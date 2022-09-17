@@ -206,8 +206,8 @@ int dsda_UStartFinale(void) {
     finaletext = "The End";
 
   if (gamemapinfo->interbackdrop[0]) {
-    if (W_CheckNumForName(gamemapinfo->interbackdrop) != -1 &&
-        (W_CheckNumForName)(gamemapinfo->interbackdrop, ns_flats) == -1)
+    if (W_LumpNameExists(gamemapinfo->interbackdrop) &&
+        !W_LumpNameExists2(gamemapinfo->interbackdrop, ns_flats))
       finalepatch = gamemapinfo->interbackdrop;
     else
       finaleflat = gamemapinfo->interbackdrop;

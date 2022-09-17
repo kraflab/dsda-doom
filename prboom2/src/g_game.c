@@ -2751,7 +2751,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     episode = 1;
 
   // Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
-  if (!EpiCustom && W_CheckNumForName(MAPNAME(episode, map)) == -1)
+  if (!EpiCustom && !W_LumpNameExists(MAPNAME(episode, map)))
   {
     if (heretic)
     {

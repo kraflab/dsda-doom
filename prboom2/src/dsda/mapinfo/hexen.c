@@ -209,7 +209,7 @@ int dsda_HexenResolveCLEV(int* clev, int* episode, int* map) {
 
   // Catch invalid maps
   next = MAPNAME(*episode, P_TranslateMap(*map));
-  if (W_CheckNumForName(next) == -1) {
+  if (!W_LumpNameExists(next)) {
     doom_printf("IDCLEV target not found: %s", next);
     *clev = false;
   }

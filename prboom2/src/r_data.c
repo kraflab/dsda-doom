@@ -177,7 +177,7 @@ static void R_InitTextures (void)
   maxoff = W_LumpLength(maptex_lump[0]);
   directory = maptex+1;
 
-  if (W_CheckNumForName("TEXTURE2") != -1)
+  if (W_LumpNameExists("TEXTURE2"))
     {
       maptex2 = W_LumpByNum(maptex_lump[1] = W_GetNumForName("TEXTURE2"));
       numtextures2 = LittleLong(*maptex2);
@@ -427,7 +427,7 @@ void R_InitTranMap(int progress)
 
   if (lump != -1)  // Set a pointer to the translucency filter maps.
     main_tranmap = W_LumpByNum(lump);   // killough 4/11/98
-  else if (W_CheckNumForName("PLAYPAL")!=-1) // can be called before WAD loaded
+  else if (W_LumpNameExists("PLAYPAL")) // can be called before WAD loaded
     {   // Compose a default transparent filter map based on PLAYPAL.
       const byte *playpal = W_LumpByName("PLAYPAL");
       byte       *my_tranmap;

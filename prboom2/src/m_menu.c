@@ -4954,7 +4954,7 @@ void M_StartControlPanel (void)
     EpiDef.numitems = ep_end;
     if (gamemode != commercial
       && (compatibility_level < ultdoom_compatibility
-        || W_CheckNumForName(EpiDef.menuitems[ep4].name) == -1))
+        || !W_LumpNameExists(EpiDef.menuitems[ep4].name)))
     {
       EpiDef.numitems--;
     }
@@ -5025,7 +5025,7 @@ void M_Drawer (void)
 
     for (i = 0; i < max; i++)
       if (currentMenu->menuitems[i].name[0])
-        if (W_CheckNumForName(currentMenu->menuitems[i].name) < 0)
+        if (!W_LumpNameExists(currentMenu->menuitems[i].name))
           lumps_missing++;
 
     if (lumps_missing == 0)

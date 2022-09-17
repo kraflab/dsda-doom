@@ -202,7 +202,7 @@ static int dsda_CannotCLEV(int episode, int map) {
 
   // Catch invalid maps
   next = MAPNAME(episode, map);
-  if (W_CheckNumForName(next) == -1) {
+  if (!W_LumpNameExists(next)) {
     doom_printf("IDCLEV target not found: %s", next);
     return true;
   }
