@@ -33,7 +33,7 @@ Not looked at yet.
 
 | Key                                | Status             |
 | ---------------------------------- | ------------------ |
-| map                                | :warning           |
+| map                                | :warning:          |
 | lookup                             | :grey_question:    |
 | defaultmap                         | :grey_question:    |
 | adddefaultmap                      | :grey_question:    |
