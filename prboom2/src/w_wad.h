@@ -158,6 +158,7 @@ const void* W_LumpByNum (int lump);
 const void* W_LockLumpNum(int lump);
 
 int W_LumpNameExists(const char *name);
+int W_LumpNameExists2(const char *name, int ns);
 
 // CPhipps - convenience macros
 //#define W_LumpByNum(num) (W_LumpByNum)((num),1)

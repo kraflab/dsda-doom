@@ -619,3 +619,8 @@ int W_LumpNameExists(const char *name)
 {
   return W_CheckNumForName(name) != -1;
 }
+
+int W_LumpNameExists2(const char *name, int ns)
+{
+  return (W_CheckNumForName)(name, ns) != -1;
+}
