@@ -2946,14 +2946,13 @@ setup_menu_t opengl_settings[] = {
   { "Simple Shadows", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_gl_shadows },
   { "Paper Items", S_YESNO, m_conf, G_X, G_Y + 7 * 8, dsda_config_gl_render_paperitems },
   { "Smooth sprite edges", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_gl_sprite_blend },
-  { "Adjust Sprite Clipping", S_CHOICE, m_conf, G_X, G_Y + 9 * 8, dsda_config_gl_spriteclip, 0, gl_spriteclipmodes },
-  { "Health Bar Above Monsters", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_gl_health_bar },
+  { "Health Bar Above Monsters", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_gl_health_bar },
 
-  { "Texture Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, dsda_config_gl_texture_filter, 0, gltexfilters },
-  { "Sprite Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 13 * 8, dsda_config_gl_sprite_filter, 0, gltexfilters },
-  { "Patch Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 14 * 8, dsda_config_gl_patch_filter, 0, gltexfilters },
-  { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 15 * 8, dsda_config_gl_texture_filter_anisotropic, 0, gltexfilters_anisotropics },
-  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 16 * 8, dsda_config_gl_tex_format_string, 0, gltexformats },
+  { "Texture Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_gl_texture_filter, 0, gltexfilters },
+  { "Sprite Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, dsda_config_gl_sprite_filter, 0, gltexfilters },
+  { "Patch Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 13 * 8, dsda_config_gl_patch_filter, 0, gltexfilters },
+  { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 14 * 8, dsda_config_gl_texture_filter_anisotropic, 0, gltexfilters_anisotropics },
+  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 15 * 8, dsda_config_gl_tex_format_string, 0, gltexformats },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mapping_settings),
@@ -4034,7 +4033,7 @@ dboolean M_Responder (event_t* ev) {
     }
 
     //e6y
-    if (dsda_InputActivated(dsda_input_speed_default) && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_default) && !dsda_StrictMode())
     {
       int value = StepwiseSum(dsda_RealticClockRate(), 0, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
@@ -4042,7 +4041,7 @@ dboolean M_Responder (event_t* ev) {
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (dsda_InputActivated(dsda_input_speed_up) && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_up) && !dsda_StrictMode())
     {
       int value = StepwiseSum(dsda_RealticClockRate(), 1, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
@@ -4050,7 +4049,7 @@ dboolean M_Responder (event_t* ev) {
       // Don't eat the keypress in this case.
       // return true;
     }
-    if (dsda_InputActivated(dsda_input_speed_down) && (!netgame||demoplayback) && !dsda_StrictMode())
+    if (dsda_InputActivated(dsda_input_speed_down) && !dsda_StrictMode())
     {
       int value = StepwiseSum(dsda_RealticClockRate(), -1, 3, 10000, 100);
       dsda_UpdateRealticClockRate(value);
