@@ -157,6 +157,8 @@ char*   W_ReadLumpToString (int lump);
 const void* W_LumpByNum (int lump);
 const void* W_LockLumpNum(int lump);
 
+int W_LumpNameExists(const char *name);
+
 // CPhipps - convenience macros
 //#define W_LumpByNum(num) (W_LumpByNum)((num),1)
 #define W_LumpByName(name) W_LumpByNum (W_GetNumForName(name))
