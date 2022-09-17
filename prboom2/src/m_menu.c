@@ -3175,15 +3175,14 @@ void M_ExtHelpNextScreen(int choice)
 void M_InitExtendedHelp(void)
 
 {
-  int index,i;
+  int index;
   char namebfr[] = { "HELPnn"} ;
 
   extended_help_count = 0;
   for (index = 1 ; index < 100 ; index++) {
     namebfr[4] = index/10 + '0';
     namebfr[5] = index%10 + '0';
-    i = W_CheckNumForName(namebfr);
-    if (i == -1) {
+    if (!W_LumpNameExists(namebfr)) {
       if (extended_help_count) {
         /* The Extended Help menu is accessed using the
          * Help hotkey (F1) or the "Read This!" menu item.
@@ -3207,7 +3206,6 @@ void M_InitExtendedHelp(void)
     }
     extended_help_count++;
   }
-
 }
 
 // Initialization for the extended HELP screens.
@@ -3488,7 +3486,7 @@ void M_DrawHelp (void)
 
   M_ChangeMenu(NULL, mnact_full);
 
-  if (helplump >= 0 && lumpinfo[helplump].source != source_iwad)
+  if (helplump != LUMP_NOT_FOUND && lumpinfo[helplump].source != source_iwad)
   {
     V_FillBorder(-1, 0);
     V_DrawNumPatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
@@ -3556,7 +3554,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   }
 
   inhelpscreens = true;
-  if (creditlump >= 0 && lumpinfo[creditlump].source != source_iwad)
+  if (creditlump != LUMP_NOT_FOUND && lumpinfo[creditlump].source != source_iwad)
   {
     V_FillBorder(-1, 0);
     V_DrawNumPatch(0, 0, 0, creditlump, CR_DEFAULT, VPT_STRETCH);
@@ -5296,7 +5294,7 @@ void M_DrawTitle(int x, int y, const char *patch, int cm,
 {
   int lumpnum = W_CheckNumForName(patch);
 
-  if (lumpnum >= 0)
+  if (lumpnum != LUMP_NOT_FOUND)
   {
     int flags = VPT_STRETCH;
     if (cm != CR_DEFAULT)

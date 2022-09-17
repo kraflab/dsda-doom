@@ -61,7 +61,7 @@ static int dsda_WadCompatibilityLevel(void) {
     last_numwadfiles = numwadfiles;
     num = W_CheckNumForName("COMPLVL");
 
-    if (num >= 0) {
+    if (num != LUMP_NOT_FOUND) {
       int length;
       const char* data;
 

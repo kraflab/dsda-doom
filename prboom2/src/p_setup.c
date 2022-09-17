@@ -1835,7 +1835,7 @@ void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, 
 
     case 260: // killough 4/11/98: apply translucency to 2s normal texture
       sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
-        (sd->special = W_CheckNumForName(msd->midtexture)) < 0 ||
+        (sd->special = W_CheckNumForName(msd->midtexture)) == LUMP_NOT_FOUND ||
         W_LumpLength(sd->special) != 65536 ?
         sd->special=0, R_TextureNumForName(msd->midtexture) :
           (sd->special++, 0) : (sd->special=0);
@@ -1943,7 +1943,7 @@ void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, secto
     //
     case zl_translucent_line: // killough 4/11/98: apply translucency to 2s normal texture
       sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
-        (sd->special = W_CheckNumForName(msd->midtexture)) < 0 ||
+        (sd->special = W_CheckNumForName(msd->midtexture)) == LUMP_NOT_FOUND ||
         W_LumpLength(sd->special) != 65536 ?
         sd->special = 0, R_TextureNumForName(msd->midtexture) :
           (sd->special++, 0) : (sd->special = 0);
@@ -2776,7 +2776,7 @@ void P_CheckLevelWadStructure(const char *mapname)
 
   lumpnum = W_CheckNumForName(mapname);
 
-  if (lumpnum < 0)
+  if (lumpnum == LUMP_NOT_FOUND)
   {
     I_Error("P_SetupLevel: There is no %s map.", mapname);
   }

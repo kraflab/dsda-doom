@@ -392,7 +392,7 @@ int gld_LoadHiresTex(GLTexture *gltexture, int cm)
         if (lumpname)
         {
           int lump = (W_CheckNumForName)(lumpname, ns_hires);
-          if (lump != -1)
+          if (lump != LUMP_NOT_FOUND)
           {
             SDL_RWops *rw_data = SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump));
             SDL_Surface *surf_tmp = IMG_Load_RW(rw_data, false);

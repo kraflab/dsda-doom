@@ -2050,7 +2050,7 @@ extern dboolean setsizeneeded;
 static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
 {
   int i, lump = W_CheckNumForName(name);
-  if (lump != -1 && (i = lump+10) < numlumps)
+  if (lump != LUMP_NOT_FOUND && (i = lump+10) < numlumps)
     do
       {
   int size = W_LumpLength(i);

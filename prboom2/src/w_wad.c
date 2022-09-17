@@ -345,7 +345,7 @@ unsigned W_LumpNameHash(const char *s)
 
 //
 // W_CheckNumForName
-// Returns -1 if name not found.
+// Returns LUMP_NOT_FOUND if name not found.
 //
 // Rewritten by Lee Killough to use hash table for performance. Significantly
 // cuts down on time -- increases Doom performance over 300%. This is the
@@ -372,7 +372,7 @@ int (W_FindNumFromName)(const char *name, int li_namespace, int i)
 
   // proff 2001/09/07 - check numlumps==0, this happens when called before WAD loaded
   if (numlumps == 0)
-    i = -1;
+    i = LUMP_NOT_FOUND;
   else
   {
     if (i < 0)
@@ -386,12 +386,12 @@ int (W_FindNumFromName)(const char *name, int li_namespace, int i)
   // worth the overhead, considering namespace collisions are rare in
   // Doom wads.
 
-  while (i >= 0 && (strncasecmp(lumpinfo[i].name, name, 8) ||
-                    lumpinfo[i].li_namespace != li_namespace))
+  while (i != LUMP_NOT_FOUND && (strncasecmp(lumpinfo[i].name, name, 8) ||
+                                 lumpinfo[i].li_namespace != li_namespace))
     i = lumpinfo[i].next;
   }
 
-  // Return the matching lump, or -1 if none found.
+  // Return the matching lump, or LUMP_NOT_FOUND if none found.
 
   return i;
 }
@@ -405,7 +405,7 @@ void W_HashLumps(void)
   int i;
 
   for (i=0; i<numlumps; i++)
-    lumpinfo[i].index = -1;                     // mark slots empty
+    lumpinfo[i].index = LUMP_NOT_FOUND;         // mark slots empty
 
   // Insert nodes to the beginning of each chain, in first-to-last
   // lump order, so that the last lump of a given name appears first
@@ -429,7 +429,7 @@ void W_HashLumps(void)
 int W_GetNumForName (const char* name)     // killough -- const added
 {
   int i = W_CheckNumForName (name);
-  if (i == -1)
+  if (i == LUMP_NOT_FOUND)
     I_Error("W_GetNumForName: %.8s not found", name);
   return i;
 }
@@ -448,14 +448,14 @@ const lumpinfo_t* W_GetLumpInfoByNum(int lump)
 int W_CheckNumForNameInternal(const char *name)
 {
   int p;
-  for (p = -1; (p = W_ListNumFromName(name, p)) >= 0; )
+  for (p = LUMP_NOT_FOUND; (p = W_ListNumFromName(name, p)) != LUMP_NOT_FOUND; )
   {
     if (lumpinfo[p].flags == LUMP_PRBOOM)
     {
       return p;
     }
   }
-  return -1;
+  return LUMP_NOT_FOUND;
 }
 
 // W_ListNumFromName
@@ -465,7 +465,7 @@ int W_ListNumFromName(const char *name, int lump)
 {
   int i, next;
 
-  for (i = -1; (next = W_FindNumFromName(name, i)) >= 0; i = next)
+  for (i = LUMP_NOT_FOUND; (next = W_FindNumFromName(name, i)) != LUMP_NOT_FOUND; i = next)
     if (next == lump)
       break;
 
@@ -617,10 +617,10 @@ int W_LumpNumInPortWad(int lump) {
 
 int W_LumpNameExists(const char *name)
 {
-  return W_CheckNumForName(name) != -1;
+  return W_CheckNumForName(name) != LUMP_NOT_FOUND;
 }
 
 int W_LumpNameExists2(const char *name, int ns)
 {
-  return (W_CheckNumForName)(name, ns) != -1;
+  return (W_CheckNumForName)(name, ns) != LUMP_NOT_FOUND;
 }

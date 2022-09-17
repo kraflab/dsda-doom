@@ -604,7 +604,7 @@ GLuint gld_LoadDetailName(const char *name)
 
   lump = (W_CheckNumForName)(name, ns_hires);
 
-  if (lump != -1)
+  if (lump != LUMP_NOT_FOUND)
   {
     SDL_PixelFormat fmt;
     SDL_Surface *surf = NULL;

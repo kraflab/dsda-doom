@@ -154,7 +154,7 @@ int dsda_UMapMusic(int* music_index, int* music_lump) {
 
   lump = W_CheckNumForName(gamemapinfo->music);
 
-  if (lump < 0)
+  if (lump == LUMP_NOT_FOUND)
     return false;
 
   *music_index = -1;
@@ -174,7 +174,7 @@ int dsda_UInterMusic(int* music_index, int* music_lump) {
 
   lump = W_CheckNumForName(gamemapinfo->intermusic);
 
-  if (lump < 0)
+  if (lump == LUMP_NOT_FOUND)
     return false;
 
   *music_index = -1;

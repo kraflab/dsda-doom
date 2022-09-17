@@ -82,12 +82,12 @@ int LoadDemo(const char *name, const byte **buffer, int *length)
 
   // check ns_demos namespace first, then ns_global
   num = (W_CheckNumForName)(basename, ns_demos);
-  if (num < 0)
+  if (num == LUMP_NOT_FOUND)
   {
     num = W_CheckNumForName(basename);
   }
 
-  if (num < 0)
+  if (num == LUMP_NOT_FOUND)
   {
     // Allow for demos not loaded as lumps
     static byte *sbuf = NULL;
@@ -302,7 +302,7 @@ void R_DemoEx_ShowComment(void)
   int         w;
 
   lump = W_CheckNumForName(DEMOEX_COMMENT_LUMPNAME);
-  if (lump == -1)
+  if (lump == LUMP_NOT_FOUND)
     return;
 
   count = W_LumpLength(lump);
@@ -351,7 +351,7 @@ static int R_DemoEx_GetVersion(void)
   char str_ver[32];
 
   lump = W_CheckNumForName(DEMOEX_VERSION_LUMPNAME);
-  if (lump != -1)
+  if (lump != LUMP_NOT_FOUND)
   {
     size = W_LumpLength(lump);
     if (size > 0)
@@ -381,7 +381,7 @@ static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
   int i, p, paramscount;
 
   lump = W_CheckNumForName(DEMOEX_PARAMS_LUMPNAME);
-  if (lump == -1)
+  if (lump == LUMP_NOT_FOUND)
     return;
 
   size = W_LumpLength(lump);

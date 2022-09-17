@@ -59,6 +59,8 @@ typedef struct
   char name[8];
 } filelump_t;
 
+#define LUMP_NOT_FOUND -1
+
 //
 // WADFILE I/O related stuff.
 //
@@ -147,7 +149,7 @@ int     W_ListNumFromName(const char *name, int lump);
 #define W_CheckNumForName(name) (W_CheckNumForName)(name, ns_global)
 static inline
 int     (W_CheckNumForName)(const char *name, int ns)
-        { return (W_FindNumFromName)(name, ns, -1); }
+        { return (W_FindNumFromName)(name, ns, LUMP_NOT_FOUND); }
 int     W_GetNumForName (const char* name);
 const lumpinfo_t* W_GetLumpInfoByNum(int lump);
 int     W_LumpLength (int lump);
