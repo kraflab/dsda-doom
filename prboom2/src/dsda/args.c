@@ -323,6 +323,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets a magic block of memory for certain overrun demos",
     arg_string_array, 0, 0, 1, 10,
   },
+  [dsda_arg_mapinfo] = {
+    "-mapinfo", NULL, NULL,
+    "turn on (partial) MAPINFO support",
+    arg_null,
+  },
   [dsda_arg_data] = {
     "-data", NULL, NULL,
     "sets the data directory",
