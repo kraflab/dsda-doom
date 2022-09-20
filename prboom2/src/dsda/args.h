@@ -157,6 +157,7 @@ typedef struct {
 void dsda_ParseCommandLineArgs(int argc, char** argv);
 dsda_arg_t* dsda_Arg(dsda_arg_identifier_t id);
 dboolean dsda_Flag(dsda_arg_identifier_t id);
+int dsda_SimpleIntArg(dsda_arg_identifier_t id);
 void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param);
 void dsda_UpdateStringArg(dsda_arg_identifier_t id, const char* param);
 void dsda_AppendStringArg(dsda_arg_identifier_t id, const char* param);

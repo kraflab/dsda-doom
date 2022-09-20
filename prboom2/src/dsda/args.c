@@ -847,6 +847,13 @@ dboolean dsda_Flag(dsda_arg_identifier_t id) {
   return arg_value[id].found;
 }
 
+int dsda_SimpleIntArg(dsda_arg_identifier_t id) {
+  if (arg_value[id].found)
+    return arg_value[id].value.v_int;
+
+  return 0;
+}
+
 void dsda_PrintArgHelp(void) {
   int i;
 
