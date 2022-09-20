@@ -1765,7 +1765,7 @@ static void M_DrawSetting(const setup_menu_t* s)
       int cursor_start, char_width;
       char c[2];
 
-      strncpy(text, entry_string_index, ENTRY_STRING_BFR_SIZE - 1);
+      strcpy(text, entry_string_index);
 
       // If the string is too wide for the screen, trim it back,
       // one char at a time until it fits. This should only occur
@@ -4551,8 +4551,13 @@ dboolean M_Responder (event_t* ev) {
           }
           // shift the remainder of the text one char left
           else
-            strcpy(&entry_string_index[entry_index],
-                   &entry_string_index[entry_index + 1]);
+          {
+            int i;
+
+            for (i = entry_index; entry_string_index[i + 1]; ++i)
+              entry_string_index[i] = entry_string_index[i + 1];
+            entry_string_index[i] = '\0';
+          }
         }
         else if (action == MENU_LEFT) // move cursor left
         {
