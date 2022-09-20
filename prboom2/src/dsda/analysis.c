@@ -48,10 +48,6 @@ int dsda_kills_on_map = 0;
 dboolean dsda_100k_on_map = false;
 dboolean dsda_100k_note_shown = false;
 dboolean dsda_pacifist_note_shown = false;
-dboolean dsda_time_keys = false;
-dboolean dsda_time_use = false;
-dboolean dsda_time_secrets = false;
-dboolean dsda_time_all = false;
 
 void dsda_ResetAnalysis(void) {
   dsda_pacifist = true;

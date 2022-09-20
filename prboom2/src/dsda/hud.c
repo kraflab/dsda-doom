@@ -35,7 +35,6 @@
 
 #define DSDA_TEXT_X 2
 #define DSDA_SPLIT_Y 12
-#define DSDA_SPLIT_LIFETIME 105
 #define DSDA_SPLIT_SIZE 80
 
 typedef struct {
@@ -135,7 +134,7 @@ void dsda_EraseHud(void) {
   dsda_EraseLineDisplay();
 }
 
-void dsda_AddSplit(dsda_split_class_t split_class) {
+void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
   int minutes;
   float seconds;
   char* s;
@@ -150,7 +149,7 @@ void dsda_AddSplit(dsda_split_class_t split_class) {
 
   split_state->delay = split_state->default_delay;
 
-  dsda_split.ticks = DSDA_SPLIT_LIFETIME;
+  dsda_split.ticks = lifetime;
 
   // to match the timer, we use the leveltime value at the end of the frame
   minutes = (leveltime + 1) / 35 / 60;

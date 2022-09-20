@@ -239,24 +239,24 @@ static arg_config_t arg_config[dsda_arg_count] = {
     arg_null,
   },
   [dsda_arg_time_keys] = {
-    "-time_keys", NULL, NULL,
+    "-time_keys", NULL, "105",
     "announces the time when keys are picked up",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_time_use] = {
-    "-time_use", NULL, NULL,
+    "-time_use", NULL, "105",
     "announces the time when the use command is activated",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_time_secrets] = {
-    "-time_secrets", NULL, NULL,
+    "-time_secrets", NULL, "105",
     "announces the time when a secret is collected",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_time_all] = {
-    "-time_all", NULL, NULL,
+    "-time_all", NULL, "105",
     "announces the time when any -time_* event happens",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_track_player] = {
     "-track_player", NULL, NULL,
