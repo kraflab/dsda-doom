@@ -37,7 +37,6 @@ int dsda_tas;
 int dsda_skip_next_wipe;
 
 void dsda_InitSettings(void) {
-  void dsda_UpdateStrictMode(void);
   void G_UpdateMouseSensitivity(void);
   void dsda_InitQuickstartCache(void);
   void dsda_InitParallelSFXFilter(void);
