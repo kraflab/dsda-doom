@@ -94,22 +94,25 @@ void R_LoadTrigTables(void)
 {
   int lump;
   {
-    lump = (W_CheckNumForName)("SINETABL",ns_prboom);
-    if (lump == -1) I_Error("Failed to locate trig tables");
+    lump = W_CheckNumForName2("SINETABL",ns_prboom);
+    if (lump == LUMP_NOT_FOUND)
+      I_Error("Failed to locate trig tables");
     if (W_LumpLength(lump) != sizeof(finesine))
       I_Error("R_LoadTrigTables: Invalid SINETABL");
     W_ReadLump(lump,(unsigned char*)finesine);
   }
   {
-    lump = (W_CheckNumForName)("TANGTABL",ns_prboom);
-    if (lump == -1) I_Error("Failed to locate trig tables");
+    lump = W_CheckNumForName2("TANGTABL",ns_prboom);
+    if (lump == LUMP_NOT_FOUND)
+      I_Error("Failed to locate trig tables");
     if (W_LumpLength(lump) != sizeof(finetangent))
       I_Error("R_LoadTrigTables: Invalid TANGTABL");
     W_ReadLump(lump,(unsigned char*)finetangent);
   }
   {
-    lump = (W_CheckNumForName)("TANTOANG",ns_prboom);
-    if (lump == -1) I_Error("Failed to locate trig tables");
+    lump = W_CheckNumForName2("TANTOANG",ns_prboom);
+    if (lump == LUMP_NOT_FOUND)
+      I_Error("Failed to locate trig tables");
     if (W_LumpLength(lump) != sizeof(tantoangle))
       I_Error("R_LoadTrigTables: Invalid TANTOANG");
     W_ReadLump(lump,(unsigned char*)tantoangle);

@@ -150,7 +150,7 @@ static void R_InitTextures (void)
     {
       strncpy (name,name_p+i*8, 8);
       patchlookup[i] = W_CheckNumForName(name);
-      if (patchlookup[i] == -1)
+      if (patchlookup[i] == LUMP_NOT_FOUND)
         {
           // killough 4/17/98:
           // Some wads use sprites as wall patches, so repeat check and
@@ -160,9 +160,9 @@ static void R_InitTextures (void)
           // appear first in a wad. This is a kludgy solution to the wad
           // lump namespace problem.
 
-          patchlookup[i] = (W_CheckNumForName)(name, ns_sprites);
+          patchlookup[i] = W_CheckNumForName2(name, ns_sprites);
 
-          if (patchlookup[i] == -1 && devparm)
+          if (patchlookup[i] == LUMP_NOT_FOUND && devparm)
             //jff 8/3/98 use logical output routine
             lprintf(LO_WARN,"\nWarning: patch %.8s, index %d does not exist",name,i);
         }
@@ -177,7 +177,7 @@ static void R_InitTextures (void)
   maxoff = W_LumpLength(maptex_lump[0]);
   directory = maptex+1;
 
-  if (W_CheckNumForName("TEXTURE2") != -1)
+  if (W_LumpNameExists("TEXTURE2"))
     {
       maptex2 = W_LumpByNum(maptex_lump[1] = W_GetNumForName("TEXTURE2"));
       numtextures2 = LittleLong(*maptex2);
@@ -400,7 +400,7 @@ int R_ColormapNumForName(const char *name)
 {
   register int i = 0;
   if (strncasecmp(name,"COLORMAP",8))     // COLORMAP predefined to return 0
-    if ((i = (W_CheckNumForName)(name, ns_colormaps)) != -1)
+    if ((i = W_CheckNumForName2(name, ns_colormaps)) != LUMP_NOT_FOUND)
       i -= firstcolormaplump;
   return i;
 }
@@ -425,9 +425,9 @@ void R_InitTranMap(int progress)
 
   // If a tranlucency filter map lump is present, use it
 
-  if (lump != -1)  // Set a pointer to the translucency filter maps.
+  if (lump != LUMP_NOT_FOUND)  // Set a pointer to the translucency filter maps.
     main_tranmap = W_LumpByNum(lump);   // killough 4/11/98
-  else if (W_CheckNumForName("PLAYPAL")!=-1) // can be called before WAD loaded
+  else if (W_LumpNameExists("PLAYPAL")) // can be called before WAD loaded
     {   // Compose a default transparent filter map based on PLAYPAL.
       const byte *playpal = W_LumpByName("PLAYPAL");
       byte       *my_tranmap;
@@ -558,15 +558,15 @@ void R_InitData(void)
 
 int R_FlatNumForName(const char *name)    // killough -- const added
 {
-  int i = (W_CheckNumForName)(name, ns_flats);
-  if (i == -1)
+  int i = W_CheckNumForName2(name, ns_flats);
+  if (i == LUMP_NOT_FOUND)
   {
     // e6y
     // Ability to play wads with wrong flat names
     // Unknown flats will be replaced with "NO TEXTURE" preset from dsda-doom.wad
     lprintf(LO_DEBUG, "R_FlatNumForName: %.8s not found\n", name);
-    i = (W_CheckNumForName)("-N0_TEX-", ns_flats);
-    if (i == -1)
+    i = W_CheckNumForName2("-N0_TEX-", ns_flats);
+    if (i == LUMP_NOT_FOUND)
     {
       I_Error("R_FlatNumForName: -N0_TEX- not found");
     }
@@ -776,8 +776,8 @@ int R_NumPatchForSpriteIndex(spritenum_t item)
 int R_SetSpriteByName(patchnum_t *patchnum, const char *name)
 {
   int result = false;
-  patchnum->lumpnum = (W_CheckNumForName)(name, ns_sprites);
-  if (patchnum->lumpnum != -1)
+  patchnum->lumpnum = W_CheckNumForName2(name, ns_sprites);
+  if (patchnum->lumpnum != LUMP_NOT_FOUND)
   {
     R_SetSpriteByNum(patchnum, patchnum->lumpnum);
     result = true;
@@ -789,7 +789,7 @@ int R_SetPatchByName(patchnum_t *patchnum, const char *name)
 {
   int result = false;
   int lump = W_CheckNumForName(name);
-  if (lump != -1)
+  if (lump != LUMP_NOT_FOUND)
   {
     R_SetPatchNum(patchnum, name);
     result = true;

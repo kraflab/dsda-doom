@@ -46,10 +46,6 @@ extern int dsda_kills_on_map;
 extern dboolean dsda_100k_on_map;
 extern dboolean dsda_100k_note_shown;
 extern dboolean dsda_pacifist_note_shown;
-extern dboolean dsda_time_keys;
-extern dboolean dsda_time_use;
-extern dboolean dsda_time_secrets;
-extern dboolean dsda_time_all;
 
 void dsda_ResetAnalysis(void);
 void dsda_WriteAnalysis(void);

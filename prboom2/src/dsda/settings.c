@@ -37,7 +37,6 @@ int dsda_tas;
 int dsda_skip_next_wipe;
 
 void dsda_InitSettings(void) {
-  void dsda_UpdateStrictMode(void);
   void G_UpdateMouseSensitivity(void);
   void dsda_InitQuickstartCache(void);
   void dsda_InitParallelSFXFilter(void);
@@ -61,7 +60,7 @@ static int dsda_WadCompatibilityLevel(void) {
     last_numwadfiles = numwadfiles;
     num = W_CheckNumForName("COMPLVL");
 
-    if (num >= 0) {
+    if (num != LUMP_NOT_FOUND) {
       int length;
       const char* data;
 

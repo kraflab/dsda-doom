@@ -474,10 +474,6 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
                 player->lookdir = 0;
             }
         }
-        if (demo_smoothturns && player == &players[displayplayer])
-        {
-          R_SmoothPlaying_Add(angle - thing->angle);
-        }
     }
     else if (thing->flags & MF_MISSILE)
     {
@@ -548,6 +544,12 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
     {
         thing->momx = thing->momy = thing->momz = 0;
     }
+
+    if (thing->player)
+    {
+        R_ResetAfterTeleport(thing->player);
+    }
+
     return (true);
 }
 

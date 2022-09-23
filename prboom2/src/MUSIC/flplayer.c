@@ -247,7 +247,7 @@ static int fl_init (int samplerate)
 
     lumpnum = W_CheckNumForName("SNDFONT");
 
-    if (lumpnum >= 0)
+    if (lumpnum != LUMP_NOT_FOUND)
     {
       replaced_soundfont = !W_LumpNumInPortWad(lumpnum);
     }

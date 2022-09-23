@@ -266,7 +266,7 @@ static const dsda_options_t* dsda_MBFOptions(void) {
 
   lumpnum = W_CheckNumForName("OPTIONS");
 
-  if (lumpnum == -1)
+  if (lumpnum == LUMP_NOT_FOUND)
     return &mbf_options;
 
   return dsda_LumpOptions(lumpnum);

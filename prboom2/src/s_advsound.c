@@ -59,7 +59,7 @@ musinfo_t musinfo;
 //
 void S_ParseMusInfo(const char *mapid)
 {
-  if (W_CheckNumForName("MUSINFO") != -1)
+  if (W_LumpNameExists("MUSINFO"))
   {
     int num, lumpnum;
     int inMap = false;
@@ -105,7 +105,7 @@ void S_ParseMusInfo(const char *mapid)
           {
             lumpnum = W_CheckNumForName(sc_String);
 
-            if (lumpnum >= 0)
+            if (lumpnum != LUMP_NOT_FOUND)
             {
               musinfo.items[num] = lumpnum;
             }

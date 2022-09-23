@@ -21,6 +21,8 @@
 #include "r_state.h"
 #include "w_wad.h"
 
+#include "dsda/args.h"
+
 #include "map_format.h"
 
 map_format_t map_format;
@@ -483,6 +485,9 @@ void dsda_ApplyDefaultMapFormat(void) {
     map_format = heretic_map_format;
   else
     map_format = doom_map_format;
+
+  if (dsda_Flag(dsda_arg_mapinfo) && !map_format.mapinfo)
+    map_format.mapinfo = W_LumpNameExists("MAPINFO");
 
   dsda_MigrateMobjInfo();
 }

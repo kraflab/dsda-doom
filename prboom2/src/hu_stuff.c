@@ -159,7 +159,7 @@ void HU_init_crosshair(void);
 static void HU_SetLumpTrans(const char *name)
 {
   int lump = W_CheckNumForName(name);
-  if (lump > 0)
+  if (lump != LUMP_NOT_FOUND)
   {
     lumpinfo[lump].flags |= LUMP_CM2RGB;
   }
@@ -497,7 +497,7 @@ void HU_init_crosshair(void)
     return;
 
   crosshair.lump = W_CheckNumForNameInternal(crosshair_nam[hudadd_crosshair]);
-  if (crosshair.lump == -1)
+  if (crosshair.lump == LUMP_NOT_FOUND)
     return;
 
   crosshair.w = R_NumPatchWidth(crosshair.lump);

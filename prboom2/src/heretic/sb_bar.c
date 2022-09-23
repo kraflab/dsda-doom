@@ -254,7 +254,7 @@ void SB_Init(void)
 
     for (i = 0; i < 11; ++i)
     {
-      lumparti[i] = (W_CheckNumForName)(heretic_namearti[i], ns_sprites);
+      lumparti[i] = W_CheckNumForName2(heretic_namearti[i], ns_sprites);
     }
 
     LumpLTFACE = W_GetNumForName("LTFACE");
@@ -1051,7 +1051,7 @@ static void Hexen_SB_Init(void)
 
     for (i = 0; i < 33; ++i)
     {
-      lumparti[i] = (W_CheckNumForName)(hexen_namearti[i], ns_sprites);
+      lumparti[i] = W_CheckNumForName2(hexen_namearti[i], ns_sprites);
     }
 
     LumpH2BAR = W_GetNumForName("H2BAR");

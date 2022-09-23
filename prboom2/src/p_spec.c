@@ -227,7 +227,7 @@ void P_InitPicAnims (void)
     }
     else
     {
-      if ((W_CheckNumForName)(animdefs[i].startname, ns_flats) == -1)  // killough 4/17/98
+      if (!W_LumpNameExists2(animdefs[i].startname, ns_flats))  // killough 4/17/98
           continue;
 
       lastanim->picnum = R_FlatNumForName (animdefs[i].endname);
@@ -5072,8 +5072,8 @@ void P_InitTerrainTypes(void)
     memset(TerrainTypes, 0, size);
     for (i = 0; TerrainTypeDefs[hexen][i].type != -1; i++)
     {
-        lump = (W_CheckNumForName)(TerrainTypeDefs[hexen][i].name, ns_flats);
-        if (lump != -1)
+        lump = W_CheckNumForName2(TerrainTypeDefs[hexen][i].name, ns_flats);
+        if (lump != LUMP_NOT_FOUND)
         {
             TerrainTypes[lump - firstflat] = TerrainTypeDefs[hexen][i].type;
         }

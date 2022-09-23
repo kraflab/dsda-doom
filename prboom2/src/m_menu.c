@@ -1765,7 +1765,7 @@ static void M_DrawSetting(const setup_menu_t* s)
       int cursor_start, char_width;
       char c[2];
 
-      strncpy(text, entry_string_index, ENTRY_STRING_BFR_SIZE - 1);
+      strcpy(text, entry_string_index);
 
       // If the string is too wide for the screen, trim it back,
       // one char at a time until it fits. This should only occur
@@ -3175,15 +3175,14 @@ void M_ExtHelpNextScreen(int choice)
 void M_InitExtendedHelp(void)
 
 {
-  int index,i;
+  int index;
   char namebfr[] = { "HELPnn"} ;
 
   extended_help_count = 0;
   for (index = 1 ; index < 100 ; index++) {
     namebfr[4] = index/10 + '0';
     namebfr[5] = index%10 + '0';
-    i = W_CheckNumForName(namebfr);
-    if (i == -1) {
+    if (!W_LumpNameExists(namebfr)) {
       if (extended_help_count) {
         /* The Extended Help menu is accessed using the
          * Help hotkey (F1) or the "Read This!" menu item.
@@ -3207,7 +3206,6 @@ void M_InitExtendedHelp(void)
     }
     extended_help_count++;
   }
-
 }
 
 // Initialization for the extended HELP screens.
@@ -3488,7 +3486,7 @@ void M_DrawHelp (void)
 
   M_ChangeMenu(NULL, mnact_full);
 
-  if (helplump >= 0 && lumpinfo[helplump].source != source_iwad)
+  if (helplump != LUMP_NOT_FOUND && lumpinfo[helplump].source != source_iwad)
   {
     V_FillBorder(-1, 0);
     V_DrawNumPatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
@@ -3556,7 +3554,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   }
 
   inhelpscreens = true;
-  if (creditlump >= 0 && lumpinfo[creditlump].source != source_iwad)
+  if (creditlump != LUMP_NOT_FOUND && lumpinfo[creditlump].source != source_iwad)
   {
     V_FillBorder(-1, 0);
     V_DrawNumPatch(0, 0, 0, creditlump, CR_DEFAULT, VPT_STRETCH);
@@ -4553,8 +4551,13 @@ dboolean M_Responder (event_t* ev) {
           }
           // shift the remainder of the text one char left
           else
-            strcpy(&entry_string_index[entry_index],
-                   &entry_string_index[entry_index + 1]);
+          {
+            int i;
+
+            for (i = entry_index; entry_string_index[i + 1]; ++i)
+              entry_string_index[i] = entry_string_index[i + 1];
+            entry_string_index[i] = '\0';
+          }
         }
         else if (action == MENU_LEFT) // move cursor left
         {
@@ -4954,7 +4957,7 @@ void M_StartControlPanel (void)
     EpiDef.numitems = ep_end;
     if (gamemode != commercial
       && (compatibility_level < ultdoom_compatibility
-        || W_CheckNumForName(EpiDef.menuitems[ep4].name) == -1))
+        || !W_LumpNameExists(EpiDef.menuitems[ep4].name)))
     {
       EpiDef.numitems--;
     }
@@ -5025,7 +5028,7 @@ void M_Drawer (void)
 
     for (i = 0; i < max; i++)
       if (currentMenu->menuitems[i].name[0])
-        if (W_CheckNumForName(currentMenu->menuitems[i].name) < 0)
+        if (!W_LumpNameExists(currentMenu->menuitems[i].name))
           lumps_missing++;
 
     if (lumps_missing == 0)
@@ -5296,7 +5299,7 @@ void M_DrawTitle(int x, int y, const char *patch, int cm,
 {
   int lumpnum = W_CheckNumForName(patch);
 
-  if (lumpnum >= 0)
+  if (lumpnum != LUMP_NOT_FOUND)
   {
     int flags = VPT_STRETCH;
     if (cm != CR_DEFAULT)

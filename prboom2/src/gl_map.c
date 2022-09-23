@@ -81,9 +81,9 @@ void gld_InitMapPics(void)
   i = 0;
   while (am_icons[i].name)
   {
-    lump = (W_CheckNumForName)(am_icons[i].name, ns_prboom);
+    lump = W_CheckNumForName2(am_icons[i].name, ns_prboom);
     am_icons[i].lumpnum = lump;
-    if (lump != -1)
+    if (lump != LUMP_NOT_FOUND)
     {
       SDL_Surface *surf = NULL;
 #ifdef HAVE_LIBSDL2_IMAGE

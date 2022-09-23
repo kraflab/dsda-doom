@@ -198,9 +198,9 @@ static int ReadLump(const char *filename, const char *lumpname, unsigned char **
     for(p = name; *p; p++)
       *p = toupper(*p);
 
-    lump = (W_CheckNumForName)(name, ns_prboom);
+    lump = W_CheckNumForName2(name, ns_prboom);
 
-    if (lump != -1)
+    if (lump != LUMP_NOT_FOUND)
     {
       size = W_LumpLength(lump);
       data = W_LumpByNum(lump);

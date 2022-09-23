@@ -57,7 +57,7 @@ void dsda_CyclePlayPal(void) {
       return;
 
     lump_num = W_CheckNumForName(playpal_data[cycle_playpal_index].lump_name);
-  } while (lump_num < 0);
+  } while (lump_num == LUMP_NOT_FOUND);
 
   V_SetPlayPal(cycle_playpal_index);
 }
@@ -90,7 +90,7 @@ void dsda_InitPlayPal(void) {
       int i, j, found = 0;
 
       lump = W_CheckNumForName(playpal_data[playpal_i].lump_name);
-      if (lump < 0)
+      if (lump == LUMP_NOT_FOUND)
         continue;
 
       playpal = W_LumpByNum(lump);

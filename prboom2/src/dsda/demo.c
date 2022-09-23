@@ -30,6 +30,7 @@
 #include "dsda.h"
 #include "dsda/args.h"
 #include "dsda/command_display.h"
+#include "dsda/configuration.h"
 #include "dsda/excmd.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
@@ -324,6 +325,8 @@ dboolean dsda_StartDemoSegment(const char* demo_name) {
     dsda_WriteToDemo(key_frame.buffer, key_frame.buffer_length);
     Z_Free(key_frame.buffer);
   }
+
+  dsda_UpdateStrictMode();
 
   return true;
 }

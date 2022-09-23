@@ -2050,7 +2050,7 @@ extern dboolean setsizeneeded;
 static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
 {
   int i, lump = W_CheckNumForName(name);
-  if (lump != -1 && (i = lump+10) < numlumps)
+  if (lump != LUMP_NOT_FOUND && (i = lump+10) < numlumps)
     do
       {
   int size = W_LumpLength(i);
@@ -2751,7 +2751,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     episode = 1;
 
   // Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
-  if (!EpiCustom && W_CheckNumForName(MAPNAME(episode, map)) == -1)
+  if (!EpiCustom && !W_LumpNameExists(MAPNAME(episode, map)))
   {
     if (heretic)
     {

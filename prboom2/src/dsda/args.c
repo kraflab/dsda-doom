@@ -239,24 +239,24 @@ static arg_config_t arg_config[dsda_arg_count] = {
     arg_null,
   },
   [dsda_arg_time_keys] = {
-    "-time_keys", NULL, NULL,
+    "-time_keys", NULL, "105",
     "announces the time when keys are picked up",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_time_use] = {
-    "-time_use", NULL, NULL,
+    "-time_use", NULL, "105",
     "announces the time when the use command is activated",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_time_secrets] = {
-    "-time_secrets", NULL, NULL,
+    "-time_secrets", NULL, "105",
     "announces the time when a secret is collected",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_time_all] = {
-    "-time_all", NULL, NULL,
+    "-time_all", NULL, "105",
     "announces the time when any -time_* event happens",
-    arg_null,
+    arg_int, 0, 350
   },
   [dsda_arg_track_player] = {
     "-track_player", NULL, NULL,
@@ -322,6 +322,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "-setmem", NULL, NULL,
     "sets a magic block of memory for certain overrun demos",
     arg_string_array, 0, 0, 1, 10,
+  },
+  [dsda_arg_mapinfo] = {
+    "-mapinfo", NULL, NULL,
+    "turn on (partial) MAPINFO support",
+    arg_null,
   },
   [dsda_arg_data] = {
     "-data", NULL, NULL,
@@ -840,6 +845,13 @@ void dsda_UpdateFlag(dsda_arg_identifier_t id, dboolean found) {
 
 dboolean dsda_Flag(dsda_arg_identifier_t id) {
   return arg_value[id].found;
+}
+
+int dsda_SimpleIntArg(dsda_arg_identifier_t id) {
+  if (arg_value[id].found)
+    return arg_value[id].value.v_int;
+
+  return 0;
 }
 
 void dsda_PrintArgHelp(void) {
