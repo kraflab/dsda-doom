@@ -647,7 +647,7 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
 
   // also yoink the gamma table and apply
   // software gamma emulation to the texture.
-  gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
+  gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
   gtable = (const byte*) W_LumpByNum(gtlump) + 256 * gamma_level;
 
   // construct a colormap texture using the selected
