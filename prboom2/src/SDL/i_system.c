@@ -72,7 +72,6 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#include "m_argv.h"
 #include "lprintf.h"
 #include "doomtype.h"
 #include "doomdef.h"
@@ -286,13 +285,15 @@ void I_SwitchToWindow(HWND hwnd)
 
 const char *I_DoomExeDir(void)
 {
+  extern char **dsda_argv;
+
   static const char current_dir_dummy[] = {"."}; // proff - rem extra slash 8/21/03
   static char *base;
   if (!base)        // cache multiple requests
     {
-      size_t len = strlen(*myargv);
+      size_t len = strlen(*dsda_argv);
       char *p = (base = (char*)Z_Malloc(len+1)) + len - 1;
-      strcpy(base,*myargv);
+      strcpy(base,*dsda_argv);
       while (p > base && *p!='/' && *p!='\\')
         *p--=0;
       if (*p=='/' || *p=='\\')
@@ -411,6 +412,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL}, // current working directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
     {DOOMWADDIR}, // build-time configured DOOMWADDIR
+    {DSDAPWADDIR}, // build-time configured location of dsda-doom.wad
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
     {"/usr/local/share/games/doom"},
@@ -511,6 +513,15 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       Z_Free(p);
   }
   return NULL;
+}
+
+char* I_RequireFile(const char* wfname, const char* ext) {
+  char* result = I_FindFileInternal(wfname, ext, false);
+
+  if (!result)
+    I_Error("Unable to find required file \"%s\"", wfname);
+
+  return result;
 }
 
 char* I_FindFile(const char* wfname, const char* ext)

@@ -15,11 +15,15 @@
 //	DSDA Utility
 //
 
+#include <string.h>
+
 #include "d_ticcmd.h"
 #include "tables.h"
 
 #define FIXED_STRING_LENGTH 16
 #define COMMAND_MOVEMENT_STRING_LENGTH 18
+
+#define ZERO_DATA(item) memset(&item, 0, sizeof(item))
 
 typedef struct {
   dboolean negative;
@@ -28,11 +32,11 @@ typedef struct {
 } dsda_fixed_t;
 
 typedef struct {
-  dboolean negative;
   int base;
   int frac;
 } dsda_angle_t;
 
+dboolean dsda_HasFileExt(const char* file, const char* ext);
 char** dsda_SplitString(char* str, const char* delimiter);
 void dsda_FixedToString(char* str, fixed_t x);
 dsda_fixed_t dsda_SplitFixed(fixed_t x);

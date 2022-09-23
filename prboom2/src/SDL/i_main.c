@@ -50,7 +50,6 @@
 #include <errno.h>
 
 #include "doomdef.h"
-#include "m_argv.h"
 #include "d_main.h"
 #include "m_fixed.h"
 #include "i_system.h"
@@ -71,8 +70,11 @@
 #include <stdlib.h>
 
 #include "e6y.h"
+
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/analysis.h"
+#include "dsda/args.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"
@@ -83,8 +85,6 @@
  * killough 4/13/98: Make clock rate adjustable by scale factor
  * cphipps - much made static
  */
-
-int realtic_clock_rate = 100;
 
 void I_Init(void)
 {
@@ -198,16 +198,14 @@ static void I_Quit (void)
   I_DemoExShutdown();
 }
 
-#ifdef SECURE_UID
-uid_t stored_euid = -1;
-#endif
-
 //
 // Sets the priority class for the prboom-plus process
 //
 
 void I_SetProcessPriority(void)
 {
+  int process_priority = dsda_IntConfig(dsda_config_process_priority);
+
   if (process_priority)
   {
     const char *errbuf = NULL;
@@ -244,22 +242,16 @@ void I_SetProcessPriority(void)
 //int main(int argc, const char * const * argv)
 int main(int argc, char **argv)
 {
-#ifdef SECURE_UID
-  /* First thing, revoke setuid status (if any) */
-  stored_euid = geteuid();
-  if (getuid() != stored_euid)
-    if (seteuid(getuid()) < 0)
-      fprintf(stderr, "Failed to revoke setuid\n");
-    else
-      fprintf(stderr, "Revoked uid %d\n",stored_euid);
-#endif
+  dsda_ParseCommandLineArgs(argc, argv);
 
-  myargc = argc;
-  myargv = (char**)Z_Malloc(sizeof(myargv[0]) * myargc);
-  memcpy(myargv, argv, sizeof(myargv[0]) * myargc);
+  if (dsda_Flag(dsda_arg_verbose))
+    I_EnableVerboseLogging();
+
+  if (dsda_Flag(dsda_arg_quiet))
+    I_DisableAllLogging();
 
   // Print the version and exit
-  if(M_CheckParm("-v"))
+  if (dsda_Flag(dsda_arg_v))
   {
     PrintVer();
     return 0;
@@ -300,7 +292,7 @@ int main(int argc, char **argv)
   I_AtExit(I_EssentialQuit, true, "I_EssentialQuit", exit_priority_first);
   I_AtExit(I_Quit, false, "I_Quit", exit_priority_last);
 #ifndef PRBOOM_DEBUG
-  if (!M_CheckParm("-devparm"))
+  if (!dsda_Flag(dsda_arg_devparm))
   {
     signal(SIGSEGV, I_SignalHandler);
   }

@@ -22,6 +22,8 @@
 
 const char* dsda_DemoNameBase(void);
 void dsda_SetDemoBaseName(const char* name);
+dboolean dsda_StartDemoSegment(const char* demo_name);
+const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p);
 void dsda_ExportDemo(const char* name);
 void dsda_MarkCompatibilityLevelUnspecified(void);
 int dsda_BytesPerTic(void);
@@ -40,8 +42,8 @@ void dsda_WriteDSDADemoHeader(byte** p);
 void dsda_ApplyDSDADemoFormat(byte** demo_p);
 void dsda_EndDemoRecording(void);
 int dsda_DemoDataSize(byte complete);
-void dsda_StoreDemoData(byte** save_p, byte complete);
-void dsda_RestoreDemoData(byte** save_p, byte complete);
+void dsda_StoreDemoData(byte complete);
+void dsda_RestoreDemoData(byte complete);
 int dsda_DemoTicsCount(const byte* p, const byte* demobuffer, int demolength);
 const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size);
 

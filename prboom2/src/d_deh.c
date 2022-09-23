@@ -48,7 +48,6 @@
 #include "g_game.h"
 #include "d_think.h"
 #include "w_wad.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "v_video.h"
 #include "e6y.h"//e6y
@@ -56,6 +55,7 @@
 // CPhipps - modify to use logical output routine
 #include "lprintf.h"
 
+#include "dsda/args.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
 #include "dsda/sfx.h"
@@ -111,9 +111,6 @@ const char * deh_getBitsDelims(void)
     return ",+| \t\f\r";
   }
 }
-
-// If false, dehacked cheat replacements are ignored.
-int deh_apply_cheats = true;
 
 // killough 10/98: new functions, to allow processing DEH files in-memory
 // (e.g. from wads)
@@ -409,26 +406,6 @@ const char *s_THUSTR_29   = THUSTR_29;
 const char *s_THUSTR_30   = THUSTR_30;
 const char *s_THUSTR_31   = THUSTR_31;
 const char *s_THUSTR_32   = THUSTR_32;
-const char *s_HUSTR_CHATMACRO1   = HUSTR_CHATMACRO1;
-const char *s_HUSTR_CHATMACRO2   = HUSTR_CHATMACRO2;
-const char *s_HUSTR_CHATMACRO3   = HUSTR_CHATMACRO3;
-const char *s_HUSTR_CHATMACRO4   = HUSTR_CHATMACRO4;
-const char *s_HUSTR_CHATMACRO5   = HUSTR_CHATMACRO5;
-const char *s_HUSTR_CHATMACRO6   = HUSTR_CHATMACRO6;
-const char *s_HUSTR_CHATMACRO7   = HUSTR_CHATMACRO7;
-const char *s_HUSTR_CHATMACRO8   = HUSTR_CHATMACRO8;
-const char *s_HUSTR_CHATMACRO9   = HUSTR_CHATMACRO9;
-const char *s_HUSTR_CHATMACRO0   = HUSTR_CHATMACRO0;
-const char *s_HUSTR_TALKTOSELF1  = HUSTR_TALKTOSELF1;
-const char *s_HUSTR_TALKTOSELF2  = HUSTR_TALKTOSELF2;
-const char *s_HUSTR_TALKTOSELF3  = HUSTR_TALKTOSELF3;
-const char *s_HUSTR_TALKTOSELF4  = HUSTR_TALKTOSELF4;
-const char *s_HUSTR_TALKTOSELF5  = HUSTR_TALKTOSELF5;
-const char *s_HUSTR_MESSAGESENT  = HUSTR_MESSAGESENT;
-const char *s_HUSTR_PLRGREEN     = HUSTR_PLRGREEN;
-const char *s_HUSTR_PLRINDIGO    = HUSTR_PLRINDIGO;
-const char *s_HUSTR_PLRBROWN     = HUSTR_PLRBROWN;
-const char *s_HUSTR_PLRRED       = HUSTR_PLRRED;
 const char *s_AMSTR_FOLLOWON     = AMSTR_FOLLOWON;
 const char *s_AMSTR_FOLLOWOFF    = AMSTR_FOLLOWOFF;
 const char *s_AMSTR_GRIDON       = AMSTR_GRIDON;
@@ -745,30 +722,6 @@ static deh_strs deh_strlookup[] = {
   {&s_THUSTR_30,"THUSTR_30"},
   {&s_THUSTR_31,"THUSTR_31"},
   {&s_THUSTR_32,"THUSTR_32"},
-  {&s_HUSTR_CHATMACRO1,"HUSTR_CHATMACRO1"},
-  {&s_HUSTR_CHATMACRO2,"HUSTR_CHATMACRO2"},
-  {&s_HUSTR_CHATMACRO3,"HUSTR_CHATMACRO3"},
-  {&s_HUSTR_CHATMACRO4,"HUSTR_CHATMACRO4"},
-  {&s_HUSTR_CHATMACRO5,"HUSTR_CHATMACRO5"},
-  {&s_HUSTR_CHATMACRO6,"HUSTR_CHATMACRO6"},
-  {&s_HUSTR_CHATMACRO7,"HUSTR_CHATMACRO7"},
-  {&s_HUSTR_CHATMACRO8,"HUSTR_CHATMACRO8"},
-  {&s_HUSTR_CHATMACRO9,"HUSTR_CHATMACRO9"},
-  {&s_HUSTR_CHATMACRO0,"HUSTR_CHATMACRO0"},
-  {&s_HUSTR_TALKTOSELF1,"HUSTR_TALKTOSELF1"},
-  {&s_HUSTR_TALKTOSELF2,"HUSTR_TALKTOSELF2"},
-  {&s_HUSTR_TALKTOSELF3,"HUSTR_TALKTOSELF3"},
-  {&s_HUSTR_TALKTOSELF4,"HUSTR_TALKTOSELF4"},
-  {&s_HUSTR_TALKTOSELF5,"HUSTR_TALKTOSELF5"},
-  {&s_HUSTR_MESSAGESENT,"HUSTR_MESSAGESENT"},
-  {&s_HUSTR_PLRGREEN,"HUSTR_PLRGREEN"},
-  {&s_HUSTR_PLRINDIGO,"HUSTR_PLRINDIGO"},
-  {&s_HUSTR_PLRBROWN,"HUSTR_PLRBROWN"},
-  {&s_HUSTR_PLRRED,"HUSTR_PLRRED"},
-  //{c_HUSTR_KEYGREEN,"HUSTR_KEYGREEN"},
-  //{c_HUSTR_KEYINDIGO,"HUSTR_KEYINDIGO"},
-  //{c_HUSTR_KEYBROWN,"HUSTR_KEYBROWN"},
-  //{c_HUSTR_KEYRED,"HUSTR_KEYRED"},
   {&s_AMSTR_FOLLOWON,"AMSTR_FOLLOWON"},
   {&s_AMSTR_FOLLOWOFF,"AMSTR_FOLLOWOFF"},
   {&s_AMSTR_GRIDON,"AMSTR_GRIDON"},
@@ -1168,7 +1121,7 @@ struct deh_flag_s {
   uint_64_t value;
 };
 
-static uint_64_t deh_translate_bits(uint64_t value, const struct deh_flag_s *flags)
+static uint_64_t deh_translate_bits(uint_64_t value, const struct deh_flag_s *flags)
 {
   int i;
   uint_64_t result = 0;
@@ -2326,12 +2279,6 @@ static void deh_procPointer(DEHFILE *fpin, char *line) // done
       continue;
     }
 
-    if (value < 0)
-    {
-      deh_log("Pointer number must be positive (%d)\n", value);
-      return;
-    }
-
     ptr_state = dsda_GetDehState(value);
 
     if (!deh_strcasecmp(key, deh_state_fields[4]))  // Codep frame (not set in Frame deh block)
@@ -2705,7 +2652,7 @@ static void deh_procCheat(DEHFILE *fpin, char *line) // done
           while (*p == ' ') ++p;
 
           //e6y: ability to ignore cheats in dehacked files.
-          if (deh_apply_cheats && !M_CheckParm("-nocheats"))
+          if (dsda_IntConfig(dsda_config_deh_apply_cheats) && !dsda_Flag(dsda_arg_nocheats))
           {
             cheat[iy].cheat = Z_Strdup(p);
             deh_log("Assigned new cheat '%s' to cheat '%s'at index %d\n",

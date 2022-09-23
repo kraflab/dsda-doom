@@ -205,9 +205,6 @@ int weapon_preferences[2][NUMWEAPONS+1] = {
   {6, 9, 4, 3, 2, 8, 5, 7, 1, 0},  //  compatibility preferences
 };
 
-// Center Weapon when Firing.
-int weapon_attack_alignment=0;
-
 // [XA] fixed version of P_SwitchWeapon that correctly
 // takes each weapon's ammotype and ammopershot into account,
 // instead of blindly assuming both.
@@ -402,7 +399,7 @@ dboolean P_CheckAmmo(player_t *player)
   // Some do not need ammunition anyway.
   // Return if current ammunition sufficient.
 
-  if (ammo == am_noammo || player->ammo[ammo] >= count)
+  if (player->cheats & CF_INFINITE_AMMO || ammo == am_noammo || player->ammo[ammo] >= count)
     return true;
 
   // Out of ammo, pick a weapon to change to.
@@ -440,7 +437,7 @@ void P_SubtractAmmo(struct player_s *player, int vanilla_amount)
   int amount;
   ammotype_t ammotype = weaponinfo[player->readyweapon].ammo;
 
-  if (mbf21 && ammotype == am_noammo)
+  if (player->cheats & CF_INFINITE_AMMO || (mbf21 && ammotype == am_noammo))
     return; // [XA] hmm... I guess vanilla/boom will go out of bounds then?
 
   if (mbf21 && (weaponinfo[player->readyweapon].intflags & WIF_ENABLEAPS))

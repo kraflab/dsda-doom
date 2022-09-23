@@ -551,7 +551,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
     }
 
     CPlayer = &players[consoleplayer];
-    if (viewheight == SCREENHEIGHT && !(automapmode & am_active))
+    if (R_FullView() && !automap_active)
     {
         DrawFullScreenStuff();
         SB_state = -1;
@@ -588,7 +588,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
                 }
                 else
                 {
-                  if (!(automapmode & am_active))
+                  if (!automap_active)
                   {
                       V_DrawNumPatch(38, 162, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
                   }
@@ -608,7 +608,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
                 oldlife = -1;
                 oldkeys = -1;
             }
-            if (heretic || !(automapmode & am_active))
+            if (heretic || !automap_active)
             {
                 DrawMainBar();
             }

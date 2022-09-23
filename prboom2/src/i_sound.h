@@ -46,8 +46,6 @@
 #include "l_soundgen.h"
 #endif
 
-extern int snd_pcspeaker;
-
 // Init at program start...
 void I_InitSound(void);
 
@@ -95,15 +93,10 @@ void I_ResampleStream (void *dest, unsigned nsamp, void (*proc) (void *dest, uns
 //
 //  MUSIC I/O
 //
-extern const char *snd_soundfont;
-extern const char *snd_mididev;
 extern char music_player_order[][200];
 
 void I_InitMusic(void);
 void I_ShutdownMusic(void);
-
-// Volume.
-void I_SetMusicVolume(int volume);
 
 // PAUSE game handling.
 void I_PauseSong(int handle);
@@ -124,17 +117,8 @@ void I_StopSong(int handle);
 // See above (register), then think backwards
 void I_UnRegisterSong(int handle);
 
-// Allegro card support jff 1/18/98
-extern int snd_card;
-extern int mus_card;
 // CPhipps - put these in config file
 extern int snd_samplerate;
-extern int snd_samplecount;
-
-extern int mus_fluidsynth_chorus;
-extern int mus_fluidsynth_reverb;
-extern int mus_fluidsynth_gain; // NSM  fine tune fluidsynth output level
-extern int mus_opl_gain; // NSM  fine tune OPL output level
 
 // prefered MIDI player
 typedef enum
@@ -146,7 +130,6 @@ typedef enum
   midi_player_last
 } midi_player_name_t;
 
-extern const char *snd_midiplayer;
 extern const char *midiplayers[];
 
 void M_ChangeMIDIPlayer(void);

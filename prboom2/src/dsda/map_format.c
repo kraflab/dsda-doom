@@ -20,7 +20,6 @@
 #include "p_spec.h"
 #include "r_state.h"
 #include "w_wad.h"
-#include "m_argv.h"
 
 #include "map_format.h"
 

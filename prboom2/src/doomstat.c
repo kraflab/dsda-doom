@@ -52,17 +52,14 @@ dboolean modifiedgame;
 //-----------------------------------------------------------------------------
 
 // CPhipps - compatibility vars
-complevel_t compatibility_level, default_compatibility_level;
+complevel_t compatibility_level;
 
 // e6y
 // it's required for demos recorded in "demo compatibility" mode by boom201 for example
 int demover;
 
 int comp[MBF_COMP_TOTAL];    // killough 10/98
-int /*comperr[COMPERR_NUM], */default_comperr[COMPERR_NUM];
-
-// v1.1-like pitched sounds
-int pitched_sounds;        // killough
+int default_comperr[COMPERR_NUM];
 
 int demo_insurance;        // killough 1/16/98
 
@@ -94,8 +91,6 @@ int monster_avoid_hazards;
 
 // killough 9/9/98: whether monsters help friends
 int help_friends;
-
-int flashing_hom;     // killough 10/98
 
 int monkeys;
 

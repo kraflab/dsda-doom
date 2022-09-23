@@ -52,17 +52,7 @@ enum column_pipeline_e {
 enum draw_filter_type_e {
   RDRAW_FILTER_NONE,
   RDRAW_FILTER_POINT,
-  RDRAW_FILTER_LINEAR,
-  RDRAW_FILTER_ROUNDED,
   RDRAW_FILTER_MAXFILTERS
-};
-
-// Used to specify what kind of column edge rendering to use on masked
-// columns. SQUARE = standard, SLOPED = slope the column edge up or down
-// based on neighboring columns
-enum sloped_edge_type_e {
-  RDRAW_MASKEDCOLUMNEDGE_SQUARE,
-  RDRAW_MASKEDCOLUMNEDGE_SLOPED
 };
 
 typedef enum
@@ -94,7 +84,6 @@ typedef struct draw_column_vars_s
   int                 edgeslope; // OR'ed RDRAW_EDGESLOPE_*
   // 1 if R_DrawColumn* is currently drawing a masked column, otherwise 0
   int                 drawingmasked;
-  enum sloped_edge_type_e edgetype;
   unsigned int        flags; //e6y: for detect patches ind colfunc()
 
   // heretic
@@ -122,20 +111,6 @@ typedef struct {
 typedef struct {
   byte           *topleft;
   int   pitch;
-
-  enum draw_filter_type_e filterwall;
-  enum draw_filter_type_e filterfloor;
-  enum draw_filter_type_e filtersprite;
-  enum draw_filter_type_e filterz;
-  enum draw_filter_type_e filterpatch;
-
-  enum sloped_edge_type_e sprite_edges;
-  enum sloped_edge_type_e patch_edges;
-
-  // Used to specify an early-out magnification threshold for filtering.
-  // If a texture is being minified (dcvars.iscale > rdraw_magThresh), then it
-  // drops back to point filtering.
-  fixed_t mag_threshold;
 } draw_vars_t;
 
 extern draw_vars_t drawvars;
@@ -143,14 +118,9 @@ extern draw_vars_t drawvars;
 extern byte playernumtotrans[MAX_MAXPLAYERS]; // CPhipps - what translation table for what player
 extern byte       *translationtables;
 
-R_DrawColumn_f R_GetDrawColumnFunc(enum column_pipeline_e type,
-                                   enum draw_filter_type_e filter,
-                                   enum draw_filter_type_e filterz);
+R_DrawColumn_f R_GetDrawColumnFunc(enum column_pipeline_e type, enum draw_filter_type_e filterz);
 
 // Span blitting for rows, floor/ceiling. No Spectre effect needed.
-typedef void (*R_DrawSpan_f)(draw_span_vars_t *dsvars);
-R_DrawSpan_f R_GetDrawSpanFunc(enum draw_filter_type_e filter,
-                               enum draw_filter_type_e filterz);
 void R_DrawSpan(draw_span_vars_t *dsvars);
 
 void R_InitBuffer(int width, int height);

@@ -292,7 +292,7 @@ static void FillEmptySpace(rpatch_t *patch)
       break;
     }
     else if (transparent == numpix)
-      break; // avoid infinite loop on entirely transparent patches (STBR127)
+      break; // avoid infinite loop on entirely transparent patches
   }
 
   Z_Free(copy);

@@ -39,7 +39,7 @@ void dsda_InitLineDisplay(patchnum_t* font) {
       LINE_TEXT_Y + i * DSDA_CHAR_HEIGHT,
       font,
       HU_FONTSTART,
-      g_cr_gray,
+      CR_GRAY,
       VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
     );
 }

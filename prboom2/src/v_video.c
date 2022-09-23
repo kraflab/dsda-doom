@@ -56,6 +56,7 @@
 #include "st_stuff.h"
 #include "e6y.h"
 
+#include "dsda/configuration.h"
 #include "dsda/global.h"
 #include "dsda/palette.h"
 #include "dsda/stretch.h"
@@ -69,7 +70,6 @@ unsigned int ratio_multiplier, ratio_scale;
 float gl_ratio;
 int psprite_offset; // Needed for "tallscreen" modes
 
-const char *render_aspects_list[5] = {"auto", "16:9", "16:10", "4:3", "5:4"};
 
 // Each screen is [SCREENWIDTH*SCREENHEIGHT];
 screeninfo_t screens[NUM_SCREENS];
@@ -101,20 +101,21 @@ typedef struct {
 
 // killough 5/2/98: table-driven approach
 static const crdef_t crdefs[] = {
-  {"CRBRICK",  &colrngs[CR_BRICK ]},
-  {"CRTAN",    &colrngs[CR_TAN   ]},
-  {"CRGRAY",   &colrngs[CR_GRAY  ]},
-  {"CRGREEN",  &colrngs[CR_GREEN ]},
-  {"CRBROWN",  &colrngs[CR_BROWN ]},
-  {"CRGOLD",   &colrngs[CR_GOLD  ]},
-  {"CRRED",    &colrngs[CR_RED   ]},
-  {"CRBLUE",   &colrngs[CR_BLUE  ]},
-  {"CRORANGE", &colrngs[CR_ORANGE]},
-  {"CRYELLOW", &colrngs[CR_YELLOW]},
-  {"CRBLUE2",  &colrngs[CR_BLUE2]},
-  {"CRBLACK",  &colrngs[CR_BLACK]},
-  {"CRPURPLE", &colrngs[CR_PURPLE]},
-  {"CRWHITE",  &colrngs[CR_WHITE]},
+  {"CRBRICK",  &colrngs[CR_BRICK  ]},
+  {"CRTAN",    &colrngs[CR_TAN    ]},
+  {"CRGRAY",   &colrngs[CR_GRAY   ]},
+  {"CRGREEN",  &colrngs[CR_GREEN  ]},
+  {"CRBROWN",  &colrngs[CR_BROWN  ]},
+  {"CRGOLD",   &colrngs[CR_GOLD   ]},
+  {"CRRED",    &colrngs[CR_DEFAULT]},
+  {"CRBLUE",   &colrngs[CR_BLUE   ]},
+  {"CRORANGE", &colrngs[CR_ORANGE ]},
+  {"CRYELLOW", &colrngs[CR_YELLOW ]},
+  {"CRBLUE2",  &colrngs[CR_BLUE2  ]},
+  {"CRBLACK",  &colrngs[CR_BLACK  ]},
+  {"CRPURPLE", &colrngs[CR_PURPLE ]},
+  {"CRWHITE",  &colrngs[CR_WHITE  ]},
+  {"CRRED",    &colrngs[CR_RED    ]},
   {NULL}
 };
 
@@ -203,6 +204,90 @@ void V_InitFlexTranTable(void)
 void V_InitColorTranslation(void)
 {
   register const crdef_t *p;
+
+  // {
+  //   //             DO  HR  HX
+  //   // CR_BRICK:   16 166 185
+  //   // CR_TAN:     48  94 121
+  //   // CR_GRAY:    80  34  32
+  //   // CR_GREEN:  112 224 216
+  //   // CR_BROWN:  128 110  96
+  //   // CR_GOLD:   160 144 230
+  //   // CR_RED:    176 160 181
+  //   // CR_BLUE:   196 202 162
+  //   // CR_ORANGE: 208 243 228
+  //   // CR_YELLOW: 224 144 230
+  //   // CR_BLUE2:  200 196 217
+  //   // CR_BLACK:  104   0   0
+  //   // CR_PURPLE: 251 175 237
+  //   // CR_WHITE:   80  35 255
+  //   int i, j;
+  //   byte* buffer = Z_Malloc(CR_LIMIT * 256);
+  //   for (i = 0; i < CR_LIMIT; ++i)
+  //     for (j = 0; j < 256; ++j)
+  //       buffer[i * 256 + j] = j;
+  //
+  //   buffer[CR_BRICK * 256 + 176] = 166;
+  //   buffer[CR_TAN * 256 + 176] = 94;
+  //   buffer[CR_GRAY * 256 + 176] = 34;
+  //   buffer[CR_GREEN * 256 + 176] = 224;
+  //   buffer[CR_BROWN * 256 + 176] = 110;
+  //   buffer[CR_GOLD * 256 + 176] = 144;
+  //   buffer[CR_RED * 256 + 176] = 160;
+  //   buffer[CR_BLUE * 256 + 176] = 202;
+  //   buffer[CR_ORANGE * 256 + 176] = 243;
+  //   buffer[CR_YELLOW * 256 + 176] = 144;
+  //   buffer[CR_BLUE2 * 256 + 176] = 196;
+  //   buffer[CR_BLACK * 256 + 176] = 0;
+  //   buffer[CR_PURPLE * 256 + 176] = 175;
+  //   buffer[CR_WHITE * 256 + 176] = 35;
+  //
+  //   M_WriteFile("crheresy.lmp", buffer, CR_LIMIT * 256);
+  //
+  //   buffer[CR_BRICK * 256 + 176] = 185;
+  //   buffer[CR_TAN * 256 + 176] = 121;
+  //   buffer[CR_GRAY * 256 + 176] = 32;
+  //   buffer[CR_GREEN * 256 + 176] = 216;
+  //   buffer[CR_BROWN * 256 + 176] = 96;
+  //   buffer[CR_GOLD * 256 + 176] = 230;
+  //   buffer[CR_RED * 256 + 176] = 181;
+  //   buffer[CR_BLUE * 256 + 176] = 162;
+  //   buffer[CR_ORANGE * 256 + 176] = 228;
+  //   buffer[CR_YELLOW * 256 + 176] = 230;
+  //   buffer[CR_BLUE2 * 256 + 176] = 217;
+  //   buffer[CR_BLACK * 256 + 176] = 0;
+  //   buffer[CR_PURPLE * 256 + 176] = 237;
+  //   buffer[CR_WHITE * 256 + 176] = 255;
+  //
+  //   M_WriteFile("crhexen.lmp", buffer, CR_LIMIT * 256);
+  // }
+
+  if (heretic)
+  {
+    const byte* source = W_LumpByName("CRHERESY");
+
+    for (p = crdefs; p->name; ++p)
+    {
+      *p->map = source;
+      source += 256;
+    }
+
+    return;
+  }
+
+  if (hexen)
+  {
+    const byte* source = W_LumpByName("CRHEXEN");
+
+    for (p = crdefs; p->name; ++p)
+    {
+      *p->map = source;
+      source += 256;
+    }
+
+    return;
+  }
+
   for (p=crdefs; p->name; p++)
   {
     *p->map = W_LumpByName(p->name);
@@ -256,11 +341,32 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
     y += params->deltay1;
   }
 
-#ifdef RANGECHECK
-  if (x < 0 || x + width > SCREENWIDTH ||
-      y < 0 || y + height > SCREENHEIGHT)
-    I_Error ("V_CopyRect: Bad arguments");
-#endif
+  if (x < 0)
+  {
+    width += x;
+    x = 0;
+  }
+
+  if (x + width > SCREENWIDTH)
+  {
+    width = SCREENWIDTH - x;
+  }
+
+  if (y < 0)
+  {
+    height += y;
+    y = 0;
+  }
+
+  if (y + height > SCREENHEIGHT)
+  {
+    height = SCREENHEIGHT - y;
+  }
+
+  if (width <= 0 || height <= 0)
+  {
+    return;
+  }
 
   src = screens[srcscrn].data + screens[srcscrn].pitch * y + x;
   dest = screens[destscrn].data + screens[destscrn].pitch * y + x;
@@ -534,10 +640,10 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     drawvars.pitch = screens[scrn].pitch;
 
     if (flags & VPT_TRANS) {
-      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, drawvars.filterpatch, RDRAW_FILTER_NONE);
+      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLATED, RDRAW_FILTER_NONE);
       dcvars.translation = trans;
     } else {
-      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, drawvars.filterpatch, RDRAW_FILTER_NONE);
+      colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_NONE);
     }
 
     DXI = params->video->xstep;
@@ -564,18 +670,8 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     dcvars.texheight = patch->height;
     dcvars.iscale = DYI;
     dcvars.drawingmasked = MAX(patch->width, patch->height) > 8;
-    dcvars.edgetype = drawvars.patch_edges;
 
-    if (drawvars.filterpatch == RDRAW_FILTER_LINEAR) {
-      // bias the texture u coordinate
-      if (patch->flags&PATCH_ISNOTTILEABLE)
-        col = -(FRACUNIT>>1);
-      else
-        col = (patch->width<<FRACBITS)-(FRACUNIT>>1);
-    }
-    else {
-      col = 0;
-    }
+    col = 0;
 
     for (dcvars.x=left; dcvars.x<=right; dcvars.x++, col+=DXI) {
       int i;
@@ -793,7 +889,6 @@ static void NULL_PlotPixelWu(int scrn, int x, int y, byte color, int weight) {}
 static void NULL_DrawLine(fline_t* fl, int color) {}
 static void NULL_DrawLineWu(fline_t* fl, int color) {}
 
-const char *default_videomode;
 static video_mode_t current_videomode = VID_MODESW;
 
 V_CopyRect_f V_CopyRect = NULL_CopyRect;
@@ -853,6 +948,11 @@ dboolean V_IsSoftwareMode(void) {
 
 dboolean V_IsOpenGLMode(void) {
   return current_videomode == VID_MODEGL;
+}
+
+void V_CopyScreen(int srcscrn, int destscrn)
+{
+  V_CopyRect(srcscrn, destscrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
 }
 
 //
@@ -1228,7 +1328,7 @@ static void swap(unsigned int *num1, unsigned int *num2)
 // Set global variables for video scaling.
 void SetRatio(int width, int height)
 {
-  lprintf(LO_INFO, "SetRatio: width/height parameters %dx%d\n", width, height);
+  lprintf(LO_DEBUG, "SetRatio: width/height parameters %dx%d\n", width, height);
 
   ratio_multiplier = width;
   ratio_scale = height;
@@ -1236,60 +1336,62 @@ void SetRatio(int width, int height)
 
   // The terms storage aspect ratio, pixel aspect ratio, and display aspect
   // ratio came from Wikipedia.  SAR x PAR = DAR
-  lprintf(LO_INFO, "SetRatio: storage aspect ratio %u:%u\n", ratio_multiplier, ratio_scale);
+  lprintf(LO_DEBUG, "SetRatio: storage aspect ratio %u:%u\n", ratio_multiplier, ratio_scale);
   if (height == 200 || height == 400)
   {
-    lprintf(LO_INFO, "SetRatio: recognized VGA mode with pixel aspect ratio 5:6\n");
+    lprintf(LO_DEBUG, "SetRatio: recognized VGA mode with pixel aspect ratio 5:6\n");
     ratio_multiplier = width * 5;
     ratio_scale = height * 6;
     ReduceFraction(&ratio_multiplier, &ratio_scale);
   }
   else
   {
-    lprintf(LO_INFO, "SetRatio: assuming square pixels\n");
+    lprintf(LO_DEBUG, "SetRatio: assuming square pixels\n");
   }
-  lprintf(LO_INFO, "SetRatio: display aspect ratio %u:%u\n", ratio_multiplier, ratio_scale);
+  lprintf(LO_DEBUG, "SetRatio: display aspect ratio %u:%u\n", ratio_multiplier, ratio_scale);
 
   // If user wants to force aspect ratio, let them.
   {
     unsigned int new_multiplier = ratio_multiplier;
     unsigned int new_scale = ratio_scale;
+    int render_aspect = dsda_IntConfig(dsda_config_render_aspect);
+
     // Hardcoded to match render_aspects_list
     switch (render_aspect)
     {
-    case 0:
-      break;
-    case 1:
-      new_multiplier = 16;
-      new_scale = 9;
-      break;
-    case 2:
-      new_multiplier = 16;
-      new_scale = 10;
-      break;
-    case 3:
-      new_multiplier = 4;
-      new_scale = 3;
-      break;
-    case 4:
-      new_multiplier = 5;
-      new_scale = 4;
-      break;
-    default:
-      lprintf(LO_ERROR, "SetRatio: render_aspect has invalid value %d\n", render_aspect);
+      case 0:
+        break;
+      case 1:
+        new_multiplier = 16;
+        new_scale = 9;
+        break;
+      case 2:
+        new_multiplier = 16;
+        new_scale = 10;
+        break;
+      case 3:
+        new_multiplier = 4;
+        new_scale = 3;
+        break;
+      case 4:
+        new_multiplier = 5;
+        new_scale = 4;
+        break;
+      default:
+        lprintf(LO_ERROR, "SetRatio: render_aspect has invalid value %d\n", render_aspect);
     }
 
     if (ratio_multiplier != new_multiplier || ratio_scale != new_scale)
     {
-      lprintf(LO_INFO, "SetRatio: overruled by user configuration setting\n");
+      lprintf(LO_DEBUG, "SetRatio: overruled by user configuration setting\n");
       ratio_multiplier = new_multiplier;
       ratio_scale = new_scale;
-      lprintf(LO_INFO, "SetRatio: revised display aspect ratio %u:%u\n", ratio_multiplier, ratio_scale);
+      lprintf(LO_DEBUG, "SetRatio: revised display aspect ratio %u:%u\n", ratio_multiplier, ratio_scale);
     }
   }
 
   gl_ratio = RMUL * ratio_multiplier / ratio_scale;
-  lprintf(LO_INFO, "SetRatio: gl_ratio %f\n", gl_ratio);
+  lprintf(LO_DEBUG, "SetRatio: gl_ratio %f\n", gl_ratio);
 
   // Calculate modified multiplier following the pattern of the old
   // BaseRatioSizes table in PrBoom-Plus 2.5.1.3.
@@ -1301,7 +1403,7 @@ void SetRatio(int width, int height)
   tallscreen = (ratio_scale < ratio_multiplier);
   if (tallscreen)
   {
-    lprintf(LO_INFO, "SetRatio: tallscreen aspect recognized; flipping multiplier\n");
+    lprintf(LO_DEBUG, "SetRatio: tallscreen aspect recognized; flipping multiplier\n");
     swap(&ratio_multiplier, &ratio_scale);
     psprite_offset = (int)(6.5*FRACUNIT);
   }
@@ -1309,7 +1411,7 @@ void SetRatio(int width, int height)
   {
     psprite_offset = 0;
   }
-  lprintf(LO_INFO, "SetRatio: multiplier %u/%u\n", ratio_multiplier, ratio_scale);
+  lprintf(LO_DEBUG, "SetRatio: multiplier %u/%u\n", ratio_multiplier, ratio_scale);
 
   // The rest is carried over from CheckRatio in PrBoom-Plus 2.5.1.3.
   if (tallscreen)
@@ -1397,22 +1499,7 @@ int V_BestColor(const unsigned char *palette, int r, int g, int b)
 // Alt-Enter: fullscreen <-> windowed
 void V_ToggleFullscreen(void)
 {
-  if (desired_fullscreen == use_fullscreen)
-  {
-    use_fullscreen = (use_fullscreen ? 0 : 1);
-    desired_fullscreen = use_fullscreen;
-  }
-  else
-  {
-    desired_fullscreen = (desired_fullscreen ? 0 : 1);
-  }
-
-  I_UpdateVideoMode();
-
-  if (V_IsOpenGLMode())
-  {
-    gld_PreprocessLevel();
-  }
+  dsda_UpdateIntConfig(dsda_config_use_fullscreen, !desired_fullscreen, true);
 }
 
 void V_ChangeScreenResolution(void)

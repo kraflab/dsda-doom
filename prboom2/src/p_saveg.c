@@ -48,6 +48,7 @@
 
 #include "hexen/a_action.h"
 #include "hexen/p_acs.h"
+#include "hexen/p_anim.h"
 #include "hexen/po_man.h"
 #include "hexen/sn_sonix.h"
 #include "hexen/sv_save.h"
@@ -57,7 +58,47 @@
 
 #define MARKED_FOR_DELETION -2
 
+#define SAVEGAMESIZE 0x20000
+
 byte *save_p;
+byte *savebuffer;
+static int savegamesize;
+
+// Check for overrun and realloc if necessary -- Lee Killough 1/22/98
+void CheckSaveGame(size_t size)
+{
+  size_t offset = save_p - savebuffer;
+
+  if (offset + size <= savegamesize)
+  {
+    return;
+  }
+
+  while (offset + size > savegamesize)
+  {
+    savegamesize *= 2;
+  }
+
+  savebuffer = Z_Realloc(savebuffer, savegamesize);
+  save_p = savebuffer + offset;
+}
+
+void P_InitSaveBuffer(void)
+{
+  savegamesize = SAVEGAMESIZE;
+  save_p = savebuffer = Z_Malloc(savegamesize);
+}
+
+void P_ForgetSaveBuffer(void)
+{
+  save_p = savebuffer = NULL;
+}
+
+void P_FreeSaveBuffer(void)
+{
+  Z_Free(savebuffer);
+  P_ForgetSaveBuffer();
+}
 
 //
 // P_ArchivePlayers
@@ -66,16 +107,13 @@ void P_ArchivePlayers (void)
 {
   int i;
 
-  CheckSaveGame(sizeof(player_t) * g_maxplayers); // killough
   for (i = 0; i < g_maxplayers; i++)
     if (playeringame[i])
       {
         int      j;
         player_t *dest;
 
-        dest = (player_t *) save_p;
-        memcpy(dest, &players[i], sizeof(player_t));
-        save_p += sizeof(player_t);
+        P_SAVE_TYPE_REF(&players[i], dest, player_t);
         for (j=0; j<NUMPSPRITES; j++)
           if (dest->psprites[j].state)
             dest->psprites[j].state =
@@ -95,8 +133,7 @@ void P_UnArchivePlayers (void)
       {
         int j;
 
-        memcpy(&players[i], save_p, sizeof(player_t));
-        save_p += sizeof(player_t);
+        P_LOAD_X(players[i]);
 
         // will be set when unarc thinker
         players[i].mo = NULL;
@@ -126,107 +163,49 @@ void P_ArchiveWorld (void)
   const sector_t *sec;
   const line_t   *li;
   const side_t   *si;
-  short          *put;
 
-  // killough 3/22/98: fix bug caused by hoisting save_p too early
-  // killough 10/98: adjust size for changes below
-  size_t size =
-    (
-      sizeof(short) * 5 +
-      sizeof(sec->floorheight) +
-      sizeof(sec->ceilingheight) +
-      sizeof(sec->seqType) +
-      sizeof(sec->flags) +
-      sizeof(sec->damage)
-    ) * numsectors +
-    (
-      sizeof(short) * 2 +
-      sizeof(li->flags) +
-      sizeof(li->player_activations) +
-      sizeof(li->arg1) * 5
-    ) * numlines +
-    sizeof(musinfo.current_item);
-
-  for (i = 0; i < numlines; i++)
-  {
-    if (lines[i].sidenum[0] != NO_INDEX)
-      size += sizeof(short) * 3 + sizeof si->textureoffset + sizeof si->rowoffset;
-
-    if (lines[i].sidenum[1] != NO_INDEX)
-      size += sizeof(short) * 3 + sizeof si->textureoffset + sizeof si->rowoffset;
-  }
-
-  CheckSaveGame(size); // killough
-
-  put = (short *) save_p;
-
-  // do sectors
   for (i = 0, sec = sectors; i < numsectors; i++, sec++)
   {
-    // killough 10/98: save full floor & ceiling heights, including fraction
-    memcpy(put, &sec->floorheight, sizeof(sec->floorheight));
-    put = (void *)((char *) put + sizeof(sec->floorheight));
-    memcpy(put, &sec->ceilingheight, sizeof(sec->ceilingheight));
-    put = (void *)((char *) put + sizeof(sec->ceilingheight));
-
-    *put++ = sec->floorpic;
-    *put++ = sec->ceilingpic;
-    *put++ = sec->lightlevel;
-    *put++ = sec->special;            // needed?   yes -- transfer types
-    *put++ = sec->tag;                // needed?   need them -- killough
-
-    memcpy(put, &sec->seqType, sizeof(sec->seqType));
-    put = (void *)((char *) put + sizeof(sec->seqType));
-
-    memcpy(put, &sec->flags, sizeof(sec->flags));
-    put = (void *)((char *) put + sizeof(sec->flags));
-
-    memcpy(put, &sec->damage, sizeof(sec->damage));
-    put = (void *)((char *) put + sizeof(sec->damage));
+    P_SAVE_X(sec->floorheight);
+    P_SAVE_X(sec->ceilingheight);
+    P_SAVE_X(sec->floorpic);
+    P_SAVE_X(sec->ceilingpic);
+    P_SAVE_X(sec->lightlevel);
+    P_SAVE_X(sec->special);
+    P_SAVE_X(sec->tag);
+    P_SAVE_X(sec->seqType);
+    P_SAVE_X(sec->flags);
+    P_SAVE_X(sec->damage);
   }
 
-  // do lines
   for (i = 0, li = lines; i < numlines; i++, li++)
   {
     int j;
 
-    memcpy(put, &li->flags, sizeof(li->flags));
-    put = (void *)((char *) put + sizeof(li->flags));
-
-    *put++ = li->special;
-    *put++ = li->tag;
-
-    save_p = (byte *) put;
-    *save_p++ = li->player_activations;
-    *save_p++ = li->arg1;
-    *save_p++ = li->arg2;
-    *save_p++ = li->arg3;
-    *save_p++ = li->arg4;
-    *save_p++ = li->arg5;
-    put = (short *) save_p;
+    P_SAVE_X(li->flags);
+    P_SAVE_X(li->special);
+    P_SAVE_X(li->tag);
+    P_SAVE_BYTE(li->player_activations);
+    P_SAVE_BYTE(li->arg1);
+    P_SAVE_BYTE(li->arg2);
+    P_SAVE_BYTE(li->arg3);
+    P_SAVE_BYTE(li->arg4);
+    P_SAVE_BYTE(li->arg5);
 
     for (j = 0; j < 2; j++)
       if (li->sidenum[j] != NO_INDEX)
       {
         si = &sides[li->sidenum[j]];
 
-        // killough 10/98: save full sidedef offsets,
-        // preserving fractional scroll offsets
-
-        memcpy(put, &si->textureoffset, sizeof si->textureoffset);
-        put = (void *)((char *) put + sizeof si->textureoffset);
-        memcpy(put, &si->rowoffset, sizeof si->rowoffset);
-        put = (void *)((char *) put + sizeof si->rowoffset);
-
-        *put++ = si->toptexture;
-        *put++ = si->bottomtexture;
-        *put++ = si->midtexture;
+        P_SAVE_X(si->textureoffset);
+        P_SAVE_X(si->rowoffset);
+        P_SAVE_X(si->toptexture);
+        P_SAVE_X(si->bottomtexture);
+        P_SAVE_X(si->midtexture);
       }
   }
 
-  *put++ = musinfo.current_item;
-
-  save_p = (byte *) put;
+  P_SAVE_X(musinfo.current_item);
 }
 
 
@@ -239,34 +218,19 @@ void P_UnArchiveWorld (void)
   int          i;
   sector_t     *sec;
   line_t       *li;
-  short        *get;
 
-  get = (short *) save_p;
-
-  // do sectors
   for (i = 0, sec = sectors; i < numsectors; i++, sec++)
   {
-    // killough 10/98: load full floor & ceiling heights, including fractions
-
-    memcpy(&sec->floorheight, get, sizeof(sec->floorheight));
-    get = (void *)((char *) get + sizeof(sec->floorheight));
-    memcpy(&sec->ceilingheight, get, sizeof(sec->ceilingheight));
-    get = (void *)((char *) get + sizeof(sec->ceilingheight));
-
-    sec->floorpic = *get++;
-    sec->ceilingpic = *get++;
-    sec->lightlevel = *get++;
-    sec->special = *get++;
-    sec->tag = *get++;
-
-    memcpy(&sec->seqType, get, sizeof(sec->seqType));
-    get = (void *)((char *) get + sizeof(sec->seqType));
-
-    memcpy(&sec->flags, get, sizeof(sec->flags));
-    get = (void *)((char *) get + sizeof(sec->flags));
-
-    memcpy(&sec->damage, get, sizeof(sec->damage));
-    get = (void *)((char *) get + sizeof(sec->damage));
+    P_LOAD_X(sec->floorheight);
+    P_LOAD_X(sec->ceilingheight);
+    P_LOAD_X(sec->floorpic);
+    P_LOAD_X(sec->ceilingpic);
+    P_LOAD_X(sec->lightlevel);
+    P_LOAD_X(sec->special);
+    P_LOAD_X(sec->tag);
+    P_LOAD_X(sec->seqType);
+    P_LOAD_X(sec->flags);
+    P_LOAD_X(sec->damage);
 
     sec->ceilingdata = 0; //jff 2/22/98 now three thinker fields, not two
     sec->floordata = 0;
@@ -279,42 +243,30 @@ void P_UnArchiveWorld (void)
   {
     int j;
 
-    memcpy(&li->flags, get, sizeof(li->flags));
-    get = (void *)((char *) get + sizeof(li->flags));
-
-    li->special = *get++;
-    li->tag = *get++;
-
-    save_p = (byte *) get;
-    li->player_activations = *save_p++;
-    li->arg1 = *save_p++;
-    li->arg2 = *save_p++;
-    li->arg3 = *save_p++;
-    li->arg4 = *save_p++;
-    li->arg5 = *save_p++;
-    get = (short *) save_p;
+    P_LOAD_X(li->flags);
+    P_LOAD_X(li->special);
+    P_LOAD_X(li->tag);
+    P_LOAD_BYTE(li->player_activations);
+    P_LOAD_BYTE(li->arg1);
+    P_LOAD_BYTE(li->arg2);
+    P_LOAD_BYTE(li->arg3);
+    P_LOAD_BYTE(li->arg4);
+    P_LOAD_BYTE(li->arg5);
 
     for (j = 0; j < 2; j++)
       if (li->sidenum[j] != NO_INDEX)
       {
         side_t *si = &sides[li->sidenum[j]];
 
-        // killough 10/98: load full sidedef offsets, including fractions
-
-        memcpy(&si->textureoffset, get, sizeof(si->textureoffset));
-        get = (void *)((char *) get + sizeof(si->textureoffset));
-        memcpy(&si->rowoffset, get, sizeof(si->rowoffset));
-        get = (void *)((char *) get + sizeof(si->rowoffset));
-
-        si->toptexture = *get++;
-        si->bottomtexture = *get++;
-        si->midtexture = *get++;
+        P_LOAD_X(si->textureoffset);
+        P_LOAD_X(si->rowoffset);
+        P_LOAD_X(si->toptexture);
+        P_LOAD_X(si->bottomtexture);
+        P_LOAD_X(si->midtexture);
       }
   }
 
-  musinfo.current_item = *get++;
-
-  save_p = (byte *) get;
+  P_LOAD_X(musinfo.current_item);
 }
 
 //
@@ -408,63 +360,38 @@ void P_IndexToThinker(void)
 
 void P_ArchiveRNG(void)
 {
-  CheckSaveGame(sizeof rng);
-  memcpy(save_p, &rng, sizeof rng);
-  save_p += sizeof rng;
+  P_SAVE_X(rng);
 }
 
 void P_UnArchiveRNG(void)
 {
-  memcpy(&rng, save_p, sizeof rng);
-  save_p += sizeof rng;
+  P_LOAD_X(rng);
 }
 
 // killough 2/22/98: Save/restore automap state
 // killough 2/22/98: Save/restore automap state
 void P_ArchiveMap(void)
 {
-  int i, zero = 0, one = 1;
-  CheckSaveGame(2 * sizeof zero + sizeof markpointnum +
-                markpointnum * (sizeof(markpoints[0].x) + sizeof(markpoints[0].y)) +
-                sizeof automapmode + sizeof one);
+  int i;
 
-  memcpy(save_p, &automapmode, sizeof automapmode);
-  save_p += sizeof automapmode;
-  memcpy(save_p, &one, sizeof one);   // CPhipps - used to be viewactive, now
-  save_p += sizeof one;               // that's worked out locally by D_Display
-  memcpy(save_p, &zero, sizeof zero); // CPhipps - used to be followplayer
-  save_p += sizeof zero;              //  that is now part of automapmode
-  memcpy(save_p, &zero, sizeof zero); // CPhipps - used to be automap_grid, ditto
-  save_p += sizeof zero;
-  memcpy(save_p, &markpointnum, sizeof markpointnum);
-  save_p += sizeof markpointnum;
+  P_SAVE_X(automap_active);
+  P_SAVE_X(markpointnum);
 
   for (i = 0; i < markpointnum; i++)
   {
-    memcpy(save_p, &markpoints[i].x, sizeof(markpoints[i].x));
-    save_p += sizeof(markpoints[i].x);
-    memcpy(save_p, &markpoints[i].y, sizeof(markpoints[i].y));
-    save_p += sizeof(markpoints[i].y);
+    P_SAVE_X(markpoints[i].x);
+    P_SAVE_X(markpoints[i].y);
   }
 }
 
 void P_UnArchiveMap(void)
 {
-  int unused;
-  memcpy(&automapmode, save_p, sizeof automapmode);
-  save_p += sizeof automapmode;
-  memcpy(&unused, save_p, sizeof unused);
-  save_p += sizeof unused;
-  memcpy(&unused, save_p, sizeof unused);
-  save_p += sizeof unused;
-  memcpy(&unused, save_p, sizeof unused);
-  save_p += sizeof unused;
+  P_LOAD_X(automap_active);
 
-  if (automapmode & am_active)
+  if (automap_active)
     AM_Start();
 
-  memcpy(&markpointnum, save_p, sizeof markpointnum);
-  save_p += sizeof markpointnum;
+  P_LOAD_X(markpointnum);
 
   if (markpointnum)
     {
@@ -475,10 +402,8 @@ void P_UnArchiveMap(void)
 
       for (i = 0; i < markpointnum; i++)
       {
-        memcpy(&markpoints[i].x, save_p, sizeof(markpoints[i].x));
-        save_p += sizeof(markpoints[i].x);
-        memcpy(&markpoints[i].y, save_p, sizeof(markpoints[i].y));
-        save_p += sizeof(markpoints[i].y);
+        P_LOAD_X(markpoints[i].x);
+        P_LOAD_X(markpoints[i].y);
 
         AM_setMarkParams(i);
       }
@@ -495,15 +420,11 @@ void P_ArchiveThinkerSubclass(th_class class)
   for (th = cap->cnext; th != cap; th = th->cnext)
     count++;
 
-  CheckSaveGame(count * sizeof(mobj_t*) + sizeof(count));
-
-  memcpy(save_p, &count, sizeof(count));
-  save_p += sizeof(count);
+  P_SAVE_X(count);
 
   for (th = cap->cnext; th != cap; th = th->cnext)
   {
-    memcpy(save_p, &th->prev, sizeof(th->prev));
-    save_p += sizeof(th->prev);
+    P_SAVE_X(th->prev);
   }
 }
 
@@ -525,16 +446,14 @@ void P_UnArchiveThinkerSubclass(th_class class, mobj_t** mobj_p, int mobj_count)
   thinkerclasscap[class].cprev =
     thinkerclasscap[class].cnext = &thinkerclasscap[class];
 
-  memcpy(&count, save_p, sizeof(count));
-  save_p += sizeof(count);
+  P_LOAD_X(count);
 
   for (i = 0; i < count; ++i)
   {
     thinker_t* th;
     mobj_t* mobj;
 
-    memcpy(&mobj, save_p, sizeof(mobj));
-    save_p += sizeof(mobj);
+    P_LOAD_X(mobj);
 
     mobj = mobj_p[P_GetMobj(mobj, mobj_count + 1)];
 
@@ -588,16 +507,12 @@ void P_ArchiveBlockLinks(void)
       mobj = mobj->bnext;
     }
 
-    CheckSaveGame(count * sizeof(mobj_t*) + sizeof(count));
-
-    memcpy(save_p, &count, sizeof(count));
-    save_p += sizeof(count);
+    P_SAVE_X(count);
 
     mobj = blocklinks[i];
     while (mobj)
     {
-      memcpy(save_p, &mobj->thinker.prev, sizeof(mobj->thinker.prev));
-      save_p += sizeof(mobj->thinker.prev);
+      P_SAVE_X(mobj->thinker.prev);
       mobj = mobj->bnext;
     }
   }
@@ -617,15 +532,13 @@ void P_UnArchiveBlockLinks(mobj_t** mobj_p, int mobj_count)
     mobj_t* mobj;
     mobj_t** bprev;
 
-    memcpy(&count, save_p, sizeof(count));
-    save_p += sizeof(count);
+    P_LOAD_X(count);
 
     blocklinks[i] = NULL;
     bprev = &blocklinks[i];
     for (j = 0; j < count; ++j)
     {
-      memcpy(&mobj, save_p, sizeof(mobj));
-      save_p += sizeof(mobj);
+      P_LOAD_X(mobj);
 
       mobj = mobj_p[P_GetMobj(mobj, mobj_count + 1)];
 
@@ -639,6 +552,70 @@ void P_UnArchiveBlockLinks(mobj_t** mobj_p, int mobj_count)
       else
       {
         I_Error("P_UnArchiveBlockLinks: mobj does not exist!\n");
+      }
+    }
+  }
+}
+
+static dboolean P_IsPolyObjThinker(thinker_t *th)
+{
+  return th->function == T_RotatePoly || th->function == T_MovePoly || th->function == T_PolyDoor;
+}
+
+void P_ArchivePolyObjSpecialData(void)
+{
+  thinker_t *th;
+
+  if (!map_format.polyobjs) return;
+
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+  {
+    if (P_IsPolyObjThinker(th))
+    {
+      int i;
+      int count = 0;
+
+      for (i = 0; i < po_NumPolyobjs; ++i)
+      {
+        if (polyobjs[i].specialdata == th)
+          ++count;
+      }
+
+      P_SAVE_X(count);
+
+      for (i = 0; i < po_NumPolyobjs; ++i)
+      {
+        if (polyobjs[i].specialdata == th)
+        {
+          P_SAVE_X(i);
+        }
+      }
+    }
+  }
+}
+
+void P_UnArchivePolyObjSpecialData(void)
+{
+  thinker_t *th;
+
+  if (!map_format.polyobjs) return;
+
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+  {
+    if (P_IsPolyObjThinker(th))
+    {
+      int i;
+      int count;
+
+      P_LOAD_X(count);
+
+      for (i = 0; i < count; ++i)
+      {
+        int j;
+
+        P_LOAD_X(j);
+
+        polyobjs[j].specialdata = th;
       }
     }
   }
@@ -680,59 +657,7 @@ void P_TrueArchiveThinkers(void) {
   thinker_t *th;
   size_t    size = 0;          // killough
 
-  CheckSaveGame(sizeof brain);      // killough 3/26/98: Save boss brain state
-  memcpy(save_p, &brain, sizeof brain);
-  save_p += sizeof brain;
-
-  // save off the current thinkers (memory size calculation -- killough)
-  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-    if (!th->function)
-    {
-      platlist_t *pl;
-      ceilinglist_t *cl;     //jff 2/22/98 need this for ceilings too now
-      for (pl=activeplats; pl; pl=pl->next)
-        if (pl->plat == (plat_t *) th)   // killough 2/14/98
-          {
-            size += 4+sizeof(plat_t);
-            goto end;
-          }
-      for (cl=activeceilings; cl; cl=cl->next) // search for activeceiling
-        if (cl->ceiling == (ceiling_t *) th)   //jff 2/22/98
-          {
-            size += 4+sizeof(ceiling_t);
-            goto end;
-          }
-    end:;
-    }
-    else
-      size +=
-        th->function==T_MoveCeiling   ? 4+sizeof(ceiling_t)       :
-        th->function==T_VerticalDoor  ? 4+sizeof(vldoor_t)        :
-        th->function==T_MoveFloor     ? 4+sizeof(floormove_t)     :
-        th->function==T_PlatRaise     ? 4+sizeof(plat_t)          :
-        th->function==T_LightFlash    ? 4+sizeof(lightflash_t)    :
-        th->function==T_StrobeFlash   ? 4+sizeof(strobe_t)        :
-        th->function==T_Glow          ? 4+sizeof(glow_t)          :
-        th->function==T_ZDoom_Glow    ? 4+sizeof(zdoom_glow_t)    :
-        th->function==T_MoveElevator  ? 4+sizeof(elevator_t)      :
-        th->function==T_Scroll        ? 4+sizeof(scroll_t)        :
-        th->function==T_Pusher        ? 4+sizeof(pusher_t)        :
-        th->function==T_FireFlicker   ? 4+sizeof(fireflicker_t)   :
-        th->function==T_ZDoom_Flicker ? 4+sizeof(zdoom_flicker_t) :
-        th->function==T_Friction      ? 4+sizeof(friction_t)      :
-        th->function==T_Light         ? 4+sizeof(light_t)         :
-        th->function==T_Phase         ? 4+sizeof(phase_t)         :
-        th->function==T_InterpretACS  ? 4+sizeof(acs_t)           :
-        th->function==T_BuildPillar   ? 4+sizeof(pillar_t)        :
-        th->function==T_FloorWaggle   ? 4+sizeof(planeWaggle_t)   :
-        th->function==T_CeilingWaggle ? 4+sizeof(planeWaggle_t)   :
-        th->function==T_RotatePoly    ? 4+sizeof(polyevent_t)     :
-        th->function==T_MovePoly      ? 4+sizeof(polyevent_t)     :
-        th->function==T_PolyDoor      ? 4+sizeof(polydoor_t)      :
-        P_IsMobjThinker(th)           ? 4+sizeof(mobj_t)          :
-      0;
-
-  CheckSaveGame(size + 1);    // killough; cph: +1 for the tc_endspecials
+  P_SAVE_X(brain);
 
   // save off the current thinkers
   for (th = thinkercap.next ; th != &thinkercap ; th=th->next) {
@@ -761,10 +686,8 @@ void P_TrueArchiveThinkers(void) {
     {
       ceiling_t *ceiling;
     ceiling:                               // killough 2/14/98
-      *save_p++ = tc_true_ceiling;
-      ceiling = (ceiling_t *)save_p;
-      memcpy (ceiling, th, sizeof(*ceiling));
-      save_p += sizeof(*ceiling);
+      P_SAVE_BYTE(tc_true_ceiling);
+      P_SAVE_TYPE_REF(th, ceiling, ceiling_t);
       ceiling->sector = (sector_t *)(intptr_t)(ceiling->sector->iSectorID);
       continue;
     }
@@ -772,10 +695,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_VerticalDoor)
     {
       vldoor_t *door;
-      *save_p++ = tc_true_door;
-      door = (vldoor_t *) save_p;
-      memcpy (door, th, sizeof *door);
-      save_p += sizeof(*door);
+      P_SAVE_BYTE(tc_true_door);
+      P_SAVE_TYPE_REF(th, door, vldoor_t);
       door->sector = (sector_t *)(intptr_t)(door->sector->iSectorID);
       //jff 1/31/98 archive line remembered by door as well
       door->line = (line_t *) (door->line ? door->line-lines : -1);
@@ -785,10 +706,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_MoveFloor)
     {
       floormove_t *floor;
-      *save_p++ = tc_true_floor;
-      floor = (floormove_t *)save_p;
-      memcpy (floor, th, sizeof(*floor));
-      save_p += sizeof(*floor);
+      P_SAVE_BYTE(tc_true_floor);
+      P_SAVE_TYPE_REF(th, floor, floormove_t);
       floor->sector = (sector_t *)(intptr_t)(floor->sector->iSectorID);
       continue;
     }
@@ -797,10 +716,8 @@ void P_TrueArchiveThinkers(void) {
     {
       plat_t *plat;
     plat:   // killough 2/14/98: added fix for original plat height above
-      *save_p++ = tc_true_plat;
-      plat = (plat_t *)save_p;
-      memcpy (plat, th, sizeof(*plat));
-      save_p += sizeof(*plat);
+      P_SAVE_BYTE(tc_true_plat);
+      P_SAVE_TYPE_REF(th, plat, plat_t);
       plat->sector = (sector_t *)(intptr_t)(plat->sector->iSectorID);
       continue;
     }
@@ -808,10 +725,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_LightFlash)
     {
       lightflash_t *flash;
-      *save_p++ = tc_true_flash;
-      flash = (lightflash_t *)save_p;
-      memcpy (flash, th, sizeof(*flash));
-      save_p += sizeof(*flash);
+      P_SAVE_BYTE(tc_true_flash);
+      P_SAVE_TYPE_REF(th, flash, lightflash_t);
       flash->sector = (sector_t *)(intptr_t)(flash->sector->iSectorID);
       continue;
     }
@@ -819,10 +734,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_StrobeFlash)
     {
       strobe_t *strobe;
-      *save_p++ = tc_true_strobe;
-      strobe = (strobe_t *)save_p;
-      memcpy (strobe, th, sizeof(*strobe));
-      save_p += sizeof(*strobe);
+      P_SAVE_BYTE(tc_true_strobe);
+      P_SAVE_TYPE_REF(th, strobe, strobe_t);
       strobe->sector = (sector_t *)(intptr_t)(strobe->sector->iSectorID);
       continue;
     }
@@ -830,10 +743,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_Glow)
     {
       glow_t *glow;
-      *save_p++ = tc_true_glow;
-      glow = (glow_t *)save_p;
-      memcpy (glow, th, sizeof(*glow));
-      save_p += sizeof(*glow);
+      P_SAVE_BYTE(tc_true_glow);
+      P_SAVE_TYPE_REF(th, glow, glow_t);
       glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
       continue;
     }
@@ -841,10 +752,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_ZDoom_Glow)
     {
       zdoom_glow_t *glow;
-      *save_p++ = tc_true_zdoom_glow;
-      glow = (zdoom_glow_t *)save_p;
-      memcpy (glow, th, sizeof(*glow));
-      save_p += sizeof(*glow);
+      P_SAVE_BYTE(tc_true_zdoom_glow);
+      P_SAVE_TYPE_REF(th, glow, zdoom_glow_t);
       glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
       continue;
     }
@@ -853,10 +762,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_FireFlicker)
     {
       fireflicker_t *flicker;
-      *save_p++ = tc_true_flicker;
-      flicker = (fireflicker_t *)save_p;
-      memcpy (flicker, th, sizeof(*flicker));
-      save_p += sizeof(*flicker);
+      P_SAVE_BYTE(tc_true_flicker);
+      P_SAVE_TYPE_REF(th, flicker, fireflicker_t);
       flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
       continue;
     }
@@ -864,10 +771,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_ZDoom_Flicker)
     {
       zdoom_flicker_t *flicker;
-      *save_p++ = tc_true_zdoom_flicker;
-      flicker = (zdoom_flicker_t *)save_p;
-      memcpy (flicker, th, sizeof(*flicker));
-      save_p += sizeof(*flicker);
+      P_SAVE_BYTE(tc_true_zdoom_flicker);
+      P_SAVE_TYPE_REF(th, flicker, zdoom_flicker_t);
       flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
       continue;
     }
@@ -876,10 +781,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_MoveElevator)
     {
       elevator_t *elevator;         //jff 2/22/98
-      *save_p++ = tc_true_elevator;
-      elevator = (elevator_t *)save_p;
-      memcpy (elevator, th, sizeof(*elevator));
-      save_p += sizeof(*elevator);
+      P_SAVE_BYTE(tc_true_elevator);
+      P_SAVE_TYPE_REF(th, elevator, elevator_t);
       elevator->sector = (sector_t *)(intptr_t)(elevator->sector->iSectorID);
       continue;
     }
@@ -887,9 +790,8 @@ void P_TrueArchiveThinkers(void) {
     // killough 3/7/98: Scroll effect thinkers
     if (th->function == T_Scroll)
     {
-      *save_p++ = tc_true_scroll;
-      memcpy (save_p, th, sizeof(scroll_t));
-      save_p += sizeof(scroll_t);
+      P_SAVE_BYTE(tc_true_scroll);
+      P_SAVE_TYPE(th, scroll_t);
       continue;
     }
 
@@ -897,27 +799,23 @@ void P_TrueArchiveThinkers(void) {
 
     if (th->function == T_Pusher)
     {
-      *save_p++ = tc_true_pusher;
-      memcpy (save_p, th, sizeof(pusher_t));
-      save_p += sizeof(pusher_t);
+      P_SAVE_BYTE(tc_true_pusher);
+      P_SAVE_TYPE(th, pusher_t);
       continue;
     }
 
     if (th->function == T_Friction)
     {
-      *save_p++ = tc_true_friction;
-      memcpy (save_p, th, sizeof(friction_t));
-      save_p += sizeof(friction_t);
+      P_SAVE_BYTE(tc_true_friction);
+      P_SAVE_TYPE(th, friction_t);
       continue;
     }
 
     if (th->function == T_Light)
     {
       light_t *light;
-      *save_p++ = tc_true_light;
-      light = (light_t *)save_p;
-      memcpy (save_p, th, sizeof(light_t));
-      save_p += sizeof(light_t);
+      P_SAVE_BYTE(tc_true_light);
+      P_SAVE_TYPE_REF(th, light, light_t);
       light->sector = (sector_t *)(intptr_t)(light->sector->iSectorID);
       continue;
     }
@@ -925,10 +823,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_Phase)
     {
       phase_t *phase;
-      *save_p++ = tc_true_phase;
-      phase = (phase_t *)save_p;
-      memcpy (save_p, th, sizeof(phase_t));
-      save_p += sizeof(phase_t);
+      P_SAVE_BYTE(tc_true_phase);
+      P_SAVE_TYPE_REF(th, phase, phase_t);
       phase->sector = (sector_t *)(intptr_t)(phase->sector->iSectorID);
       continue;
     }
@@ -936,11 +832,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_InterpretACS)
     {
       acs_t *acs;
-      *save_p++ = tc_true_acs;
-      acs = (acs_t *)save_p;
-      memcpy (save_p, th, sizeof(acs_t));
-      save_p += sizeof(acs_t);
-
+      P_SAVE_BYTE(tc_true_acs);
+      P_SAVE_TYPE_REF(th, acs, acs_t);
       P_ReplaceMobjWithIndex(&acs->activator);
       acs->line = (line_t *) (acs->line ? acs->line - lines : -1);
 
@@ -950,10 +843,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_BuildPillar)
     {
       pillar_t *pillar;
-      *save_p++ = tc_true_pillar;
-      pillar = (pillar_t *)save_p;
-      memcpy (save_p, th, sizeof(pillar_t));
-      save_p += sizeof(pillar_t);
+      P_SAVE_BYTE(tc_true_pillar);
+      P_SAVE_TYPE_REF(th, pillar, pillar_t);
       pillar->sector = (sector_t *)(intptr_t)(pillar->sector->iSectorID);
       continue;
     }
@@ -961,10 +852,8 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_FloorWaggle)
     {
       planeWaggle_t *floor_waggle;
-      *save_p++ = tc_true_floor_waggle;
-      floor_waggle = (planeWaggle_t *)save_p;
-      memcpy (save_p, th, sizeof(planeWaggle_t));
-      save_p += sizeof(planeWaggle_t);
+      P_SAVE_BYTE(tc_true_floor_waggle);
+      P_SAVE_TYPE_REF(th, floor_waggle, planeWaggle_t);
       floor_waggle->sector = (sector_t *)(intptr_t)(floor_waggle->sector->iSectorID);
       continue;
     }
@@ -972,35 +861,30 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == T_CeilingWaggle)
     {
       planeWaggle_t *ceiling_waggle;
-      *save_p++ = tc_true_ceiling_waggle;
-      ceiling_waggle = (planeWaggle_t *)save_p;
-      memcpy (save_p, th, sizeof(planeWaggle_t));
-      save_p += sizeof(planeWaggle_t);
+      P_SAVE_BYTE(tc_true_ceiling_waggle);
+      P_SAVE_TYPE_REF(th, ceiling_waggle, planeWaggle_t);
       ceiling_waggle->sector = (sector_t *)(intptr_t)(ceiling_waggle->sector->iSectorID);
       continue;
     }
 
     if (th->function == T_RotatePoly)
     {
-      *save_p++ = tc_true_poly_rotate;
-      memcpy (save_p, th, sizeof(polyevent_t));
-      save_p += sizeof(polyevent_t);
+      P_SAVE_BYTE(tc_true_poly_rotate);
+      P_SAVE_TYPE(th, polyevent_t);
       continue;
     }
 
     if (th->function == T_MovePoly)
     {
-      *save_p++ = tc_true_poly_move;
-      memcpy (save_p, th, sizeof(polyevent_t));
-      save_p += sizeof(polyevent_t);
+      P_SAVE_BYTE(tc_true_poly_move);
+      P_SAVE_TYPE(th, polyevent_t);
       continue;
     }
 
     if (th->function == T_PolyDoor)
     {
-      *save_p++ = tc_true_poly_door;
-      memcpy (save_p, th, sizeof(polydoor_t));
-      save_p += sizeof(polydoor_t);
+      P_SAVE_BYTE(tc_true_poly_door);
+      P_SAVE_TYPE(th, polydoor_t);
       continue;
     }
 
@@ -1008,12 +892,8 @@ void P_TrueArchiveThinkers(void) {
     {
       mobj_t *mobj;
 
-      *save_p++ = tc_true_mobj;
-      mobj = (mobj_t *)save_p;
-
-      //e6y
-      memcpy (mobj, th, sizeof(*mobj));
-      save_p += sizeof(*mobj);
+      P_SAVE_BYTE(tc_true_mobj);
+      P_SAVE_TYPE_REF(th, mobj, mobj_t);
 
       mobj->state = (state_t *)(mobj->state - states);
 
@@ -1055,20 +935,20 @@ void P_TrueArchiveThinkers(void) {
   }
 
   // add a terminating marker
-  *save_p++ = tc_true_end;
+  P_SAVE_BYTE(tc_true_end);
+
+  P_ArchivePolyObjSpecialData();
 
   // killough 9/14/98: save soundtargets
   {
     int i;
-    CheckSaveGame(numsectors * sizeof(mobj_t *));       // killough 9/14/98
     for (i = 0; i < numsectors; i++)
     {
       mobj_t *target = sectors[i].soundtarget;
       // Fix crash on reload when a soundtarget points to a removed corpse
       // (prboom bug #1590350)
       P_ReplaceMobjWithIndex(&target);
-      memcpy(save_p, &target, sizeof target);
-      save_p += sizeof target;
+      P_SAVE_X(target);
     }
   }
 
@@ -1089,8 +969,7 @@ void P_TrueUnArchiveThinkers(void) {
   totallive = 0;
 
   // killough 3/26/98: Load boss brain state
-  memcpy(&brain, save_p, sizeof brain);
-  save_p += sizeof brain;
+  P_LOAD_X(brain);
 
   // remove all the current thinkers
   for (th = thinkercap.next; th != &thinkercap; )
@@ -1114,8 +993,12 @@ void P_TrueUnArchiveThinkers(void) {
     sp = save_p;
     mobj_count = 0;
 
-    while ((tc = *save_p++) != tc_true_end)
+    while (true)
     {
+      P_LOAD_BYTE(tc);
+      if (tc == tc_true_end)
+        break;
+
       if (tc == tc_true_mobj) mobj_count++;
       save_p +=
         tc == tc_true_ceiling        ? sizeof(ceiling_t)       :
@@ -1155,13 +1038,17 @@ void P_TrueUnArchiveThinkers(void) {
 
   // read in saved thinkers
   mobj_count = 0;
-  while ((tc = *save_p++) != tc_true_end)
+  while (true)
+  {
+    P_LOAD_BYTE(tc);
+    if (tc == tc_true_end)
+      break;
+
     switch (tc) {
       case tc_true_ceiling:
         {
           ceiling_t *ceiling = Z_MallocLevel (sizeof(*ceiling));
-          memcpy (ceiling, save_p, sizeof(*ceiling));
-          save_p += sizeof(*ceiling);
+          P_LOAD_P(ceiling);
           ceiling->sector = &sectors[(size_t)ceiling->sector];
           ceiling->sector->ceilingdata = ceiling; //jff 2/22/98
 
@@ -1176,8 +1063,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_door:
         {
           vldoor_t *door = Z_MallocLevel (sizeof(*door));
-          memcpy (door, save_p, sizeof(*door));
-          save_p += sizeof(*door);
+          P_LOAD_P(door);
           door->sector = &sectors[(size_t)door->sector];
 
           //jff 1/31/98 unarchive line remembered by door as well
@@ -1192,8 +1078,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_floor:
         {
           floormove_t *floor = Z_MallocLevel (sizeof(*floor));
-          memcpy (floor, save_p, sizeof(*floor));
-          save_p += sizeof(*floor);
+          P_LOAD_P(floor);
           floor->sector = &sectors[(size_t)floor->sector];
           floor->sector->floordata = floor; //jff 2/22/98
           floor->thinker.function = T_MoveFloor;
@@ -1204,8 +1089,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_plat:
         {
           plat_t *plat = Z_MallocLevel (sizeof(*plat));
-          memcpy (plat, save_p, sizeof(*plat));
-          save_p += sizeof(*plat);
+          P_LOAD_P(plat);
           plat->sector = &sectors[(size_t)plat->sector];
           plat->sector->floordata = plat; //jff 2/22/98
 
@@ -1220,8 +1104,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_flash:
         {
           lightflash_t *flash = Z_MallocLevel (sizeof(*flash));
-          memcpy (flash, save_p, sizeof(*flash));
-          save_p += sizeof(*flash);
+          P_LOAD_P(flash);
           flash->sector = &sectors[(size_t)flash->sector];
           flash->sector->lightingdata = flash;
           flash->thinker.function = T_LightFlash;
@@ -1232,8 +1115,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_strobe:
         {
           strobe_t *strobe = Z_MallocLevel (sizeof(*strobe));
-          memcpy (strobe, save_p, sizeof(*strobe));
-          save_p += sizeof(*strobe);
+          P_LOAD_P(strobe);
           strobe->sector = &sectors[(size_t)strobe->sector];
           strobe->sector->lightingdata = strobe;
           strobe->thinker.function = T_StrobeFlash;
@@ -1244,8 +1126,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_glow:
         {
           glow_t *glow = Z_MallocLevel (sizeof(*glow));
-          memcpy (glow, save_p, sizeof(*glow));
-          save_p += sizeof(*glow);
+          P_LOAD_P(glow);
           glow->sector = &sectors[(size_t)glow->sector];
           glow->sector->lightingdata = glow;
           glow->thinker.function = T_Glow;
@@ -1256,8 +1137,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_zdoom_glow:
         {
           zdoom_glow_t *glow = Z_MallocLevel (sizeof(*glow));
-          memcpy (glow, save_p, sizeof(*glow));
-          save_p += sizeof(*glow);
+          P_LOAD_P(glow);
           glow->sector = &sectors[(size_t)glow->sector];
           glow->sector->lightingdata = glow;
           glow->thinker.function = T_ZDoom_Glow;
@@ -1268,8 +1148,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_flicker:           // killough 10/4/98
         {
           fireflicker_t *flicker = Z_MallocLevel (sizeof(*flicker));
-          memcpy (flicker, save_p, sizeof(*flicker));
-          save_p += sizeof(*flicker);
+          P_LOAD_P(flicker);
           flicker->sector = &sectors[(size_t)flicker->sector];
           flicker->sector->lightingdata = flicker;
           flicker->thinker.function = T_FireFlicker;
@@ -1280,8 +1159,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_zdoom_flicker:
         {
           zdoom_flicker_t *flicker = Z_MallocLevel (sizeof(*flicker));
-          memcpy (flicker, save_p, sizeof(*flicker));
-          save_p += sizeof(*flicker);
+          P_LOAD_P(flicker);
           flicker->sector = &sectors[(size_t)flicker->sector];
           flicker->sector->lightingdata = flicker;
           flicker->thinker.function = T_ZDoom_Flicker;
@@ -1293,8 +1171,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_elevator:
         {
           elevator_t *elevator = Z_MallocLevel (sizeof(*elevator));
-          memcpy (elevator, save_p, sizeof(*elevator));
-          save_p += sizeof(*elevator);
+          P_LOAD_P(elevator);
           elevator->sector = &sectors[(size_t)elevator->sector];
           elevator->sector->floordata = elevator; //jff 2/22/98
           elevator->sector->ceilingdata = elevator; //jff 2/22/98
@@ -1306,8 +1183,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_scroll:       // killough 3/7/98: scroll effect thinkers
         {
           scroll_t *scroll = Z_MallocLevel (sizeof(scroll_t));
-          memcpy (scroll, save_p, sizeof(scroll_t));
-          save_p += sizeof(scroll_t);
+          P_LOAD_P(scroll);
           scroll->thinker.function = T_Scroll;
           P_AddThinker(&scroll->thinker);
           break;
@@ -1316,8 +1192,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_pusher:   // phares 3/22/98: new Push/Pull effect thinkers
         {
           pusher_t *pusher = Z_MallocLevel (sizeof(pusher_t));
-          memcpy (pusher, save_p, sizeof(pusher_t));
-          save_p += sizeof(pusher_t);
+          P_LOAD_P(pusher);
           pusher->thinker.function = T_Pusher;
           pusher->source = P_GetPushThing(pusher->affectee);
           P_AddThinker(&pusher->thinker);
@@ -1327,8 +1202,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_friction:
         {
           friction_t *friction = Z_MallocLevel (sizeof(friction_t));
-          memcpy (friction, save_p, sizeof(friction_t));
-          save_p += sizeof(friction_t);
+          P_LOAD_P(friction);
           friction->thinker.function = T_Friction;
           P_AddThinker(&friction->thinker);
           break;
@@ -1337,8 +1211,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_light:
         {
           light_t *light = Z_MallocLevel(sizeof(*light));
-          memcpy(light, save_p, sizeof(*light));
-          save_p += sizeof(*light);
+          P_LOAD_P(light);
           light->sector = &sectors[(size_t)light->sector];
           light->thinker.function = T_Light;
           P_AddThinker(&light->thinker);
@@ -1348,8 +1221,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_phase:
         {
           phase_t *phase = Z_MallocLevel(sizeof(*phase));
-          memcpy(phase, save_p, sizeof(*phase));
-          save_p += sizeof(*phase);
+          P_LOAD_P(phase);
           phase->sector = &sectors[(size_t)phase->sector];
           phase->sector->lightingdata = phase;
           phase->thinker.function = T_Phase;
@@ -1360,8 +1232,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_acs:
         {
           acs_t *acs = Z_MallocLevel(sizeof(*acs));
-          memcpy(acs, save_p, sizeof(*acs));
-          save_p += sizeof(*acs);
+          P_LOAD_P(acs);
           acs->line = (intptr_t) acs->line != -1 ? &lines[(size_t) acs->line] : NULL;
           acs->thinker.function = T_InterpretACS;
           P_AddThinker(&acs->thinker);
@@ -1371,8 +1242,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_pillar:
         {
           pillar_t *pillar = Z_MallocLevel(sizeof(*pillar));
-          memcpy(pillar, save_p, sizeof(*pillar));
-          save_p += sizeof(*pillar);
+          P_LOAD_P(pillar);
           pillar->sector = &sectors[(size_t)pillar->sector];
           pillar->sector->floordata = pillar;
           pillar->thinker.function = T_BuildPillar;
@@ -1383,8 +1253,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_floor_waggle:
         {
           planeWaggle_t *waggle = Z_MallocLevel(sizeof(*waggle));
-          memcpy(waggle, save_p, sizeof(*waggle));
-          save_p += sizeof(*waggle);
+          P_LOAD_P(waggle);
           waggle->sector = &sectors[(size_t)waggle->sector];
           waggle->sector->floordata = waggle;
           waggle->thinker.function = T_FloorWaggle;
@@ -1395,8 +1264,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_ceiling_waggle:
         {
           planeWaggle_t *waggle = Z_MallocLevel(sizeof(*waggle));
-          memcpy(waggle, save_p, sizeof(*waggle));
-          save_p += sizeof(*waggle);
+          P_LOAD_P(waggle);
           waggle->sector = &sectors[(size_t)waggle->sector];
           waggle->sector->floordata = waggle;
           waggle->thinker.function = T_CeilingWaggle;
@@ -1407,8 +1275,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_poly_rotate:
         {
           polyevent_t *poly = Z_MallocLevel(sizeof(*poly));
-          memcpy(poly, save_p, sizeof(*poly));
-          save_p += sizeof(*poly);
+          P_LOAD_P(poly);
           poly->thinker.function = T_RotatePoly;
           P_AddThinker(&poly->thinker);
           break;
@@ -1417,8 +1284,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_poly_move:
         {
           polyevent_t *poly = Z_MallocLevel(sizeof(*poly));
-          memcpy(poly, save_p, sizeof(*poly));
-          save_p += sizeof(*poly);
+          P_LOAD_P(poly);
           poly->thinker.function = T_MovePoly;
           P_AddThinker(&poly->thinker);
           break;
@@ -1427,8 +1293,7 @@ void P_TrueUnArchiveThinkers(void) {
       case tc_true_poly_door:
         {
           polydoor_t *poly = Z_MallocLevel(sizeof(*poly));
-          memcpy(poly, save_p, sizeof(*poly));
-          save_p += sizeof(*poly);
+          P_LOAD_P(poly);
           poly->thinker.function = T_PolyDoor;
           P_AddThinker(&poly->thinker);
           break;
@@ -1442,8 +1307,7 @@ void P_TrueUnArchiveThinkers(void) {
           mobj_count++;
           mobj_p[mobj_count] = mobj;
 
-          memcpy (mobj, save_p, sizeof(mobj_t));
-          save_p += sizeof(mobj_t);
+          P_LOAD_P(mobj);
 
           mobj->state = states + (intptr_t) mobj->state;
 
@@ -1484,6 +1348,7 @@ void P_TrueUnArchiveThinkers(void) {
       default:
         I_Error("P_TrueUnarchiveSpecials: Unknown tc %i in extraction", tc);
     }
+  }
 
   // killough 2/14/98: adjust target and tracer fields, plus
   // lastenemy field, to correctly point to mobj thinkers.
@@ -1518,12 +1383,13 @@ void P_TrueUnArchiveThinkers(void) {
     }
   }
 
+  P_UnArchivePolyObjSpecialData();
+
   {  // killough 9/14/98: restore soundtargets
     int i;
     for (i = 0; i < numsectors; i++)
     {
-      memcpy(&sectors[i].soundtarget, save_p, sizeof sectors[i].soundtarget);
-      save_p += sizeof sectors[i].soundtarget;
+      P_LOAD_X(sectors[i].soundtarget);
       // Must verify soundtarget. See P_TrueArchiveThinkers.
       P_ReplaceIndexWithMobj(&sectors[i].soundtarget, mobj_p, mobj_count);
     }
@@ -1572,14 +1438,10 @@ void P_ArchiveACS(void)
   if (!map_format.acs) return;
 
   size = sizeof(*WorldVars) * MAX_ACS_WORLD_VARS;
-  CheckSaveGame(size);
-  memcpy(save_p, WorldVars, size);
-  save_p += size;
+  P_SAVE_SIZE(WorldVars, size);
 
   size = sizeof(*ACSStore) * (MAX_ACS_STORE + 1);
-  CheckSaveGame(size);
-  memcpy(save_p, ACSStore, size);
-  save_p += size;
+  P_SAVE_SIZE(ACSStore, size);
 }
 
 void P_UnArchiveACS(void)
@@ -1589,12 +1451,24 @@ void P_UnArchiveACS(void)
   if (!map_format.acs) return;
 
   size = sizeof(*WorldVars) * MAX_ACS_WORLD_VARS;
-  memcpy(WorldVars, save_p, size);
-  save_p += size;
+  P_LOAD_SIZE(WorldVars, size);
 
   size = sizeof(*ACSStore) * (MAX_ACS_STORE + 1);
-  memcpy(ACSStore, save_p, size);
-  save_p += size;
+  P_LOAD_SIZE(ACSStore, size);
+}
+
+static void P_ArchiveVertex(vertex_t *v)
+{
+  P_SAVE_X(v->x);
+
+  P_SAVE_X(v->y);
+}
+
+static void P_UnArchiveVertex(vertex_t *v)
+{
+  P_LOAD_X(v->x);
+
+  P_LOAD_X(v->y);
 }
 
 void P_ArchivePolyobjs(void)
@@ -1603,45 +1477,84 @@ void P_ArchivePolyobjs(void)
 
   if (!map_format.polyobjs) return;
 
-  CheckSaveGame(po_NumPolyobjs * (sizeof(angle_t) + 2 * sizeof(fixed_t)));
-
   for (i = 0; i < po_NumPolyobjs; i++)
   {
-    memcpy(save_p, &polyobjs[i].angle, sizeof(polyobjs[i].angle));
-    save_p += sizeof(polyobjs[i].angle);
+    int seg_i;
+    polyobj_t *po;
 
-    memcpy(save_p, &polyobjs[i].startSpot.x, sizeof(polyobjs[i].startSpot.x));
-    save_p += sizeof(polyobjs[i].startSpot.x);
+    po = &polyobjs[i];
 
-    memcpy(save_p, &polyobjs[i].startSpot.y, sizeof(polyobjs[i].startSpot.y));
-    save_p += sizeof(polyobjs[i].startSpot.y);
+    for (seg_i = 0; seg_i < po->numsegs; ++seg_i) {
+      seg_t *seg;
+      line_t *line;
+
+      seg = po->segs[seg_i];
+      line = seg->linedef;
+
+      P_ArchiveVertex(seg->v1);
+      P_ArchiveVertex(seg->v2);
+
+      P_SAVE_X(seg->angle);
+      P_SAVE_X(line->slopetype);
+      P_SAVE_ARRAY(line->bbox);
+      P_SAVE_X(line->dx);
+      P_SAVE_X(line->dy);
+
+      P_ArchiveVertex(&po->originalPts[seg_i]);
+      P_ArchiveVertex(&po->prevPts[seg_i]);
+    }
+
+    P_SAVE_X(po->angle);
+    P_SAVE_X(po->startSpot.x);
+    P_SAVE_X(po->startSpot.y);
   }
 }
 
 void P_UnArchivePolyobjs(void)
 {
+  void UnLinkPolyobj(polyobj_t * po);
+  void LinkPolyobj(polyobj_t * po);
+  void ResetPolySubSector(polyobj_t *po);
+
   int i;
-  angle_t angle;
-  fixed_t deltaX;
-  fixed_t deltaY;
 
   if (!map_format.polyobjs) return;
 
   for (i = 0; i < po_NumPolyobjs; i++)
   {
-    memcpy(&angle, save_p, sizeof(angle));
-    save_p += sizeof(angle);
+    int seg_i;
+    polyobj_t *po;
 
-    memcpy(&deltaX, save_p, sizeof(deltaX));
-    save_p += sizeof(deltaX);
+    po = &polyobjs[i];
 
-    memcpy(&deltaY, save_p, sizeof(deltaY));
-    save_p += sizeof(deltaY);
+    UnLinkPolyobj(po);
 
-    PO_RotatePolyobj(polyobjs[i].tag, angle);
-    deltaX -= polyobjs[i].startSpot.x;
-    deltaY -= polyobjs[i].startSpot.y;
-    PO_MovePolyobj(polyobjs[i].tag, deltaX, deltaY);
+    for (seg_i = 0; seg_i < po->numsegs; ++seg_i) {
+      seg_t *seg;
+      line_t *line;
+
+      seg = po->segs[seg_i];
+      line = seg->linedef;
+
+      P_UnArchiveVertex(seg->v1);
+      P_UnArchiveVertex(seg->v2);
+
+      P_LOAD_X(seg->angle);
+      P_LOAD_X(line->slopetype);
+      P_LOAD_ARRAY(line->bbox);
+      P_LOAD_X(line->dx);
+      P_LOAD_X(line->dy);
+
+      P_UnArchiveVertex(&po->originalPts[seg_i]);
+      P_UnArchiveVertex(&po->prevPts[seg_i]);
+    }
+
+    P_LOAD_X(po->angle);
+    P_LOAD_X(po->startSpot.x);
+    P_LOAD_X(po->startSpot.y);
+
+    LinkPolyobj(po);
+    ResetPolySubSector(po);
   }
 }
 
@@ -1652,14 +1565,10 @@ void P_ArchiveScripts(void)
   if (!map_format.acs) return;
 
   size = sizeof(*ACSInfo) * ACScriptCount;
-  CheckSaveGame(size);
-  memcpy(save_p, ACSInfo, size);
-  save_p += size;
+  P_SAVE_SIZE(ACSInfo, size);
 
   size = sizeof(*MapVars) * MAX_ACS_MAP_VARS;
-  CheckSaveGame(size);
-  memcpy(save_p, MapVars, size);
-  save_p += size;
+  P_SAVE_SIZE(MapVars, size);
 }
 
 void P_UnArchiveScripts(void)
@@ -1669,12 +1578,10 @@ void P_UnArchiveScripts(void)
   if (!map_format.acs) return;
 
   size = sizeof(*ACSInfo) * ACScriptCount;
-  memcpy(ACSInfo, save_p, size);
-  save_p += size;
+  P_LOAD_SIZE(ACSInfo, size);
 
   size = sizeof(*MapVars) * MAX_ACS_MAP_VARS;
-  memcpy(MapVars, save_p, size);
-  save_p += size;
+  P_LOAD_SIZE(MapVars, size);
 }
 
 void P_ArchiveSounds(void)
@@ -1686,28 +1593,17 @@ void P_ArchiveSounds(void)
 
   if (!map_format.sndseq) return;
 
-  CheckSaveGame(sizeof(ActiveSequences) + ActiveSequences * (6 * sizeof(int) + 1));
-
-  memcpy(save_p, &ActiveSequences, sizeof(ActiveSequences));
-  save_p += sizeof(ActiveSequences);
+  P_SAVE_X(ActiveSequences);
 
   for (node = SequenceListHead; node; node = node->next)
   {
-    memcpy(save_p, &node->sequence, sizeof(node->sequence));
-    save_p += sizeof(node->sequence);
-
-    memcpy(save_p, &node->delayTics, sizeof(node->delayTics));
-    save_p += sizeof(node->delayTics);
-
-    memcpy(save_p, &node->volume, sizeof(node->volume));
-    save_p += sizeof(node->volume);
+    P_SAVE_X(node->sequence);
+    P_SAVE_X(node->delayTics);
+    P_SAVE_X(node->volume);
 
     difference = SN_GetSequenceOffset(node->sequence, node->sequencePtr);
-    memcpy(save_p, &difference, sizeof(difference));
-    save_p += sizeof(difference);
-
-    memcpy(save_p, &node->currentSoundID, sizeof(node->currentSoundID));
-    save_p += sizeof(node->currentSoundID);
+    P_SAVE_X(difference);
+    P_SAVE_X(node->currentSoundID);
 
     for (i = 0; i < po_NumPolyobjs; i++)
     {
@@ -1721,16 +1617,15 @@ void P_ArchiveSounds(void)
     {                       // Sound is attached to a sector, not a polyobj
       sec = R_PointInSubsector(node->mobj->x, node->mobj->y)->sector;
       difference = (int) (sec - sectors);
-      *save_p++ = 0;   // 0 -- sector sound origin
+      P_SAVE_BYTE(0);   // 0 -- sector sound origin
     }
     else
     {
       difference = i;
-      *save_p++ = 1;   // 1 -- polyobj sound origin
+      P_SAVE_BYTE(1);   // 1 -- polyobj sound origin
     }
 
-    memcpy(save_p, &difference, sizeof(difference));
-    save_p += sizeof(difference);
+    P_SAVE_X(difference);
   }
 }
 
@@ -1749,31 +1644,18 @@ void P_UnArchiveSounds(void)
 
   if (!map_format.sndseq) return;
 
-  memcpy(&numSequences, save_p, sizeof(numSequences));
-  save_p += sizeof(numSequences);
+  P_LOAD_X(numSequences);
 
   i = 0;
   while (i < numSequences)
   {
-    memcpy(&sequence, save_p, sizeof(sequence));
-    save_p += sizeof(sequence);
-
-    memcpy(&delayTics, save_p, sizeof(delayTics));
-    save_p += sizeof(delayTics);
-
-    memcpy(&volume, save_p, sizeof(volume));
-    save_p += sizeof(volume);
-
-    memcpy(&seqOffset, save_p, sizeof(seqOffset));
-    save_p += sizeof(seqOffset);
-
-    memcpy(&soundID, save_p, sizeof(soundID));
-    save_p += sizeof(soundID);
-
-    polySnd = *save_p++;
-
-    memcpy(&secNum, save_p, sizeof(secNum));
-    save_p += sizeof(secNum);
+    P_LOAD_X(sequence);
+    P_LOAD_X(delayTics);
+    P_LOAD_X(volume);
+    P_LOAD_X(seqOffset);
+    P_LOAD_X(soundID);
+    P_LOAD_BYTE(polySnd);
+    P_LOAD_X(secNum);
 
     if (!polySnd)
     {
@@ -1789,36 +1671,85 @@ void P_UnArchiveSounds(void)
   }
 }
 
+void P_ArchiveAmbientSound(void)
+{
+  if (!heretic) return;
+
+  P_SAVE_X(AmbSfxTics);
+  P_SAVE_X(AmbSfxVolume);
+  P_SAVE_X(AmbSfxPtrIndex);
+
+  if (AmbSfxPtrIndex != -1)
+  {
+    size_t offset;
+
+    offset = AmbSfxPtr - LevelAmbientSfx[AmbSfxPtrIndex];
+
+    P_SAVE_X(offset);
+  }
+}
+
+void P_UnArchiveAmbientSound(void)
+{
+  if (!heretic) return;
+
+  P_LOAD_X(AmbSfxTics);
+  P_LOAD_X(AmbSfxVolume);
+  P_LOAD_X(AmbSfxPtrIndex);
+
+  if (AmbSfxPtrIndex == -1)
+  {
+    extern int AmbSndSeqInit[];
+
+    AmbSfxPtr = AmbSndSeqInit;
+  }
+  else
+  {
+    size_t offset;
+
+    P_LOAD_X(offset);
+
+    AmbSfxPtr = LevelAmbientSfx[AmbSfxPtrIndex] + offset;
+  }
+}
+
 void P_ArchiveMisc(void)
 {
   size_t size;
 
+  if (map_format.animdefs)
+  {
+    P_SAVE_ARRAY(AnimDefs);
+  }
+
   if (!hexen) return;
 
+
   size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
-  CheckSaveGame(size);
-  memcpy(save_p, localQuakeHappening, size);
-  save_p += size;
+  P_SAVE_SIZE(localQuakeHappening, size);
+  P_SAVE_ARRAY(PlayerClass);
+  P_SAVE_X(NextLightningFlash);
+  P_SAVE_X(LightningFlash);
 
-  CheckSaveGame(sizeof(PlayerClass));
-  memcpy(save_p, PlayerClass, sizeof(PlayerClass));
-  save_p += sizeof(PlayerClass);
-
-  SV_StoreMapArchive(&save_p);
+  SV_StoreMapArchive();
 }
 
 void P_UnArchiveMisc(void)
 {
   size_t size;
 
+  if (map_format.animdefs)
+  {
+    P_LOAD_ARRAY(AnimDefs);
+  }
+
   if (!hexen) return;
 
   size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
-  memcpy(localQuakeHappening, save_p, size);
-  save_p += size;
+  P_LOAD_SIZE(localQuakeHappening, size);
+  P_LOAD_ARRAY(PlayerClass);
+  P_LOAD_X(NextLightningFlash);
+  P_LOAD_X(LightningFlash);
 
-  memcpy(PlayerClass, save_p, sizeof(PlayerClass));
-  save_p += sizeof(PlayerClass);
-
-  SV_RestoreMapArchive(&save_p);
+  SV_RestoreMapArchive();
 }

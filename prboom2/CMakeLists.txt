@@ -135,6 +135,7 @@ set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_PREV})
 set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES_PREV})
 
 set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/share/games/doom" CACHE PATH "Path to look for WAD files")
+set(DSDAPWADDIR "${DOOMWADDIR}" CACHE PATH "Path to install DSDA-Doom internal WAD")
 
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 
@@ -153,6 +154,7 @@ else()
         -Wall -Wno-missing-field-initializers -Wwrite-strings -Wundef \
         -Wbad-function-cast -Wcast-align -Wcast-qual -Wdeclaration-after-statement \
         -Wpointer-arith -Wno-unused -Wno-switch -Wno-sign-compare -Wno-pointer-sign \
+        -Wtype-limits -Wabsolute-value \
         -ffast-math"
     )
 endif()

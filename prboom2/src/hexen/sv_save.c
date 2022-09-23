@@ -125,26 +125,22 @@ static void FreeMapArchive(void)
     }
 }
 
-void SV_StoreMapArchive(byte **buffer)
+void SV_StoreMapArchive(void)
 {
   int i;
 
   for (i = 0; i < MAX_MAPS; ++i)
   {
-    CheckSaveGame(map_archive[i].size + sizeof(map_archive[i].size));
-
-    memcpy(*buffer, &map_archive[i].size, sizeof(map_archive[i].size));
-    *buffer += sizeof(map_archive[i].size);
+    P_SAVE_X(map_archive[i].size);
 
     if (map_archive[i].size)
     {
-      memcpy(*buffer, map_archive[i].buffer, map_archive[i].size);
-      *buffer += map_archive[i].size;
+      P_SAVE_SIZE(map_archive[i].buffer, map_archive[i].size);
     }
   }
 }
 
-void SV_RestoreMapArchive(byte **buffer)
+void SV_RestoreMapArchive(void)
 {
   int i;
 
@@ -152,14 +148,12 @@ void SV_RestoreMapArchive(byte **buffer)
 
   for (i = 0; i < MAX_MAPS; ++i)
   {
-    memcpy(&map_archive[i].size, *buffer, sizeof(map_archive[i].size));
-    *buffer += sizeof(map_archive[i].size);
+    P_LOAD_X(map_archive[i].size);
 
     if (map_archive[i].size)
     {
       map_archive[i].buffer = Z_Malloc(map_archive[i].size);
-      memcpy(map_archive[i].buffer, *buffer, map_archive[i].size);
-      *buffer += map_archive[i].size;
+      P_LOAD_SIZE(map_archive[i].buffer, map_archive[i].size);
     }
   }
 }

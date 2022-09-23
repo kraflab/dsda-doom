@@ -39,6 +39,7 @@
 #include "i_video.h"
 #include "w_wad.h"
 #include "st_stuff.h"
+#include "hu_stuff.h"
 #include "st_lib.h"
 #include "r_main.h"
 #include "am_map.h"
@@ -269,23 +270,11 @@ static unsigned int st_clock;
 // used for making messages go away
 static int st_msgcounter=0;
 
-// used when in chat
-static st_chatstateenum_t st_chatstate;
-
 // whether in automap or first-person
 static st_stateenum_t st_gamestate;
 
 // whether left-side main status bar is active
 static dboolean st_statusbaron;
-
-// whether status bar chat is active
-static dboolean st_chat;
-
-// value of st_chat before message popped up
-static dboolean st_oldchat;
-
-// whether chat window has the cursor on
-static dboolean st_cursoron;
 
 // !deathmatch
 static dboolean st_notdeathmatch;
@@ -329,23 +318,6 @@ static patchnum_t arms[6][2];
 
 // ready-weapon widget
 static st_number_t w_ready;
-
-//jff 2/16/98 status color change levels
-int ammo_red;      // ammo percent less than which status is red
-int ammo_yellow;   // ammo percent less is yellow more green
-int health_red;    // health amount less than which status is red
-int health_yellow; // health amount less than which status is yellow
-int health_green;  // health amount above is blue, below is green
-int armor_red;     // armor amount less than which status is red
-int armor_yellow;  // armor amount less than which status is yellow
-int armor_green;   // armor amount above is blue, below is green
-
-ammo_colour_behaviour_t ammo_colour_behaviour;
-const char *ammo_colour_behaviour_list[ammo_colour_behaviour_max] = {
-  "no",
-  "full ammo only",
-  "yes"
-};
 
  // in deathmatch only, summary of frags stats
 static st_number_t w_frags;
@@ -754,11 +726,6 @@ static void ST_updateWidgets(void)
       else
         st_fragscount -= plyr->frags[i];
     }
-
-  // get rid of chat window if up because of message
-  if (!--st_msgcounter)
-    st_chat = st_oldchat;
-
 }
 
 void ST_Ticker(void)
@@ -830,7 +797,7 @@ static void ST_doPaletteStuff(void)
 
 void M_ChangeApplyPalette(void)
 {
-  if (gamestate == GS_LEVEL)
+  if (in_game && gamestate == GS_LEVEL)
     ST_doPaletteStuff();
 }
 
@@ -846,19 +813,15 @@ static void ST_drawWidgets(dboolean refresh)
   st_fragson = deathmatch && st_statusbaron;
 
   //jff 2/16/98 make color of ammo depend on amount
-  if ((*w_ready.num == plyr->maxammo[weaponinfo[w_ready.data].ammo]) ||
-    (ammo_colour_behaviour == ammo_colour_behaviour_no && plyr->backpack &&
-    *w_ready.num*2 >= plyr->maxammo[weaponinfo[w_ready.data].ammo]))
+  if (*w_ready.num == plyr->maxammo[weaponinfo[w_ready.data].ammo])
     STlib_updateNum(&w_ready, CR_BLUE2, refresh);
   else {
     if (plyr->maxammo[weaponinfo[w_ready.data].ammo])
       ammopct = (*w_ready.num*100)/plyr->maxammo[weaponinfo[w_ready.data].ammo];
-    if (plyr->backpack && ammo_colour_behaviour != ammo_colour_behaviour_yes)
-      ammopct *= 2;
-    if (ammopct < ammo_red)
+    if (ammopct < hud_ammo_red)
       STlib_updateNum(&w_ready, CR_RED, refresh);
     else
-      if (ammopct < ammo_yellow)
+      if (ammopct < hud_ammo_yellow)
         STlib_updateNum(&w_ready, CR_GOLD, refresh);
       else
         STlib_updateNum(&w_ready, CR_GREEN, refresh);
@@ -870,17 +833,15 @@ static void ST_drawWidgets(dboolean refresh)
     }
 
   //jff 2/16/98 make color of health depend on amount
-  if (*w_health.n.num<health_red)
+  if (*w_health.n.num < hud_health_red)
     STlib_updatePercent(&w_health, CR_RED, refresh);
-  else if (*w_health.n.num<health_yellow)
+  else if (*w_health.n.num < hud_health_yellow)
     STlib_updatePercent(&w_health, CR_GOLD, refresh);
-  else if (*w_health.n.num<=health_green)
+  else if (*w_health.n.num <= hud_health_green)
     STlib_updatePercent(&w_health, CR_GREEN, refresh);
   else
     STlib_updatePercent(&w_health, CR_BLUE2, refresh); //killough 2/28/98
 
-  if (sts_armorcolor_type)
-  {
   // armor color dictated by type (Status Bar)
   if (plyr->armortype >= 2)
     STlib_updatePercent(&w_armor, CR_BLUE2, refresh);
@@ -888,19 +849,6 @@ static void ST_drawWidgets(dboolean refresh)
     STlib_updatePercent(&w_armor, CR_GREEN, refresh);
   else if (plyr->armortype == 0)
     STlib_updatePercent(&w_armor, CR_RED, refresh);
-  }
-  else
-  {
-  //jff 2/16/98 make color of armor depend on amount
-  if (*w_armor.n.num<armor_red)
-    STlib_updatePercent(&w_armor, CR_RED, refresh);
-  else if (*w_armor.n.num<armor_yellow)
-    STlib_updatePercent(&w_armor, CR_GOLD, refresh);
-  else if (*w_armor.n.num<=armor_green)
-    STlib_updatePercent(&w_armor, CR_GREEN, refresh);
-  else
-    STlib_updatePercent(&w_armor, CR_BLUE2, refresh); //killough 2/28/98
-  }
 
   for (i=0;i<6;i++)
     STlib_updateMultIcon(&w_arms[i], refresh);
@@ -1062,12 +1010,9 @@ static void ST_initData(void)
   plyr = &players[displayplayer];            // killough 3/7/98
 
   st_clock = 0;
-  st_chatstate = StartChatState;
   st_gamestate = FirstPersonState;
 
   st_statusbaron = true;
-  st_oldchat = st_chat = false;
-  st_cursoron = false;
 
   st_faceindex = 0;
   st_palette = -1;

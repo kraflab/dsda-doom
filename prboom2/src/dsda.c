@@ -19,7 +19,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "m_argv.h"
 #include "doomstat.h"
 #include "p_inter.h"
 #include "p_tick.h"
@@ -29,6 +28,7 @@
 #include "am_map.h"
 
 #include "dsda/analysis.h"
+#include "dsda/args.h"
 #include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
@@ -39,6 +39,7 @@
 #include "dsda/mouse.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
+#include "dsda/tracker.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
@@ -105,17 +106,12 @@ static void dsda_ResetLineActivationTracker(void) {
 }
 
 static void dsda_HandleTurbo(void) {
-  int p;
+  dsda_arg_t* arg;
 
-  if ((p = M_CheckParm ("-turbo"))) {
-    if (p < myargc - 1)
-      turbo_scale = atoi(myargv[p + 1]);
+  arg = dsda_Arg(dsda_arg_turbo);
 
-    if (!turbo_scale)
-      turbo_scale = 255;
-
-    turbo_scale = BETWEEN(10, 255, turbo_scale);
-  }
+  if (arg->found)
+    turbo_scale = arg->value.v_int;
 
   if (turbo_scale > 100)
     dsda_ToggleBuildTurbo();
@@ -125,8 +121,21 @@ int dsda_TurboScale(void) {
   return turbo_scale;
 }
 
+static dboolean frozen_mode;
+
+dboolean dsda_FrozenMode(void) {
+  return frozen_mode;
+}
+
+void dsda_ToggleFrozenMode(void) {
+  if (demorecording || demoplayback)
+    return;
+
+  frozen_mode = !frozen_mode;
+}
+
 static void dsda_HandleBuild(void) {
-  start_in_build_mode = M_CheckParm("-build");
+  start_in_build_mode = dsda_Flag(dsda_arg_build);
 }
 
 int dsda_StartInBuildMode(void) {
@@ -134,18 +143,18 @@ int dsda_StartInBuildMode(void) {
 }
 
 void dsda_ReadCommandLine(void) {
-  int p;
+  dsda_arg_t* arg;
 
-  dsda_track_pacifist = M_CheckParm("-track_pacifist");
-  dsda_track_100k = M_CheckParm("-track_100k");
-  dsda_analysis = M_CheckParm("-analysis");
-  dsda_time_keys = M_CheckParm("-time_keys");
-  dsda_time_use = M_CheckParm("-time_use");
-  dsda_time_secrets = M_CheckParm("-time_secrets");
-  dsda_time_all = M_CheckParm("-time_all");
+  dsda_track_pacifist = dsda_Flag(dsda_arg_track_pacifist);
+  dsda_track_100k = dsda_Flag(dsda_arg_track_100k);
+  dsda_analysis = dsda_Flag(dsda_arg_analysis);
+  dsda_time_keys = dsda_Flag(dsda_arg_time_keys);
+  dsda_time_use = dsda_Flag(dsda_arg_time_use);
+  dsda_time_secrets = dsda_Flag(dsda_arg_time_secrets);
+  dsda_time_all = dsda_Flag(dsda_arg_time_all);
 
-  if ((p = M_CheckParm("-movie")) && ++p < myargc)
-    dsda_movie_target = atoi(myargv[p]);
+  if ((arg = dsda_Arg(dsda_arg_movie))->found)
+    dsda_movie_target = arg->value.v_int;
 
   if (dsda_time_all) {
     dsda_time_keys = true;
@@ -153,15 +162,18 @@ void dsda_ReadCommandLine(void) {
     dsda_time_secrets = true;
   }
 
-  if ((p = M_CheckParm("-export_ghost")) && ++p < myargc)
-    dsda_InitGhostExport(myargv[p]);
+  arg = dsda_Arg(dsda_arg_export_ghost);
+  if (arg->found)
+    dsda_InitGhostExport(arg->value.v_string);
 
   dsda_HandleTurbo();
   dsda_HandleBuild();
 
-  if ((p = M_CheckParm("-import_ghost"))) dsda_InitGhostImport(p);
+  arg = dsda_Arg(dsda_arg_import_ghost);
+  if (arg->found)
+    dsda_InitGhostImport(arg->value.v_string_array, arg->count);
 
-  if (M_CheckParm2("-tas", "-build")) dsda_SetTas();
+  if (dsda_Flag(dsda_arg_tas) || dsda_Flag(dsda_arg_build)) dsda_SetTas();
 
   dsda_InitKeyFrame();
   dsda_InitCommandHistory();

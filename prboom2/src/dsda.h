@@ -21,6 +21,7 @@
 #include "doomdef.h"
 #include "p_mobj.h"
 #include "d_player.h"
+#include "r_defs.h"
 
 typedef struct {
   int m, s, t;
@@ -67,5 +68,8 @@ int* dsda_PlayerActivatedLines(void);
 
 int dsda_TurboScale(void);
 int dsda_StartInBuildMode(void);
+
+dboolean dsda_FrozenMode(void);
+void dsda_ToggleFrozenMode(void);
 
 #endif

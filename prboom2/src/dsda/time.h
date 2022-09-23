@@ -23,6 +23,7 @@ typedef enum {
   dsda_timer_fps,
   dsda_timer_key_frame,
   dsda_timer_brute_force,
+  dsda_timer_render_stats,
   DSDA_TIMER_COUNT
 } dsda_timer_t;
 
@@ -35,5 +36,6 @@ unsigned long long dsda_ElapsedTimeMS(int timer);
 void dsda_LimitFPS(void);
 int dsda_GetTickRealTime(void);
 void dsda_ResetTimeFunctions(int fastdemo);
+void dsda_StrCatLocalTime(char* str);
 
 #endif

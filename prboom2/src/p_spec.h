@@ -1345,6 +1345,13 @@ void P_InitTerrainTypes(void);
 void P_InitLava(void);
 void P_SpawnLineSpecials(void);
 
+#define MAX_AMBIENT_SFX 8
+
+extern int AmbSfxTics;
+extern int AmbSfxVolume;
+extern int AmbSfxPtrIndex;
+extern int *AmbSfxPtr;
+extern int *LevelAmbientSfx[MAX_AMBIENT_SFX];
 extern int *TerrainTypes;
 
 void P_InitAmbientSound(void);

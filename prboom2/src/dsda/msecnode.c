@@ -96,21 +96,24 @@ void dsda_ArchiveMSecNodes(void) {
     count = 0;
     msecnode = sectors[sector_i].touching_thinglist;
     while (msecnode) {
-      count++;
+      if (dsda_IsMSecNodeMobj(&msecnode->m_thing->thinker))
+        count++;
       msecnode = msecnode->m_snext;
     }
 
-    CheckSaveGame(sizeof(count));
-    memcpy(save_p, &count, sizeof(count));
-    save_p += sizeof(count);
+    P_SAVE_X(count);
 
     msecnode = sectors[sector_i].touching_thinglist;
     while (msecnode) {
       th = &msecnode->m_thing->thinker;
 
-      CheckSaveGame(sizeof(th->prev));
-      memcpy(save_p, &th->prev, sizeof(th->prev));
-      save_p += sizeof(th->prev);
+      if (!dsda_IsMSecNodeMobj(th)) {
+        lprintf(LO_WARN, "Orphan mobj in msecnode list - undefined behaviour may occur!\n");
+        msecnode = msecnode->m_snext;
+        continue;
+      }
+
+      P_SAVE_X(th->prev);
 
       msecnode = msecnode->m_snext;
     }
@@ -129,17 +132,13 @@ void dsda_ArchiveMSecNodes(void) {
       msecnode = msecnode->m_tnext;
     }
 
-    CheckSaveGame(sizeof(count));
-    memcpy(save_p, &count, sizeof(count));
-    save_p += sizeof(count);
+    P_SAVE_X(count);
 
     msecnode = ((mobj_t*) th)->touching_sectorlist;
     while (msecnode) {
       sector_i = msecnode->m_sector - sectors;
 
-      CheckSaveGame(sizeof(sector_i));
-      memcpy(save_p, &sector_i, sizeof(sector_i));
-      save_p += sizeof(sector_i);
+      P_SAVE_X(sector_i);
 
       msecnode = msecnode->m_tnext;
     }
@@ -149,8 +148,7 @@ void dsda_ArchiveMSecNodes(void) {
 static void dsda_UnArchiveMSecNodeMobj(msecnode_t* msecnode, mobj_t** mobj_p, int mobj_count) {
   mobj_t* mobj;
 
-  memcpy(&mobj, save_p, sizeof(mobj));
-  save_p += sizeof(mobj);
+  P_LOAD_X(mobj);
 
   mobj = mobj_p[P_GetMobj(mobj, mobj_count + 1)];
 
@@ -171,8 +169,7 @@ void dsda_UnArchiveMSecNodes(mobj_t** mobj_p, int mobj_count) {
   int count, existing_count;
 
   for (sector_i = 0; sector_i < numsectors; ++sector_i) {
-    memcpy(&count, save_p, sizeof(count));
-    save_p += sizeof(count);
+    P_LOAD_X(count);
 
     // Due to a bug in m_snext chain management,
     //   this value can differ from the one stored originally.
@@ -238,16 +235,14 @@ void dsda_UnArchiveMSecNodes(mobj_t** mobj_p, int mobj_count) {
 
     // The rewriting going on in this loop reorganizes the m_tnext chains,
     //   so we cannot trust the existing chain length
-    memcpy(&count, save_p, sizeof(count));
-    save_p += sizeof(count);
+    P_LOAD_X(count);
 
     mobj->touching_sectorlist = NULL;
     msecnode_prev = NULL;
     msecnode_next = &mobj->touching_sectorlist;
 
     for (i = 0; i < count; ++i) {
-      memcpy(&sector_i, save_p, sizeof(sector_i));
-      save_p += sizeof(sector_i);
+      P_LOAD_X(sector_i);
 
       // The sector msecnodes were rewritten above,
       //   so we need to find the actual msecnode match (sector, thing)

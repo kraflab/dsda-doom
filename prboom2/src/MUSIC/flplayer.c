@@ -66,14 +66,15 @@ const music_player_t fl_player =
 #else // HAVE_LIBFLUIDSYNTH
 
 #include <fluidsynth.h>
-#include "i_sound.h" // for snd_soundfont, mus_fluidsynth_gain
+#include <stdlib.h>
+#include <string.h>
 #include "i_system.h" // for I_FindFile()
 #include "lprintf.h"
 #include "midifile.h"
 #include "memio.h"
 #include "w_wad.h"
-#include <stdlib.h>
-#include <string.h>
+
+#include "dsda/configuration.h"
 
 static fluid_settings_t *f_set;
 static fluid_synth_t *f_syn;
@@ -150,7 +151,14 @@ static long long fl_sftell(void *handle)
 
 static int fl_init (int samplerate)
 {
+  int mus_fluidsynth_chorus;
+  int mus_fluidsynth_reverb;
+  int mus_fluidsynth_gain;
   const char *filename;
+
+  mus_fluidsynth_chorus = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus);
+  mus_fluidsynth_reverb = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb);
+  mus_fluidsynth_gain = dsda_IntConfig(dsda_config_mus_fluidsynth_gain);
 
   f_soundrate = samplerate;
   // fluidsynth 1.1.4 supports sample rates as low as 8000hz.  earlier versions only go down to 22050hz
@@ -235,6 +243,7 @@ static int fl_init (int samplerate)
     int checked_file = false;
     dboolean replaced_soundfont = false;
     const char *checked_f_font = NULL;
+    const char *snd_soundfont;
 
     lumpnum = W_CheckNumForName("SNDFONT");
 
@@ -242,6 +251,8 @@ static int fl_init (int samplerate)
     {
       replaced_soundfont = !W_LumpNumInPortWad(lumpnum);
     }
+
+    snd_soundfont = dsda_StringConfig(dsda_config_snd_soundfont);
 
     if (!replaced_soundfont && snd_soundfont && snd_soundfont[0])
     {

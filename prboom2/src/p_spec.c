@@ -45,7 +45,6 @@
 #include "p_setup.h"
 #include "m_random.h"
 #include "d_englsh.h"
-#include "m_argv.h"
 #include "w_wad.h"
 #include "r_main.h"
 #include "p_maputl.h"
@@ -65,6 +64,8 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/global.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
@@ -439,7 +440,7 @@ fixed_t P_FindNextHighestFloor(sector_t *sec, int currentheight)
 
     // 20 adjoining sectors max!
     if (!MAX_ADJOINING_SECTORS)
-      MAX_ADJOINING_SECTORS = M_CheckParm("-doom95") ? 500 : 20;
+      MAX_ADJOINING_SECTORS = dsda_Flag(dsda_arg_doom95) ? 500 : 20;
 
     if (sec->linecount > heightlist_size)
     {
@@ -1458,7 +1459,7 @@ static void P_CollectSecretCommon(sector_t *sector, player_t *player)
   player->secretcount++;
   sector->flags &= ~SECF_SECRET;
 
-  if (hudadd_secretarea)
+  if (dsda_IntConfig(dsda_config_hudadd_secretarea))
   {
     int sfx_id = raven ? g_sfx_secret :
                  I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
@@ -3678,37 +3679,24 @@ static void P_SpawnExtras(void)
 
 static void P_EvaluateDeathmatchParams(void)
 {
-  int i;
+  dsda_arg_t *arg;
 
-  // See if -timer needs to be used.
   levelTimer = false;
 
-  i = M_CheckParm("-avg");   // Austin Virtual Gaming 20 min timer on DM play
-  if (i && deathmatch)
+  arg = dsda_Arg(dsda_arg_timer);
+  if (arg->found && deathmatch)
   {
     levelTimer = true;
-    levelTimeCount = 20 * 60 * TICRATE;
+    levelTimeCount = arg->value.v_int * 60 * TICRATE;
   }
 
-  i = M_CheckParm("-timer"); // user defined timer on game play
-  if (i && deathmatch)
-  {
-    int time;
-    time = atoi(myargv[i+1]) * 60 * TICRATE;
-    levelTimer = true;
-    levelTimeCount = time;
-  }
-
-  // See if -frags has been used
   levelFragLimit = false;
-  i = M_CheckParm("-frags");  // Ty 03/18/98 Added -frags support
-  if (i && deathmatch)
+
+  arg = dsda_Arg(dsda_arg_frags);
+  if (arg->found && deathmatch)
   {
-    int frags;
-    frags = atoi(myargv[i+1]);
-    if (frags <= 0) frags = 10;  // default 10 if no count provided
     levelFragLimit = true;
-    levelFragLimitCount = frags;
+    levelFragLimitCount = arg->value.v_int;
   }
 }
 
@@ -4813,8 +4801,6 @@ static void P_SpawnPushers(void)
 
 #include "heretic/def.h"
 
-#define MAX_AMBIENT_SFX 8
-
 typedef enum
 {
     afxcmd_play,                // (sound)
@@ -4827,6 +4813,7 @@ typedef enum
 
 int *LevelAmbientSfx[MAX_AMBIENT_SFX];
 int *AmbSfxPtr;
+int AmbSfxPtrIndex;
 int AmbSfxCount;
 int AmbSfxTics;
 int AmbSfxVolume;
@@ -4995,6 +4982,7 @@ void P_InitAmbientSound(void)
     AmbSfxCount = 0;
     AmbSfxVolume = 0;
     AmbSfxTics = 10 * TICRATE;
+    AmbSfxPtrIndex = -1;
     AmbSfxPtr = AmbSndSeqInit;
 }
 
@@ -5050,7 +5038,8 @@ void P_AmbientSound(void)
                 break;
             case afxcmd_end:
                 AmbSfxTics = 6 * TICRATE + P_Random(pr_heretic);
-                AmbSfxPtr = LevelAmbientSfx[P_Random(pr_heretic) % AmbSfxCount];
+                AmbSfxPtrIndex = P_Random(pr_heretic) % AmbSfxCount;
+                AmbSfxPtr = LevelAmbientSfx[AmbSfxPtrIndex];
                 done = true;
                 break;
             default:
@@ -5535,8 +5524,8 @@ static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
     }
     if (!mo->player->cards[lock - 1])
     {
-        doom_snprintf(LockedBuffer, sizeof(LockedBuffer),
-                   "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
+        snprintf(LockedBuffer, sizeof(LockedBuffer),
+                 "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
         P_SetMessage(mo->player, LockedBuffer, true);
         S_StartSound(mo, hexen_sfx_door_locked);
         return false;

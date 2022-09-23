@@ -40,6 +40,8 @@
 
 #include "doomtype.h"
 
+#define SAVEVERSION 1
+
 /* Persistent storage/archiving.
  * These are the load / save game routines. */
 void P_ArchivePlayers(void);
@@ -62,8 +64,55 @@ void P_TrueArchiveThinkers(void);
 void P_TrueUnArchiveThinkers(void);
 
 extern byte *save_p;
-void CheckSaveGame(size_t,const char*, int);              /* killough */
-#define CheckSaveGame(a) (CheckSaveGame)(a, __FILE__, __LINE__)
+extern byte* savebuffer;
+
+void CheckSaveGame(size_t size);
+void P_InitSaveBuffer(void);
+void P_ForgetSaveBuffer(void);
+void P_FreeSaveBuffer(void);
+
+#define P_SAVE_X(x) { CheckSaveGame(sizeof(x)); \
+                      memcpy(save_p, &x, sizeof(x)); \
+                      save_p += sizeof(x); }
+
+#define P_LOAD_X(x) { memcpy(&x, save_p, sizeof(x)); \
+                      save_p += sizeof(x); }
+
+#define P_SAVE_SIZE(x, size) { CheckSaveGame(size); \
+                               memcpy(save_p, x, size); \
+                               save_p += size; }
+
+#define P_LOAD_SIZE(x, size) { memcpy(x, save_p, size); \
+                               save_p += size; }
+
+#define P_SAVE_TYPE(x, type) { CheckSaveGame(sizeof(type)); \
+                               memcpy(save_p, x, sizeof(type)); \
+                               save_p += sizeof(type); }
+
+#define P_SAVE_TYPE_REF(x, ref, type) { CheckSaveGame(sizeof(type)); \
+                                        ref = (type *) save_p; \
+                                        memcpy(save_p, x, sizeof(type)); \
+                                        save_p += sizeof(type); }
+
+#define P_LOAD_P(p) { memcpy(p, save_p, sizeof(*p)); \
+                      save_p += sizeof(*p); }
+
+#define P_SAVE_BYTE(x) { CheckSaveGame(1); \
+                         *save_p++ = x; }
+
+#define P_LOAD_BYTE(x) { x = *save_p++; }
+
+#define P_SAVE_ARRAY(x) { CheckSaveGame(sizeof(x)); \
+                          memcpy(save_p, x, sizeof(x)); \
+                          save_p += sizeof(x); }
+
+#define P_LOAD_ARRAY(x) { memcpy(x, save_p, sizeof(x)); \
+                          save_p += sizeof(x); }
+
+// heretic
+
+void P_ArchiveAmbientSound(void);
+void P_UnArchiveAmbientSound(void);
 
 // hexen
 

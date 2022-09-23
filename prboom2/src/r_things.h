@@ -65,20 +65,6 @@ extern fixed_t pspriteiyscale;
 extern float pspritexscale_f;
 extern float pspriteyscale_f;
 
-typedef enum {
-  DOOM_ORDER_NONE,
-  DOOM_ORDER_STATIC,
-  DOOM_ORDER_DYNAMIC,
-  DOOM_ORDER_LAST
-} sprite_doom_order_t;
-extern int sprites_doom_order;
-
-extern int health_bar;
-extern int health_bar_full_length;
-extern int health_bar_red;
-extern int health_bar_yellow;
-extern int health_bar_green;
-
 void R_DrawMaskedColumn(const rpatch_t *patch,
                         R_DrawColumn_f colfunc,
                         draw_column_vars_t *dcvars,

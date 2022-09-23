@@ -27,11 +27,6 @@
 #define ITEM_HEIGHT 20
 #define SELECTOR_XOFFSET (-28)
 #define SELECTOR_YOFFSET (-1)
-#define SCREENSIZE_INDEX 5
-#define MOUSE_HORIZ_INDEX 1
-#define MOUSE_VERT_INDEX 3
-#define MOUSE_MLOOK_INDEX 5
-#define MOUSE_ACCEL_INDEX 7
 #define SFX_VOL_INDEX 1
 #define MUS_VOL_INDEX 3
 
@@ -56,8 +51,6 @@ extern menu_t MainDef;
 extern menu_t EpiDef;
 extern menu_t NewDef;
 extern menu_t OptionsDef;
-extern menu_t SetupDef;
-extern menu_t MouseDef;
 extern menu_t SoundDef;
 extern menu_t LoadDef;
 extern menu_t SaveDef;
@@ -89,12 +82,6 @@ void MN_Init(void)
 
   OptionsDef.x = 88;
   OptionsDef.y = 16;
-
-  SetupDef.x = OptionsDef.x;
-  SetupDef.y = OptionsDef.y;
-
-  MouseDef.x = OptionsDef.x;
-  MouseDef.y = OptionsDef.y;
 
   SoundDef.x = OptionsDef.x;
   SoundDef.y = OptionsDef.y;
@@ -211,7 +198,6 @@ void MN_Ticker(void)
 
 extern menu_t* currentMenu;
 extern short itemOn;
-extern int screenSize;
 
 void MN_DrawMessage(const char* messageString)
 {
@@ -386,39 +372,6 @@ void MN_DrawSkillMenu(void)
 
 void MN_DrawOptions(void)
 {
-    if (dsda_ShowMessages())
-    {
-        MN_DrTextB("ON", 196, OptionsDef.y + 3 * ITEM_HEIGHT);
-    }
-    else
-    {
-        MN_DrTextB("OFF", 196, OptionsDef.y + 3 * ITEM_HEIGHT);
-    }
-    MN_DrawSlider(OptionsDef.x - 8, OptionsDef.y + ITEM_HEIGHT * SCREENSIZE_INDEX, 9, screenSize);
-}
-
-void MN_DrawSetup(void)
-{
-  // nothing for heretic
-}
-
-extern int mouseSensitivity_mlook;
-extern int mouse_acceleration;
-
-void MN_DrawMouse(void)
-{
-  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_HORIZ_INDEX,
-                200, mouseSensitivity_horiz);
-
-  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_VERT_INDEX,
-                200, mouseSensitivity_vert);
-
-  //e6y
-  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_MLOOK_INDEX,
-                200, mouseSensitivity_mlook);
-
-  MN_DrawSlider(MouseDef.x - 8, MouseDef.y + ITEM_HEIGHT * MOUSE_ACCEL_INDEX,
-                200, mouse_acceleration);
 }
 
 void MN_DrawSound(void)
@@ -620,7 +573,7 @@ void MN_DrawSlider(int x, int y, int width, int slot)
   V_DrawNamePatch(x2, y, 0, "M_SLDRT", CR_DEFAULT, VPT_STRETCH);
 
   // [crispy] print the value
-  snprintf(num, 4, "%3d", slot);
+  snprintf(num, sizeof(num), "%3d", slot);
   MN_DrTextA(num, x2 + 32, y + 3);
 
   // [crispy] do not crash anymore if the value is out of bounds

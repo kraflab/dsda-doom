@@ -16,6 +16,7 @@
 // to be interrogated.
 //
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -65,9 +66,9 @@ static dboolean IsDirectory(char *dir, struct dirent *de)
         struct stat sb;
         int result;
 
-        int len = doom_snprintf(NULL, 0, "%s/%s", dir, de->d_name);
+        int len = snprintf(NULL, 0, "%s/%s", dir, de->d_name);
         filename = malloc(len+1);
-        doom_snprintf(filename, len+1, "%s/%s", dir, de->d_name);
+        snprintf(filename, len+1, "%s/%s", dir, de->d_name);
         result = stat(filename, &sb);
         free(filename);
 
@@ -265,9 +266,9 @@ static char *NextGlob(glob_t *glob)
           || !MatchesAnyGlob(de->d_name, glob));
 
     // Return the fully-qualified path, not just the bare filename.
-    len = doom_snprintf(NULL, 0, "%s/%s", glob->directory, de->d_name);
+    len = snprintf(NULL, 0, "%s/%s", glob->directory, de->d_name);
     ret = malloc(len+1);
-    doom_snprintf(ret, len+1, "%s/%s", glob->directory, de->d_name);
+    snprintf(ret, len+1, "%s/%s", glob->directory, de->d_name);
     return ret;
 }
 
@@ -383,4 +384,3 @@ const char *I_NextGlob(glob_t *glob)
 }
 
 #endif /* #ifdef NO_DIRENT_IMPLEMENTATION */
-

@@ -37,11 +37,8 @@
 
 #include "doomstat.h"
 
-extern int movement_smooth_default;
 extern int movement_smooth;
 extern dboolean isExtraDDisplay;
-
-extern int interpolation_maxobjects;
 
 typedef struct {
   fixed_t frac;

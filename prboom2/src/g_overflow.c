@@ -43,9 +43,10 @@
 
 #include "doomstat.h"
 #include "lprintf.h"
-#include "m_argv.h"
 #include "m_misc.h"
 #include "e6y.h"
+
+#include "dsda/args.h"
 
 int overflows_enabled = true;
 
@@ -187,12 +188,12 @@ void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
 
 int PlayeringameOverrun(const mapthing_t* mthing)
 {
-  if (mthing->type == 0 && PROCESS(OVERFLOW_PLYERINGAME))
+  if (mthing->type == 0 && PROCESS(OVERFLOW_PLAYERINGAME))
   {
     // playeringame[-1] == players[3].didsecret
-    ShowOverflowWarning(OVERFLOW_PLYERINGAME, (players + 3)->didsecret, "");
+    ShowOverflowWarning(OVERFLOW_PLAYERINGAME, (players + 3)->didsecret, "");
 
-    if (EMULATE(OVERFLOW_PLYERINGAME))
+    if (EMULATE(OVERFLOW_PLAYERINGAME))
     {
       return true;
     }
@@ -236,7 +237,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
 
       if (spechit_baseaddr == 0)
       {
-        int p;
+        dsda_arg_t *arg;
 
         // This is the first time we have had an overrun.  Work out
         // what base address we are going to use.
@@ -246,12 +247,10 @@ void SpechitOverrun(spechit_overrun_param_t *params)
         // Use the specified magic value when emulating spechit overruns.
         //
 
-        p = M_CheckParm("-spechit");
-
-        if (p > 0)
+        arg = dsda_Arg(dsda_arg_spechit);
+        if (arg->found)
         {
-          //baseaddr = atoi(myargv[p+1]);
-          M_StrToInt(myargv[p+1], (int*)&spechit_baseaddr);
+          spechit_baseaddr = arg->value.v_int;
         }
         else
         {
@@ -429,24 +428,26 @@ static int GetMemoryValue(unsigned int offset, void *value, int size)
 
   if (firsttime)
   {
-    int p, i, val;
+    int i, val;
+    dsda_arg_t *arg;
 
     firsttime = false;
     i = 0;
 
-    if ((p = M_CheckParm("-setmem")) && (p < myargc-1))
+    arg = dsda_Arg(dsda_arg_setmem);
+    if (arg->found)
     {
-      if (!strcasecmp(myargv[p + 1], "dos622"))
+      if (!strcasecmp(arg->value.v_string_array[0], "dos622"))
         dos_mem_dump = mem_dump_dos622;
-      if (!strcasecmp(myargv[p + 1], "dos71"))
+      if (!strcasecmp(arg->value.v_string_array[0], "dos71"))
         dos_mem_dump = mem_dump_win98;
-      else if (!strcasecmp(myargv[p + 1], "dosbox"))
+      else if (!strcasecmp(arg->value.v_string_array[0], "dosbox"))
         dos_mem_dump = mem_dump_dosbox;
       else
       {
-        while (++p != myargc && *myargv[p] != '-' && i < DOS_MEM_DUMP_SIZE)
+        while (i < DOS_MEM_DUMP_SIZE)
         {
-          M_StrToInt(myargv[p], &val);
+          M_StrToInt(arg->value.v_string_array[i], &val);
           dos_mem_dump[i++] = (unsigned char)val;
         }
       }

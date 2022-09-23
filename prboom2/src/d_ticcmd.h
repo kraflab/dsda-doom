@@ -57,7 +57,6 @@ typedef struct
   signed char forwardmove;  /* *2048 for move       */
   signed char sidemove; /* *2048 for move       */
   signed short  angleturn;  /* <<16 for angle delta */
-  byte  chatchar;
   byte  buttons;
 
   // heretic

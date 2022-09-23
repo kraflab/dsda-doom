@@ -330,9 +330,6 @@ extern float yaw;
 extern float inv_yaw;
 extern float pitch;
 
-extern int gl_ztrick;
-extern int gl_finish;
-
 extern int gl_preprocessed; //e6y
 
 extern GLDrawInfo gld_drawinfo;
@@ -342,9 +339,8 @@ void gld_ResetDrawInfo(void);
 extern GLSector *sectorloops;
 extern GLMapSubsector *subsectorloops;
 
-extern const char *gl_tex_format_string;
 extern int gl_tex_format;
-extern int gl_texture_filter_anisotropic;
+extern GLfloat gl_texture_filter_anisotropic;
 extern int transparent_pal_index;
 extern unsigned char gld_palmap[256];
 extern tex_filter_t tex_filter[];
@@ -356,7 +352,6 @@ extern float xCamera,yCamera,zCamera;
 //detail
 //
 
-int gld_IsDetailVisible(float x0, float y0, float x1, float y1, float x2, float y2);
 void gld_InitDetail(void);
 void gld_InitFrameDetails(void);
 void gld_ParseDetail(void);
@@ -439,9 +434,6 @@ extern int SceneInTexture;
 void gld_InitFBO(void);
 void gld_FreeScreenSizeFBO(void);
 
-//motion bloor
-extern int gl_motionblur;
-
 extern int imageformats[];
 
 //missing flats (fake floors and ceilings)
@@ -472,9 +464,6 @@ void gl_EnableFog(int on);
 void gld_SetFog(float fogdensity);
 typedef float (*gld_CalcFogDensity_f)(sector_t *sector, int lightlevel, GLDrawItemType type);
 extern gld_CalcFogDensity_f gld_CalcFogDensity;
-
-//HQ resize
-unsigned char* gld_HQResize(GLTexture *gltexture, unsigned char *inputBuffer, int inWidth, int inHeight, int *outWidth, int *outHeight);
 
 // SkyBox
 #define SKY_NONE    0
@@ -555,11 +544,6 @@ typedef struct box_skybox_s
 box_skybox_t* R_GetBoxSkybox(int index);
 void gld_ParseSkybox(void);
 extern box_skybox_t *BoxSkybox_default;
-
-// display lists
-void gld_InitDisplayLists(void);
-void gld_CleanDisplayLists(void);
-extern int flats_display_list;
 
 // preprocessing
 extern byte *segrendered; // true if sector rendered (only here for malloc)

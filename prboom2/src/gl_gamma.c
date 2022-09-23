@@ -46,14 +46,15 @@
 #include "gl_intern.h"
 #include "doomtype.h"
 #include "i_video.h"
-#include "m_argv.h"
 #include "lprintf.h"
+
+#include "dsda/args.h"
 
 #ifndef HIBYTE
 #define HIBYTE(W) (((W) >> 8) & 0xFF)
 #endif
 
-int useglgamma;
+int gl_usegamma;
 int gl_DeviceSupportsGamma = false;
 
 static Uint16 gl_oldHardwareGamma[3][256];
@@ -167,7 +168,7 @@ int gld_SetGammaRamp(int gamma)
 // Restoring the gamma values to a linear value and exit
 void gld_ResetGammaRamp(void)
 {
-  if (M_CheckParm("-resetgamma"))
+  if (dsda_Flag(dsda_arg_resetgamma))
   {
     if (gld_SetGammaRamp(1))
     {

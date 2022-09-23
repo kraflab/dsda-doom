@@ -31,6 +31,8 @@ extern "C"
 #include "doomdef.h"
 #include "doomstat.h"
 
+#include "dsda/mobjinfo.h"
+
 void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char *alpha);
 void M_ClearEpisodes(void);
 
@@ -590,6 +592,8 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 				scanner.ErrorF("Unknown thing type %s", scanner.string);
 				return 0;
 			}
+
+			i = dsda_GetDehMobjIndex(i);
 
 			scanner.MustGetToken(',');
 			scanner.MustGetInteger();

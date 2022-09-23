@@ -255,32 +255,14 @@ static void AM_SetColors(void)
   }
 }
 
-//jff 3/9/98 add option to not show secret sectors until entered
-int map_secret_after;
-
-int map_always_updates;
-int map_grid_size;
-int map_scroll_speed;
-int map_wheel_zoom;
-int map_use_multisamling;
+static int map_secret_after;
+static int map_grid_size;
+static int map_scroll_speed;
+static int map_wheel_zoom;
 int map_textured;
-int map_textured_trans;
-int map_textured_overlay_trans;
-int map_lines_overlay_trans;
-int map_overlay_pos_x;
-int map_overlay_pos_y;
-int map_overlay_pos_width;
-int map_overlay_pos_height;
+int map_use_multisampling;
 
-map_things_appearance_t map_things_appearance;
-const char *map_things_appearance_list[map_things_appearance_max] =
-{
-  "classic",
-  "scaled",
-#if defined(HAVE_LIBSDL2_IMAGE)
-  "icons"
-#endif
-};
+static map_things_appearance_t map_things_appearance;
 
 // drawing stuff
 #define FB    0
@@ -399,7 +381,11 @@ mline_t thintriangle_guy[] =
 
 static int leveljuststarted = 1;       // kluge until AM_LevelInit() is called
 
-enum automapmode_e automapmode; // Mode that the automap is in
+int automap_active;
+int automap_overlay;
+int automap_rotate;
+int automap_follow;
+int automap_grid;
 
 // location of window on screen
 static int  f_x;
@@ -536,7 +522,7 @@ static void AM_restoreScaleAndLoc(void)
 {
   m_w = old_m_w;
   m_h = old_m_h;
-  if (!(automapmode & am_follow))
+  if (!automap_follow)
   {
     m_x = old_m_x;
     m_y = old_m_y;
@@ -562,7 +548,7 @@ void AM_setMarkParams(int num)
   markpoints[num].w = 0;
   markpoints[num].h = 0;
 
-  doom_snprintf(markpoints[num].label, sizeof(markpoints[num].label), "%d", num);
+  snprintf(markpoints[num].label, sizeof(markpoints[num].label), "%d", num);
   for (i = 0; i < (int)strlen(markpoints[num].label); i++)
   {
     namebuf[6] = markpoints[num].label[i];
@@ -657,7 +643,7 @@ static void AM_changeWindowLoc(void)
 
   if (m_paninc.x || m_paninc.y)
   {
-    automapmode &= ~am_follow;
+    dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
   }
 
   if (movement_smooth)
@@ -671,7 +657,7 @@ static void AM_changeWindowLoc(void)
     incy = m_paninc.y;
   }
 
-  if (automapmode & am_rotate)
+  if (automap_rotate)
   {
     AM_rotate(&incx, &incy, viewangle - ANG90);
   }
@@ -679,7 +665,7 @@ static void AM_changeWindowLoc(void)
   m_x = prev_m_x + incx;
   m_y = prev_m_y + incy;
 
-  if (!(automapmode & am_rotate))
+  if (!automap_rotate)
   {
     if (m_x + m_w/2 > max_x)
       m_x = max_x - m_w/2;
@@ -713,17 +699,12 @@ void AM_SetScale(void)
 //
 void AM_SetPosition(void)
 {
-  if (automapmode & am_overlay)
+  if (automap_overlay)
   {
-    f_x = map_overlay_pos_x * SCREENWIDTH / 320;
-    f_y = map_overlay_pos_y * SCREENHEIGHT / 200;
-    f_w = map_overlay_pos_width * SCREENWIDTH / 320;
-    f_h = map_overlay_pos_height * SCREENHEIGHT / 200;
-
-    if (f_x + f_w > SCREENWIDTH)
-      f_w = SCREENWIDTH - f_x;
-    if (f_y + f_h > SCREENHEIGHT)
-      f_h = SCREENHEIGHT - f_y;
+    f_x = 0;
+    f_y = 0;
+    f_w = SCREENWIDTH;
+    f_h = SCREENHEIGHT;
 
     f_x = viewwindowx + f_x * viewwidth / SCREENWIDTH;
     f_y = viewwindowy + f_y * viewheight / SCREENHEIGHT;
@@ -764,7 +745,7 @@ static void AM_initVariables(void)
     player_arrow = doom_player_arrow;
   }
 
-  automapmode |= am_active;
+  automap_active = true;
 
   m_paninc.x = m_paninc.y = 0;
   ftom_zoommul = FRACUNIT;
@@ -832,6 +813,15 @@ void AM_clearMarks(void)
   markpointnum = 0;
 }
 
+void AM_InitParams(void)
+{
+  map_secret_after = dsda_IntConfig(dsda_config_map_secret_after);
+  map_scroll_speed = dsda_IntConfig(dsda_config_map_scroll_speed);
+  map_grid_size = dsda_IntConfig(dsda_config_map_grid_size);
+  map_wheel_zoom = dsda_IntConfig(dsda_config_map_wheel_zoom);
+  map_things_appearance = dsda_IntConfig(dsda_config_map_things_appearance);
+}
+
 //
 // AM_LevelInit()
 //
@@ -862,7 +852,7 @@ void AM_Stop (void)
   static event_t st_notify = { 0, ev_keyup, AM_MSGEXITED, 0 };
 
   AM_unloadPics();
-  automapmode &= ~am_active;
+  automap_active = false;
   D_PostEvent(&st_notify);
   stopped = true;
 }
@@ -880,6 +870,8 @@ void AM_Stop (void)
 void AM_Start(void)
 {
   static int lastlevel = -1, lastepisode = -1;
+
+  AM_InitParams();
 
   if (!stopped)
     AM_Stop();
@@ -935,7 +927,7 @@ dboolean AM_Responder
 {
   static int bigstate=0;
 
-  if (!(automapmode & am_active))
+  if (!automap_active)
   {
     if (dsda_InputActivated(dsda_input_map))
     {
@@ -952,7 +944,7 @@ dboolean AM_Responder
   }
   else if (dsda_InputActivated(dsda_input_map_right))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
     {
       m_paninc.x = FTOM(F_PANINC);
       return true;
@@ -960,7 +952,7 @@ dboolean AM_Responder
   }
   else if (dsda_InputActivated(dsda_input_map_left))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
     {
       m_paninc.x = -FTOM(F_PANINC);
       return true;
@@ -968,17 +960,17 @@ dboolean AM_Responder
   }
   else if (dsda_InputDeactivated(dsda_input_map_right))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
       m_paninc.x = 0;
   }
   else if (dsda_InputDeactivated(dsda_input_map_left))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
       m_paninc.x = 0;
   }
   else if (dsda_InputActivated(dsda_input_map_up))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
     {
       m_paninc.y = FTOM(F_PANINC);
       return true;
@@ -986,7 +978,7 @@ dboolean AM_Responder
   }
   else if (dsda_InputActivated(dsda_input_map_down))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
     {
       m_paninc.y = -FTOM(F_PANINC);
       return true;
@@ -994,12 +986,12 @@ dboolean AM_Responder
   }
   else if (dsda_InputDeactivated(dsda_input_map_up))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
       m_paninc.y = 0;
   }
   else if (dsda_InputDeactivated(dsda_input_map_down))
   {
-    if (!(automapmode & am_follow))
+    if (!automap_follow)
       m_paninc.y = 0;
   }
   else if (
@@ -1041,17 +1033,17 @@ dboolean AM_Responder
   }
   else if (dsda_InputActivated(dsda_input_map_follow))
   {
-    automapmode ^= am_follow;     // CPhipps - put all automap mode stuff into one enum
+    dsda_ToggleConfig(dsda_config_automap_follow, true);
     // Ty 03/27/98 - externalized
-    plr->message = (automapmode & am_follow) ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF;
+    plr->message = automap_follow ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF;
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_grid))
   {
-    automapmode ^= am_grid;      // CPhipps
+    dsda_ToggleConfig(dsda_config_automap_grid, true);
     // Ty 03/27/98 - *not* externalized
-    plr->message = (automapmode & am_grid) ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF;
+    plr->message = automap_grid ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF;
 
     return true;
   }
@@ -1073,24 +1065,23 @@ dboolean AM_Responder
   }
   else if (dsda_InputActivated(dsda_input_map_rotate))
   {
-    automapmode ^= am_rotate;
-    plr->message = (automapmode & am_rotate) ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF;
+    dsda_ToggleConfig(dsda_config_automap_rotate, true);
+    plr->message = automap_rotate ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF;
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_overlay))
   {
-    automapmode ^= am_overlay;
+    dsda_ToggleConfig(dsda_config_automap_overlay, true);
     AM_SetPosition();
     AM_activateNewScale();
-    plr->message = (automapmode & am_overlay) ? s_AMSTR_OVERLAYON : s_AMSTR_OVERLAYOFF;
+    plr->message = automap_overlay ? s_AMSTR_OVERLAYON : s_AMSTR_OVERLAYOFF;
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_textured))
   {
-    map_textured = !map_textured;
-    M_ChangeMapTextured();
+    dsda_ToggleConfig(dsda_config_map_textured, true);
     plr->message = (map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
 
     return true;
@@ -1432,7 +1423,7 @@ static void AM_drawMline
   if (AM_clipMline(ml, &fl))
   {
     // draws it on frame buffer using fb coords
-    if (!raven && map_use_multisamling)
+    if (!raven && map_use_multisampling)
       V_DrawLineWu(&fl, color);
     else
       V_DrawLine(&fl, color);
@@ -1455,16 +1446,6 @@ static void AM_drawGrid(int color)
   fixed_t minlen, extx, exty;
   fixed_t minx, miny;
   fixed_t gridsize = map_grid_size << MAPBITS;
-
-  if(map_grid_size == -1)
-  {
-    fixed_t oprtimal_gridsize = m_h / 16;
-    gridsize = 8;
-    while (gridsize < oprtimal_gridsize)
-      gridsize <<= 1;
-    if (gridsize - oprtimal_gridsize > oprtimal_gridsize - (gridsize >> 1))
-      gridsize >>= 1;
-  }
 
   // [RH] Calculate a minimum for how long the grid lines should be so that
   // they cover the screen at any rotation.
@@ -1493,7 +1474,7 @@ static void AM_drawGrid(int color)
     ml.b.x = x;
     ml.a.y = miny - exty;
     ml.b.y = ml.a.y + minlen;
-    if (automapmode & am_rotate)
+    if (automap_rotate)
     {
       AM_rotatePoint (&ml.a);
       AM_rotatePoint (&ml.b);
@@ -1519,7 +1500,7 @@ static void AM_drawGrid(int color)
     ml.b.x = ml.a.x + minlen;
     ml.a.y = y;
     ml.b.y = y;
-    if (automapmode & am_rotate)
+    if (automap_rotate)
     {
       AM_rotatePoint (&ml.a);
       AM_rotatePoint (&ml.b);
@@ -1580,7 +1561,7 @@ static void AM_drawWalls(void)
     l.b.x = lines[i].v2->x >> FRACTOMAPBITS;
     l.b.y = lines[i].v2->y >> FRACTOMAPBITS;
 
-    if (automapmode & am_rotate)
+    if (automap_rotate)
     {
       AM_rotatePoint(&l.a);
       AM_rotatePoint(&l.b);
@@ -1743,7 +1724,7 @@ static void AM_drawLineCharacter
   int   i;
   mline_t l;
 
-  if (automapmode & am_rotate) angle -= viewangle - ANG90; // cph
+  if (automap_rotate) angle -= viewangle - ANG90; // cph
 
   for (i=0;i<lineguylines;i++)
   {
@@ -1840,7 +1821,7 @@ static void AM_drawPlayers(void)
   {
     pt.x = viewx >> FRACTOMAPBITS;
     pt.y = viewy >> FRACTOMAPBITS;
-    if (automapmode & am_rotate)
+    if (automap_rotate)
       AM_rotatePoint(&pt);
     else
       AM_SetMPointFloatValue(&pt);
@@ -1862,7 +1843,7 @@ static void AM_drawPlayers(void)
     {
       AM_GetMobjPosition(p->mo, &pt, &angle);
 
-      if (automapmode & am_rotate)
+      if (automap_rotate)
         AM_rotatePoint(&pt);
       else
         AM_SetMPointFloatValue(&pt);
@@ -2034,7 +2015,7 @@ static void AM_ProcessNiceThing(mobj_t* mobj, angle_t angle, fixed_t x, fixed_t 
     return;
   }
 
-  ang = (rotate ? angle : 0) + ((automapmode & am_rotate) ? ANG90 - viewangle : 0);
+  ang = (rotate ? angle : 0) + (automap_rotate ? ANG90 - viewangle : 0);
   rot = -(float)ang / (float)(1u << 31) * (float)M_PI;
 
   gld_AddNiceThing(type, fx, fy, fradius, rot, r, g, b, a);
@@ -2063,7 +2044,7 @@ static void AM_DrawNiceThings(void)
     {
       t = players[i].mo;
       AM_GetMobjPosition(t, &p, &angle);
-      if (automapmode & am_rotate)
+      if (automap_rotate)
         AM_rotatePoint(&p);
       else
         AM_SetMPointFloatValue(&p);
@@ -2092,7 +2073,7 @@ static void AM_DrawNiceThings(void)
         if (!t->player)
         {
           AM_GetMobjPosition(t, &p, &angle);
-          if (automapmode & am_rotate)
+          if (automap_rotate)
             AM_rotatePoint(&p);
           AM_ProcessNiceThing(t, angle, p.x, p.y);
         }
@@ -2127,7 +2108,7 @@ static void AM_DrawNiceThings(void)
         p.x = markpoints[i].x;
         p.y = markpoints[i].y;
 
-        if (automapmode & am_rotate)
+        if (automap_rotate)
           AM_rotatePoint(&p);
         else
           AM_SetMPointFloatValue(&p);
@@ -2214,7 +2195,7 @@ static void AM_drawThings(void)
 
       AM_GetMobjPosition(t, &p, &angle);
 
-      if (automapmode & am_rotate)
+      if (automap_rotate)
         AM_rotatePoint(&p);
       else
         AM_SetMPointFloatValue(&p);
@@ -2308,7 +2289,7 @@ static void AM_drawMarks(void)
       p.x = markpoints[i].x;// - m_x + prev_m_x;
       p.y = markpoints[i].y;// - m_y + prev_m_y;
 
-      if (automapmode & am_rotate)
+      if (automap_rotate)
         AM_rotatePoint(&p);
       else
         AM_SetMPointFloatValue(&p);
@@ -2421,17 +2402,11 @@ static void AM_drawCrosshair(int color)
   V_DrawLine(&line, color);
 }
 
-void M_ChangeMapGridSize(void)
-{
-  if (map_grid_size > 0)
-  {
-    map_grid_size = MAX(map_grid_size, 8);
-  }
-}
-
 void M_ChangeMapTextured(void)
 {
-  if (V_IsOpenGLMode())
+  map_textured = dsda_IntConfig(dsda_config_map_textured);
+
+  if (in_game && gamestate == GS_LEVEL && V_IsOpenGLMode())
   {
     gld_ProcessTexturedMap();
   }
@@ -2439,7 +2414,9 @@ void M_ChangeMapTextured(void)
 
 void M_ChangeMapMultisamling(void)
 {
-  if (!raven && map_use_multisamling && V_IsSoftwareMode())
+  map_use_multisampling = dsda_IntConfig(dsda_config_map_use_multisamling);
+
+  if (!raven && map_use_multisampling && V_IsSoftwareMode())
   {
     V_InitFlexTranTable();
   }
@@ -2474,7 +2451,7 @@ static void AM_setFrameVariables(void)
   am_frame.centerx_f = (float)m_x + (float)m_w / 2.0f;
   am_frame.centery_f = (float)m_y + (float)m_h / 2.0f;
 
-  if (automapmode & am_rotate)
+  if (automap_rotate)
   {
     float dx = (float)(m_x2 - am_frame.centerx);
     float dy = (float)(m_y2 - am_frame.centery);
@@ -2506,11 +2483,10 @@ static void AM_setFrameVariables(void)
 
 void AM_Drawer (void)
 {
-  // CPhipps - all automap modes put into one enum
-  if (!(automapmode & am_active))
+  if (!automap_active)
     return;
 
-  if (automapmode & am_follow)
+  if (automap_follow)
     AM_doFollowPlayer();
 
   // Change the zoom if necessary
@@ -2525,11 +2501,11 @@ void AM_Drawer (void)
 
   if (V_IsOpenGLMode())
   {
-    // do not use multisampling in automap mode if map_use_multisamling 0
+    // do not use multisampling in automap mode if map_use_multisampling 0
     gld_MultisamplingSet();
   }
 
-  if (!(automapmode & am_overlay)) // cph - If not overlay mode, clear background for the automap
+  if (!automap_overlay) // cph - If not overlay mode, clear background for the automap
     V_FillRect(FB, f_x, f_y, f_w, f_h, (byte)(*mapcolor_back_p)); //jff 1/5/98 background default color
 
   if (map_textured)
@@ -2537,7 +2513,7 @@ void AM_Drawer (void)
     AM_drawSubsectors();
   }
 
-  if (automapmode & am_grid)
+  if (automap_grid)
     AM_drawGrid((*mapcolor_grid_p));      //jff 1/7/98 grid default color
   AM_drawWalls();
   AM_drawPlayers();

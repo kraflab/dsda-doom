@@ -16,8 +16,11 @@
 //
 
 #include <time.h>
+#include <string.h>
 
 #include "i_system.h"
+
+#include "dsda/configuration.h"
 
 #include "time.h"
 
@@ -87,15 +90,17 @@ static void dsda_Throttle(int timer, unsigned long long target_time) {
   }
 }
 
-int dsda_fps_limit;
-
 void dsda_LimitFPS(void) {
   extern int movement_smooth;
 
-  if (movement_smooth && dsda_fps_limit) {
+  int fps_limit;
+
+  fps_limit = dsda_IntConfig(dsda_config_fps_limit);
+
+  if (movement_smooth && fps_limit) {
     unsigned long long target_time;
 
-    target_time = 1000000 / dsda_fps_limit;
+    target_time = 1000000 / fps_limit;
 
     dsda_Throttle(dsda_timer_fps, target_time);
   }
@@ -193,4 +198,14 @@ void dsda_ResetTimeFunctions(int fastdemo) {
     dsda_GetTick = dsda_GetTickRealTime;
     dsda_TickElapsedTime = dsda_TickElapsedRealTime;
   }
+}
+
+void dsda_StrCatLocalTime(char* str) {
+  time_t now;
+  struct tm* local;
+
+  now = time(NULL);
+  local = localtime(&now);
+
+  strftime(str + strlen(str), 9, "%H:%M:%S", local);
 }

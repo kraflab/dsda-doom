@@ -108,5 +108,6 @@ void R_SetFloorNum(patchnum_t *patchnum, const char *name);
 int R_SetSpriteByIndex(patchnum_t *patchnum, spritenum_t item);
 int R_SetSpriteByName(patchnum_t *patchnum, const char *name);
 int R_SetPatchByName(patchnum_t *patchnum, const char *name);
+int R_NumPatchForSpriteIndex(spritenum_t item);
 
 #endif

@@ -46,8 +46,6 @@
 // VIDEO
 //
 
-extern const char *render_aspects_list[];
-
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
 // user preferences. The integer ratio is hardly used anymore, so further
@@ -75,7 +73,7 @@ typedef enum
   CR_GREEN,   //3
   CR_BROWN,   //4
   CR_GOLD,    //5
-  CR_RED,     //6
+  CR_DEFAULT, //6
   CR_BLUE,    //7
   CR_ORANGE,  //8
   CR_YELLOW,  //9
@@ -83,11 +81,10 @@ typedef enum
   CR_BLACK,   //11
   CR_PURPLE,  //12
   CR_WHITE,   //13
-  CR_LIMIT    //14 //jff 2/27/98 added for range check
+  CR_RED,     //14
+  CR_LIMIT    //15 //jff 2/27/98 added for range check
 } crange_idx_e;
 //jff 1/16/98 end palette color range additions
-
-#define CR_DEFAULT CR_RED   /* default value for out of range colors */
 
 typedef struct {
   byte *data;          // pointer to the screen content
@@ -126,8 +123,6 @@ typedef enum {
   VID_MODEMAX
 } video_mode_t;
 
-extern const char *default_videomode;
-
 void V_InitMode(video_mode_t mode);
 
 // video mode query interface
@@ -148,6 +143,8 @@ typedef void (*V_CopyRect_f)(int srcscrn, int destscrn,
                              int width, int height,
                              enum patch_translation_e flags);
 extern V_CopyRect_f V_CopyRect;
+
+void V_CopyScreen(int srcscrn, int destscrn);
 
 // V_FillRect
 typedef void (*V_FillRect_f)(int scrn, int x, int y,

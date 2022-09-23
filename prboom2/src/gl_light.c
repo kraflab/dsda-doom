@@ -47,15 +47,14 @@
 #include "gl_opengl.h"
 #include "e6y.h"
 
+#include "dsda/configuration.h"
+
 gl_lightmode_t gl_lightmode;
-gl_lightmode_t gl_lightmode_default;
-const char *gl_lightmodes[] = {"glboom", "shaders", "indexed"};
-int gl_light_ambient;
+const char *gl_lightmodes[] = {"glboom", "shaders", "indexed", NULL};
 int gl_rellight;
 
 int gl_fog;
 int gl_use_fog;
-int gl_fog_color;
 
 int gl_fogenabled;
 int gl_distfog = 70;
@@ -110,6 +109,8 @@ gld_CalcFogDensity_f gld_CalcFogDensity = gld_CalcFogDensity_glboom;
 
 void M_ChangeLightMode(void)
 {
+  gl_lightmode_t gl_lightmode_default = dsda_IntConfig(dsda_config_gl_lightmode);
+
   if (gl_lightmode_default == gl_lightmode_shaders || gl_lightmode_default == gl_lightmode_indexed)
   {
     if (!glsl_Init())
@@ -128,7 +129,7 @@ void M_ChangeLightMode(void)
 
   if (gl_hardware_gamma)
   {
-    gld_SetGammaRamp(useglgamma);
+    gld_SetGammaRamp(gl_usegamma);
   }
   else
   {
@@ -231,11 +232,6 @@ void M_ChangeAllowFog(void)
 {
   int i;
   GLfloat FogColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-  FogColor[0] = ((float)((gl_fog_color >> 16) & 0xff)) / 255.0f;
-  FogColor[1] = ((float)((gl_fog_color >>  8) & 0xff)) / 255.0f;
-  FogColor[2] = ((float)((gl_fog_color >>  0) & 0xff)) / 255.0f;
-  FogColor[3] = 0.0f;
 
   glFogi (GL_FOG_MODE, GL_EXP);
   glFogfv(GL_FOG_COLOR, FogColor);

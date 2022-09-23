@@ -685,13 +685,6 @@ static void P_XYMovement (mobj_t* mo)
       }
     }
   }
-
-  if (gl_use_motionblur && player == &players[displayplayer])
-  {
-    float dx = (float)(oldx - player->mo->x) / 65536.0f;
-    float dy = (float)(oldy - player->mo->y) / 65536.0f;
-    motion_blur.curr_speed_pow2 = dx * dx + dy * dy;
-  }
 }
 
 
@@ -2016,7 +2009,7 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   mobj->angle      = ANG45 * (mthing->angle/45);
   mobj->player     = p;
   mobj->health     = p->health;
-  mobj->player->prev_viewangle = mobj->angle + viewangleoffset;
+  mobj->player->prev_viewangle = mobj->angle;
 
   p->mo            = mobj;
   p->playerstate   = PST_LIVE;
