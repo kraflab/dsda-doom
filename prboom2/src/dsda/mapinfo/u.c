@@ -154,7 +154,7 @@ int dsda_UMapMusic(int* music_index, int* music_lump) {
 
   lump = W_CheckNumForName(gamemapinfo->music);
 
-  if (lump < 0)
+  if (lump == LUMP_NOT_FOUND)
     return false;
 
   *music_index = -1;
@@ -174,7 +174,7 @@ int dsda_UInterMusic(int* music_index, int* music_lump) {
 
   lump = W_CheckNumForName(gamemapinfo->intermusic);
 
-  if (lump < 0)
+  if (lump == LUMP_NOT_FOUND)
     return false;
 
   *music_index = -1;
@@ -206,8 +206,8 @@ int dsda_UStartFinale(void) {
     finaletext = "The End";
 
   if (gamemapinfo->interbackdrop[0]) {
-    if (W_CheckNumForName(gamemapinfo->interbackdrop) != -1 &&
-        (W_CheckNumForName)(gamemapinfo->interbackdrop, ns_flats) == -1)
+    if (W_LumpNameExists(gamemapinfo->interbackdrop) &&
+        !W_LumpNameExists2(gamemapinfo->interbackdrop, ns_flats))
       finalepatch = gamemapinfo->interbackdrop;
     else
       finaleflat = gamemapinfo->interbackdrop;

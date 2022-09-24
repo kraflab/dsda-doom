@@ -253,9 +253,11 @@ typedef enum {
   dsda_config_render_patches_scalex,
   dsda_config_render_patches_scaley,
   dsda_config_render_stretchsky,
+  dsda_config_boom_translucent_sprites,
   dsda_config_count,
 } dsda_config_identifier_t;
 
+void dsda_UpdateStrictMode(void);
 int dsda_MaxConfigLength(void);
 void dsda_InitConfig(void);
 dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_param);

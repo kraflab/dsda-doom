@@ -488,7 +488,7 @@ static void I_UploadNewPalette(int pal, int force)
     register int i;
 
     pplump = W_GetNumForName(playpal_data->lump_name);
-    gtlump = (W_CheckNumForName)("GAMMATBL", ns_prboom);
+    gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
     palette = (const byte*) W_LumpByNum(pplump);
     gtable = (const byte*) W_LumpByNum(gtlump) + 256 * (cachedgamma = usegamma);
 

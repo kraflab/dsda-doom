@@ -377,7 +377,7 @@ void P_InitFTAnims(void)
         ignore = false;
         if (ad->type == ANIM_FLAT)
         {
-            if ((W_CheckNumForName)(sc_String, ns_flats) == -1)
+            if (!W_LumpNameExists2(sc_String, ns_flats))
             {
                 ignore = true;
             }

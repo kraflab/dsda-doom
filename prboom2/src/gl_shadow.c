@@ -78,8 +78,8 @@ void gld_InitShadows(void)
 
   gld_ResetShadowParameters();
 
-  lump = (W_CheckNumForName)("GLSHADOW", ns_prboom);
-  if (lump != -1)
+  lump = W_CheckNumForName2("GLSHADOW", ns_prboom);
+  if (lump != LUMP_NOT_FOUND)
   {
     SDL_PixelFormat fmt;
     SDL_Surface *surf = NULL;

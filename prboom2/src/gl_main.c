@@ -276,7 +276,7 @@ int gld_LoadGLDefs(const char * defsLump)
 
   int result = false;
 
-  if (W_CheckNumForName(defsLump) != -1)
+  if (W_LumpNameExists(defsLump))
   {
     SC_OpenLump(defsLump);
 

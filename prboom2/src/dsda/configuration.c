@@ -124,6 +124,7 @@ void M_Trans(void);
 void M_ChangeApplyPalette(void);
 void M_ChangeStretch(void);
 void M_ChangeAspectRatio(void);
+void deh_changeCompTranslucency(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -1065,6 +1066,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_render_stretchsky] = {
     "render_stretchsky", dsda_config_render_stretchsky,
     CONF_BOOL(1)
+  },
+  [dsda_config_boom_translucent_sprites] = {
+    "boom_translucent_sprites", dsda_config_boom_translucent_sprites,
+    CONF_BOOL(1), NULL, 0, 0, deh_changeCompTranslucency
   },
 };
 

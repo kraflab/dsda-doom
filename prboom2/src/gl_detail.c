@@ -602,9 +602,9 @@ GLuint gld_LoadDetailName(const char *name)
   GLuint texid = 0;
   int lump;
 
-  lump = (W_CheckNumForName)(name, ns_hires);
+  lump = W_CheckNumForName2(name, ns_hires);
 
-  if (lump != -1)
+  if (lump != LUMP_NOT_FOUND)
   {
     SDL_PixelFormat fmt;
     SDL_Surface *surf = NULL;
@@ -725,7 +725,7 @@ void gld_ParseDetailItem(tag_detail_e item)
           detail.texture_num = R_CheckTextureNumForName(sc_String);
           break;
         case TAG_DETAIL_FLAT:
-          detail.texture_num = (W_CheckNumForName)(sc_String, ns_flats);
+          detail.texture_num = W_CheckNumForName2(sc_String, ns_flats);
           break;
         }
 

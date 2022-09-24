@@ -38,7 +38,7 @@ int dsda_LegacyFirstMap(int* episode, int* map) {
     for (i = 1; i < 33; i++) {
       lump = W_CheckNumForName(MAPNAME(1, i));
 
-      if (lump != -1 && lumpinfo[lump].source == source_pwad) {
+      if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source == source_pwad) {
         *map = i;
 
         return true;
@@ -50,7 +50,7 @@ int dsda_LegacyFirstMap(int* episode, int* map) {
       for (j = 1; j < 10; j++) {
         lump = W_CheckNumForName(MAPNAME(i, j));
 
-        if (lump != -1 && lumpinfo[lump].source == source_pwad) {
+        if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source == source_pwad) {
           *episode = i;
           *map = j;
 
@@ -202,7 +202,7 @@ static int dsda_CannotCLEV(int episode, int map) {
 
   // Catch invalid maps
   next = MAPNAME(episode, map);
-  if (W_CheckNumForName(next) == -1) {
+  if (!W_LumpNameExists(next)) {
     doom_printf("IDCLEV target not found: %s", next);
     return true;
   }

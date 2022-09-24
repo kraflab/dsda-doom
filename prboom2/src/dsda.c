@@ -65,6 +65,10 @@ static int line_activation[2][LINE_ACTIVATION_INDEX_MAX + 1];
 static int line_activation_frame;
 static int line_activation_index;
 
+static int dsda_time_keys;
+static int dsda_time_use;
+static int dsda_time_secrets;
+
 dboolean dsda_IsWeapon(mobj_t* thing);
 void dsda_DisplayNotification(const char* msg);
 void dsda_ResetMapVariables(void);
@@ -144,22 +148,23 @@ int dsda_StartInBuildMode(void) {
 
 void dsda_ReadCommandLine(void) {
   dsda_arg_t* arg;
+  int dsda_time_all;
 
   dsda_track_pacifist = dsda_Flag(dsda_arg_track_pacifist);
   dsda_track_100k = dsda_Flag(dsda_arg_track_100k);
   dsda_analysis = dsda_Flag(dsda_arg_analysis);
-  dsda_time_keys = dsda_Flag(dsda_arg_time_keys);
-  dsda_time_use = dsda_Flag(dsda_arg_time_use);
-  dsda_time_secrets = dsda_Flag(dsda_arg_time_secrets);
-  dsda_time_all = dsda_Flag(dsda_arg_time_all);
+  dsda_time_keys = dsda_SimpleIntArg(dsda_arg_time_keys);
+  dsda_time_use = dsda_SimpleIntArg(dsda_arg_time_use);
+  dsda_time_secrets = dsda_SimpleIntArg(dsda_arg_time_secrets);
+  dsda_time_all = dsda_SimpleIntArg(dsda_arg_time_all);
 
   if ((arg = dsda_Arg(dsda_arg_movie))->found)
     dsda_movie_target = arg->value.v_int;
 
   if (dsda_time_all) {
-    dsda_time_keys = true;
-    dsda_time_use = true;
-    dsda_time_secrets = true;
+    dsda_time_keys = dsda_time_all;
+    dsda_time_use = dsda_time_all;
+    dsda_time_secrets = dsda_time_all;
   }
 
   arg = dsda_Arg(dsda_arg_export_ghost);
@@ -223,15 +228,15 @@ void dsda_WatchCard(card_t card) {
     switch (card) {
       case it_bluecard:
       case it_blueskull:
-        dsda_AddSplit(DSDA_SPLIT_BLUE_KEY);
+        dsda_AddSplit(DSDA_SPLIT_BLUE_KEY, dsda_time_keys);
         break;
       case it_yellowcard:
       case it_yellowskull:
-        dsda_AddSplit(DSDA_SPLIT_YELLOW_KEY);
+        dsda_AddSplit(DSDA_SPLIT_YELLOW_KEY, dsda_time_keys);
         break;
       case it_redcard:
       case it_redskull:
-        dsda_AddSplit(DSDA_SPLIT_RED_KEY);
+        dsda_AddSplit(DSDA_SPLIT_RED_KEY, dsda_time_keys);
         break;
       default:
         break;
@@ -380,7 +385,7 @@ void dsda_WatchCommand(void) {
     player_class = &pclass[players[i].pclass];
 
     if (cmd->buttons & BT_USE && dsda_time_use)
-      dsda_AddSplit(DSDA_SPLIT_USE);
+      dsda_AddSplit(DSDA_SPLIT_USE, dsda_time_use);
 
     if (cmd->sidemove != 0 || abs(cmd->forwardmove) > player_class->stroller_threshold)
       dsda_stroller = false;
@@ -484,7 +489,8 @@ void dsda_WatchWeaponFire(weapontype_t weapon) {
 }
 
 void dsda_WatchSecret(void) {
-  if (dsda_time_secrets) dsda_AddSplit(DSDA_SPLIT_SECRET);
+  if (dsda_time_secrets)
+    dsda_AddSplit(DSDA_SPLIT_SECRET, dsda_time_secrets);
 }
 
 static void dsda_ResetTracking(void) {

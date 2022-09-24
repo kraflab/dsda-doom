@@ -45,6 +45,6 @@ void dsda_InitHud(patchnum_t* font);
 void dsda_UpdateHud(void);
 void dsda_DrawHud(void);
 void dsda_EraseHud(void);
-void dsda_AddSplit(dsda_split_class_t split_class);
+void dsda_AddSplit(dsda_split_class_t split_class, int lifetime);
 
 #endif

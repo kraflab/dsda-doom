@@ -522,7 +522,7 @@ void WI_drawLF(void)
     else
       WI_levelNameLump(wbs->epsd, wbs->last, lname);
 
-    if (W_CheckNumForName(lname) == -1)
+    if (!W_LumpNameExists(lname))
       return;
 
     // CPhipps - patch drawing updated
@@ -577,7 +577,7 @@ void WI_drawEL(void)
     else
       WI_levelNameLump(wbs->nextep, wbs->next, lname);
 
-    if (W_CheckNumForName(lname) == -1)
+    if (!W_LumpNameExists(lname))
       return;
 
     // draw level
