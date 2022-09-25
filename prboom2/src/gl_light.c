@@ -136,6 +136,10 @@ void M_ChangeLightMode(void)
     gld_SetGammaRamp(-1);
     gld_FlushTextures();
   }
+
+  // [XA] recalculate skymode since it depends
+  // on whether or not indexed mode is set
+  M_ChangeSkyMode();
 }
 
 void gld_InitLightTable(void)

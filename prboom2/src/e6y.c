@@ -276,7 +276,7 @@ void M_ChangeSpeed(void)
   G_SetSpeed(true);
 }
 
-void M_ChangeMouseLook(void)
+void M_ChangeSkyMode(void)
 {
   int gl_skymode;
 
@@ -286,7 +286,11 @@ void M_ChangeMouseLook(void)
 
   gl_skymode = dsda_IntConfig(dsda_config_gl_skymode);
 
-  if (gl_skymode == skytype_auto)
+  // [XA] always force the standard (strips)
+  // sky for the indexed lightmode.
+  if (gl_lightmode == gl_lightmode_indexed)
+    gl_drawskys = skytype_standard;
+  else if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;

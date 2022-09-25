@@ -5400,7 +5400,7 @@ void M_Init(void)
   //e6y
   M_ChangeSpeed();
   M_ChangeMaxViewPitch();
-  M_ChangeMouseLook();
+  M_ChangeSkyMode();
   M_ChangeFOV();
   M_ChangeAllowBoomColormaps();
 
