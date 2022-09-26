@@ -1095,21 +1095,23 @@ static void dsda_PropagateIntConfig(dsda_config_t* conf) {
 }
 
 // No side effects
-static void dsda_InitIntConfig(dsda_config_t* conf, int value) {
+static void dsda_InitIntConfig(dsda_config_t* conf, int value, dboolean persist) {
   conf->transient_value.v_int = value;
 
   dsda_ConstrainIntConfig(conf);
-  dsda_PersistIntConfig(conf);
+  if (persist)
+    dsda_PersistIntConfig(conf);
   dsda_PropagateIntConfig(conf);
 }
 
 // No side effects
-static void dsda_InitStringConfig(dsda_config_t* conf, const char* value) {
+static void dsda_InitStringConfig(dsda_config_t* conf, const char* value, dboolean persist) {
   if (conf->transient_value.v_string)
     Z_Free(conf->transient_value.v_string);
 
   conf->transient_value.v_string = Z_Strdup(value);
-  dsda_PersistStringConfig(conf);
+  if (persist)
+    dsda_PersistStringConfig(conf);
 }
 
 int dsda_MaxConfigLength(void) {
@@ -1138,9 +1140,9 @@ void dsda_InitConfig(void) {
     conf = &dsda_config[i];
 
     if (conf->type == dsda_config_int)
-      dsda_InitIntConfig(conf, conf->default_value.v_int);
+      dsda_InitIntConfig(conf, conf->default_value.v_int, true);
     else if (conf->type == dsda_config_string)
-      dsda_InitStringConfig(conf, conf->default_value.v_string);
+      dsda_InitStringConfig(conf, conf->default_value.v_string, true);
   }
 }
 
@@ -1155,9 +1157,9 @@ dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_par
     conf = &dsda_config[id];
 
     if (conf->type == dsda_config_int && !string_param)
-      dsda_InitIntConfig(conf, int_param);
+      dsda_InitIntConfig(conf, int_param, true);
     else if (conf->type == dsda_config_string && string_param)
-      dsda_InitStringConfig(conf, string_param);
+      dsda_InitStringConfig(conf, string_param, true);
 
     return true;
   }
