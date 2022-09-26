@@ -381,6 +381,8 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean inde
 void gld_BindPatch(GLTexture *gltexture, int cm);
 GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed);
 void gld_BindFlat(GLTexture *gltexture, unsigned int flags);
+GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force);
+void gld_BindSkyTexture(GLTexture *gltexture);
 GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level);
 void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level);
 void gld_InitColormapTextures(void);

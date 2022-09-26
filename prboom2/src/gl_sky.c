@@ -186,8 +186,8 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
   {
     s = *l->sidenum + sides;
     SkyBox.side = s;
-    wall->gltexture = gld_RegisterTexture(texturetranslation[s->toptexture], false,
-      texturetranslation[s->toptexture] == skytexture || l->special == 271 || l->special == 272, false);
+    wall->gltexture = gld_RegisterSkyTexture(texturetranslation[s->toptexture],
+      texturetranslation[s->toptexture] == skytexture || l->special == 271 || l->special == 272);
     if (wall->gltexture)
     {
       if (!mlook_or_fov)
@@ -205,7 +205,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
   }
   else
   {
-    wall->gltexture = gld_RegisterTexture(skytexture, false, true, false);
+    wall->gltexture = gld_RegisterSkyTexture(skytexture, true);
     if (wall->gltexture)
     {
       wall->skyyaw  = skyXShift;
@@ -285,7 +285,7 @@ void gld_DrawStripsSky(void)
     GLWall *wall = gld_drawinfo.items[GLDIT_SWALL][i].item.wall;
 
     gltexture = (gl_drawskys == skytype_none ? NULL : wall->gltexture);
-    gld_BindTexture(gltexture, 0);
+    gld_BindSkyTexture(gltexture);
 
     if (!gltexture)
     {
