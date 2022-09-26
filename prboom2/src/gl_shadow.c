@@ -250,7 +250,6 @@ void gld_RenderShadows(void)
   gl_EnableFog(false);
 
   glDepthMask(GL_FALSE);
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE);
   glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
   // Apply a modelview shift.
@@ -274,6 +273,5 @@ void gld_RenderShadows(void)
 
   glPopMatrix();
   glDepthMask(GL_TRUE);
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
