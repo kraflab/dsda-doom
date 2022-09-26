@@ -23,13 +23,16 @@
 #include "hu_stuff.h"
 #include "g_overflow.h"
 #include "gl_struct.h"
+#include "lprintf.h"
 #include "r_demo.h"
 #include "s_sound.h"
 #include "v_video.h"
 #include "z_zone.h"
 
+#include "dsda/args.h"
 #include "dsda/input.h"
 #include "dsda/stretch.h"
+#include "dsda/utility.h"
 
 #include "configuration.h"
 
@@ -1176,6 +1179,52 @@ void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file) {
     fprintf(file, "%-*s %i\n", key_length, conf->name, conf->persistent_value.v_int);
   else if (conf->type == dsda_config_string)
     fprintf(file, "%-*s \"%s\"\n", key_length, conf->name, conf->persistent_value.v_string);
+}
+
+static void dsda_ParseConfigArg(int arg_id, dboolean persist) {
+  dsda_arg_t* arg;
+
+  arg = dsda_Arg(arg_id);
+  if (arg->found) {
+    int i;
+
+    for (i = 0; i < arg->count; ++i) {
+      int id;
+      dsda_config_t* conf;
+      char* pair;
+      char** key_value;
+
+      pair = Z_Strdup(arg->value.v_string_array[i]);
+      key_value = dsda_SplitString(pair, "=");
+      if (!key_value[0] || !key_value[1])
+        I_Error("Invalid config variable assignment \"%s\" (use key=value)", pair);
+
+      id = dsda_ConfigIDByName(key_value[0]);
+      if (!id)
+        I_Error("Unknown config variable \"%s\"", key_value[0]);
+
+      conf = &dsda_config[id];
+      if (conf->type == dsda_config_int) {
+        int value;
+
+        if (sscanf(key_value[1], "%i", &value) != 1)
+          I_Error("Config variable \"%s\" requires an integer value", key_value[0]);
+
+        dsda_InitIntConfig(conf, value, persist);
+      }
+      else {
+        dsda_InitStringConfig(conf, key_value[1], persist);
+      }
+
+      Z_Free(pair);
+      Z_Free(key_value);
+    }
+  }
+}
+
+void dsda_ApplyAdHocConfiguration(void) {
+  dsda_ParseConfigArg(dsda_arg_update, true);
+  dsda_ParseConfigArg(dsda_arg_assign, false);
 }
 
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist) {

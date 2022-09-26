@@ -67,6 +67,8 @@ typedef enum {
   dsda_arg_track_line_distance,
   dsda_arg_track_sector,
   dsda_arg_track_mobj,
+  dsda_arg_assign,
+  dsda_arg_update,
   dsda_arg_analysis,
   dsda_arg_levelstat,
   dsda_arg_export_text_file,

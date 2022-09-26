@@ -850,6 +850,8 @@ void M_LoadDefaults (void)
   Z_Free(strparm);
   Z_Free(cfgline);
 
+  dsda_ApplyAdHocConfiguration();
+
   dsda_InitSettings();
 
   //e6y: Check on existence of dsda-doom.wad
