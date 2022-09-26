@@ -275,7 +275,7 @@ static GLTexture *gld_AddNewGLPatchTexture(int lump, dboolean indexed)
 
 static GLTexture *gld_AddNewGLColormapTexture(int palette_index, int gamma_level)
 {
-  return gld_AddNewGLTexItem(palette_index + (gamma_level * NUM_GAMMA_LEVELS), gld_numGLColormaps, &gld_GLColormapTextures);
+  return gld_AddNewGLTexItem(palette_index + (gamma_level * V_GetPlaypalCount()), gld_numGLColormaps, &gld_GLColormapTextures);
 }
 
 // [XA] adds a memory-contiguous batch of sky textures,
