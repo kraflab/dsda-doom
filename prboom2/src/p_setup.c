@@ -1717,7 +1717,7 @@ static void P_LoadLineDefs (int lump)
         if ((ld->sidenum[1] == NO_INDEX) && (ld->flags & ML_TWOSIDED)) {
           // e6y
           // ML_TWOSIDED flag shouldn't be cleared for compatibility purposes
-          // see CLNJ-506.LMP at http://doomedsda.us/wad1005.html
+          // see CLNJ-506.LMP at https://dsdarchive.com/wads/challenj
           MissedBackSideOverrun(ld);
           if (!demo_compatibility || !EMULATE(OVERFLOW_MISSEDBACKSIDE))
           {
