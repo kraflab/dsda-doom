@@ -87,7 +87,7 @@ int mapcolor_frnd;    // friendly sprite color
 int mapcolor_enemy;   // enemy sprite color
 int mapcolor_hair;    // crosshair color
 int mapcolor_sngl;    // single player arrow color
-int mapcolor_plyr[4] = { 112, 88, 64, 32 }; // colors for player arrows in multiplayer
+int mapcolor_plyr[4] = { 112, 96, 64, 176 }; // colors for player arrows in multiplayer
 
 static int heretic_mapcolor_back = 13 * 8 - 1;
 static int heretic_mapcolor_grid = 5 * 8;

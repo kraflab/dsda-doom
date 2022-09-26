@@ -358,6 +358,9 @@ void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars) {
 
 byte playernumtotrans[MAX_MAXPLAYERS];
 
+// HERETIC_TODO: player colors
+const byte player_colors[] = { 0x70, 0x60, 0x40, 0x20 };
+
 void R_InitTranslationTables (void)
 {
   int i, j;
@@ -390,12 +393,14 @@ void R_InitTranslationTables (void)
   for (i=0; i<MAXTRANS; i++) transtocolour[i] = 255;
 
   for (i = 0; i < g_maxplayers; i++) {
-    byte wantcolour = mapcolor_plyr[i];
+    byte wantcolour = player_colors[i];
     playernumtotrans[i] = 0;
     if (wantcolour != 0x70) // Not green, would like translation
-      for (j=0; j<MAXTRANS; j++)
+      for (j = 0; j < MAXTRANS; j++)
         if (transtocolour[j] == 255) {
-          transtocolour[j] = wantcolour; playernumtotrans[i] = j+1; break;
+          transtocolour[j] = wantcolour;
+          playernumtotrans[i] = j + 1;
+          break;
         }
   }
 
