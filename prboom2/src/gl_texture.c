@@ -293,10 +293,8 @@ static GLTexture *gld_AddNewGLIndexedSkyTextures(int texture_num)
   return gld_GLIndexedSkyTextures[baseTextureNum];
 }
 
-// [XA] TODO: probably consolidate all these functions and get better names :P
-// [XA] TODO: document all these
-
-static GLTexture *gld_GetGLIndexedSkyTextureByTextureNum(int texture_num, int index)
+// [XA] returns a specific indexed sky texture from a set.
+static GLTexture *gld_GetGLIndexedSkyTexture(int texture_num, int index)
 {
   if (texture_num < 0 || texture_num >= numtextures)
     return NULL;
@@ -304,22 +302,10 @@ static GLTexture *gld_GetGLIndexedSkyTextureByTextureNum(int texture_num, int in
   return gld_GLIndexedSkyTextures[texture_num * gld_numGLColormaps + index];
 }
 
-static GLTexture *gld_GetGLIndexedSkyTextureByIndex(GLTexture *basetexture, int index)
-{
-  if (basetexture == NULL)
-    return basetexture;
-
-  return gld_GetGLIndexedSkyTextureByTextureNum(basetexture->index, index);
-}
-
-static GLTexture *gld_GetGLIndexedSkyTexture(GLTexture *basetexture, int palette_index, int gamma_level)
-{
-  return gld_GetGLIndexedSkyTextureByIndex(basetexture, palette_index * NUM_GAMMA_LEVELS + gamma_level);
-}
-
+// [XA] returns the indexed sky texture for the current palette & gamma level.
 static GLTexture *gld_GetCurrentGLIndexedSkyTexture(GLTexture *basetexture)
 {
-  return gld_GetGLIndexedSkyTexture(basetexture, gld_paletteIndex, usegamma);
+  return gld_GetGLIndexedSkyTexture(basetexture->index, gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma);
 }
 
 void gld_SetTexturePalette(GLenum target)
@@ -744,20 +730,16 @@ static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buff
   gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
   gtable = (const byte*)W_LumpByNum(gtlump) + 256 * gamma_level;
 
-  // [XA] TODO: refactor this out
-  int originx = 0;
-  int originy = 0;
-
   xs=0;
   xe=patch->width;
-  if ((xs+originx)>=gltexture->realtexwidth)
+  if (xs>=gltexture->realtexwidth)
     return;
-  if ((xe+originx)<=0)
+  if (xe<=0)
     return;
-  if ((xs+originx)<0)
-    xs=-originx;
-  if ((xe+originx)>gltexture->realtexwidth)
-    xe+=(gltexture->realtexwidth-(xe+originx));
+  if (xs<0)
+    xs=0;
+  if (xe>gltexture->realtexwidth)
+    xe+=(gltexture->realtexwidth-xe);
 
   //e6y
   if (patch->flags&PATCH_HASHOLES)
@@ -775,7 +757,7 @@ static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buff
     column = &patch->columns[x];
     for (i=0; i<column->numPosts; i++) {
       const rpost_t *post = &column->posts[i];
-      y=(post->topdelta+originy);
+      y=(post->topdelta);
       js=0;
       je=post->length;
       if ((js+y)>=gltexture->realtexheight)
@@ -787,7 +769,7 @@ static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buff
       if ((je+y)>gltexture->realtexheight)
         je+=(gltexture->realtexheight-(je+y));
       source = column->pixels + post->topdelta;
-      pos=4*(((js+y)*gltexture->buffer_width)+x+originx);
+      pos=4*(((js+y)*gltexture->buffer_width)+x);
       for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
       {
 #ifdef RANGECHECK
@@ -1494,7 +1476,7 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
   // [XA] initialize all textures in the set.
   for(i = 0; i < gld_numGLColormaps; i++)
   {
-    gltexture = gld_GetGLIndexedSkyTextureByTextureNum(texture_num, i);
+    gltexture = gld_GetGLIndexedSkyTexture(texture_num, i);
     if (gltexture->textype==GLDT_UNREGISTERED)
     {
       texture_t *texture=NULL;
