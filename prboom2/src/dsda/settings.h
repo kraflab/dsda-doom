@@ -44,7 +44,6 @@ dboolean dsda_SwitchWhenAmmoRunsOut(void);
 dboolean dsda_SkipQuitPrompt(void);
 dboolean dsda_TrackSplits(void);
 dboolean dsda_ShowSplitData(void);
-dboolean dsda_ExHud(void);
 dboolean dsda_CommandDisplay(void);
 dboolean dsda_CoordinateDisplay(void);
 dboolean dsda_ShowFPS(void);

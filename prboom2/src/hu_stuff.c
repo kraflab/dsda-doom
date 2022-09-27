@@ -666,7 +666,7 @@ void HU_Drawer(void)
   if (automap_active)
   {
     // Hide title if automap in overlay mode and adv / ex hud is active
-    if (!automap_overlay || (R_PartialView() && !dsda_ExHud()))
+    if (!automap_overlay)
     {
       // map title
       HUlib_drawTextLine(&w_title, false);

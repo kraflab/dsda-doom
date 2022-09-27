@@ -262,6 +262,9 @@ void dsda_InitExHud(void) {
   if (R_FullView() && !dsda_IntConfig(dsda_config_hud_displayed))
     return;
 
+  if (R_PartialView() && !dsda_IntConfig(dsda_config_exhud))
+    return;
+
   hud_config = dsda_HUDConfig();
 
   if (!hud_config)

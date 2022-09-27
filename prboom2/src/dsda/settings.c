@@ -186,10 +186,6 @@ dboolean dsda_ShowSplitData(void) {
   return dsda_IntConfig(dsda_config_show_split_data);
 }
 
-dboolean dsda_ExHud(void) {
-  return dsda_IntConfig(dsda_config_exhud);
-}
-
 dboolean dsda_CommandDisplay(void) {
   return dsda_IntConfig(dsda_config_command_display);
 }
