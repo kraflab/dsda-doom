@@ -843,6 +843,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_hide_horns", dsda_config_hide_horns,
     CONF_BOOL(0)
   },
+  [dsda_config_hide_weapon] = {
+    "dsda_hide_weapon", dsda_config_hide_weapon,
+    CONF_BOOL(0), NULL, CONF_STRICT, 0
+  },
   [dsda_config_organized_saves] = {
     "dsda_organized_saves", dsda_config_organized_saves,
     CONF_BOOL(1)

@@ -353,6 +353,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_wipe_at_full_speed),
   MIGRATED_SETTING(dsda_config_show_demo_attempts),
   MIGRATED_SETTING(dsda_config_hide_horns),
+  MIGRATED_SETTING(dsda_config_hide_weapon),
   MIGRATED_SETTING(dsda_config_organized_saves),
   MIGRATED_SETTING(dsda_config_command_display),
   MIGRATED_SETTING(dsda_config_command_history_size),

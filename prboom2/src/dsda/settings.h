@@ -40,6 +40,7 @@ dboolean dsda_ProcessCheatCodes(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_HideHorns(void);
+dboolean dsda_HideWeapon(void);
 dboolean dsda_SwitchWhenAmmoRunsOut(void);
 dboolean dsda_SkipQuitPrompt(void);
 dboolean dsda_TrackSplits(void);

@@ -170,6 +170,10 @@ dboolean dsda_HideHorns(void) {
   return dsda_IntConfig(dsda_config_hide_horns);
 }
 
+dboolean dsda_HideWeapon(void) {
+  return dsda_IntConfig(dsda_config_hide_weapon);
+}
+
 dboolean dsda_SwitchWhenAmmoRunsOut(void) {
   return dsda_IntConfig(dsda_config_switch_when_ammo_runs_out);
 }

@@ -197,6 +197,7 @@ typedef enum {
   dsda_config_wipe_at_full_speed,
   dsda_config_show_demo_attempts,
   dsda_config_hide_horns,
+  dsda_config_hide_weapon,
   dsda_config_organized_saves,
   dsda_config_command_history_size,
   dsda_config_hide_empty_commands,
