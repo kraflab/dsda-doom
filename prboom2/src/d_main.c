@@ -90,6 +90,7 @@
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
+#include "dsda/features.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
@@ -237,6 +238,8 @@ static void D_Wipe(void)
   //e6y
   if (!dsda_RenderWipeScreen() || dsda_SkipWipe())
   {
+    dsda_TrackFeature(UF_WIPESCREEN);
+
     // If there's no screen wipe, we still need to refresh the status bar
     SB_Start();
     return;
