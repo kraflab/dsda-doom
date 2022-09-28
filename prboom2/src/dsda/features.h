@@ -26,6 +26,7 @@ typedef uint_64_t dsda_feature_t;
 #define UF_ADVHUD          (dsda_feature_t) 0x00000004
 #define UF_CROSSHAIR       (dsda_feature_t) 0x00000008
 #define UF_QUICKSTARTCACHE (dsda_feature_t) 0x00000010
+#define UF_100K            (dsda_feature_t) 0x00000020
 
 #define UF_IDDT            (dsda_feature_t) 0x0000000100000000
 #define UF_AUTOMAP         (dsda_feature_t) 0x0000000200000000
