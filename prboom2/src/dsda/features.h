@@ -36,6 +36,7 @@ typedef uint_64_t dsda_feature_t;
 #define UF_TRACKER         (dsda_feature_t) 0x0000004000000000
 #define UF_KEYFRAME        (dsda_feature_t) 0x0000008000000000
 #define UF_SKIP            (dsda_feature_t) 0x0000010000000000
+#define UF_WIPESCREEN      (dsda_feature_t) 0x0000020000000000
 // #define UF_SPEEDUP         (dsda_feature_t) 0x0000000000000000
 // #define UF_SLOWDOWN        (dsda_feature_t) 0x0000000000000000
 // #define UF_COORDINATES     (dsda_feature_t) 0x0000000000000000
@@ -51,6 +52,8 @@ typedef uint_64_t dsda_feature_t;
 // #define UF_HEALTHBAR       (dsda_feature_t) 0x0000000000000000
 // #define UF_SHOWALIVE       (dsda_feature_t) 0x0000000000000000
 // #define UF_ALWAYSSR50      (dsda_feature_t) 0x0000000000000000
+// #define UF_MAXPLAYERCORPSE (dsda_feature_t) 0x0000000000000000
+// #define UF_HIDEWEAPON      (dsda_feature_t) 0x0000000000000000
 
 void dsda_TrackFeature(dsda_feature_t feature);
 void dsda_ResetFeatures(void);
