@@ -25,11 +25,13 @@
 #include "gl_struct.h"
 #include "lprintf.h"
 #include "r_demo.h"
+#include "r_main.h"
 #include "s_sound.h"
 #include "v_video.h"
 #include "z_zone.h"
 
 #include "dsda/args.h"
+#include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/stretch.h"
 #include "dsda/utility.h"
@@ -142,6 +144,65 @@ void dsda_UpdateStrictMode(void) {
   M_ChangeMouseLook();
   HU_init_crosshair();
   M_ChangeApplyPalette();
+}
+
+static void dsda_TrackConfigFeatures(void) {
+  if (R_PartialView() && dsda_IntConfig(dsda_config_exhud))
+    dsda_TrackFeature(UF_EXHUD);
+
+  if (R_FullView() && dsda_IntConfig(dsda_config_hud_displayed))
+    dsda_TrackFeature(UF_ADVHUD);
+
+  if (dsda_IntConfig(dsda_config_realtic_clock_rate) > 100)
+    dsda_TrackFeature(UF_SPEEDUP);
+
+  if (dsda_IntConfig(dsda_config_realtic_clock_rate) < 100)
+    dsda_TrackFeature(UF_SLOWDOWN);
+
+  if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_point_coord))
+    dsda_TrackFeature(UF_COORDINATES);
+
+  if (dsda_IntConfig(dsda_config_mouselook))
+    dsda_TrackFeature(UF_MOUSELOOK);
+
+  if (dsda_IntConfig(dsda_config_weapon_attack_alignment))
+    dsda_TrackFeature(UF_WEAPONALIGNMENT);
+
+  if (dsda_IntConfig(dsda_config_command_display))
+    dsda_TrackFeature(UF_COMMANDDISPLAY);
+
+  if (dsda_IntConfig(dsda_config_hudadd_crosshair))
+    dsda_TrackFeature(UF_CROSSHAIR);
+
+  if (dsda_IntConfig(dsda_config_hudadd_crosshair_target))
+    dsda_TrackFeature(UF_CROSSHAIRCOLOR);
+
+  if (dsda_IntConfig(dsda_config_hudadd_crosshair_lock_target))
+    dsda_TrackFeature(UF_CROSSHAIRLOCK);
+
+  if (dsda_IntConfig(dsda_config_gl_shadows))
+    dsda_TrackFeature(UF_SHADOWS);
+
+  if (!dsda_IntConfig(dsda_config_palette_ondamage))
+    dsda_TrackFeature(UF_PAINPALETTE);
+
+  if (!dsda_IntConfig(dsda_config_palette_onbonus))
+    dsda_TrackFeature(UF_BONUSPALETTE);
+
+  if (!dsda_IntConfig(dsda_config_palette_onpowers))
+    dsda_TrackFeature(UF_POWERPALETTE);
+
+  if (dsda_IntConfig(dsda_config_gl_health_bar))
+    dsda_TrackFeature(UF_HEALTHBAR);
+
+  if (dsda_IntConfig(dsda_config_movement_strafe50))
+    dsda_TrackFeature(UF_ALWAYSSR50);
+
+  if (dsda_IntConfig(dsda_config_max_player_corpse) != 32)
+    dsda_TrackFeature(UF_MAXPLAYERCORPSE);
+
+  if (dsda_IntConfig(dsda_config_hide_weapon))
+    dsda_TrackFeature(UF_HIDEWEAPON);
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {

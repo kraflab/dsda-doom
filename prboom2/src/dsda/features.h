@@ -19,13 +19,13 @@
 
 typedef uint_64_t dsda_feature_t;
 
-// TODO: commented features require configuration refactor
-
 #define UF_NONE 0
 
 #define UF_MENU            (dsda_feature_t) 0x00000001
-// #define UF_EXHUD           (dsda_feature_t) 0x00000000
-// #define UF_ADVHUD          (dsda_feature_t) 0x00000000
+#define UF_EXHUD           (dsda_feature_t) 0x00000002
+#define UF_ADVHUD          (dsda_feature_t) 0x00000004
+#define UF_CROSSHAIR       (dsda_feature_t) 0x00000008
+#define UF_QUICKSTARTCACHE (dsda_feature_t) 0x00000010
 
 #define UF_IDDT            (dsda_feature_t) 0x0000000100000000
 #define UF_AUTOMAP         (dsda_feature_t) 0x0000000200000000
@@ -37,23 +37,23 @@ typedef uint_64_t dsda_feature_t;
 #define UF_KEYFRAME        (dsda_feature_t) 0x0000008000000000
 #define UF_SKIP            (dsda_feature_t) 0x0000010000000000
 #define UF_WIPESCREEN      (dsda_feature_t) 0x0000020000000000
-// #define UF_SPEEDUP         (dsda_feature_t) 0x0000000000000000
-// #define UF_SLOWDOWN        (dsda_feature_t) 0x0000000000000000
-// #define UF_COORDINATES     (dsda_feature_t) 0x0000000000000000
-// #define UF_MOUSELOOK       (dsda_feature_t) 0x0000000000000000
-// #define UF_WEAPONALIGNMENT (dsda_feature_t) 0x0000000000000000
-// #define UF_COMMANDDISPLAY  (dsda_feature_t) 0x0000000000000000
-// #define UF_CROSSHAIRCOLOR  (dsda_feature_t) 0x0000000000000000
-// #define UF_CROSSHAIRLOCK   (dsda_feature_t) 0x0000000000000000
-// #define UF_SHADOWS         (dsda_feature_t) 0x0000000000000000
-// #define UF_PAINPALETTE     (dsda_feature_t) 0x0000000000000000
-// #define UF_BONUSPALETTE    (dsda_feature_t) 0x0000000000000000
-// #define UF_POWERPALETTE    (dsda_feature_t) 0x0000000000000000
-// #define UF_HEALTHBAR       (dsda_feature_t) 0x0000000000000000
+#define UF_SPEEDUP         (dsda_feature_t) 0x0000040000000000
+#define UF_SLOWDOWN        (dsda_feature_t) 0x0000080000000000
+#define UF_COORDINATES     (dsda_feature_t) 0x0000100000000000
+#define UF_MOUSELOOK       (dsda_feature_t) 0x0000200000000000
+#define UF_WEAPONALIGNMENT (dsda_feature_t) 0x0000400000000000
+#define UF_COMMANDDISPLAY  (dsda_feature_t) 0x0000800000000000
+#define UF_CROSSHAIRCOLOR  (dsda_feature_t) 0x0001000000000000
+#define UF_CROSSHAIRLOCK   (dsda_feature_t) 0x0002000000000000
+#define UF_SHADOWS         (dsda_feature_t) 0x0004000000000000
+#define UF_PAINPALETTE     (dsda_feature_t) 0x0008000000000000
+#define UF_BONUSPALETTE    (dsda_feature_t) 0x0010000000000000
+#define UF_POWERPALETTE    (dsda_feature_t) 0x0020000000000000
+#define UF_HEALTHBAR       (dsda_feature_t) 0x0040000000000000
+#define UF_ALWAYSSR50      (dsda_feature_t) 0x0080000000000000
+#define UF_MAXPLAYERCORPSE (dsda_feature_t) 0x0100000000000000
+#define UF_HIDEWEAPON      (dsda_feature_t) 0x0200000000000000
 // #define UF_SHOWALIVE       (dsda_feature_t) 0x0000000000000000
-// #define UF_ALWAYSSR50      (dsda_feature_t) 0x0000000000000000
-// #define UF_MAXPLAYERCORPSE (dsda_feature_t) 0x0000000000000000
-// #define UF_HIDEWEAPON      (dsda_feature_t) 0x0000000000000000
 
 void dsda_TrackFeature(dsda_feature_t feature);
 void dsda_ResetFeatures(void);
