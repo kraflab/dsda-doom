@@ -40,7 +40,7 @@ typedef uint_64_t dsda_feature_t;
 // #define UF_SPEEDUP         (dsda_feature_t) 0x0000000000000000
 // #define UF_SLOWDOWN        (dsda_feature_t) 0x0000000000000000
 // #define UF_COORDINATES     (dsda_feature_t) 0x0000000000000000
-// #define UF_MLOOK           (dsda_feature_t) 0x0000000000000000
+// #define UF_MOUSELOOK       (dsda_feature_t) 0x0000000000000000
 // #define UF_WEAPONALIGNMENT (dsda_feature_t) 0x0000000000000000
 // #define UF_COMMANDDISPLAY  (dsda_feature_t) 0x0000000000000000
 // #define UF_CROSSHAIRCOLOR  (dsda_feature_t) 0x0000000000000000
