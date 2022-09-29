@@ -200,7 +200,7 @@ void dsda_DisplayNotifications(void) {
   }
 
   if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {
-    dsda_TrackFeature(UF_100K);
+    dsda_TrackFeature(uf_100k);
 
     dsda_100k_note_shown = true;
     dsda_DisplayNotification("100K achieved!");

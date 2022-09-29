@@ -149,61 +149,61 @@ void dsda_UpdateStrictMode(void) {
 
 static void dsda_TrackConfigFeatures(void) {
   if (R_PartialView() && dsda_IntConfig(dsda_config_exhud))
-    dsda_TrackFeature(UF_EXHUD);
+    dsda_TrackFeature(uf_exhud);
 
   if (R_FullView() && dsda_IntConfig(dsda_config_hud_displayed))
-    dsda_TrackFeature(UF_ADVHUD);
+    dsda_TrackFeature(uf_advhud);
 
   if (dsda_IntConfig(dsda_config_realtic_clock_rate) > 100)
-    dsda_TrackFeature(UF_SPEEDUP);
+    dsda_TrackFeature(uf_speedup);
 
   if (dsda_IntConfig(dsda_config_realtic_clock_rate) < 100)
-    dsda_TrackFeature(UF_SLOWDOWN);
+    dsda_TrackFeature(uf_slowdown);
 
   if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_point_coord))
-    dsda_TrackFeature(UF_COORDINATES);
+    dsda_TrackFeature(uf_coordinates);
 
   if (dsda_IntConfig(dsda_config_mouselook))
-    dsda_TrackFeature(UF_MOUSELOOK);
+    dsda_TrackFeature(uf_mouselook);
 
   if (dsda_IntConfig(dsda_config_weapon_attack_alignment))
-    dsda_TrackFeature(UF_WEAPONALIGNMENT);
+    dsda_TrackFeature(uf_weaponalignment);
 
   if (dsda_IntConfig(dsda_config_command_display))
-    dsda_TrackFeature(UF_COMMANDDISPLAY);
+    dsda_TrackFeature(uf_commanddisplay);
 
   if (dsda_IntConfig(dsda_config_hudadd_crosshair))
-    dsda_TrackFeature(UF_CROSSHAIR);
+    dsda_TrackFeature(uf_crosshair);
 
   if (dsda_IntConfig(dsda_config_hudadd_crosshair_target))
-    dsda_TrackFeature(UF_CROSSHAIRCOLOR);
+    dsda_TrackFeature(uf_crosshaircolor);
 
   if (dsda_IntConfig(dsda_config_hudadd_crosshair_lock_target))
-    dsda_TrackFeature(UF_CROSSHAIRLOCK);
+    dsda_TrackFeature(uf_crosshairlock);
 
   if (dsda_IntConfig(dsda_config_gl_shadows))
-    dsda_TrackFeature(UF_SHADOWS);
+    dsda_TrackFeature(uf_shadows);
 
   if (!dsda_IntConfig(dsda_config_palette_ondamage))
-    dsda_TrackFeature(UF_PAINPALETTE);
+    dsda_TrackFeature(uf_painpalette);
 
   if (!dsda_IntConfig(dsda_config_palette_onbonus))
-    dsda_TrackFeature(UF_BONUSPALETTE);
+    dsda_TrackFeature(uf_bonuspalette);
 
   if (!dsda_IntConfig(dsda_config_palette_onpowers))
-    dsda_TrackFeature(UF_POWERPALETTE);
+    dsda_TrackFeature(uf_powerpalette);
 
   if (dsda_IntConfig(dsda_config_gl_health_bar))
-    dsda_TrackFeature(UF_HEALTHBAR);
+    dsda_TrackFeature(uf_healthbar);
 
   if (dsda_IntConfig(dsda_config_movement_strafe50))
-    dsda_TrackFeature(UF_ALWAYSSR50);
+    dsda_TrackFeature(uf_alwayssr50);
 
   if (dsda_IntConfig(dsda_config_max_player_corpse) != 32)
-    dsda_TrackFeature(UF_MAXPLAYERCORPSE);
+    dsda_TrackFeature(uf_maxplayercorpse);
 
   if (dsda_IntConfig(dsda_config_hide_weapon))
-    dsda_TrackFeature(UF_HIDEWEAPON);
+    dsda_TrackFeature(uf_hideweapon);
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {

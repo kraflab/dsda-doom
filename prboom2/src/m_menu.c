@@ -5066,7 +5066,7 @@ void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
     menuactive = mnact;
 
   if (mnact > mnact_inactive)
-    dsda_TrackFeature(UF_MENU);
+    dsda_TrackFeature(uf_menu);
 
   if (SDL_IsTextInputActive()) {
     if (!(currentMenu && currentMenu->flags & MENUF_TEXTINPUT))

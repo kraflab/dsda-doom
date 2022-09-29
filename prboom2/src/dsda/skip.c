@@ -71,7 +71,7 @@ static void dsda_ResetSkipSettings(void) {
 void dsda_EnterSkipMode(void) {
   extern void M_ClearMenus(void);
 
-  dsda_TrackFeature(UF_SKIP);
+  dsda_TrackFeature(uf_skip);
 
   skip_mode = true;
 

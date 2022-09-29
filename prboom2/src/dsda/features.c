@@ -15,16 +15,20 @@
 //	DSDA Features
 //
 
+#include "doomtype.h"
+
 #include "features.h"
+
+typedef uint_64_t dsda_feature_t;
 
 static dsda_feature_t used_features;
 
-void dsda_TrackFeature(dsda_feature_t feature) {
-  used_features |= feature;
+void dsda_TrackFeature(int feature) {
+  used_features |= ((dsda_feature_t) 1 << feature);
 }
 
 void dsda_ResetFeatures(void) {
-  used_features = UF_NONE;
+  used_features = 0;
 }
 
 dsda_feature_t dsda_UsedFeatures(void) {
