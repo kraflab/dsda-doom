@@ -216,6 +216,8 @@ void dsda_InitDemoRecording(void) {
   // we need to reset things here to satisfy strict mode
   dsda_InitSettings();
 
+  dsda_TrackConfigFeatures();
+
   if (!demo_key_frame_initialized) {
     dsda_InitKeyFrame();
     demo_key_frame_initialized = true;

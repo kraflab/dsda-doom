@@ -1335,6 +1335,9 @@ int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persis
   if (dsda_config[id].onUpdate)
     dsda_config[id].onUpdate();
 
+  if (dsda_config[id].flags & CONF_FEATURE)
+    dsda_TrackConfigFeatures();
+
   return dsda_IntConfig(id);
 }
 
