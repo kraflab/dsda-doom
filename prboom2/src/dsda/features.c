@@ -55,8 +55,10 @@ static const char* feature_names[64] = {
   [uf_hideweapon] = "Hide Weapon",
 };
 
+#define FEATURE_BIT(x) ((uint_64_t) 1 << x)
+
 void dsda_TrackFeature(int feature) {
-  used_features |= ((dsda_feature_t) 1 << feature);
+  used_features |= FEATURE_BIT(feature);
 }
 
 void dsda_ResetFeatures(void) {
