@@ -23,6 +23,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "m_misc.h"
+#include "md5.h"
 #include "lprintf.h"
 #include "e6y.h"
 #include "p_saveg.h"
@@ -353,6 +354,18 @@ const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
   }
 
   return demo_p;
+}
+
+void dsda_GetDemoRecordingCheckSum(dsda_cksum_t* cksum) {
+  struct MD5Context md5;
+
+  MD5Init(&md5);
+
+  MD5Update(&md5, dsda_demo_write_buffer, dsda_DemoBufferOffset());
+
+  MD5Final(cksum->bytes, &md5);
+
+  dsda_TranslateCheckSum(cksum);
 }
 
 static int dsda_ExportDemoToFile(const char* demo_name) {

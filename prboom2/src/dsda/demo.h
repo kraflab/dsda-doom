@@ -20,6 +20,8 @@
 
 #include "d_ticcmd.h"
 
+#include "dsda/utility.h"
+
 const char* dsda_DemoNameBase(void);
 void dsda_SetDemoBaseName(const char* name);
 dboolean dsda_StartDemoSegment(const char* demo_name);
@@ -40,6 +42,7 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd);
 const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size);
 void dsda_WriteDSDADemoHeader(byte** p);
 void dsda_ApplyDSDADemoFormat(byte** demo_p);
+void dsda_GetDemoRecordingCheckSum(dsda_cksum_t* cksum);
 void dsda_EndDemoRecording(void);
 int dsda_DemoDataSize(byte complete);
 void dsda_StoreDemoData(byte complete);
