@@ -148,6 +148,9 @@ void dsda_UpdateStrictMode(void) {
 }
 
 static void dsda_TrackConfigFeatures(void) {
+  if (!demorecording)
+    return;
+
   if (R_PartialView() && dsda_IntConfig(dsda_config_exhud))
     dsda_TrackFeature(uf_exhud);
 
