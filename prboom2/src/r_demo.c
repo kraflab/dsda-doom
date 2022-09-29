@@ -192,8 +192,6 @@ void R_ResetAfterTeleport(player_t *player)
 #define DEMOEX_PORTNAME_LUMPNAME "PORTNAME"
 #define DEMOEX_PARAMS_LUMPNAME "CMDLINE"
 
-#define DEMOEX_SEPARATOR       "\n"
-
 // demo ex
 char demoex_filename[PATH_MAX];
 
@@ -944,25 +942,31 @@ static int G_ReadDemoFooter(const char *filename)
   return result;
 }
 
+static void R_DemoEx_NewLine(wadtbl_t *wadtbl)
+{
+  const char* const separator = "\n";
+
+  W_AddLump(wadtbl, NULL, (const byte*) separator, strlen(separator));
+}
+
 void G_WriteDemoFooter(void)
 {
   wadtbl_t demoex;
 
   W_InitPWADTable(&demoex);
 
-
   // separators for eye-friendly looking
-  W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
-  W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
+  R_DemoEx_NewLine(&demoex);
+  R_DemoEx_NewLine(&demoex);
 
   //process port name
   W_AddLump(&demoex, DEMOEX_PORTNAME_LUMPNAME,
     (const byte*)(PACKAGE_NAME" "PACKAGE_VERSION), strlen(PACKAGE_NAME" "PACKAGE_VERSION));
-  W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
+  R_DemoEx_NewLine(&demoex);
 
   //process iwad, pwads, dehs and critical for demos params like -spechit, etc
   R_DemoEx_AddParams(&demoex);
-  W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
+  R_DemoEx_NewLine(&demoex);
 
   //write pwad header, all data and lookup table to the end of a demo
   dsda_WriteToDemo(&demoex.header, sizeof(demoex.header));
