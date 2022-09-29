@@ -19,6 +19,42 @@
 
 static dsda_feature_t used_features;
 
+static const char* feature_names[64] = {
+  [uf_menu] = "Menu",
+  [uf_exhud] = "Extended HUD",
+  [uf_advhud] = "Advanced HUD",
+  [uf_crosshair] = "Crosshair",
+  [uf_quickstartcache] = "Quickstart Cache",
+  [uf_100k] = "100K Tracker",
+
+  [uf_iddt] = "IDDT",
+  [uf_automap] = "IDBEHOLD Map",
+  [uf_liteamp] = "IDBEHOLD Light",
+  [uf_build] = "Build Mode",
+  [uf_buildzero] = "Build First Frame",
+  [uf_bruteforce] = "Brute Force",
+  [uf_tracker] = "TAS Tracker",
+  [uf_keyframe] = "Key Frame",
+  [uf_skip] = "Skip Forward",
+  [uf_wipescreen] = "Skip Wipe Screen",
+  [uf_speedup] = "Speed Up",
+  [uf_slowdown] = "Slow Down",
+  [uf_coordinates] = "Show Coordinates",
+  [uf_mouselook] = "Mouse Look",
+  [uf_weaponalignment] = "Weapon Alignment",
+  [uf_commanddisplay] = "Command Display",
+  [uf_crosshaircolor] = "Dynamic Crosshair Color",
+  [uf_crosshairlock] = "Crosshair Lock",
+  [uf_shadows] = "Shadows",
+  [uf_painpalette] = "Disable Pain Palette",
+  [uf_bonuspalette] = "Disable Bonus Palette",
+  [uf_powerpalette] = "Disable Power Palette",
+  [uf_healthbar] = "Show Health Bars",
+  [uf_alwayssr50] = "Always SR50",
+  [uf_maxplayercorpse] = "Edit Corpse Limit",
+  [uf_hideweapon] = "Hide Weapon",
+};
+
 void dsda_TrackFeature(int feature) {
   used_features |= ((dsda_feature_t) 1 << feature);
 }
