@@ -188,13 +188,9 @@ void R_ResetAfterTeleport(player_t *player)
 //
 
 #define PWAD_SIGNATURE "PWAD"
-#define DEMOEX_VERSION "2"
 
-#define DEMOEX_VERSION_LUMPNAME "VERSION"
 #define DEMOEX_PORTNAME_LUMPNAME "PORTNAME"
 #define DEMOEX_PARAMS_LUMPNAME "CMDLINE"
-#define DEMOEX_MLOOK_LUMPNAME "MLOOK"
-#define DEMOEX_COMMENT_LUMPNAME "COMMENT"
 
 #define DEMOEX_SEPARATOR       "\n"
 
@@ -204,7 +200,6 @@ char demoex_filename[PATH_MAX];
 int AddString(char **str, const char *val);
 
 static void R_DemoEx_AddParams(wadtbl_t *wadtbl);
-static int R_DemoEx_GetVersion(void);
 static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata);
 
 static int G_ReadDemoFooter(const char *filename);
@@ -288,87 +283,6 @@ void W_AddLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size
 
     wadtbl->header.infotableofs += size;
   }
-}
-
-void R_DemoEx_ShowComment(void)
-{
-  extern patchnum_t hu_font[];
-
-  int         lump;
-  int         cx = 10;
-  int         cy = 10;
-  const char* ch;
-  int         count;
-  int         w;
-
-  lump = W_CheckNumForName(DEMOEX_COMMENT_LUMPNAME);
-  if (lump == LUMP_NOT_FOUND)
-    return;
-
-  count = W_LumpLength(lump);
-
-  if (count <= 0)
-    return;
-
-  ch = W_LumpByNum(lump);
-
-  for ( ; count ; count-- )
-  {
-    int c = *ch++;
-
-    if (!c)
-      break;
-    if (c == '\n')
-    {
-      cx = 10;
-      cy += 11;
-      continue;
-    }
-
-    c = toupper(c) - HU_FONTSTART;
-    if (c < 0 || c> HU_FONTSIZE)
-    {
-      cx += 4;
-      continue;
-    }
-
-    w = hu_font[c].width;
-    if (cx + w > SCREENWIDTH)
-      break;
-
-    V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
-    cx += w;
-  }
-}
-
-static int R_DemoEx_GetVersion(void)
-{
-  int result = -1;
-
-  int lump, ver;
-  unsigned int size;
-  const char *data;
-  char str_ver[32];
-
-  lump = W_CheckNumForName(DEMOEX_VERSION_LUMPNAME);
-  if (lump != LUMP_NOT_FOUND)
-  {
-    size = W_LumpLength(lump);
-    if (size > 0)
-    {
-      size_t len = MIN(size, sizeof(str_ver) - 1);
-      data = W_LumpByNum(lump);
-      strncpy(str_ver, data, len);
-      str_ver[len] = 0;
-
-      if (sscanf(str_ver, "%d", &ver) == 1)
-      {
-        result = ver;
-      }
-    }
-  }
-
-  return result;
 }
 
 static void R_DemoEx_GetParams(const byte *pwad_p, waddata_t *waddata)
@@ -1043,10 +957,6 @@ void G_WriteDemoFooter(void)
 
   // separators for eye-friendly looking
   W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
-  W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
-
-  //process format version
-  W_AddLump(&demoex, DEMOEX_VERSION_LUMPNAME, (const byte*)DEMOEX_VERSION, strlen(DEMOEX_VERSION));
   W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
 
   //process port name
