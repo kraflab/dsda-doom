@@ -33,6 +33,7 @@
 #include "dsda/command_display.h"
 #include "dsda/configuration.h"
 #include "dsda/excmd.h"
+#include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
@@ -217,6 +218,7 @@ void dsda_InitDemoRecording(void) {
   // we need to reset things here to satisfy strict mode
   dsda_InitSettings();
 
+  dsda_ResetFeatures();
   dsda_TrackConfigFeatures();
 
   if (!demo_key_frame_initialized) {
@@ -358,10 +360,14 @@ const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
 
 void dsda_GetDemoRecordingCheckSum(dsda_cksum_t* cksum) {
   struct MD5Context md5;
+  byte features[FEATURE_SIZE];
 
   MD5Init(&md5);
 
   MD5Update(&md5, dsda_demo_write_buffer, dsda_DemoBufferOffset());
+
+  dsda_CopyFeatures(features);
+  MD5Update(&md5, features, sizeof(features));
 
   MD5Final(cksum->bytes, &md5);
 
