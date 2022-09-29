@@ -147,7 +147,7 @@ void dsda_UpdateStrictMode(void) {
   M_ChangeApplyPalette();
 }
 
-static void dsda_TrackConfigFeatures(void) {
+void dsda_TrackConfigFeatures(void) {
   if (!demorecording)
     return;
 
