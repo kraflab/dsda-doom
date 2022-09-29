@@ -15,6 +15,9 @@
 //	DSDA Utility
 //
 
+#ifndef __DSDA_UTILITY__
+#define __DSDA_UTILITY__
+
 #include <string.h>
 
 #include "d_ticcmd.h"
@@ -46,3 +49,5 @@ void dsda_CutExtension(char* str);
 double dsda_DistancePointToLine(fixed_t line_x1, fixed_t line_y1,
                                 fixed_t line_x2, fixed_t line_y2,
                                 fixed_t point_x, fixed_t point_y);
+
+#endif
