@@ -54,6 +54,10 @@ typedef enum {
   // uf_showalive,
 } dsda_feature_flag_t;
 
+#define FEATURE_SIZE 8
+
 void dsda_TrackFeature(int feature);
 void dsda_ResetFeatures(void);
 uint_64_t dsda_UsedFeatures(void);
+void dsda_CopyFeatures(byte* result);
+char* dsda_DescribeFeatures(void);
