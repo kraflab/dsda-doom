@@ -5065,7 +5065,7 @@ void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
   if (mnact != mnact_nochange)
     menuactive = mnact;
 
-  if (mnact > mnact_inactive)
+  if (mnact > mnact_inactive && gamestate == GS_LEVEL)
     dsda_TrackFeature(uf_menu);
 
   if (SDL_IsTextInputActive()) {
