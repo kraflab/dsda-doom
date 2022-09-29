@@ -15,6 +15,10 @@
 //	DSDA Features
 //
 
+#include "doomtype.h"
+
+typedef uint_64_t dsda_feature_t;
+
 typedef enum {
   uf_menu,
   uf_exhud,

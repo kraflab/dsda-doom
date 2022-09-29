@@ -15,11 +15,7 @@
 //	DSDA Features
 //
 
-#include "doomtype.h"
-
 #include "features.h"
-
-typedef uint_64_t dsda_feature_t;
 
 static dsda_feature_t used_features;
 
