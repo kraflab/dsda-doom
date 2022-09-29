@@ -17,8 +17,6 @@
 
 #include "doomtype.h"
 
-typedef uint_64_t dsda_feature_t;
-
 typedef enum {
   uf_menu,
   uf_exhud,
@@ -58,4 +56,4 @@ typedef enum {
 
 void dsda_TrackFeature(int feature);
 void dsda_ResetFeatures(void);
-dsda_feature_t dsda_UsedFeatures(void);
+uint_64_t dsda_UsedFeatures(void);

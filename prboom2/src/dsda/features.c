@@ -17,7 +17,7 @@
 
 #include "features.h"
 
-static dsda_feature_t used_features;
+static uint_64_t used_features;
 
 static const char* feature_names[64] = {
   [uf_menu] = "Menu",
@@ -65,6 +65,6 @@ void dsda_ResetFeatures(void) {
   used_features = 0;
 }
 
-dsda_feature_t dsda_UsedFeatures(void) {
+uint_64_t dsda_UsedFeatures(void) {
   return used_features;
 }
