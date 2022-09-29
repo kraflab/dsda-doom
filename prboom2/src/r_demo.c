@@ -45,6 +45,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include "doomdef.h"
 #include "doomtype.h"
@@ -63,11 +64,14 @@
 #include "p_map.h"
 #include "hu_stuff.h"
 #include "g_overflow.h"
+#include "z_zone.h"
 #include "e6y.h"
 
 #include "dsda/args.h"
 #include "dsda/demo.h"
+#include "dsda/features.h"
 #include "dsda/playback.h"
+#include "dsda/utility.h"
 
 int LoadDemo(const char *name, const byte **buffer, int *length)
 {
@@ -191,6 +195,7 @@ void R_ResetAfterTeleport(player_t *player)
 
 #define DEMOEX_PORTNAME_LUMPNAME "PORTNAME"
 #define DEMOEX_PARAMS_LUMPNAME "CMDLINE"
+#define DEMOEX_FEATURE_LUMPNAME "FEATURES"
 
 // demo ex
 char demoex_filename[PATH_MAX];
@@ -609,6 +614,30 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   }
 }
 
+static void R_DemoEx_AddFeatures(wadtbl_t *wadtbl)
+{
+  dsda_cksum_t cksum;
+  char* description;
+  byte* buffer;
+  size_t buffer_length;
+  uint_64_t features;
+
+  dsda_GetDemoRecordingCheckSum(&cksum);
+  description = dsda_DescribeFeatures();
+  features = dsda_UsedFeatures();
+
+  // 18 for 64 bits in hex + \n + \0 + \- + extra space :^)
+  buffer_length = strlen(cksum.string) + strlen(description) + 24;
+  buffer = Z_Calloc(buffer_length, 1);
+
+  snprintf(buffer, buffer_length, "%s\n0x%016llx-%s", description, features, cksum.string);
+
+  W_AddLump(wadtbl, DEMOEX_FEATURE_LUMPNAME, buffer, buffer_length);
+
+  Z_Free(buffer);
+  Z_Free(description);
+}
+
 void I_DemoExShutdown(void)
 {
   W_ReleaseAllWads();
@@ -958,6 +987,9 @@ void G_WriteDemoFooter(void)
   // separators for eye-friendly looking
   R_DemoEx_NewLine(&demoex);
   R_DemoEx_NewLine(&demoex);
+
+  // R_DemoEx_AddFeatures(&demoex);
+  // R_DemoEx_NewLine(&demoex);
 
   //process port name
   W_AddLump(&demoex, DEMOEX_PORTNAME_LUMPNAME,
