@@ -948,12 +948,8 @@ void G_WriteDemoFooter(void)
 {
   wadtbl_t demoex;
 
-  //init PWAD header
   W_InitPWADTable(&demoex);
 
-  //
-  //write all the data
-  //
 
   // separators for eye-friendly looking
   W_AddLump(&demoex, NULL, (const byte*)DEMOEX_SEPARATOR, strlen(DEMOEX_SEPARATOR));
