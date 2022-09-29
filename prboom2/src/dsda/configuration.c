@@ -68,8 +68,9 @@ typedef struct {
   dsda_config_value_t persistent_value;
 } dsda_config_t;
 
-#define CONF_STRICT 0x01
-#define CONF_EVEN   0x02
+#define CONF_STRICT  0x01
+#define CONF_EVEN    0x02
+#define CONF_FEATURE 0x04
 
 #define CONF_BOOL(x) dsda_config_int, 0, 1, { x }
 #define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
@@ -79,7 +80,7 @@ typedef struct {
 #define CONF_WEAPON(x) dsda_config_int, 0, 9, { x }
 
 #define NOT_STRICT 0, 0
-#define STRICT_INT(x) CONF_STRICT, x
+#define STRICT_INT(x) CONF_FEATURE | CONF_STRICT, x
 
 extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
@@ -338,7 +339,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_exhud] = {
     "dsda_exhud", dsda_config_exhud,
-    CONF_BOOL(0)
+    CONF_BOOL(0), NULL, CONF_FEATURE | NOT_STRICT
   },
   [dsda_config_mute_sfx] = {
     "dsda_mute_sfx", dsda_config_mute_sfx,
@@ -825,7 +826,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_hud_displayed] = {
     "hud_displayed", dsda_config_hud_displayed,
-    CONF_BOOL(0), NULL, NOT_STRICT, R_SetViewSize
+    CONF_BOOL(0), NULL, CONF_FEATURE | NOT_STRICT, R_SetViewSize
   },
   [dsda_config_hudadd_secretarea] = {
     "hudadd_secretarea", dsda_config_hudadd_secretarea,
@@ -853,7 +854,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_hudadd_crosshair] = {
     "hudadd_crosshair", dsda_config_hudadd_crosshair,
-    dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, NOT_STRICT, HU_init_crosshair
+    dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, CONF_FEATURE | NOT_STRICT, HU_init_crosshair
   },
   [dsda_config_hud_health_red] = {
     "hud_health_red", dsda_config_hud_health_red,
@@ -1070,7 +1071,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_screenblocks] = {
     "screenblocks", dsda_config_screenblocks,
-    dsda_config_int, 3, 11, { 10 }, NULL, NOT_STRICT, R_SetViewSize
+    dsda_config_int, 3, 11, { 10 }, NULL, CONF_FEATURE | NOT_STRICT, R_SetViewSize
   },
   [dsda_config_tran_filter_pct] = {
     "tran_filter_pct", dsda_config_tran_filter_pct,
