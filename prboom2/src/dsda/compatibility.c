@@ -22,6 +22,8 @@
 #include "w_wad.h"
 #include "lprintf.h"
 
+#include "dsda/utility.h"
+
 #include "compatibility.h"
 
 typedef struct {
@@ -340,7 +342,7 @@ static void dsda_MD5UpdateLump(int lump, struct MD5Context *md5)
   MD5Update(md5, W_LumpByNum(lump), W_LumpLength(lump));
 }
 
-static void dsda_GetLevelCheckSum(int lump, byte cksum[16])
+static void dsda_GetLevelCheckSum(int lump, dsda_cksum_t* cksum)
 {
   struct MD5Context md5;
 
@@ -354,38 +356,34 @@ static void dsda_GetLevelCheckSum(int lump, byte cksum[16])
 
   // ML_BEHAVIOR when it becomes applicable to comp options
 
-  MD5Final(cksum, &md5);
-}
+  MD5Final(cksum->bytes, &md5);
 
+  dsda_TranslateCheckSum(cksum);
+}
 
 // For casual players that aren't careful about setting complevels,
 //   this function will apply comp options to automatically fix some issues
 //   that appear when playing wads in mbf21 (since this is the default).
 void dsda_ApplyLevelCompatibility(int lump) {
   unsigned int i;
-  byte cksum[16];
-  char cksum_string[33];
+  dsda_cksum_t cksum;
   const dsda_compatibility_t** level_compatibility;
 
   if (demorecording || demoplayback || !mbf21) return;
 
-  dsda_GetLevelCheckSum(lump, cksum);
+  dsda_GetLevelCheckSum(lump, &cksum);
 
-  for (i = 0; i < 16; i++)
-    sprintf(&cksum_string[i * 2], "%02x", cksum[i]);
-  cksum_string[32] = '\0';
+  lprintf(LO_DEBUG, "Level checksum: %s\n", cksum.string);
 
-  lprintf(LO_DEBUG, "Level checksum: %s\n", cksum_string);
-
-  if (cksum_string[0] >= 'a')
-    i = cksum_string[0] - 'a' + 10;
+  if (cksum.string[0] >= 'a')
+    i = cksum.string[0] - 'a' + 10;
   else
-    i = cksum_string[0] - '0';
+    i = cksum.string[0] - '0';
 
   level_compatibility = level_compatibilities[i];
 
   while (*level_compatibility) {
-    if (!strncmp((*level_compatibility)->cksum_string, cksum_string, 32)) {
+    if (!strncmp((*level_compatibility)->cksum_string, cksum.string, 32)) {
       const signed char* option;
 
       for (option = (*level_compatibility)->options; *option != -1; option++) {

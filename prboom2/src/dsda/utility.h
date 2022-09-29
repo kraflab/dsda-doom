@@ -39,6 +39,12 @@ typedef struct {
   int frac;
 } dsda_angle_t;
 
+typedef struct {
+  byte bytes[16];
+  char string[33];
+} dsda_cksum_t;
+
+void dsda_TranslateCheckSum(dsda_cksum_t* cksum);
 dboolean dsda_HasFileExt(const char* file, const char* ext);
 char** dsda_SplitString(char* str, const char* delimiter);
 void dsda_FixedToString(char* str, fixed_t x);

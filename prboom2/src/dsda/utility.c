@@ -24,6 +24,14 @@
 
 #include "utility.h"
 
+void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
+  unsigned int i;
+
+  for (i = 0; i < 16; i++)
+    sprintf(&cksum->string[i * 2], "%02x", cksum->bytes[i]);
+  cksum->string[32] = '\0';
+}
+
 dboolean dsda_HasFileExt(const char* file, const char* ext) {
   return strlen(file) > strlen(ext) &&
          !strcasecmp(file + strlen(file) - strlen(ext), ext);
