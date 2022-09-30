@@ -19,6 +19,8 @@
 
 #include "z_zone.h"
 
+#include "dsda/utility.h"
+
 #include "features.h"
 
 static uint_64_t used_features;
@@ -86,26 +88,20 @@ void dsda_CopyFeatures(byte* result) {
 
 char* dsda_DescribeFeatures(void) {
   int i;
-  char* description;
-  size_t length = 0;
   dboolean first = true;
+  dsda_string_t description;
 
-  for (i = 0; i < 64; ++i)
-    if (used_features & FEATURE_BIT(i) && feature_names[i])
-      length += strlen(feature_names[i]) + 2; // ", "
-
-  ++length;
-  description = Z_Calloc(length, 1);
+  dsda_InitString(&description, "");
 
   for (i = 0; i < 64; ++i)
     if (used_features & FEATURE_BIT(i) && feature_names[i]) {
       if (first)
         first = false;
       else
-        strcat(description, ", ");
+        dsda_StringCat(&description, ", ");
 
-      strcat(description, feature_names[i]);
+      dsda_StringCat(&description, feature_names[i]);
     }
 
-  return description;
+  return description.string;
 }
