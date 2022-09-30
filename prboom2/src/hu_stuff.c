@@ -51,7 +51,9 @@
 #include "r_main.h"
 #include "lprintf.h"
 #include "p_setup.h"
+#include "w_wad.h"
 #include "e6y.h" //e6y
+
 #include "dsda.h"
 #include "dsda/hud.h"
 #include "dsda/map_format.h"
