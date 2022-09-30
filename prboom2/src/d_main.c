@@ -1439,12 +1439,75 @@ static void HandleClass(void)
   randomclass = dsda_Flag(dsda_arg_randclass);
 }
 
+const char* doomverstr = NULL;
+
+static void EvaluateDoomVerStr(void)
+{
+  switch ( gamemode )
+  {
+    case retail:
+      switch (gamemission)
+      {
+        case chex:
+          doomverstr = "Chex(R) Quest";
+          break;
+        default:
+          doomverstr = "The Ultimate DOOM";
+          break;
+      }
+      break;
+    case shareware:
+      doomverstr = "DOOM Shareware";
+      break;
+    case registered:
+      doomverstr = "DOOM Registered";
+      break;
+    case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
+      switch (gamemission)
+      {
+        case pack_plut:
+          doomverstr = "Final DOOM - The Plutonia Experiment";
+          break;
+        case pack_tnt:
+          doomverstr = "Final DOOM - TNT: Evilution";
+          break;
+        case hacx:
+          doomverstr = "HACX - Twitch 'n Kill";
+          break;
+        default:
+          doomverstr = "DOOM 2: Hell on Earth";
+          break;
+      }
+      break;
+    default:
+      doomverstr = "Public DOOM";
+      break;
+  }
+
+  if (bfgedition)
+  {
+    char *tempverstr;
+    const char bfgverstr[]=" (BFG Edition)";
+    tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
+    strcpy (tempverstr, doomverstr);
+    strcat (tempverstr, bfgverstr);
+    doomverstr = Z_Strdup (tempverstr);
+    Z_Free (tempverstr);
+  }
+
+  /* cphipps - the main display. This shows the build date, copyright, and game type */
+  lprintf(LO_INFO,PACKAGE_NAME" (built %s), playing: %s\n"
+    PACKAGE_NAME" is released under the GNU General Public license v2.0.\n"
+    "You are welcome to redistribute it under certain conditions.\n"
+    "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n",
+    version_date, doomverstr);
+}
+
 //
 // D_DoomMainSetup
 //
 // CPhipps - the old contents of D_DoomMain, but moved out of the main
 //  line of execution so its stack space can be freed
-const char* doomverstr = NULL;
 
 static void D_DoomMainSetup(void)
 {
@@ -1487,66 +1550,7 @@ static void D_DoomMainSetup(void)
   else if (dsda_Flag(dsda_arg_deathmatch))
     deathmatch = 1;
 
-  {
-    switch ( gamemode )
-    {
-      case retail:
-        switch (gamemission)
-        {
-          case chex:
-            doomverstr = "Chex(R) Quest";
-            break;
-          default:
-            doomverstr = "The Ultimate DOOM";
-            break;
-        }
-        break;
-      case shareware:
-        doomverstr = "DOOM Shareware";
-        break;
-      case registered:
-        doomverstr = "DOOM Registered";
-        break;
-      case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
-        switch (gamemission)
-        {
-          case pack_plut:
-            doomverstr = "Final DOOM - The Plutonia Experiment";
-            break;
-          case pack_tnt:
-            doomverstr = "Final DOOM - TNT: Evilution";
-            break;
-          case hacx:
-            doomverstr = "HACX - Twitch 'n Kill";
-            break;
-          default:
-            doomverstr = "DOOM 2: Hell on Earth";
-            break;
-        }
-        break;
-      default:
-        doomverstr = "Public DOOM";
-        break;
-    }
-
-    if (bfgedition)
-    {
-      char *tempverstr;
-      const char bfgverstr[]=" (BFG Edition)";
-      tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
-      strcpy (tempverstr, doomverstr);
-      strcat (tempverstr, bfgverstr);
-      doomverstr = Z_Strdup (tempverstr);
-      Z_Free (tempverstr);
-    }
-
-    /* cphipps - the main display. This shows the build date, copyright, and game type */
-    lprintf(LO_INFO,PACKAGE_NAME" (built %s), playing: %s\n"
-      PACKAGE_NAME" is released under the GNU General Public license v2.0.\n"
-      "You are welcome to redistribute it under certain conditions.\n"
-      "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n",
-      version_date, doomverstr);
-  }
+  EvaluateDoomVerStr();
 
   if (devparm)
     //jff 9/3/98 use logical output routine
