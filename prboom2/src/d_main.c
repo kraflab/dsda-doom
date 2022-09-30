@@ -791,6 +791,16 @@ void D_AddFile (const char *file, wad_source_t source)
   char *gwa_filename=NULL;
   int len;
 
+  // There can only be one iwad source!
+  if (source == source_iwad)
+  {
+    int i;
+
+    for (i = 0; i < numwadfiles; ++i)
+      if (wadfiles[i].src == source_iwad)
+        wadfiles[i].src = source_skip;
+  }
+
   wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
   wadfiles[numwadfiles].name =
     AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
@@ -813,7 +823,7 @@ void D_AddFile (const char *file, wad_source_t source)
     ext[1] = 'g'; ext[2] = 'w'; ext[3] = 'a';
     wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
     wadfiles[numwadfiles].name = gwa_filename;
-    wadfiles[numwadfiles].src = source; // Ty 08/29/98
+    wadfiles[numwadfiles].src = source_pwad; // Ty 08/29/98
     wadfiles[numwadfiles].handle = 0;
     numwadfiles++;
   }
@@ -1439,12 +1449,96 @@ static void HandleClass(void)
   randomclass = dsda_Flag(dsda_arg_randclass);
 }
 
+static void HandlePlayback(void)
+{
+  const char* name;
+
+  name = dsda_ParsePlaybackOptions();
+
+  if (name)
+  {
+    char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
+    strcpy(file, name);
+    AddDefaultExtension(file, ".lmp");     // killough
+    D_AddFile (file, source_lmp);
+    //jff 9/3/98 use logical output routine
+    lprintf(LO_INFO, "Playing demo %s\n", file);
+    Z_Free(file);
+
+    //e6y
+    G_CheckDemoEx();
+  }
+}
+
+const char* doomverstr = NULL;
+
+static void EvaluateDoomVerStr(void)
+{
+  switch ( gamemode )
+  {
+    case retail:
+      switch (gamemission)
+      {
+        case chex:
+          doomverstr = "Chex(R) Quest";
+          break;
+        default:
+          doomverstr = "The Ultimate DOOM";
+          break;
+      }
+      break;
+    case shareware:
+      doomverstr = "DOOM Shareware";
+      break;
+    case registered:
+      doomverstr = "DOOM Registered";
+      break;
+    case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
+      switch (gamemission)
+      {
+        case pack_plut:
+          doomverstr = "Final DOOM - The Plutonia Experiment";
+          break;
+        case pack_tnt:
+          doomverstr = "Final DOOM - TNT: Evilution";
+          break;
+        case hacx:
+          doomverstr = "HACX - Twitch 'n Kill";
+          break;
+        default:
+          doomverstr = "DOOM 2: Hell on Earth";
+          break;
+      }
+      break;
+    default:
+      doomverstr = "Public DOOM";
+      break;
+  }
+
+  if (bfgedition)
+  {
+    char *tempverstr;
+    const char bfgverstr[]=" (BFG Edition)";
+    tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
+    strcpy (tempverstr, doomverstr);
+    strcat (tempverstr, bfgverstr);
+    doomverstr = Z_Strdup (tempverstr);
+    Z_Free (tempverstr);
+  }
+
+  /* cphipps - the main display. This shows the build date, copyright, and game type */
+  lprintf(LO_INFO,PACKAGE_NAME" (built %s), playing: %s\n"
+    PACKAGE_NAME" is released under the GNU General Public license v2.0.\n"
+    "You are welcome to redistribute it under certain conditions.\n"
+    "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n",
+    version_date, doomverstr);
+}
+
 //
 // D_DoomMainSetup
 //
 // CPhipps - the old contents of D_DoomMain, but moved out of the main
 //  line of execution so its stack space can be freed
-const char* doomverstr = NULL;
 
 static void D_DoomMainSetup(void)
 {
@@ -1487,66 +1581,7 @@ static void D_DoomMainSetup(void)
   else if (dsda_Flag(dsda_arg_deathmatch))
     deathmatch = 1;
 
-  {
-    switch ( gamemode )
-    {
-      case retail:
-        switch (gamemission)
-        {
-          case chex:
-            doomverstr = "Chex(R) Quest";
-            break;
-          default:
-            doomverstr = "The Ultimate DOOM";
-            break;
-        }
-        break;
-      case shareware:
-        doomverstr = "DOOM Shareware";
-        break;
-      case registered:
-        doomverstr = "DOOM Registered";
-        break;
-      case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
-        switch (gamemission)
-        {
-          case pack_plut:
-            doomverstr = "Final DOOM - The Plutonia Experiment";
-            break;
-          case pack_tnt:
-            doomverstr = "Final DOOM - TNT: Evilution";
-            break;
-          case hacx:
-            doomverstr = "HACX - Twitch 'n Kill";
-            break;
-          default:
-            doomverstr = "DOOM 2: Hell on Earth";
-            break;
-        }
-        break;
-      default:
-        doomverstr = "Public DOOM";
-        break;
-    }
-
-    if (bfgedition)
-    {
-      char *tempverstr;
-      const char bfgverstr[]=" (BFG Edition)";
-      tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
-      strcpy (tempverstr, doomverstr);
-      strcat (tempverstr, bfgverstr);
-      doomverstr = Z_Strdup (tempverstr);
-      Z_Free (tempverstr);
-    }
-
-    /* cphipps - the main display. This shows the build date, copyright, and game type */
-    lprintf(LO_INFO,PACKAGE_NAME" (built %s), playing: %s\n"
-      PACKAGE_NAME" is released under the GNU General Public license v2.0.\n"
-      "You are welcome to redistribute it under certain conditions.\n"
-      "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n",
-      version_date, doomverstr);
-  }
+  EvaluateDoomVerStr();
 
   if (devparm)
     //jff 9/3/98 use logical output routine
@@ -1623,6 +1658,8 @@ static void D_DoomMainSetup(void)
 
   D_AddFile(port_wad_file, source_auto_load);
 
+  HandlePlayback(); // must come before autoload: may detect iwad in footer
+
   // add wad files from autoload directory before wads from -file parameter
   if (autoload)
     D_AutoloadIWadDir();
@@ -1657,26 +1694,6 @@ static void D_DoomMainSetup(void)
       Z_Free(file);
     }
   }
-
-  {
-    const char* name;
-
-    name = dsda_ParsePlaybackOptions();
-
-    if (name)
-    {
-      char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
-      strcpy(file, name);
-      AddDefaultExtension(file, ".lmp");     // killough
-      D_AddFile (file, source_lmp);
-      //jff 9/3/98 use logical output routine
-      lprintf(LO_INFO, "Playing demo %s\n", file);
-      Z_Free(file);
-    }
-  }
-
-  //e6y
-  CheckDemoExDemo();
 
   // add wad files from autoload PWAD directories
   if (autoload)
