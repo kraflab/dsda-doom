@@ -1658,6 +1658,8 @@ static void D_DoomMainSetup(void)
 
   D_AddFile(port_wad_file, source_auto_load);
 
+  HandlePlayback(); // must come before autoload: may detect iwad in footer
+
   // add wad files from autoload directory before wads from -file parameter
   if (autoload)
     D_AutoloadIWadDir();
@@ -1692,8 +1694,6 @@ static void D_DoomMainSetup(void)
       Z_Free(file);
     }
   }
-
-  HandlePlayback();
 
   // add wad files from autoload PWAD directories
   if (autoload)
