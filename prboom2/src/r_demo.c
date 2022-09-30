@@ -366,7 +366,12 @@ static void R_DemoEx_GetParams(const wadinfo_t *header)
             {
               filename = Z_Strdup(params[p]);
             }
-            D_AddFile(filename, files[i].source);
+
+            if (files[i].source == source_iwad)
+              AddIWAD(filename);
+            else
+              D_AddFile(filename, files[i].source);
+
             Z_Free(filename);
           }
         }
