@@ -1439,6 +1439,27 @@ static void HandleClass(void)
   randomclass = dsda_Flag(dsda_arg_randclass);
 }
 
+static void HandlePlayback(void)
+{
+  const char* name;
+
+  name = dsda_ParsePlaybackOptions();
+
+  if (name)
+  {
+    char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
+    strcpy(file, name);
+    AddDefaultExtension(file, ".lmp");     // killough
+    D_AddFile (file, source_lmp);
+    //jff 9/3/98 use logical output routine
+    lprintf(LO_INFO, "Playing demo %s\n", file);
+    Z_Free(file);
+
+    //e6y
+    G_CheckDemoEx();
+  }
+}
+
 const char* doomverstr = NULL;
 
 static void EvaluateDoomVerStr(void)
@@ -1662,25 +1683,7 @@ static void D_DoomMainSetup(void)
     }
   }
 
-  {
-    const char* name;
-
-    name = dsda_ParsePlaybackOptions();
-
-    if (name)
-    {
-      char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
-      strcpy(file, name);
-      AddDefaultExtension(file, ".lmp");     // killough
-      D_AddFile (file, source_lmp);
-      //jff 9/3/98 use logical output routine
-      lprintf(LO_INFO, "Playing demo %s\n", file);
-      Z_Free(file);
-    }
-  }
-
-  //e6y
-  G_CheckDemoEx();
+  HandlePlayback();
 
   // add wad files from autoload PWAD directories
   if (autoload)
