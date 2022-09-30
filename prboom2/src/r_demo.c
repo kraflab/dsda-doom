@@ -206,29 +206,6 @@ typedef struct
 #define DEMOEX_PARAMS_LUMPNAME "CMDLINE"
 #define DEMOEX_FEATURE_LUMPNAME "FEATURES"
 
-int AddString(char **str, const char *val)
-{
-  int size = 0;
-
-  if (!str || !val)
-    return 0;
-
-  if (*str)
-  {
-    size = strlen(*str) + strlen(val) + 1;
-    *str = Z_Realloc(*str, size);
-    strcat(*str, val);
-  }
-  else
-  {
-    size = strlen(val) + 1;
-    *str = Z_Malloc(size);
-    strcpy(*str, val);
-  }
-
-  return size;
-}
-
 void W_InitPWADTable(wadtbl_t *wadtbl)
 {
   //init header signature and lookup table offset and size
@@ -495,17 +472,23 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   char buf[200];
 
   const char* filename_p;
-  const char* fileext_p;
 
-  char *files = NULL;
-  char *iwad  = NULL;
-  char *pwads = NULL;
-  char *dehs  = NULL;
-  char **item;
+  dsda_string_t files;
+  dsda_string_t iwad;
+  dsda_string_t pwads;
+  dsda_string_t dehs;
+
+  dsda_InitString(&files);
+  dsda_InitString(&iwad);
+  dsda_InitString(&pwads);
+  dsda_InitString(&dehs);
 
   //iwad and pwads
   for (i = 0; i < numwadfiles; i++)
   {
+    const char *fileext_p;
+    dsda_string_t *item = NULL;
+
     filename_p = PathFindFileName(wadfiles[i].name);
     fileext_p = filename_p + strlen(filename_p) - 1;
     while (fileext_p != filename_p && *(fileext_p - 1) != '.')
@@ -513,9 +496,7 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
     if (fileext_p == filename_p)
       continue;
 
-    item = NULL;
-
-    if (wadfiles[i].src == source_iwad && !iwad && !strcasecmp(fileext_p, "wad"))
+    if (wadfiles[i].src == source_iwad && !iwad.string && !strcasecmp(fileext_p, "wad"))
       item = &iwad;
 
     if (wadfiles[i].src == source_pwad && !strcasecmp(fileext_p, "wad"))
@@ -523,9 +504,9 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
 
     if (item)
     {
-      AddString(item, "\"");
-      AddString(item, filename_p);
-      AddString(item, "\" ");
+      dsda_StringCat(item, "\"");
+      dsda_StringCat(item, filename_p);
+      dsda_StringCat(item, "\" ");
     }
   }
 
@@ -540,58 +521,58 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
           (file = I_FindFile(arg->value.v_string_array[i], ".deh")))
       {
         filename_p = PathFindFileName(file);
-        AddString(&dehs, "\"");
-        AddString(&dehs, filename_p);
-        AddString(&dehs, "\" ");
+        dsda_StringCat(&dehs, "\"");
+        dsda_StringCat(&dehs, filename_p);
+        dsda_StringCat(&dehs, "\" ");
         Z_Free(file);
       }
     }
   }
 
-  if (iwad)
+  if (iwad.string)
   {
-    AddString(&files, "-iwad ");
-    AddString(&files, iwad);
+    dsda_StringCat(&files, "-iwad ");
+    dsda_StringCat(&files, iwad.string);
   }
 
-  if (pwads)
+  if (pwads.string)
   {
-    AddString(&files, "-file ");
-    AddString(&files, pwads);
+    dsda_StringCat(&files, "-file ");
+    dsda_StringCat(&files, pwads.string);
   }
 
-  if (dehs)
+  if (dehs.string)
   {
-    AddString(&files, "-deh ");
-    AddString(&files, dehs);
+    dsda_StringCat(&files, "-deh ");
+    dsda_StringCat(&files, dehs.string);
   }
 
   //add complevel for formats which do not have it in header
   if (demo_compatibility)
   {
     sprintf(buf, "-complevel %d ", compatibility_level);
-    AddString(&files, buf);
+    dsda_StringCat(&files, buf);
   }
 
   //for recording or playback using "single-player coop" mode
   if (dsda_Flag(dsda_arg_solo_net))
   {
     sprintf(buf, "-solo-net ");
-    AddString(&files, buf);
+    dsda_StringCat(&files, buf);
   }
 
   //for recording or playback using "coop in single-player" mode
   if (dsda_Flag(dsda_arg_coop_spawns))
   {
     sprintf(buf, "-coop_spawns ");
-    AddString(&files, buf);
+    dsda_StringCat(&files, buf);
   }
 
   arg = dsda_Arg(dsda_arg_emulate);
   if (arg->found)
   {
     sprintf(buf, "-emulate %s", arg->value.v_string);
-    AddString(&files, buf);
+    dsda_StringCat(&files, buf);
   }
 
   // doom 1.2 does not store these params in header
@@ -600,24 +581,24 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
     if (dsda_Flag(dsda_arg_respawn))
     {
       sprintf(buf, "-respawn ");
-      AddString(&files, buf);
+      dsda_StringCat(&files, buf);
     }
     if (dsda_Flag(dsda_arg_fast))
     {
       sprintf(buf, "-fast ");
-      AddString(&files, buf);
+      dsda_StringCat(&files, buf);
     }
     if (dsda_Flag(dsda_arg_nomonsters))
     {
       sprintf(buf, "-nomonsters ");
-      AddString(&files, buf);
+      dsda_StringCat(&files, buf);
     }
   }
 
   if (spechit_baseaddr != 0 && spechit_baseaddr != DEFAULT_SPECHIT_MAGIC)
   {
     sprintf(buf, "-spechit %d ", spechit_baseaddr);
-    AddString(&files, buf);
+    dsda_StringCat(&files, buf);
   }
 
   //overflows
@@ -628,15 +609,20 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
       if (overflows[overflow].shit_happens)
       {
         sprintf(buf, "-set %s=%d ", overflow_cfgname[overflow], overflows[overflow].emulate);
-        AddString(&files, buf);
+        dsda_StringCat(&files, buf);
       }
     }
   }
 
-  if (files)
+  if (files.string)
   {
-    W_AddLump(wadtbl, DEMOEX_PARAMS_LUMPNAME, (const byte*)files, strlen(files));
+    W_AddLump(wadtbl, DEMOEX_PARAMS_LUMPNAME, (const byte*) files.string, strlen(files.string));
   }
+
+  dsda_FreeString(&files);
+  dsda_FreeString(&iwad);
+  dsda_FreeString(&pwads);
+  dsda_FreeString(&dehs);
 }
 
 static void R_DemoEx_AddFeatures(wadtbl_t *wadtbl)
