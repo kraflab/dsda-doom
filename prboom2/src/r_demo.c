@@ -649,6 +649,12 @@ static void R_DemoEx_AddFeatures(wadtbl_t *wadtbl)
   Z_Free(description);
 }
 
+static void R_DemoEx_AddPort(wadtbl_t *wadtbl)
+{
+  W_AddLump(wadtbl, DEMOEX_PORTNAME_LUMPNAME,
+    (const byte*)(PACKAGE_NAME" "PACKAGE_VERSION), strlen(PACKAGE_NAME" "PACKAGE_VERSION));
+}
+
 byte* G_GetDemoFooter(const char *filename, byte **footer, size_t *size)
 {
   byte* result = NULL;
@@ -786,32 +792,32 @@ static void R_DemoEx_NewLine(wadtbl_t *wadtbl)
   W_AddLump(wadtbl, NULL, (const byte*) separator, strlen(separator));
 }
 
+static void R_DemoEx_WritePWADTable(wadtbl_t *wadtbl)
+{
+  dsda_WriteToDemo(&wadtbl->header, sizeof(wadtbl->header));
+  dsda_WriteToDemo(wadtbl->data, wadtbl->datasize);
+  dsda_WriteToDemo(wadtbl->lumps, wadtbl->header.numlumps * sizeof(wadtbl->lumps[0]));
+}
+
 void G_WriteDemoFooter(void)
 {
   wadtbl_t demoex;
 
   W_InitPWADTable(&demoex);
 
-  // separators for eye-friendly looking
   R_DemoEx_NewLine(&demoex);
   R_DemoEx_NewLine(&demoex);
 
   // R_DemoEx_AddFeatures(&demoex);
   // R_DemoEx_NewLine(&demoex);
 
-  //process port name
-  W_AddLump(&demoex, DEMOEX_PORTNAME_LUMPNAME,
-    (const byte*)(PACKAGE_NAME" "PACKAGE_VERSION), strlen(PACKAGE_NAME" "PACKAGE_VERSION));
+  R_DemoEx_AddPort(&demoex);
   R_DemoEx_NewLine(&demoex);
 
-  //process iwad, pwads, dehs and critical for demos params like -spechit, etc
   R_DemoEx_AddParams(&demoex);
   R_DemoEx_NewLine(&demoex);
 
-  //write pwad header, all data and lookup table to the end of a demo
-  dsda_WriteToDemo(&demoex.header, sizeof(demoex.header));
-  dsda_WriteToDemo(demoex.data, demoex.datasize);
-  dsda_WriteToDemo(demoex.lumps, demoex.header.numlumps * sizeof(demoex.lumps[0]));
+  R_DemoEx_WritePWADTable(&demoex);
 
   W_FreePWADTable(&demoex);
 }
