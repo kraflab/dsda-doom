@@ -655,7 +655,7 @@ static void R_DemoEx_AddPort(wadtbl_t *wadtbl)
     (const byte*)(PACKAGE_NAME" "PACKAGE_VERSION), strlen(PACKAGE_NAME" "PACKAGE_VERSION));
 }
 
-static void G_PartitionDemo(const char *filename, byte **buffer, const byte **demo_end_p, byte **footer, size_t *size)
+static void G_PartitionDemo(const char *filename, byte **demo, size_t *demo_size, byte **footer, size_t *footer_size)
 {
   FILE *hfile;
   size_t file_size;
@@ -670,28 +670,28 @@ static void G_PartitionDemo(const char *filename, byte **buffer, const byte **de
   file_size = ftell(hfile);
   fseek(hfile, 0, SEEK_SET);
 
-  *buffer = Z_Malloc(file_size);
+  *demo = Z_Malloc(file_size);
 
-  if (fread(*buffer, file_size, 1, hfile) == 1)
+  if (fread(*demo, file_size, 1, hfile) == 1)
   {
     const byte* p;
 
-    p = dsda_DemoMarkerPosition(*buffer, file_size);
+    p = dsda_DemoMarkerPosition(*demo, file_size);
 
     if (p)
     {
       //skip DEMOMARKER
       p++;
 
-      *demo_end_p = p;
+      *demo_size = p - *demo;
 
       //seach for the "PWAD" signature after ENDDEMOMARKER
-      while (p - *buffer + sizeof(wadinfo_t) < file_size)
+      while (p - *demo + sizeof(wadinfo_t) < file_size)
       {
         if (!memcmp(p, PWAD_SIGNATURE, strlen(PWAD_SIGNATURE)))
         {
-          *footer = *buffer + (p - *buffer);
-          *size = file_size - (p - *buffer);
+          *footer = *demo + (p - *demo);
+          *footer_size = file_size - (p - *demo);
 
           break;
         }
@@ -743,18 +743,18 @@ wadinfo_t *G_ReadDemoFooterHeader(char *buffer, size_t size)
 
 static void G_ReadDemoFooter(const char *filename)
 {
-  byte *buffer = NULL;
-  byte *demoex_p = NULL;
-  const byte *demo_end_p = NULL;
-  size_t size;
+  byte *demo = NULL;
+  byte *footer = NULL;
+  size_t demo_size;
+  size_t footer_size;
 
-  G_PartitionDemo(filename, &buffer, &demo_end_p, &demoex_p, &size);
+  G_PartitionDemo(filename, &demo, &demo_size, &footer, &footer_size);
 
-  if (demoex_p)
+  if (footer)
   {
     wadinfo_t *header;
 
-    header = G_ReadDemoFooterHeader(demoex_p, size);
+    header = G_ReadDemoFooterHeader(footer, footer_size);
 
     if (!header)
     {
@@ -768,8 +768,8 @@ static void G_ReadDemoFooter(const char *filename)
     }
   }
 
-  if (buffer)
-    Z_Free(buffer);
+  if (demo)
+    Z_Free(demo);
 }
 
 static void R_DemoEx_NewLine(wadtbl_t *wadtbl)
