@@ -24,6 +24,28 @@
 
 #include "utility.h"
 
+void dsda_InitString(dsda_string_t* dest) {
+  dest->size = 1; // \0
+  dest->string = NULL;
+}
+
+void dsda_FreeString(dsda_string_t* dest) {
+  Z_Free(dest->string);
+  dsda_InitString(dest);
+}
+
+void dsda_StringCat(dsda_string_t* dest, const char* source) {
+  if (!source || !source[0])
+    return;
+
+  dest->size += strlen(source);
+  if (dest->string)
+    dest->string = Z_Realloc(dest->string, dest->size);
+  else
+    dest->string = Z_Calloc(dest->size, 1);
+  strcat(dest->string, source);
+}
+
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
   unsigned int i;
 

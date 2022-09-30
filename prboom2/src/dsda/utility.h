@@ -44,6 +44,14 @@ typedef struct {
   char string[33];
 } dsda_cksum_t;
 
+typedef struct {
+  char* string;
+  size_t size;
+} dsda_string_t;
+
+void dsda_InitString(dsda_string_t* dest);
+void dsda_FreeString(dsda_string_t* dest);
+void dsda_StringCat(dsda_string_t* dest, const char* source);
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum);
 dboolean dsda_HasFileExt(const char* file, const char* ext);
 char** dsda_SplitString(char* str, const char* delimiter);
