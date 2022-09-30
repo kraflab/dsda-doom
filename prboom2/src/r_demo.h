@@ -81,7 +81,6 @@ int CheckDemoExDemo(void);
 void WadDataToWadFiles(waddata_t *waddata);
 
 byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size);
-void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
 void G_WriteDemoFooter(void);
 void I_DemoExShutdown(void);
 

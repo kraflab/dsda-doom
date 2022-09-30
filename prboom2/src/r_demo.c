@@ -725,47 +725,6 @@ byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size)
   return result;
 }
 
-void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl)
-{
-  FILE *hfile;
-  byte *buffer = NULL;
-  const byte *demoex_p = NULL;
-  size_t size;
-
-  buffer = G_GetDemoFooter(filename, &demoex_p, &size);
-  if (buffer)
-  {
-    char newfilename[PATH_MAX];
-
-    strncpy(newfilename, filename, sizeof(newfilename) - 5);
-    newfilename[sizeof(newfilename) - 5] = 0;
-    strcat(newfilename, ".out");
-
-    hfile = fopen(newfilename, "wb");
-    if (hfile)
-    {
-      int demosize = (demoex_p - buffer);
-      int headersize = sizeof(wadtbl->header);
-      int datasize = wadtbl->datasize;
-      int lumpssize = wadtbl->header.numlumps * sizeof(wadtbl->lumps[0]);
-
-      //write pwad header, all data and lookup table to the end of a demo
-      if (
-        fwrite(buffer, demosize, 1, hfile) != 1 ||
-        fwrite(&wadtbl->header, headersize, 1, hfile) != 1 ||
-        fwrite(wadtbl->data, datasize, 1, hfile) != 1 ||
-        fwrite(wadtbl->lumps, lumpssize, 1, hfile) != 1 ||
-        false)
-      {
-        I_Error("G_SetDemoFooter: error writing");
-      }
-
-      fclose(hfile);
-    }
-    Z_Free(buffer);
-  }
-}
-
 int CheckWadBufIntegrity(const char *buffer, size_t size)
 {
   int i;
