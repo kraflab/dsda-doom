@@ -24,14 +24,17 @@
 
 #include "utility.h"
 
-void dsda_InitString(dsda_string_t* dest) {
+void dsda_InitString(dsda_string_t* dest, const char* value) {
   dest->size = 1; // \0
   dest->string = NULL;
+
+  if (value)
+    dsda_StringCat(dest, value);
 }
 
 void dsda_FreeString(dsda_string_t* dest) {
   Z_Free(dest->string);
-  dsda_InitString(dest);
+  dsda_InitString(dest, NULL);
 }
 
 void dsda_StringCat(dsda_string_t* dest, const char* source) {

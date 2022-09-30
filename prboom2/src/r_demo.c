@@ -478,10 +478,10 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   dsda_string_t pwads;
   dsda_string_t dehs;
 
-  dsda_InitString(&files);
-  dsda_InitString(&iwad);
-  dsda_InitString(&pwads);
-  dsda_InitString(&dehs);
+  dsda_InitString(&files, NULL);
+  dsda_InitString(&iwad, NULL);
+  dsda_InitString(&pwads, NULL);
+  dsda_InitString(&dehs, NULL);
 
   //iwad and pwads
   for (i = 0; i < numwadfiles; i++)
