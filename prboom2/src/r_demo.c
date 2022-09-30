@@ -655,56 +655,43 @@ static void R_DemoEx_AddPort(wadtbl_t *wadtbl)
     (const byte*)(PACKAGE_NAME" "PACKAGE_VERSION), strlen(PACKAGE_NAME" "PACKAGE_VERSION));
 }
 
-byte* G_GetDemoFooter(const char *filename, byte **footer, size_t *size)
+static void G_PartitionDemo(const char *filename, byte **buffer, const byte **demo_end_p, byte **footer, size_t *size)
 {
-  byte* result = NULL;
-
   FILE *hfile;
-  byte *buffer = NULL;
-  const byte* p;
   size_t file_size;
 
   hfile = fopen(filename, "rb");
 
   if (!hfile)
-    return result;
+    return;
 
   //get demo size in bytes
   fseek(hfile, 0, SEEK_END);
   file_size = ftell(hfile);
   fseek(hfile, 0, SEEK_SET);
 
-  buffer = Z_Malloc(file_size);
+  *buffer = Z_Malloc(file_size);
 
-  if (fread(buffer, file_size, 1, hfile) == 1)
+  if (fread(*buffer, file_size, 1, hfile) == 1)
   {
-    p = dsda_DemoMarkerPosition(buffer, file_size);
+    const byte* p;
+
+    p = dsda_DemoMarkerPosition(*buffer, file_size);
 
     if (p)
     {
       //skip DEMOMARKER
       p++;
 
+      *demo_end_p = p;
+
       //seach for the "PWAD" signature after ENDDEMOMARKER
-      while (p - buffer + sizeof(wadinfo_t) < file_size)
+      while (p - *buffer + sizeof(wadinfo_t) < file_size)
       {
         if (!memcmp(p, PWAD_SIGNATURE, strlen(PWAD_SIGNATURE)))
         {
-          //got it!
-          //the demo has an additional information itself
-          int demoex_size = file_size - (p - buffer);
-
-          result = buffer;
-
-          if (footer)
-          {
-            *footer = buffer + (p - buffer);
-          }
-
-          if (size)
-          {
-            *size = demoex_size;
-          }
+          *footer = *buffer + (p - *buffer);
+          *size = file_size - (p - *buffer);
 
           break;
         }
@@ -714,8 +701,6 @@ byte* G_GetDemoFooter(const char *filename, byte **footer, size_t *size)
   }
 
   fclose(hfile);
-
-  return result;
 }
 
 wadinfo_t *G_ReadDemoFooterHeader(char *buffer, size_t size)
@@ -760,11 +745,12 @@ static void G_ReadDemoFooter(const char *filename)
 {
   byte *buffer = NULL;
   byte *demoex_p = NULL;
+  const byte *demo_end_p = NULL;
   size_t size;
 
-  buffer = G_GetDemoFooter(filename, &demoex_p, &size);
+  G_PartitionDemo(filename, &buffer, &demo_end_p, &demoex_p, &size);
 
-  if (buffer)
+  if (demoex_p)
   {
     wadinfo_t *header;
 
@@ -780,9 +766,10 @@ static void G_ReadDemoFooter(const char *filename)
       // restore all critical params like -spechit x
       R_DemoEx_GetParams(header);
     }
-
-    Z_Free(buffer);
   }
+
+  if (buffer)
+    Z_Free(buffer);
 }
 
 static void R_DemoEx_NewLine(wadtbl_t *wadtbl)
