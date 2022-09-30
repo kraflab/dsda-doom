@@ -809,52 +809,6 @@ int CheckWadBufIntegrity(const char *buffer, size_t size)
   return result;
 }
 
-int CheckWadFileIntegrity(const char *filename)
-{
-  FILE *hfile;
-  int i;
-  unsigned int length;
-  wadinfo_t header;
-  filelump_t *fileinfo, *fileinfo2free = NULL;
-  int result = false;
-
-  hfile = fopen(filename, "rb");
-  if (hfile)
-  {
-    if (fread(&header, sizeof(header), 1, hfile) == 1 &&
-      (strncmp(header.identification, "IWAD", 4) == 0 ||
-       strncmp(header.identification, "PWAD", 4) == 0))
-    {
-      header.numlumps = LittleLong(header.numlumps);
-      header.infotableofs = LittleLong(header.infotableofs);
-      length = header.numlumps * sizeof(filelump_t);
-
-      fileinfo2free = fileinfo = Z_Malloc(length);
-      if (fileinfo)
-      {
-        if (fseek(hfile, header.infotableofs, SEEK_SET) == 0 &&
-          fread(fileinfo, length, 1, hfile) == 1)
-        {
-          for (i = 0; i < header.numlumps; i++, fileinfo++)
-          {
-            if (fileinfo->filepos < 0 ||
-              fileinfo->filepos > header.infotableofs ||
-              fileinfo->filepos + fileinfo->size > header.infotableofs)
-            {
-              break;
-            }
-          }
-          result = (i == header.numlumps);
-        }
-        Z_Free(fileinfo2free);
-      }
-    }
-    fclose(hfile);
-  }
-
-  return result;
-}
-
 static int G_ReadDemoFooter(const char *filename)
 {
   int result = false;
