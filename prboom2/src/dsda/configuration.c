@@ -1189,6 +1189,11 @@ static void dsda_InitStringConfig(dsda_config_t* conf, const char* value, dboole
     dsda_PersistStringConfig(conf);
 }
 
+// No side effects
+void dsda_RevertIntConfig(dsda_config_identifier_t id) {
+  dsda_config[id].transient_value.v_int = dsda_config[id].persistent_value.v_int;
+}
+
 int dsda_MaxConfigLength(void) {
   int length = 0;
 

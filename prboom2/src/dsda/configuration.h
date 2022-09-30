@@ -259,6 +259,7 @@ typedef enum {
 
 void dsda_UpdateStrictMode(void);
 void dsda_TrackConfigFeatures(void);
+void dsda_RevertIntConfig(dsda_config_identifier_t id);
 int dsda_MaxConfigLength(void);
 void dsda_InitConfig(void);
 dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_param);
