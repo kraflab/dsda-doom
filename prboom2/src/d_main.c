@@ -1676,7 +1676,7 @@ static void D_DoomMainSetup(void)
   }
 
   //e6y
-  CheckDemoExDemo();
+  G_CheckDemoEx();
 
   // add wad files from autoload PWAD directories
   if (autoload)

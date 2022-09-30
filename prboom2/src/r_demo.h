@@ -35,15 +35,9 @@
 #ifndef __R_DEMO__
 #define __R_DEMO__
 
-#include "doomdef.h"
 #include "doomtype.h"
 #include "tables.h"
 #include "d_player.h"
-#include "w_wad.h"
-
-//
-// Smooth playing stuff
-//
 
 #define SMOOTH_PLAYING_MAXFACTOR 16
 
@@ -55,34 +49,8 @@ void R_SmoothPlaying_Add(int delta);
 angle_t R_SmoothPlaying_Get(player_t *player);
 void R_ResetAfterTeleport(player_t *player);
 
-//
-// DemoEx stuff
-//
-
-typedef struct
-{
-  wadinfo_t header;
-  filelump_t *lumps;
-  char* data;
-  int datasize;
-} wadtbl_t;
-
-typedef struct
-{
-  wadfile_info_t *wadfiles;
-  size_t numwadfiles;
-} waddata_t;
-
-int WadDataInit(waddata_t *waddata);
-int WadDataAddItem(waddata_t *waddata, const char *filename, wad_source_t source, int handle);
-void WadDataFree(waddata_t *wadfiles);
-
-int CheckDemoExDemo(void);
-void WadDataToWadFiles(waddata_t *waddata);
-
-byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size);
+void G_CheckDemoEx(void);
 void G_WriteDemoFooter(void);
-void I_DemoExShutdown(void);
 
 int LoadDemo(const char *name, const byte **buffer, int *length);
 

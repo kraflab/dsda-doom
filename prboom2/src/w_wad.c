@@ -527,31 +527,6 @@ void W_Init(void)
   V_FreePlaypal();
 }
 
-void W_ReleaseAllWads(void)
-{
-  size_t i;
-
-  W_DoneCache();
-
-  for (i = 0; i < numwadfiles; i++)
-  {
-    if (wadfiles[i].handle > 0)
-    {
-      close(wadfiles[i].handle);
-      wadfiles[i].handle = 0;
-    }
-  }
-
-  numwadfiles = 0;
-  Z_Free(wadfiles);
-  wadfiles = NULL;
-  numlumps = 0;
-  Z_Free(lumpinfo);
-  lumpinfo = NULL;
-
-  V_FreePlaypal();
-}
-
 //
 // W_LumpLength
 // Returns the buffer size needed to load the given lump.
