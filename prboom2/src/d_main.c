@@ -813,7 +813,7 @@ void D_AddFile (const char *file, wad_source_t source)
     ext[1] = 'g'; ext[2] = 'w'; ext[3] = 'a';
     wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
     wadfiles[numwadfiles].name = gwa_filename;
-    wadfiles[numwadfiles].src = source; // Ty 08/29/98
+    wadfiles[numwadfiles].src = source_pwad; // Ty 08/29/98
     wadfiles[numwadfiles].handle = 0;
     numwadfiles++;
   }
