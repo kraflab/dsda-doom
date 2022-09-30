@@ -142,6 +142,11 @@ static void W_AddFile(wadfile_info_t *wadfile)
   filelump_t  singleinfo;
   int         flags = 0;
 
+  if (wadfile->src == source_skip)
+  {
+    return;
+  }
+
   // Close any existing handle
   if (wadfile->handle > 0)
   {

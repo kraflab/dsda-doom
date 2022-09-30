@@ -68,7 +68,7 @@ typedef struct
 // CPhipps - defined enum in wider scope
 // Ty 08/29/98 - add source field to identify where this lump came from
 typedef enum {
-  // CPhipps - define elements in order of 'how new/unusual'
+  source_skip = -1,
   source_iwad=0,    // iwad file load
   source_pre,       // predefined lump
   source_auto_load, // lump auto-loaded by config file
