@@ -651,8 +651,7 @@ static void R_DemoEx_AddFeatures(wadtbl_t *wadtbl)
 
 static void R_DemoEx_AddPort(wadtbl_t *wadtbl)
 {
-  W_AddLump(wadtbl, DEMOEX_PORTNAME_LUMPNAME,
-    (const byte*)(PACKAGE_NAME" "PACKAGE_VERSION), strlen(PACKAGE_NAME" "PACKAGE_VERSION));
+  W_AddLump(wadtbl, DEMOEX_PORTNAME_LUMPNAME, (const byte*) PACKAGE_STRING, strlen(PACKAGE_STRING));
 }
 
 static void G_PartitionDemo(const char *filename, byte **demo, size_t *demo_size, byte **footer, size_t *footer_size)
