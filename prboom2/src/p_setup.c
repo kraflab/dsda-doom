@@ -2781,6 +2781,15 @@ void P_CheckLevelWadStructure(const char *mapname)
     I_Error("P_SetupLevel: There is no %s map.", mapname);
   }
 
+  i = lumpnum + ML_TEXTMAP;
+  if (P_CheckLumpsForSameSource(lumpnum, i))
+  {
+    if (!strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
+    {
+      I_Error("UDMF maps are not supported yet");
+    }
+  }
+
   for (i = ML_THINGS + 1; i <= ML_SECTORS; i++)
   {
     if (!P_CheckLumpsForSameSource(lumpnum, lumpnum + i))
