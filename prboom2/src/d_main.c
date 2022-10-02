@@ -1585,10 +1585,6 @@ static void D_DoomMainSetup(void)
   else if (dsda_Flag(dsda_arg_deathmatch))
     deathmatch = 1;
 
-  if (devparm)
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"%s",D_DEVSTR);
-
   modifiedgame = false;
 
   // get skill / episode / map from parms
