@@ -286,7 +286,7 @@ static void R_InitTextures (void)
   if (errors)
   {
     const lumpinfo_t* info = W_GetLumpInfoByNum(names_lump);
-    lprintf(LO_INFO, "\nR_InitTextures: The file %s seems to be incompatible with \"%s\".\n",
+    lprintf(LO_ERROR, "\nR_InitTextures: The file %s seems to be incompatible with \"%s\".\n",
       info->wadfile->name,
       (doomverstr ? doomverstr : "DOOM"));
     I_Error("R_InitTextures: %d errors", errors);
@@ -539,11 +539,11 @@ void R_InitTranMap(int progress)
 
 void R_InitData(void)
 {
-  lprintf(LO_INFO, "Textures ");
+  lprintf(LO_DEBUG, "Textures ");
   R_InitTextures();
-  lprintf(LO_INFO, "Flats ");
+  lprintf(LO_DEBUG, "Flats ");
   R_InitFlats();
-  lprintf(LO_INFO, "Sprites ");
+  lprintf(LO_DEBUG, "Sprites ");
   R_InitSpriteLumps();
   R_InitTranMap(1);                   // killough 2/21/98, 3/6/98
   R_InitColormaps();                    // killough 3/20/98

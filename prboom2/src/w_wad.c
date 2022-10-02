@@ -526,7 +526,7 @@ void W_Init(void)
   W_HashLumps();
 
   /* cph 2001/07/07 - separated cache setup */
-  lprintf(LO_INFO,"W_InitCache\n");
+  lprintf(LO_DEBUG, "W_InitCache\n");
   W_InitCache();
 
   V_FreePlaypal();

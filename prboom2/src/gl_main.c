@@ -212,7 +212,7 @@ void gld_InitTextureParams(void)
     if (!strcasecmp(gl_tex_format_string, tex_formats[i].tex_format_name))
     {
       gl_tex_format = tex_formats[i].tex_format;
-      lprintf(LO_INFO,"Using texture format %s.\n", tex_formats[i].tex_format_name);
+      lprintf(LO_DEBUG, "Using texture format %s.\n", tex_formats[i].tex_format_name);
       break;
     }
     i++;
@@ -307,10 +307,10 @@ void gld_Init(int width, int height)
 {
   GLfloat params[4]={0.0f,0.0f,1.0f,0.0f};
 
-  lprintf(LO_INFO,"GL_VENDOR: %s\n",glGetString(GL_VENDOR));
-  lprintf(LO_INFO,"GL_RENDERER: %s\n",glGetString(GL_RENDERER));
-  lprintf(LO_INFO,"GL_VERSION: %s\n",glGetString(GL_VERSION));
-  lprintf(LO_DEBUG,"GL_EXTENSIONS:\n");
+  lprintf(LO_DEBUG, "GL_VENDOR: %s\n",glGetString(GL_VENDOR));
+  lprintf(LO_DEBUG, "GL_RENDERER: %s\n",glGetString(GL_RENDERER));
+  lprintf(LO_DEBUG, "GL_VERSION: %s\n",glGetString(GL_VERSION));
+  lprintf(LO_DEBUG, "GL_EXTENSIONS:\n");
   {
     char ext_name[256];
     const char *extensions = (const char*)glGetString(GL_EXTENSIONS);

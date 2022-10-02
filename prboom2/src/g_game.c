@@ -3588,8 +3588,6 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
   if (sizeof(comp_lev_str)/sizeof(comp_lev_str[0]) != MAX_COMPATIBILITY_LEVEL)
     I_Error("G_ReadDemoHeader: compatibility level strings incomplete");
-  lprintf(LO_INFO, "G_DoPlayDemo: playing demo with %s compatibility\n",
-    comp_lev_str[compatibility_level]);
 
   for (i = 0; i < g_maxplayers; i++)
     playeringame[i] = 0;
@@ -3702,6 +3700,9 @@ void G_DoPlayDemo(void)
   if (LoadDemo(defdemoname, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_NORMAL);
+
+    lprintf(LO_INFO, "Playing demo:\n  Name: %s\n  Compatibility: %s\n",
+                     defdemoname, comp_lev_str[compatibility_level]);
 
     gameaction = ga_nothing;
   }

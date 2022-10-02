@@ -506,7 +506,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       strcat(p, ext);
     if (!access(p,F_OK)) {
       if (!isStatic)
-        lprintf(LO_INFO, " found %s\n", p);
+        lprintf(LO_DEBUG, " found %s\n", p);
       return p;
     }
     if (!isStatic)

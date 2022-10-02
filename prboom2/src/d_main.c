@@ -965,7 +965,7 @@ void AddIWAD(const char *iwad)
     return;
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"IWAD found: %s\n",iwad); //jff 4/20/98 print only if found
+  lprintf(LO_DEBUG, "IWAD found: %s\n", iwad); //jff 4/20/98 print only if found
   CheckIWAD(iwad,&gamemode,&haswolflevels);
 
   /* jff 8/23/98 set gamemission global appropriately in all cases
@@ -1458,54 +1458,63 @@ static void HandlePlayback(void)
   if (!file)
     return;
 
-  //e6y
   LoadExDemo(file);
-  lprintf(LO_INFO, "Playing demo %s\n", file);
 }
 
 const char* doomverstr = NULL;
 
 static void EvaluateDoomVerStr(void)
 {
-  switch ( gamemode )
+  if (heretic)
   {
-    case retail:
-      switch (gamemission)
-      {
-        case chex:
-          doomverstr = "Chex(R) Quest";
-          break;
-        default:
-          doomverstr = "The Ultimate DOOM";
-          break;
-      }
-      break;
-    case shareware:
-      doomverstr = "DOOM Shareware";
-      break;
-    case registered:
-      doomverstr = "DOOM Registered";
-      break;
-    case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
-      switch (gamemission)
-      {
-        case pack_plut:
-          doomverstr = "Final DOOM - The Plutonia Experiment";
-          break;
-        case pack_tnt:
-          doomverstr = "Final DOOM - TNT: Evilution";
-          break;
-        case hacx:
-          doomverstr = "HACX - Twitch 'n Kill";
-          break;
-        default:
-          doomverstr = "DOOM 2: Hell on Earth";
-          break;
-      }
-      break;
-    default:
-      doomverstr = "Public DOOM";
-      break;
+    doomverstr = "Heretic";
+  }
+  else if (hexen)
+  {
+    doomverstr = "Hexen";
+  }
+  else
+  {
+    switch ( gamemode )
+    {
+      case retail:
+        switch (gamemission)
+        {
+          case chex:
+            doomverstr = "Chex(R) Quest";
+            break;
+          default:
+            doomverstr = "The Ultimate DOOM";
+            break;
+        }
+        break;
+      case shareware:
+        doomverstr = "DOOM Shareware";
+        break;
+      case registered:
+        doomverstr = "DOOM Registered";
+        break;
+      case commercial:  // Ty 08/27/98 - fixed gamemode vs gamemission
+        switch (gamemission)
+        {
+          case pack_plut:
+            doomverstr = "Final DOOM - The Plutonia Experiment";
+            break;
+          case pack_tnt:
+            doomverstr = "Final DOOM - TNT: Evilution";
+            break;
+          case hacx:
+            doomverstr = "HACX - Twitch 'n Kill";
+            break;
+          default:
+            doomverstr = "DOOM 2: Hell on Earth";
+            break;
+        }
+        break;
+      default:
+        doomverstr = "Public DOOM";
+        break;
+    }
   }
 
   if (bfgedition)
@@ -1519,12 +1528,14 @@ static void EvaluateDoomVerStr(void)
     Z_Free (tempverstr);
   }
 
-  /* cphipps - the main display. This shows the build date, copyright, and game type */
-  lprintf(LO_INFO,PACKAGE_NAME" (built %s), playing: %s\n"
-    PACKAGE_NAME" is released under the GNU General Public license v2.0.\n"
-    "You are welcome to redistribute it under certain conditions.\n"
-    "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n",
-    version_date, doomverstr);
+  /* cphipps - the main display. This shows the copyright and game type */
+  lprintf(LO_INFO,
+          "%s is released under the GNU General Public license v2.0.\n"
+          "You are welcome to redistribute it under certain conditions.\n"
+          "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n\n",
+          PACKAGE_NAME);
+
+  lprintf(LO_INFO, "Playing: %s\n", doomverstr);
 }
 
 //
@@ -1573,8 +1584,6 @@ static void D_DoomMainSetup(void)
     deathmatch = 2;
   else if (dsda_Flag(dsda_arg_deathmatch))
     deathmatch = 1;
-
-  EvaluateDoomVerStr();
 
   if (devparm)
     //jff 9/3/98 use logical output routine
@@ -1634,7 +1643,7 @@ static void D_DoomMainSetup(void)
   gld_InitCommandLine();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"V_Init: allocate screens.\n");
+  lprintf(LO_DEBUG, "V_Init: allocate screens.\n");
   V_Init();
 
   //e6y: Calculate the screen resolution and init all buffers
@@ -1652,6 +1661,8 @@ static void D_DoomMainSetup(void)
   D_AddFile(port_wad_file, source_auto_load);
 
   HandlePlayback(); // must come before autoload: may detect iwad in footer
+
+  EvaluateDoomVerStr(); // must come after HandlePlayback (may change iwad)
 
   // add wad files from autoload directory before wads from -file parameter
   if (autoload)
@@ -1695,7 +1706,7 @@ static void D_DoomMainSetup(void)
   D_InitFakeNetGame();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"W_Init: Init WADfiles.\n");
+  lprintf(LO_DEBUG, "W_Init: Init WADfiles.\n");
   W_Init(); // CPhipps - handling of wadfiles init changed
 
   if (hexen)
@@ -1713,10 +1724,8 @@ static void D_DoomMainSetup(void)
   }
 
 
-  lprintf(LO_INFO, "G_ReloadDefaults: Checking OPTIONS.\n");
+  lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
   G_ReloadDefaults();
-
-  lprintf(LO_INFO,"\n");     // killough 3/6/98: add a newline, by popular demand :)
 
   // e6y
   // option to disable automatic loading of dehacked-in-wad lump
@@ -1806,10 +1815,12 @@ static void D_DoomMainSetup(void)
   dsda_AppendZDoomMobjInfo();
   dsda_ApplyDefaultMapFormat();
 
+  lprintf(LO_INFO, "\n"); // Separator after file loading
+
   V_InitColorTranslation(); //jff 4/24/98 load color translation lumps
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"M_Init: Init miscellaneous info.\n");
+  lprintf(LO_DEBUG, "M_Init: Init miscellaneous info.\n");
   M_Init();
 
   dsda_LoadSndInfo();
@@ -1820,13 +1831,13 @@ static void D_DoomMainSetup(void)
   }
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"R_Init: Init DOOM refresh daemon - ");
+  lprintf(LO_DEBUG, "R_Init: Init DOOM refresh daemon - ");
   R_Init();
 
   dsda_LoadMapInfo();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"\nP_Init: Init Playloop state.\n");
+  lprintf(LO_DEBUG, "\nP_Init: Init Playloop state.\n");
   P_Init();
 
   // Must be after P_Init
@@ -1836,15 +1847,15 @@ static void D_DoomMainSetup(void)
   dsda_HandleSkip();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"I_Init: Setting up machine state.\n");
+  lprintf(LO_DEBUG, "I_Init: Setting up machine state.\n");
   I_Init();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"S_Init: Setting up sound.\n");
+  lprintf(LO_DEBUG, "S_Init: Setting up sound.\n");
   S_Init();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
+  lprintf(LO_DEBUG, "HU_Init: Setting up heads up display.\n");
   HU_Init();
 
   if (!(dsda_Flag(dsda_arg_nodraw) && dsda_Flag(dsda_arg_nosound)))
@@ -1858,7 +1869,7 @@ static void D_DoomMainSetup(void)
   }
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"ST_Init: Init status bar.\n");
+  lprintf(LO_DEBUG, "ST_Init: Init status bar.\n");
   ST_Init();
 
   // start the appropriate game based on parms
@@ -1887,6 +1898,8 @@ static void D_DoomMainSetup(void)
 
   // do not try to interpolate during timedemo
   M_ChangeUncappedFrameRate();
+
+  lprintf(LO_INFO, "\n"); // Separator after setup
 }
 
 //

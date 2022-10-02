@@ -1469,7 +1469,7 @@ void gld_Precache(void)
 
     strcpy(map, MAPNAME(gameepisode, gamemap));
 
-    lprintf(LO_INFO, "gld_Precache: %s done in %d ms\n", map, SDL_GetTicks() - tics);
+    lprintf(LO_DEBUG, "gld_Precache: %s done in %d ms\n", map, SDL_GetTicks() - tics);
   }
 }
 

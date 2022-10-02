@@ -754,7 +754,7 @@ void M_LoadDefaults (void)
     snprintf(defaultfile, len + 1, "%s/dsda-doom.cfg", exedir);
   }
 
-  lprintf (LO_INFO, " default file: %s\n",defaultfile);
+  lprintf(LO_DEBUG, " default file: %s\n", defaultfile);
 
   // read the file in, overriding any set defaults
 

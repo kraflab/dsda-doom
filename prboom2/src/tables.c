@@ -120,12 +120,12 @@ void R_LoadTrigTables(void)
   // Endianness correction - might still be non-portable, but is fast where possible
   {
     size_t n;
-    lprintf(LO_INFO, "Endianness...");
+    lprintf(LO_DEBUG, "Endianness...");
 
     // This test doesn't assume the endianness of the tables, but deduces them from
     // en entry. I hope this is portable.
     if ((10 < finesine[1]) && (finesine[1] < 100)) {
-      lprintf(LO_INFO, "ok.");
+      lprintf(LO_DEBUG, "ok.");
       return; // Endianness is correct
     }
 
@@ -136,6 +136,6 @@ void R_LoadTrigTables(void)
     CORRECT_TABLE_ENDIAN(finesine);
     CORRECT_TABLE_ENDIAN(finetangent);
     CORRECT_TABLE_ENDIAN(tantoangle);
-    lprintf(LO_INFO, "corrected.");
+    lprintf(LO_DEBUG, "corrected.");
   }
 }

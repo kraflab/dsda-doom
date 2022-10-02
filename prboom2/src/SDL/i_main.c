@@ -160,6 +160,8 @@ void I_SafeExit(int rc)
 {
   atexit_listentry_t *entry;
 
+  lprintf(LO_INFO, "\n"); // Separator after game loop
+
   // Run through all exit functions
   for (; exit_priority < exit_priority_max; ++exit_priority)
   {
@@ -169,7 +171,7 @@ void I_SafeExit(int rc)
 
       if (rc == 0 || entry->run_on_error)
       {
-        lprintf(LO_INFO, "Exit Sequence[%d]: %s (%d)\n", exit_priority, entry->name, rc);
+        lprintf(LO_DEBUG, "Exit Sequence[%d]: %s (%d)\n", exit_priority, entry->name, rc);
         entry->func();
       }
     }
@@ -262,11 +264,11 @@ int main(int argc, char **argv)
   // e6y: was moved from D_DoomMainSetup
   // init subsystems
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"M_LoadDefaults: Load system defaults.\n");
+  lprintf(LO_DEBUG, "M_LoadDefaults: Load system defaults.\n");
   M_LoadDefaults();              // load before initing other systems
 
   /* Version info */
-  lprintf(LO_INFO,"\n");
+  lprintf(LO_INFO, "\n");
   PrintVer();
 
   /*

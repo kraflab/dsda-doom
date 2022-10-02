@@ -236,7 +236,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
     if (linked)
     {
-      lprintf(LO_INFO, "gld_LoadShader: Shader \"%s+%s\" compiled OK: %s\n", vpname, fpname, buffer);
+      lprintf(LO_DEBUG, "gld_LoadShader: Shader \"%s+%s\" compiled OK: %s\n", vpname, fpname, buffer);
     }
     else
     {

@@ -60,7 +60,6 @@
 #endif
 
 #include "m_swap.h"
-#include "version.h"
 #include "doomtype.h"
 
 extern dboolean bfgedition;

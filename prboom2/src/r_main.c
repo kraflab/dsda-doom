@@ -745,20 +745,20 @@ void R_Init (void)
   // CPhipps - R_DrawColumn isn't constant anymore, so must
   //  initialise in code
   // current column draw function
-  lprintf(LO_INFO, "\nR_LoadTrigTables: ");
+  lprintf(LO_DEBUG, "\nR_LoadTrigTables: ");
   R_LoadTrigTables();
-  lprintf(LO_INFO, "\nR_InitData: ");
+  lprintf(LO_DEBUG, "\nR_InitData: ");
   R_InitData();
   R_SetViewSize();
-  lprintf(LO_INFO, "\nR_Init: R_InitPlanes ");
+  lprintf(LO_DEBUG, "\nR_Init: R_InitPlanes ");
   R_InitPlanes();
-  lprintf(LO_INFO, "R_InitLightTables ");
+  lprintf(LO_DEBUG, "R_InitLightTables ");
   R_InitLightTables();
-  lprintf(LO_INFO, "R_InitSkyMap ");
+  lprintf(LO_DEBUG, "R_InitSkyMap ");
   R_InitSkyMap();
-  lprintf(LO_INFO, "R_InitTranslationsTables ");
+  lprintf(LO_DEBUG, "R_InitTranslationsTables ");
   R_InitTranslationTables();
-  lprintf(LO_INFO, "R_InitPatches ");
+  lprintf(LO_DEBUG, "R_InitPatches ");
   R_InitPatches();
 }
 

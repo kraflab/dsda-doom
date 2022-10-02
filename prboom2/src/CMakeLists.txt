@@ -335,8 +335,6 @@ set(COMMON_SRC
     tables.h
     umapinfo.cpp
     umapinfo.h
-    version.c
-    version.h
     v_video.c
     v_video.h
     wi_stuff.c

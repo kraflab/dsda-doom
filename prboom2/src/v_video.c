@@ -909,7 +909,7 @@ V_DrawLineWu_f V_DrawLineWu = NULL_DrawLineWu;
 void V_InitMode(video_mode_t mode) {
   switch (mode) {
     case VID_MODESW:
-      lprintf(LO_INFO, "V_InitMode: using software video mode\n");
+      lprintf(LO_DEBUG, "V_InitMode: using software video mode\n");
       V_CopyRect = FUNC_V_CopyRect;
       V_FillRect = V_FillRect8;
       V_DrawNumPatch = FUNC_V_DrawNumPatch;
@@ -924,7 +924,7 @@ void V_InitMode(video_mode_t mode) {
       current_videomode = VID_MODESW;
       break;
     case VID_MODEGL:
-      lprintf(LO_INFO, "V_InitMode: using OpenGL video mode\n");
+      lprintf(LO_DEBUG, "V_InitMode: using OpenGL video mode\n");
       V_CopyRect = WRAP_gld_CopyRect;
       V_FillRect = WRAP_gld_FillRect;
       V_DrawNumPatch = WRAP_gld_DrawNumPatch;
