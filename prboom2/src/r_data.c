@@ -44,6 +44,7 @@
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "p_tick.h"
 
+#include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/map_format.h"
 
@@ -138,6 +139,9 @@ static void R_InitTextures (void)
   int  numtextures1, numtextures2;
   const int *directory;
   int  errors = 0;
+  int  devparm;
+
+  devparm = dsda_Flag(dsda_arg_devparm);
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;

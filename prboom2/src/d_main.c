@@ -119,10 +119,6 @@
 
 static void D_PageDrawer(void);
 
-// CPhipps - removed wadfiles[] stuff
-
-dboolean devparm;        // started game with -devparm
-
 // jff 1/24/98 add new versions of these variables to remember command line
 dboolean clnomonsters;   // checkparm of -nomonsters
 dboolean clrespawnparm;  // checkparm of -respawn
@@ -1577,8 +1573,6 @@ static void D_DoomMainSetup(void)
   respawnparm = clrespawnparm = dsda_Flag(dsda_arg_respawn);
   fastparm = clfastparm = dsda_Flag(dsda_arg_fast);
   // jff 1/24/98 end of set to both working and command line value
-
-  devparm = dsda_Flag(dsda_arg_devparm);
 
   if (dsda_Flag(dsda_arg_altdeath))
     deathmatch = 2;
