@@ -1451,23 +1451,16 @@ static void HandleClass(void)
 
 static void HandlePlayback(void)
 {
-  const char* name;
+  const char* file;
 
-  name = dsda_ParsePlaybackOptions();
+  file = dsda_ParsePlaybackOptions();
 
-  if (name)
-  {
-    char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
-    strcpy(file, name);
-    AddDefaultExtension(file, ".lmp");     // killough
-    D_AddFile (file, source_lmp);
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO, "Playing demo %s\n", file);
-    Z_Free(file);
+  if (!file)
+    return;
 
-    //e6y
-    G_CheckDemoEx();
-  }
+  //e6y
+  LoadExDemo(file);
+  lprintf(LO_INFO, "Playing demo %s\n", file);
 }
 
 const char* doomverstr = NULL;

@@ -49,9 +49,9 @@ void R_SmoothPlaying_Add(int delta);
 angle_t R_SmoothPlaying_Get(player_t *player);
 void R_ResetAfterTeleport(player_t *player);
 
-void G_CheckDemoEx(void);
 void G_WriteDemoFooter(void);
 
+void LoadExDemo(const char *filename);
 int LoadDemo(const char *name, const byte **buffer, int *length);
 
 #endif // __R_DEMO__

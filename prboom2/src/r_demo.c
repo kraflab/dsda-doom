@@ -74,50 +74,53 @@
 #include "dsda/playback.h"
 #include "dsda/utility.h"
 
+typedef struct {
+  const char *name;
+  byte *demo;
+  byte *footer;
+  size_t demo_size;
+  size_t footer_size;
+} exdemo_t;
+
+static exdemo_t exdemo;
+
+static void ForgetExDemo(void)
+{
+  if (exdemo.demo)
+    Z_Free(exdemo.demo);
+
+  memset(&exdemo, 0, sizeof(exdemo));
+}
+
 int LoadDemo(const char *name, const byte **buffer, int *length)
 {
   char basename[9];
-  char *filename = NULL;
-  int num = -1;
-  int len = 0;
+  int num;
+  int len;
   const byte *buf = NULL;
+
+  if (exdemo.demo)
+  {
+    *buffer = exdemo.demo;
+    *length = exdemo.demo_size;
+
+    return true;
+  }
 
   ExtractFileBase(name, basename);
   basename[8] = 0;
 
   // check ns_demos namespace first, then ns_global
   num = W_CheckNumForName2(basename, ns_demos);
+
   if (num == LUMP_NOT_FOUND)
-  {
     num = W_CheckNumForName(basename);
-  }
 
   if (num == LUMP_NOT_FOUND)
-  {
-    // Allow for demos not loaded as lumps
-    static byte *sbuf = NULL;
-    filename = I_FindFile(name, ".lmp");
-    if (filename)
-    {
-      if (sbuf)
-      {
-        Z_Free(sbuf);
-        sbuf = NULL;
-      }
+    return false;
 
-      len = M_ReadFile(filename, &sbuf);
-      buf = (const byte *)sbuf;
-      Z_Free(filename);
-    }
-  }
-  else
-  {
-    buf = W_LumpByNum(num);
-    len = W_LumpLength(num);
-  }
-
-  if (len < 0)
-    len = 0;
+  buf = W_LumpByNum(num);
+  len = W_LumpLength(num);
 
   if (len > 0)
   {
@@ -654,52 +657,47 @@ static void R_DemoEx_AddPort(wadtbl_t *wadtbl)
   W_AddLump(wadtbl, DEMOEX_PORTNAME_LUMPNAME, (const byte*) PACKAGE_STRING, strlen(PACKAGE_STRING));
 }
 
-static void G_PartitionDemo(const char *filename, byte **demo, size_t *demo_size, byte **footer, size_t *footer_size)
+static void G_PartitionDemo(const char *filename)
 {
-  FILE *hfile;
   size_t file_size;
 
-  hfile = fopen(filename, "rb");
+  file_size = M_ReadFile(filename, &exdemo.demo);
 
-  if (!hfile)
-    return;
-
-  //get demo size in bytes
-  fseek(hfile, 0, SEEK_END);
-  file_size = ftell(hfile);
-  fseek(hfile, 0, SEEK_SET);
-
-  *demo = Z_Malloc(file_size);
-
-  if (fread(*demo, file_size, 1, hfile) == 1)
+  if (file_size > 0)
   {
     const byte* p;
 
-    p = dsda_DemoMarkerPosition(*demo, file_size);
+    p = dsda_DemoMarkerPosition(exdemo.demo, file_size);
 
     if (p)
     {
       //skip DEMOMARKER
       p++;
 
-      *demo_size = p - *demo;
+      exdemo.demo_size = p - exdemo.demo;
 
       //seach for the "PWAD" signature after ENDDEMOMARKER
-      while (p - *demo + sizeof(wadinfo_t) < file_size)
+      while (p - exdemo.demo + sizeof(wadinfo_t) < file_size)
       {
         if (!memcmp(p, PWAD_SIGNATURE, strlen(PWAD_SIGNATURE)))
         {
-          *footer = *demo + (p - *demo);
-          *footer_size = file_size - (p - *demo);
+          exdemo.footer = exdemo.demo + (p - exdemo.demo);
+          exdemo.footer_size = file_size - (p - exdemo.demo);
 
           break;
         }
         p++;
       }
     }
+    else
+    {
+      ForgetExDemo();
+    }
   }
-
-  fclose(hfile);
+  else
+  {
+    ForgetExDemo();
+  }
 }
 
 wadinfo_t *G_ReadDemoFooterHeader(char *buffer, size_t size)
@@ -740,37 +738,6 @@ wadinfo_t *G_ReadDemoFooterHeader(char *buffer, size_t size)
   return NULL;
 }
 
-static void G_ReadDemoFooter(const char *filename)
-{
-  byte *demo = NULL;
-  byte *footer = NULL;
-  size_t demo_size;
-  size_t footer_size;
-
-  G_PartitionDemo(filename, &demo, &demo_size, &footer, &footer_size);
-
-  if (footer)
-  {
-    wadinfo_t *header;
-
-    header = G_ReadDemoFooterHeader(footer, footer_size);
-
-    if (!header)
-    {
-      lprintf(LO_ERROR, "G_ReadDemoFooter: demo footer is corrupted\n");
-    }
-    else
-    {
-      // get needed wads and dehs
-      // restore all critical params like -spechit x
-      R_DemoEx_GetParams(header);
-    }
-  }
-
-  if (demo)
-    Z_Free(demo);
-}
-
 static void R_DemoEx_NewLine(wadtbl_t *wadtbl)
 {
   const char* const separator = "\n";
@@ -808,27 +775,26 @@ void G_WriteDemoFooter(void)
   W_FreePWADTable(&demoex);
 }
 
-void G_CheckDemoEx(void)
+void LoadExDemo(const char *filename)
 {
-  const char* playback_name;
+  G_PartitionDemo(filename);
 
-  playback_name = dsda_PlaybackName();
-
-  if (playback_name)
+  if (exdemo.footer)
   {
-    char *demoname, *filename;
+    wadinfo_t *header;
 
-    filename = Z_Malloc(strlen(playback_name) + 16);
-    strcpy(filename, playback_name);
-    AddDefaultExtension(filename, ".lmp");
+    header = G_ReadDemoFooterHeader(exdemo.footer, exdemo.footer_size);
 
-    demoname = I_FindFile(filename, NULL);
-    if (demoname)
+    if (!header)
     {
-      G_ReadDemoFooter(demoname);
-      Z_Free(demoname);
+      lprintf(LO_ERROR, "LoadExDemo: demo footer is corrupted\n");
     }
-
-    Z_Free(filename);
+    else
+    {
+      // R_DemoEx_CheckFeatures(header, demo, demo_size);
+      // get needed wads and dehs
+      // restore all critical params like -spechit x
+      R_DemoEx_GetParams(header);
+    }
   }
 }

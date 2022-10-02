@@ -39,7 +39,8 @@ static dsda_arg_t* playdemo_arg;
 static dsda_arg_t* fastdemo_arg;
 static dsda_arg_t* timedemo_arg;
 static dsda_arg_t* recordfromto_arg;
-static const char* playback_name;
+static char* playback_name;
+static char* playback_filename;
 
 dboolean demoplayback;
 dboolean userdemo;
@@ -94,38 +95,48 @@ void dsda_ExecutePlaybackOptions(void) {
   }
 }
 
+static void dsda_UpdatePlaybackName(const char* name) {
+  if (playback_name)
+    Z_Free(playback_name);
+
+  if (playback_filename)
+    Z_Free(playback_filename);
+
+  playback_name = Z_Strdup(name);
+  playback_filename = I_RequireFile(playback_name, ".lmp");
+}
+
 const char* dsda_ParsePlaybackOptions(void) {
   dsda_arg_t* arg;
 
   arg = dsda_Arg(dsda_arg_playdemo);
   if (arg->found) {
     playdemo_arg = arg;
-    playback_name = arg->value.v_string;
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string);
+    return playback_filename;
   }
 
   arg = dsda_Arg(dsda_arg_fastdemo);
   if (arg->found) {
     fastdemo_arg = arg;
     fastdemo = true;
-    playback_name = arg->value.v_string;
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string);
+    return playback_filename;
   }
 
   arg = dsda_Arg(dsda_arg_timedemo);
   if (arg->found) {
     timedemo_arg = arg;
-    playback_name = arg->value.v_string;
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string);
+    return playback_filename;
   }
 
   arg = dsda_Arg(dsda_arg_recordfromto);
   if (arg->found) {
-    I_RequireFile(arg->value.v_string_array[0], ".lmp");
     recordfromto_arg = arg;
     dsda_SetDemoBaseName(arg->value.v_string_array[1]);
-    playback_name = arg->value.v_string_array[0];
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string_array[0]);
+    return playback_filename;
   }
 
   return NULL;
