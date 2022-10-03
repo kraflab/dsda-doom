@@ -105,7 +105,7 @@ char* dsda_DescribeFeatures(void) {
   dboolean first = true;
   dsda_string_t description;
 
-  dsda_InitString(&description, "");
+  dsda_InitString(&description, NULL);
 
   for (i = 0; i < 64; ++i)
     if (used_features & FEATURE_BIT(i) && feature_names[i]) {
@@ -116,6 +116,9 @@ char* dsda_DescribeFeatures(void) {
 
       dsda_StringCat(&description, feature_names[i]);
     }
+
+  if (!description.string)
+    dsda_StringCat(&description, "Tachyeres pteneres");
 
   return description.string;
 }
