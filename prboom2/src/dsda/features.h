@@ -24,7 +24,7 @@ typedef enum {
   uf_crosshair,
   uf_quickstartcache,
   uf_100k,
-  // uf_console,
+  uf_console,
 
   uf_unknown = 30,
   uf_invalid = 31,

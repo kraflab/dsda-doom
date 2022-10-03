@@ -32,6 +32,7 @@ static const char* feature_names[64] = {
   [uf_crosshair] = "Crosshair",
   [uf_quickstartcache] = "Quickstart Cache",
   [uf_100k] = "100K Tracker",
+  [uf_console] = "Console",
 
   [uf_iddt] = "IDDT",
   [uf_automap] = "IDBEHOLD Map",

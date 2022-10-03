@@ -33,6 +33,7 @@
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
+#include "dsda/features.h"
 #include "dsda/global.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
@@ -128,6 +129,8 @@ dboolean dsda_OpenConsole(void) {
       VPT_ALIGN_LEFT_TOP
     );
   }
+
+  dsda_TrackFeature(uf_console);
 
   M_StartControlPanel();
   M_SetupNextMenu(&dsda_ConsoleDef);
