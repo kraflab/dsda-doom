@@ -51,6 +51,7 @@ void R_ResetAfterTeleport(player_t *player);
 
 void G_WriteDemoFooter(void);
 
+int R_DemoEx_IsSigned(void);
 void LoadExDemo(const char *filename);
 int LoadDemo(const char *name, const byte **buffer, int *length);
 

@@ -630,6 +630,11 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   dsda_FreeString(&dehs);
 }
 
+int R_DemoEx_IsSigned(void)
+{
+  return exdemo.is_signed;
+}
+
 static void R_DemoEx_GetFeatures(const wadinfo_t *header)
 {
   char* str;
