@@ -81,6 +81,7 @@ typedef struct {
   size_t demo_size;
   size_t footer_size;
   uint_64_t signature;
+  int is_signed;
 } exdemo_t;
 
 static exdemo_t exdemo;
@@ -633,32 +634,37 @@ static void R_DemoEx_GetFeatures(const wadinfo_t *header)
 {
   char* str;
   uint_64_t used_features;
-  byte features[FEATURE_SIZE];
   char signature[33];
-  dsda_cksum_t cksum;
 
   dsda_ResetFeatures2(&exdemo.signature);
 
   str = R_DemoEx_LumpAsString(DEMOEX_FEATURE_LUMPNAME, header);
   if (!str) {
+    exdemo.is_signed = 0;
     dsda_TrackFeature2(uf_unknown, &exdemo.signature);
     return;
   }
 
-  if (sscanf(str, "[^\n]\n%llx-%32s", &used_features, signature) == 2) {
+  if (sscanf(str, "%*[^\n]\n%llx-%32s", &used_features, signature) == 2) {
+    byte features[FEATURE_SIZE];
+    dsda_cksum_t cksum;
+
     dsda_CopyFeatures2(features, used_features);
 
     dsda_GetDemoCheckSum(&cksum, features, exdemo.demo, exdemo.demo_size);
 
     if (!strcmp(signature, cksum.string)) {
       exdemo.signature = used_features;
+      exdemo.is_signed = 1;
     }
     else {
       dsda_TrackFeature2(uf_invalid, &exdemo.signature);
+      exdemo.is_signed = -1;
     }
   }
   else {
     dsda_TrackFeature2(uf_invalid, &exdemo.signature);
+    exdemo.is_signed = -1;
   }
 
   Z_Free(str);
