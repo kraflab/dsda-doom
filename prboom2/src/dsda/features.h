@@ -55,7 +55,7 @@ typedef enum {
   uf_alwayssr50,
   uf_maxplayercorpse,
   uf_hideweapon,
-  // uf_showalive,
+  uf_showalive,
 } dsda_feature_flag_t;
 
 #define FEATURE_SIZE 8

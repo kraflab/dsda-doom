@@ -22,8 +22,6 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
-extern int dsda_show_alive_monsters;
-
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
 void dsda_SetTas(void);

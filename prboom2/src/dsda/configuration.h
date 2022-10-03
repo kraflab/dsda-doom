@@ -254,6 +254,7 @@ typedef enum {
   dsda_config_render_patches_scaley,
   dsda_config_render_stretchsky,
   dsda_config_boom_translucent_sprites,
+  dsda_config_show_alive_monsters,
   dsda_config_count,
 } dsda_config_identifier_t;
 

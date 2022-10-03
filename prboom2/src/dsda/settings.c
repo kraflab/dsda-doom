@@ -234,18 +234,8 @@ dboolean dsda_WipeAtFullSpeed(void) {
   return dsda_IntConfig(dsda_config_wipe_at_full_speed);
 }
 
-int dsda_show_alive_monsters;
-
 int dsda_ShowAliveMonsters(void) {
-  if (dsda_StrictMode()) return 0;
-
-  return dsda_show_alive_monsters;
-}
-
-int dsda_CycleShowAliveMonsters(void) {
-  dsda_show_alive_monsters = (dsda_show_alive_monsters + 1) % 3;
-
-  return dsda_ShowAliveMonsters();
+  return dsda_IntConfig(dsda_config_show_alive_monsters);
 }
 
 int dsda_reveal_map;

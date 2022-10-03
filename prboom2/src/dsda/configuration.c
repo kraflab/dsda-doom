@@ -207,6 +207,9 @@ void dsda_TrackConfigFeatures(void) {
 
   if (dsda_IntConfig(dsda_config_hide_weapon))
     dsda_TrackFeature(uf_hideweapon);
+
+  if (dsda_IntConfig(dsda_config_show_alive_monsters))
+    dsda_TrackFeature(uf_showalive);
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
@@ -1140,6 +1143,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_boom_translucent_sprites] = {
     "boom_translucent_sprites", dsda_config_boom_translucent_sprites,
     CONF_BOOL(1), NULL, NOT_STRICT, deh_changeCompTranslucency
+  },
+  [dsda_config_show_alive_monsters] = { // never persisted
+    "show_alive_monsters", dsda_config_show_alive_monsters,
+    dsda_config_int, 0, 2, { 0 }, NULL, STRICT_INT(0)
   },
 };
 

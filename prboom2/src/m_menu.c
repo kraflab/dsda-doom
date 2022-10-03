@@ -4151,7 +4151,7 @@ dboolean M_Responder (event_t* ev) {
       if (dsda_InputActivated(dsda_input_showalive) && !dsda_StrictMode())
       {
         const char* const show_alive_message[3] = { "off", "(mode 1) on", "(mode 2) on" };
-        int show_alive = dsda_CycleShowAliveMonsters();
+        int show_alive = dsda_CycleConfig(dsda_config_show_alive_monsters, false);
 
         if (show_alive >= 0 && show_alive < 3)
           doom_printf("Show Alive Monsters %s", show_alive_message[show_alive]);
