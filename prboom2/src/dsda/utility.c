@@ -38,7 +38,7 @@ void dsda_FreeString(dsda_string_t* dest) {
 }
 
 void dsda_StringCat(dsda_string_t* dest, const char* source) {
-  if (!source || !source[0])
+  if (!source || (!source[0] && dest->string))
     return;
 
   dest->size += strlen(source);
