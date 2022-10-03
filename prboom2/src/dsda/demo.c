@@ -369,7 +369,6 @@ void dsda_GetDemoCheckSum(dsda_cksum_t* cksum, byte* features, byte* demo, size_
 
   MD5Update(&md5, demo, demo_size);
 
-  dsda_CopyFeatures(features);
   MD5Update(&md5, features, sizeof(features));
 
   MD5Final(cksum->bytes, &md5);
