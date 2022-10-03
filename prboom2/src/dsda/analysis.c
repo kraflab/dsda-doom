@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "r_demo.h"
 
 #include "dsda/excmd.h"
 #include "dsda/settings.h"
@@ -71,6 +72,7 @@ void dsda_ResetAnalysis(void) {
 void dsda_WriteAnalysis(void) {
   FILE *fstream = NULL;
   const char* category = NULL;
+  int is_signed;
 
   if (!dsda_analysis) return;
 
@@ -82,6 +84,7 @@ void dsda_WriteAnalysis(void) {
   }
 
   category = dsda_DetectCategory();
+  is_signed = R_DemoEx_IsSigned();
 
   fprintf(fstream, "skill %d\n", gameskill + 1);
   fprintf(fstream, "nomonsters %d\n", dsda_nomo);
@@ -101,6 +104,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "solo_net %d\n", solo_net);
   fprintf(fstream, "coop_spawns %d\n", coop_spawns);
   fprintf(fstream, "category %s\n", category);
+  fprintf(fstream, "signature %d\n", is_signed);
 
   fclose(fstream);
 
