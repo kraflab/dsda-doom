@@ -64,11 +64,19 @@ static const char* feature_names[64] = {
 #define FEATURE_BIT(x) ((uint_64_t) 1 << x)
 
 void dsda_TrackFeature(int feature) {
-  used_features |= FEATURE_BIT(feature);
+  dsda_TrackFeature2(feature, &used_features);
+}
+
+void dsda_TrackFeature2(int feature, uint_64_t* source) {
+  *source |= FEATURE_BIT(feature);
 }
 
 void dsda_ResetFeatures(void) {
-  used_features = 0;
+  dsda_ResetFeatures2(&used_features);
+}
+
+void dsda_ResetFeatures2(uint_64_t* source) {
+  *source = 0;
 }
 
 uint_64_t dsda_UsedFeatures(void) {
@@ -76,14 +84,18 @@ uint_64_t dsda_UsedFeatures(void) {
 }
 
 void dsda_CopyFeatures(byte* result) {
-  result[0] = (used_features      ) & 0xff;
-  result[1] = (used_features >>  8) & 0xff;
-  result[2] = (used_features >> 16) & 0xff;
-  result[3] = (used_features >> 24) & 0xff;
-  result[4] = (used_features >> 32) & 0xff;
-  result[5] = (used_features >> 40) & 0xff;
-  result[6] = (used_features >> 48) & 0xff;
-  result[7] = (used_features >> 56) & 0xff;
+  dsda_CopyFeatures2(result, used_features);
+}
+
+void dsda_CopyFeatures2(byte* result, uint_64_t source) {
+  result[0] = (source      ) & 0xff;
+  result[1] = (source >>  8) & 0xff;
+  result[2] = (source >> 16) & 0xff;
+  result[3] = (source >> 24) & 0xff;
+  result[4] = (source >> 32) & 0xff;
+  result[5] = (source >> 40) & 0xff;
+  result[6] = (source >> 48) & 0xff;
+  result[7] = (source >> 56) & 0xff;
 }
 
 char* dsda_DescribeFeatures(void) {
