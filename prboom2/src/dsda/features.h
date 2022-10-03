@@ -25,6 +25,29 @@ typedef enum {
   uf_quickstartcache,
   uf_100k,
   uf_console,
+  // 7
+  // 8
+  // 9
+  // 10
+  // 11
+  // 12
+  // 13
+  // 14
+  // 15
+  // 16
+  // 17
+  // 18
+  // 19
+  // 20
+  // 21
+  // 22
+  // 23
+  // 24
+  // 25
+  // 26
+  // 27
+  // 28
+  // 29
 
   uf_unknown = 30,
   uf_invalid = 31,
@@ -56,6 +79,11 @@ typedef enum {
   uf_maxplayercorpse,
   uf_hideweapon,
   uf_showalive,
+  // 59
+  // 60
+  // 61
+  // 62
+  // 63
 } dsda_feature_flag_t;
 
 #define FEATURE_SIZE 8
