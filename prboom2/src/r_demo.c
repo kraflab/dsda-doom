@@ -80,6 +80,7 @@ typedef struct {
   byte *footer;
   size_t demo_size;
   size_t footer_size;
+  uint_64_t signature;
 } exdemo_t;
 
 static exdemo_t exdemo;
@@ -626,6 +627,41 @@ static void R_DemoEx_AddParams(wadtbl_t *wadtbl)
   dsda_FreeString(&iwad);
   dsda_FreeString(&pwads);
   dsda_FreeString(&dehs);
+}
+
+static void R_DemoEx_GetFeatures(const wadinfo_t *header)
+{
+  char* str;
+  uint_64_t used_features;
+  byte features[FEATURE_SIZE];
+  char signature[33];
+  dsda_cksum_t cksum;
+
+  dsda_ResetFeatures2(&exdemo.signature);
+
+  str = R_DemoEx_LumpAsString(DEMOEX_FEATURE_LUMPNAME, header);
+  if (!str) {
+    dsda_TrackFeature2(uf_unknown, &exdemo.signature);
+    return;
+  }
+
+  if (sscanf(str, "[^\n]\n%llx-%32s", &used_features, signature) == 2) {
+    dsda_CopyFeatures2(features, used_features);
+
+    dsda_GetDemoCheckSum(&cksum, features, exdemo.demo, exdemo.demo_size);
+
+    if (!strcmp(signature, cksum.string)) {
+      exdemo.signature = used_features;
+    }
+    else {
+      dsda_TrackFeature2(uf_invalid, &exdemo.signature);
+    }
+  }
+  else {
+    dsda_TrackFeature2(uf_invalid, &exdemo.signature);
+  }
+
+  Z_Free(str);
 }
 
 static void R_DemoEx_AddFeatures(wadtbl_t *wadtbl)
