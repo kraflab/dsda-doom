@@ -808,8 +808,8 @@ void G_WriteDemoFooter(void)
   R_DemoEx_NewLine(&demoex);
   R_DemoEx_NewLine(&demoex);
 
-  // R_DemoEx_AddFeatures(&demoex);
-  // R_DemoEx_NewLine(&demoex);
+  R_DemoEx_AddFeatures(&demoex);
+  R_DemoEx_NewLine(&demoex);
 
   R_DemoEx_AddPort(&demoex);
   R_DemoEx_NewLine(&demoex);
@@ -838,7 +838,8 @@ void LoadExDemo(const char *filename)
     }
     else
     {
-      // R_DemoEx_CheckFeatures(header, demo, demo_size);
+      R_DemoEx_GetFeatures(header);
+
       // get needed wads and dehs
       // restore all critical params like -spechit x
       R_DemoEx_GetParams(header);
