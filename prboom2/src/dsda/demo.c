@@ -549,6 +549,8 @@ dboolean dsda_PendingJoin(void) {
 }
 
 void dsda_JoinDemoCmd(ticcmd_t* cmd) {
+  dsda_TrackFeature(uf_join);
+
   // Sometimes this bit is not available
   if (
     (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||

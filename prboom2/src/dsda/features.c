@@ -61,6 +61,7 @@ static const char* feature_names[64] = {
   [uf_maxplayercorpse] = "Edit Corpse Limit",
   [uf_hideweapon] = "Hide Weapon",
   [uf_showalive] = "Show Alive",
+  [uf_join] = "Join",
 };
 
 #define FEATURE_BIT(x) ((uint_64_t) 1 << x)

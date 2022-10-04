@@ -79,7 +79,7 @@ typedef enum {
   uf_maxplayercorpse,
   uf_hideweapon,
   uf_showalive,
-  // 59
+  uf_join,
   // 60
   // 61
   // 62
