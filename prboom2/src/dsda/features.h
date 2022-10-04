@@ -89,10 +89,9 @@ typedef enum {
 #define FEATURE_SIZE 8
 
 void dsda_TrackFeature(int feature);
-void dsda_TrackFeature2(int feature, uint_64_t* source);
 void dsda_ResetFeatures(void);
-void dsda_ResetFeatures2(uint_64_t* source);
 uint_64_t dsda_UsedFeatures(void);
+void dsda_MergeFeatures(uint_64_t source);
 void dsda_CopyFeatures(byte* result);
 void dsda_CopyFeatures2(byte* result, uint_64_t source);
 char* dsda_DescribeFeatures(void);

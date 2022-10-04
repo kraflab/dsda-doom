@@ -80,7 +80,7 @@ typedef struct {
   byte *footer;
   size_t demo_size;
   size_t footer_size;
-  uint_64_t signature;
+  uint_64_t features;
   int is_signed;
 } exdemo_t;
 
@@ -638,39 +638,30 @@ int R_DemoEx_IsSigned(void)
 static void R_DemoEx_GetFeatures(const wadinfo_t *header)
 {
   char* str;
-  uint_64_t used_features;
   char signature[33];
 
-  dsda_ResetFeatures2(&exdemo.signature);
+  exdemo.is_signed = 0;
+  exdemo.features = 0;
 
   str = R_DemoEx_LumpAsString(DEMOEX_FEATURE_LUMPNAME, header);
-  if (!str) {
-    exdemo.is_signed = 0;
-    dsda_TrackFeature2(uf_unknown, &exdemo.signature);
+  if (!str)
     return;
-  }
 
-  if (sscanf(str, "%*[^\n]\n%llx-%32s", &used_features, signature) == 2) {
+  if (sscanf(str, "%*[^\n]\n%llx-%32s", &exdemo.features, signature) == 2) {
     byte features[FEATURE_SIZE];
     dsda_cksum_t cksum;
 
-    dsda_CopyFeatures2(features, used_features);
+    dsda_CopyFeatures2(features, exdemo.features);
 
     dsda_GetDemoCheckSum(&cksum, features, exdemo.demo, exdemo.demo_size);
 
-    if (!strcmp(signature, cksum.string)) {
-      exdemo.signature = used_features;
+    if (!strcmp(signature, cksum.string))
       exdemo.is_signed = 1;
-    }
-    else {
-      dsda_TrackFeature2(uf_invalid, &exdemo.signature);
+    else
       exdemo.is_signed = -1;
-    }
   }
-  else {
-    dsda_TrackFeature2(uf_invalid, &exdemo.signature);
+  else
     exdemo.is_signed = -1;
-  }
 
   Z_Free(str);
 }

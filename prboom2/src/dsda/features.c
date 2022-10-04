@@ -67,23 +67,19 @@ static const char* feature_names[64] = {
 #define FEATURE_BIT(x) ((uint_64_t) 1 << x)
 
 void dsda_TrackFeature(int feature) {
-  dsda_TrackFeature2(feature, &used_features);
-}
-
-void dsda_TrackFeature2(int feature, uint_64_t* source) {
-  *source |= FEATURE_BIT(feature);
+  used_features |= FEATURE_BIT(feature);
 }
 
 void dsda_ResetFeatures(void) {
-  dsda_ResetFeatures2(&used_features);
-}
-
-void dsda_ResetFeatures2(uint_64_t* source) {
-  *source = 0;
+  used_features = 0;
 }
 
 uint_64_t dsda_UsedFeatures(void) {
   return used_features;
+}
+
+void dsda_MergeFeatures(uint_64_t source) {
+  used_features |= source;
 }
 
 void dsda_CopyFeatures(byte* result) {
