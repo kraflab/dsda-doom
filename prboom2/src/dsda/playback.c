@@ -19,6 +19,7 @@
 #include "g_game.h"
 #include "i_system.h"
 #include "p_saveg.h"
+#include "r_demo.h"
 #include "w_wad.h"
 
 #include "dsda/args.h"
@@ -182,6 +183,18 @@ static dboolean dsda_EndOfPlaybackStream(void) {
          playback_p + dsda_BytesPerTic() > playback_origin_p + playback_length;
 }
 
+static void dsda_JoinDemo(ticcmd_t* cmd) {
+  int is_signed;
+
+  if (dsda_SkipMode())
+    dsda_ExitSkipMode();
+
+  dsda_ClearPlaybackStream();
+  dsda_JoinDemoCmd(cmd);
+
+  R_DemoEx_MergeFeatures();
+}
+
 void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {
   dboolean ended = false;
 
@@ -197,17 +210,11 @@ void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {
   }
 
   if (ended) {
-    if (playback_behaviour & PLAYBACK_JOIN_ON_END) {
-      if (dsda_SkipMode())
-        dsda_ExitSkipMode();
-      dsda_ClearPlaybackStream();
-      dsda_JoinDemoCmd(cmd);
-    }
+    if (playback_behaviour & PLAYBACK_JOIN_ON_END)
+      dsda_JoinDemo(cmd);
     else
       G_CheckDemoStatus();
   }
-  else if (dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use)) {
-    dsda_ClearPlaybackStream();
-    dsda_JoinDemoCmd(cmd);
-  }
+  else if (dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
+    dsda_JoinDemo(cmd);
 }
