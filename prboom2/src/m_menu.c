@@ -71,7 +71,7 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "i_sound.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include "r_main.h"
 #include "f_finale.h"

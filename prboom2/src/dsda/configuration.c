@@ -24,9 +24,9 @@
 #include "g_overflow.h"
 #include "gl_struct.h"
 #include "lprintf.h"
-#include "r_demo.h"
 #include "r_main.h"
 #include "s_sound.h"
+#include "smooth.h"
 #include "v_video.h"
 #include "z_zone.h"
 

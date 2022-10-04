@@ -37,6 +37,8 @@ set(COMMON_SRC
     dsda/demo.h
     dsda/excmd.c
     dsda/excmd.h
+    dsda/exdemo.c
+    dsda/exdemo.h
     dsda/exhud.c
     dsda/exhud.h
     dsda/features.c
@@ -296,8 +298,6 @@ set(COMMON_SRC
     r_data.c
     r_data.h
     r_defs.h
-    r_demo.c
-    r_demo.h
     r_draw.c
     r_draw.h
     r_filter.c
@@ -321,6 +321,8 @@ set(COMMON_SRC
     scanner.h
     sc_man.c
     sc_man.h
+    smooth.c
+    smooth.h
     sounds.c
     sounds.h
     st_lib.c
@@ -337,6 +339,8 @@ set(COMMON_SRC
     umapinfo.h
     v_video.c
     v_video.h
+    wadtbl.c
+    wadtbl.h
     wi_stuff.c
     wi_stuff.h
     w_wad.c

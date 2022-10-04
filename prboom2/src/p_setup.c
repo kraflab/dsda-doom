@@ -50,7 +50,7 @@
 #include "s_advsound.h"
 #include "lprintf.h" //jff 10/6/98 for debug outputs
 #include "v_video.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include "g_overflow.h"
 #include "am_map.h"

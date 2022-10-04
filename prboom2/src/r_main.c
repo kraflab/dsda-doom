@@ -55,7 +55,7 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "g_game.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include <math.h>
 #include "e6y.h"//e6y

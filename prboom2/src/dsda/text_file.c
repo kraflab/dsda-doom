@@ -16,7 +16,6 @@
 //
 
 #include "doomstat.h"
-#include "r_demo.h"
 #include "lprintf.h"
 #include "e6y.h"
 

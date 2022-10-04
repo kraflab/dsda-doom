@@ -80,7 +80,6 @@
 #include "gl_struct.h"
 #include "gl_intern.h"
 #include "g_game.h"
-#include "r_demo.h"
 #include "d_deh.h"
 #include "e6y.h"
 

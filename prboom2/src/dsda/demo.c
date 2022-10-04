@@ -33,6 +33,7 @@
 #include "dsda/command_display.h"
 #include "dsda/configuration.h"
 #include "dsda/excmd.h"
+#include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
@@ -395,7 +396,7 @@ static int dsda_ExportDemoToFile(const char* demo_name) {
 
   dsda_WriteExtraDemoHeaderData(end_marker_location);
 
-  G_WriteDemoFooter();
+  dsda_WriteExDemoFooter();
 
   length = dsda_DemoBufferOffset();
 

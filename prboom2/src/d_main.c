@@ -82,14 +82,12 @@
 #include "d_deh.h"  // Ty 04/08/98 - Externalizations
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "am_map.h"
-
-//e6y
-#include "r_demo.h"
 #include "e6y.h"
 
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
+#include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/global.h"
 #include "dsda/save.h"
@@ -1454,7 +1452,7 @@ static void HandlePlayback(void)
   if (!file)
     return;
 
-  LoadExDemo(file);
+  dsda_LoadExDemo(file);
 }
 
 const char* doomverstr = NULL;

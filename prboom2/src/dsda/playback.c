@@ -19,11 +19,11 @@
 #include "g_game.h"
 #include "i_system.h"
 #include "p_saveg.h"
-#include "r_demo.h"
 #include "w_wad.h"
 
 #include "dsda/args.h"
 #include "dsda/demo.h"
+#include "dsda/exdemo.h"
 #include "dsda/input.h"
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
@@ -192,7 +192,7 @@ static void dsda_JoinDemo(ticcmd_t* cmd) {
   dsda_ClearPlaybackStream();
   dsda_JoinDemoCmd(cmd);
 
-  R_DemoEx_MergeFeatures();
+  dsda_MergeExDemoFeatures();
 }
 
 void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {

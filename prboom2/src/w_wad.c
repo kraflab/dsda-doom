@@ -56,9 +56,6 @@
 #endif
 #include "w_wad.h"
 #include "lprintf.h"
-
-//e6y
-#include "r_demo.h"
 #include "e6y.h"
 
 //

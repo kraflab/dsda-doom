@@ -41,7 +41,7 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "p_user.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "m_random.h"
 
 #include "dsda/thing_id.h"

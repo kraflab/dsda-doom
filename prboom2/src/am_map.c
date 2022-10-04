@@ -52,7 +52,7 @@
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "g_game.h"
 #include "r_fps.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "m_misc.h"
 #include "m_bbox.h"
 #include "d_main.h"

@@ -81,7 +81,7 @@
 #include "lprintf.h"
 #include "i_main.h"
 #include "i_system.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include "e6y.h"//e6y
 
@@ -93,6 +93,7 @@
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
+#include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/save.h"
@@ -3694,6 +3695,43 @@ void G_StartDemoPlayback(const byte *buffer, int length, int behaviour)
 
   R_SmoothPlaying_Reset(NULL); // e6y
 }
+
+static int LoadDemo(const char *name, const byte **buffer, int *length)
+{
+  char basename[9];
+  int num;
+  int len;
+  const byte *buf = NULL;
+
+  if (dsda_CopyExDemo(buffer, length))
+    return true;
+
+  ExtractFileBase(name, basename);
+  basename[8] = 0;
+
+  // check ns_demos namespace first, then ns_global
+  num = W_CheckNumForName2(basename, ns_demos);
+
+  if (num == LUMP_NOT_FOUND)
+    num = W_CheckNumForName(basename);
+
+  if (num == LUMP_NOT_FOUND)
+    return false;
+
+  buf = W_LumpByNum(num);
+  len = W_LumpLength(num);
+
+  if (len > 0)
+  {
+    if (buffer)
+      *buffer = buf;
+    if (length)
+      *length = len;
+  }
+
+  return (len > 0);
+}
+
 
 void G_DoPlayDemo(void)
 {

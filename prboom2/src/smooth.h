@@ -27,13 +27,13 @@
  *  02111-1307, USA.
  *
  * DESCRIPTION:
- *      Demo stuff
+ *      Smooth demo playback
  *
  *---------------------------------------------------------------------
  */
 
-#ifndef __R_DEMO__
-#define __R_DEMO__
+#ifndef __SMOOTH__
+#define __SMOOTH__
 
 #include "doomtype.h"
 #include "tables.h"
@@ -49,11 +49,4 @@ void R_SmoothPlaying_Add(int delta);
 angle_t R_SmoothPlaying_Get(player_t *player);
 void R_ResetAfterTeleport(player_t *player);
 
-void G_WriteDemoFooter(void);
-
-int R_DemoEx_IsSigned(void);
-void R_DemoEx_MergeFeatures(void);
-void LoadExDemo(const char *filename);
-int LoadDemo(const char *name, const byte **buffer, int *length);
-
-#endif // __R_DEMO__
+#endif
