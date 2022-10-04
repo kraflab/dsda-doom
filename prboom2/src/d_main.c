@@ -1041,17 +1041,17 @@ static char *FindIWADFile(void)
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found)
   {
-    iwad = I_FindFile(arg->value.v_string, ".wad");
+    iwad = I_FindWad(arg->value.v_string);
   }
   else
   {
     if (dsda_Flag(dsda_arg_heretic) || CheckExeSuffix("-heretic"))
-      return I_FindFile("heretic.wad", ".wad");
+      return I_FindWad("heretic.wad");
     else if (dsda_Flag(dsda_arg_hexen) || CheckExeSuffix("-hexen"))
-      return I_FindFile("hexen.wad", ".wad");
+      return I_FindWad("hexen.wad");
 
     for (i=0; !iwad && i<nstandard_iwads; i++)
-      iwad = I_FindFile(standard_iwads[i], ".wad");
+      iwad = I_FindWad(standard_iwads[i]);
   }
   return iwad;
 }
@@ -1681,7 +1681,7 @@ static void D_DoomMainSetup(void)
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
-      file = I_RequireFile(file_name, ".wad");
+      file = I_RequireWad(file_name);
       D_AddFile(file,source_pwad);
       Z_Free(file);
     }
@@ -1789,9 +1789,7 @@ static void D_DoomMainSetup(void)
     {
       char *file = NULL;
 
-      file = I_FindFile(arg->value.v_string_array[i], ".bex");
-      if (!file)
-        file = I_RequireFile(arg->value.v_string_array[i], ".deh");
+      file = I_RequireDeh(arg->value.v_string_array[i]);
 
       // during the beta we have debug output to dehout.txt
       ProcessDehFile(file,D_dehout(),0);

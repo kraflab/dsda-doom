@@ -124,10 +124,13 @@ static void DemoEx_GetParams(const wadinfo_t* header) {
           while (++p != paramscount && *params[p] != '-') {
             char* filename;
 
-            //something is wrong here
-            filename = I_FindFile(params[p], ".wad");
+            if (files[i].source == source_deh)
+              filename = I_FindDeh(params[p]);
+            else
+              filename = I_FindWad(params[p]);
+
             if (!filename)
-              filename = Z_Strdup(params[p]);
+              continue;
 
             if (files[i].source == source_iwad)
               AddIWAD(filename);
@@ -270,11 +273,10 @@ static void DemoEx_AddParams(wadtbl_t* wadtbl) {
   arg = dsda_Arg(dsda_arg_deh);
   if (arg->found) {
     for (i = 0; i < arg->count; ++i) {
-      char* file = NULL;
-      if (
-        (file = I_FindFile(arg->value.v_string_array[i], ".bex")) ||
-        (file = I_FindFile(arg->value.v_string_array[i], ".deh"))
-      ) {
+      char* file;
+
+      file = I_FindDeh(arg->value.v_string_array[i]);
+      if (file) {
         filename_p = PathFindFileName(file);
         dsda_StringCat(&dehs, "\"");
         dsda_StringCat(&dehs, filename_p);

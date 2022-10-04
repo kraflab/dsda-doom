@@ -533,3 +533,35 @@ const char* I_FindFile2(const char* wfname, const char* ext)
 {
   return (const char*) I_FindFileInternal(wfname, ext, true);
 }
+
+char* I_RequireWad(const char* wfname)
+{
+  return I_RequireFile(wfname, ".wad");
+}
+
+char* I_FindWad(const char* wfname)
+{
+  return I_FindFile(wfname, ".wad");
+}
+
+char* I_RequireDeh(const char* wfname)
+{
+  char* result;
+
+  result = I_FindFile(wfname, ".bex");
+  if (result)
+    return result;
+
+  return I_RequireFile(wfname, ".deh");
+}
+
+char* I_FindDeh(const char* wfname)
+{
+  char* result;
+
+  result = I_FindFile(wfname, ".bex");
+  if (result)
+    return result;
+
+  return I_FindFile(wfname, ".deh");
+}
