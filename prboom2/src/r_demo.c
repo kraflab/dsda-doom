@@ -635,6 +635,18 @@ int R_DemoEx_IsSigned(void)
   return exdemo.is_signed;
 }
 
+void R_DemoEx_MergeFeatures(void)
+{
+  if (!exdemo.is_signed)
+    dsda_TrackFeature(uf_unknown);
+  else {
+    dsda_MergeFeatures(exdemo.features);
+
+    if (exdemo.is_signed == -1)
+      dsda_TrackFeature(uf_invalid);
+  }
+}
+
 static void R_DemoEx_GetFeatures(const wadinfo_t *header)
 {
   char* str;
