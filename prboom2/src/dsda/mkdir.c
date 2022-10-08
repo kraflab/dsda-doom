@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include "doomtype.h"
 #include "lprintf.h"
 
 #include "mkdir.h"
