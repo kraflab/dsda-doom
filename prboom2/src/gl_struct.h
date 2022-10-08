@@ -135,10 +135,7 @@ int gld_wipe_EndScreen(void);
 //clipper
 dboolean gld_clipper_SafeCheckRange(angle_t startAngle, angle_t endAngle);
 void gld_clipper_SafeAddClipRange(angle_t startangle, angle_t endangle);
-void gld_clipper_SafeAddClipRangeRealAngles(angle_t startangle, angle_t endangle);
-void gld_clipper_Clear(void);
-angle_t gld_FrustumAngle(void);
-void gld_FrustrumSetup(void);
+void gld_FrustumSetup(void);
 dboolean gld_SphereInFrustum(float x, float y, float z, float radius);
 
 //missing flats (fake floors and ceilings)
