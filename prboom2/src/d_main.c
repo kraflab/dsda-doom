@@ -302,6 +302,29 @@ static void D_Wipe(void)
 gamestate_t    wipegamestate = GS_DEMOSCREEN;
 extern dboolean setsizeneeded;
 
+static void D_DrawPause(void)
+{
+  if (hexen)
+  {
+    if (!netgame)
+    {
+      V_DrawNamePatch(160, viewwindowy + 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+    }
+    else
+    {
+      V_DrawNamePatch(160, 70, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+    }
+  }
+  else if (heretic)
+    MN_DrawPause();
+  else if (!dsda_PauseMode(PAUSE_BUILDMODE))
+    // Simplified the "logic" here and no need for x-coord caching - POPE
+    V_DrawNamePatch(
+      (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
+      "M_PAUSE", CR_DEFAULT, VPT_STRETCH
+    );
+}
+
 void D_Display (fixed_t frac)
 {
   static dboolean isborderstate        = false;
@@ -454,25 +477,7 @@ void D_Display (fixed_t frac)
 
   // draw pause pic
   if (dsda_Paused() && (menuactive != mnact_full)) {
-    if (hexen)
-    {
-      if (!netgame)
-      {
-        V_DrawNamePatch(160, viewwindowy + 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
-      }
-      else
-      {
-        V_DrawNamePatch(160, 70, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
-      }
-    }
-    else if (heretic)
-      MN_DrawPause();
-    else if (!dsda_PauseMode(PAUSE_BUILDMODE))
-      // Simplified the "logic" here and no need for x-coord caching - POPE
-      V_DrawNamePatch(
-        (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
-        "M_PAUSE", CR_DEFAULT, VPT_STRETCH
-      );
+    D_DrawPause();
   }
 
   // menus go directly to the screen
