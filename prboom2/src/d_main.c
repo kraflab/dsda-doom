@@ -100,6 +100,7 @@
 #include "dsda/playback.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
+#include "dsda/signal_context.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
@@ -441,8 +442,9 @@ void D_Display (fixed_t frac)
 
     R_InterpolateView(&players[displayplayer], frac);
 
-    // Now do the drawing
-    R_RenderPlayerView (&players[displayplayer]);
+    DSDA_ADD_CONTEXT(sf_player_view);
+    R_RenderPlayerView(&players[displayplayer]);
+    DSDA_REMOVE_CONTEXT(sf_player_view);
 
     dsda_UpdateRenderStats();
 
@@ -458,15 +460,20 @@ void D_Display (fixed_t frac)
 
     R_RestoreInterpolations();
 
+    DSDA_ADD_CONTEXT(sf_status_bar);
     ST_Drawer(
         (R_PartialView() || automap_on),
         redrawborderstuff || BorderNeedRefresh,
         (menuactive == mnact_full));
+    DSDA_REMOVE_CONTEXT(sf_status_bar);
 
     BorderNeedRefresh = false;
     if (V_IsSoftwareMode())
       R_DrawViewBorder();
+
+    DSDA_ADD_CONTEXT(sf_hud);
     HU_Drawer();
+    DSDA_REMOVE_CONTEXT(sf_hud);
 
     if (V_IsOpenGLMode())
       gld_ProcessExtraAlpha();

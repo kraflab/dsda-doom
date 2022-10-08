@@ -93,6 +93,7 @@
 #include "z_zone.h"
 
 #include "dsda/settings.h"
+#include "dsda/signal_context.h"
 #include "dsda/time.h"
 
 void I_uSleep(unsigned long usecs)
@@ -115,12 +116,14 @@ dboolean I_StartDisplay(void)
     saved_gametic = gametic;
 
   InDisplay = true;
+  DSDA_ADD_CONTEXT(sf_display);
   return true;
 }
 
 void I_EndDisplay(void)
 {
   InDisplay = false;
+  DSDA_REMOVE_CONTEXT(sf_display);
 }
 
 int interpolation_method;
