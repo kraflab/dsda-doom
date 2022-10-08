@@ -76,6 +76,7 @@
 #include "dsda/analysis.h"
 #include "dsda/args.h"
 #include "dsda/settings.h"
+#include "dsda/signal_context.h"
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"
 #include "dsda/time.h"
@@ -100,8 +101,8 @@ void I_Init2(void)
   force_singletics_to = gametic + BACKUPTICS;
 }
 
-/* cleanup handling -- killough:
- */
+int signal_context;
+
 static void I_SignalHandler(int s)
 {
   char buf[2048];
@@ -112,10 +113,11 @@ static void I_SignalHandler(int s)
   if (s == 2)
     I_DisableMessageBoxes();
 
-  strcpy(buf, "Exiting on signal: ");
-  I_SigString(buf + strlen(buf), 2000 - strlen(buf), s);
+  I_SigString(buf, sizeof(buf), s);
 
-  I_Error("I_SignalHandler: %s", buf);
+  I_Error("The game has crashed!\n"
+          "Please report the following information: %s (0x%04x)",
+          buf, signal_context);
 }
 
 static void PrintVer(void)
