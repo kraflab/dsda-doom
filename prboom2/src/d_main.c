@@ -90,6 +90,7 @@
 #include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/global.h"
+#include "dsda/mkdir.h"
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
 #include "dsda/map_format.h"
@@ -1219,11 +1220,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
         snprintf(autoload_path, len+1, "%s/autoload", exedir);
     }
 
-#ifdef _WIN32
-    mkdir(autoload_path);
-#else
-    mkdir(autoload_path, 0755);
-#endif
+    dsda_MkDir(autoload_path, false);
 
     len = snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
     result = Z_Malloc(len+1);
@@ -1231,11 +1228,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 
     if (createdir)
     {
-#ifdef _WIN32
-    mkdir(result);
-#else
-    mkdir(result, 0755);
-#endif
+      dsda_MkDir(result, false);
     }
 
     return result;
