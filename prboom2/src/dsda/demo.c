@@ -432,12 +432,12 @@ static char* dsda_DemoNameWithTime(void) {
 
     dsda_DecomposeILTime(&level_time);
 
-    if (level_time.m == 0 && level_time.s < 10)
+    if (level_time.m == 0)
       snprintf(base_name, length, "%s%d%02d",
                dsda_demo_name_base, level_time.s, level_time.t);
     else
-      snprintf(base_name, length, "%s%d%02d",
-               dsda_demo_name_base, level_time.m, level_time.s);
+      snprintf(base_name, length, "%s%d%02d%02d",
+               dsda_demo_name_base, level_time.m, level_time.s, level_time.t);
   }
   else {
     dsda_movie_time_t movie_time;
