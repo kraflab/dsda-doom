@@ -607,8 +607,9 @@ void gld_BeginUIDraw(void)
 {
   if (V_IsWorldLightmodeIndexed())
   {
+    gld_InitColormapTextures();
     glsl_SetMainShaderActive();
-    glsl_SetLightLevel(1.0f); // UI is always "fullbright"
+    gld_StaticLight(1.0f); // UI is always "fullbright"
     gl_ui_lightmode_indexed = true;
   }
 }

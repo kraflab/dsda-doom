@@ -679,6 +679,12 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
   playpal = V_GetPlaypal() + (palette_index*PALETTE_SIZE);
   colormap = fullcolormap;
 
+  // fallback in case the current colormap hasn't been set
+  // yet; this occurs when rendering the main menu for the
+  // first time if the game is launched in indexed lightmode
+  if (colormap == NULL)
+    colormap = colormaps[0];
+
   // also yoink the gamma table and apply
   // software gamma emulation to the texture.
   gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
