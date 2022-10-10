@@ -79,6 +79,7 @@
 
 #include "dsda/exhud.h"
 #include "dsda/features.h"
+#include "dsda/game_controller.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
@@ -1709,11 +1710,12 @@ static void M_DrawSetting(const setup_menu_t* s)
     if (input->joyb != -1)
     {
       if (any_input)
-        format = "/JSB%d";
+        format = "/%s";
       else
-        format = "JSB%d";
+        format = "%s";
 
-      sprintf(menu_buffer + strlen(menu_buffer), format, input->joyb + 1);
+      sprintf(menu_buffer + strlen(menu_buffer), format,
+              dsda_GameControllerButtonName(input->joyb));
       any_input = true;
     }
 

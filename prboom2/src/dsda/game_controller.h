@@ -18,6 +18,7 @@
 #ifndef __DSDA_GAME_CONTROLLER__
 #define __DSDA_GAME_CONTROLLER__
 
+const char* dsda_GameControllerButtonName(int button);
 void dsda_PollGameController(void);
 void dsda_InitGameController(void);
 

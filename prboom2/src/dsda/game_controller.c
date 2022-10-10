@@ -31,6 +31,31 @@ static SDL_GameController* game_controller;
 
 #define DEADZONE 1024
 
+static const char* button_names[] = {
+  [SDL_CONTROLLER_BUTTON_A] = "pad a",
+  [SDL_CONTROLLER_BUTTON_B] = "pad b",
+  [SDL_CONTROLLER_BUTTON_X] = "pad x",
+  [SDL_CONTROLLER_BUTTON_Y] = "pad y",
+  [SDL_CONTROLLER_BUTTON_BACK] = "pad back",
+  [SDL_CONTROLLER_BUTTON_GUIDE] = "pad guide",
+  [SDL_CONTROLLER_BUTTON_START] = "pad start",
+  [SDL_CONTROLLER_BUTTON_LEFTSTICK] = "lstick",
+  [SDL_CONTROLLER_BUTTON_RIGHTSTICK] = "rstick",
+  [SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = "pad l",
+  [SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = "pad r",
+  [SDL_CONTROLLER_BUTTON_DPAD_UP] = "dpad u",
+  [SDL_CONTROLLER_BUTTON_DPAD_DOWN] = "dpad d",
+  [SDL_CONTROLLER_BUTTON_DPAD_LEFT] = "dpad l",
+  [SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = "dpad r",
+};
+
+const char* dsda_GameControllerButtonName(int button) {
+  if (button >= sizeof(button_names))
+    return "misc";
+
+  return button_names[button];
+}
+
 static int dsda_AxisValue(SDL_GameControllerButton button) {
   int value;
 
