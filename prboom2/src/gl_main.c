@@ -605,17 +605,19 @@ void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)
 
 void gld_BeginUIDraw(void)
 {
-  if (V_IsUILightmodeIndexed())
+  if (V_IsWorldLightmodeIndexed())
   {
     glsl_SetMainShaderActive();
     glsl_SetLightLevel(1.0f); // UI is always "fullbright"
+    gl_ui_lightmode_indexed = true;
   }
 }
 
 void gld_EndUIDraw(void)
 {
-  if (V_IsUILightmodeIndexed())
+  if (V_IsWorldLightmodeIndexed())
   {
+    gl_ui_lightmode_indexed = false;
     glsl_SetActiveShader(NULL);
     return;
   }

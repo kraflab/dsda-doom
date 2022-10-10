@@ -51,6 +51,7 @@
 
 gl_lightmode_t gl_lightmode;
 const char *gl_lightmodes[] = {"glboom", "shaders", "indexed", NULL};
+dboolean gl_ui_lightmode_indexed = false;
 int gl_rellight;
 
 int gl_fog;

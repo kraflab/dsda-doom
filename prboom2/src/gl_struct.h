@@ -73,6 +73,7 @@ extern int gl_drawskys;
 extern int gl_hardware_gamma;
 extern gl_lightmode_t gl_lightmode;
 extern const char *gl_lightmodes[];
+extern dboolean gl_ui_lightmode_indexed;
 extern int gl_usegamma;
 int gld_SetGammaRamp(int gamma);
 void gld_CheckHardwareGamma(void);

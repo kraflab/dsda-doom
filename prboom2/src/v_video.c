@@ -971,9 +971,7 @@ dboolean V_IsWorldLightmodeIndexed(void) {
 }
 
 dboolean V_IsUILightmodeIndexed(void) {
-  // TODO: hook up a casual play option here to allow
-  // turning off pain palettes affecting HUD and menus.
-  return gl_lightmode == gl_lightmode_indexed;
+  return gl_ui_lightmode_indexed;
 }
 
 void V_CopyScreen(int srcscrn, int destscrn)
