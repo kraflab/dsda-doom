@@ -50,10 +50,7 @@
 #include "dsda/configuration.h"
 
 static int use_joystick;
-
-#ifdef HAVE_SDL_JOYSTICKGETAXIS
 static SDL_Joystick *joystick;
-#endif
 
 static void I_EndJoystick(void)
 {
@@ -62,7 +59,6 @@ static void I_EndJoystick(void)
 
 void I_PollJoystick(void)
 {
-#ifdef HAVE_SDL_JOYSTICKGETAXIS
   event_t ev;
   Sint16 axis_value;
 
@@ -89,12 +85,10 @@ void I_PollJoystick(void)
   ev.data3 = axis_value;
 
   D_PostEvent(&ev);
-#endif
 }
 
 void I_InitJoystick(void)
 {
-#ifdef HAVE_SDL_JOYSTICKGETAXIS
   const char* fname = "I_InitJoystick : ";
   int num_joysticks;
 
@@ -123,5 +117,4 @@ void I_InitJoystick(void)
     I_AtExit(I_EndJoystick, true, "I_EndJoystick", exit_priority_normal);
     lprintf(LO_INFO, "%sopened %s\n", fname, SDL_JoystickName(joystick));
   }
-#endif
 }
