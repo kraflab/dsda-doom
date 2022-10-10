@@ -4109,7 +4109,7 @@ dboolean M_Responder (event_t* ev) {
 
   if (!menuactive)
   {
-    if (ch == KEYD_ESCAPE) // phares
+    if (ch == KEYD_ESCAPE || action == MENU_ESCAPE) // phares
     {
       M_StartControlPanel ();
       S_StartSound(NULL,g_sfx_swtchn);
