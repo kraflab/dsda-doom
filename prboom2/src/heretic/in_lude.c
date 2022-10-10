@@ -518,6 +518,9 @@ void IN_Drawer(void)
     {
         return;
     }
+
+    V_BeginUIDraw();
+
     if (oldinterstate != 2 && interstate == 2)
     {
         S_StartSound(NULL, heretic_sfx_pstop);
@@ -564,6 +567,8 @@ void IN_Drawer(void)
             I_Error("IN_lude:  Intermission state out of range.\n");
             break;
     }
+
+    V_EndUIDraw();
 }
 
 //========================================================================

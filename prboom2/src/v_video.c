@@ -834,6 +834,14 @@ static void V_PlotPixel8(int scrn, int x, int y, byte color);
 static void WRAP_V_DrawLineWu(fline_t* fl, int color);
 static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight);
 
+static void WRAP_gld_BeginUIDraw(void)
+{
+  gld_BeginUIDraw();
+}
+static void WRAP_gld_EndUIDraw(void)
+{
+  gld_EndUIDraw();
+}
 static void WRAP_gld_FillRect(int scrn, int x, int y, int width, int height, byte colour)
 {
   gld_FillBlock(x,y,width,height,colour);
@@ -876,6 +884,8 @@ static void WRAP_gld_DrawLine(fline_t* fl, int color)
   gld_DrawLine_f(fl->a.fx, fl->a.fy, fl->b.fx, fl->b.fy, color);
 }
 
+static void NULL_BeginUIDraw(void) {}
+static void NULL_EndUIDraw(void) {}
 static void NULL_FillRect(int scrn, int x, int y, int width, int height, byte colour) {}
 static void NULL_CopyRect(int srcscrn, int destscrn, int x, int y, int width, int height, enum patch_translation_e flags) {}
 static void NULL_FillFlat(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags) {}
@@ -891,6 +901,8 @@ static void NULL_DrawLineWu(fline_t* fl, int color) {}
 
 static video_mode_t current_videomode = VID_MODESW;
 
+V_BeginUIDraw_f V_BeginUIDraw = NULL_BeginUIDraw;
+V_EndUIDraw_f V_EndUIDraw = NULL_EndUIDraw;
 V_CopyRect_f V_CopyRect = NULL_CopyRect;
 V_FillRect_f V_FillRect = NULL_FillRect;
 V_DrawNumPatch_f V_DrawNumPatch = NULL_DrawNumPatch;
@@ -910,6 +922,8 @@ void V_InitMode(video_mode_t mode) {
   switch (mode) {
     case VID_MODESW:
       lprintf(LO_INFO, "V_InitMode: using software video mode\n");
+      V_BeginUIDraw = NULL_BeginUIDraw; // [XA] no-op in software
+      V_EndUIDraw = NULL_EndUIDraw; // [XA] ditto
       V_CopyRect = FUNC_V_CopyRect;
       V_FillRect = V_FillRect8;
       V_DrawNumPatch = FUNC_V_DrawNumPatch;
@@ -925,6 +939,8 @@ void V_InitMode(video_mode_t mode) {
       break;
     case VID_MODEGL:
       lprintf(LO_INFO, "V_InitMode: using OpenGL video mode\n");
+      V_BeginUIDraw = WRAP_gld_BeginUIDraw;
+      V_EndUIDraw = WRAP_gld_EndUIDraw;
       V_CopyRect = WRAP_gld_CopyRect;
       V_FillRect = WRAP_gld_FillRect;
       V_DrawNumPatch = WRAP_gld_DrawNumPatch;
@@ -951,6 +967,12 @@ dboolean V_IsOpenGLMode(void) {
 }
 
 dboolean V_IsWorldLightmodeIndexed(void) {
+  return gl_lightmode == gl_lightmode_indexed;
+}
+
+dboolean V_IsUILightmodeIndexed(void) {
+  // TODO: hook up a casual play option here to allow
+  // turning off pain palettes affecting HUD and menus.
   return gl_lightmode == gl_lightmode_indexed;
 }
 

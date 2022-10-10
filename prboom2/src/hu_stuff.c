@@ -657,6 +657,8 @@ void HU_Drawer(void)
   static dboolean needupdate = false;
   if (realframe) needupdate = !needupdate;
 
+  V_BeginUIDraw();
+
   // don't draw anything if there's a fullscreen menu up
   if (menuactive == mnact_full)
     return;
@@ -781,6 +783,8 @@ void HU_Drawer(void)
     HUlib_drawTextLine(&w_centermsg, false);
 
   dsda_DrawHud();
+
+  V_EndUIDraw();
 }
 
 //

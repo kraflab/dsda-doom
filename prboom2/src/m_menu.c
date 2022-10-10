@@ -4978,6 +4978,8 @@ void M_StartControlPanel (void)
 
 void M_Drawer (void)
 {
+  V_BeginUIDraw();
+
   inhelpscreens = false;
 
   // Horiz. & Vertically center string and print it.
@@ -4988,7 +4990,12 @@ void M_Drawer (void)
     char* p;
     int y;
 
-    if (raven) return MN_DrawMessage(messageString);
+    if (raven)
+    {
+      MN_DrawMessage(messageString);
+      V_EndUIDraw();
+      return;
+    }
 
     /* cph - Z_Strdup string to writable memory */
     ms = Z_Strdup(messageString);
@@ -5018,7 +5025,12 @@ void M_Drawer (void)
     if (currentMenu->routine)
       currentMenu->routine();     // call Draw routine
 
-    if (raven) return MN_Drawer();
+    if (raven)
+    {
+      MN_Drawer();
+      V_EndUIDraw();
+      return;
+    }
 
     // DRAW MENU
 
@@ -5054,6 +5066,8 @@ void M_Drawer (void)
       V_DrawNamePatch(x + SKULLXOFF, currentMenu->y - 5 + itemOn*LINEHEIGHT,0,
           skullName[whichSkull], CR_DEFAULT, VPT_STRETCH);
   }
+
+  V_EndUIDraw();
 }
 
 void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)

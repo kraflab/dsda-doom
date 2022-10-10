@@ -131,6 +131,7 @@ dboolean V_IsOpenGLMode(void);
 
 // [XA] indexed lightmode query interface
 dboolean V_IsWorldLightmodeIndexed(void);
+dboolean V_IsUILightmodeIndexed(void);
 
 //jff 4/24/98 loads color translation lumps
 void V_InitColorTranslation(void);
@@ -139,6 +140,14 @@ void V_InitFlexTranTable(void);
 
 // Allocates buffer screens, call before R_Init.
 void V_Init (void);
+
+// V_BeginUIDraw
+typedef void(*V_BeginUIDraw_f)(void);
+extern V_BeginUIDraw_f V_BeginUIDraw;
+
+// V_EndUIDraw
+typedef void(*V_EndUIDraw_f)(void);
+extern V_EndUIDraw_f V_EndUIDraw;
 
 // V_CopyRect
 typedef void (*V_CopyRect_f)(int srcscrn, int destscrn,

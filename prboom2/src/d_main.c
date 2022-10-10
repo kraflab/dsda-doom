@@ -456,6 +456,7 @@ void D_Display (fixed_t frac)
 
   // draw pause pic
   if (dsda_Paused() && (menuactive != mnact_full)) {
+    V_BeginUIDraw();
     if (hexen)
     {
       if (!netgame)
@@ -475,6 +476,7 @@ void D_Display (fixed_t frac)
         (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
         "M_PAUSE", CR_DEFAULT, VPT_STRETCH
       );
+    V_EndUIDraw();
   }
 
   // menus go directly to the screen
@@ -597,6 +599,8 @@ void D_PageTicker(void)
 //
 static void D_PageDrawer(void)
 {
+  V_BeginUIDraw();
+
   if (raven)
   {
     V_DrawRawScreen(pagename);
@@ -604,6 +608,8 @@ static void D_PageDrawer(void)
     {
       V_DrawNamePatch(4, 160, 0, "ADVISOR", CR_DEFAULT, VPT_STRETCH);
     }
+
+    V_EndUIDraw();
     return;
   }
 
@@ -618,6 +624,8 @@ static void D_PageDrawer(void)
   }
   else
     M_DrawCredits();
+
+  V_EndUIDraw();
 }
 
 //

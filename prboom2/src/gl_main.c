@@ -533,7 +533,8 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       continue;
     }
 
-    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, V_IsWorldLightmodeIndexed());
+    // [XA] TODO: indexed lightmode support here -- needs to use V_IsUILightmodeIndexed();
+    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, false);
     if (gltexture)
     {
       sector_t tempsec;
@@ -574,6 +575,10 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     }
   }
 
+  // [XA] reset lighting so it doesn't interfere with
+  // other drawing steps (e.g. indexed lightmode UI)
+  gld_StaticLight(1.0f);
+
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
   glDisable(GL_SCISSOR_TEST);
@@ -598,6 +603,24 @@ void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)
   glEnd();
 }
 
+void gld_BeginUIDraw(void)
+{
+  if (V_IsUILightmodeIndexed())
+  {
+    glsl_SetMainShaderActive();
+    glsl_SetLightLevel(1.0f); // UI is always "fullbright"
+  }
+}
+
+void gld_EndUIDraw(void)
+{
+  if (V_IsUILightmodeIndexed())
+  {
+    glsl_SetActiveShader(NULL);
+    return;
+  }
+}
+
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
 {
   GLTexture *gltexture;
@@ -611,7 +634,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
   dboolean bFakeColormap;
 
   cmap = ((flags & VPT_TRANS) ? cm : CR_DEFAULT);
-  gltexture=gld_RegisterPatch(lump, cmap, false, false);
+  gltexture=gld_RegisterPatch(lump, cmap, false, V_IsUILightmodeIndexed());
   gld_BindPatch(gltexture, cmap);
 
   if (!gltexture)
@@ -707,7 +730,7 @@ void gld_FillFlat(int lump, int x, int y, int width, int height, enum patch_tran
   int saved_boom_cm = boom_cm;
   boom_cm = 0;
 
-  gltexture = gld_RegisterFlat(lump, false, false);
+  gltexture = gld_RegisterFlat(lump, false, V_IsUILightmodeIndexed());
   gld_BindFlat(gltexture, 0);
 
   //e6y
@@ -746,7 +769,7 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
   int saved_boom_cm = boom_cm;
   boom_cm = 0;
 
-  gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false, false);
+  gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false, V_IsUILightmodeIndexed());
   gld_BindPatch(gltexture, CR_DEFAULT);
 
   if (!gltexture)

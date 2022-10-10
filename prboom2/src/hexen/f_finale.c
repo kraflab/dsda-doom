@@ -257,6 +257,8 @@ static void DrawPic(void)
 
 void Hexen_F_Drawer(void)
 {
+    V_BeginUIDraw();
+
     switch (FinaleStage)
     {
         case 0:                // Fade in initial finale screen
@@ -276,6 +278,8 @@ void Hexen_F_Drawer(void)
             TextWrite();
             break;
     }
+
+    V_EndUIDraw();
 }
 
 extern char ClusterMessage[MAX_INTRMSN_MESSAGE_SIZE];

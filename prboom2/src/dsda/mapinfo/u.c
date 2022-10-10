@@ -278,6 +278,8 @@ int dsda_UFTicker(void) {
 }
 
 void dsda_UFDrawer(void) {
+  V_BeginUIDraw();
+
   void F_TextWrite(void);
   void F_BunnyScroll(void);
 
@@ -290,6 +292,8 @@ void dsda_UFDrawer(void) {
     V_FillBorder(-1, 0);
     V_DrawNamePatch(0, 0, 0, gamemapinfo->endpic, CR_DEFAULT, VPT_STRETCH);
   }
+
+  V_EndUIDraw();
 }
 
 // numbossactions == 0 means to use the defaults.

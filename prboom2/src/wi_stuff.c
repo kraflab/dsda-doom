@@ -2075,6 +2075,8 @@ void WI_Drawer (void)
   if (heretic) return IN_Drawer();
   if (hexen) return Hexen_IN_Drawer();
 
+  V_BeginUIDraw();
+
   switch (state)
   {
     case StatCount:
@@ -2094,6 +2096,8 @@ void WI_Drawer (void)
          WI_drawNoState();
          break;
   }
+
+  V_EndUIDraw();
 }
 
 
