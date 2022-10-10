@@ -1304,9 +1304,9 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat events
     }
 
-    case ev_joystick:
-      joyxmove = ev->data2;
-      joyymove = ev->data3;
+    case ev_left_analog:
+      joyxmove = ev->data1;
+      joyymove = ev->data2;
       return true;    // eat events
 
     default:

@@ -108,7 +108,7 @@ void M_ChangeLightMode(void);
 void I_InitMouse(void);
 void MouseAccelChanging(void);
 void G_UpdateMouseSensitivity(void);
-void I_InitJoystick(void);
+void dsda_InitGameController(void);
 void M_ChangeSpeed(void);
 void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
@@ -690,9 +690,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_fine_sensitivity", dsda_config_fine_sensitivity,
     dsda_config_int, 0, 99, { 0 }, NULL, NOT_STRICT, G_UpdateMouseSensitivity
   },
-  [dsda_config_use_joystick] = {
-    "use_joystick", dsda_config_use_joystick,
-    dsda_config_int, 0, 2, { 0 }, NULL, NOT_STRICT, I_InitJoystick
+  [dsda_config_use_game_controller] = {
+    "use_game_controller", dsda_config_use_game_controller,
+    dsda_config_int, 0, 2, { 0 }, NULL, NOT_STRICT, dsda_InitGameController
   },
   [dsda_config_deh_apply_cheats] = {
     "deh_apply_cheats", dsda_config_deh_apply_cheats,

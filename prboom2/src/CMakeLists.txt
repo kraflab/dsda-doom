@@ -43,6 +43,8 @@ set(COMMON_SRC
     dsda/exhud.h
     dsda/features.c
     dsda/features.h
+    dsda/game_controller.c
+    dsda/game_controller.h
     dsda/ghost.c
     dsda/ghost.h
     dsda/gl/render_scale.c
@@ -240,7 +242,6 @@ set(COMMON_SRC
     i_capture.h
     i_glob.c
     i_glob.h
-    i_joy.h
     i_main.h
     i_pcsound.c
     i_pcsound.h
@@ -372,7 +373,6 @@ set(MUS2MID_SRC
 )
 
 set(SDLDOOM_SOURCES
-    SDL/i_joy.c
     SDL/i_main.c
     SDL/i_sound.c
     SDL/i_sshot.c

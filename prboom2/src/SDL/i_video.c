@@ -67,7 +67,6 @@
 #include "d_main.h"
 #include "d_event.h"
 #include "d_deh.h"
-#include "i_joy.h"
 #include "i_video.h"
 #include "i_capture.h"
 #include "z_zone.h"
@@ -86,6 +85,7 @@
 
 #include "dsda/args.h"
 #include "dsda/configuration.h"
+#include "dsda/game_controller.h"
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
@@ -423,7 +423,7 @@ void I_StartTic (void)
 
   I_ReadMouse();
 
-  I_PollJoystick();
+  dsda_PollGameController();
 }
 
 //
@@ -460,7 +460,7 @@ void I_InitMouse(void)
 static void I_InitInputs(void)
 {
   I_InitMouse();
-  I_InitJoystick();
+  dsda_InitGameController();
 }
 
 ///////////////////////////////////////////////////////////

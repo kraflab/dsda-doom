@@ -1,0 +1,143 @@
+//
+// Copyright(C) 2022 by Ryan Krafnick
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// DESCRIPTION:
+//	DSDA Game Controller
+//
+
+#include "SDL.h"
+
+#include "d_event.h"
+#include "d_main.h"
+#include "lprintf.h"
+
+#include "dsda/args.h"
+#include "dsda/configuration.h"
+
+#include "game_controller.h"
+
+static int use_game_controller;
+static SDL_GameController* game_controller;
+
+#define DEADZONE 1024
+
+static int dsda_AxisValue(SDL_GameControllerButton button) {
+  int value;
+
+  value = SDL_GameControllerGetAxis(game_controller, button);
+
+  if (abs(value) < DEADZONE)
+    value = 0;
+
+  return value;
+}
+
+static void dsda_PollLeftStick(void) {
+  event_t ev;
+
+  ev.type = ev_left_analog;
+  ev.data1 = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTX);
+  ev.data2 = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY);
+
+  if (ev.data1 || ev.data2)
+    D_PostEvent(&ev);
+}
+
+static void dsda_PollRightStick(void) {
+  event_t ev;
+
+  ev.type = ev_right_analog;
+  ev.data1 = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTX);
+  ev.data2 = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTY);
+
+  if (ev.data1 || ev.data2)
+    D_PostEvent(&ev);
+}
+
+static void dsda_PollTrigger(void) {
+  event_t ev;
+
+  ev.type = ev_trigger;
+  ev.data1 = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+  ev.data2 = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+
+  if (ev.data1 || ev.data2)
+    D_PostEvent(&ev);
+}
+
+static void dsda_PollButtons(void) {
+  event_t ev;
+
+  ev.type = ev_joystick;
+  ev.data1 =
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_A) << 0) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_B) << 1) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_X) << 2) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_Y) << 3) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_BACK) << 4) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_GUIDE) << 5) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_START) << 6) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_LEFTSTICK) << 7) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_RIGHTSTICK) << 8) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) << 9) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) << 10) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_UP) << 11) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN) << 12) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT) << 13) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT) << 14);
+
+  D_PostEvent(&ev);
+}
+
+void dsda_PollGameController(void) {
+  dsda_PollLeftStick();
+  dsda_PollRightStick();
+  dsda_PollTrigger();
+  dsda_PollButtons();
+}
+
+void dsda_InitGameController(void) {
+  int num_joysticks;
+
+  use_game_controller =
+    dsda_IntConfig(dsda_config_use_game_controller) && !dsda_Flag(dsda_arg_nojoy);
+
+  if (!use_game_controller)
+    return;
+
+  SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
+
+  num_joysticks = SDL_NumJoysticks();
+
+  if (use_game_controller > num_joysticks) {
+    lprintf(LO_WARN, "dsda_InitGameController: invalid joystick %d\n",
+            use_game_controller);
+    return;
+  }
+
+  if (!SDL_IsGameController(use_game_controller - 1)) {
+    lprintf(LO_WARN, "dsda_InitGameController: unsupported joystick %d\n",
+            use_game_controller);
+    return;
+  }
+
+  game_controller = SDL_GameControllerOpen(use_game_controller - 1);
+
+  if (!game_controller) {
+    lprintf(LO_ERROR, "dsda_InitGameController: error opening game controller %d\n",
+            use_game_controller);
+    return;
+  }
+
+  lprintf(LO_DEBUG, "Opened game controller %s\n", SDL_GameControllerName(game_controller));
+}

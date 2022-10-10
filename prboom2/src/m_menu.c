@@ -2871,7 +2871,7 @@ setup_menu_t audiovideo_settings[] = {
 setup_menu_t device_settings[] = {
   { "Input Devices", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_use_mouse },
-  { "Enable Joystick", S_YESNO, m_conf, G_X, G_Y + 3 * 8, dsda_config_use_joystick },
+  { "Enable Game Controller", S_YESNO, m_conf, G_X, G_Y + 3 * 8, dsda_config_use_game_controller },
 
   { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
   { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_mouse_sensitivity_horiz },

@@ -279,8 +279,8 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_movement_mousestrafedivisor),
   MIGRATED_SETTING(dsda_config_movement_mouseinvert),
 
-  SETTING_HEADING("Joystick settings"),
-  MIGRATED_SETTING(dsda_config_use_joystick),
+  SETTING_HEADING("Game controller settings"),
+  MIGRATED_SETTING(dsda_config_use_game_controller),
 
   SETTING_HEADING("Automap settings"),
   MIGRATED_SETTING(dsda_config_mapcolor_back),
