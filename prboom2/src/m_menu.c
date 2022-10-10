@@ -3669,97 +3669,32 @@ dboolean M_Responder (event_t* ev) {
 
   // Process joystick input
 
-  if (ev->type == ev_joystick && joywait < dsda_GetTick()) {
-    // if (ev->data3 == -1)
-    // {
-    //   action = MENU_UP;                                // phares 3/7/98
-    //   ch = 0;
-    //   joywait = dsda_GetTick() + 5;
-    // }
-    // else if (ev->data3 == 1)
-    // {
-    //   action = MENU_DOWN;                              // phares 3/7/98
-    //   ch = 0;
-    //   joywait = dsda_GetTick() + 5;
-    // }
-    //
-    // if (ev->data2 == -1)
-    // {
-    //   action = MENU_LEFT;                              // phares 3/7/98
-    //   ch = 0;
-    //   joywait = dsda_GetTick() + 2;
-    // }
-    // else if (ev->data2 == 1)
-    // {
-    //   action = MENU_RIGHT;                             // phares 3/7/98
-    //   ch = 0;
-    //   joywait = dsda_GetTick() + 2;
-    // }
-
-    if (ev->data1&1)
+  if (ev->type == ev_joystick) {
+    if (ev->data1 && joywait < dsda_GetTick())
     {
-      action = MENU_ENTER;                             // phares 3/7/98
-      ch = 0;
+      ch = 0; // meaningless, just to get you past the check for -1
       joywait = dsda_GetTick() + 5;
-    }
-
-    if (ev->data1&2)
-    {
-      action = MENU_BACKSPACE;                         // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 5;
-    }
-
-    // phares 4/4/98:
-    // Handle joystick buttons 3+, and allow them to pass down
-    // to where key binding can eat them.
-
-    if (setup_active && set_keybnd_active) {
-      if (ev->data1 >> 2)
-      {
-        ch = 0; // meaningless, just to get you past the check for -1
-        joywait = dsda_GetTick() + 5;
-      }
     }
   }
-  else {
-    // Process mouse input
-    if (ev->type == ev_mouse && mousewait < dsda_GetTick()) {
-      if (ev->data1&1)
-      {
-        action = MENU_ENTER;                           // phares 3/7/98
-        ch = 0;
-        mousewait = dsda_GetTick() + 15;
-      }
-
-      if (ev->data1&2)
-      {
-        action = MENU_BACKSPACE;                       // phares 3/7/98
-        ch = 0;
-        mousewait = dsda_GetTick() + 15;
-      }
-
-      // phares 4/4/98:
-      // Handle mouse buttons 3+, and allow it to pass down
-      if (ev->data1 >> 2)
-      {
-        ch = 0; // meaningless, just to get you past the check for -1
-        mousewait = dsda_GetTick() + 15;
-      }
+  else if (ev->type == ev_mouse) {
+    if (ev->data1 && mousewait < dsda_GetTick())
+    {
+      ch = 0; // meaningless, just to get you past the check for -1
+      mousewait = dsda_GetTick() + 15;
     }
-    else
-      // Process keyboard input
-      if (ev->type == ev_keydown)
-      {
-        ch = ev->data1;
-                                      // phares 4/11/98:
-        if (ch == KEYD_RSHIFT)        // For string processing, need
-          shiftdown = true;           // to know when shift key is up or
-      }                               // down so you can get at the !,#,
-      else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
-        if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
-          shiftdown = false;          // so we need to note the difference
-  }                                   // here using the 'shiftdown' dboolean.
+  }
+  else if (ev->type == ev_keydown)
+  {
+    ch = ev->data1;
+                                  // phares 4/11/98:
+    if (ch == KEYD_RSHIFT)        // For string processing, need
+      shiftdown = true;           // to know when shift key is up or
+  }                               // down so you can get at the !,#,
+  else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
+  {                               // past this point, but keyups aren't
+    if (ev->data1 == KEYD_RSHIFT) // so we need to note the difference
+      shiftdown = false;          // here using the 'shiftdown' dboolean.
+  }
 
   if (dsda_InputActivated(dsda_input_menu_left))
   {
