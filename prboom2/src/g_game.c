@@ -1285,11 +1285,11 @@ dboolean G_Responder (event_t* ev)
     {
       double value;
 
-      value = mouse_sensitivity_horiz * AccelerateMouse(ev->data2);
+      value = mouse_sensitivity_horiz * AccelerateMouse(ev->data1);
       mousex += G_CarryDouble(carry_mousex, value);
       if (dsda_MouseLook())
       {
-        value = mouse_sensitivity_mlook * AccelerateMouse(ev->data3);
+        value = mouse_sensitivity_mlook * AccelerateMouse(ev->data2);
         if (dsda_IntConfig(dsda_config_movement_mouseinvert))
           mlooky += G_CarryDouble(carry_mousey, value);
         else
@@ -1297,7 +1297,7 @@ dboolean G_Responder (event_t* ev)
       }
       else
       {
-        value = mouse_sensitivity_vert * AccelerateMouse(ev->data3) / 8;
+        value = mouse_sensitivity_vert * AccelerateMouse(ev->data2) / 8;
         mousey += G_CarryDouble(carry_vertmouse, value);
       }
 

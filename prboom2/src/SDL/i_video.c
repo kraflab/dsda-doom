@@ -350,7 +350,6 @@ while (SDL_PollEvent(Event))
   {
     event.type = ev_mouse;
     event.data1 = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
-    event.data2 = event.data3 = 0;
     D_PostEvent(&event);
   }
   break;
@@ -1483,9 +1482,8 @@ static void I_ReadMouse(void)
     {
       event_t event;
       event.type = ev_mousemotion;
-      event.data1 = 0;
-      event.data2 = x;
-      event.data3 = -y;
+      event.data1 = x;
+      event.data2 = -y;
 
       D_PostEvent(&event);
     }

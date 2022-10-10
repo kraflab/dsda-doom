@@ -3670,31 +3670,31 @@ dboolean M_Responder (event_t* ev) {
   // Process joystick input
 
   if (ev->type == ev_joystick && joywait < dsda_GetTick()) {
-    if (ev->data3 == -1)
-    {
-      action = MENU_UP;                                // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 5;
-    }
-    else if (ev->data3 == 1)
-    {
-      action = MENU_DOWN;                              // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 5;
-    }
-
-    if (ev->data2 == -1)
-    {
-      action = MENU_LEFT;                              // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 2;
-    }
-    else if (ev->data2 == 1)
-    {
-      action = MENU_RIGHT;                             // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 2;
-    }
+    // if (ev->data3 == -1)
+    // {
+    //   action = MENU_UP;                                // phares 3/7/98
+    //   ch = 0;
+    //   joywait = dsda_GetTick() + 5;
+    // }
+    // else if (ev->data3 == 1)
+    // {
+    //   action = MENU_DOWN;                              // phares 3/7/98
+    //   ch = 0;
+    //   joywait = dsda_GetTick() + 5;
+    // }
+    //
+    // if (ev->data2 == -1)
+    // {
+    //   action = MENU_LEFT;                              // phares 3/7/98
+    //   ch = 0;
+    //   joywait = dsda_GetTick() + 2;
+    // }
+    // else if (ev->data2 == 1)
+    // {
+    //   action = MENU_RIGHT;                             // phares 3/7/98
+    //   ch = 0;
+    //   joywait = dsda_GetTick() + 2;
+    // }
 
     if (ev->data1&1)
     {
