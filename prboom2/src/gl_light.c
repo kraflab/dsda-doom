@@ -190,7 +190,7 @@ static float gld_CalcLightLevel_shaders(int lightlevel)
 void gld_StaticLightAlpha(float light, float alpha)
 {
   player_t *player = &players[displayplayer];
-  int shaders = (gl_lightmode == gl_lightmode_shaders || gl_lightmode == gl_lightmode_indexed);
+  int shaders = (gl_lightmode == gl_lightmode_shaders || V_IsWorldLightmodeIndexed());
 
   if (!player->fixedcolormap)
   {
@@ -226,7 +226,7 @@ void gld_StaticLightAlpha(float light, float alpha)
 // for non-indexed modes this is twice as large for some reason.
 int gld_GetGunFlashLight(void)
 {
-  if (gl_lightmode == gl_lightmode_indexed)
+  if (V_IsWorldLightmodeIndexed())
     return (extralight << 4);
   else
     return (extralight << 5);

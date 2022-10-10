@@ -1463,7 +1463,7 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
   GLTexture *gltexture;
   int i;
 
-  if (gl_lightmode != gl_lightmode_indexed)
+  if (!V_IsWorldLightmodeIndexed())
     return gld_RegisterTexture(texture_num, false, force, false);
 
   if (texture_num == NO_TEXTURE && !force)
@@ -1531,7 +1531,7 @@ void gld_BindSkyTexture(GLTexture *gltexture)
   unsigned char *buffer;
 
   // nothing special to do unless we're in indexed lightmode
-  if (gl_lightmode != gl_lightmode_indexed)
+  if (!V_IsWorldLightmodeIndexed())
   {
     gld_BindTexture(gltexture, 0);
     return;
@@ -1686,7 +1686,7 @@ void gld_InitColormapTextures(void)
   GLTexture *gltexture;
 
   // ain't in indexed mode? ain't nothin' to do.
-  if (gl_lightmode != gl_lightmode_indexed)
+  if (!V_IsWorldLightmodeIndexed())
     return;
 
   // figure out how many palette variants are in the
@@ -1817,7 +1817,7 @@ void gld_Precache(void)
   // [XA] TODO: precache both indexed and non-indexed textures?
   // right now if a player switches lightmode while-ingame, the
   // other texture set will not have been precached.
-  indexed = (gl_lightmode == gl_lightmode_indexed);
+  indexed = V_IsWorldLightmodeIndexed();
 
   // Precache flats.
 

@@ -950,6 +950,10 @@ dboolean V_IsOpenGLMode(void) {
   return current_videomode == VID_MODEGL;
 }
 
+dboolean V_IsWorldLightmodeIndexed(void) {
+  return gl_lightmode == gl_lightmode_indexed;
+}
+
 void V_CopyScreen(int srcscrn, int destscrn)
 {
   V_CopyRect(srcscrn, destscrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);

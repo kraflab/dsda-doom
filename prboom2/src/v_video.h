@@ -129,6 +129,9 @@ void V_InitMode(video_mode_t mode);
 dboolean V_IsSoftwareMode(void);
 dboolean V_IsOpenGLMode(void);
 
+// [XA] indexed lightmode query interface
+dboolean V_IsWorldLightmodeIndexed(void);
+
 //jff 4/24/98 loads color translation lumps
 void V_InitColorTranslation(void);
 

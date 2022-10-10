@@ -533,7 +533,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       continue;
     }
 
-    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, gl_lightmode == gl_lightmode_indexed);
+    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, V_IsWorldLightmodeIndexed());
     if (gltexture)
     {
       sector_t tempsec;
@@ -822,7 +822,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   int x1,y1,x2,y2;
   float light;
 
-  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, gl_lightmode == gl_lightmode_indexed);
+  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, V_IsWorldLightmodeIndexed());
   if (!gltexture)
     return;
   gld_BindPatch(gltexture, CR_DEFAULT);
@@ -909,7 +909,7 @@ void gld_SetPalette(int palette)
   // if we're actually in indexed mode,
   // then we're all done here.
   gld_SetIndexedPalette(palette);
-  if (gl_lightmode == gl_lightmode_indexed)
+  if (V_IsWorldLightmodeIndexed())
     return;
 
   if (palette > 0)
@@ -1326,7 +1326,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
     int currpic, nextpic;
     GLWall *wall = (GLWall*)itemdata;
     float oldalpha = wall->alpha;
-    dboolean indexed = (gl_lightmode == gl_lightmode_indexed);
+    dboolean indexed = V_IsWorldLightmodeIndexed();
 
     switch (itemtype)
     {
@@ -1531,7 +1531,7 @@ void gld_AddWall(seg_t *seg)
   wall.glseg=&gl_lines[seg->linedef->iLineID];
   backseg = seg->sidedef != &sides[seg->linedef->sidenum[0]];
 
-  indexed = (gl_lightmode == gl_lightmode_indexed);
+  indexed = V_IsWorldLightmodeIndexed();
 
   if (poly_add_line)
   {
@@ -2028,7 +2028,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   sector=R_FakeFlat(sector, &tempsec, &floorlightlevel, &ceilinglightlevel, false); // for boom effects
   flat.flags = (ceiling ? GLFLAT_CEILING : 0);
 
-  indexed = (gl_lightmode == gl_lightmode_indexed);
+  indexed = V_IsWorldLightmodeIndexed();
 
   if (!ceiling) // if it is a floor ...
   {
@@ -2587,7 +2587,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.cm = thing->color;
   else
     sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
-  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, gl_lightmode == gl_lightmode_indexed);
+  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, V_IsWorldLightmodeIndexed());
   if (!sprite.gltexture)
     return;
   sprite.flags = thing->flags;

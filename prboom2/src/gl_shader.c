@@ -286,7 +286,7 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
 void glsl_SetActiveShader(GLShader *shader)
 {
-  if (gl_lightmode == gl_lightmode_shaders || gl_lightmode == gl_lightmode_indexed)
+  if (gl_lightmode == gl_lightmode_shaders || V_IsWorldLightmodeIndexed())
   {
     if (shader != active_shader)
     {
@@ -298,7 +298,7 @@ void glsl_SetActiveShader(GLShader *shader)
 
 void glsl_SetMainShaderActive()
 {
-  if (gl_lightmode == gl_lightmode_indexed)
+  if (V_IsWorldLightmodeIndexed())
   {
     glsl_SetActiveShader(sh_indexed);
   }
@@ -328,7 +328,7 @@ void glsl_SetFuzzShaderInactive()
 
 void glsl_SetLightLevel(float lightlevel)
 {
-  if (gl_lightmode == gl_lightmode_indexed && sh_indexed)
+  if (V_IsWorldLightmodeIndexed() && sh_indexed)
   {
     GLEXT_glUniform1fARB(indexed_unifs.lightlevel_index, lightlevel);
   }
@@ -422,5 +422,5 @@ void glsl_SetFuzzTextureDimensions(float texwidth, float texheight)
 
 int glsl_IsActive(void)
 {
-  return ((gl_lightmode == gl_lightmode_shaders && sh_main) || (gl_lightmode == gl_lightmode_indexed && sh_indexed));
+  return ((gl_lightmode == gl_lightmode_shaders && sh_main) || (V_IsWorldLightmodeIndexed() && sh_indexed));
 }

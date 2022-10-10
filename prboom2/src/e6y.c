@@ -288,7 +288,7 @@ void M_ChangeSkyMode(void)
 
   // [XA] always force the standard (strips)
   // sky for the indexed lightmode.
-  if (gl_lightmode == gl_lightmode_indexed)
+  if (V_IsWorldLightmodeIndexed())
     gl_drawskys = skytype_standard;
   else if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
