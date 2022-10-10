@@ -293,8 +293,6 @@ void Hexen_IN_Drawer(void)
         return;
     }
 
-    V_BeginUIDraw();
-
     V_DrawRawScreen("INTERPIC");
 
     if (gametype == SINGLE)
@@ -309,8 +307,6 @@ void Hexen_IN_Drawer(void)
     {
         DrDeathTally();
     }
-
-    V_EndUIDraw();
 }
 
 #define TALLY_EFFECT_TICKS 20

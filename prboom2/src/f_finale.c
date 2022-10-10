@@ -614,8 +614,6 @@ void F_CastDrawer (void)
   int                 lump;
   dboolean             flip;
 
-  V_BeginUIDraw();
-
   // e6y: wide-res
   V_FillBorder(-1, 0);
   // erase the entire screen to a background
@@ -633,8 +631,6 @@ void F_CastDrawer (void)
   // CPhipps - patch drawing updated
   V_DrawNumPatch(160, 170, 0, lump+firstspritelump, CR_DEFAULT,
      VPT_STRETCH | (flip ? VPT_FLIP : 0));
-
-  V_EndUIDraw();
 }
 
 //
@@ -729,8 +725,6 @@ void F_Drawer (void)
     return;
   }
 
-  V_BeginUIDraw();
-
   if (!finalestage)
     F_TextWrite ();
   else
@@ -758,6 +752,4 @@ void F_Drawer (void)
            break;
     }
   }
-
-  V_EndUIDraw();
 }

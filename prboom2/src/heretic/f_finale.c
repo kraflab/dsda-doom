@@ -257,8 +257,6 @@ void F_DrawUnderwater(void)
 
 void Heretic_F_Drawer(void)
 {
-  V_BeginUIDraw();
-
   if (!finalestage)
     Heretic_F_TextWrite();
   else
@@ -287,6 +285,4 @@ void Heretic_F_Drawer(void)
         break;
     }
   }
-
-  V_EndUIDraw();
 }
