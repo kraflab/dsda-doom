@@ -466,6 +466,12 @@ void G_UpdateMouseSensitivity(void)
   mouse_strafe_divisor = dsda_IntConfig(dsda_config_movement_mousestrafedivisor);
 }
 
+void G_ResetMotion(void)
+{
+  mousex = mousey = 0;
+  joyxmove = joyymove = 0;
+}
+
 void G_BuildTiccmd(ticcmd_t* cmd)
 {
   int strafe;
@@ -485,7 +491,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (demoplayback && demorecording)
   {
-    mousex = mousey = 0;
+    G_ResetMotion();
     return;
   }
 
@@ -985,7 +991,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     cmd->angleturn -= mousex; /* mead now have enough dynamic range 2-10-00 */
 
   if (!walkcamera.type || menuactive) //e6y
-    mousex = mousey = 0;
+    G_ResetMotion();
 
   if (forward > MAXPLMOVE)
     forward = MAXPLMOVE;
@@ -1151,8 +1157,7 @@ static void G_DoLoadLevel (void)
 
   // clear cmd building stuff
   dsda_InputFlush();
-  joyxmove = joyymove = 0;
-  mousex = mousey = 0;
+  G_ResetMotion();
   mlooky = 0;//e6y
   special_event = 0;
   dsda_ResetPauseMode();
@@ -3945,7 +3950,7 @@ void P_WalkTicker()
     walkcamera.z = subsec->sector->floorheight + 41 * FRACUNIT;
   }
 
-  mousex = mousey = 0;
+  G_ResetMotion();
 }
 
 void P_ResetWalkcam(void)
