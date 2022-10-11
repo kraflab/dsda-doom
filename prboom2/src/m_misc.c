@@ -62,6 +62,7 @@
 #include "m_misc.h"
 
 #include "dsda/args.h"
+#include "dsda/game_controller.h"
 #include "dsda/settings.h"
 
 // NSM
@@ -444,10 +445,10 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_speed", dsda_input_speed, KEYD_RSHIFT, -1, -1),
   INPUT_SETTING("input_strafeleft", dsda_input_strafeleft, 'a', -1, -1),
   INPUT_SETTING("input_straferight", dsda_input_straferight, 'd', -1, -1),
-  INPUT_SETTING("input_strafe", dsda_input_strafe, KEYD_RALT, 1, -1),
-  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, -1),
-  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, -1),
-  INPUT_SETTING("input_use", dsda_input_use, ' ', -1, SDL_CONTROLLER_BUTTON_B),
+  INPUT_SETTING("input_strafe", dsda_input_strafe, KEYD_RALT, 1, SDL_CONTROLLER_BUTTON_LEFTSHOULDER),
+  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, SDL_CONTROLLER_BUTTON_LEFTSTICK),
+  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, SDL_CONTROLLER_BUTTON_RIGHTSTICK),
+  INPUT_SETTING("input_use", dsda_input_use, ' ', -1, SDL_CONTROLLER_BUTTON_A),
   INPUT_SETTING("input_flyup", dsda_input_flyup, '.', -1, -1),
   INPUT_SETTING("input_flydown", dsda_input_flydown, ',', -1, -1),
   INPUT_SETTING("input_flycenter", dsda_input_flycenter, 0, -1, -1),
@@ -466,7 +467,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_nextweapon", dsda_input_nextweapon, KEYD_MWHEELUP, -1, SDL_CONTROLLER_BUTTON_Y),
   INPUT_SETTING("input_prevweapon", dsda_input_prevweapon, KEYD_MWHEELDOWN, -1, SDL_CONTROLLER_BUTTON_X),
   INPUT_SETTING("input_toggleweapon", dsda_input_toggleweapon, '0', -1, -1),
-  INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, SDL_CONTROLLER_BUTTON_A),
+  INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, FAKE_BUTTON_TRIGGERRIGHT),
 
   INPUT_SETTING("input_pause", dsda_input_pause, KEYD_PAUSE, -1, -1),
   INPUT_SETTING("input_map", dsda_input_map, KEYD_TAB, -1, -1),
