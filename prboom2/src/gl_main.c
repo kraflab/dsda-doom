@@ -99,6 +99,8 @@ int gl_render_paperitems;
 
 GLfloat gl_texture_filter_anisotropic;
 
+extern int gld_paletteIndex;
+
 //sprites
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
 int gl_sprite_blend;  // e6y: smooth sprite edges
@@ -533,8 +535,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       continue;
     }
 
-    // [XA] TODO: indexed lightmode support here -- needs to use V_IsUILightmodeIndexed();
-    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, false);
+    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, V_IsUILightmodeIndexed());
     if (gltexture)
     {
       sector_t tempsec;
@@ -805,34 +806,64 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
   glEnd();
 }
 
+// [XA] quicky indexed color-lookup function for a couple
+// of things that aren't done in the shader for the indexed
+// lightmode. ideally this will go away in the future.
+color_rgb_t gld_LookupIndexedColor(int index)
+{
+  color_rgb_t color;
+  const unsigned char *playpal;
+
+  if (V_IsUILightmodeIndexed())
+  {
+    playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
+    int gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
+    const byte * gtable = (const byte*)W_LumpByNum(gtlump) + 256 * usegamma;
+    const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
+
+    color.r = gtable[playpal[colormap[index] * 3 + 0]];
+    color.g = gtable[playpal[colormap[index] * 3 + 1]];
+    color.b = gtable[playpal[colormap[index] * 3 + 2]];
+  }
+  else
+  {
+    playpal = V_GetPlaypal();
+
+    color.r = playpal[3 * index + 0];
+    color.g = playpal[3 * index + 1];
+    color.b = playpal[3 * index + 2];
+  }
+
+  return color;
+}
+
 void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
 {
   const unsigned char *playpal = V_GetPlaypal();
-  unsigned char r, g, b, a;
+  color_rgb_t color;
+  unsigned char a;
   map_line_t *line;
 
   a = (automap_overlay ? map_lines_overlay_trans * 255 / 100 : 255);
   if (a == 0)
     return;
 
-  r = playpal[3 * BaseColor + 0];
-  g = playpal[3 * BaseColor + 1];
-  b = playpal[3 * BaseColor + 2];
+  color = gld_LookupIndexedColor(BaseColor);
 
   line = M_ArrayGetNewItem(&map_lines, sizeof(line[0]));
 
   line->point[0].x = x0;
   line->point[0].y = y0;
-  line->point[0].r = r;
-  line->point[0].g = g;
-  line->point[0].b = b;
+  line->point[0].r = color.r;
+  line->point[0].g = color.g;
+  line->point[0].b = color.b;
   line->point[0].a = a;
 
   line->point[1].x = x1;
   line->point[1].y = y1;
-  line->point[1].r = r;
-  line->point[1].g = g;
-  line->point[1].b = b;
+  line->point[1].r = color.r;
+  line->point[1].g = color.g;
+  line->point[1].b = color.b;
   line->point[1].a = a;
 }
 
@@ -903,11 +934,14 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
 void gld_FillBlock(int x, int y, int width, int height, int col)
 {
   const unsigned char *playpal = V_GetPlaypal();
+  color_rgb_t color = gld_LookupIndexedColor(col);
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
-  glColor3f((float)playpal[3*col]/255.0f,
-            (float)playpal[3*col+1]/255.0f,
-            (float)playpal[3*col+2]/255.0f);
+
+  glColor3f((float)color.r/255.0f,
+            (float)color.g/255.0f,
+            (float)color.b/255.0f);
+
   glBegin(GL_TRIANGLE_STRIP);
     glVertex2i( x, y );
     glVertex2i( x, y+height );

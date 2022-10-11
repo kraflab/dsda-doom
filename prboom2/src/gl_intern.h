@@ -99,6 +99,13 @@ typedef struct detail_s
   float offsetx, offsety;
 } detail_t;
 
+typedef struct color_rgb_s
+{
+  byte r;
+  byte g;
+  byte b;
+} color_rgb_t;
+
 typedef struct
 {
   int index;

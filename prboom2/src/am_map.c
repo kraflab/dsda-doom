@@ -2486,6 +2486,8 @@ void AM_Drawer (void)
   if (!automap_active)
     return;
 
+  V_BeginUIDraw();
+
   if (automap_follow)
     AM_doFollowPlayer();
 
@@ -2522,8 +2524,13 @@ void AM_Drawer (void)
 
   if (V_IsOpenGLMode())
   {
+    // [XA] temporarily shut off UI drawing here, since this
+    // uses GL_LINES which doesn't play well with the shader.
+    // eventually ought to spin up a new shader for this part.
+    V_EndUIDraw();
     gld_DrawMapLines();
     M_ArrayClear(&map_lines);
+    V_BeginUIDraw();
 
 #if defined(HAVE_LIBSDL2_IMAGE)
     if (map_things_appearance == map_things_appearance_icon)
@@ -2534,4 +2541,6 @@ void AM_Drawer (void)
   }
 
   AM_drawMarks();
+
+  V_EndUIDraw();
 }
