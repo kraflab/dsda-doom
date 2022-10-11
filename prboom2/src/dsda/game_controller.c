@@ -77,7 +77,7 @@ static void dsda_PollLeftStick(void) {
 
   ev.type = ev_left_analog;
   ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTX);
-  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY);
+  ev.data2.f = -dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY);
 
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);

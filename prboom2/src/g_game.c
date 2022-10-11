@@ -250,9 +250,8 @@ static int   dclicktime2;
 static int   dclickstate2;
 static int   dclicks2;
 
-// joystick values are repeated
-static int   joyxmove;
-static int   joyymove;
+static int left_analog_x;
+static int left_analog_y;
 
 // Game events info
 static buttoncode_t special_event; // Event triggered by local player, to send
@@ -469,7 +468,7 @@ void G_UpdateMouseSensitivity(void)
 void G_ResetMotion(void)
 {
   mousex = mousey = 0;
-  joyxmove = joyymove = 0;
+  left_analog_x = left_analog_y = 0;
 }
 
 void G_BuildTiccmd(ticcmd_t* cmd)
@@ -501,11 +500,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   forward = side = 0;
 
-    // use two stage accelerative turning
-    // on the keyboard and joystick
-  if (joyxmove != 0 ||
-      dsda_InputActive(dsda_input_turnright) ||
-      dsda_InputActive(dsda_input_turnleft))
+  // use two stage accelerative turning on the keyboard
+  if (dsda_InputActive(dsda_input_turnright) || dsda_InputActive(dsda_input_turnleft))
     ++turnheld;
   else
     turnheld = 0;
@@ -531,10 +527,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       side += sidemove[speed];
     if (dsda_InputActive(dsda_input_turnleft))
       side -= sidemove[speed];
-    if (joyxmove > 0)
-      side += sidemove[speed];
-    if (joyxmove < 0)
-      side -= sidemove[speed];
   }
   else
   {
@@ -542,19 +534,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       cmd->angleturn -= angleturn[tspeed];
     if (dsda_InputActive(dsda_input_turnleft))
       cmd->angleturn += angleturn[tspeed];
-    if (joyxmove > 0)
-      cmd->angleturn -= angleturn[tspeed];
-    if (joyxmove < 0)
-      cmd->angleturn += angleturn[tspeed];
   }
 
   if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
   if (dsda_InputActive(dsda_input_backward))
-    forward -= forwardmove[speed];
-  if (joyymove < 0)
-    forward += forwardmove[speed];
-  if (joyymove > 0)
     forward -= forwardmove[speed];
   if (dsda_InputActive(dsda_input_straferight))
     side += sidemove[speed];
@@ -990,6 +974,22 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   else
     cmd->angleturn -= mousex; /* mead now have enough dynamic range 2-10-00 */
 
+  if (left_analog_x || left_analog_y)
+  {
+    if (left_analog_x > sidemove[speed])
+      left_analog_x = sidemove[speed];
+    else if (left_analog_x < -sidemove[speed])
+      left_analog_x = -sidemove[speed];
+
+    if (left_analog_y > forwardmove[speed])
+      left_analog_y = forwardmove[speed];
+    else if (left_analog_y < -forwardmove[speed])
+      left_analog_y = -forwardmove[speed];
+
+    forward += left_analog_y;
+    side += left_analog_x;
+  }
+
   if (!walkcamera.type || menuactive) //e6y
     G_ResetMotion();
 
@@ -1305,8 +1305,13 @@ dboolean G_Responder (event_t* ev)
     }
 
     case ev_left_analog:
-      joyxmove = ev->data1.f * 100;
-      joyymove = ev->data2.f * 100;
+      left_analog_x = ev->data1.f * 100;
+      left_analog_y = ev->data2.f * 100;
+      return true;    // eat events
+
+    case ev_right_analog:
+      mousex += ev->data1.f * 1536;
+      mousey += ev->data1.f * 1536;
       return true;    // eat events
 
     default:
@@ -3850,11 +3855,8 @@ void P_WalkTicker()
   angturn = 0;
   turnheld = 0;
 
-    // use two stage accelerative turning
-    // on the keyboard and joystick
-  if (joyxmove != 0 ||
-      dsda_InputActive(dsda_input_turnright) ||
-      dsda_InputActive(dsda_input_turnleft))
+  // use two stage accelerative turning on the keyboard
+  if (dsda_InputActive(dsda_input_turnright) || dsda_InputActive(dsda_input_turnleft))
     ++turnheld;
   else
     turnheld = 0;
@@ -3872,10 +3874,6 @@ void P_WalkTicker()
         side += sidemove[speed];
       if (dsda_InputActive(dsda_input_turnleft))
         side -= sidemove[speed];
-      if (joyxmove > 0)
-        side += sidemove[speed];
-      if (joyxmove < 0)
-        side -= sidemove[speed];
     }
   else
     {
@@ -3883,19 +3881,11 @@ void P_WalkTicker()
         angturn -= angleturn[tspeed];
       if (dsda_InputActive(dsda_input_turnleft))
         angturn += angleturn[tspeed];
-      if (joyxmove > 0)
-        angturn -= angleturn[tspeed];
-      if (joyxmove < 0)
-        angturn += angleturn[tspeed];
     }
 
   if (dsda_InputActive(dsda_input_forward))
     forward += forwardmove[speed];
   if (dsda_InputActive(dsda_input_backward))
-    forward -= forwardmove[speed];
-  if (joyymove < 0)
-    forward += forwardmove[speed];
-  if (joyymove > 0)
     forward -= forwardmove[speed];
   if (dsda_InputActive(dsda_input_straferight))
     side += sidemove[speed];
@@ -3907,6 +3897,22 @@ void P_WalkTicker()
     side += mousex / 4;       /* mead  Don't want to strafe as fast as turns.*/
   else
     angturn -= mousex; /* mead now have enough dynamic range 2-10-00 */
+
+  if (left_analog_x || left_analog_y)
+  {
+    if (left_analog_x > sidemove[speed])
+      left_analog_x = sidemove[speed];
+    else if (left_analog_x < -sidemove[speed])
+      left_analog_x = -sidemove[speed];
+
+    if (left_analog_y > forwardmove[speed])
+      left_analog_y = forwardmove[speed];
+    else if (left_analog_y < -forwardmove[speed])
+      left_analog_y = -forwardmove[speed];
+
+    forward += left_analog_y;
+    side += left_analog_x;
+  }
 
   walkcamera.angle += ((angturn / 8) << ANGLETOFINESHIFT);
   if (dsda_MouseLook())
