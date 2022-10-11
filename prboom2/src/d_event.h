@@ -57,13 +57,18 @@ typedef enum
   ev_text,
 } evtype_t;
 
-// Event structure.
+typedef union
+{
+  int i;
+  float f;
+} event_data_t;
+
 typedef struct
 {
-  evtype_t  type;
-  int       data1;    // keys / mouse/joystick buttons / axis x
-  int       data2;    // axis y
-  char      *text;
+  evtype_t type;
+  event_data_t data1;
+  event_data_t data2;
+  char *text;
 } event_t;
 
 

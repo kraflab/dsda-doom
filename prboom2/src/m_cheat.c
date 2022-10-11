@@ -1001,7 +1001,7 @@ dboolean M_CheatResponder(event_t *ev)
 
   if (dsda_ProcessCheatCodes() &&
       ev->type == ev_keydown &&
-      M_FindCheats(ev->data1))
+      M_FindCheats(ev->data1.i))
     return true;
 
   for (cheat_i = cheat_input; cheat_i->input; cheat_i++)

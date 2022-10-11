@@ -332,14 +332,14 @@ while (SDL_PollEvent(Event))
     }
 #endif
     event.type = ev_keydown;
-    event.data1 = I_TranslateKey(&Event->key.keysym);
+    event.data1.i = I_TranslateKey(&Event->key.keysym);
     D_PostEvent(&event);
     break;
 
   case SDL_KEYUP:
   {
     event.type = ev_keyup;
-    event.data1 = I_TranslateKey(&Event->key.keysym);
+    event.data1.i = I_TranslateKey(&Event->key.keysym);
     D_PostEvent(&event);
   }
   break;
@@ -349,7 +349,7 @@ while (SDL_PollEvent(Event))
   if (mouse_enabled && window_focused)
   {
     event.type = ev_mouse;
-    event.data1 = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
+    event.data1.i = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
     D_PostEvent(&event);
   }
   break;
@@ -359,7 +359,7 @@ while (SDL_PollEvent(Event))
   {
     if (Event->wheel.y > 0)
     {
-      event.data1 = KEYD_MWHEELUP;
+      event.data1.i = KEYD_MWHEELUP;
 
       event.type = ev_keydown;
       D_PostEvent(&event);
@@ -369,7 +369,7 @@ while (SDL_PollEvent(Event))
     }
     else if (Event->wheel.y < 0)
     {
-      event.data1 = KEYD_MWHEELDOWN;
+      event.data1.i = KEYD_MWHEELDOWN;
 
       event.type = ev_keydown;
       D_PostEvent(&event);
@@ -1482,8 +1482,8 @@ static void I_ReadMouse(void)
     {
       event_t event;
       event.type = ev_mousemotion;
-      event.data1 = x;
-      event.data2 = -y;
+      event.data1.i = x;
+      event.data2.i = -y;
 
       D_PostEvent(&event);
     }

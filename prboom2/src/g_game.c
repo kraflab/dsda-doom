@@ -1285,11 +1285,11 @@ dboolean G_Responder (event_t* ev)
     {
       double value;
 
-      value = mouse_sensitivity_horiz * AccelerateMouse(ev->data1);
+      value = mouse_sensitivity_horiz * AccelerateMouse(ev->data1.i);
       mousex += G_CarryDouble(carry_mousex, value);
       if (dsda_MouseLook())
       {
-        value = mouse_sensitivity_mlook * AccelerateMouse(ev->data2);
+        value = mouse_sensitivity_mlook * AccelerateMouse(ev->data2.i);
         if (dsda_IntConfig(dsda_config_movement_mouseinvert))
           mlooky += G_CarryDouble(carry_mousey, value);
         else
@@ -1297,7 +1297,7 @@ dboolean G_Responder (event_t* ev)
       }
       else
       {
-        value = mouse_sensitivity_vert * AccelerateMouse(ev->data2) / 8;
+        value = mouse_sensitivity_vert * AccelerateMouse(ev->data2.i) / 8;
         mousey += G_CarryDouble(carry_vertmouse, value);
       }
 
@@ -1305,8 +1305,8 @@ dboolean G_Responder (event_t* ev)
     }
 
     case ev_left_analog:
-      joyxmove = ev->data1;
-      joyymove = ev->data2;
+      joyxmove = ev->data1.f * 100;
+      joyymove = ev->data2.f * 100;
       return true;    // eat events
 
     default:

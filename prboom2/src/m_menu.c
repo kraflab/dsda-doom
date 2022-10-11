@@ -3670,14 +3670,14 @@ dboolean M_Responder (event_t* ev) {
   // Process joystick input
 
   if (ev->type == ev_joystick) {
-    if (ev->data1 && joywait < dsda_GetTick())
+    if (ev->data1.i && joywait < dsda_GetTick())
     {
       ch = 0; // meaningless, just to get you past the check for -1
       joywait = dsda_GetTick() + 5;
     }
   }
   else if (ev->type == ev_mouse) {
-    if (ev->data1 && mousewait < dsda_GetTick())
+    if (ev->data1.i && mousewait < dsda_GetTick())
     {
       ch = 0; // meaningless, just to get you past the check for -1
       mousewait = dsda_GetTick() + 15;
@@ -3685,14 +3685,14 @@ dboolean M_Responder (event_t* ev) {
   }
   else if (ev->type == ev_keydown)
   {
-    ch = ev->data1;
+    ch = ev->data1.i;
                                   // phares 4/11/98:
     if (ch == KEYD_RSHIFT)        // For string processing, need
       shiftdown = true;           // to know when shift key is up or
   }                               // down so you can get at the !,#,
   else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
   {                               // past this point, but keyups aren't
-    if (ev->data1 == KEYD_RSHIFT) // so we need to note the difference
+    if (ev->data1.i == KEYD_RSHIFT) // so we need to note the difference
       shiftdown = false;          // here using the 'shiftdown' dboolean.
   }
 
@@ -4309,7 +4309,7 @@ dboolean M_Responder (event_t* ev) {
           // that belong to the same group as the one you're changing.
 
           group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1)) == -1)
+          if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1.i)) == -1)
             return true;
           for (i = 0 ; keys_settings[i] && search ; i++)
             for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
@@ -4342,7 +4342,7 @@ dboolean M_Responder (event_t* ev) {
           // that belong to the same group as the one you're changing.
 
           group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1)) == -1)
+          if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1.i)) == -1)
             return true;
           for (i = 0 ; keys_settings[i] && search ; i++)
             for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)

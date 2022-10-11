@@ -56,25 +56,30 @@ const char* dsda_GameControllerButtonName(int button) {
   return button_names[button];
 }
 
-static int dsda_AxisValue(SDL_GameControllerButton button) {
+static float dsda_AxisValue(SDL_GameControllerButton button) {
   int value;
 
   value = SDL_GameControllerGetAxis(game_controller, button);
 
-  if (abs(value) < DEADZONE)
+  // the positive axis max is 1 less
+  if (value > (DEADZONE - 1))
+    value -= (DEADZONE - 1);
+  else if (value < -DEADZONE)
+    value += DEADZONE;
+  else
     value = 0;
 
-  return value;
+  return (float) value / (32768 - DEADZONE);
 }
 
 static void dsda_PollLeftStick(void) {
   event_t ev;
 
   ev.type = ev_left_analog;
-  ev.data1 = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTX);
-  ev.data2 = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY);
+  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTX);
+  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY);
 
-  if (ev.data1 || ev.data2)
+  if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
 }
 
@@ -82,10 +87,10 @@ static void dsda_PollRightStick(void) {
   event_t ev;
 
   ev.type = ev_right_analog;
-  ev.data1 = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTX);
-  ev.data2 = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTY);
+  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTX);
+  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTY);
 
-  if (ev.data1 || ev.data2)
+  if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
 }
 
@@ -93,10 +98,10 @@ static void dsda_PollTrigger(void) {
   event_t ev;
 
   ev.type = ev_trigger;
-  ev.data1 = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-  ev.data2 = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
 
-  if (ev.data1 || ev.data2)
+  if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
 }
 
@@ -104,7 +109,7 @@ static void dsda_PollButtons(void) {
   event_t ev;
 
   ev.type = ev_joystick;
-  ev.data1 =
+  ev.data1.i =
     (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_A) << 0) |
     (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_B) << 1) |
     (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_X) << 2) |
