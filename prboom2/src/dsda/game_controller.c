@@ -31,6 +31,9 @@ static SDL_GameController* game_controller;
 
 #define DEADZONE 1024
 
+#define FAKE_BUTTON_TRIGGERLEFT 21
+#define FAKE_BUTTON_TRIGGERRIGHT 22
+
 static const char* button_names[] = {
   [SDL_CONTROLLER_BUTTON_A] = "pad a",
   [SDL_CONTROLLER_BUTTON_B] = "pad b",
@@ -47,6 +50,14 @@ static const char* button_names[] = {
   [SDL_CONTROLLER_BUTTON_DPAD_DOWN] = "dpad d",
   [SDL_CONTROLLER_BUTTON_DPAD_LEFT] = "dpad l",
   [SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = "dpad r",
+  [SDL_CONTROLLER_BUTTON_MISC1] = "misc 1",
+  [SDL_CONTROLLER_BUTTON_PADDLE1] = "paddle 1",
+  [SDL_CONTROLLER_BUTTON_PADDLE2] = "paddle 2",
+  [SDL_CONTROLLER_BUTTON_PADDLE3] = "paddle 3",
+  [SDL_CONTROLLER_BUTTON_PADDLE4] = "paddle 4",
+  [SDL_CONTROLLER_BUTTON_TOUCHPAD] = "touchpad",
+  [FAKE_BUTTON_TRIGGERLEFT] = "pad lt",
+  [FAKE_BUTTON_TRIGGERRIGHT] = "pad rt",
 };
 
 const char* dsda_GameControllerButtonName(int button) {
@@ -94,19 +105,9 @@ static void dsda_PollRightStick(void) {
     D_PostEvent(&ev);
 }
 
-static void dsda_PollTrigger(void) {
-  event_t ev;
-
-  ev.type = ev_trigger;
-  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
-
-  if (ev.data1.f || ev.data2.f)
-    D_PostEvent(&ev);
-}
-
 static void dsda_PollButtons(void) {
   event_t ev;
+  float trigger;
 
   ev.type = ev_joystick;
   ev.data1.i =
@@ -124,7 +125,21 @@ static void dsda_PollButtons(void) {
     (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_UP) << 11) |
     (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN) << 12) |
     (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT) << 13) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT) << 14);
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT) << 14) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_MISC1) << 15) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE1) << 16) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE2) << 17) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE3) << 18) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE4) << 19) |
+    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_TOUCHPAD) << 20);
+
+  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+  if (trigger)
+    ev.data1.i |= (1 << FAKE_BUTTON_TRIGGERLEFT);
+
+  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+  if (trigger)
+    ev.data1.i |= (1 << FAKE_BUTTON_TRIGGERRIGHT);
 
   D_PostEvent(&ev);
 }
@@ -132,7 +147,6 @@ static void dsda_PollButtons(void) {
 void dsda_PollGameController(void) {
   dsda_PollLeftStick();
   dsda_PollRightStick();
-  dsda_PollTrigger();
   dsda_PollButtons();
 }
 

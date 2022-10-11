@@ -18,6 +18,9 @@
 #ifndef __DSDA_GAME_CONTROLLER__
 #define __DSDA_GAME_CONTROLLER__
 
+#define FAKE_BUTTON_TRIGGERLEFT 21
+#define FAKE_BUTTON_TRIGGERRIGHT 22
+
 const char* dsda_GameControllerButtonName(int button);
 void dsda_PollGameController(void);
 void dsda_InitGameController(void);
