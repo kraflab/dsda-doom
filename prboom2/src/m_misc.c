@@ -48,8 +48,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#include "SDL_gamecontroller.h"
-
 #include "doomstat.h"
 #include "g_game.h"
 #include "i_system.h"
@@ -445,10 +443,10 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_speed", dsda_input_speed, KEYD_RSHIFT, -1, -1),
   INPUT_SETTING("input_strafeleft", dsda_input_strafeleft, 'a', -1, -1),
   INPUT_SETTING("input_straferight", dsda_input_straferight, 'd', -1, -1),
-  INPUT_SETTING("input_strafe", dsda_input_strafe, KEYD_RALT, 1, SDL_CONTROLLER_BUTTON_LEFTSHOULDER),
-  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, SDL_CONTROLLER_BUTTON_LEFTSTICK),
-  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, SDL_CONTROLLER_BUTTON_RIGHTSTICK),
-  INPUT_SETTING("input_use", dsda_input_use, ' ', -1, SDL_CONTROLLER_BUTTON_A),
+  INPUT_SETTING("input_strafe", dsda_input_strafe, KEYD_RALT, 1, DSDA_CONTROLLER_BUTTON_LEFTSHOULDER),
+  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, DSDA_CONTROLLER_BUTTON_LEFTSTICK),
+  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, DSDA_CONTROLLER_BUTTON_RIGHTSTICK),
+  INPUT_SETTING("input_use", dsda_input_use, ' ', -1, DSDA_CONTROLLER_BUTTON_A),
   INPUT_SETTING("input_flyup", dsda_input_flyup, '.', -1, -1),
   INPUT_SETTING("input_flydown", dsda_input_flydown, ',', -1, -1),
   INPUT_SETTING("input_flycenter", dsda_input_flycenter, 0, -1, -1),
@@ -464,10 +462,10 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_weapon7", dsda_input_weapon7, '7', -1, -1),
   INPUT_SETTING("input_weapon8", dsda_input_weapon8, '8', -1, -1),
   INPUT_SETTING("input_weapon9", dsda_input_weapon9, '9', -1, -1),
-  INPUT_SETTING("input_nextweapon", dsda_input_nextweapon, KEYD_MWHEELUP, -1, SDL_CONTROLLER_BUTTON_Y),
-  INPUT_SETTING("input_prevweapon", dsda_input_prevweapon, KEYD_MWHEELDOWN, -1, SDL_CONTROLLER_BUTTON_X),
+  INPUT_SETTING("input_nextweapon", dsda_input_nextweapon, KEYD_MWHEELUP, -1, DSDA_CONTROLLER_BUTTON_Y),
+  INPUT_SETTING("input_prevweapon", dsda_input_prevweapon, KEYD_MWHEELDOWN, -1, DSDA_CONTROLLER_BUTTON_X),
   INPUT_SETTING("input_toggleweapon", dsda_input_toggleweapon, '0', -1, -1),
-  INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, FAKE_BUTTON_TRIGGERRIGHT),
+  INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT),
 
   INPUT_SETTING("input_pause", dsda_input_pause, KEYD_PAUSE, -1, -1),
   INPUT_SETTING("input_map", dsda_input_map, KEYD_TAB, -1, -1),
@@ -514,14 +512,14 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_nextlevel", dsda_input_nextlevel, KEYD_PAGEDOWN, -1, -1),
   INPUT_SETTING("input_showalive", dsda_input_showalive, KEYD_KEYPADDIVIDE, -1, -1),
 
-  INPUT_SETTING("input_menu_down", dsda_input_menu_down, KEYD_DOWNARROW, -1, SDL_CONTROLLER_BUTTON_DPAD_DOWN),
-  INPUT_SETTING("input_menu_up", dsda_input_menu_up, KEYD_UPARROW, -1, SDL_CONTROLLER_BUTTON_DPAD_UP),
-  INPUT_SETTING("input_menu_left", dsda_input_menu_left, KEYD_LEFTARROW, -1, SDL_CONTROLLER_BUTTON_DPAD_LEFT),
-  INPUT_SETTING("input_menu_right", dsda_input_menu_right, KEYD_RIGHTARROW, -1, SDL_CONTROLLER_BUTTON_DPAD_RIGHT),
-  INPUT_SETTING("input_menu_backspace", dsda_input_menu_backspace, KEYD_BACKSPACE, -1, SDL_CONTROLLER_BUTTON_B),
-  INPUT_SETTING("input_menu_enter", dsda_input_menu_enter, KEYD_ENTER, -1, SDL_CONTROLLER_BUTTON_A),
-  INPUT_SETTING("input_menu_escape", dsda_input_menu_escape, KEYD_ESCAPE, -1, SDL_CONTROLLER_BUTTON_START),
-  INPUT_SETTING("input_menu_clear", dsda_input_menu_clear, KEYD_DEL, -1, SDL_CONTROLLER_BUTTON_BACK),
+  INPUT_SETTING("input_menu_down", dsda_input_menu_down, KEYD_DOWNARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_DOWN),
+  INPUT_SETTING("input_menu_up", dsda_input_menu_up, KEYD_UPARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_UP),
+  INPUT_SETTING("input_menu_left", dsda_input_menu_left, KEYD_LEFTARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_LEFT),
+  INPUT_SETTING("input_menu_right", dsda_input_menu_right, KEYD_RIGHTARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_RIGHT),
+  INPUT_SETTING("input_menu_backspace", dsda_input_menu_backspace, KEYD_BACKSPACE, -1, DSDA_CONTROLLER_BUTTON_B),
+  INPUT_SETTING("input_menu_enter", dsda_input_menu_enter, KEYD_ENTER, -1, DSDA_CONTROLLER_BUTTON_A),
+  INPUT_SETTING("input_menu_escape", dsda_input_menu_escape, KEYD_ESCAPE, -1, DSDA_CONTROLLER_BUTTON_START),
+  INPUT_SETTING("input_menu_clear", dsda_input_menu_clear, KEYD_DEL, -1, DSDA_CONTROLLER_BUTTON_BACK),
 
   INPUT_SETTING("input_iddqd", dsda_input_iddqd, 0, -1, -1),
   INPUT_SETTING("input_idkfa", dsda_input_idkfa, 0, -1, -1),

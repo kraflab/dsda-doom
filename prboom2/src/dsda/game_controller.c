@@ -31,33 +31,30 @@ static SDL_GameController* game_controller;
 
 #define DEADZONE 1024
 
-#define FAKE_BUTTON_TRIGGERLEFT 21
-#define FAKE_BUTTON_TRIGGERRIGHT 22
-
 static const char* button_names[] = {
-  [SDL_CONTROLLER_BUTTON_A] = "pad a",
-  [SDL_CONTROLLER_BUTTON_B] = "pad b",
-  [SDL_CONTROLLER_BUTTON_X] = "pad x",
-  [SDL_CONTROLLER_BUTTON_Y] = "pad y",
-  [SDL_CONTROLLER_BUTTON_BACK] = "pad back",
-  [SDL_CONTROLLER_BUTTON_GUIDE] = "pad guide",
-  [SDL_CONTROLLER_BUTTON_START] = "pad start",
-  [SDL_CONTROLLER_BUTTON_LEFTSTICK] = "lstick",
-  [SDL_CONTROLLER_BUTTON_RIGHTSTICK] = "rstick",
-  [SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = "pad l",
-  [SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = "pad r",
-  [SDL_CONTROLLER_BUTTON_DPAD_UP] = "dpad u",
-  [SDL_CONTROLLER_BUTTON_DPAD_DOWN] = "dpad d",
-  [SDL_CONTROLLER_BUTTON_DPAD_LEFT] = "dpad l",
-  [SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = "dpad r",
-  [SDL_CONTROLLER_BUTTON_MISC1] = "misc 1",
-  [SDL_CONTROLLER_BUTTON_PADDLE1] = "paddle 1",
-  [SDL_CONTROLLER_BUTTON_PADDLE2] = "paddle 2",
-  [SDL_CONTROLLER_BUTTON_PADDLE3] = "paddle 3",
-  [SDL_CONTROLLER_BUTTON_PADDLE4] = "paddle 4",
-  [SDL_CONTROLLER_BUTTON_TOUCHPAD] = "touchpad",
-  [FAKE_BUTTON_TRIGGERLEFT] = "pad lt",
-  [FAKE_BUTTON_TRIGGERRIGHT] = "pad rt",
+  [DSDA_CONTROLLER_BUTTON_A] = "pad a",
+  [DSDA_CONTROLLER_BUTTON_B] = "pad b",
+  [DSDA_CONTROLLER_BUTTON_X] = "pad x",
+  [DSDA_CONTROLLER_BUTTON_Y] = "pad y",
+  [DSDA_CONTROLLER_BUTTON_BACK] = "pad back",
+  [DSDA_CONTROLLER_BUTTON_GUIDE] = "pad guide",
+  [DSDA_CONTROLLER_BUTTON_START] = "pad start",
+  [DSDA_CONTROLLER_BUTTON_LEFTSTICK] = "lstick",
+  [DSDA_CONTROLLER_BUTTON_RIGHTSTICK] = "rstick",
+  [DSDA_CONTROLLER_BUTTON_LEFTSHOULDER] = "pad l",
+  [DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER] = "pad r",
+  [DSDA_CONTROLLER_BUTTON_DPAD_UP] = "dpad u",
+  [DSDA_CONTROLLER_BUTTON_DPAD_DOWN] = "dpad d",
+  [DSDA_CONTROLLER_BUTTON_DPAD_LEFT] = "dpad l",
+  [DSDA_CONTROLLER_BUTTON_DPAD_RIGHT] = "dpad r",
+  [DSDA_CONTROLLER_BUTTON_MISC1] = "misc 1",
+  [DSDA_CONTROLLER_BUTTON_PADDLE1] = "paddle 1",
+  [DSDA_CONTROLLER_BUTTON_PADDLE2] = "paddle 2",
+  [DSDA_CONTROLLER_BUTTON_PADDLE3] = "paddle 3",
+  [DSDA_CONTROLLER_BUTTON_PADDLE4] = "paddle 4",
+  [DSDA_CONTROLLER_BUTTON_TOUCHPAD] = "touchpad",
+  [DSDA_CONTROLLER_BUTTON_TRIGGERLEFT] = "pad lt",
+  [DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT] = "pad rt",
 };
 
 const char* dsda_GameControllerButtonName(int button) {
@@ -111,35 +108,35 @@ static void dsda_PollButtons(void) {
 
   ev.type = ev_joystick;
   ev.data1.i =
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_A) << 0) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_B) << 1) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_X) << 2) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_Y) << 3) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_BACK) << 4) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_GUIDE) << 5) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_START) << 6) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_LEFTSTICK) << 7) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_RIGHTSTICK) << 8) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_LEFTSHOULDER) << 9) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) << 10) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_UP) << 11) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN) << 12) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT) << 13) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT) << 14) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_MISC1) << 15) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE1) << 16) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE2) << 17) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE3) << 18) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_PADDLE4) << 19) |
-    (SDL_GameControllerGetButton(game_controller, SDL_CONTROLLER_BUTTON_TOUCHPAD) << 20);
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_A) << 0) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_B) << 1) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_X) << 2) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_Y) << 3) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_BACK) << 4) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_GUIDE) << 5) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_START) << 6) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_LEFTSTICK) << 7) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_RIGHTSTICK) << 8) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_LEFTSHOULDER) << 9) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER) << 10) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_UP) << 11) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_DOWN) << 12) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_LEFT) << 13) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_RIGHT) << 14) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_MISC1) << 15) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE1) << 16) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE2) << 17) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE3) << 18) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE4) << 19) |
+    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_TOUCHPAD) << 20);
 
   trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
   if (trigger)
-    ev.data1.i |= (1 << FAKE_BUTTON_TRIGGERLEFT);
+    ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERLEFT);
 
   trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
   if (trigger)
-    ev.data1.i |= (1 << FAKE_BUTTON_TRIGGERRIGHT);
+    ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT);
 
   D_PostEvent(&ev);
 }
