@@ -61,7 +61,7 @@ static const char* button_names[] = {
 };
 
 const char* dsda_GameControllerButtonName(int button) {
-  if (button >= sizeof(button_names))
+  if (button >= sizeof(button_names) || !button_names[button])
     return "misc";
 
   return button_names[button];
