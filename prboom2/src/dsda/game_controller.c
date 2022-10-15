@@ -168,6 +168,7 @@ void dsda_InitGameController(void) {
   if (!use_game_controller)
     return;
 
+  dsda_InitGameControllerParameters();
   SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
 
   num_joysticks = SDL_NumJoysticks();
