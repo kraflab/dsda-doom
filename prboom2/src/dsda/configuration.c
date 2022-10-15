@@ -1165,6 +1165,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "right_trigger_deadzone", dsda_config_right_trigger_deadzone,
     dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
+  [dsda_config_left_analog_sensitivity] = {
+    "left_analog_sensitivity", dsda_config_left_analog_sensitivity,
+    dsda_config_int, 0, 16384, { 100 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+  },
+  [dsda_config_right_analog_sensitivity] = {
+    "right_analog_sensitivity", dsda_config_right_analog_sensitivity,
+    dsda_config_int, 0, 16384, { 1536 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
