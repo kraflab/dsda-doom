@@ -1151,19 +1151,19 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_left_analog_deadzone] = {
     "left_analog_deadzone", dsda_config_left_analog_deadzone,
-    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
   [dsda_config_right_analog_deadzone] = {
     "right_analog_deadzone", dsda_config_right_analog_deadzone,
-    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
   [dsda_config_left_trigger_deadzone] = {
     "left_trigger_deadzone", dsda_config_left_trigger_deadzone,
-    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
   [dsda_config_right_trigger_deadzone] = {
     "right_trigger_deadzone", dsda_config_right_trigger_deadzone,
-    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
   [dsda_config_left_analog_sensitivity] = {
     "left_analog_sensitivity", dsda_config_left_analog_sensitivity,
