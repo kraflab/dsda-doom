@@ -134,6 +134,7 @@ void M_ChangeApplyPalette(void);
 void M_ChangeStretch(void);
 void M_ChangeAspectRatio(void);
 void deh_changeCompTranslucency(void);
+void dsda_InitGameControllerParameters(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -1147,6 +1148,22 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_show_alive_monsters] = { // never persisted
     "show_alive_monsters", dsda_config_show_alive_monsters,
     dsda_config_int, 0, 2, { 0 }, NULL, STRICT_INT(0)
+  },
+  [dsda_config_left_analog_deadzone] = {
+    "left_analog_deadzone", dsda_config_left_analog_deadzone,
+    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_right_analog_deadzone] = {
+    "right_analog_deadzone", dsda_config_right_analog_deadzone,
+    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_left_trigger_deadzone] = {
+    "left_trigger_deadzone", dsda_config_left_trigger_deadzone,
+    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_right_trigger_deadzone] = {
+    "right_trigger_deadzone", dsda_config_right_trigger_deadzone,
+    dsda_config_int, 0, 16384, { 1024 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
 };
 

@@ -31,6 +31,11 @@ static SDL_GameController* game_controller;
 
 #define DEADZONE 1024
 
+static int left_analog_deadzone;
+static int right_analog_deadzone;
+static int left_trigger_deadzone;
+static int right_trigger_deadzone;
+
 static const char* button_names[] = {
   [DSDA_CONTROLLER_BUTTON_A] = "pad a",
   [DSDA_CONTROLLER_BUTTON_B] = "pad b",
@@ -64,28 +69,28 @@ const char* dsda_GameControllerButtonName(int button) {
   return button_names[button];
 }
 
-static float dsda_AxisValue(SDL_GameControllerButton button) {
+static float dsda_AxisValue(SDL_GameControllerButton button, int deadzone) {
   int value;
 
   value = SDL_GameControllerGetAxis(game_controller, button);
 
   // the positive axis max is 1 less
-  if (value > (DEADZONE - 1))
-    value -= (DEADZONE - 1);
-  else if (value < -DEADZONE)
-    value += DEADZONE;
+  if (value > (deadzone - 1))
+    value -= (deadzone - 1);
+  else if (value < -deadzone)
+    value += deadzone;
   else
     value = 0;
 
-  return (float) value / (32768 - DEADZONE);
+  return (float) value / (32768 - deadzone);
 }
 
 static void dsda_PollLeftStick(void) {
   event_t ev;
 
   ev.type = ev_left_analog;
-  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTX);
-  ev.data2.f = -dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY);
+  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTX, left_analog_deadzone);
+  ev.data2.f = -dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY, left_analog_deadzone);
 
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
@@ -95,8 +100,8 @@ static void dsda_PollRightStick(void) {
   event_t ev;
 
   ev.type = ev_right_analog;
-  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTX);
-  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTY);
+  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTX, right_analog_deadzone);
+  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTY, right_analog_deadzone);
 
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
@@ -130,11 +135,11 @@ static void dsda_PollButtons(void) {
     (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE4) << 19) |
     (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_TOUCHPAD) << 20);
 
-  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT, left_trigger_deadzone);
   if (trigger)
     ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERLEFT);
 
-  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT, right_trigger_deadzone);
   if (trigger)
     ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT);
 
@@ -145,6 +150,13 @@ void dsda_PollGameController(void) {
   dsda_PollLeftStick();
   dsda_PollRightStick();
   dsda_PollButtons();
+}
+
+void dsda_InitGameControllerParameters(void) {
+  left_analog_deadzone = dsda_IntConfig(dsda_config_left_analog_deadzone);
+  right_analog_deadzone = dsda_IntConfig(dsda_config_right_analog_deadzone);
+  left_trigger_deadzone = dsda_IntConfig(dsda_config_left_trigger_deadzone);
+  right_trigger_deadzone = dsda_IntConfig(dsda_config_right_trigger_deadzone);
 }
 
 void dsda_InitGameController(void) {

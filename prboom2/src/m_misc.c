@@ -282,6 +282,10 @@ cfg_def_t cfg_defs[] =
 
   SETTING_HEADING("Game controller settings"),
   MIGRATED_SETTING(dsda_config_use_game_controller),
+  MIGRATED_SETTING(dsda_config_left_analog_deadzone),
+  MIGRATED_SETTING(dsda_config_right_analog_deadzone),
+  MIGRATED_SETTING(dsda_config_left_trigger_deadzone),
+  MIGRATED_SETTING(dsda_config_right_trigger_deadzone),
 
   SETTING_HEADING("Automap settings"),
   MIGRATED_SETTING(dsda_config_mapcolor_back),
