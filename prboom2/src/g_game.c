@@ -452,7 +452,7 @@ static double mouse_sensitivity_vert;
 static double mouse_sensitivity_mlook;
 static double mouse_strafe_divisor;
 
-void G_UpdateMouseSensitivity(void)
+void G_UpdateInputSensitivity(void)
 {
   double horizontal_sensitivity, fine_sensitivity;
 
