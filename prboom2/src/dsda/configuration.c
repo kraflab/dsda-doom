@@ -1179,7 +1179,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_right_analog_sensitivity_y] = {
     "right_analog_sensitivity_y", dsda_config_right_analog_sensitivity_y,
-    dsda_config_int, 0, 16384, { 1536 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, 16384, { 768 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
   },
 };
 
