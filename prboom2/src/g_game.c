@@ -1323,8 +1323,6 @@ dboolean G_Responder (event_t* ev)
       mousex += ev->data1.f * right_analog_sensitivity_x;
       if (dsda_MouseLook())
         mlooky += ev->data2.f * right_analog_sensitivity_y;
-      else
-        mousey += ev->data2.f * right_analog_sensitivity_y;
       return true;    // eat events
 
     default:
