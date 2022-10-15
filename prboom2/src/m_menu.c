@@ -4826,6 +4826,11 @@ dboolean M_Responder (event_t* ev) {
       itemOn = currentMenu->lastOn;
       S_StartSound(NULL, g_sfx_swtchn);
     }
+    else
+    {
+      M_ClearMenus();
+      S_StartSound(NULL, g_sfx_swtchx);
+    }
     return true;
   }
   else if (action == MENU_CLEAR) // [FG] delete a savegame
