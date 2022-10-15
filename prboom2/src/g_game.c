@@ -1317,7 +1317,10 @@ dboolean G_Responder (event_t* ev)
 
     case ev_right_analog:
       mousex += ev->data1.f * right_analog_sensitivity;
-      mousey += ev->data1.f * right_analog_sensitivity;
+      if (dsda_MouseLook())
+        mlooky += ev->data2.f * right_analog_sensitivity;
+      else
+        mousey += ev->data2.f * right_analog_sensitivity;
       return true;    // eat events
 
     default:
