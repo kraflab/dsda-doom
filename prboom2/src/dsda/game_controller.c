@@ -147,6 +147,9 @@ static void dsda_PollButtons(void) {
 }
 
 void dsda_PollGameController(void) {
+  if (!game_controller)
+    return;
+
   dsda_PollLeftStick();
   dsda_PollRightStick();
   dsda_PollButtons();
@@ -162,6 +165,7 @@ void dsda_InitGameControllerParameters(void) {
 void dsda_InitGameController(void) {
   int num_joysticks;
 
+  game_controller = NULL;
   use_game_controller =
     dsda_IntConfig(dsda_config_use_game_controller) && !dsda_Flag(dsda_arg_nojoy);
 
