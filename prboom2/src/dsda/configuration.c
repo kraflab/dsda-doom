@@ -106,9 +106,9 @@ void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
 void M_ChangeLightMode(void);
 void I_InitMouse(void);
-void MouseAccelChanging(void);
+void AccelChanging(void);
 void G_UpdateMouseSensitivity(void);
-void I_InitJoystick(void);
+void dsda_InitGameController(void);
 void M_ChangeSpeed(void);
 void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
@@ -134,6 +134,7 @@ void M_ChangeApplyPalette(void);
 void M_ChangeStretch(void);
 void M_ChangeAspectRatio(void);
 void deh_changeCompTranslucency(void);
+void dsda_InitGameControllerParameters(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -166,7 +167,7 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_point_coord))
     dsda_TrackFeature(uf_coordinates);
 
-  if (dsda_IntConfig(dsda_config_mouselook))
+  if (dsda_IntConfig(dsda_config_freelook))
     dsda_TrackFeature(uf_mouselook);
 
   if (dsda_IntConfig(dsda_config_weapon_attack_alignment))
@@ -210,6 +211,9 @@ void dsda_TrackConfigFeatures(void) {
 
   if (dsda_IntConfig(dsda_config_show_alive_monsters))
     dsda_TrackFeature(uf_showalive);
+
+  if (dsda_IntConfig(dsda_config_analog_movement_emulates_keyboard))
+    dsda_TrackFeature(uf_free_analog);
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
@@ -319,8 +323,8 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "movement_vertmouse", dsda_config_vertmouse,
     CONF_BOOL(0)
   },
-  [dsda_config_mouselook] = {
-    "movement_mouselook", dsda_config_mouselook,
+  [dsda_config_freelook] = {
+    "allow_freelook", dsda_config_freelook,
     CONF_BOOL(0), NULL, STRICT_INT(0), M_ChangeMouseLook
   },
   [dsda_config_autorun] = {
@@ -660,7 +664,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mouse_acceleration] = {
     "dsda_mouse_acceleration", dsda_config_mouse_acceleration,
-    dsda_config_int, 0, INT_MAX, { 0 }, NULL, NOT_STRICT, MouseAccelChanging
+    dsda_config_int, 0, INT_MAX, { 0 }, NULL, NOT_STRICT, AccelChanging
   },
   [dsda_config_mouse_sensitivity_mlook] = {
     "mouse_sensitivity_mlook", dsda_config_mouse_sensitivity_mlook,
@@ -690,9 +694,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_fine_sensitivity", dsda_config_fine_sensitivity,
     dsda_config_int, 0, 99, { 0 }, NULL, NOT_STRICT, G_UpdateMouseSensitivity
   },
-  [dsda_config_use_joystick] = {
-    "use_joystick", dsda_config_use_joystick,
-    dsda_config_int, 0, 2, { 0 }, NULL, NOT_STRICT, I_InitJoystick
+  [dsda_config_use_game_controller] = {
+    "use_game_controller", dsda_config_use_game_controller,
+    dsda_config_int, 0, 2, { 0 }, NULL, NOT_STRICT, dsda_InitGameController
   },
   [dsda_config_deh_apply_cheats] = {
     "deh_apply_cheats", dsda_config_deh_apply_cheats,
@@ -1147,6 +1151,54 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_show_alive_monsters] = { // never persisted
     "show_alive_monsters", dsda_config_show_alive_monsters,
     dsda_config_int, 0, 2, { 0 }, NULL, STRICT_INT(0)
+  },
+  [dsda_config_left_analog_deadzone] = {
+    "left_analog_deadzone", dsda_config_left_analog_deadzone,
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_right_analog_deadzone] = {
+    "right_analog_deadzone", dsda_config_right_analog_deadzone,
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_left_trigger_deadzone] = {
+    "left_trigger_deadzone", dsda_config_left_trigger_deadzone,
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_right_trigger_deadzone] = {
+    "right_trigger_deadzone", dsda_config_right_trigger_deadzone,
+    dsda_config_int, 0, 16384, { 6556 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_left_analog_sensitivity_x] = {
+    "left_analog_sensitivity_x", dsda_config_left_analog_sensitivity_x,
+    dsda_config_int, 0, 16384, { 100 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_left_analog_sensitivity_y] = {
+    "left_analog_sensitivity_y", dsda_config_left_analog_sensitivity_y,
+    dsda_config_int, 0, 16384, { 100 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_right_analog_sensitivity_x] = {
+    "right_analog_sensitivity_x", dsda_config_right_analog_sensitivity_x,
+    dsda_config_int, 0, 16384, { 1536 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_right_analog_sensitivity_y] = {
+    "right_analog_sensitivity_y", dsda_config_right_analog_sensitivity_y,
+    dsda_config_int, 0, 16384, { 768 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_analog_look_acceleration] = {
+    "analog_look_acceleration", dsda_config_analog_look_acceleration,
+    dsda_config_int, 0, INT_MAX, { 0 }, NULL, NOT_STRICT, AccelChanging
+  },
+  [dsda_config_swap_analogs] = {
+    "swap_analogs", dsda_config_swap_analogs,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_invert_analog_look] = {
+    "invert_analog_look", dsda_config_invert_analog_look,
+    CONF_BOOL(0),
+  },
+  [dsda_config_analog_movement_emulates_keyboard] = {
+    "analog_movement_emulates_keyboard", dsda_config_analog_movement_emulates_keyboard,
+    CONF_BOOL(0), NULL, STRICT_INT(1)
   },
 };
 

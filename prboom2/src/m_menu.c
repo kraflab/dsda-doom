@@ -79,6 +79,7 @@
 
 #include "dsda/exhud.h"
 #include "dsda/features.h"
+#include "dsda/game_controller.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
@@ -1709,11 +1710,12 @@ static void M_DrawSetting(const setup_menu_t* s)
     if (input->joyb != -1)
     {
       if (any_input)
-        format = "/JSB%d";
+        format = "/%s";
       else
-        format = "JSB%d";
+        format = "%s";
 
-      sprintf(menu_buffer + strlen(menu_buffer), format, input->joyb + 1);
+      sprintf(menu_buffer + strlen(menu_buffer), format,
+              dsda_GameControllerButtonName(input->joyb));
       any_input = true;
     }
 
@@ -2065,7 +2067,7 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
 
   {"TOGGLES"  ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+14*8},
   {"AUTORUN"  ,S_INPUT,m_scrn,KB_X,KB_Y+15*8,0,dsda_input_autorun},
-  {"MOUSELOOK",S_INPUT,m_scrn,KB_X,KB_Y+16*8,0,dsda_input_mlook},
+  {"FREE LOOK",S_INPUT,m_scrn,KB_X,KB_Y+16*8,0,dsda_input_mlook},
   {"VERTMOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,0,dsda_input_novert},
 
   NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings2),
@@ -2766,14 +2768,15 @@ void M_DrawAutoMap(void)
 // The General table.
 // killough 10/10/98
 
-setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
+setup_menu_t audiovideo_settings[], mouse_settings[], controller_settings[], misc_settings[];
 setup_menu_t display_settings[], opengl_settings[];
 setup_menu_t mapping_settings[], demo_settings[], tas_settings[];
 
 setup_menu_t* gen_settings[] =
 {
   audiovideo_settings,
-  device_settings,
+  mouse_settings,
+  controller_settings,
   misc_settings,
   display_settings,
   opengl_settings,
@@ -2864,30 +2867,55 @@ setup_menu_t audiovideo_settings[] = {
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_full_sounds },
   { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, dsda_config_snd_midiplayer, 0, midiplayers },
 
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, device_settings),
+  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mouse_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t device_settings[] = {
-  { "Input Devices", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
+setup_menu_t mouse_settings[] = {
+  { "Mouse Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_use_mouse },
-  { "Enable Joystick", S_YESNO, m_conf, G_X, G_Y + 3 * 8, dsda_config_use_joystick },
 
-  { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
-  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_mouse_sensitivity_horiz },
-  { "Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_mouse_sensitivity_vert },
-  { "Fine Sensitivity", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_fine_sensitivity },
-  { "Mouse Acceleration", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_mouse_acceleration },
-  { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_mouselook },
-  { "Mouselook Sensitivity", S_NUM, m_conf, G_X, G_Y + 11 * 8, dsda_config_mouse_sensitivity_mlook },
-  { "Invert Mouse", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_movement_mouseinvert },
+  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_mouse_sensitivity_horiz },
+  { "Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 5 * 8, dsda_config_mouse_sensitivity_vert },
+  { "Free Look Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_mouse_sensitivity_mlook },
+  { "Acceleration", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_mouse_acceleration },
+
+  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_freelook },
+  { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_movement_mouseinvert },
+
+  { "Mouse Strafe Divisor", S_NUM, m_conf, G_X, G_Y + 12 * 8, dsda_config_movement_mousestrafedivisor },
   { "Dbl-Click As Use", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_mouse_doubleclick_as_use },
-  { "Mouse Strafe Divisor", S_NUM,   m_conf, G_X, G_Y + 14 * 8, dsda_config_movement_mousestrafedivisor },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_vertmouse },
   { "Carry Fractional Tics", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_mouse_carrytics },
-  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_vertmouse },
-  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 17 * 8, dsda_config_mouse_stutter_correction },
+  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_mouse_stutter_correction },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, audiovideo_settings),
+  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, controller_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t controller_settings[] = {
+  { "Controller Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
+  { "Enable Controller", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_use_game_controller },
+
+  { "Left Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_left_analog_sensitivity_x },
+  { "Left Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 5 * 8, dsda_config_left_analog_sensitivity_y },
+  { "Right Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_right_analog_sensitivity_x },
+  { "Right Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_right_analog_sensitivity_y },
+  { "Acceleration", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_analog_look_acceleration },
+
+  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_freelook },
+  { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 11 * 8, dsda_config_invert_analog_look },
+
+  { "Swap Analogs", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_swap_analogs },
+  { "Movement Emulates Keyboard", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_analog_movement_emulates_keyboard },
+
+  { "Left Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 15 * 8, dsda_config_left_analog_deadzone },
+  { "Right Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 16 * 8, dsda_config_right_analog_deadzone },
+  { "Left Trigger Deadzone", S_NUM, m_conf, G_X, G_Y + 17 * 8, dsda_config_left_trigger_deadzone },
+  { "Right Trigger Deadzone", S_NUM, m_conf, G_X, G_Y + 18 * 8, dsda_config_right_trigger_deadzone },
+
+  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mouse_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, misc_settings),
   FINAL_ENTRY
 };
@@ -2909,7 +2937,7 @@ setup_menu_t misc_settings[] = {
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, G_Y + 14 * 8, dsda_config_parallel_sfx_limit },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, G_Y + 15 * 8, dsda_config_parallel_sfx_window },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, device_settings),
+  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, controller_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, display_settings),
   FINAL_ENTRY
 };
@@ -3610,7 +3638,7 @@ typedef struct {
 static toggle_input_t toggle_inputs[] = {
   { dsda_input_strict_mode, dsda_config_strict_mode, true, false, "Strict Mode" },
   { dsda_input_novert, dsda_config_vertmouse, true, false, "Vertical Mouse Movement" },
-  { dsda_input_mlook, dsda_config_mouselook, true, true, "Mouselook" },
+  { dsda_input_mlook, dsda_config_freelook, true, true, "Free Look" },
   { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run" },
   { dsda_input_messages, dsda_config_show_messages, true, true, "Messages" },
   { dsda_input_command_display, dsda_config_command_display, false, true, "Command Display" },
@@ -3667,97 +3695,32 @@ dboolean M_Responder (event_t* ev) {
 
   // Process joystick input
 
-  if (ev->type == ev_joystick && joywait < dsda_GetTick()) {
-    if (ev->data3 == -1)
+  if (ev->type == ev_joystick) {
+    if (ev->data1.i && joywait < dsda_GetTick())
     {
-      action = MENU_UP;                                // phares 3/7/98
-      ch = 0;
+      ch = 0; // meaningless, just to get you past the check for -1
       joywait = dsda_GetTick() + 5;
-    }
-    else if (ev->data3 == 1)
-    {
-      action = MENU_DOWN;                              // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 5;
-    }
-
-    if (ev->data2 == -1)
-    {
-      action = MENU_LEFT;                              // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 2;
-    }
-    else if (ev->data2 == 1)
-    {
-      action = MENU_RIGHT;                             // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 2;
-    }
-
-    if (ev->data1&1)
-    {
-      action = MENU_ENTER;                             // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 5;
-    }
-
-    if (ev->data1&2)
-    {
-      action = MENU_BACKSPACE;                         // phares 3/7/98
-      ch = 0;
-      joywait = dsda_GetTick() + 5;
-    }
-
-    // phares 4/4/98:
-    // Handle joystick buttons 3+, and allow them to pass down
-    // to where key binding can eat them.
-
-    if (setup_active && set_keybnd_active) {
-      if (ev->data1 >> 2)
-      {
-        ch = 0; // meaningless, just to get you past the check for -1
-        joywait = dsda_GetTick() + 5;
-      }
     }
   }
-  else {
-    // Process mouse input
-    if (ev->type == ev_mouse && mousewait < dsda_GetTick()) {
-      if (ev->data1&1)
-      {
-        action = MENU_ENTER;                           // phares 3/7/98
-        ch = 0;
-        mousewait = dsda_GetTick() + 15;
-      }
-
-      if (ev->data1&2)
-      {
-        action = MENU_BACKSPACE;                       // phares 3/7/98
-        ch = 0;
-        mousewait = dsda_GetTick() + 15;
-      }
-
-      // phares 4/4/98:
-      // Handle mouse buttons 3+, and allow it to pass down
-      if (ev->data1 >> 2)
-      {
-        ch = 0; // meaningless, just to get you past the check for -1
-        mousewait = dsda_GetTick() + 15;
-      }
+  else if (ev->type == ev_mouse) {
+    if (ev->data1.i && mousewait < dsda_GetTick())
+    {
+      ch = 0; // meaningless, just to get you past the check for -1
+      mousewait = dsda_GetTick() + 15;
     }
-    else
-      // Process keyboard input
-      if (ev->type == ev_keydown)
-      {
-        ch = ev->data1;
-                                      // phares 4/11/98:
-        if (ch == KEYD_RSHIFT)        // For string processing, need
-          shiftdown = true;           // to know when shift key is up or
-      }                               // down so you can get at the !,#,
-      else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
-        if (ev->data1 == KEYD_RSHIFT) // past this point, but keyups aren't
-          shiftdown = false;          // so we need to note the difference
-  }                                   // here using the 'shiftdown' dboolean.
+  }
+  else if (ev->type == ev_keydown)
+  {
+    ch = ev->data1.i;
+                                  // phares 4/11/98:
+    if (ch == KEYD_RSHIFT)        // For string processing, need
+      shiftdown = true;           // to know when shift key is up or
+  }                               // down so you can get at the !,#,
+  else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
+  {                               // past this point, but keyups aren't
+    if (ev->data1.i == KEYD_RSHIFT) // so we need to note the difference
+      shiftdown = false;          // here using the 'shiftdown' dboolean.
+  }
 
   if (dsda_InputActivated(dsda_input_menu_left))
   {
@@ -4172,7 +4135,7 @@ dboolean M_Responder (event_t* ev) {
 
   if (!menuactive)
   {
-    if (ch == KEYD_ESCAPE) // phares
+    if (ch == KEYD_ESCAPE || action == MENU_ESCAPE) // phares
     {
       M_StartControlPanel ();
       S_StartSound(NULL,g_sfx_swtchn);
@@ -4372,7 +4335,7 @@ dboolean M_Responder (event_t* ev) {
           // that belong to the same group as the one you're changing.
 
           group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1)) == -1)
+          if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1.i)) == -1)
             return true;
           for (i = 0 ; keys_settings[i] && search ; i++)
             for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
@@ -4405,7 +4368,7 @@ dboolean M_Responder (event_t* ev) {
           // that belong to the same group as the one you're changing.
 
           group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1)) == -1)
+          if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1.i)) == -1)
             return true;
           for (i = 0 ; keys_settings[i] && search ; i++)
             for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
@@ -4888,6 +4851,11 @@ dboolean M_Responder (event_t* ev) {
         M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
       itemOn = currentMenu->lastOn;
       S_StartSound(NULL, g_sfx_swtchn);
+    }
+    else
+    {
+      M_ClearMenus();
+      S_StartSound(NULL, g_sfx_swtchx);
     }
     return true;
   }
