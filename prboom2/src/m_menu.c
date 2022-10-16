@@ -2768,14 +2768,15 @@ void M_DrawAutoMap(void)
 // The General table.
 // killough 10/10/98
 
-setup_menu_t audiovideo_settings[], device_settings[], misc_settings[];
+setup_menu_t audiovideo_settings[], mouse_settings[], controller_settings[], misc_settings[];
 setup_menu_t display_settings[], opengl_settings[];
 setup_menu_t mapping_settings[], demo_settings[], tas_settings[];
 
 setup_menu_t* gen_settings[] =
 {
   audiovideo_settings,
-  device_settings,
+  mouse_settings,
+  controller_settings,
   misc_settings,
   display_settings,
   opengl_settings,
@@ -2866,30 +2867,55 @@ setup_menu_t audiovideo_settings[] = {
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_full_sounds },
   { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, dsda_config_snd_midiplayer, 0, midiplayers },
 
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, device_settings),
+  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mouse_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t device_settings[] = {
-  { "Input Devices", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
+setup_menu_t mouse_settings[] = {
+  { "Mouse Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_use_mouse },
-  { "Enable Game Controller", S_YESNO, m_conf, G_X, G_Y + 3 * 8, dsda_config_use_game_controller },
 
-  { "Mouse", S_SKIP | S_TITLE, m_null, G_X, G_Y + 5 * 8 },
-  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_mouse_sensitivity_horiz },
-  { "Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_mouse_sensitivity_vert },
-  { "Fine Sensitivity", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_fine_sensitivity },
-  { "Mouse Acceleration", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_mouse_acceleration },
-  { "Enable Mouselook", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_mouselook },
-  { "Mouselook Sensitivity", S_NUM, m_conf, G_X, G_Y + 11 * 8, dsda_config_mouse_sensitivity_mlook },
-  { "Invert Mouse", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_movement_mouseinvert },
+  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_mouse_sensitivity_horiz },
+  { "Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 5 * 8, dsda_config_mouse_sensitivity_vert },
+  { "Free Look Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_mouse_sensitivity_mlook },
+  { "Acceleration", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_mouse_acceleration },
+
+  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_mouselook },
+  { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_movement_mouseinvert },
+
+  { "Mouse Strafe Divisor", S_NUM, m_conf, G_X, G_Y + 12 * 8, dsda_config_movement_mousestrafedivisor },
   { "Dbl-Click As Use", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_mouse_doubleclick_as_use },
-  { "Mouse Strafe Divisor", S_NUM,   m_conf, G_X, G_Y + 14 * 8, dsda_config_movement_mousestrafedivisor },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_vertmouse },
   { "Carry Fractional Tics", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_mouse_carrytics },
-  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_vertmouse },
-  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 17 * 8, dsda_config_mouse_stutter_correction },
+  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_mouse_stutter_correction },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, audiovideo_settings),
+  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, controller_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t controller_settings[] = {
+  { "Controller Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
+  { "Enable Controller", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_use_game_controller },
+
+  { "Left Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_left_analog_sensitivity_x },
+  { "Left Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 5 * 8, dsda_config_left_analog_sensitivity_y },
+  { "Right Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_right_analog_sensitivity_x },
+  { "Right Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_right_analog_sensitivity_y },
+   // { "Acceleration", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_analog_acceleration },
+
+  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_mouselook },
+  { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 11 * 8, dsda_config_invert_analog_look },
+
+  { "Swap Analogs", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_swap_analogs },
+  { "Movement Emulates Keyboard", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_left_analog_emulates_keyboard },
+
+  { "Left Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 15 * 8, dsda_config_left_analog_deadzone },
+  { "Right Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 16 * 8, dsda_config_right_analog_deadzone },
+  { "Left Trigger Deadzone", S_NUM, m_conf, G_X, G_Y + 17 * 8, dsda_config_left_trigger_deadzone },
+  { "Right Trigger Deadzone", S_NUM, m_conf, G_X, G_Y + 18 * 8, dsda_config_right_trigger_deadzone },
+
+  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mouse_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, misc_settings),
   FINAL_ENTRY
 };
@@ -2911,7 +2937,7 @@ setup_menu_t misc_settings[] = {
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, G_Y + 14 * 8, dsda_config_parallel_sfx_limit },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, G_Y + 15 * 8, dsda_config_parallel_sfx_window },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, device_settings),
+  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, controller_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, display_settings),
   FINAL_ENTRY
 };
