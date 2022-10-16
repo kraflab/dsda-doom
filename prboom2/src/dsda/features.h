@@ -80,7 +80,7 @@ typedef enum {
   uf_hideweapon,
   uf_showalive,
   uf_join,
-  // 60
+  uf_free_analog,
   // 61
   // 62
   // 63

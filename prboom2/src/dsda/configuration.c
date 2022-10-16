@@ -211,6 +211,9 @@ void dsda_TrackConfigFeatures(void) {
 
   if (dsda_IntConfig(dsda_config_show_alive_monsters))
     dsda_TrackFeature(uf_showalive);
+
+  if (dsda_IntConfig(dsda_config_left_analog_emulates_keyboard))
+    dsda_TrackFeature(uf_free_analog);
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
@@ -1184,6 +1187,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_swap_analogs] = {
     "swap_analogs", dsda_config_swap_analogs,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_left_analog_emulates_keyboard] = {
+    "left_analog_emulates_keyboard", dsda_config_left_analog_emulates_keyboard,
+    CONF_BOOL(0), NULL, STRICT_INT(1)
   },
 };
 

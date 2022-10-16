@@ -471,6 +471,39 @@ void G_ResetMotion(void)
   left_analog_x = left_analog_y = 0;
 }
 
+static void G_ConvertAnalogMotion(int speed, int *forward, int *side)
+{
+  if (left_analog_x || left_analog_y)
+  {
+    int side_threshold;
+    int forward_threshold;
+
+    if (dsda_IntConfig(dsda_config_left_analog_emulates_keyboard))
+    {
+      side_threshold = 0;
+      forward_threshold = 0;
+    }
+    else
+    {
+      side_threshold = sidemove[speed];
+      forward_threshold = forwardmove[speed];
+    }
+
+    if (left_analog_x > side_threshold)
+      left_analog_x = sidemove[speed];
+    else if (left_analog_x < -side_threshold)
+      left_analog_x = -sidemove[speed];
+
+    if (left_analog_y > forward_threshold)
+      left_analog_y = forwardmove[speed];
+    else if (left_analog_y < -forward_threshold)
+      left_analog_y = -forwardmove[speed];
+
+    *forward += left_analog_y;
+    *side += left_analog_x;
+  }
+}
+
 void G_BuildTiccmd(ticcmd_t* cmd)
 {
   int strafe;
@@ -974,21 +1007,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   else
     cmd->angleturn -= mousex; /* mead now have enough dynamic range 2-10-00 */
 
-  if (left_analog_x || left_analog_y)
-  {
-    if (left_analog_x > sidemove[speed])
-      left_analog_x = sidemove[speed];
-    else if (left_analog_x < -sidemove[speed])
-      left_analog_x = -sidemove[speed];
-
-    if (left_analog_y > forwardmove[speed])
-      left_analog_y = forwardmove[speed];
-    else if (left_analog_y < -forwardmove[speed])
-      left_analog_y = -forwardmove[speed];
-
-    forward += left_analog_y;
-    side += left_analog_x;
-  }
+  G_ConvertAnalogMotion(speed, &forward, &side);
 
   if (!walkcamera.type || menuactive) //e6y
     G_ResetMotion();
@@ -3899,21 +3918,7 @@ void P_WalkTicker()
   else
     angturn -= mousex; /* mead now have enough dynamic range 2-10-00 */
 
-  if (left_analog_x || left_analog_y)
-  {
-    if (left_analog_x > sidemove[speed])
-      left_analog_x = sidemove[speed];
-    else if (left_analog_x < -sidemove[speed])
-      left_analog_x = -sidemove[speed];
-
-    if (left_analog_y > forwardmove[speed])
-      left_analog_y = forwardmove[speed];
-    else if (left_analog_y < -forwardmove[speed])
-      left_analog_y = -forwardmove[speed];
-
-    forward += left_analog_y;
-    side += left_analog_x;
-  }
+  G_ConvertAnalogMotion(speed, &forward, &side);
 
   walkcamera.angle += ((angturn / 8) << ANGLETOFINESHIFT);
   if (dsda_MouseLook())
