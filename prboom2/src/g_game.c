@@ -478,7 +478,7 @@ static void G_ConvertAnalogMotion(int speed, int *forward, int *side)
     int side_threshold;
     int forward_threshold;
 
-    if (dsda_IntConfig(dsda_config_left_analog_emulates_keyboard))
+    if (dsda_IntConfig(dsda_config_analog_movement_emulates_keyboard))
     {
       side_threshold = 0;
       forward_threshold = 0;

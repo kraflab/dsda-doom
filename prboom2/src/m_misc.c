@@ -292,7 +292,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_right_analog_sensitivity_y),
   MIGRATED_SETTING(dsda_config_swap_analogs),
   MIGRATED_SETTING(dsda_config_invert_analog_look),
-  MIGRATED_SETTING(dsda_config_left_analog_emulates_keyboard),
+  MIGRATED_SETTING(dsda_config_analog_movement_emulates_keyboard),
 
   SETTING_HEADING("Automap settings"),
   MIGRATED_SETTING(dsda_config_mapcolor_back),

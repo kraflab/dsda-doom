@@ -2908,7 +2908,7 @@ setup_menu_t controller_settings[] = {
   { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 11 * 8, dsda_config_invert_analog_look },
 
   { "Swap Analogs", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_swap_analogs },
-  { "Movement Emulates Keyboard", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_left_analog_emulates_keyboard },
+  { "Movement Emulates Keyboard", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_analog_movement_emulates_keyboard },
 
   { "Left Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 15 * 8, dsda_config_left_analog_deadzone },
   { "Right Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 16 * 8, dsda_config_right_analog_deadzone },

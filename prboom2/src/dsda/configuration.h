@@ -265,7 +265,7 @@ typedef enum {
   dsda_config_right_analog_sensitivity_y,
   dsda_config_swap_analogs,
   dsda_config_invert_analog_look,
-  dsda_config_left_analog_emulates_keyboard,
+  dsda_config_analog_movement_emulates_keyboard,
   dsda_config_count,
 } dsda_config_identifier_t;
 
