@@ -167,7 +167,7 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_point_coord))
     dsda_TrackFeature(uf_coordinates);
 
-  if (dsda_IntConfig(dsda_config_mouselook))
+  if (dsda_IntConfig(dsda_config_freelook))
     dsda_TrackFeature(uf_mouselook);
 
   if (dsda_IntConfig(dsda_config_weapon_attack_alignment))
@@ -323,8 +323,8 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "movement_vertmouse", dsda_config_vertmouse,
     CONF_BOOL(0)
   },
-  [dsda_config_mouselook] = {
-    "movement_mouselook", dsda_config_mouselook,
+  [dsda_config_freelook] = {
+    "allow_freelook", dsda_config_freelook,
     CONF_BOOL(0), NULL, STRICT_INT(0), M_ChangeMouseLook
   },
   [dsda_config_autorun] = {

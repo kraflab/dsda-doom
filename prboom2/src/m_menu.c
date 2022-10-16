@@ -2067,7 +2067,7 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
 
   {"TOGGLES"  ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+14*8},
   {"AUTORUN"  ,S_INPUT,m_scrn,KB_X,KB_Y+15*8,0,dsda_input_autorun},
-  {"MOUSELOOK",S_INPUT,m_scrn,KB_X,KB_Y+16*8,0,dsda_input_mlook},
+  {"FREE LOOK",S_INPUT,m_scrn,KB_X,KB_Y+16*8,0,dsda_input_mlook},
   {"VERTMOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,0,dsda_input_novert},
 
   NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings2),
@@ -2880,7 +2880,7 @@ setup_menu_t mouse_settings[] = {
   { "Free Look Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_mouse_sensitivity_mlook },
   { "Acceleration", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_mouse_acceleration },
 
-  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_mouselook },
+  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_freelook },
   { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_movement_mouseinvert },
 
   { "Mouse Strafe Divisor", S_NUM, m_conf, G_X, G_Y + 12 * 8, dsda_config_movement_mousestrafedivisor },
@@ -2904,7 +2904,7 @@ setup_menu_t controller_settings[] = {
   { "Right Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_right_analog_sensitivity_y },
    // { "Acceleration", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_analog_acceleration },
 
-  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_mouselook },
+  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_freelook },
   { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 11 * 8, dsda_config_invert_analog_look },
 
   { "Swap Analogs", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_swap_analogs },
@@ -3638,7 +3638,7 @@ typedef struct {
 static toggle_input_t toggle_inputs[] = {
   { dsda_input_strict_mode, dsda_config_strict_mode, true, false, "Strict Mode" },
   { dsda_input_novert, dsda_config_vertmouse, true, false, "Vertical Mouse Movement" },
-  { dsda_input_mlook, dsda_config_mouselook, true, true, "Mouselook" },
+  { dsda_input_mlook, dsda_config_freelook, true, true, "Free Look" },
   { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run" },
   { dsda_input_messages, dsda_config_show_messages, true, true, "Messages" },
   { dsda_input_command_display, dsda_config_command_display, false, true, "Command Display" },

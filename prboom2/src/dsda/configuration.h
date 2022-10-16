@@ -50,7 +50,7 @@ typedef enum {
   dsda_config_sts_traditional_keys,
   dsda_config_strict_mode,
   dsda_config_vertmouse,
-  dsda_config_mouselook,
+  dsda_config_freelook,
   dsda_config_autorun,
   dsda_config_show_messages,
   dsda_config_command_display,

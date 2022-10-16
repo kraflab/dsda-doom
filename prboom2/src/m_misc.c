@@ -244,6 +244,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_render_patches_scalex),
   MIGRATED_SETTING(dsda_config_render_patches_scaley),
   MIGRATED_SETTING(dsda_config_render_stretchsky),
+  MIGRATED_SETTING(dsda_config_freelook),
 
   SETTING_HEADING("OpenGL settings"),
   MIGRATED_SETTING(dsda_config_gl_sprite_blend),
@@ -275,7 +276,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_mouse_sensitivity_mlook),
   MIGRATED_SETTING(dsda_config_mouse_doubleclick_as_use),
   MIGRATED_SETTING(dsda_config_mouse_carrytics),
-  MIGRATED_SETTING(dsda_config_mouselook),
   MIGRATED_SETTING(dsda_config_vertmouse),
   MIGRATED_SETTING(dsda_config_movement_mousestrafedivisor),
   MIGRATED_SETTING(dsda_config_movement_mouseinvert),
