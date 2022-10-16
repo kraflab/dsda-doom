@@ -806,6 +806,19 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
   glEnd();
 }
 
+// [XA] some UI functions may run before fullcolormap has
+// been initialized, since that's is done in SetupFrame;
+// use colormaps[0] as a fallback in such a case.
+const lighttable_t *gld_GetActiveColormap()
+{
+  if (fixedcolormap)
+    return fixedcolormap;
+  else if (fullcolormap)
+    return fullcolormap;
+  else 
+    return colormaps[0];
+}
+
 // [XA] quicky indexed color-lookup function for a couple
 // of things that aren't done in the shader for the indexed
 // lightmode. ideally this will go away in the future.
@@ -819,7 +832,7 @@ color_rgb_t gld_LookupIndexedColor(int index)
     playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
     int gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
     const byte * gtable = (const byte*)W_LumpByNum(gtlump) + 256 * usegamma;
-    const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
+    const lighttable_t *colormap = gld_GetActiveColormap();
 
     color.r = gtable[playpal[colormap[index] * 3 + 0]];
     color.g = gtable[playpal[colormap[index] * 3 + 1]];
