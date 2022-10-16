@@ -1181,6 +1181,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "right_analog_sensitivity_y", dsda_config_right_analog_sensitivity_y,
     dsda_config_int, 0, 16384, { 768 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
+  [dsda_config_swap_analogs] = {
+    "swap_analogs", dsda_config_swap_analogs,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

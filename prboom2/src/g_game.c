@@ -1304,15 +1304,15 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat events
     }
 
-    case ev_left_analog:
+    case ev_move_analog:
       left_analog_x = ev->data1.f;
       left_analog_y = ev->data2.f;
       return true;    // eat events
 
-    case ev_right_analog:
+    case ev_look_analog:
       mousex += ev->data1.f;
       if (dsda_MouseLook())
-        mlooky += ev->data2.f;
+        mlooky -= ev->data2.f;
       return true;    // eat events
 
     default:

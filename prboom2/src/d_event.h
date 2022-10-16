@@ -51,8 +51,8 @@ typedef enum
   ev_mouse,
   ev_mousemotion,
   ev_joystick,
-  ev_left_analog,
-  ev_right_analog,
+  ev_move_analog,
+  ev_look_analog,
   ev_trigger,
   ev_text,
 } evtype_t;

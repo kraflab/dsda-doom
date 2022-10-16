@@ -42,6 +42,8 @@ static axis_t right_analog_y = { SDL_CONTROLLER_AXIS_RIGHTY };
 static axis_t left_trigger = { SDL_CONTROLLER_AXIS_TRIGGERLEFT };
 static axis_t right_trigger = { SDL_CONTROLLER_AXIS_TRIGGERRIGHT };
 
+static int swap_analogs;
+
 static const char* button_names[] = {
   [DSDA_CONTROLLER_BUTTON_A] = "pad a",
   [DSDA_CONTROLLER_BUTTON_B] = "pad b",
@@ -94,7 +96,7 @@ static float dsda_AxisValue(axis_t* axis) {
 static void dsda_PollLeftStick(void) {
   event_t ev;
 
-  ev.type = ev_left_analog;
+  ev.type = swap_analogs ? ev_look_analog : ev_move_analog;
   ev.data1.f = dsda_AxisValue(&left_analog_x);
   ev.data2.f = -dsda_AxisValue(&left_analog_y);
 
@@ -105,9 +107,9 @@ static void dsda_PollLeftStick(void) {
 static void dsda_PollRightStick(void) {
   event_t ev;
 
-  ev.type = ev_right_analog;
+  ev.type = swap_analogs ? ev_move_analog : ev_look_analog;
   ev.data1.f = dsda_AxisValue(&right_analog_x);
-  ev.data2.f = dsda_AxisValue(&right_analog_y);
+  ev.data2.f = -dsda_AxisValue(&right_analog_y);
 
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
@@ -176,6 +178,8 @@ void dsda_InitGameControllerParameters(void) {
   left_trigger.sensitivity = 1;
   right_trigger.deadzone = dsda_IntConfig(dsda_config_right_trigger_deadzone);
   right_trigger.sensitivity = 1;
+
+  swap_analogs = dsda_IntConfig(dsda_config_swap_analogs);
 }
 
 void dsda_InitGameController(void) {
