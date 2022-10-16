@@ -1188,6 +1188,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "swap_analogs", dsda_config_swap_analogs,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
+  [dsda_config_invert_analog_look] = {
+    "invert_analog_look", dsda_config_invert_analog_look,
+    CONF_BOOL(0),
+  },
   [dsda_config_left_analog_emulates_keyboard] = {
     "left_analog_emulates_keyboard", dsda_config_left_analog_emulates_keyboard,
     CONF_BOOL(0), NULL, STRICT_INT(1)
