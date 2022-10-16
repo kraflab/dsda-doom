@@ -230,7 +230,8 @@ void I_ProcessWin32Mouse(void);
 void I_StartWin32Mouse(void);
 void I_EndWin32Mouse(void);
 int AccelerateMouse(int val);
-void MouseAccelChanging(void);
+int AccelerateAnalog(float val);
+void AccelChanging(void);
 
 extern int mlooky;
 

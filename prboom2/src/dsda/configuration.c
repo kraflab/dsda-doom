@@ -106,7 +106,7 @@ void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
 void M_ChangeLightMode(void);
 void I_InitMouse(void);
-void MouseAccelChanging(void);
+void AccelChanging(void);
 void G_UpdateMouseSensitivity(void);
 void dsda_InitGameController(void);
 void M_ChangeSpeed(void);
@@ -664,7 +664,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mouse_acceleration] = {
     "dsda_mouse_acceleration", dsda_config_mouse_acceleration,
-    dsda_config_int, 0, INT_MAX, { 0 }, NULL, NOT_STRICT, MouseAccelChanging
+    dsda_config_int, 0, INT_MAX, { 0 }, NULL, NOT_STRICT, AccelChanging
   },
   [dsda_config_mouse_sensitivity_mlook] = {
     "mouse_sensitivity_mlook", dsda_config_mouse_sensitivity_mlook,
@@ -1183,6 +1183,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_right_analog_sensitivity_y] = {
     "right_analog_sensitivity_y", dsda_config_right_analog_sensitivity_y,
     dsda_config_int, 0, 16384, { 768 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
+  },
+  [dsda_config_analog_look_acceleration] = {
+    "analog_look_acceleration", dsda_config_analog_look_acceleration,
+    dsda_config_int, 0, INT_MAX, { 0 }, NULL, NOT_STRICT, AccelChanging
   },
   [dsda_config_swap_analogs] = {
     "swap_analogs", dsda_config_swap_analogs,

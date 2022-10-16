@@ -445,11 +445,6 @@ void I_InitMouse(void)
   cursors[0] = SDL_GetCursor();
   // Create an empty cursor
   cursors[1] = SDL_CreateCursor(&empty_cursor_data, &empty_cursor_data, 8, 1, 0, 0);
-
-  if (mouse_enabled)
-  {
-    MouseAccelChanging();
-  }
 }
 
 //
@@ -458,6 +453,7 @@ void I_InitMouse(void)
 
 static void I_InitInputs(void)
 {
+  AccelChanging();
   I_InitMouse();
   dsda_InitGameController();
 }

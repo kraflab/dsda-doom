@@ -2902,7 +2902,7 @@ setup_menu_t controller_settings[] = {
   { "Left Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 5 * 8, dsda_config_left_analog_sensitivity_y },
   { "Right Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_right_analog_sensitivity_x },
   { "Right Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_right_analog_sensitivity_y },
-   // { "Acceleration", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_analog_acceleration },
+  { "Acceleration", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_analog_look_acceleration },
 
   { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_freelook },
   { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 11 * 8, dsda_config_invert_analog_look },

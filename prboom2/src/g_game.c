@@ -1329,13 +1329,13 @@ dboolean G_Responder (event_t* ev)
       return true;    // eat events
 
     case ev_look_analog:
-      mousex += ev->data1.f;
+      mousex += AccelerateAnalog(ev->data1.f);
       if (dsda_MouseLook())
       {
         if (dsda_IntConfig(dsda_config_invert_analog_look))
-          mlooky += ev->data2.f;
+          mlooky += AccelerateAnalog(ev->data2.f);
         else
-          mlooky -= ev->data2.f;
+          mlooky -= AccelerateAnalog(ev->data2.f);
       }
       return true;    // eat events
 
