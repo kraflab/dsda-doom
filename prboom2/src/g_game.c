@@ -452,12 +452,7 @@ static double mouse_sensitivity_vert;
 static double mouse_sensitivity_mlook;
 static double mouse_strafe_divisor;
 
-static int left_analog_sensitivity_x;
-static int left_analog_sensitivity_y;
-static int right_analog_sensitivity_x;
-static int right_analog_sensitivity_y;
-
-void G_UpdateInputSensitivity(void)
+void G_UpdateMouseSensitivity(void)
 {
   double horizontal_sensitivity, fine_sensitivity;
 
@@ -468,11 +463,6 @@ void G_UpdateInputSensitivity(void)
   mouse_sensitivity_vert = dsda_IntConfig(dsda_config_mouse_sensitivity_vert);
   mouse_sensitivity_mlook = dsda_IntConfig(dsda_config_mouse_sensitivity_mlook);
   mouse_strafe_divisor = dsda_IntConfig(dsda_config_movement_mousestrafedivisor);
-
-  left_analog_sensitivity_x = dsda_IntConfig(dsda_config_left_analog_sensitivity_x);
-  left_analog_sensitivity_y = dsda_IntConfig(dsda_config_left_analog_sensitivity_y);
-  right_analog_sensitivity_x = dsda_IntConfig(dsda_config_right_analog_sensitivity_x);
-  right_analog_sensitivity_y = dsda_IntConfig(dsda_config_right_analog_sensitivity_y);
 }
 
 void G_ResetMotion(void)
@@ -1315,14 +1305,14 @@ dboolean G_Responder (event_t* ev)
     }
 
     case ev_left_analog:
-      left_analog_x = ev->data1.f * left_analog_sensitivity_x;
-      left_analog_y = ev->data2.f * left_analog_sensitivity_y;
+      left_analog_x = ev->data1.f;
+      left_analog_y = ev->data2.f;
       return true;    // eat events
 
     case ev_right_analog:
-      mousex += ev->data1.f * right_analog_sensitivity_x;
+      mousex += ev->data1.f;
       if (dsda_MouseLook())
-        mlooky += ev->data2.f * right_analog_sensitivity_y;
+        mlooky += ev->data2.f;
       return true;    // eat events
 
     default:

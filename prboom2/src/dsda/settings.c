@@ -37,13 +37,13 @@ int dsda_tas;
 int dsda_skip_next_wipe;
 
 void dsda_InitSettings(void) {
-  void G_UpdateInputSensitivity(void);
+  void G_UpdateMouseSensitivity(void);
   void dsda_InitQuickstartCache(void);
   void dsda_InitParallelSFXFilter(void);
   void gld_ResetAutomapTransparency(void);
 
   dsda_UpdateStrictMode();
-  G_UpdateInputSensitivity();
+  G_UpdateMouseSensitivity();
   dsda_InitQuickstartCache();
   dsda_InitParallelSFXFilter();
   gld_ResetAutomapTransparency();

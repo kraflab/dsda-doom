@@ -107,7 +107,7 @@ void M_ChangeFOV(void);
 void M_ChangeLightMode(void);
 void I_InitMouse(void);
 void MouseAccelChanging(void);
-void G_UpdateInputSensitivity(void);
+void G_UpdateMouseSensitivity(void);
 void dsda_InitGameController(void);
 void M_ChangeSpeed(void);
 void M_ChangeShorttics(void);
@@ -653,11 +653,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mouse_sensitivity_horiz] = {
     "mouse_sensitivity_horiz", dsda_config_mouse_sensitivity_horiz,
-    dsda_config_int, 0, INT_MAX, { 10 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, INT_MAX, { 10 }, NULL, NOT_STRICT, G_UpdateMouseSensitivity
   },
   [dsda_config_mouse_sensitivity_vert] = {
     "mouse_sensitivity_vert", dsda_config_mouse_sensitivity_vert,
-    dsda_config_int, 0, INT_MAX, { 1 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, INT_MAX, { 1 }, NULL, NOT_STRICT, G_UpdateMouseSensitivity
   },
   [dsda_config_mouse_acceleration] = {
     "dsda_mouse_acceleration", dsda_config_mouse_acceleration,
@@ -665,7 +665,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mouse_sensitivity_mlook] = {
     "mouse_sensitivity_mlook", dsda_config_mouse_sensitivity_mlook,
-    dsda_config_int, 0, INT_MAX, { 10 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, INT_MAX, { 10 }, NULL, NOT_STRICT, G_UpdateMouseSensitivity
   },
   [dsda_config_mouse_stutter_correction] = {
     "mouse_stutter_correction", dsda_config_mouse_stutter_correction,
@@ -685,11 +685,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_movement_mousestrafedivisor] = {
     "movement_mousestrafedivisor", dsda_config_movement_mousestrafedivisor,
-    dsda_config_int, 1, INT_MAX, { 4 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 1, INT_MAX, { 4 }, NULL, NOT_STRICT, G_UpdateMouseSensitivity
   },
   [dsda_config_fine_sensitivity] = {
     "dsda_fine_sensitivity", dsda_config_fine_sensitivity,
-    dsda_config_int, 0, 99, { 0 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, 99, { 0 }, NULL, NOT_STRICT, G_UpdateMouseSensitivity
   },
   [dsda_config_use_game_controller] = {
     "use_game_controller", dsda_config_use_game_controller,
@@ -1167,19 +1167,19 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_left_analog_sensitivity_x] = {
     "left_analog_sensitivity_x", dsda_config_left_analog_sensitivity_x,
-    dsda_config_int, 0, 16384, { 100 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, 16384, { 100 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
   [dsda_config_left_analog_sensitivity_y] = {
     "left_analog_sensitivity_y", dsda_config_left_analog_sensitivity_y,
-    dsda_config_int, 0, 16384, { 100 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, 16384, { 100 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
   [dsda_config_right_analog_sensitivity_x] = {
     "right_analog_sensitivity_x", dsda_config_right_analog_sensitivity_x,
-    dsda_config_int, 0, 16384, { 1536 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, 16384, { 1536 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
   [dsda_config_right_analog_sensitivity_y] = {
     "right_analog_sensitivity_y", dsda_config_right_analog_sensitivity_y,
-    dsda_config_int, 0, 16384, { 768 }, NULL, NOT_STRICT, G_UpdateInputSensitivity
+    dsda_config_int, 0, 16384, { 768 }, NULL, NOT_STRICT, dsda_InitGameControllerParameters
   },
 };
 

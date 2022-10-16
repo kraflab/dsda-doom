@@ -29,12 +29,18 @@
 static int use_game_controller;
 static SDL_GameController* game_controller;
 
-#define DEADZONE 1024
+typedef struct {
+  SDL_GameControllerButton button;
+  int deadzone;
+  int sensitivity;
+} axis_t;
 
-static int left_analog_deadzone;
-static int right_analog_deadzone;
-static int left_trigger_deadzone;
-static int right_trigger_deadzone;
+static axis_t left_analog_x = { SDL_CONTROLLER_AXIS_LEFTX };
+static axis_t left_analog_y = { SDL_CONTROLLER_AXIS_LEFTY };
+static axis_t right_analog_x = { SDL_CONTROLLER_AXIS_RIGHTX };
+static axis_t right_analog_y = { SDL_CONTROLLER_AXIS_RIGHTY };
+static axis_t left_trigger = { SDL_CONTROLLER_AXIS_TRIGGERLEFT };
+static axis_t right_trigger = { SDL_CONTROLLER_AXIS_TRIGGERRIGHT };
 
 static const char* button_names[] = {
   [DSDA_CONTROLLER_BUTTON_A] = "pad a",
@@ -69,28 +75,28 @@ const char* dsda_GameControllerButtonName(int button) {
   return button_names[button];
 }
 
-static float dsda_AxisValue(SDL_GameControllerButton button, int deadzone) {
+static float dsda_AxisValue(axis_t* axis) {
   int value;
 
-  value = SDL_GameControllerGetAxis(game_controller, button);
+  value = SDL_GameControllerGetAxis(game_controller, axis->button);
 
   // the positive axis max is 1 less
-  if (value > (deadzone - 1))
-    value -= (deadzone - 1);
-  else if (value < -deadzone)
-    value += deadzone;
+  if (value > (axis->deadzone - 1))
+    value -= (axis->deadzone - 1);
+  else if (value < -axis->deadzone)
+    value += axis->deadzone;
   else
     value = 0;
 
-  return (float) value / (32768 - deadzone);
+  return (float) value * axis->sensitivity / (32768 - axis->deadzone);
 }
 
 static void dsda_PollLeftStick(void) {
   event_t ev;
 
   ev.type = ev_left_analog;
-  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTX, left_analog_deadzone);
-  ev.data2.f = -dsda_AxisValue(SDL_CONTROLLER_AXIS_LEFTY, left_analog_deadzone);
+  ev.data1.f = dsda_AxisValue(&left_analog_x);
+  ev.data2.f = -dsda_AxisValue(&left_analog_y);
 
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
@@ -100,8 +106,8 @@ static void dsda_PollRightStick(void) {
   event_t ev;
 
   ev.type = ev_right_analog;
-  ev.data1.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTX, right_analog_deadzone);
-  ev.data2.f = dsda_AxisValue(SDL_CONTROLLER_AXIS_RIGHTY, right_analog_deadzone);
+  ev.data1.f = dsda_AxisValue(&right_analog_x);
+  ev.data2.f = dsda_AxisValue(&right_analog_y);
 
   if (ev.data1.f || ev.data2.f)
     D_PostEvent(&ev);
@@ -135,11 +141,11 @@ static void dsda_PollButtons(void) {
     (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE4) << 19) |
     (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_TOUCHPAD) << 20);
 
-  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERLEFT, left_trigger_deadzone);
+  trigger = dsda_AxisValue(&left_trigger);
   if (trigger)
     ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERLEFT);
 
-  trigger = dsda_AxisValue(SDL_CONTROLLER_AXIS_TRIGGERRIGHT, right_trigger_deadzone);
+  trigger = dsda_AxisValue(&right_trigger);
   if (trigger)
     ev.data1.i |= (1 << DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT);
 
@@ -156,10 +162,20 @@ void dsda_PollGameController(void) {
 }
 
 void dsda_InitGameControllerParameters(void) {
-  left_analog_deadzone = dsda_IntConfig(dsda_config_left_analog_deadzone);
-  right_analog_deadzone = dsda_IntConfig(dsda_config_right_analog_deadzone);
-  left_trigger_deadzone = dsda_IntConfig(dsda_config_left_trigger_deadzone);
-  right_trigger_deadzone = dsda_IntConfig(dsda_config_right_trigger_deadzone);
+  left_analog_x.deadzone = dsda_IntConfig(dsda_config_left_analog_deadzone);
+  left_analog_x.sensitivity = dsda_IntConfig(dsda_config_left_analog_sensitivity_x);
+  left_analog_y.deadzone = left_analog_x.deadzone;
+  left_analog_y.sensitivity = dsda_IntConfig(dsda_config_left_analog_sensitivity_y);
+
+  right_analog_x.deadzone = dsda_IntConfig(dsda_config_right_analog_deadzone);
+  right_analog_x.sensitivity = dsda_IntConfig(dsda_config_right_analog_sensitivity_x);
+  right_analog_y.deadzone = right_analog_x.deadzone;
+  right_analog_y.sensitivity = dsda_IntConfig(dsda_config_right_analog_sensitivity_y);
+
+  left_trigger.deadzone = dsda_IntConfig(dsda_config_left_trigger_deadzone);
+  left_trigger.sensitivity = 1;
+  right_trigger.deadzone = dsda_IntConfig(dsda_config_right_trigger_deadzone);
+  right_trigger.sensitivity = 1;
 }
 
 void dsda_InitGameController(void) {
