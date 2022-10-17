@@ -151,8 +151,7 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawTrackerHC,
     dsda_EraseTrackerHC,
     "tracker",
-    VPT_NONE,
-    true
+    .strict = true
   },
   [exhud_weapon_text] = {
     dsda_InitWeaponTextHC,
@@ -167,8 +166,7 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawRenderStatsHC,
     dsda_EraseRenderStatsHC,
     "render_stats",
-    VPT_NONE,
-    true
+    .strict = true
   },
   [exhud_fps] = {
     dsda_InitFPSHC,
