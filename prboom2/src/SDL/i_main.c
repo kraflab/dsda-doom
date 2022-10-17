@@ -75,6 +75,7 @@
 #include "dsda/args.h"
 #include "dsda/analysis.h"
 #include "dsda/args.h"
+#include "dsda/endoom.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
 #include "dsda/split_tracker.h"
@@ -196,6 +197,7 @@ static void I_EssentialQuit (void)
 static void I_Quit (void)
 {
   M_SaveDefaults ();
+  dsda_DumpEndoom();
 }
 
 //

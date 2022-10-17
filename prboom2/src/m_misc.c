@@ -182,6 +182,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
   MIGRATED_SETTING(dsda_config_screenshot_dir),
   MIGRATED_SETTING(dsda_config_startup_delay_ms),
+  MIGRATED_SETTING(dsda_config_ansi_endoom),
 
   SETTING_HEADING("Game settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),

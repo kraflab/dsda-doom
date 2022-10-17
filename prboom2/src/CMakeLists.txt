@@ -35,6 +35,8 @@ set(COMMON_SRC
     dsda/death.h
     dsda/demo.c
     dsda/demo.h
+    dsda/endoom.c
+    dsda/endoom.h
     dsda/excmd.c
     dsda/excmd.h
     dsda/exdemo.c

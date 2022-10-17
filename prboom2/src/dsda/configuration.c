@@ -1200,6 +1200,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "analog_movement_emulates_keyboard", dsda_config_analog_movement_emulates_keyboard,
     CONF_BOOL(0), NULL, STRICT_INT(1)
   },
+  [dsda_config_ansi_endoom] = {
+    "ansi_endoom", dsda_config_ansi_endoom,
+    CONF_BOOL(0)
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
