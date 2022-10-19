@@ -48,7 +48,7 @@
 #include "p_inter.h"
 #include "p_user.h"
 #include "lprintf.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "p_enemy.h"
 #include "p_spec.h"
 #include "g_overflow.h"

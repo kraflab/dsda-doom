@@ -63,6 +63,8 @@ enum {
   ML_BEHAVIOR
 };
 
+#define ML_TEXTMAP 1
+
 #ifdef _MSC_VER // proff: This is the same as __attribute__ ((packed)) in GNUC
 #pragma pack(push)
 #pragma pack(1)

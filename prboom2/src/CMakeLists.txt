@@ -37,10 +37,14 @@ set(COMMON_SRC
     dsda/demo.h
     dsda/excmd.c
     dsda/excmd.h
+    dsda/exdemo.c
+    dsda/exdemo.h
     dsda/exhud.c
     dsda/exhud.h
     dsda/features.c
     dsda/features.h
+    dsda/game_controller.c
+    dsda/game_controller.h
     dsda/ghost.c
     dsda/ghost.h
     dsda/gl/render_scale.c
@@ -115,6 +119,8 @@ set(COMMON_SRC
     dsda/mapinfo/u.h
     dsda/memory.c
     dsda/memory.h
+    dsda/mkdir.c
+    dsda/mkdir.h
     dsda/mobjinfo.c
     dsda/mobjinfo.h
     dsda/mouse.c
@@ -141,6 +147,7 @@ set(COMMON_SRC
     dsda/settings.h
     dsda/sfx.c
     dsda/sfx.h
+    dsda/signal_context.h
     dsda/skip.c
     dsda/skip.h
     dsda/sndinfo.c
@@ -235,7 +242,6 @@ set(COMMON_SRC
     i_capture.h
     i_glob.c
     i_glob.h
-    i_joy.h
     i_main.h
     i_pcsound.c
     i_pcsound.h
@@ -296,8 +302,6 @@ set(COMMON_SRC
     r_data.c
     r_data.h
     r_defs.h
-    r_demo.c
-    r_demo.h
     r_draw.c
     r_draw.h
     r_filter.c
@@ -321,6 +325,8 @@ set(COMMON_SRC
     scanner.h
     sc_man.c
     sc_man.h
+    smooth.c
+    smooth.h
     sounds.c
     sounds.h
     st_lib.c
@@ -335,10 +341,10 @@ set(COMMON_SRC
     tables.h
     umapinfo.cpp
     umapinfo.h
-    version.c
-    version.h
     v_video.c
     v_video.h
+    wadtbl.c
+    wadtbl.h
     wi_stuff.c
     wi_stuff.h
     w_wad.c
@@ -367,7 +373,6 @@ set(MUS2MID_SRC
 )
 
 set(SDLDOOM_SOURCES
-    SDL/i_joy.c
     SDL/i_main.c
     SDL/i_sound.c
     SDL/i_sshot.c

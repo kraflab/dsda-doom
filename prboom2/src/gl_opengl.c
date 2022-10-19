@@ -162,12 +162,12 @@ void gld_InitOpenGL(void)
 
   gl_ext_texture_filter_anisotropic = isExtensionSupported("GL_EXT_texture_filter_anisotropic") != NULL;
   if (gl_ext_texture_filter_anisotropic)
-    lprintf(LO_INFO, "using GL_EXT_texture_filter_anisotropic\n");
+    lprintf(LO_DEBUG, "using GL_EXT_texture_filter_anisotropic\n");
 
   // Any textures sizes are allowed
   gl_arb_texture_non_power_of_two = isExtensionSupported("GL_ARB_texture_non_power_of_two") != NULL;
   if (gl_arb_texture_non_power_of_two)
-    lprintf(LO_INFO, "using GL_ARB_texture_non_power_of_two\n");
+    lprintf(LO_DEBUG, "using GL_ARB_texture_non_power_of_two\n");
 
   //
   // ARB_multitexture command function pointers
@@ -186,7 +186,7 @@ void gld_InitOpenGL(void)
       gl_arb_multitexture = false;
   }
   if (gl_arb_multitexture)
-    lprintf(LO_INFO,"using GL_ARB_multitexture\n");
+    lprintf(LO_DEBUG, "using GL_ARB_multitexture\n");
 
   //
   // ARB_texture_compression
@@ -201,7 +201,7 @@ void gld_InitOpenGL(void)
       gl_arb_texture_compression = false;
   }
   if (gl_arb_texture_compression)
-    lprintf(LO_INFO,"using GL_ARB_texture_compression\n");
+    lprintf(LO_DEBUG, "using GL_ARB_texture_compression\n");
 
   //
   // EXT_framebuffer_object
@@ -229,11 +229,11 @@ void gld_InitOpenGL(void)
       gl_ext_framebuffer_object = false;
   }
   if (gl_ext_framebuffer_object)
-    lprintf(LO_INFO,"using GL_EXT_framebuffer_object\n");
+    lprintf(LO_DEBUG, "using GL_EXT_framebuffer_object\n");
 
   gl_ext_packed_depth_stencil = isExtensionSupported("GL_EXT_packed_depth_stencil") != NULL;
   if (gl_ext_packed_depth_stencil)
-    lprintf(LO_INFO,"using GL_EXT_packed_depth_stencil\n");
+    lprintf(LO_DEBUG, "using GL_EXT_packed_depth_stencil\n");
 
   //
   // Blending
@@ -248,7 +248,7 @@ void gld_InitOpenGL(void)
       gl_ext_blend_color = false;
   }
   if (gl_ext_blend_color)
-    lprintf(LO_INFO,"using GL_EXT_blend_color\n");
+    lprintf(LO_DEBUG, "using GL_EXT_blend_color\n");
 
   // VBO
 #ifdef USE_VBO
@@ -265,7 +265,7 @@ void gld_InitOpenGL(void)
       gl_ext_arb_vertex_buffer_object = false;
   }
   if (gl_ext_arb_vertex_buffer_object)
-    lprintf(LO_INFO,"using GL_ARB_vertex_buffer_object\n");
+    lprintf(LO_DEBUG, "using GL_ARB_vertex_buffer_object\n");
 #else
   gl_ext_arb_vertex_buffer_object = false;
 #endif
@@ -289,7 +289,7 @@ void gld_InitOpenGL(void)
       gl_arb_pixel_buffer_object = false;
   }
   if (gl_arb_pixel_buffer_object)
-    lprintf(LO_INFO,"using GL_ARB_pixel_buffer_object\n");
+    lprintf(LO_DEBUG, "using GL_ARB_pixel_buffer_object\n");
 
   //
   // Stencil support
@@ -347,17 +347,17 @@ void gld_InitOpenGL(void)
   }
   if (gl_arb_shader_objects)
   {
-    lprintf(LO_INFO,"using GL_ARB_shader_objects\n");
-    lprintf(LO_INFO,"using GL_ARB_vertex_shader\n");
-    lprintf(LO_INFO,"using GL_ARB_fragment_shader\n");
-    lprintf(LO_INFO,"using GL_ARB_shading_language_100\n");
+    lprintf(LO_DEBUG, "using GL_ARB_shader_objects\n");
+    lprintf(LO_DEBUG, "using GL_ARB_vertex_shader\n");
+    lprintf(LO_DEBUG, "using GL_ARB_fragment_shader\n");
+    lprintf(LO_DEBUG, "using GL_ARB_shading_language_100\n");
   }
 
   // GL_CLAMP_TO_EDGE
   GLEXT_CLAMP_TO_EDGE = (gl_version >= OPENGL_VERSION_1_2 ? GL_CLAMP_TO_EDGE : GL_CLAMP);
 
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
-  lprintf(LO_INFO,"GL_MAX_TEXTURE_SIZE=%i\n", gl_max_texture_size);
+  lprintf(LO_DEBUG, "GL_MAX_TEXTURE_SIZE=%i\n", gl_max_texture_size);
 
   // Additional checks
   if (gl_version < OPENGL_VERSION_1_3)
@@ -368,7 +368,7 @@ void gld_InitOpenGL(void)
 
   if (gl_version <= OPENGL_VERSION_1_1)
   {
-    lprintf(LO_INFO, "gld_InitOpenGL: Compatibility mode is used.\n");
+    lprintf(LO_DEBUG, "gld_InitOpenGL: Compatibility mode is used.\n");
     gl_arb_texture_non_power_of_two = false;
     gl_arb_multitexture = false;
     gl_arb_texture_compression = false;

@@ -192,11 +192,7 @@ dboolean deh_pars = FALSE; // in wi_stuff to allow pars in modified games
 // ====================================================================
 // Any of these can be changed using the bex extensions
 #include "dstrings.h"  // to get the initial values
-/* cph - const's
- *     - removed redundant "can't XXX in a netgame" strings.
- */
-const char *s_D_DEVSTR    = D_DEVSTR;
-const char *s_D_CDROM     = D_CDROM;
+
 const char *s_PRESSKEY    = PRESSKEY;
 const char *s_PRESSYN     = PRESSYN;
 const char *s_QUITMSG     = QUITMSG;
@@ -511,8 +507,6 @@ typedef struct {
  *         - removed redundant "Can't XXX in a netgame" strings
  */
 static deh_strs deh_strlookup[] = {
-  {&s_D_DEVSTR,"D_DEVSTR"},
-  {&s_D_CDROM,"D_CDROM"},
   {&s_PRESSKEY,"PRESSKEY"},
   {&s_PRESSYN,"PRESSYN"},
   {&s_QUITMSG,"QUITMSG"},

@@ -722,14 +722,14 @@ void I_InitSound(void)
 
   if (SDL_InitSubSystem(SDL_INIT_AUDIO))
   {
-    lprintf(LO_INFO, "Couldn't initialize SDL audio (%s))\n", SDL_GetError());
+    lprintf(LO_WARN, "Couldn't initialize SDL audio (%s))\n", SDL_GetError());
     nosfxparm = true;
     nomusicparm = true;
     return;
   }
 
   // Secure and configure sound device first.
-  lprintf(LO_INFO, "I_InitSound: ");
+  lprintf(LO_DEBUG, "I_InitSound: ");
 
   I_InitSoundParams();
 
@@ -740,7 +740,7 @@ void I_InitSound(void)
   if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
                           NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
   {
-    lprintf(LO_INFO,"couldn't open audio with desired format (%s)\n", SDL_GetError());
+    lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
     nosfxparm = true;
     nomusicparm = true;
     return;
@@ -753,7 +753,7 @@ void I_InitSound(void)
 
   Mix_SetPostMix(I_UpdateSound, NULL);
 
-  lprintf(LO_INFO," configured audio device with %d samples/slice\n", audio_buffers);
+  lprintf(LO_DEBUG, " configured audio device with %d samples/slice\n", audio_buffers);
 
   I_AtExit(I_ShutdownSound, true, "I_ShutdownSound", exit_priority_normal);
 
@@ -765,7 +765,7 @@ void I_InitSound(void)
   if (!nomusicparm)
     I_InitMusic();
 
-  lprintf(LO_INFO, "I_InitSound: sound module ready\n");
+  lprintf(LO_DEBUG, "I_InitSound: sound module ready\n");
   SDL_PauseAudio(0);
 }
 
@@ -1241,16 +1241,16 @@ static int RegisterSongEx (const void *data, size_t len, int try_mus2mid)
               current_player = i;
               music_handle = temp_handle;
               SDL_UnlockMutex (musmutex);
-              lprintf (LO_INFO, "RegisterSongEx: Using player %s\n", music_players[i]->name ());
+              lprintf(LO_DEBUG, "RegisterSongEx: Using player %s\n", music_players[i]->name ());
               return 1;
             }
           }
           else
-            lprintf (LO_INFO, "RegisterSongEx: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
+            lprintf(LO_DEBUG, "RegisterSongEx: Music player %s on preferred list but it failed to init\n", music_players[i]-> name ());
         }
       }
       if (!found)
-        lprintf (LO_INFO, "RegisterSongEx: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
+        lprintf(LO_DEBUG, "RegisterSongEx: Couldn't find preferred music player %s in list\n  (typo or support not included at compile time)\n", music_player_order[j]);
     }
     // load failed
   }
@@ -1309,7 +1309,7 @@ static int RegisterSongEx (const void *data, size_t len, int try_mus2mid)
     }
   }
 
-  lprintf (LO_ERROR, "RegisterSongEx: Failed\n");
+  lprintf(LO_ERROR, "RegisterSongEx: Failed\n");
   return 0;
 }
 

@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <errno.h>
 
 #include "doomtype.h"
 #include "lprintf.h"
@@ -30,6 +29,7 @@
 #include "e6y.h"
 
 #include "dsda/args.h"
+#include "dsda/mkdir.h"
 
 #include "data_organizer.h"
 
@@ -88,24 +88,6 @@ char* dsda_DetectDirectory(const char* env_key, int arg_id) {
   dsda_NormalizeSlashes(result);
 
   return result;
-}
-
-static void dsda_CreateDirectory(const char* path) {
-  int error = 0;
-
-  error =
-#if defined(_MSC_VER)
-    _mkdir(path);
-#else
-  #if defined(_WIN32)
-    mkdir(path);
-  #else
-    mkdir(path, 0733);
-  #endif
-#endif
-
-  if (error)
-    I_Error("dsda_CreateDirectory: unable to create directory %s (%d)", path, errno);
 }
 
 void dsda_InitDataDir(void) {
@@ -168,10 +150,7 @@ static void dsda_InitWadDataDir(void) {
       strcat(dsda_wad_data_dir, "/");
       strcat(dsda_wad_data_dir, dsda_data_dir_strings[i]);
 
-      if (!stat(dsda_wad_data_dir, &sbuf) && S_ISDIR(sbuf.st_mode))
-        continue;
-      else
-        dsda_CreateDirectory(dsda_wad_data_dir);
+      dsda_MkDir(dsda_wad_data_dir, true);
     }
   }
 

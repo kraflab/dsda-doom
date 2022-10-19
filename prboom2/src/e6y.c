@@ -80,7 +80,6 @@
 #include "gl_struct.h"
 #include "gl_intern.h"
 #include "g_game.h"
-#include "r_demo.h"
 #include "d_deh.h"
 #include "e6y.h"
 
@@ -668,11 +667,18 @@ void e6y_WriteStats(void)
 //--------------------------------------------------
 
 static double mouse_accelfactor;
+static double analog_accelfactor;
 
-void MouseAccelChanging(void)
+void AccelChanging(void)
 {
-  int mouse_acceleration = dsda_IntConfig(dsda_config_mouse_acceleration);
+  int mouse_acceleration;
+  int analog_acceleration;
+
+  mouse_acceleration = dsda_IntConfig(dsda_config_mouse_acceleration);
   mouse_accelfactor = (double) mouse_acceleration / 100.0 + 1.0;
+
+  analog_acceleration = dsda_IntConfig(dsda_config_analog_look_acceleration);
+  analog_accelfactor = (double) analog_acceleration / 100.0 + 1.0;
 }
 
 int AccelerateMouse(int val)
@@ -684,6 +690,17 @@ int AccelerateMouse(int val)
     return -AccelerateMouse(-val);
 
   return M_DoubleToInt(pow((double) val, mouse_accelfactor));
+}
+
+int AccelerateAnalog(float val)
+{
+  if (!analog_accelfactor)
+    return val;
+
+  if (val < 0)
+    return -AccelerateAnalog(-val);
+
+  return M_DoubleToInt(pow((double) val, analog_accelfactor));
 }
 
 int mlooky = 0;

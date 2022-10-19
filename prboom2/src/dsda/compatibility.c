@@ -22,6 +22,8 @@
 #include "w_wad.h"
 #include "lprintf.h"
 
+#include "dsda/utility.h"
+
 #include "compatibility.h"
 
 typedef struct {
@@ -169,6 +171,51 @@ static const dsda_compatibility_t tntr_map30 = {
   { comp_telefrag, -1, -1 }
 };
 
+static const dsda_compatibility_t roomblow_e1m1 = {
+  "68ffa69f2eaa5ced3dc4da5a300d022a",
+  { comp_stairs, -1, -1 }
+};
+
+static const dsda_compatibility_t esp_map21 = {
+  "97088f2849904bc1cd5ae1d92d163b13",
+  { comp_stairs, -1, -1 }
+};
+
+static const dsda_compatibility_t av_map07 = {
+  "941e4cb56ee4184e0b1ed43486ab0bbf",
+  { comp_model, -1, -1 }
+};
+
+static const dsda_compatibility_t sin2_9_map02 = {
+  "9aa5aa3020434f824624eba88916ee23",
+  { comp_vile, -1, -1 }
+};
+
+static const dsda_compatibility_t d2reload_map09 = {
+  "c8de798a4d658ffc94151884c6c2bf37",
+  { comp_vile, -1, -1 }
+};
+
+static const dsda_compatibility_t amoreupho_map02 = {
+  "66a8310a0a7d2af99e3a0089b2d6c897",
+  { comp_vile, -1, -1 }
+};
+
+static const dsda_compatibility_t dbp20_dnd_map07 = {
+  "e26c1b6f4dfd90bb6533e6381bf61be5",
+  { comp_vile, -1, -1 }
+};
+
+static const dsda_compatibility_t arch_map01 = {
+  "1d37cbd32a1ecf4763437631e7b3c29a",
+  { comp_vile, -1, -1 }
+};
+
+static const dsda_compatibility_t ur_map06 = {
+  "cfb054683af1ed187d0565942d3dbb8f",
+  { comp_vile, -1, -1 }
+};
+
 static const dsda_compatibility_t* entry_0[] = {
   &archie_map01,
   &sixpack2_map02,
@@ -180,6 +227,7 @@ static const dsda_compatibility_t* entry_1[] = {
   &seej_map01,
   &mayhem_2013_map05,
   &tntr_map30,
+  &arch_map01,
   NULL
 };
 
@@ -211,6 +259,8 @@ static const dsda_compatibility_t* entry_5[] = {
 static const dsda_compatibility_t* entry_6[] = {
   &eternal_doom_25,
   &plutonia2_map32,
+  &roomblow_e1m1,
+  &amoreupho_map02,
   NULL
 };
 
@@ -228,6 +278,9 @@ static const dsda_compatibility_t* entry_8[] = {
 
 static const dsda_compatibility_t* entry_9[] = {
   &project_x_map14,
+  &esp_map21,
+  &av_map07,
+  &sin2_9_map02,
   NULL
 };
 
@@ -246,6 +299,8 @@ static const dsda_compatibility_t* entry_c[] = {
   &gather2_map05_and_darkside_map01,
   &reverie_map18,
   &conf256b_map12,
+  &d2reload_map09,
+  &ur_map06,
   NULL
 };
 
@@ -254,6 +309,7 @@ static const dsda_compatibility_t* entry_d[] = {
 };
 
 static const dsda_compatibility_t* entry_e[] = {
+  &dbp20_dnd_map07,
   NULL
 };
 
@@ -286,7 +342,7 @@ static void dsda_MD5UpdateLump(int lump, struct MD5Context *md5)
   MD5Update(md5, W_LumpByNum(lump), W_LumpLength(lump));
 }
 
-static void dsda_GetLevelCheckSum(int lump, byte cksum[16])
+static void dsda_GetLevelCheckSum(int lump, dsda_cksum_t* cksum)
 {
   struct MD5Context md5;
 
@@ -300,38 +356,34 @@ static void dsda_GetLevelCheckSum(int lump, byte cksum[16])
 
   // ML_BEHAVIOR when it becomes applicable to comp options
 
-  MD5Final(cksum, &md5);
-}
+  MD5Final(cksum->bytes, &md5);
 
+  dsda_TranslateCheckSum(cksum);
+}
 
 // For casual players that aren't careful about setting complevels,
 //   this function will apply comp options to automatically fix some issues
 //   that appear when playing wads in mbf21 (since this is the default).
 void dsda_ApplyLevelCompatibility(int lump) {
   unsigned int i;
-  byte cksum[16];
-  char cksum_string[33];
+  dsda_cksum_t cksum;
   const dsda_compatibility_t** level_compatibility;
 
   if (demorecording || demoplayback || !mbf21) return;
 
-  dsda_GetLevelCheckSum(lump, cksum);
+  dsda_GetLevelCheckSum(lump, &cksum);
 
-  for (i = 0; i < 16; i++)
-    sprintf(&cksum_string[i * 2], "%02x", cksum[i]);
-  cksum_string[32] = '\0';
+  lprintf(LO_DEBUG, "Level checksum: %s\n", cksum.string);
 
-  lprintf(LO_DEBUG, "Level checksum: %s\n", cksum_string);
-
-  if (cksum_string[0] >= 'a')
-    i = cksum_string[0] - 'a' + 10;
+  if (cksum.string[0] >= 'a')
+    i = cksum.string[0] - 'a' + 10;
   else
-    i = cksum_string[0] - '0';
+    i = cksum.string[0] - '0';
 
   level_compatibility = level_compatibilities[i];
 
   while (*level_compatibility) {
-    if (!strncmp((*level_compatibility)->cksum_string, cksum_string, 32)) {
+    if (!strncmp((*level_compatibility)->cksum_string, cksum.string, 32)) {
       const signed char* option;
 
       for (option = (*level_compatibility)->options; *option != -1; option++) {

@@ -50,7 +50,7 @@
 #include "s_advsound.h"
 #include "lprintf.h" //jff 10/6/98 for debug outputs
 #include "v_video.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include "g_overflow.h"
 #include "am_map.h"
@@ -1717,7 +1717,7 @@ static void P_LoadLineDefs (int lump)
         if ((ld->sidenum[1] == NO_INDEX) && (ld->flags & ML_TWOSIDED)) {
           // e6y
           // ML_TWOSIDED flag shouldn't be cleared for compatibility purposes
-          // see CLNJ-506.LMP at http://doomedsda.us/wad1005.html
+          // see CLNJ-506.LMP at https://dsdarchive.com/wads/challenj
           MissedBackSideOverrun(ld);
           if (!demo_compatibility || !EMULATE(OVERFLOW_MISSEDBACKSIDE))
           {
@@ -2779,6 +2779,15 @@ void P_CheckLevelWadStructure(const char *mapname)
   if (lumpnum == LUMP_NOT_FOUND)
   {
     I_Error("P_SetupLevel: There is no %s map.", mapname);
+  }
+
+  i = lumpnum + ML_TEXTMAP;
+  if (P_CheckLumpsForSameSource(lumpnum, i))
+  {
+    if (!strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
+    {
+      I_Error("UDMF maps are not supported yet");
+    }
   }
 
   for (i = ML_THINGS + 1; i <= ML_SECTORS; i++)

@@ -135,7 +135,7 @@ dboolean dsda_AutoRun(void) {
 }
 
 dboolean dsda_MouseLook(void) {
-  return dsda_IntConfig(dsda_config_mouselook);
+  return dsda_IntConfig(dsda_config_freelook);
 }
 
 dboolean dsda_VertMouse(void) {
@@ -170,6 +170,10 @@ dboolean dsda_HideHorns(void) {
   return dsda_IntConfig(dsda_config_hide_horns);
 }
 
+dboolean dsda_HideWeapon(void) {
+  return dsda_IntConfig(dsda_config_hide_weapon);
+}
+
 dboolean dsda_SwitchWhenAmmoRunsOut(void) {
   return dsda_IntConfig(dsda_config_switch_when_ammo_runs_out);
 }
@@ -184,10 +188,6 @@ dboolean dsda_TrackSplits(void) {
 
 dboolean dsda_ShowSplitData(void) {
   return dsda_IntConfig(dsda_config_show_split_data);
-}
-
-dboolean dsda_ExHud(void) {
-  return dsda_IntConfig(dsda_config_exhud);
 }
 
 dboolean dsda_CommandDisplay(void) {
@@ -234,18 +234,8 @@ dboolean dsda_WipeAtFullSpeed(void) {
   return dsda_IntConfig(dsda_config_wipe_at_full_speed);
 }
 
-int dsda_show_alive_monsters;
-
 int dsda_ShowAliveMonsters(void) {
-  if (dsda_StrictMode()) return 0;
-
-  return dsda_show_alive_monsters;
-}
-
-int dsda_CycleShowAliveMonsters(void) {
-  dsda_show_alive_monsters = (dsda_show_alive_monsters + 1) % 3;
-
-  return dsda_ShowAliveMonsters();
+  return dsda_IntConfig(dsda_config_show_alive_monsters);
 }
 
 int dsda_reveal_map;

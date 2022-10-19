@@ -15,6 +15,9 @@
 //	DSDA Utility
 //
 
+#ifndef __DSDA_UTILITY__
+#define __DSDA_UTILITY__
+
 #include <string.h>
 
 #include "d_ticcmd.h"
@@ -36,6 +39,20 @@ typedef struct {
   int frac;
 } dsda_angle_t;
 
+typedef struct {
+  byte bytes[16];
+  char string[33];
+} dsda_cksum_t;
+
+typedef struct {
+  char* string;
+  size_t size;
+} dsda_string_t;
+
+void dsda_InitString(dsda_string_t* dest, const char* value);
+void dsda_FreeString(dsda_string_t* dest);
+void dsda_StringCat(dsda_string_t* dest, const char* source);
+void dsda_TranslateCheckSum(dsda_cksum_t* cksum);
 dboolean dsda_HasFileExt(const char* file, const char* ext);
 char** dsda_SplitString(char* str, const char* delimiter);
 void dsda_FixedToString(char* str, fixed_t x);
@@ -46,3 +63,5 @@ void dsda_CutExtension(char* str);
 double dsda_DistancePointToLine(fixed_t line_x1, fixed_t line_y1,
                                 fixed_t line_x2, fixed_t line_y2,
                                 fixed_t point_x, fixed_t point_y);
+
+#endif

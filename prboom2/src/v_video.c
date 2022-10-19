@@ -921,7 +921,7 @@ V_DrawLineWu_f V_DrawLineWu = NULL_DrawLineWu;
 void V_InitMode(video_mode_t mode) {
   switch (mode) {
     case VID_MODESW:
-      lprintf(LO_INFO, "V_InitMode: using software video mode\n");
+      lprintf(LO_DEBUG, "V_InitMode: using software video mode\n");
       V_BeginUIDraw = NULL_BeginUIDraw; // [XA] no-op in software
       V_EndUIDraw = NULL_EndUIDraw; // [XA] ditto
       V_CopyRect = FUNC_V_CopyRect;
@@ -938,7 +938,7 @@ void V_InitMode(video_mode_t mode) {
       current_videomode = VID_MODESW;
       break;
     case VID_MODEGL:
-      lprintf(LO_INFO, "V_InitMode: using OpenGL video mode\n");
+      lprintf(LO_DEBUG, "V_InitMode: using OpenGL video mode\n");
       V_BeginUIDraw = WRAP_gld_BeginUIDraw;
       V_EndUIDraw = WRAP_gld_EndUIDraw;
       V_CopyRect = WRAP_gld_CopyRect;

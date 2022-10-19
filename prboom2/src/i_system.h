@@ -88,6 +88,12 @@ char* I_FindFile(const char* wfname, const char* ext);
 char* I_FindFileEx(const char* wfname, const char* ext);
 const char* I_FindFile2(const char* wfname, const char* ext);
 
+char* I_RequireWad(const char* wfname);
+char* I_FindWad(const char* wfname);
+
+char* I_RequireDeh(const char* wfname);
+char* I_FindDeh(const char* wfname);
+
 dboolean I_FileToBuffer(const char *filename, byte **data, int *size);
 
 /* cph 2001/11/18 - wrapper for read(2) which deals with partial reads */

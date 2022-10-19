@@ -24,6 +24,39 @@
 
 #include "utility.h"
 
+void dsda_InitString(dsda_string_t* dest, const char* value) {
+  dest->size = 1; // \0
+  dest->string = NULL;
+
+  if (value)
+    dsda_StringCat(dest, value);
+}
+
+void dsda_FreeString(dsda_string_t* dest) {
+  Z_Free(dest->string);
+  dsda_InitString(dest, NULL);
+}
+
+void dsda_StringCat(dsda_string_t* dest, const char* source) {
+  if (!source || (!source[0] && dest->string))
+    return;
+
+  dest->size += strlen(source);
+  if (dest->string)
+    dest->string = Z_Realloc(dest->string, dest->size);
+  else
+    dest->string = Z_Calloc(dest->size, 1);
+  strcat(dest->string, source);
+}
+
+void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
+  unsigned int i;
+
+  for (i = 0; i < 16; i++)
+    sprintf(&cksum->string[i * 2], "%02x", cksum->bytes[i]);
+  cksum->string[32] = '\0';
+}
+
 dboolean dsda_HasFileExt(const char* file, const char* ext) {
   return strlen(file) > strlen(ext) &&
          !strcasecmp(file + strlen(file) - strlen(ext), ext);

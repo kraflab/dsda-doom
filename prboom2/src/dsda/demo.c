@@ -23,6 +23,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "m_misc.h"
+#include "md5.h"
 #include "lprintf.h"
 #include "e6y.h"
 #include "p_saveg.h"
@@ -32,6 +33,8 @@
 #include "dsda/command_display.h"
 #include "dsda/configuration.h"
 #include "dsda/excmd.h"
+#include "dsda/exdemo.h"
+#include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
@@ -212,9 +215,16 @@ void dsda_InitDemoRecording(void) {
 
   demorecording = true;
 
+  // Key settings revert when starting a new attempt
+  dsda_RevertIntConfig(dsda_config_vertmouse);
+  dsda_RevertIntConfig(dsda_config_strict_mode);
+
   // prboom+ has already cached its settings (with demorecording == false)
   // we need to reset things here to satisfy strict mode
   dsda_InitSettings();
+
+  dsda_ResetFeatures();
+  dsda_TrackConfigFeatures();
 
   if (!demo_key_frame_initialized) {
     dsda_InitKeyFrame();
@@ -353,6 +363,28 @@ const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
   return demo_p;
 }
 
+void dsda_GetDemoCheckSum(dsda_cksum_t* cksum, byte* features, byte* demo, size_t demo_size) {
+  struct MD5Context md5;
+
+  MD5Init(&md5);
+
+  MD5Update(&md5, demo, demo_size);
+
+  MD5Update(&md5, features, FEATURE_SIZE);
+
+  MD5Final(cksum->bytes, &md5);
+
+  dsda_TranslateCheckSum(cksum);
+}
+
+void dsda_GetDemoRecordingCheckSum(dsda_cksum_t* cksum) {
+  byte features[FEATURE_SIZE];
+
+  dsda_CopyFeatures(features);
+
+  dsda_GetDemoCheckSum(cksum, features, dsda_demo_write_buffer, dsda_DemoBufferOffset());
+}
+
 static int dsda_ExportDemoToFile(const char* demo_name) {
   int end_marker_location;
   byte end_marker = DEMOMARKER;
@@ -364,7 +396,7 @@ static int dsda_ExportDemoToFile(const char* demo_name) {
 
   dsda_WriteExtraDemoHeaderData(end_marker_location);
 
-  G_WriteDemoFooter();
+  dsda_WriteExDemoFooter();
 
   length = dsda_DemoBufferOffset();
 
@@ -400,12 +432,12 @@ static char* dsda_DemoNameWithTime(void) {
 
     dsda_DecomposeILTime(&level_time);
 
-    if (level_time.m == 0 && level_time.s < 10)
+    if (level_time.m == 0)
       snprintf(base_name, length, "%s%d%02d",
                dsda_demo_name_base, level_time.s, level_time.t);
     else
-      snprintf(base_name, length, "%s%d%02d",
-               dsda_demo_name_base, level_time.m, level_time.s);
+      snprintf(base_name, length, "%s%d%02d%02d",
+               dsda_demo_name_base, level_time.m, level_time.s, level_time.t);
   }
   else {
     dsda_movie_time_t movie_time;
@@ -518,6 +550,8 @@ dboolean dsda_PendingJoin(void) {
 }
 
 void dsda_JoinDemoCmd(ticcmd_t* cmd) {
+  dsda_TrackFeature(uf_join);
+
   // Sometimes this bit is not available
   if (
     (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||

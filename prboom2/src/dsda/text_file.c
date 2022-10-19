@@ -16,7 +16,6 @@
 //
 
 #include "doomstat.h"
-#include "r_demo.h"
 #include "lprintf.h"
 #include "e6y.h"
 
@@ -175,8 +174,7 @@ void dsda_ExportTextFile(void) {
 
   fprintf(file, "Skill:     %i\n", gameskill + 1);
   fprintf(file, "Category:  %s\n", dsda_DetectCategory());
-  fprintf(file, "Exe:       %s -complevel %i\n",
-          (PACKAGE_NAME" "PACKAGE_VERSION), compatibility_level);
+  fprintf(file, "Exe:       %s -complevel %i\n", PACKAGE_STRING, compatibility_level);
   fprintf(file, "\n");
 
   name = dsda_TextFileTime();

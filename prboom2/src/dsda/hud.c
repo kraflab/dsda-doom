@@ -87,7 +87,7 @@ void dsda_InitHud(patchnum_t* font) {
 }
 
 static dboolean dsda_ExHudVisible(void) {
-  return dsda_ExHud() && automap_off;
+  return automap_off;
 }
 
 static dboolean dsda_CommandDisplayVisible(void) {

@@ -32,6 +32,7 @@
 #include "dsda/build.h"
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
+#include "dsda/features.h"
 #include "dsda/ghost.h"
 #include "dsda/hud.h"
 #include "dsda/command_display.h"
@@ -199,6 +200,8 @@ void dsda_DisplayNotifications(void) {
   }
 
   if (dsda_100k_on_map && dsda_track_100k && !dsda_100k_note_shown) {
+    dsda_TrackFeature(uf_100k);
+
     dsda_100k_note_shown = true;
     dsda_DisplayNotification("100K achieved!");
   }

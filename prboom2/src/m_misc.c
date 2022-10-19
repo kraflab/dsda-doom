@@ -60,6 +60,7 @@
 #include "m_misc.h"
 
 #include "dsda/args.h"
+#include "dsda/game_controller.h"
 #include "dsda/settings.h"
 
 // NSM
@@ -243,6 +244,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_render_patches_scalex),
   MIGRATED_SETTING(dsda_config_render_patches_scaley),
   MIGRATED_SETTING(dsda_config_render_stretchsky),
+  MIGRATED_SETTING(dsda_config_freelook),
 
   SETTING_HEADING("OpenGL settings"),
   MIGRATED_SETTING(dsda_config_gl_sprite_blend),
@@ -274,13 +276,24 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_mouse_sensitivity_mlook),
   MIGRATED_SETTING(dsda_config_mouse_doubleclick_as_use),
   MIGRATED_SETTING(dsda_config_mouse_carrytics),
-  MIGRATED_SETTING(dsda_config_mouselook),
   MIGRATED_SETTING(dsda_config_vertmouse),
   MIGRATED_SETTING(dsda_config_movement_mousestrafedivisor),
   MIGRATED_SETTING(dsda_config_movement_mouseinvert),
 
-  SETTING_HEADING("Joystick settings"),
-  MIGRATED_SETTING(dsda_config_use_joystick),
+  SETTING_HEADING("Game controller settings"),
+  MIGRATED_SETTING(dsda_config_use_game_controller),
+  MIGRATED_SETTING(dsda_config_left_analog_deadzone),
+  MIGRATED_SETTING(dsda_config_right_analog_deadzone),
+  MIGRATED_SETTING(dsda_config_left_trigger_deadzone),
+  MIGRATED_SETTING(dsda_config_right_trigger_deadzone),
+  MIGRATED_SETTING(dsda_config_left_analog_sensitivity_x),
+  MIGRATED_SETTING(dsda_config_left_analog_sensitivity_y),
+  MIGRATED_SETTING(dsda_config_right_analog_sensitivity_x),
+  MIGRATED_SETTING(dsda_config_right_analog_sensitivity_y),
+  MIGRATED_SETTING(dsda_config_analog_look_acceleration),
+  MIGRATED_SETTING(dsda_config_swap_analogs),
+  MIGRATED_SETTING(dsda_config_invert_analog_look),
+  MIGRATED_SETTING(dsda_config_analog_movement_emulates_keyboard),
 
   SETTING_HEADING("Automap settings"),
   MIGRATED_SETTING(dsda_config_mapcolor_back),
@@ -353,6 +366,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_wipe_at_full_speed),
   MIGRATED_SETTING(dsda_config_show_demo_attempts),
   MIGRATED_SETTING(dsda_config_hide_horns),
+  MIGRATED_SETTING(dsda_config_hide_weapon),
   MIGRATED_SETTING(dsda_config_organized_saves),
   MIGRATED_SETTING(dsda_config_command_display),
   MIGRATED_SETTING(dsda_config_command_history_size),
@@ -438,15 +452,15 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_backward", dsda_input_backward, 's', -1, -1),
   INPUT_SETTING("input_turnleft", dsda_input_turnleft, 'e', -1, -1),
   INPUT_SETTING("input_turnright", dsda_input_turnright, 'q', -1, -1),
-  INPUT_SETTING("input_speed", dsda_input_speed, KEYD_RSHIFT, -1, 2),
-  INPUT_SETTING("input_strafeleft", dsda_input_strafeleft, 'a', -1, 4),
-  INPUT_SETTING("input_straferight", dsda_input_straferight, 'd', -1, 5),
-  INPUT_SETTING("input_strafe", dsda_input_strafe, KEYD_RALT, 1, 1),
-  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, -1),
-  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, -1),
-  INPUT_SETTING("input_use", dsda_input_use, ' ', -1, 3),
-  INPUT_SETTING("input_flyup", dsda_input_flyup, '.', -1, -1),
-  INPUT_SETTING("input_flydown", dsda_input_flydown, ',', -1, -1),
+  INPUT_SETTING("input_speed", dsda_input_speed, KEYD_RSHIFT, -1, -1),
+  INPUT_SETTING("input_strafeleft", dsda_input_strafeleft, 'a', -1, -1),
+  INPUT_SETTING("input_straferight", dsda_input_straferight, 'd', -1, -1),
+  INPUT_SETTING("input_strafe", dsda_input_strafe, KEYD_RALT, 1, DSDA_CONTROLLER_BUTTON_LEFTSHOULDER),
+  INPUT_SETTING("input_autorun", dsda_input_autorun, KEYD_CAPSLOCK, -1, DSDA_CONTROLLER_BUTTON_LEFTSTICK),
+  INPUT_SETTING("input_reverse", dsda_input_reverse, '/', -1, DSDA_CONTROLLER_BUTTON_RIGHTSTICK),
+  INPUT_SETTING("input_use", dsda_input_use, ' ', -1, DSDA_CONTROLLER_BUTTON_A),
+  INPUT_SETTING("input_flyup", dsda_input_flyup, '.', -1, DSDA_CONTROLLER_BUTTON_DPAD_UP),
+  INPUT_SETTING("input_flydown", dsda_input_flydown, ',', -1, DSDA_CONTROLLER_BUTTON_DPAD_DOWN),
   INPUT_SETTING("input_flycenter", dsda_input_flycenter, 0, -1, -1),
   INPUT_SETTING("input_mlook", dsda_input_mlook, '\\', -1, -1),
   INPUT_SETTING("input_novert", dsda_input_novert, 0, -1, -1),
@@ -460,13 +474,13 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_weapon7", dsda_input_weapon7, '7', -1, -1),
   INPUT_SETTING("input_weapon8", dsda_input_weapon8, '8', -1, -1),
   INPUT_SETTING("input_weapon9", dsda_input_weapon9, '9', -1, -1),
-  INPUT_SETTING("input_nextweapon", dsda_input_nextweapon, KEYD_MWHEELUP, -1, -1),
-  INPUT_SETTING("input_prevweapon", dsda_input_prevweapon, KEYD_MWHEELDOWN, -1, -1),
+  INPUT_SETTING("input_nextweapon", dsda_input_nextweapon, KEYD_MWHEELUP, -1, DSDA_CONTROLLER_BUTTON_Y),
+  INPUT_SETTING("input_prevweapon", dsda_input_prevweapon, KEYD_MWHEELDOWN, -1, DSDA_CONTROLLER_BUTTON_X),
   INPUT_SETTING("input_toggleweapon", dsda_input_toggleweapon, '0', -1, -1),
-  INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, 0),
+  INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT),
 
   INPUT_SETTING("input_pause", dsda_input_pause, KEYD_PAUSE, -1, -1),
-  INPUT_SETTING("input_map", dsda_input_map, KEYD_TAB, -1, -1),
+  INPUT_SETTING("input_map", dsda_input_map, KEYD_TAB, -1, DSDA_CONTROLLER_BUTTON_TRIGGERLEFT),
   INPUT_SETTING("input_soundvolume", dsda_input_soundvolume, KEYD_F4, -1, -1),
   INPUT_SETTING("input_hud", dsda_input_hud, KEYD_F5, -1, -1),
   INPUT_SETTING("input_messages", dsda_input_messages, KEYD_F8, -1, -1),
@@ -510,14 +524,14 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_nextlevel", dsda_input_nextlevel, KEYD_PAGEDOWN, -1, -1),
   INPUT_SETTING("input_showalive", dsda_input_showalive, KEYD_KEYPADDIVIDE, -1, -1),
 
-  INPUT_SETTING("input_menu_down", dsda_input_menu_down, KEYD_DOWNARROW, -1, -1),
-  INPUT_SETTING("input_menu_up", dsda_input_menu_up, KEYD_UPARROW, -1, -1),
-  INPUT_SETTING("input_menu_left", dsda_input_menu_left, KEYD_LEFTARROW, -1, -1),
-  INPUT_SETTING("input_menu_right", dsda_input_menu_right, KEYD_RIGHTARROW, -1, -1),
-  INPUT_SETTING("input_menu_backspace", dsda_input_menu_backspace, KEYD_BACKSPACE, -1, -1),
-  INPUT_SETTING("input_menu_enter", dsda_input_menu_enter, KEYD_ENTER, -1, -1),
-  INPUT_SETTING("input_menu_escape", dsda_input_menu_escape, KEYD_ESCAPE, -1, -1),
-  INPUT_SETTING("input_menu_clear", dsda_input_menu_clear, KEYD_DEL, -1, -1),
+  INPUT_SETTING("input_menu_down", dsda_input_menu_down, KEYD_DOWNARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_DOWN),
+  INPUT_SETTING("input_menu_up", dsda_input_menu_up, KEYD_UPARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_UP),
+  INPUT_SETTING("input_menu_left", dsda_input_menu_left, KEYD_LEFTARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_LEFT),
+  INPUT_SETTING("input_menu_right", dsda_input_menu_right, KEYD_RIGHTARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_RIGHT),
+  INPUT_SETTING("input_menu_backspace", dsda_input_menu_backspace, KEYD_BACKSPACE, -1, DSDA_CONTROLLER_BUTTON_B),
+  INPUT_SETTING("input_menu_enter", dsda_input_menu_enter, KEYD_ENTER, -1, DSDA_CONTROLLER_BUTTON_A),
+  INPUT_SETTING("input_menu_escape", dsda_input_menu_escape, KEYD_ESCAPE, -1, DSDA_CONTROLLER_BUTTON_START),
+  INPUT_SETTING("input_menu_clear", dsda_input_menu_clear, KEYD_DEL, -1, DSDA_CONTROLLER_BUTTON_BACK),
 
   INPUT_SETTING("input_iddqd", dsda_input_iddqd, 0, -1, -1),
   INPUT_SETTING("input_idkfa", dsda_input_idkfa, 0, -1, -1),
@@ -541,7 +555,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_lookup", dsda_input_lookup, 0, -1, -1),
   INPUT_SETTING("input_lookdown", dsda_input_lookdown, 0, -1, -1),
   INPUT_SETTING("input_lookcenter", dsda_input_lookcenter, 0, -1, -1),
-  INPUT_SETTING("input_use_artifact", dsda_input_use_artifact, 0, -1, -1),
+  INPUT_SETTING("input_use_artifact", dsda_input_use_artifact, 0, -1, DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER),
   INPUT_SETTING("input_arti_tome", dsda_input_arti_tome, 0, -1, -1),
   INPUT_SETTING("input_arti_quartz", dsda_input_arti_quartz, 0, -1, -1),
   INPUT_SETTING("input_arti_urn", dsda_input_arti_urn, 0, -1, -1),
@@ -552,8 +566,8 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_arti_wings", dsda_input_arti_wings, 0, -1, -1),
   INPUT_SETTING("input_arti_torch", dsda_input_arti_torch, 0, -1, -1),
   INPUT_SETTING("input_arti_morph", dsda_input_arti_morph, 0, -1, -1),
-  INPUT_SETTING("input_invleft", dsda_input_invleft, 0, -1, -1),
-  INPUT_SETTING("input_invright", dsda_input_invright, 0, -1, -1),
+  INPUT_SETTING("input_invleft", dsda_input_invleft, 0, -1, DSDA_CONTROLLER_BUTTON_DPAD_LEFT),
+  INPUT_SETTING("input_invright", dsda_input_invright, 0, -1, DSDA_CONTROLLER_BUTTON_DPAD_RIGHT),
   INPUT_SETTING("input_store_quick_key_frame", dsda_input_store_quick_key_frame, 0, -1, -1),
   INPUT_SETTING("input_restore_quick_key_frame", dsda_input_restore_quick_key_frame, 0, -1, -1),
   INPUT_SETTING("input_rewind", dsda_input_rewind, 0, -1, -1),
@@ -599,7 +613,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_build_weapon8", dsda_input_build_weapon8, '8', -1, -1),
   INPUT_SETTING("input_build_weapon9", dsda_input_build_weapon9, '9', -1, -1),
 
-  INPUT_SETTING("input_jump", dsda_input_jump, 0, -1, -1),
+  INPUT_SETTING("input_jump", dsda_input_jump, 0, -1, DSDA_CONTROLLER_BUTTON_B),
   INPUT_SETTING("input_hexen_arti_incant", dsda_input_hexen_arti_incant, 0, -1, -1),
   INPUT_SETTING("input_hexen_arti_summon", dsda_input_hexen_arti_summon, 0, -1, -1),
   INPUT_SETTING("input_hexen_arti_disk", dsda_input_hexen_arti_disk, 0, -1, -1),
@@ -753,7 +767,7 @@ void M_LoadDefaults (void)
     snprintf(defaultfile, len + 1, "%s/dsda-doom.cfg", exedir);
   }
 
-  lprintf (LO_INFO, " default file: %s\n",defaultfile);
+  lprintf(LO_DEBUG, " default file: %s\n", defaultfile);
 
   // read the file in, overriding any set defaults
 
@@ -849,6 +863,8 @@ void M_LoadDefaults (void)
 
   Z_Free(strparm);
   Z_Free(cfgline);
+
+  dsda_ApplyAdHocConfiguration();
 
   dsda_InitSettings();
 

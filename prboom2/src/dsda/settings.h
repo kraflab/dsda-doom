@@ -22,8 +22,6 @@
 
 #define UNSPECIFIED_COMPLEVEL -2
 
-extern int dsda_show_alive_monsters;
-
 void dsda_InitSettings(void);
 int dsda_CompatibilityLevel(void);
 void dsda_SetTas(void);
@@ -40,11 +38,11 @@ dboolean dsda_ProcessCheatCodes(void);
 dboolean dsda_CycleGhostColors(void);
 dboolean dsda_AlwaysSR50(void);
 dboolean dsda_HideHorns(void);
+dboolean dsda_HideWeapon(void);
 dboolean dsda_SwitchWhenAmmoRunsOut(void);
 dboolean dsda_SkipQuitPrompt(void);
 dboolean dsda_TrackSplits(void);
 dboolean dsda_ShowSplitData(void);
-dboolean dsda_ExHud(void);
 dboolean dsda_CommandDisplay(void);
 dboolean dsda_CoordinateDisplay(void);
 dboolean dsda_ShowFPS(void);

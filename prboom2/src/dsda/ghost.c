@@ -27,7 +27,9 @@
 #include "z_zone.h"
 #include "w_wad.h"
 
-#include "settings.h"
+#include "dsda/features.h"
+#include "dsda/settings.h"
+
 #include "ghost.h"
 
 #define DSDA_GHOST_MIN_VERSION 1
@@ -210,6 +212,11 @@ void dsda_SpawnGhost(void) {
   state_t* ghost_state;
   int ghost_i;
   dboolean any_ghosts;
+
+  if (dsda_StrictMode())
+    return;
+
+  dsda_TrackFeature(uf_ghost);
 
   for (ghost_i = 0; ghost_i < dsda_ghost_import.count; ++ghost_i) {
     if (dsda_ghost_import.ghosts[ghost_i].fstream == NULL) {
