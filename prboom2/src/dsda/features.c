@@ -63,6 +63,7 @@ static const char* feature_names[64] = {
   [uf_showalive] = "Show Alive",
   [uf_join] = "Join",
   [uf_free_analog] = "Free Analog",
+  [uf_ghost] = "Ghost",
 };
 
 #define FEATURE_BIT(x) ((uint_64_t) 1 << x)

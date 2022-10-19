@@ -81,7 +81,7 @@ typedef enum {
   uf_showalive,
   uf_join,
   uf_free_analog,
-  // 61
+  uf_ghost,
   // 62
   // 63
 } dsda_feature_flag_t;
