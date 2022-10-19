@@ -212,7 +212,7 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_show_alive_monsters))
     dsda_TrackFeature(uf_showalive);
 
-  if (dsda_IntConfig(dsda_config_analog_movement_emulates_keyboard))
+  if (!dsda_IntConfig(dsda_config_analog_movement_emulates_keyboard))
     dsda_TrackFeature(uf_free_analog);
 }
 
