@@ -67,7 +67,6 @@
 #include "d_main.h"
 #include "d_event.h"
 #include "d_deh.h"
-#include "i_joy.h"
 #include "i_video.h"
 #include "i_capture.h"
 #include "z_zone.h"
@@ -86,6 +85,7 @@
 
 #include "dsda/args.h"
 #include "dsda/configuration.h"
+#include "dsda/game_controller.h"
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/time.h"
@@ -332,14 +332,14 @@ while (SDL_PollEvent(Event))
     }
 #endif
     event.type = ev_keydown;
-    event.data1 = I_TranslateKey(&Event->key.keysym);
+    event.data1.i = I_TranslateKey(&Event->key.keysym);
     D_PostEvent(&event);
     break;
 
   case SDL_KEYUP:
   {
     event.type = ev_keyup;
-    event.data1 = I_TranslateKey(&Event->key.keysym);
+    event.data1.i = I_TranslateKey(&Event->key.keysym);
     D_PostEvent(&event);
   }
   break;
@@ -349,8 +349,7 @@ while (SDL_PollEvent(Event))
   if (mouse_enabled && window_focused)
   {
     event.type = ev_mouse;
-    event.data1 = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
-    event.data2 = event.data3 = 0;
+    event.data1.i = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
     D_PostEvent(&event);
   }
   break;
@@ -360,7 +359,7 @@ while (SDL_PollEvent(Event))
   {
     if (Event->wheel.y > 0)
     {
-      event.data1 = KEYD_MWHEELUP;
+      event.data1.i = KEYD_MWHEELUP;
 
       event.type = ev_keydown;
       D_PostEvent(&event);
@@ -370,7 +369,7 @@ while (SDL_PollEvent(Event))
     }
     else if (Event->wheel.y < 0)
     {
-      event.data1 = KEYD_MWHEELDOWN;
+      event.data1.i = KEYD_MWHEELDOWN;
 
       event.type = ev_keydown;
       D_PostEvent(&event);
@@ -423,7 +422,7 @@ void I_StartTic (void)
 
   I_ReadMouse();
 
-  I_PollJoystick();
+  dsda_PollGameController();
 }
 
 //
@@ -446,11 +445,6 @@ void I_InitMouse(void)
   cursors[0] = SDL_GetCursor();
   // Create an empty cursor
   cursors[1] = SDL_CreateCursor(&empty_cursor_data, &empty_cursor_data, 8, 1, 0, 0);
-
-  if (mouse_enabled)
-  {
-    MouseAccelChanging();
-  }
 }
 
 //
@@ -459,8 +453,9 @@ void I_InitMouse(void)
 
 static void I_InitInputs(void)
 {
+  AccelChanging();
   I_InitMouse();
-  I_InitJoystick();
+  dsda_InitGameController();
 }
 
 ///////////////////////////////////////////////////////////
@@ -1080,7 +1075,7 @@ void I_InitScreenResolution(void)
 
   I_InitBuffersRes();
 
-  lprintf(LO_INFO,"I_InitScreenResolution: Using resolution %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
+  lprintf(LO_DEBUG, "I_InitScreenResolution: Using resolution %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
 }
 
 //
@@ -1125,7 +1120,7 @@ void I_InitGraphics(void)
     firsttime = 0;
 
     I_AtExit(I_ShutdownGraphics, true, "I_ShutdownGraphics", exit_priority_normal);
-    lprintf(LO_INFO, "I_InitGraphics: %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
+    lprintf(LO_DEBUG, "I_InitGraphics: %dx%d\n", SCREENWIDTH, SCREENHEIGHT);
 
     /* Set the video mode */
     I_UpdateVideoMode();
@@ -1343,7 +1338,7 @@ void I_UpdateVideoMode(void)
 
   if (V_IsSoftwareMode())
   {
-    lprintf(LO_INFO, "I_UpdateVideoMode: 0x%x, %s, %s\n", init_flags, screen && screen->pixels ? "SDL buffer" : "own buffer", screen && SDL_MUSTLOCK(screen) ? "lock-and-copy": "direct access");
+    lprintf(LO_DEBUG, "I_UpdateVideoMode: 0x%x, %s, %s\n", init_flags, screen && screen->pixels ? "SDL buffer" : "own buffer", screen && SDL_MUSTLOCK(screen) ? "lock-and-copy": "direct access");
 
     // Get the info needed to render to the display
     if (!SDL_MUSTLOCK(screen))
@@ -1375,35 +1370,35 @@ void I_UpdateVideoMode(void)
   if (V_IsOpenGLMode())
   {
     int temp;
-    lprintf(LO_INFO,"SDL OpenGL PixelFormat:\n");
+    lprintf(LO_DEBUG, "SDL OpenGL PixelFormat:\n");
     SDL_GL_GetAttribute( SDL_GL_RED_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_RED_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_RED_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_GREEN_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_GREEN_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_GREEN_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_BLUE_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_BLUE_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_BLUE_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_STENCIL_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_STENCIL_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_STENCIL_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_ACCUM_RED_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_ACCUM_RED_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_RED_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_ACCUM_GREEN_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_ACCUM_GREEN_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_GREEN_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_ACCUM_BLUE_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_ACCUM_BLUE_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_BLUE_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_ACCUM_ALPHA_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_ACCUM_ALPHA_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_ACCUM_ALPHA_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_DOUBLEBUFFER, &temp );
-    lprintf(LO_INFO,"    SDL_GL_DOUBLEBUFFER: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_DOUBLEBUFFER: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_BUFFER_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_BUFFER_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_BUFFER_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_DEPTH_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_DEPTH_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_DEPTH_SIZE: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_MULTISAMPLESAMPLES, &temp );
-    lprintf(LO_INFO,"    SDL_GL_MULTISAMPLESAMPLES: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_MULTISAMPLESAMPLES: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_MULTISAMPLEBUFFERS, &temp );
-    lprintf(LO_INFO,"    SDL_GL_MULTISAMPLEBUFFERS: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_MULTISAMPLEBUFFERS: %i\n",temp);
     SDL_GL_GetAttribute( SDL_GL_STENCIL_SIZE, &temp );
-    lprintf(LO_INFO,"    SDL_GL_STENCIL_SIZE: %i\n",temp);
+    lprintf(LO_DEBUG, "    SDL_GL_STENCIL_SIZE: %i\n",temp);
 
     gld_Init(SCREENWIDTH, SCREENHEIGHT);
   }
@@ -1483,9 +1478,8 @@ static void I_ReadMouse(void)
     {
       event_t event;
       event.type = ev_mousemotion;
-      event.data1 = 0;
-      event.data2 = x;
-      event.data3 = -y;
+      event.data1.i = x;
+      event.data2.i = -y;
 
       D_PostEvent(&event);
     }

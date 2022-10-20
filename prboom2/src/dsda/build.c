@@ -316,7 +316,7 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
 }
 
 void dsda_EnterBuildMode(void) {
-  dsda_TrackFeature(UF_BUILD);
+  dsda_TrackFeature(uf_build);
 
   build_mode = true;
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);

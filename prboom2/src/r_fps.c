@@ -37,7 +37,7 @@
 #include "r_defs.h"
 #include "r_state.h"
 #include "p_spec.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include "i_system.h"
 #include "i_capture.h"

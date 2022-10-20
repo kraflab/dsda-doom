@@ -44,7 +44,7 @@
 #include "p_enemy.h"
 #include "p_spec.h"
 #include "p_user.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include "g_game.h"
 #include "p_tick.h"

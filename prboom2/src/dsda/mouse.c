@@ -16,6 +16,7 @@
 //
 
 #include "dsda/configuration.h"
+#include "dsda/features.h"
 
 #include "mouse.h"
 
@@ -37,6 +38,8 @@ void dsda_ApplyQuickstartMouseCache(int* mousex) {
     signed short result = 0;
 
     quickstart_queued = false;
+
+    dsda_TrackFeature(uf_quickstartcache);
 
     for (i = 0; i < quickstart_cache_tics; ++i)
       result += angleturn_cache[i];

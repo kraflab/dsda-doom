@@ -57,14 +57,6 @@ void PostProcessDeh(void);
 //
 
 //
-// D_Main.C
-//
-//#define D_DEVSTR      "Development mode ON.\n"
-extern const char *s_D_DEVSTR; // = D_DEVSTR;
-//#define D_CDROM       "CD-ROM Version: default.cfg from c:\\doomdata\n"
-extern const char *s_D_CDROM; // = D_CDROM;
-
-//
 //      M_Menu.C
 //
 //#define PRESSKEY      "press a key."

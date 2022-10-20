@@ -436,9 +436,9 @@ dboolean ST_Responder(event_t *ev)
   if (raven) return SB_Responder(ev);
 
   // Filter automap on/off.
-  if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
+  if (ev->type == ev_keyup && (ev->data1.i & 0xffff0000) == AM_MSGHEADER)
     {
-      switch(ev->data1)
+      switch(ev->data1.i)
         {
         case AM_MSGENTERED:
           st_gamestate = AutomapState;

@@ -457,10 +457,10 @@ static void cheat_noclip()
 static void cheat_pw(int pw)
 {
   if (pw == pw_allmap)
-    dsda_TrackFeature(UF_AUTOMAP);
+    dsda_TrackFeature(uf_automap);
 
   if (pw == pw_infrared)
-    dsda_TrackFeature(UF_LITEAMP);
+    dsda_TrackFeature(uf_liteamp);
 
   if (plyr->powers[pw])
     plyr->powers[pw] = pw!=pw_strength && pw!=pw_allmap;  // killough
@@ -601,7 +601,7 @@ static void cheat_ddt()
 
   if (automap_active)
   {
-    dsda_TrackFeature(UF_IDDT);
+    dsda_TrackFeature(uf_iddt);
 
     dsda_reveal_map = (dsda_reveal_map+1) % 3;
   }
@@ -615,7 +615,7 @@ static void cheat_reveal_secret()
   {
     int i, start_i;
 
-    dsda_TrackFeature(UF_IDDT);
+    dsda_TrackFeature(uf_iddt);
 
     i = last_secret + 1;
     if (i >= numsectors)
@@ -692,7 +692,7 @@ static void cheat_reveal_kill()
     static int last_count;
     static mobj_t *last_mobj;
 
-    dsda_TrackFeature(UF_IDDT);
+    dsda_TrackFeature(uf_iddt);
 
     cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTKILL, true);
   }
@@ -705,7 +705,7 @@ static void cheat_reveal_item()
     static int last_count;
     static mobj_t *last_mobj;
 
-    dsda_TrackFeature(UF_IDDT);
+    dsda_TrackFeature(uf_iddt);
 
     cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTITEM, false);
   }
@@ -1001,7 +1001,7 @@ dboolean M_CheatResponder(event_t *ev)
 
   if (dsda_ProcessCheatCodes() &&
       ev->type == ev_keydown &&
-      M_FindCheats(ev->data1))
+      M_FindCheats(ev->data1.i))
     return true;
 
   for (cheat_i = cheat_input; cheat_i->input; cheat_i++)

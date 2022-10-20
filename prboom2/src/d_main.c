@@ -82,15 +82,15 @@
 #include "d_deh.h"  // Ty 04/08/98 - Externalizations
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "am_map.h"
-
-//e6y
-#include "r_demo.h"
 #include "e6y.h"
 
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
+#include "dsda/exdemo.h"
+#include "dsda/features.h"
 #include "dsda/global.h"
+#include "dsda/mkdir.h"
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
 #include "dsda/map_format.h"
@@ -100,6 +100,7 @@
 #include "dsda/playback.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
+#include "dsda/signal_context.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
@@ -117,10 +118,6 @@
 #include "i_glob.h"
 
 static void D_PageDrawer(void);
-
-// CPhipps - removed wadfiles[] stuff
-
-dboolean devparm;        // started game with -devparm
 
 // jff 1/24/98 add new versions of these variables to remember command line
 dboolean clnomonsters;   // checkparm of -nomonsters
@@ -237,6 +234,8 @@ static void D_Wipe(void)
   //e6y
   if (!dsda_RenderWipeScreen() || dsda_SkipWipe())
   {
+    dsda_TrackFeature(uf_wipescreen);
+
     // If there's no screen wipe, we still need to refresh the status bar
     SB_Start();
     return;
@@ -303,6 +302,31 @@ static void D_Wipe(void)
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t    wipegamestate = GS_DEMOSCREEN;
 extern dboolean setsizeneeded;
+
+static void D_DrawPause(void)
+{
+  V_BeginUIDraw();
+  if (hexen)
+  {
+    if (!netgame)
+    {
+      V_DrawNamePatch(160, viewwindowy + 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+    }
+    else
+    {
+      V_DrawNamePatch(160, 70, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+    }
+  }
+  else if (heretic)
+    MN_DrawPause();
+  else if (!dsda_PauseMode(PAUSE_BUILDMODE))
+    // Simplified the "logic" here and no need for x-coord caching - POPE
+    V_DrawNamePatch(
+      (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
+      "M_PAUSE", CR_DEFAULT, VPT_STRETCH
+    );
+  V_EndUIDraw();
+}
 
 void D_Display (fixed_t frac)
 {
@@ -420,8 +444,9 @@ void D_Display (fixed_t frac)
 
     R_InterpolateView(&players[displayplayer], frac);
 
-    // Now do the drawing
-    R_RenderPlayerView (&players[displayplayer]);
+    DSDA_ADD_CONTEXT(sf_player_view);
+    R_RenderPlayerView(&players[displayplayer]);
+    DSDA_REMOVE_CONTEXT(sf_player_view);
 
     dsda_UpdateRenderStats();
 
@@ -437,15 +462,20 @@ void D_Display (fixed_t frac)
 
     R_RestoreInterpolations();
 
+    DSDA_ADD_CONTEXT(sf_status_bar);
     ST_Drawer(
         (R_PartialView() || automap_on),
         redrawborderstuff || BorderNeedRefresh,
         (menuactive == mnact_full));
+    DSDA_REMOVE_CONTEXT(sf_status_bar);
 
     BorderNeedRefresh = false;
     if (V_IsSoftwareMode())
       R_DrawViewBorder();
+
+    DSDA_ADD_CONTEXT(sf_hud);
     HU_Drawer();
+    DSDA_REMOVE_CONTEXT(sf_hud);
 
     if (V_IsOpenGLMode())
       gld_ProcessExtraAlpha();
@@ -456,27 +486,7 @@ void D_Display (fixed_t frac)
 
   // draw pause pic
   if (dsda_Paused() && (menuactive != mnact_full)) {
-    V_BeginUIDraw();
-    if (hexen)
-    {
-      if (!netgame)
-      {
-        V_DrawNamePatch(160, viewwindowy + 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
-      }
-      else
-      {
-        V_DrawNamePatch(160, 70, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
-      }
-    }
-    else if (heretic)
-      MN_DrawPause();
-    else if (!dsda_PauseMode(PAUSE_BUILDMODE))
-      // Simplified the "logic" here and no need for x-coord caching - POPE
-      V_DrawNamePatch(
-        (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
-        "M_PAUSE", CR_DEFAULT, VPT_STRETCH
-      );
-    V_EndUIDraw();
+    D_DrawPause();
   }
 
   // menus go directly to the screen
@@ -796,6 +806,16 @@ void D_AddFile (const char *file, wad_source_t source)
   char *gwa_filename=NULL;
   int len;
 
+  // There can only be one iwad source!
+  if (source == source_iwad)
+  {
+    int i;
+
+    for (i = 0; i < numwadfiles; ++i)
+      if (wadfiles[i].src == source_iwad)
+        wadfiles[i].src = source_skip;
+  }
+
   wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
   wadfiles[numwadfiles].name =
     AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
@@ -818,7 +838,7 @@ void D_AddFile (const char *file, wad_source_t source)
     ext[1] = 'g'; ext[2] = 'w'; ext[3] = 'a';
     wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
     wadfiles[numwadfiles].name = gwa_filename;
-    wadfiles[numwadfiles].src = source; // Ty 08/29/98
+    wadfiles[numwadfiles].src = source_pwad; // Ty 08/29/98
     wadfiles[numwadfiles].handle = 0;
     numwadfiles++;
   }
@@ -960,7 +980,7 @@ void AddIWAD(const char *iwad)
     return;
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"IWAD found: %s\n",iwad); //jff 4/20/98 print only if found
+  lprintf(LO_DEBUG, "IWAD found: %s\n", iwad); //jff 4/20/98 print only if found
   CheckIWAD(iwad,&gamemode,&haswolflevels);
 
   /* jff 8/23/98 set gamemission global appropriately in all cases
@@ -1042,17 +1062,17 @@ static char *FindIWADFile(void)
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found)
   {
-    iwad = I_FindFile(arg->value.v_string, ".wad");
+    iwad = I_FindWad(arg->value.v_string);
   }
   else
   {
     if (dsda_Flag(dsda_arg_heretic) || CheckExeSuffix("-heretic"))
-      return I_FindFile("heretic.wad", ".wad");
+      return I_FindWad("heretic.wad");
     else if (dsda_Flag(dsda_arg_hexen) || CheckExeSuffix("-hexen"))
-      return I_FindFile("hexen.wad", ".wad");
+      return I_FindWad("hexen.wad");
 
     for (i=0; !iwad && i<nstandard_iwads; i++)
-      iwad = I_FindFile(standard_iwads[i], ".wad");
+      iwad = I_FindWad(standard_iwads[i]);
   }
   return iwad;
 }
@@ -1220,11 +1240,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
         snprintf(autoload_path, len+1, "%s/autoload", exedir);
     }
 
-#ifdef _WIN32
-    mkdir(autoload_path);
-#else
-    mkdir(autoload_path, 0755);
-#endif
+    dsda_MkDir(autoload_path, false);
 
     len = snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
     result = Z_Malloc(len+1);
@@ -1232,11 +1248,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 
     if (createdir)
     {
-#ifdef _WIN32
-    mkdir(result);
-#else
-    mkdir(result, 0755);
-#endif
+      dsda_MkDir(result, false);
     }
 
     return result;
@@ -1444,54 +1456,31 @@ static void HandleClass(void)
   randomclass = dsda_Flag(dsda_arg_randclass);
 }
 
-//
-// D_DoomMainSetup
-//
-// CPhipps - the old contents of D_DoomMain, but moved out of the main
-//  line of execution so its stack space can be freed
+static void HandlePlayback(void)
+{
+  const char* file;
+
+  file = dsda_ParsePlaybackOptions();
+
+  if (!file)
+    return;
+
+  dsda_LoadExDemo(file);
+}
+
 const char* doomverstr = NULL;
 
-static void D_DoomMainSetup(void)
+static void EvaluateDoomVerStr(void)
 {
-  int p;
-  dsda_arg_t *arg;
-  dboolean autoload;
-
-  setbuf(stdout,NULL);
-
-  if (dsda_Flag(dsda_arg_help))
+  if (heretic)
   {
-    dsda_PrintArgHelp();
-    I_SafeExit(0);
+    doomverstr = "Heretic";
   }
-
-  // figgi 09/18/00-- added switch to force classic bsp nodes
-  if (dsda_Flag(dsda_arg_forceoldbsp))
-    forceOldBsp = true;
-
-  DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
-
-  IdentifyVersion();
-
-  dsda_InitGlobal();
-
-  // e6y: DEH files preloaded in wrong order
-  // http://sourceforge.net/tracker/index.php?func=detail&aid=1418158&group_id=148658&atid=772943
-  // The dachaked stuff has been moved below an autoload
-
-  // jff 1/24/98 set both working and command line value of play parms
-  nomonsters = clnomonsters = dsda_Flag(dsda_arg_nomonsters);
-  respawnparm = clrespawnparm = dsda_Flag(dsda_arg_respawn);
-  fastparm = clfastparm = dsda_Flag(dsda_arg_fast);
-  // jff 1/24/98 end of set to both working and command line value
-
-  devparm = dsda_Flag(dsda_arg_devparm);
-
-  if (dsda_Flag(dsda_arg_altdeath))
-    deathmatch = 2;
-  else if (dsda_Flag(dsda_arg_deathmatch))
-    deathmatch = 1;
-
+  else if (hexen)
+  {
+    doomverstr = "Hexen";
+  }
+  else
   {
     switch ( gamemode )
     {
@@ -1533,29 +1522,73 @@ static void D_DoomMainSetup(void)
         doomverstr = "Public DOOM";
         break;
     }
-
-    if (bfgedition)
-    {
-      char *tempverstr;
-      const char bfgverstr[]=" (BFG Edition)";
-      tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
-      strcpy (tempverstr, doomverstr);
-      strcat (tempverstr, bfgverstr);
-      doomverstr = Z_Strdup (tempverstr);
-      Z_Free (tempverstr);
-    }
-
-    /* cphipps - the main display. This shows the build date, copyright, and game type */
-    lprintf(LO_INFO,PACKAGE_NAME" (built %s), playing: %s\n"
-      PACKAGE_NAME" is released under the GNU General Public license v2.0.\n"
-      "You are welcome to redistribute it under certain conditions.\n"
-      "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n",
-      version_date, doomverstr);
   }
 
-  if (devparm)
-    //jff 9/3/98 use logical output routine
-    lprintf(LO_INFO,"%s",D_DEVSTR);
+  if (bfgedition)
+  {
+    char *tempverstr;
+    const char bfgverstr[]=" (BFG Edition)";
+    tempverstr = Z_Malloc(sizeof(char) * (strlen(doomverstr)+strlen(bfgverstr)+1));
+    strcpy (tempverstr, doomverstr);
+    strcat (tempverstr, bfgverstr);
+    doomverstr = Z_Strdup (tempverstr);
+    Z_Free (tempverstr);
+  }
+
+  /* cphipps - the main display. This shows the copyright and game type */
+  lprintf(LO_INFO,
+          "%s is released under the GNU General Public license v2.0.\n"
+          "You are welcome to redistribute it under certain conditions.\n"
+          "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n\n",
+          PACKAGE_NAME);
+
+  lprintf(LO_INFO, "Playing: %s\n", doomverstr);
+}
+
+//
+// D_DoomMainSetup
+//
+// CPhipps - the old contents of D_DoomMain, but moved out of the main
+//  line of execution so its stack space can be freed
+
+static void D_DoomMainSetup(void)
+{
+  int p;
+  dsda_arg_t *arg;
+  dboolean autoload;
+
+  setbuf(stdout,NULL);
+
+  if (dsda_Flag(dsda_arg_help))
+  {
+    dsda_PrintArgHelp();
+    I_SafeExit(0);
+  }
+
+  // figgi 09/18/00-- added switch to force classic bsp nodes
+  if (dsda_Flag(dsda_arg_forceoldbsp))
+    forceOldBsp = true;
+
+  DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
+
+  IdentifyVersion();
+
+  dsda_InitGlobal();
+
+  // e6y: DEH files preloaded in wrong order
+  // http://sourceforge.net/tracker/index.php?func=detail&aid=1418158&group_id=148658&atid=772943
+  // The dachaked stuff has been moved below an autoload
+
+  // jff 1/24/98 set both working and command line value of play parms
+  nomonsters = clnomonsters = dsda_Flag(dsda_arg_nomonsters);
+  respawnparm = clrespawnparm = dsda_Flag(dsda_arg_respawn);
+  fastparm = clfastparm = dsda_Flag(dsda_arg_fast);
+  // jff 1/24/98 end of set to both working and command line value
+
+  if (dsda_Flag(dsda_arg_altdeath))
+    deathmatch = 2;
+  else if (dsda_Flag(dsda_arg_deathmatch))
+    deathmatch = 1;
 
   modifiedgame = false;
 
@@ -1611,7 +1644,7 @@ static void D_DoomMainSetup(void)
   gld_InitCommandLine();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"V_Init: allocate screens.\n");
+  lprintf(LO_DEBUG, "V_Init: allocate screens.\n");
   V_Init();
 
   //e6y: Calculate the screen resolution and init all buffers
@@ -1627,6 +1660,10 @@ static void D_DoomMainSetup(void)
   autoload = !dsda_Flag(dsda_arg_noautoload);
 
   D_AddFile(port_wad_file, source_auto_load);
+
+  HandlePlayback(); // must come before autoload: may detect iwad in footer
+
+  EvaluateDoomVerStr(); // must come after HandlePlayback (may change iwad)
 
   // add wad files from autoload directory before wads from -file parameter
   if (autoload)
@@ -1657,31 +1694,11 @@ static void D_DoomMainSetup(void)
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
-      file = I_RequireFile(file_name, ".wad");
+      file = I_RequireWad(file_name);
       D_AddFile(file,source_pwad);
       Z_Free(file);
     }
   }
-
-  {
-    const char* name;
-
-    name = dsda_ParsePlaybackOptions();
-
-    if (name)
-    {
-      char *file = Z_Malloc(strlen(name) + 4 + 1); // cph - localised
-      strcpy(file, name);
-      AddDefaultExtension(file, ".lmp");     // killough
-      D_AddFile (file, source_lmp);
-      //jff 9/3/98 use logical output routine
-      lprintf(LO_INFO, "Playing demo %s\n", file);
-      Z_Free(file);
-    }
-  }
-
-  //e6y
-  CheckDemoExDemo();
 
   // add wad files from autoload PWAD directories
   if (autoload)
@@ -1690,7 +1707,7 @@ static void D_DoomMainSetup(void)
   D_InitFakeNetGame();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"W_Init: Init WADfiles.\n");
+  lprintf(LO_DEBUG, "W_Init: Init WADfiles.\n");
   W_Init(); // CPhipps - handling of wadfiles init changed
 
   if (hexen)
@@ -1708,10 +1725,8 @@ static void D_DoomMainSetup(void)
   }
 
 
-  lprintf(LO_INFO, "G_ReloadDefaults: Checking OPTIONS.\n");
+  lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
   G_ReloadDefaults();
-
-  lprintf(LO_INFO,"\n");     // killough 3/6/98: add a newline, by popular demand :)
 
   // e6y
   // option to disable automatic loading of dehacked-in-wad lump
@@ -1787,9 +1802,7 @@ static void D_DoomMainSetup(void)
     {
       char *file = NULL;
 
-      file = I_FindFile(arg->value.v_string_array[i], ".bex");
-      if (!file)
-        file = I_RequireFile(arg->value.v_string_array[i], ".deh");
+      file = I_RequireDeh(arg->value.v_string_array[i]);
 
       // during the beta we have debug output to dehout.txt
       ProcessDehFile(file,D_dehout(),0);
@@ -1801,10 +1814,12 @@ static void D_DoomMainSetup(void)
   dsda_AppendZDoomMobjInfo();
   dsda_ApplyDefaultMapFormat();
 
+  lprintf(LO_INFO, "\n"); // Separator after file loading
+
   V_InitColorTranslation(); //jff 4/24/98 load color translation lumps
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"M_Init: Init miscellaneous info.\n");
+  lprintf(LO_DEBUG, "M_Init: Init miscellaneous info.\n");
   M_Init();
 
   dsda_LoadSndInfo();
@@ -1815,13 +1830,13 @@ static void D_DoomMainSetup(void)
   }
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"R_Init: Init DOOM refresh daemon - ");
+  lprintf(LO_DEBUG, "R_Init: Init DOOM refresh daemon - ");
   R_Init();
 
   dsda_LoadMapInfo();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"\nP_Init: Init Playloop state.\n");
+  lprintf(LO_DEBUG, "\nP_Init: Init Playloop state.\n");
   P_Init();
 
   // Must be after P_Init
@@ -1831,15 +1846,15 @@ static void D_DoomMainSetup(void)
   dsda_HandleSkip();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"I_Init: Setting up machine state.\n");
+  lprintf(LO_DEBUG, "I_Init: Setting up machine state.\n");
   I_Init();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"S_Init: Setting up sound.\n");
+  lprintf(LO_DEBUG, "S_Init: Setting up sound.\n");
   S_Init();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"HU_Init: Setting up heads up display.\n");
+  lprintf(LO_DEBUG, "HU_Init: Setting up heads up display.\n");
   HU_Init();
 
   if (!(dsda_Flag(dsda_arg_nodraw) && dsda_Flag(dsda_arg_nosound)))
@@ -1853,7 +1868,7 @@ static void D_DoomMainSetup(void)
   }
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_INFO,"ST_Init: Init status bar.\n");
+  lprintf(LO_DEBUG, "ST_Init: Init status bar.\n");
   ST_Init();
 
   // start the appropriate game based on parms
@@ -1882,6 +1897,8 @@ static void D_DoomMainSetup(void)
 
   // do not try to interpolate during timedemo
   M_ChangeUncappedFrameRate();
+
+  lprintf(LO_INFO, "\n"); // Separator after setup
 }
 
 //

@@ -119,12 +119,10 @@ extern const char * comp_lev_str[];
 // with the same mouse behaviour as when recording,
 // but without having to be recording every time.
 extern int shorttics;
+extern int longtics;
 
 // automatic pistol start when advancing from one level to the next
 extern int pistolstart;
-
-//e6y: for r_demo.c
-extern int longtics;
 
 #define singleplayer (!demorecording && !demoplayback && !netgame)
 #define comperr(i) (default_comperr[i] && singleplayer)

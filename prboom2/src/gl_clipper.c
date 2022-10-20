@@ -202,7 +202,7 @@ angle_t gld_clipper_AngleToPseudo(angle_t ang)
   return (angle_t)xs_CRoundToUInt(result * (1<<30));
 }
 
-void gld_clipper_SafeAddClipRangeRealAngles(angle_t startangle, angle_t endangle)
+static void gld_clipper_SafeAddClipRangeRealAngles(angle_t startangle, angle_t endangle)
 {
   gld_clipper_SafeAddClipRange(
     gld_clipper_AngleToPseudo(startangle),
@@ -318,7 +318,7 @@ static void gld_clipper_AddClipRange(angle_t start, angle_t end)
   }
 }
 
-void gld_clipper_Clear(void)
+static void gld_clipper_Clear(void)
 {
   clipnode_t *node = cliphead;
   clipnode_t *temp;
@@ -333,7 +333,7 @@ void gld_clipper_Clear(void)
   cliphead = NULL;
 }
 
-angle_t gld_FrustumAngle(void)
+static angle_t gld_FrustumAngle(void)
 {
   double floatangle;
   angle_t a1;
@@ -358,7 +358,7 @@ angle_t gld_FrustumAngle(void)
 }
 
 //
-// gld_FrustrumSetup
+// gld_FrustumSetup
 //
 
 #define CALCMATRIX(a, b, c, d, e, f, g, h)\
@@ -377,10 +377,14 @@ angle_t gld_FrustumAngle(void)
   frustum[i][2] /= t; \
   frustum[i][3] /= t
 
-void gld_FrustrumSetup(void)
+void gld_FrustumSetup(void)
 {
   float t;
   float clip[16];
+  angle_t a1 = gld_FrustumAngle();
+
+  gld_clipper_Clear();
+  gld_clipper_SafeAddClipRangeRealAngles(viewangle + a1, viewangle - a1);
 
   clip[0]  = CALCMATRIX(0, 0, 1, 4, 2, 8, 3, 12);
   clip[1]  = CALCMATRIX(0, 1, 1, 5, 2, 9, 3, 13);

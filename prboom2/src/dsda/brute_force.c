@@ -435,7 +435,7 @@ dboolean dsda_StartBruteForce(int depth,
   if (bf_depth > MAX_BF_DEPTH)
     return false;
 
-  dsda_TrackFeature(UF_BRUTEFORCE);
+  dsda_TrackFeature(uf_bruteforce);
 
   dsda_SortIntPair(&forwardmove_min, &forwardmove_max);
   dsda_SortIntPair(&sidemove_min, &sidemove_max);

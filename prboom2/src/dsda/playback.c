@@ -23,6 +23,7 @@
 
 #include "dsda/args.h"
 #include "dsda/demo.h"
+#include "dsda/exdemo.h"
 #include "dsda/input.h"
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
@@ -39,7 +40,8 @@ static dsda_arg_t* playdemo_arg;
 static dsda_arg_t* fastdemo_arg;
 static dsda_arg_t* timedemo_arg;
 static dsda_arg_t* recordfromto_arg;
-static const char* playback_name;
+static char* playback_name;
+static char* playback_filename;
 
 dboolean demoplayback;
 dboolean userdemo;
@@ -94,38 +96,48 @@ void dsda_ExecutePlaybackOptions(void) {
   }
 }
 
+static void dsda_UpdatePlaybackName(const char* name) {
+  if (playback_name)
+    Z_Free(playback_name);
+
+  if (playback_filename)
+    Z_Free(playback_filename);
+
+  playback_name = Z_Strdup(name);
+  playback_filename = I_RequireFile(playback_name, ".lmp");
+}
+
 const char* dsda_ParsePlaybackOptions(void) {
   dsda_arg_t* arg;
 
   arg = dsda_Arg(dsda_arg_playdemo);
   if (arg->found) {
     playdemo_arg = arg;
-    playback_name = arg->value.v_string;
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string);
+    return playback_filename;
   }
 
   arg = dsda_Arg(dsda_arg_fastdemo);
   if (arg->found) {
     fastdemo_arg = arg;
     fastdemo = true;
-    playback_name = arg->value.v_string;
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string);
+    return playback_filename;
   }
 
   arg = dsda_Arg(dsda_arg_timedemo);
   if (arg->found) {
     timedemo_arg = arg;
-    playback_name = arg->value.v_string;
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string);
+    return playback_filename;
   }
 
   arg = dsda_Arg(dsda_arg_recordfromto);
   if (arg->found) {
-    I_RequireFile(arg->value.v_string_array[0], ".lmp");
     recordfromto_arg = arg;
     dsda_SetDemoBaseName(arg->value.v_string_array[1]);
-    playback_name = arg->value.v_string_array[0];
-    return playback_name;
+    dsda_UpdatePlaybackName(arg->value.v_string_array[0]);
+    return playback_filename;
   }
 
   return NULL;
@@ -171,6 +183,18 @@ static dboolean dsda_EndOfPlaybackStream(void) {
          playback_p + dsda_BytesPerTic() > playback_origin_p + playback_length;
 }
 
+static void dsda_JoinDemo(ticcmd_t* cmd) {
+  int is_signed;
+
+  if (dsda_SkipMode())
+    dsda_ExitSkipMode();
+
+  dsda_ClearPlaybackStream();
+  dsda_JoinDemoCmd(cmd);
+
+  dsda_MergeExDemoFeatures();
+}
+
 void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {
   dboolean ended = false;
 
@@ -186,17 +210,11 @@ void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {
   }
 
   if (ended) {
-    if (playback_behaviour & PLAYBACK_JOIN_ON_END) {
-      if (dsda_SkipMode())
-        dsda_ExitSkipMode();
-      dsda_ClearPlaybackStream();
-      dsda_JoinDemoCmd(cmd);
-    }
+    if (playback_behaviour & PLAYBACK_JOIN_ON_END)
+      dsda_JoinDemo(cmd);
     else
       G_CheckDemoStatus();
   }
-  else if (dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use)) {
-    dsda_ClearPlaybackStream();
-    dsda_JoinDemoCmd(cmd);
-  }
+  else if (dsda_InputActive(dsda_input_join_demo) || dsda_InputJoyBActive(dsda_input_use))
+    dsda_JoinDemo(cmd);
 }

@@ -50,7 +50,7 @@ typedef enum {
   dsda_config_sts_traditional_keys,
   dsda_config_strict_mode,
   dsda_config_vertmouse,
-  dsda_config_mouselook,
+  dsda_config_freelook,
   dsda_config_autorun,
   dsda_config_show_messages,
   dsda_config_command_display,
@@ -142,7 +142,7 @@ typedef enum {
   dsda_config_movement_mouseinvert,
   dsda_config_movement_mousestrafedivisor,
   dsda_config_fine_sensitivity,
-  dsda_config_use_joystick,
+  dsda_config_use_game_controller,
   dsda_config_deh_apply_cheats,
   dsda_config_movement_strafe50,
   dsda_config_movement_strafe50onturns,
@@ -198,6 +198,7 @@ typedef enum {
   dsda_config_wipe_at_full_speed,
   dsda_config_show_demo_attempts,
   dsda_config_hide_horns,
+  dsda_config_hide_weapon,
   dsda_config_organized_saves,
   dsda_config_command_history_size,
   dsda_config_hide_empty_commands,
@@ -254,14 +255,30 @@ typedef enum {
   dsda_config_render_patches_scaley,
   dsda_config_render_stretchsky,
   dsda_config_boom_translucent_sprites,
+  dsda_config_show_alive_monsters,
+  dsda_config_left_analog_deadzone,
+  dsda_config_right_analog_deadzone,
+  dsda_config_left_trigger_deadzone,
+  dsda_config_right_trigger_deadzone,
+  dsda_config_left_analog_sensitivity_x,
+  dsda_config_left_analog_sensitivity_y,
+  dsda_config_right_analog_sensitivity_x,
+  dsda_config_right_analog_sensitivity_y,
+  dsda_config_analog_look_acceleration,
+  dsda_config_swap_analogs,
+  dsda_config_invert_analog_look,
+  dsda_config_analog_movement_emulates_keyboard,
   dsda_config_count,
 } dsda_config_identifier_t;
 
 void dsda_UpdateStrictMode(void);
+void dsda_TrackConfigFeatures(void);
+void dsda_RevertIntConfig(dsda_config_identifier_t id);
 int dsda_MaxConfigLength(void);
 void dsda_InitConfig(void);
 dboolean dsda_ReadConfig(const char* name, const char* string_param, int int_param);
 void dsda_WriteConfig(dsda_config_identifier_t id, int key_length, FILE* file);
+void dsda_ApplyAdHocConfiguration(void);
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist);
 int dsda_IncrementIntConfig(dsda_config_identifier_t id, dboolean persist);
 int dsda_DecrementIntConfig(dsda_config_identifier_t id, dboolean persist);

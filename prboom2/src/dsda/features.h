@@ -17,41 +17,81 @@
 
 #include "doomtype.h"
 
-typedef uint_64_t dsda_feature_t;
+typedef enum {
+  uf_menu,
+  uf_exhud,
+  uf_advhud,
+  uf_crosshair,
+  uf_quickstartcache,
+  uf_100k,
+  uf_console,
+  // 7
+  // 8
+  // 9
+  // 10
+  // 11
+  // 12
+  // 13
+  // 14
+  // 15
+  // 16
+  // 17
+  // 18
+  // 19
+  // 20
+  // 21
+  // 22
+  // 23
+  // 24
+  // 25
+  // 26
+  // 27
+  // 28
+  // 29
 
-// TODO: commented features require configuration refactor
+  uf_unknown = 30,
+  uf_invalid = 31,
 
-#define UF_NONE 0
+  uf_iddt = 32,
+  uf_automap,
+  uf_liteamp,
+  uf_build,
+  uf_buildzero,
+  uf_bruteforce,
+  uf_tracker,
+  uf_keyframe,
+  uf_skip,
+  uf_wipescreen,
+  uf_speedup,
+  uf_slowdown,
+  uf_coordinates,
+  uf_mouselook,
+  uf_weaponalignment,
+  uf_commanddisplay,
+  uf_crosshaircolor,
+  uf_crosshairlock,
+  uf_shadows,
+  uf_painpalette,
+  uf_bonuspalette,
+  uf_powerpalette,
+  uf_healthbar,
+  uf_alwayssr50,
+  uf_maxplayercorpse,
+  uf_hideweapon,
+  uf_showalive,
+  uf_join,
+  uf_free_analog,
+  uf_ghost,
+  // 62
+  // 63
+} dsda_feature_flag_t;
 
-#define UF_MENU            (dsda_feature_t) 0x00000001
-// #define UF_EXHUD           (dsda_feature_t) 0x00000000
-// #define UF_ADVHUD          (dsda_feature_t) 0x00000000
+#define FEATURE_SIZE 8
 
-#define UF_IDDT            (dsda_feature_t) 0x0000000100000000
-#define UF_AUTOMAP         (dsda_feature_t) 0x0000000200000000
-#define UF_LITEAMP         (dsda_feature_t) 0x0000000400000000
-#define UF_BUILD           (dsda_feature_t) 0x0000000800000000
-#define UF_BUILDZERO       (dsda_feature_t) 0x0000001000000000
-#define UF_BRUTEFORCE      (dsda_feature_t) 0x0000002000000000
-#define UF_TRACKER         (dsda_feature_t) 0x0000004000000000
-#define UF_KEYFRAME        (dsda_feature_t) 0x0000008000000000
-#define UF_SKIP            (dsda_feature_t) 0x0000010000000000
-// #define UF_SPEEDUP         (dsda_feature_t) 0x0000000000000000
-// #define UF_SLOWDOWN        (dsda_feature_t) 0x0000000000000000
-// #define UF_COORDINATES     (dsda_feature_t) 0x0000000000000000
-// #define UF_MLOOK           (dsda_feature_t) 0x0000000000000000
-// #define UF_WEAPONALIGNMENT (dsda_feature_t) 0x0000000000000000
-// #define UF_COMMANDDISPLAY  (dsda_feature_t) 0x0000000000000000
-// #define UF_CROSSHAIRCOLOR  (dsda_feature_t) 0x0000000000000000
-// #define UF_CROSSHAIRLOCK   (dsda_feature_t) 0x0000000000000000
-// #define UF_SHADOWS         (dsda_feature_t) 0x0000000000000000
-// #define UF_PAINPALETTE     (dsda_feature_t) 0x0000000000000000
-// #define UF_BONUSPALETTE    (dsda_feature_t) 0x0000000000000000
-// #define UF_POWERPALETTE    (dsda_feature_t) 0x0000000000000000
-// #define UF_HEALTHBAR       (dsda_feature_t) 0x0000000000000000
-// #define UF_SHOWALIVE       (dsda_feature_t) 0x0000000000000000
-// #define UF_ALWAYSSR50      (dsda_feature_t) 0x0000000000000000
-
-void dsda_TrackFeature(dsda_feature_t feature);
+void dsda_TrackFeature(int feature);
 void dsda_ResetFeatures(void);
-dsda_feature_t dsda_UsedFeatures(void);
+uint_64_t dsda_UsedFeatures(void);
+void dsda_MergeFeatures(uint_64_t source);
+void dsda_CopyFeatures(byte* result);
+void dsda_CopyFeatures2(byte* result, uint_64_t source);
+char* dsda_DescribeFeatures(void);

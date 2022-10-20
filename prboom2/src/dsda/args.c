@@ -283,6 +283,16 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "adds at least one mobj to the tracker",
     arg_int_array, AT_LEAST_ONE_NONNEGATIVE_INT,
   },
+  [dsda_arg_assign] = {
+    "-assign", NULL, NULL,
+    "temporarily assign config variables",
+    arg_string_array, AT_LEAST_ONE_STRING,
+  },
+  [dsda_arg_update] = {
+    "-update", NULL, NULL,
+    "permanently update config variables",
+    arg_string_array, AT_LEAST_ONE_STRING,
+  },
   [dsda_arg_analysis] = {
     "-analysis", NULL, NULL,
     "writes various data to analysis.txt",

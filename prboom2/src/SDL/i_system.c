@@ -93,6 +93,7 @@
 #include "z_zone.h"
 
 #include "dsda/settings.h"
+#include "dsda/signal_context.h"
 #include "dsda/time.h"
 
 void I_uSleep(unsigned long usecs)
@@ -115,12 +116,14 @@ dboolean I_StartDisplay(void)
     saved_gametic = gametic;
 
   InDisplay = true;
+  DSDA_ADD_CONTEXT(sf_display);
   return true;
 }
 
 void I_EndDisplay(void)
 {
   InDisplay = false;
+  DSDA_REMOVE_CONTEXT(sf_display);
 }
 
 int interpolation_method;
@@ -506,7 +509,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       strcat(p, ext);
     if (!access(p,F_OK)) {
       if (!isStatic)
-        lprintf(LO_INFO, " found %s\n", p);
+        lprintf(LO_DEBUG, " found %s\n", p);
       return p;
     }
     if (!isStatic)
@@ -532,4 +535,36 @@ char* I_FindFile(const char* wfname, const char* ext)
 const char* I_FindFile2(const char* wfname, const char* ext)
 {
   return (const char*) I_FindFileInternal(wfname, ext, true);
+}
+
+char* I_RequireWad(const char* wfname)
+{
+  return I_RequireFile(wfname, ".wad");
+}
+
+char* I_FindWad(const char* wfname)
+{
+  return I_FindFile(wfname, ".wad");
+}
+
+char* I_RequireDeh(const char* wfname)
+{
+  char* result;
+
+  result = I_FindFile(wfname, ".bex");
+  if (result)
+    return result;
+
+  return I_RequireFile(wfname, ".deh");
+}
+
+char* I_FindDeh(const char* wfname)
+{
+  char* result;
+
+  result = I_FindFile(wfname, ".bex");
+  if (result)
+    return result;
+
+  return I_FindFile(wfname, ".deh");
 }

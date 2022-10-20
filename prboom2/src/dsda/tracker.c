@@ -106,7 +106,7 @@ static void dsda_RefreshTrackers(void) {
     }
 
     if (dsda_tracker[i].type != dsda_tracker_nothing)
-      dsda_TrackFeature(UF_TRACKER);
+      dsda_TrackFeature(uf_tracker);
   }
 }
 
@@ -157,7 +157,7 @@ static dboolean dsda_AddTracker(int type, int id, mobj_t* mobj) {
     return false;
 
   if ((i = dsda_FindTracker(dsda_tracker_nothing, 0)) >= 0) {
-    dsda_TrackFeature(UF_TRACKER);
+    dsda_TrackFeature(uf_tracker);
 
     dsda_tracker[i].type = type;
     dsda_tracker[i].id = id;

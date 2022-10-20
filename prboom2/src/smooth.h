@@ -7,7 +7,7 @@
  *  Copyright (C) 1999 by
  *  id Software, Chi Hoang, Lee Killough, Jim Flynn, Rand Phares, Ty Halderman
  *  Copyright (C) 1999-2000 by
- *  Jess Haas, Nicolas Kalkhof, Colin Phipps, Florian Schulze
+ *  Jess Haas, Nicolas Kalkhof, Colin Phipps, Florian Schulze, Andrey Budko
  *  Copyright 2005, 2006 by
  *  Florian Schulze, Colin Phipps, Neil Stevens, Andrey Budko
  *
@@ -27,21 +27,26 @@
  *  02111-1307, USA.
  *
  * DESCRIPTION:
- *  Date stamp
+ *      Smooth demo playback
  *
- *-----------------------------------------------------------------------------
+ *---------------------------------------------------------------------
  */
 
+#ifndef __SMOOTH__
+#define __SMOOTH__
 
-#include "doomdef.h"
-#include "version.h"
+#include "doomtype.h"
+#include "tables.h"
+#include "d_player.h"
 
-#ifndef BUILD_DATE
-#define BUILD_DATE __DATE__
+#define SMOOTH_PLAYING_MAXFACTOR 16
+
+extern int demo_smoothturns;
+extern int demo_smoothturnsfactor;
+
+void R_SmoothPlaying_Reset(player_t *player);
+void R_SmoothPlaying_Add(int delta);
+angle_t R_SmoothPlaying_Get(player_t *player);
+void R_ResetAfterTeleport(player_t *player);
+
 #endif
-
-#ifndef BUILD_TIME
-#define BUILD_TIME __TIME__
-#endif
-
-const char version_date[] = BUILD_DATE " " BUILD_TIME;

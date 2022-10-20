@@ -51,17 +51,24 @@ typedef enum
   ev_mouse,
   ev_mousemotion,
   ev_joystick,
+  ev_move_analog,
+  ev_look_analog,
+  ev_trigger,
   ev_text,
 } evtype_t;
 
-// Event structure.
+typedef union
+{
+  int i;
+  float f;
+} event_data_t;
+
 typedef struct
 {
-  evtype_t  type;
-  int       data1;    // keys / mouse/joystick buttons
-  int       data2;    // mouse/joystick x move
-  int       data3;    // mouse/joystick y move
-  char      *text;
+  evtype_t type;
+  event_data_t data1;
+  event_data_t data2;
+  char *text;
 } event_t;
 
 

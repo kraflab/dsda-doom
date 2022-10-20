@@ -55,7 +55,7 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "g_game.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "r_fps.h"
 #include <math.h>
 #include "e6y.h"//e6y
@@ -65,6 +65,7 @@
 #include "dsda/exhud.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
+#include "dsda/signal_context.h"
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
 
@@ -745,20 +746,20 @@ void R_Init (void)
   // CPhipps - R_DrawColumn isn't constant anymore, so must
   //  initialise in code
   // current column draw function
-  lprintf(LO_INFO, "\nR_LoadTrigTables: ");
+  lprintf(LO_DEBUG, "\nR_LoadTrigTables: ");
   R_LoadTrigTables();
-  lprintf(LO_INFO, "\nR_InitData: ");
+  lprintf(LO_DEBUG, "\nR_InitData: ");
   R_InitData();
   R_SetViewSize();
-  lprintf(LO_INFO, "\nR_Init: R_InitPlanes ");
+  lprintf(LO_DEBUG, "\nR_Init: R_InitPlanes ");
   R_InitPlanes();
-  lprintf(LO_INFO, "R_InitLightTables ");
+  lprintf(LO_DEBUG, "R_InitLightTables ");
   R_InitLightTables();
-  lprintf(LO_INFO, "R_InitSkyMap ");
+  lprintf(LO_DEBUG, "R_InitSkyMap ");
   R_InitSkyMap();
-  lprintf(LO_INFO, "R_InitTranslationsTables ");
+  lprintf(LO_DEBUG, "R_InitTranslationsTables ");
   R_InitTranslationTables();
-  lprintf(LO_INFO, "R_InitPatches ");
+  lprintf(LO_DEBUG, "R_InitPatches ");
   R_InitPatches();
 }
 
@@ -907,33 +908,18 @@ static void R_SetupFrame (player_t *player)
   validcount++;
 }
 
-//
-// R_RenderView
-//
-
-void R_RenderPlayerView (player_t* player)
+static void R_InitDrawScene(void)
 {
   // Framerate-independent fuzz progression
   static int fuzzgametic = 0;
   static int savedfuzzpos = 0;
-  dboolean automap = automap_on;
-
-  r_frame_count++;
-
-  R_SetupFrame (player);
-
-  // Clear buffers.
-  R_ClearClipSegs ();
-  R_ClearDrawSegs ();
-  R_ClearPlanes ();
-  R_ClearSprites ();
 
   if (V_IsOpenGLMode())
   {
     // proff 11/99: clear buffers
     gld_InitDrawScene();
 
-    if (!automap)
+    if (!automap_on)
     {
       // proff 11/99: switch to perspective mode
       gld_StartDrawScene();
@@ -957,18 +943,10 @@ void R_RenderPlayerView (player_t* player)
       R_SetFuzzPos(savedfuzzpos);
     }
   }
+}
 
-  FakeNetUpdate();
-
-  if (V_IsOpenGLMode()) {
-    {
-      angle_t a1 = gld_FrustumAngle();
-      gld_clipper_Clear();
-      gld_clipper_SafeAddClipRangeRealAngles(viewangle + a1, viewangle - a1);
-      gld_FrustrumSetup();
-    }
-  }
-
+static void R_RenderBSPNodes(void)
+{
   // Make displayed player invisible locally
   if (localQuakeHappening[displayplayer] && gamestate == GS_LEVEL)
   {
@@ -981,27 +959,71 @@ void R_RenderPlayerView (player_t* player)
     // The head node is the last node output.
     R_RenderBSPNode(numnodes - 1);
   }
+}
+
+//
+// R_RenderView
+//
+
+void R_RenderPlayerView (player_t* player)
+{
+  r_frame_count++;
+
+  DSDA_ADD_CONTEXT(sf_setup_frame);
+  R_SetupFrame (player);
+  DSDA_REMOVE_CONTEXT(sf_setup_frame);
+
+  DSDA_ADD_CONTEXT(sf_clear);
+  R_ClearClipSegs ();
+  R_ClearDrawSegs ();
+  R_ClearPlanes ();
+  R_ClearSprites ();
+  DSDA_REMOVE_CONTEXT(sf_clear);
+
+  DSDA_ADD_CONTEXT(sf_init_scene);
+  R_InitDrawScene();
+  DSDA_REMOVE_CONTEXT(sf_init_scene);
+
+  FakeNetUpdate();
+
+  if (V_IsOpenGLMode()) {
+    DSDA_ADD_CONTEXT(sf_gl_frustum);
+    gld_FrustumSetup();
+    DSDA_REMOVE_CONTEXT(sf_gl_frustum);
+  }
+
+  DSDA_ADD_CONTEXT(sf_bsp_nodes);
+  R_RenderBSPNodes();
+  DSDA_REMOVE_CONTEXT(sf_bsp_nodes);
 
   FakeNetUpdate();
 
   if (V_IsSoftwareMode())
+  {
+    DSDA_ADD_CONTEXT(sf_draw_planes);
     R_DrawPlanes();
+    DSDA_REMOVE_CONTEXT(sf_draw_planes);
+  }
 
+  DSDA_ADD_CONTEXT(sf_reset_column_buffer);
   R_ResetColumnBuffer();
+  DSDA_REMOVE_CONTEXT(sf_reset_column_buffer);
 
   FakeNetUpdate();
 
   if (V_IsSoftwareMode()) {
+    DSDA_ADD_CONTEXT(sf_draw_masked);
     R_DrawMasked ();
     R_ResetColumnBuffer();
+    DSDA_REMOVE_CONTEXT(sf_draw_masked);
   }
 
   FakeNetUpdate();
 
-  if (V_IsOpenGLMode() && !automap) {
-    // proff 11/99: draw the scene
+  if (V_IsOpenGLMode() && !automap_on) {
+    DSDA_ADD_CONTEXT(sf_draw_scene);
     gld_DrawScene(player);
-    // proff 11/99: finishing off
     gld_EndDrawScene();
+    DSDA_REMOVE_CONTEXT(sf_draw_scene);
   }
 }

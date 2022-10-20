@@ -56,9 +56,6 @@
 #endif
 #include "w_wad.h"
 #include "lprintf.h"
-
-//e6y
-#include "r_demo.h"
 #include "e6y.h"
 
 //
@@ -141,6 +138,11 @@ static void W_AddFile(wadfile_info_t *wadfile)
   filelump_t  *fileinfo, *fileinfo2free=NULL; //killough
   filelump_t  singleinfo;
   int         flags = 0;
+
+  if (wadfile->src == source_skip)
+  {
+    return;
+  }
 
   // Close any existing handle
   if (wadfile->handle > 0)
@@ -521,33 +523,8 @@ void W_Init(void)
   W_HashLumps();
 
   /* cph 2001/07/07 - separated cache setup */
-  lprintf(LO_INFO,"W_InitCache\n");
+  lprintf(LO_DEBUG, "W_InitCache\n");
   W_InitCache();
-
-  V_FreePlaypal();
-}
-
-void W_ReleaseAllWads(void)
-{
-  size_t i;
-
-  W_DoneCache();
-
-  for (i = 0; i < numwadfiles; i++)
-  {
-    if (wadfiles[i].handle > 0)
-    {
-      close(wadfiles[i].handle);
-      wadfiles[i].handle = 0;
-    }
-  }
-
-  numwadfiles = 0;
-  Z_Free(wadfiles);
-  wadfiles = NULL;
-  numlumps = 0;
-  Z_Free(lumpinfo);
-  lumpinfo = NULL;
 
   V_FreePlaypal();
 }

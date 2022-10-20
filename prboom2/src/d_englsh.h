@@ -36,10 +36,6 @@
 #ifndef __D_ENGLSH__
 #define __D_ENGLSH__
 
-/* d_main.c */
-#define D_DEVSTR    "Development mode ON.\n"
-#define D_CDROM     "CD-ROM Version: default.cfg from c:\\doomdata\n"
-
 /* m_menu.c */
 #define PRESSKEY    "press a key."
 #define PRESSYN     "press y or n."

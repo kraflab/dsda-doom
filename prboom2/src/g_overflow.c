@@ -44,6 +44,7 @@
 #include "doomstat.h"
 #include "lprintf.h"
 #include "m_misc.h"
+#include "w_wad.h"
 #include "e6y.h"
 
 #include "dsda/args.h"

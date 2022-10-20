@@ -37,6 +37,7 @@
 #include "am_map.h"
 #include "r_main.h"
 #include "s_sound.h"
+#include "smooth.h"
 #include "sounds.h"
 #include "d_deh.h"  // Ty 03/22/98 - externalized strings
 #include "p_tick.h"

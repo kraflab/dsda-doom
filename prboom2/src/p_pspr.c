@@ -43,7 +43,7 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "d_event.h"
-#include "r_demo.h"
+#include "smooth.h"
 #include "g_game.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y

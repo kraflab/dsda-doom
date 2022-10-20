@@ -27,37 +27,16 @@
  *  02111-1307, USA.
  *
  * DESCRIPTION:
- *      Demo stuff
+ *      Ex Demo Wad Table
  *
  *---------------------------------------------------------------------
  */
 
-#ifndef __R_DEMO__
-#define __R_DEMO__
+#ifndef __WADTBL__
+#define __WADTBL__
 
-#include "doomdef.h"
 #include "doomtype.h"
-#include "tables.h"
-#include "d_player.h"
 #include "w_wad.h"
-
-//
-// Smooth playing stuff
-//
-
-#define SMOOTH_PLAYING_MAXFACTOR 16
-
-extern int demo_smoothturns;
-extern int demo_smoothturnsfactor;
-
-void R_SmoothPlaying_Reset(player_t *player);
-void R_SmoothPlaying_Add(int delta);
-angle_t R_SmoothPlaying_Get(player_t *player);
-void R_ResetAfterTeleport(player_t *player);
-
-//
-// DemoEx stuff
-//
 
 typedef struct
 {
@@ -67,24 +46,11 @@ typedef struct
   int datasize;
 } wadtbl_t;
 
-typedef struct
-{
-  wadfile_info_t *wadfiles;
-  size_t numwadfiles;
-} waddata_t;
+#define PWAD_SIGNATURE "PWAD"
 
-int WadDataInit(waddata_t *waddata);
-int WadDataAddItem(waddata_t *waddata, const char *filename, wad_source_t source, int handle);
-void WadDataFree(waddata_t *wadfiles);
+void InitPWADTable(wadtbl_t *wadtbl);
+void FreePWADTable(wadtbl_t *wadtbl);
+void AddPWADTableLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size);
+wadinfo_t *ReadPWADTable(char *buffer, size_t size);
 
-int CheckDemoExDemo(void);
-void WadDataToWadFiles(waddata_t *waddata);
-
-byte* G_GetDemoFooter(const char *filename, const byte **footer, size_t *size);
-void G_SetDemoFooter(const char *filename, wadtbl_t *wadtbl);
-void G_WriteDemoFooter(void);
-void I_DemoExShutdown(void);
-
-int LoadDemo(const char *name, const byte **buffer, int *length);
-
-#endif // __R_DEMO__
+#endif

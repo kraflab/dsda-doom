@@ -41,6 +41,7 @@ typedef struct {
   const char* name;
   int default_vpt;
   dboolean strict;
+  dboolean off_by_default;
   dboolean on;
   dboolean initialized;
 } exhud_component_t;
@@ -151,8 +152,7 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawTrackerHC,
     dsda_EraseTrackerHC,
     "tracker",
-    VPT_NONE,
-    true
+    .strict = true
   },
   [exhud_weapon_text] = {
     dsda_InitWeaponTextHC,
@@ -167,15 +167,16 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawRenderStatsHC,
     dsda_EraseRenderStatsHC,
     "render_stats",
-    VPT_NONE,
-    true
+    .strict = true,
+    .off_by_default = true
   },
   [exhud_fps] = {
     dsda_InitFPSHC,
     dsda_UpdateFPSHC,
     dsda_DrawFPSHC,
     dsda_EraseFPSHC,
-    "fps"
+    "fps",
+    .off_by_default = true
   },
 };
 
@@ -201,6 +202,11 @@ static void dsda_TurnComponentOff(int id) {
 static void dsda_InitializeComponent(int id, int x, int y, int vpt) {
   components[id].initialized = true;
   components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT);
+
+  if (components[id].off_by_default)
+    dsda_TurnComponentOff(id);
+  else
+    dsda_TurnComponentOn(id);
 }
 
 static char** dsda_HUDConfig(void) {
@@ -262,6 +268,9 @@ void dsda_InitExHud(void) {
   if (R_FullView() && !dsda_IntConfig(dsda_config_hud_displayed))
     return;
 
+  if (R_PartialView() && !dsda_IntConfig(dsda_config_exhud))
+    return;
+
   hud_config = dsda_HUDConfig();
 
   if (!hud_config)
@@ -295,13 +304,13 @@ void dsda_InitExHud(void) {
 
       for (i = 0; i < exhud_component_count; ++i)
         if (!strncmp(command, components[i].name, sizeof(command))) {
-          int x, y, vpt, always_on;
+          int x, y, vpt;
           char alignment[16];
 
           found = true;
 
-          count = sscanf(args, "%d %d %15s %d", &x, &y, alignment, &always_on);
-          if (count != 4)
+          count = sscanf(args, "%d %d %15s", &x, &y, alignment);
+          if (count != 3)
             I_Error("Invalid hud component args \"%s\"", line);
 
           if (!strncmp(alignment, "bottom_left", sizeof(alignment)))
@@ -316,11 +325,6 @@ void dsda_InitExHud(void) {
             I_Error("Invalid hud component alignment \"%s\"", line);
 
           dsda_InitializeComponent(i, x, y, vpt);
-
-          if (always_on)
-            dsda_TurnComponentOn(i);
-          else
-            dsda_TurnComponentOff(i);
         }
 
       if (!found)
