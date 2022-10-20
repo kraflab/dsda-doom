@@ -53,7 +53,7 @@ void dsda_UpdateReadyAmmoTextHC(void) {
 }
 
 void dsda_DrawReadyAmmoTextHC(void) {
-  HUlib_drawTextLine(&component.text, false);
+  dsda_DrawBasicText(&component);
 }
 
 void dsda_EraseReadyAmmoTextHC(void) {

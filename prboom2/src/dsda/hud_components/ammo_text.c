@@ -108,7 +108,7 @@ void dsda_DrawAmmoTextHC(void) {
   int i;
 
   for (i = 0; i < component_config->count; ++i)
-    HUlib_drawTextLine(&component[i].text, false);
+    dsda_DrawBasicText(&component[i]);
 }
 
 void dsda_EraseAmmoTextHC(void) {

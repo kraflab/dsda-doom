@@ -43,7 +43,7 @@ void dsda_UpdateFPSHC(void) {
 }
 
 void dsda_DrawFPSHC(void) {
-  HUlib_drawTextLine(&component.text, false);
+  dsda_DrawBasicText(&component);
 }
 
 void dsda_EraseFPSHC(void) {

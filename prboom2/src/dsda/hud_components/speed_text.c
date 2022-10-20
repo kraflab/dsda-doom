@@ -48,7 +48,7 @@ void dsda_UpdateSpeedTextHC(void) {
 }
 
 void dsda_DrawSpeedTextHC(void) {
-  HUlib_drawTextLine(&component.text, false);
+  dsda_DrawBasicText(&component);
 }
 
 void dsda_EraseSpeedTextHC(void) {

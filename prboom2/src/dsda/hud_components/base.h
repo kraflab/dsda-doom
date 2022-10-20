@@ -23,6 +23,7 @@
 #include "doomdef.h"
 #include "doomstat.h"
 #include "hu_stuff.h"
+#include "m_menu.h"
 #include "p_mobj.h"
 #include "p_spec.h"
 #include "p_tick.h"
@@ -55,5 +56,6 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt);
 fixed_t dsda_HexenArmor(player_t* player);
 void dsda_DrawBigNumber(int x, int y, int delta_x, int delta_y, int cm, int vpt, int count, int n);
+void dsda_DrawBasicText(dsda_text_t* component);
 
 #endif
