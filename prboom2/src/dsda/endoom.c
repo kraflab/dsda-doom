@@ -64,6 +64,9 @@ void dsda_DumpEndoom(void) {
 
       lprintf(LO_INFO, "\033[3%sm\033[4%sm\033[%sm%c\033[0m",
               foreground, background, blink, character);
+
+      if ((i + 1) % 80 == 0)
+        lprintf(LO_INFO, "\n");
     }
 
     lprintf(LO_INFO, "\n");
