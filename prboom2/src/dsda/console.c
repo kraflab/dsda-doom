@@ -83,11 +83,14 @@ static dboolean dsda_ExecuteConsole(const char* command_line);
 
 static void dsda_UpdateConsoleDisplay(void) {
   const char* s;
+  int i;
 
   s = console_prompt;
   HUlib_clearTextLine(&hu_console_prompt);
-  while (*s) HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
+  for (i = -2; *s && i < console_entry_index; ++i)
+    HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
   HUlib_addCharToTextLine(&hu_console_prompt, '_');
+  while (*s) HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
 
   s = console_message;
   HUlib_clearTextLine(&hu_console_message);
@@ -1100,8 +1103,13 @@ void dsda_UpdateConsoleText(char* text) {
   length = strlen(text);
 
   for (i = 0; i < length; ++i) {
+    int shift_i;
+
     if (text[i] < 32 || text[i] > 126)
       continue;
+
+    for (shift_i = strlen(console_entry); shift_i > console_entry_index; --shift_i)
+      console_entry[shift_i] = console_entry[shift_i - 1];
 
     console_entry[console_entry_index] = tolower(text[i]);
     if (console_entry_index < CONSOLE_ENTRY_SIZE)
@@ -1113,8 +1121,13 @@ void dsda_UpdateConsoleText(char* text) {
 
 void dsda_UpdateConsole(int action) {
   if (action == MENU_BACKSPACE && console_entry_index > 0) {
+    int shift_i;
+
+    for (shift_i = console_entry_index; console_entry[shift_i]; ++shift_i)
+      console_entry[shift_i - 1] = console_entry[shift_i];
+    console_entry[shift_i - 1] = '\0';
+
     --console_entry_index;
-    console_entry[console_entry_index] = '\0';
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
@@ -1135,6 +1148,14 @@ void dsda_UpdateConsole(int action) {
   else if (action == MENU_UP) {
     strcpy(console_entry, last_console_entry);
     console_entry_index = strlen(console_entry);
+    dsda_UpdateConsoleDisplay();
+  }
+  else if (action == MENU_RIGHT && console_entry[console_entry_index]) {
+    ++console_entry_index;
+    dsda_UpdateConsoleDisplay();
+  }
+  else if (action == MENU_LEFT && console_entry_index > 0) {
+    --console_entry_index;
     dsda_UpdateConsoleDisplay();
   }
 }
