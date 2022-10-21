@@ -15,6 +15,7 @@
 //	DSDA Endoom
 //
 
+#include "doomdef.h"
 #include "doomtype.h"
 #include "lprintf.h"
 #include "w_wad.h"
@@ -30,9 +31,16 @@ void dsda_DumpEndoom(void) {
   if (!dsda_IntConfig(dsda_config_ansi_endoom))
     return;
 
-  lump = W_CheckNumForName("ENDBOOM");
-  if (lump == LUMP_NOT_FOUND)
-    lump = W_CheckNumForName("ENDOOM");
+  if (hexen)
+    return;
+
+  if (heretic)
+    lump = W_CheckNumForName("ENDTEXT");
+  else {
+    lump = W_CheckNumForName("ENDBOOM");
+    if (lump == LUMP_NOT_FOUND)
+      lump = W_CheckNumForName("ENDOOM");
+  }
 
   if (W_LumpLength(lump) != 4000)
     return;
