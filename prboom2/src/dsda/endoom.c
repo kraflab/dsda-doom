@@ -42,7 +42,7 @@ void dsda_DumpEndoom(void) {
       lump = W_CheckNumForName("ENDOOM");
   }
 
-  if (W_LumpLength(lump) != 4000)
+  if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000)
     return;
 
   endoom = W_LumpByNum(lump);
