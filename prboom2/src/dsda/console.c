@@ -53,12 +53,17 @@ extern patchnum_t hu_font2[HU_FONTSIZE];
 #define CF_STRICT 0x02
 #define CF_ALWAYS (CF_DEMO|CF_STRICT)
 
-static char console_prompt[CONSOLE_ENTRY_SIZE + 3] = { '$', ' ' };
-static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
-static char* console_entry = console_prompt + 2;
-static char* console_message_entry = console_message + 2;
-static char last_console_entry[CONSOLE_ENTRY_SIZE + 1];
+typedef struct console_entry_s {
+  char text[CONSOLE_ENTRY_SIZE + 1];
+  struct console_entry_s* prev;
+  struct console_entry_s* next;
+} console_entry_t;
+
+static console_entry_t* console_history_head;
+static console_entry_t* console_entry;
 static int console_entry_index;
+static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
+static char* console_message_entry = console_message + 2;
 static hu_textline_t hu_console_prompt;
 static hu_textline_t hu_console_message;
 
@@ -85,9 +90,11 @@ static void dsda_UpdateConsoleDisplay(void) {
   const char* s;
   int i;
 
-  s = console_prompt;
+  s = console_entry->text;
   HUlib_clearTextLine(&hu_console_prompt);
-  for (i = -2; *s && i < console_entry_index; ++i)
+  HUlib_addCharToTextLine(&hu_console_prompt, '$');
+  HUlib_addCharToTextLine(&hu_console_prompt, ' ');
+  for (i = 0; *s && i < console_entry_index; ++i)
     HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
   HUlib_addCharToTextLine(&hu_console_prompt, '_');
   while (*s) HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
@@ -98,7 +105,6 @@ static void dsda_UpdateConsoleDisplay(void) {
 }
 
 static void dsda_ResetConsoleEntry(void) {
-  memset(console_entry, 0, CONSOLE_ENTRY_SIZE);
   console_entry_index = 0;
   dsda_UpdateConsoleDisplay();
 }
@@ -131,6 +137,9 @@ dboolean dsda_OpenConsole(void) {
       CR_GRAY,
       VPT_ALIGN_LEFT_TOP
     );
+
+    console_history_head = Z_Calloc(sizeof(console_entry_t), 1);
+    console_entry = console_history_head;
   }
 
   dsda_TrackFeature(uf_console);
@@ -1091,8 +1100,6 @@ static dboolean dsda_ExecuteConsole(const char* command_line) {
     }
   }
 
-  dsda_ResetConsoleEntry();
-
   return ret;
 }
 
@@ -1108,10 +1115,10 @@ void dsda_UpdateConsoleText(char* text) {
     if (text[i] < 32 || text[i] > 126)
       continue;
 
-    for (shift_i = strlen(console_entry); shift_i > console_entry_index; --shift_i)
-      console_entry[shift_i] = console_entry[shift_i - 1];
+    for (shift_i = strlen(console_entry->text); shift_i > console_entry_index; --shift_i)
+      console_entry->text[shift_i] = console_entry->text[shift_i - 1];
 
-    console_entry[console_entry_index] = tolower(text[i]);
+    console_entry->text[console_entry_index] = tolower(text[i]);
     if (console_entry_index < CONSOLE_ENTRY_SIZE)
       ++console_entry_index;
   }
@@ -1119,13 +1126,34 @@ void dsda_UpdateConsoleText(char* text) {
   dsda_UpdateConsoleDisplay();
 }
 
+void dsda_UpdateConsoleHistory(void) {
+  console_entry_t* last_command;
+
+  if (console_entry != console_history_head)
+    strcpy(console_history_head->text, console_entry->text);
+
+  last_command = console_history_head->prev;
+  if (!last_command || strcmp(last_command->text, console_entry->text)) {
+    console_entry_t* new_head;
+
+    new_head = Z_Calloc(sizeof(*new_head), 1);
+    new_head->prev = console_history_head;
+    console_history_head->next = new_head;
+    console_history_head = new_head;
+  }
+  else
+    memset(console_history_head->text, 0, CONSOLE_ENTRY_SIZE);
+
+  console_entry = console_history_head;
+}
+
 void dsda_UpdateConsole(int action) {
   if (action == MENU_BACKSPACE && console_entry_index > 0) {
     int shift_i;
 
-    for (shift_i = console_entry_index; console_entry[shift_i]; ++shift_i)
-      console_entry[shift_i - 1] = console_entry[shift_i];
-    console_entry[shift_i - 1] = '\0';
+    for (shift_i = console_entry_index; console_entry->text[shift_i]; ++shift_i)
+      console_entry->text[shift_i - 1] = console_entry->text[shift_i];
+    console_entry->text[shift_i - 1] = '\0';
 
     --console_entry_index;
     dsda_UpdateConsoleDisplay();
@@ -1135,22 +1163,30 @@ void dsda_UpdateConsole(int action) {
     char* entry;
     char** lines;
 
-    strcpy(last_console_entry, console_entry);
-
-    entry = Z_Strdup(console_entry);
+    entry = Z_Strdup(console_entry->text);
     lines = dsda_SplitString(entry, ";");
     for (line = 0; lines[line]; ++line)
       dsda_ExecuteConsole(lines[line]);
+
+    dsda_UpdateConsoleHistory();
+    dsda_ResetConsoleEntry();
 
     Z_Free(entry);
     Z_Free(lines);
   }
   else if (action == MENU_UP) {
-    strcpy(console_entry, last_console_entry);
-    console_entry_index = strlen(console_entry);
+    if (console_entry->prev)
+      console_entry = console_entry->prev;
+    console_entry_index = strlen(console_entry->text);
     dsda_UpdateConsoleDisplay();
   }
-  else if (action == MENU_RIGHT && console_entry[console_entry_index]) {
+  else if (action == MENU_DOWN) {
+    if (console_entry->next)
+      console_entry = console_entry->next;
+    console_entry_index = strlen(console_entry->text);
+    dsda_UpdateConsoleDisplay();
+  }
+  else if (action == MENU_RIGHT && console_entry->text[console_entry_index]) {
     ++console_entry_index;
     dsda_UpdateConsoleDisplay();
   }
