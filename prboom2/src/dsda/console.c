@@ -105,7 +105,7 @@ static void dsda_UpdateConsoleDisplay(void) {
 }
 
 static void dsda_ResetConsoleEntry(void) {
-  console_entry_index = 0;
+  console_entry_index = strlen(console_entry->text);
   dsda_UpdateConsoleDisplay();
 }
 
