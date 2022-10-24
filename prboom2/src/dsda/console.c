@@ -869,22 +869,26 @@ static dboolean console_ChangeConfig(const char* command, const char* args, dboo
   char value_string[CONSOLE_ENTRY_SIZE];
   int value_int;
 
-  if (sscanf(args, "%s %d", name, &value_int)) {
+  if (sscanf(args, "%s %s", name, value_string)) {
     int id;
 
     id = dsda_ConfigIDByName(name);
     if (id) {
-      dsda_UpdateIntConfig(id, value_int, persist);
-      return true;
-    }
-  }
-  else if (sscanf(args, "%s %s", name, value_string)) {
-    int id;
+      dsda_config_type_t config_type;
 
-    id = dsda_ConfigIDByName(name);
-    if (id) {
-      dsda_UpdateStringConfig(id, value_string, persist);
-      return true;
+      config_type = dsda_ConfigType(id);
+      if (config_type == dsda_config_int) {
+        int value_int;
+
+        if (sscanf(value_string, "%d", &value_int)) {
+          dsda_UpdateIntConfig(id, value_int, persist);
+          return true;
+        }
+      }
+      else {
+        dsda_UpdateStringConfig(id, value_string, persist);
+        return true;
+      }
     }
   }
 

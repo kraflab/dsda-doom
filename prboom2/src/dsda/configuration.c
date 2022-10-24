@@ -38,11 +38,6 @@
 
 #include "configuration.h"
 
-typedef enum {
-  dsda_config_int,
-  dsda_config_string,
-} dsda_config_type_t;
-
 typedef union {
   int v_int;
   char* v_string;
@@ -1490,4 +1485,8 @@ int dsda_ConfigIDByName(const char* name) {
       return i;
 
   return 0;
+}
+
+dsda_config_type_t dsda_ConfigType(dsda_config_identifier_t id) {
+  return dsda_config[id].type;
 }

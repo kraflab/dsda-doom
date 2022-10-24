@@ -271,6 +271,11 @@ typedef enum {
   dsda_config_count,
 } dsda_config_identifier_t;
 
+typedef enum {
+  dsda_config_int,
+  dsda_config_string,
+} dsda_config_type_t;
+
 void dsda_UpdateStrictMode(void);
 void dsda_TrackConfigFeatures(void);
 void dsda_RevertIntConfig(dsda_config_identifier_t id);
@@ -291,5 +296,6 @@ const char* dsda_StringConfig(dsda_config_identifier_t id);
 const char* dsda_PersistentStringConfig(dsda_config_identifier_t id);
 char* dsda_ConfigSummary(const char* name);
 int dsda_ConfigIDByName(const char* name);
+dsda_config_type_t dsda_ConfigType(dsda_config_identifier_t id);
 
 #endif
