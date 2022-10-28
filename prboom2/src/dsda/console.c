@@ -37,6 +37,7 @@
 #include "dsda/global.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 #include "dsda/tracker.h"
 #include "dsda/utility.h"
 
@@ -46,6 +47,7 @@ extern patchnum_t hu_font2[HU_FONTSIZE];
 
 #define target_player players[consoleplayer]
 
+#define CONSOLE_TEXT_FLAGS (VPT_ALIGN_TOP | VPT_EX_TEXT)
 #define CONSOLE_ENTRY_SIZE 64
 
 #define CF_NEVER  0x00
@@ -70,7 +72,7 @@ static hu_textline_t hu_console_message;
 static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
 static void dsda_DrawConsole(void) {
-  V_FillRect(0, 0, 0, SCREENWIDTH, 16 * SCREENHEIGHT / 200, 0);
+  V_FillRectVPT(0, 0, 0, 320, 16, 0, CONSOLE_TEXT_FLAGS);
   HUlib_drawTextLine(&hu_console_prompt, false);
   HUlib_drawTextLine(&hu_console_message, false);
 }
@@ -125,7 +127,7 @@ dboolean dsda_OpenConsole(void) {
       hu_font2,
       HU_FONTSTART,
       CR_GRAY,
-      VPT_ALIGN_LEFT_TOP
+      CONSOLE_TEXT_FLAGS
     );
 
     HUlib_initTextLine(
@@ -135,7 +137,7 @@ dboolean dsda_OpenConsole(void) {
       hu_font2,
       HU_FONTSTART,
       CR_GRAY,
-      VPT_ALIGN_LEFT_TOP
+      CONSOLE_TEXT_FLAGS
     );
 
     console_history_head = Z_Calloc(sizeof(console_entry_t), 1);
