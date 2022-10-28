@@ -34,6 +34,7 @@ typedef struct {
 #define LINE_ACTIVATION_INDEX_MAX 8
 
 void dsda_ReadCommandLine(void);
+int dsda_SessionAttempts(void);
 void dsda_DisplayNotifications(void);
 void dsda_WatchCard(card_t card);
 void dsda_WatchCrush(mobj_t* thing, int damage);

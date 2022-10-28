@@ -57,7 +57,7 @@ dboolean dsda_any_map_completed;
 
 // other
 int dsda_max_kill_requirement;
-int dsda_session_attempts = 1;
+static int dsda_session_attempts = 1;
 
 static int turbo_scale;
 static int start_in_build_mode;
@@ -186,6 +186,10 @@ void dsda_ReadCommandLine(void) {
 }
 
 static int dsda_shown_attempt = 0;
+
+int dsda_SessionAttempts(void) {
+  return dsda_session_attempts;
+}
 
 void dsda_DisplayNotifications(void) {
   if (dsda_ShowDemoAttempts() && dsda_session_attempts > dsda_shown_attempt) {

@@ -17,6 +17,7 @@
 
 #include "hud_components/ammo_text.h"
 #include "hud_components/armor_text.h"
+#include "hud_components/attempts.h"
 #include "hud_components/big_ammo.h"
 #include "hud_components/big_armor.h"
 #include "hud_components/big_health.h"

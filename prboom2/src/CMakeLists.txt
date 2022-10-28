@@ -60,6 +60,8 @@ set(COMMON_SRC
     dsda/hud_components/ammo_text.h
     dsda/hud_components/armor_text.c
     dsda/hud_components/armor_text.h
+    dsda/hud_components/attempts.c
+    dsda/hud_components/attempts.h
     dsda/hud_components/base.c
     dsda/hud_components/base.h
     dsda/hud_components/big_ammo.c

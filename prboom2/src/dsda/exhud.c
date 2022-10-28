@@ -62,6 +62,7 @@ typedef enum {
   exhud_weapon_text,
   exhud_render_stats,
   exhud_fps,
+  exhud_attempts,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -177,6 +178,13 @@ exhud_component_t components[exhud_component_count] = {
     dsda_EraseFPSHC,
     "fps",
     .off_by_default = true
+  },
+  [exhud_attempts] = {
+    dsda_InitAttemptsHC,
+    dsda_UpdateAttemptsHC,
+    dsda_DrawAttemptsHC,
+    dsda_EraseAttemptsHC,
+    "attempts"
   },
 };
 
