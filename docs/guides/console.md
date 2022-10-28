@@ -31,6 +31,10 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - temporarily assigns a config value (will not be saved to config file)
 - `update <attribute> <value>`
   - permanently updates a config value (will be saved to config file)
+- `toggle_assign <attribute>`
+  - temporarily toggles a config value (will not be saved to config file)
+- `toggle_update <attribute>`
+  - permanently toggles a config value (will be saved to config file)
 - `exit`
 - `quit`
 
