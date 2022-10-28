@@ -63,6 +63,7 @@ typedef enum {
   exhud_render_stats,
   exhud_fps,
   exhud_attempts,
+  exhud_local_time,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -185,6 +186,13 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawAttemptsHC,
     dsda_EraseAttemptsHC,
     "attempts"
+  },
+  [exhud_local_time] = {
+    dsda_InitLocalTimeHC,
+    dsda_UpdateLocalTimeHC,
+    dsda_DrawLocalTimeHC,
+    dsda_EraseLocalTimeHC,
+    "local_time"
   },
 };
 
