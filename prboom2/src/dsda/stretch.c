@@ -123,7 +123,7 @@ static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e f
   if (flags == VPT_ALIGN_BOTTOM || flags == VPT_ALIGN_LEFT_BOTTOM || flags == VPT_ALIGN_RIGHT_BOTTOM)
     offsets->deltay1 = offset2y;
 
-  if (flags == VPT_ALIGN_TOP || flags == VPT_ALIGN_LEFT_TOP || flags == VPT_ALIGN_RIGHT_TOP)
+  if (flags == VPT_ALIGN_LEFT_TOP)
     offsets->deltay1 = ex_text_top_displacement;
 }
 
