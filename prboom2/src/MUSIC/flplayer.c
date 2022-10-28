@@ -149,12 +149,20 @@ static long long fl_sftell(void *handle)
   return mem_ftell((MEMFILE *)handle);
 }
 
+static void fl_null_logger(int level, const char *message, void *data) {
+  // no op
+}
+
+static int fl_null_data;
+
 static int fl_init (int samplerate)
 {
   int mus_fluidsynth_chorus;
   int mus_fluidsynth_reverb;
   int mus_fluidsynth_gain;
   const char *filename;
+
+  fluid_set_log_function(FLUID_WARN, fl_null_logger, &fl_null_data);
 
   mus_fluidsynth_chorus = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus);
   mus_fluidsynth_reverb = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb);
