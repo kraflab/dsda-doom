@@ -74,6 +74,7 @@ const music_player_t fl_player =
 #include "memio.h"
 #include "w_wad.h"
 
+#include "dsda/args.h"
 #include "dsda/configuration.h"
 
 static fluid_settings_t *f_set;
@@ -162,7 +163,8 @@ static int fl_init (int samplerate)
   int mus_fluidsynth_gain;
   const char *filename;
 
-  fluid_set_log_function(FLUID_WARN, fl_null_logger, &fl_null_data);
+  if (!dsda_Flag(dsda_arg_verbose) || dsda_Flag(dsda_arg_quiet))
+    fluid_set_log_function(FLUID_WARN, fl_null_logger, &fl_null_data);
 
   mus_fluidsynth_chorus = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus);
   mus_fluidsynth_reverb = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb);
