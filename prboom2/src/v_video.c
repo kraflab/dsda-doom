@@ -1506,9 +1506,9 @@ void V_ChangeScreenResolution(void)
   }
 }
 
-void V_FillRectStretch(int scrn, int x, int y, int width, int height, byte color)
+void V_FillRectVPT(int scrn, int x, int y, int width, int height, byte color, enum patch_translation_e flags)
 {
-  V_GetWideRect(&x, &y, &width, &height, VPT_STRETCH);
+  V_GetWideRect(&x, &y, &width, &height, flags);
   V_FillRect(scrn, x, y, width, height, color);
 }
 

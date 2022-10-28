@@ -1545,10 +1545,10 @@ static void Hexen_DrawMainBar(void)
         V_DrawNumPatch(110, 164, 0, manaLump2, CR_DEFAULT, VPT_STRETCH);
 
         V_DrawNumPatch(94, 164, 0, manaVialLump1, CR_DEFAULT, VPT_STRETCH);
-        V_FillRectStretch(0, 95, 165, 3, 22 - (22 * CPlayer->ammo[0]) / MAX_MANA, 0);
+        V_FillRectVPT(0, 95, 165, 3, 22 - (22 * CPlayer->ammo[0]) / MAX_MANA, 0, VPT_STRETCH);
 
         V_DrawNumPatch(102, 164, 0, manaVialLump2, CR_DEFAULT, VPT_STRETCH);
-        V_FillRectStretch(0, 103, 165, 3, 22 - (22 * CPlayer->ammo[1]) / MAX_MANA, 0);
+        V_FillRectVPT(0, 103, 165, 3, 22 - (22 * CPlayer->ammo[1]) / MAX_MANA, 0, VPT_STRETCH);
 
         oldweapon = CPlayer->readyweapon;
     }
