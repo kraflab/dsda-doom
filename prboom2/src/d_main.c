@@ -1890,7 +1890,7 @@ static void D_DoomMainSetup(void)
   // do not try to interpolate during timedemo
   M_ChangeUncappedFrameRate();
 
-  lprintf(LO_INFO, "\n"); // Separator after setup
+  lprintf(LO_DEBUG, "\n"); // Separator after setup
 }
 
 //

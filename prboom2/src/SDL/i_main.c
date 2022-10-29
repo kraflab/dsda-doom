@@ -163,7 +163,7 @@ void I_SafeExit(int rc)
 {
   atexit_listentry_t *entry;
 
-  lprintf(LO_INFO, "\n"); // Separator after game loop
+  lprintf(LO_DEBUG, "\n"); // Separator after game loop
 
   // Run through all exit functions
   for (; exit_priority < exit_priority_max; ++exit_priority)
@@ -270,9 +270,9 @@ int main(int argc, char **argv)
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "M_LoadDefaults: Load system defaults.\n");
   M_LoadDefaults();              // load before initing other systems
+  lprintf(LO_DEBUG, "\n");
 
   /* Version info */
-  lprintf(LO_INFO, "\n");
   PrintVer();
 
   /*
