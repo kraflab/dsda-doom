@@ -98,13 +98,11 @@ stretch_param_t* dsda_StretchParams(int flags) {
 
 static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e flags) {
   int scale;
-  int offsetx, offset2x, offsety, offset2y;
+  int offset2x, offset2y;
 
   offset2x = SCREENWIDTH - ex_text_scale * 320;
   offset2y = (SCREENHEIGHT - ex_text_scale * 200) -
              R_PartialView() * (ST_SCALED_HEIGHT - ex_text_scale * g_st_height);
-  offsetx = offset2x / 2;
-  offsety = offset2y / 2;
 
   memset(offsets, 0, sizeof(*offsets));
 
