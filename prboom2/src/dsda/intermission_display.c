@@ -40,7 +40,7 @@ void dsda_InitIntermissionDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     CR_GRAY,
-    VPT_ALIGN_LEFT
+    VPT_ALIGN_TOP | VPT_EX_TEXT
   );
 
   HUlib_initTextLine(
@@ -50,7 +50,7 @@ void dsda_InitIntermissionDisplay(patchnum_t* font) {
     font,
     HU_FONTSTART,
     CR_GRAY,
-    VPT_ALIGN_LEFT
+    VPT_ALIGN_TOP | VPT_EX_TEXT
   );
 }
 
