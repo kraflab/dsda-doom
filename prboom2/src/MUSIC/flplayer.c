@@ -177,14 +177,14 @@ static int fl_init (int samplerate)
     int minor;
     int micro;
     fluid_version (&major, &minor, &micro);
-    lprintf (LO_INFO, "Fluidplayer: Fluidsynth version %i.%i.%i\n", major, minor, micro);
+    lprintf (LO_DEBUG, "Fluidplayer: Fluidsynth version %i.%i.%i\n", major, minor, micro);
     if (major >= 2 || (minor >=1 && micro >= 4))
       sratemin = 8000;
     else
       sratemin = 22050;
     if (f_soundrate < sratemin)
     {
-      lprintf (LO_INFO, "Fluidplayer: samplerates under %i are not supported\n", sratemin);
+      lprintf (LO_WARN, "Fluidplayer: samplerates under %i are not supported\n", sratemin);
       return 0;
     }
   }
@@ -194,10 +194,10 @@ static int fl_init (int samplerate)
 
 #if FLUIDSYNTH_VERSION_MAJOR == 1
   #define FSET(a,b,c) if (!fluid_settings_set##a(f_set,b,c))\
-    lprintf (LO_INFO, "fl_init: Couldn't set " b "\n")
+    lprintf (LO_WARN, "fl_init: Couldn't set " b "\n")
 #else
   #define FSET(a,b,c) if (fluid_settings_set##a(f_set,b,c) == FLUID_FAILED)\
-    lprintf (LO_INFO, "fl_init: Couldn't set " b "\n")
+    lprintf (LO_WARN, "fl_init: Couldn't set " b "\n")
 #endif
 
   FSET (num, "synth.sample-rate", f_soundrate);
