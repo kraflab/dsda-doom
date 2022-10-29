@@ -73,21 +73,21 @@ exhud_component_t components[exhud_component_count] = {
     dsda_UpdateAmmoTextHC,
     dsda_DrawAmmoTextHC,
     dsda_EraseAmmoTextHC,
-    "ammo_text"
+    "ammo_text",
   },
   [exhud_armor_text] = {
     dsda_InitArmorTextHC,
     dsda_UpdateArmorTextHC,
     dsda_DrawArmorTextHC,
     dsda_EraseArmorTextHC,
-    "armor_text"
+    "armor_text",
   },
   [exhud_big_ammo] = {
     dsda_InitBigAmmoHC,
     dsda_UpdateBigAmmoHC,
     dsda_DrawBigAmmoHC,
     dsda_EraseBigAmmoHC,
-    "big_ammo"
+    "big_ammo",
   },
   [exhud_big_armor] = {
     dsda_InitBigArmorHC,
@@ -95,7 +95,7 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawBigArmorHC,
     dsda_EraseBigArmorHC,
     "big_armor",
-    VPT_NOOFFSET
+    VPT_NOOFFSET,
   },
   [exhud_big_health] = {
     dsda_InitBigHealthHC,
@@ -103,21 +103,21 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawBigHealthHC,
     dsda_EraseBigHealthHC,
     "big_health",
-    VPT_NOOFFSET
+    VPT_NOOFFSET,
   },
   [exhud_composite_time] = {
     dsda_InitCompositeTimeHC,
     dsda_UpdateCompositeTimeHC,
     dsda_DrawCompositeTimeHC,
     dsda_EraseCompositeTimeHC,
-    "composite_time"
+    "composite_time",
   },
   [exhud_health_text] = {
     dsda_InitHealthTextHC,
     dsda_UpdateHealthTextHC,
     dsda_DrawHealthTextHC,
     dsda_EraseHealthTextHC,
-    "health_text"
+    "health_text",
   },
   [exhud_keys] = {
     dsda_InitKeysHC,
@@ -125,28 +125,28 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawKeysHC,
     dsda_EraseKeysHC,
     "keys",
-    VPT_NOOFFSET
+    VPT_NOOFFSET,
   },
   [exhud_ready_ammo_text] = {
     dsda_InitReadyAmmoTextHC,
     dsda_UpdateReadyAmmoTextHC,
     dsda_DrawReadyAmmoTextHC,
     dsda_EraseReadyAmmoTextHC,
-    "ready_ammo_text"
+    "ready_ammo_text",
   },
   [exhud_speed_text] = {
     dsda_InitSpeedTextHC,
     dsda_UpdateSpeedTextHC,
     dsda_DrawSpeedTextHC,
     dsda_EraseSpeedTextHC,
-    "speed_text"
+    "speed_text",
   },
   [exhud_stat_totals] = {
     dsda_InitStatTotalsHC,
     dsda_UpdateStatTotalsHC,
     dsda_DrawStatTotalsHC,
     dsda_EraseStatTotalsHC,
-    "stat_totals"
+    "stat_totals",
   },
   [exhud_tracker] = {
     dsda_InitTrackerHC,
@@ -154,14 +154,14 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawTrackerHC,
     dsda_EraseTrackerHC,
     "tracker",
-    .strict = true
+    .strict = true,
   },
   [exhud_weapon_text] = {
     dsda_InitWeaponTextHC,
     dsda_UpdateWeaponTextHC,
     dsda_DrawWeaponTextHC,
     dsda_EraseWeaponTextHC,
-    "weapon_text"
+    "weapon_text",
   },
   [exhud_render_stats] = {
     dsda_InitRenderStatsHC,
@@ -170,7 +170,7 @@ exhud_component_t components[exhud_component_count] = {
     dsda_EraseRenderStatsHC,
     "render_stats",
     .strict = true,
-    .off_by_default = true
+    .off_by_default = true,
   },
   [exhud_fps] = {
     dsda_InitFPSHC,
@@ -178,21 +178,21 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawFPSHC,
     dsda_EraseFPSHC,
     "fps",
-    .off_by_default = true
+    .off_by_default = true,
   },
   [exhud_attempts] = {
     dsda_InitAttemptsHC,
     dsda_UpdateAttemptsHC,
     dsda_DrawAttemptsHC,
     dsda_EraseAttemptsHC,
-    "attempts"
+    "attempts",
   },
   [exhud_local_time] = {
     dsda_InitLocalTimeHC,
     dsda_UpdateLocalTimeHC,
     dsda_DrawLocalTimeHC,
     dsda_EraseLocalTimeHC,
-    "local_time"
+    "local_time",
   },
 };
 
