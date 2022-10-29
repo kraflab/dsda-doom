@@ -154,8 +154,6 @@ static void fl_null_logger(int level, const char *message, void *data) {
   // no op
 }
 
-static int fl_null_data;
-
 static int fl_init (int samplerate)
 {
   int mus_fluidsynth_chorus;
@@ -164,7 +162,7 @@ static int fl_init (int samplerate)
   const char *filename;
 
   if (!dsda_Flag(dsda_arg_verbose) || dsda_Flag(dsda_arg_quiet))
-    fluid_set_log_function(FLUID_WARN, fl_null_logger, &fl_null_data);
+    fluid_set_log_function(FLUID_WARN, fl_null_logger, NULL);
 
   mus_fluidsynth_chorus = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus);
   mus_fluidsynth_reverb = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb);
