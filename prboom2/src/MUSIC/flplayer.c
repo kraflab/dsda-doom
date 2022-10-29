@@ -308,7 +308,6 @@ static void fl_shutdown (void)
 {
   if (f_syn)
   {
-    fluid_synth_sfunload (f_syn, f_font, 1);
     delete_fluid_synth (f_syn);
     f_syn = NULL;
     f_font = 0;
