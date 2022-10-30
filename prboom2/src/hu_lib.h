@@ -164,7 +164,6 @@ void HUlib_initTextLine
 
 // returns success
 dboolean HUlib_addCharToTextLine(hu_textline_t *t, char ch);
-dboolean HUlib_cpyStrToTextLine(hu_textline_t *t, const char *str);
 
 // draws tline
 void HUlib_drawTextLine(hu_textline_t *l, dboolean drawcursor);

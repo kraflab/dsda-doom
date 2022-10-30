@@ -131,28 +131,6 @@ dboolean HUlib_addCharToTextLine
 
 }
 
-dboolean HUlib_cpyStrToTextLine
-( hu_textline_t*  t,
-  const char* str )
-{
-  int diff;
-
-  diff = strlen(str) - t->len;
-
-  if (diff > 0)
-  {
-    if (t->linelen + diff >= HU_MAXLINELENGTH)
-      return false;
-
-    t->linelen += diff;
-    t->len += diff;
-    t->l[t->len] = 0;
-  }
-
-  strcpy(t->l, str);
-  return true;
-}
-
 //
 // HUlib_delCharFromTextLine()
 //
