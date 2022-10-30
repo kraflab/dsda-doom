@@ -25,5 +25,6 @@ void dsda_EraseExHud(void);
 void dsda_ToggleRenderStats(void);
 void dsda_RefreshExHudFPS(void);
 void dsda_RefreshExHudCoordinateDisplay(void);
+void dsda_RefreshExHudCommandDisplay(void);
 
 #endif

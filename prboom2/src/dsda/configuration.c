@@ -95,6 +95,7 @@ void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
 void dsda_RefreshExHudCoordinateDisplay(void);
+void dsda_RefreshExHudCommandDisplay(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
@@ -143,6 +144,7 @@ void dsda_UpdateStrictMode(void) {
   HU_init_crosshair();
   M_ChangeApplyPalette();
   dsda_RefreshExHudCoordinateDisplay();
+  dsda_RefreshExHudCommandDisplay();
 }
 
 void dsda_TrackConfigFeatures(void) {
@@ -334,7 +336,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_command_display] = {
     "dsda_command_display", dsda_config_command_display,
-    CONF_BOOL(0), NULL, STRICT_INT(0)
+    CONF_BOOL(0), NULL, STRICT_INT(0), dsda_RefreshExHudCommandDisplay
   },
   [dsda_config_coordinate_display] = {
     "dsda_coordinate_display", dsda_config_coordinate_display,

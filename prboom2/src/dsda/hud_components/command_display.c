@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,24 +12,17 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Command Display
+//	DSDA Command Display HUD Component
 //
 
-#include "st_stuff.h"
-#include "hu_lib.h"
-#include "hu_stuff.h"
-#include "doomstat.h"
+#include "d_ticcmd.h"
 
-#include "dsda.h"
 #include "dsda/build.h"
-#include "dsda/configuration.h"
-#include "dsda/global.h"
-#include "dsda/settings.h"
-#include "dsda/hud.h"
+
+#include "base.h"
 
 #include "command_display.h"
 
-#define INPUT_TEXT_X 198
 #define MAX_HISTORY 20
 
 typedef struct {
@@ -44,8 +37,8 @@ typedef struct {
 typedef struct dsda_command_display_s {
   dsda_command_t command;
   int repeat;
-  char text[200];
-  hu_textline_t hu_text;
+  dsda_text_t component;
+  char color;
   struct dsda_command_display_s* next;
   struct dsda_command_display_s* prev;
 } dsda_command_display_t;
@@ -56,6 +49,8 @@ int dsda_hide_empty_commands;
 static dsda_command_display_t command_history[MAX_HISTORY];
 static dsda_command_display_t* current_command = command_history;
 static dsda_command_display_t next_command_display;
+
+static int base_y;
 
 static void dsda_TicCmdToCommand(dsda_command_t* command, ticcmd_t* cmd) {
   command->forwardmove = cmd->forwardmove;
@@ -100,8 +95,8 @@ void dsda_ResetCommandHistory(void) {
   for (i = 0; i < MAX_HISTORY; ++i) {
     memset(&command_history[i].command, 0, sizeof(command_history[i].command));
     command_history[i].repeat = 0;
-    command_history[i].text[0] = '\0';
-    HUlib_clearTextLine(&command_history[i].hu_text);
+    command_history[i].component.msg[0] = '\0';
+    dsda_RefreshHudText(&command_history[i].component);
   }
 }
 
@@ -120,86 +115,68 @@ void dsda_InitCommandHistory(void) {
   command_history[MAX_HISTORY - 1].next = &command_history[0];
 }
 
-void dsda_InitCommandDisplayLine(dsda_command_display_t* command, int offset,
-                                 int color, patchnum_t* font) {
-  HUlib_initTextLine(
-    &command->hu_text,
-    INPUT_TEXT_X,
-    200 - g_st_height - 8 * offset,
-    font,
-    HU_FONTSTART,
-    color,
-    VPT_ALIGN_RIGHT_BOTTOM | VPT_EX_TEXT
-  );
+void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt) {
+  int i;
 
-  command->hu_text.space_width = 5;
-}
-
-void dsda_InitCommandDisplay(patchnum_t* font) {
-  static int firsttime = 1;
-
-  if (firsttime) {
-    int i;
-
-    firsttime = 0;
-
-    for (i = 0; i < MAX_HISTORY; ++i)
-      dsda_InitCommandDisplayLine(&command_history[i], i + 1, CR_GRAY, font);
-
-    dsda_InitCommandDisplayLine(&next_command_display, 1, CR_GOLD, font);
+  for (i = 0; i < MAX_HISTORY; ++i) {
+    command_history[i].color = HUlib_Color(CR_GRAY);
+    dsda_InitTextHC(&command_history[i].component, x_offset, y_offset + i * 8, vpt);
   }
+
+  next_command_display.color = HUlib_Color(CR_GOLD);
+  dsda_InitTextHC(&next_command_display.component, x_offset, y_offset, vpt);
+
+  base_y = next_command_display.component.text.y;
 }
 
-void dsda_UpdateCommandText(dsda_command_t* command, dsda_command_display_t* display_command) {
-  char* s;
-  int length = 0;
+static void dsda_UpdateCommandText(dsda_command_t* command,
+                                   dsda_command_display_t* display_command, dboolean playback) {
+  int length;
 
-  display_command->text[0] = '\0';
+  length = sprintf(display_command->component.msg, "\x1b%c", display_command->color);
 
-  if (display_command->repeat)
-    length += sprintf(display_command->text + length, "x%-3d ", display_command->repeat + 1);
+  if (playback)
+    length += sprintf(display_command->component.msg + length, " PL  ");
+  else if (display_command->repeat)
+    length += sprintf(display_command->component.msg + length, "x%-3d ", display_command->repeat + 1);
   else
-    length += sprintf(display_command->text + length, "     ");
+    length += sprintf(display_command->component.msg + length, "     ");
 
   if (command->forwardmove > 0)
-    length += sprintf(display_command->text + length, "MF%2d ", command->forwardmove);
+    length += sprintf(display_command->component.msg + length, "MF%2d ", command->forwardmove);
   else if (command->forwardmove < 0)
-    length += sprintf(display_command->text + length, "MB%2d ", -command->forwardmove);
+    length += sprintf(display_command->component.msg + length, "MB%2d ", -command->forwardmove);
   else
-    length += sprintf(display_command->text + length, "     ");
+    length += sprintf(display_command->component.msg + length, "     ");
 
   if (command->sidemove > 0)
-    length += sprintf(display_command->text + length, "SR%2d ", command->sidemove);
+    length += sprintf(display_command->component.msg + length, "SR%2d ", command->sidemove);
   else if (command->sidemove < 0)
-    length += sprintf(display_command->text + length, "SL%2d ", -command->sidemove);
+    length += sprintf(display_command->component.msg + length, "SL%2d ", -command->sidemove);
   else
-    length += sprintf(display_command->text + length, "     ");
+    length += sprintf(display_command->component.msg + length, "     ");
 
   if (command->angleturn > 0)
-    length += sprintf(display_command->text + length, "TL%2d ", command->angleturn);
+    length += sprintf(display_command->component.msg + length, "TL%2d ", command->angleturn);
   else if (command->angleturn < 0)
-    length += sprintf(display_command->text + length, "TR%2d ", -command->angleturn);
+    length += sprintf(display_command->component.msg + length, "TR%2d ", -command->angleturn);
   else
-    length += sprintf(display_command->text + length, "     ");
+    length += sprintf(display_command->component.msg + length, "     ");
 
   if (command->attack)
-    length += sprintf(display_command->text + length, "A");
+    length += sprintf(display_command->component.msg + length, "A");
   else
-    length += sprintf(display_command->text + length, " ");
+    length += sprintf(display_command->component.msg + length, " ");
 
   if (command->use)
-    length += sprintf(display_command->text + length, "U");
+    length += sprintf(display_command->component.msg + length, "U");
   else
-    length += sprintf(display_command->text + length, " ");
+    length += sprintf(display_command->component.msg + length, " ");
 
   if (command->change)
-    length += sprintf(display_command->text + length, "C%d", command->change);
+    length += sprintf(display_command->component.msg + length, "C%d", command->change);
   else
-    length += sprintf(display_command->text + length, "  ");
-
-  HUlib_clearTextLine(&display_command->hu_text);
-  s = display_command->text;
-  while (*s) HUlib_addCharToTextLine(&display_command->hu_text, *(s++));
+    length += sprintf(display_command->component.msg + length, "  ");
 }
 
 void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
@@ -218,17 +195,26 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
     current_command->command = command;
   }
 
-  dsda_UpdateCommandText(&command, current_command);
+  dsda_UpdateCommandText(&command, current_command, false);
 }
 
-void dsda_DrawCommandDisplayLine(dsda_command_display_t* command, int offset) {
-  command->hu_text.y = 200 - g_st_height - 8 * offset;
-  HUlib_drawTextLine(&command->hu_text, false);
-}
-
-void dsda_DrawCommandDisplay(void) {
+void dsda_UpdateCommandDisplayHC(void) {
   int i;
-  int offset = 1;
+
+  for (i = 0; i < MAX_HISTORY; ++i)
+    dsda_RefreshHudText(&command_history[i].component);
+
+  dsda_RefreshHudText(&next_command_display.component);
+}
+
+static void dsda_DrawCommandDisplayLine(dsda_command_display_t* command, int offset) {
+  command->component.text.y = base_y - 8 * offset;
+  dsda_DrawBasicText(&command->component);
+}
+
+void dsda_DrawCommandDisplayHC(void) {
+  int i;
+  int offset = 0;
   dsda_command_display_t* command = current_command;
 
   if (dsda_BuildMode()) {
@@ -237,11 +223,7 @@ void dsda_DrawCommandDisplay(void) {
 
     dsda_CopyBuildCmd(&next_cmd);
     dsda_TicCmdToCommand(&next_command, &next_cmd);
-    dsda_UpdateCommandText(&next_command, &next_command_display);
-
-    if (dsda_BuildPlayback())
-      HUlib_cpyStrToTextLine(&next_command_display.hu_text, " PL ");
-
+    dsda_UpdateCommandText(&next_command, &next_command_display, dsda_BuildPlayback());
     dsda_DrawCommandDisplayLine(&next_command_display, offset);
 
     ++offset;
@@ -253,12 +235,12 @@ void dsda_DrawCommandDisplay(void) {
   }
 }
 
-void dsda_EraseCommandDisplay(void) {
+void dsda_EraseCommandDisplayHC(void) {
   int i;
   dsda_command_display_t* command = current_command;
 
   for (i = 0; i < dsda_command_history_size; ++i) {
-    HUlib_eraseTextLine(&command->hu_text);
+    HUlib_eraseTextLine(&command->component.text);
     command = command->prev;
   }
 }

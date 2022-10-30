@@ -18,7 +18,6 @@
 #include "hu_lib.h"
 #include "hu_stuff.h"
 
-#include "dsda/command_display.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
@@ -164,5 +163,6 @@ void dsda_DrawIntermissionDisplay(void) {
   HUlib_drawTextLine(&dsda_intermission_time.text, false);
   HUlib_drawTextLine(&dsda_intermission_total.text, false);
 
-  if (dsda_CommandDisplay()) dsda_DrawCommandDisplay();
+  // TODO: temporarily disabled while migrating
+  // if (dsda_CommandDisplay()) dsda_DrawCommandDisplay();
 }

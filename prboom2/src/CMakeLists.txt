@@ -19,8 +19,6 @@ set(COMMON_SRC
     dsda/brute_force.h
     dsda/build.c
     dsda/build.h
-    dsda/command_display.c
-    dsda/command_display.h
     dsda/compatibility.c
     dsda/compatibility.h
     dsda/configuration.c
@@ -68,6 +66,8 @@ set(COMMON_SRC
     dsda/hud_components/big_armor.h
     dsda/hud_components/big_health.c
     dsda/hud_components/big_health.h
+    dsda/hud_components/command_display.c
+    dsda/hud_components/command_display.h
     dsda/hud_components/composite_time.c
     dsda/hud_components/composite_time.h
     dsda/hud_components/coordinate_display.c

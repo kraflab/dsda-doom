@@ -30,7 +30,6 @@
 
 #include "dsda.h"
 #include "dsda/args.h"
-#include "dsda/command_display.h"
 #include "dsda/configuration.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"

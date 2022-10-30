@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,20 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Command Display
+//	DSDA Command Display HUD Component
 //
 
-#ifndef __DSDA_COMMAND_DISPLAY__
-#define __DSDA_COMMAND_DISPLAY__
+#ifndef __DSDA_HUD_COMPONENT_COMMAND_DISPLAY__
+#define __DSDA_HUD_COMPONENT_COMMAND_DISPLAY__
 
-#include "r_defs.h"
-#include "d_ticcmd.h"
-
-void dsda_ResetCommandHistory(void);
-void dsda_InitCommandHistory(void);
-void dsda_InitCommandDisplay(patchnum_t* font);
-void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd);
-void dsda_DrawCommandDisplay(void);
-void dsda_EraseCommandDisplay(void);
+void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateCommandDisplayHC(void);
+void dsda_DrawCommandDisplayHC(void);
+void dsda_EraseCommandDisplayHC(void);
 
 #endif

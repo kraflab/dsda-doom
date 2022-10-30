@@ -26,7 +26,6 @@
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/exhud.h"
-#include "dsda/command_display.h"
 #include "dsda/intermission_display.h"
 
 #include "hud.h"
@@ -79,17 +78,10 @@ void dsda_InitHud(patchnum_t* font) {
 
   dsda_InitIntermissionDisplay(font);
   dsda_InitExHud();
-  dsda_InitCommandDisplay(font);
 }
 
 static dboolean dsda_ExHudVisible(void) {
   return automap_off;
-}
-
-static dboolean dsda_CommandDisplayVisible(void) {
-  return (dsda_CommandDisplay() || dsda_BuildMode()) && // command display turned on
-         R_PartialView() && // not zoomed in
-         automap_off;
 }
 
 void dsda_UpdateHud(void) {
@@ -108,14 +100,12 @@ void dsda_DrawHud(void) {
   if (dsda_split.ticks > 0) HUlib_drawTextLine(&dsda_split.text, false);
 
   if (dsda_ExHudVisible()) dsda_DrawExHud();
-  if (dsda_CommandDisplayVisible()) dsda_DrawCommandDisplay();
 }
 
 void dsda_EraseHud(void) {
   if (dsda_split.ticks > 0) HUlib_eraseTextLine(&dsda_split.text);
 
   dsda_EraseExHud();
-  dsda_EraseCommandDisplay();
 }
 
 void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {

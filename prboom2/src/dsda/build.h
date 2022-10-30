@@ -17,6 +17,7 @@
 
 #include "d_event.h"
 #include "d_ticcmd.h"
+#include "tables.h"
 
 angle_t dsda_BuildModeViewAngleOffset(void);
 dboolean dsda_AllowBuilding(void);

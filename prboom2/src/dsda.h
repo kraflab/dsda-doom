@@ -33,6 +33,11 @@ typedef struct {
 
 #define LINE_ACTIVATION_INDEX_MAX 8
 
+// TODO: Probably want a command history object split from display
+void dsda_ResetCommandHistory(void);
+void dsda_InitCommandHistory(void);
+void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd);
+
 void dsda_ReadCommandLine(void);
 int dsda_SessionAttempts(void);
 void dsda_DisplayNotifications(void);

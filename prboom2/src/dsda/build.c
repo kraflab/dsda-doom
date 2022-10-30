@@ -20,6 +20,7 @@
 
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
+#include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/pause.h"
@@ -320,11 +321,15 @@ void dsda_EnterBuildMode(void) {
 
   build_mode = true;
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);
+
+  dsda_RefreshExHudCommandDisplay();
 }
 
 void dsda_ExitBuildMode(void) {
   build_mode = false;
   dsda_RemovePauseMode(PAUSE_BUILDMODE);
+
+  dsda_RefreshExHudCommandDisplay();
 }
 
 dboolean dsda_BuildResponder(event_t* ev) {

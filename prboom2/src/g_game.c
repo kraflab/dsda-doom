@@ -89,7 +89,6 @@
 #include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
-#include "dsda/command_display.h"
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"

@@ -21,6 +21,7 @@
 #include "hud_components/big_ammo.h"
 #include "hud_components/big_armor.h"
 #include "hud_components/big_health.h"
+#include "hud_components/command_display.h"
 #include "hud_components/composite_time.h"
 #include "hud_components/coordinate_display.h"
 #include "hud_components/fps.h"
