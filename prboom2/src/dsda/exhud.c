@@ -216,8 +216,6 @@ exhud_component_t components[exhud_component_count] = {
   },
 };
 
-#define DSDA_EXHUD_X 2
-
 int exhud_color_default;
 int exhud_color_warning;
 int exhud_color_alert;
