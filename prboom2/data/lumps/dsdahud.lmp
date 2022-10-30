@@ -4,6 +4,7 @@ composite_time 2 16 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
+line_display 98 8 top_left
 fps 298 0 top_right
 
 heretic ex
@@ -12,6 +13,7 @@ composite_time 2 16 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
+line_display 98 8 top_left
 fps 298 0 top_right
 
 hexen ex
@@ -20,6 +22,7 @@ composite_time 2 16 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
+line_display 98 8 top_left
 fps 298 0 top_right
 
 doom full
@@ -34,6 +37,7 @@ ammo_text 256 32 bottom_right
 keys 241 30 bottom_right
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
+line_display 98 8 top_left
 fps 298 0 top_right
 
 heretic full
@@ -48,6 +52,7 @@ ammo_text 256 48 bottom_right
 keys 241 30 bottom_right
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
+line_display 98 8 top_left
 fps 298 0 top_right
 
 hexen full
@@ -62,4 +67,5 @@ ammo_text 256 24 bottom_right
 keys 102 30 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
+line_display 98 8 top_left
 fps 298 0 top_right

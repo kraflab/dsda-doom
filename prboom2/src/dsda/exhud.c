@@ -65,6 +65,7 @@ typedef enum {
   exhud_attempts,
   exhud_local_time,
   exhud_coordinate_display,
+  exhud_line_display,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -201,6 +202,15 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawCoordinateDisplayHC,
     dsda_EraseCoordinateDisplayHC,
     "coordinate_display",
+    .strict = true,
+    .off_by_default = true,
+  },
+  [exhud_line_display] = {
+    dsda_InitLineDisplayHC,
+    dsda_UpdateLineDisplayHC,
+    dsda_DrawLineDisplayHC,
+    dsda_EraseLineDisplayHC,
+    "line_display",
     .strict = true,
     .off_by_default = true,
   },
@@ -408,8 +418,12 @@ void dsda_RefreshExHudFPS(void) {
 }
 
 void dsda_RefreshExHudCoordinateDisplay(void) {
-  if (dsda_CoordinateDisplay())
+  if (dsda_CoordinateDisplay()) {
     dsda_TurnComponentOn(exhud_coordinate_display);
-  else
+    dsda_TurnComponentOn(exhud_line_display);
+  }
+  else {
     dsda_TurnComponentOff(exhud_coordinate_display);
+    dsda_TurnComponentOff(exhud_line_display);
+  }
 }

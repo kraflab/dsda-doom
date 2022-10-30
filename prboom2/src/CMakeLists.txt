@@ -78,6 +78,8 @@ set(COMMON_SRC
     dsda/hud_components/health_text.h
     dsda/hud_components/keys.c
     dsda/hud_components/keys.h
+    dsda/hud_components/line_display.c
+    dsda/hud_components/line_display.h
     dsda/hud_components/line_distance_tracker.c
     dsda/hud_components/line_distance_tracker.h
     dsda/hud_components/line_tracker.c
@@ -110,8 +112,6 @@ set(COMMON_SRC
     dsda/intermission_display.h
     dsda/key_frame.c
     dsda/key_frame.h
-    dsda/line_display.c
-    dsda/line_display.h
     dsda/line_special.h
     dsda/map_format.c
     dsda/map_format.h

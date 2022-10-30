@@ -28,7 +28,6 @@
 #include "dsda/exhud.h"
 #include "dsda/command_display.h"
 #include "dsda/intermission_display.h"
-#include "dsda/line_display.h"
 
 #include "hud.h"
 
@@ -81,7 +80,6 @@ void dsda_InitHud(patchnum_t* font) {
   dsda_InitIntermissionDisplay(font);
   dsda_InitExHud();
   dsda_InitCommandDisplay(font);
-  dsda_InitLineDisplay(font);
 }
 
 static dboolean dsda_ExHudVisible(void) {
@@ -90,12 +88,6 @@ static dboolean dsda_ExHudVisible(void) {
 
 static dboolean dsda_CommandDisplayVisible(void) {
   return (dsda_CommandDisplay() || dsda_BuildMode()) && // command display turned on
-         R_PartialView() && // not zoomed in
-         automap_off;
-}
-
-static dboolean dsda_CoordinateDisplayVisible(void) {
-  return dsda_CoordinateDisplay() && // command display turned on
          R_PartialView() && // not zoomed in
          automap_off;
 }
@@ -110,7 +102,6 @@ void dsda_UpdateHud(void) {
       --dsda_split_state[i].delay;
 
   if (dsda_ExHudVisible()) dsda_UpdateExHud();
-  if (dsda_CoordinateDisplayVisible()) dsda_UpdateLineDisplay();
 }
 
 void dsda_DrawHud(void) {
@@ -118,7 +109,6 @@ void dsda_DrawHud(void) {
 
   if (dsda_ExHudVisible()) dsda_DrawExHud();
   if (dsda_CommandDisplayVisible()) dsda_DrawCommandDisplay();
-  if (dsda_CoordinateDisplayVisible()) dsda_DrawLineDisplay();
 }
 
 void dsda_EraseHud(void) {
@@ -126,7 +116,6 @@ void dsda_EraseHud(void) {
 
   dsda_EraseExHud();
   dsda_EraseCommandDisplay();
-  dsda_EraseLineDisplay();
 }
 
 void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {

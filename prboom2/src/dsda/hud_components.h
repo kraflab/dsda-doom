@@ -26,6 +26,7 @@
 #include "hud_components/fps.h"
 #include "hud_components/health_text.h"
 #include "hud_components/keys.h"
+#include "hud_components/line_display.h"
 #include "hud_components/local_time.h"
 #include "hud_components/ready_ammo_text.h"
 #include "hud_components/render_stats.h"

@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,17 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Line Display
+//	DSDA Line Display HUD Component
 //
 
-#ifndef __DSDA_LINE_DISPLAY__
-#define __DSDA_LINE_DISPLAY__
+#ifndef __DSDA_HUD_COMPONENT_LINE_DISPLAY__
+#define __DSDA_HUD_COMPONENT_LINE_DISPLAY__
 
-#include "r_defs.h"
-
-void dsda_InitLineDisplay(patchnum_t* font);
-void dsda_UpdateLineDisplay(void);
-void dsda_DrawLineDisplay(void);
-void dsda_EraseLineDisplay(void);
+void dsda_InitLineDisplayHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateLineDisplayHC(void);
+void dsda_DrawLineDisplayHC(void);
+void dsda_EraseLineDisplayHC(void);
 
 #endif
