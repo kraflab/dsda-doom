@@ -39,8 +39,10 @@ void dsda_UpdateLineDisplayHC(void) {
     dsda_RefreshHudText(&line_display[i]);
   }
 
-  if (line_ids[0] != -1 && i < LINE_ACTIVATION_INDEX_MAX)
+  if (line_ids[0] != -1 && i < LINE_ACTIVATION_INDEX_MAX) {
     line_display[i].msg[0] = '\0';
+    dsda_RefreshHudText(&line_display[i]);
+  }
 }
 
 void dsda_DrawLineDisplayHC(void) {
