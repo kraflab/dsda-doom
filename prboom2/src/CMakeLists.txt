@@ -27,8 +27,6 @@ set(COMMON_SRC
     dsda/configuration.h
     dsda/console.c
     dsda/console.h
-    dsda/coordinate_display.c
-    dsda/coordinate_display.h
     dsda/data_organizer.c
     dsda/data_organizer.h
     dsda/death.c
@@ -72,6 +70,8 @@ set(COMMON_SRC
     dsda/hud_components/big_health.h
     dsda/hud_components/composite_time.c
     dsda/hud_components/composite_time.h
+    dsda/hud_components/coordinate_display.c
+    dsda/hud_components/coordinate_display.h
     dsda/hud_components/fps.c
     dsda/hud_components/fps.h
     dsda/hud_components/health_text.c

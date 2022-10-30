@@ -94,6 +94,7 @@ void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
+void dsda_RefreshExHudCoordinateDisplay(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
@@ -141,6 +142,7 @@ void dsda_UpdateStrictMode(void) {
   M_ChangeMouseLook();
   HU_init_crosshair();
   M_ChangeApplyPalette();
+  dsda_RefreshExHudCoordinateDisplay();
 }
 
 void dsda_TrackConfigFeatures(void) {
@@ -336,7 +338,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_coordinate_display] = {
     "dsda_coordinate_display", dsda_config_coordinate_display,
-    CONF_BOOL(0), NULL, STRICT_INT(0)
+    CONF_BOOL(0), NULL, STRICT_INT(0), dsda_RefreshExHudCoordinateDisplay
   },
   [dsda_config_show_fps] = {
     "dsda_show_fps", dsda_config_show_fps,

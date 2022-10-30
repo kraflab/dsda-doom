@@ -27,7 +27,6 @@
 #include "dsda/settings.h"
 #include "dsda/exhud.h"
 #include "dsda/command_display.h"
-#include "dsda/coordinate_display.h"
 #include "dsda/intermission_display.h"
 #include "dsda/line_display.h"
 
@@ -82,7 +81,6 @@ void dsda_InitHud(patchnum_t* font) {
   dsda_InitIntermissionDisplay(font);
   dsda_InitExHud();
   dsda_InitCommandDisplay(font);
-  dsda_InitCoordinateDisplay(font);
   dsda_InitLineDisplay(font);
 }
 
@@ -112,7 +110,6 @@ void dsda_UpdateHud(void) {
       --dsda_split_state[i].delay;
 
   if (dsda_ExHudVisible()) dsda_UpdateExHud();
-  if (dsda_CoordinateDisplayVisible()) dsda_UpdateCoordinateDisplay();
   if (dsda_CoordinateDisplayVisible()) dsda_UpdateLineDisplay();
 }
 
@@ -121,7 +118,6 @@ void dsda_DrawHud(void) {
 
   if (dsda_ExHudVisible()) dsda_DrawExHud();
   if (dsda_CommandDisplayVisible()) dsda_DrawCommandDisplay();
-  if (dsda_CoordinateDisplayVisible()) dsda_DrawCoordinateDisplay();
   if (dsda_CoordinateDisplayVisible()) dsda_DrawLineDisplay();
 }
 
@@ -130,7 +126,6 @@ void dsda_EraseHud(void) {
 
   dsda_EraseExHud();
   dsda_EraseCommandDisplay();
-  dsda_EraseCoordinateDisplay();
   dsda_EraseLineDisplay();
 }
 
