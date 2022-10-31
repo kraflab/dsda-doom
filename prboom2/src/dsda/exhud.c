@@ -43,6 +43,7 @@ typedef struct {
   const dboolean strict;
   const dboolean off_by_default;
   const dboolean intermission;
+  const dboolean not_level;
   dboolean on;
   dboolean initialized;
 } exhud_component_t;
@@ -406,7 +407,11 @@ void dsda_UpdateExHud(void) {
   int i;
 
   for (i = 0; i < exhud_component_count; ++i)
-    if (components[i].on && (!components[i].strict || !dsda_StrictMode()))
+    if (
+      components[i].on &&
+      !components[i].not_level &&
+      (!components[i].strict || !dsda_StrictMode())
+    )
       components[i].update();
 }
 
@@ -414,7 +419,11 @@ void dsda_DrawExHud(void) {
   int i;
 
   for (i = 0; i < exhud_component_count; ++i)
-    if (components[i].on && (!components[i].strict || !dsda_StrictMode()))
+    if (
+      components[i].on &&
+      !components[i].not_level &&
+      (!components[i].strict || !dsda_StrictMode())
+    )
       components[i].draw();
 }
 
@@ -422,7 +431,11 @@ void dsda_EraseExHud(void) {
   int i;
 
   for (i = 0; i < exhud_component_count; ++i)
-    if (components[i].on && (!components[i].strict || !dsda_StrictMode()))
+    if (
+      components[i].on &&
+      !components[i].not_level &&
+      (!components[i].strict || !dsda_StrictMode())
+    )
       components[i].erase();
 }
 
