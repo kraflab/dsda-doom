@@ -32,6 +32,7 @@
 #include "w_wad.h"
 #include "g_game.h"
 
+#include "dsda/exhud.h"
 #include "dsda/intermission_display.h"
 
 #include "heretic/def.h"
@@ -689,6 +690,7 @@ void IN_DrawSingleStats(void)
     MN_DrTextA("FINISHED", x, 25);
 
     dsda_DrawIntermissionDisplay();
+    dsda_DrawExIntermission();
 
     if (intertime < 30)
     {

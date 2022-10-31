@@ -44,6 +44,8 @@
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "r_draw.h"
 #include "hu_stuff.h"
+
+#include "dsda/exhud.h"
 #include "dsda/intermission_display.h"
 #include "dsda/mapinfo.h"
 
@@ -959,6 +961,7 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
   }
 
   dsda_DrawIntermissionDisplay();
+  dsda_DrawExIntermission();
 }
 
 // ====================================================================

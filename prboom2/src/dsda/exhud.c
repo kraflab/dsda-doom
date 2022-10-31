@@ -42,6 +42,7 @@ typedef struct {
   int default_vpt;
   dboolean strict;
   dboolean off_by_default;
+  dboolean intermission;
   dboolean on;
   dboolean initialized;
 } exhud_component_t;
@@ -224,6 +225,7 @@ exhud_component_t components[exhud_component_count] = {
     "command_display",
     .strict = true,
     .off_by_default = true,
+    .intermission = true,
   },
   [exhud_event_split] = {
     dsda_InitEventSplitHC,
@@ -414,6 +416,18 @@ void dsda_EraseExHud(void) {
   for (i = 0; i < exhud_component_count; ++i)
     if (components[i].on && (!components[i].strict || !dsda_StrictMode()))
       components[i].erase();
+}
+
+void dsda_DrawExIntermission(void) {
+  int i;
+
+  for (i = 0; i < exhud_component_count; ++i)
+    if (
+      components[i].on &&
+      components[i].intermission &&
+      (!components[i].strict || !dsda_StrictMode())
+    )
+      components[i].draw();
 }
 
 void dsda_ToggleRenderStats(void) {

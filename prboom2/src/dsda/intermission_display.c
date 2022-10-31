@@ -162,7 +162,4 @@ void dsda_DrawIntermissionDisplay(void) {
 
   HUlib_drawTextLine(&dsda_intermission_time.text, false);
   HUlib_drawTextLine(&dsda_intermission_total.text, false);
-
-  // TODO: temporarily disabled while migrating
-  // if (dsda_CommandDisplay()) dsda_DrawCommandDisplay();
 }
