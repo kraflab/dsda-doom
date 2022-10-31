@@ -46,7 +46,6 @@
 #include "hu_stuff.h"
 
 #include "dsda/exhud.h"
-#include "dsda/intermission_display.h"
 #include "dsda/mapinfo.h"
 
 #include "heretic/in_lude.h"
@@ -960,7 +959,6 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
     }
   }
 
-  dsda_DrawIntermissionDisplay();
   dsda_DrawExIntermission();
 }
 

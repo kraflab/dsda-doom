@@ -80,6 +80,8 @@ set(COMMON_SRC
     dsda/hud_components/health_text.h
     dsda/hud_components/keys.c
     dsda/hud_components/keys.h
+    dsda/hud_components/level_splits.c
+    dsda/hud_components/level_splits.h
     dsda/hud_components/line_display.c
     dsda/hud_components/line_display.h
     dsda/hud_components/line_distance_tracker.c
@@ -110,8 +112,6 @@ set(COMMON_SRC
     dsda/hud_components/weapon_text.h
     dsda/input.c
     dsda/input.h
-    dsda/intermission_display.c
-    dsda/intermission_display.h
     dsda/key_frame.c
     dsda/key_frame.h
     dsda/line_special.h

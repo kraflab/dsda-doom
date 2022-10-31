@@ -7,6 +7,7 @@ coordinate_display 2 8 top_left
 line_display 98 8 top_left
 command_display 198 8 bottom_right
 event_split 10 16 top_left
+level_splits 2 2 top
 fps 298 0 top_right
 
 heretic ex
@@ -18,6 +19,7 @@ coordinate_display 2 8 top_left
 line_display 98 8 top_left
 command_display 198 8 bottom_right
 event_split 10 16 top_left
+level_splits 2 2 top
 fps 298 0 top_right
 
 hexen ex
@@ -29,6 +31,7 @@ coordinate_display 2 8 top_left
 line_display 98 8 top_left
 command_display 198 8 bottom_right
 event_split 10 16 top_left
+level_splits 2 2 top
 fps 298 0 top_right
 
 doom full
@@ -46,6 +49,7 @@ coordinate_display 2 8 top_left
 line_display 98 8 top_left
 command_display 198 48 bottom_right
 event_split 10 16 top_left
+level_splits 2 2 top
 fps 298 0 top_right
 
 heretic full
@@ -63,6 +67,7 @@ coordinate_display 2 8 top_left
 line_display 98 8 top_left
 command_display 198 64 bottom_right
 event_split 10 16 top_left
+level_splits 2 2 top
 fps 298 0 top_right
 
 hexen full
@@ -80,4 +85,5 @@ coordinate_display 2 8 top_left
 line_display 98 8 top_left
 command_display 198 40 bottom_right
 event_split 10 16 top_left
+level_splits 2 2 top
 fps 298 0 top_right

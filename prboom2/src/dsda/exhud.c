@@ -70,6 +70,7 @@ typedef enum {
   exhud_line_display,
   exhud_command_display,
   exhud_event_split,
+  exhud_level_splits,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -234,6 +235,15 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawEventSplitHC,
     dsda_EraseEventSplitHC,
     "event_split",
+  },
+  [exhud_level_splits] = {
+    dsda_InitLevelSplitsHC,
+    dsda_UpdateLevelSplitsHC,
+    dsda_DrawLevelSplitsHC,
+    dsda_EraseLevelSplitsHC,
+    "level_splits",
+    .intermission = true,
+    .not_level = true,
   },
 };
 

@@ -26,7 +26,6 @@
 #include "dsda/global.h"
 #include "dsda/settings.h"
 #include "dsda/exhud.h"
-#include "dsda/intermission_display.h"
 
 #include "hud.h"
 
@@ -40,7 +39,6 @@ void dsda_RefreshHudText(dsda_text_t* hud_text) {
 }
 
 void dsda_InitHud(patchnum_t* font) {
-  dsda_InitIntermissionDisplay(font);
   dsda_InitExHud();
 }
 
