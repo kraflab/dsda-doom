@@ -40,17 +40,6 @@ static dsda_split_state_t dsda_split_state[DSDA_SPLIT_CLASS_COUNT] = {
 
 static dsda_split_text_t split;
 
-static void dsda_UpdateComponentText(char* str, size_t max_size) {
-  int i;
-
-  if (split.ticks > 0)
-    --split.ticks;
-
-  for (i = 0; i < DSDA_SPLIT_CLASS_COUNT; ++i)
-    if (dsda_split_state[i].delay > 0)
-      --dsda_split_state[i].delay;
-}
-
 void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt) {
   dsda_InitTextHC(&split.component, x_offset, y_offset, vpt);
 }
