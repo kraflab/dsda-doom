@@ -177,6 +177,8 @@ static void dsda_UpdateCommandText(dsda_command_t* command,
     length += sprintf(display_command->component.msg + length, "C%d", command->change);
   else
     length += sprintf(display_command->component.msg + length, "  ");
+
+  dsda_RefreshHudText(&display_command->component);
 }
 
 void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
@@ -199,12 +201,7 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
 }
 
 void dsda_UpdateCommandDisplayHC(void) {
-  int i;
-
-  for (i = 0; i < MAX_HISTORY; ++i)
-    dsda_RefreshHudText(&command_history[i].component);
-
-  dsda_RefreshHudText(&next_command_display.component);
+  // nothing to do
 }
 
 static void dsda_DrawCommandDisplayLine(dsda_command_display_t* command, int offset) {
