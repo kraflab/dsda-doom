@@ -375,6 +375,14 @@ void dsda_InitExHud(void) {
             vpt = VPT_ALIGN_LEFT_TOP;
           else if (!strncmp(alignment, "top_right", sizeof(alignment)))
             vpt = VPT_ALIGN_RIGHT_TOP;
+          else if (!strncmp(alignment, "top", sizeof(alignment)))
+            vpt = VPT_ALIGN_TOP;
+          else if (!strncmp(alignment, "bottom", sizeof(alignment)))
+            vpt = VPT_ALIGN_BOTTOM;
+          else if (!strncmp(alignment, "left", sizeof(alignment)))
+            vpt = VPT_ALIGN_LEFT;
+          else if (!strncmp(alignment, "right", sizeof(alignment)))
+            vpt = VPT_ALIGN_RIGHT;
           else
             I_Error("Invalid hud component alignment \"%s\"", line);
 
