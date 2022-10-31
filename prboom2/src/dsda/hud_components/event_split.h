@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,28 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Hud
+//	DSDA Event Split HUD Component
 //
 
-#ifndef __DSDA_HUD__
-#define __DSDA_HUD__
+#ifndef __DSDA_HUD_COMPONENT_EVENT_SPLIT__
+#define __DSDA_HUD_COMPONENT_EVENT_SPLIT__
 
-#include "r_defs.h"
-#include "hu_lib.h"
-
-#define DSDA_TEXT_SIZE 200
-#define DSDA_CHAR_HEIGHT 8
-#define DSDA_CHAR_WIDTH 6
-
-typedef struct {
-  hu_textline_t text;
-  char msg[DSDA_TEXT_SIZE];
-} dsda_text_t;
-
-void dsda_RefreshHudText(dsda_text_t* hud_text);
-void dsda_InitHud(patchnum_t* font);
-void dsda_UpdateHud(void);
-void dsda_DrawHud(void);
-void dsda_EraseHud(void);
+void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateEventSplitHC(void);
+void dsda_DrawEventSplitHC(void);
+void dsda_EraseEventSplitHC(void);
 
 #endif

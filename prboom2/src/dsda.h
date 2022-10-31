@@ -38,6 +38,19 @@ void dsda_ResetCommandHistory(void);
 void dsda_InitCommandHistory(void);
 void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd);
 
+// TODO: Might want a split object separate from display
+typedef enum
+{
+  DSDA_SPLIT_BLUE_KEY,
+  DSDA_SPLIT_YELLOW_KEY,
+  DSDA_SPLIT_RED_KEY,
+  DSDA_SPLIT_USE,
+  DSDA_SPLIT_SECRET,
+  DSDA_SPLIT_CLASS_COUNT
+} dsda_split_class_t;
+
+void dsda_AddSplit(dsda_split_class_t split_class, int lifetime);
+
 void dsda_ReadCommandLine(void);
 int dsda_SessionAttempts(void);
 void dsda_DisplayNotifications(void);

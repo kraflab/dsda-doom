@@ -72,6 +72,8 @@ set(COMMON_SRC
     dsda/hud_components/composite_time.h
     dsda/hud_components/coordinate_display.c
     dsda/hud_components/coordinate_display.h
+    dsda/hud_components/event_split.c
+    dsda/hud_components/event_split.h
     dsda/hud_components/fps.c
     dsda/hud_components/fps.h
     dsda/hud_components/health_text.c

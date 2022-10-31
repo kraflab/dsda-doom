@@ -67,6 +67,7 @@ typedef enum {
   exhud_coordinate_display,
   exhud_line_display,
   exhud_command_display,
+  exhud_event_split,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -223,6 +224,13 @@ exhud_component_t components[exhud_component_count] = {
     "command_display",
     .strict = true,
     .off_by_default = true,
+  },
+  [exhud_event_split] = {
+    dsda_InitEventSplitHC,
+    dsda_UpdateEventSplitHC,
+    dsda_DrawEventSplitHC,
+    dsda_EraseEventSplitHC,
+    "event_split",
   },
 };
 
