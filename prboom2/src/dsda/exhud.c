@@ -39,10 +39,10 @@ typedef struct {
   void (*draw)(void);
   void (*erase)(void);
   const char* name;
-  int default_vpt;
-  dboolean strict;
-  dboolean off_by_default;
-  dboolean intermission;
+  const int default_vpt;
+  const dboolean strict;
+  const dboolean off_by_default;
+  const dboolean intermission;
   dboolean on;
   dboolean initialized;
 } exhud_component_t;
