@@ -464,7 +464,7 @@ void R_InitTranMap(int progress)
           long w2 = (1l<<TSC)-w1;
 
           if (progress)
-            lprintf(LO_INFO, "Tranmap build [        ]\x08\x08\x08\x08\x08\x08\x08\x08\x08");
+            lprintf(LO_DEBUG, "Tranmap build [        ]\x08\x08\x08\x08\x08\x08\x08\x08\x08");
 
           // First, convert playpal into long int type, and transpose array,
           // for fast inner-loop calculations. Precompute tot array.
@@ -499,7 +499,7 @@ void R_InitTranMap(int progress)
                 long b1 = pal[2][i] * w2;
                 if (!(i & 31) && progress)
                   //jff 8/3/98 use logical output routine
-                  lprintf(LO_INFO,".");
+                  lprintf(LO_DEBUG,".");
                 for (j=0;j<256;j++,tp++)
                   {
                     register int color = 255;
