@@ -42,7 +42,6 @@ static void DrBNumber(signed int val, int x, int y);
 static void DrawCommonBar(void);
 static void DrawMainBar(void);
 static void DrawInventoryBar(void);
-static void DrawFullScreenStuff(void);
 
 static void Hexen_SB_Init(void);
 static void Hexen_DrINumber(signed int val, int x, int y);
@@ -556,82 +555,74 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
     }
 
     CPlayer = &players[consoleplayer];
-    if (R_FullView() && !automap_active)
+    if (SB_state == -1)
     {
-        DrawFullScreenStuff();
-        SB_state = -1;
-    }
-    else
-    {
-        if (SB_state == -1)
+        if (heretic)
         {
-            if (heretic)
+            V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
+            if (players[consoleplayer].cheats & CF_GODMODE)
             {
-                V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
-                if (players[consoleplayer].cheats & CF_GODMODE)
-                {
-                    V_DrawNamePatch(16, 167, 0, "GOD1", CR_DEFAULT, VPT_STRETCH);
-                    V_DrawNamePatch(287, 167, 0, "GOD2", CR_DEFAULT, VPT_STRETCH);
-                }
+                V_DrawNamePatch(16, 167, 0, "GOD1", CR_DEFAULT, VPT_STRETCH);
+                V_DrawNamePatch(287, 167, 0, "GOD2", CR_DEFAULT, VPT_STRETCH);
             }
-            else
-            {
-                V_DrawNumPatch(0, 134, 0, LumpH2BAR, CR_DEFAULT, VPT_STRETCH);
-            }
-
-            oldhealth = -1;
-        }
-        DrawCommonBar();
-        if (!inventory)
-        {
-            if (SB_state != 0)
-            {
-                // Main interface
-                if (heretic)
-                {
-                    V_DrawNumPatch(34, 160, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
-                }
-                else
-                {
-                  if (!automap_active)
-                  {
-                      V_DrawNumPatch(38, 162, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
-                  }
-                  else
-                  {
-                      V_DrawNumPatch(38, 162, 0, LumpKEYBAR, CR_DEFAULT, VPT_STRETCH);
-                  }
-                }
-                oldarti = 0;
-                oldammo = -1;
-                oldmana1 = -1;
-                oldmana2 = -1;
-                oldarmor = -1;
-                oldpieces = -1;
-                oldweapon = -1;
-                oldfrags = -9999;       //can't use -1, 'cuz of negative frags
-                oldlife = -1;
-                oldkeys = -1;
-            }
-            if (heretic || !automap_active)
-            {
-                DrawMainBar();
-            }
-            else if (hexen)
-            {
-                DrawKeyBar();
-            }
-            SB_state = 0;
         }
         else
         {
-            if (heretic && SB_state != 1)
-            {
-                V_DrawNumPatch(34, 160, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
-            }
-            DrawInventoryBar();
-            SB_state = 1;
+            V_DrawNumPatch(0, 134, 0, LumpH2BAR, CR_DEFAULT, VPT_STRETCH);
         }
+
+        oldhealth = -1;
+    }
+    DrawCommonBar();
+    if (!inventory)
+    {
+        if (SB_state != 0)
+        {
+            // Main interface
+            if (heretic)
+            {
+                V_DrawNumPatch(34, 160, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
+            }
+            else
+            {
+              if (!automap_active)
+              {
+                  V_DrawNumPatch(38, 162, 0, LumpSTATBAR, CR_DEFAULT, VPT_STRETCH);
+              }
+              else
+              {
+                  V_DrawNumPatch(38, 162, 0, LumpKEYBAR, CR_DEFAULT, VPT_STRETCH);
+              }
+            }
+            oldarti = 0;
+            oldammo = -1;
+            oldmana1 = -1;
+            oldmana2 = -1;
+            oldarmor = -1;
+            oldpieces = -1;
+            oldweapon = -1;
+            oldfrags = -9999;       //can't use -1, 'cuz of negative frags
+            oldlife = -1;
+            oldkeys = -1;
+        }
+        if (heretic || !automap_active)
+        {
+            DrawMainBar();
+        }
+        else if (hexen)
+        {
+            DrawKeyBar();
+        }
+        SB_state = 0;
+    }
+    else
+    {
+        if (heretic && SB_state != 1)
+        {
+            V_DrawNumPatch(34, 160, 0, LumpINVBAR, CR_DEFAULT, VPT_STRETCH);
+        }
+        DrawInventoryBar();
+        SB_state = 1;
     }
     SB_PaletteFlash(false);
     DrawAnimatedIcons();
@@ -908,81 +899,6 @@ void DrawInventoryBar(void)
     {
         lump = !(leveltime & 4) ? LumpINVRTGEM1 : LumpINVRTGEM2;
         V_DrawNumPatch(269, sb_inv_gem_y, 0, lump, CR_DEFAULT, VPT_STRETCH);
-    }
-}
-
-void DrawFullScreenStuff(void)
-{
-    const char *name;
-    int lump;
-    int i;
-    int x;
-    int temp;
-
-    if (CPlayer->mo->health > 0)
-    {
-        DrBNumber(CPlayer->mo->health, 5, 180);
-    }
-    else
-    {
-        DrBNumber(0, 5, 180);
-    }
-    if (deathmatch)
-    {
-        temp = 0;
-        for (i = 0; i < g_maxplayers; i++)
-        {
-            if (playeringame[i])
-            {
-                temp += CPlayer->frags[i];
-            }
-        }
-        DrINumber(temp, 45, 185);
-    }
-    if (!inventory)
-    {
-        if (CPlayer->readyArtifact > 0)
-        {
-            lump = lumparti[CPlayer->readyArtifact];
-            V_DrawTLNamePatch(286, 170, "ARTIBOX");
-            V_DrawNumPatch(sb_full_arti_x, sb_full_arti_y, 0, lump, CR_DEFAULT, VPT_STRETCH);
-            if (heretic || CPlayer->inventory[inv_ptr].count > 1)
-            {
-                DrSmallNumber(CPlayer->inventory[inv_ptr].count, sb_full_arti_count_x, 192);
-            }
-        }
-    }
-    else
-    {
-        x = inv_ptr - curpos;
-        for (i = 0; i < 7; i++)
-        {
-            V_DrawTLNamePatch(50 + i * 31, 168, "ARTIBOX");
-            if (CPlayer->inventorySlotNum > x + i
-                && CPlayer->inventory[x + i].type != arti_none)
-            {
-                lump = lumparti[CPlayer->inventory[x + i].type];
-                V_DrawNumPatch(sb_full_inv_arti_x + i * 31, sb_full_inv_arti_y, 0,
-                               lump, CR_DEFAULT, VPT_STRETCH);
-                if (heretic || CPlayer->inventory[x + i].count > 1)
-                {
-                    DrSmallNumber(CPlayer->inventory[x + i].count,
-                                  sb_full_inv_arti_count_x + i * 31, sb_full_inv_arti_count_y);
-                }
-            }
-        }
-        V_DrawNumPatch(50 + curpos * 31, sb_full_inv_select_y, 0,
-                       LumpSELECTBOX, CR_DEFAULT, VPT_STRETCH);
-        if (x != 0)
-        {
-            lump = !(leveltime & 4) ? LumpINVLFGEM1 : LumpINVLFGEM2;
-            V_DrawNumPatch(sb_full_inv_gem_xl, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
-        }
-        if (CPlayer->inventorySlotNum - x > 7)
-        {
-            lump = !(leveltime & 4) ? LumpINVRTGEM1 : LumpINVRTGEM2;
-            V_DrawNumPatch(sb_full_inv_gem_xr, 167, 0, lump, CR_DEFAULT, VPT_STRETCH);
-        }
     }
 }
 
