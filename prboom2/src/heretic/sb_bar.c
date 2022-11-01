@@ -551,6 +551,10 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
     if (!statusbaron)
     {
         SB_PaletteFlash(false);
+        if (R_FullView())
+        {
+            DrawAnimatedIcons();
+        }
         return;
     }
 
