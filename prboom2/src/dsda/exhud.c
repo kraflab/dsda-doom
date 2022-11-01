@@ -53,6 +53,7 @@ typedef enum {
   exhud_armor_text,
   exhud_big_ammo,
   exhud_big_armor,
+  exhud_big_artifact,
   exhud_big_health,
   exhud_composite_time,
   exhud_health_text,
@@ -103,6 +104,13 @@ exhud_component_t components[exhud_component_count] = {
     dsda_EraseBigArmorHC,
     "big_armor",
     VPT_NOOFFSET,
+  },
+  [exhud_big_artifact] = {
+    dsda_InitBigArtifactHC,
+    dsda_UpdateBigArtifactHC,
+    dsda_DrawBigArtifactHC,
+    dsda_EraseBigArtifactHC,
+    "big_artifact",
   },
   [exhud_big_health] = {
     dsda_InitBigHealthHC,

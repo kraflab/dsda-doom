@@ -62,6 +62,7 @@ composite_time 2 40 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 48 bottom_right
 keys 241 30 bottom_right
+big_artifact 206 32 bottom_right
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
 line_display 98 8 top_left
@@ -80,6 +81,7 @@ composite_time 2 40 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 24 bottom_right
 keys 102 30 bottom_left
+big_artifact 206 32 bottom_right
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
 line_display 98 8 top_left

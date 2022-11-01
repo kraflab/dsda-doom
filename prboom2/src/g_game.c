@@ -4020,6 +4020,16 @@ void G_ContinueDemo(const char *playback_name)
 
 static dboolean InventoryMoveLeft(void)
 {
+    if (R_FullView())
+    {
+        inv_ptr--;
+        if (inv_ptr < 0)
+        {
+            inv_ptr = 0;
+        }
+        return true;
+    }
+
     inventoryTics = 5 * 35;
     if (!inventory)
     {
@@ -4047,6 +4057,19 @@ static dboolean InventoryMoveRight(void)
     player_t *plr;
 
     plr = &players[consoleplayer];
+
+    if (R_FullView())
+    {
+        inv_ptr++;
+        if (inv_ptr >= plr->inventorySlotNum)
+        {
+            inv_ptr--;
+            if (inv_ptr < 0)
+                inv_ptr = 0;
+        }
+        return true;
+    }
+
     inventoryTics = 5 * 35;
     if (!inventory)
     {

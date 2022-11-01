@@ -20,6 +20,7 @@
 #include "hud_components/attempts.h"
 #include "hud_components/big_ammo.h"
 #include "hud_components/big_armor.h"
+#include "hud_components/big_artifact.h"
 #include "hud_components/big_health.h"
 #include "hud_components/command_display.h"
 #include "hud_components/composite_time.h"

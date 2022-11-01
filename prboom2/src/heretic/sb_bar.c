@@ -46,7 +46,7 @@ static void DrawFullScreenStuff(void);
 
 static void Hexen_SB_Init(void);
 static void Hexen_DrINumber(signed int val, int x, int y);
-static void Hexen_DrSmallNumber(int val, int x, int y);
+static void Hexen_DrSmallNumberVPT(int val, int x, int y, int vpt);
 static void DrRedINumber(signed int val, int x, int y);
 static void DrawKeyBar(void);
 static void DrawWeaponPieces(void);
@@ -447,11 +447,11 @@ static void DrBNumber(signed int val, int x, int y)
 //
 //---------------------------------------------------------------------------
 
-static void DrSmallNumber(int val, int x, int y)
+static void DrSmallNumberVPT(int val, int x, int y, int vpt)
 {
     int lump;
 
-    if (hexen) return Hexen_DrSmallNumber(val, x, y);
+    if (hexen) return Hexen_DrSmallNumberVPT(val, x, y, vpt);
 
     if (val == 1)
     {
@@ -460,11 +460,16 @@ static void DrSmallNumber(int val, int x, int y)
     if (val > 9)
     {
         lump = LumpSmNumbers[val / 10];
-        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, vpt);
     }
     val = val % 10;
     lump = LumpSmNumbers[val];
-    V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, vpt);
+}
+
+static void DrSmallNumber(int val, int x, int y)
+{
+    DrSmallNumberVPT(val, x, y, VPT_STRETCH);
 }
 
 //---------------------------------------------------------------------------
@@ -981,6 +986,21 @@ void DrawFullScreenStuff(void)
     }
 }
 
+void DrawArtifact(int x, int y, int vpt)
+{
+  inventory_t *inv;
+  const int delta_x = heretic ? 22 : 19;
+  const int delta_y = heretic ? 22 : 21;
+
+  inv = &players[displayplayer].inventory[inv_ptr];
+
+  if (inv->type > 0)
+  {
+    V_DrawNumPatch(x, y, 0, lumparti[inv->type], CR_DEFAULT, vpt);
+    DrSmallNumberVPT(inv->count, x + delta_x, y + delta_y, vpt);
+  }
+}
+
 //--------------------------------------------------------------------------
 //
 // FUNC SB_Responder
@@ -1168,7 +1188,7 @@ static void Hexen_DrINumber(signed int val, int x, int y)
     V_DrawNumPatch(x + 16, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
 }
 
-static void Hexen_DrSmallNumber(int val, int x, int y)
+static void Hexen_DrSmallNumberVPT(int val, int x, int y, int vpt)
 {
     int lump;
 
@@ -1183,18 +1203,18 @@ static void Hexen_DrSmallNumber(int val, int x, int y)
     if (val > 99)
     {
         lump = LumpSmNumbers[val / 100];
-        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, vpt);
         lump = LumpSmNumbers[(val % 100) / 10];
-        V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, vpt);
     }
     else if (val > 9)
     {
         lump = LumpSmNumbers[val / 10];
-        V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(x + 4, y, 0, lump, CR_DEFAULT, vpt);
     }
     val %= 10;
     lump = LumpSmNumbers[val];
-    V_DrawNumPatch(x + 8, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNumPatch(x + 8, y, 0, lump, CR_DEFAULT, vpt);
 }
 
 static void DrRedINumber(signed int val, int x, int y)
