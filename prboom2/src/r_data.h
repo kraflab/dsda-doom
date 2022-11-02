@@ -96,7 +96,7 @@ int PUREFUNC R_TextureNumForName (const char *name);    // killough -- const add
 int PUREFUNC R_SafeTextureNumForName (const char *name, int snum);
 int PUREFUNC R_CheckTextureNumForName (const char *name);
 
-void R_InitTranMap(int);      // killough 3/6/98: translucency initialization
+void R_InitTranMap(void);      // killough 3/6/98: translucency initialization
 int R_ColormapNumForName(const char *name);      // killough 4/4/98
 
 extern const byte *main_tranmap, *tranmap;

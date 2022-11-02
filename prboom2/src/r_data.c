@@ -421,7 +421,7 @@ int tran_filter_pct; // filter percent
 
 #define TSC 12        /* number of fixed point digits in filter percent */
 
-void R_InitTranMap(int progress)
+void R_InitTranMap(void)
 {
   int lump = W_CheckNumForName("TRANMAP");
 
@@ -463,9 +463,6 @@ void R_InitTranMap(int progress)
       long w1 = ((unsigned long) tran_filter_pct<<TSC)/100;
       long w2 = (1l<<TSC)-w1;
 
-      if (progress)
-        lprintf(LO_DEBUG, "Tranmap build [        ]\x08\x08\x08\x08\x08\x08\x08\x08\x08");
-
       // First, convert playpal into long int type, and transpose array,
       // for fast inner-loop calculations. Precompute tot array.
 
@@ -497,9 +494,7 @@ void R_InitTranMap(int progress)
           long r1 = pal[0][i] * w2;
           long g1 = pal[1][i] * w2;
           long b1 = pal[2][i] * w2;
-          if (!(i & 31) && progress)
-            //jff 8/3/98 use logical output routine
-            lprintf(LO_DEBUG,".");
+
           for (j=0;j<256;j++,tp++)
           {
             register int color = 255;
@@ -549,7 +544,7 @@ void R_InitData(void)
   R_InitFlats();
   lprintf(LO_DEBUG, "Sprites ");
   R_InitSpriteLumps();
-  R_InitTranMap(1);                   // killough 2/21/98, 3/6/98
+  R_InitTranMap();                   // killough 2/21/98, 3/6/98
   R_InitColormaps();                    // killough 3/20/98
 }
 
