@@ -222,11 +222,11 @@ static void buildFineStrafeLeft(void) {
 }
 
 static void buildTurnRight(void) {
-  build_cmd.angleturn += shortTic();
+  build_cmd.angleturn -= shortTic();
 }
 
 static void buildTurnLeft(void) {
-  build_cmd.angleturn -= shortTic();
+  build_cmd.angleturn += shortTic();
 }
 
 static void buildUse(void) {
