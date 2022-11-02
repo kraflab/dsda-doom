@@ -238,7 +238,6 @@ typedef enum {
   dsda_config_fps_limit,
   dsda_config_usegamma,
   dsda_config_screenblocks,
-  dsda_config_tran_filter_pct,
   dsda_config_sdl_video_window_pos,
   dsda_config_palette_ondamage,
   dsda_config_palette_onbonus,

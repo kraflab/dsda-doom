@@ -226,7 +226,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_exclusive_fullscreen),
   MIGRATED_SETTING(dsda_config_render_vsync),
   MIGRATED_SETTING(dsda_config_uncapped_framerate),
-  MIGRATED_SETTING(dsda_config_tran_filter_pct),
   MIGRATED_SETTING(dsda_config_boom_translucent_sprites),
   MIGRATED_SETTING(dsda_config_screenblocks),
   MIGRATED_SETTING(dsda_config_usegamma),

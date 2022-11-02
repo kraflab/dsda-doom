@@ -417,15 +417,13 @@ int R_ColormapNumForName(const char *name)
 // By Lee Killough 2/21/98
 //
 
-int tran_filter_pct; // filter percent
+const int tran_filter_pct = 66; // filter percent
 
 #define TSC 12        /* number of fixed point digits in filter percent */
 
 void R_InitTranMap(void)
 {
   int lump = W_CheckNumForName("TRANMAP");
-
-  tran_filter_pct = dsda_IntConfig(dsda_config_tran_filter_pct);
 
   // If a tranlucency filter map lump is present, use it
 

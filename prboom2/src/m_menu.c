@@ -3045,11 +3045,6 @@ setup_menu_t tas_settings[] = {
   FINAL_ENTRY
 };
 
-void M_Trans(void) // To reset translucency after setting it in menu
-{
-  R_InitTranMap();
-}
-
 // To (un)set fullscreen video after menu changes
 void M_ChangeFullScreen(void)
 {
