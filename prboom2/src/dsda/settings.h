@@ -46,6 +46,7 @@ dboolean dsda_ShowSplitData(void);
 dboolean dsda_CommandDisplay(void);
 dboolean dsda_CoordinateDisplay(void);
 dboolean dsda_ShowFPS(void);
+dboolean dsda_ShowLevelSplits(void);
 dboolean dsda_ShowDemoAttempts(void);
 dboolean dsda_ShowHealthBars(void);
 dboolean dsda_MapPointCoordinates(void);

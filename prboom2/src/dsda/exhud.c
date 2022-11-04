@@ -417,6 +417,7 @@ void dsda_InitExHud(void) {
     dsda_TurnComponentOn(exhud_render_stats);
 
   dsda_RefreshExHudFPS();
+  dsda_RefreshExHudLevelSplits();
   dsda_RefreshExHudCoordinateDisplay();
   dsda_RefreshExHudCommandDisplay();
 }
@@ -485,6 +486,13 @@ void dsda_RefreshExHudFPS(void) {
     dsda_TurnComponentOn(exhud_fps);
   else
     dsda_TurnComponentOff(exhud_fps);
+}
+
+void dsda_RefreshExHudLevelSplits(void) {
+  if (dsda_ShowLevelSplits())
+    dsda_TurnComponentOn(exhud_level_splits);
+  else
+    dsda_TurnComponentOff(exhud_level_splits);
 }
 
 void dsda_RefreshExHudCoordinateDisplay(void) {
