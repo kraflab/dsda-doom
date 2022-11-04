@@ -28,6 +28,7 @@ int dsda_analysis;
 dboolean dsda_pacifist = true;
 dboolean dsda_reality = true;
 dboolean dsda_almost_reality = true;
+dboolean dsda_reborn = false;
 int dsda_missed_monsters = 0;
 int dsda_missed_secrets = 0;
 int dsda_missed_weapons = 0;
@@ -54,6 +55,7 @@ void dsda_ResetAnalysis(void) {
   dsda_pacifist = true;
   dsda_reality = true;
   dsda_almost_reality = true;
+  dsda_reborn = false;
   dsda_missed_monsters = 0;
   dsda_missed_secrets = 0;
   dsda_missed_weapons = 0;
@@ -94,6 +96,7 @@ void dsda_WriteAnalysis(void) {
   fprintf(fstream, "stroller %d\n", dsda_stroller);
   fprintf(fstream, "reality %d\n", dsda_reality);
   fprintf(fstream, "almost_reality %d\n", dsda_almost_reality);
+  fprintf(fstream, "reborn %d\n", dsda_reborn);
   fprintf(fstream, "100k %d\n", dsda_100k);
   fprintf(fstream, "100s %d\n", dsda_100s);
   fprintf(fstream, "missed_monsters %d\n", dsda_missed_monsters);
@@ -147,6 +150,7 @@ const char* dsda_DetectCategory(void) {
   if (dsda_turbo) return "Other";
   if (coop_spawns) return "Other";
   if (solo_net) return "Other";
+  if (dsda_reborn) return "Other";
 
   if (gameskill == sk_hard) {
     if (dsda_nomo && !dsda_respawn && !dsda_fast) {

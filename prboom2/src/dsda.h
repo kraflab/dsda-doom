@@ -54,6 +54,7 @@ void dsda_AddSplit(dsda_split_class_t split_class, int lifetime);
 void dsda_ReadCommandLine(void);
 int dsda_SessionAttempts(void);
 void dsda_DisplayNotifications(void);
+void dsda_WatchReborn(int playernum);
 void dsda_WatchCard(card_t card);
 void dsda_WatchCrush(mobj_t* thing, int damage);
 void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int damage);

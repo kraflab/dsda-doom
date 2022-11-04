@@ -1871,6 +1871,8 @@ void G_DeathMatchSpawnPlayer (int playernum)
 
 void G_DoReborn (int playernum)
 {
+  dsda_WatchReborn(playernum);
+
   if (hexen)
     return Hexen_G_DoReborn(playernum);
 

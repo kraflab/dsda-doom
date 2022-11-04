@@ -229,6 +229,10 @@ void dsda_DisplayNotification(const char* msg) {
   doom_printf("%s", msg);
 }
 
+void dsda_WatchReborn(int playernum) {
+  dsda_reborn = true;
+}
+
 void dsda_WatchCard(card_t card) {
   if (dsda_time_keys)
     switch (card) {
