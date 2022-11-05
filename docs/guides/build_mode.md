@@ -15,6 +15,7 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 - Turn values and the use action are reset every time the frame advances. Other values are kept.
 - Use `build.turbo` / `b.turbo` in the console to toggle turbo on and off (or launch with `-turbo`).
 - You can also set values with `mf X`, `mb X`, `sr X`, `sl X`, `tr X`, and `tl X` in the console.
+- The raven games also support `fu X` / `fd X` / `fc` (fly up / down / center), `lu X` / `ld X` / `lc` (look up / down / center), and `ua X` (use artifact).
 
 ### Time
 

@@ -68,6 +68,13 @@ See the [build mode guide](./build_mode.md) for more info.
 - `sl <value>`
 - `tr <value>`
 - `tl <value>`
+- `fu <value>`
+- `fd <value>`
+- `fc`
+- `lu <value>`
+- `ld <value>`
+- `lc`
+- `ua <value>`
 
 #### Cheats
 - `idchoppers`
