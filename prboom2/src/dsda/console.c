@@ -650,6 +650,44 @@ static dboolean console_BuildTL(const char* command, const char* args) {
   return sscanf(args, "%i", &x) && dsda_BuildTL(x);
 }
 
+static dboolean console_BuildFU(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildFU(x);
+}
+
+static dboolean console_BuildFD(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildFD(x);
+}
+
+static dboolean console_BuildFC(const char* command, const char* args) {
+  return dsda_BuildFC();
+}
+
+static dboolean console_BuildLU(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildLU(x);
+}
+
+static dboolean console_BuildLD(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildLD(x);
+}
+
+static dboolean console_BuildLC(const char* command, const char* args) {
+  return dsda_BuildLC();
+}
+
+static dboolean console_BuildUA(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildUA(x);
+}
+
 static dboolean console_BruteForceStart(const char* command, const char* args) {
   int depth;
   int forwardmove_min, forwardmove_max;
@@ -1008,6 +1046,13 @@ static console_command_entry_t console_commands[] = {
   { "sl", console_BuildSL, CF_DEMO },
   { "tr", console_BuildTR, CF_DEMO },
   { "tl", console_BuildTL, CF_DEMO },
+  { "fu", console_BuildFU, CF_DEMO },
+  { "fd", console_BuildFD, CF_DEMO },
+  { "fc", console_BuildFC, CF_DEMO },
+  { "lu", console_BuildLU, CF_DEMO },
+  { "ld", console_BuildLD, CF_DEMO },
+  { "lc", console_BuildLC, CF_DEMO },
+  { "ua", console_BuildUA, CF_DEMO },
 
   // demos
   { "demo.export", console_DemoExport, CF_ALWAYS },
