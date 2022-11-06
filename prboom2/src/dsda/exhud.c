@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 
+#include "doomstat.h"
 #include "hu_stuff.h"
 #include "lprintf.h"
 #include "m_misc.h"
@@ -425,6 +426,9 @@ void dsda_InitExHud(void) {
 void dsda_UpdateExHud(void) {
   int i;
 
+  if (automap_on)
+    return;
+
   for (i = 0; i < exhud_component_count; ++i)
     if (
       components[i].on &&
@@ -436,6 +440,9 @@ void dsda_UpdateExHud(void) {
 
 void dsda_DrawExHud(void) {
   int i;
+
+  if (automap_on)
+    return;
 
   for (i = 0; i < exhud_component_count; ++i)
     if (

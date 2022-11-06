@@ -34,7 +34,6 @@
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/ghost.h"
-#include "dsda/hud.h"
 #include "dsda/key_frame.h"
 #include "dsda/mouse.h"
 #include "dsda/settings.h"

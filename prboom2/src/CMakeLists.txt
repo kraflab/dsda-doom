@@ -49,8 +49,6 @@ set(COMMON_SRC
     dsda/gl/render_scale.h
     dsda/global.c
     dsda/global.h
-    dsda/hud.c
-    dsda/hud.h
     dsda/hud_components.h
     dsda/hud_components/ammo_text.c
     dsda/hud_components/ammo_text.h

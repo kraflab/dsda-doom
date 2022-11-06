@@ -143,3 +143,12 @@ void dsda_DrawBasicText(dsda_text_t* component) {
 
   HUlib_drawOffsetTextLine(&component->text, offset);
 }
+
+void dsda_RefreshHudText(dsda_text_t* component) {
+  const char* s;
+
+  HUlib_clearTextLine(&component->text);
+
+  s = component->msg;
+  while (*s) HUlib_addCharToTextLine(&component->text, *(s++));
+}
