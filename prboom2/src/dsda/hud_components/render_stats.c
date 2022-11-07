@@ -76,8 +76,8 @@ void dsda_UpdateRenderStatsHC(void) {
 }
 
 void dsda_DrawRenderStatsHC(void) {
-  HUlib_drawTextLine(&component[0].text, false);
-  HUlib_drawTextLine(&component[1].text, false);
+  dsda_DrawBasicText(&component[0]);
+  dsda_DrawBasicText(&component[1]);
 }
 
 void dsda_EraseRenderStatsHC(void) {

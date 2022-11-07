@@ -72,7 +72,7 @@ void dsda_DrawTrackerHC(void) {
   int i;
 
   for (i = 0; i < TRACKER_LIMIT; ++i)
-    HUlib_drawTextLine(&component[i].text, false);
+    dsda_DrawBasicText(&component[i]);
 }
 
 void dsda_EraseTrackerHC(void) {

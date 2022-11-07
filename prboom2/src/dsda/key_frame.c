@@ -37,7 +37,6 @@
 #include "dsda.h"
 #include "dsda/args.h"
 #include "dsda/build.h"
-#include "dsda/command_display.h"
 #include "dsda/demo.h"
 #include "dsda/features.h"
 #include "dsda/mapinfo.h"

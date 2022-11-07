@@ -305,7 +305,11 @@ extern dboolean setsizeneeded;
 
 static void D_DrawPause(void)
 {
+  if (dsda_PauseMode(PAUSE_BUILDMODE))
+    return;
+
   V_BeginUIDraw();
+
   if (hexen)
   {
     if (!netgame)
@@ -319,12 +323,9 @@ static void D_DrawPause(void)
   }
   else if (heretic)
     MN_DrawPause();
-  else if (!dsda_PauseMode(PAUSE_BUILDMODE))
-    // Simplified the "logic" here and no need for x-coord caching - POPE
-    V_DrawNamePatch(
-      (320 - V_NamePatchWidth("M_PAUSE"))/2, 4, 0,
-      "M_PAUSE", CR_DEFAULT, VPT_STRETCH
-    );
+  else
+    V_DrawNamePatch((320 - V_NamePatchWidth("M_PAUSE")) / 2, 4, 0, "M_PAUSE", CR_DEFAULT, VPT_STRETCH);
+
   V_EndUIDraw();
 }
 
@@ -1898,7 +1899,7 @@ static void D_DoomMainSetup(void)
   // do not try to interpolate during timedemo
   M_ChangeUncappedFrameRate();
 
-  lprintf(LO_INFO, "\n"); // Separator after setup
+  lprintf(LO_DEBUG, "\n"); // Separator after setup
 }
 
 //

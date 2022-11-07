@@ -26,7 +26,7 @@
 #include "g_game.h"
 #include "p_setup.h"
 
-#include "dsda/intermission_display.h"
+#include "dsda/exhud.h"
 #include "dsda/mapinfo.h"
 
 #include "heretic/mn_menu.h"
@@ -301,7 +301,7 @@ void Hexen_IN_Drawer(void)
         {
             DrawHubText();
         }
-        dsda_DrawIntermissionDisplay();
+        dsda_DrawExIntermission();
     }
     else
     {

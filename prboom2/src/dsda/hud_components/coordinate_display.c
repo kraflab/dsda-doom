@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,24 +12,12 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Coordinate Display
+//	DSDA Coordinate Display HUD Component
 //
 
-#include <math.h>
-
-#include "st_stuff.h"
-#include "hu_lib.h"
-#include "hu_stuff.h"
-#include "doomstat.h"
-#include "m_menu.h"
-
-#include "dsda/hud.h"
-#include "dsda/utility.h"
+#include "base.h"
 
 #include "coordinate_display.h"
-
-#define COORDINATE_TEXT_X 2
-#define COORDINATE_TEXT_Y 8
 
 #define THRESHOLD_1V 15.11
 #define THRESHOLD_2V 19.35
@@ -49,6 +37,7 @@ static dsda_text_t dsda_vy_display;
 static dsda_text_t dsda_d_display;
 static dsda_text_t dsda_dx_display;
 static dsda_text_t dsda_dy_display;
+static char dsda_coordinate_color;
 static char dsda_velocity_color;
 static char dsda_distance_color;
 
@@ -79,7 +68,7 @@ static void dsda_WriteCoordinate(dsda_text_t* text, fixed_t x, const char* ch) {
 
   dsda_FixedToString(str, x);
 
-  snprintf(text->msg, sizeof(text->msg), "%s: %s", ch, str);
+  snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %s", dsda_coordinate_color, ch, str);
 
   dsda_RefreshHudText(text);
 }
@@ -91,9 +80,11 @@ static void dsda_WriteAngle(dsda_text_t* text, angle_t x, const char* ch) {
   value = dsda_SplitAngle(x);
 
   if (value.frac)
-    snprintf(text->msg, sizeof(text->msg), "%s: %i.%03i", ch, value.base, value.frac);
+    snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i.%03i",
+             dsda_coordinate_color, ch, value.base, value.frac);
   else
-    snprintf(text->msg, sizeof(text->msg), "%s: %i", ch, value.base);
+    snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i",
+             dsda_coordinate_color, ch, value.base);
 
   dsda_RefreshHudText(text);
 }
@@ -162,129 +153,22 @@ static void dsda_WriteDistance(dsda_text_t* text) {
   dsda_RefreshHudText(text);
 }
 
-void dsda_InitCoordinateDisplay(patchnum_t* font) {
-  int offset = 0;
+void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt) {
+  dsda_coordinate_color = HUlib_Color(CR_GREEN);
 
-  HUlib_initTextLine(
-    &dsda_x_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GREEN,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_y_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GREEN,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_z_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GREEN,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_a_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GREEN,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += 2 * DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_v_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_vx_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_vy_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += 2 * DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_d_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_dx_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
-
-  offset += DSDA_CHAR_HEIGHT;
-
-  HUlib_initTextLine(
-    &dsda_dy_display.text,
-    COORDINATE_TEXT_X,
-    COORDINATE_TEXT_Y + offset,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-  );
+  dsda_InitTextHC(&dsda_x_display, x_offset, y_offset, vpt);
+  dsda_InitTextHC(&dsda_y_display, x_offset, y_offset + 8, vpt);
+  dsda_InitTextHC(&dsda_z_display, x_offset, y_offset + 16, vpt);
+  dsda_InitTextHC(&dsda_a_display, x_offset, y_offset + 24, vpt);
+  dsda_InitTextHC(&dsda_v_display, x_offset, y_offset + 40, vpt);
+  dsda_InitTextHC(&dsda_vx_display, x_offset, y_offset + 48, vpt);
+  dsda_InitTextHC(&dsda_vy_display, x_offset, y_offset + 56, vpt);
+  dsda_InitTextHC(&dsda_d_display, x_offset, y_offset + 72, vpt);
+  dsda_InitTextHC(&dsda_dx_display, x_offset, y_offset + 80, vpt);
+  dsda_InitTextHC(&dsda_dy_display, x_offset, y_offset + 88, vpt);
 }
 
-void dsda_UpdateCoordinateDisplay(void) {
+void dsda_UpdateCoordinateDisplayHC(void) {
   mobj_t* mo;
 
   mo = players[displayplayer].mo;
@@ -299,26 +183,33 @@ void dsda_UpdateCoordinateDisplay(void) {
   dsda_WriteDistance(&dsda_d_display);
   dsda_WriteCoordinateSimple(&dsda_dx_display, mo->x - mo->PrevX, "X", dsda_distance_color);
   dsda_WriteCoordinateSimple(&dsda_dy_display, mo->y - mo->PrevY, "Y", dsda_distance_color);
+
+  dsda_RefreshHudText(&dsda_x_display);
+  dsda_RefreshHudText(&dsda_y_display);
+  dsda_RefreshHudText(&dsda_z_display);
+  dsda_RefreshHudText(&dsda_a_display);
+  dsda_RefreshHudText(&dsda_v_display);
+  dsda_RefreshHudText(&dsda_vx_display);
+  dsda_RefreshHudText(&dsda_vy_display);
+  dsda_RefreshHudText(&dsda_d_display);
+  dsda_RefreshHudText(&dsda_dx_display);
+  dsda_RefreshHudText(&dsda_dy_display);
 }
 
-void dsda_DrawCoordinateDisplay(void) {
-  int offset;
-
-  offset = M_ConsoleOpen() ? 2 * DSDA_CHAR_HEIGHT : 0;
-
-  HUlib_drawOffsetTextLine(&dsda_x_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_y_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_z_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_a_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_v_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_vx_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_vy_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_d_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_dx_display.text, offset);
-  HUlib_drawOffsetTextLine(&dsda_dy_display.text, offset);
+void dsda_DrawCoordinateDisplayHC(void) {
+  dsda_DrawBasicText(&dsda_x_display);
+  dsda_DrawBasicText(&dsda_y_display);
+  dsda_DrawBasicText(&dsda_z_display);
+  dsda_DrawBasicText(&dsda_a_display);
+  dsda_DrawBasicText(&dsda_v_display);
+  dsda_DrawBasicText(&dsda_vx_display);
+  dsda_DrawBasicText(&dsda_vy_display);
+  dsda_DrawBasicText(&dsda_d_display);
+  dsda_DrawBasicText(&dsda_dx_display);
+  dsda_DrawBasicText(&dsda_dy_display);
 }
 
-void dsda_EraseCoordinateDisplay(void) {
+void dsda_EraseCoordinateDisplayHC(void) {
   HUlib_eraseTextLine(&dsda_x_display.text);
   HUlib_eraseTextLine(&dsda_y_display.text);
   HUlib_eraseTextLine(&dsda_z_display.text);

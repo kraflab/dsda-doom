@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,17 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Coordinate Display
+//	DSDA Attempts HUD Component
 //
 
-#ifndef __DSDA_COORDINATE_DISPLAY__
-#define __DSDA_COORDINATE_DISPLAY__
+#ifndef __DSDA_HUD_COMPONENT_ATTEMPTS__
+#define __DSDA_HUD_COMPONENT_ATTEMPTS__
 
-#include "r_defs.h"
-
-void dsda_InitCoordinateDisplay(patchnum_t* font);
-void dsda_UpdateCoordinateDisplay(void);
-void dsda_DrawCoordinateDisplay(void);
-void dsda_EraseCoordinateDisplay(void);
+void dsda_InitAttemptsHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateAttemptsHC(void);
+void dsda_DrawAttemptsHC(void);
+void dsda_EraseAttemptsHC(void);
 
 #endif

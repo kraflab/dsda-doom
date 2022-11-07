@@ -204,7 +204,7 @@ static int pm_init (int samplerate)
 
   snd_mididev = dsda_StringConfig(dsda_config_snd_mididev);
 
-  lprintf (LO_INFO, "portmidiplayer device list:\n");
+  lprintf (LO_DEBUG, "portmidiplayer device list:\n");
   for (i = 0; i < Pm_CountDevices (); i++)
   {
     oinfo = Pm_GetDeviceInfo (i);
@@ -214,18 +214,18 @@ static int pm_init (int samplerate)
     if (strlen (snd_mididev) && strstr (devname, snd_mididev))
     {
       outputdevice = i;
-      lprintf (LO_INFO, ">>%s\n", devname);
+      lprintf (LO_DEBUG, ">>%s\n", devname);
     }
     else
     {
-      lprintf (LO_INFO, "  %s\n", devname);
+      lprintf (LO_DEBUG, "  %s\n", devname);
     }
   }
 
 
   oinfo = Pm_GetDeviceInfo (outputdevice);
 
-  lprintf (LO_INFO, "portmidiplayer: Opening device %s:%s for output\n", oinfo->interf, oinfo->name);
+  lprintf (LO_DEBUG, "portmidiplayer: Opening device %s:%s for output\n", oinfo->interf, oinfo->name);
 
   if (Pm_OpenOutput(&pm_stream, outputdevice, NULL, DRIVER_BUFFER, NULL, NULL, DRIVER_LATENCY) != pmNoError)
   {

@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,39 +12,23 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Line Display
+//	DSDA Line Display HUD Component
 //
 
-#include "hu_lib.h"
-#include "hu_stuff.h"
-#include "m_menu.h"
-
-#include "dsda.h"
-#include "dsda/hud.h"
+#include "base.h"
 
 #include "line_display.h"
 
-#define LINE_TEXT_X (DSDA_CHAR_WIDTH * 16 + 2)
-#define LINE_TEXT_Y 8
-
 static dsda_text_t line_display[LINE_ACTIVATION_INDEX_MAX];
 
-void dsda_InitLineDisplay(patchnum_t* font) {
+void dsda_InitLineDisplayHC(int x_offset, int y_offset, int vpt) {
   int i;
 
   for (i = 0; i < LINE_ACTIVATION_INDEX_MAX; ++i)
-    HUlib_initTextLine(
-      &line_display[i].text,
-      LINE_TEXT_X,
-      LINE_TEXT_Y + i * DSDA_CHAR_HEIGHT,
-      font,
-      HU_FONTSTART,
-      CR_GRAY,
-      VPT_ALIGN_LEFT_TOP | VPT_EX_TEXT
-    );
+    dsda_InitTextHC(&line_display[i], x_offset, y_offset + i * 8, vpt);
 }
 
-void dsda_UpdateLineDisplay(void) {
+void dsda_UpdateLineDisplayHC(void) {
   int* line_ids;
   int i;
 
@@ -55,24 +39,24 @@ void dsda_UpdateLineDisplay(void) {
     dsda_RefreshHudText(&line_display[i]);
   }
 
-  if (line_ids[0] != -1 && i < LINE_ACTIVATION_INDEX_MAX)
+  if (line_ids[0] != -1 && i < LINE_ACTIVATION_INDEX_MAX) {
     line_display[i].msg[0] = '\0';
+    dsda_RefreshHudText(&line_display[i]);
+  }
 }
 
-void dsda_DrawLineDisplay(void) {
-  int offset, i;
-
-  offset = M_ConsoleOpen() ? 2 * DSDA_CHAR_HEIGHT : 0;
+void dsda_DrawLineDisplayHC(void) {
+  int i;
 
   for (i = 0; i < LINE_ACTIVATION_INDEX_MAX; ++i) {
     if (!line_display[i].msg[0])
       break;
 
-    HUlib_drawOffsetTextLine(&line_display[i].text, offset);
+    dsda_DrawBasicText(&line_display[i]);
   }
 }
 
-void dsda_EraseLineDisplay(void) {
+void dsda_EraseLineDisplayHC(void) {
   int i;
 
   for (i = 0; i < LINE_ACTIVATION_INDEX_MAX; ++i)

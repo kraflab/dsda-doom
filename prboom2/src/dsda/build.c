@@ -20,6 +20,7 @@
 
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
+#include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/pause.h"
@@ -128,6 +129,75 @@ dboolean dsda_BuildTL(int x) {
   return true;
 }
 
+dboolean dsda_BuildFU(int x) {
+  if (x < 0 || x > 7)
+    return false;
+
+  build_cmd.lookfly &= 0x0f;
+  build_cmd.lookfly |= (x << 4);
+
+  return true;
+}
+
+dboolean dsda_BuildFD(int x) {
+  if (x < 0 || x > 7)
+    return false;
+
+  if (x)
+    x = 16 - x;
+
+  build_cmd.lookfly &= 0x0f;
+  build_cmd.lookfly |= (x << 4);
+
+  return true;
+}
+
+dboolean dsda_BuildFC(void) {
+  build_cmd.lookfly &= 0x0f;
+  build_cmd.lookfly |= 0x80;
+
+  return true;
+}
+
+dboolean dsda_BuildLU(int x) {
+  if (x < 0 || x > 7)
+    return false;
+
+  build_cmd.lookfly &= 0xf0;
+  build_cmd.lookfly |= x;
+
+  return true;
+}
+
+dboolean dsda_BuildLD(int x) {
+  if (x < 0 || x > 7)
+    return false;
+
+  if (x)
+    x = 16 - x;
+
+  build_cmd.lookfly &= 0xf0;
+  build_cmd.lookfly |= x;
+
+  return true;
+}
+
+dboolean dsda_BuildLC(void) {
+  build_cmd.lookfly &= 0xf0;
+  build_cmd.lookfly |= 0x08;
+
+  return true;
+}
+
+dboolean dsda_BuildUA(int x) {
+  if (x < 0 || x > (heretic ? 10 : 15))
+    return false;
+
+  build_cmd.arti = x;
+
+  return true;
+}
+
 static void buildForward(void) {
   if (allow_turbo) {
     if (build_cmd.forwardmove == 127)
@@ -221,11 +291,11 @@ static void buildFineStrafeLeft(void) {
 }
 
 static void buildTurnRight(void) {
-  build_cmd.angleturn += shortTic();
+  build_cmd.angleturn -= shortTic();
 }
 
 static void buildTurnLeft(void) {
-  build_cmd.angleturn -= shortTic();
+  build_cmd.angleturn += shortTic();
 }
 
 static void buildUse(void) {
@@ -310,6 +380,7 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
   dsda_CopyBuildCmd(cmd);
 
   build_cmd.angleturn = 0;
+  build_cmd.arti = 0;
   build_cmd.buttons &= ~BT_USE;
   if (build_cmd.buttons & BT_CHANGE)
     build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
@@ -320,11 +391,15 @@ void dsda_EnterBuildMode(void) {
 
   build_mode = true;
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);
+
+  dsda_RefreshExHudCommandDisplay();
 }
 
 void dsda_ExitBuildMode(void) {
   build_mode = false;
   dsda_RemovePauseMode(PAUSE_BUILDMODE);
+
+  dsda_RefreshExHudCommandDisplay();
 }
 
 dboolean dsda_BuildResponder(event_t* ev) {

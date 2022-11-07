@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2020 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,17 +12,29 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Line Display
+//	DSDA Big Artifact HUD Component
 //
 
-#ifndef __DSDA_LINE_DISPLAY__
-#define __DSDA_LINE_DISPLAY__
+#include "base.h"
 
-#include "r_defs.h"
+#include "big_artifact.h"
 
-void dsda_InitLineDisplay(patchnum_t* font);
-void dsda_UpdateLineDisplay(void);
-void dsda_DrawLineDisplay(void);
-void dsda_EraseLineDisplay(void);
+static dsda_patch_component_t component;
 
-#endif
+void dsda_InitBigArtifactHC(int x_offset, int y_offset, int vpt) {
+  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+}
+
+void dsda_UpdateBigArtifactHC(void) {
+  return;
+}
+
+void dsda_DrawBigArtifactHC(void) {
+  extern void DrawArtifact(int x, int y, int vpt);
+
+  DrawArtifact(component.x, component.y, component.vpt);
+}
+
+void dsda_EraseBigArtifactHC(void) {
+  return;
+}

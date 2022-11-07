@@ -89,7 +89,6 @@
 #include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
-#include "dsda/command_display.h"
 #include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
@@ -1872,6 +1871,8 @@ void G_DeathMatchSpawnPlayer (int playernum)
 
 void G_DoReborn (int playernum)
 {
+  dsda_WatchReborn(playernum);
+
   if (hexen)
     return Hexen_G_DoReborn(playernum);
 
@@ -4021,6 +4022,16 @@ void G_ContinueDemo(const char *playback_name)
 
 static dboolean InventoryMoveLeft(void)
 {
+    if (R_FullView())
+    {
+        inv_ptr--;
+        if (inv_ptr < 0)
+        {
+            inv_ptr = 0;
+        }
+        return true;
+    }
+
     inventoryTics = 5 * 35;
     if (!inventory)
     {
@@ -4048,6 +4059,19 @@ static dboolean InventoryMoveRight(void)
     player_t *plr;
 
     plr = &players[consoleplayer];
+
+    if (R_FullView())
+    {
+        inv_ptr++;
+        if (inv_ptr >= plr->inventorySlotNum)
+        {
+            inv_ptr--;
+            if (inv_ptr < 0)
+                inv_ptr = 0;
+        }
+        return true;
+    }
+
     inventoryTics = 5 * 35;
     if (!inventory)
     {
