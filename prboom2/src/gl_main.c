@@ -847,10 +847,11 @@ color_rgb_t gld_LookupIndexedColor(int index)
 
   if (V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed())
   {
-    playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
     int gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
     const byte * gtable = (const byte*)W_LumpByNum(gtlump) + 256 * usegamma;
     const lighttable_t *colormap = gld_GetActiveColormap();
+
+    playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
 
     color.r = gtable[playpal[colormap[index] * 3 + 0]];
     color.g = gtable[playpal[colormap[index] * 3 + 1]];
