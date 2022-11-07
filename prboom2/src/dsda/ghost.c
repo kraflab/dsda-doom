@@ -216,8 +216,6 @@ void dsda_SpawnGhost(void) {
   if (dsda_StrictMode())
     return;
 
-  dsda_TrackFeature(uf_ghost);
-
   for (ghost_i = 0; ghost_i < dsda_ghost_import.count; ++ghost_i) {
     if (dsda_ghost_import.ghosts[ghost_i].fstream == NULL) {
       dsda_ghost_import.ghosts[ghost_i].mobj = NULL;
@@ -276,6 +274,7 @@ void dsda_SpawnGhost(void) {
   }
 
   if (dsda_ghost_import.count > 0) {
+    dsda_TrackFeature(uf_ghost);
     dsda_ghost_import.thinker = Z_MallocLevel(sizeof(*mobj));
     memset(dsda_ghost_import.thinker, 0, sizeof(thinker_t));
     dsda_ghost_import.thinker->function = dsda_UpdateGhosts;
