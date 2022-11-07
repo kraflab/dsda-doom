@@ -625,6 +625,24 @@ void gld_EndUIDraw(void)
   }
 }
 
+void gld_BeginAutomapDraw(void)
+{
+  if (V_IsWorldLightmodeIndexed())
+  {
+    gld_InitColormapTextures();
+    gl_automap_lightmode_indexed = true;
+  }
+}
+
+void gld_EndAutomapDraw(void)
+{
+  if (V_IsWorldLightmodeIndexed())
+  {
+    gl_automap_lightmode_indexed = false;
+    return;
+  }
+}
+
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
 {
   GLTexture *gltexture;
@@ -827,7 +845,7 @@ color_rgb_t gld_LookupIndexedColor(int index)
   color_rgb_t color;
   const unsigned char *playpal;
 
-  if (V_IsUILightmodeIndexed())
+  if (V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed())
   {
     playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
     int gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
