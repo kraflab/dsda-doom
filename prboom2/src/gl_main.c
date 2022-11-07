@@ -833,7 +833,7 @@ const lighttable_t *gld_GetActiveColormap()
     return fixedcolormap;
   else if (fullcolormap)
     return fullcolormap;
-  else 
+  else
     return colormaps[0];
 }
 
