@@ -1486,16 +1486,16 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
     if (gltexture->textype==GLDT_UNREGISTERED)
     {
       texture_t *texture=NULL;
-    
+
       if ((texture_num>=0) || (texture_num<numtextures))
         texture=textures[texture_num];
-    
+
       if (!texture)
         return NULL;
-    
+
       gltexture->textype=GLDT_BROKEN;
       gltexture->index=texture_num;
-    
+
       // [XA] removed some stuff like mipmaps here since these
       // are only used in indexed lightmode, where those dont' matter
       gltexture->flags = 0;
@@ -1513,17 +1513,17 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
       gltexture->height=gltexture->tex_height;
       gltexture->buffer_width=gltexture->realtexwidth;
       gltexture->buffer_height=gltexture->realtexheight;
-    
+
       //e6y: right/bottom UV coordinates for texture drawing
       gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
       gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
-    
+
       gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
       if (gltexture->realtexwidth>gltexture->buffer_width)
         return gltexture;
       if (gltexture->realtexheight>gltexture->buffer_height)
         return gltexture;
-    
+
       gltexture->textype=GLDT_TEXTURE;
     }
   }
