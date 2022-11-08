@@ -2950,16 +2950,17 @@ setup_menu_t display_settings[] = {
   { "Hide Weapon", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_hide_weapon },
   { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, dsda_config_render_wipescreen },
   { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 7 * 8, dsda_config_show_fps },
-  { "View Bobbing", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_viewbob },
-  { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_weaponbob },
-  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 10 * 8, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  { "Show Precise Intermission Time", S_YESNO,  m_conf, G_X, G_Y + 8 * 8, dsda_config_show_level_splits },
+  { "View Bobbing", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_viewbob },
+  { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_weaponbob },
+  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
 
-  { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_palette_ondamage },
-  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_palette_onbonus },
-  { "Change Palette On Powers", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_palette_onpowers },
+  { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_palette_ondamage },
+  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_palette_onbonus },
+  { "Change Palette On Powers", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_palette_onpowers },
 
-  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 16 * 8, dsda_config_render_stretch_hud, 0, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 17 * 8, dsda_config_menu_background },
+  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 17 * 8, dsda_config_render_stretch_hud, 0, render_stretch_list },
+  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 18 * 8, dsda_config_menu_background },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, misc_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, opengl_settings),
@@ -3044,11 +3045,6 @@ setup_menu_t tas_settings[] = {
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, demo_settings),
   FINAL_ENTRY
 };
-
-void M_Trans(void) // To reset translucency after setting it in menu
-{
-  R_InitTranMap(0);
-}
 
 // To (un)set fullscreen video after menu changes
 void M_ChangeFullScreen(void)

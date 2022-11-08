@@ -63,7 +63,7 @@ void dsda_UpdateCompositeTimeHC(void) {
 }
 
 void dsda_DrawCompositeTimeHC(void) {
-  HUlib_drawTextLine(&component.text, false);
+  dsda_DrawBasicText(&component);
 }
 
 void dsda_EraseCompositeTimeHC(void) {

@@ -12,45 +12,43 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Speed Text HUD Component
+//	DSDA Attempts HUD Component
 //
+
+#include "dsda/split_tracker.h"
 
 #include "base.h"
 
-#include "speed_text.h"
+#include "attempts.h"
 
 static dsda_text_t component;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
-  int speed;
-
-  speed = dsda_RealticClockRate();
+  if (!demorecording)
+    return;
 
   snprintf(
     str,
     max_size,
-    "\x1b%cSPEED \x1b%c%d%%",
-    HUlib_Color(CR_GRAY),
-    speed < 100 ? HUlib_Color(CR_GOLD)
-                : speed == 100 ? HUlib_Color(CR_GREEN)
-                               : HUlib_Color(CR_BLUE),
-    speed
+    "%d/%d",
+    dsda_SessionAttempts(),
+    dsda_DemoAttempts()
   );
 }
 
-void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitAttemptsHC(int x_offset, int y_offset, int vpt) {
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateSpeedTextHC(void) {
+void dsda_UpdateAttemptsHC(void) {
   dsda_UpdateComponentText(component.msg, sizeof(component.msg));
   dsda_RefreshHudText(&component);
 }
 
-void dsda_DrawSpeedTextHC(void) {
+void dsda_DrawAttemptsHC(void) {
   dsda_DrawBasicText(&component);
 }
 
-void dsda_EraseSpeedTextHC(void) {
+void dsda_EraseAttemptsHC(void) {
   HUlib_eraseTextLine(&component.text);
 }

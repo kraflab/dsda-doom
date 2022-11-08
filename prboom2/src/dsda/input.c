@@ -213,7 +213,7 @@ dsda_input_t* dsda_Input(int identifier) {
   return &dsda_input[dsda_input_profile][identifier];
 }
 
-void dsda_InputCopy(int identifier, dsda_input_t** input) {
+void dsda_InputCopy(int identifier, dsda_input_t* input[DSDA_INPUT_PROFILE_COUNT]) {
   int i;
 
   for (i = 0; i < DSDA_INPUT_PROFILE_COUNT; ++i) {

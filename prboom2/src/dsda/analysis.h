@@ -25,6 +25,7 @@ extern int dsda_analysis;
 extern dboolean dsda_pacifist;
 extern dboolean dsda_reality;
 extern dboolean dsda_almost_reality;
+extern dboolean dsda_reborn;
 extern int dsda_missed_monsters;
 extern int dsda_missed_secrets;
 extern int dsda_missed_weapons;

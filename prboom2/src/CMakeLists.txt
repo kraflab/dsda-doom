@@ -19,22 +19,20 @@ set(COMMON_SRC
     dsda/brute_force.h
     dsda/build.c
     dsda/build.h
-    dsda/command_display.c
-    dsda/command_display.h
     dsda/compatibility.c
     dsda/compatibility.h
     dsda/configuration.c
     dsda/configuration.h
     dsda/console.c
     dsda/console.h
-    dsda/coordinate_display.c
-    dsda/coordinate_display.h
     dsda/data_organizer.c
     dsda/data_organizer.h
     dsda/death.c
     dsda/death.h
     dsda/demo.c
     dsda/demo.h
+    dsda/endoom.c
+    dsda/endoom.h
     dsda/excmd.c
     dsda/excmd.h
     dsda/exdemo.c
@@ -51,33 +49,47 @@ set(COMMON_SRC
     dsda/gl/render_scale.h
     dsda/global.c
     dsda/global.h
-    dsda/hud.c
-    dsda/hud.h
     dsda/hud_components.h
     dsda/hud_components/ammo_text.c
     dsda/hud_components/ammo_text.h
     dsda/hud_components/armor_text.c
     dsda/hud_components/armor_text.h
+    dsda/hud_components/attempts.c
+    dsda/hud_components/attempts.h
     dsda/hud_components/base.c
     dsda/hud_components/base.h
     dsda/hud_components/big_ammo.c
     dsda/hud_components/big_ammo.h
     dsda/hud_components/big_armor.c
     dsda/hud_components/big_armor.h
+    dsda/hud_components/big_artifact.c
+    dsda/hud_components/big_artifact.h
     dsda/hud_components/big_health.c
     dsda/hud_components/big_health.h
+    dsda/hud_components/command_display.c
+    dsda/hud_components/command_display.h
     dsda/hud_components/composite_time.c
     dsda/hud_components/composite_time.h
+    dsda/hud_components/coordinate_display.c
+    dsda/hud_components/coordinate_display.h
+    dsda/hud_components/event_split.c
+    dsda/hud_components/event_split.h
     dsda/hud_components/fps.c
     dsda/hud_components/fps.h
     dsda/hud_components/health_text.c
     dsda/hud_components/health_text.h
     dsda/hud_components/keys.c
     dsda/hud_components/keys.h
+    dsda/hud_components/level_splits.c
+    dsda/hud_components/level_splits.h
+    dsda/hud_components/line_display.c
+    dsda/hud_components/line_display.h
     dsda/hud_components/line_distance_tracker.c
     dsda/hud_components/line_distance_tracker.h
     dsda/hud_components/line_tracker.c
     dsda/hud_components/line_tracker.h
+    dsda/hud_components/local_time.c
+    dsda/hud_components/local_time.h
     dsda/hud_components/mobj_tracker.c
     dsda/hud_components/mobj_tracker.h
     dsda/hud_components/null.c
@@ -100,12 +112,8 @@ set(COMMON_SRC
     dsda/hud_components/weapon_text.h
     dsda/input.c
     dsda/input.h
-    dsda/intermission_display.c
-    dsda/intermission_display.h
     dsda/key_frame.c
     dsda/key_frame.h
-    dsda/line_display.c
-    dsda/line_display.h
     dsda/line_special.h
     dsda/map_format.c
     dsda/map_format.h
@@ -525,11 +533,15 @@ function(AddGameExecutable TARGET SOURCES)
 
     if(MSVC)
         set_target_properties(${TARGET} PROPERTIES
-            LINK_FLAGS "/MANIFEST:NO"
+            LINK_FLAGS "/MANIFEST:NO /SUBSYSTEM:CONSOLE"
         )
         add_custom_command(TARGET ${TARGET} POST_BUILD
             COMMAND "mt.exe" -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\..\\ICONS\\dsda-doom.exe.manifest\" -outputresource:\"$<TARGET_FILE:dsda-doom>\"\;\#1
             COMMAND ${CMAKE_COMMAND} -E copy_if_different ${WAD_DATA_PATH} $<TARGET_FILE_DIR:dsda-doom>
+        )
+    elseif(WIN32)
+        set_target_properties(${TARGET} PROPERTIES
+            LINK_FLAGS "-mconsole"
         )
     endif()
 

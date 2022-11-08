@@ -55,7 +55,7 @@
 #include "e6y.h" //e6y
 
 #include "dsda.h"
-#include "dsda/hud.h"
+#include "dsda/exhud.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/pause.h"
@@ -449,7 +449,7 @@ void HU_Start(void)
 
   HU_init_crosshair();
 
-  dsda_InitHud(hu_font2);
+  dsda_InitExHud();
 }
 
 int HU_GetHealthColor(int health, int def)
@@ -784,7 +784,7 @@ void HU_Drawer(void)
   if (custom_message_p->ticks > 0)
     HUlib_drawTextLine(&w_centermsg, false);
 
-  dsda_DrawHud();
+  dsda_DrawExHud();
 
   V_EndUIDraw();
 }
@@ -808,7 +808,7 @@ void HU_Erase(void)
   // erase the automap title
   HUlib_eraseTextLine(&w_title);
 
-  dsda_EraseHud();
+  dsda_EraseExHud();
 }
 
 //
@@ -882,7 +882,7 @@ void HU_Ticker(void)
     }
   }
 
-  dsda_UpdateHud();
+  dsda_UpdateExHud();
 }
 
 //

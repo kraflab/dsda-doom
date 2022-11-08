@@ -126,3 +126,29 @@ void dsda_DrawBigNumber(int x, int y, int delta_x, int delta_y, int cm, int vpt,
     x += delta_x;
   }
 }
+
+void dsda_DrawBasicText(dsda_text_t* component) {
+  int offset;
+  int flags;
+
+  flags = component->text.flags & VPT_ALIGN_MASK;
+
+  if (
+    (flags == VPT_ALIGN_TOP || flags == VPT_ALIGN_LEFT_TOP || flags == VPT_ALIGN_RIGHT_TOP) &&
+    M_ConsoleOpen()
+  )
+    offset = M_ConsoleOpen() ? 2 * DSDA_CHAR_HEIGHT : 0;
+  else
+    offset = 0;
+
+  HUlib_drawOffsetTextLine(&component->text, offset);
+}
+
+void dsda_RefreshHudText(dsda_text_t* component) {
+  const char* s;
+
+  HUlib_clearTextLine(&component->text);
+
+  s = component->msg;
+  while (*s) HUlib_addCharToTextLine(&component->text, *(s++));
+}

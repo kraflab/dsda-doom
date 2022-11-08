@@ -34,8 +34,6 @@
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/ghost.h"
-#include "dsda/hud.h"
-#include "dsda/command_display.h"
 #include "dsda/key_frame.h"
 #include "dsda/mouse.h"
 #include "dsda/settings.h"
@@ -57,7 +55,7 @@ dboolean dsda_any_map_completed;
 
 // other
 int dsda_max_kill_requirement;
-int dsda_session_attempts = 1;
+static int dsda_session_attempts = 1;
 
 static int turbo_scale;
 static int start_in_build_mode;
@@ -187,6 +185,10 @@ void dsda_ReadCommandLine(void) {
 
 static int dsda_shown_attempt = 0;
 
+int dsda_SessionAttempts(void) {
+  return dsda_session_attempts;
+}
+
 void dsda_DisplayNotifications(void) {
   if (dsda_ShowDemoAttempts() && dsda_session_attempts > dsda_shown_attempt) {
     doom_printf("Attempt %d / %d", dsda_session_attempts, dsda_DemoAttempts());
@@ -224,6 +226,10 @@ void dsda_DecomposeMovieTime(dsda_movie_time_t* total_time) {
 void dsda_DisplayNotification(const char* msg) {
   S_StartSound(0, gamemode == commercial ? sfx_radio : sfx_itmbk);
   doom_printf("%s", msg);
+}
+
+void dsda_WatchReborn(int playernum) {
+  dsda_reborn = true;
 }
 
 void dsda_WatchCard(card_t card) {

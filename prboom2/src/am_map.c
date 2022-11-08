@@ -2103,7 +2103,7 @@ static void AM_DrawNiceThings(void)
     {
       if (markpoints[i].x != -1)
       {
-        mpoint_t p;
+        mpoint_t p = { 0 };
 
         p.x = markpoints[i].x;
         p.y = markpoints[i].y;

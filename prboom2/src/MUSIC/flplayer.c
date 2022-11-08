@@ -74,6 +74,7 @@ const music_player_t fl_player =
 #include "memio.h"
 #include "w_wad.h"
 
+#include "dsda/args.h"
 #include "dsda/configuration.h"
 
 static fluid_settings_t *f_set;
@@ -149,12 +150,19 @@ static long long fl_sftell(void *handle)
   return mem_ftell((MEMFILE *)handle);
 }
 
+static void fl_null_logger(int level, const char *message, void *data) {
+  // no op
+}
+
 static int fl_init (int samplerate)
 {
   int mus_fluidsynth_chorus;
   int mus_fluidsynth_reverb;
   int mus_fluidsynth_gain;
   const char *filename;
+
+  if (!dsda_Flag(dsda_arg_verbose) || dsda_Flag(dsda_arg_quiet))
+    fluid_set_log_function(FLUID_WARN, fl_null_logger, NULL);
 
   mus_fluidsynth_chorus = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus);
   mus_fluidsynth_reverb = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb);
@@ -169,14 +177,14 @@ static int fl_init (int samplerate)
     int minor;
     int micro;
     fluid_version (&major, &minor, &micro);
-    lprintf (LO_INFO, "Fluidplayer: Fluidsynth version %i.%i.%i\n", major, minor, micro);
+    lprintf (LO_DEBUG, "Fluidplayer: Fluidsynth version %i.%i.%i\n", major, minor, micro);
     if (major >= 2 || (minor >=1 && micro >= 4))
       sratemin = 8000;
     else
       sratemin = 22050;
     if (f_soundrate < sratemin)
     {
-      lprintf (LO_INFO, "Fluidplayer: samplerates under %i are not supported\n", sratemin);
+      lprintf (LO_WARN, "Fluidplayer: samplerates under %i are not supported\n", sratemin);
       return 0;
     }
   }
@@ -186,10 +194,10 @@ static int fl_init (int samplerate)
 
 #if FLUIDSYNTH_VERSION_MAJOR == 1
   #define FSET(a,b,c) if (!fluid_settings_set##a(f_set,b,c))\
-    lprintf (LO_INFO, "fl_init: Couldn't set " b "\n")
+    lprintf (LO_WARN, "fl_init: Couldn't set " b "\n")
 #else
   #define FSET(a,b,c) if (fluid_settings_set##a(f_set,b,c) == FLUID_FAILED)\
-    lprintf (LO_INFO, "fl_init: Couldn't set " b "\n")
+    lprintf (LO_WARN, "fl_init: Couldn't set " b "\n")
 #endif
 
   FSET (num, "synth.sample-rate", f_soundrate);
@@ -214,9 +222,9 @@ static int fl_init (int samplerate)
   // gain control
   FSET (num, "synth.gain", mus_fluidsynth_gain / 100.0); // 0.0 - 0.2 - 10.0
   // behavior wrt bank select messages
-  FSET (str, "synth-midi-bank-select", "gm"); // general midi mode
+  FSET (str, "synth.midi-bank-select", "gm"); // general midi mode
   // general midi spec says no more than 24 voices needed
-  FSET (int, "synth-polyphony", 24);
+  FSET (int, "synth.polyphony", 24);
 
   // we're not using the builtin shell or builtin midiplayer,
   // and our own access to the synth is protected by mutex in i_sound.c
@@ -298,7 +306,6 @@ static void fl_shutdown (void)
 {
   if (f_syn)
   {
-    fluid_synth_sfunload (f_syn, f_font, 1);
     delete_fluid_synth (f_syn);
     f_syn = NULL;
     f_font = 0;

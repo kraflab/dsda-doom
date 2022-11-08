@@ -64,7 +64,7 @@ void dsda_UpdateArmorTextHC(void) {
 }
 
 void dsda_DrawArmorTextHC(void) {
-  HUlib_drawTextLine(&component.text, false);
+  dsda_DrawBasicText(&component);
 }
 
 void dsda_EraseArmorTextHC(void) {

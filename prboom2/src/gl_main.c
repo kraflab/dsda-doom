@@ -91,7 +91,7 @@ float bw_red = 0.3f;
 float bw_green = 0.59f;
 float bw_blue = 0.11f;
 
-extern int tran_filter_pct;
+extern const int tran_filter_pct;
 
 dboolean use_fog=false;
 
@@ -833,7 +833,7 @@ const lighttable_t *gld_GetActiveColormap()
     return fixedcolormap;
   else if (fullcolormap)
     return fullcolormap;
-  else 
+  else
     return colormaps[0];
 }
 
@@ -847,10 +847,11 @@ color_rgb_t gld_LookupIndexedColor(int index)
 
   if (V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed())
   {
-    playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
     int gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
     const byte * gtable = (const byte*)W_LumpByNum(gtlump) + 256 * usegamma;
     const lighttable_t *colormap = gld_GetActiveColormap();
+
+    playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
 
     color.r = gtable[playpal[colormap[index] * 3 + 0]];
     color.g = gtable[playpal[colormap[index] * 3 + 1]];

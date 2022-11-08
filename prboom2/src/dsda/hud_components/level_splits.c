@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,47 +12,17 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Intermission Display
+//	DSDA Level Splits HUD Component
 //
 
-#include "hu_lib.h"
-#include "hu_stuff.h"
-
-#include "dsda/command_display.h"
-#include "dsda/global.h"
-#include "dsda/settings.h"
 #include "dsda/split_tracker.h"
-#include "dsda/hud.h"
 
-#include "intermission_display.h"
+#include "base.h"
 
-#define DSDA_INTERMISSION_TIME_X 2
-#define DSDA_INTERMISSION_TIME_Y 1
+#include "level_splits.h"
 
-static dsda_text_t dsda_intermission_time;
-static dsda_text_t dsda_intermission_total;
-
-void dsda_InitIntermissionDisplay(patchnum_t* font) {
-  HUlib_initTextLine(
-    &dsda_intermission_time.text,
-    DSDA_INTERMISSION_TIME_X,
-    DSDA_INTERMISSION_TIME_Y,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT
-  );
-
-  HUlib_initTextLine(
-    &dsda_intermission_total.text,
-    DSDA_INTERMISSION_TIME_X,
-    DSDA_INTERMISSION_TIME_Y + 8,
-    font,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_ALIGN_LEFT
-  );
-}
+static dsda_text_t time_component;
+static dsda_text_t total_component;
 
 extern int leveltime, totalleveltimes;
 
@@ -94,16 +64,16 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   }
 
   snprintf(
-    dsda_intermission_time.msg,
-    sizeof(dsda_intermission_time.msg),
+    time_component.msg,
+    sizeof(time_component.msg),
     "\x1b%c%d:%05.2f",
     color, leveltime / 35 / 60,
     (float)(leveltime % (60 * 35)) / 35
   );
 
-  strcat(dsda_intermission_time.msg, delta);
+  strcat(time_component.msg, delta);
 
-  dsda_RefreshHudText(&dsda_intermission_time);
+  dsda_RefreshHudText(&time_component);
 }
 
 static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
@@ -140,19 +110,28 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
   }
 
   snprintf(
-    dsda_intermission_total.msg,
-    sizeof(dsda_intermission_total.msg),
+    total_component.msg,
+    sizeof(total_component.msg),
     "\x1b%c%d:%02d",
     color, totalleveltimes / 35 / 60,
     (totalleveltimes / 35) % 60
   );
 
-  strcat(dsda_intermission_total.msg, delta);
+  strcat(total_component.msg, delta);
 
-  dsda_RefreshHudText(&dsda_intermission_total);
+  dsda_RefreshHudText(&total_component);
 }
 
-void dsda_DrawIntermissionDisplay(void) {
+void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt) {
+  dsda_InitTextHC(&time_component, x_offset, y_offset, vpt);
+  dsda_InitTextHC(&total_component, x_offset, y_offset + 8, vpt);
+}
+
+void dsda_UpdateLevelSplitsHC(void) {
+  // nothing to do
+}
+
+void dsda_DrawLevelSplitsHC(void) {
   char* s;
   dsda_split_t* split;
 
@@ -161,8 +140,11 @@ void dsda_DrawIntermissionDisplay(void) {
   dsda_UpdateIntermissionTime(split);
   dsda_UpdateIntermissionTotal(split);
 
-  HUlib_drawTextLine(&dsda_intermission_time.text, false);
-  HUlib_drawTextLine(&dsda_intermission_total.text, false);
+  dsda_DrawBasicText(&time_component);
+  dsda_DrawBasicText(&total_component);
+}
 
-  if (dsda_CommandDisplay()) dsda_DrawCommandDisplay();
+void dsda_EraseLevelSplitsHC(void) {
+  HUlib_eraseTextLine(&time_component.text);
+  HUlib_eraseTextLine(&total_component.text);
 }

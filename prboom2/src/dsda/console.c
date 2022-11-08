@@ -37,6 +37,7 @@
 #include "dsda/global.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
+#include "dsda/stretch.h"
 #include "dsda/tracker.h"
 #include "dsda/utility.h"
 
@@ -46,6 +47,7 @@ extern patchnum_t hu_font2[HU_FONTSIZE];
 
 #define target_player players[consoleplayer]
 
+#define CONSOLE_TEXT_FLAGS (VPT_ALIGN_TOP | VPT_EX_TEXT)
 #define CONSOLE_ENTRY_SIZE 64
 
 #define CF_NEVER  0x00
@@ -53,19 +55,24 @@ extern patchnum_t hu_font2[HU_FONTSIZE];
 #define CF_STRICT 0x02
 #define CF_ALWAYS (CF_DEMO|CF_STRICT)
 
-static char console_prompt[CONSOLE_ENTRY_SIZE + 3] = { '$', ' ' };
-static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
-static char* console_entry = console_prompt + 2;
-static char* console_message_entry = console_message + 2;
-static char last_console_entry[CONSOLE_ENTRY_SIZE + 1];
+typedef struct console_entry_s {
+  char text[CONSOLE_ENTRY_SIZE + 1];
+  struct console_entry_s* prev;
+  struct console_entry_s* next;
+} console_entry_t;
+
+static console_entry_t* console_history_head;
+static console_entry_t* console_entry;
 static int console_entry_index;
+static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
+static char* console_message_entry = console_message + 2;
 static hu_textline_t hu_console_prompt;
 static hu_textline_t hu_console_message;
 
 static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
 static void dsda_DrawConsole(void) {
-  V_FillRect(0, 0, 0, SCREENWIDTH, 16 * SCREENHEIGHT / 200, 0);
+  V_FillRectVPT(0, 0, 0, 320, 16, 0, CONSOLE_TEXT_FLAGS);
   HUlib_drawTextLine(&hu_console_prompt, false);
   HUlib_drawTextLine(&hu_console_message, false);
 }
@@ -83,11 +90,16 @@ static dboolean dsda_ExecuteConsole(const char* command_line);
 
 static void dsda_UpdateConsoleDisplay(void) {
   const char* s;
+  int i;
 
-  s = console_prompt;
+  s = console_entry->text;
   HUlib_clearTextLine(&hu_console_prompt);
-  while (*s) HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
+  HUlib_addCharToTextLine(&hu_console_prompt, '$');
+  HUlib_addCharToTextLine(&hu_console_prompt, ' ');
+  for (i = 0; *s && i < console_entry_index; ++i)
+    HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
   HUlib_addCharToTextLine(&hu_console_prompt, '_');
+  while (*s) HUlib_addCharToTextLine(&hu_console_prompt, *(s++));
 
   s = console_message;
   HUlib_clearTextLine(&hu_console_message);
@@ -95,8 +107,7 @@ static void dsda_UpdateConsoleDisplay(void) {
 }
 
 static void dsda_ResetConsoleEntry(void) {
-  memset(console_entry, 0, CONSOLE_ENTRY_SIZE);
-  console_entry_index = 0;
+  console_entry_index = strlen(console_entry->text);
   dsda_UpdateConsoleDisplay();
 }
 
@@ -116,7 +127,7 @@ dboolean dsda_OpenConsole(void) {
       hu_font2,
       HU_FONTSTART,
       CR_GRAY,
-      VPT_ALIGN_LEFT_TOP
+      CONSOLE_TEXT_FLAGS
     );
 
     HUlib_initTextLine(
@@ -126,8 +137,11 @@ dboolean dsda_OpenConsole(void) {
       hu_font2,
       HU_FONTSTART,
       CR_GRAY,
-      VPT_ALIGN_LEFT_TOP
+      CONSOLE_TEXT_FLAGS
     );
+
+    console_history_head = Z_Calloc(sizeof(console_entry_t), 1);
+    console_entry = console_history_head;
   }
 
   dsda_TrackFeature(uf_console);
@@ -636,6 +650,44 @@ static dboolean console_BuildTL(const char* command, const char* args) {
   return sscanf(args, "%i", &x) && dsda_BuildTL(x);
 }
 
+static dboolean console_BuildFU(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildFU(x);
+}
+
+static dboolean console_BuildFD(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildFD(x);
+}
+
+static dboolean console_BuildFC(const char* command, const char* args) {
+  return dsda_BuildFC();
+}
+
+static dboolean console_BuildLU(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildLU(x);
+}
+
+static dboolean console_BuildLD(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildLD(x);
+}
+
+static dboolean console_BuildLC(const char* command, const char* args) {
+  return dsda_BuildLC();
+}
+
+static dboolean console_BuildUA(const char* command, const char* args) {
+  int x;
+
+  return sscanf(args, "%i", &x) && dsda_BuildUA(x);
+}
+
 static dboolean console_BruteForceStart(const char* command, const char* args) {
   int depth;
   int forwardmove_min, forwardmove_max;
@@ -857,22 +909,26 @@ static dboolean console_ChangeConfig(const char* command, const char* args, dboo
   char value_string[CONSOLE_ENTRY_SIZE];
   int value_int;
 
-  if (sscanf(args, "%s %d", name, &value_int)) {
+  if (sscanf(args, "%s %s", name, value_string)) {
     int id;
 
     id = dsda_ConfigIDByName(name);
     if (id) {
-      dsda_UpdateIntConfig(id, value_int, persist);
-      return true;
-    }
-  }
-  else if (sscanf(args, "%s %s", name, value_string)) {
-    int id;
+      dsda_config_type_t config_type;
 
-    id = dsda_ConfigIDByName(name);
-    if (id) {
-      dsda_UpdateStringConfig(id, value_string, persist);
-      return true;
+      config_type = dsda_ConfigType(id);
+      if (config_type == dsda_config_int) {
+        int value_int;
+
+        if (sscanf(value_string, "%d", &value_int)) {
+          dsda_UpdateIntConfig(id, value_int, persist);
+          return true;
+        }
+      }
+      else {
+        dsda_UpdateStringConfig(id, value_string, persist);
+        return true;
+      }
     }
   }
 
@@ -885,6 +941,37 @@ static dboolean console_Assign(const char* command, const char* args) {
 
 static dboolean console_Update(const char* command, const char* args) {
   return console_ChangeConfig(command, args, true);
+}
+
+static dboolean console_ToggleConfig(const char* command, const char* args, dboolean persist) {
+  char name[CONSOLE_ENTRY_SIZE];
+  char value_string[CONSOLE_ENTRY_SIZE];
+  int value_int;
+
+  if (sscanf(args, "%s", name)) {
+    int id;
+
+    id = dsda_ConfigIDByName(name);
+    if (id) {
+      dsda_config_type_t config_type;
+
+      config_type = dsda_ConfigType(id);
+      if (config_type == dsda_config_int) {
+        dsda_ToggleConfig(id, persist);
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+static dboolean console_ToggleAssign(const char* command, const char* args) {
+  return console_ToggleConfig(command, args, false);
+}
+
+static dboolean console_ToggleUpdate(const char* command, const char* args) {
+  return console_ToggleConfig(command, args, true);
 }
 
 typedef dboolean (*console_command_t)(const char*, const char*);
@@ -917,6 +1004,8 @@ static console_command_entry_t console_commands[] = {
   { "check", console_Check, CF_ALWAYS },
   { "assign", console_Assign, CF_ALWAYS },
   { "update", console_Update, CF_ALWAYS },
+  { "toggle_assign", console_ToggleAssign, CF_ALWAYS },
+  { "toggle_update", console_ToggleUpdate, CF_ALWAYS },
 
   // tracking
   { "tracker.add_line", console_TrackerAddLine, CF_DEMO },
@@ -957,6 +1046,13 @@ static console_command_entry_t console_commands[] = {
   { "sl", console_BuildSL, CF_DEMO },
   { "tr", console_BuildTR, CF_DEMO },
   { "tl", console_BuildTL, CF_DEMO },
+  { "fu", console_BuildFU, CF_DEMO },
+  { "fd", console_BuildFD, CF_DEMO },
+  { "fc", console_BuildFC, CF_DEMO },
+  { "lu", console_BuildLU, CF_DEMO },
+  { "ld", console_BuildLD, CF_DEMO },
+  { "lc", console_BuildLC, CF_DEMO },
+  { "ua", console_BuildUA, CF_DEMO },
 
   // demos
   { "demo.export", console_DemoExport, CF_ALWAYS },
@@ -1088,8 +1184,6 @@ static dboolean dsda_ExecuteConsole(const char* command_line) {
     }
   }
 
-  dsda_ResetConsoleEntry();
-
   return ret;
 }
 
@@ -1100,10 +1194,15 @@ void dsda_UpdateConsoleText(char* text) {
   length = strlen(text);
 
   for (i = 0; i < length; ++i) {
+    int shift_i;
+
     if (text[i] < 32 || text[i] > 126)
       continue;
 
-    console_entry[console_entry_index] = tolower(text[i]);
+    for (shift_i = strlen(console_entry->text); shift_i > console_entry_index; --shift_i)
+      console_entry->text[shift_i] = console_entry->text[shift_i - 1];
+
+    console_entry->text[console_entry_index] = tolower(text[i]);
     if (console_entry_index < CONSOLE_ENTRY_SIZE)
       ++console_entry_index;
   }
@@ -1111,10 +1210,36 @@ void dsda_UpdateConsoleText(char* text) {
   dsda_UpdateConsoleDisplay();
 }
 
+void dsda_UpdateConsoleHistory(void) {
+  console_entry_t* last_command;
+
+  if (console_entry != console_history_head)
+    strcpy(console_history_head->text, console_entry->text);
+
+  last_command = console_history_head->prev;
+  if (!last_command || strcmp(last_command->text, console_entry->text)) {
+    console_entry_t* new_head;
+
+    new_head = Z_Calloc(sizeof(*new_head), 1);
+    new_head->prev = console_history_head;
+    console_history_head->next = new_head;
+    console_history_head = new_head;
+  }
+  else
+    memset(console_history_head->text, 0, CONSOLE_ENTRY_SIZE);
+
+  console_entry = console_history_head;
+}
+
 void dsda_UpdateConsole(int action) {
   if (action == MENU_BACKSPACE && console_entry_index > 0) {
+    int shift_i;
+
+    for (shift_i = console_entry_index; console_entry->text[shift_i]; ++shift_i)
+      console_entry->text[shift_i - 1] = console_entry->text[shift_i];
+    console_entry->text[shift_i - 1] = '\0';
+
     --console_entry_index;
-    console_entry[console_entry_index] = '\0';
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
@@ -1122,19 +1247,35 @@ void dsda_UpdateConsole(int action) {
     char* entry;
     char** lines;
 
-    strcpy(last_console_entry, console_entry);
-
-    entry = Z_Strdup(console_entry);
+    entry = Z_Strdup(console_entry->text);
     lines = dsda_SplitString(entry, ";");
     for (line = 0; lines[line]; ++line)
       dsda_ExecuteConsole(lines[line]);
+
+    dsda_UpdateConsoleHistory();
+    dsda_ResetConsoleEntry();
 
     Z_Free(entry);
     Z_Free(lines);
   }
   else if (action == MENU_UP) {
-    strcpy(console_entry, last_console_entry);
-    console_entry_index = strlen(console_entry);
+    if (console_entry->prev)
+      console_entry = console_entry->prev;
+    console_entry_index = strlen(console_entry->text);
+    dsda_UpdateConsoleDisplay();
+  }
+  else if (action == MENU_DOWN) {
+    if (console_entry->next)
+      console_entry = console_entry->next;
+    console_entry_index = strlen(console_entry->text);
+    dsda_UpdateConsoleDisplay();
+  }
+  else if (action == MENU_RIGHT && console_entry->text[console_entry_index]) {
+    ++console_entry_index;
+    dsda_UpdateConsoleDisplay();
+  }
+  else if (action == MENU_LEFT && console_entry_index > 0) {
+    --console_entry_index;
     dsda_UpdateConsoleDisplay();
   }
 }

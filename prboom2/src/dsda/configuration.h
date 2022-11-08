@@ -56,6 +56,7 @@ typedef enum {
   dsda_config_command_display,
   dsda_config_coordinate_display,
   dsda_config_show_fps,
+  dsda_config_show_level_splits,
   dsda_config_exhud,
   dsda_config_mute_sfx,
   dsda_config_mute_music,
@@ -239,7 +240,6 @@ typedef enum {
   dsda_config_fps_limit,
   dsda_config_usegamma,
   dsda_config_screenblocks,
-  dsda_config_tran_filter_pct,
   dsda_config_sdl_video_window_pos,
   dsda_config_palette_ondamage,
   dsda_config_palette_onbonus,
@@ -268,8 +268,14 @@ typedef enum {
   dsda_config_swap_analogs,
   dsda_config_invert_analog_look,
   dsda_config_analog_movement_emulates_keyboard,
+  dsda_config_ansi_endoom,
   dsda_config_count,
 } dsda_config_identifier_t;
+
+typedef enum {
+  dsda_config_int,
+  dsda_config_string,
+} dsda_config_type_t;
 
 void dsda_UpdateStrictMode(void);
 void dsda_TrackConfigFeatures(void);
@@ -291,5 +297,6 @@ const char* dsda_StringConfig(dsda_config_identifier_t id);
 const char* dsda_PersistentStringConfig(dsda_config_identifier_t id);
 char* dsda_ConfigSummary(const char* name);
 int dsda_ConfigIDByName(const char* name);
+dsda_config_type_t dsda_ConfigType(dsda_config_identifier_t id);
 
 #endif

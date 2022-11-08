@@ -62,7 +62,6 @@ typedef struct
   // heretic
   byte lookfly; // look/fly up/down/centering
   byte arti;    // artitype_t to use
-  int lookdir;
 
   // dsda extension
   excmd_t ex;

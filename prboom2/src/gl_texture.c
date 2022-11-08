@@ -1883,15 +1883,14 @@ void gld_Precache(void)
       if (sb)
       {
         int texture;
-        int face = 0;
-        while (face < 6 && sb->faces[face])
+        int face;
+        for (face = 0; face < 6; face++)
         {
           texture = R_CheckTextureNumForName(sb->faces[face]);
           if (texture != -1)
           {
             hitlist[texture] = 1;
           }
-          face++;
         }
       }
     }
@@ -1941,15 +1940,14 @@ void gld_Precache(void)
   if (sb)
   {
     int texture;
-    int face = 0;
-    while (face < 6 && sb->faces[face])
+    int face;
+    for (face = 0; face < 6; face++)
     {
       texture = R_CheckTextureNumForName(sb->faces[face]);
       if (texture != -1)
       {
         hitlist[texture] = 1;
       }
-      face++;
     }
   }
 

@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,15 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Intermission Display
+//	DSDA Command Display HUD Component
 //
 
-#ifndef __DSDA_INTERMISSION_DISPLAY__
-#define __DSDA_INTERMISSION_DISPLAY__
+#ifndef __DSDA_HUD_COMPONENT_COMMAND_DISPLAY__
+#define __DSDA_HUD_COMPONENT_COMMAND_DISPLAY__
 
-#include "r_defs.h"
-
-void dsda_InitIntermissionDisplay(patchnum_t* font);
-void dsda_DrawIntermissionDisplay(void);
+void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_UpdateCommandDisplayHC(void);
+void dsda_DrawCommandDisplayHC(void);
+void dsda_EraseCommandDisplayHC(void);
 
 #endif

@@ -38,11 +38,6 @@
 
 #include "configuration.h"
 
-typedef enum {
-  dsda_config_int,
-  dsda_config_string,
-} dsda_config_type_t;
-
 typedef union {
   int v_int;
   char* v_string;
@@ -99,6 +94,9 @@ void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
+void dsda_RefreshExHudLevelSplits(void);
+void dsda_RefreshExHudCoordinateDisplay(void);
+void dsda_RefreshExHudCommandDisplay(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
@@ -129,7 +127,6 @@ void M_ChangeVideoMode(void);
 void M_ChangeUncappedFrameRate(void);
 void M_ChangeFullScreen(void);
 void R_SetViewSize(void);
-void M_Trans(void);
 void M_ChangeApplyPalette(void);
 void M_ChangeStretch(void);
 void M_ChangeAspectRatio(void);
@@ -146,6 +143,8 @@ void dsda_UpdateStrictMode(void) {
   M_ChangeSkyMode(); // affected by mouselook setting
   HU_init_crosshair();
   M_ChangeApplyPalette();
+  dsda_RefreshExHudCoordinateDisplay();
+  dsda_RefreshExHudCommandDisplay();
 }
 
 void dsda_TrackConfigFeatures(void) {
@@ -337,15 +336,19 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_command_display] = {
     "dsda_command_display", dsda_config_command_display,
-    CONF_BOOL(0), NULL, STRICT_INT(0)
+    CONF_BOOL(0), NULL, STRICT_INT(0), dsda_RefreshExHudCommandDisplay
   },
   [dsda_config_coordinate_display] = {
     "dsda_coordinate_display", dsda_config_coordinate_display,
-    CONF_BOOL(0), NULL, STRICT_INT(0)
+    CONF_BOOL(0), NULL, STRICT_INT(0), dsda_RefreshExHudCoordinateDisplay
   },
   [dsda_config_show_fps] = {
     "dsda_show_fps", dsda_config_show_fps,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshExHudFPS
+  },
+  [dsda_config_show_level_splits] = {
+    "dsda_show_level_splits", dsda_config_show_level_splits,
+    CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshExHudLevelSplits
   },
   [dsda_config_exhud] = {
     "dsda_exhud", dsda_config_exhud,
@@ -1088,10 +1091,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "screenblocks", dsda_config_screenblocks,
     dsda_config_int, 3, 11, { 10 }, NULL, CONF_FEATURE | NOT_STRICT, R_SetViewSize
   },
-  [dsda_config_tran_filter_pct] = {
-    "tran_filter_pct", dsda_config_tran_filter_pct,
-    dsda_config_int, 0, 100, { 66 }, NULL, NOT_STRICT, M_Trans
-  },
   [dsda_config_sdl_video_window_pos] = {
     "sdl_video_window_pos", dsda_config_sdl_video_window_pos,
     CONF_STRING("center")
@@ -1204,6 +1203,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_analog_movement_emulates_keyboard] = {
     "analog_movement_emulates_keyboard", dsda_config_analog_movement_emulates_keyboard,
     CONF_BOOL(0), NULL, STRICT_INT(1)
+  },
+  [dsda_config_ansi_endoom] = {
+    "ansi_endoom", dsda_config_ansi_endoom,
+    dsda_config_int, 0, 2, { 0 }
   },
 };
 
@@ -1491,4 +1494,8 @@ int dsda_ConfigIDByName(const char* name) {
       return i;
 
   return 0;
+}
+
+dsda_config_type_t dsda_ConfigType(dsda_config_identifier_t id) {
+  return dsda_config[id].type;
 }
