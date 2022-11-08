@@ -870,7 +870,14 @@ void ST_SetResolution(void)
 
 void ST_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 {
-  if (raven) return SB_Drawer(statusbaron, refresh, fullmenu);
+  V_BeginUIDraw();
+
+  if (raven)
+  {
+    SB_Drawer(statusbaron, refresh, fullmenu);
+    V_EndUIDraw();
+    return;
+  }
 
   /* cph - let status bar on be controlled
    * completely by the call from D_Display
@@ -896,6 +903,8 @@ void ST_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
         ST_drawWidgets(false); // update all widgets
     }
   }
+
+  V_EndUIDraw();
 }
 
 

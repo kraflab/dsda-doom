@@ -518,6 +518,7 @@ void IN_Drawer(void)
     {
         return;
     }
+
     if (oldinterstate != 2 && interstate == 2)
     {
         S_StartSound(NULL, heretic_sfx_pstop);

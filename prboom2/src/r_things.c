@@ -1250,7 +1250,7 @@ static void R_DrawPSprite (pspdef_t *psp)
       R_FakeFlat( viewplayer->mo->subsector->sector, &tmpsec,
                   &floorlightlevel, &ceilinglightlevel, false);
       lightlevel = ((floorlightlevel+ceilinglightlevel) >> 1) + (extralight << LIGHTSEGSHIFT);
-      if (!gl_hardware_gamma)
+      if (!gl_hardware_gamma && !V_IsWorldLightmodeIndexed())
         lightlevel += usegamma * 16;
 
       if (lightlevel < 0)

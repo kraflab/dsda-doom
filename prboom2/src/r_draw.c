@@ -505,6 +505,8 @@ void R_FillBackScreen (void)
   if (grnrock.lumpnum == 0)
     return;
 
+  V_BeginUIDraw();
+
   // e6y: wide-res
   if (ratio_multiplier != ratio_scale || wide_offsety)
   {
@@ -541,18 +543,23 @@ void R_FillBackScreen (void)
       }
 
       // heretic_note: I think this looks bad, so I'm skipping it...
-      if (heretic) return;
+      if (!heretic)
+      {
+        // line between view and status bar
+        V_FillPatch(brdr_b.lumpnum, 1, 0, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
+        V_FillPatch(brdr_b.lumpnum, 1, SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
+      }
 
-      // line between view and status bar
-      V_FillPatch(brdr_b.lumpnum, 1, 0, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
-      V_FillPatch(brdr_b.lumpnum, 1, SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
-
+      V_EndUIDraw();
       return;
     }
   }
 
   if (scaledviewwidth == SCREENWIDTH)
+  {
+    V_EndUIDraw();
     return;
+  }
 
   V_FillFlat(grnrock.lumpnum, 1, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
 
@@ -579,6 +586,8 @@ void R_FillBackScreen (void)
   V_DrawNumPatch(viewwindowx - g_border_offset, viewwindowy + viewheight, 1, brdr_bl.lumpnum, CR_DEFAULT, VPT_NONE);
 
   V_DrawNumPatch(viewwindowx + scaledviewwidth, viewwindowy + viewheight, 1, brdr_br.lumpnum, CR_DEFAULT, VPT_NONE);
+
+  V_EndUIDraw();
 }
 
 //

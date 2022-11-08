@@ -64,6 +64,7 @@ typedef enum
 {
   gl_lightmode_glboom,
   gl_lightmode_shaders,
+  gl_lightmode_indexed,
 
   gl_lightmode_last
 } gl_lightmode_t;
@@ -72,6 +73,8 @@ extern int gl_drawskys;
 extern int gl_hardware_gamma;
 extern gl_lightmode_t gl_lightmode;
 extern const char *gl_lightmodes[];
+extern dboolean gl_ui_lightmode_indexed;
+extern dboolean gl_automap_lightmode_indexed;
 extern int gl_usegamma;
 int gld_SetGammaRamp(int gamma);
 void gld_CheckHardwareGamma(void);
@@ -89,6 +92,11 @@ extern int gl_boom_colormaps_default;
 void gld_Init(int width, int height);
 void gld_InitCommandLine(void);
 void gld_InitTextureParams(void);
+
+void gld_BeginUIDraw(void);
+void gld_EndUIDraw(void);
+void gld_BeginAutomapDraw(void);
+void gld_EndAutomapDraw(void);
 
 void gld_DrawNumPatch(int x, int y, int lump, int cm, enum patch_translation_e flags);
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags);

@@ -2486,6 +2486,8 @@ void AM_Drawer (void)
   if (!automap_active)
     return;
 
+  V_BeginAutomapDraw();
+
   if (automap_follow)
     AM_doFollowPlayer();
 
@@ -2510,7 +2512,9 @@ void AM_Drawer (void)
 
   if (map_textured)
   {
+    V_BeginUIDraw();
     AM_drawSubsectors();
+    V_EndUIDraw();
   }
 
   if (automap_grid)
@@ -2534,4 +2538,6 @@ void AM_Drawer (void)
   }
 
   AM_drawMarks();
+
+  V_EndAutomapDraw();
 }

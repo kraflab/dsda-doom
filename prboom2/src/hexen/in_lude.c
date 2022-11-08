@@ -292,6 +292,7 @@ void Hexen_IN_Drawer(void)
     {
         return;
     }
+
     V_DrawRawScreen("INTERPIC");
 
     if (gametype == SINGLE)

@@ -76,7 +76,19 @@ int imageformats[5] = {0, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_RGB, GL_RGBA};
 static GLTexture **gld_GLTextures=NULL;
 /* PATCHES FLATS SPRITES */
 static GLTexture **gld_GLPatchTextures=NULL;
-static GLTexture **gld_GLStaticPatchTextures=NULL;
+static GLTexture **gld_GLStaticPatchTextures = NULL;
+/* [XA] Indexed textures, for indexed lightmode */
+static GLTexture **gld_GLIndexedTextures = NULL;
+static GLTexture **gld_GLIndexedPatchTextures = NULL;
+static GLTexture **gld_GLIndexedStaticPatchTextures = NULL;
+/* [XA] Colormap textures, for indexed lightmode */
+static GLTexture **gld_GLColormapTextures = NULL;
+int gld_numGLColormaps = -1;
+int gld_paletteIndex = 0;
+/* [XA] Sky textures for indexed lightmode -- name is sort
+of a misnomer since the textures themselves aren't indexed,
+but rather have the GL colormaps pre-applied, but meh. */
+static GLTexture **gld_GLIndexedSkyTextures = NULL;
 
 tex_filter_t tex_filter[MIP_COUNT];
 
@@ -248,17 +260,52 @@ static GLTexture *gld_AddNewGLTexItem(int num, int count, GLTexture ***items)
   return (*items)[num];
 }
 
-static GLTexture *gld_AddNewGLTexture(int texture_num)
+static GLTexture *gld_AddNewGLTexture(int texture_num, dboolean indexed)
 {
-  return gld_AddNewGLTexItem(texture_num, numtextures, &gld_GLTextures);
+  return gld_AddNewGLTexItem(texture_num, numtextures, indexed ? &gld_GLIndexedTextures : &gld_GLTextures);
 }
 
-static GLTexture *gld_AddNewGLPatchTexture(int lump)
+static GLTexture *gld_AddNewGLPatchTexture(int lump, dboolean indexed)
 {
   if (lumpinfo[lump].flags & LUMP_STATIC)
-    return gld_AddNewGLTexItem(lump, numlumps, &gld_GLStaticPatchTextures);
+    return gld_AddNewGLTexItem(lump, numlumps, indexed ? &gld_GLIndexedStaticPatchTextures : &gld_GLStaticPatchTextures);
   else
-    return gld_AddNewGLTexItem(lump, numlumps, &gld_GLPatchTextures);
+    return gld_AddNewGLTexItem(lump, numlumps, indexed ? &gld_GLIndexedPatchTextures : &gld_GLPatchTextures);
+}
+
+static GLTexture *gld_AddNewGLColormapTexture(int palette_index, int gamma_level)
+{
+  return gld_AddNewGLTexItem(palette_index + (gamma_level * V_GetPlaypalCount()), gld_numGLColormaps, &gld_GLColormapTextures);
+}
+
+// [XA] adds a memory-contiguous batch of sky textures,
+// one for each GL colormap, and returns the first one
+static GLTexture *gld_AddNewGLIndexedSkyTextures(int texture_num)
+{
+  int numIndexedSkyTextures = numtextures * gld_numGLColormaps;
+  int baseTextureNum = texture_num * gld_numGLColormaps;
+  int i;
+
+  for (i = 0; i < gld_numGLColormaps; i++) {
+    gld_AddNewGLTexItem(baseTextureNum + i, numIndexedSkyTextures, &gld_GLIndexedSkyTextures);
+  }
+
+  return gld_GLIndexedSkyTextures[baseTextureNum];
+}
+
+// [XA] returns a specific indexed sky texture from a set.
+static GLTexture *gld_GetGLIndexedSkyTexture(int texture_num, int index)
+{
+  if (texture_num < 0 || texture_num >= numtextures)
+    return NULL;
+
+  return gld_GLIndexedSkyTextures[texture_num * gld_numGLColormaps + index];
+}
+
+// [XA] returns the indexed sky texture for the current palette & gamma level.
+static GLTexture *gld_GetCurrentGLIndexedSkyTexture(GLTexture *basetexture)
+{
+  return gld_GetGLIndexedSkyTexture(basetexture->index, gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma);
 }
 
 void gld_SetTexturePalette(GLenum target)
@@ -279,6 +326,11 @@ void gld_SetTexturePalette(GLenum target)
   pal[transparent_pal_index*4+2]=0;
   pal[transparent_pal_index*4+3]=0;
   GLEXT_glColorTableEXT(target, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, pal);
+}
+
+void gld_SetIndexedPalette(int palette_index)
+{
+  gld_paletteIndex = palette_index;
 }
 
 static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned char *buffer, const rpatch_t *patch, int originx, int originy, int paletted)
@@ -363,15 +415,36 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
           if (gl_boom_colormaps && use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
           {
             const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
-            buffer[pos+0]=playpal[colormap[source[j]]*3+0];
-            buffer[pos+1]=playpal[colormap[source[j]]*3+1];
-            buffer[pos+2]=playpal[colormap[source[j]]*3+2];
+            if (gltexture->flags & GLTEXTURE_INDEXED)
+            {
+              // [XA] new indexed color mode: store the palette index in
+              // the R channel and get the colormap index in the shader.
+              buffer[pos + 0] = colormap[source[j]];
+              buffer[pos + 1] = 0;
+              buffer[pos + 2] = 0;
+            }
+            else
+            {
+              buffer[pos+0]=playpal[colormap[source[j]]*3+0];
+              buffer[pos+1]=playpal[colormap[source[j]]*3+1];
+              buffer[pos+2]=playpal[colormap[source[j]]*3+2];
+            }
           }
           else
           {
-            buffer[pos+0]=playpal[source[j]*3+0];
-            buffer[pos+1]=playpal[source[j]*3+1];
-            buffer[pos+2]=playpal[source[j]*3+2];
+            if (gltexture->flags & GLTEXTURE_INDEXED)
+            {
+              // [XA] new indexed color mode
+              buffer[pos + 0] = source[j];
+              buffer[pos + 1] = 0;
+              buffer[pos + 2] = 0;
+            }
+            else
+            {
+              buffer[pos+0]=playpal[source[j]*3+0];
+              buffer[pos+1]=playpal[source[j]*3+1];
+              buffer[pos+2]=playpal[source[j]*3+2];
+            }
           }
           buffer[pos+3]=255;
         }
@@ -472,15 +545,35 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
           if (gl_boom_colormaps && use_boom_cm)
           {
             const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
-            buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
-            buffer[pos+1]=playpal[colormap[outr[source[j]]]*3+1];
-            buffer[pos+2]=playpal[colormap[outr[source[j]]]*3+2];
+            if (gltexture->flags & GLTEXTURE_INDEXED)
+            {
+              // [XA] new indexed color mode
+              buffer[pos+0]=colormap[outr[source[j]]];
+              buffer[pos+1]=0;
+              buffer[pos+2]=0;
+            }
+            else
+            {
+              buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
+              buffer[pos+1]=playpal[colormap[outr[source[j]]]*3+1];
+              buffer[pos+2]=playpal[colormap[outr[source[j]]]*3+2];
+            }
           }
           else
           {
-            buffer[pos+0]=playpal[outr[source[j]]*3+0];
-            buffer[pos+1]=playpal[outr[source[j]]*3+1];
-            buffer[pos+2]=playpal[outr[source[j]]*3+2];
+            if (gltexture->flags & GLTEXTURE_INDEXED)
+            {
+              // [XA] new indexed color mode
+              buffer[pos+0]=outr[source[j]];
+              buffer[pos+1]=0;
+              buffer[pos+2]=0;
+            }
+            else
+            {
+              buffer[pos+0]=playpal[outr[source[j]]*3+0];
+              buffer[pos+1]=playpal[outr[source[j]]*3+1];
+              buffer[pos+2]=playpal[outr[source[j]]*3+2];
+            }
           }
           buffer[pos+3]=255;
         }
@@ -532,15 +625,179 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
         if (gl_boom_colormaps && use_boom_cm)
         {
           const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
-          buffer[pos+0]=playpal[colormap[flat[y*64+x]]*3+0];
-          buffer[pos+1]=playpal[colormap[flat[y*64+x]]*3+1];
-          buffer[pos+2]=playpal[colormap[flat[y*64+x]]*3+2];
+          if (gltexture->flags & GLTEXTURE_INDEXED)
+          {
+            // [XA] new indexed color mode
+            buffer[pos+0]=colormap[flat[y*64+x]];
+            buffer[pos+1]=0;
+            buffer[pos+2]=0;
+          }
+          else
+          {
+            buffer[pos+0]=playpal[colormap[flat[y*64+x]]*3+0];
+            buffer[pos+1]=playpal[colormap[flat[y*64+x]]*3+1];
+            buffer[pos+2]=playpal[colormap[flat[y*64+x]]*3+2];
+          }
         }
         else
         {
-          buffer[pos+0]=playpal[flat[y*64+x]*3+0];
-          buffer[pos+1]=playpal[flat[y*64+x]*3+1];
-          buffer[pos+2]=playpal[flat[y*64+x]*3+2];
+          if (gltexture->flags & GLTEXTURE_INDEXED)
+          {
+            // [XA] new indexed color mode
+            buffer[pos+0]=flat[y*64+x];
+            buffer[pos+1]=0;
+            buffer[pos+2]=0;
+          }
+          else
+          {
+            buffer[pos+0]=playpal[flat[y*64+x]*3+0];
+            buffer[pos+1]=playpal[flat[y*64+x]*3+1];
+            buffer[pos+2]=playpal[flat[y*64+x]*3+2];
+          }
+        }
+        buffer[pos+3]=255;
+      }
+    }
+  }
+}
+
+static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer, int palette_index, int gamma_level)
+{
+  int x,y,pos;
+  const unsigned char *playpal;
+  const lighttable_t *colormap;
+  const byte * gtable;
+  int gtlump;
+
+  if (!gltexture)
+    return;
+  if (gltexture->realtexwidth<256)
+    return;
+
+  // figure out which palette variant to use
+  // (e.g. normal, pain flash, item flash, etc).
+  playpal = V_GetPlaypal() + (palette_index*PALETTE_SIZE);
+  colormap = fullcolormap;
+
+  // fallback in case the current colormap hasn't been set
+  // yet; this occurs when rendering the main menu for the
+  // first time if the game is launched in indexed lightmode
+  if (colormap == NULL)
+    colormap = colormaps[0];
+
+  // also yoink the gamma table and apply
+  // software gamma emulation to the texture.
+  gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
+  gtable = (const byte*) W_LumpByNum(gtlump) + 256 * gamma_level;
+
+  // construct a colormap texture using the selected
+  // palette variant & gamma, for shader lookup.
+  for (y=0;y<gltexture->realtexheight;y++)
+  {
+    pos=4*(y*gltexture->buffer_width);
+    for (x=0;x<gltexture->realtexwidth;x++,pos+=4)
+    {
+#ifdef RANGECHECK
+      if ((pos+3)>=gltexture->buffer_size)
+      {
+        lprintf(LO_ERROR,"gld_AddColormapToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+        return;
+      }
+#endif
+      buffer[pos+0]=gtable[playpal[colormap[y*256+x]*3+0]];
+      buffer[pos+1]=gtable[playpal[colormap[y*256+x]*3+1]];
+      buffer[pos+2]=gtable[playpal[colormap[y*256+x]*3+2]];
+      buffer[pos+3]=255;
+    }
+  }
+}
+
+// [XA] indexed lightmode sky support -- this basically creates
+// a "pre-baked" version of the sky texture with the given
+// palette (i.e. normal, pain flash, etc.) and gamma applied.
+// the game selects the correct texture to use on the fly.
+static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buffer, const rpatch_t *patch, int palette_index, int gamma_level)
+{
+  int x,y,j;
+  int xs,xe;
+  int js,je;
+  const rcolumn_t *column;
+  const byte *source;
+  int i, pos;
+  const unsigned char *playpal;
+  const byte * gtable;
+  int gtlump;
+
+  if (!gltexture || !patch)
+    return;
+
+  // get palette & gamma table for the given args
+  playpal = V_GetPlaypal() + (palette_index*PALETTE_SIZE);
+  gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
+  gtable = (const byte*)W_LumpByNum(gtlump) + 256 * gamma_level;
+
+  xs=0;
+  xe=patch->width;
+  if (xs>=gltexture->realtexwidth)
+    return;
+  if (xe<=0)
+    return;
+  if (xs<0)
+    xs=0;
+  if (xe>gltexture->realtexwidth)
+    xe+=(gltexture->realtexwidth-xe);
+
+  //e6y
+  if (patch->flags&PATCH_HASHOLES)
+    gltexture->flags |= GLTEXTURE_HASHOLES;
+
+  for (x=xs;x<xe;x++)
+  {
+#ifdef RANGECHECK
+    if (x>=patch->width)
+    {
+      lprintf(LO_ERROR,"gld_AddIndexedSkyToTexture x>=patch->width (%i >= %i)\n",x,patch->width);
+      return;
+    }
+#endif
+    column = &patch->columns[x];
+    for (i=0; i<column->numPosts; i++) {
+      const rpost_t *post = &column->posts[i];
+      y=(post->topdelta);
+      js=0;
+      je=post->length;
+      if ((js+y)>=gltexture->realtexheight)
+        continue;
+      if ((je+y)<=0)
+        continue;
+      if ((js+y)<0)
+        js=-y;
+      if ((je+y)>gltexture->realtexheight)
+        je+=(gltexture->realtexheight-(je+y));
+      source = column->pixels + post->topdelta;
+      pos=4*(((js+y)*gltexture->buffer_width)+x);
+      for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
+      {
+#ifdef RANGECHECK
+        if ((pos+3)>=gltexture->buffer_size)
+        {
+          lprintf(LO_ERROR,"gld_AddIndexedSkyToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+          return;
+        }
+#endif
+        //e6y: Boom's color maps
+        if (gl_boom_colormaps && use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
+        {
+          const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
+          buffer[pos+0]=gtable[playpal[colormap[source[j]]*3+0]];
+          buffer[pos+1]=gtable[playpal[colormap[source[j]]*3+1]];
+          buffer[pos+2]=gtable[playpal[colormap[source[j]]*3+2]];
+        }
+        else
+        {
+          buffer[pos+0]=gtable[playpal[source[j]*3+0]];
+          buffer[pos+1]=gtable[playpal[source[j]*3+1]];
+          buffer[pos+2]=gtable[playpal[source[j]*3+2]];
         }
         buffer[pos+3]=255;
       }
@@ -549,14 +806,15 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
 }
 
 //e6y: "force" flag for loading texture with zero index
-GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force)
+// [XA]  "indexed" flag for new indexed lightmode
+GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed)
 {
   GLTexture *gltexture;
 
   //e6y: textures with zero index should be loaded sometimes
   if (texture_num==NO_TEXTURE && !force)
     return NULL;
-  gltexture=gld_AddNewGLTexture(texture_num);
+  gltexture=gld_AddNewGLTexture(texture_num, indexed);
   if (!gltexture)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
@@ -572,8 +830,11 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force)
 
     //e6y
     gltexture->flags = 0;
-    if (mipmap && tex_filter[MIP_TEXTURE].mipmap)
+    if (mipmap && tex_filter[MIP_TEXTURE].mipmap && !indexed)
       gltexture->flags |= GLTEXTURE_MIPMAP;
+
+    if (indexed)
+      gltexture->flags |= GLTEXTURE_INDEXED;
 
     gltexture->realtexwidth=texture->width;
     gltexture->realtexheight=texture->height;
@@ -610,7 +871,8 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force)
 
     gltexture->textype=GLDT_TEXTURE;
 
-    gld_SetTexDetail(gltexture);
+    if (!indexed)
+      gld_SetTexDetail(gltexture);
   }
   return gltexture;
 }
@@ -676,18 +938,28 @@ void gld_SetTexFilters(GLTexture *gltexture)
   int mip, mag_filter, min_filter;
   float aniso_filter = 0.0f;
 
-  switch (gltexture->textype)
+  if (gltexture->flags & GLTEXTURE_INDEXED)
   {
-  case GLDT_TEXTURE:
-  case GLDT_FLAT:
-    mip = MIP_TEXTURE;
-    break;
-  case GLDT_PATCH:
-    mip = ((gltexture->flags & GLTEXTURE_SPRITE) ? MIP_SPRITE : MIP_PATCH);
-    break;
-  default:
-    mip = MIP_TEXTURE;
-    break;
+    mip = MIP_INDEXED;
+  }
+  else
+  {
+    switch (gltexture->textype)
+    {
+    case GLDT_TEXTURE:
+    case GLDT_FLAT:
+      mip = MIP_TEXTURE;
+      break;
+    case GLDT_PATCH:
+      mip = ((gltexture->flags & GLTEXTURE_SPRITE) ? MIP_SPRITE : MIP_PATCH);
+      break;
+    case GLDT_COLORMAP:
+      mip = MIP_INDEXED;
+      break;
+    default:
+      mip = MIP_TEXTURE;
+      break;
+    }
   }
 
   if (render_usedetail && gltexture->detail)
@@ -928,12 +1200,12 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
   gld_SetTexClamp(gltexture, flags);
 }
 
-GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite)
+GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean indexed)
 {
   const rpatch_t *patch;
   GLTexture *gltexture;
 
-  gltexture=gld_AddNewGLPatchTexture(lump);
+  gltexture=gld_AddNewGLPatchTexture(lump, indexed);
   if (!gltexture)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
@@ -949,15 +1221,18 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite)
     if (is_sprite)
     {
       gltexture->flags |= GLTEXTURE_SPRITE;
-      if (tex_filter[MIP_SPRITE].mipmap)
+      if (tex_filter[MIP_SPRITE].mipmap && !indexed)
         gltexture->flags |= GLTEXTURE_MIPMAP;
     }
     else
     {
-      if (tex_filter[MIP_PATCH].mipmap)
+      if (tex_filter[MIP_PATCH].mipmap && !indexed)
         gltexture->flags |= GLTEXTURE_MIPMAP;
     }
     //gltexture->wrap_mode = (patch->flags & PATCH_REPEAT ? GL_REPEAT : GLEXT_CLAMP_TO_EDGE);
+
+    if (indexed)
+      gltexture->flags |= GLTEXTURE_INDEXED;
 
     gltexture->realtexwidth=patch->width;
     gltexture->realtexheight=patch->height;
@@ -1066,11 +1341,11 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
 }
 
-GLTexture *gld_RegisterFlat(int lump, dboolean mipmap)
+GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed)
 {
   GLTexture *gltexture;
 
-  gltexture=gld_AddNewGLPatchTexture(firstflat+lump);
+  gltexture=gld_AddNewGLPatchTexture(firstflat+lump, indexed);
   if (!gltexture)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
@@ -1080,8 +1355,11 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap)
 
     //e6y
     gltexture->flags = 0;
-    if (mipmap && tex_filter[MIP_TEXTURE].mipmap)
+    if (mipmap && tex_filter[MIP_TEXTURE].mipmap && !indexed)
       gltexture->flags |= GLTEXTURE_MIPMAP;
+
+    if (indexed)
+      gltexture->flags |= GLTEXTURE_INDEXED;
 
     gltexture->realtexwidth=64;
     gltexture->realtexheight=64;
@@ -1118,7 +1396,8 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap)
 
     gltexture->textype=GLDT_FLAT;
 
-    gld_SetTexDetail(gltexture);
+    if (!indexed)
+      gld_SetTexDetail(gltexture);
   }
   return gltexture;
 }
@@ -1174,6 +1453,266 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
   gld_SetTexClamp(gltexture, flags);
 }
 
+
+// [XA] new functions for registering & binding sky textures.
+// for truecolor lightmodes, these just call into the regular
+// RegisterTexture function; for indexed lightmode, there's
+// a special set of sky textures with palettes pre-applied
+// that gets selected based on current palette, and we need
+// to generate & bind those here.
+// NOTE: since these only differer in behavior in indexed
+// lightmode, and indexed lightmode enforces gld_DrawStripsSky,
+// only that sky function bothers to call these, because lazy. ;)
+GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
+{
+  GLTexture *basetexture;
+  GLTexture *gltexture;
+  int i;
+
+  if (!V_IsWorldLightmodeIndexed())
+    return gld_RegisterTexture(texture_num, false, force, false);
+
+  if (texture_num == NO_TEXTURE && !force)
+    return NULL;
+
+  basetexture=gld_AddNewGLIndexedSkyTextures(texture_num);
+  if (!basetexture)
+    return NULL;
+
+  // [XA] initialize all textures in the set.
+  for(i = 0; i < gld_numGLColormaps; i++)
+  {
+    gltexture = gld_GetGLIndexedSkyTexture(texture_num, i);
+    if (gltexture->textype==GLDT_UNREGISTERED)
+    {
+      texture_t *texture=NULL;
+    
+      if ((texture_num>=0) || (texture_num<numtextures))
+        texture=textures[texture_num];
+    
+      if (!texture)
+        return NULL;
+    
+      gltexture->textype=GLDT_BROKEN;
+      gltexture->index=texture_num;
+    
+      // [XA] removed some stuff like mipmaps here since these
+      // are only used in indexed lightmode, where those dont' matter
+      gltexture->flags = 0;
+      gltexture->realtexwidth=texture->width;
+      gltexture->realtexheight=texture->height;
+      gltexture->leftoffset=0;
+      gltexture->topoffset=0;
+      gltexture->tex_width=gld_GetTexDimension(gltexture->realtexwidth);
+      gltexture->tex_height=gld_GetTexDimension(gltexture->realtexheight);
+      gltexture->width=MIN(gltexture->realtexwidth, gltexture->tex_width);
+      gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
+      gltexture->buffer_width=gltexture->tex_width;
+      gltexture->buffer_height=gltexture->tex_height;
+      gltexture->width=gltexture->tex_width;
+      gltexture->height=gltexture->tex_height;
+      gltexture->buffer_width=gltexture->realtexwidth;
+      gltexture->buffer_height=gltexture->realtexheight;
+    
+      //e6y: right/bottom UV coordinates for texture drawing
+      gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
+      gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
+    
+      gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
+      if (gltexture->realtexwidth>gltexture->buffer_width)
+        return gltexture;
+      if (gltexture->realtexheight>gltexture->buffer_height)
+        return gltexture;
+    
+      gltexture->textype=GLDT_TEXTURE;
+    }
+  }
+
+  return basetexture;
+}
+
+void gld_BindSkyTexture(GLTexture *gltexture)
+{
+  const rpatch_t *patch;
+  unsigned char *buffer;
+
+  // nothing special to do unless we're in indexed lightmode
+  if (!V_IsWorldLightmodeIndexed())
+  {
+    gld_BindTexture(gltexture, 0);
+    return;
+  }
+
+  // resolve the actual texture for the current GL colormap
+  gltexture = gld_GetCurrentGLIndexedSkyTexture(gltexture);
+
+  if (!gltexture || gltexture->textype != GLDT_TEXTURE)
+  {
+    glBindTexture(GL_TEXTURE_2D, 0);
+    last_glTexID = NULL;
+    return;
+  }
+
+#ifdef HAVE_LIBSDL2_IMAGE
+  if (gld_LoadHiresTex(gltexture, CR_DEFAULT))
+  {
+    gld_SetTexClamp(gltexture, 0);
+    last_glTexID = gltexture->texid_p;
+    return;
+  }
+#endif
+
+  gld_GetTextureTexID(gltexture, CR_DEFAULT);
+
+  if (last_glTexID == gltexture->texid_p)
+  {
+    gld_SetTexClamp(gltexture, 0);
+    return;
+  }
+
+  last_glTexID = gltexture->texid_p;
+
+  if (*gltexture->texid_p != 0)
+  {
+    glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
+    gld_SetTexClamp(gltexture, 0);
+    return;
+  }
+
+  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
+  memset(buffer,0,gltexture->buffer_size);
+  patch=R_TextureCompositePatchByNum(gltexture->index);
+
+  gld_AddIndexedSkyToTexture(gltexture, buffer, patch, gld_paletteIndex, usegamma);
+
+  if (*gltexture->texid_p == 0)
+    glGenTextures(1, gltexture->texid_p);
+  glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
+
+  if (gltexture->flags & GLTEXTURE_HASHOLES)
+  {
+    SmoothEdges(buffer, gltexture->buffer_width, gltexture->buffer_height);
+  }
+
+  gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
+
+  gld_SetTexClamp(gltexture, 0);
+}
+
+GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level)
+{
+  GLTexture *gltexture;
+
+  gltexture=gld_AddNewGLColormapTexture(palette_index, gamma_level);
+  if (!gltexture)
+    return NULL;
+  if (gltexture->textype==GLDT_UNREGISTERED)
+  {
+    gltexture->textype=GLDT_BROKEN;
+    gltexture->index=palette_index;
+
+    gltexture->realtexwidth=256;
+    gltexture->realtexheight=NUMCOLORMAPS+1; // it's +1 'cause of the invuln palette
+    gltexture->leftoffset=0;
+    gltexture->topoffset=0;
+    gltexture->tex_width=gld_GetTexDimension(gltexture->realtexwidth);
+    gltexture->tex_height=gld_GetTexDimension(gltexture->realtexheight);
+    gltexture->width=MIN(gltexture->realtexwidth, gltexture->tex_width);
+    gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
+    gltexture->buffer_width=gltexture->tex_width;
+    gltexture->buffer_height=gltexture->tex_height;
+
+    //e6y: right/bottom UV coordinates for patch drawing
+    gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
+    gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
+
+    gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
+
+    if (gltexture->realtexwidth>gltexture->buffer_width)
+      return gltexture;
+    if (gltexture->realtexheight>gltexture->buffer_height)
+      return gltexture;
+    gltexture->textype=GLDT_COLORMAP;
+  }
+  return gltexture;
+}
+
+void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level)
+{
+  unsigned char *buffer;
+
+  // abort if we're trying to bind the wrong texture type
+  if (!gltexture || gltexture->textype != GLDT_COLORMAP)
+  {
+    glBindTexture(GL_TEXTURE_2D, 0);
+    last_glTexID = NULL;
+    return;
+  }
+
+  // 'push' the active texture -- use texture2 for
+  // colormaps since texture1 is already in use.
+  GLEXT_glActiveTextureARB(GL_TEXTURE2_ARB);
+
+  gld_GetTextureTexID(gltexture, CR_DEFAULT);
+
+  if (last_glTexID == gltexture->texid_p)
+  {
+    GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
+    return;
+  }
+  last_glTexID = gltexture->texid_p;
+
+  // texure data already initialized; use it
+  if (*gltexture->texid_p != 0)
+  {
+    glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
+    GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
+    return;
+  }
+
+  // collect the actual texture data
+  buffer = (unsigned char*) Z_Malloc(gltexture->buffer_size);
+  memset(buffer, 0, gltexture->buffer_size);
+
+  gld_AddColormapToTexture(gltexture, buffer, palette_index, gamma_level);
+
+  // bind it, finally :P
+  if (*gltexture->texid_p == 0)
+    glGenTextures(1, gltexture->texid_p);
+  glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
+
+  gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
+
+  // 'pop' the active texture back to the default.
+  GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
+}
+
+void gld_InitColormapTextures(void)
+{
+  GLTexture *gltexture;
+
+  // ain't in indexed mode? ain't nothin' to do.
+  if (!V_IsWorldLightmodeIndexed())
+    return;
+
+  // figure out how many palette variants are in the
+  // PLAYPAL lump and create a colormap texture for
+  // each palette at each gamma level. word.
+  gld_numGLColormaps = V_GetPlaypalCount() * NUM_GAMMA_LEVELS;
+
+  // abort if we're trying to show an out-of-bounds palette.
+  if (gld_paletteIndex < 0 || gld_paletteIndex >= gld_numGLColormaps)
+    return;
+
+  // lazy-init and bind the colormap texture for
+  // the current palette index. since colormaps
+  // won't change during the frame, we can go
+  // ahead and bind them now and be done with it.
+  gltexture = gld_RegisterColormapTexture(gld_paletteIndex, usegamma);
+  if (gltexture)
+    gld_BindColormapTexture(gltexture, gld_paletteIndex, usegamma);
+}
+
 // e6y
 // The common function for cleaning textures and patches
 // gld_CleanTextures and gld_CleanPatchTextures are replaced with that
@@ -1217,6 +1756,11 @@ void gld_FlushTextures(void)
   gld_CleanTexItems(numtextures, &gld_GLTextures);
   gld_CleanTexItems(numlumps, &gld_GLPatchTextures);
   gld_CleanTexItems(numlumps, &gld_GLStaticPatchTextures);
+  gld_CleanTexItems(numtextures, &gld_GLIndexedTextures);
+  gld_CleanTexItems(numlumps, &gld_GLIndexedPatchTextures);
+  gld_CleanTexItems(numlumps, &gld_GLIndexedStaticPatchTextures);
+  gld_CleanTexItems(gld_numGLColormaps, &gld_GLColormapTextures);
+  gld_CleanTexItems(numtextures * gld_numGLColormaps, &gld_GLIndexedSkyTextures);
 
   gl_has_hires = 0;
 
@@ -1254,6 +1798,7 @@ void gld_Precache(void)
   int hit, hitcount = 0;
   GLTexture *gltexture;
   box_skybox_t *sb;
+  dboolean indexed;
 
   unsigned int tics = SDL_GetTicks();
 
@@ -1274,6 +1819,11 @@ void gld_Precache(void)
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
     hitlist = Z_Malloc((size_t)numtextures > size ? (size_t)numtextures : size);
   }
+
+  // [XA] TODO: precache both indexed and non-indexed textures?
+  // right now if a player switches lightmode while-ingame, the
+  // other texture set will not have been precached.
+  indexed = V_IsWorldLightmodeIndexed();
 
   // Precache flats.
 
@@ -1310,7 +1860,7 @@ void gld_Precache(void)
     if (hitlist[i])
     {
       gld_ProgressUpdate("Loading Flats...", ++hit, hitcount);
-      gltexture = gld_RegisterFlat(i,true);
+      gltexture = gld_RegisterFlat(i, true, indexed);
       if (gltexture)
       {
         gld_BindFlat(gltexture, 0);
@@ -1407,7 +1957,7 @@ void gld_Precache(void)
     if (hitlist[i])
     {
       gld_ProgressUpdate("Loading Textures...", ++hit, hitcount);
-      gltexture = gld_RegisterTexture(i, i != skytexture, false);
+      gltexture = gld_RegisterTexture(i, i != skytexture, false, indexed);
       if (gltexture)
       {
         gld_BindTexture(gltexture, 0);
@@ -1446,7 +1996,7 @@ void gld_Precache(void)
             do
             {
               gld_ProgressUpdate("Loading Sprites...", ++hit, hitcount);
-              gltexture = gld_RegisterPatch(firstspritelump + sflump[k], CR_LIMIT, true);
+              gltexture = gld_RegisterPatch(firstspritelump + sflump[k], CR_LIMIT, true, indexed);
               if (gltexture)
               {
                 gld_BindPatch(gltexture, CR_LIMIT);
@@ -1476,10 +2026,15 @@ void gld_CleanMemory(void)
   gld_CleanVertexData();
   gld_CleanTexItems(numtextures, &gld_GLTextures);
   gld_CleanTexItems(numlumps, &gld_GLPatchTextures);
+  gld_CleanTexItems(numtextures, &gld_GLIndexedTextures);
+  gld_CleanTexItems(numlumps, &gld_GLIndexedPatchTextures);
+  gld_CleanTexItems(numtextures * gld_numGLColormaps, &gld_GLIndexedSkyTextures);
   gl_preprocessed = false;
 }
 
 void gld_CleanStaticMemory(void)
 {
   gld_CleanTexItems(numlumps, &gld_GLStaticPatchTextures);
+  gld_CleanTexItems(numlumps, &gld_GLIndexedStaticPatchTextures);
+  gld_CleanTexItems(gld_numGLColormaps, &gld_GLColormapTextures);
 }

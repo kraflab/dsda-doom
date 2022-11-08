@@ -1,0 +1,45 @@
+uniform sampler2D tex;
+uniform sampler2D colormap;
+uniform float lightlevel;
+
+// [XA] New "indexed" lightmode shader, which approximates
+// Doom's software lighting algorithm using the COLORMAP.
+// Looks very very close to the software renderer,
+// palette edits included, all while running on the GPU. :)
+
+// Big thanks to Jazz Mickle for pioneering this technique
+// and publishing an article explaining how it all works.
+// https://medium.com/@jmickle_/writing-a-doom-style-shader-for-unity-63fa13678634
+
+// [XA] adjusted this value a bit from the truecolor shader,
+// to taste -- seems to match software pretty damn closely
+#define DOOMLIGHTFACTOR 200.0
+
+void main()
+{
+  vec4 color = gl_Color;
+
+  // grab the texel and its color index,
+  // which is stuffed into the R channel
+  vec4 texel = texture2D(tex, gl_TexCoord[0].st);
+  float colorIndex = texel.r;
+
+  // calculate light level based on distance.
+  // equation originally from EDGE. now translated
+  // to an actual colormap lookup, for science.
+  float L = 63.0 * lightlevel;
+  float min_L = clamp(36.0 - L, 0.0, 31.0);
+  float dist = max(0.0, gl_FragCoord.z);
+  float index = 59.0 + DOOMLIGHTFACTOR - L - DOOMLIGHTFACTOR / dist;
+  float doomlight = (clamp(index, min_L, 31.0) / 31.0);
+
+  // Map light level (1.0 to 0.0) to colormap index (0 to 31)
+  // and pluck the actual RGB color from the colormap; note
+  // that we're dividing by 32 at the end since there's an
+  // extra 32nd row in the colormap image for the invuln pal
+  float lightIndex = (doomlight * 31.0 / 32.0);
+  gl_FragColor = color * texture2D(colormap, vec2(colorIndex, lightIndex));
+
+  // reapply transparency & translucency
+  gl_FragColor.a = color.a * texel.a;
+}

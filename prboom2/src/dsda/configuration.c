@@ -89,7 +89,7 @@ extern int fake_contrast;
 
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
-void M_ChangeMouseLook(void);
+void M_ChangeSkyMode(void);
 void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
@@ -140,7 +140,7 @@ void dsda_UpdateStrictMode(void) {
   I_Init2(); // side effect of realtic clock rate
   M_ChangeSpeed(); // side effect of always sr50
   dsda_InitKeyFrame();
-  M_ChangeMouseLook();
+  M_ChangeSkyMode(); // affected by mouselook setting
   HU_init_crosshair();
   M_ChangeApplyPalette();
   dsda_RefreshExHudCoordinateDisplay();
@@ -324,7 +324,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_freelook] = {
     "allow_freelook", dsda_config_freelook,
-    CONF_BOOL(0), NULL, STRICT_INT(0), M_ChangeMouseLook
+    CONF_BOOL(0), NULL, STRICT_INT(0), M_ChangeSkyMode
   },
   [dsda_config_autorun] = {
     "autorun", dsda_config_autorun,
@@ -609,7 +609,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
-    NOT_STRICT, M_ChangeMouseLook
+    NOT_STRICT, M_ChangeSkyMode
   },
   [dsda_config_gl_texture_filter] = {
     "gl_texture_filter", dsda_config_gl_texture_filter,
@@ -625,6 +625,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_patch_filter", dsda_config_gl_patch_filter,
     dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
     NULL, NOT_STRICT, M_ChangeTextureParams
+  },
+  [dsda_config_gl_indexed_filter] = {
+    "gl_indexed_filter", dsda_config_gl_indexed_filter,
+    dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
+    NULL, 0, 0, M_ChangeTextureParams
   },
   [dsda_config_gl_texture_filter_anisotropic] = {
     "gl_texture_filter_anisotropic", dsda_config_gl_texture_filter_anisotropic,

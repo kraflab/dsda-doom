@@ -834,6 +834,22 @@ static void V_PlotPixel8(int scrn, int x, int y, byte color);
 static void WRAP_V_DrawLineWu(fline_t* fl, int color);
 static void V_PlotPixelWu8(int scrn, int x, int y, byte color, int weight);
 
+static void WRAP_gld_BeginUIDraw(void)
+{
+  gld_BeginUIDraw();
+}
+static void WRAP_gld_EndUIDraw(void)
+{
+  gld_EndUIDraw();
+}
+static void WRAP_gld_BeginAutomapDraw(void)
+{
+  gld_BeginAutomapDraw();
+}
+static void WRAP_gld_EndAutomapDraw(void)
+{
+  gld_EndAutomapDraw();
+}
 static void WRAP_gld_FillRect(int scrn, int x, int y, int width, int height, byte colour)
 {
   gld_FillBlock(x,y,width,height,colour);
@@ -876,6 +892,10 @@ static void WRAP_gld_DrawLine(fline_t* fl, int color)
   gld_DrawLine_f(fl->a.fx, fl->a.fy, fl->b.fx, fl->b.fy, color);
 }
 
+static void NULL_BeginUIDraw(void) {}
+static void NULL_EndUIDraw(void) {}
+static void NULL_BeginAutomapDraw(void) {}
+static void NULL_EndAutomapDraw(void) {}
 static void NULL_FillRect(int scrn, int x, int y, int width, int height, byte colour) {}
 static void NULL_CopyRect(int srcscrn, int destscrn, int x, int y, int width, int height, enum patch_translation_e flags) {}
 static void NULL_FillFlat(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags) {}
@@ -891,6 +911,10 @@ static void NULL_DrawLineWu(fline_t* fl, int color) {}
 
 static video_mode_t current_videomode = VID_MODESW;
 
+V_BeginUIDraw_f V_BeginUIDraw = NULL_BeginUIDraw;
+V_EndUIDraw_f V_EndUIDraw = NULL_EndUIDraw;
+V_BeginUIDraw_f V_BeginAutomapDraw = NULL_BeginAutomapDraw;
+V_EndUIDraw_f V_EndAutomapDraw = NULL_EndAutomapDraw;
 V_CopyRect_f V_CopyRect = NULL_CopyRect;
 V_FillRect_f V_FillRect = NULL_FillRect;
 V_DrawNumPatch_f V_DrawNumPatch = NULL_DrawNumPatch;
@@ -910,6 +934,10 @@ void V_InitMode(video_mode_t mode) {
   switch (mode) {
     case VID_MODESW:
       lprintf(LO_DEBUG, "V_InitMode: using software video mode\n");
+      V_BeginUIDraw = NULL_BeginUIDraw; // [XA] no-op in software
+      V_EndUIDraw = NULL_EndUIDraw; // [XA] ditto for the other begin/ends
+      V_BeginAutomapDraw = NULL_BeginAutomapDraw;
+      V_EndAutomapDraw = NULL_EndAutomapDraw;
       V_CopyRect = FUNC_V_CopyRect;
       V_FillRect = V_FillRect8;
       V_DrawNumPatch = FUNC_V_DrawNumPatch;
@@ -925,6 +953,10 @@ void V_InitMode(video_mode_t mode) {
       break;
     case VID_MODEGL:
       lprintf(LO_DEBUG, "V_InitMode: using OpenGL video mode\n");
+      V_BeginUIDraw = WRAP_gld_BeginUIDraw;
+      V_EndUIDraw = WRAP_gld_EndUIDraw;
+      V_BeginAutomapDraw = WRAP_gld_BeginAutomapDraw;
+      V_EndAutomapDraw = WRAP_gld_EndAutomapDraw;
       V_CopyRect = WRAP_gld_CopyRect;
       V_FillRect = WRAP_gld_FillRect;
       V_DrawNumPatch = WRAP_gld_DrawNumPatch;
@@ -948,6 +980,18 @@ dboolean V_IsSoftwareMode(void) {
 
 dboolean V_IsOpenGLMode(void) {
   return current_videomode == VID_MODEGL;
+}
+
+dboolean V_IsWorldLightmodeIndexed(void) {
+  return gl_lightmode == gl_lightmode_indexed;
+}
+
+dboolean V_IsUILightmodeIndexed(void) {
+  return gl_ui_lightmode_indexed;
+}
+
+dboolean V_IsAutomapLightmodeIndexed(void) {
+  return gl_automap_lightmode_indexed;
 }
 
 void V_CopyScreen(int srcscrn, int destscrn)
@@ -1229,10 +1273,10 @@ const unsigned char* V_GetPlaypal(void)
   if (!playpal_data->lump)
   {
     int lump = W_GetNumForName(playpal_data->lump_name);
-    int len = W_LumpLength(lump);
     const byte *data = W_LumpByNum(lump);
-    playpal_data->lump = Z_Malloc(len);
-    memcpy(playpal_data->lump, data, len);
+    playpal_data->length = W_LumpLength(lump);
+    playpal_data->lump = Z_Malloc(playpal_data->length);
+    memcpy(playpal_data->lump, data, playpal_data->length);
   }
 
   return playpal_data->lump;
@@ -1241,6 +1285,12 @@ const unsigned char* V_GetPlaypal(void)
 void V_FreePlaypal(void)
 {
   dsda_FreePlayPal();
+}
+
+int V_GetPlaypalCount(void)
+{
+  V_GetPlaypal(); // ensure playpal data is initialized
+  return (dsda_PlayPalData()->length / PALETTE_SIZE);
 }
 
 void V_FillBorder(int lump, byte color)

@@ -99,6 +99,8 @@ int gl_render_paperitems;
 
 GLfloat gl_texture_filter_anisotropic;
 
+extern int gld_paletteIndex;
+
 //sprites
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
 int gl_sprite_blend;  // e6y: smooth sprite edges
@@ -192,7 +194,8 @@ void gld_InitTextureParams(void)
   int var[MIP_COUNT] = {
     dsda_IntConfig(dsda_config_gl_texture_filter),
     dsda_IntConfig(dsda_config_gl_sprite_filter),
-    dsda_IntConfig(dsda_config_gl_patch_filter)
+    dsda_IntConfig(dsda_config_gl_patch_filter),
+    dsda_IntConfig(dsda_config_gl_indexed_filter)
   };
   const char* gl_tex_format_string = dsda_StringConfig(dsda_config_gl_tex_format_string);
 
@@ -532,7 +535,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       continue;
     }
 
-    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true);
+    gltexture = gld_RegisterFlat(flattranslation[sub->sector->floorpic], true, V_IsUILightmodeIndexed());
     if (gltexture)
     {
       sector_t tempsec;
@@ -573,6 +576,10 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     }
   }
 
+  // [XA] reset lighting so it doesn't interfere with
+  // other drawing steps (e.g. indexed lightmode UI)
+  gld_StaticLight(1.0f);
+
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
   glDisable(GL_SCISSOR_TEST);
@@ -597,6 +604,45 @@ void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)
   glEnd();
 }
 
+void gld_BeginUIDraw(void)
+{
+  if (V_IsWorldLightmodeIndexed())
+  {
+    gld_InitColormapTextures();
+    glsl_SetMainShaderActive();
+    gld_StaticLight(1.0f); // UI is always "fullbright"
+    gl_ui_lightmode_indexed = true;
+  }
+}
+
+void gld_EndUIDraw(void)
+{
+  if (V_IsWorldLightmodeIndexed())
+  {
+    gl_ui_lightmode_indexed = false;
+    glsl_SetActiveShader(NULL);
+    return;
+  }
+}
+
+void gld_BeginAutomapDraw(void)
+{
+  if (V_IsWorldLightmodeIndexed())
+  {
+    gld_InitColormapTextures();
+    gl_automap_lightmode_indexed = true;
+  }
+}
+
+void gld_EndAutomapDraw(void)
+{
+  if (V_IsWorldLightmodeIndexed())
+  {
+    gl_automap_lightmode_indexed = false;
+    return;
+  }
+}
+
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
 {
   GLTexture *gltexture;
@@ -610,7 +656,7 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
   dboolean bFakeColormap;
 
   cmap = ((flags & VPT_TRANS) ? cm : CR_DEFAULT);
-  gltexture=gld_RegisterPatch(lump, cmap, false);
+  gltexture=gld_RegisterPatch(lump, cmap, false, V_IsUILightmodeIndexed());
   gld_BindPatch(gltexture, cmap);
 
   if (!gltexture)
@@ -706,7 +752,7 @@ void gld_FillFlat(int lump, int x, int y, int width, int height, enum patch_tran
   int saved_boom_cm = boom_cm;
   boom_cm = 0;
 
-  gltexture = gld_RegisterFlat(lump, false);
+  gltexture = gld_RegisterFlat(lump, false, V_IsUILightmodeIndexed());
   gld_BindFlat(gltexture, 0);
 
   //e6y
@@ -745,7 +791,7 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
   int saved_boom_cm = boom_cm;
   boom_cm = 0;
 
-  gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false);
+  gltexture = gld_RegisterPatch(lump, CR_DEFAULT, false, V_IsUILightmodeIndexed());
   gld_BindPatch(gltexture, CR_DEFAULT);
 
   if (!gltexture)
@@ -778,34 +824,78 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
   glEnd();
 }
 
+// [XA] some UI functions may run before fullcolormap has
+// been initialized, since that's is done in SetupFrame;
+// use colormaps[0] as a fallback in such a case.
+const lighttable_t *gld_GetActiveColormap()
+{
+  if (fixedcolormap)
+    return fixedcolormap;
+  else if (fullcolormap)
+    return fullcolormap;
+  else
+    return colormaps[0];
+}
+
+// [XA] quicky indexed color-lookup function for a couple
+// of things that aren't done in the shader for the indexed
+// lightmode. ideally this will go away in the future.
+color_rgb_t gld_LookupIndexedColor(int index)
+{
+  color_rgb_t color;
+  const unsigned char *playpal;
+
+  if (V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed())
+  {
+    int gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
+    const byte * gtable = (const byte*)W_LumpByNum(gtlump) + 256 * usegamma;
+    const lighttable_t *colormap = gld_GetActiveColormap();
+
+    playpal = V_GetPlaypal() + (gld_paletteIndex*PALETTE_SIZE);
+
+    color.r = gtable[playpal[colormap[index] * 3 + 0]];
+    color.g = gtable[playpal[colormap[index] * 3 + 1]];
+    color.b = gtable[playpal[colormap[index] * 3 + 2]];
+  }
+  else
+  {
+    playpal = V_GetPlaypal();
+
+    color.r = playpal[3 * index + 0];
+    color.g = playpal[3 * index + 1];
+    color.b = playpal[3 * index + 2];
+  }
+
+  return color;
+}
+
 void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
 {
   const unsigned char *playpal = V_GetPlaypal();
-  unsigned char r, g, b, a;
+  color_rgb_t color;
+  unsigned char a;
   map_line_t *line;
 
   a = (automap_overlay ? map_lines_overlay_trans * 255 / 100 : 255);
   if (a == 0)
     return;
 
-  r = playpal[3 * BaseColor + 0];
-  g = playpal[3 * BaseColor + 1];
-  b = playpal[3 * BaseColor + 2];
+  color = gld_LookupIndexedColor(BaseColor);
 
   line = M_ArrayGetNewItem(&map_lines, sizeof(line[0]));
 
   line->point[0].x = x0;
   line->point[0].y = y0;
-  line->point[0].r = r;
-  line->point[0].g = g;
-  line->point[0].b = b;
+  line->point[0].r = color.r;
+  line->point[0].g = color.g;
+  line->point[0].b = color.b;
   line->point[0].a = a;
 
   line->point[1].x = x1;
   line->point[1].y = y1;
-  line->point[1].r = r;
-  line->point[1].g = g;
-  line->point[1].b = b;
+  line->point[1].r = color.r;
+  line->point[1].g = color.g;
+  line->point[1].b = color.b;
   line->point[1].a = a;
 }
 
@@ -821,7 +911,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   int x1,y1,x2,y2;
   float light;
 
-  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false);
+  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, V_IsWorldLightmodeIndexed());
   if (!gltexture)
     return;
   gld_BindPatch(gltexture, CR_DEFAULT);
@@ -876,11 +966,14 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
 void gld_FillBlock(int x, int y, int width, int height, int col)
 {
   const unsigned char *playpal = V_GetPlaypal();
+  color_rgb_t color = gld_LookupIndexedColor(col);
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
-  glColor3f((float)playpal[3*col]/255.0f,
-            (float)playpal[3*col+1]/255.0f,
-            (float)playpal[3*col+2]/255.0f);
+
+  glColor3f((float)color.r/255.0f,
+            (float)color.g/255.0f,
+            (float)color.b/255.0f);
+
   glBegin(GL_TRIANGLE_STRIP);
     glVertex2i( x, y );
     glVertex2i( x, y+height );
@@ -898,9 +991,19 @@ void gld_SetPalette(int palette)
   extra_green=0.0f;
   extra_blue=0.0f;
   extra_alpha=0.0f;
+
   if (palette < 0)
     palette = last_palette;
   last_palette = palette;
+
+  // [XA] store the current palette so
+  // the indexed lightmode can use it.
+  // if we're actually in indexed mode,
+  // then we're all done here.
+  gld_SetIndexedPalette(palette);
+  if (V_IsWorldLightmodeIndexed())
+    return;
+
   if (palette > 0)
   {
     if (palette <= 8)
@@ -1181,6 +1284,8 @@ void gld_StartDrawScene(void)
   glMatrixMode(GL_MODELVIEW);
   glLoadMatrixf(modelMatrix);
 
+  gld_InitColormapTextures();
+
   rendermarker++;
   scene_has_overlapped_sprites = false;
   scene_has_wall_details = 0;
@@ -1233,7 +1338,7 @@ void gld_EndDrawScene(void)
   gl_EnableFog(false);
   gld_Set2DMode();
 
-  glsl_SetActiveShader(sh_main);
+  glsl_SetMainShaderActive();
   R_DrawPlayerSprites();
   glsl_SetActiveShader(NULL);
 
@@ -1313,6 +1418,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
     int currpic, nextpic;
     GLWall *wall = (GLWall*)itemdata;
     float oldalpha = wall->alpha;
+    dboolean indexed = V_IsWorldLightmodeIndexed();
 
     switch (itemtype)
     {
@@ -1326,7 +1432,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
         currpic = wall->gltexture->index - firstflat - anim->basepic;
         nextpic = anim->basepic + (currpic + 1) % anim->numpics;
         wall->alpha = oldalpha;
-        wall->gltexture = gld_RegisterFlat(nextpic, true);
+        wall->gltexture = gld_RegisterFlat(nextpic, true, indexed);
       }
       break;
     case GLDIT_WALL:
@@ -1342,7 +1448,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
           currpic = wall->gltexture->index - anim->basepic;
           nextpic = anim->basepic + (currpic + 1) % anim->numpics;
           wall->alpha = oldalpha;
-          wall->gltexture = gld_RegisterTexture(nextpic, true, false);
+          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed);
         }
       }
       break;
@@ -1507,6 +1613,7 @@ void gld_AddWall(seg_t *seg)
   float lineheight, linelength;
   int rellight = 0;
   int backseg;
+  dboolean indexed;
 
   int side = (seg->sidedef == &sides[seg->linedef->sidenum[0]] ? 0 : 1);
   if (linerendered[side][seg->linedef->iLineID] == rendermarker)
@@ -1515,6 +1622,8 @@ void gld_AddWall(seg_t *seg)
   linelength = lines[seg->linedef->iLineID].texel_length;
   wall.glseg=&gl_lines[seg->linedef->iLineID];
   backseg = seg->sidedef != &sides[seg->linedef->sidenum[0]];
+
+  indexed = V_IsWorldLightmodeIndexed();
 
   if (poly_add_line)
   {
@@ -1546,7 +1655,7 @@ void gld_AddWall(seg_t *seg)
   {
     rellight = seg->linedef->dx == 0 ? +gl_rellight : seg->linedef->dy==0 ? -gl_rellight : 0;
   }
-  wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+(extralight<<5));
+  wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+gld_GetGunFlashLight());
   wall.fogdensity = gld_CalcFogDensity(frontsector, frontsector->lightlevel, GLDIT_WALL);
   wall.alpha=1.0f;
   wall.gltexture=NULL;
@@ -1566,7 +1675,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom=-MAXCOORD;
       gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
     }
-    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false);
+    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
     {
       wall.gltexture=temptex;
@@ -1678,7 +1787,7 @@ void gld_AddWall(seg_t *seg)
     {
       if (!((frontsector->ceilingpic==skyflatnum) && (backsector->ceilingpic==skyflatnum)))
       {
-        temptex=gld_RegisterTexture(toptexture, true, false);
+        temptex=gld_RegisterTexture(toptexture, true, false, indexed);
         if (!temptex && gl_use_stencil && backsector &&
           !(seg->linedef->r_flags & RF_ISOLATED) &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
@@ -1689,7 +1798,7 @@ void gld_AddWall(seg_t *seg)
           if (wall.ybottom >= zCamera)
           {
             wall.flag=GLDWF_TOPFLUD;
-            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true);
+            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true, indexed);
             if (temptex)
             {
               wall.gltexture=temptex;
@@ -1714,13 +1823,13 @@ void gld_AddWall(seg_t *seg)
     /* midtexture */
     //e6y
     if (comp[comp_maskedanim])
-      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false);
+      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed);
     else
 
     // e6y
     // Animated middle textures with a zero index should be forced
     // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
-    temptex=gld_RegisterTexture(midtexture, true, true);
+    temptex=gld_RegisterTexture(midtexture, true, true, indexed);
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
       int top, bottom;
@@ -1849,7 +1958,7 @@ bottomtexture:
     }
     if (floor_height<ceiling_height)
     {
-      temptex=gld_RegisterTexture(bottomtexture, true, false);
+      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed);
       if (!temptex && gl_use_stencil && backsector &&
         !(seg->linedef->r_flags & RF_ISOLATED) &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
@@ -1860,7 +1969,7 @@ bottomtexture:
         if (wall.ytop <= zCamera)
         {
           wall.flag = GLDWF_BOTFLUD;
-          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true);
+          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true, indexed);
           if (temptex)
           {
             wall.gltexture=temptex;
@@ -2002,6 +2111,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   int floorlightlevel;      // killough 3/16/98: set floor lightlevel
   int ceilinglightlevel;    // killough 4/11/98
   GLFlat flat;
+  dboolean indexed;
 
   if (sectornum<0)
     return;
@@ -2010,17 +2120,19 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   sector=R_FakeFlat(sector, &tempsec, &floorlightlevel, &ceilinglightlevel, false); // for boom effects
   flat.flags = (ceiling ? GLFLAT_CEILING : 0);
 
+  indexed = V_IsWorldLightmodeIndexed();
+
   if (!ceiling) // if it is a floor ...
   {
     if (sector->floorpic == skyflatnum) // don't draw if sky
       return;
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
     if (!flat.gltexture)
       return;
     // get the lightlevel from floorlightlevel
-    flat.light=gld_CalcLightLevel(plane->lightlevel+(extralight<<5));
+    flat.light=gld_CalcLightLevel(plane->lightlevel+gld_GetGunFlashLight());
     flat.fogdensity = gld_CalcFogDensity(sector, plane->lightlevel, GLDIT_FLOOR);
     // calculate texture offsets
     if (sector->floor_xoffs | sector->floor_yoffs)
@@ -2122,11 +2234,11 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
       return;
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
     if (!flat.gltexture)
       return;
     // get the lightlevel from ceilinglightlevel
-    flat.light=gld_CalcLightLevel(plane->lightlevel+(extralight<<5));
+    flat.light=gld_CalcLightLevel(plane->lightlevel+gld_GetGunFlashLight());
     flat.fogdensity = gld_CalcFogDensity(sector, plane->lightlevel, GLDIT_CEILING);
     // calculate texture offsets
     if (sector->ceiling_xoffs | sector->ceiling_yoffs)
@@ -2157,7 +2269,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
 
       currpic = flat.gltexture->index - firstflat - anim->basepic;
       nextpic = anim->basepic + (currpic + 1) % anim->numpics;
-      flat.gltexture = gld_RegisterFlat(nextpic, true);
+      flat.gltexture = gld_RegisterFlat(nextpic, true, indexed);
     }
   }
 
@@ -2560,14 +2672,14 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   }
   else
   {
-    sprite.light = gld_CalcLightLevel(lightlevel+(extralight<<5));
+    sprite.light = gld_CalcLightLevel(lightlevel+gld_GetGunFlashLight());
     sprite.fogdensity = gld_CalcFogDensity(thing->subsector->sector, lightlevel, GLDIT_SPRITE);
   }
   if (thing->color)
     sprite.cm = thing->color;
   else
     sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
-  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true);
+  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, V_IsWorldLightmodeIndexed());
   if (!sprite.gltexture)
     return;
   sprite.flags = thing->flags;
@@ -2817,7 +2929,7 @@ void gld_DrawScene(player_t *player)
   glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
   glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
 
-  glsl_SetActiveShader(sh_main);
+  glsl_SetMainShaderActive();
 
   //
   // opaque stuff
@@ -2948,7 +3060,7 @@ void gld_DrawScene(player_t *player)
     // fake strips of sky
     glsl_SetActiveShader(NULL);
     gld_DrawStripsSky();
-    glsl_SetActiveShader(sh_main);
+    glsl_SetMainShaderActive();
   }
 
   // opaque sprites
@@ -2989,7 +3101,7 @@ void gld_DrawScene(player_t *player)
   {
     glsl_SetActiveShader(NULL);
     gld_DrawHealthBars();
-    glsl_SetActiveShader(sh_main);
+    glsl_SetMainShaderActive();
   }
 
   //
@@ -3039,7 +3151,7 @@ void gld_DrawScene(player_t *player)
 
   glsl_SetActiveShader(NULL);
   gld_RenderShadows();
-  glsl_SetActiveShader(sh_main);
+  glsl_SetMainShaderActive();
 
   /* Transparent sprites and transparent things must be rendered
    * in far-to-near order. The approach used here is to sort in-

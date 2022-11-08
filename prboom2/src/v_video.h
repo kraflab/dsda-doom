@@ -109,6 +109,13 @@ extern int          usegamma;
 #define VID_COLORWEIGHTMASK (VID_NUMCOLORWEIGHTS-1)
 #define VID_COLORWEIGHTBITS 6
 
+// [XA] size of a single palette within PLAYPAL:
+//      256 colors * 3 bytes per color = 768
+#define PALETTE_SIZE 768
+
+// [XA] wonder why this was never a constant... silly id. :P
+#define NUM_GAMMA_LEVELS 5
+
 // The available bit-depth modes
 typedef enum {
   VID_MODESW,
@@ -122,6 +129,11 @@ void V_InitMode(video_mode_t mode);
 dboolean V_IsSoftwareMode(void);
 dboolean V_IsOpenGLMode(void);
 
+// [XA] indexed lightmode query interface
+dboolean V_IsWorldLightmodeIndexed(void);
+dboolean V_IsUILightmodeIndexed(void);
+dboolean V_IsAutomapLightmodeIndexed(void);
+
 //jff 4/24/98 loads color translation lumps
 void V_InitColorTranslation(void);
 
@@ -129,6 +141,22 @@ void V_InitFlexTranTable(void);
 
 // Allocates buffer screens, call before R_Init.
 void V_Init (void);
+
+// V_BeginUIDraw
+typedef void(*V_BeginUIDraw_f)(void);
+extern V_BeginUIDraw_f V_BeginUIDraw;
+
+// V_EndUIDraw
+typedef void(*V_EndUIDraw_f)(void);
+extern V_EndUIDraw_f V_EndUIDraw;
+
+// V_BeginAutomapDraw
+typedef void(*V_BeginAutomapDraw_f)(void);
+extern V_BeginAutomapDraw_f V_BeginAutomapDraw;
+
+// V_EndAutomapDraw
+typedef void(*V_EndAutomapDraw_f)(void);
+extern V_EndAutomapDraw_f V_EndAutomapDraw;
 
 // V_CopyRect
 typedef void (*V_CopyRect_f)(int srcscrn, int destscrn,
@@ -230,6 +258,9 @@ void V_FreeScreens();
 
 const unsigned char* V_GetPlaypal(void);
 void V_FreePlaypal(void);
+
+// [XA] get number of palettes in the current playpal
+int V_GetPlaypalCount(void);
 
 // e6y: wide-res
 void V_FillBorder(int lump, byte color);

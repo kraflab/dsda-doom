@@ -50,7 +50,9 @@
 #include "dsda/configuration.h"
 
 gl_lightmode_t gl_lightmode;
-const char *gl_lightmodes[] = {"glboom", "shaders", NULL};
+const char *gl_lightmodes[] = {"glboom", "shaders", "indexed", NULL};
+dboolean gl_ui_lightmode_indexed = false;
+dboolean gl_automap_lightmode_indexed = false;
 int gl_rellight;
 
 int gl_fog;
@@ -94,6 +96,12 @@ static GLLight gld_light[gl_lightmode_last] = {
    gld_InitLightTable_glboom,
    gld_CalcLightLevel_shaders, gld_CalcLightLevel_glboom,
    gld_CalcFogDensity_glboom},
+
+   //gl_lightmode_indexed
+  {false, 16,
+   gld_InitLightTable_glboom,
+   gld_CalcLightLevel_shaders, gld_CalcLightLevel_glboom,
+   gld_CalcFogDensity_glboom},
 };
 
 int gl_hardware_gamma = false;
@@ -105,7 +113,7 @@ void M_ChangeLightMode(void)
 {
   gl_lightmode_t gl_lightmode_default = dsda_IntConfig(dsda_config_gl_lightmode);
 
-  if (gl_lightmode_default == gl_lightmode_shaders)
+  if (gl_lightmode_default == gl_lightmode_shaders || gl_lightmode_default == gl_lightmode_indexed)
   {
     if (!glsl_Init())
     {
@@ -130,6 +138,10 @@ void M_ChangeLightMode(void)
     gld_SetGammaRamp(-1);
     gld_FlushTextures();
   }
+
+  // [XA] recalculate skymode since it depends
+  // on whether or not indexed mode is set
+  M_ChangeSkyMode();
 }
 
 void gld_InitLightTable(void)
@@ -180,7 +192,7 @@ static float gld_CalcLightLevel_shaders(int lightlevel)
 void gld_StaticLightAlpha(float light, float alpha)
 {
   player_t *player = &players[displayplayer];
-  int shaders = (gl_lightmode == gl_lightmode_shaders);
+  int shaders = (gl_lightmode == gl_lightmode_shaders || V_IsWorldLightmodeIndexed());
 
   if (!player->fixedcolormap)
   {
@@ -210,6 +222,16 @@ void gld_StaticLightAlpha(float light, float alpha)
   {
     glsl_SetLightLevel((player->fixedcolormap ? 1.0f : light));
   }
+}
+
+// [XA] return amount of light to add from the player's gun flash.
+// for non-indexed modes this is twice as large for some reason.
+int gld_GetGunFlashLight(void)
+{
+  if (V_IsWorldLightmodeIndexed())
+    return (extralight << 4);
+  else
+    return (extralight << 5);
 }
 
 void M_ChangeAllowFog(void)
