@@ -2832,16 +2832,6 @@ static const char *gen_compstrings[] =
 
 static const char *death_use_strings[] = { "default", "nothing", "reload", NULL };
 
-static const char *gltexfilters[] = {
-  "None",
-  "Linear",
-  "Nearest Mipmap",
-  "Linear Mipmap",
-  "Bilinear",
-  "Trilinear",
-  NULL
-};
-
 static const char *gltexfilters_anisotropics[] = { "Off", "2x", "4x", "8x", "16x", NULL };
 static const char *render_aspects_list[] = { "auto", "16:9", "16:10", "4:3", "5:4", NULL };
 
@@ -2972,17 +2962,15 @@ setup_menu_t opengl_settings[] = {
   { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_EVEN, m_conf, G_X, G_Y + 2 * 8, dsda_config_gl_render_multisampling },
   { "Field Of View", S_NUM, m_conf, G_X, G_Y + 3 * 8, dsda_config_gl_render_fov },
   { "Sector Light Mode", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, dsda_config_gl_lightmode, 0, gl_lightmodes },
-  { "Allow Fog", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_gl_fog },
-  { "Simple Shadows", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_gl_shadows },
-  { "Paper Items", S_YESNO, m_conf, G_X, G_Y + 7 * 8, dsda_config_gl_render_paperitems },
-  { "Smooth sprite edges", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_gl_sprite_blend },
-  { "Health Bar Above Monsters", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_gl_health_bar },
 
-  { "Texture Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_gl_texture_filter, 0, gltexfilters },
-  { "Sprite Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, dsda_config_gl_sprite_filter, 0, gltexfilters },
-  { "Patch Filter Mode", S_CHOICE, m_conf, G_X, G_Y + 13 * 8, dsda_config_gl_patch_filter, 0, gltexfilters },
-  { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 14 * 8, dsda_config_gl_texture_filter_anisotropic, 0, gltexfilters_anisotropics },
-  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 15 * 8, dsda_config_gl_tex_format_string, 0, gltexformats },
+  { "Allow Fog", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_gl_fog },
+  { "Simple Shadows", S_YESNO, m_conf, G_X, G_Y + 7 * 8, dsda_config_gl_shadows },
+  { "Paper Items", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_gl_render_paperitems },
+  { "Smooth sprite edges", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_gl_sprite_blend },
+  { "Health Bar Above Monsters", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_gl_health_bar },
+
+  { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, dsda_config_gl_texture_filter_anisotropic, 0, gltexfilters_anisotropics },
+  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 13 * 8, dsda_config_gl_tex_format_string, 0, gltexformats },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mapping_settings),

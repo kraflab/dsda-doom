@@ -157,29 +157,11 @@ void SetFrameTextureMode(void)
 
 void gld_InitTextureParams(void)
 {
-  typedef struct tex_filter_s
-  {
-    dboolean mipmap;
-    int tex_filter;
-    int mipmap_filter;
-    const char *tex_filter_name;
-    const char *mipmap_filter_name;
-  } tex_filter_t;
-
   typedef struct tex_format_s
   {
     int tex_format;
     const char *tex_format_name;
   } tex_format_t;
-
-  tex_filter_t params[filter_count] = {
-    {false, GL_NEAREST, GL_NEAREST,                "GL_NEAREST", "GL_NEAREST"},
-    {false, GL_LINEAR,  GL_LINEAR,                 "GL_LINEAR",  "GL_LINEAR"},
-    {true,  GL_NEAREST, GL_NEAREST_MIPMAP_NEAREST, "GL_NEAREST", "GL_NEAREST_MIPMAP_NEAREST"},
-    {true,  GL_NEAREST, GL_NEAREST_MIPMAP_LINEAR,  "GL_NEAREST", "GL_NEAREST_MIPMAP_LINEAR"},
-    {true,  GL_LINEAR,  GL_LINEAR_MIPMAP_NEAREST,  "GL_LINEAR",  "GL_LINEAR_MIPMAP_NEAREST"},
-    {true,  GL_LINEAR,  GL_LINEAR_MIPMAP_LINEAR,   "GL_LINEAR",  "GL_LINEAR_MIPMAP_LINEAR"},
-  };
 
   tex_format_t tex_formats[] = {
     {GL_RGBA2,   "GL_RGBA2"},
@@ -191,23 +173,11 @@ void gld_InitTextureParams(void)
   };
 
   int i;
-  int var[MIP_COUNT] = {
-    dsda_IntConfig(dsda_config_gl_texture_filter),
-    dsda_IntConfig(dsda_config_gl_sprite_filter),
-    dsda_IntConfig(dsda_config_gl_patch_filter),
-    dsda_IntConfig(dsda_config_gl_indexed_filter)
-  };
+
   const char* gl_tex_format_string = dsda_StringConfig(dsda_config_gl_tex_format_string);
 
   gl_texture_filter_anisotropic =
     (GLfloat) (1 << dsda_IntConfig(dsda_config_gl_texture_filter_anisotropic));
-
-  for (i = 0; i < MIP_COUNT; i++)
-  {
-    tex_filter[i].mipmap     = params[var[i]].mipmap;
-    tex_filter[i].mag_filter = params[var[i]].tex_filter;
-    tex_filter[i].min_filter = params[var[i]].mipmap_filter;
-  }
 
   i = 0;
   while (tex_formats[i].tex_format_name)
@@ -2027,8 +1997,7 @@ static void gld_DrawFlat(GLFlat *flat)
   has_offset = (has_detail || (flat->flags & GLFLAT_HAVE_OFFSET));
 
   if ((sectorloops[flat->sectornum].flags & SECTOR_CLAMPXY) && (!has_detail) &&
-      ((tex_filter[MIP_TEXTURE].mag_filter == GL_NEAREST) ||
-       (flat->gltexture->flags & GLTEXTURE_HIRES)) &&
+      (flat->gltexture->flags & GLTEXTURE_HIRES) &&
       !(flat->flags & GLFLAT_HAVE_OFFSET))
     flags = GLTEXTURE_CLAMPXY;
   else

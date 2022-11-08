@@ -61,13 +61,6 @@ typedef enum
   MIP_COUNT
 } GLMipType;
 
-typedef struct tex_filter_s
-{
-  int mipmap;
-  int mag_filter;
-  int min_filter;
-} tex_filter_t;
-
 typedef enum
 {
   GLTEXTURE_SPRITE    = 0x00000002,
@@ -350,7 +343,6 @@ extern int gl_tex_format;
 extern GLfloat gl_texture_filter_anisotropic;
 extern int transparent_pal_index;
 extern unsigned char gld_palmap[256];
-extern tex_filter_t tex_filter[];
 void gld_SetTexFilters(GLTexture *gltexture);
 
 extern float xCamera,yCamera,zCamera;

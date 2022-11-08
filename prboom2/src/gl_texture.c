@@ -90,8 +90,6 @@ of a misnomer since the textures themselves aren't indexed,
 but rather have the GL colormaps pre-applied, but meh. */
 static GLTexture **gld_GLIndexedSkyTextures = NULL;
 
-tex_filter_t tex_filter[MIP_COUNT];
-
 int gl_tex_format=GL_RGB5_A1;
 
 int gl_boom_colormaps = -1;
@@ -830,8 +828,6 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force,
 
     //e6y
     gltexture->flags = 0;
-    if (mipmap && tex_filter[MIP_TEXTURE].mipmap && !indexed)
-      gltexture->flags |= GLTEXTURE_MIPMAP;
 
     if (indexed)
       gltexture->flags |= GLTEXTURE_INDEXED;
@@ -965,18 +961,9 @@ void gld_SetTexFilters(GLTexture *gltexture)
   if (render_usedetail && gltexture->detail)
     mag_filter = GL_LINEAR;
   else
-    mag_filter = tex_filter[mip].mag_filter;
+    mag_filter = GL_NEAREST;
 
-  if ((gltexture->flags & GLTEXTURE_MIPMAP) && tex_filter[mip].mipmap)
-  {
-    min_filter = tex_filter[mip].min_filter;
-    if (gl_ext_texture_filter_anisotropic)
-      aniso_filter = gl_texture_filter_anisotropic;
-  }
-  else
-  {
-    min_filter =  tex_filter[mip].mag_filter;
-  }
+  min_filter =  GL_NEAREST;
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
@@ -1221,15 +1208,7 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean inde
     if (is_sprite)
     {
       gltexture->flags |= GLTEXTURE_SPRITE;
-      if (tex_filter[MIP_SPRITE].mipmap && !indexed)
-        gltexture->flags |= GLTEXTURE_MIPMAP;
     }
-    else
-    {
-      if (tex_filter[MIP_PATCH].mipmap && !indexed)
-        gltexture->flags |= GLTEXTURE_MIPMAP;
-    }
-    //gltexture->wrap_mode = (patch->flags & PATCH_REPEAT ? GL_REPEAT : GLEXT_CLAMP_TO_EDGE);
 
     if (indexed)
       gltexture->flags |= GLTEXTURE_INDEXED;
@@ -1355,8 +1334,6 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed)
 
     //e6y
     gltexture->flags = 0;
-    if (mipmap && tex_filter[MIP_TEXTURE].mipmap && !indexed)
-      gltexture->flags |= GLTEXTURE_MIPMAP;
 
     if (indexed)
       gltexture->flags |= GLTEXTURE_INDEXED;

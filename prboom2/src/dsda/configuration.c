@@ -611,26 +611,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
     NOT_STRICT, M_ChangeSkyMode
   },
-  [dsda_config_gl_texture_filter] = {
-    "gl_texture_filter", dsda_config_gl_texture_filter,
-    dsda_config_int, filter_nearest, filter_linear_mipmap_linear, { filter_nearest_mipmap_linear },
-    NULL, NOT_STRICT, M_ChangeTextureParams
-  },
-  [dsda_config_gl_sprite_filter] = {
-    "gl_sprite_filter", dsda_config_gl_sprite_filter,
-    dsda_config_int, filter_nearest, filter_linear_mipmap_nearest, { filter_nearest },
-    NULL, NOT_STRICT, M_ChangeTextureParams
-  },
-  [dsda_config_gl_patch_filter] = {
-    "gl_patch_filter", dsda_config_gl_patch_filter,
-    dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
-    NULL, NOT_STRICT, M_ChangeTextureParams
-  },
-  [dsda_config_gl_indexed_filter] = {
-    "gl_indexed_filter", dsda_config_gl_indexed_filter,
-    dsda_config_int, filter_nearest, filter_linear, { filter_nearest },
-    NULL, 0, 0, M_ChangeTextureParams
-  },
   [dsda_config_gl_texture_filter_anisotropic] = {
     "gl_texture_filter_anisotropic", dsda_config_gl_texture_filter_anisotropic,
     dsda_config_int, 0, 4, { 3 },

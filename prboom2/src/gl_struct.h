@@ -39,17 +39,6 @@
 extern int nodesVersion;
 
 typedef enum {
-  filter_nearest,
-  filter_linear,
-  filter_nearest_mipmap_nearest,
-  filter_nearest_mipmap_linear,
-  filter_linear_mipmap_nearest,
-  filter_linear_mipmap_linear,
-
-  filter_count
-} filter_texture_mode_t;
-
-typedef enum {
   skytype_auto,
   skytype_none,
   skytype_standard,
