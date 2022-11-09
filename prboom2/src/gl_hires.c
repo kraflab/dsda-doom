@@ -375,6 +375,15 @@ int gld_LoadHiresTex(GLTexture *gltexture, int cm)
   int result = false;
   GLuint *texid;
 
+  // [XA] hires textures aren't supported in indexed
+  // lightmode, since they're typically truecolor and
+  // would look like super-poop if downsampled. do
+  // abort early though so the function doesn't flag
+  // the texture as "no high-res texture found", else
+  // it'll bork up if switching the lightmode later on.
+  if (V_IsWorldLightmodeIndexed())
+    return false;
+
   // do we need it?
   if (!(gltexture->flags & GLTEXTURE_HASNOHIRES))
   {
