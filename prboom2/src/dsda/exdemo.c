@@ -470,7 +470,9 @@ static void PartitionDemo(const char* filename) {
       }
     }
     else
-      ForgetExDemo();
+    {
+      exdemo.demo_size = file_size;
+    }
   }
   else
     ForgetExDemo();
