@@ -128,8 +128,6 @@ int             leds_always_off = 0; // Expected by m_misc, not relevant
 // Mouse handling
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
 
-video_mode_t I_GetModeFromString(const char *modestr);
-
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
 
@@ -977,6 +975,34 @@ void I_CalculateRes(int width, int height)
   }
 }
 
+static video_mode_t I_GetModeFromString(const char *modestr)
+{
+  video_mode_t mode;
+
+  if (!stricmp(modestr,"gl")) {
+    mode = VID_MODEGL;
+  } else if (!stricmp(modestr,"OpenGL")) {
+    mode = VID_MODEGL;
+  } else {
+    mode = VID_MODESW;
+  }
+
+  return mode;
+}
+
+static video_mode_t I_DesiredVideoMode(void) {
+  dsda_arg_t *arg;
+  video_mode_t mode;
+
+  arg = dsda_Arg(dsda_arg_vidmode);
+  if (arg->found)
+    mode = I_GetModeFromString(arg->value.v_string);
+  else
+    mode = I_GetModeFromString(dsda_StringConfig(dsda_config_videomode));
+
+  return mode;
+}
+
 // CPhipps -
 // I_InitScreenResolution
 // Sets the screen resolution
@@ -1049,12 +1075,7 @@ void I_InitScreenResolution(void)
     h = desired_screenheight;
   }
 
-  mode = (video_mode_t)I_GetModeFromString(dsda_StringConfig(dsda_config_videomode));
-  arg = dsda_Arg(dsda_arg_vidmode);
-  if (arg->found)
-  {
-    mode = (video_mode_t)I_GetModeFromString(arg->value.v_string);
-  }
+  mode = I_DesiredVideoMode();
 
   V_InitMode(mode);
 
@@ -1140,21 +1161,6 @@ void I_InitGraphics(void)
   }
 }
 
-video_mode_t I_GetModeFromString(const char *modestr)
-{
-  video_mode_t mode;
-
-  if (!stricmp(modestr,"gl")) {
-    mode = VID_MODEGL;
-  } else if (!stricmp(modestr,"OpenGL")) {
-    mode = VID_MODEGL;
-  } else {
-    mode = VID_MODESW;
-  }
-
-  return mode;
-}
-
 void I_UpdateVideoMode(void)
 {
   int init_flags = 0;
@@ -1166,7 +1172,8 @@ void I_UpdateVideoMode(void)
   const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
                            dsda_Flag(dsda_arg_fastdemo);
 
-  exclusive_fullscreen = dsda_IntConfig(dsda_config_exclusive_fullscreen);
+  exclusive_fullscreen = dsda_IntConfig(dsda_config_exclusive_fullscreen) &&
+                         I_DesiredVideoMode() == VID_MODESW;
   render_vsync = dsda_IntConfig(dsda_config_render_vsync) && !novsync;
   sdl_video_window_pos = dsda_StringConfig(dsda_config_sdl_video_window_pos);
   screen_multiply = dsda_IntConfig(dsda_config_render_screen_multiply);
