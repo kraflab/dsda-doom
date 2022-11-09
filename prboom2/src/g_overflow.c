@@ -251,7 +251,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
         arg = dsda_Arg(dsda_arg_spechit);
         if (arg->found)
         {
-          spechit_baseaddr = arg->value.v_int;
+          spechit_baseaddr = (unsigned int) arg->value.v_int;
         }
         else
         {

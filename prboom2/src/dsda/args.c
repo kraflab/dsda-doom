@@ -326,7 +326,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
   [dsda_arg_spechit] = {
     "-spechit", NULL, NULL,
     "sets a magic spechit base address for certain overrun demos",
-    arg_int, 0, INT_MAX,
+    arg_int, INT_MIN, INT_MAX,
   },
   [dsda_arg_setmem] = {
     "-setmem", NULL, NULL,
