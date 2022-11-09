@@ -301,8 +301,6 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 
   sfx = &S_sfx[sfx_id];
 
-  if (dsda_BlockSFX(sfx)) return;
-
   // Initialize sound parameters
   if (sfx->flags & SFXF_PRIORITY)
     priority = sfx->priority;
@@ -339,6 +337,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
       if ( origin->x == players[displayplayer].mo->x &&
            origin->y == players[displayplayer].mo->y)
         sep = NORM_SEP;
+
+  if (dsda_BlockSFX(sfx)) return;
 
   // hacks to vary the sfx pitches
   if (sfx_id >= sfx_sawup && sfx_id <= sfx_sawhit)
