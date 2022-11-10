@@ -26,11 +26,11 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 ### Trackers
 
 - You can display extra data about different aspects of the game state using trackers.
-  - `tracker.addline X` / `t.al X`: track the special value of line X.
-  - `tracker.addlinedistance X` / `t.ald X`: track the distance from line X.
-  - `tracker.addsector X` / `t.as X`: track the special value, active state, and floor height of sector X.
-  - `tracker.addmobj X` / `t.am X`: track the health of mobj X.
-  - `tracker.addplayer` / `t.ap`: track the last damage dealt by the player.
+  - `tracker.add_line X` / `t.al X`: track the special value of line X.
+  - `tracker.add_line_distance X` / `t.ald X`: track the distance from line X.
+  - `tracker.add_sector X` / `t.as X`: track the special value, active state, and floor height of sector X.
+  - `tracker.add_mobj X` / `t.am X`: track the health of mobj X.
+  - `tracker.add_player` / `t.ap`: track the last damage dealt by the player.
   - `tracker.reset` / `t.r`: removes all trackers
 - You can remove trackers with the same commands, substituting `remove` / `r` for `add` / `a`.
 - You can also populate these through command line arguments:
@@ -44,7 +44,7 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 
 Brute force is a technique in built tases where you automatically apply different sequences of commands until you reach a desired outcome. A common use case is for performing glides. You can activate brute force from the console.
 
-- `bruteforce.start / bf.start depth forward_range strafe_range turn_range conditions`
+- `brute_force.start / bf.start depth forward_range strafe_range turn_range conditions`
   - `depth` is the number of tics you want to brute force (limit 5)
   - `forward_range` is the range of values for forwardmove. Format: `40,50`, `-50,-40`, etc.
   - `strafe_range` is the same as `forward_range`, but for strafe values.
