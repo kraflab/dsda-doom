@@ -72,7 +72,7 @@ static hu_textline_t hu_console_message;
 static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
 static void dsda_DrawConsole(void) {
-  V_FillRectVPT(0, 0, 0, 320, 16, 0, CONSOLE_TEXT_FLAGS);
+  V_FillHeightVPT(0, 0, 16, 0, CONSOLE_TEXT_FLAGS);
   HUlib_drawTextLine(&hu_console_prompt, false);
   HUlib_drawTextLine(&hu_console_message, false);
 }
