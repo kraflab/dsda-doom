@@ -321,8 +321,16 @@ void glsl_SetFuzzShaderInactive()
 {
   if (active_shader == sh_fuzz)
   {
-    GLEXT_glUseProgramObjectARB(0);
-    active_shader = NULL;
+    if (V_IsWorldLightmodeIndexed())
+    {
+      GLEXT_glUseProgramObjectARB(sh_indexed->hShader);
+      active_shader = sh_indexed;
+    }
+    else
+    {
+      GLEXT_glUseProgramObjectARB(sh_main->hShader);
+      active_shader = sh_main;
+    }
   }
 }
 
