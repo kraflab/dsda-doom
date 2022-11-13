@@ -67,11 +67,13 @@ const music_player_t pm_player =
 
 #else // HAVE_LIBPORTMIDI
 
+#include <math.h>
 #include <portmidi.h>
 #include <porttime.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "lprintf.h"
 #include "midifile.h"
 
@@ -321,7 +323,7 @@ static int mastervol;
 
 static void set_mastervol (unsigned long when)
 {
-  int vol = mastervol * pm_volume / 15;
+  int vol = mastervol * sqrt((float) pm_volume / 15);
   unsigned char data[] = {0xf0, 0x7f, 0x7f, 0x04, 0x01, vol & 0x7f, vol >> 7, 0xf7};
   Pm_WriteSysEx(pm_stream, when, data);
 }
