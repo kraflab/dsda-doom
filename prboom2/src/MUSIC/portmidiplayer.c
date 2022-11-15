@@ -496,15 +496,14 @@ static void pm_render (void *vdest, unsigned bufflen)
     double eventdelta;
     currevent = events[eventpos];
 
+    // how many samples away event is
+    eventdelta = currevent->delta_time * spmc;
+
     if (use_reset_delay)
     {
       // delay after reset, for real devices only (e.g. roland sc-55)
-      currevent->delta_time += mus_portmidi_reset_delay / spmc;
-      use_reset_delay = false;
+      eventdelta += mus_portmidi_reset_delay;
     }
-
-    // how many samples away event is
-    eventdelta = currevent->delta_time * spmc;
 
     // how many we will render (rounding down); include delta offset
     samples = (unsigned) (eventdelta + pm_delta);
@@ -514,6 +513,7 @@ static void pm_render (void *vdest, unsigned bufflen)
       break;
     }
 
+    use_reset_delay = false;
     sampleswritten += samples;
     pm_delta -= samples;
 
