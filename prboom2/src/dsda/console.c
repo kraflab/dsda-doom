@@ -24,9 +24,11 @@
 #include "m_cheat.h"
 #include "m_menu.h"
 #include "m_misc.h"
+#include "p_inter.h"
 #include "p_map.h"
 #include "p_mobj.h"
 #include "p_spec.h"
+#include "p_tick.h"
 #include "s_sound.h"
 #include "v_video.h"
 
@@ -1023,6 +1025,16 @@ static dboolean console_MoveMobj(mobj_t* mobj, fixed_t x, fixed_t y) {
   return true;
 }
 
+static dboolean console_SetTarget(mobj_t* mobj, mobj_t* target) {
+  if (!mobj || !target)
+    return false;
+
+  P_SetTarget(&mobj->target, target);
+  mobj->threshold = BASETHRESHOLD;
+
+  return true;
+}
+
 static dboolean console_TargetSpawn(const char* command, const char* args) {
   mobj_t* target;
 
@@ -1131,6 +1143,28 @@ static dboolean console_TargetMove(const char* command, const char* args) {
   target = HU_Target();
 
   return console_MoveMobj(target, x, y);
+}
+
+static dboolean console_TargetSetTarget(const char* command, const char* args) {
+  mobj_t* target;
+  int new_target_index;
+  mobj_t* new_target;
+
+  if (sscanf(args, "%d", &new_target_index) != 1)
+    return false;
+
+  target = HU_Target();
+  new_target = dsda_FindMobj(new_target_index);
+
+  return console_SetTarget(target, new_target);
+}
+
+static dboolean console_TargetTargetPlayer(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return console_SetTarget(target, target_player.mo);
 }
 
 static dboolean console_TargetActivateLine(const char* command, const char* args) {
@@ -1290,6 +1324,33 @@ static dboolean console_MobjMove(const char* command, const char* args) {
   return console_MoveMobj(target, x, y);
 }
 
+static dboolean console_MobjSetTarget(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+  int new_target_index;
+  mobj_t* new_target;
+
+  if (sscanf(args, "%d %d", &index, &new_target_index) != 2)
+    return false;
+
+  target = dsda_FindMobj(index);
+  new_target = dsda_FindMobj(new_target_index);
+
+  return console_SetTarget(target, new_target);
+}
+
+static dboolean console_MobjTargetPlayer(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return console_SetTarget(target, target_player.mo);
+}
+
 static dboolean console_MobjActivateLine(const char* command, const char* args) {
   int id;
   int index;
@@ -1404,6 +1465,8 @@ static console_command_entry_t console_commands[] = {
   { "target.set_state", console_TargetSetState, CF_NEVER },
   { "target.set_health", console_TargetSetHealth, CF_NEVER },
   { "target.move", console_TargetMove, CF_NEVER },
+  { "target.set_target", console_TargetSetTarget, CF_NEVER },
+  { "target.target_player", console_TargetTargetPlayer, CF_NEVER },
 
   { "mobj.spawn", console_MobjSpawn, CF_NEVER },
   { "mobj.see", console_MobjSee, CF_NEVER },
@@ -1416,6 +1479,8 @@ static console_command_entry_t console_commands[] = {
   { "mobj.set_state", console_MobjSetState, CF_NEVER },
   { "mobj.set_health", console_MobjSetHealth, CF_NEVER },
   { "mobj.move", console_MobjMove, CF_NEVER },
+  { "mobj.set_target", console_MobjSetTarget, CF_NEVER },
+  { "mobj.target_player", console_MobjTargetPlayer, CF_NEVER },
 
   { "spawn", console_Spawn, CF_NEVER },
 
