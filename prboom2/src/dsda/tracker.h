@@ -49,5 +49,6 @@ dboolean dsda_TrackPlayer(int id);
 dboolean dsda_UntrackPlayer(int id);
 void dsda_WipeTrackers(void);
 void dsda_ResetTrackers(void);
+mobj_t* dsda_FindMobj(int id);
 
 #endif

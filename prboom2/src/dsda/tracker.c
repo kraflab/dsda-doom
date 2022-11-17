@@ -41,7 +41,7 @@ static int dsda_FindTracker(int type, int id) {
   return -1;
 }
 
-static mobj_t* dsda_FindMobj(int id) {
+mobj_t* dsda_FindMobj(int id) {
   thinker_t* th;
   mobj_t* mobj;
 
