@@ -26,6 +26,7 @@
 #include "m_misc.h"
 #include "p_map.h"
 #include "p_mobj.h"
+#include "p_spec.h"
 #include "s_sound.h"
 #include "v_video.h"
 
@@ -37,6 +38,7 @@
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/global.h"
+#include "dsda/map_format.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
@@ -154,6 +156,28 @@ dboolean dsda_OpenConsole(void) {
   dsda_ResetConsoleEntry();
 
   return true;
+}
+
+static dboolean console_ActivateLine(mobj_t* mobj, int id, dboolean bossaction) {
+  if (!mobj || id < 0 || id >= numlines)
+    return false;
+
+  P_MapStart();
+  P_UseSpecialLine(mobj, &lines[id], 0, bossaction);
+  map_format.cross_special_line(&lines[id], 0, mobj, bossaction);
+  map_format.shoot_special_line(mobj, &lines[id]);
+  P_MapEnd();
+
+  return true;
+}
+
+static dboolean console_PlayerActivateLine(const char* command, const char* args) {
+  int id;
+
+  if (sscanf(args, "%i", &id) != 1)
+    return false;
+
+  return console_ActivateLine(target_player.mo, id, false);
 }
 
 static dboolean console_PlayerSetHealth(const char* command, const char* args) {
@@ -1109,6 +1133,18 @@ static dboolean console_TargetMove(const char* command, const char* args) {
   return console_MoveMobj(target, x, y);
 }
 
+static dboolean console_TargetActivateLine(const char* command, const char* args) {
+  int id;
+  mobj_t* target;
+
+  if (sscanf(args, "%i", &id) != 1)
+    return false;
+
+  target = HU_Target();
+
+  return console_ActivateLine(target, id, false);
+}
+
 static dboolean console_MobjSpawn(const char* command, const char* args) {
   int index;
   mobj_t* target;
@@ -1254,6 +1290,32 @@ static dboolean console_MobjMove(const char* command, const char* args) {
   return console_MoveMobj(target, x, y);
 }
 
+static dboolean console_MobjActivateLine(const char* command, const char* args) {
+  int id;
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d %i", &index, &id) != 2)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return console_ActivateLine(target, id, false);
+}
+
+static dboolean console_BossActivateLine(const char* command, const char* args) {
+  int id;
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d %i", &index, &id) != 2)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return console_ActivateLine(target, id, true);
+}
+
 static dboolean console_Spawn(const char* command, const char* args) {
   fixed_t x, y, z;
   int type;
@@ -1356,6 +1418,12 @@ static console_command_entry_t console_commands[] = {
   { "mobj.move", console_MobjMove, CF_NEVER },
 
   { "spawn", console_Spawn, CF_NEVER },
+
+  // lines
+  { "player.activate_line", console_PlayerActivateLine, CF_NEVER },
+  { "target.activate_line", console_TargetActivateLine, CF_NEVER },
+  { "mobj.activate_line", console_MobjActivateLine, CF_NEVER },
+  { "boss.activate_line", console_BossActivateLine, CF_NEVER },
 
   // traversing time
   { "jump.to_tic", console_JumpToTic, CF_DEMO },

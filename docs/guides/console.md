@@ -79,6 +79,14 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `spawn <x> <y> <z> <type>`
   - spawns a mobj at the given location, with the given type
 
+#### Line Manipulation
+- Line activation (use / cross / shoot)
+  - `player.activate_line <line_id>`
+  - `target.activate_line <line_id>`
+  - `mobj.activate_line <mobj_index> <line_id>`
+  - `boss.activate_line <mobj_index> <line_id>`
+    - activates the line with the boss action flag set
+
 #### Demo Tools
 - `jump.to_tic <tic>`
 - `jump.by_tic <tic_count>`
