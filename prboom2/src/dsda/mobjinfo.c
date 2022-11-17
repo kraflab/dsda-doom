@@ -76,6 +76,23 @@ static deh_mobj_index_entry_t deh_mobj_index_hash[DEH_MOBJ_INDEX_HASH_SIZE];
 static int deh_mobj_index_start;
 static int deh_mobj_index_end;
 
+int dsda_FindDehMobjIndex(int index) {
+  deh_mobj_index_entry_t* entry;
+
+  if (index < deh_mobj_index_start)
+    return index;
+
+  entry = &deh_mobj_index_hash[index % DEH_MOBJ_INDEX_HASH_SIZE];
+
+  while (entry->next && entry->index_in != index)
+    entry = entry->next;
+
+  if (entry->index_in != index)
+    return DEH_MOBJ_INDEX_NOT_FOUND;
+
+  return entry->index_out;
+}
+
 int dsda_GetDehMobjIndex(int index) {
   deh_mobj_index_entry_t* entry;
 
