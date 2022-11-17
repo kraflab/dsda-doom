@@ -1063,6 +1063,115 @@ static dboolean console_TargetSetState(const char* command, const char* args) {
   return target && console_SetMobjState(target, state);
 }
 
+static dboolean console_MobjSpawn(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->spawnstate);
+}
+
+static dboolean console_MobjSee(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->seestate);
+}
+
+static dboolean console_MobjPain(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->painstate);
+}
+
+static dboolean console_MobjMelee(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->meleestate);
+}
+
+static dboolean console_MobjMissile(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->missilestate);
+}
+
+static dboolean console_MobjDeath(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->deathstate);
+}
+
+static dboolean console_MobjXDeath(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->xdeathstate);
+}
+
+static dboolean console_MobjRaise(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &index) != 1 || index < 0)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, target->info->raisestate);
+}
+
+static dboolean console_MobjSetState(const char* command, const char* args) {
+  int state;
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d %d", &index, &state) != 2 || index < 0 || state < 0 || state >= num_states)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  return target && console_SetMobjState(target, state);
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -1130,6 +1239,16 @@ static console_command_entry_t console_commands[] = {
   { "target.xdeath", console_TargetXDeath, CF_NEVER },
   { "target.raise", console_TargetRaise, CF_NEVER },
   { "target.set_state", console_TargetSetState, CF_NEVER },
+
+  { "mobj.spawn", console_MobjSpawn, CF_NEVER },
+  { "mobj.see", console_MobjSee, CF_NEVER },
+  { "mobj.pain", console_MobjPain, CF_NEVER },
+  { "mobj.melee", console_MobjMelee, CF_NEVER },
+  { "mobj.missile", console_MobjMissile, CF_NEVER },
+  { "mobj.death", console_MobjDeath, CF_NEVER },
+  { "mobj.xdeath", console_MobjXDeath, CF_NEVER },
+  { "mobj.raise", console_MobjRaise, CF_NEVER },
+  { "mobj.set_state", console_MobjSetState, CF_NEVER },
 
   // traversing time
   { "jump.to_tic", console_JumpToTic, CF_DEMO },
