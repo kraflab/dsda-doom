@@ -988,6 +988,17 @@ static dboolean console_SetMobjState(mobj_t* mobj, statenum_t state) {
   return true;
 }
 
+static dboolean console_MoveMobj(mobj_t* mobj, fixed_t x, fixed_t y) {
+  if (!mobj)
+    return false;
+
+  P_MapStart();
+  P_UnqualifiedMove(mobj, x, y);
+  P_MapEnd();
+
+  return true;
+}
+
 static dboolean console_TargetSpawn(const char* command, const char* args) {
   mobj_t* target;
 
@@ -1081,6 +1092,21 @@ static dboolean console_TargetSetHealth(const char* command, const char* args) {
     target->player->health = health;
 
   return true;
+}
+
+static dboolean console_TargetMove(const char* command, const char* args) {
+  fixed_t x, y;
+  mobj_t* target;
+
+  if (sscanf(args, "%d %d", &x, &y) != 2)
+    return false;
+
+  x <<= FRACBITS;
+  y <<= FRACBITS;
+
+  target = HU_Target();
+
+  return console_MoveMobj(target, x, y);
 }
 
 static dboolean console_MobjSpawn(const char* command, const char* args) {
@@ -1212,6 +1238,22 @@ static dboolean console_MobjSetHealth(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_MobjMove(const char* command, const char* args) {
+  fixed_t x, y;
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d %d %d", &index, &x, &y) != 3)
+    return false;
+
+  x <<= FRACBITS;
+  y <<= FRACBITS;
+
+  target = dsda_FindMobj(index);
+
+  return console_MoveMobj(target, x, y);
+}
+
 static dboolean console_Spawn(const char* command, const char* args) {
   fixed_t x, y, z;
   int type;
@@ -1299,6 +1341,7 @@ static console_command_entry_t console_commands[] = {
   { "target.raise", console_TargetRaise, CF_NEVER },
   { "target.set_state", console_TargetSetState, CF_NEVER },
   { "target.set_health", console_TargetSetHealth, CF_NEVER },
+  { "target.move", console_TargetMove, CF_NEVER },
 
   { "mobj.spawn", console_MobjSpawn, CF_NEVER },
   { "mobj.see", console_MobjSee, CF_NEVER },
@@ -1310,6 +1353,7 @@ static console_command_entry_t console_commands[] = {
   { "mobj.raise", console_MobjRaise, CF_NEVER },
   { "mobj.set_state", console_MobjSetState, CF_NEVER },
   { "mobj.set_health", console_MobjSetHealth, CF_NEVER },
+  { "mobj.move", console_MobjMove, CF_NEVER },
 
   { "spawn", console_Spawn, CF_NEVER },
 
