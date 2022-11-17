@@ -35,6 +35,7 @@
 
 #include "d_event.h"
 #include "d_think.h"
+#include "p_mobj.h"
 
 /*
  * Globally visible constants.
@@ -68,6 +69,8 @@ dboolean HU_Responder(event_t* ev);
 void HU_Ticker(void);
 void HU_Drawer(void);
 void HU_Erase(void);
+
+mobj_t *HU_Target(void);
 
 int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx);
 void ClearMessage(void);

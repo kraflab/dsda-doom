@@ -562,6 +562,26 @@ void SetCrosshairTarget(void)
   }
 }
 
+mobj_t *HU_Target(void)
+{
+  fixed_t slope;
+  angle_t an = plr->mo->angle;
+
+  // intercepts overflow guard
+  overflows_enabled = false;
+  slope = P_AimLineAttack(plr->mo, an, 16*64*FRACUNIT, 0);
+  if (plr->readyweapon == wp_missile || plr->readyweapon == wp_plasma || plr->readyweapon == wp_bfg)
+  {
+    if (!linetarget)
+      slope = P_AimLineAttack(plr->mo, an += 1<<26, 16*64*FRACUNIT, 0);
+    if (!linetarget)
+      slope = P_AimLineAttack(plr->mo, an -= 2<<26, 16*64*FRACUNIT, 0);
+  }
+  overflows_enabled = true;
+
+  return linetarget;
+}
+
 void HU_draw_crosshair(void)
 {
   int cm;
@@ -586,28 +606,17 @@ void HU_draw_crosshair(void)
 
   if (hudadd_crosshair_target || hudadd_crosshair_lock_target)
   {
-    fixed_t slope;
-    angle_t an = plr->mo->angle;
+    mobj_t *target;
 
-    // intercepts overflow guard
-    overflows_enabled = false;
-    slope = P_AimLineAttack(plr->mo, an, 16*64*FRACUNIT, 0);
-    if (plr->readyweapon == wp_missile || plr->readyweapon == wp_plasma || plr->readyweapon == wp_bfg)
-    {
-      if (!linetarget)
-        slope = P_AimLineAttack(plr->mo, an += 1<<26, 16*64*FRACUNIT, 0);
-      if (!linetarget)
-        slope = P_AimLineAttack(plr->mo, an -= 2<<26, 16*64*FRACUNIT, 0);
-    }
-    overflows_enabled = true;
+    target = HU_Target();
 
-    if (linetarget && !(linetarget->flags & MF_SHADOW))
+    if (target && !(target->flags & MF_SHADOW))
     {
-      crosshair.target_x = linetarget->x;
-      crosshair.target_y = linetarget->y;
-      crosshair.target_z = linetarget->z;
-      crosshair.target_z += linetarget->height / 2 + linetarget->height / 8;
-      crosshair.target_sprite = linetarget->sprite;
+      crosshair.target_x = target->x;
+      crosshair.target_y = target->y;
+      crosshair.target_z = target->z;
+      crosshair.target_z += target->height / 2 + target->height / 8;
+      crosshair.target_sprite = target->sprite;
 
       if (hudadd_crosshair_target)
         cm = dsda_IntConfig(dsda_config_hudadd_crosshair_target_color);
