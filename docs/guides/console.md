@@ -51,6 +51,26 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `tracker.remove_player / t.rp`
 - `tracker.reset / t.r`
 
+#### Thing Manipulation
+- `target.spawn`
+  - set the target thing to its spawn state
+- `target.see`
+  - set the target thing to its see state
+- `target.pain`
+  - set the target thing to its pain state
+- `target.melee`
+  - set the target thing to its melee state
+- `target.missile`
+  - set the target thing to its missile state
+- `target.death`
+  - set the target thing to its death state
+- `target.xdeath`
+  - set the target thing to its xdeath state
+- `target.raise`
+  - set the target thing to its raise state
+- `target.set_state <state_num>`
+  - set the target thing to the given state
+
 #### Demo Tools
 - `jump.to_tic <tic>`
 - `jump.by_tic <tic_count>`

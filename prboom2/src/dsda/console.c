@@ -24,6 +24,8 @@
 #include "m_cheat.h"
 #include "m_menu.h"
 #include "m_misc.h"
+#include "p_map.h"
+#include "p_mobj.h"
 #include "s_sound.h"
 #include "v_video.h"
 
@@ -974,6 +976,93 @@ static dboolean console_ToggleUpdate(const char* command, const char* args) {
   return console_ToggleConfig(command, args, true);
 }
 
+static dboolean console_SetMobjState(mobj_t* mobj, statenum_t state) {
+  if (!state)
+    return false;
+
+  P_MapStart();
+  P_SetMobjState(mobj, state);
+  P_MapEnd();
+
+  return true;
+}
+
+static dboolean console_TargetSpawn(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->spawnstate);
+}
+
+static dboolean console_TargetSee(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->seestate);
+}
+
+static dboolean console_TargetPain(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->painstate);
+}
+
+static dboolean console_TargetMelee(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->meleestate);
+}
+
+static dboolean console_TargetMissile(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->missilestate);
+}
+
+static dboolean console_TargetDeath(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->deathstate);
+}
+
+static dboolean console_TargetXDeath(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->xdeathstate);
+}
+
+static dboolean console_TargetRaise(const char* command, const char* args) {
+  mobj_t* target;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, target->info->raisestate);
+}
+
+static dboolean console_TargetSetState(const char* command, const char* args) {
+  int state;
+  mobj_t* target;
+
+  if (sscanf(args, "%d", &state) != 1 || state < 0 || state >= num_states)
+    return false;
+
+  target = HU_Target();
+
+  return target && console_SetMobjState(target, state);
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -1030,6 +1119,17 @@ static console_command_entry_t console_commands[] = {
   { "t.rp", console_TrackerRemovePlayer, CF_DEMO },
   { "tracker.reset", console_TrackerReset, CF_DEMO },
   { "t.r", console_TrackerReset, CF_DEMO },
+
+  // thing manipulation
+  { "target.spawn", console_TargetSpawn, CF_NEVER },
+  { "target.see", console_TargetSee, CF_NEVER },
+  { "target.pain", console_TargetPain, CF_NEVER },
+  { "target.melee", console_TargetMelee, CF_NEVER },
+  { "target.missile", console_TargetMissile, CF_NEVER },
+  { "target.death", console_TargetDeath, CF_NEVER },
+  { "target.xdeath", console_TargetXDeath, CF_NEVER },
+  { "target.raise", console_TargetRaise, CF_NEVER },
+  { "target.set_state", console_TargetSetState, CF_NEVER },
 
   // traversing time
   { "jump.to_tic", console_JumpToTic, CF_DEMO },
