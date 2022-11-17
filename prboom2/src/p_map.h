@@ -57,6 +57,7 @@ dboolean P_TryMove(mobj_t *thing, fixed_t x, fixed_t y, dboolean dropoff);
 
 // killough 8/9/98: extra argument for telefragging
 dboolean P_TeleportMove(mobj_t *thing, fixed_t x, fixed_t y,dboolean boss);
+void    P_UnqualifiedMove(mobj_t *thing, fixed_t x, fixed_t y);
 void    P_SlideMove(mobj_t *mo);
 dboolean P_CheckSight(mobj_t *t1, mobj_t *t2);
 dboolean P_CheckFov(mobj_t *t1, mobj_t *t2, angle_t fov);

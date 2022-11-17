@@ -363,6 +363,19 @@ dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fo
   }
 }
 
+void P_UnqualifiedMove(mobj_t *thing, fixed_t x, fixed_t y)
+{
+  subsector_t *subsector;
+
+  P_UnsetThingPosition(thing);
+  thing->x = x;
+  thing->y = y;
+  subsector = R_PointInSubsector(thing->x, thing->y);
+  thing->z = thing->floorz = subsector->sector->floorheight;
+  thing->ceilingz = subsector->sector->ceilingheight;
+  P_SetThingPosition(thing);
+}
+
 //
 // P_TeleportMove
 //
