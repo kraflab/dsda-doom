@@ -37,6 +37,7 @@
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/global.h"
+#include "dsda/mobjinfo.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
@@ -1172,6 +1173,25 @@ static dboolean console_MobjSetState(const char* command, const char* args) {
   return target && console_SetMobjState(target, state);
 }
 
+static dboolean console_Spawn(const char* command, const char* args) {
+  fixed_t x, y, z;
+  int type;
+
+  if (sscanf(args, "%d %d %d %d", &x, &y, &z, &type) != 4)
+    return false;
+
+  x <<= FRACBITS;
+  y <<= FRACBITS;
+  z <<= FRACBITS;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  return P_SpawnMobj(x, y, z, type) != NULL;
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -1249,6 +1269,8 @@ static console_command_entry_t console_commands[] = {
   { "mobj.xdeath", console_MobjXDeath, CF_NEVER },
   { "mobj.raise", console_MobjRaise, CF_NEVER },
   { "mobj.set_state", console_MobjSetState, CF_NEVER },
+
+  { "spawn", console_Spawn, CF_NEVER },
 
   // traversing time
   { "jump.to_tic", console_JumpToTic, CF_DEMO },

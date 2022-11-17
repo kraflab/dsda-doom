@@ -72,6 +72,8 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - set the target thing to the given state
 - `mobj.* <mobj_index> [other args]`
   - same as the above commands, but applied to a specific mobj index
+- `spawn <x> <y> <z> <type>`
+  - spawns a mobj at the given location, with the given type
 
 #### Demo Tools
 - `jump.to_tic <tic>`
