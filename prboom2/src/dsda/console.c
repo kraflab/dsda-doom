@@ -1064,6 +1064,25 @@ static dboolean console_TargetSetState(const char* command, const char* args) {
   return target && console_SetMobjState(target, state);
 }
 
+static dboolean console_TargetSetHealth(const char* command, const char* args) {
+  int health;
+  mobj_t* target;
+
+  if (sscanf(args, "%i", &health) != 1)
+    return false;
+
+  target = HU_Target();
+
+  if (!target)
+    return false;
+
+  target->health = health;
+  if (target->player)
+    target->player->health = health;
+
+  return true;
+}
+
 static dboolean console_MobjSpawn(const char* command, const char* args) {
   int index;
   mobj_t* target;
@@ -1173,6 +1192,26 @@ static dboolean console_MobjSetState(const char* command, const char* args) {
   return target && console_SetMobjState(target, state);
 }
 
+static dboolean console_MobjSetHealth(const char* command, const char* args) {
+  int health;
+  int index;
+  mobj_t* target;
+
+  if (sscanf(args, "%d %i", &index, &health) != 2)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  if (!target)
+    return false;
+
+  target->health = health;
+  if (target->player)
+    target->player->health = health;
+
+  return true;
+}
+
 static dboolean console_Spawn(const char* command, const char* args) {
   fixed_t x, y, z;
   int type;
@@ -1259,6 +1298,7 @@ static console_command_entry_t console_commands[] = {
   { "target.xdeath", console_TargetXDeath, CF_NEVER },
   { "target.raise", console_TargetRaise, CF_NEVER },
   { "target.set_state", console_TargetSetState, CF_NEVER },
+  { "target.set_health", console_TargetSetHealth, CF_NEVER },
 
   { "mobj.spawn", console_MobjSpawn, CF_NEVER },
   { "mobj.see", console_MobjSee, CF_NEVER },
@@ -1269,6 +1309,7 @@ static console_command_entry_t console_commands[] = {
   { "mobj.xdeath", console_MobjXDeath, CF_NEVER },
   { "mobj.raise", console_MobjRaise, CF_NEVER },
   { "mobj.set_state", console_MobjSetState, CF_NEVER },
+  { "mobj.set_health", console_MobjSetHealth, CF_NEVER },
 
   { "spawn", console_Spawn, CF_NEVER },
 

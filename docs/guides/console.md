@@ -70,6 +70,8 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - set the target thing to its raise state
 - `target.set_state <state_num>`
   - set the target thing to the given state
+- `target.set_health <health>`
+  - set the target thing's health
 - `mobj.* <mobj_index> [other args]`
   - same as the above commands, but applied to a specific mobj index
 - `spawn <x> <y> <z> <type>`
