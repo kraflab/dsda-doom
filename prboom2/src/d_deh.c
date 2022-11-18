@@ -1502,6 +1502,37 @@ dboolean IsDehMaxHealth = false;
 dboolean IsDehMaxSoul = false;
 dboolean IsDehMegaHealth = false;
 
+static uint_64_t deh_stringToFlags(char *strval, const struct deh_flag_s *flags)
+{
+  uint_64_t value;
+
+  for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
+    const struct deh_flag_s *flag;
+
+    for (flag = flags; flag->name; flag++) {
+      if (deh_strcasecmp(strval, flag->name)) continue;
+
+      value |= flag->value;
+      break;
+    }
+
+    if (!flag->name)
+      deh_log("Could not find MBF21 bit mnemonic %s\n", strval);
+  }
+
+  return value;
+}
+
+uint_64_t deh_stringToMBF21MobjFlags(char *strval)
+{
+  return deh_stringToFlags(strval, deh_mobjflags_mbf21);
+}
+
+uint_64_t deh_stringToMobjFlags(char *strval)
+{
+  return deh_stringToFlags(strval, deh_mobjflags);
+}
+
 void deh_changeCompTranslucency(void)
 {
   extern byte* edited_mobjinfo_bits;
@@ -1994,19 +2025,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
         }
         else
         {
-          for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
-            const struct deh_flag_s *flags;
-
-            for (flags = deh_mobjflags_mbf21; flags->name; flags++) {
-              if (deh_strcasecmp(strval, flags->name)) continue;
-
-              value |= flags->value;
-              break;
-            }
-
-            if (!flags->name)
-              deh_log("Could not find MBF21 bit mnemonic %s\n", strval);
-          }
+          value = deh_stringToMBF21MobjFlags(strval);
         }
 
         deh_mobjinfo.info->flags2 = value;
@@ -2036,28 +2055,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
       }
       else
       {
-        // figure out what the bits are
-        value = 0;
-
-        // killough 10/98: replace '+' kludge with strtok() loop
-        // Fix error-handling case ('found' var wasn't being reset)
-        //
-        // Use OR logic instead of addition, to allow repetition
-        for (;(strval = strtok(strval,deh_getBitsDelims())); strval = NULL) {
-          const struct deh_flag_s *flags;
-
-          for (flags = deh_mobjflags; flags->name; flags++) {
-            if (deh_strcasecmp(strval, flags->name)) continue;
-            deh_log("ORed value 0x%08lX%08lX %s\n",
-                    (unsigned long)(flags->value >> 32) & 0xffffffff,
-                    (unsigned long)flags->value & 0xffffffff, strval);
-            value |= flags->value;
-            break;
-          }
-
-          if (!flags->name)
-            deh_log("Could not find bit mnemonic %s\n", strval);
-        }
+        value = deh_stringToMobjFlags(strval);
 
         // Don't worry about conversion -- simply print values
         deh_log("Bits = 0x%08lX%08lX\n",

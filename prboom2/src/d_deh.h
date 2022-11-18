@@ -42,6 +42,8 @@
 #ifndef __D_DEH__
 #define __D_DEH__
 
+#include "doomtype.h"
+
 void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum);
 void PostProcessDeh(void);
 
@@ -1047,6 +1049,8 @@ extern const char* bgcastcall;
 // from g_game.c, prefix for savegame name like "boomsav"
 extern const char* savegamename;
 
+uint_64_t deh_stringToMBF21MobjFlags(char *strval);
+uint_64_t deh_stringToMobjFlags(char *strval);
 void deh_changeCompTranslucency(void);
 void deh_applyCompatibility(void);
 
