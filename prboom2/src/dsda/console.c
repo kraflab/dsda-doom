@@ -15,6 +15,7 @@
 //	DSDA Console
 //
 
+#include "d_deh.h"
 #include "doomstat.h"
 #include "g_game.h"
 #include "hu_lib.h"
@@ -26,6 +27,7 @@
 #include "m_misc.h"
 #include "p_inter.h"
 #include "p_map.h"
+#include "p_maputl.h"
 #include "p_mobj.h"
 #include "p_spec.h"
 #include "p_tick.h"
@@ -1035,6 +1037,15 @@ static dboolean console_SetTarget(mobj_t* mobj, mobj_t* target) {
   return true;
 }
 
+static void console_SetMobjFlags(mobj_t* mobj, uint_64_t flags, uint_64_t flags2) {
+  P_MapStart();
+  P_UnsetThingPosition(mobj);
+  mobj->flags = flags;
+  mobj->flags2 = flags2;
+  P_SetThingPosition(mobj);
+  P_MapEnd();
+}
+
 static dboolean console_TargetSpawn(const char* command, const char* args) {
   mobj_t* target;
 
@@ -1177,6 +1188,69 @@ static dboolean console_TargetActivateLine(const char* command, const char* args
   target = HU_Target();
 
   return console_ActivateLine(target, id, false);
+}
+
+static dboolean console_TargetAddFlags(const char* command, const char* args) {
+  mobj_t* target;
+  uint_64_t flags, flags2;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", flag_str) != 1)
+    return false;
+
+  target = HU_Target();
+
+  if (!target)
+    return false;
+
+  flags = target->flags | deh_stringToMobjFlags(flag_str);
+  flags2 = target->flags2 | deh_stringToMBF21MobjFlags(flag_str);
+
+  console_SetMobjFlags(target, flags, flags2);
+
+  return true;
+}
+
+static dboolean console_TargetRemoveFlags(const char* command, const char* args) {
+  mobj_t* target;
+  uint_64_t flags, flags2;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", flag_str) != 1)
+    return false;
+
+  target = HU_Target();
+
+  if (!target)
+    return false;
+
+  flags = target->flags & ~deh_stringToMobjFlags(flag_str);
+  flags2 = target->flags2 & ~deh_stringToMBF21MobjFlags(flag_str);
+
+  console_SetMobjFlags(target, flags, flags2);
+
+  return true;
+}
+
+static dboolean console_TargetSetFlags(const char* command, const char* args) {
+  mobj_t* target;
+  uint_64_t flags, flags2;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%s", flag_str) != 1)
+    return false;
+
+  target = HU_Target();
+
+  if (!target)
+    return false;
+
+  flags = deh_stringToMobjFlags(flag_str);
+  flags2 = deh_stringToMBF21MobjFlags(flag_str);
+
+  console_SetMobjFlags(target, flags, flags2);
+
+  return true;
 }
 
 static dboolean console_MobjSpawn(const char* command, const char* args) {
@@ -1364,6 +1438,72 @@ static dboolean console_MobjActivateLine(const char* command, const char* args) 
   return console_ActivateLine(target, id, false);
 }
 
+static dboolean console_MobjAddFlags(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+  uint_64_t flags, flags2;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%d %s", &index, flag_str) != 2)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  if (!target)
+    return false;
+
+  flags = target->flags | deh_stringToMobjFlags(flag_str);
+  flags2 = target->flags2 | deh_stringToMBF21MobjFlags(flag_str);
+
+  console_SetMobjFlags(target, flags, flags2);
+
+  return true;
+}
+
+static dboolean console_MobjRemoveFlags(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+  uint_64_t flags, flags2;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%d %s", &index, flag_str) != 2)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  if (!target)
+    return false;
+
+  flags = target->flags & ~deh_stringToMobjFlags(flag_str);
+  flags2 = target->flags2 & ~deh_stringToMBF21MobjFlags(flag_str);
+
+  console_SetMobjFlags(target, flags, flags2);
+
+  return true;
+}
+
+static dboolean console_MobjSetFlags(const char* command, const char* args) {
+  int index;
+  mobj_t* target;
+  uint_64_t flags, flags2;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%d %s", &index, flag_str) != 2)
+    return false;
+
+  target = dsda_FindMobj(index);
+
+  if (!target)
+    return false;
+
+  flags = deh_stringToMobjFlags(flag_str);
+  flags2 = deh_stringToMBF21MobjFlags(flag_str);
+
+  console_SetMobjFlags(target, flags, flags2);
+
+  return true;
+}
+
 static dboolean console_BossActivateLine(const char* command, const char* args) {
   int id;
   int index;
@@ -1467,6 +1607,9 @@ static console_command_entry_t console_commands[] = {
   { "target.move", console_TargetMove, CF_NEVER },
   { "target.set_target", console_TargetSetTarget, CF_NEVER },
   { "target.target_player", console_TargetTargetPlayer, CF_NEVER },
+  { "target.add_flags", console_TargetAddFlags, CF_NEVER },
+  { "target.remove_flags", console_TargetRemoveFlags, CF_NEVER },
+  { "target.set_flags", console_TargetSetFlags, CF_NEVER },
 
   { "mobj.spawn", console_MobjSpawn, CF_NEVER },
   { "mobj.see", console_MobjSee, CF_NEVER },
@@ -1481,6 +1624,9 @@ static console_command_entry_t console_commands[] = {
   { "mobj.move", console_MobjMove, CF_NEVER },
   { "mobj.set_target", console_MobjSetTarget, CF_NEVER },
   { "mobj.target_player", console_MobjTargetPlayer, CF_NEVER },
+  { "mobj.add_flags", console_MobjAddFlags, CF_NEVER },
+  { "mobj.remove_flags", console_MobjRemoveFlags, CF_NEVER },
+  { "mobj.set_flags", console_MobjSetFlags, CF_NEVER },
 
   { "spawn", console_Spawn, CF_NEVER },
 

@@ -52,24 +52,34 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `tracker.reset / t.r`
 
 #### Thing Manipulation
-- `target.spawn`
-  - set the target thing to its spawn state
-- `target.see`
-  - set the target thing to its see state
-- `target.pain`
-  - set the target thing to its pain state
-- `target.melee`
-  - set the target thing to its melee state
-- `target.missile`
-  - set the target thing to its missile state
-- `target.death`
-  - set the target thing to its death state
-- `target.xdeath`
-  - set the target thing to its xdeath state
-- `target.raise`
-  - set the target thing to its raise state
-- `target.set_state <state_num>`
-  - set the target thing to the given state
+- States
+  - `target.spawn`
+    - set the target thing to its spawn state
+  - `target.see`
+    - set the target thing to its see state
+  - `target.pain`
+    - set the target thing to its pain state
+  - `target.melee`
+    - set the target thing to its melee state
+  - `target.missile`
+    - set the target thing to its missile state
+  - `target.death`
+    - set the target thing to its death state
+  - `target.xdeath`
+    - set the target thing to its xdeath state
+  - `target.raise`
+    - set the target thing to its raise state
+  - `target.set_state <state_num>`
+    - set the target thing to the given state
+- Flags
+  - Use named format (e.g., `LOGRAV+SHOOTABLE`)
+  - Some flag changes may have unforeseen side effects
+  - `target.add_flags <flags>`
+    - adds the given flags to the target
+  - `target.remove_flags <flags>`
+    - removes the given flags from the target
+  - `target.set_flags <flags>`
+    - sets the target's flags
 - `target.set_health <health>`
   - set the target thing's health
 - `target.move <x> <y>`
