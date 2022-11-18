@@ -1536,6 +1536,138 @@ static dboolean console_Spawn(const char* command, const char* args) {
   return P_SpawnMobj(x, y, z, type) != NULL;
 }
 
+static dboolean console_StateSetTics(const char* command, const char* args) {
+  int id;
+  int value;
+
+  if (sscanf(args, "%d %i", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].tics = value;
+
+  return true;
+}
+
+static dboolean console_StateSetMisc1(const char* command, const char* args) {
+  int id;
+  int value;
+
+  if (sscanf(args, "%d %i", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].misc1 = value;
+
+  return true;
+}
+
+static dboolean console_StateSetMisc2(const char* command, const char* args) {
+  int id;
+  int value;
+
+  if (sscanf(args, "%d %i", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].misc2 = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs1(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[0] = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs2(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[1] = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs3(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[2] = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs4(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[3] = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs5(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[4] = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs6(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[5] = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs7(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[6] = value;
+
+  return true;
+}
+
+static dboolean console_StateSetArgs8(const char* command, const char* args) {
+  int id;
+  statearg_t value;
+
+  if (sscanf(args, "%d %lli", &id, &value) != 2 || id < 0 || id >= num_states)
+    return false;
+
+  states[id].args[7] = value;
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -1635,6 +1767,19 @@ static console_command_entry_t console_commands[] = {
   { "target.activate_line", console_TargetActivateLine, CF_NEVER },
   { "mobj.activate_line", console_MobjActivateLine, CF_NEVER },
   { "boss.activate_line", console_BossActivateLine, CF_NEVER },
+
+  // states
+  { "state.set_tics", console_StateSetTics, CF_NEVER },
+  { "state.set_misc1", console_StateSetMisc1, CF_NEVER },
+  { "state.set_misc2", console_StateSetMisc2, CF_NEVER },
+  { "state.set_args1", console_StateSetArgs1, CF_NEVER },
+  { "state.set_args2", console_StateSetArgs2, CF_NEVER },
+  { "state.set_args3", console_StateSetArgs3, CF_NEVER },
+  { "state.set_args4", console_StateSetArgs4, CF_NEVER },
+  { "state.set_args5", console_StateSetArgs5, CF_NEVER },
+  { "state.set_args6", console_StateSetArgs6, CF_NEVER },
+  { "state.set_args7", console_StateSetArgs7, CF_NEVER },
+  { "state.set_args8", console_StateSetArgs8, CF_NEVER },
 
   // traversing time
   { "jump.to_tic", console_JumpToTic, CF_DEMO },

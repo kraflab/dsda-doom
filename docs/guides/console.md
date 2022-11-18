@@ -101,6 +101,19 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - `boss.activate_line <mobj_index> <line_id>`
     - activates the line with the boss action flag set
 
+#### State Manipulation
+- `state.set_tics <state_id> <value>`
+- `state.set_misc1 <state_id> <value>`
+- `state.set_misc2 <state_id> <value>`
+- `state.set_args1 <state_id> <value>`
+- `state.set_args2 <state_id> <value>`
+- `state.set_args3 <state_id> <value>`
+- `state.set_args4 <state_id> <value>`
+- `state.set_args5 <state_id> <value>`
+- `state.set_args6 <state_id> <value>`
+- `state.set_args7 <state_id> <value>`
+- `state.set_args8 <state_id> <value>`
+
 #### Demo Tools
 - `jump.to_tic <tic>`
 - `jump.by_tic <tic_count>`
