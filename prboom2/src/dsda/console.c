@@ -1668,6 +1668,302 @@ static dboolean console_StateSetArgs8(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_MobjInfoSetHealth(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].spawnhealth = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetRadius(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  value <<= FRACBITS;
+
+  mobjinfo[type].radius = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetHeight(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  value <<= FRACBITS;
+
+  mobjinfo[type].height = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetMass(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].mass = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetDamage(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].damage = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetSpeed(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].speed = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetFastSpeed(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].altspeed = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetMeleeRange(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  value <<= FRACBITS;
+
+  mobjinfo[type].meleerange = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetReactionTime(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].reactiontime = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetPainChance(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].painchance = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetInfightingGroup(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  if (value < 0)
+    value = IG_DEFAULT;
+  else
+    value += IG_END;
+
+  mobjinfo[type].infighting_group = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetProjectileGroup(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  if (value < 0)
+    value = PG_GROUPLESS;
+  else
+    value += PG_END;
+
+  mobjinfo[type].projectile_group = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetSplashGroup(const char* command, const char* args) {
+  int type;
+  int value;
+
+  if (sscanf(args, "%d %i", &type, &value) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  if (value < 0)
+    value = SG_DEFAULT;
+  else
+    value += SG_END;
+
+  mobjinfo[type].splash_group = value;
+
+  return true;
+}
+
+static dboolean console_MobjInfoAddFlags(const char* command, const char* args) {
+  int type;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%d %s", &type, flag_str) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].flags |= deh_stringToMobjFlags(flag_str);
+  mobjinfo[type].flags2 |= deh_stringToMBF21MobjFlags(flag_str);
+
+  return true;
+}
+
+static dboolean console_MobjInfoRemoveFlags(const char* command, const char* args) {
+  int type;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%d %s", &type, flag_str) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].flags &= ~deh_stringToMobjFlags(flag_str);
+  mobjinfo[type].flags2 &= ~deh_stringToMBF21MobjFlags(flag_str);
+
+  return true;
+}
+
+static dboolean console_MobjInfoSetFlags(const char* command, const char* args) {
+  int type;
+  char flag_str[CONSOLE_ENTRY_SIZE];
+
+  if (sscanf(args, "%d %s", &type, flag_str) != 2 || type < 0)
+    return false;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+    return false;
+
+  mobjinfo[type].flags = deh_stringToMobjFlags(flag_str);
+  mobjinfo[type].flags2 = deh_stringToMBF21MobjFlags(flag_str);
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -1780,6 +2076,24 @@ static console_command_entry_t console_commands[] = {
   { "state.set_args6", console_StateSetArgs6, CF_NEVER },
   { "state.set_args7", console_StateSetArgs7, CF_NEVER },
   { "state.set_args8", console_StateSetArgs8, CF_NEVER },
+
+  // mobjinfo
+  { "mobjinfo.set_health", console_MobjInfoSetHealth, CF_NEVER },
+  { "mobjinfo.set_radius", console_MobjInfoSetRadius, CF_NEVER },
+  { "mobjinfo.set_height", console_MobjInfoSetHeight, CF_NEVER },
+  { "mobjinfo.set_mass", console_MobjInfoSetMass, CF_NEVER },
+  { "mobjinfo.set_damage", console_MobjInfoSetDamage, CF_NEVER },
+  { "mobjinfo.set_speed", console_MobjInfoSetSpeed, CF_NEVER },
+  { "mobjinfo.set_fast_speed", console_MobjInfoSetFastSpeed, CF_NEVER },
+  { "mobjinfo.set_melee_range", console_MobjInfoSetMeleeRange, CF_NEVER },
+  { "mobjinfo.set_reaction_time", console_MobjInfoSetReactionTime, CF_NEVER },
+  { "mobjinfo.set_pain_chance", console_MobjInfoSetPainChance, CF_NEVER },
+  { "mobjinfo.set_infighting_group", console_MobjInfoSetInfightingGroup, CF_NEVER },
+  { "mobjinfo.set_projectile_group", console_MobjInfoSetProjectileGroup, CF_NEVER },
+  { "mobjinfo.set_splash_group", console_MobjInfoSetSplashGroup, CF_NEVER },
+  { "mobjinfo.add_flags", console_MobjInfoAddFlags, CF_NEVER },
+  { "mobjinfo.remove_flags", console_MobjInfoRemoveFlags, CF_NEVER },
+  { "mobjinfo.set_flags", console_MobjInfoSetFlags, CF_NEVER },
 
   // traversing time
   { "jump.to_tic", console_JumpToTic, CF_DEMO },

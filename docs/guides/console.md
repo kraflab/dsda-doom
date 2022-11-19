@@ -114,6 +114,27 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `state.set_args7 <state_id> <value>`
 - `state.set_args8 <state_id> <value>`
 
+#### Mobj Info Manipulation
+- Some changes to mobj info require restarting a map
+- `mobjinfo.set_health <type> <value>`
+- `mobjinfo.set_radius <type> <value>`
+- `mobjinfo.set_height <type> <value>`
+- `mobjinfo.set_mass <type> <value>`
+- `mobjinfo.set_damage <type> <value>`
+- `mobjinfo.set_speed <type> <value>`
+- `mobjinfo.set_fast_speed <type> <value>`
+- `mobjinfo.set_melee_range <type> <value>`
+- `mobjinfo.set_reaction_time <type> <value>`
+- `mobjinfo.set_pain_chance <type> <value>`
+- `mobjinfo.set_infighting_group <type> <value>`
+- `mobjinfo.set_projectile_group <type> <value>`
+- `mobjinfo.set_splash_group <type> <value>`
+- Flags
+  - Use named format (e.g., `LOGRAV+SHOOTABLE`)
+  - `mobjinfo.add_flags <type> <value>`
+  - `mobjinfo.remove_flags <type> <value>`
+  - `mobjinfo.set_flags <type> <value>`
+
 #### Demo Tools
 - `jump.to_tic <tic>`
 - `jump.by_tic <tic_count>`
