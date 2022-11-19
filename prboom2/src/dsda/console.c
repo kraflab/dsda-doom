@@ -1521,7 +1521,7 @@ static dboolean console_Spawn(const char* command, const char* args) {
   fixed_t x, y, z;
   int type;
 
-  if (sscanf(args, "%d %d %d %d", &x, &y, &z, &type) != 4)
+  if (sscanf(args, "%d %d %d %d", &x, &y, &z, &type) != 4 || type < 0)
     return false;
 
   x <<= FRACBITS;
