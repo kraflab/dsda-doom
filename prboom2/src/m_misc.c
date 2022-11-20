@@ -258,9 +258,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_gl_lightmode),
   MIGRATED_SETTING(dsda_config_gl_skymode),
   MIGRATED_SETTING(dsda_config_gl_usegamma),
-  MIGRATED_SETTING(dsda_config_gl_shadows),
-  MIGRATED_SETTING(dsda_config_gl_shadows_maxdist),
-  MIGRATED_SETTING(dsda_config_gl_shadows_factor),
   MIGRATED_SETTING(dsda_config_gl_health_bar),
 
   SETTING_HEADING("Mouse settings"),

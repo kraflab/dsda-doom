@@ -455,7 +455,6 @@ function(AddGameExecutable TARGET SOURCES)
         gl_opengl.h
         gl_preprocess.c
         gl_shader.c
-        gl_shadow.c
         gl_sky.c
         gl_struct.h
         gl_texture.c

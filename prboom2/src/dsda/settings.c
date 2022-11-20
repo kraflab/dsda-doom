@@ -215,10 +215,6 @@ dboolean dsda_MapPointCoordinates(void) {
   return dsda_IntConfig(dsda_config_map_point_coord);
 }
 
-dboolean dsda_SimpleShadows(void) {
-  return dsda_IntConfig(dsda_config_gl_shadows);
-}
-
 dboolean dsda_PainPalette(void) {
   return dsda_IntConfig(dsda_config_palette_ondamage);
 }

@@ -621,9 +621,9 @@ void R_SetClipPlanes(void)
   // thing is behind view plane?
   if ((V_IsOpenGLMode()) &&
       (HaveMouseLook() || (gl_render_fov > FOV90)) &&
-      (!gl_render_paperitems || simple_shadows.loaded))
+      !gl_render_paperitems)
   {
-    r_near_clip_plane = -(FRACUNIT * MAX(64, simple_shadows.max_radius));
+    r_near_clip_plane = -(FRACUNIT * 80);
   }
   else
   {

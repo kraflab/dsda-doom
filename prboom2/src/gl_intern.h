@@ -500,11 +500,6 @@ void gld_DrawDomeSkyBox(void);
 void gld_DrawSkyCaps(void);
 int gld_DrawBoxSkyBox(void);
 
-// shadows
-void gld_InitShadows(void);
-void gld_ProcessThingShadow(mobj_t *mo);
-void gld_RenderShadows(void);
-
 // VBO
 typedef struct vbo_vertex_s
 {

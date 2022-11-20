@@ -140,25 +140,6 @@ extern dboolean gl_use_stencil;
 sector_t* GetBestFake(sector_t *sector, int ceiling, int validcount);
 sector_t* GetBestBleedSector(sector_t* source, int ceiling);
 
-//shadows
-typedef struct shadow_params_s
-{
-  int loaded;
-
-  GLuint tex_id;
-  int width;
-  int height;
-
-  int max_radius;
-  int max_dist;
-  float factor;
-  float bias;
-} simple_shadow_params_t;
-
-extern simple_shadow_params_t simple_shadows;
-extern int gl_shadows_maxdist;
-extern int gl_shadows_factor;
-
 void gld_DrawMapLines(void);
 
 //sprites

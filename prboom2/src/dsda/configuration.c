@@ -184,9 +184,6 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_hudadd_crosshair_lock_target))
     dsda_TrackFeature(uf_crosshairlock);
 
-  if (dsda_IntConfig(dsda_config_gl_shadows))
-    dsda_TrackFeature(uf_shadows);
-
   if (!dsda_IntConfig(dsda_config_palette_ondamage))
     dsda_TrackFeature(uf_painpalette);
 
@@ -586,21 +583,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_fog", dsda_config_gl_fog,
     CONF_BOOL(1), &gl_fog, NOT_STRICT, M_ChangeAllowFog
   },
-  [dsda_config_gl_shadows] = {
-    "gl_shadows", dsda_config_gl_shadows,
-    CONF_BOOL(0), NULL, STRICT_INT(0)
-  },
   [dsda_config_gl_blend_animations] = {
     "gl_blend_animations", dsda_config_gl_blend_animations,
     CONF_BOOL(0), &gl_blend_animations
-  },
-  [dsda_config_gl_shadows_maxdist] = {
-    "gl_shadows_maxdist", dsda_config_gl_shadows_maxdist,
-    dsda_config_int, 0, 32767, { 1000 }, NULL, NOT_STRICT, gld_ResetShadowParameters
-  },
-  [dsda_config_gl_shadows_factor] = {
-    "gl_shadows_factor", dsda_config_gl_shadows_factor,
-    CONF_BYTE(128), NULL, NOT_STRICT, gld_ResetShadowParameters
   },
   [dsda_config_gl_usegamma] = {
     "gl_usegamma", dsda_config_gl_usegamma,

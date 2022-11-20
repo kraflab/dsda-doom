@@ -50,7 +50,6 @@ dboolean dsda_ShowLevelSplits(void);
 dboolean dsda_ShowDemoAttempts(void);
 dboolean dsda_ShowHealthBars(void);
 dboolean dsda_MapPointCoordinates(void);
-dboolean dsda_SimpleShadows(void);
 dboolean dsda_PainPalette(void);
 dboolean dsda_BonusPalette(void);
 dboolean dsda_PowerPalette(void);
