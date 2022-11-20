@@ -2832,7 +2832,6 @@ static const char *gen_compstrings[] =
 
 static const char *death_use_strings[] = { "default", "nothing", "reload", NULL };
 
-static const char *gltexfilters_anisotropics[] = { "Off", "2x", "4x", "8x", "16x", NULL };
 static const char *render_aspects_list[] = { "auto", "16:9", "16:10", "4:3", "5:4", NULL };
 
 static const char* render_stretch_list[] = {
