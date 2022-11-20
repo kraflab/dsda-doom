@@ -571,14 +571,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mapcolor_frnd", dsda_config_mapcolor_frnd,
     CONF_COLOR(112), &mapcolor_frnd
   },
-  [dsda_config_gl_sprite_blend] = {
-    "gl_sprite_blend", dsda_config_gl_sprite_blend,
-    CONF_BOOL(0), &gl_sprite_blend
-  },
-  [dsda_config_gl_render_paperitems] = {
-    "gl_render_paperitems", dsda_config_gl_render_paperitems,
-    CONF_BOOL(0), &gl_render_paperitems
-  },
   [dsda_config_gl_fog] = {
     "gl_fog", dsda_config_gl_fog,
     CONF_BOOL(1), &gl_fog, NOT_STRICT, M_ChangeAllowFog

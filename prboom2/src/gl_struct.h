@@ -142,9 +142,6 @@ sector_t* GetBestBleedSector(sector_t* source, int ceiling);
 
 void gld_DrawMapLines(void);
 
-//sprites
-extern int gl_sprite_blend;
-
 //skybox
 int R_BoxSkyboxNumForName(const char *name);
 void R_SetBoxSkybox(int texture);
@@ -197,7 +194,6 @@ void gld_AddNiceThing(int type, float x, float y, float radius, float angle,
 void gld_DrawNiceThings(int fx, int fy, int fw, int fh);
 void gld_ClearNiceThings(void);
 
-extern int gl_render_paperitems;
 extern int gl_fog;
 extern int gl_render_fov;
 
