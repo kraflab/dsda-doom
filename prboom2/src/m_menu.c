@@ -2769,8 +2769,7 @@ void M_DrawAutoMap(void)
 // killough 10/10/98
 
 setup_menu_t audiovideo_settings[], mouse_settings[], controller_settings[], misc_settings[];
-setup_menu_t display_settings[], opengl_settings[];
-setup_menu_t mapping_settings[], demo_settings[], tas_settings[];
+setup_menu_t display_settings[], mapping_settings[], demo_settings[], tas_settings[];
 
 setup_menu_t* gen_settings[] =
 {
@@ -2779,7 +2778,6 @@ setup_menu_t* gen_settings[] =
   controller_settings,
   misc_settings,
   display_settings,
-  opengl_settings,
   mapping_settings,
   demo_settings,
   tas_settings,
@@ -2849,12 +2847,14 @@ setup_menu_t audiovideo_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_fps_limit },
 
-  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
-  { "Number of Sound Channels", S_NUM, m_conf, G_X, G_Y + 12 * 8, dsda_config_snd_channels },
-  { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_pitched_sounds },
-  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, G_Y + 14 * 8, dsda_config_snd_pcspeaker },
-  { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_full_sounds },
-  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, dsda_config_snd_midiplayer, 0, midiplayers },
+  { "OpenGL Light Mode", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_gl_lightmode, 0, gl_lightmodes },
+
+  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 13 * 8 },
+  { "Number of Sound Channels", S_NUM, m_conf, G_X, G_Y + 14 * 8, dsda_config_snd_channels },
+  { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_pitched_sounds },
+  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, dsda_config_snd_pcspeaker },
+  { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 17 * 8, dsda_config_full_sounds },
+  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 18 * 8, dsda_config_snd_midiplayer, 0, midiplayers },
 
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mouse_settings),
   FINAL_ENTRY
@@ -2952,18 +2952,6 @@ setup_menu_t display_settings[] = {
   { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 18 * 8, dsda_config_menu_background },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, misc_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, opengl_settings),
-  FINAL_ENTRY
-};
-
-setup_menu_t opengl_settings[] = {
-  { "OpenGL Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
-  { "Multisampling (0-None)", S_NUM | S_PRGWARN | S_EVEN, m_conf, G_X, G_Y + 2 * 8, dsda_config_gl_render_multisampling },
-  { "Field Of View", S_NUM, m_conf, G_X, G_Y + 3 * 8, dsda_config_gl_render_fov },
-  { "Sector Light Mode", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, dsda_config_gl_lightmode, 0, gl_lightmodes },
-  { "Health Bar Above Monsters", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_gl_health_bar },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mapping_settings),
   FINAL_ENTRY
 };
@@ -2986,7 +2974,7 @@ setup_menu_t mapping_settings[] = {
   { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_comperr_blockmap },
   { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_comperr_freeaim },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, opengl_settings),
+  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, demo_settings),
   FINAL_ENTRY
 };
@@ -3004,6 +2992,7 @@ setup_menu_t demo_settings[] = {
 
   { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
   { "Allow Jumping", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_allow_jumping },
+  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_gl_health_bar },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mapping_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, tas_settings),
