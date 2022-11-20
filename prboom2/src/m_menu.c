@@ -2968,9 +2968,6 @@ setup_menu_t opengl_settings[] = {
   { "Smooth sprite edges", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_gl_sprite_blend },
   { "Health Bar Above Monsters", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_gl_health_bar },
 
-  { "Anisotropic filter", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_gl_texture_filter_anisotropic, 0, gltexfilters_anisotropics },
-  { "Texture format", S_CHOICE | S_STR, m_conf, G_X, G_Y + 12 * 8, dsda_config_gl_tex_format_string, 0, gltexformats },
-
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mapping_settings),
   FINAL_ENTRY
