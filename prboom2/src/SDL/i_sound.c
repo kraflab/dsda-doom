@@ -289,12 +289,12 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
   return channel;
 }
 
-static void updateSoundParams(int handle, int volume, int seperation, int pitch)
+static void updateSoundParams(int handle, sfx_params_t *params)
 {
   int slot = handle;
-  int   rightvol;
-  int   leftvol;
-  int         step = steptable[pitch];
+  int rightvol;
+  int leftvol;
+  int step = steptable[params->pitch];
 
 #ifdef RANGECHECK
   if ((handle < 0) || (handle >= MAX_CHANNELS))
@@ -316,14 +316,14 @@ static void updateSoundParams(int handle, int volume, int seperation, int pitch)
 
   // Separation, that is, orientation/stereo.
   //  range is: 1 - 256
-  seperation += 1;
+  params->separation += 1;
 
   // Per left/right channel.
-  //  x^2 seperation,
+  //  x^2 separation,
   //  adjust volume properly.
-  leftvol = volume - ((volume * seperation * seperation) >> 16);
-  seperation = seperation - 257;
-  rightvol = volume - ((volume * seperation * seperation) >> 16);
+  leftvol = params->volume - ((params->volume * params->separation * params->separation) >> 16);
+  params->separation = params->separation - 257;
+  rightvol = params->volume - ((params->volume * params->separation * params->separation) >> 16);
 
   // Sanity check, clamp volume.
   if (rightvol < 0 || rightvol > 127)
@@ -344,10 +344,10 @@ static void updateSoundParams(int handle, int volume, int seperation, int pitch)
   channelinfo[slot].rightvol = rightvol;
 }
 
-void I_UpdateSoundParams(int handle, int volume, int seperation, int pitch)
+void I_UpdateSoundParams(int handle, sfx_params_t *params)
 {
   SDL_LockMutex (sfxmutex);
-  updateSoundParams(handle, volume, seperation, pitch);
+  updateSoundParams(handle, params);
   SDL_UnlockMutex (sfxmutex);
 }
 
@@ -428,7 +428,7 @@ int I_GetSfxLumpNum(sfxinfo_t *sfx)
 // Pitching (that is, increased speed of playback)
 //  is set, but currently not used by mixing.
 //
-int I_StartSound(int id, int channel, int vol, int sep, int pitch, int priority)
+int I_StartSound(int id, int channel, sfx_params_t *params)
 {
   const unsigned char *data;
   int lump;
@@ -442,7 +442,7 @@ int I_StartSound(int id, int channel, int vol, int sep, int pitch, int priority)
 #endif
 
   if (snd_pcspeaker)
-    return I_PCS_StartSound(id, channel, vol, sep, pitch, priority);
+    return I_PCS_StartSound(id, channel, params);
 
   lump = S_sfx[id].lumpnum;
 
@@ -466,7 +466,7 @@ int I_StartSound(int id, int channel, int vol, int sep, int pitch, int priority)
 
   // Returns a handle (not used).
   addsfx(id, channel, data, len);
-  updateSoundParams(channel, vol, sep, pitch);
+  updateSoundParams(channel, params);
 
   SDL_UnlockMutex (sfxmutex);
 

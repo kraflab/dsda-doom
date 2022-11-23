@@ -40,6 +40,13 @@
 #define SFXF_VOLUME   0x04
 #define SFXF_OLDLINK (SFXF_PRIORITY|SFXF_PITCH|SFXF_VOLUME)
 
+typedef struct {
+  int volume;
+  int separation;
+  int pitch;
+  int priority;
+} sfx_params_t;
+
 //
 // SoundFX struct.
 //
