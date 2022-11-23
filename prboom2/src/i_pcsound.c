@@ -135,12 +135,7 @@ static dboolean CachePCSLump(int sound_id)
     return true;
 }
 
-int I_PCS_StartSound(int id,
-                     int channel,
-                     int vol,
-                     int sep,
-                     int pitch,
-                     int priority)
+int I_PCS_StartSound(int id, int channel, sfx_params_t *params)
 {
     int result;
 

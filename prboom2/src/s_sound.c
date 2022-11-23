@@ -128,8 +128,7 @@ int idmusnum;
 
 void S_StopChannel(int cnum);
 
-int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
-                        int *vol, int *sep, int *pitch);
+int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, sfx_params_t *params);
 
 static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup);
 
@@ -276,7 +275,8 @@ void S_Start(void)
 
 void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 {
-  int sep, pitch, priority, cnum, is_pickup;
+  int cnum, is_pickup;
+  sfx_params_t params;
   sfxinfo_t *sfx;
   mobj_t *origin;
 
@@ -303,55 +303,56 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 
   // Initialize sound parameters
   if (sfx->flags & SFXF_PRIORITY)
-    priority = sfx->priority;
+    params.priority = sfx->priority;
   else
-    priority = NORM_PRIORITY;
+    params.priority = NORM_PRIORITY;
 
   if (sfx->flags & SFXF_PITCH)
-    pitch = sfx->pitch;
+    params.pitch = sfx->pitch;
   else
-    pitch = NORM_PITCH;
+    params.pitch = NORM_PITCH;
+
+  params.volume = volume;
 
   if (sfx->flags & SFXF_VOLUME)
   {
-    volume += sfx->volume;
+    params.volume += sfx->volume;
 
-    if (volume < 1)
+    if (params.volume < 1)
       return;
 
-    if (volume > sfx_volume)
-      volume = sfx_volume;
+    if (params.volume > sfx_volume)
+      params.volume = sfx_volume;
   }
 
   // Check to see if it is audible, modify the params
   // killough 3/7/98, 4/25/98: code rearranged slightly
 
   if (!origin || (origin == players[displayplayer].mo && walkcamera.type < 2)) {
-    sep = NORM_SEP;
-    volume *= 8;
+    params.separation = NORM_SEP;
+    params.volume *= 8;
   } else
-    if (!S_AdjustSoundParams(players[displayplayer].mo, origin, &volume,
-                             &sep, &pitch))
+    if (!S_AdjustSoundParams(players[displayplayer].mo, origin, &params))
       return;
     else
       if ( origin->x == players[displayplayer].mo->x &&
            origin->y == players[displayplayer].mo->y)
-        sep = NORM_SEP;
+        params.separation = NORM_SEP;
 
   if (dsda_BlockSFX(sfx)) return;
 
   // hacks to vary the sfx pitches
   if (sfx_id >= sfx_sawup && sfx_id <= sfx_sawhit)
-    pitch += 8 - (M_Random()&15);
+    params.pitch += 8 - (M_Random()&15);
   else
     if (sfx_id != sfx_itemup && sfx_id != sfx_tink)
-      pitch += 16 - (M_Random()&31);
+      params.pitch += 16 - (M_Random()&31);
 
-  if (pitch<0)
-    pitch = 0;
+  if (params.pitch < 0)
+    params.pitch = 0;
 
-  if (pitch>255)
-    pitch = 255;
+  if (params.pitch > 255)
+    params.pitch = 255;
 
   // kill old sound
   for (cnum=0 ; cnum<numChannels ; cnum++)
@@ -375,11 +376,11 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 
   // Assigns the handle to one of the channels in the mix/output buffer.
   { // e6y: [Fix] Crash with zero-length sounds.
-    int h = I_StartSound(sfx_id, cnum, volume, sep, pitch, priority);
+    int h = I_StartSound(sfx_id, cnum, &params);
     if (h != -1)
     {
       channels[cnum].handle = h;
-      channels[cnum].pitch = pitch;
+      channels[cnum].pitch = params.pitch;
     }
   }
 }
@@ -496,33 +497,36 @@ void S_UpdateSounds(void* listener_p)
     {
       if (I_SoundIsPlaying(c->handle))
       {
+        sfx_params_t params;
+
         // initialize parameters
-        int volume = sfx_volume;
-        int pitch = c->pitch; // use channel's pitch!
-        int sep = NORM_SEP;
+        params.volume = sfx_volume;
+        params.pitch = c->pitch; // use channel's pitch!
+        params.priority = sfx->priority;
+        params.separation = NORM_SEP;
 
         if (sfx->link)
         {
-          pitch = sfx->pitch;
-          volume += sfx->volume;
-          if (volume < 1)
+          params.pitch = sfx->pitch;
+          params.volume += sfx->volume;
+          if (params.volume < 1)
           {
             S_StopChannel(cnum);
             continue;
           }
           else
-            if (volume > sfx_volume)
-              volume = sfx_volume;
+            if (params.volume > sfx_volume)
+              params.volume = sfx_volume;
         }
 
         // check non-local sounds for distance clipping
         // or modify their params
         if (c->origin && listener_p != c->origin) // killough 3/20/98
         {
-          if (!S_AdjustSoundParams(listener, c->origin, &volume, &sep, &pitch))
+          if (!S_AdjustSoundParams(listener, c->origin, &params))
             S_StopChannel(cnum);
           else
-            I_UpdateSoundParams(c->handle, volume, sep, pitch);
+            I_UpdateSoundParams(c->handle, &params);
         }
       }
       else   // if channel is allocated but sound has stopped, free it
@@ -696,8 +700,7 @@ void S_StopChannel(int cnum)
 // Otherwise, modifies parameters and returns 1.
 //
 
-int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
-                        int *vol, int *sep, int *pitch)
+int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, sfx_params_t *params)
 {
   fixed_t adx, ady;
   ufixed_t approx_dist;
@@ -740,11 +743,11 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
   approx_dist = adx + ady - ((adx < ady ? adx : ady)>>1);
 
   if (!approx_dist)  // killough 11/98: handle zero-distance as special case
-    {
-      *sep = NORM_SEP;
-      *vol = sfx_volume;
-      return *vol > 0;
-    }
+  {
+    params->separation = NORM_SEP;
+    params->volume = sfx_volume;
+    return params->volume > 0;
+  }
 
   if (approx_dist > S_CLIPPING_DIST)
     return 0;
@@ -758,17 +761,17 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
   angle >>= ANGLETOFINESHIFT;
 
   // stereo separation
-  *sep = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
+  params->separation = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
 
   // volume calculation
   if (approx_dist < S_CLOSE_DIST)
-    *vol = sfx_volume*8;
+    params->volume = sfx_volume*8;
   else
     // distance effect
-    *vol = (sfx_volume * ((S_CLIPPING_DIST-approx_dist)>>FRACBITS) * 8)
+    params->volume = (sfx_volume * ((S_CLIPPING_DIST-approx_dist)>>FRACBITS) * 8)
       / S_ATTENUATOR;
 
-  return (*vol > 0);
+  return (params->volume > 0);
 }
 
 //
@@ -890,10 +893,9 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   sfxinfo_t *sfx;
   mobj_t *origin;
   mobj_t *listener;
-  int dist, vol;
+  sfx_params_t params;
+  int dist;
   int i;
-  int priority;
-  int sep;
   angle_t angle;
   fixed_t absx;
   fixed_t absy;
@@ -928,10 +930,10 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   if (dist < 0)
     dist = 0;
 
-  priority = sfx->priority;
-  priority *= (10 - (dist / dist_adjust));
+  params.priority = sfx->priority;
+  params.priority *= (10 - (dist / dist_adjust));
 
-  if (!S_StopSoundInfo(sfx, priority))
+  if (!S_StopSoundInfo(sfx, params.priority))
     return; // other sounds have greater priority
 
   for (i = 0; i < numChannels; i++)
@@ -972,7 +974,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
       for (chan = 0; chan < numChannels; chan++)
       {
         i = (sndcount + chan) % numChannels;
-        if (priority >= channels[i].priority)
+        if (params.priority >= channels[i].priority)
         {
           chan = -1;  //denote that sound should be replaced.
           break;
@@ -996,10 +998,10 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   if (sfx->lumpnum <= 0)
     sfx->lumpnum = I_GetSfxLumpNum(sfx);
 
-  vol = (soundCurve[dist] * volume * sfx_volume * 8) >> 14;
+  params.volume = (soundCurve[dist] * volume * sfx_volume * 8) >> 14;
 
   if (origin == listener)
-    sep = 128;
+    params.separation = 128;
   else
   {
     angle = R_PointToAngle2(listener->x, listener->y, origin->x, origin->y);
@@ -1009,22 +1011,24 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
     angle >>= ANGLETOFINESHIFT;
 
     // stereo separation
-    sep = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
+    params.separation = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
   }
 
   if (!hexen || sfx->pitch)
   {
-    channels[i].pitch = (byte) (NORM_PITCH + (M_Random() & 7) - (M_Random() & 7));
+    params.pitch = (byte) (NORM_PITCH + (M_Random() & 7) - (M_Random() & 7));
   }
   else
   {
-    channels[i].pitch = NORM_PITCH;
+    params.pitch = NORM_PITCH;
   }
-  channels[i].handle = I_StartSound(sound_id, i, vol, sep, channels[i].pitch, priority);
+
+  channels[i].pitch = params.pitch;
+  channels[i].handle = I_StartSound(sound_id, i, &params);
   channels[i].origin = origin;
   channels[i].sfxinfo = sfx;
-  channels[i].priority = priority;
-  channels[i].volume = volume;
+  channels[i].priority = params.priority;
+  channels[i].volume = volume; // original volume, not attenuated volume
   if (heretic && sound_id >= heretic_sfx_wind)
     AmbChan = i;
 }
@@ -1032,6 +1036,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 {
   sfxinfo_t *sfx;
+  sfx_params_t params;
   mobj_t *origin;
   mobj_t *listener;
   int i;
@@ -1050,7 +1055,10 @@ static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume
 
   sfx = &S_sfx[sound_id];
 
-  volume = (volume * (sfx_volume + 1) * 8) >> 7;
+  params.volume = (volume * (sfx_volume + 1) * 8) >> 7;
+  params.pitch = (byte) (NORM_PITCH - (M_Random() & 3) + (M_Random() & 3));
+  params.priority = 1; // super low priority
+  params.separation = 128;
 
   // no priority checking, as ambient sounds would be the LOWEST.
   for (i = 0; i < numChannels; i++)
@@ -1063,11 +1071,11 @@ static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume
   if (sfx->lumpnum <= 0)
     sfx->lumpnum = I_GetSfxLumpNum(sfx);
 
-  channels[i].pitch = (byte) (NORM_PITCH - (M_Random() & 3) + (M_Random() & 3));
-  channels[i].handle = I_StartSound(sound_id, i, volume, 128, channels[i].pitch, 1);
+  channels[i].pitch = params.pitch;
+  channels[i].handle = I_StartSound(sound_id, i, &params);
   channels[i].origin = origin;
   channels[i].sfxinfo = sfx;
-  channels[i].priority = 1;    //super low priority.
+  channels[i].priority = params.priority;
 }
 
 static void Heretic_S_StopSound(void *_origin)
@@ -1096,9 +1104,8 @@ static void Heretic_S_StopSound(void *_origin)
 
 void Heretic_S_UpdateSounds(mobj_t *listener)
 {
-  int i, dist, vol;
-  int sep;
-  int priority;
+  int i, dist;
+  sfx_params_t params;
   angle_t angle;
   fixed_t absx;
   fixed_t absy;
@@ -1163,7 +1170,7 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
       dist = 0;
 
     // calculate the volume based upon the distance from the sound origin.
-    vol = (soundCurve[dist] * sfx_volume * 8 * channels[i].volume) >> 14;
+    params.volume = (soundCurve[dist] * sfx_volume * 8 * channels[i].volume) >> 14;
 
     angle = R_PointToAngle2(listener->x, listener->y, origin->x, origin->y);
     if (angle <= listener->angle)
@@ -1172,14 +1179,15 @@ void Heretic_S_UpdateSounds(mobj_t *listener)
     angle >>= ANGLETOFINESHIFT;
 
     // stereo separation
-    sep = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
+    params.separation = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
 
     // TODO: Pitch shifting.
-    I_UpdateSoundParams(channels[i].handle, vol, sep, channels[i].pitch);
-    priority = channels[i].sfxinfo->priority;
+    params.pitch = channels[i].pitch;
+    params.priority = channels[i].sfxinfo->priority;
     // heretic_note: divides by 256 instead of the dist_adjust
-    priority *= (10 - (dist / dist_adjust));
-    channels[i].priority = priority;
+    params.priority *= (10 - (dist / dist_adjust));
+    I_UpdateSoundParams(channels[i].handle, &params);
+    channels[i].priority = params.priority;
   }
 }
 
