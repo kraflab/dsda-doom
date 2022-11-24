@@ -119,7 +119,7 @@ void S_StopChannel(int cnum);
 
 int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sfx_params_t *params);
 
-static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup);
+static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_params_t *params);
 
 
 // heretic
@@ -349,7 +349,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
       }
 
   // try to find a channel
-  cnum = S_getChannel(origin, sfx, is_pickup);
+  cnum = S_getChannel(origin, sfx, is_pickup, &params);
 
   if (cnum<0)
     return;
@@ -759,7 +759,7 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
 //
 // killough 4/25/98: made static, added is_pickup argument
 
-static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup)
+static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_params_t *params)
 {
   // channel number to use
   int cnum;
@@ -770,7 +770,7 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup)
     return -1;
 
   // Find an open channel
-  for (cnum=0; cnum<numChannels && channels[cnum].sfxinfo; cnum++)
+  for (cnum = 0; cnum < numChannels && channels[cnum].sfxinfo; cnum++)
     if (origin && channels[cnum].origin == origin &&
         channels[cnum].is_pickup == is_pickup)
       {
@@ -780,15 +780,15 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup)
 
     // None available
   if (cnum == numChannels)
-    {      // Look for lower priority
-      for (cnum=0 ; cnum<numChannels ; cnum++)
-        if (channels[cnum].sfxinfo->priority >= sfxinfo->priority)
-          break;
-      if (cnum == numChannels)
-        return -1;                  // No lower priority.  Sorry, Charlie.
-      else
-        S_StopChannel(cnum);        // Otherwise, kick out lower priority.
-    }
+  {      // Look for lower priority
+    for (cnum = 0; cnum < numChannels; cnum++)
+      if (channels[cnum].priority < params->priority)
+        break;
+    if (cnum == numChannels)
+      return -1;                  // No lower priority.  Sorry, Charlie.
+    else
+      S_StopChannel(cnum);        // Otherwise, kick out lower priority.
+  }
 
   c = &channels[cnum];              // channel is decided to be cnum.
   c->sfxinfo = sfxinfo;
