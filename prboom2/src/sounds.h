@@ -35,11 +35,6 @@
 #ifndef __SOUNDS__
 #define __SOUNDS__
 
-#define SFXF_PRIORITY 0x01
-#define SFXF_PITCH    0x02
-#define SFXF_VOLUME   0x04
-#define SFXF_OLDLINK (SFXF_PRIORITY|SFXF_PITCH|SFXF_VOLUME)
-
 typedef struct {
   int volume;
   int separation;
@@ -83,8 +78,6 @@ struct sfxinfo_struct {
 
   // hexen
   const char *tagname;
-
-  int flags;
 
   int parallel_tic;
   int parallel_count;

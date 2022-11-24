@@ -303,28 +303,12 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   sfx = &S_sfx[sfx_id];
 
   // Initialize sound parameters
-  if (sfx->flags & SFXF_PRIORITY)
-    params.priority = sfx->priority;
-  else
-    params.priority = NORM_PRIORITY;
-
-  if (sfx->flags & SFXF_PITCH)
-    params.pitch = sfx->pitch;
-  else
+  params.priority = sfx->priority;
+  if (sfx->pitch < 0)
     params.pitch = NORM_PITCH;
-
+  else
+    params.pitch = sfx->pitch;
   params.volume = volume;
-
-  if (sfx->flags & SFXF_VOLUME)
-  {
-    params.volume += sfx->volume;
-
-    if (params.volume < 1)
-      return;
-
-    if (params.volume > sfx_volume)
-      params.volume = sfx_volume;
-  }
 
   // Check to see if it is audible, modify the params
   // killough 3/7/98, 4/25/98: code rearranged slightly
