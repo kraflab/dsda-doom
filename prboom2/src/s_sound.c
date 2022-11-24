@@ -303,7 +303,9 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   sfx = &S_sfx[sfx_id];
 
   // Initialize sound parameters
-  params.priority = sfx->priority;
+  params.priority = 128 - sfx->priority;
+  if (params.priority <= 0)
+    params.priority = 1;
   if (sfx->pitch < 0)
     params.pitch = NORM_PITCH;
   else
