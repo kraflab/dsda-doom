@@ -93,7 +93,7 @@ void S_ResumeSound(void);
 //
 // Updates music & sounds
 //
-void S_UpdateSounds(void* listener);
+void S_UpdateSounds(void);
 
 // machine-independent sound params
 extern int default_numChannels;

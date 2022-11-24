@@ -47,6 +47,7 @@
 #include "m_random.h"
 #include "w_wad.h"
 #include "lprintf.h"
+#include "p_maputl.h"
 #include "p_setup.h"
 #include "e6y.h"
 
@@ -59,18 +60,6 @@
 #include "dsda/settings.h"
 #include "dsda/sfx.h"
 #include "dsda/skip.h"
-
-// when to clip out sounds
-// Does not fit the large outdoor areas.
-#define S_CLIPPING_DIST (1200<<FRACBITS)
-
-// Distance tp origin when sounds should be maxed out.
-// This should relate to movement clipping resolution
-// (see BLOCKMAP handling).
-// Originally: (200*0x10000).
-
-#define S_CLOSE_DIST (160<<FRACBITS)
-#define S_ATTENUATOR ((S_CLIPPING_DIST-S_CLOSE_DIST)>>FRACBITS)
 
 // Adjustable by menu.
 #define NORM_PITCH 128
@@ -128,7 +117,7 @@ int idmusnum;
 
 void S_StopChannel(int cnum);
 
-int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, sfx_params_t *params);
+int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sfx_params_t *params);
 
 static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup);
 
@@ -140,8 +129,8 @@ int dist_adjust = 160;
 static byte* soundCurve;
 static int AmbChan = -1;
 
+static mobj_t* GetSoundListener(void);
 static void Heretic_S_StopSound(void *_origin);
-static void Heretic_S_UpdateSounds(mobj_t *listener);
 static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
 static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
 
@@ -188,6 +177,7 @@ void S_Init(void)
     if (first_s_init)
     {
       int i;
+      int snd_curve_lump;
 
       first_s_init = false;
 
@@ -196,20 +186,31 @@ void S_Init(void)
 
       dsda_CacheSoundLumps();
 
-      if (raven)
-      {
-        int lump;
-        int length;
+      // {
+      //   int i;
+      //   const int snd_curve_length = 1200;
+      //   const int flat_curve_length = 160;
+      //   byte* buffer = Z_Malloc(snd_curve_length);
+      //   for (i = 0; i < snd_curve_length; ++i)
+      //   {
+      //     if (i < flat_curve_length)
+      //       buffer[i] = 127;
+      //     else
+      //       buffer[i] = 127 * (snd_curve_length - i) / (snd_curve_length - flat_curve_length);
 
-        lump = W_GetNumForName("SNDCURVE");
-        length = W_LumpLength(lump);
+      //     if (!buffer[i])
+      //       buffer[i] = 1;
+      //   }
+      //   M_WriteFile("sndcurve.lmp", buffer, snd_curve_length);
+      // }
 
-        max_snd_dist = length;
-        dist_adjust = max_snd_dist / 10;
+      snd_curve_lump = W_GetNumForName("SNDCURVE");
+      max_snd_dist = W_LumpLength(snd_curve_lump);
 
-        soundCurve = Z_Malloc(max_snd_dist);
-        memcpy(soundCurve, (const byte *) W_LumpByNum(lump), max_snd_dist);
-      }
+      dist_adjust = max_snd_dist / 10;
+
+      soundCurve = Z_Malloc(max_snd_dist);
+      memcpy(soundCurve, (const byte *) W_LumpByNum(snd_curve_lump), max_snd_dist);
     }
   }
 
@@ -332,7 +333,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
     params.separation = NORM_SEP;
     params.volume *= 8;
   } else
-    if (!S_AdjustSoundParams(players[displayplayer].mo, origin, &params))
+    if (!S_AdjustSoundParams(players[displayplayer].mo, origin, NULL, &params))
       return;
     else
       if ( origin->x == players[displayplayer].mo->x &&
@@ -472,14 +473,10 @@ void S_ResumeSound(void)
 //
 // Updates music & sounds
 //
-void S_UpdateSounds(void* listener_p)
+void S_UpdateSounds(void)
 {
   mobj_t *listener;
   int cnum;
-
-  if (raven) return Heretic_S_UpdateSounds(listener_p);
-
-  listener = (mobj_t*) listener_p;
 
   //jff 1/22/98 return if sound is not enabled
   if (nosfxparm)
@@ -489,44 +486,40 @@ void S_UpdateSounds(void* listener_p)
   I_UpdateMusic();
 #endif
 
-  for (cnum=0 ; cnum<numChannels ; cnum++)
+  listener = GetSoundListener();
+  if (sfx_volume == 0)
+    return;
+
+  if (map_format.sndseq)
   {
-    sfxinfo_t *sfx;
-    channel_t *c = &channels[cnum];
-    if ((sfx = c->sfxinfo))
+    // Update any Sequences
+    SN_UpdateActiveSequences();
+  }
+
+  for (cnum = 0; cnum < numChannels; cnum++)
+  {
+    channel_t *channel = &channels[cnum];
+
+    if (channel->sfxinfo && channel->handle)
     {
-      if (I_SoundIsPlaying(c->handle))
+      if (I_SoundIsPlaying(channel->handle))
       {
         sfx_params_t params;
 
-        // initialize parameters
-        params.volume = sfx_volume;
-        params.pitch = c->pitch; // use channel's pitch!
-        params.priority = sfx->priority;
-        params.separation = NORM_SEP;
-
-        if (sfx->link)
-        {
-          params.pitch = sfx->pitch;
-          params.volume += sfx->volume;
-          if (params.volume < 1)
-          {
-            S_StopChannel(cnum);
-            continue;
-          }
-          else
-            if (params.volume > sfx_volume)
-              params.volume = sfx_volume;
-        }
-
         // check non-local sounds for distance clipping
         // or modify their params
-        if (c->origin && listener_p != c->origin) // killough 3/20/98
+        if (channel->origin && listener != channel->origin) // killough 3/20/98
         {
-          if (!S_AdjustSoundParams(listener, c->origin, &params))
-            S_StopChannel(cnum);
+          if (S_AdjustSoundParams(listener, channel->origin, channel, &params))
+          {
+            I_UpdateSoundParams(channel->handle, &params);
+            channel->priority = params.priority;
+          }
           else
-            I_UpdateSoundParams(c->handle, &params);
+          {
+            // raven used S_StopSound
+            S_StopChannel(cnum);
+          }
         }
       }
       else   // if channel is allocated but sound has stopped, free it
@@ -670,6 +663,9 @@ void S_StopChannel(int cnum)
   int i;
   channel_t *c = &channels[cnum];
 
+  if (AmbChan == cnum)
+    AmbChan = -1;
+
   //jff 1/22/98 return if sound is not enabled
   if (nosfxparm)
     return;
@@ -700,7 +696,7 @@ void S_StopChannel(int cnum)
 // Otherwise, modifies parameters and returns 1.
 //
 
-int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, sfx_params_t *params)
+int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sfx_params_t *params)
 {
   fixed_t adx, ady;
   ufixed_t approx_dist;
@@ -711,18 +707,6 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, sfx_params_t *params)
     return 0;
 
   // e6y
-  // Fix crash when the program wants to S_AdjustSoundParams() for player
-  // which is not displayplayer and displayplayer was not spawned at the moment.
-  // It happens in multiplayer demos only.
-  //
-  // Stack trace is:
-  // P_SetupLevel() - P_LoadThings() - P_SpawnMapThing() \ P_SpawnPlayer(players[0]) -
-  // P_SetupPsprites() - P_BringUpWeapon() - S_StartSound(players[0]->mo, sfx_sawup) -
-  // S_StartSoundAtVolume() - S_AdjustSoundParams(players[displayplayer]->mo, ...);
-  // players[displayplayer]->mo is NULL
-  //
-  // There is no more crash on e1cmnet3.lmp between e1m2 and e1m3
-  // http://competn.doom2.net/pub/compet-n/doom/coop/movies/e1cmnet3.zip
   if (!listener)
     return 0;
 
@@ -739,17 +723,10 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, sfx_params_t *params)
     ady = D_abs(listener->y - source->y);
   }
 
-  // From _GG1_ p.428. Appox. eucledian distance fast.
-  approx_dist = adx + ady - ((adx < ady ? adx : ady)>>1);
+  approx_dist = P_AproxDistance(adx, ady);
+  approx_dist >>= FRACBITS;
 
-  if (!approx_dist)  // killough 11/98: handle zero-distance as special case
-  {
-    params->separation = NORM_SEP;
-    params->volume = sfx_volume;
-    return params->volume > 0;
-  }
-
-  if (approx_dist > S_CLIPPING_DIST)
+  if (approx_dist >= max_snd_dist)
     return 0;
 
   // angle of source to listener
@@ -761,15 +738,33 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, sfx_params_t *params)
   angle >>= ANGLETOFINESHIFT;
 
   // stereo separation
-  params->separation = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
+  params->separation = 128 - (FixedMul(S_STEREO_SWING, finesine[angle]) >> FRACBITS);
 
   // volume calculation
-  if (approx_dist < S_CLOSE_DIST)
-    params->volume = sfx_volume*8;
+  if (raven)
+  {
+    if (channel)
+    {
+      params->volume =
+        (soundCurve[approx_dist] * sfx_volume * 8 * channel->volume) >> 14;
+    }
+    else
+    {
+      // currently raven only adjusts on update (channel exists)
+    }
+  }
   else
-    // distance effect
-    params->volume = (sfx_volume * ((S_CLIPPING_DIST-approx_dist)>>FRACBITS) * 8)
-      / S_ATTENUATOR;
+  {
+    params->volume = (soundCurve[approx_dist] * sfx_volume * 8) >> 7;
+  }
+
+  if (channel)
+  {
+    params->pitch = channel->pitch;
+    params->priority = channel->sfxinfo->priority;
+    // heretic_note: divides by 256 instead of the dist_adjust
+    params->priority *= (10 - approx_dist / dist_adjust);
+  }
 
   return (params->volume > 0);
 }
@@ -922,7 +917,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   // sounds that are beyond the hearing range.
   absx = abs(origin->x - listener->x);
   absy = abs(origin->y - listener->y);
-  dist = absx + absy - (absx > absy ? absy >> 1 : absx >> 1);
+  dist = P_AproxDistance(absx, absy);
   dist >>= FRACBITS;
 
   if (dist >= max_snd_dist)
@@ -1099,95 +1094,6 @@ static void Heretic_S_StopSound(void *_origin)
       if (AmbChan == i)
         AmbChan = -1;
     }
-  }
-}
-
-void Heretic_S_UpdateSounds(mobj_t *listener)
-{
-  int i, dist;
-  sfx_params_t params;
-  angle_t angle;
-  fixed_t absx;
-  fixed_t absy;
-
-  //jff 1/22/98 return if sound is not enabled
-  if (nosfxparm)
-    return;
-
-#ifdef UPDATE_MUSIC
-  I_UpdateMusic();
-#endif
-
-  // I_UpdateSound();
-
-  listener = GetSoundListener();
-  if (sfx_volume == 0)
-    return;
-
-  if (map_format.sndseq)
-  {
-    // Update any Sequences
-    SN_UpdateActiveSequences();
-  }
-
-  for (i = 0; i < numChannels; i++)
-  {
-    mobj_t* origin;
-
-    if (!channels[i].handle)
-      continue;
-
-    if (!I_SoundIsPlaying(channels[i].handle))
-    {
-      channels[i].handle = 0;
-      channels[i].origin = NULL;
-      channels[i].sfxinfo = NULL;
-      if (AmbChan == i)
-        AmbChan = -1;
-    }
-
-    if (
-      channels[i].origin == NULL ||
-      channels[i].sfxinfo == NULL ||
-      channels[i].origin == listener ||
-      listener == NULL
-    )
-      continue;
-
-    origin = (mobj_t*)channels[i].origin;
-
-    absx = abs(origin->x - listener->x);
-    absy = abs(origin->y - listener->y);
-    dist = absx + absy - (absx > absy ? absy >> 1 : absx >> 1);
-    dist >>= FRACBITS;
-
-    if (dist >= max_snd_dist)
-    {
-      S_StopSound(origin);
-      continue;
-    }
-    if (dist < 0)
-      dist = 0;
-
-    // calculate the volume based upon the distance from the sound origin.
-    params.volume = (soundCurve[dist] * sfx_volume * 8 * channels[i].volume) >> 14;
-
-    angle = R_PointToAngle2(listener->x, listener->y, origin->x, origin->y);
-    if (angle <= listener->angle)
-      angle += 0xffffffff;
-    angle -= listener->angle;
-    angle >>= ANGLETOFINESHIFT;
-
-    // stereo separation
-    params.separation = 128 - (FixedMul(S_STEREO_SWING,finesine[angle])>>FRACBITS);
-
-    // TODO: Pitch shifting.
-    params.pitch = channels[i].pitch;
-    params.priority = channels[i].sfxinfo->priority;
-    // heretic_note: divides by 256 instead of the dist_adjust
-    params.priority *= (10 - (dist / dist_adjust));
-    I_UpdateSoundParams(channels[i].handle, &params);
-    channels[i].priority = params.priority;
   }
 }
 
