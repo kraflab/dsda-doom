@@ -700,12 +700,12 @@ dsda_config_t dsda_config[dsda_config_count] = {
     CONF_BOOL(0), &full_sounds
   },
   [dsda_config_snd_samplerate] = {
-    "samplerate", dsda_config_snd_samplerate,
+    "snd_samplerate", dsda_config_snd_samplerate,
     dsda_config_int, 11025, 48000, { 44100 }, NULL, NOT_STRICT, I_InitSoundParams
   },
   [dsda_config_snd_samplecount] = {
-    "slice_samplecount", dsda_config_snd_samplecount,
-    dsda_config_int, 32, 8192, { 512 }, NULL, NOT_STRICT, I_InitSoundParams
+    "snd_samplecount", dsda_config_snd_samplecount,
+    dsda_config_int, 0, 8192, { 0 }, NULL, NOT_STRICT, I_InitSoundParams
   },
   [dsda_config_sfx_volume] = {
     "sfx_volume", dsda_config_sfx_volume,
