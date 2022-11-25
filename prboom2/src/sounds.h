@@ -35,11 +35,17 @@
 #ifndef __SOUNDS__
 #define __SOUNDS__
 
+typedef enum {
+  sfx_class_none,
+  sfx_class_important,
+} sfx_class_t;
+
 typedef struct {
   int volume;
   int separation;
   int pitch;
   int priority;
+  sfx_class_t sfx_class;
 } sfx_params_t;
 
 //

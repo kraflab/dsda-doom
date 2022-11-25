@@ -74,7 +74,6 @@ typedef struct
   sfxinfo_t *sfxinfo;  // sound information (if null, channel avail.)
   void *origin;        // origin of sound
   int handle;          // handle of the sound being played
-  int is_pickup;       // killough 4/25/98: whether sound is a player's weapon
   int pitch;
 
   // heretic
@@ -82,6 +81,8 @@ typedef struct
 
   // hexen
   int volume;
+
+  sfx_class_t sfx_class;
 } channel_t;
 
 // the set of channels available
@@ -121,7 +122,7 @@ void S_StopChannel(int cnum);
 
 int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sfx_params_t *params);
 
-static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_params_t *params);
+static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, sfx_params_t *params);
 
 
 // heretic
@@ -278,7 +279,7 @@ void S_Start(void)
 
 void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 {
-  int cnum, is_pickup;
+  int cnum;
   sfx_params_t params;
   sfxinfo_t *sfx;
   mobj_t *origin;
@@ -292,7 +293,14 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   if (nosfxparm)
     return;
 
-  is_pickup = sfx_id & PICKUP_SOUND || sfx_id == sfx_oof || (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway); // killough 4/25/98
+  // killough 4/25/98
+  if (sfx_id & PICKUP_SOUND ||
+      sfx_id == sfx_oof ||
+      (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway))
+    params.sfx_class = sfx_class_important;
+  else
+    params.sfx_class = sfx_class_none;
+
   sfx_id &= ~PICKUP_SOUND;
 
   if (sfx_id == sfx_None)
@@ -343,17 +351,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   if (params.pitch > 255)
     params.pitch = 255;
 
-  // kill old sound
-  for (cnum=0 ; cnum<numChannels ; cnum++)
-    if (channels[cnum].sfxinfo && channels[cnum].origin == origin &&
-        (comp[comp_sound] || channels[cnum].is_pickup == is_pickup))
-      {
-        S_StopChannel(cnum);
-        break;
-      }
-
   // try to find a channel
-  cnum = S_getChannel(origin, sfx, is_pickup, &params);
+  cnum = S_getChannel(origin, sfx, &params);
 
   if (cnum == channel_not_found)
     return;
@@ -761,7 +760,6 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
 // S_getChannel :
 //   If none available, return -1.  Otherwise channel #.
 //
-// killough 4/25/98: made static, added is_pickup argument
 
 static int S_ChannelScore(channel_t *channel)
 {
@@ -788,7 +786,7 @@ static int S_LowestScoreChannel(void)
   return lowest_cnum;
 }
 
-static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_params_t *params)
+static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, sfx_params_t *params)
 {
   // channel number to use
   int cnum;
@@ -800,8 +798,9 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_par
 
   // Find an open channel
   for (cnum = 0; cnum < numChannels && channels[cnum].sfxinfo; cnum++)
-    if (origin && channels[cnum].origin == origin &&
-        channels[cnum].is_pickup == is_pickup)
+    if (channels[cnum].sfxinfo &&
+        channels[cnum].origin == origin &&
+        (comp[comp_sound] || channels[cnum].sfx_class == params->sfx_class))
     {
       S_StopChannel(cnum);
       break;
@@ -830,7 +829,7 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_par
   c = &channels[cnum];              // channel is decided to be cnum.
   c->sfxinfo = sfxinfo;
   c->origin = origin;
-  c->is_pickup = is_pickup;         // killough 4/25/98
+  c->sfx_class = params->sfx_class;
   return cnum;
 }
 
@@ -951,6 +950,8 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 
   if (!S_StopSoundInfo(sfx, params.priority))
     return; // other sounds have greater priority
+
+  params.sfx_class = sfx_class_none;
 
   for (i = 0; i < numChannels; i++)
   {
@@ -1075,6 +1076,7 @@ static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume
   params.pitch = (byte) (NORM_PITCH - (M_Random() & 3) + (M_Random() & 3));
   params.priority = 1; // super low priority
   params.separation = 128;
+  params.sfx_class = sfx_class_none;
 
   // no priority checking, as ambient sounds would be the LOWEST.
   for (i = 0; i < numChannels; i++)
