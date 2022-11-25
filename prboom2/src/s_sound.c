@@ -67,6 +67,8 @@
 #define NORM_SEP 128
 #define S_STEREO_SWING (96<<FRACBITS)
 
+const int channel_not_found = -1;
+
 typedef struct
 {
   sfxinfo_t *sfxinfo;  // sound information (if null, channel avail.)
@@ -353,7 +355,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   // try to find a channel
   cnum = S_getChannel(origin, sfx, is_pickup, &params);
 
-  if (cnum<0)
+  if (cnum == channel_not_found)
     return;
 
   // get lumpnum if necessary
@@ -761,6 +763,31 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
 //
 // killough 4/25/98: made static, added is_pickup argument
 
+static int S_ChannelScore(channel_t *channel)
+{
+  return channel->priority;
+}
+
+static int S_LowestScoreChannel(void)
+{
+  int cnum;
+  int lowest_score = INT_MAX;
+  int lowest_cnum = channel_not_found;
+
+  for (cnum = 0; cnum < numChannels; ++cnum)
+  {
+    int score = S_ChannelScore(&channels[cnum]);
+
+    if (score < lowest_score)
+    {
+      lowest_score = score;
+      lowest_cnum = cnum;
+    }
+  }
+
+  return lowest_cnum;
+}
+
 static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_params_t *params)
 {
   // channel number to use
@@ -769,27 +796,35 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, int is_pickup, sfx_par
 
   //jff 1/22/98 return if sound is not enabled
   if (nosfxparm)
-    return -1;
+    return channel_not_found;
 
   // Find an open channel
   for (cnum = 0; cnum < numChannels && channels[cnum].sfxinfo; cnum++)
     if (origin && channels[cnum].origin == origin &&
         channels[cnum].is_pickup == is_pickup)
-      {
-        S_StopChannel(cnum);
-        break;
-      }
+    {
+      S_StopChannel(cnum);
+      break;
+    }
 
-    // None available
+  // None available
   if (cnum == numChannels)
   {      // Look for lower priority
-    for (cnum = 0; cnum < numChannels; cnum++)
-      if (channels[cnum].priority < params->priority)
-        break;
-    if (cnum == numChannels)
-      return -1;                  // No lower priority.  Sorry, Charlie.
+    channel_t temp_channel;
+
+    memset(&temp_channel, 0, sizeof(temp_channel));
+    temp_channel.priority = params->priority;
+    temp_channel.volume = params->volume;
+
+    cnum = S_LowestScoreChannel();
+
+    if (cnum == channel_not_found)
+      return channel_not_found;
+
+    if (S_ChannelScore(&temp_channel) > S_ChannelScore(&channels[cnum]))
+      S_StopChannel(cnum);
     else
-      S_StopChannel(cnum);        // Otherwise, kick out lower priority.
+      return channel_not_found;
   }
 
   c = &channels[cnum];              // channel is decided to be cnum.
