@@ -18,15 +18,15 @@ The initial pass over the format has been completed. Most planned line actions a
 
 ### Major Features
 
-| Name         | Status                    |
-| ------------ | ------------------------- |
-| Levels       | :warning:                 |
-| Poly Objects | :heavy_check_mark:        |
-| ACS          | :telescope:               |
-| MAPINFO      | [:warning:](./mapinfo.md) |
-| SNDINFO      | :telescope:               |
-| SNDSEQ       | :telescope:               |
-| ANIMDEFS     | :telescope:               |
+| Name                    | Status             |
+| ----------------------- | ------------------ |
+| Levels                  | :warning:          |
+| Poly Objects            | :heavy_check_mark: |
+| ACS                     | :telescope:        |
+| [MAPINFO](./mapinfo.md) | :warning:          |
+| SNDINFO                 | :telescope:        |
+| SNDSEQ                  | :telescope:        |
+| ANIMDEFS                | :telescope:        |
 
 ### Thing Types
 
