@@ -1581,44 +1581,109 @@ void G_Ticker (void)
 // Can when a player completes a level.
 //
 
+typedef struct {
+  int flight_carryover;
+  dboolean set_one_artifact;
+  int use_flight_artifact;
+  int use_flight_count;
+  dboolean remove_cards;
+} finish_level_behaviour_t;
+
+static void G_FinishLevelBehaviour(finish_level_behaviour_t *flb, player_t *p)
+{
+  dboolean different_cluster;
+
+  different_cluster = (dsda_MapCluster(gamemap) != dsda_MapCluster(LeaveMap));
+
+  if (hexen && !deathmatch && !different_cluster)
+    flb->flight_carryover = p->powers[pw_flight];
+  else
+    flb->flight_carryover = 0;
+
+  flb->set_one_artifact = heretic;
+
+  if (heretic && !deathmatch)
+  {
+    flb->use_flight_artifact = arti_fly;
+    flb->use_flight_count = 16;
+  }
+  else if (hexen && !deathmatch && different_cluster)
+  {
+    flb->use_flight_artifact = hexen_arti_fly;
+    flb->use_flight_count = 25;
+  }
+  else
+  {
+    flb->use_flight_artifact = arti_none;
+    flb->use_flight_count = 0;
+  }
+
+  flb->remove_cards = (!hexen || different_cluster);
+}
+
 static void G_PlayerFinishLevel(int player)
 {
   int i;
   player_t *p = &players[player];
+  finish_level_behaviour_t flb;
 
-  for (i = 0; i < p->inventorySlotNum; i++)
+  G_FinishLevelBehaviour(&flb, p);
+
+  if (flb.set_one_artifact)
   {
-    p->inventory[i].count = 1;
-  }
-  p->artifactCount = p->inventorySlotNum;
-  if (!deathmatch)
-  {
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < p->inventorySlotNum; i++)
     {
-      P_PlayerUseArtifact(p, arti_fly);
+      p->inventory[i].count = 1;
+    }
+    p->artifactCount = p->inventorySlotNum;
+  }
+
+  if (flb.use_flight_artifact)
+  {
+    for (i = 0; i < flb.use_flight_count; i++)
+    {
+      if (hexen)
+        p->powers[pw_flight] = 0;
+
+      P_PlayerUseArtifact(p, flb.use_flight_artifact);
     }
   }
-  if (p->chickenTics)
+
+  if (p->chickenTics || p->morphTics)
   {
     p->readyweapon = p->mo->special1.i;       // Restore weapon
     p->chickenTics = 0;
+    p->morphTics = 0;
   }
+
   p->lookdir = 0;
   p->rain1 = NULL;
   p->rain2 = NULL;
   playerkeys = 0;
-  if (p == &players[consoleplayer])
-  {
-    SB_Start();          // refresh the status bar
-  }
 
   memset(p->powers, 0, sizeof p->powers);
-  memset(p->cards, 0, sizeof p->cards);
-  p->mo = NULL;           // cph - this is zone-allocated so it's gone
+  if (flb.flight_carryover)
+    p->powers[pw_flight] = flb.flight_carryover;
+
+  if (flb.remove_cards)
+    memset(p->cards, 0, sizeof p->cards);
+
+  // TODO: need to understand the life cycle of p->mo in hexen
+  if (hexen)
+    p->mo->flags &= ~MF_SHADOW;    // Remove invisibility
+  else
+    p->mo = NULL;           // cph - this is zone-allocated so it's gone
+
   p->extralight = 0;      // cancel gun flashes
   p->fixedcolormap = 0;   // cancel ir gogles
   p->damagecount = 0;     // no palette changes
   p->bonuscount = 0;
+  p->poisoncount = 0;
+
+  if (p == &players[consoleplayer])
+  {
+    SB_Start();          // refresh the status bar
+  }
 }
 
 // CPhipps - G_SetPlayerColour
@@ -4128,59 +4193,6 @@ void G_DoTeleportNewMap(void)
     dsda_EvaluateSkipModeDoTeleportNewMap();
 }
 
-void G_PlayerExitMap(int playerNumber)
-{
-    int i;
-    player_t *player;
-    int flightPower;
-
-    player = &players[playerNumber];
-
-    // Strip all current powers (retain flight)
-    flightPower = player->powers[pw_flight];
-    memset(player->powers, 0, sizeof(player->powers));
-    player->powers[pw_flight] = flightPower;
-
-    if (deathmatch)
-    {
-        player->powers[pw_flight] = 0;
-    }
-    else
-    {
-        if (dsda_MapCluster(gamemap) != dsda_MapCluster(LeaveMap))
-        {                       // Entering new cluster
-            // Strip all keys
-            for (i = 0; i < NUMCARDS; ++i)
-              player->cards[i] = 0;
-
-            // Strip flight artifact
-            for (i = 0; i < 25; i++)
-            {
-                player->powers[pw_flight] = 0;
-                P_PlayerUseArtifact(player, hexen_arti_fly);
-            }
-            player->powers[pw_flight] = 0;
-        }
-    }
-
-    if (player->morphTics)
-    {
-        player->readyweapon = player->mo->special1.i;     // Restore weapon
-        player->morphTics = 0;
-    }
-    player->lookdir = 0;
-    player->mo->flags &= ~MF_SHADOW;    // Remove invisibility
-    player->extralight = 0;     // Remove weapon flashes
-    player->fixedcolormap = 0;  // Remove torch
-    player->damagecount = 0;    // No palette changes
-    player->bonuscount = 0;
-    player->poisoncount = 0;
-    if (player == &players[consoleplayer])
-    {
-        SB_Start();          // refresh the status bar
-    }
-}
-
 static void Hexen_G_DoCompleted(void)
 {
     int i;
@@ -4193,7 +4205,7 @@ static void Hexen_G_DoCompleted(void)
     {
         if (playeringame[i])
         {
-            G_PlayerExitMap(i);
+            G_PlayerFinishLevel(i);
         }
     }
 
