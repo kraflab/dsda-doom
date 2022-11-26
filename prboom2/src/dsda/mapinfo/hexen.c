@@ -331,7 +331,18 @@ int dsda_HexenPrepareInitNew(void) {
 }
 
 int dsda_HexenPrepareIntermission(int* result) {
-  return false; // TODO
+  extern int LeaveMap;
+  extern int LeavePosition;
+
+  if (!map_format.mapinfo)
+    return false;
+
+  if (LeaveMap == -1 && LeavePosition == -1)
+    *result = DC_VICTORY;
+  else
+    *result = 0;
+
+  return true;
 }
 
 int dsda_HexenPrepareFinale(int* result) {

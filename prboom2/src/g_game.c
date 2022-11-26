@@ -279,10 +279,9 @@ static dboolean InventoryMoveRight(void);
 int RebornPosition;
 
 int LeaveMap;
-static int LeavePosition;
+int LeavePosition;
 
 void G_DoTeleportNewMap(void);
-static void Hexen_G_DoCompleted(void);
 static void Hexen_G_DoReborn(int playernum);
 // end hexen
 
@@ -2030,7 +2029,9 @@ void G_DoCompleted (void)
   int completed_behaviour;
 
   if (hexen)
-    return Hexen_G_DoCompleted();
+    totalleveltimes = players[consoleplayer].worldTimer;
+  else
+    totalleveltimes += leveltime - leveltime % 35;
 
   gameaction = ga_nothing;
 
@@ -2040,6 +2041,9 @@ void G_DoCompleted (void)
 
   if (automap_active)
     AM_Stop();
+
+  e6y_G_DoCompleted();
+  dsda_WatchLevelCompletion();
 
   wminfo.nextep = wminfo.epsd = gameepisode -1;
   wminfo.last = gamemap -1;
@@ -2062,22 +2066,17 @@ void G_DoCompleted (void)
   wminfo.pnum = consoleplayer;
 
   for (i = 0; i < g_maxplayers; i++)
-    {
-      wminfo.plyr[i].in = playeringame[i];
-      wminfo.plyr[i].skills = players[i].killcount;
-      wminfo.plyr[i].sitems = players[i].itemcount;
-      wminfo.plyr[i].ssecret = players[i].secretcount;
-      wminfo.plyr[i].stime = leveltime;
-      memcpy (wminfo.plyr[i].frags, players[i].frags,
-              sizeof(wminfo.plyr[i].frags));
-    }
+  {
+    wminfo.plyr[i].in = playeringame[i];
+    wminfo.plyr[i].skills = players[i].killcount;
+    wminfo.plyr[i].sitems = players[i].itemcount;
+    wminfo.plyr[i].ssecret = players[i].secretcount;
+    wminfo.plyr[i].stime = leveltime;
+    memcpy (wminfo.plyr[i].frags, players[i].frags,
+            sizeof(wminfo.plyr[i].frags));
+  }
 
-  /* cph - modified so that only whole seconds are added to the totalleveltimes
-   *  value; so our total is compatible with the "naive" total of just adding
-   *  the times in seconds shown for each level. Also means our total time
-   *  will agree with Compet-n.
-   */
-  wminfo.totaltimes = (totalleveltimes += (leveltime - leveltime%35));
+  wminfo.totaltimes = totalleveltimes;
 
   gamestate = GS_INTERMISSION;
   automap_active = false;
@@ -2086,10 +2085,6 @@ void G_DoCompleted (void)
   // print "FINISHED: <mapname>" when the player exits the current map
   if (nodrawers && (demoplayback || timingdemo))
     lprintf(LO_INFO, "FINISHED: %s\n", MAPNAME(gameepisode, gamemap));
-
-  e6y_G_DoCompleted();//e6y
-
-  dsda_WatchLevelCompletion();
 
   WI_Start (&wminfo);
 }
@@ -4187,40 +4182,6 @@ void G_DoTeleportNewMap(void)
     gameaction = ga_nothing;
     RebornPosition = LeavePosition;
     dsda_EvaluateSkipModeDoTeleportNewMap();
-}
-
-static void Hexen_G_DoCompleted(void)
-{
-    int i;
-
-    totalleveltimes = players[consoleplayer].worldTimer;
-
-    gameaction = ga_nothing;
-
-    for (i = 0; i < g_maxplayers; i++)
-    {
-        if (playeringame[i])
-        {
-            G_PlayerFinishLevel(i);
-        }
-    }
-
-    if (automap_active)
-      AM_Stop();
-
-    e6y_G_DoCompleted();
-    dsda_WatchLevelCompletion();
-
-    if (LeaveMap == -1 && LeavePosition == -1)
-    {
-        gameaction = ga_victory;
-        return;
-    }
-    else
-    {
-        gamestate = GS_INTERMISSION;
-        WI_Start(&wminfo);
-    }
 }
 
 void Hexen_G_DoReborn(int playernum)
