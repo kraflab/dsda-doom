@@ -2084,12 +2084,8 @@ void G_DoCompleted (void)
 
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
-  if (nodrawers && (demoplayback || timingdemo)) {
-    if (gamemode == commercial)
-      lprintf(LO_INFO, "FINISHED: MAP%02d\n", gamemap);
-    else
-      lprintf(LO_INFO, "FINISHED: E%dM%d\n", gameepisode, gamemap);
-  }
+  if (nodrawers && (demoplayback || timingdemo))
+    lprintf(LO_INFO, "FINISHED: %s\n", MAPNAME(gameepisode, gamemap));
 
   e6y_G_DoCompleted();//e6y
 

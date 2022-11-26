@@ -696,10 +696,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 				int ep, map;
 				G_ValidateMapName(parsed.mapname, &ep, &map);
 				map++;
-				if (gamemode == commercial)
-					sprintf(parsed.nextmap, "MAP%02d", map);
-				else
-					sprintf(parsed.nextmap, "E%dM%d", ep, map);
+				sprintf(parsed.nextmap, "%s", MAPNAME(ep, map));
 			}
 		}
 
