@@ -1524,6 +1524,12 @@ dboolean PUREFUNC P_RevealedSecret(const sector_t *sec)
   return P_WasSecret(sec) && !P_IsSecret(sec);
 }
 
+// TODO: account for map / cluster info (zdoom: CheckIfExitIsGood)
+dboolean P_CanExit(mobj_t *mo)
+{
+  return !(mo && mo->player && mo->player->playerstate == PST_DEAD);
+}
+
 void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
 {
   if (thing->player)
@@ -6806,6 +6812,17 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_exit_secret:
       G_SecretExitLevel(); // args[0] is position
       buttonSuccess = 1;
+      break;
+    case zl_teleport_new_map:
+      if (!side)
+      {
+        if (P_CanExit(mo))
+        {
+          // args[2] is "retain player facing angle"
+          G_Completed(args[0], args[1]);
+          buttonSuccess = 1;
+        }
+      }
       break;
     case zl_polyobj_rotate_left:
       buttonSuccess = EV_RotatePoly(line, args, 1, false);

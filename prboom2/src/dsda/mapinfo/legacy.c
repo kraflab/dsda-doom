@@ -498,6 +498,15 @@ int dsda_LegacyPrepareIntermission(int* result) {
       wminfo.partime = TICRATE*pars[gameepisode][gamemap];
   }
 
+  if (map_format.zdoom) {
+    extern int LeaveMap;
+
+    if (LeaveMap > 0)
+      wminfo.next = LeaveMap - 1;
+
+    LeaveMap = 0;
+  }
+
   *result = 0;
 
   return true;

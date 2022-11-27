@@ -247,7 +247,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 71    | Teleport_NoFog                  | :heavy_check_mark: |
 | 72    | ThrustThing                     | :heavy_check_mark: |
 | 73    | DamageThing                     | :heavy_check_mark: |
-| 74    | Teleport_NewMap                 | :telescope:        |
+| 74    | Teleport_NewMap                 | :warning:          |
 | 75    | Teleport_EndGame                | :telescope:        |
 | 76    | TeleportOther                   | :heavy_check_mark: |
 | 77    | TeleportGroup                   | :telescope:        |
@@ -433,6 +433,10 @@ The initial pass over the format has been completed. Most planned line actions a
 - Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
 - The position argument for map exits is currently ignored.
+- Teleporting to a specific map currently...
+  - Always triggers the intermission screen
+  - Does not apply the facing angle argument
+  - Does not know about clusters (e.g., you can't bring keys through the exit)
 - Line flags coming from extra arguments are ignored.
 - Line translucency works like boom (fixed alpha).
 - Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.
