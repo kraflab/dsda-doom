@@ -248,7 +248,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 72    | ThrustThing                     | :heavy_check_mark: |
 | 73    | DamageThing                     | :heavy_check_mark: |
 | 74    | Teleport_NewMap                 | :warning:          |
-| 75    | Teleport_EndGame                | :telescope:        |
+| 75    | Teleport_EndGame                | :warning:          |
 | 76    | TeleportOther                   | :heavy_check_mark: |
 | 77    | TeleportGroup                   | :telescope:        |
 | 78    | TeleportInSector                | :telescope:        |
@@ -437,6 +437,7 @@ The initial pass over the format has been completed. Most planned line actions a
   - Always triggers the intermission screen
   - Does not apply the facing angle argument
   - Does not know about clusters (e.g., you can't bring keys through the exit)
+- There may be undefined behaviour when combining new exit specials with UMAPINFO
 - Line flags coming from extra arguments are ignored.
 - Line translucency works like boom (fixed alpha).
 - Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.

@@ -203,6 +203,45 @@ void F_StartFinale (void)
          break;
   }
 
+  if (dsda_FinaleShortcut()) {
+    switch (gamemode) {
+      case shareware:
+      case registered:
+      case retail:
+        switch (gameepisode) {
+          case 1:
+              finaleflat = bgflatE1;
+              finaletext = s_E1TEXT;
+              break;
+          case 2:
+              finaleflat = bgflatE2;
+              finaletext = s_E2TEXT;
+              break;
+          case 3:
+              finaleflat = bgflatE3;
+              finaletext = s_E3TEXT;
+              break;
+          case 4:
+          default:
+              finaleflat = bgflatE4;
+              finaletext = s_E4TEXT;
+              break;
+        }
+        break;
+      case commercial:
+        if (gamemission == pack_nerve) {
+          finaleflat = bgflat06;
+          finaletext = s_C6TEXT;
+        }
+        else {
+          finaleflat = bgflat30;
+          finaletext = (gamemission == pack_tnt)  ? s_T4TEXT :
+                       (gamemission == pack_plut) ? s_P4TEXT : s_C4TEXT;
+        }
+        break;
+    }
+  }
+
   dsda_StartFinale();
 
   finalestage = 0;
@@ -244,6 +283,13 @@ float Get_TextSpeed(void)
 //
 // killough 5/10/98: add back v1.9 demo compatibility
 //
+
+static dboolean F_ShowCast(void)
+{
+  return gamemap == 30 ||
+         (gamemission == pack_nerve && singleplayer && gamemap == 8) ||
+         dsda_FinaleShortcut();
+}
 
 void F_Ticker(void)
 {
@@ -290,7 +336,7 @@ void F_Ticker(void)
           if (!demo_compatibility && midstage)
             {
             next_level:
-              if (gamemap == 30 || (gamemission == pack_nerve && singleplayer && gamemap == 8))
+              if (F_ShowCast())
                 F_StartCast();              // cast of Doom 2 characters
               else
                 gameaction = ga_worlddone;  // next level, e.g. MAP07

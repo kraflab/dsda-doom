@@ -167,11 +167,17 @@ int dsda_LegacyShowNextLocBehaviour(int* behaviour) {
   else
     *behaviour = WI_SHOW_NEXT_LOC;
 
+  if (dsda_FinaleShortcut())
+    *behaviour = WI_SHOW_NEXT_DONE;
+
   return true;
 }
 
 int dsda_LegacySkipDrawShowNextLoc(int* skip) {
   *skip = false;
+
+  if (dsda_FinaleShortcut())
+    *skip = true;
 
   return true;
 }
@@ -533,6 +539,9 @@ int dsda_LegacyPrepareFinale(int* result) {
     *result = WD_VICTORY;
   else if (gamemap == 5 && gamemission == chex)
     *result = WD_VICTORY;
+
+  if (dsda_FinaleShortcut())
+    *result = WD_START_FINALE;
 
   return true;
 }

@@ -21,6 +21,7 @@
 #include "doomstat.h"
 #include "m_misc.h"
 
+#include "dsda/map_format.h"
 #include "dsda/mapinfo/hexen.h"
 #include "dsda/mapinfo/u.h"
 #include "dsda/mapinfo/legacy.h"
@@ -136,6 +137,10 @@ void dsda_UpdateGameMap(int episode, int map) {
 void dsda_UpdateLeaveMap(int leave_map, int leave_position) {
   LeaveMap = leave_map;
   LeavePosition = leave_position;
+}
+
+dboolean dsda_FinaleShortcut(void) {
+  return map_format.zdoom && LeaveMap == LEAVE_VICTORY;
 }
 
 void dsda_UpdateLastMapInfo(void) {

@@ -6824,6 +6824,16 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
       break;
+    case zl_teleport_end_game:
+      if (!side)
+      {
+        if (P_CanExit(mo))
+        {
+          G_Completed(LEAVE_VICTORY, LEAVE_VICTORY);
+          buttonSuccess = 1;
+        }
+      }
+      break;
     case zl_polyobj_rotate_left:
       buttonSuccess = EV_RotatePoly(line, args, 1, false);
       break;
