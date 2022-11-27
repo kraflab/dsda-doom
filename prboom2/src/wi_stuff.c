@@ -135,7 +135,6 @@ typedef struct
 
 //
 // Animation.
-// There is another anim_t used in p_spec.
 //
 typedef struct
 {
@@ -178,7 +177,7 @@ typedef struct
 
   // used by RANDOM and LEVEL when animating
   int   state;
-} anim_t;
+} wi_anim_t;
 
 
 static point_t lnodes[NUMEPISODES][NUMMAPS] =
@@ -229,7 +228,7 @@ static point_t lnodes[NUMEPISODES][NUMMAPS] =
 // Using patches saves a lot of space,
 //  as they replace 320x200 full screen frames.
 //
-static anim_t epsd0animinfo[] =
+static wi_anim_t epsd0animinfo[] =
 {
   { ANIM_ALWAYS, TICRATE/3, 3, { 224, 104 } },
   { ANIM_ALWAYS, TICRATE/3, 3, { 184, 160 } },
@@ -243,7 +242,7 @@ static anim_t epsd0animinfo[] =
   { ANIM_ALWAYS, TICRATE/3, 3, { 64, 24 } }
 };
 
-static anim_t epsd1animinfo[] =
+static wi_anim_t epsd1animinfo[] =
 {
   { ANIM_LEVEL,  TICRATE/3, 1, { 128, 136 }, 1 },
   { ANIM_LEVEL,  TICRATE/3, 1, { 128, 136 }, 2 },
@@ -256,7 +255,7 @@ static anim_t epsd1animinfo[] =
   { ANIM_LEVEL,  TICRATE/3, 1, { 128, 136 }, 8 }
 };
 
-static anim_t epsd2animinfo[] =
+static wi_anim_t epsd2animinfo[] =
 {
   { ANIM_ALWAYS, TICRATE/3, 3, { 104, 168 } },
   { ANIM_ALWAYS, TICRATE/3, 3, { 40, 136 } },
@@ -268,12 +267,12 @@ static anim_t epsd2animinfo[] =
 
 static int NUMANIMS[NUMEPISODES] =
 {
-  sizeof(epsd0animinfo)/sizeof(anim_t),
-  sizeof(epsd1animinfo)/sizeof(anim_t),
-  sizeof(epsd2animinfo)/sizeof(anim_t)
+  sizeof(epsd0animinfo)/sizeof(wi_anim_t),
+  sizeof(epsd1animinfo)/sizeof(wi_anim_t),
+  sizeof(epsd2animinfo)/sizeof(wi_anim_t)
 };
 
-static anim_t *anims[NUMEPISODES] =
+static wi_anim_t *anims[NUMEPISODES] =
 {
   epsd0animinfo,
   epsd1animinfo,
@@ -656,7 +655,7 @@ WI_drawOnLnode  // draw stuff at a location by episode/map#
 void WI_initAnimatedBack(int entering)
 {
   int   i;
-  anim_t* a;
+  wi_anim_t* a;
 
   if (exitpic) return;
   if (enterpic && entering) return;
@@ -697,7 +696,7 @@ void WI_initAnimatedBack(int entering)
 void WI_updateAnimatedBack(void)
 {
   int   i;
-  anim_t* a;
+  wi_anim_t* a;
 
   if (exitpic) return;
   if (enterpic && state != StatCount) return;
@@ -757,7 +756,7 @@ void WI_updateAnimatedBack(void)
 void WI_drawAnimatedBack(void)
 {
   int     i;
-  anim_t*   a;
+  wi_anim_t*   a;
 
   if (exitpic) return;
   if (enterpic && state != StatCount) return;
@@ -2027,7 +2026,7 @@ void WI_loadData(void)
   int   i;
   int   j;
   char  name[9];  // limited to 8 characters
-  anim_t* a;
+  wi_anim_t* a;
 
   if (gamemode != commercial)
   {
