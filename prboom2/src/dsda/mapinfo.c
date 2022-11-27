@@ -132,6 +132,11 @@ void dsda_UpdateGameMap(int episode, int map) {
   dsda_UpdateMapInfo();
 }
 
+void dsda_UpdateLeaveMap(int leave_map, int leave_position) {
+  LeaveMap = leave_map;
+  LeavePosition = leave_position;
+}
+
 void dsda_UpdateLastMapInfo(void) {
   dsda_HexenUpdateLastMapInfo();
   dsda_UUpdateLastMapInfo();

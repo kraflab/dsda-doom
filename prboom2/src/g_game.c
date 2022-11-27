@@ -4165,15 +4165,13 @@ void G_Completed(int map, int position)
 
     secretexit = false;
     gameaction = ga_completed;
-    LeaveMap = map;
-    LeavePosition = position;
+    dsda_UpdateLeaveMap(map, position);
 }
 
 void G_TeleportNewMap(int map, int position)
 {
     gameaction = ga_leavemap;
-    LeaveMap = map;
-    LeavePosition = position;
+    dsda_UpdateLeaveMap(map, position);
 }
 
 void G_DoTeleportNewMap(void)

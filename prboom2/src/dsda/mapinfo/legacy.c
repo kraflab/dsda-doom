@@ -501,7 +501,7 @@ int dsda_LegacyPrepareIntermission(int* result) {
   if (map_format.zdoom)
     if (LeaveMap > 0) {
       wminfo.next = LeaveMap - 1;
-      LeaveMap = 0;
+      dsda_UpdateLeaveMap(0, LeavePosition);
     }
 
   *result = 0;

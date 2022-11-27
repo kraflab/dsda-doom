@@ -37,6 +37,7 @@ void dsda_NextMap(int* episode, int* map);
 void dsda_ShowNextLocBehaviour(int* behaviour);
 int dsda_SkipDrawShowNextLoc(void);
 void dsda_UpdateGameMap(int episode, int map);
+void dsda_UpdateLeaveMap(int leave_map, int leave_position);
 void dsda_UpdateLastMapInfo(void);
 void dsda_UpdateNextMapInfo(void);
 int dsda_ResolveCLEV(int* episode, int* map);
