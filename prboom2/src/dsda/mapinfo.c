@@ -129,6 +129,7 @@ static void dsda_UpdateMapInfo(void) {
 void dsda_UpdateGameMap(int episode, int map) {
   gameepisode = episode;
   gamemap = map;
+  dsda_UpdateLeaveMap(0, 0);
   dsda_UpdateMapInfo();
 }
 
