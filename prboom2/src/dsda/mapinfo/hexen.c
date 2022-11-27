@@ -331,9 +331,6 @@ int dsda_HexenPrepareInitNew(void) {
 }
 
 int dsda_HexenPrepareIntermission(int* result) {
-  extern int LeaveMap;
-  extern int LeavePosition;
-
   if (!map_format.mapinfo)
     return false;
 

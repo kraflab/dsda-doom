@@ -153,6 +153,8 @@ extern  dboolean   autostart;
 extern  skill_t         gameskill;
 extern  int   gameepisode;
 extern  int   gamemap;
+extern  int   LeaveMap;
+extern  int   LeavePosition;
 
 // Nightmare mode flag, single player.
 extern  dboolean         respawnmonsters;

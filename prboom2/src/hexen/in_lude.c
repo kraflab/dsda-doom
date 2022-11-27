@@ -127,8 +127,6 @@ static void InitStats(void)
     int msgSize;
     int msgLump;
 
-    extern int LeaveMap;
-
     if (!deathmatch)
     {
         gametype = SINGLE;
