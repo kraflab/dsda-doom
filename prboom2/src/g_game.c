@@ -4156,7 +4156,7 @@ static dboolean InventoryMoveRight(void)
 
 void G_Completed(int map, int position)
 {
-    if (gamemode == shareware && map > 4)
+    if (hexen && gamemode == shareware && map > 4)
     {
         P_SetMessage(&players[consoleplayer], "ACCESS DENIED -- DEMO", true);
         S_StartSound(NULL, hexen_sfx_chat);
