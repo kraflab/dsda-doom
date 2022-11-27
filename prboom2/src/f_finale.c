@@ -782,7 +782,7 @@ void F_Drawer (void)
     {
       // CPhipps - patch drawing updated
       case 1:
-           if ( gamemode == retail )
+           if ( gamemode == retail || gamemode == commercial )
              V_DrawNamePatch(0, 0, 0, "CREDIT", CR_DEFAULT, VPT_STRETCH);
            else
              V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
