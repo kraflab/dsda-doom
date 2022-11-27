@@ -4163,6 +4163,7 @@ void G_Completed(int map, int position)
         return;
     }
 
+    secretexit = false;
     gameaction = ga_completed;
     LeaveMap = map;
     LeavePosition = position;
