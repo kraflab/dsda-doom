@@ -334,7 +334,7 @@ int dsda_HexenPrepareIntermission(int* result) {
   if (!map_format.mapinfo)
     return false;
 
-  if (LeaveMap == -1 && LeavePosition == -1)
+  if (LeaveMap == LEAVE_VICTORY && LeavePosition == LEAVE_VICTORY)
     *result = DC_VICTORY;
   else
     *result = 0;

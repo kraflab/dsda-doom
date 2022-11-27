@@ -7600,8 +7600,8 @@ dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int 
                         G_Completed(1, 0);
                     }
                     else
-                    {           // Passing -1, -1 to G_Completed() starts the Finale
-                        G_Completed(-1, -1);
+                    {           // Starts the Finale
+                        G_Completed(LEAVE_VICTORY, LEAVE_VICTORY);
                     }
                 }
             }

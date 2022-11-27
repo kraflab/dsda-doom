@@ -156,6 +156,8 @@ extern  int   gamemap;
 extern  int   LeaveMap;
 extern  int   LeavePosition;
 
+#define LEAVE_VICTORY -1
+
 // Nightmare mode flag, single player.
 extern  dboolean         respawnmonsters;
 
