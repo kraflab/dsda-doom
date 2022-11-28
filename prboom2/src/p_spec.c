@@ -1894,7 +1894,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       // EXIT!
       // killough 10/98: prevent zombies from exiting levels
       if (bossaction || (!(thing->player && thing->player->health <= 0 && !comp[comp_zombie])))
-  G_ExitLevel ();
+        G_ExitLevel(0);
       break;
 
     case 53:
@@ -1980,7 +1980,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       // killough 10/98: prevent zombies from exiting levels
       // CPhipps - change for lxdoom's compatibility handling
       if (bossaction || (!(thing->player && thing->player->health <= 0 && !comp[comp_zombie])))
-  G_SecretExitLevel ();
+        G_SecretExitLevel(0);
       break;
 
     case 125:
@@ -2665,7 +2665,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
             if(thing->player && thing->player->health<=0 && !comp[comp_zombie])
               break;
             P_ChangeSwitchTexture(line,0);
-            G_ExitLevel();
+            G_ExitLevel(0);
             break;
 
           case 198:
@@ -2674,7 +2674,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
             if(thing->player && thing->player->health<=0 && !comp[comp_zombie])
               break;
             P_ChangeSwitchTexture(line,0);
-            G_SecretExitLevel();
+            G_SecretExitLevel(0);
             break;
             //jff end addition of new gun linedefs
         }
@@ -2703,7 +2703,7 @@ static void P_ApplySectorDamageEndLevel(player_t *player)
     P_DamageMobj(player->mo, NULL, NULL, 20);
 
   if (player->health <= 10)
-    G_ExitLevel();
+    G_ExitLevel(0);
 }
 
 static void P_ApplyGeneralizedSectorDamage(player_t *player, int bits)
@@ -2770,13 +2770,13 @@ void P_PlayerInCompatibleSector(player_t *player, sector_t *sector)
           for (i = 0; i < g_maxplayers; i++)
             if (playeringame[i])
               P_DamageMobj(players[i].mo, NULL, NULL, 10000);
-          G_ExitLevel();
+          G_ExitLevel(0);
           break;
         case 3:
           for (i = 0; i < g_maxplayers; i++)
             if (playeringame[i])
               P_DamageMobj(players[i].mo, NULL, NULL, 10000);
-          G_SecretExitLevel();
+          G_SecretExitLevel(0);
           break;
       }
     }
@@ -2834,7 +2834,7 @@ void P_PlayerInZDoomSector(player_t *player, sector_t *sector)
 
           if (sector->flags & SECF_ENDLEVEL && player->health <= 10)
           {
-            G_ExitLevel();
+            G_ExitLevel(0);
           }
 
           if (sector->flags & SECF_DMGTERRAINFX)
@@ -3042,7 +3042,7 @@ void P_UpdateSpecials (void)
     {
       levelTimeCount--;
       if (!levelTimeCount)
-        G_ExitLevel();
+        G_ExitLevel(0);
     }
 
     // Check frag counters, if frag limit reached, exit level // Ty 03/18/98
@@ -3064,7 +3064,7 @@ void P_UpdateSpecials (void)
         if (exitflag == true) break; // skip out of the loop--we're done
       }
       if (exitflag == true)
-        G_ExitLevel();
+        G_ExitLevel(0);
     }
   }
 
@@ -5203,7 +5203,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             line->special = 0;
             break;
         case 52:               // EXIT!
-            G_ExitLevel();
+            G_ExitLevel(0);
             line->special = 0;
             break;
         case 53:               // Perpetual Platform Raise
@@ -5235,7 +5235,7 @@ void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean
             line->special = 0;
             break;
         case 105:              // Trigger_SecretExit
-            G_SecretExitLevel();
+            G_SecretExitLevel(0);
             line->special = 0;
             break;
 
@@ -6806,11 +6806,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       }
       break;
     case zl_exit_normal:
-      G_ExitLevel(); // args[0] is position
+      G_ExitLevel(args[0]);
       buttonSuccess = 1;
       break;
     case zl_exit_secret:
-      G_SecretExitLevel(); // args[0] is position
+      G_SecretExitLevel(args[0]);
       buttonSuccess = 1;
       break;
     case zl_teleport_new_map:

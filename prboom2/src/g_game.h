@@ -53,8 +53,8 @@ void G_ForcedLoadGame(void);           // killough 5/15/98: forced loadgames
 void G_DoLoadGame(void);
 void G_SaveGame(int slot, const char *description); // Called by M_Responder.
 void G_BeginRecording(void);
-void G_ExitLevel(void);
-void G_SecretExitLevel(void);
+void G_ExitLevel(int position);
+void G_SecretExitLevel(int position);
 void G_WorldDone(void);
 void G_EndGame(void); /* cph - make m_menu.c call a G_* function for this */
 void G_Ticker(void);

@@ -2001,24 +2001,24 @@ int cpars[34] = {
 
 dboolean secretexit;
 
-void G_ExitLevel (void)
+void G_ExitLevel(int position)
 {
   secretexit = false;
   gameaction = ga_completed;
-  dsda_UpdateLeaveMap(0, 0);
+  dsda_UpdateLeaveMap(0, position);
 }
 
 // Here's for the german edition.
 // IF NO WOLF3D LEVELS, NO SECRET EXIT!
 
-void G_SecretExitLevel (void)
+void G_SecretExitLevel(int position)
 {
   if (gamemode!=commercial || haswolflevels)
     secretexit = true;
   else
     secretexit = false;
   gameaction = ga_completed;
-  dsda_UpdateLeaveMap(0, 0);
+  dsda_UpdateLeaveMap(0, position);
 }
 
 //

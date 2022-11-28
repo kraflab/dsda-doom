@@ -396,8 +396,8 @@ The initial pass over the format has been completed. Most planned line actions a
 | 240   | Floor_RaiseByTexture            | :heavy_check_mark: |
 | 241   | Floor_LowerToLowestTxTy         | :heavy_check_mark: |
 | 242   | Floor_LowerToHighest            | :heavy_check_mark: |
-| 243   | Exit_Normal                     | :warning:          |
-| 244   | Exit_Secret                     | :warning:          |
+| 243   | Exit_Normal                     | :heavy_check_mark: |
+| 244   | Exit_Secret                     | :heavy_check_mark: |
 | 245   | Elevator_RaiseToNearest         | :heavy_check_mark: |
 | 246   | Elevator_MoveToFloor            | :heavy_check_mark: |
 | 247   | Elevator_LowerToNearest         | :heavy_check_mark: |
@@ -432,7 +432,6 @@ The initial pass over the format has been completed. Most planned line actions a
 - Specials above 255 aren't accessible yet (hexen format only supports special < 256).
 - Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
-- The position argument for map exits is currently ignored.
 - Teleporting to a specific map currently...
   - Always triggers the intermission screen
   - Does not apply the facing angle argument
