@@ -2005,6 +2005,7 @@ void G_ExitLevel (void)
 {
   secretexit = false;
   gameaction = ga_completed;
+  dsda_UpdateLeaveMap(0, 0);
 }
 
 // Here's for the german edition.
@@ -2017,6 +2018,7 @@ void G_SecretExitLevel (void)
   else
     secretexit = false;
   gameaction = ga_completed;
+  dsda_UpdateLeaveMap(0, 0);
 }
 
 //
@@ -2719,6 +2721,7 @@ void G_DoNewGame (void)
   deathmatch = false;
 
   dsda_NewGameMap(&realEpisode, &realMap);
+  dsda_UpdateLeaveMap(0, 0);
 
   G_InitNew (d_skill, realEpisode, realMap, true);
   gameaction = ga_nothing;
