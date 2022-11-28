@@ -6818,8 +6818,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       {
         if (P_CanExit(mo))
         {
-          // args[2] is "retain player facing angle"
-          G_Completed(args[0], args[1]);
+          int flags;
+
+          flags = args[2] ? LF_SET_ANGLE : 0;
+
+          G_Completed(args[0], args[1], flags, mo->angle);
           buttonSuccess = 1;
         }
       }
@@ -6829,7 +6832,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       {
         if (P_CanExit(mo))
         {
-          G_Completed(LEAVE_VICTORY, LEAVE_VICTORY);
+          G_Completed(LEAVE_VICTORY, LEAVE_VICTORY, 0, 0);
           buttonSuccess = 1;
         }
       }
@@ -7594,7 +7597,7 @@ dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int 
             {                   // Only teleport when crossing the front side of a line
                 if (!(mo && mo->player && mo->player->playerstate == PST_DEAD)) // Players must be alive to teleport
                 {
-                    G_Completed(args[0], args[1]);
+                    G_Completed(args[0], args[1], 0, 0);
                     buttonSuccess = true;
                 }
             }
@@ -7607,11 +7610,11 @@ dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int 
                     buttonSuccess = true;
                     if (deathmatch)
                     {           // Winning in deathmatch just goes back to map 1
-                        G_Completed(1, 0);
+                        G_Completed(1, 0, 0, 0);
                     }
                     else
                     {           // Starts the Finale
-                        G_Completed(LEAVE_VICTORY, LEAVE_VICTORY);
+                        G_Completed(LEAVE_VICTORY, LEAVE_VICTORY, 0, 0);
                     }
                 }
             }

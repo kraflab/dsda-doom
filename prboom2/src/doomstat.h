@@ -158,10 +158,13 @@ typedef struct
 {
   int map;
   int position;
+  int flags;
+  angle_t angle;
 } leave_data_t;
 
 extern leave_data_t leave_data;
 
+#define LF_SET_ANGLE 0x01
 #define LEAVE_VICTORY -1
 
 // Nightmare mode flag, single player.

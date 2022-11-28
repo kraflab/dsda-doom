@@ -35,6 +35,7 @@
 #include "doomdef.h"
 #include "d_event.h"
 #include "d_ticcmd.h"
+#include "tables.h"
 
 //
 // GAME
@@ -130,6 +131,6 @@ extern int pistolstart;
 // hexen
 
 void G_TeleportNewMap(int map, int position);
-void G_Completed(int map, int position);
+void G_Completed(int map, int position, int flags, angle_t angle);
 
 #endif

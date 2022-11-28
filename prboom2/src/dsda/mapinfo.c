@@ -133,9 +133,15 @@ void dsda_UpdateGameMap(int episode, int map) {
   dsda_UpdateMapInfo();
 }
 
-void dsda_UpdateLeaveMap(int leave_map, int leave_position) {
-  leave_data.map = leave_map;
-  leave_data.position = leave_position;
+void dsda_ResetLeaveData(void) {
+  memset(&leave_data, 0, sizeof(leave_data));
+}
+
+void dsda_UpdateLeaveData(int map, int position, int flags, angle_t angle) {
+  leave_data.map = map;
+  leave_data.position = position;
+  leave_data.flags = flags;
+  leave_data.angle = angle;
 }
 
 dboolean dsda_FinaleShortcut(void) {

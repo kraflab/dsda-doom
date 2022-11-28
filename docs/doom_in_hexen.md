@@ -434,7 +434,6 @@ The initial pass over the format has been completed. Most planned line actions a
 - The static init supports damage, gravity, and skies only.
 - Teleporting to a specific map currently...
   - Always triggers the intermission screen
-  - Does not apply the facing angle argument
   - Does not know about clusters (e.g., you can't bring keys through the exit)
 - There may be undefined behaviour when combining new exit specials with UMAPINFO
 - Line flags coming from extra arguments are ignored.

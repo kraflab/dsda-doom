@@ -2004,7 +2004,7 @@ void G_ExitLevel(int position)
 {
   secretexit = false;
   gameaction = ga_completed;
-  dsda_UpdateLeaveMap(0, position);
+  dsda_UpdateLeaveData(0, position, 0, 0);
 }
 
 // Here's for the german edition.
@@ -2017,7 +2017,7 @@ void G_SecretExitLevel(int position)
   else
     secretexit = false;
   gameaction = ga_completed;
-  dsda_UpdateLeaveMap(0, position);
+  dsda_UpdateLeaveData(0, position, 0, 0);
 }
 
 //
@@ -2720,7 +2720,7 @@ void G_DoNewGame (void)
   deathmatch = false;
 
   dsda_NewGameMap(&realEpisode, &realMap);
-  dsda_UpdateLeaveMap(0, 0);
+  dsda_ResetLeaveData();
 
   G_InitNew (d_skill, realEpisode, realMap, true);
   gameaction = ga_nothing;
@@ -4156,7 +4156,7 @@ static dboolean InventoryMoveRight(void)
 
 // hexen
 
-void G_Completed(int map, int position)
+void G_Completed(int map, int position, int flags, angle_t angle)
 {
     if (hexen && gamemode == shareware && map > 4)
     {
@@ -4167,13 +4167,13 @@ void G_Completed(int map, int position)
 
     secretexit = false;
     gameaction = ga_completed;
-    dsda_UpdateLeaveMap(map, position);
+    dsda_UpdateLeaveData(map, position, flags, angle);
 }
 
 void G_TeleportNewMap(int map, int position)
 {
     gameaction = ga_leavemap;
-    dsda_UpdateLeaveMap(map, position);
+    dsda_UpdateLeaveData(map, position, 0, 0);
 }
 
 void G_DoTeleportNewMap(void)

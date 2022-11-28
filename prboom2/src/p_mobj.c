@@ -2006,7 +2006,11 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else
     mobj->flags |= playernumtotrans[n]<<MF_TRANSSHIFT;
 
-  mobj->angle      = ANG45 * (mthing->angle/45);
+  if (leave_data.flags & LF_SET_ANGLE)
+    mobj->angle = leave_data.angle;
+  else
+    mobj->angle = ANG45 * (mthing->angle/45);
+
   mobj->player     = p;
   mobj->health     = p->health;
   mobj->player->prev_viewangle = mobj->angle;
