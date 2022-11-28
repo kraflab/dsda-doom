@@ -2089,7 +2089,8 @@ dboolean P_IsDoomnumAllowed(int doomnum)
 
 static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
 {
-  return !deathmatch && (map_format.zdoom ? mthing->arg1 == LeavePosition : !mthing->arg1);
+  return !deathmatch &&
+         (map_format.zdoom ? mthing->arg1 == leave_data.position : !mthing->arg1);
 }
 
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)

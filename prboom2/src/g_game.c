@@ -278,8 +278,7 @@ static dboolean InventoryMoveRight(void);
 // Position indicator for cooperative net-play reborn
 int RebornPosition;
 
-int LeaveMap;
-int LeavePosition;
+leave_data_t leave_data;
 
 void G_DoTeleportNewMap(void);
 static void Hexen_G_DoReborn(int playernum);
@@ -1592,7 +1591,7 @@ static void G_FinishLevelBehaviour(finish_level_behaviour_t *flb, player_t *p)
 {
   dboolean different_cluster;
 
-  different_cluster = (dsda_MapCluster(gamemap) != dsda_MapCluster(LeaveMap));
+  different_cluster = (dsda_MapCluster(gamemap) != dsda_MapCluster(leave_data.map));
 
   if (hexen && !deathmatch && !different_cluster)
     flb->flight_carryover = p->powers[pw_flight];
@@ -4179,10 +4178,10 @@ void G_TeleportNewMap(int map, int position)
 
 void G_DoTeleportNewMap(void)
 {
-    SV_MapTeleport(LeaveMap, LeavePosition);
+    SV_MapTeleport(leave_data.map, leave_data.position);
     gamestate = GS_LEVEL;
     gameaction = ga_nothing;
-    RebornPosition = LeavePosition;
+    RebornPosition = leave_data.position;
     dsda_EvaluateSkipModeDoTeleportNewMap();
 }
 

@@ -153,8 +153,14 @@ extern  dboolean   autostart;
 extern  skill_t         gameskill;
 extern  int   gameepisode;
 extern  int   gamemap;
-extern  int   LeaveMap;
-extern  int   LeavePosition;
+
+typedef struct
+{
+  int map;
+  int position;
+} leave_data_t;
+
+extern leave_data_t leave_data;
 
 #define LEAVE_VICTORY -1
 

@@ -132,7 +132,7 @@ static void InitStats(void)
         gametype = SINGLE;
         HubCount = 0;
         oldCluster = dsda_MapCluster(gamemap);
-        if (oldCluster != dsda_MapCluster(LeaveMap))
+        if (oldCluster != dsda_MapCluster(leave_data.map))
         {
             if (oldCluster >= 1 && oldCluster <= 5)
             {

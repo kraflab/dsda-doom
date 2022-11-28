@@ -134,12 +134,12 @@ void dsda_UpdateGameMap(int episode, int map) {
 }
 
 void dsda_UpdateLeaveMap(int leave_map, int leave_position) {
-  LeaveMap = leave_map;
-  LeavePosition = leave_position;
+  leave_data.map = leave_map;
+  leave_data.position = leave_position;
 }
 
 dboolean dsda_FinaleShortcut(void) {
-  return map_format.zdoom && LeaveMap == LEAVE_VICTORY;
+  return map_format.zdoom && leave_data.map == LEAVE_VICTORY;
 }
 
 void dsda_UpdateLastMapInfo(void) {
