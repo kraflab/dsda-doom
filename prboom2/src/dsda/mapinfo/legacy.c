@@ -505,10 +505,8 @@ int dsda_LegacyPrepareIntermission(int* result) {
   }
 
   if (map_format.zdoom)
-    if (leave_data.map > 0) {
+    if (leave_data.map > 0)
       wminfo.next = leave_data.map - 1;
-      dsda_UpdateLeaveMap(0, leave_data.position);
-    }
 
   *result = 0;
 
