@@ -2087,6 +2087,11 @@ dboolean P_IsDoomnumAllowed(int doomnum)
 // already be in host byte order.
 //
 
+static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
+{
+  return !deathmatch && (map_format.zdoom ? mthing->arg1 == LeavePosition : !mthing->arg1);
+}
+
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 {
   int     i;
@@ -2229,7 +2234,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
      * the playerstarts version with this field set */
     playerstarts[start][thingtype - 1].options = 1;
 
-    if (!deathmatch && !mthing->arg1)
+    if (P_ShouldSpawnPlayer(mthing))
       P_SpawnPlayer(thingtype - 1, &playerstarts[start][thingtype - 1]);
     return NULL;
   }
@@ -2267,7 +2272,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       memcpy(player_start, mthing, sizeof(mapthing_t));
       player_start->type = player + 1;
 
-      if (!deathmatch && !player_start->arg1)
+      if (P_ShouldSpawnPlayer(mthing))
       {
         P_SpawnPlayer(player_start->type - 1, player_start);
       }
