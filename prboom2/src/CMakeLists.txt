@@ -147,6 +147,7 @@ set(COMMON_SRC
     dsda/pclass.h
     dsda/playback.c
     dsda/playback.h
+    dsda/quake.c
     dsda/render_stats.c
     dsda/render_stats.h
     dsda/save.c

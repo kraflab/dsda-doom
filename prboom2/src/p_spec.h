@@ -1480,6 +1480,23 @@ dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset, int tim
 int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount);
 void Hexen_EV_StopPlat(line_t * line, byte * args);
 
+// quake
+
+typedef struct {
+  thinker_t thinker;
+  mobj_t *location;
+  int duration;
+  int intensity;
+  int damage_radius;
+  int tremor_radius;
+} quake_t;
+
+void dsda_ResetQuakes(void);
+void dsda_UpdateQuakeIntensity(int player_num, int intensity);
+void dsda_UpdateQuake(quake_t* quake);
+void dsda_SpawnQuake(mobj_t* location, int intensity, int duration,
+                     int damage_radius, int tremor_radius);
+
 //
 
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activationType);

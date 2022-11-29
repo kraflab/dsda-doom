@@ -294,7 +294,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 117   | Light_Stop                      | :heavy_check_mark: |
 | 118   | Plane_Copy                      | :x:                |
 | 119   | Thing_Damage                    | :heavy_check_mark: |
-| 120   | Radius_Quake                    | :telescope:        |
+| 120   | Radius_Quake                    | :heavy_check_mark: |
 | 121   | Line_SetIdentification          | :warning:          |
 | -     | -                               | -                  |
 | 125   | Thing_Move                      | :heavy_check_mark: |

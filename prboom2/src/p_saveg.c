@@ -648,6 +648,7 @@ typedef enum {
   tc_true_poly_rotate,
   tc_true_poly_move,
   tc_true_poly_door,
+  tc_true_quake,
   tc_true_end
 } true_thinkerclass_t;
 
@@ -888,6 +889,15 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == dsda_UpdateQuake)
+    {
+      quake_t *quake;
+      P_SAVE_BYTE(tc_true_quake);
+      P_SAVE_TYPE_REF(th, quake, quake_t);
+      P_ReplaceMobjWithIndex(&quake->location);
+      continue;
+    }
+
     if (P_IsMobjThinker(th))
     {
       mobj_t *mobj;
@@ -1024,6 +1034,7 @@ void P_TrueUnArchiveThinkers(void) {
         tc == tc_true_poly_rotate    ? sizeof(polyevent_t)     :
         tc == tc_true_poly_move      ? sizeof(polyevent_t)     :
         tc == tc_true_poly_door      ? sizeof(polydoor_t)      :
+        tc == tc_true_quake          ? sizeof(quake_t)         :
         tc == tc_true_mobj           ? sizeof(mobj_t)          :
       0;
     }
@@ -1299,6 +1310,15 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_quake:
+        {
+          quake_t *quake = Z_MallocLevel(sizeof(*quake));
+          P_LOAD_P(quake);
+          quake->thinker.function = dsda_UpdateQuake;
+          P_AddThinker(&quake->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         {
           mobj_t *mobj = Z_MallocLevel(sizeof(mobj_t));
@@ -1361,6 +1381,10 @@ void P_TrueUnArchiveThinkers(void) {
     if (th->function == T_InterpretACS)
     {
       P_ReplaceIndexWithMobj(&((acs_t *) th)->activator, mobj_p, mobj_count);
+    }
+    else if (th->function == dsda_UpdateQuake)
+    {
+      P_ReplaceIndexWithMobj(&((quake_t *) th)->location, mobj_p, mobj_count);
     }
     else if (P_IsMobjThinker(th))
     {

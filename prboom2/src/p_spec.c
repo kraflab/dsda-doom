@@ -6912,6 +6912,21 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_polyobj_stop:
       buttonSuccess = EV_StopPoly(args[0]);
       break;
+    case zl_radius_quake:
+      {
+        mobj_t *spawn_location;
+        thing_id_search_t search;
+
+        args[0] = BETWEEN(1, 9, args[0]);
+
+        dsda_ResetThingIDSearch(&search);
+        while ((spawn_location = dsda_FindMobjFromThingIDOrMobj(args[4], mo, &search)))
+        {
+          dsda_SpawnQuake(spawn_location, args[0], args[1], args[2], args[3]);
+          buttonSuccess = 1;
+        }
+      }
+      break;
     case zl_thing_move:
       {
         mobj_t *target;
