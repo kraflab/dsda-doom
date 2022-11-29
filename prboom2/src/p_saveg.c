@@ -1746,11 +1746,14 @@ void P_ArchiveMisc(void)
     P_SAVE_ARRAY(AnimDefs);
   }
 
+  if (map_format.hexen)
+  {
+    size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
+    P_SAVE_SIZE(localQuakeHappening, size);
+  }
+
   if (!hexen) return;
 
-
-  size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
-  P_SAVE_SIZE(localQuakeHappening, size);
   P_SAVE_ARRAY(PlayerClass);
   P_SAVE_X(NextLightningFlash);
   P_SAVE_X(LightningFlash);
@@ -1767,10 +1770,14 @@ void P_UnArchiveMisc(void)
     P_LOAD_ARRAY(AnimDefs);
   }
 
+  if (map_format.hexen)
+  {
+    size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
+    P_LOAD_SIZE(localQuakeHappening, size);
+  }
+
   if (!hexen) return;
 
-  size = sizeof(*localQuakeHappening) * MAX_MAXPLAYERS;
-  P_LOAD_SIZE(localQuakeHappening, size);
   P_LOAD_ARRAY(PlayerClass);
   P_LOAD_X(NextLightningFlash);
   P_LOAD_X(LightningFlash);
