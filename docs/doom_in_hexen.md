@@ -13,6 +13,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | :heavy_check_mark: | Feature is supported           |
 | :warning:          | Feature is partially supported |
 | :telescope:        | Feature is planned             |
+| :comet:            | Feature is planned later       |
 | :grey_question:    | Feature is under investigation |
 | :x:                | Feature is not planned         |
 
@@ -22,7 +23,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | ----------------------- | ------------------ |
 | Levels                  | :warning:          |
 | Poly Objects            | :heavy_check_mark: |
-| ACS                     | :telescope:        |
+| ACS                     | :comet:            |
 | [MAPINFO](./mapinfo.md) | :warning:          |
 | SNDINFO                 | :telescope:        |
 | SNDSEQ                  | :telescope:        |
@@ -253,12 +254,12 @@ The initial pass over the format has been completed. Most planned line actions a
 | 77    | TeleportGroup                   | :telescope:        |
 | 78    | TeleportInSector                | :telescope:        |
 | 79    | Thing_SetConversation           | :x:                |
-| 80    | ACS_Execute                     | :telescope:        |
-| 81    | ACS_Suspend                     | :telescope:        |
-| 82    | ACS_Terminate                   | :telescope:        |
-| 83    | ACS_LockedExecute               | :telescope:        |
-| 84    | ACS_ExecuteWithResult           | :telescope:        |
-| 85    | ACS_LockedExecuteDoor           | :telescope:        |
+| 80    | ACS_Execute                     | :comet:            |
+| 81    | ACS_Suspend                     | :comet:            |
+| 82    | ACS_Terminate                   | :comet:            |
+| 83    | ACS_LockedExecute               | :comet:            |
+| 84    | ACS_ExecuteWithResult           | :comet:            |
+| 85    | ACS_LockedExecuteDoor           | :comet:            |
 | 86    | Polyobj_MoveToSpot              | :heavy_check_mark: |
 | 87    | Polyobj_Stop                    | :heavy_check_mark: |
 | 88    | Polyobj_MoveTo                  | :heavy_check_mark: |
@@ -379,7 +380,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 223   | Scroll_Floor                    | :heavy_check_mark: |
 | 224   | Scroll_Ceiling                  | :heavy_check_mark: |
 | 225   | Scroll_Texture_Offsets          | :warning:          |
-| 226   | ACS_ExecuteAlways               | :telescope:        |
+| 226   | ACS_ExecuteAlways               | :comet:            |
 | 227   | PointPush_SetForce              | :heavy_check_mark: |
 | 228   | Plat_RaiseAndStayTx0            | :heavy_check_mark: |
 | 229   | Thing_SetGoal                   | :x:                |
