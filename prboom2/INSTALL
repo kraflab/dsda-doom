@@ -56,9 +56,6 @@ Basic Installation (ZIP, tarball, Git)
      your version of Doom, and make sure only those users allowed to use it
      can access the IWAD file.
 
-     You may also aquire FreeDoom from https://freedoom.github.io/ which is a
-     free replacement to the iD Doom iWADs.
-
   6. You can remove the program binaries and object files from the
      source directory by typing `make clean`.  To also remove the
      files that `configure' created (so you can compile the package for
