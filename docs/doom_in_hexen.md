@@ -134,7 +134,10 @@ The initial pass over the format has been completed. Most planned line actions a
 | 14067       | AmbientSoundNoGravity   | :telescope:        |
 | -           | -                       | -                  |
 | 14101-14164 | MusicChanger            | :heavy_check_mark: |
-| 14165       | Custom MusicChanger     | :telescope:        |
+| 14165       | Custom MusicChanger     | :warning:          |
+
+#### Notes
+- The Custom MusicChanger only supports the track number, which can be from 0 to 64
 
 ### Spawn Flags
 

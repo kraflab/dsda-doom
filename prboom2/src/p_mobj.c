@@ -2345,6 +2345,13 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     thingtype = 14164;            // MT_MUSICSOURCE
   }
 
+  if (!raven && thingtype == 14165 && map_format.hexen)
+  {
+    // Use the ambient number
+    iden_num = BETWEEN(0, 64, mthing->arg1); // Mus change
+    thingtype = 14164;            // MT_MUSICSOURCE
+  }
+
   if (hexen)
   {
     // Check current character classes with spawn flags
