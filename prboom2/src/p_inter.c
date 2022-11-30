@@ -766,6 +766,12 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       I_Error ("P_SpecialThing: Unknown gettable thing");
     }
 
+  if (special->special)
+  {
+    map_format.execute_line_special(special->special, special->args, NULL, 0, player->mo);
+    special->special = 0;
+  }
+
   if (special->flags & MF_COUNTITEM)
     player->itemcount++;
   P_RemoveMobj (special);
@@ -818,19 +824,20 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
 
   dsda_WatchDeath(target);
 
-  // hexen
-  if ((target->flags & MF_COUNTKILL || target->type == HEXEN_MT_ZBELL)
-      && target->special)
-  {                           // Initiate monster death actions
-      if (target->type == HEXEN_MT_SORCBOSS)
-      {
-          byte dummyArgs[3] = {0, 0, 0};
-          P_StartACS(target->special, 0, dummyArgs, target, NULL, 0);
-      }
-      else
-      {
-          map_format.execute_line_special(target->special, target->args, NULL, 0, target);
-      }
+  if (map_format.hexen && target->special)
+  {
+    if (!hexen || (target->flags & MF_COUNTKILL || target->type == HEXEN_MT_ZBELL))
+    {                           // Initiate monster death actions
+        if (hexen && target->type == HEXEN_MT_SORCBOSS)
+        {
+            byte dummyArgs[3] = {0, 0, 0};
+            P_StartACS(target->special, 0, dummyArgs, target, NULL, 0);
+        }
+        else
+        {
+            map_format.execute_line_special(target->special, target->args, NULL, 0, target);
+        }
+    }
   }
 
   if (source && source->player)

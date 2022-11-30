@@ -23,6 +23,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | ----------------------- | ------------------ |
 | Levels                  | :warning:          |
 | Poly Objects            | :heavy_check_mark: |
+| Thing Specials          | :heavy_check_mark: |
 | ACS                     | :comet:            |
 | [MAPINFO](./mapinfo.md) | :warning:          |
 | SNDINFO                 | :telescope:        |
