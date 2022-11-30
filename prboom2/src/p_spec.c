@@ -7067,6 +7067,22 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       EV_StopLightEffect(args[0]);
       buttonSuccess = 1;
       break;
+    case zl_thing_set_special:
+      {
+        mobj_t *target;
+        thing_id_search_t search;
+
+        dsda_ResetThingIDSearch(&search);
+        while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
+        {
+          target->special = args[1];
+          target->args[0] = args[2];
+          target->args[1] = args[3];
+          target->args[2] = args[4];
+        }
+      }
+      buttonSuccess = 1;
+      break;
     case zl_thing_spawn:
       buttonSuccess =
         P_SpawnThing(args[0], mo, args[1], P_ArgToAngle(args[2]), true, args[3]);

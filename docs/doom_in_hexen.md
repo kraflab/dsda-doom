@@ -303,7 +303,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | -     | -                               | -                  |
 | 125   | Thing_Move                      | :heavy_check_mark: |
 | -     | -                               | -                  |
-| 127   | Thing_SetSpecial                | :telescope:        |
+| 127   | Thing_SetSpecial                | :heavy_check_mark: |
 | 128   | ThrustThingZ                    | :heavy_check_mark: |
 | 129   | UsePuzzleItem                   | :x:                |
 | 130   | Thing_Activate                  | :heavy_check_mark: |
