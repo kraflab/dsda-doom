@@ -26,8 +26,8 @@ The initial pass over the format has been completed. Most planned line actions a
 | ACS                     | :comet:            |
 | [MAPINFO](./mapinfo.md) | :warning:          |
 | SNDINFO                 | :telescope:        |
-| SNDSEQ                  | :telescope:        |
-| ANIMDEFS                | :telescope:        |
+| SNDSEQ                  | :comet:            |
+| ANIMDEFS                | :comet:            |
 
 ### Thing Types
 
@@ -37,8 +37,8 @@ The initial pass over the format has been completed. Most planned line actions a
 | -           | -                       | -                  |
 | 888         | MBFHelperDog            | :heavy_check_mark: |
 | -           | -                       | -                  |
-| 1400-1409   | Sound Sequence          | :telescope:        |
-| 1411        | Sound Sequence Override | :telescope:        |
+| 1400-1409   | Sound Sequence          | :comet:            |
+| 1411        | Sound Sequence Override | :comet:            |
 | -           | -                       | -                  |
 | 1500-1501   | Line Slopes             | :x:                |
 | -           | -                       | -                  |
@@ -130,7 +130,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | -           | -                       | -                  |
 | 14001-14064 | AmbientSound            | :telescope:        |
 | 14065       | Custom AmbientSound     | :telescope:        |
-| 14066       | SoundSequence           | :telescope:        |
+| 14066       | SoundSequence           | :comet:            |
 | 14067       | AmbientSoundNoGravity   | :telescope:        |
 | -           | -                       | -                  |
 | 14101-14164 | MusicChanger            | :heavy_check_mark: |
@@ -183,14 +183,14 @@ The initial pass over the format has been completed. Most planned line actions a
 | 6     | Polyobj_MoveTimes8              | :heavy_check_mark: |
 | 7     | Polyobj_DoorSwing               | :heavy_check_mark: |
 | 8     | Polyobj_DoorSlide               | :heavy_check_mark: |
-| 9     | Line_Horizon                    | :telescope:        |
+| 9     | Line_Horizon                    | :comet:            |
 | 10    | Door_Close                      | :heavy_check_mark: |
 | 11    | Door_Open                       | :heavy_check_mark: |
 | 12    | Door_Raise                      | :heavy_check_mark: |
 | 13    | Door_LockedRaise                | :heavy_check_mark: |
 | 14    | Door_Animated                   | :x:                |
 | 15    | Autosave                        | :x:                |
-| 16    | Transfer_WallLight              | :telescope:        |
+| 16    | Transfer_WallLight              | :comet:            |
 | 17    | Thing_Raise                     | :heavy_check_mark: |
 | 18    | StartConversation               | :x:                |
 | 19    | Thing_Stop                      | :heavy_check_mark: |
@@ -223,7 +223,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 46    | Floor_CrushStop                 | :heavy_check_mark: |
 | 47    | Ceiling_MoveToValue             | :heavy_check_mark: |
 | 48    | Sector_Attach3dMidtex           | :x:                |
-| 49    | GlassBreak                      | :telescope:        |
+| 49    | GlassBreak                      | :comet:            |
 | 50    | ExtraFloor_LightOnly            | :x:                |
 | 51    | Sector_SetLink                  | :x:                |
 | 52    | Scroll_Wall                     | :warning:          |
@@ -283,7 +283,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 106   | Door_WaitClose                  | :heavy_check_mark: |
 | 107   | Line_SetPortalTarget            | :x:                |
 | -     | -                               | -                  |
-| 109   | Light_ForceLightning            | :telescope:        |
+| 109   | Light_ForceLightning            | :comet:            |
 | 110   | Light_RaiseByValue              | :heavy_check_mark: |
 | 111   | Light_LowerByValue              | :heavy_check_mark: |
 | 112   | Light_ChangeToValue             | :heavy_check_mark: |
@@ -312,11 +312,11 @@ The initial pass over the format has been completed. Most planned line actions a
 | 137   | Thing_SpawnNoFog                | :heavy_check_mark: |
 | 138   | Floor_Waggle                    | :heavy_check_mark: |
 | 139   | Thing_SpawnFacing               | :heavy_check_mark: |
-| 140   | Sector_ChangeSound              | :telescope:        |
+| 140   | Sector_ChangeSound              | :comet:            |
 | -     | -                               | -                  |
 | 154   | Teleport_NoStop                 | :heavy_check_mark: |
 | -     | -                               | -                  |
-| 157   | SetGlobalFogParameter           | :telescope:        |
+| 157   | SetGlobalFogParameter           | :x:                |
 | 158   | FS_Execute                      | :x:                |
 | 159   | Sector_SetPlaneReflection       | :x:                |
 | 160   | Sector_Set3DFloor               | :x:                |
@@ -334,7 +334,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 177   | Thing_Hate                      | :warning:          |
 | 178   | Thing_ProjectileAimed           | :heavy_check_mark: |
 | 179   | ChangeSkill                     | :x:                |
-| 180   | Thing_SetTranslation            | :telescope:        |
+| 180   | Thing_SetTranslation            | :x:                |
 | 181   | Plane_Align                     | :x:                |
 | 182   | Line_Mirror                     | :x:                |
 | 183   | Line_AlignCeiling               | :x:                |
@@ -494,7 +494,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 196     | Sector_Heal              | :heavy_check_mark: |
 | 197     | Light_OutdoorLightning   | :x:                |
 | 198-199 | Light_IndoorLightning*   | :x:                |
-| 200     | Sky2                     | :telescope:        |
+| 200     | Sky2                     | :comet:            |
 | 201-224 | Scroll*                  | :heavy_check_mark: |
 | 225-244 | Carry*                   | :heavy_check_mark: |
 
