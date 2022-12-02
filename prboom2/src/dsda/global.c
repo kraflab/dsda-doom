@@ -107,6 +107,7 @@ int g_sfx_swtchn;
 int g_sfx_swtchx;
 int g_sfx_dorcls;
 int g_sfx_doropn;
+int g_sfx_dorlnd;
 int g_sfx_pstart;
 int g_sfx_pstop;
 int g_sfx_itemup;
@@ -188,6 +189,7 @@ static void dsda_InitDoom(void) {
   g_sfx_swtchx = sfx_swtchx;
   g_sfx_dorcls = sfx_dorcls;
   g_sfx_doropn = sfx_doropn;
+  g_sfx_dorlnd = sfx_dorcls;
   g_sfx_pstart = sfx_pstart;
   g_sfx_pstop = sfx_pstop;
   g_sfx_itemup = sfx_itemup;
@@ -365,6 +367,7 @@ static void dsda_InitHeretic(void) {
   g_sfx_swtchx = heretic_sfx_switch;
   g_sfx_dorcls = heretic_sfx_doropn;
   g_sfx_doropn = heretic_sfx_doropn;
+  g_sfx_dorlnd = heretic_sfx_dorcls;
   g_sfx_pstart = heretic_sfx_pstart;
   g_sfx_pstop = heretic_sfx_pstop;
   g_sfx_itemup = heretic_sfx_itemup;
@@ -526,6 +529,7 @@ static void dsda_InitHexen(void) {
   g_sfx_swtchx = hexen_sfx_fighter_hammer_hitwall;
   g_sfx_dorcls = hexen_sfx_door_light_close;
   g_sfx_doropn = hexen_sfx_door_open;
+  g_sfx_dorlnd = hexen_sfx_door_light_close;
   g_sfx_itemup = hexen_sfx_pickup_key;
   g_sfx_pistol = hexen_sfx_fighter_hammer_hitwall;
   g_sfx_oof = hexen_sfx_player_fighter_grunt;

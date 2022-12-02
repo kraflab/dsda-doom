@@ -79,6 +79,7 @@ extern int g_sfx_swtchn;
 extern int g_sfx_swtchx;
 extern int g_sfx_dorcls;
 extern int g_sfx_doropn;
+extern int g_sfx_dorlnd;
 extern int g_sfx_pstart;
 extern int g_sfx_pstop;
 extern int g_sfx_itemup;
