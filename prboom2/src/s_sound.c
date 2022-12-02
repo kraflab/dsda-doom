@@ -504,8 +504,7 @@ void S_UpdateSounds(void)
           }
           else
           {
-            // raven used S_StopSound
-            S_StopChannel(cnum);
+            raven ? S_StopSound(channel->origin) : S_StopChannel(cnum);
           }
         }
       }
