@@ -943,6 +943,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_weaponbob", dsda_config_weaponbob,
     CONF_BOOL(1)
   },
+  [dsda_config_quake_intensity] = {
+    "dsda_quake_intensity", dsda_config_quake_intensity,
+    dsda_config_int, 0, 100, { 100 }
+  },
   [dsda_config_map_secret_after] = {
     "map_secret_after", dsda_config_map_secret_after,
     CONF_BOOL(0), NULL, NOT_STRICT, AM_InitParams

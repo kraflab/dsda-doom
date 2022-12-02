@@ -2939,9 +2939,9 @@ setup_menu_t display_settings[] = {
   { "Hide Weapon", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_hide_weapon },
   { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, G_Y + 6 * 8, dsda_config_render_wipescreen },
   { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 7 * 8, dsda_config_show_fps },
-  { "Show Precise Intermission Time", S_YESNO,  m_conf, G_X, G_Y + 8 * 8, dsda_config_show_level_splits },
-  { "View Bobbing", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_viewbob },
-  { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_weaponbob },
+  { "View Bobbing", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_viewbob },
+  { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_weaponbob },
+  { "Quake Intensity", S_NUM, m_conf, G_X, G_Y + 10 * 8, dsda_config_quake_intensity },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
 
   { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_palette_ondamage },
@@ -2989,10 +2989,11 @@ setup_menu_t demo_settings[] = {
   { "Quickstart Cache Tics", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_quickstart_cache_tics },
   { "Smooth Demo Playback", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_demo_smoothturns },
   { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_demo_smoothturnsfactor },
+  { "Show Precise Intermission Time", S_YESNO,  m_conf, G_X, G_Y + 10 * 8, dsda_config_show_level_splits },
 
-  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 11 * 8 },
-  { "Allow Jumping", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_allow_jumping },
-  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_gl_health_bar },
+  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 12 * 8 },
+  { "Allow Jumping", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_allow_jumping },
+  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_gl_health_bar },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mapping_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, tas_settings),

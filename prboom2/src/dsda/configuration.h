@@ -205,6 +205,7 @@ typedef enum {
   dsda_config_switch_when_ammo_runs_out,
   dsda_config_viewbob,
   dsda_config_weaponbob,
+  dsda_config_quake_intensity,
   dsda_config_map_secret_after,
   dsda_config_map_point_coord,
   dsda_config_map_level_stat,

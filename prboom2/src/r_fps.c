@@ -102,8 +102,11 @@ void R_InterpolateView(player_t *player, fixed_t frac)
 {
   static mobj_t *oviewer;
   angle_t angleoffset;
+  int quake_intensity;
 
   dboolean NoInterpolate = dsda_CameraPaused() || dsda_PausedViaMenu();
+
+  quake_intensity = dsda_IntConfig(dsda_config_quake_intensity);
 
   viewplayer = player;
   angleoffset = dsda_BuildModeViewAngleOffset();
@@ -193,6 +196,10 @@ void R_InterpolateView(player_t *player, fixed_t frac)
 
       x_displacement = ((M_Random() % (intensity << 2)) - (intensity << 1)) << FRACBITS;
       y_displacement = ((M_Random() % (intensity << 2)) - (intensity << 1)) << FRACBITS;
+
+      x_displacement = x_displacement * quake_intensity / 100;
+      y_displacement = y_displacement * quake_intensity / 100;
+
       last_leveltime = leveltime;
     }
 
