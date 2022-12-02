@@ -1682,6 +1682,8 @@ void T_ZDoom_Glow(zdoom_glow_t *g);
 void T_ZDoom_Flicker(zdoom_flicker_t *g);
 int P_ConvertHexenCrush(int crush);
 
+int EV_TeleportGroup(short group_tid, mobj_t *thing, short source_tid, short dest_tid,
+                     dboolean move_source, dboolean fog);
 #define NO_CRUSH -1
 #define DOOM_CRUSH 10
 
