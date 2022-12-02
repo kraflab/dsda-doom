@@ -334,6 +334,62 @@ int EV_TeleportGroup(short group_tid, mobj_t *thing, short source_tid, short des
   return result;
 }
 
+int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
+                        dboolean fog, short group_tid)
+{
+  int result = 0;
+  mobj_t *source;
+  mobj_t *dest;
+  mobj_t *target;
+  thing_id_search_t search;
+
+  dsda_ResetThingIDSearch(&search);
+  source = dsda_FindMobjFromThingID(source_tid, &search);
+
+  dest = P_TeleportDestination(dest_tid, 0);
+
+  if (source && dest)
+  {
+    int i;
+    int flags;
+    angle_t an;
+    fixed_t dcos, dsin;
+
+    flags = fog ? (TELF_DESTFOG | TELF_SOURCEFOG) : TELF_KEEPORIENTATION;
+
+    an = dest->angle - source->angle;
+    dcos = finecosine[an >> ANGLETOFINESHIFT];
+    dsin = finesine[an >> ANGLETOFINESHIFT];
+
+    for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
+      mobj_in_sector_t mis;
+
+      P_InitSectorSearch(&mis, &sectors[i]);
+      while ((target = P_FindMobjInSector(&mis)))
+      {
+        fixed_t dx, dy;
+        mobj_t target_dest;
+
+        if (group_tid && target->tid != group_tid)
+          continue;
+
+        memset(&target_dest, 0, sizeof(target_dest));
+
+        dx = target->x - source->x;
+        dy = target->y - source->y;
+        target_dest.x = dest->x + FixedMul(dx, dcos) - FixedMul(dy, dsin);
+        target_dest.y = dest->y + FixedMul(dx, dsin) + FixedMul(dy, dcos);
+        target_dest.angle = target->angle;
+        target_dest.type = dest->type;
+
+        result |= P_TeleportToDestination(&target_dest, NULL, target, flags);
+      }
+    }
+  }
+
+  return result;
+}
+
 int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags)
 {
   mobj_t *m;

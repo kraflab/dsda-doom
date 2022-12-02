@@ -1684,6 +1684,9 @@ int P_ConvertHexenCrush(int crush);
 
 int EV_TeleportGroup(short group_tid, mobj_t *thing, short source_tid, short dest_tid,
                      dboolean move_source, dboolean fog);
+int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
+                        dboolean fog, short group_tid);
+
 #define NO_CRUSH -1
 #define DOOM_CRUSH 10
 

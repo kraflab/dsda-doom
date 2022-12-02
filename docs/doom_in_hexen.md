@@ -256,7 +256,7 @@ The initial pass over the format has been completed. Most planned line actions a
 | 75    | Teleport_EndGame                | :warning:          |
 | 76    | TeleportOther                   | :heavy_check_mark: |
 | 77    | TeleportGroup                   | :heavy_check_mark: |
-| 78    | TeleportInSector                | :telescope:        |
+| 78    | TeleportInSector                | :heavy_check_mark: |
 | 79    | Thing_SetConversation           | :x:                |
 | 80    | ACS_Execute                     | :comet:            |
 | 81    | ACS_Suspend                     | :comet:            |
