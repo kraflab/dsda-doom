@@ -455,7 +455,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		ParseLumpName(scanner, mape->nextsecret);
 		if (!G_ValidateMapName(mape->nextsecret, NULL, NULL))
 		{
-			scanner.ErrorF("Invalid map name %s", mape->nextmap);
+			scanner.ErrorF("Invalid map name %s", mape->nextsecret);
 			return 0;
 		}
 	}
@@ -682,7 +682,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 		// Set default level progression here to simplify the checks elsewhere. Doing this lets us skip all normal code for this if nothing has been defined.
 		if (parsed.endpic[0] && (strcmp(parsed.endpic, "-") != 0))
 		{
-			parsed.nextmap[0] = parsed.nextsecret[0] = 0;
+			parsed.nextmap[0] = 0;
 		}
 		else if (!parsed.nextmap[0] && !parsed.endpic[0])
 		{

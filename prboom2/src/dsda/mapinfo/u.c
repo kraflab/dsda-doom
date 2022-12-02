@@ -462,7 +462,9 @@ int dsda_UPrepareFinale(int* result) {
 
     return true;
   }
-  else if (gamemapinfo->endpic[0] && strcmp(gamemapinfo->endpic, "-") != 0) {
+  else if (gamemapinfo->endpic[0] &&
+           gamemapinfo->endpic[0] != '-' &&
+           !secretexit) {
     *result = WD_VICTORY;
 
     return true;
