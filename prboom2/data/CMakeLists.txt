@@ -84,6 +84,7 @@ set(SOUNDS
     sounds/dsdgact.wav
     sounds/dsdgdth.wav
     sounds/dsdgpain.wav
+    sounds/dssecret.wav
 )
 
 set(GRAPHICS
