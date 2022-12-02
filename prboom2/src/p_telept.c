@@ -53,6 +53,11 @@ static dboolean P_IsTeleportDestination(mobj_t *mo)
          mo->type == ZMT_TELEPORTDEST2 || mo->type == ZMT_TELEPORTDEST3;
 }
 
+static dboolean P_UseTeleportDestinationHeight(mobj_t *mo)
+{
+  return mo->type == ZMT_TELEPORTDEST2 || mo->type == ZMT_TELEPORTDEST3;
+}
+
 static dboolean P_IsMapSpot(mobj_t *mo)
 {
   return mo->type == ZMT_MAPSPOT || mo->type == ZMT_MAPSPOT_GRAVITY;
@@ -204,7 +209,9 @@ static int P_TeleportToDestination(mobj_t *destination, line_t *line, mobj_t *th
     thing->angle = destination->angle;
   }
 
-  if (flags & TELF_KEEPHEIGHT || destination->type == ZMT_TELEPORTDEST2)
+  if (P_UseTeleportDestinationHeight(destination))
+    thing->z = destination->z;
+  else if (flags & TELF_KEEPHEIGHT)
     thing->z = thing->floorz + z;
   else if (compatibility_level != finaldoom_compatibility)
     thing->z = thing->floorz;
