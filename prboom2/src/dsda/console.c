@@ -1964,6 +1964,13 @@ static dboolean console_MobjInfoSetFlags(const char* command, const char* args) 
   return true;
 }
 
+static dboolean console_MusicRestart(const char* command, const char* args) {
+  S_StopMusic();
+  S_RestartMusic();
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -1989,6 +1996,8 @@ static console_command_entry_t console_commands[] = {
   { "player.round_x", console_PlayerRoundX, CF_NEVER },
   { "player.round_y", console_PlayerRoundY, CF_NEVER },
   { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
+
+  { "music.restart", console_MusicRestart, CF_ALWAYS },
 
   { "script.run", console_ScriptRun, CF_ALWAYS },
   { "check", console_Check, CF_ALWAYS },
