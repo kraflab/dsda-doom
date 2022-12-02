@@ -6959,6 +6959,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
       }
       break;
+    case zl_teleport_group:
+      buttonSuccess = EV_TeleportGroup(args[0], mo, args[1], args[2], args[3], args[4]);
+      break;
     case zl_teleport:
       {
         int flags = TELF_DESTFOG;

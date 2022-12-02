@@ -153,6 +153,187 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
 //
 // killough 5/3/98: reformatted, cleaned up
 
+static int P_TeleportToDestination(mobj_t *destination, line_t *line, mobj_t *thing, int flags)
+{
+  fixed_t oldx = thing->x;
+  fixed_t oldy = thing->y;
+  fixed_t oldz = thing->z;
+  fixed_t momx = thing->momx;
+  fixed_t momy = thing->momy;
+  fixed_t z = thing->z - thing->floorz;
+  player_t *player = thing->player;
+  angle_t angle = 0;
+  fixed_t c = 0, s = 0;
+
+  // Get the angle between the exit thing and source linedef.
+  // Rotate 90 degrees, so that walking perpendicularly across
+  // teleporter linedef causes thing to exit in the direction
+  // indicated by the exit thing.
+  if (flags & (TELF_ROTATEBOOM | TELF_ROTATEBOOMINVERSE) && line)
+  {
+    angle = R_PointToAngle2(0, 0, line->dx, line->dy) - destination->angle + ANG90;
+
+    if (flags & TELF_ROTATEBOOMINVERSE)
+      angle = angle + ANG180;
+
+    s = finesine[angle >> ANGLETOFINESHIFT];
+    c = finecosine[angle >> ANGLETOFINESHIFT];
+  }
+
+  // killough 5/12/98: exclude voodoo dolls:
+  if (player && player->mo != thing)
+    player = NULL;
+
+  if (!P_TeleportMove(thing, destination->x, destination->y, false)) /* killough 8/9/98 */
+    return 0;
+
+  if (flags & (TELF_ROTATEBOOM | TELF_ROTATEBOOMINVERSE))
+  {
+    if (line)
+    {
+      // Rotate thing according to difference in angles
+      thing->angle += angle;
+
+      // Rotate thing's momentum to come out of exit just like it entered
+      thing->momx = FixedMul(momx, c) - FixedMul(momy, s);
+      thing->momy = FixedMul(momy, c) + FixedMul(momx, s);
+    }
+  }
+  else if (!(flags & TELF_KEEPORIENTATION))
+  {
+    thing->angle = destination->angle;
+  }
+
+  if (flags & TELF_KEEPHEIGHT || destination->type == ZMT_TELEPORTDEST2)
+    thing->z = thing->floorz + z;
+  else if (compatibility_level != finaldoom_compatibility)
+    thing->z = thing->floorz;
+  thing->PrevZ = thing->z;
+
+  if (flags & TELF_SOURCEFOG)
+  {
+    // spawn teleport fog and emit sound at source
+    S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
+  }
+
+  if (flags & TELF_DESTFOG)
+  {
+    // spawn teleport fog and emit sound at destination
+    S_StartSound(
+      P_SpawnMobj(
+        destination->x + 20 * finecosine[destination->angle >> ANGLETOFINESHIFT],
+        destination->y + 20 * finesine[destination->angle >> ANGLETOFINESHIFT],
+        thing->z, MT_TFOG
+      ),
+      sfx_telept
+    );
+  }
+
+  /* don't move for a bit
+    * cph - DEMOSYNC - BOOM had (player) here? */
+  if (
+    thing->player &&
+    ((flags & TELF_DESTFOG) || !(flags & TELF_KEEPORIENTATION)) &&
+    !(flags & TELF_KEEPVELOCITY)
+  )
+    thing->reactiontime = 18;
+
+  if (!(flags & TELF_KEEPORIENTATION) && !(flags & TELF_KEEPVELOCITY))
+  {
+    thing->momx = thing->momy = thing->momz = 0;
+
+    /* killough 10/98: kill all bobbing momentum too */
+    if (player)
+      player->momx = player->momy = 0;
+  }
+
+  if (player)
+  {
+    // This code was different between silent and non-silent functions.
+    if (flags & TELF_KEEPORIENTATION)
+    {
+      // Adjust player's view, in case there has been a height change
+      if (player)
+      {
+        // Save the current deltaviewheight, used in stepping
+        fixed_t deltaviewheight = player->deltaviewheight;
+
+        // Clear deltaviewheight, since we don't want any changes
+        player->deltaviewheight = 0;
+
+        // Set player's view according to the newly set parameters
+        P_CalcHeight(player);
+
+        // Reset the delta to have the same dynamics as before
+        player->deltaviewheight = deltaviewheight;
+      }
+    }
+    else
+    {
+      player->viewz = thing->z + player->viewheight;
+    }
+
+    // e6y
+    R_ResetAfterTeleport(player);
+  }
+
+  return 1;
+}
+
+int EV_TeleportGroup(short group_tid, mobj_t *thing, short source_tid, short dest_tid,
+                     dboolean move_source, dboolean fog)
+{
+  int result = 0;
+  mobj_t *source;
+  mobj_t *dest;
+  mobj_t *target;
+  thing_id_search_t search;
+
+  dsda_ResetThingIDSearch(&search);
+  source = dsda_FindMobjFromThingID(source_tid, &search);
+
+  dest = P_TeleportDestination(dest_tid, 0);
+
+  if (source && dest)
+  {
+    int flags;
+    angle_t an;
+    fixed_t dcos, dsin;
+
+    flags = fog ? (TELF_DESTFOG | TELF_SOURCEFOG) : TELF_KEEPORIENTATION;
+
+    an = dest->angle - source->angle;
+    dcos = finecosine[an >> ANGLETOFINESHIFT];
+    dsin = finesine[an >> ANGLETOFINESHIFT];
+
+    dsda_ResetThingIDSearch(&search);
+    while ((target = dsda_FindMobjFromThingIDOrMobj(group_tid, thing, &search)))
+    {
+      fixed_t dx, dy;
+      mobj_t target_dest;
+
+      memset(&target_dest, 0, sizeof(target_dest));
+
+      dx = target->x - source->x;
+      dy = target->y - source->y;
+      target_dest.x = dest->x + FixedMul(dx, dcos) - FixedMul(dy, dsin);
+      target_dest.y = dest->y + FixedMul(dx, dsin) + FixedMul(dy, dcos);
+      target_dest.angle = target->angle;
+      target_dest.type = dest->type;
+
+      result |= P_TeleportToDestination(&target_dest, NULL, target, flags);
+    }
+
+    if (result && move_source)
+    {
+      P_TeleportToDestination(dest, NULL, source, TELF_KEEPORIENTATION);
+      source->angle = dest->angle;
+    }
+  }
+
+  return result;
+}
+
 int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags)
 {
   mobj_t *m;
@@ -168,126 +349,9 @@ int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_
 
   if ((m = P_TeleportDestination(thing_id, tag)) != NULL)
   {
-    fixed_t oldx = thing->x;
-    fixed_t oldy = thing->y;
-    fixed_t oldz = thing->z;
-    fixed_t momx = thing->momx;
-    fixed_t momy = thing->momy;
-    fixed_t z = thing->z - thing->floorz;
-    player_t *player = thing->player;
-    angle_t angle = 0;
-    fixed_t c = 0, s = 0;
-
-    // Get the angle between the exit thing and source linedef.
-    // Rotate 90 degrees, so that walking perpendicularly across
-    // teleporter linedef causes thing to exit in the direction
-    // indicated by the exit thing.
-    if (flags & (TELF_ROTATEBOOM | TELF_ROTATEBOOMINVERSE) && line)
-    {
-      angle = R_PointToAngle2(0, 0, line->dx, line->dy) - m->angle + ANG90;
-
-      if (flags & TELF_ROTATEBOOMINVERSE)
-        angle = angle + ANG180;
-
-      s = finesine[angle >> ANGLETOFINESHIFT];
-      c = finecosine[angle >> ANGLETOFINESHIFT];
-    }
-
-    // killough 5/12/98: exclude voodoo dolls:
-    if (player && player->mo != thing)
-      player = NULL;
-
-    if (!P_TeleportMove(thing, m->x, m->y, false)) /* killough 8/9/98 */
-      return 0;
-
-    if (flags & (TELF_ROTATEBOOM | TELF_ROTATEBOOMINVERSE))
-    {
-      if (line)
-      {
-        // Rotate thing according to difference in angles
-        thing->angle += angle;
-
-        // Rotate thing's momentum to come out of exit just like it entered
-        thing->momx = FixedMul(momx, c) - FixedMul(momy, s);
-        thing->momy = FixedMul(momy, c) + FixedMul(momx, s);
-      }
-    }
-    else if (!(flags & TELF_KEEPORIENTATION))
-    {
-      thing->angle = m->angle;
-    }
-
-    if (flags & TELF_KEEPHEIGHT)
-      thing->z = thing->floorz + z;
-    else if (compatibility_level != finaldoom_compatibility)
-      thing->z = thing->floorz;
-    thing->PrevZ = thing->z;
-
-    if (flags & TELF_SOURCEFOG)
-    {
-      // spawn teleport fog and emit sound at source
-      S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
-    }
-
-    if (flags & TELF_DESTFOG)
-    {
-      // spawn teleport fog and emit sound at destination
-      S_StartSound(P_SpawnMobj(m->x + 20 * finecosine[m->angle >> ANGLETOFINESHIFT],
-                               m->y + 20 * finesine[m->angle >> ANGLETOFINESHIFT],
-                               thing->z, MT_TFOG),
-                   sfx_telept);
-    }
-
-    /* don't move for a bit
-     * cph - DEMOSYNC - BOOM had (player) here? */
-    if (
-      thing->player &&
-      ((flags & TELF_DESTFOG) || !(flags & TELF_KEEPORIENTATION)) &&
-      !(flags & TELF_KEEPVELOCITY)
-    )
-      thing->reactiontime = 18;
-
-    if (!(flags & TELF_KEEPORIENTATION) && !(flags & TELF_KEEPVELOCITY))
-    {
-      thing->momx = thing->momy = thing->momz = 0;
-
-      /* killough 10/98: kill all bobbing momentum too */
-      if (player)
-        player->momx = player->momy = 0;
-    }
-
-    if (player)
-    {
-      // This code was different between silent and non-silent functions.
-      if (flags & TELF_KEEPORIENTATION)
-      {
-        // Adjust player's view, in case there has been a height change
-        if (player)
-        {
-          // Save the current deltaviewheight, used in stepping
-          fixed_t deltaviewheight = player->deltaviewheight;
-
-          // Clear deltaviewheight, since we don't want any changes
-          player->deltaviewheight = 0;
-
-          // Set player's view according to the newly set parameters
-          P_CalcHeight(player);
-
-          // Reset the delta to have the same dynamics as before
-          player->deltaviewheight = deltaviewheight;
-        }
-      }
-      else
-      {
-        player->viewz = thing->z + player->viewheight;
-      }
-
-      // e6y
-      R_ResetAfterTeleport(player);
-    }
-
-    return 1;
+    return P_TeleportToDestination(m, line, thing, flags);
   }
+
   return 0;
 }
 
