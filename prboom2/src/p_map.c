@@ -2870,6 +2870,31 @@ dboolean P_ChangeSector(sector_t* sector, int crunch)
   return nofit;
 }
 
+void P_InitSectorSearch(mobj_in_sector_t *data, sector_t *sector)
+{
+  data->sector = sector;
+
+  for (data->node = data->sector->touching_thinglist;
+       data->node;
+       data->node = data->node->m_snext)
+    data->node->visited = false;
+
+  data->node = data->sector->touching_thinglist;
+}
+
+mobj_t *P_FindMobjInSector(mobj_in_sector_t *data)
+{
+  while (data->node && data->node->visited)
+    data->node = data->node->m_snext;
+
+  if (!data->node)
+    return NULL;
+
+  data->node->visited = true;
+
+  return data->node->m_thing;
+}
+
 //
 // P_CheckSector
 // jff 3/19/98 added to just check monsters on the periphery

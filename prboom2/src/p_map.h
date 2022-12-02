@@ -77,6 +77,15 @@ void    P_LineAttack(mobj_t *t1, angle_t angle, fixed_t distance,
 void P_RadiusAttack(mobj_t *spot, mobj_t *source, int damage, int distance, dboolean damageSource);
 dboolean P_CheckPosition(mobj_t *thing, fixed_t x, fixed_t y);
 
+typedef struct
+{
+  msecnode_t *node;
+  sector_t *sector;
+} mobj_in_sector_t;
+
+void P_InitSectorSearch(mobj_in_sector_t *data, sector_t *sector);
+mobj_t *P_FindMobjInSector(mobj_in_sector_t *data);
+
 //jff 3/19/98 P_CheckSector(): new routine to replace P_ChangeSector()
 dboolean P_ChangeSector(sector_t *sector, int crunch);
 dboolean P_CheckSector(sector_t *sector, int crunch);
