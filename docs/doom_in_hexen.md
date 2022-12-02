@@ -4,17 +4,15 @@ This page tracks support for the "Doom in Hexen" map format and related features
 
 ### Current Status
 
-The initial pass over the format has been completed. Most planned line actions and sector effects are supported. Poly objects are supported (but there are visual artifacts in some cases). New teleport destinations and map spots are implemented. Most line actions targeting thing tags are implemented.
+The first iteration of support is complete. There are various exceptions and notes listed in the full documentation below where things may act differently compared to other source ports. The remaining features (marked with :comet:) require more significant effort and will be addressed more gradually over time.
 
 ### Legend
 
 | Symbol             | Meaning                        |
 | ------------------ | ------------------------------ |
-| :heavy_check_mark: | Feature is supported           |
+| :heavy_check_mark: | Feature is fully supported     |
 | :warning:          | Feature is partially supported |
-| :telescope:        | Feature is planned             |
 | :comet:            | Feature is planned later       |
-| :grey_question:    | Feature is under investigation |
 | :x:                | Feature is not planned         |
 
 ### Major Features
@@ -25,8 +23,8 @@ The initial pass over the format has been completed. Most planned line actions a
 | Poly Objects            | :heavy_check_mark: |
 | Thing Specials          | :heavy_check_mark: |
 | ACS                     | :comet:            |
-| [MAPINFO](./mapinfo.md) | :warning:          |
-| SNDINFO                 | :telescope:        |
+| [MAPINFO](./mapinfo.md) | :comet:            |
+| SNDINFO                 | :comet:            |
 | SNDSEQ                  | :comet:            |
 | ANIMDEFS                | :comet:            |
 
@@ -129,10 +127,10 @@ The initial pass over the format has been completed. Most planned line actions a
 | 9998        | SecActEnter             | :x:                |
 | 9999        | SecActHitFloor          | :x:                |
 | -           | -                       | -                  |
-| 14001-14064 | AmbientSound            | :telescope:        |
-| 14065       | Custom AmbientSound     | :telescope:        |
+| 14001-14064 | AmbientSound            | :comet:            |
+| 14065       | Custom AmbientSound     | :comet:            |
 | 14066       | SoundSequence           | :comet:            |
-| 14067       | AmbientSoundNoGravity   | :telescope:        |
+| 14067       | AmbientSoundNoGravity   | :comet:            |
 | -           | -                       | -                  |
 | 14101-14164 | MusicChanger            | :heavy_check_mark: |
 | 14165       | Custom MusicChanger     | :warning:          |
