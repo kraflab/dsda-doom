@@ -1,10 +1,6 @@
 ## Doom in Hexen
 
-This page tracks support for the "Doom in Hexen" map format and related features, as seen in ZDoom. This is all a work in progress - the status of any feature (including whether or not it is planned) is subject to change.
-
-### Current Status
-
-The first iteration of support is complete. There are various exceptions and notes listed in the full documentation below where things may act differently compared to other source ports. The remaining features (marked with :comet:) require more significant effort and will be addressed more gradually over time.
+This page tracks support for the "Doom in Hexen" map format and related features, as seen in ZDoom. The first iteration of support is now complete. There are various exceptions and notes listed in the full documentation below where things may act differently compared to other source ports. Some of those points will be addressed over time, but others are intrinsic differences in how some things work in dsda-doom. The remaining planned features (:comet:) require more significant effort and will be addressed more gradually over time.
 
 ### Legend
 
