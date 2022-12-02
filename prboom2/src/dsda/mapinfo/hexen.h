@@ -41,6 +41,7 @@ int dsda_HexenBossAction(mobj_t* mo);
 int dsda_HexenHUTitle(const char** title);
 int dsda_HexenSkyTexture(int* sky);
 int dsda_HexenPrepareInitNew(void);
+int dsda_HexenPrepareParTime(void);
 int dsda_HexenPrepareIntermission(int* result);
 int dsda_HexenPrepareFinale(int* result);
 void dsda_HexenLoadMapInfo(void);

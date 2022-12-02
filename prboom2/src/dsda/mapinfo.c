@@ -326,7 +326,7 @@ void dsda_PrepareInitNew(void) {
   dsda_LegacyPrepareInitNew();
 }
 
-void dsda_PrepareIntermission(int* behaviour) {
+static void dsda_PrepareBasicIntermission(int* behaviour) {
   if (dsda_HexenPrepareIntermission(behaviour))
     return;
 
@@ -334,6 +334,21 @@ void dsda_PrepareIntermission(int* behaviour) {
     return;
 
   dsda_LegacyPrepareIntermission(behaviour);
+}
+
+static void dsda_PrepareParTime(void) {
+  if (dsda_HexenPrepareParTime())
+    return;
+
+  if (dsda_UPrepareParTime())
+    return;
+
+  dsda_LegacyPrepareParTime();
+}
+
+void dsda_PrepareIntermission(int* behaviour) {
+  dsda_PrepareBasicIntermission(behaviour);
+  dsda_PrepareParTime();
 }
 
 void dsda_PrepareFinale(int* behaviour) {
