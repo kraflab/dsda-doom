@@ -82,6 +82,7 @@ typedef struct
   // hexen
   int volume;
 
+  dboolean ambient;
   sfx_class_t sfx_class;
 } channel_t;
 
@@ -299,6 +300,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   else
     params.sfx_class = sfx_class_none;
 
+  params.ambient = false;
+
   sfx_id &= ~PICKUP_SOUND;
 
   if (sfx_id == sfx_None)
@@ -367,6 +370,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
     {
       channels[cnum].handle = h;
       channels[cnum].pitch = params.pitch;
+      channels[cnum].ambient = params.ambient;
     }
   }
 }
@@ -692,6 +696,8 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
   if (!listener)
     return 0;
 
+  params->ambient = channel->ambient;
+
   // calculate the distance to sound origin
   //  and clip it if necessary
   if (walkcamera.type > 1)
@@ -878,7 +884,7 @@ static dboolean S_StopSoundInfo(sfxinfo_t* sfx, sfx_params_t *params)
   return false; // don't replace any sounds
 }
 
-static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, dboolean ambient, sfx_params_t *params)
+static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, sfx_params_t *params)
 {
   int i;
   static int sndcount = 0;
@@ -903,7 +909,7 @@ static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, dboolean ambient, 
   if (i >= numChannels)
   {
     // TODO: can ambient sounds even reach this flow?
-    if (ambient)
+    if (params->ambient)
     {
       if (AmbChan != -1 && sfx->priority <= channels[AmbChan].sfxinfo->priority)
         return channel_not_found;         //ambient channel already in use
@@ -983,7 +989,6 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   angle_t angle;
   fixed_t absx;
   fixed_t absy;
-  dboolean ambient;
 
   origin = (mobj_t *)_origin;
   listener = GetSoundListener();
@@ -1000,7 +1005,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 
   sfx = &S_sfx[sound_id];
 
-  ambient = heretic && sound_id >= heretic_sfx_wind;
+  params.ambient = heretic && sound_id >= heretic_sfx_wind;
 
   // calculate the distance before other stuff so that we can throw out
   // sounds that are beyond the hearing range.
@@ -1019,7 +1024,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 
   params.sfx_class = sfx_class_none;
 
-  cnum = Raven_S_getChannel(origin, sfx, ambient, &params);
+  cnum = Raven_S_getChannel(origin, sfx, &params);
   if (cnum == channel_not_found)
     return;
 
@@ -1057,7 +1062,8 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   channels[cnum].sfxinfo = sfx;
   channels[cnum].priority = params.priority;
   channels[cnum].volume = volume; // original volume, not attenuated volume
-  if (ambient) // TODO: can ambient sounds even reach this flow?
+  channels[cnum].ambient = params.ambient;
+  if (channels[cnum].ambient) // TODO: can ambient sounds even reach this flow?
     AmbChan = cnum;
 }
 
@@ -1088,6 +1094,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   params.priority = 1; // super low priority
   params.separation = 128;
   params.sfx_class = sfx_class_none;
+  params.ambient = true;
 
   // no priority checking, as ambient sounds would be the LOWEST.
   for (i = 0; i < numChannels; i++)
@@ -1105,6 +1112,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   channels[i].origin = origin;
   channels[i].sfxinfo = sfx;
   channels[i].priority = params.priority;
+  channels[i].ambient = params.ambient;
 }
 
 static void Heretic_S_StopSound(void *_origin)

@@ -35,6 +35,8 @@
 #ifndef __SOUNDS__
 #define __SOUNDS__
 
+#include "doomtype.h"
+
 typedef enum {
   sfx_class_none,
   sfx_class_important,
@@ -45,6 +47,7 @@ typedef struct {
   int separation;
   int pitch;
   int priority;
+  dboolean ambient;
   sfx_class_t sfx_class;
 } sfx_params_t;
 
