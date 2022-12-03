@@ -96,6 +96,7 @@ typedef struct
   unsigned int bits;
   // The channel data pointers, start and end.
   const unsigned char *data;
+  const unsigned char *startdata;
   const unsigned char *enddata;
   // Time/gametic that the channel started playing,
   //  used to determine oldest, which automatically
@@ -106,6 +107,7 @@ typedef struct
   // left and right channel volume (0-127)
   int leftvol;
   int rightvol;
+  dboolean loop;
 } channel_info_t;
 
 channel_info_t channelinfo[MAX_CHANNELS];
@@ -282,6 +284,8 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
   // Should be gametic, I presume.
   ci->starttime = gametic;
 
+  ci->startdata = ci->data;
+
   // Preserve sound SFX id,
   //  e.g. for avoiding duplicates of chainsaw.
   ci->id = sfxid;
@@ -329,6 +333,8 @@ static void updateSoundParams(int handle, sfx_params_t *params)
 
   if (snd_pcspeaker)
     return;
+
+  channelinfo[slot].loop = params->loop;
 
   // Set stepping
   // MWM 2000-12-24: Calculates proportion of channel samplerate
@@ -685,7 +691,12 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
 
         // Check whether we are done.
         if (ci->data >= ci->enddata)
-          stopchan(chan);
+        {
+          if (ci->loop)
+            ci->data = ci->startdata;
+          else
+            stopchan(chan);
+        }
       }
     }
 
