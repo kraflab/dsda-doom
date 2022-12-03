@@ -134,8 +134,7 @@ static int AmbChan = -1;
 
 static mobj_t* GetSoundListener(void);
 static void Heretic_S_StopSound(void *_origin);
-static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
-static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
+static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
 
 void S_ResetSfxVolume(void)
 {
@@ -284,8 +283,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
   sfxinfo_t *sfx;
   mobj_t *origin;
 
-  if (heretic) return Heretic_S_StartSoundAtVolume(origin_p, sfx_id, volume);
-  if (hexen) return Hexen_S_StartSoundAtVolume(origin_p, sfx_id, volume);
+  if (raven) return Raven_S_StartSoundAtVolume(origin_p, sfx_id, volume);
 
   origin = (mobj_t *) origin_p;
 
@@ -375,9 +373,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
 
 void S_StartSound(void *origin, int sfx_id)
 {
-  if (raven) return Hexen_S_StartSoundAtVolume(origin, sfx_id, 127);
-
-  S_StartSoundAtVolume(origin, sfx_id, sfx_volume);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume);
 }
 
 void S_StopSound(void *origin)
@@ -901,8 +897,7 @@ static dboolean S_StopSoundInfo(sfxinfo_t* sfx, int priority)
   return false; // don't replace any sounds
 }
 
-// This is essentially Heretic's S_StartSound AND Hexen's S_StartSoundAtVolume
-static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
+static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
 {
   sfxinfo_t *sfx;
   mobj_t *origin;
@@ -1049,7 +1044,7 @@ static void Hexen_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
     AmbChan = i;
 }
 
-static void Heretic_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
+void S_StartAmbientSound(void *_origin, int sound_id, int volume)
 {
   sfxinfo_t *sfx;
   sfx_params_t params;

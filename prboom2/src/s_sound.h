@@ -107,6 +107,7 @@ extern int idmusnum;
 #include "doomtype.h"
 
 void S_SetSoundCurve(dboolean fullprocess);
+void S_StartAmbientSound(void *origin, int sound_id, int volume);
 
 // hexen
 

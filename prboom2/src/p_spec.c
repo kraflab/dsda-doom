@@ -5014,12 +5014,12 @@ void P_AmbientSound(void)
         {
             case afxcmd_play:
                 AmbSfxVolume = P_Random(pr_heretic) >> 2;
-                S_StartSoundAtVolume(NULL, *AmbSfxPtr++, AmbSfxVolume);
+                S_StartAmbientSound(NULL, *AmbSfxPtr++, AmbSfxVolume);
                 break;
             case afxcmd_playabsvol:
                 sound = *AmbSfxPtr++;
                 AmbSfxVolume = *AmbSfxPtr++;
-                S_StartSoundAtVolume(NULL, sound, AmbSfxVolume);
+                S_StartAmbientSound(NULL, sound, AmbSfxVolume);
                 break;
             case afxcmd_playrelvol:
                 sound = *AmbSfxPtr++;
@@ -5032,7 +5032,7 @@ void P_AmbientSound(void)
                 {
                     AmbSfxVolume = 127;
                 }
-                S_StartSoundAtVolume(NULL, sound, AmbSfxVolume);
+                S_StartAmbientSound(NULL, sound, AmbSfxVolume);
                 break;
             case afxcmd_delay:
                 AmbSfxTics = *AmbSfxPtr++;
