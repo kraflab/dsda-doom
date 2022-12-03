@@ -83,6 +83,7 @@ typedef struct
   int volume;
 
   dboolean ambient;
+  dboolean loop;
   sfx_class_t sfx_class;
 } channel_t;
 
@@ -135,7 +136,7 @@ static int AmbChan = -1;
 
 static mobj_t* GetSoundListener(void);
 static void Heretic_S_StopSound(void *_origin);
-static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume);
+static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, dboolean loop);
 
 void S_ResetSfxVolume(void)
 {
@@ -277,14 +278,14 @@ void S_Start(void)
   }
 }
 
-void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
+void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean loop)
 {
   int cnum;
   sfx_params_t params;
   sfxinfo_t *sfx;
   mobj_t *origin;
 
-  if (raven) return Raven_S_StartSoundAtVolume(origin_p, sfx_id, volume);
+  if (raven) return Raven_S_StartSoundAtVolume(origin_p, sfx_id, volume, loop);
 
   origin = (mobj_t *) origin_p;
 
@@ -301,6 +302,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
     params.sfx_class = sfx_class_none;
 
   params.ambient = false;
+  params.loop = loop;
 
   sfx_id &= ~PICKUP_SOUND;
 
@@ -371,13 +373,19 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume)
       channels[cnum].handle = h;
       channels[cnum].pitch = params.pitch;
       channels[cnum].ambient = params.ambient;
+      channels[cnum].loop = params.loop;
     }
   }
 }
 
 void S_StartSound(void *origin, int sfx_id)
 {
-  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, false);
+}
+
+void S_LoopSound(void *origin, int sfx_id)
+{
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, true);
 }
 
 void S_StopSound(void *origin)
@@ -699,6 +707,7 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
   if (channel)
   {
     params->ambient = channel->ambient;
+    params->loop = channel->loop;
   }
 
   // calculate the distance to sound origin
@@ -981,7 +990,7 @@ static mobj_t* GetSoundListener(void)
   }
 }
 
-static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
+static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, dboolean loop)
 {
   sfxinfo_t *sfx;
   mobj_t *origin;
@@ -1009,6 +1018,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   sfx = &S_sfx[sound_id];
 
   params.ambient = heretic && sound_id >= heretic_sfx_wind;
+  params.loop = loop;
 
   // calculate the distance before other stuff so that we can throw out
   // sounds that are beyond the hearing range.
@@ -1066,6 +1076,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume)
   channels[cnum].priority = params.priority;
   channels[cnum].volume = volume; // original volume, not attenuated volume
   channels[cnum].ambient = params.ambient;
+  channels[cnum].loop = params.loop;
   if (channels[cnum].ambient) // TODO: can ambient sounds even reach this flow?
     AmbChan = cnum;
 }
@@ -1098,6 +1109,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   params.separation = 128;
   params.sfx_class = sfx_class_none;
   params.ambient = true;
+  params.loop = false;
 
   // no priority checking, as ambient sounds would be the LOWEST.
   for (i = 0; i < numChannels; i++)
@@ -1116,6 +1128,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   channels[i].sfxinfo = sfx;
   channels[i].priority = params.priority;
   channels[i].ambient = params.ambient;
+  channels[i].loop = params.loop;
 }
 
 static void Heretic_S_StopSound(void *_origin)

@@ -48,6 +48,7 @@ typedef struct {
   int pitch;
   int priority;
   dboolean ambient;
+  dboolean loop;
   sfx_class_t sfx_class;
 } sfx_params_t;
 

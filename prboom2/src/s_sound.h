@@ -38,6 +38,8 @@
 #pragma interface
 #endif
 
+#include "doomtype.h"
+
 #define MAX_CHANNELS 32
 
 //
@@ -62,9 +64,10 @@ void S_Start(void);
 //  using <sound_id> from sounds.h
 //
 void S_StartSound(void *origin, int sound_id);
+void S_LoopSound(void *origin, int sound_id);
 
 // Will start a sound at a given volume.
-void S_StartSoundAtVolume(void *origin, int sound_id, int volume);
+void S_StartSoundAtVolume(void *origin, int sound_id, int volume, dboolean loop);
 
 // killough 4/25/98: mask used to indicate sound origin is player item pickup
 #define PICKUP_SOUND (0x8000)
