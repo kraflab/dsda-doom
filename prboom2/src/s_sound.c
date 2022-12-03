@@ -696,7 +696,10 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
   if (!listener)
     return 0;
 
-  params->ambient = channel->ambient;
+  if (channel)
+  {
+    params->ambient = channel->ambient;
+  }
 
   // calculate the distance to sound origin
   //  and clip it if necessary
