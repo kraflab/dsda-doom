@@ -408,6 +408,22 @@ void S_StopSound(void *origin)
       }
 }
 
+void S_StopLoop(void *origin)
+{
+  int cnum;
+
+  //jff 1/22/98 return if sound is not enabled
+  if (nosfxparm)
+    return;
+
+  for (cnum = 0; cnum < numChannels; ++cnum)
+    if (channels[cnum].active && channels[cnum].origin == origin && channels[cnum].loop)
+    {
+      channels[cnum].loop = false;
+      break;
+    }
+}
+
 // [FG] disable sound cutoffs
 int full_sounds;
 
