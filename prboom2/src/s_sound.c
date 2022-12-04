@@ -884,8 +884,11 @@ static dboolean S_StopSoundInfo(sfxinfo_t* sfx, sfx_params_t *params)
       found++;            //found one.  Now, should we replace it??
       if (priority >= channels[i].priority)
       {                   // if we're gonna kill one, then this'll be it
-        least_priority = i;
-        priority = channels[i].priority;
+        if (!channels[i].loop || priority > channels[i].priority)
+        {
+          least_priority = i;
+          priority = channels[i].priority;
+        }
       }
     }
   }
