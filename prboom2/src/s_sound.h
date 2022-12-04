@@ -76,6 +76,8 @@ void S_StartSoundAtVolume(void *origin, int sound_id, int volume, dboolean loop)
 void S_StopSound(void* origin);
 void S_StopLoop(void *origin);
 
+void S_StopSoundLoops(void);
+
 extern int full_sounds;
 void S_UnlinkSound(void *origin);
 
