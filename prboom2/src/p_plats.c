@@ -71,7 +71,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
 
       if (heretic && !(leveltime & 31))
       {
-        S_StartSound(&plat->sector->soundorg, g_sfx_stnmov_plats);
+        S_LoopSound(&plat->sector->soundorg, g_sfx_stnmov_plats);
       }
 
       // if a pure raise type, make the plat moving sound
@@ -79,7 +79,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
           || plat->type == raiseToNearestAndChange)
       {
         if (!(leveltime&7))
-          S_StartSound((mobj_t *)&plat->sector->soundorg, g_sfx_stnmov_plats);
+          S_LoopSound((mobj_t *)&plat->sector->soundorg, g_sfx_stnmov_plats);
       }
 
       // if encountered an obstacle, and not a crush type, reverse direction
@@ -106,6 +106,8 @@ void T_CompatiblePlatRaise(plat_t * plat)
       {
         if (res == pastdest) // end of stroke
         {
+          S_StopLoop((mobj_t *)&plat->sector->soundorg);
+
           // if not an instant toggle type, wait, make plat stop sound
           if (plat->type!=toggleUpDn)
           {
@@ -143,6 +145,8 @@ void T_CompatiblePlatRaise(plat_t * plat)
       // handle reaching end of down stroke
       if (res == pastdest)
       {
+        S_StopLoop((mobj_t *)&plat->sector->soundorg);
+
         // if not an instant toggle, start waiting, make plat stop sound
         if (plat->type!=toggleUpDn) //jff 3/14/98 toggle up down
         {                           // is silent, instant, no waiting
@@ -175,7 +179,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
       }
       else if (heretic && !(leveltime & 31))
       {
-        S_StartSound(&plat->sector->soundorg, g_sfx_stnmov_plats);
+        S_LoopSound(&plat->sector->soundorg, g_sfx_stnmov_plats);
       }
       break;
 
@@ -212,7 +216,7 @@ void T_ZDoomPlatRaise(plat_t * plat)
           || plat->type == platRaiseAndStayLockout)
       {
         if (!(leveltime & 7))
-          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_stnmov_plats);
+          S_LoopSound((mobj_t *) &plat->sector->soundorg, g_sfx_stnmov_plats);
       }
 
       if (res == crushed && plat->crush == NO_CRUSH)
@@ -223,6 +227,8 @@ void T_ZDoomPlatRaise(plat_t * plat)
       }
       else if (res == pastdest)
       {
+        S_StopLoop((mobj_t *)&plat->sector->soundorg);
+
         if (plat->type != platToggle)
         {
           plat->count = plat->wait;
@@ -670,6 +676,8 @@ void EV_StopZDoomPlat(int tag, dboolean remove)
     plat_t *plat = pl->plat;
     if (plat->status != in_stasis && plat->tag == tag)
     {
+      S_StopLoop((mobj_t *) &plat->sector->soundorg);
+
       if (!remove)
       {
         plat->oldstatus = plat->status;
@@ -691,6 +699,8 @@ int EV_StopPlat(line_t* line)
     plat_t *plat = pl->plat;             // for one with the tag not in stasis
     if (plat->status != in_stasis && plat->tag == line->tag)
     {
+      S_StopLoop((mobj_t *) &plat->sector->soundorg);
+
       plat->oldstatus = plat->status;    // put it in stasis
       plat->status = in_stasis;
       plat->thinker.function = NULL;
