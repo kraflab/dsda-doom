@@ -815,6 +815,10 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, sfx_params_t *params)
         channels[cnum].origin == origin &&
         (comp[comp_sound] || channels[cnum].sfx_class == params->sfx_class))
     {
+      // The sound is already playing
+      if (channels[cnum].sfxinfo == sfxinfo && channels[cnum].loop && params->loop)
+        return channel_not_found;
+
       S_StopChannel(cnum);
       break;
     }
@@ -900,6 +904,15 @@ static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, sfx_params_t *para
 {
   int i;
   static int sndcount = 0;
+
+  for (i = 0; i < numChannels; i++)
+  {
+    // The sound is already playing
+    if (channels[i].sfxinfo == sfx &&
+        channels[i].origin == origin &&
+        channels[i].loop && params->loop)
+      return channel_not_found;
+  }
 
   if (!S_StopSoundInfo(sfx, params))
     return channel_not_found; // other sounds have greater priority
