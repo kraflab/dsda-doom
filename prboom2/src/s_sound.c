@@ -82,6 +82,7 @@ typedef struct
   // hexen
   int volume;
 
+  dboolean active;
   dboolean ambient;
   dboolean loop;
   sfx_class_t sfx_class;
@@ -239,7 +240,7 @@ void S_Stop(void)
   //jff 1/22/98 skip sound init if sound not enabled
   if (!nosfxparm)
     for (cnum=0 ; cnum<numChannels ; cnum++)
-      if (channels[cnum].sfxinfo)
+      if (channels[cnum].active)
         S_StopChannel(cnum);
 }
 
@@ -374,6 +375,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean loop)
       channels[cnum].pitch = params.pitch;
       channels[cnum].ambient = params.ambient;
       channels[cnum].loop = params.loop;
+      channels[cnum].active = true;
     }
   }
 }
@@ -399,7 +401,7 @@ void S_StopSound(void *origin)
     return;
 
   for (cnum=0 ; cnum<numChannels ; cnum++)
-    if (channels[cnum].sfxinfo && channels[cnum].origin == origin)
+    if (channels[cnum].active && channels[cnum].origin == origin)
       {
         S_StopChannel(cnum);
         break;
@@ -421,7 +423,7 @@ void S_UnlinkSound(void *origin)
   {
     for (cnum = 0; cnum < numChannels; cnum++)
     {
-      if (channels[cnum].sfxinfo && channels[cnum].origin == origin)
+      if (channels[cnum].active && channels[cnum].origin == origin)
       {
         degenmobj_t *const sobj = &sobjs[cnum];
         const mobj_t *const mobj = (mobj_t *) origin;
@@ -495,7 +497,7 @@ void S_UpdateSounds(void)
   {
     channel_t *channel = &channels[cnum];
 
-    if (channel->sfxinfo && channel->handle)
+    if (channel->active)
     {
       if (I_SoundIsPlaying(channel->handle))
       {
@@ -664,23 +666,17 @@ void S_StopChannel(int cnum)
   if (nosfxparm)
     return;
 
-  if (c->sfxinfo)
-    {
-      // stop the sound playing
-      if (I_SoundIsPlaying(c->handle))
-        I_StopSound(c->handle);
+  if (c->active)
+  {
+    // stop the sound playing
+    if (I_SoundIsPlaying(c->handle))
+      I_StopSound(c->handle);
 
-      // check to see
-      //  if other channels are playing the sound
-      for (i=0 ; i<numChannels ; i++)
-        if (cnum != i && c->sfxinfo == channels[i].sfxinfo)
-          break;
-
-      c->sfxinfo = 0;
-
-      // heretic_note: do this for doom too?
-      if (raven) c->handle = 0;
-    }
+    c->active = false;
+    c->sfxinfo = NULL;
+    c->origin = NULL;
+    c->handle = 0;
+  }
 }
 
 //
@@ -810,9 +806,8 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, sfx_params_t *params)
     return channel_not_found;
 
   // Find an open channel
-  for (cnum = 0; cnum < numChannels && channels[cnum].sfxinfo; cnum++)
-    if (channels[cnum].sfxinfo &&
-        channels[cnum].origin == origin &&
+  for (cnum = 0; cnum < numChannels && channels[cnum].active; cnum++)
+    if (channels[cnum].origin == origin &&
         (comp[comp_sound] || channels[cnum].sfx_class == params->sfx_class))
     {
       // The sound is already playing
@@ -868,7 +863,7 @@ static dboolean S_StopSoundInfo(sfxinfo_t* sfx, sfx_params_t *params)
 
   for (i = 0; i < numChannels; i++)
   {
-    if (channels[i].sfxinfo == sfx && channels[i].origin)
+    if (channels[i].active && channels[i].sfxinfo == sfx && channels[i].origin)
     {
       found++;            //found one.  Now, should we replace it??
       if (priority >= channels[i].priority)
@@ -884,15 +879,7 @@ static dboolean S_StopSoundInfo(sfxinfo_t* sfx, sfx_params_t *params)
 
   if (least_priority >= 0)
   {
-    channel_t* channel = &channels[least_priority];
-
-    if (channel->handle)
-    {
-      if (I_SoundIsPlaying(channel->handle))
-        I_StopSound(channel->handle);
-
-      channel->origin = NULL;
-    }
+    S_StopChannel(least_priority);
 
     return true;
   }
@@ -908,7 +895,8 @@ static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, sfx_params_t *para
   for (i = 0; i < numChannels; i++)
   {
     // The sound is already playing
-    if (channels[i].sfxinfo == sfx &&
+    if (channels[i].active &&
+        channels[i].sfxinfo == sfx &&
         channels[i].origin == origin &&
         channels[i].loop && params->loop)
       return channel_not_found;
@@ -943,7 +931,7 @@ static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, sfx_params_t *para
     }
 
     for (i = 0; i < numChannels; i++)
-      if (channels[i].origin == NULL)
+      if (!channels[i].active)
         break;
 
     if (i >= numChannels)
@@ -968,14 +956,7 @@ static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, sfx_params_t *para
       if (chan != -1)
         return channel_not_found;  //no free channels.
 
-      if (channels[i].handle)
-      {
-        if (I_SoundIsPlaying(channels[i].handle))
-          I_StopSound(channels[i].handle);
-
-        if (AmbChan == i)
-          AmbChan = -1;
-      }
+      S_StopChannel(i);
     }
   }
 
@@ -1090,6 +1071,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   channels[cnum].volume = volume; // original volume, not attenuated volume
   channels[cnum].ambient = params.ambient;
   channels[cnum].loop = params.loop;
+  channels[cnum].active = true;
   if (channels[cnum].ambient) // TODO: can ambient sounds even reach this flow?
     AmbChan = cnum;
 }
@@ -1142,6 +1124,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   channels[i].priority = params.priority;
   channels[i].ambient = params.ambient;
   channels[i].loop = params.loop;
+  channels[i].active = true;
 }
 
 static void Heretic_S_StopSound(void *_origin)
@@ -1155,15 +1138,9 @@ static void Heretic_S_StopSound(void *_origin)
 
   for (i = 0; i < numChannels; i++)
   {
-    if (channels[i].origin == origin)
+    if (channels[i].active && channels[i].origin == origin)
     {
-      I_StopSound(channels[i].handle);
-
-      channels[i].handle = 0;
-      channels[i].origin = NULL;
-
-      if (AmbChan == i)
-        AmbChan = -1;
+      S_StopChannel(i);
     }
   }
 }
@@ -1183,7 +1160,7 @@ dboolean S_GetSoundPlayingInfo(void * origin, int sound_id)
 
     for (i = 0; i < numChannels; i++)
     {
-        if (channels[i].sfxinfo == sfx && channels[i].origin == origin)
+        if (channels[i].active && channels[i].sfxinfo == sfx && channels[i].origin == origin)
         {
             if (I_SoundIsPlaying(channels[i].handle))
             {
