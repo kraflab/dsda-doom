@@ -191,6 +191,7 @@ See the [build mode guide](./build_mode.md) for more info.
 - `fullclip`
 - `freeze`
 - `nosleep`
+- `allghosts`
 - `quicken`
 - `ponce`
 - `kitty`

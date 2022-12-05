@@ -1971,6 +1971,20 @@ static dboolean console_MusicRestart(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_AllGhosts(const char* command, const char* args) {
+  extern int bmapwidth;
+  static int old_bmapwidth;
+
+  if (bmapwidth) {
+    old_bmapwidth = bmapwidth;
+    bmapwidth = 0;
+  }
+  else
+    bmapwidth = old_bmapwidth;
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -2163,6 +2177,7 @@ static console_command_entry_t console_commands[] = {
   { "fullclip", console_CheatFullClip, CF_NEVER },
   { "freeze", console_Freeze, CF_NEVER },
   { "nosleep", console_NoSleep, CF_NEVER },
+  { "allghosts", console_AllGhosts, CF_NEVER },
 
   { "quicken", console_BasicCheat, CF_DEMO },
   { "ponce", console_BasicCheat, CF_DEMO },
