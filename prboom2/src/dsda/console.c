@@ -29,6 +29,7 @@
 #include "p_map.h"
 #include "p_maputl.h"
 #include "p_mobj.h"
+#include "p_setup.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "s_sound.h"
@@ -1972,15 +1973,10 @@ static dboolean console_MusicRestart(const char* command, const char* args) {
 }
 
 static dboolean console_AllGhosts(const char* command, const char* args) {
-  extern int bmapwidth;
-  static int old_bmapwidth;
-
-  if (bmapwidth) {
-    old_bmapwidth = bmapwidth;
+  if (bmapwidth)
     bmapwidth = 0;
-  }
   else
-    bmapwidth = old_bmapwidth;
+    P_RestoreOriginalBlockMap();
 
   return true;
 }
