@@ -60,4 +60,16 @@ extern dboolean skipblstart; // MaxW: Skip initial blocklist short
 extern int blockmapxneg;
 extern int blockmapyneg;
 
+typedef struct
+{
+  int width;
+  int height;
+  fixed_t orgx;
+  fixed_t orgy;
+} blockmap_t;
+
+extern blockmap_t original_blockmap;
+
+void P_RestoreOriginalBlockMap(void);
+
 #endif

@@ -2035,6 +2035,24 @@ static void AddBlockLine
   done[blockno] = 1;
 }
 
+blockmap_t original_blockmap;
+
+static void RememberOriginalBlockMap(void)
+{
+  original_blockmap.width = bmapwidth;
+  original_blockmap.height = bmapheight;
+  original_blockmap.orgx = bmaporgx;
+  original_blockmap.orgy = bmaporgy;
+}
+
+void P_RestoreOriginalBlockMap(void)
+{
+  bmapwidth = original_blockmap.width;
+  bmapheight = original_blockmap.height;
+  bmaporgx = original_blockmap.orgx;
+  bmaporgy = original_blockmap.orgy;
+}
+
 //
 // Actually construct the blockmap lump from the level data
 //
@@ -2274,6 +2292,8 @@ static void P_CreateBlockMap(void)
   blockmaplump[2] = bmapwidth  = ncols;
   blockmaplump[3] = bmapheight = nrows;
 
+  RememberOriginalBlockMap();
+
   // offsets to lists and block lists
 
   for (i=0;i<NBlocks;i++)
@@ -2419,6 +2439,8 @@ static void P_LoadBlockMap (int lump)
     bmaporgy = blockmaplump[1]<<FRACBITS;
     bmapwidth = blockmaplump[2];
     bmapheight = blockmaplump[3];
+
+    RememberOriginalBlockMap();
 
     // haleyjd 03/04/10: check for blockmap problems
     // http://www.doomworld.com/idgames/index.php?id=12935
