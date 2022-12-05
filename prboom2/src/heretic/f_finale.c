@@ -202,11 +202,6 @@ void F_DemonScroll(void)
   static int yval = 0;
   static int nextscroll = 0;
 
-  if (finalecount < nextscroll)
-  {
-    return;
-  }
-
   if (finalecount < 70)
   {
     V_DrawRawScreen("FINAL1");
@@ -216,8 +211,11 @@ void F_DemonScroll(void)
   {
     V_DrawRawScreenSection("FINAL2", (200 - yval) * 320, 0, yval);
     V_DrawRawScreenSection("FINAL1", 0, yval, 200 - yval);
-    yval++;
-    nextscroll = finalecount + 3;
+    if (finalecount >= nextscroll)
+    {
+      yval++;
+      nextscroll = finalecount + 3;
+    }
   }
   else
   {                           //else, we'll just sit here and wait, for now
