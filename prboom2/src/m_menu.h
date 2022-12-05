@@ -113,6 +113,7 @@ extern int warning_about_changes, print_warning_about_changes;
 #define S_NAME  0x2000000
 #define S_EVEN 0x20000000
 #define S_STR  0x40000000 // need to refactor things...
+#define S_NOCLEAR 0x80000000
 
 /* S_SHOWDESC  = the set of items whose description should be displayed
  * S_SHOWSET   = the set of items whose setting should be displayed

@@ -2192,7 +2192,7 @@ setup_menu_t keys_settings6[] =
   {"LEFT"        ,S_INPUT     ,m_menu,KB_X,KB_Y+3*8,0,dsda_input_menu_left},
   {"RIGHT"       ,S_INPUT     ,m_menu,KB_X,KB_Y+4*8,0,dsda_input_menu_right},
   {"BACKSPACE"   ,S_INPUT     ,m_menu,KB_X,KB_Y+5*8,0,dsda_input_menu_backspace},
-  {"SELECT ITEM" ,S_INPUT     ,m_menu,KB_X,KB_Y+6*8,0,dsda_input_menu_enter},
+  { "SELECT ITEM", S_INPUT | S_NOCLEAR, m_menu, KB_X, KB_Y + 6 * 8, 0, dsda_input_menu_enter },
   {"EXIT"        ,S_INPUT     ,m_menu,KB_X,KB_Y+7*8,0,dsda_input_menu_escape},
   {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,KB_Y+8*8,0,dsda_input_menu_clear},
 
@@ -4571,7 +4571,14 @@ dboolean M_Responder (event_t* ev) {
     {
       if (ptr1->m_flags & S_INPUT)
       {
-        dsda_InputReset(ptr1->input);
+        if (ptr1->m_flags & S_NOCLEAR)
+        {
+          S_StartSound(NULL, g_sfx_oof);
+        }
+        else
+        {
+          dsda_InputReset(ptr1->input);
+        }
       }
 
       return true;
