@@ -41,7 +41,6 @@ int dsda_LegacyBossAction(mobj_t* mo);
 int dsda_LegacyHUTitle(const char** title);
 int dsda_LegacySkyTexture(int* sky);
 int dsda_LegacyPrepareInitNew(void);
-int dsda_LegacyPrepareParTime(void);
 int dsda_LegacyPrepareIntermission(int* result);
 int dsda_LegacyPrepareFinale(int* result);
 void dsda_LegacyLoadMapInfo(void);

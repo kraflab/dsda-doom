@@ -381,21 +381,6 @@ int dsda_USkyTexture(int* sky) {
 int dsda_UPrepareInitNew(void) {
   return false;
 }
-
-int dsda_UPrepareParTime(void) {
-  if (!gamemapinfo)
-    return false;
-
-  if (gamemapinfo->partime) {
-    wminfo.partime = gamemapinfo->partime;
-    wminfo.modified_partime = true;
-
-    return true;
-  }
-
-  return false;
-}
-
 int dsda_UPrepareIntermission(int* result) {
   const char *next = "";
 
@@ -411,6 +396,9 @@ int dsda_UPrepareIntermission(int* result) {
 
     return true;
   }
+
+  wminfo.partime = gamemapinfo->partime;
+  wminfo.modified_partime = true;
 
   if (secretexit)
     next = gamemapinfo->nextsecret;

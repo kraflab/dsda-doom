@@ -415,26 +415,9 @@ int dsda_LegacyPrepareInitNew(void) {
   return true;
 }
 
-int dsda_LegacyPrepareParTime(void) {
-  extern dboolean deh_pars;
-
-  if (gamemode == commercial) {
-    if (gamemap >= 1 && gamemap <= 34) {
-      wminfo.partime = TICRATE * cpars[gamemap - 1];
-      wminfo.modified_partime = deh_pars;
-    }
-  }
-  else {
-    if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9) {
-      wminfo.partime = TICRATE * pars[gameepisode][gamemap];
-      wminfo.modified_partime = deh_pars;
-    }
-  }
-
-  return true;
-}
-
 int dsda_LegacyPrepareIntermission(int* result) {
+  extern int deh_pars;
+
   if (gamemode != commercial)
     if (gamemap == 9) {
       int i;
@@ -512,6 +495,19 @@ int dsda_LegacyPrepareIntermission(int* result) {
     }
     else
       wminfo.next = gamemap; // go to next level
+  }
+
+  if (gamemode == commercial) {
+    if (gamemap >= 1 && gamemap <= 34) {
+      wminfo.partime = TICRATE * cpars[gamemap - 1];
+      wminfo.modified_partime = deh_pars;
+    }
+  }
+  else {
+    if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9) {
+      wminfo.partime = TICRATE * pars[gameepisode][gamemap];
+      wminfo.modified_partime = deh_pars;
+    }
   }
 
   if (map_format.zdoom)

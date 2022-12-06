@@ -330,10 +330,6 @@ int dsda_HexenPrepareInitNew(void) {
   return true;
 }
 
-int dsda_HexenPrepareParTime(void) {
-  return false; // TODO
-}
-
 int dsda_HexenPrepareIntermission(int* result) {
   if (!map_format.mapinfo)
     return false;
