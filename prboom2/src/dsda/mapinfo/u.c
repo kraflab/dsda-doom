@@ -400,6 +400,12 @@ int dsda_UPrepareIntermission(int* result) {
   wminfo.partime = gamemapinfo->partime;
   wminfo.modified_partime = true;
 
+  if (!wminfo.partime) {
+    extern void dsda_LegacyParTime(int* partime, dboolean* modified);
+
+    dsda_LegacyParTime(&wminfo.fake_partime, &wminfo.modified_partime);
+  }
+
   if (secretexit)
     next = gamemapinfo->nextsecret;
 

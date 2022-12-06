@@ -312,6 +312,7 @@ typedef struct
 
   // the par time
   int         partime;
+  int         fake_partime;
   dboolean    modified_partime;
 
   // index of this player in game

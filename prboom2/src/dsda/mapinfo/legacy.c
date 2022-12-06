@@ -415,9 +415,24 @@ int dsda_LegacyPrepareInitNew(void) {
   return true;
 }
 
-int dsda_LegacyPrepareIntermission(int* result) {
+void dsda_LegacyParTime(int* partime, dboolean* modified) {
   extern int deh_pars;
 
+  if (gamemode == commercial) {
+    if (gamemap >= 1 && gamemap <= 34) {
+      *partime = TICRATE * cpars[gamemap - 1];
+      *modified = deh_pars;
+    }
+  }
+  else {
+    if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9) {
+      *partime = TICRATE * pars[gameepisode][gamemap];
+      *modified = deh_pars;
+    }
+  }
+}
+
+int dsda_LegacyPrepareIntermission(int* result) {
   if (gamemode != commercial)
     if (gamemap == 9) {
       int i;
@@ -497,18 +512,7 @@ int dsda_LegacyPrepareIntermission(int* result) {
       wminfo.next = gamemap; // go to next level
   }
 
-  if (gamemode == commercial) {
-    if (gamemap >= 1 && gamemap <= 34) {
-      wminfo.partime = TICRATE * cpars[gamemap - 1];
-      wminfo.modified_partime = deh_pars;
-    }
-  }
-  else {
-    if (gameepisode >= 1 && gameepisode <= 4 && gamemap >= 1 && gamemap <= 9) {
-      wminfo.partime = TICRATE * pars[gameepisode][gamemap];
-      wminfo.modified_partime = deh_pars;
-    }
-  }
+  dsda_LegacyParTime(&wminfo.partime, &wminfo.modified_partime);
 
   if (map_format.zdoom)
     if (leave_data.map > 0)

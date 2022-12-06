@@ -956,8 +956,13 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
   {
     if (wbs->epsd < 4 || wbs->modified_partime)
     {
+      int display_count;
+
+      display_count =
+        wbs->fake_partime && cnt_par >= 0 ? wbs->fake_partime / TICRATE : cnt_par;
+
       V_DrawNamePatch(320/2 + SP_TIMEX, SP_TIMEY, FB, par, CR_DEFAULT, VPT_STRETCH);
-      WI_drawTime(320 - SP_TIMEX, SP_TIMEY, cnt_par);
+      WI_drawTime(320 - SP_TIMEX, SP_TIMEY, display_count);
     }
   }
 

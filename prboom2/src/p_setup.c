@@ -2959,6 +2959,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   totallive = totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
   wminfo.partime = 180;
+  wminfo.fake_partime = 0;
   wminfo.modified_partime = false;
 
   for (i = 0; i < g_maxplayers; i++)
