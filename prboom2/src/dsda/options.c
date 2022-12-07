@@ -21,6 +21,8 @@
 #include "m_random.h"
 #include "lprintf.h"
 
+#include "dsda/configuration.h"
+
 #include "options.h"
 
 static const dsda_options_t default_vanilla_options = {
@@ -155,6 +157,7 @@ typedef struct {
   int* value;
   int min;
   int max;
+  int config_key;
 } dsda_option_t;
 
 static dsda_option_t option_list[] = {
@@ -195,6 +198,32 @@ static dsda_option_t option_list[] = {
   { "comp_friendlyspawn", &mbf_options.comp_friendlyspawn, 0, 1 },
   { "comp_voodooscroller", &mbf_options.comp_voodooscroller, 0, 1 },
   { "comp_reservedlineflag", &mbf_options.comp_reservedlineflag, 0, 1 },
+
+  { "mapcolor_back", NULL, 0, 255, dsda_config_mapcolor_back },
+  { "mapcolor_grid", NULL, 0, 255, dsda_config_mapcolor_grid },
+  { "mapcolor_wall", NULL, 0, 255, dsda_config_mapcolor_wall },
+  { "mapcolor_fchg", NULL, 0, 255, dsda_config_mapcolor_fchg },
+  { "mapcolor_cchg", NULL, 0, 255, dsda_config_mapcolor_cchg },
+  { "mapcolor_clsd", NULL, 0, 255, dsda_config_mapcolor_clsd },
+  { "mapcolor_rkey", NULL, 0, 255, dsda_config_mapcolor_rkey },
+  { "mapcolor_bkey", NULL, 0, 255, dsda_config_mapcolor_bkey },
+  { "mapcolor_ykey", NULL, 0, 255, dsda_config_mapcolor_ykey },
+  { "mapcolor_rdor", NULL, 0, 255, dsda_config_mapcolor_rdor },
+  { "mapcolor_bdor", NULL, 0, 255, dsda_config_mapcolor_bdor },
+  { "mapcolor_ydor", NULL, 0, 255, dsda_config_mapcolor_ydor },
+  { "mapcolor_tele", NULL, 0, 255, dsda_config_mapcolor_tele },
+  { "mapcolor_secr", NULL, 0, 255, dsda_config_mapcolor_secr },
+  { "mapcolor_revsecr", NULL, 0, 255, dsda_config_mapcolor_revsecr },
+  { "mapcolor_exit", NULL, 0, 255, dsda_config_mapcolor_exit },
+  { "mapcolor_unsn", NULL, 0, 255, dsda_config_mapcolor_unsn },
+  { "mapcolor_flat", NULL, 0, 255, dsda_config_mapcolor_flat },
+  { "mapcolor_sprt", NULL, 0, 255, dsda_config_mapcolor_sprt },
+  { "mapcolor_item", NULL, 0, 255, dsda_config_mapcolor_item },
+  { "mapcolor_enemy", NULL, 0, 255, dsda_config_mapcolor_enemy },
+  { "mapcolor_frnd", NULL, 0, 255, dsda_config_mapcolor_frnd },
+  { "mapcolor_hair", NULL, 0, 255, dsda_config_mapcolor_hair },
+  { "mapcolor_sngl", NULL, 0, 255, dsda_config_mapcolor_sngl },
+  { "mapcolor_me", NULL, 0, 255, dsda_config_mapcolor_me },
   { 0 }
 };
 
@@ -242,9 +271,12 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
     if (count != 2)
       continue;
 
-    for (option = option_list; option->value; option++) {
+    for (option = option_list; option->key; option++) {
       if (!strncmp(key, option->key, OPTIONS_LINE_LENGTH)) {
-        *option->value = BETWEEN(option->min, option->max, value);
+        if (option->value)
+          *option->value = BETWEEN(option->min, option->max, value);
+        else
+          dsda_UpdateIntConfig(option->config_key, value, false);
 
         lprintf(LO_INFO, "dsda_LumpOptions: %s = %d\n", key, value);
 
