@@ -15,6 +15,7 @@
 //	DSDA Palette Management
 //
 
+#include "r_main.h"
 #include "w_wad.h"
 #include "v_video.h"
 
@@ -79,6 +80,23 @@ void dsda_FreePlayPal(void) {
     }
 }
 
+static dboolean dsda_DuplicatePaletteEntry(const char *playpal, int i, int j) {
+  int colormap_i;
+
+  if (
+    playpal[3 * i + 0] != playpal[3 * j + 0] ||
+    playpal[3 * i + 1] != playpal[3 * j + 1] ||
+    playpal[3 * i + 2] != playpal[3 * j + 2]
+  )
+    return false;
+
+  for (colormap_i = 0; colormap_i < NUMCOLORMAPS; ++colormap_i)
+    if (colormaps[0][colormap_i * 256 + i] != colormaps[0][colormap_i * 256 + j])
+      return false;
+
+  return true;
+}
+
 // Moved from r_patch.c
 void dsda_InitPlayPal(void) {
   int playpal_i;
@@ -100,11 +118,7 @@ void dsda_InitPlayPal(void) {
 
       for (i = 0; i < 256; i++) {
         for (j = i + 1; j < 256; j++) {
-          if (
-            playpal[3 * i + 0] == playpal[3 * j + 0] &&
-            playpal[3 * i + 1] == playpal[3 * j + 1] &&
-            playpal[3 * i + 2] == playpal[3 * j + 2]
-          ) {
+          if (dsda_DuplicatePaletteEntry(playpal, i, j)) {
             found = 1;
             break;
           }
