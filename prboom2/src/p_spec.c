@@ -3074,13 +3074,13 @@ void P_UpdateSpecials (void)
     // Animate flats and textures globally
     for (anim = anims ; anim < lastanim ; anim++)
     {
-      for (i=anim->basepic ; i<anim->basepic+anim->numpics ; i++)
+      for (i = 0; i < anim->numpics; ++i)
       {
-        pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
+        pic = anim->basepic + ((leveltime / anim->speed + i) % anim->numpics);
         if (anim->istexture)
-          texturetranslation[i] = pic;
+          texturetranslation[anim->basepic + i] = pic;
         else
-          flattranslation[i] = pic;
+          flattranslation[anim->basepic + i] = pic;
       }
     }
   }
