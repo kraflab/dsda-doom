@@ -103,6 +103,7 @@ static void STlib_drawNum
   int   w = n->p[0].width;
   int   h = n->p[0].height;
   int   x = n->x;
+  int   clear_x, clear_y;
 
   int   neg;
 
@@ -126,20 +127,14 @@ static void STlib_drawNum
   }
 
   // clear the area
-  x = n->x - numdigits*w;
+  clear_x = n->x - LittleShort(n->p[0].leftoffset) - numdigits * w;
+  clear_y = n->y - LittleShort(n->p[0].topoffset);
 
-#ifdef RANGECHECK
-  if (n->y - ST_Y < 0)
-    I_Error("STlib_drawNum: n->y - ST_Y < 0");
-#endif
-
-  V_CopyRect(BG, FG, x, n->y, w * numdigits, h, VPT_STRETCH | VPT_ALIGN_BOTTOM);
+  V_CopyRect(BG, FG, clear_x, clear_y, w * numdigits, h, VPT_STRETCH | VPT_ALIGN_BOTTOM);
 
   // if non-number, do not draw it
   if (num == 1994)
     return;
-
-  x = n->x;
 
   //jff 2/16/98 add color translation to digit output
   // in the special case of 0, you draw 0
