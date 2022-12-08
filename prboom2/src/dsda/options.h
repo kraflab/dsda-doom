@@ -64,6 +64,7 @@ typedef struct dsda_options {
   int comp_reservedlineflag;
 } dsda_options_t;
 
+void dsda_ParseOptionsLump(void);
 const dsda_options_t* dsda_Options(void);
 int dsda_GameOptionSize(void);
 byte* dsda_WriteOptions21(byte* demo_p);

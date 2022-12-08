@@ -96,6 +96,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/mobjinfo.h"
+#include "dsda/options.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
 #include "dsda/render_stats.h"
@@ -1727,6 +1728,7 @@ static void D_DoomMainSetup(void)
 
 
   lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
+  dsda_ParseOptionsLump();
   G_ReloadDefaults();
 
   // e6y

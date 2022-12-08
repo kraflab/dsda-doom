@@ -227,6 +227,13 @@ static dsda_option_t option_list[] = {
   { 0 }
 };
 
+typedef struct {
+  dboolean found;
+  int value;
+} dsda_parsed_option_t;
+
+static dsda_parsed_option_t parsed_option_list[arrlen(option_list)];
+
 #define OPTIONS_LINE_LENGTH 80
 
 typedef struct {
@@ -250,13 +257,19 @@ static const char* dsda_ReadOption(char* buf, size_t size, options_lump_t* lump)
   return lump->data;
 }
 
-static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
+void dsda_ParseOptionsLump(void) {
   options_lump_t lump;
   char buf[OPTIONS_LINE_LENGTH];
   char key[OPTIONS_LINE_LENGTH];
   char* scan;
-  int value, count;
+  int lumpnum;
+  int i, value, count;
   dsda_option_t* option;
+
+  lumpnum = W_CheckNumForName("OPTIONS");
+
+  if (lumpnum == LUMP_NOT_FOUND)
+    return;
 
   lump.length = W_LumpLength(lumpnum);
   lump.data = W_LumpByNum(lumpnum);
@@ -271,12 +284,14 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
     if (count != 2)
       continue;
 
-    for (option = option_list; option->key; option++) {
-      if (!strncmp(key, option->key, OPTIONS_LINE_LENGTH)) {
-        if (option->value)
-          *option->value = BETWEEN(option->min, option->max, value);
+    for (i = 0; option_list[i].key; ++i) {
+      if (!strncmp(key, option_list[i].key, OPTIONS_LINE_LENGTH)) {
+        if (option_list[i].value) {
+          parsed_option_list[i].found = true;
+          parsed_option_list[i].value = BETWEEN(option_list[i].min, option_list[i].max, value);
+        }
         else
-          dsda_UpdateIntConfig(option->config_key, value, false);
+          dsda_UpdateIntConfig(option_list[i].config_key, value, false);
 
         lprintf(LO_INFO, "dsda_LumpOptions: %s = %d\n", key, value);
 
@@ -285,23 +300,22 @@ static const dsda_options_t* dsda_LumpOptions(int lumpnum) {
     }
   }
 
-  return &mbf_options;
+  return;
 }
 
 static const dsda_options_t* dsda_MBFOptions(void) {
-  int lumpnum;
+  int i;
 
   if (compatibility_level == mbf_compatibility)
     mbf_options = default_mbf_options;
   else
     mbf_options = default_latest_options;
 
-  lumpnum = W_CheckNumForName("OPTIONS");
+  for (i = 0; option_list[i].value; ++i)
+    if (parsed_option_list[i].found)
+      *option_list[i].value = parsed_option_list[i].value;
 
-  if (lumpnum == LUMP_NOT_FOUND)
-    return &mbf_options;
-
-  return dsda_LumpOptions(lumpnum);
+  return &mbf_options;
 }
 
 const dsda_options_t* dsda_Options(void) {
