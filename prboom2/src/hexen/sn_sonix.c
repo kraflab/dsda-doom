@@ -326,7 +326,7 @@ void SN_StopSequence(mobj_t * mobj)
             S_StopSound(mobj);
             if (node->stopSound)
             {
-                S_StartSoundAtVolume(mobj, node->stopSound, node->volume, false);
+                S_StartSoundAtVolume(mobj, node->stopSound, node->volume, 0);
             }
             if (SequenceListHead == node)
             {
@@ -372,7 +372,7 @@ void SN_UpdateActiveSequences(void)
                 {
                     node->currentSoundID = *(node->sequencePtr + 1);
                     S_StartSoundAtVolume(node->mobj, node->currentSoundID,
-                                         node->volume, false);
+                                         node->volume, 0);
                 }
                 node->sequencePtr += 2;
                 break;
@@ -388,7 +388,7 @@ void SN_UpdateActiveSequences(void)
                 {
                     node->currentSoundID = *(node->sequencePtr + 1);
                     S_StartSoundAtVolume(node->mobj, node->currentSoundID,
-                                         node->volume, false);
+                                         node->volume, 0);
                 }
                 break;
             case SS_CMD_DELAY:

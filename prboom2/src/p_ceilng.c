@@ -187,13 +187,11 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 
       // if not silent, make moving sound
       if (!(leveltime & 7) && !ceiling->silent)
-        S_LoopSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov);
+        S_LoopSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov, 8);
 
       // handle reaching destination height
       if (res == pastdest)
       {
-        S_StopLoop((mobj_t *) &ceiling->sector->soundorg);
-
         switch(ceiling->type)
         {
           // plain movers are just removed
@@ -252,13 +250,11 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 
       // if not silent, make moving sound
       if (!(leveltime & 7) && !ceiling->silent)
-        S_LoopSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov);
+        S_LoopSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov, 8);
 
       // handle reaching destination height
       if (res == pastdest)
       {
-        S_StopLoop((mobj_t *) &ceiling->sector->soundorg);
-
         switch(ceiling->type)
         {
           // 02/09/98 jff change slow crushers' speed back to normal

@@ -49,6 +49,7 @@ typedef struct {
   int priority;
   dboolean ambient;
   dboolean loop;
+  int loop_timeout;
   sfx_class_t sfx_class;
 } sfx_params_t;
 

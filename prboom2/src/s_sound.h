@@ -64,19 +64,16 @@ void S_Start(void);
 //  using <sound_id> from sounds.h
 //
 void S_StartSound(void *origin, int sound_id);
-void S_LoopSound(void *origin, int sound_id);
+void S_LoopSound(void *origin, int sfx_id, int timeout);
 
 // Will start a sound at a given volume.
-void S_StartSoundAtVolume(void *origin, int sound_id, int volume, dboolean loop);
+void S_StartSoundAtVolume(void *origin, int sound_id, int volume, int loop_timeout);
 
 // killough 4/25/98: mask used to indicate sound origin is player item pickup
 #define PICKUP_SOUND (0x8000)
 
 // Stop sound for thing at <origin>
 void S_StopSound(void* origin);
-void S_StopLoop(void *origin);
-
-void S_StopSoundLoops(void);
 
 extern int full_sounds;
 void S_UnlinkSound(void *origin);

@@ -85,6 +85,7 @@ typedef struct
   dboolean active;
   dboolean ambient;
   dboolean loop;
+  int loop_timeout;
   sfx_class_t sfx_class;
 } channel_t;
 
@@ -137,7 +138,7 @@ static int AmbChan = -1;
 
 static mobj_t* GetSoundListener(void);
 static void Heretic_S_StopSound(void *_origin);
-static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, dboolean loop);
+static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, int loop_timeout);
 
 void S_ResetSfxVolume(void)
 {
@@ -279,14 +280,14 @@ void S_Start(void)
   }
 }
 
-void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean loop)
+void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeout)
 {
   int cnum;
   sfx_params_t params;
   sfxinfo_t *sfx;
   mobj_t *origin;
 
-  if (raven) return Raven_S_StartSoundAtVolume(origin_p, sfx_id, volume, loop);
+  if (raven) return Raven_S_StartSoundAtVolume(origin_p, sfx_id, volume, loop_timeout);
 
   origin = (mobj_t *) origin_p;
 
@@ -303,7 +304,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean loop)
     params.sfx_class = sfx_class_none;
 
   params.ambient = false;
-  params.loop = loop;
+  params.loop = loop_timeout > 0;
+  params.loop_timeout = loop_timeout;
 
   sfx_id &= ~PICKUP_SOUND;
 
@@ -375,6 +377,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean loop)
       channels[cnum].pitch = params.pitch;
       channels[cnum].ambient = params.ambient;
       channels[cnum].loop = params.loop;
+      channels[cnum].loop_timeout = params.loop_timeout;
       channels[cnum].active = true;
     }
   }
@@ -382,12 +385,12 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean loop)
 
 void S_StartSound(void *origin, int sfx_id)
 {
-  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, false);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, 0);
 }
 
-void S_LoopSound(void *origin, int sfx_id)
+void S_LoopSound(void *origin, int sfx_id, int timeout)
 {
-  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, true);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, timeout);
 }
 
 void S_StopSound(void *origin)
@@ -406,34 +409,6 @@ void S_StopSound(void *origin)
         S_StopChannel(cnum);
         break;
       }
-}
-
-void S_StopLoop(void *origin)
-{
-  int cnum;
-
-  //jff 1/22/98 return if sound is not enabled
-  if (nosfxparm)
-    return;
-
-  for (cnum = 0; cnum < numChannels; ++cnum)
-    if (channels[cnum].active && channels[cnum].origin == origin && channels[cnum].loop)
-    {
-      channels[cnum].loop = false;
-      break;
-    }
-}
-
-void S_StopSoundLoops(void)
-{
-  int cnum;
-
-  if (nosfxparm)
-    return;
-
-  for (cnum = 0; cnum < numChannels; ++cnum)
-    if (channels[cnum].active && channels[cnum].loop)
-      channels[cnum].loop = false;
 }
 
 // [FG] disable sound cutoffs
@@ -527,7 +502,11 @@ void S_UpdateSounds(void)
 
     if (channel->active)
     {
-      if (I_SoundIsPlaying(channel->handle))
+      if (channel->loop && --channel->loop_timeout < 0)
+      {
+        S_StopChannel(cnum);
+      }
+      else if (I_SoundIsPlaying(channel->handle))
       {
         sfx_params_t params;
 
@@ -732,6 +711,7 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
   {
     params->ambient = channel->ambient;
     params->loop = channel->loop;
+    params->loop_timeout = channel->loop_timeout;
   }
 
   // calculate the distance to sound origin
@@ -839,8 +819,11 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, sfx_params_t *params)
         (comp[comp_sound] || channels[cnum].sfx_class == params->sfx_class))
     {
       // The sound is already playing
-      if (channels[cnum].sfxinfo == sfxinfo && channels[cnum].loop && params->loop)
+      if (channels[cnum].sfxinfo == sfxinfo && channels[cnum].loop && params->loop) {
+        channels[cnum].loop_timeout = params->loop_timeout;
+
         return channel_not_found;
+      }
 
       S_StopChannel(cnum);
       break;
@@ -930,7 +913,11 @@ static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, sfx_params_t *para
         channels[i].sfxinfo == sfx &&
         channels[i].origin == origin &&
         channels[i].loop && params->loop)
+    {
+      channels[i].loop_timeout = params->loop_timeout;
+
       return channel_not_found;
+    }
   }
 
   if (!S_StopSoundInfo(sfx, params))
@@ -1015,7 +1002,7 @@ static mobj_t* GetSoundListener(void)
   }
 }
 
-static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, dboolean loop)
+static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, int loop_timeout)
 {
   sfxinfo_t *sfx;
   mobj_t *origin;
@@ -1043,7 +1030,8 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   sfx = &S_sfx[sound_id];
 
   params.ambient = heretic && sound_id >= heretic_sfx_wind;
-  params.loop = loop;
+  params.loop = loop_timeout > 0;
+  params.loop_timeout = loop_timeout;
 
   // calculate the distance before other stuff so that we can throw out
   // sounds that are beyond the hearing range.
@@ -1102,6 +1090,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   channels[cnum].volume = volume; // original volume, not attenuated volume
   channels[cnum].ambient = params.ambient;
   channels[cnum].loop = params.loop;
+  channels[cnum].loop_timeout = params.loop_timeout;
   channels[cnum].active = true;
   if (channels[cnum].ambient) // TODO: can ambient sounds even reach this flow?
     AmbChan = cnum;
@@ -1136,6 +1125,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   params.sfx_class = sfx_class_none;
   params.ambient = true;
   params.loop = false;
+  params.loop_timeout = 0;
 
   // no priority checking, as ambient sounds would be the LOWEST.
   for (i = 0; i < numChannels; i++)
@@ -1155,6 +1145,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   channels[i].priority = params.priority;
   channels[i].ambient = params.ambient;
   channels[i].loop = params.loop;
+  channels[i].loop_timeout = params.loop_timeout;
   channels[i].active = true;
 }
 

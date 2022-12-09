@@ -1674,7 +1674,7 @@ static int CmdSectorSound(void)
         mobj = (mobj_t *) & ACScript->line->frontsector->soundorg;
     }
     volume = Pop();
-    S_StartSoundAtVolume(mobj, S_GetSoundID(StringLookup(Pop())), volume, false);
+    S_StartSoundAtVolume(mobj, S_GetSoundID(StringLookup(Pop())), volume, 0);
     return SCRIPT_CONTINUE;
 }
 
@@ -1692,7 +1692,7 @@ static int CmdThingSound(void)
     searcher = -1;
     while ((mobj = P_FindMobjFromTID(tid, &searcher)) != NULL)
     {
-        S_StartSoundAtVolume(mobj, sound, volume, false);
+        S_StartSoundAtVolume(mobj, sound, volume, 0);
     }
     return SCRIPT_CONTINUE;
 }
@@ -1702,7 +1702,7 @@ static int CmdAmbientSound(void)
     int volume;
 
     volume = Pop();
-    S_StartSoundAtVolume(NULL, S_GetSoundID(StringLookup(Pop())), volume, false);
+    S_StartSoundAtVolume(NULL, S_GetSoundID(StringLookup(Pop())), volume, 0);
     return SCRIPT_CONTINUE;
 }
 
