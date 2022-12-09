@@ -1350,9 +1350,12 @@ dboolean G_Responder (event_t* ev)
 void G_Ticker (void)
 {
   int i;
+  int entry_leveltime;
   int pause_mask;
   dboolean advance_frame = false;
   static gamestate_t prevgamestate;
+
+  entry_leveltime = leveltime;
 
   // CPhipps - player colour changing
   if (!demoplayback && mapcolor_plyr[consoleplayer] != mapcolor_me) {
@@ -1564,6 +1567,9 @@ void G_Ticker (void)
       D_PageTicker();
       break;
   }
+
+  if (leveltime == entry_leveltime)
+    S_StopSoundLoops();
 
   if (advance_frame)
     dsda_UnmaskPause(pause_mask);
