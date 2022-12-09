@@ -1531,7 +1531,7 @@ static dboolean console_Spawn(const char* command, const char* args) {
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   return P_SpawnMobj(x, y, z, type) != NULL;
@@ -1678,7 +1678,7 @@ static dboolean console_MobjInfoSetHealth(const char* command, const char* args)
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].spawnhealth = value;
@@ -1695,7 +1695,7 @@ static dboolean console_MobjInfoSetRadius(const char* command, const char* args)
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   value <<= FRACBITS;
@@ -1714,7 +1714,7 @@ static dboolean console_MobjInfoSetHeight(const char* command, const char* args)
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   value <<= FRACBITS;
@@ -1733,7 +1733,7 @@ static dboolean console_MobjInfoSetMass(const char* command, const char* args) {
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].mass = value;
@@ -1750,7 +1750,7 @@ static dboolean console_MobjInfoSetDamage(const char* command, const char* args)
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].damage = value;
@@ -1767,7 +1767,7 @@ static dboolean console_MobjInfoSetSpeed(const char* command, const char* args) 
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].speed = value;
@@ -1784,7 +1784,7 @@ static dboolean console_MobjInfoSetFastSpeed(const char* command, const char* ar
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].altspeed = value;
@@ -1801,7 +1801,7 @@ static dboolean console_MobjInfoSetMeleeRange(const char* command, const char* a
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   value <<= FRACBITS;
@@ -1820,7 +1820,7 @@ static dboolean console_MobjInfoSetReactionTime(const char* command, const char*
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].reactiontime = value;
@@ -1837,7 +1837,7 @@ static dboolean console_MobjInfoSetPainChance(const char* command, const char* a
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].painchance = value;
@@ -1854,7 +1854,7 @@ static dboolean console_MobjInfoSetInfightingGroup(const char* command, const ch
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   if (value < 0)
@@ -1876,7 +1876,7 @@ static dboolean console_MobjInfoSetProjectileGroup(const char* command, const ch
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   if (value < 0)
@@ -1898,7 +1898,7 @@ static dboolean console_MobjInfoSetSplashGroup(const char* command, const char* 
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   if (value < 0)
@@ -1920,7 +1920,7 @@ static dboolean console_MobjInfoAddFlags(const char* command, const char* args) 
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].flags |= deh_stringToMobjFlags(flag_str);
@@ -1938,7 +1938,7 @@ static dboolean console_MobjInfoRemoveFlags(const char* command, const char* arg
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].flags &= ~deh_stringToMobjFlags(flag_str);
@@ -1956,7 +1956,7 @@ static dboolean console_MobjInfoSetFlags(const char* command, const char* args) 
 
   type = dsda_FindDehMobjIndex(type - 1);
 
-  if (type == DEH_MOBJ_INDEX_NOT_FOUND)
+  if (type == DEH_INDEX_NOT_FOUND)
     return false;
 
   mobjinfo[type].flags = deh_stringToMobjFlags(flag_str);

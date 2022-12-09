@@ -63,56 +63,14 @@ static void dsda_EnsureCapacity(int limit) {
   }
 }
 
-typedef struct deh_mobj_index_entry_s {
-  int index_in;
-  int index_out;
-  struct deh_mobj_index_entry_s* next;
-} deh_mobj_index_entry_t;
-
-#define DEH_MOBJ_INDEX_HASH_SIZE 128
-
-static deh_mobj_index_entry_t deh_mobj_index_hash[DEH_MOBJ_INDEX_HASH_SIZE];
-
-static int deh_mobj_index_start;
-static int deh_mobj_index_end;
+static deh_index_hash_t deh_mobj_index_hash;
 
 int dsda_FindDehMobjIndex(int index) {
-  deh_mobj_index_entry_t* entry;
-
-  if (index < deh_mobj_index_start)
-    return index;
-
-  entry = &deh_mobj_index_hash[index % DEH_MOBJ_INDEX_HASH_SIZE];
-
-  while (entry->next && entry->index_in != index)
-    entry = entry->next;
-
-  if (entry->index_in != index)
-    return DEH_MOBJ_INDEX_NOT_FOUND;
-
-  return entry->index_out;
+  return dsda_FindDehIndex(index, &deh_mobj_index_hash);
 }
 
 int dsda_GetDehMobjIndex(int index) {
-  deh_mobj_index_entry_t* entry;
-
-  if (index < deh_mobj_index_start)
-    return index;
-
-  entry = &deh_mobj_index_hash[index % DEH_MOBJ_INDEX_HASH_SIZE];
-
-  while (entry->next && entry->index_in != index)
-    entry = entry->next;
-
-  if (entry->index_in != index) {
-    entry->next = Z_Calloc(1, sizeof(*entry));
-    entry = entry->next;
-    entry->index_in = index;
-    entry->index_out = deh_mobj_index_end;
-    ++deh_mobj_index_end;
-  }
-
-  return entry->index_out;
+  return dsda_GetDehIndex(index, &deh_mobj_index_hash);
 }
 
 // Dehacked has the index off by 1
@@ -141,8 +99,8 @@ void dsda_InitializeMobjInfo(int zero, int max, int count) {
 
   if (raven) return;
 
-  deh_mobj_index_start = num_mobj_types;
-  deh_mobj_index_end = num_mobj_types;
+  deh_mobj_index_hash.start_index = num_mobj_types;
+  deh_mobj_index_hash.end_index = num_mobj_types;
   edited_mobjinfo_bits = Z_Calloc(num_mobj_types, sizeof(*edited_mobjinfo_bits));
 }
 
@@ -324,7 +282,7 @@ void dsda_AppendZDoomMobjInfo(void) {
   int index;
   dsda_deh_mobjinfo_t mobjinfo;
 
-  index = deh_mobj_index_end;
+  index = deh_mobj_index_hash.end_index;
   for (i = 0; i < append_mobjinfo_count; ++i) {
     mobjinfo = dsda_GetDehMobjInfo(index);
     *(append_mobjinfo[i].index_p) = index;

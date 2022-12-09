@@ -29,6 +29,8 @@ set(COMMON_SRC
     dsda/data_organizer.h
     dsda/death.c
     dsda/death.h
+    dsda/deh_hash.c
+    dsda/deh_hash.h
     dsda/demo.c
     dsda/demo.h
     dsda/endoom.c

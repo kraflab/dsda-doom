@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,27 +12,28 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Mobj Info
+//	DSDA Dehacked Hash
 //
 
-#ifndef __DSDA_MOBJ_INFO__
-#define __DSDA_MOBJ_INFO__
+#ifndef __DSDA_DEH_HASH__
+#define __DSDA_DEH_HASH__
 
-#include "info.h"
+#define DEH_INDEX_HASH_SIZE 128
+#define DEH_INDEX_NOT_FOUND -1
 
-#include "dsda/deh_hash.h"
+typedef struct deh_index_entry_s {
+  int index_in;
+  int index_out;
+  struct deh_index_entry_s* next;
+} deh_index_entry_t;
 
 typedef struct {
-  mobjinfo_t* info;
-  byte* edited_bits;
-} dsda_deh_mobjinfo_t;
+  deh_index_entry_t table[DEH_INDEX_HASH_SIZE];
+  int start_index;
+  int end_index;
+} deh_index_hash_t;
 
-int dsda_FindDehMobjIndex(int index);
-int dsda_TranslateDehMobjIndex(int index);
-int dsda_GetDehMobjIndex(int index);
-dsda_deh_mobjinfo_t dsda_GetDehMobjInfo(int index);
-void dsda_InitializeMobjInfo(int zero, int max, int count);
-void dsda_FreeDehMobjInfo(void);
-void dsda_AppendZDoomMobjInfo(void);
+int dsda_FindDehIndex(int index, deh_index_hash_t* hash);
+int dsda_GetDehIndex(int index, deh_index_hash_t* hash);
 
 #endif
