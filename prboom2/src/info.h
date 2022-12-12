@@ -5761,7 +5761,7 @@ typedef enum
  * Definition of the state (frames) structure                       *
  ********************************************************************/
 
-typedef int_64_t statearg_t;
+typedef int64_t statearg_t;
 
 typedef struct
 {
@@ -6573,7 +6573,7 @@ typedef struct
   int damage;       /* If this is a missile, how much does it hurt? */
   int activesound;  /* What sound it makes wandering around, once
            in a while.  Chance is 3/256 it will. */
-  uint_64_t flags;  /* Bit masks for lots of things.  See p_mobj.h */
+  uint64_t flags;  /* Bit masks for lots of things.  See p_mobj.h */
 
   // not in heretic
   int raisestate;   /* The first state for an Archvile or respawn
@@ -6583,7 +6583,7 @@ typedef struct
 
   // heretic
   int crashstate;
-  uint_64_t flags2;
+  uint64_t flags2;
 
   // mbf21
   int infighting_group;
@@ -6623,7 +6623,7 @@ typedef struct
     int mass;
     int damage;
     int activesound;
-    uint_64_t flags;
+    uint64_t flags;
     int raisestate;
     mobjtype_t droppeditem;
 } doom_mobjinfo_t;
@@ -6652,8 +6652,8 @@ typedef struct
     int mass;
     int damage;
     int activesound;
-    uint_64_t flags;
-    uint_64_t flags2;
+    uint64_t flags;
+    uint64_t flags2;
 } raven_mobjinfo_t;
 
 // all the stuff - dynamically selected in global.c

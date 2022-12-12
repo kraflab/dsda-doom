@@ -1038,7 +1038,7 @@ static dboolean console_SetTarget(mobj_t* mobj, mobj_t* target) {
   return true;
 }
 
-static void console_SetMobjFlags(mobj_t* mobj, uint_64_t flags, uint_64_t flags2) {
+static void console_SetMobjFlags(mobj_t* mobj, uint64_t flags, uint64_t flags2) {
   P_MapStart();
   P_UnsetThingPosition(mobj);
   mobj->flags = flags;
@@ -1193,7 +1193,7 @@ static dboolean console_TargetActivateLine(const char* command, const char* args
 
 static dboolean console_TargetAddFlags(const char* command, const char* args) {
   mobj_t* target;
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
   char flag_str[CONSOLE_ENTRY_SIZE];
 
   if (sscanf(args, "%s", flag_str) != 1)
@@ -1214,7 +1214,7 @@ static dboolean console_TargetAddFlags(const char* command, const char* args) {
 
 static dboolean console_TargetRemoveFlags(const char* command, const char* args) {
   mobj_t* target;
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
   char flag_str[CONSOLE_ENTRY_SIZE];
 
   if (sscanf(args, "%s", flag_str) != 1)
@@ -1235,7 +1235,7 @@ static dboolean console_TargetRemoveFlags(const char* command, const char* args)
 
 static dboolean console_TargetSetFlags(const char* command, const char* args) {
   mobj_t* target;
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
   char flag_str[CONSOLE_ENTRY_SIZE];
 
   if (sscanf(args, "%s", flag_str) != 1)
@@ -1442,7 +1442,7 @@ static dboolean console_MobjActivateLine(const char* command, const char* args) 
 static dboolean console_MobjAddFlags(const char* command, const char* args) {
   int index;
   mobj_t* target;
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
   char flag_str[CONSOLE_ENTRY_SIZE];
 
   if (sscanf(args, "%d %s", &index, flag_str) != 2)
@@ -1464,7 +1464,7 @@ static dboolean console_MobjAddFlags(const char* command, const char* args) {
 static dboolean console_MobjRemoveFlags(const char* command, const char* args) {
   int index;
   mobj_t* target;
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
   char flag_str[CONSOLE_ENTRY_SIZE];
 
   if (sscanf(args, "%d %s", &index, flag_str) != 2)
@@ -1486,7 +1486,7 @@ static dboolean console_MobjRemoveFlags(const char* command, const char* args) {
 static dboolean console_MobjSetFlags(const char* command, const char* args) {
   int index;
   mobj_t* target;
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
   char flag_str[CONSOLE_ENTRY_SIZE];
 
   if (sscanf(args, "%d %s", &index, flag_str) != 2)

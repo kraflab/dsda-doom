@@ -81,7 +81,7 @@ typedef unsigned int ufixed_t;
 
 inline static CONSTFUNC fixed_t FixedMul(fixed_t a, fixed_t b)
 {
-  return (fixed_t)((int_64_t) a*b >> FRACBITS);
+  return (fixed_t)((int64_t) a*b >> FRACBITS);
 }
 
 /*
@@ -91,7 +91,7 @@ inline static CONSTFUNC fixed_t FixedMul(fixed_t a, fixed_t b)
 static CONSTFUNC fixed_t FixedDiv(fixed_t a, fixed_t b)
 {
   return (D_abs(a)>>14) >= D_abs(b) ? ((a^b)>>31) ^ INT_MAX :
-    (fixed_t)(((int_64_t) a << FRACBITS) / b);
+    (fixed_t)(((int64_t) a << FRACBITS) / b);
 }
 
 /* CPhipps -
@@ -110,7 +110,7 @@ inline static CONSTFUNC fixed_t FixedMod(fixed_t a, fixed_t b)
 
 static CONSTFUNC fixed_t Scale(fixed_t a, fixed_t b, fixed_t c)
 {
-	return (fixed_t)(((int_64_t)a*b)/c);
+	return (fixed_t)(((int64_t)a*b)/c);
 }
 
 #endif

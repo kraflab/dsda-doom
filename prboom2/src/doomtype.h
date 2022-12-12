@@ -61,21 +61,10 @@ typedef unsigned char byte;
 #define BETWEEN(l,u,x) ((l)>(x)?(l):(x)>(u)?(u):(x))
 #endif
 
+#include <inttypes.h>
 #include <limits.h>
 
-/* cph - Wrapper for the long long type, as Win32 used a different name.
- * Except I don't know what to test as it's compiler specific
- * Proff - I fixed it */
-#ifndef _MSC_VER
-typedef signed long long int_64_t;
-typedef unsigned long long uint_64_t;
-// define compiled-specific long-long contstant notation here
-#define LONGLONG(num)   (uint_64_t)num ## ll
-#else
-typedef __int64 int_64_t;
-typedef unsigned __int64 uint_64_t;
-// define compiled-specific long-long contstant notation here
-#define LONGLONG(num) (uint_64_t)num
+#ifdef _MSC_VER
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
 #define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)

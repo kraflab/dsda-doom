@@ -89,13 +89,13 @@ static int      worldtop;
 static int      worldbottom;
 static int      worldhigh;
 static int      worldlow;
-static int_64_t  pixhigh; // R_WiggleFix
-static int_64_t  pixlow; // R_WiggleFix
+static int64_t  pixhigh; // R_WiggleFix
+static int64_t  pixlow; // R_WiggleFix
 static fixed_t  pixhighstep;
 static fixed_t  pixlowstep;
-static int_64_t  topfrac; // R_WiggleFix
+static int64_t  topfrac; // R_WiggleFix
 static fixed_t  topstep;
-static int_64_t  bottomfrac; // R_WiggleFix
+static int64_t  bottomfrac; // R_WiggleFix
 static fixed_t  bottomstep;
 static int      *maskedtexturecol; // dropoff overflow
 
@@ -335,7 +335,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
 
         if (!fixedcolormap)
         {
-          int index = (int)(((int_64_t)spryscale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
+          int index = (int)(((int64_t)spryscale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
           if (index >= MAXLIGHTSCALE)
             index = MAXLIGHTSCALE - 1;
 
@@ -359,12 +359,12 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
         // mapping to screen coordinates is totally out of range:
 
         {
-          int_64_t t = ((int_64_t) centeryfrac << FRACBITS) -
-            (int_64_t) dcvars.texturemid * spryscale;
-          if (t + (int_64_t) textureheight[texnum] * spryscale < 0 ||
-              t > (int_64_t) SCREENHEIGHT << FRACBITS*2)
+          int64_t t = ((int64_t) centeryfrac << FRACBITS) -
+            (int64_t) dcvars.texturemid * spryscale;
+          if (t + (int64_t) textureheight[texnum] * spryscale < 0 ||
+              t > (int64_t) SCREENHEIGHT << FRACBITS*2)
             continue;        // skip if the texture is out of screen's range
-          sprtopscreen = (int_64_t)(t >> FRACBITS); // R_WiggleFix
+          sprtopscreen = (int64_t)(t >> FRACBITS); // R_WiggleFix
         }
 
         dcvars.iscale = 0xffffffffu / (unsigned) spryscale;
@@ -476,7 +476,7 @@ static void R_RenderSegLoop (void)
           // calculate lighting
           if (!fixedcolormap)
           {
-            int index = (int)(((int_64_t)rw_scale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
+            int index = (int)(((int64_t)rw_scale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
             if (index >= MAXLIGHTSCALE)
                index = MAXLIGHTSCALE - 1;
 
@@ -624,7 +624,7 @@ static fixed_t R_PointToDist(fixed_t x, fixed_t y)
 void R_StoreWallRange(const int start, const int stop)
 {
   const int shift_bits = 1;
-  int_64_t dx, dy, dx1, dy1, len, dist;
+  int64_t dx, dy, dx1, dy1, len, dist;
 
   if (ds_p == drawsegs+maxdrawsegs)   // killough 1/98 -- fix 2s line HOM
     {
@@ -663,10 +663,10 @@ void R_StoreWallRange(const int start, const int stop)
 
   // [Linguica] Fix long wall error
   // shift right to avoid possibility of int64 overflow in rw_distance calculation
-  dx = ((int_64_t)curline->v2->px - curline->v1->px) >> shift_bits;
-  dy = ((int_64_t)curline->v2->py - curline->v1->py) >> shift_bits;
-  dx1 = ((int_64_t)viewx - curline->v1->px) >> shift_bits;
-  dy1 = ((int_64_t)viewy - curline->v1->py) >> shift_bits;
+  dx = ((int64_t)curline->v2->px - curline->v1->px) >> shift_bits;
+  dy = ((int64_t)curline->v2->py - curline->v1->py) >> shift_bits;
+  dx1 = ((int64_t)viewx - curline->v1->px) >> shift_bits;
+  dy1 = ((int64_t)viewy - curline->v1->py) >> shift_bits;
   len = curline->length >> shift_bits;
 
   dist = (((dy * dx1 - dx * dy1) / len) << shift_bits);
@@ -937,10 +937,10 @@ void R_StoreWallRange(const int start, const int stop)
     worldbottom >>= invhgtbits;
 
     topstep = -FixedMul (rw_scalestep, worldtop);
-    topfrac = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldtop*rw_scale)>>FRACBITS); // R_WiggleFix
+    topfrac = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldtop*rw_scale)>>FRACBITS); // R_WiggleFix
 
     bottomstep = -FixedMul (rw_scalestep,worldbottom);
-    bottomfrac = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldbottom*rw_scale)>>FRACBITS); // R_WiggleFix
+    bottomfrac = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldbottom*rw_scale)>>FRACBITS); // R_WiggleFix
 
     if (backsector)
     {
@@ -949,12 +949,12 @@ void R_StoreWallRange(const int start, const int stop)
 
       if (high_less_than_top)
       {
-        pixhigh = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldhigh*rw_scale)>>FRACBITS); // R_WiggleFix
+        pixhigh = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldhigh*rw_scale)>>FRACBITS); // R_WiggleFix
         pixhighstep = -FixedMul (rw_scalestep,worldhigh);
       }
       if (low_greater_than_bottom)
       {
-        pixlow = ((int_64_t)centeryfrac>>invhgtbits) - (((int_64_t)worldlow*rw_scale)>>FRACBITS); // R_WiggleFix
+        pixlow = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldlow*rw_scale)>>FRACBITS); // R_WiggleFix
         pixlowstep = -FixedMul (rw_scalestep,worldlow);
       }
     }

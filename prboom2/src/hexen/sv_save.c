@@ -208,10 +208,10 @@ static int SV_ReadLong(void)
     return result;
 }
 
-static uint_64_t SV_ReadFlags(void)
+static uint64_t SV_ReadFlags(void)
 {
-    uint_64_t result;
-    SV_Read(&result, sizeof(uint_64_t));
+    uint64_t result;
+    SV_Read(&result, sizeof(uint64_t));
     return result;
 }
 
@@ -242,9 +242,9 @@ static void SV_WriteLong(unsigned int val)
     SV_Write(&val, sizeof(unsigned int));
 }
 
-static void SV_WriteFlags(uint_64_t val)
+static void SV_WriteFlags(uint64_t val)
 {
-    SV_Write(&val, sizeof(uint_64_t));
+    SV_Write(&val, sizeof(uint64_t));
 }
 
 static void SV_WritePtr(void *val)

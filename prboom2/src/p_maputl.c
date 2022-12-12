@@ -161,11 +161,11 @@ fixed_t PUREFUNC P_InterceptVector(const divline_t *v2, const divline_t *v1)
     return P_InterceptVector2(v2, v1);
   else {
     /* cph - This was introduced at prboom_4_compatibility - no precision/overflow problems */
-    int_64_t den = (int_64_t)v1->dy * v2->dx - (int_64_t)v1->dx * v2->dy;
+    int64_t den = (int64_t)v1->dy * v2->dx - (int64_t)v1->dx * v2->dy;
     den >>= 16;
     if (!den)
       return 0;
-    return (fixed_t)(((int_64_t)(v1->x - v2->x) * v1->dy - (int_64_t)(v1->y - v2->y) * v1->dx) / den);
+    return (fixed_t)(((int64_t)(v1->x - v2->x) * v1->dy - (int64_t)(v1->y - v2->y) * v1->dx) / den);
   }
 }
 
@@ -726,18 +726,18 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 
   if (comperr(comperr_blockmap))
   {
-    int_64_t _x1, _x2, _y1, _y2;
+    int64_t _x1, _x2, _y1, _y2;
 
-    _x1 = (int_64_t)x1 - bmaporgx;
-    _y1 = (int_64_t)y1 - bmaporgy;
+    _x1 = (int64_t)x1 - bmaporgx;
+    _y1 = (int64_t)y1 - bmaporgy;
     xt1 = (int)(_x1>>MAPBLOCKSHIFT);
     yt1 = (int)(_y1>>MAPBLOCKSHIFT);
 
     mapx1 = (int)(_x1>>MAPBTOFRAC);
     mapy1 = (int)(_y1>>MAPBTOFRAC);
 
-    _x2 = (int_64_t)x2 - bmaporgx;
-    _y2 = (int_64_t)y2 - bmaporgy;
+    _x2 = (int64_t)x2 - bmaporgx;
+    _y2 = (int64_t)y2 - bmaporgy;
     xt2 = (int)(_x2>>MAPBLOCKSHIFT);
     yt2 = (int)(_y2>>MAPBLOCKSHIFT);
 

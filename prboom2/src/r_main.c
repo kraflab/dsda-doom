@@ -660,8 +660,8 @@ void R_ExecuteSetViewSize (void)
   projection = wide_centerx<<FRACBITS;
 
 // proff 11/06/98: Added for high-res
-  // calculate projectiony using int_64_t math to avoid overflow when SCREENWIDTH>4228
-  projectiony = (fixed_t)((((int_64_t)cheight * centerx * 320) / 200) / SCREENWIDTH * FRACUNIT);
+  // calculate projectiony using int64_t math to avoid overflow when SCREENWIDTH>4228
+  projectiony = (fixed_t)((((int64_t)cheight * centerx * 320) / 200) / SCREENWIDTH * FRACUNIT);
   // e6y: this is a precalculated value for more precise flats drawing (see R_MapPlane)
   viewfocratio = projectiony / wide_centerx;
 
@@ -689,7 +689,7 @@ void R_ExecuteSetViewSize (void)
   pspritexscale_f = (float)wide_centerx/160.0f;
   pspriteyscale_f = (((float)cheight*viewwidth)/(float)SCREENWIDTH) / 200.0f;
 
-  skyiscale = (fixed_t)(((uint_64_t)FRACUNIT * SCREENWIDTH * 200) / (viewwidth * SCREENHEIGHT));
+  skyiscale = (fixed_t)(((uint64_t)FRACUNIT * SCREENWIDTH * 200) / (viewwidth * SCREENHEIGHT));
 
 	// [RH] Sky height fix for screens not 200 (or 240) pixels tall
 	R_InitSkyMap();

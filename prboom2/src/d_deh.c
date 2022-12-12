@@ -980,7 +980,7 @@ const char **const mapnamest[] = // TNT WAD map names.
 void    lfstrip(char *);     // strip the \r and/or \n off of a line
 void    rstrip(char *);      // strip trailing whitespace
 char *  ptr_lstrip(char *);  // point past leading whitespace
-dboolean deh_GetData(char *, char *, uint_64_t *, char **);
+dboolean deh_GetData(char *, char *, uint64_t *, char **);
 dboolean deh_procStringSub(char *, char *, char *);
 char *  dehReformatStr(char *);
 
@@ -1112,13 +1112,13 @@ static const char *deh_mobjinfo_fields[] =
 
 struct deh_flag_s {
   const char *name; // CPhipps - const*
-  uint_64_t value;
+  uint64_t value;
 };
 
-static uint_64_t deh_translate_bits(uint_64_t value, const struct deh_flag_s *flags)
+static uint64_t deh_translate_bits(uint64_t value, const struct deh_flag_s *flags)
 {
   int i;
-  uint_64_t result = 0;
+  uint64_t result = 0;
 
   for (i = 0; flags[i].name; ++i)
   {
@@ -1502,9 +1502,9 @@ dboolean IsDehMaxHealth = false;
 dboolean IsDehMaxSoul = false;
 dboolean IsDehMegaHealth = false;
 
-static uint_64_t deh_stringToFlags(char *strval, const struct deh_flag_s *flags)
+static uint64_t deh_stringToFlags(char *strval, const struct deh_flag_s *flags)
 {
-  uint_64_t value;
+  uint64_t value;
 
   for (value = 0; (strval = strtok(strval, deh_getBitsDelims())); strval = NULL) {
     const struct deh_flag_s *flag;
@@ -1523,12 +1523,12 @@ static uint_64_t deh_stringToFlags(char *strval, const struct deh_flag_s *flags)
   return value;
 }
 
-uint_64_t deh_stringToMBF21MobjFlags(char *strval)
+uint64_t deh_stringToMBF21MobjFlags(char *strval)
 {
   return deh_stringToFlags(strval, deh_mobjflags_mbf21);
 }
 
-uint_64_t deh_stringToMobjFlags(char *strval)
+uint64_t deh_stringToMobjFlags(char *strval)
 {
   return deh_stringToFlags(strval, deh_mobjflags);
 }
@@ -1814,8 +1814,8 @@ static void deh_procBexCodePointers(DEHFILE *fpin, char *line)
 // To be on the safe, compatible side, we manually convert DEH bitflags
 // to prboom types - POPE
 //---------------------------------------------------------------------------
-static uint_64_t getConvertedDEHBits(uint_64_t bits) {
-  static const uint_64_t bitMap[32] = {
+static uint64_t getConvertedDEHBits(uint64_t bits) {
+  static const uint64_t bitMap[32] = {
     /* cf linuxdoom-1.10 p_mobj.h */
     MF_SPECIAL, // 0 Can be picked up - When touched the thing can be picked up.
     MF_SOLID, // 1 Obstacle - The thing is solid and will not let you (or others) pass through it
@@ -1853,8 +1853,8 @@ static uint_64_t getConvertedDEHBits(uint_64_t bits) {
     MF_TRANSLUCENT // e6y: Translucency via dehacked/bex doesn't work without it
   };
   int i;
-  uint_64_t shiftBits = bits;
-  uint_64_t convertedBits = 0;
+  uint64_t shiftBits = bits;
+  uint64_t convertedBits = 0;
   for (i=0; i<32; i++) {
     if (shiftBits & 0x1) convertedBits |= bitMap[i];
     shiftBits >>= 1;
@@ -1865,7 +1865,7 @@ static uint_64_t getConvertedDEHBits(uint_64_t bits) {
 //---------------------------------------------------------------------------
 // See usage below for an explanation of this function's existence - POPE
 //---------------------------------------------------------------------------
-static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint_64_t value) {
+static void setMobjInfoValue(int mobjInfoIndex, int keyIndex, uint64_t value) {
   mobjinfo_t *mi;
   if (mobjInfoIndex >= num_mobj_types || mobjInfoIndex < 0) return;
   mi = &mobjinfo[mobjInfoIndex];
@@ -1968,7 +1968,7 @@ static void deh_procThing(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
   int indexnum;
   int internal_index;
   int ix;
@@ -2083,7 +2083,7 @@ static void deh_procFrame(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
   int indexnum;
   char *strval;
   int bGetData;
@@ -2239,7 +2239,7 @@ static void deh_procPointer(DEHFILE *fpin, char *line) // done
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
   int indexnum;
   size_t i; // looper
   dsda_deh_state_t deh_state, ptr_state;
@@ -2308,7 +2308,7 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
   int indexnum;
   sfxinfo_t *deh_sfx;
 
@@ -2367,7 +2367,7 @@ static void deh_procAmmo(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
   int indexnum;
 
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
@@ -2408,7 +2408,7 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
   int indexnum;
   char *strval;
   int bGetData;
@@ -2605,7 +2605,7 @@ static void deh_procCheat(DEHFILE *fpin, char *line) // done
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
   char ch = 0; // CPhipps - `writable' null string to initialise...
   char *strval = &ch;  // pointer to the value area
   int ix, iy;   // array indices
@@ -2670,7 +2670,7 @@ static void deh_procMisc(DEHFILE *fpin, char *line) // done
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
 
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
   while (!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
@@ -2874,7 +2874,7 @@ static void deh_procStrings(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;    // All deh values are ints or longs
+  uint64_t value;    // All deh values are ints or longs
   char *strval;      // holds the string value of the line
   static size_t maxstrlen = 128; // maximum string length, bumped 128 at
   // a time as needed
@@ -3016,7 +3016,7 @@ static void deh_procHelperThing(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;      // All deh values are ints or longs
+  uint64_t value;      // All deh values are ints or longs
 
   strncpy(inbuffer, line, DEH_BUFFERMAX - 1);
   while (!dehfeof(fpin) && *inbuffer && (*inbuffer != ' '))
@@ -3046,7 +3046,7 @@ static void deh_procBexSprites(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;    // All deh values are ints or longs
+  uint64_t value;    // All deh values are ints or longs
   char *strval;  // holds the string value of the line
   char candidate[5];
   int  match;
@@ -3092,7 +3092,7 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;    // All deh values are ints or longs
+  uint64_t value;    // All deh values are ints or longs
   char *strval;  // holds the string value of the line
   char candidate[7];
   int  match;
@@ -3140,7 +3140,7 @@ static void deh_procBexMusic(DEHFILE *fpin, char *line)
 {
   char key[DEH_MAXKEYLEN];
   char inbuffer[DEH_BUFFERMAX];
-  uint_64_t value;    // All deh values are ints or longs
+  uint64_t value;    // All deh values are ints or longs
   char *strval;  // holds the string value of the line
   char candidate[7];
   int  match;
@@ -3270,7 +3270,7 @@ char *ptr_lstrip(char *p)  // point past leading whitespace
 //          as a long just in case.  The passed pointer to hold
 //          the key must be DEH_MAXKEYLEN in size.
 
-dboolean deh_GetData(char *s, char *k, uint_64_t *l, char **strval)
+dboolean deh_GetData(char *s, char *k, uint64_t *l, char **strval)
 {
   char *t;  // current char
   int val; // to hold value of pair

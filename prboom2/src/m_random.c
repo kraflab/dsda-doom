@@ -170,7 +170,7 @@ void M_ClearRandom (void)
 int P_RandomHitscanAngle(pr_class_t pr_class, fixed_t spread)
 {
   int t;
-  int_64_t spread_bam;
+  int64_t spread_bam;
 
   // FixedToAngle doesn't work for negative numbers,
   // so for convenience take just the absolute value.

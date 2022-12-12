@@ -437,7 +437,7 @@ static vissprite_t *R_NewVisSprite(void)
 int   *mfloorclip;   // dropoff overflow
 int   *mceilingclip; // dropoff overflow
 fixed_t spryscale;
-int_64_t sprtopscreen; // R_WiggleFix
+int64_t sprtopscreen; // R_WiggleFix
 
 void R_DrawMaskedColumn(
   const rpatch_t *patch,
@@ -449,8 +449,8 @@ void R_DrawMaskedColumn(
 )
 {
   int     i;
-  int_64_t     topscreen; // R_WiggleFix
-  int_64_t     bottomscreen; // R_WiggleFix
+  int64_t     topscreen; // R_WiggleFix
+  int64_t     bottomscreen; // R_WiggleFix
   fixed_t basetexturemid = dcvars->texturemid;
 
   dcvars->texheight = patch->height; // killough 11/98
@@ -890,7 +890,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
     vis->colormap = fullcolormap;     // full bright  // killough 3/20/98
   else
     {      // diminished light
-      int index = (int)(((int_64_t)xscale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
+      int index = (int)(((int64_t)xscale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
       if (index >= MAXLIGHTSCALE)
         index = MAXLIGHTSCALE - 1;
       vis->colormap = spritelights[index];

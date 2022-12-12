@@ -253,7 +253,7 @@ typedef struct
   float fogdensity;
   fixed_t scale;
   GLTexture *gltexture;
-  uint_64_t flags;
+  uint64_t flags;
   int index;
   int xy;
   fixed_t fx,fy;

@@ -102,12 +102,12 @@ int SlopeDivEx(unsigned int num, unsigned int den);
 // These are straight from Eternity so demos stay in sync.
 inline static angle_t FixedToAngle(fixed_t a)
 {
-  return (angle_t)(((uint_64_t)a * ANG1) >> FRACBITS);
+  return (angle_t)(((uint64_t)a * ANG1) >> FRACBITS);
 }
 
 inline static fixed_t AngleToFixed(angle_t a)
 {
-  return (fixed_t)(((uint_64_t)a << FRACBITS) / ANG1);
+  return (fixed_t)(((uint64_t)a << FRACBITS) / ANG1);
 }
 
 // [XA] Clamped angle->slope, for convenience

@@ -42,7 +42,7 @@ typedef struct {
   byte* footer;
   size_t demo_size;
   size_t footer_size;
-  uint_64_t features;
+  uint64_t features;
   int is_signed;
 } exdemo_t;
 
@@ -419,7 +419,7 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   char* description;
   byte* buffer;
   size_t buffer_length;
-  uint_64_t features;
+  uint64_t features;
 
   dsda_GetDemoRecordingCheckSum(&cksum);
   description = dsda_DescribeFeatures();

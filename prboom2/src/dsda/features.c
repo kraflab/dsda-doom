@@ -23,7 +23,7 @@
 
 #include "features.h"
 
-static uint_64_t used_features;
+static uint64_t used_features;
 
 static const char* feature_names[64] = {
   [uf_menu] = "Menu",
@@ -66,7 +66,7 @@ static const char* feature_names[64] = {
   [uf_ghost] = "Ghost",
 };
 
-#define FEATURE_BIT(x) ((uint_64_t) 1 << x)
+#define FEATURE_BIT(x) ((uint64_t) 1 << x)
 
 void dsda_TrackFeature(int feature) {
   used_features |= FEATURE_BIT(feature);
@@ -76,11 +76,11 @@ void dsda_ResetFeatures(void) {
   used_features = 0;
 }
 
-uint_64_t dsda_UsedFeatures(void) {
+uint64_t dsda_UsedFeatures(void) {
   return used_features;
 }
 
-void dsda_MergeFeatures(uint_64_t source) {
+void dsda_MergeFeatures(uint64_t source) {
   used_features |= source;
 }
 
@@ -88,7 +88,7 @@ void dsda_CopyFeatures(byte* result) {
   dsda_CopyFeatures2(result, used_features);
 }
 
-void dsda_CopyFeatures2(byte* result, uint_64_t source) {
+void dsda_CopyFeatures2(byte* result, uint64_t source) {
   result[0] = (source      ) & 0xff;
   result[1] = (source >>  8) & 0xff;
   result[2] = (source >> 16) & 0xff;
