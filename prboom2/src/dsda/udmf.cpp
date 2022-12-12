@@ -62,20 +62,24 @@ static void dsda_SkipValue(Scanner &scanner) {
   }
 }
 
-#define SCAN_INT(x)  { scanner.MustGetInteger(); \
+#define SCAN_INT(x)  { scanner.MustGetToken('='); \
+                       scanner.MustGetInteger(); \
                        x = scanner.number; \
                        scanner.MustGetToken(';'); }
 
-#define SCAN_FLOAT(x) { scanner.MustGetFloat(); \
+#define SCAN_FLOAT(x) { scanner.MustGetToken('='); \
+                        scanner.MustGetFloat(); \
                         x = scanner.decimal; \
                         scanner.MustGetToken(';'); }
 
-#define SCAN_FLAG(x, f) { scanner.MustGetToken(TK_BoolConst); \
+#define SCAN_FLAG(x, f) { scanner.MustGetToken('='); \
+                          scanner.MustGetToken(TK_BoolConst); \
                           if (scanner.boolean) \
                             x |= f; \
                           scanner.MustGetToken(';'); }
 
-#define SCAN_STRING_N(x, n) { scanner.MustGetToken(TK_StringConst); \
+#define SCAN_STRING_N(x, n) { scanner.MustGetToken('='); \
+                              scanner.MustGetToken(TK_StringConst); \
                               strncpy(x, scanner.string, n); \
                               scanner.MustGetToken(';'); }
 
