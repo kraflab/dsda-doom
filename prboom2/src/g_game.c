@@ -107,6 +107,7 @@
 #include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
+#include "dsda/utility.h"
 
 struct
 {
@@ -136,6 +137,8 @@ struct
 // of need to savegame format change from one minor version to another.
 // The old format is still supported.
 #define NEWFORMATSIG "\xff\xff\xff\xff"
+
+extern dsda_bfg_tracers_t dsda_bfg_tracers;
 
 static const byte *demobuffer;   /* cph - only used for playback */
 static int demolength; // check for overrun (missing DEMOMARKER)
@@ -2949,6 +2952,9 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dsda_InitSky();
 
   G_DoLoadLevel ();
+
+  // hide all BFG tracers
+  dsda_bfg_tracers.show = false;
 }
 
 //

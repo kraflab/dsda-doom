@@ -3042,6 +3042,7 @@ setup_menu_t demo_settings[] = {
   { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 12 * 8 },
   { "Allow Jumping", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_allow_jumping },
   { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_gl_health_bar },
+  { "OpenGL Show BFG Tracers", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_gl_bfg_tracers },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mapping_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, tas_settings),

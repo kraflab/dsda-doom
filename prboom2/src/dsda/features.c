@@ -57,6 +57,7 @@ static const char* feature_names[64] = {
   [uf_bonuspalette] = "Disable Bonus Palette",
   [uf_powerpalette] = "Disable Power Palette",
   [uf_healthbar] = "Show Health Bars",
+  [uf_bfg_tracers] = "Show BFG Tracers",
   [uf_alwayssr50] = "Always SR50",
   [uf_maxplayercorpse] = "Edit Corpse Limit",
   [uf_hideweapon] = "Hide Weapon",

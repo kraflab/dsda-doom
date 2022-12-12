@@ -76,6 +76,7 @@
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
+#include "dsda/utility.h"
 
 int gl_preprocessed = false;
 
@@ -130,6 +131,8 @@ GLfloat cm2RGB[CR_LIMIT + 1][4] =
   {1.00f ,0.00f, 0.00f, 1.00f}, //CR_RED
   {1.00f ,1.00f, 1.00f, 1.00f}, //CR_LIMIT
 };
+
+dsda_bfg_tracers_t dsda_bfg_tracers = { 0 };
 
 void SetFrameTextureMode(void)
 {
@@ -2461,6 +2464,51 @@ static void gld_DrawHealthBars(void)
   }
 }
 
+static void gld_DrawBFGTracers(void)
+{
+  int i;
+  float sx, sy, sz;
+
+  // Show last BFG tracers for 2 seconds
+  if (dsda_bfg_tracers.show && gametic < dsda_bfg_tracers.start_tick + 2 * TICRATE) {
+    gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
+
+    glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+    glBegin(GL_LINES);
+
+    sx = -(float)dsda_bfg_tracers.src_x / MAP_SCALE;
+    sy = (float)dsda_bfg_tracers.src_z / MAP_SCALE;
+    sz = (float)dsda_bfg_tracers.src_y / MAP_SCALE;
+
+    for (i = 0; i < 40; i++) {
+      if (dsda_bfg_tracers.hit[i] == true) {
+        glVertex3f(sx, sy, sz);
+        glVertex3f(-(float)dsda_bfg_tracers.dst_x[i] / MAP_SCALE,
+          (float)dsda_bfg_tracers.dst_z[i] / MAP_SCALE,
+          (float)dsda_bfg_tracers.dst_y[i] / MAP_SCALE);
+      }
+    }
+
+    glEnd();
+
+    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+    glBegin(GL_LINES);
+
+    for (i = 0; i < 40; i++) {
+      if (dsda_bfg_tracers.hit[i] == false) {
+        glVertex3f(sx, sy, sz);
+        glVertex3f(-(float)dsda_bfg_tracers.dst_x[i] / MAP_SCALE,
+          (float)dsda_bfg_tracers.dst_z[i] / MAP_SCALE,
+          (float)dsda_bfg_tracers.dst_y[i] / MAP_SCALE);
+      }
+    }
+
+    glEnd();
+
+    gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
+  }
+}
+
 void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 {
   fixed_t   tx;
@@ -3089,6 +3137,11 @@ void gld_DrawScene(player_t *player)
     glsl_SetActiveShader(NULL);
     gld_DrawHealthBars();
     glsl_SetMainShaderActive();
+  }
+
+  if (dsda_ShowBFGTracers())
+  {
+    gld_DrawBFGTracers();
   }
 
   //

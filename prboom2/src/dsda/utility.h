@@ -49,6 +49,20 @@ typedef struct {
   size_t size;
 } dsda_string_t;
 
+typedef struct {
+  fixed_t src_x;
+  fixed_t src_y;
+  fixed_t src_z;
+
+  fixed_t dst_x[40];
+  fixed_t dst_y[40];
+  fixed_t dst_z[40];
+
+  dboolean hit[40];
+  dboolean show;
+  int start_tick;
+} dsda_bfg_tracers_t;
+
 void dsda_InitString(dsda_string_t* dest, const char* value);
 void dsda_FreeString(dsda_string_t* dest);
 void dsda_StringCat(dsda_string_t* dest, const char* source);

@@ -196,6 +196,9 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_gl_health_bar))
     dsda_TrackFeature(uf_healthbar);
 
+  if (dsda_IntConfig(dsda_config_gl_bfg_tracers))
+    dsda_TrackFeature(uf_bfg_tracers);
+
   if (dsda_IntConfig(dsda_config_movement_strafe50))
     dsda_TrackFeature(uf_alwayssr50);
 
@@ -613,6 +616,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_health_bar] = {
     "gl_health_bar", dsda_config_gl_health_bar,
+    CONF_BOOL(0), NULL, STRICT_INT(0)
+  },
+  [dsda_config_gl_bfg_tracers] = {
+    "gl_bfg_tracers", dsda_config_gl_bfg_tracers,
     CONF_BOOL(0), NULL, STRICT_INT(0)
   },
   [dsda_config_use_mouse] = {

@@ -82,7 +82,7 @@ typedef enum {
   uf_join,
   uf_free_analog,
   uf_ghost,
-  // 62
+  uf_bfg_tracers,
   // 63
 } dsda_feature_flag_t;
 

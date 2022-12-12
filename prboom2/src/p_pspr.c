@@ -49,6 +49,9 @@
 #include "e6y.h"//e6y
 #include "dsda.h"
 
+#include "dsda/utility.h"
+#include "dsda/settings.h"
+
 #define LOWERSPEED   (FRACUNIT*6)
 #define RAISESPEED   (FRACUNIT*6)
 #define WEAPONBOTTOM (FRACUNIT*128)
@@ -84,6 +87,8 @@ static const int recoil_values[] = {    // phares
   0,  // wp_chainsaw
   80  // wp_supershotgun
 };
+
+extern dsda_bfg_tracers_t dsda_bfg_tracers;
 
 //
 // P_SetPsprite
@@ -1163,11 +1168,34 @@ void A_Light2 (player_t *player, pspdef_t *psp)
 void A_BFGSpray(mobj_t *mo)
 {
   int i;
+  mobj_t *t1 = NULL;
+
+  if (dsda_ShowBFGTracers())
+  {
+    t1 = P_SubstNullMobj(mo->target);
+
+    dsda_bfg_tracers.src_x = t1->x;
+    dsda_bfg_tracers.src_y = t1->y;
+    // In reality tracers starts at "t1->z + (t1->height>>1) + 8*FRACUNIT",
+    // but starting at "t1->z" makes it much easier to see
+    dsda_bfg_tracers.src_z = t1->z;
+    dsda_bfg_tracers.show = true;
+    dsda_bfg_tracers.start_tick = gametic;
+  }
 
   for (i=0 ; i<40 ; i++)  // offset angles from its attack angle
     {
       int j, damage;
       angle_t an = mo->angle - ANG90/2 + ANG90/40*i;
+
+      if (dsda_ShowBFGTracers())
+      {
+        // calculate destination same as in P_AimLineAttack
+        dsda_bfg_tracers.dst_x[i] = t1->x + ((16*64*FRACUNIT)>>FRACBITS)*finecosine[an >> ANGLETOFINESHIFT];
+        dsda_bfg_tracers.dst_y[i] = t1->y + ((16*64*FRACUNIT)>>FRACBITS)*finesine[an >> ANGLETOFINESHIFT];
+        dsda_bfg_tracers.dst_z[i] = t1->z + (t1->height>>1) + 8*FRACUNIT;
+        dsda_bfg_tracers.hit[i] = 0;
+      }
 
       // mo->target is the originator (player) of the missile
 
@@ -1182,6 +1210,9 @@ void A_BFGSpray(mobj_t *mo)
 
       P_SpawnMobj(linetarget->x, linetarget->y,
                   linetarget->z + (linetarget->height>>2), MT_EXTRABFG);
+
+      if (dsda_ShowBFGTracers())
+        dsda_bfg_tracers.hit[i] = 1;
 
       for (damage=j=0; j<15; j++)
         damage += (P_Random(pr_bfg)&7) + 1;
