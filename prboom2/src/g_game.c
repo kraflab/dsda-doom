@@ -1711,7 +1711,7 @@ void G_ChangedPlayerColour(int pn, int cl)
   for (i = 0; i < g_maxplayers; i++) {
     if ((gamestate == GS_LEVEL) && playeringame[i] && (players[i].mo != NULL)) {
       players[i].mo->flags &= ~MF_TRANSLATION;
-      players[i].mo->flags |= ((uint_64_t)playernumtotrans[i]) << MF_TRANSSHIFT;
+      players[i].mo->flags |= ((uint64_t)playernumtotrans[i]) << MF_TRANSSHIFT;
     }
   }
 }
@@ -2147,7 +2147,7 @@ extern dboolean setsizeneeded;
  * of savegame compatibility warnings, and options lookups.
  */
 
-static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
+static uint64_t G_UpdateSignature(uint64_t s, const char *name)
 {
   int i, lump = W_CheckNumForName(name);
   if (lump != LUMP_NOT_FOUND && (i = lump+10) < numlumps)
@@ -2162,9 +2162,9 @@ static uint_64_t G_UpdateSignature(uint_64_t s, const char *name)
   return s;
 }
 
-static uint_64_t G_Signature(void)
+static uint64_t G_Signature(void)
 {
-  static uint_64_t s = 0;
+  static uint64_t s = 0;
   static dboolean computed = false;
   char name[9];
   int episode, map;
@@ -2340,7 +2340,7 @@ void G_DoLoadGame(void)
   // CPhipps - always check savegames even when forced,
   //  only print a warning if forced
   {  // killough 3/16/98: check lump name checksum (independent of order)
-    uint_64_t checksum;
+    uint64_t checksum;
 
     P_LOAD_X(checksum);
 
@@ -2400,7 +2400,7 @@ static void G_DoSaveGame(dboolean via_cmd)
   char *name;
   char *description;
   int saveversion;
-  uint_64_t checksum;
+  uint64_t checksum;
   int  i;
   const char *maplump;
   int time, ttime;

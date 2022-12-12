@@ -944,7 +944,7 @@ void A_FireOldBFG(player_t *player, pspdef_t *psp)
     if (autoaim/* || !beta_emulation*/)
     {
       // killough 8/2/98: make autoaiming prefer enemies
-      uint_64_t mask = mbf_features ? MF_FRIEND : 0;
+      uint64_t mask = mbf_features ? MF_FRIEND : 0;
       fixed_t slope;
       do
       {
@@ -1004,7 +1004,7 @@ static void P_BulletSlope(mobj_t *mo)
   else
   {
     /* killough 8/2/98: make autoaiming prefer enemies */
-    uint_64_t mask = mbf_features ? MF_FRIEND : 0;
+    uint64_t mask = mbf_features ? MF_FRIEND : 0;
 
     do
     {
@@ -1236,7 +1236,7 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
     return;
 
   // adjust angle
-  mo->angle += (unsigned int)(((int_64_t)angle << 16) / 360);
+  mo->angle += (unsigned int)(((int64_t)angle << 16) / 360);
   an = mo->angle >> ANGLETOFINESHIFT;
   mo->momx = FixedMul(mo->info->speed, finecosine[an]);
   mo->momy = FixedMul(mo->info->speed, finesine[an]);

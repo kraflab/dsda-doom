@@ -90,8 +90,8 @@ typedef enum {
 
 void dsda_TrackFeature(int feature);
 void dsda_ResetFeatures(void);
-uint_64_t dsda_UsedFeatures(void);
-void dsda_MergeFeatures(uint_64_t source);
+uint64_t dsda_UsedFeatures(void);
+void dsda_MergeFeatures(uint64_t source);
 void dsda_CopyFeatures(byte* result);
-void dsda_CopyFeatures2(byte* result, uint_64_t source);
+void dsda_CopyFeatures2(byte* result, uint64_t source);
 char* dsda_DescribeFeatures(void);

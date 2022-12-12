@@ -2685,10 +2685,10 @@ static void P_RemoveSlimeTrails(void)         // killough 10/98
     hit[v - vertexes] = 1;        // Mark this vertex as processed
     if (v != l->v1 && v != l->v2) // Exclude endpoints of linedefs
       { // Project the vertex back onto the parent linedef
-        int_64_t dx2 = (l->dx >> FRACBITS) * (l->dx >> FRACBITS);
-        int_64_t dy2 = (l->dy >> FRACBITS) * (l->dy >> FRACBITS);
-        int_64_t dxy = (l->dx >> FRACBITS) * (l->dy >> FRACBITS);
-        int_64_t s = dx2 + dy2;
+        int64_t dx2 = (l->dx >> FRACBITS) * (l->dx >> FRACBITS);
+        int64_t dy2 = (l->dy >> FRACBITS) * (l->dy >> FRACBITS);
+        int64_t dxy = (l->dx >> FRACBITS) * (l->dy >> FRACBITS);
+        int64_t s = dx2 + dy2;
         int x0 = v->x, y0 = v->y, x1 = l->v1->x, y1 = l->v1->y;
         v->px = (int)((dx2 * x0 + dy2 * x1 + dxy * (y0 - y1)) / s);
         v->py = (int)((dy2 * y0 + dx2 * y1 + dxy * (x0 - x1)) / s);
@@ -2722,10 +2722,10 @@ static void R_CalcSegsLength(void)
   {
     double length;
     seg_t *li = segs+i;
-    int_64_t dx = (int_64_t)li->v2->px - li->v1->px;
-    int_64_t dy = (int_64_t)li->v2->py - li->v1->py;
+    int64_t dx = (int64_t)li->v2->px - li->v1->px;
+    int64_t dy = (int64_t)li->v2->py - li->v1->py;
     length = sqrt((double)dx*dx + (double)dy*dy);
-    li->length = (int_64_t)length;
+    li->length = (int64_t)length;
     // [crispy] re-calculate angle used for rendering
     li->pangle = R_PointToAngleEx2(li->v1->px, li->v1->py, li->v2->px, li->v2->py);
   }

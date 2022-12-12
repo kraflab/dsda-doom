@@ -319,7 +319,7 @@ typedef struct
   fixed_t offset;
   angle_t angle;
   angle_t pangle; // re-calculated angle used for rendering
-  int_64_t length; // fix long wall wobble
+  int64_t length; // fix long wall wobble
   side_t* sidedef;
   line_t* linedef;
 
@@ -434,7 +434,7 @@ typedef struct vissprite_s
   fixed_t xiscale;             // negative if flipped
   fixed_t texturemid;
   int patch;
-  uint_64_t mobjflags;
+  uint64_t mobjflags;
 
   // for color translation and shadow draw, maxbright frames as well
   const lighttable_t *colormap;

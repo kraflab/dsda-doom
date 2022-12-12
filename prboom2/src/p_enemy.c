@@ -1822,7 +1822,7 @@ static dboolean PIT_VileCheck(mobj_t *thing)
 
 dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
 {
-  uint_64_t oldflags;
+  uint64_t oldflags;
   fixed_t oldheight, oldradius;
   mobjinfo_t *info;
 
@@ -3052,7 +3052,7 @@ void A_Turn(mobj_t *mo)
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  mo->angle += (unsigned int)(((uint_64_t) mo->state->misc1 << 32) / 360);
+  mo->angle += (unsigned int)(((uint64_t) mo->state->misc1 << 32) / 360);
 }
 
 void A_Face(mobj_t *mo)
@@ -3061,7 +3061,7 @@ void A_Face(mobj_t *mo)
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  mo->angle = (unsigned int)(((uint_64_t) mo->state->misc1 << 32) / 360);
+  mo->angle = (unsigned int)(((uint64_t) mo->state->misc1 << 32) / 360);
 }
 
 void A_Scratch(mobj_t *mo)
@@ -3158,7 +3158,7 @@ void A_SpawnObject(mobj_t *actor)
   vel_z = actor->state->args[7];
 
   // calculate position offsets
-  an = actor->angle + (unsigned int)(((int_64_t)angle << 16) / 360);
+  an = actor->angle + (unsigned int)(((int64_t)angle << 16) / 360);
   fan = an >> ANGLETOFINESHIFT;
   dx = FixedMul(ofs_x, finecosine[fan]) - FixedMul(ofs_y, finesine[fan]  );
   dy = FixedMul(ofs_x, finesine[fan]  ) + FixedMul(ofs_y, finecosine[fan]);
@@ -3227,7 +3227,7 @@ void A_MonsterProjectile(mobj_t *actor)
     return;
 
   // adjust angle
-  mo->angle += (unsigned int)(((int_64_t)angle << 16) / 360);
+  mo->angle += (unsigned int)(((int64_t)angle << 16) / 360);
   an = mo->angle >> ANGLETOFINESHIFT;
   mo->momx = FixedMul(mo->info->speed, finecosine[an]);
   mo->momy = FixedMul(mo->info->speed, finesine[an]);
@@ -3540,7 +3540,7 @@ void A_JumpIfTracerCloser(mobj_t* actor)
 void A_JumpIfFlagsSet(mobj_t* actor)
 {
   int state;
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
 
   if (!mbf21 || !actor)
     return;
@@ -3562,7 +3562,7 @@ void A_JumpIfFlagsSet(mobj_t* actor)
 //
 void A_AddFlags(mobj_t* actor)
 {
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
 
   if (!mbf21 || !actor)
     return;
@@ -3582,7 +3582,7 @@ void A_AddFlags(mobj_t* actor)
 //
 void A_RemoveFlags(mobj_t* actor)
 {
-  uint_64_t flags, flags2;
+  uint64_t flags, flags2;
 
   if (!mbf21 || !actor)
     return;

@@ -177,7 +177,7 @@ void R_InitPlanes (void)
 
 static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
 {
-  int_64_t den;
+  int64_t den;
   fixed_t distance;
   unsigned index;
 
@@ -197,11 +197,11 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
   // See cchest2.wad/map02/room with sector #265
   if (centery == y)
     return;
-  den = (int_64_t)FRACUNIT * FRACUNIT * D_abs(centery - y);
+  den = (int64_t)FRACUNIT * FRACUNIT * D_abs(centery - y);
   distance = FixedMul (planeheight, yslope[y]);
 
-  dsvars->xstep = (fixed_t)((int_64_t)viewsin * planeheight * viewfocratio / den);
-  dsvars->ystep = (fixed_t)((int_64_t)viewcos * planeheight * viewfocratio / den);
+  dsvars->xstep = (fixed_t)((int64_t)viewsin * planeheight * viewfocratio / den);
+  dsvars->ystep = (fixed_t)((int64_t)viewcos * planeheight * viewfocratio / den);
 
   // killough 2/28/98: Add offsets
   dsvars->xfrac =  viewx + xoffs + FixedMul(viewcos, distance) + (x1 - centerx) * dsvars->xstep;
@@ -547,7 +547,7 @@ static void R_DoDrawPlane(visplane_t *pl)
         if (skystretch)
         {
           int skyheight = textureheight[texture]>>FRACBITS;
-          dcvars.texturemid = (int)((int_64_t)dcvars.texturemid * skyheight / SKYSTRETCH_HEIGHT);
+          dcvars.texturemid = (int)((int64_t)dcvars.texturemid * skyheight / SKYSTRETCH_HEIGHT);
         }
       }
       else

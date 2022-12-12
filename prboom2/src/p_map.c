@@ -1093,7 +1093,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 
   if (thing->flags & MF_SPECIAL)
   {
-    uint_64_t solid = thing->flags & MF_SOLID;
+    uint64_t solid = thing->flags & MF_SOLID;
     if (tmthing->flags & MF_PICKUP) // hexen_note: can probably use tmflags here?
       P_TouchSpecialThing(thing, tmthing); // can remove thing
     return !solid;
@@ -2048,7 +2048,7 @@ mobj_t*   crosshair_target;
 static mobj_t*   shootthing;
 
 /* killough 8/2/98: for more intelligent autoaiming */
-static uint_64_t aim_flags_mask;
+static uint64_t aim_flags_mask;
 
 // Height if not aiming up or down
 fixed_t   shootz;
@@ -2342,7 +2342,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 //
 // P_AimLineAttack
 //
-fixed_t P_AimLineAttack(mobj_t* t1,angle_t angle,fixed_t distance, uint_64_t mask)
+fixed_t P_AimLineAttack(mobj_t* t1,angle_t angle,fixed_t distance, uint64_t mask)
 {
   fixed_t x2;
   fixed_t y2;

@@ -898,7 +898,7 @@ int HU_DrawDemoProgress(int force)
     return false;
 
   tics_count = demo_tics_count * demo_playerscount;
-  len = MIN(SCREENWIDTH, (int)((int_64_t)SCREENWIDTH * dsda_PlaybackTics() / tics_count));
+  len = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * dsda_PlaybackTics() / tics_count));
 
   if (!force)
   {

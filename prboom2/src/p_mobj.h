@@ -119,118 +119,118 @@
 //
 
 // Call P_SpecialThing when touched.
-#define MF_SPECIAL      (uint_64_t)(0x0000000000000001)
+#define MF_SPECIAL      0x0000000000000001ull
 // Blocks.
-#define MF_SOLID        (uint_64_t)(0x0000000000000002)
+#define MF_SOLID        0x0000000000000002ull
 // Can be hit.
-#define MF_SHOOTABLE    (uint_64_t)(0x0000000000000004)
+#define MF_SHOOTABLE    0x0000000000000004ull
 // Don't use the sector links (invisible but touchable).
-#define MF_NOSECTOR     (uint_64_t)(0x0000000000000008)
+#define MF_NOSECTOR     0x0000000000000008ull
 // Don't use the blocklinks (inert but displayable)
-#define MF_NOBLOCKMAP   (uint_64_t)(0x0000000000000010)
+#define MF_NOBLOCKMAP   0x0000000000000010ull
 
 // Not to be activated by sound, deaf monster.
-#define MF_AMBUSH       (uint_64_t)(0x0000000000000020)
+#define MF_AMBUSH       0x0000000000000020ull
 // Will try to attack right back.
-#define MF_JUSTHIT      (uint_64_t)(0x0000000000000040)
+#define MF_JUSTHIT      0x0000000000000040ull
 // Will take at least one step before attacking.
-#define MF_JUSTATTACKED (uint_64_t)(0x0000000000000080)
+#define MF_JUSTATTACKED 0x0000000000000080ull
 // On level spawning (initial position),
 //  hang from ceiling instead of stand on floor.
-#define MF_SPAWNCEILING (uint_64_t)(0x0000000000000100)
+#define MF_SPAWNCEILING 0x0000000000000100ull
 // Don't apply gravity (every tic),
 //  that is, object will float, keeping current height
 //  or changing it actively.
-#define MF_NOGRAVITY    (uint_64_t)(0x0000000000000200)
+#define MF_NOGRAVITY    0x0000000000000200ull
 
 // Movement flags.
 // This allows jumps from high places.
-#define MF_DROPOFF      (uint_64_t)(0x0000000000000400)
+#define MF_DROPOFF      0x0000000000000400ull
 // For players, will pick up items.
-#define MF_PICKUP       (uint_64_t)(0x0000000000000800)
+#define MF_PICKUP       0x0000000000000800ull
 // Player cheat. ???
-#define MF_NOCLIP       (uint_64_t)(0x0000000000001000)
+#define MF_NOCLIP       0x0000000000001000ull
 // Player: keep info about sliding along walls.
-#define MF_SLIDE        (uint_64_t)(0x0000000000002000)
+#define MF_SLIDE        0x0000000000002000ull
 // Allow moves to any height, no gravity.
 // For active floaters, e.g. cacodemons, pain elementals.
-#define MF_FLOAT        (uint_64_t)(0x0000000000004000)
+#define MF_FLOAT        0x0000000000004000ull
 // Don't cross lines
 //   ??? or look at heights on teleport.
-#define MF_TELEPORT     (uint_64_t)(0x0000000000008000)
+#define MF_TELEPORT     0x0000000000008000ull
 // Don't hit same species, explode on block.
 // Player missiles as well as fireballs of various kinds.
-#define MF_MISSILE      (uint_64_t)(0x0000000000010000)
+#define MF_MISSILE      0x0000000000010000ull
 // Dropped by a demon, not level spawned.
 // E.g. ammo clips dropped by dying former humans.
-#define MF_DROPPED      (uint_64_t)(0x0000000000020000)
+#define MF_DROPPED      0x0000000000020000ull
 // Use fuzzy draw (shadow demons or spectres),
 //  temporary player invisibility powerup.
-#define MF_SHADOW       (uint_64_t)(0x0000000000040000)
+#define MF_SHADOW       0x0000000000040000ull
 // Flag: don't bleed when shot (use puff),
 //  barrels and shootable furniture shall not bleed.
-#define MF_NOBLOOD      (uint_64_t)(0x0000000000080000)
+#define MF_NOBLOOD      0x0000000000080000ull
 // Don't stop moving halfway off a step,
 //  that is, have dead bodies slide down all the way.
-#define MF_CORPSE       (uint_64_t)(0x0000000000100000)
+#define MF_CORPSE       0x0000000000100000ull
 // Floating to a height for a move, ???
 //  don't auto float to target's height.
-#define MF_INFLOAT      (uint_64_t)(0x0000000000200000)
+#define MF_INFLOAT      0x0000000000200000ull
 
 // On kill, count this enemy object
 //  towards intermission kill total.
 // Happy gathering.
-#define MF_COUNTKILL    (uint_64_t)(0x0000000000400000)
+#define MF_COUNTKILL    0x0000000000400000ull
 
 // On picking up, count this item object
 //  towards intermission item total.
-#define MF_COUNTITEM    (uint_64_t)(0x0000000000800000)
+#define MF_COUNTITEM    0x0000000000800000ull
 
 // Special handling: skull in flight.
 // Neither a cacodemon nor a missile.
-#define MF_SKULLFLY     (uint_64_t)(0x0000000001000000)
+#define MF_SKULLFLY     0x0000000001000000ull
 
 // Don't spawn this object
 //  in death match mode (e.g. key cards).
-#define MF_NOTDMATCH    (uint_64_t)(0x0000000002000000)
+#define MF_NOTDMATCH    0x0000000002000000ull
 
 // Player sprites in multiplayer modes are modified
 //  using an internal color lookup table for re-indexing.
 // If 0x4 0x8 or 0xc,
 //  use a translation table for player colormaps
-#define MF_TRANSLATION  (uint_64_t)(0x000000000c000000)
-#define MF_TRANSLATION1 (uint_64_t)(0x0000000004000000)
-#define MF_TRANSLATION2 (uint_64_t)(0x0000000008000000)
+#define MF_TRANSLATION  (uint64_t)(0x000000000c000000)
+#define MF_TRANSLATION1 0x0000000004000000ull
+#define MF_TRANSLATION2 0x0000000008000000ull
 // Hmm ???.
 #define MF_TRANSSHIFT 26
 
-#define MF_UNUSED2      (uint_64_t)(0x0000000010000000)
-#define MF_UNUSED3      (uint_64_t)(0x0000000020000000)
+#define MF_UNUSED2      0x0000000010000000ull
+#define MF_UNUSED3      0x0000000020000000ull
 
     // Translucent sprite?                                          // phares
-#define MF_TRANSLUCENT  (uint_64_t)(0x0000000040000000)
+#define MF_TRANSLUCENT  0x0000000040000000ull
 
-// this is free            LONGLONG(0x0000000100000000)
+// this is free            0x0000000100000000ull
 
-// these are greater than an int. That's why the flags below are now uint_64_t
+// these are greater than an int. That's why the flags below are now uint64_t
 
-#define MF_TOUCHY          LONGLONG(0x0000000100000000)
-#define MF_BOUNCES         LONGLONG(0x0000000200000000)
-#define MF_FRIEND          LONGLONG(0x0000000400000000)
+#define MF_TOUCHY          0x0000000100000000ull
+#define MF_BOUNCES         0x0000000200000000ull
+#define MF_FRIEND          0x0000000400000000ull
 
-#define MF_RESSURECTED     LONGLONG(0x0000001000000000)
-#define MF_NO_DEPTH_TEST   LONGLONG(0x0000002000000000)
-#define MF_FOREGROUND      LONGLONG(0x0000004000000000)
-#define MF_PLAYERSPRITE    LONGLONG(0x0000008000000000)
+#define MF_RESSURECTED     0x0000001000000000ull
+#define MF_NO_DEPTH_TEST   0x0000002000000000ull
+#define MF_FOREGROUND      0x0000004000000000ull
+#define MF_PLAYERSPRITE    0x0000008000000000ull
 
 // This actor not targetted when it hurts something else
-#define MF_NOTARGET        LONGLONG(0x0000010000000000)
+#define MF_NOTARGET        0x0000010000000000ull
 // fly mode is active
-#define MF_FLY             LONGLONG(0x0000020000000000)
+#define MF_FLY             0x0000020000000000ull
 
 // hexen
-#define	MF_ALTSHADOW	LONGLONG(0x0000040000000000) // alternate translucent draw
-#define	MF_ICECORPSE	LONGLONG(0x0000080000000000) // a frozen corpse (for blasting)
+#define	MF_ALTSHADOW	0x0000040000000000ull // alternate translucent draw
+#define	MF_ICECORPSE	0x0000080000000000ull // a frozen corpse (for blasting)
 
 // hexen_note: MF_TRANSLATION covers doom's (MF_TRANSLATION | MF_UNUSED2)
 
@@ -324,7 +324,7 @@ typedef struct mobj_s
 
     int                 tics;   // state tic counter
     state_t*            state;
-    uint_64_t           flags;
+    uint64_t            flags;
     int                 intflags;  // killough 9/15/98: internal flags
     int                 health;
 
@@ -389,7 +389,7 @@ typedef struct mobj_s
 
     // heretic
     int damage;                 // For missiles
-    uint_64_t flags2;           // Heretic & MBF21 flags
+    uint64_t flags2;           // Heretic & MBF21 flags
     specialval_t special1;      // Special info
     specialval_t special2;      // Special info
 
@@ -455,59 +455,59 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 
 // --- mobj.flags2 ---
 
-#define MF2_LOGRAV         (uint_64_t)(0x00000001)  // alternate gravity setting
-#define MF2_WINDTHRUST     (uint_64_t)(0x00000002)  // gets pushed around by the wind
-#define MF2_FLOORBOUNCE    (uint_64_t)(0x00000004)  // bounces off the floor
-#define MF2_THRUGHOST      (uint_64_t)(0x00000008)  // missile will pass through ghosts
-#define MF2_FLY            (uint_64_t)(0x00000010)  // fly mode is active
-#define MF2_FOOTCLIP       (uint_64_t)(0x00000020)  // if feet are allowed to be clipped
-#define MF2_SPAWNFLOAT     (uint_64_t)(0x00000040)  // spawn random float z
-#define MF2_NOTELEPORT     (uint_64_t)(0x00000080)  // does not teleport
-#define MF2_RIP            (uint_64_t)(0x00000100)  // missile rips through solid
-#define MF2_PUSHABLE       (uint_64_t)(0x00000200)  // can be pushed by other moving
-#define MF2_SLIDE          (uint_64_t)(0x00000400)  // slides against walls
-#define MF2_ONMOBJ         (uint_64_t)(0x00000800)  // mobj is resting on top of another
-#define MF2_PASSMOBJ       (uint_64_t)(0x00001000)  // Enable z block checking (pass over / under)
-#define MF2_CANNOTPUSH     (uint_64_t)(0x00002000)  // cannot push other pushable mobjs
-#define MF2_FEETARECLIPPED (uint_64_t)(0x00004000)  // a mobj's feet are now being cut
-#define MF2_BOSS           (uint_64_t)(0x00008000)  // mobj is a major boss
-#define MF2_FIREDAMAGE     (uint_64_t)(0x00010000)  // does fire damage
-#define MF2_NODMGTHRUST    (uint_64_t)(0x00020000)  // does not thrust target when
-#define MF2_TELESTOMP      (uint_64_t)(0x00040000)  // mobj can stomp another
-#define MF2_FLOATBOB       (uint_64_t)(0x00080000)  // use float bobbing z movement
-#define MF2_DONTDRAW       (uint_64_t)(0x00100000)  // don't generate a vissprite
+#define MF2_LOGRAV         0x00000001ull  // alternate gravity setting
+#define MF2_WINDTHRUST     0x00000002ull  // gets pushed around by the wind
+#define MF2_FLOORBOUNCE    0x00000004ull  // bounces off the floor
+#define MF2_THRUGHOST      0x00000008ull  // missile will pass through ghosts
+#define MF2_FLY            0x00000010ull  // fly mode is active
+#define MF2_FOOTCLIP       0x00000020ull  // if feet are allowed to be clipped
+#define MF2_SPAWNFLOAT     0x00000040ull  // spawn random float z
+#define MF2_NOTELEPORT     0x00000080ull  // does not teleport
+#define MF2_RIP            0x00000100ull  // missile rips through solid
+#define MF2_PUSHABLE       0x00000200ull  // can be pushed by other moving
+#define MF2_SLIDE          0x00000400ull  // slides against walls
+#define MF2_ONMOBJ         0x00000800ull  // mobj is resting on top of another
+#define MF2_PASSMOBJ       0x00001000ull  // Enable z block checking (pass over / under)
+#define MF2_CANNOTPUSH     0x00002000ull  // cannot push other pushable mobjs
+#define MF2_FEETARECLIPPED 0x00004000ull  // a mobj's feet are now being cut
+#define MF2_BOSS           0x00008000ull  // mobj is a major boss
+#define MF2_FIREDAMAGE     0x00010000ull  // does fire damage
+#define MF2_NODMGTHRUST    0x00020000ull  // does not thrust target when
+#define MF2_TELESTOMP      0x00040000ull  // mobj can stomp another
+#define MF2_FLOATBOB       0x00080000ull  // use float bobbing z movement
+#define MF2_DONTDRAW       0x00100000ull  // don't generate a vissprite
 
 // mbf21
-#define MF2_SHORTMRANGE    (uint_64_t)(0x00200000) // has short missile range (archvile)
-#define MF2_DMGIGNORED     (uint_64_t)(0x00400000) // other things ignore its attacks (archvile)
-#define MF2_NORADIUSDMG    (uint_64_t)(0x00800000) // Doesn't take damage from blast radii
-#define MF2_FORCERADIUSDMG (uint_64_t)(0x01000000) // Does radius damage to everything, no exceptions
-#define MF2_HIGHERMPROB    (uint_64_t)(0x02000000) // min prob. of miss. att. = 37.5% vs 22%
-#define MF2_RANGEHALF      (uint_64_t)(0x04000000) // use half actual distance for missile attack probability
-#define MF2_NOTHRESHOLD    (uint_64_t)(0x08000000) // has no target threshold
-#define MF2_MAP07BOSS1     (uint_64_t)(0x10000000) // is a MAP07 boss type 1 (666)
-#define MF2_MAP07BOSS2     (uint_64_t)(0x20000000) // is a MAP07 boss type 2 (667)
-#define MF2_E1M8BOSS       (uint_64_t)(0x40000000) // is an E1M8 boss
-#define MF2_E2M8BOSS       (uint_64_t)(0x80000000) // is an E2M8 boss
-#define MF2_E3M8BOSS  LONGLONG(0x0000000100000000) // is an E3M8 boss
-#define MF2_E4M6BOSS  LONGLONG(0x0000000200000000) // is an E4M6 boss
-#define MF2_E4M8BOSS  LONGLONG(0x0000000400000000) // is an E4M8 boss
-#define MF2_LONGMELEE LONGLONG(0x0000000800000000) // has long melee range (revenant)
-#define MF2_FULLVOLSOUNDS LONGLONG(0x0000001000000000) // full volume see / death sound
+#define MF2_SHORTMRANGE    0x00200000ull // has short missile range (archvile)
+#define MF2_DMGIGNORED     0x00400000ull // other things ignore its attacks (archvile)
+#define MF2_NORADIUSDMG    0x00800000ull // Doesn't take damage from blast radii
+#define MF2_FORCERADIUSDMG 0x01000000ull // Does radius damage to everything, no exceptions
+#define MF2_HIGHERMPROB    0x02000000ull // min prob. of miss. att. = 37.5% vs 22%
+#define MF2_RANGEHALF      0x04000000ull // use half actual distance for missile attack probability
+#define MF2_NOTHRESHOLD    0x08000000ull // has no target threshold
+#define MF2_MAP07BOSS1     0x10000000ull // is a MAP07 boss type 1 (666)
+#define MF2_MAP07BOSS2     0x20000000ull // is a MAP07 boss type 2 (667)
+#define MF2_E1M8BOSS       0x40000000ull // is an E1M8 boss
+#define MF2_E2M8BOSS       0x80000000ull // is an E2M8 boss
+#define MF2_E3M8BOSS  0x0000000100000000ull // is an E3M8 boss
+#define MF2_E4M6BOSS  0x0000000200000000ull // is an E4M6 boss
+#define MF2_E4M8BOSS  0x0000000400000000ull // is an E4M8 boss
+#define MF2_LONGMELEE 0x0000000800000000ull // has long melee range (revenant)
+#define MF2_FULLVOLSOUNDS 0x0000001000000000ull // full volume see / death sound
 
 // hexen
-#define MF2_BLASTED	          LONGLONG(0x0000002000000000) // missile will pass through ghosts
-#define MF2_IMPACT            LONGLONG(0x0000004000000000) // an MF_MISSILE mobj can activate SPAC_IMPACT
-#define MF2_PUSHWALL          LONGLONG(0x0000008000000000) // mobj can push walls
-#define MF2_MCROSS            LONGLONG(0x0000010000000000) // can activate monster cross lines
-#define MF2_PCROSS            LONGLONG(0x0000020000000000) // can activate projectile cross lines
-#define MF2_CANTLEAVEFLOORPIC LONGLONG(0x0000040000000000) // stay within a certain floor type
-#define MF2_NONSHOOTABLE      LONGLONG(0x0000080000000000) // mobj is totally non-shootable, but still considered solid
-#define MF2_INVULNERABLE      LONGLONG(0x0000100000000000) // mobj is invulnerable
-#define MF2_DORMANT           LONGLONG(0x0000200000000000) // thing is dormant
-#define MF2_ICEDAMAGE         LONGLONG(0x0000400000000000) // does ice damage
-#define MF2_SEEKERMISSILE     LONGLONG(0x0000800000000000) // is a seeker (for reflection)
-#define MF2_REFLECTIVE        LONGLONG(0x0001000000000000) // reflects missiles
+#define MF2_BLASTED	          0x0000002000000000ull // missile will pass through ghosts
+#define MF2_IMPACT            0x0000004000000000ull // an MF_MISSILE mobj can activate SPAC_IMPACT
+#define MF2_PUSHWALL          0x0000008000000000ull // mobj can push walls
+#define MF2_MCROSS            0x0000010000000000ull // can activate monster cross lines
+#define MF2_PCROSS            0x0000020000000000ull // can activate projectile cross lines
+#define MF2_CANTLEAVEFLOORPIC 0x0000040000000000ull // stay within a certain floor type
+#define MF2_NONSHOOTABLE      0x0000080000000000ull // mobj is totally non-shootable, but still considered solid
+#define MF2_INVULNERABLE      0x0000100000000000ull // mobj is invulnerable
+#define MF2_DORMANT           0x0000200000000000ull // thing is dormant
+#define MF2_ICEDAMAGE         0x0000400000000000ull // does ice damage
+#define MF2_SEEKERMISSILE     0x0000800000000000ull // is a seeker (for reflection)
+#define MF2_REFLECTIVE        0x0001000000000000ull // reflects missiles
 
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50

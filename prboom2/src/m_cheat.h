@@ -57,7 +57,7 @@ typedef struct cheatseq_s {
   void (*const func)();
   const int arg;
   const int repeatable;
-  uint_64_t code, mask;
+  uint64_t code, mask;
   size_t sequence_len;
 
   // state used during the game

@@ -311,7 +311,7 @@ void M_CheatGod(void)
     P_MapStart();
     mt.x = plyr->mo->x >> FRACBITS;
     mt.y = plyr->mo->y >> FRACBITS;
-    mt.angle = (plyr->mo->angle + ANG45/2)*(uint_64_t)45/ANG45;
+    mt.angle = (plyr->mo->angle + ANG45/2)*(uint64_t)45/ANG45;
     mt.type = consoleplayer + 1;
     mt.options = 1; // arbitrary non-zero value
     P_SpawnPlayer(consoleplayer, &mt);
@@ -566,7 +566,7 @@ static void cheat_massacre()    // jff 2/01/98 kill all monsters
   extern void A_PainDie(mobj_t *);
 
   // killough 7/20/98: kill friendly monsters only if no others to kill
-  uint_64_t mask = MF_FRIEND;
+  uint64_t mask = MF_FRIEND;
   P_MapStart();
   do
     while ((currentthinker = P_NextThinker(currentthinker,th_all)) != NULL)

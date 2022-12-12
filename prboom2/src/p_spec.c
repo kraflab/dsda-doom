@@ -3876,8 +3876,8 @@ static void Add_WallScroller(fixed_t dx, fixed_t dy, const line_t *l,
 
   // CPhipps - Import scroller calc overflow fix, compatibility optioned
   if (compatibility_level >= lxdoom_1_compatibility) {
-    x = (fixed_t)(((int_64_t)dy * -(int_64_t)l->dy - (int_64_t)dx * (int_64_t)l->dx) / (int_64_t)d);  // killough 10/98:
-    y = (fixed_t)(((int_64_t)dy * (int_64_t)l->dx - (int_64_t)dx * (int_64_t)l->dy) / (int_64_t)d);   // Use long long arithmetic
+    x = (fixed_t)(((int64_t)dy * -(int64_t)l->dy - (int64_t)dx * (int64_t)l->dx) / (int64_t)d);  // killough 10/98:
+    y = (fixed_t)(((int64_t)dy * (int64_t)l->dx - (int64_t)dx * (int64_t)l->dy) / (int64_t)d);   // Use long long arithmetic
   } else {
     x = -FixedDiv(FixedMul(dy, l->dy) + FixedMul(dx, l->dx), d);
     y = -FixedDiv(FixedMul(dx, l->dy) - FixedMul(dy, l->dx), d);
@@ -4520,7 +4520,7 @@ static dboolean PIT_PushThing(mobj_t* thing)
         {
           int x = (thing->x-sx) >> FRACBITS;
           int y = (thing->y-sy) >> FRACBITS;
-          speed = (int)(((uint_64_t) tmpusher->magnitude << 23) / (x*x+y*y+1));
+          speed = (int)(((uint64_t) tmpusher->magnitude << 23) / (x*x+y*y+1));
         }
 
       // If speed <= 0, you're outside the effective radius. You also have
