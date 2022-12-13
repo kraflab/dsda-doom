@@ -2626,13 +2626,11 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   sprite.y2 = sprite.y1 - ((float)patch->height / MAP_COEFF);
 
   // e6y
-  // if the sprite is below the floor, and it's not a hanger/floater/missile,
-  // and it's not a fully dead corpse, move it up
+  // if the sprite is below the floor, and it's not a hanger/floater/missile, move it up
   if (
     sprite.y2 < 0 &&
     sprite.y2 >= -gl_spriteclip_threshold_f &&
-    !(thing->flags & (MF_SPAWNCEILING|MF_FLOAT|MF_MISSILE|MF_NOGRAVITY)) &&
-    !(thing->flags & MF_CORPSE && thing->tics == -1)
+    !(thing->flags & (MF_SPAWNCEILING|MF_FLOAT|MF_MISSILE|MF_NOGRAVITY))
   )
   {
     sprite.y1 -= sprite.y2;
