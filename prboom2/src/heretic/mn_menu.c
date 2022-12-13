@@ -248,9 +248,12 @@ void MN_Drawer(void)
     y += ITEM_HEIGHT;
   }
 
-  y = currentMenu->y + (itemOn * ITEM_HEIGHT) + SELECTOR_YOFFSET;
-  selName = (MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
-  V_DrawNamePatch(x + SELECTOR_XOFFSET, y, 0, selName, CR_DEFAULT, VPT_STRETCH);
+  if (max)
+  {
+    y = currentMenu->y + (itemOn * ITEM_HEIGHT) + SELECTOR_YOFFSET;
+    selName = (MenuTime & 16 ? "M_SLCTR1" : "M_SLCTR2");
+    V_DrawNamePatch(x + SELECTOR_XOFFSET, y, 0, selName, CR_DEFAULT, VPT_STRETCH);
+  }
   // MenuItem_t *item;
   // const char *message;
   // const char *selName;
