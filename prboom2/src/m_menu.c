@@ -2580,7 +2580,7 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
   { "AMMO LOW/OK", S_NUM, m_conf, SB_X, SB_Y + 11 * 8, dsda_config_hud_ammo_red },
   { "AMMO OK/GOOD", S_NUM, m_conf, SB_X, SB_Y + 12 * 8, dsda_config_hud_ammo_yellow },
   { "REPORT REVEALED SECRETS", S_YESNO, m_conf, SB_X, SB_Y + 13 * 8, dsda_config_hudadd_secretarea },
-  { "SHOW PROGRESS BAR DURING DEMO PLAYBACK", S_YESNO, m_conf, SB_X, SB_Y + 14 * 8, dsda_config_hudadd_demoprogressbar },
+  { "DEMO PLAYBACK PROGRESS BAR", S_YESNO, m_conf, SB_X, SB_Y + 14 * 8, dsda_config_hudadd_demoprogressbar },
 
   NEXT_PAGE(KB_NEXT, SB_Y + 20 * 8, stat_settings2),
   FINAL_ENTRY
