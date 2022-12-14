@@ -1046,7 +1046,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_usegamma] = {
     "usegamma", dsda_config_usegamma,
-    dsda_config_int, 0, 4, { 0 }, &usegamma
+    dsda_config_int, 0, 4, { 0 }, &usegamma, NOT_STRICT, M_ChangeApplyPalette
   },
   [dsda_config_screenblocks] = {
     "screenblocks", dsda_config_screenblocks,

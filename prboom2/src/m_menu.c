@@ -3984,7 +3984,6 @@ dboolean M_Responder (event_t* ev) {
           usegamma == 2 ? s_GAMMALVL2 :
           usegamma == 3 ? s_GAMMALVL3 :
           s_GAMMALVL4;
-        V_SetPalette(0);
         return true;
       }
     }
