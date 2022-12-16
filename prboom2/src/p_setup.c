@@ -1008,6 +1008,47 @@ static void P_LoadSectors (int lump)
   }
 }
 
+static void P_LoadUDMFSectors(int lump)
+{
+  int i;
+
+  sectors = calloc_IfSameLevel(sectors, udmf.num_sectors, sizeof(sector_t));
+
+  for (i = 0; i < numsectors; ++i)
+  {
+    sector_t *ss = &sectors[i];
+    const udmf_sector_t *ms = &udmf.sectors[i];
+
+    P_InitializeSectorDefaults(ss);
+
+    ss->iSectorID = i;
+    ss->floorheight = P_IntToFixed(ms->heightfloor);
+    ss->ceilingheight = P_IntToFixed(ms->heightceiling);
+    ss->floorpic = R_FlatNumForName(ms->texturefloor);
+    ss->ceilingpic = R_FlatNumForName(ms->textureceiling);
+    ss->lightlevel = ms->lightlevel;
+    ss->special = ms->special;
+    ss->tag = ms->id;
+    ss->floor_xoffs = P_FloatToFixed(ms->xpanningfloor);
+    ss->floor_yoffs = P_FloatToFixed(ms->ypanningfloor);
+    ss->ceiling_xoffs = P_FloatToFixed(ms->xpanningceiling);
+    ss->ceiling_yoffs = P_FloatToFixed(ms->ypanningceiling);
+    ss->gravity = P_FloatToFixed(ms->gravity);
+
+    // UDMF TODO:
+    // xscalefloor
+    // yscalefloor
+    // xscaleceiling
+    // yscaleceiling
+    // rotationfloor
+    // rotationceiling
+    // lightfloor
+    // lightceiling
+    // damageamount
+    // damageinterval
+    // leakiness
+  }
+}
 
 //
 // P_LoadNodes
