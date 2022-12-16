@@ -186,7 +186,6 @@ dboolean skipblstart;  // MaxW: Skip initial blocklist short
 // be used as a PVS lookup as well.
 //
 
-static int rejectlump = -1;// cph - store reject lump num if cached
 const byte *rejectmatrix; // cph - const*
 
 // Maintain single and multi player starting spots.
@@ -202,6 +201,66 @@ static int current_episode = -1;
 static int current_map = -1;
 static int current_nodesVersion = -1;
 static int samelevel = false;
+
+typedef struct
+{
+  int label;
+  int things;
+  int linedefs;
+  int sidedefs;
+  int vertexes;
+  int segs;
+  int ssectors;
+  int nodes;
+  int sectors;
+  int reject;
+  int blockmap;
+  int behavior;
+
+  int gl_label;
+  int gl_verts;
+  int gl_segs;
+  int gl_ssect;
+  int gl_nodes;
+} level_components_t;
+
+static level_components_t level_components;
+
+static dboolean P_GLLumpsExist(void) {
+  return level_components.gl_label != LUMP_NOT_FOUND;
+}
+
+static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {
+  level_components.label = lumpnum;
+  level_components.things = lumpnum + ML_THINGS;
+  level_components.linedefs = lumpnum + ML_LINEDEFS;
+  level_components.sidedefs = lumpnum + ML_SIDEDEFS;
+  level_components.vertexes = lumpnum + ML_VERTEXES;
+  level_components.segs = lumpnum + ML_SEGS;
+  level_components.ssectors = lumpnum + ML_SSECTORS;
+  level_components.nodes = lumpnum + ML_NODES;
+  level_components.sectors = lumpnum + ML_SECTORS;
+  level_components.reject = lumpnum + ML_REJECT;
+  level_components.blockmap = lumpnum + ML_BLOCKMAP;
+  level_components.behavior = lumpnum + ML_BEHAVIOR;
+
+  if (gl_lumpnum > lumpnum)
+  {
+    level_components.gl_label = gl_lumpnum;
+    level_components.gl_verts = gl_lumpnum + ML_GL_VERTS;
+    level_components.gl_segs = gl_lumpnum + ML_GL_SEGS;
+    level_components.gl_ssect = gl_lumpnum + ML_GL_SSECT;
+    level_components.gl_nodes = gl_lumpnum + ML_GL_NODES;
+  }
+  else
+  {
+    level_components.gl_label = LUMP_NOT_FOUND;
+    level_components.gl_verts = LUMP_NOT_FOUND;
+    level_components.gl_segs = LUMP_NOT_FOUND;
+    level_components.gl_ssect = LUMP_NOT_FOUND;
+    level_components.gl_nodes = LUMP_NOT_FOUND;
+  }
+}
 
 // e6y: Smart malloc
 // Used by P_SetupLevel() for smart data loading
@@ -255,14 +314,14 @@ static dboolean CheckForIdentifier(int lumpnum, const byte *id, size_t length)
 // P_CheckForZDoomNodes
 //
 
-static dboolean P_CheckForZDoomNodes(int lumpnum, int gl_lumpnum)
+static dboolean P_CheckForZDoomNodes(void)
 {
 #ifndef HAVE_LIBZ
-  if (CheckForIdentifier(lumpnum + ML_NODES, "ZNOD", 4))
+  if (CheckForIdentifier(level_components.nodes, "ZNOD", 4))
     I_Error("P_CheckForZDoomNodes: compressed ZDoom nodes not supported yet");
 #endif
 
-  if (CheckForIdentifier(lumpnum + ML_SSECTORS, "ZGLN", 4))
+  if (CheckForIdentifier(level_components.ssectors, "ZGLN", 4))
     I_Error("P_CheckForZDoomNodes: ZDoom GL nodes not supported yet");
 
   return false;
@@ -273,9 +332,9 @@ static dboolean P_CheckForZDoomNodes(int lumpnum, int gl_lumpnum)
 // http://www.sbsoftware.com/files/DeePBSPV4specs.txt
 //
 
-static dboolean P_CheckForDeePBSPv4Nodes(int lumpnum, int gl_lumpnum)
+static dboolean P_CheckForDeePBSPv4Nodes(void)
 {
-  int result = CheckForIdentifier(lumpnum + ML_NODES, "xNd4\0\0\0\0", 8);
+  int result = CheckForIdentifier(level_components.nodes, "xNd4\0\0\0\0", 8);
 
   if (result)
     lprintf(LO_INFO, "P_CheckForDeePBSPv4Nodes: DeePBSP v4 Extended nodes are detected\n");
@@ -294,10 +353,10 @@ enum {
   ZDOOM_ZNOD_NODES
 };
 
-static int P_CheckForZDoomUncompressedNodes(int lumpnum, int gl_lumpnum)
+static int P_CheckForZDoomUncompressedNodes(void)
 {
   int ret = NO_ZDOOM_NODES;
-  int result = CheckForIdentifier(lumpnum + ML_NODES, "XNOD", 4);
+  int result = CheckForIdentifier(level_components.nodes, "XNOD", 4);
 
   if (result)
   {
@@ -306,7 +365,7 @@ static int P_CheckForZDoomUncompressedNodes(int lumpnum, int gl_lumpnum)
 #ifdef HAVE_LIBZ
   else
   {
-    result = CheckForIdentifier(lumpnum + ML_NODES, "ZNOD", 4);
+    result = CheckForIdentifier(level_components.nodes, "ZNOD", 4);
 
     if (result)
     {
@@ -322,27 +381,27 @@ static int P_CheckForZDoomUncompressedNodes(int lumpnum, int gl_lumpnum)
 // P_GetNodesVersion
 //
 
-static void P_GetNodesVersion(int lumpnum, int gl_lumpnum)
+static void P_GetNodesVersion(void)
 {
   int ver = -1;
   nodesVersion = 0;
 
-  if ((gl_lumpnum > lumpnum) &&
+  if (P_GLLumpsExist() &&
       (mbf21 || forceOldBsp == false) &&
       (compatibility_level >= prboom_2_compatibility))
   {
-    if (CheckForIdentifier(gl_lumpnum+ML_GL_VERTS, "gNd2", 4)) {
-      if (CheckForIdentifier(gl_lumpnum+ML_GL_SEGS, "gNd3", 4)) {
+    if (CheckForIdentifier(level_components.gl_verts, "gNd2", 4)) {
+      if (CheckForIdentifier(level_components.gl_segs, "gNd3", 4)) {
         ver = 3;
       } else {
         nodesVersion = 2;
         lprintf(LO_DEBUG, "P_GetNodesVersion: found version 2 nodes\n");
       }
     }
-    else if (CheckForIdentifier(gl_lumpnum+ML_GL_VERTS, "gNd4", 4)) {
+    else if (CheckForIdentifier(level_components.gl_verts, "gNd4", 4)) {
       ver = 4;
     }
-    else if (CheckForIdentifier(gl_lumpnum+ML_GL_VERTS, "gNd5", 4)) {
+    else if (CheckForIdentifier(level_components.gl_verts, "gNd5", 4)) {
       ver = 5;
     }
     //e6y: unknown gl nodes will be ignored
@@ -351,10 +410,12 @@ static void P_GetNodesVersion(int lumpnum, int gl_lumpnum)
       lprintf(LO_DEBUG,"P_GetNodesVersion: found version %d nodes\n", ver);
       lprintf(LO_DEBUG,"P_GetNodesVersion: version %d nodes not supported\n", ver);
     }
-  } else {
+  }
+  else
+  {
     nodesVersion = 0;
     lprintf(LO_DEBUG,"P_GetNodesVersion: using normal BSP nodes\n");
-    if (P_CheckForZDoomNodes(lumpnum, gl_lumpnum))
+    if (P_CheckForZDoomNodes())
       I_Error("P_GetNodesVersion: ZDoom nodes not supported yet");
   }
 }
@@ -2470,19 +2531,6 @@ static void P_LoadBlockMap (int lump)
 }
 
 //
-// P_LoadReject - load the reject table
-//
-
-static void P_LoadReject(int lumpnum, int totallines)
-{
-  rejectlump = lumpnum + ML_REJECT;
-  rejectmatrix = W_LumpByNum(rejectlump);
-
-  //e6y: check for overflow
-  RejectOverrun(rejectlump, &rejectmatrix, totallines);
-}
-
-//
 // P_GroupLines
 // Builds sector line lists and subsector sector numbers.
 // Finds block bounding boxes for sectors.
@@ -2603,6 +2651,18 @@ static int P_GroupLines (void)
   }
 
   return total; // this value is needed by the reject overrun emulation code
+}
+
+//
+// P_LoadReject - load the reject table
+//
+
+static void P_LoadReject(void)
+{
+  rejectmatrix = W_LumpByNum(level_components.reject);
+
+  //e6y: check for overflow
+  RejectOverrun(level_components.reject, &rejectmatrix, P_GroupLines());
 }
 
 //
@@ -2770,36 +2830,24 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
 // Checking for presence of necessary lumps
 //
 
-void P_CheckLevelWadStructure(const char *mapname)
+void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
 {
-  int i, lumpnum;
+  int i;
   dboolean has_behavior = false;
 
   static const char *ml_labels[] = {
-    "ML_LABEL",             // A separator, name, ExMx or MAPxx
-    "ML_THINGS",            // Monsters, items..
-    "ML_LINEDEFS",          // LineDefs, from editing
-    "ML_SIDEDEFS",          // SideDefs, from editing
-    "ML_VERTEXES",          // Vertices, edited and BSP splits generated
-    "ML_SEGS",              // LineSegs, from LineDefs split by BSP
-    "ML_SSECTORS",          // SubSectors, list of LineSegs
-    "ML_NODES",             // BSP nodes
-    "ML_SECTORS",           // Sectors, from editing
-    "ML_REJECT",            // LUT, sector-sector visibility
-    "ML_BLOCKMAP",          // LUT, motion clipping, walls/grid element
+    "LABEL",             // A separator, name, ExMx or MAPxx
+    "THINGS",            // Monsters, items..
+    "LINEDEFS",          // LineDefs, from editing
+    "SIDEDEFS",          // SideDefs, from editing
+    "VERTEXES",          // Vertices, edited and BSP splits generated
+    "SEGS",              // LineSegs, from LineDefs split by BSP
+    "SSECTORS",          // SubSectors, list of LineSegs
+    "NODES",             // BSP nodes
+    "SECTORS",           // Sectors, from editing
+    "REJECT",            // LUT, sector-sector visibility
+    "BLOCKMAP",          // LUT, motion clipping, walls/grid element
   };
-
-  if (!mapname)
-  {
-    I_Error("P_SetupLevel: Wrong map name");
-  }
-
-  lumpnum = W_CheckNumForName(mapname);
-
-  if (lumpnum == LUMP_NOT_FOUND)
-  {
-    I_Error("P_SetupLevel: There is no %s map.", mapname);
-  }
 
   i = lumpnum + ML_TEXTMAP;
   if (P_CheckLumpsForSameSource(lumpnum, i))
@@ -2810,6 +2858,8 @@ void P_CheckLevelWadStructure(const char *mapname)
     }
   }
 
+  P_UpdateLevelComponents(lumpnum, gl_lumpnum);
+
   for (i = ML_THINGS + 1; i <= ML_SECTORS; i++)
   {
     if (!P_CheckLumpsForSameSource(lumpnum, lumpnum + i))
@@ -2819,7 +2869,7 @@ void P_CheckLevelWadStructure(const char *mapname)
   }
 
   // Find out what format we have
-  i = lumpnum + ML_BEHAVIOR;
+  i = level_components.behavior;
   if (P_CheckLumpsForSameSource(lumpnum, i))
   {
     if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
@@ -2970,7 +3020,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   S_Start();
 
   Z_FreeLevel();
-  rejectlump = -1;
 
   P_InitThinkers();
 
@@ -2987,7 +3036,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // e6y
   // Refuse to load a map with incomplete pwad structure.
   // Avoid segfaults on levels without nodes.
-  P_CheckLevelWadStructure(lumpname);
+  P_CheckLevelWadStructure(lumpnum, gl_lumpnum);
 
   dsda_ApplyLevelCompatibility(lumpnum);
 
@@ -3000,7 +3049,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // to allow texture names to be used in special linedefs
 
   // figgi 10/19/00 -- check for gl lumps and load them
-  P_GetNodesVersion(lumpnum,gl_lumpnum);
+  P_GetNodesVersion();
 
   samelevel =
     (map == current_map) &&
@@ -3033,14 +3082,14 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   }
 
   if (nodesVersion > 0)
-    P_LoadVertexes2 (lumpnum+ML_VERTEXES,gl_lumpnum+ML_GL_VERTS);
+    P_LoadVertexes2(level_components.vertexes, level_components.gl_verts);
   else
-    P_LoadVertexes  (lumpnum+ML_VERTEXES);
-  P_LoadSectors   (lumpnum+ML_SECTORS);
-  P_LoadSideDefs  (lumpnum+ML_SIDEDEFS);
-  P_LoadLineDefs  (lumpnum+ML_LINEDEFS);
-  P_LoadSideDefs2 (lumpnum+ML_SIDEDEFS);
-  P_LoadLineDefs2 (lumpnum+ML_LINEDEFS);
+    P_LoadVertexes(level_components.vertexes);
+  P_LoadSectors(level_components.sectors);
+  P_LoadSideDefs(level_components.sidedefs);
+  P_LoadLineDefs(level_components.linedefs);
+  P_LoadSideDefs2(level_components.sidedefs);
+  P_LoadLineDefs2(level_components.linedefs);
 
   // e6y: speedup of level reloading
   // Do not reload BlockMap for same level,
@@ -3050,7 +3099,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // because bmapwidth/bmapheight/bmaporgx/bmaporgy can be overwritten
   if (!samelevel || overflows[OVERFLOW_INTERCEPT].shit_happens)
   {
-    P_LoadBlockMap  (lumpnum+ML_BLOCKMAP);
+    P_LoadBlockMap(level_components.blockmap);
   }
   else
   {
@@ -3059,26 +3108,26 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   if (nodesVersion > 0)
   {
-    P_LoadSubsectors(gl_lumpnum + ML_GL_SSECT);
-    P_LoadNodes(gl_lumpnum + ML_GL_NODES);
-    P_LoadGLSegs(gl_lumpnum + ML_GL_SEGS);
+    P_LoadSubsectors(level_components.gl_ssect);
+    P_LoadNodes(level_components.gl_nodes);
+    P_LoadGLSegs(level_components.gl_segs);
   }
   else
   {
     int zdoom_nodes;
-    if ((zdoom_nodes = P_CheckForZDoomUncompressedNodes(lumpnum, gl_lumpnum)))
-      P_LoadZNodes(lumpnum + ML_NODES, 0, zdoom_nodes);
-    else if (P_CheckForDeePBSPv4Nodes(lumpnum, gl_lumpnum))
+    if ((zdoom_nodes = P_CheckForZDoomUncompressedNodes()))
+      P_LoadZNodes(level_components.nodes, 0, zdoom_nodes);
+    else if (P_CheckForDeePBSPv4Nodes())
     {
-      P_LoadSubsectors_V4(lumpnum + ML_SSECTORS);
-      P_LoadNodes_V4(lumpnum + ML_NODES);
-      P_LoadSegs_V4(lumpnum + ML_SEGS);
+      P_LoadSubsectors_V4(level_components.ssectors);
+      P_LoadNodes_V4(level_components.nodes);
+      P_LoadSegs_V4(level_components.segs);
     }
     else
     {
-      P_LoadSubsectors(lumpnum + ML_SSECTORS);
-      P_LoadNodes(lumpnum + ML_NODES);
-      P_LoadSegs(lumpnum + ML_SEGS);
+      P_LoadSubsectors(level_components.ssectors);
+      P_LoadNodes(level_components.nodes);
+      P_LoadSegs(level_components.segs);
     }
   }
 
@@ -3091,8 +3140,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     numsubsectors, sizeof(map_subsectors[0]));
 
   // reject loading and underflow padding separated out into new function
-  // P_GroupLines modified to return a number the underflow padding needs
-  P_LoadReject(lumpnum, P_GroupLines());
+  P_LoadReject();
 
   P_RemoveSlimeTrails();    // killough 10/98: remove slime trails from wad
 
@@ -3127,16 +3175,16 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     PO_ResetBlockMap(true);
   }
 
-  P_LoadThings(lumpnum+ML_THINGS);
+  P_LoadThings(level_components.things);
 
   if (map_format.polyobjs)
   {
-    PO_Init(lumpnum + ML_THINGS);       // Initialize the polyobjs
+    PO_Init(level_components.things);       // Initialize the polyobjs
   }
 
   if (map_format.acs)
   {
-    P_LoadACScripts(lumpnum + ML_BEHAVIOR);     // ACS object code
+    P_LoadACScripts(level_components.behavior);     // ACS object code
   }
 
   if (heretic)
