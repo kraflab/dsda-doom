@@ -425,51 +425,29 @@ static void P_GetNodesVersion(void)
 //
 // killough 5/3/98: reformatted, cleaned up
 //
-static void P_LoadVertexes (int lump)
-{
-  const mapvertex_t *data; // cph - const
-  int i;
-
-  // Determine number of lumps:
-  //  total lump length / vertex record length.
-  numvertexes = W_LumpLength(lump) / sizeof(mapvertex_t);
-
-  // Allocate zone memory for buffer.
-  vertexes = calloc_IfSameLevel(vertexes, numvertexes, sizeof(vertex_t));
-
-  // Load data into cache.
-  // cph 2006/07/29 - cast to mapvertex_t here, making the loop below much neater
-  data = (const mapvertex_t *)W_LumpByNum(lump);
-
-  // Copy and convert vertex coordinates,
-  // internal representation as fixed.
-  for (i=0; i<numvertexes; i++)
-    {
-      vertexes[i].x = LittleShort(data[i].x)<<FRACBITS;
-      vertexes[i].y = LittleShort(data[i].y)<<FRACBITS;
-    }
-}
 
 /*******************************************
- * Name     : P_LoadVertexes2        *
+ * Name     : P_LoadVertexes               *
  * modified : 09/18/00, adapted for PrBoom *
- * author   : figgi              *
- * what   : support for gl nodes       *
+ * author   : figgi                        *
+ * what   : support for gl nodes           *
  *******************************************/
 
 // figgi -- FIXME: Automap showes wrong zoom boundaries when starting game
-//           when P_LoadVertexes2 is used with classic BSP nodes.
+//           when P_LoadVertexes is used with classic BSP nodes.
 
-static void P_LoadVertexes2(int lump, int gllump)
+static void P_LoadVertexes(int lump, int gllump)
 {
   const byte         *gldata;
   int                 i;
   const mapvertex_t*  ml;
 
-  firstglvertex = W_LumpLength(lump) / sizeof(mapvertex_t);
+  // Determine number of lumps:
+  //  total lump length / vertex record length.
   numvertexes   = W_LumpLength(lump) / sizeof(mapvertex_t);
+  firstglvertex = numvertexes;
 
-  if (gllump >= 0)  // check for glVertices
+  if (nodesVersion > 0 && P_GLLumpsExist())  // check for glVertices
   {
     gldata = W_LumpByNum(gllump);
 
@@ -502,9 +480,18 @@ static void P_LoadVertexes2(int lump, int gllump)
       }
     }
   }
+  else
+  {
+    // Allocate zone memory for buffer.
+    vertexes = calloc_IfSameLevel(vertexes, numvertexes, sizeof(vertex_t));
+  }
 
+  // Load data into cache.
+  // cph 2006/07/29 - cast to mapvertex_t here, making the loop below much neater
   ml = (const mapvertex_t*) W_LumpByNum(lump);
 
+  // Copy and convert vertex coordinates,
+  // internal representation as fixed.
   for (i=0; i < firstglvertex; i++)
   {
     vertexes[i].x = LittleShort(ml->x)<<FRACBITS;
@@ -3081,10 +3068,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     Z_Free(vertexes);
   }
 
-  if (nodesVersion > 0)
-    P_LoadVertexes2(level_components.vertexes, level_components.gl_verts);
-  else
-    P_LoadVertexes(level_components.vertexes);
+  P_LoadVertexes(level_components.vertexes, level_components.gl_verts);
   P_LoadSectors(level_components.sectors);
   P_LoadSideDefs(level_components.sidedefs);
   P_LoadLineDefs(level_components.linedefs);
