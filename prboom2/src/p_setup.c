@@ -263,6 +263,11 @@ static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {
   }
 }
 
+static fixed_t P_FloatToFixed(float x)
+{
+  return (fixed_t) (x * FRACUNIT);
+}
+
 // e6y: Smart malloc
 // Used by P_SetupLevel() for smart data loading
 // Do nothing if level is the same
