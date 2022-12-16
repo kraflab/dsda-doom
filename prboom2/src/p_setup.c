@@ -506,6 +506,18 @@ static void P_LoadVertexes(int lump, int gllump)
   }
 }
 
+static void P_LoadUDMFVertexes(int lump, int gllump)
+{
+  int i;
+
+  vertexes = calloc_IfSameLevel(vertexes, udmf.num_vertices, sizeof(vertex_t));
+
+  for (i = 0; i < udmf.num_vertices; ++i)
+  {
+    vertexes[i].x = P_FloatToFixed(udmf.vertices[i].x);
+    vertexes[i].y = P_FloatToFixed(udmf.vertices[i].y);
+  }
+}
 
 /*******************************************
  * created  : 08/13/00             *
