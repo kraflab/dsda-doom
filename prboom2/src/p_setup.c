@@ -63,6 +63,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/skip.h"
+#include "dsda/udmf.h"
 
 #include "hexen/p_acs.h"
 #include "hexen/p_anim.h"
