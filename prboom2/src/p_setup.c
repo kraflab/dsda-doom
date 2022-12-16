@@ -942,6 +942,45 @@ static void P_LoadSubsectors_V4(int lump)
 //
 // killough 5/3/98: reformatted, cleaned up
 
+static void P_InitializeSectorDefaults(sector_t *ss)
+{
+  ss->thinglist = NULL;
+  ss->touching_thinglist = NULL;            // phares 3/14/98
+  ss->nextsec = -1; //jff 2/26/98 add fields to support locking out
+  ss->prevsec = -1; // stair retriggering until build completes
+  // killough 3/7/98:
+  ss->floor_xoffs = 0;
+  ss->floor_yoffs = 0;      // floor and ceiling flats offsets
+  ss->ceiling_xoffs = 0;
+  ss->ceiling_yoffs = 0;
+  ss->heightsec = -1;       // sector used to get floor and ceiling height
+  ss->floorlightsec = -1;   // sector used to get floor lighting
+  // killough 3/7/98: end changes
+
+  // killough 4/11/98 sector used to get ceiling lighting:
+  ss->ceilinglightsec = -1;
+
+  // killough 4/4/98: colormaps:
+  ss->bottommap = ss->midmap = ss->topmap = 0;
+
+  // killough 10/98: sky textures coming from sidedefs:
+  ss->sky = 0;
+
+  // [kb] For R_WiggleFix
+  ss->cachedheight = 0;
+  ss->scaleindex = 0;
+
+  // hexen
+  ss->seqType = SEQTYPE_STONE;    // default seqType
+
+  // killough 8/28/98: initialize all sectors to normal friction
+  ss->friction = ORIG_FRICTION;
+  ss->movefactor = ORIG_FRICTION_FACTOR;
+
+  // zdoom
+  ss->gravity = GRAVITY;
+}
+
 static void P_LoadSectors (int lump)
 {
   const byte *data; // cph - const*
@@ -952,56 +991,21 @@ static void P_LoadSectors (int lump)
   data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numsectors; i++)
-    {
-      sector_t *ss = sectors + i;
-      const mapsector_t *ms = (const mapsector_t *) data + i;
+  {
+    sector_t *ss = sectors + i;
+    const mapsector_t *ms = (const mapsector_t *) data + i;
 
-      ss->iSectorID=i; // proff 04/05/2000: needed for OpenGL
-      ss->floorheight = LittleShort(ms->floorheight)<<FRACBITS;
-      ss->ceilingheight = LittleShort(ms->ceilingheight)<<FRACBITS;
-      ss->floorpic = R_FlatNumForName(ms->floorpic);
-      ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
-      ss->lightlevel = LittleShort(ms->lightlevel);
-      ss->special = LittleShort(ms->special);
-      ss->tag = LittleShort(ms->tag);
-      ss->thinglist = NULL;
-      ss->touching_thinglist = NULL;            // phares 3/14/98
+    P_InitializeSectorDefaults(ss);
 
-      ss->nextsec = -1; //jff 2/26/98 add fields to support locking out
-      ss->prevsec = -1; // stair retriggering until build completes
-
-      // killough 3/7/98:
-      ss->floor_xoffs = 0;
-      ss->floor_yoffs = 0;      // floor and ceiling flats offsets
-      ss->ceiling_xoffs = 0;
-      ss->ceiling_yoffs = 0;
-      ss->heightsec = -1;       // sector used to get floor and ceiling height
-      ss->floorlightsec = -1;   // sector used to get floor lighting
-      // killough 3/7/98: end changes
-
-      // killough 4/11/98 sector used to get ceiling lighting:
-      ss->ceilinglightsec = -1;
-
-      // killough 4/4/98: colormaps:
-      ss->bottommap = ss->midmap = ss->topmap = 0;
-
-      // killough 10/98: sky textures coming from sidedefs:
-      ss->sky = 0;
-
-      // [kb] For R_WiggleFix
-      ss->cachedheight = 0;
-      ss->scaleindex = 0;
-
-      // hexen
-      ss->seqType = SEQTYPE_STONE;    // default seqType
-
-      // killough 8/28/98: initialize all sectors to normal friction
-      ss->friction = ORIG_FRICTION;
-      ss->movefactor = ORIG_FRICTION_FACTOR;
-
-      // zdoom
-      ss->gravity = GRAVITY;
-    }
+    ss->iSectorID=i; // proff 04/05/2000: needed for OpenGL
+    ss->floorheight = LittleShort(ms->floorheight)<<FRACBITS;
+    ss->ceilingheight = LittleShort(ms->ceilingheight)<<FRACBITS;
+    ss->floorpic = R_FlatNumForName(ms->floorpic);
+    ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
+    ss->lightlevel = LittleShort(ms->lightlevel);
+    ss->special = LittleShort(ms->special);
+    ss->tag = LittleShort(ms->tag);
+  }
 }
 
 
