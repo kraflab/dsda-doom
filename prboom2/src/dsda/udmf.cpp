@@ -743,8 +743,17 @@ void dsda_ParseUDMF(const unsigned char* buffer, size_t length, udmf_errorfunc e
     scanner.ErrorF("Insufficient UDMF data");
 
   udmf.lines = &udmf_lines[0];
+  udmf.num_lines = udmf_lines.size();
+
   udmf.sides = &udmf_sides[0];
+  udmf.num_sides = udmf_sides.size();
+
   udmf.vertices = &udmf_vertices[0];
+  udmf.num_vertices = udmf_vertices.size();
+
   udmf.sectors = &udmf_sectors[0];
+  udmf.num_sectors = udmf_sectors.size();
+
   udmf.things = &udmf_things[0];
+  udmf.num_things = udmf_things.size();
 }

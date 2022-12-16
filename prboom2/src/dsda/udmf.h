@@ -205,10 +205,19 @@ typedef struct {
 } udmf_thing_t;
 
 typedef struct {
+  size_t num_lines;
   udmf_line_t* lines;
+
+  size_t num_sides;
   udmf_side_t* sides;
+
+  size_t num_vertices;
   udmf_vertex_t* vertices;
+
+  size_t num_sectors;
   udmf_sector_t* sectors;
+
+  size_t num_things;
   udmf_thing_t* things;
 } udmf_t;
 
