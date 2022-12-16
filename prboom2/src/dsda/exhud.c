@@ -357,7 +357,7 @@ void dsda_InitExHud(void) {
   for (line_i = 0; hud_config[line_i]; ++line_i) {
     line = hud_config[line_i];
 
-    if (!strncmp(target, line, sizeof(target)))
+    if (!reading && !strncmp(target, line, sizeof(target)))
       reading = true;
     else if (reading) {
       int count;
