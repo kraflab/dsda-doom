@@ -800,7 +800,12 @@ void M_ChangeApplyPalette(void)
   st_palette = -1;
 
   if (in_game && gamestate == GS_LEVEL)
-    ST_doPaletteStuff();
+  {
+    if (raven)
+      SB_PaletteFlash(true);
+    else
+      ST_doPaletteStuff();
+  }
   else
     V_SetPalette(0);
 }
