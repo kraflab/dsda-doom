@@ -1049,6 +1049,7 @@ static void P_LoadUDMFSectors(int lump)
     // damageamount
     // damageinterval
     // leakiness
+    // flags
   }
 }
 
