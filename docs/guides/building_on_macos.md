@@ -1,7 +1,7 @@
-# Building DSDA-Doom on MacOS
-This is a basic guide for building DSDA-Doom for a x86_64 or arm64 MacOS target using brew. 
+# Building DSDA-Doom on macOS
+This is a basic guide for building DSDA-Doom for a x86_64 or arm64 macOS target using brew. 
 ## Configure brew
-[brew](https://brew.sh) is a package manager for MacOS and Linux. we will use it to download everything we need to build DSDA-Doom.
+[brew](https://brew.sh) is a package manager for macOS and Linux. we will use it to download everything we need to build DSDA-Doom.
 
 To install it we need to run:
 ```
@@ -13,12 +13,12 @@ On arm64 machines, brew will be installed in `/opt/homebrew`.
 ## Install Build Dependencies
 Install cmake, SDL2 and additional dependencies for DSDA-Doom:
 ```
-brew install cmake pcre sdl2 sdl2_image sdl2_mixer fluid-synth portmidi libmad dumb libvorbis
+brew install cmake pcre sdl2 sdl2_image sdl2_mixer fluid-synth portmidi mad dumb libvorbis
 ```
 ## Build DSDA-Doom
 Make a clone of the DSDA-Doom Git repository:
 ```
-git clone https://github.com/kraflab/dsda-doom
+git clone https://github.com/kraflab/dsda-doom.git
 ```
 Prepare the build folder, generate the build system, and compile:
 ```
@@ -50,7 +50,6 @@ cd ./release
 dylibbundler -od -b -x ./dsda-doom -d ./libs/ -p @executable_path/libs
 ```
 
-
 ## Final Steps
 
 Since this is a release build, it's customary to remove symbols from the binaries (and since we are changing the binary file, we will need to codesign it again):
@@ -61,5 +60,5 @@ codesign --force --deep --preserve-metadata=entitlements,requirements,flags,runt
 ```
 Finally, add the files to an archive with today's date:
 ```
-zip -j ~/dsda-doom-$(date +"%Y%m%d")-mac.zip .
+zip -j -r ./dsda-doom-$(date +"%Y%m%d")-mac.zip . -x .\*
 ```
