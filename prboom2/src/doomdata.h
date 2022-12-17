@@ -175,6 +175,10 @@ typedef struct {
 #define ML_BLOCKLANDMONSTERS 0x1000
 #define ML_BLOCKPLAYERS      0x2000
 
+#define ML_VANILLA 0x01ff
+#define ML_BOOM    0x03ff
+#define ML_MBF21   0x3fff
+
 // extensions
 #define ML_MONSTERSCANACTIVATE 0x4000 // zdoom
 #define ML_BLOCKEVERYTHING     0x8000 // zdoom

@@ -1680,9 +1680,9 @@ void P_TranslateCompatibleLineFlags(unsigned int *flags)
   int filter;
 
   if (mbf21)
-    filter = (*flags & ML_RESERVED && comp[comp_reservedlineflag]) ? 0x01ff : 0x3fff;
+    filter = (*flags & ML_RESERVED && comp[comp_reservedlineflag]) ? ML_VANILLA : ML_MBF21;
   else
-    filter = 0x03ff;
+    filter = ML_BOOM;
 
   *flags = *flags & filter;
 }
