@@ -2030,6 +2030,12 @@ static void P_LoadSideDefs (int lump)
   sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
 }
 
+static void P_LoadUDMFSideDefs(int lump)
+{
+  numsides = udmf.num_sides;
+  sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
+}
+
 void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
 {
   // killough 4/4/98: allow sidedef texture names to be overloaded
