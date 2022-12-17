@@ -1714,6 +1714,102 @@ static void P_SetLineID(line_t *ld)
   }
 }
 
+static void P_CalculateLineDefProperties(line_t *ld)
+{
+  vertex_t *v1, *v2;
+
+  v1 = ld->v1;
+  v2 = ld->v2;
+
+  ld->dx = v2->x - v1->x;
+  ld->dy = v2->y - v1->y;
+
+  // e6y
+  // Rounding the wall length to the nearest integer
+  // when determining length instead of always rounding down
+  // There is no more glitches on seams between identical textures.
+  ld->texel_length = GetTexelDistance(ld->dx, ld->dy);
+
+  ld->tranlump = -1;  // killough 4/11/98: no translucency by default
+
+  ld->slopetype = !ld->dx                      ? ST_VERTICAL   :
+                  !ld->dy                      ? ST_HORIZONTAL :
+                  FixedDiv(ld->dy, ld->dx) > 0 ? ST_POSITIVE   : ST_NEGATIVE;
+
+  if (v1->x < v2->x)
+  {
+    ld->bbox[BOXLEFT] = v1->x;
+    ld->bbox[BOXRIGHT] = v2->x;
+  }
+  else
+  {
+    ld->bbox[BOXLEFT] = v2->x;
+    ld->bbox[BOXRIGHT] = v1->x;
+  }
+  if (v1->y < v2->y)
+  {
+    ld->bbox[BOXBOTTOM] = v1->y;
+    ld->bbox[BOXTOP] = v2->y;
+  }
+  else
+  {
+    ld->bbox[BOXBOTTOM] = v2->y;
+    ld->bbox[BOXTOP] = v1->y;
+  }
+
+  /* calculate sound origin of line to be its midpoint */
+  //e6y: fix sound origin for large levels
+  // no need for comp_sound test, these are only used when comp_sound = 0
+  ld->soundorg.x = ld->bbox[BOXLEFT] / 2 + ld->bbox[BOXRIGHT] / 2;
+  ld->soundorg.y = ld->bbox[BOXTOP] / 2 + ld->bbox[BOXBOTTOM] / 2;
+
+  {
+    /* cph 2006/09/30 - fix sidedef errors right away.
+     * cph 2002/07/20 - these errors are fatal if not fixed, so apply them
+     * in compatibility mode - a desync is better than a crash! */
+    int j;
+
+    for (j = 0; j < 2; j++)
+    {
+      if (ld->sidenum[j] != NO_INDEX && ld->sidenum[j] >= numsides)
+      {
+        ld->sidenum[j] = NO_INDEX;
+        lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
+                         " has out-of-range sidedef number\n", ld->iLineID);
+      }
+    }
+
+    // killough 11/98: fix common wad errors (missing sidedefs):
+
+    if (ld->sidenum[0] == NO_INDEX)
+    {
+      ld->sidenum[0] = 0;  // Substitute dummy sidedef for missing right side
+      // cph - print a warning about the bug
+      lprintf(LO_WARN, "P_LoadLineDefs: linedef %d missing first sidedef\n", ld->iLineID);
+    }
+
+    if ((ld->sidenum[1] == NO_INDEX) && (ld->flags & ML_TWOSIDED))
+    {
+      // e6y
+      // ML_TWOSIDED flag shouldn't be cleared for compatibility purposes
+      // see CLNJ-506.LMP at https://dsdarchive.com/wads/challenj
+      MissedBackSideOverrun(ld);
+      if (!demo_compatibility || !EMULATE(OVERFLOW_MISSEDBACKSIDE))
+      {
+        ld->flags &= ~ML_TWOSIDED;  // Clear 2s flag for missing left side
+      }
+
+      // cph - print a warning about the bug
+      lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
+              " has two-sided flag set, but no second sidedef\n", ld->iLineID);
+    }
+  }
+
+  // killough 4/4/98: support special sidedef interpretation below
+  if (ld->sidenum[0] != NO_INDEX && ld->special)
+    sides[*ld->sidenum].special = ld->special;
+}
+
 static void P_LoadLineDefs (int lump)
 {
   const byte *data; // cph - const*
@@ -1724,135 +1820,51 @@ static void P_LoadLineDefs (int lump)
   data = W_LumpByNum (lump); // cph - wad lump handling updated
 
   for (i=0; i<numlines; i++)
+  {
+    line_t *ld = lines+i;
+
+    ld->iLineID=i; // proff 04/05/2000: needed for OpenGL
+
+    if (map_format.hexen)
     {
-      line_t *ld = lines+i;
-      vertex_t *v1, *v2;
+      const hexen_maplinedef_t *mld = (const hexen_maplinedef_t *) data + i;
 
-      if (map_format.hexen)
-      {
-        const hexen_maplinedef_t *mld = (const hexen_maplinedef_t *) data + i;
-
-        ld->flags = (unsigned short)LittleShort(mld->flags);
-        ld->special = mld->special; // just a byte in hexen
-        ld->tag = 0;
-        ld->arg1 = mld->arg1;
-        ld->arg2 = mld->arg2;
-        ld->arg3 = mld->arg3;
-        ld->arg4 = mld->arg4;
-        ld->arg5 = mld->arg5;
-        v1 = ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
-        v2 = ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
-        ld->sidenum[0] = LittleShort(mld->sidenum[0]);
-        ld->sidenum[1] = LittleShort(mld->sidenum[1]);
-        P_SetLineID(ld);
-      }
-      else
-      {
-        const doom_maplinedef_t *mld = (const doom_maplinedef_t *) data + i;
-
-        ld->flags = (unsigned short)LittleShort(mld->flags);
-        ld->special = LittleShort(mld->special);
-        ld->tag = LittleShort(mld->tag);
-        ld->arg1 = 0;
-        ld->arg2 = 0;
-        ld->arg3 = 0;
-        ld->arg4 = 0;
-        ld->arg5 = 0;
-        v1 = ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
-        v2 = ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
-        ld->sidenum[0] = LittleShort(mld->sidenum[0]);
-        ld->sidenum[1] = LittleShort(mld->sidenum[1]);
-      }
-
-      map_format.translate_line_flags(&ld->flags);
-
-      ld->dx = v2->x - v1->x;
-      ld->dy = v2->y - v1->y;
-
-      // e6y
-      // Rounding the wall length to the nearest integer
-      // when determining length instead of always rounding down
-      // There is no more glitches on seams between identical textures.
-      ld->texel_length = GetTexelDistance(ld->dx, ld->dy);
-
-      ld->tranlump = -1;   // killough 4/11/98: no translucency by default
-
-      ld->slopetype = !ld->dx ? ST_VERTICAL : !ld->dy ? ST_HORIZONTAL :
-        FixedDiv(ld->dy, ld->dx) > 0 ? ST_POSITIVE : ST_NEGATIVE;
-
-      if (v1->x < v2->x)
-        {
-          ld->bbox[BOXLEFT] = v1->x;
-          ld->bbox[BOXRIGHT] = v2->x;
-        }
-      else
-        {
-          ld->bbox[BOXLEFT] = v2->x;
-          ld->bbox[BOXRIGHT] = v1->x;
-        }
-      if (v1->y < v2->y)
-        {
-          ld->bbox[BOXBOTTOM] = v1->y;
-          ld->bbox[BOXTOP] = v2->y;
-        }
-      else
-        {
-          ld->bbox[BOXBOTTOM] = v2->y;
-          ld->bbox[BOXTOP] = v1->y;
-        }
-
-      /* calculate sound origin of line to be its midpoint */
-      //e6y: fix sound origin for large levels
-      // no need for comp_sound test, these are only used when comp_sound = 0
-      ld->soundorg.x = ld->bbox[BOXLEFT] / 2 + ld->bbox[BOXRIGHT] / 2;
-      ld->soundorg.y = ld->bbox[BOXTOP] / 2 + ld->bbox[BOXBOTTOM] / 2;
-
-      ld->iLineID=i; // proff 04/05/2000: needed for OpenGL
-
-      {
-        /* cph 2006/09/30 - fix sidedef errors right away.
-         * cph 2002/07/20 - these errors are fatal if not fixed, so apply them
-         * in compatibility mode - a desync is better than a crash! */
-        int j;
-
-        for (j=0; j < 2; j++)
-        {
-          if (ld->sidenum[j] != NO_INDEX && ld->sidenum[j] >= numsides) {
-            ld->sidenum[j] = NO_INDEX;
-            lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
-                    " has out-of-range sidedef number\n", i);
-          }
-        }
-
-        // killough 11/98: fix common wad errors (missing sidedefs):
-
-        if (ld->sidenum[0] == NO_INDEX) {
-          ld->sidenum[0] = 0;  // Substitute dummy sidedef for missing right side
-          // cph - print a warning about the bug
-          lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
-                  " missing first sidedef\n", i);
-        }
-
-        if ((ld->sidenum[1] == NO_INDEX) && (ld->flags & ML_TWOSIDED)) {
-          // e6y
-          // ML_TWOSIDED flag shouldn't be cleared for compatibility purposes
-          // see CLNJ-506.LMP at https://dsdarchive.com/wads/challenj
-          MissedBackSideOverrun(ld);
-          if (!demo_compatibility || !EMULATE(OVERFLOW_MISSEDBACKSIDE))
-          {
-            ld->flags &= ~ML_TWOSIDED;  // Clear 2s flag for missing left side
-          }
-
-          // cph - print a warning about the bug
-          lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
-                  " has two-sided flag set, but no second sidedef\n", i);
-        }
-      }
-
-      // killough 4/4/98: support special sidedef interpretation below
-      if (ld->sidenum[0] != NO_INDEX && ld->special)
-        sides[*ld->sidenum].special = ld->special;
+      ld->flags = (unsigned short)LittleShort(mld->flags);
+      ld->special = mld->special; // just a byte in hexen
+      ld->tag = 0;
+      ld->arg1 = mld->arg1;
+      ld->arg2 = mld->arg2;
+      ld->arg3 = mld->arg3;
+      ld->arg4 = mld->arg4;
+      ld->arg5 = mld->arg5;
+      ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
+      ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
+      ld->sidenum[0] = LittleShort(mld->sidenum[0]);
+      ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+      P_SetLineID(ld);
     }
+    else
+    {
+      const doom_maplinedef_t *mld = (const doom_maplinedef_t *) data + i;
+
+      ld->flags = (unsigned short)LittleShort(mld->flags);
+      ld->special = LittleShort(mld->special);
+      ld->tag = LittleShort(mld->tag);
+      ld->arg1 = 0;
+      ld->arg2 = 0;
+      ld->arg3 = 0;
+      ld->arg4 = 0;
+      ld->arg5 = 0;
+      ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
+      ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
+      ld->sidenum[0] = LittleShort(mld->sidenum[0]);
+      ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+    }
+
+    map_format.translate_line_flags(&ld->flags);
+
+    P_CalculateLineDefProperties(ld);
+  }
 }
 
 void P_PostProcessCompatibleLineSpecial(line_t *ld)
