@@ -1867,6 +1867,91 @@ static void P_LoadLineDefs (int lump)
   }
 }
 
+static void P_LoadUDMFLineDefs(int lump)
+{
+  int i;
+
+  numlines = udmf.num_lines;
+  lines = calloc_IfSameLevel(lines, numlines, sizeof(line_t));
+
+  for (i = 0; i < numlines; ++i)
+  {
+    line_t *ld = &lines[i];
+    vertex_t *v1, *v2;
+    const udmf_line_t *mld = &udmf.lines[i];
+
+    ld->flags = (mld->flags & ML_BOOM);
+    ld->special = mld->special;
+    ld->tag = mld->id;
+    ld->arg1 = mld->arg0;
+    ld->arg2 = mld->arg1;
+    ld->arg3 = mld->arg2;
+    ld->arg4 = mld->arg3;
+    ld->arg5 = mld->arg4;
+    ld->v1 = &vertexes[mld->v1];
+    ld->v2 = &vertexes[mld->v2];
+    ld->sidenum[0] = mld->sidefront;
+    ld->sidenum[1] = mld->sideback;
+
+    if (mld->flags & UDMF_ML_PLAYERCROSS)
+      ld->flags |= ML_SPAC_CROSS;
+
+    if (mld->flags & UDMF_ML_PLAYERUSE)
+      ld->flags |= ML_SPAC_USE;
+
+    if (mld->flags & UDMF_ML_MONSTERCROSS)
+      ld->flags |= ML_SPAC_MCROSS;
+
+    if (mld->flags & UDMF_ML_IMPACT)
+      ld->flags |= ML_SPAC_IMPACT;
+
+    if (mld->flags & UDMF_ML_PLAYERPUSH)
+      ld->flags |= ML_SPAC_PUSH;
+
+    if (mld->flags & UDMF_ML_MISSILECROSS)
+      ld->flags |= ML_SPAC_PCROSS;
+
+    if (mld->flags & UDMF_ML_REPEATSPECIAL)
+      ld->flags |= ML_REPEATSPECIAL;
+
+    // check what else this can do
+    if (mld->flags & UDMF_ML_ANYCROSS)
+      ld->flags |= ML_SPAC_CROSS | ML_SPAC_MCROSS | ML_SPAC_PCROSS;
+
+    if (mld->flags & UDMF_ML_MONSTERACTIVATE)
+      ld->flags |= ML_MONSTERSCANACTIVATE;
+
+    if (mld->flags & UDMF_ML_BLOCKPLAYERS)
+      ld->flags |= ML_BLOCKPLAYERS;
+
+    if (mld->flags & UDMF_ML_BLOCKEVERYTHING)
+      ld->flags |= ML_BLOCKING | ML_BLOCKEVERYTHING;
+
+    // UDMF TODO:
+    // UDMF_ML_TRANSLUCENT
+    // UDMF_ML_JUMPOVER
+    // UDMF_ML_BLOCKFLOATERS
+    // UDMF_ML_MONSTERUSE
+    // UDMF_ML_MONSTERPUSH
+    // UDMF_ML_PLAYERUSEBACK
+    // UDMF_ML_FIRSTSIDEONLY
+    // UDMF_ML_ZONEBOUNDARY
+    // UDMF_ML_CLIPMIDTEX
+    // UDMF_ML_WRAPMIDTEX
+    // UDMF_ML_MIDTEX3D
+    // UDMF_ML_MIDTEX3DIMPASSIBLE
+    // UDMF_ML_CHECKSWITCHRANGE
+    // UDMF_ML_BLOCKPROJECTILES
+    // UDMF_ML_BLOCKUSE
+    // UDMF_ML_BLOCKSIGHT
+    // UDMF_ML_BLOCKHITSCAN
+    // UDMF_ML_TRANSPARENT
+    // locknumber
+
+    P_CalculateLineDefProperties(ld);
+  }
+}
+
 void P_PostProcessCompatibleLineSpecial(line_t *ld)
 {
   switch (ld->special)
