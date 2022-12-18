@@ -60,5 +60,5 @@ codesign --force --deep --preserve-metadata=entitlements,requirements,flags,runt
 ```
 Finally, add the files to an archive with today's date:
 ```
-zip -j -r ./dsda-doom-$(date +"%Y%m%d")-mac.zip . -x .\*
+zip -r ./dsda-doom-$(date +"%Y%m%d")-mac.zip . -x .\*
 ```
