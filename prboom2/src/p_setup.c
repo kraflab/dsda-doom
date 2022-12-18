@@ -33,6 +33,7 @@
  *-----------------------------------------------------------------------------*/
 
 #include <math.h>
+#include <zlib.h>
 
 #include "doomstat.h"
 #include "m_bbox.h"
@@ -71,9 +72,6 @@
 #include "hexen/sn_sonix.h"
 
 #include "config.h"
-#ifdef HAVE_LIBZ
-#include <zlib.h>
-#endif
 
 //
 // MAP related Lookup tables.
@@ -327,11 +325,6 @@ static dboolean CheckForIdentifier(int lumpnum, const byte *id, size_t length)
 
 static dboolean P_CheckForZDoomNodes(void)
 {
-#ifndef HAVE_LIBZ
-  if (CheckForIdentifier(level_components.nodes, "ZNOD", 4))
-    I_Error("P_CheckForZDoomNodes: compressed ZDoom nodes not supported yet");
-#endif
-
   if (CheckForIdentifier(level_components.ssectors, "ZGLN", 4))
     I_Error("P_CheckForZDoomNodes: ZDoom GL nodes not supported yet");
 
@@ -373,7 +366,6 @@ static int P_CheckForZDoomUncompressedNodes(void)
   {
     ret = ZDOOM_XNOD_NODES;
   }
-#ifdef HAVE_LIBZ
   else
   {
     result = CheckForIdentifier(level_components.nodes, "ZNOD", 4);
@@ -383,7 +375,6 @@ static int P_CheckForZDoomUncompressedNodes(void)
       ret = ZDOOM_ZNOD_NODES;
     }
   }
-#endif
 
   return ret;
 }
@@ -1262,66 +1253,60 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
   unsigned int numSegs;
   unsigned int numNodes;
   vertex_t *newvertarray = NULL;
-#ifdef HAVE_LIBZ
   byte *output;
-#endif
 
   data = W_LumpByNum(lump);
   len =  W_LumpLength(lump);
 
   if (compressed == ZDOOM_ZNOD_NODES)
   {
-#ifdef HAVE_LIBZ
-	int outlen, err;
-	z_stream *zstream;
+    int outlen, err;
+    z_stream *zstream;
 
-	// first estimate for compression rate:
-	// output buffer size == 2.5 * input size
-	outlen = 2.5 * len;
-	output = Z_Malloc(outlen);
+    // first estimate for compression rate:
+    // output buffer size == 2.5 * input size
+    outlen = 2.5 * len;
+    output = Z_Malloc(outlen);
 
-	// initialize stream state for decompression
-	zstream = Z_Malloc(sizeof(*zstream));
-	memset(zstream, 0, sizeof(*zstream));
+    // initialize stream state for decompression
+    zstream = Z_Malloc(sizeof(*zstream));
+    memset(zstream, 0, sizeof(*zstream));
 
-  // Evidently next_in is the wrong type for legacy reasons
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-	zstream->next_in = data + 4;
-  #pragma GCC diagnostic pop
-	zstream->avail_in = len - 4;
-	zstream->next_out = output;
-	zstream->avail_out = outlen;
+    // Evidently next_in is the wrong type for legacy reasons
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
+    zstream->next_in = data + 4;
+    #pragma GCC diagnostic pop
+    zstream->avail_in = len - 4;
+    zstream->next_out = output;
+    zstream->avail_out = outlen;
 
-	if (inflateInit(zstream) != Z_OK)
-	    I_Error("P_LoadZNodes: Error during ZDoom nodes decompression initialization!");
+    if (inflateInit(zstream) != Z_OK)
+        I_Error("P_LoadZNodes: Error during ZDoom nodes decompression initialization!");
 
-	// resize if output buffer runs full
-	while ((err = inflate(zstream, Z_SYNC_FLUSH)) == Z_OK)
-	{
-	    int outlen_old = outlen;
-	    outlen = 2 * outlen_old;
-	    output = Z_Realloc(output, outlen);
-	    zstream->next_out = output + outlen_old;
-	    zstream->avail_out = outlen - outlen_old;
-	}
+    // resize if output buffer runs full
+    while ((err = inflate(zstream, Z_SYNC_FLUSH)) == Z_OK)
+    {
+        int outlen_old = outlen;
+        outlen = 2 * outlen_old;
+        output = Z_Realloc(output, outlen);
+        zstream->next_out = output + outlen_old;
+        zstream->avail_out = outlen - outlen_old;
+    }
 
-	if (err != Z_STREAM_END)
-	    I_Error("P_LoadZNodes: Error during ZDoom nodes decompression!");
+    if (err != Z_STREAM_END)
+        I_Error("P_LoadZNodes: Error during ZDoom nodes decompression!");
 
-	lprintf(LO_INFO, "P_LoadZNodes: ZDoom nodes compression ratio %.3f\n",
-	        (float)zstream->total_out/zstream->total_in);
+    lprintf(LO_INFO, "P_LoadZNodes: ZDoom nodes compression ratio %.3f\n",
+            (float)zstream->total_out/zstream->total_in);
 
-	data = output;
-	len = zstream->total_out;
+    data = output;
+    len = zstream->total_out;
 
-	if (inflateEnd(zstream) != Z_OK)
-	    I_Error("P_LoadZNodes: Error during ZDoom nodes decompression shut-down!");
+    if (inflateEnd(zstream) != Z_OK)
+        I_Error("P_LoadZNodes: Error during ZDoom nodes decompression shut-down!");
 
-	Z_Free(zstream);
-#else
-	I_Error("P_LoadZNodes: Compressed ZDoom nodes are not supported!");
-#endif
+    Z_Free(zstream);
   }
   else
   {
@@ -1464,10 +1449,8 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
     }
   }
 
-#ifdef HAVE_LIBZ
   if (compressed == ZDOOM_ZNOD_NODES)
     Z_Free(output);
-#endif
 }
 
 static int no_overlapped_sprites;
