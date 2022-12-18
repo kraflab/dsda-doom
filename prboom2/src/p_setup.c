@@ -2212,6 +2212,75 @@ static void P_LoadSideDefs2(int lump)
   }
 }
 
+static void P_LoadUDMFSideDefs2(int lump)
+{
+  int i;
+
+  for (i = 0; i < numsides; ++i)
+  {
+    const udmf_side_t *msd = &udmf.sides[i];
+    side_t *sd = &sides[i];
+    sector_t *sec;
+
+    sd->textureoffset = P_IntToFixed(msd->offsetx);
+    sd->rowoffset = P_IntToFixed(msd->offsety);
+
+    if (msd->sector >= numsectors)
+      I_Error("Invalid level data: sidedef %d's sector index is out of range", i);
+
+    sd->sector = &sectors[msd->sector];
+
+    // UDMF TODO:
+    // scalex_top
+    // scaley_top
+    // scalex_mid
+    // scaley_mid
+    // scalex_bottom
+    // scaley_bottom
+    // offsetx_top
+    // offsety_top
+    // offsetx_mid
+    // offsety_mid
+    // offsetx_bottom
+    // offsety_bottom
+    // light
+    // flags
+
+    switch (sd->special)
+    {
+      case zl_translucent_line:
+        if (strncasecmp("TRANMAP", msd->texturemiddle, 8))
+        {
+          sd->special = W_CheckNumForName(msd->texturemiddle);
+          if (sd->special == LUMP_NOT_FOUND || W_LumpLength(sd->special) != 65536)
+          {
+            sd->special = 0;
+            sd->midtexture = R_TextureNumForName(msd->texturemiddle);
+          }
+          else
+          {
+            sd->special++;
+            sd->midtexture = 0;
+          }
+        }
+        else
+        {
+          sd->special = 0;
+          sd->midtexture = 0;
+        }
+        sd->toptexture = R_TextureNumForName(msd->texturetop);
+        sd->bottomtexture = R_TextureNumForName(msd->texturebottom);
+        break;
+
+      default:
+        sd->midtexture = R_SafeTextureNumForName(msd->texturemiddle, i);
+        sd->toptexture = R_SafeTextureNumForName(msd->texturetop, i);
+        sd->bottomtexture = R_SafeTextureNumForName(msd->texturebottom, i);
+        break;
+    }
+  }
+}
+
 //
 // jff 10/6/98
 // New code added to speed up calculation of internal blockmap
