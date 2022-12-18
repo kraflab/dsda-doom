@@ -2887,12 +2887,12 @@ static int P_GroupLines (void)
 // P_LoadReject - load the reject table
 //
 
-static void P_LoadReject(void)
+static void P_LoadReject(int lump)
 {
-  rejectmatrix = W_LumpByNum(level_components.reject);
+  rejectmatrix = W_LumpByNum(lump);
 
   //e6y: check for overflow
-  RejectOverrun(level_components.reject, &rejectmatrix, P_GroupLines());
+  RejectOverrun(lump, &rejectmatrix, P_GroupLines());
 }
 
 //
@@ -3367,7 +3367,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     numsubsectors, sizeof(map_subsectors[0]));
 
   // reject loading and underflow padding separated out into new function
-  P_LoadReject();
+  P_LoadReject(level_components.reject);
 
   P_RemoveSlimeTrails();    // killough 10/98: remove slime trails from wad
 
