@@ -2682,8 +2682,16 @@ static void P_LoadBlockMap (int lump)
 {
   long count;
 
-  if (dsda_Flag(dsda_arg_blockmap) || W_LumpLength(lump)<8 || (count = W_LumpLength(lump)/2) >= 0x10000) //e6y
+  count = W_SafeLumpLength(lump);
+
+  if (
+    dsda_Flag(dsda_arg_blockmap) ||
+    count < 8 ||
+    (count /= 2) >= 0x10000 //e6y
+  )
+  {
     P_CreateBlockMap();
+  }
   else
   {
     long i;
