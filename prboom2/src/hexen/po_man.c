@@ -1388,7 +1388,7 @@ dboolean PO_Detect(int doomednum)
   return false;
 }
 
-void PO_Init(int lump)
+static void PO_LoadThings(int lump)
 {
     const byte *data;
     int i;
@@ -1396,9 +1396,6 @@ void PO_Init(int lump)
     const mapthing_t *mt;
     int numthings;
     int polyIndex;
-
-    polyobjs = Z_MallocLevel(po_NumPolyobjs * sizeof(polyobj_t));
-    memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
 
     data = W_LumpByNum(lump);
     numthings = W_LumpLength(lump) / sizeof(mapthing_t);
@@ -1438,6 +1435,17 @@ void PO_Init(int lump)
                                  spawnthing.y << FRACBITS);
         }
     }
+}
+
+void PO_Init(int lump)
+{
+    int i;
+
+    polyobjs = Z_MallocLevel(po_NumPolyobjs * sizeof(polyobj_t));
+    memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
+
+    PO_LoadThings(lump);
+
     // check for a startspot without an anchor point
     for (i = 0; i < po_NumPolyobjs; i++)
     {
