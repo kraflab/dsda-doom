@@ -263,8 +263,10 @@ void dsda_SkipNextWipe(void) {
   dsda_skip_next_wipe = 1;
 }
 
+// In raven, strict mode does not affect this setting
 dboolean dsda_RenderWipeScreen(void) {
-  return dsda_IntConfig(dsda_config_render_wipescreen);
+  return raven ? dsda_TransientIntConfig(dsda_config_render_wipescreen) :
+                 dsda_IntConfig(dsda_config_render_wipescreen);
 }
 
 dboolean dsda_PendingSkipWipe(void) {

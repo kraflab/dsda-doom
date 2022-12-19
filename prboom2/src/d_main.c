@@ -235,7 +235,8 @@ static void D_Wipe(void)
   //e6y
   if (!dsda_RenderWipeScreen() || dsda_SkipWipe())
   {
-    dsda_TrackFeature(uf_wipescreen);
+    if (!raven)
+      dsda_TrackFeature(uf_wipescreen);
 
     // If there's no screen wipe, we still need to refresh the status bar
     SB_Start();
