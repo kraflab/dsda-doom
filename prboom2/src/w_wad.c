@@ -540,6 +540,11 @@ int W_LumpLength (int lump)
   return lumpinfo[lump].size;
 }
 
+int W_SafeLumpLength (int lump)
+{
+  return W_LumpNumExists(lump) ? lumpinfo[lump].size : 0;
+}
+
 //
 // W_ReadLump
 // Loads the lump into the given buffer,
