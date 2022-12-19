@@ -592,6 +592,11 @@ int W_LumpNumInPortWad(int lump) {
          !strcmp(info->wadfile->name + name_length - default_name_length, WAD_DATA);
 }
 
+int W_LumpNumExists(int lump)
+{
+  return lump != LUMP_NOT_FOUND && lump < numlumps;
+}
+
 int W_LumpNameExists(const char *name)
 {
   return W_CheckNumForName(name) != LUMP_NOT_FOUND;

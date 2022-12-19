@@ -163,6 +163,7 @@ char*   W_ReadLumpToString (int lump);
 const void* W_LumpByNum (int lump);
 const void* W_LockLumpNum(int lump);
 
+int W_LumpNumExists(int lump);
 int W_LumpNameExists(const char *name);
 int W_LumpNameExists2(const char *name, int ns);
 
