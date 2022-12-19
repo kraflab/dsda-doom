@@ -192,3 +192,19 @@ double dsda_DistancePointToLine(fixed_t line_x1, fixed_t line_y1,
 
   return dsda_DistanceLF(intersect_x, intersect_y, px, py);
 }
+
+fixed_t dsda_FloatToFixed(float x)
+{
+  return (fixed_t) (x * FRACUNIT);
+}
+
+int dsda_IntToFixed(int x)
+{
+  return (fixed_t) (x << FRACBITS);
+}
+
+// ANG1 is off by 256 / 360 due to rounding
+angle_t dsda_DegreesToAngle(int x)
+{
+  return ANG1 * x / 360 + 256 * x / 360;
+}

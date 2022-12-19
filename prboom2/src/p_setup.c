@@ -65,6 +65,7 @@
 #include "dsda/mapinfo.h"
 #include "dsda/skip.h"
 #include "dsda/udmf.h"
+#include "dsda/utility.h"
 
 #include "hexen/p_acs.h"
 #include "hexen/p_anim.h"
@@ -259,22 +260,6 @@ static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {
     level_components.gl_ssect = LUMP_NOT_FOUND;
     level_components.gl_nodes = LUMP_NOT_FOUND;
   }
-}
-
-static fixed_t P_FloatToFixed(float x)
-{
-  return (fixed_t) (x * FRACUNIT);
-}
-
-static int P_IntToFixed(int x)
-{
-  return (fixed_t) (x << FRACBITS);
-}
-
-// ANG1 is off by 256 / 360 due to rounding
-static angle_t P_DegreesToAngle(int x)
-{
-  return ANG1 * x / 360 + 256 * x / 360;
 }
 
 // e6y: Smart malloc
@@ -517,8 +502,8 @@ static void P_LoadUDMFVertexes(int lump, int gllump)
 
   for (i = 0; i < numvertexes; ++i)
   {
-    vertexes[i].x = P_FloatToFixed(udmf.vertices[i].x);
-    vertexes[i].y = P_FloatToFixed(udmf.vertices[i].y);
+    vertexes[i].x = dsda_FloatToFixed(udmf.vertices[i].x);
+    vertexes[i].y = dsda_FloatToFixed(udmf.vertices[i].y);
   }
 }
 
@@ -1021,18 +1006,18 @@ static void P_LoadUDMFSectors(int lump)
     P_InitializeSectorDefaults(ss);
 
     ss->iSectorID = i;
-    ss->floorheight = P_IntToFixed(ms->heightfloor);
-    ss->ceilingheight = P_IntToFixed(ms->heightceiling);
+    ss->floorheight = dsda_IntToFixed(ms->heightfloor);
+    ss->ceilingheight = dsda_IntToFixed(ms->heightceiling);
     ss->floorpic = R_FlatNumForName(ms->texturefloor);
     ss->ceilingpic = R_FlatNumForName(ms->textureceiling);
     ss->lightlevel = ms->lightlevel;
     ss->special = ms->special;
     ss->tag = ms->id;
-    ss->floor_xoffs = P_FloatToFixed(ms->xpanningfloor);
-    ss->floor_yoffs = P_FloatToFixed(ms->ypanningfloor);
-    ss->ceiling_xoffs = P_FloatToFixed(ms->xpanningceiling);
-    ss->ceiling_yoffs = P_FloatToFixed(ms->ypanningceiling);
-    ss->gravity = P_FloatToFixed(ms->gravity);
+    ss->floor_xoffs = dsda_FloatToFixed(ms->xpanningfloor);
+    ss->floor_yoffs = dsda_FloatToFixed(ms->ypanningfloor);
+    ss->ceiling_xoffs = dsda_FloatToFixed(ms->xpanningceiling);
+    ss->ceiling_yoffs = dsda_FloatToFixed(ms->ypanningceiling);
+    ss->gravity = dsda_FloatToFixed(ms->gravity);
 
     // UDMF TODO:
     // xscalefloor
@@ -2211,8 +2196,8 @@ static void P_LoadUDMFSideDefs2(int lump)
     side_t *sd = &sides[i];
     sector_t *sec;
 
-    sd->textureoffset = P_IntToFixed(msd->offsetx);
-    sd->rowoffset = P_IntToFixed(msd->offsety);
+    sd->textureoffset = dsda_IntToFixed(msd->offsetx);
+    sd->rowoffset = dsda_IntToFixed(msd->offsety);
 
     if (msd->sector >= numsectors)
       I_Error("Invalid level data: sidedef %d's sector index is out of range", i);
