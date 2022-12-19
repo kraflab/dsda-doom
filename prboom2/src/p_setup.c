@@ -1979,7 +1979,7 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
 // killough 4/4/98: delay using sidedefs until they are loaded
 // killough 5/3/98: reformatted, cleaned up
 
-static void P_LoadLineDefs2(int lump)
+static void P_PostProcessLineDefs(void)
 {
   int i = numlines;
   register line_t *ld = lines;
@@ -1998,13 +1998,13 @@ static void P_LoadLineDefs2(int lump)
 //
 // killough 4/4/98: split into two functions
 
-static void P_LoadSideDefs (int lump)
+static void P_AllocateSideDefs (int lump)
 {
   numsides = W_LumpLength(lump) / sizeof(mapsidedef_t);
   sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
 }
 
-static void P_LoadUDMFSideDefs(int lump)
+static void P_AllocateUDMFSideDefs(int lump)
 {
   numsides = udmf.num_sides;
   sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
@@ -2159,7 +2159,7 @@ void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, secto
 // after linedefs are loaded, to allow overloading.
 // killough 5/3/98: reformatted, cleaned up
 
-static void P_LoadSideDefs2(int lump)
+static void P_LoadSideDefs(int lump)
 {
   const byte *data = W_LumpByNum(lump); // cph - const*, wad lump handling updated
   int  i;
@@ -2176,7 +2176,7 @@ static void P_LoadSideDefs2(int lump)
     { /* cph 2006/09/30 - catch out-of-range sector numbers; use sector 0 instead */
       unsigned short sector_num = LittleShort(msd->sector);
       if (sector_num >= numsectors) {
-        lprintf(LO_WARN,"P_LoadSideDefs2: sidedef %i has out-of-range sector num %u\n", i, sector_num);
+        lprintf(LO_WARN,"P_LoadSideDefs: sidedef %i has out-of-range sector num %u\n", i, sector_num);
         sector_num = 0;
       }
       sd->sector = sec = &sectors[sector_num];
@@ -2186,7 +2186,7 @@ static void P_LoadSideDefs2(int lump)
   }
 }
 
-static void P_LoadUDMFSideDefs2(int lump)
+static void P_LoadUDMFSideDefs(int lump)
 {
   int i;
 
@@ -3298,10 +3298,10 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   P_LoadVertexes(level_components.vertexes, level_components.gl_verts);
   P_LoadSectors(level_components.sectors);
-  P_LoadSideDefs(level_components.sidedefs);
+  P_AllocateSideDefs(level_components.sidedefs);
   P_LoadLineDefs(level_components.linedefs);
-  P_LoadSideDefs2(level_components.sidedefs);
-  P_LoadLineDefs2(level_components.linedefs);
+  P_LoadSideDefs(level_components.sidedefs);
+  P_PostProcessLineDefs();
 
   // e6y: speedup of level reloading
   // Do not reload BlockMap for same level,
