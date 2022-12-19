@@ -271,6 +271,12 @@ static int P_IntToFixed(int x)
   return (fixed_t) (x << FRACBITS);
 }
 
+// ANG1 is off by 256 / 360 due to rounding
+static angle_t P_DegreesToAngle(int x)
+{
+  return ANG1 * x / 360 + 256 * x / 360;
+}
+
 // e6y: Smart malloc
 // Used by P_SetupLevel() for smart data loading
 // Do nothing if level is the same
