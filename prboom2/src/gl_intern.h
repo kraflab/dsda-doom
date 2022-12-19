@@ -564,5 +564,6 @@ void glsl_SetFuzzTime(int time);
 void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
 void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
 int glsl_IsActive(void);
+dboolean glsl_UseFuzzShader(void);
 
 #endif // _GL_INTERN_H

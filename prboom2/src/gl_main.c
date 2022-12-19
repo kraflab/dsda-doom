@@ -809,12 +809,12 @@ const lighttable_t *gld_GetActiveColormap()
 // [XA] quicky indexed color-lookup function for a couple
 // of things that aren't done in the shader for the indexed
 // lightmode. ideally this will go away in the future.
-color_rgb_t gld_LookupIndexedColor(int index)
+color_rgb_t gld_LookupIndexedColor(int index, dboolean usecolormap)
 {
   color_rgb_t color;
   const unsigned char *playpal;
 
-  if (V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed())
+  if (usecolormap)
   {
     int gtlump = W_CheckNumForName2("GAMMATBL", ns_prboom);
     const byte * gtable = (const byte*)W_LumpByNum(gtlump) + 256 * usegamma;
@@ -849,7 +849,7 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   if (a == 0)
     return;
 
-  color = gld_LookupIndexedColor(BaseColor);
+  color = gld_LookupIndexedColor(BaseColor, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
   line = M_ArrayGetNewItem(&map_lines, sizeof(line[0]));
 
@@ -871,6 +871,48 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
 void gld_DrawLine(int x0, int y0, int x1, int y1, int BaseColor)
 {
   gld_DrawLine_f((float)x0, (float)y0, (float)x1, (float)y1, BaseColor);
+}
+
+
+void gld_StartFuzz(float width, float height)
+{
+  color_rgb_t color;
+
+  // legacy (non-shader) effect. remove this in case
+  // we want to absolutely require the fuzz shader.
+  if (!glsl_UseFuzzShader())
+  {
+    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+    glAlphaFunc(GL_GEQUAL, 0.1f);
+    glColor4f(0.2f, 0.2f, 0.2f, 0.33f);
+    return;
+  }
+
+  // shader init
+  glsl_SetFuzzShaderActive();
+  glsl_SetFuzzTextureDimensions(width, height);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glAlphaFunc(GL_GEQUAL, 0.1f);
+
+  // for non-indexed modes, just use black as the fuzz color.
+  if (!V_IsWorldLightmodeIndexed()) {
+    glColor3f(0.0f, 0.0f, 0.0f);
+    return;
+  }
+
+  // for indexed lightmode, the fuzz color needs to take
+  // pain/item fades and gamma into account, so do a color
+  // lookup based on the closest-to-black color index.
+  // [XA] TODO: actually figure out the black color index instead of assuming zero
+  color = gld_LookupIndexedColor(0, true);
+  glColor3f((float)color.r/255.0f,
+            (float)color.g/255.0f,
+            (float)color.b/255.0f);
+}
+
+void gld_EndFuzz()
+{
+  glsl_SetFuzzShaderInactive(); // will no-op if fuzz shader wasn't enabled.
 }
 
 void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
@@ -904,11 +946,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   // when invisibility is about to go
   if (/*(viewplayer->mo->flags & MF_SHADOW) && */!vis->colormap)
   {
-    glsl_SetFuzzShaderActive();
-    glsl_SetFuzzTextureDimensions((float)gltexture->realtexwidth, (float)gltexture->realtexheight);
-    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL,0.1f);
-    glColor4f(0.2f,0.2f,0.2f,0.01f);
+    gld_StartFuzz((float)gltexture->realtexwidth, (float)gltexture->realtexheight);
   }
   else
   {
@@ -929,13 +967,13 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
     glAlphaFunc(GL_GEQUAL,0.3f);
   }
   glColor3f(1.0f,1.0f,1.0f);
-  glsl_SetFuzzShaderInactive();
+  gld_EndFuzz();
 }
 
 void gld_FillBlock(int x, int y, int width, int height, int col)
 {
   const unsigned char *playpal = V_GetPlaypal();
-  color_rgb_t color = gld_LookupIndexedColor(col);
+  color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
 
@@ -2304,14 +2342,10 @@ static void gld_DrawSprite(GLSprite *sprite)
   {
     if(sprite->flags & g_mf_shadow)
     {
-      glsl_SetFuzzShaderActive();
-      glsl_SetFuzzTextureDimensions((float)sprite->gltexture->width, (float)sprite->gltexture->height);
       glGetIntegerv(GL_BLEND_SRC, &blend_src);
       glGetIntegerv(GL_BLEND_DST, &blend_dst);
-      glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-      glAlphaFunc(GL_GEQUAL,0.1f);
-      glColor4f(0.2f,0.2f,0.2f,0.33f);
       restore = 1;
+      gld_StartFuzz((float)sprite->gltexture->width, (float)sprite->gltexture->height);
     }
     else
     {
@@ -2381,7 +2415,7 @@ static void gld_DrawSprite(GLSprite *sprite)
   {
     glBlendFunc(blend_src, blend_dst);
     glAlphaFunc(GL_GEQUAL, gl_mask_sprite_threshold_f);
-    glsl_SetFuzzShaderInactive();
+    gld_EndFuzz();
   }
 }
 
