@@ -31,6 +31,8 @@
 #include "hexen/sn_sonix.h"
 
 #include "dsda/map_format.h"
+#include "dsda/udmf.h"
+#include "dsda/utility.h"
 
 #include "po_man.h"
 
@@ -1433,6 +1435,39 @@ static void PO_LoadThings(int lump)
             TranslateToStartSpot(spawnthing.angle,
                                  spawnthing.x << FRACBITS,
                                  spawnthing.y << FRACBITS);
+        }
+    }
+}
+
+static void PO_LoadUDMFThings(int lump)
+{
+    int i;
+    const udmf_thing_t *mt;
+    int polyIndex = 0;
+
+    // Find the startSpot points, and spawn each polyobj
+    for (i = 0, mt = &udmf.things[0]; i < udmf.num_things; i++, mt++)
+    {
+        // 3001 = no crush, 3002 = crushing
+        if (mt->type >= map_format.dn_polyspawn_start &&
+            mt->type <= map_format.dn_polyspawn_end)
+        {                       // Polyobj StartSpot Pt.
+            polyobjs[polyIndex].startSpot.x = dsda_FloatToFixed(mt->x);
+            polyobjs[polyIndex].startSpot.y = dsda_FloatToFixed(mt->y);
+            SpawnPolyobj(polyIndex, dsda_DegreesToAngle(mt->angle),
+                         (mt->type != map_format.dn_polyspawn_start),
+                         (mt->type == map_format.dn_polyspawn_hurt));
+            polyIndex++;
+        }
+    }
+
+    for (i = 0, mt = &udmf.things[0]; i < udmf.num_things; i++, mt++)
+    {
+        if (mt->type == map_format.dn_polyanchor)
+        {                       // Polyobj Anchor Pt.
+            TranslateToStartSpot(dsda_DegreesToAngle(mt->angle),
+                                 dsda_FloatToFixed(mt->x),
+                                 dsda_FloatToFixed(mt->y));
         }
     }
 }
