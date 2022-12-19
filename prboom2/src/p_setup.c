@@ -2880,10 +2880,13 @@ static int P_GroupLines (void)
 
 static void P_LoadReject(int lump)
 {
-  rejectmatrix = W_LumpByNum(lump);
+  unsigned int length;
+
+  length = W_SafeLumpLength(lump);
+  rejectmatrix = W_SafeLumpByNum(lump);
 
   //e6y: check for overflow
-  RejectOverrun(lump, &rejectmatrix, P_GroupLines());
+  RejectOverrun(length, &rejectmatrix, P_GroupLines());
 }
 
 //
