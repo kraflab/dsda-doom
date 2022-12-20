@@ -67,4 +67,10 @@ void dsda_SkipNextWipe(void);
 dboolean dsda_PendingSkipWipe(void);
 dboolean dsda_SkipWipe(void);
 
+dboolean dsda_AllowGameController(void);
+dboolean dsda_AllowMouse(void);
+void dsda_WatchGameControllerEvent(void);
+void dsda_WatchMouseEvent(void);
+void dsda_LiftInputRestrictions(void);
+
 #endif

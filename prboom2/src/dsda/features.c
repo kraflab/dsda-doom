@@ -62,7 +62,7 @@ static const char* feature_names[64] = {
   [uf_hideweapon] = "Hide Weapon",
   [uf_showalive] = "Show Alive",
   [uf_join] = "Join",
-  [uf_free_analog] = "Free Analog",
+  [uf_mouse_and_controller] = "Mouse and Controller",
   [uf_ghost] = "Ghost",
 };
 

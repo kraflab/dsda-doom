@@ -472,28 +472,14 @@ static void G_ConvertAnalogMotion(int speed, int *forward, int *side)
 {
   if (left_analog_x || left_analog_y)
   {
-    int side_threshold;
-    int forward_threshold;
-
-    if (dsda_IntConfig(dsda_config_analog_movement_emulates_keyboard))
-    {
-      side_threshold = 0;
-      forward_threshold = 0;
-    }
-    else
-    {
-      side_threshold = sidemove[speed];
-      forward_threshold = forwardmove[speed];
-    }
-
-    if (left_analog_x > side_threshold)
+    if (left_analog_x > sidemove[speed])
       left_analog_x = sidemove[speed];
-    else if (left_analog_x < -side_threshold)
+    else if (left_analog_x < -sidemove[speed])
       left_analog_x = -sidemove[speed];
 
-    if (left_analog_y > forward_threshold)
+    if (left_analog_y > forwardmove[speed])
       left_analog_y = forwardmove[speed];
-    else if (left_analog_y < -forward_threshold)
+    else if (left_analog_y < -forwardmove[speed])
       left_analog_y = -forwardmove[speed];
 
     *forward += left_analog_y;
@@ -1301,6 +1287,8 @@ dboolean G_Responder (event_t* ev)
     {
       double value;
 
+      dsda_WatchMouseEvent();
+
       value = mouse_sensitivity_horiz * AccelerateMouse(ev->data1.i);
       mousex += G_CarryDouble(carry_mousex, value);
       if (dsda_MouseLook())
@@ -1321,11 +1309,15 @@ dboolean G_Responder (event_t* ev)
     }
 
     case ev_move_analog:
+      dsda_WatchGameControllerEvent();
+
       left_analog_x = ev->data1.f;
       left_analog_y = ev->data2.f;
       return true;    // eat events
 
     case ev_look_analog:
+      dsda_WatchGameControllerEvent();
+
       mousex += AccelerateAnalog(ev->data1.f);
       if (dsda_MouseLook())
       {

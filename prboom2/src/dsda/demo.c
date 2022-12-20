@@ -222,6 +222,7 @@ void dsda_InitDemoRecording(void) {
   // we need to reset things here to satisfy strict mode
   dsda_InitSettings();
 
+  dsda_LiftInputRestrictions();
   dsda_ResetFeatures();
   dsda_TrackConfigFeatures();
 

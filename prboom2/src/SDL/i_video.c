@@ -88,6 +88,7 @@
 #include "dsda/game_controller.h"
 #include "dsda/palette.h"
 #include "dsda/pause.h"
+#include "dsda/settings.h"
 #include "dsda/time.h"
 #include "dsda/gl/render_scale.h"
 
@@ -418,9 +419,11 @@ void I_StartTic (void)
 {
   I_GetEvent();
 
-  I_ReadMouse();
+  if (dsda_AllowMouse())
+    I_ReadMouse();
 
-  dsda_PollGameController();
+  if (dsda_AllowGameController())
+    dsda_PollGameController();
 }
 
 //

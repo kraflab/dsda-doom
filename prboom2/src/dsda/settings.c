@@ -29,6 +29,7 @@
 #include "dsda/build.h"
 #include "dsda/configuration.h"
 #include "dsda/exhud.h"
+#include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 
@@ -280,4 +281,34 @@ dboolean dsda_SkipWipe(void) {
   }
 
   return !dsda_RenderWipeScreen() || hexen;
+}
+
+static dboolean game_controller_used;
+static dboolean mouse_used;
+
+dboolean dsda_AllowGameController(void) {
+  return !dsda_StrictMode() || !mouse_used;
+}
+
+dboolean dsda_AllowMouse(void) {
+  return !dsda_StrictMode() || !game_controller_used;
+}
+
+void dsda_WatchGameControllerEvent(void) {
+  game_controller_used = true;
+
+  if (mouse_used)
+    dsda_TrackFeature(uf_mouse_and_controller);
+}
+
+void dsda_WatchMouseEvent(void) {
+  mouse_used = true;
+
+  if (game_controller_used)
+    dsda_TrackFeature(uf_mouse_and_controller);
+}
+
+void dsda_LiftInputRestrictions(void) {
+  game_controller_used = false;
+  mouse_used = false;
 }

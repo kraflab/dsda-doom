@@ -80,7 +80,7 @@ typedef enum {
   uf_hideweapon,
   uf_showalive,
   uf_join,
-  uf_free_analog,
+  uf_mouse_and_controller,
   uf_ghost,
   // 62
   // 63
