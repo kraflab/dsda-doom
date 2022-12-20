@@ -25,5 +25,7 @@ void main()
   brightness = min(1.0, brightness + 0.55);
   brightness = mix(0.475, 0.925, brightness * brightness);
 
-  gl_FragColor = vec4(vec3(brightness), texture2D(tex, uv).w);
+  // [XA] new for 0.25: use brightness as an alpha value so the game can
+  // pass in a non-black gl_color for pain/gamma support in indexed lightmode
+  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, uv).w * (1 - brightness));
 }
