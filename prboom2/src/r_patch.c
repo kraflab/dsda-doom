@@ -111,6 +111,9 @@ static rpatch_t *texture_composites = 0;
 // indices of two duplicate PLAYPAL entries, second is -1 if none found
 static int playpal_transparent, playpal_duplicate;
 
+// index of black (or the closest color to it)
+int playpal_black;
+
 //---------------------------------------------------------------------------
 void R_InitPatches(void) {
   if (!patches)
@@ -136,6 +139,7 @@ void R_UpdatePlayPal(void) {
   playpal_data = dsda_PlayPalData();
   playpal_transparent = playpal_data->transparent;
   playpal_duplicate = playpal_data->duplicate;
+  playpal_black = playpal_data->black;
 }
 
 //---------------------------------------------------------------------------
