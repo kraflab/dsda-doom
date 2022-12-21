@@ -1587,10 +1587,14 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
 {
   int i, j;
   float x_factor, y_factor;
-  int x_offset;
+  int x_offset, y_offset;
   const byte* raw;
 
   // e6y: wide-res
+  // NOTE: the size isn't quite right on all resolutions,
+  // which causes the black bars on the edge of heretic E3's
+  // bottom endscreen to overlap the top screen during scrolling.
+  // this happens in both software and GL at the time of writing.
   V_FillBorder(-1, 0);
 
   // custom widescreen assets are a different format
@@ -1605,8 +1609,6 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
     }
   }
 
-  raw = (const byte *) W_LumpByName(lump_name) + source_offset;
-
   x_factor = (float)SCREENWIDTH / 320;
   y_factor = (float)SCREENHEIGHT / 200;
 
@@ -1614,6 +1616,17 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
     x_factor = y_factor;
 
   x_offset = (int)((SCREENWIDTH - (x_factor * 320)) / 2);
+  y_offset = (int)((dest_y_offset * y_factor) - (source_offset * y_factor / 320));
+
+  // TODO: create a V_FillRaw alias and call that instead of the gld_ func directly,
+  // though that means there needs to be a software version too (that's ideally a
+  // bit more efficient than the current code's thousands-of-little-boxes approach)
+  if (V_IsOpenGLMode()) {
+    gld_FillRawName(lump_name, x_offset, y_offset, 320, 200, 320 * x_factor, 200 * y_factor, VPT_STRETCH_REAL);
+    return;
+  }
+
+  raw = (const byte *)W_LumpByName(lump_name) + source_offset;
 
   for (j = dest_y_offset; j < dest_y_offset + dest_y_limit; ++j)
     for (i = 0; i < 320; ++i, ++raw)

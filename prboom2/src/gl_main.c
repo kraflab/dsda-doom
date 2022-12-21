@@ -711,7 +711,7 @@ void gld_DrawNumPatch(int x, int y, int lump, int cm, enum patch_translation_e f
   gld_DrawNumPatch_f((float)x, (float)y, lump, cm, flags);
 }
 
-void gld_FillFlat(int lump, int x, int y, int width, int height, enum patch_translation_e flags)
+void gld_FillRaw(int lump, int x, int y, int src_width, int src_height, int dst_width, int dst_height, enum patch_translation_e flags)
 {
   GLTexture *gltexture;
   float fU1, fU2, fV1, fV2;
@@ -720,8 +720,8 @@ void gld_FillFlat(int lump, int x, int y, int width, int height, enum patch_tran
   int saved_boom_cm = boom_cm;
   boom_cm = 0;
 
-  gltexture = gld_RegisterFlat(lump, false, V_IsUILightmodeIndexed());
-  gld_BindFlat(gltexture, 0);
+  gltexture = gld_RegisterRaw(lump, src_width, src_height, false, V_IsUILightmodeIndexed());
+  gld_BindRaw(gltexture, 0);
 
   //e6y
   boom_cm = saved_boom_cm;
@@ -729,24 +729,35 @@ void gld_FillFlat(int lump, int x, int y, int width, int height, enum patch_tran
   if (!gltexture)
     return;
 
+  // [XA] NOTE: this flag actually means "tile", not stretch...
   if (flags & VPT_STRETCH)
   {
     x = x * SCREENWIDTH / 320;
     y = y * SCREENHEIGHT / 200;
-    width = width * SCREENWIDTH / 320;
-    height = height * SCREENHEIGHT / 200;
+    dst_width = dst_width * SCREENWIDTH / 320;
+    dst_height = dst_height * SCREENHEIGHT / 200;
   }
 
   fU1 = 0;
   fV1 = 0;
-  fU2 = (float)width / (float)gltexture->realtexwidth;
-  fV2 = (float)height / (float)gltexture->realtexheight;
+
+  // [XA] ...this flag means "stretch". welp.
+  if (flags & VPT_STRETCH_REAL)
+  {
+    fU2 = 1.0f;
+    fV2 = 1.0f;
+  }
+  else
+  {
+    fU2 = (float)dst_width / (float)gltexture->realtexwidth;
+    fV2 = (float)dst_height / (float)gltexture->realtexheight;
+  }
 
   glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(fU1, fV1); glVertex2f((float)(x),(float)(y));
-    glTexCoord2f(fU1, fV2); glVertex2f((float)(x),(float)(y + height));
-    glTexCoord2f(fU2, fV1); glVertex2f((float)(x + width),(float)(y));
-    glTexCoord2f(fU2, fV2); glVertex2f((float)(x + width),(float)(y + height));
+    glTexCoord2f(fU1, fV2); glVertex2f((float)(x),(float)(y + dst_height));
+    glTexCoord2f(fU2, fV1); glVertex2f((float)(x + dst_width),(float)(y));
+    glTexCoord2f(fU2, fV2); glVertex2f((float)(x + dst_width),(float)(y + dst_height));
   glEnd();
 }
 

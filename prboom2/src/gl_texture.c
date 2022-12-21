@@ -580,15 +580,16 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
   }
 }
 
-static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, const unsigned char *flat, int paletted)
+static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, const unsigned char *raw, int paletted)
 {
-  int x,y,pos;
+  int x,y,w,pos;
   const unsigned char *playpal;
 
   if (!gltexture)
     return;
-  if (!flat)
+  if (!raw)
     return;
+  w = gltexture->realtexwidth;
   if (paletted) {
     for (y=0;y<gltexture->realtexheight;y++)
     {
@@ -598,11 +599,11 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
 #ifdef RANGECHECK
         if (pos>=gltexture->buffer_size)
         {
-          lprintf(LO_ERROR,"gld_AddFlatToTexture pos>=size (%i >= %i)\n",pos,gltexture->buffer_size);
+          lprintf(LO_ERROR,"gld_AddRawToTexture pos>=size (%i >= %i)\n",pos,gltexture->buffer_size);
           return;
         }
 #endif
-        buffer[pos]=gld_palmap[flat[y*64+x]];
+        buffer[pos]=gld_palmap[raw[y*w+x]];
       }
     }
   } else {
@@ -615,7 +616,7 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
 #ifdef RANGECHECK
         if ((pos+3)>=gltexture->buffer_size)
         {
-          lprintf(LO_ERROR,"gld_AddFlatToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+          lprintf(LO_ERROR,"gld_AddRawToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
           return;
         }
 #endif
@@ -626,15 +627,15 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
           if (gltexture->flags & GLTEXTURE_INDEXED)
           {
             // [XA] new indexed color mode
-            buffer[pos+0]=colormap[flat[y*64+x]];
+            buffer[pos+0]=colormap[raw[y*w+x]];
             buffer[pos+1]=0;
             buffer[pos+2]=0;
           }
           else
           {
-            buffer[pos+0]=playpal[colormap[flat[y*64+x]]*3+0];
-            buffer[pos+1]=playpal[colormap[flat[y*64+x]]*3+1];
-            buffer[pos+2]=playpal[colormap[flat[y*64+x]]*3+2];
+            buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
+            buffer[pos+1]=playpal[colormap[raw[y*w+x]]*3+1];
+            buffer[pos+2]=playpal[colormap[raw[y*w+x]]*3+2];
           }
         }
         else
@@ -642,15 +643,15 @@ static void gld_AddFlatToTexture(GLTexture *gltexture, unsigned char *buffer, co
           if (gltexture->flags & GLTEXTURE_INDEXED)
           {
             // [XA] new indexed color mode
-            buffer[pos+0]=flat[y*64+x];
+            buffer[pos+0]=raw[y*w+x];
             buffer[pos+1]=0;
             buffer[pos+2]=0;
           }
           else
           {
-            buffer[pos+0]=playpal[flat[y*64+x]*3+0];
-            buffer[pos+1]=playpal[flat[y*64+x]*3+1];
-            buffer[pos+2]=playpal[flat[y*64+x]*3+2];
+            buffer[pos+0]=playpal[raw[y*w+x]*3+0];
+            buffer[pos+1]=playpal[raw[y*w+x]*3+1];
+            buffer[pos+2]=playpal[raw[y*w+x]*3+2];
           }
         }
         buffer[pos+3]=255;
@@ -1320,17 +1321,17 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
 }
 
-GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed)
+GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dboolean indexed)
 {
   GLTexture *gltexture;
 
-  gltexture=gld_AddNewGLPatchTexture(firstflat+lump, indexed);
+  gltexture=gld_AddNewGLPatchTexture(lump, indexed);
   if (!gltexture)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
   {
     gltexture->textype=GLDT_BROKEN;
-    gltexture->index=firstflat+lump;
+    gltexture->index=lump;
 
     //e6y
     gltexture->flags = 0;
@@ -1338,8 +1339,8 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed)
     if (indexed)
       gltexture->flags |= GLTEXTURE_INDEXED;
 
-    gltexture->realtexwidth=64;
-    gltexture->realtexheight=64;
+    gltexture->realtexwidth= width;
+    gltexture->realtexheight= height;
     gltexture->leftoffset=0;
     gltexture->topoffset=0;
     gltexture->tex_width=gld_GetTexDimension(gltexture->realtexwidth);
@@ -1379,9 +1380,9 @@ GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed)
   return gltexture;
 }
 
-void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
+void gld_BindRaw(GLTexture *gltexture, unsigned int flags)
 {
-  const unsigned char *flat;
+  const unsigned char *raw;
   unsigned char *buffer;
 
   if (!gltexture || gltexture->textype != GLDT_FLAT)
@@ -1417,10 +1418,10 @@ void gld_BindFlat(GLTexture *gltexture, unsigned int flags)
     return;
   }
 
-  flat=W_LumpByNum(gltexture->index);
+  raw=W_LumpByNum(gltexture->index);
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   memset(buffer,0,gltexture->buffer_size);
-  gld_AddFlatToTexture(gltexture, buffer, flat, 0);
+  gld_AddRawToTexture(gltexture, buffer, raw, 0);
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);

@@ -163,6 +163,7 @@ enum patch_translation_e {
   VPT_FLIP    = 256, // Flip image horizontally
   VPT_TRANS   = 512, // Translate image via a translation table
   VPT_NOOFFSET = 1024,
+  VPT_STRETCH_REAL       = 2048, // [XA] VPT_STRETCH in gld_fillRect means "tile", rather than "stretch"... these flags probably need a rename.
 };
 
 #define arrlen(array) (sizeof(array) / sizeof(*array))
