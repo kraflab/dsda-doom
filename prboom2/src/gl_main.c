@@ -729,6 +729,7 @@ void gld_FillRaw(int lump, int x, int y, int src_width, int src_height, int dst_
   if (!gltexture)
     return;
 
+  // [XA] NOTE: this flag actually means "tile", not stretch...
   if (flags & VPT_STRETCH)
   {
     x = x * SCREENWIDTH / 320;
@@ -739,8 +740,18 @@ void gld_FillRaw(int lump, int x, int y, int src_width, int src_height, int dst_
 
   fU1 = 0;
   fV1 = 0;
-  fU2 = (float)dst_width / (float)gltexture->realtexwidth;
-  fV2 = (float)dst_height / (float)gltexture->realtexheight;
+
+  // [XA] ...this flag means "stretch". welp.
+  if (flags & VPT_STRETCH_REAL)
+  {
+    fU2 = 1.0f;
+    fV2 = 1.0f;
+  }
+  else
+  {
+    fU2 = (float)dst_width / (float)gltexture->realtexwidth;
+    fV2 = (float)dst_height / (float)gltexture->realtexheight;
+  }
 
   glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(fU1, fV1); glVertex2f((float)(x),(float)(y));
