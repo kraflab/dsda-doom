@@ -766,7 +766,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_AddMiscBruteForceCondition(dsda_bf_line_activation, value);
       }
-      else if (sscanf(conditions[i], "%3s %2s %i", attr_s, oper_s, &value) == 3) {
+      else if (sscanf(conditions[i], "%3s %4s %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
 
         for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
@@ -777,10 +777,13 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
           return false;
 
         for (oper_i = dsda_bf_limit_trio_zero; oper_i < dsda_bf_limit_trio_max; ++oper_i)
-          if (!strcmp(oper_s, dsda_bf_limit_names[oper_i])) {
-            dsda_SetBruteForceTarget(attr_i, oper_i, value);
-            continue;
-          }
+          if (!strcmp(oper_s, dsda_bf_limit_names[oper_i]))
+            break;
+
+        if (oper_i != dsda_bf_limit_trio_max) {
+          dsda_SetBruteForceTarget(attr_i, oper_i, value);
+          continue;
+        }
 
         for (oper_i = 0; oper_i < dsda_bf_operator_max; ++oper_i)
           if (!strcmp(oper_s, dsda_bf_operator_names[oper_i]))
