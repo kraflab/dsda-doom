@@ -415,7 +415,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
     return true;
   }
 
-  if (!build_mode)
+  if (!build_mode || menuactive)
     return false;
 
   if (dsda_InputActivated(dsda_input_build_source)) {
