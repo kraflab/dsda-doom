@@ -814,12 +814,10 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
     Z_Free(conditions);
 
-    dsda_StartBruteForce(depth,
-                         forwardmove_min, forwardmove_max,
-                         sidemove_min, sidemove_max,
-                         angleturn_min, angleturn_max);
-
-    return true;
+    return dsda_StartBruteForce(depth,
+                                forwardmove_min, forwardmove_max,
+                                sidemove_min, sidemove_max,
+                                angleturn_min, angleturn_max);
   }
 
   return false;
