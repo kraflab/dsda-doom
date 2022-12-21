@@ -378,8 +378,12 @@ GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force,
 void gld_BindTexture(GLTexture *gltexture, unsigned int flags);
 GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean indexed);
 void gld_BindPatch(GLTexture *gltexture, int cm);
-GLTexture *gld_RegisterFlat(int lump, dboolean mipmap, dboolean indexed);
-void gld_BindFlat(GLTexture *gltexture, unsigned int flags);
+GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dboolean indexed);
+void gld_BindRaw(GLTexture *gltexture, unsigned int flags);
+#define gld_RegisterFlat(lump, mipmap, indexed) \
+  gld_RegisterRaw((firstflat+lump), 64, 64, (mipmap), (indexed))
+#define gld_BindFlat(gltexture, flags) \
+  gld_BindRaw((gltexture), (flags))
 GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force);
 void gld_BindSkyTexture(GLTexture *gltexture);
 GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level);
