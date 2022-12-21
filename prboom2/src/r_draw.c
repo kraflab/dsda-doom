@@ -460,6 +460,8 @@ void R_InitBuffersRes(void)
 
   solidcol = Z_Calloc(1, SCREENWIDTH * sizeof(*solidcol));
   tempbuf = Z_Calloc(1, (SCREENHEIGHT * 4) * sizeof(*tempbuf));
+
+  temp_x = 0;
 }
 
 //
