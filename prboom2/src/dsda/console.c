@@ -752,7 +752,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       dsda_bf_operator_t operator;
       fixed_t value;
       char attr_s[4] = { 0 };
-      char oper_s[3] = { 0 };
+      char oper_s[5] = { 0 };
 
       if (sscanf(conditions[i], "skip %i", &value) == 1) {
         if (value >= numlines || value < 0)
