@@ -432,7 +432,7 @@ dboolean dsda_StartBruteForce(int depth,
                               int angleturn_min, int angleturn_max) {
   int i;
 
-  if (bf_depth > MAX_BF_DEPTH)
+  if (depth <= 0 || depth > MAX_BF_DEPTH)
     return false;
 
   dsda_TrackFeature(uf_bruteforce);
