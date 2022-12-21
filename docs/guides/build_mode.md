@@ -60,12 +60,12 @@ Brute force is a technique in built tases where you automatically apply differen
       - `dmg` (single frame player damage dealt)
       - `rng` (rng index)
     - `operator` has the following options:
-      - `lt` (less than)
-      - `lteq` (less than or equal to)
-      - `gt` (greater than)
-      - `gteq` (greater than or equal to)
-      - `eq` (equal)
-      - `neq` (not equal)
+      - `<` (less than)
+      - `<=` (less than or equal to)
+      - `>` (greater than)
+      - `>=` (greater than or equal to)
+      - `==` (equal)
+      - `!=` (not equal)
       - These operators look for a best result (by checking all sequences):
         - `acap` (as close as possible)
         - `max` (maximum)
@@ -73,10 +73,10 @@ Brute force is a technique in built tases where you automatically apply differen
     - `value` is the number to compare against (currently limited to integer).
       - `max` and `min` do not require a value
     - Examples:
-      - `x gt 4, y lt -34, vx gteq 10` means the player x position must be greater than 4, and the player y position must be less than -34, and the player x velocity must be greater than or equal to 10, all at the same time.
-      - `y eq 0, vy acap 0` means the player y position must be equal to 0. All sequences will be checked, and the one that leads to a player y velocity closest to 0 will be used.
+      - `x gt 4, y < -34, vx >= 10` means the player x position must be greater than 4, and the player y position must be less than -34, and the player x velocity must be greater than or equal to 10, all at the same time.
+      - `y == 0, vy acap 0` means the player y position must be equal to 0. All sequences will be checked, and the one that leads to a player y velocity closest to 0 will be used.
   - There are additional conditions that do not follow the above pattern:
     - `skip X` (skip line X)
     - `act X` (activate line X)
-  - Full example: `bf.start 2 40:50 40:50 -2:2 x lt 1056, vx gt 5` is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
+  - Full example: `bf.start 2 40:50 40:50 -2:2 x < 1056, vx > 5` is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
 - Brute force metadata gets printed to the console (conditions, progress, etc).
