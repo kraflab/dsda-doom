@@ -1,6 +1,7 @@
 /prboom2/ICONS/icons.aps
 /prboom2/release
 /build*
+/release*
 /dependencies*
 
 # spec files
@@ -8,3 +9,6 @@ analysis.txt
 levelstat.txt
 /spec/support/wads/*
 !/spec/support/wads/analysis_test.wad
+
+# macOS
+.DS_Store
