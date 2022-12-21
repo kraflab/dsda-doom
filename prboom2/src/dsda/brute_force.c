@@ -464,7 +464,11 @@ dboolean dsda_StartBruteForce(int depth,
 
   dsda_StartTimer(dsda_timer_brute_force);
 
-  lprintf(LO_INFO, "Brute force starting!\n");
+  lprintf(LO_INFO, "Brute force starting:\n");
+  lprintf(LO_INFO, "  F %d:%d S %d:%d T %d:%d\n", forwardmove_min, forwardmove_max,
+                                                  sidemove_min, sidemove_max,
+                                                  angleturn_min, angleturn_max);
+  lprintf(LO_INFO, "Testing %lld sequences with depth %d\n\n", bf_volume_max, bf_depth);
 
   bf_mode = true;
 
