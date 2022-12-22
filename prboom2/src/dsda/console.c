@@ -813,6 +813,9 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_SetBruteForceTarget(attr_i, oper_i, 0);
       }
+      else {
+        return false;
+      }
     }
 
     Z_Free(conditions);
