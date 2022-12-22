@@ -1464,12 +1464,30 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
  * changes like byte order reversals. Take a copy to edit.
  */
 
+static void P_PostProcessMapThing(mapthing_t *mt, int index, mobj_t ***mobjlist)
+{
+  mobj_t *mobj;
+
+  if (!P_IsDoomnumAllowed(mt->type))
+    return;
+
+  // Although all resources of the Wolf SS have been removed
+  // off the BFG Edition, there is still one left in MAP33.
+  // Replace with a Former Human instead.
+  if (bfgedition && singleplayer && mt->type == 84)
+    mt->type = 3004;
+
+  // Do spawn all other stuff.
+  mobj = P_SpawnMapThing(mt, index);
+  if (mobj && mobj->info->speed == 0)
+    *mobjlist[index] = mobj;
+}
+
 static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
 {
   int  i, numthings;
   const mapthing_t *data;
   const doom_mapthing_t *doom_data;
-  mobj_t *mobj;
 
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
   data = W_LumpByNum(lump);
@@ -1516,19 +1534,7 @@ static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
       mt.arg5 = 0;
     }
 
-    if (!P_IsDoomnumAllowed(mt.type))
-      continue;
-
-    // Although all resources of the Wolf SS have been removed
-    // off the BFG Edition, there is still one left in MAP33.
-    // Replace with a Former Human instead.
-    if (bfgedition && singleplayer && mt.type == 84)
-      mt.type = 3004;
-
-    // Do spawn all other stuff.
-    mobj = P_SpawnMapThing(&mt, i);
-    if (mobj && mobj->info->speed == 0)
-      *mobjlist[i] = mobj;
+    P_PostProcessMapThing(&mt, i, mobjlist);
   }
 }
 
