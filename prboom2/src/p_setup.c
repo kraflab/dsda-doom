@@ -1464,24 +1464,23 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
  * changes like byte order reversals. Take a copy to edit.
  */
 
-static void P_LoadThings (int lump)
+static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
 {
   int  i, numthings;
   const mapthing_t *data;
   const doom_mapthing_t *doom_data;
   mobj_t *mobj;
-  int mobjcount = 0;
-  mobj_t **mobjlist;
 
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
   data = W_LumpByNum(lump);
   doom_data = (const doom_mapthing_t*) data;
-  mobjlist = Z_Malloc(numthings * sizeof(mobjlist[0]));
+  *mobjcount = numthings;
+  *mobjlist = Z_Malloc(numthings * sizeof(*mobjlist[0]));
 
-  if ((!data) || (!numthings))
+  if (!data || !numthings)
     I_Error("P_LoadThings: no things in level");
 
-  for (i=0; i<numthings; i++)
+  for (i = 0; i < numthings; i++)
   {
     mapthing_t mt;
 
@@ -1529,8 +1528,17 @@ static void P_LoadThings (int lump)
     // Do spawn all other stuff.
     mobj = P_SpawnMapThing(&mt, i);
     if (mobj && mobj->info->speed == 0)
-      mobjlist[mobjcount++] = mobj;
+      *mobjlist[i] = mobj;
   }
+}
+
+static void P_LoadThings (int lump)
+{
+  int i;
+  int mobjcount;
+  mobj_t **mobjlist;
+
+  P_LoadLegacyThings(lump, &mobjcount, &mobjlist);
 
   if (map_format.thing_id)
   {
