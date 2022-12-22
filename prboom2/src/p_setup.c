@@ -109,9 +109,20 @@ byte     *map_subsectors;
 // figgi 08/21/00 -- constants and globals for glBsp support
 #define GL_VERT_OFFSET  4
 
-int     firstglvertex = 0;
-int     nodesVersion  = 0;
-dboolean forceOldBsp   = false;
+typedef enum {
+  UNKNOWN_NODES = -1,
+  DEFAULT_BSP_NODES,
+  DEEP_BSP_V4_NODES,
+  GL_V1_NODES,
+  GL_V2_NODES,
+  ZDOOM_XNOD_NODES,
+  ZDOOM_ZNOD_NODES,
+} nodes_version_t;
+
+int firstglvertex = 0;
+static nodes_version_t nodesVersion = DEFAULT_BSP_NODES;
+dboolean use_gl_nodes = false;
+dboolean forceOldBsp = false;
 
 // figgi 08/21/00 -- glSegs
 typedef struct
@@ -199,7 +210,7 @@ mapthing_t playerstarts[MAX_PLAYER_STARTS][MAX_MAXPLAYERS];
 
 static int current_episode = -1;
 static int current_map = -1;
-static int current_nodesVersion = -1;
+static nodes_version_t current_nodesVersion = UNKNOWN_NODES;
 static int samelevel = false;
 
 typedef struct
@@ -311,105 +322,62 @@ static dboolean CheckForIdentifier(int lumpnum, const byte *id, size_t length)
 }
 
 //
-// P_CheckForZDoomNodes
-//
-
-static dboolean P_CheckForZDoomNodes(void)
-{
-  if (CheckForIdentifier(level_components.ssectors, "ZGLN", 4))
-    I_Error("P_CheckForZDoomNodes: ZDoom GL nodes not supported yet");
-
-  return false;
-}
-
-//
-// P_CheckForDeePBSPv4Nodes
-// http://www.sbsoftware.com/files/DeePBSPV4specs.txt
-//
-
-static dboolean P_CheckForDeePBSPv4Nodes(void)
-{
-  int result = CheckForIdentifier(level_components.nodes, "xNd4\0\0\0\0", 8);
-
-  if (result)
-    lprintf(LO_INFO, "P_CheckForDeePBSPv4Nodes: DeePBSP v4 Extended nodes are detected\n");
-
-  return result;
-}
-
-//
-// P_CheckForZDoomUncompressedNodes
-// http://zdoom.org/wiki/ZDBSP#Compressed_Nodes
-//
-
-enum {
-  NO_ZDOOM_NODES,
-  ZDOOM_XNOD_NODES,
-  ZDOOM_ZNOD_NODES
-};
-
-static int P_CheckForZDoomUncompressedNodes(void)
-{
-  int ret = NO_ZDOOM_NODES;
-  int result = CheckForIdentifier(level_components.nodes, "XNOD", 4);
-
-  if (result)
-  {
-    ret = ZDOOM_XNOD_NODES;
-  }
-  else
-  {
-    result = CheckForIdentifier(level_components.nodes, "ZNOD", 4);
-
-    if (result)
-    {
-      ret = ZDOOM_ZNOD_NODES;
-    }
-  }
-
-  return ret;
-}
-
-//
 // P_GetNodesVersion
 //
 
 static void P_GetNodesVersion(void)
 {
-  int ver = -1;
-  nodesVersion = 0;
+  nodesVersion = DEFAULT_BSP_NODES;
+  use_gl_nodes = false;
 
   if (P_GLLumpsExist() &&
       (mbf21 || forceOldBsp == false) &&
       (compatibility_level >= prboom_2_compatibility))
   {
-    if (CheckForIdentifier(level_components.gl_verts, "gNd2", 4)) {
-      if (CheckForIdentifier(level_components.gl_segs, "gNd3", 4)) {
-        ver = 3;
-      } else {
-        nodesVersion = 2;
-        lprintf(LO_DEBUG, "P_GetNodesVersion: found version 2 nodes\n");
-      }
-    }
-    else if (CheckForIdentifier(level_components.gl_verts, "gNd4", 4)) {
-      ver = 4;
-    }
-    else if (CheckForIdentifier(level_components.gl_verts, "gNd5", 4)) {
-      ver = 5;
-    }
-    //e6y: unknown gl nodes will be ignored
-    if (nodesVersion == 0 && ver != -1)
+    if (!CheckForIdentifier(level_components.gl_verts, "gNd", 3))
     {
-      lprintf(LO_DEBUG,"P_GetNodesVersion: found version %d nodes\n", ver);
-      lprintf(LO_DEBUG,"P_GetNodesVersion: version %d nodes not supported\n", ver);
+      use_gl_nodes = true;
+      nodesVersion = GL_V1_NODES;
+      lprintf(LO_DEBUG, "P_GetNodesVersion: using v1 gl nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.gl_verts, "gNd2", 4) &&
+             !CheckForIdentifier(level_components.gl_segs, "gNd3", 4))
+    {
+      use_gl_nodes = true;
+      nodesVersion = GL_V2_NODES;
+      lprintf(LO_DEBUG, "P_GetNodesVersion: using v2 gl nodes\n");
+    }
+    else
+    {
+      lprintf(LO_DEBUG, "P_GetNodesVersion: ignoring unsupported gl nodes version");
     }
   }
-  else
+
+  if (nodesVersion == DEFAULT_BSP_NODES)
   {
-    nodesVersion = 0;
-    lprintf(LO_DEBUG,"P_GetNodesVersion: using normal BSP nodes\n");
-    if (P_CheckForZDoomNodes())
-      I_Error("P_GetNodesVersion: ZDoom nodes not supported yet");
+    // http://zdoom.org/wiki/ZDBSP
+    if (CheckForIdentifier(level_components.ssectors, "ZGLN", 4))
+      I_Error("ZDoom GL nodes are not supported yet");
+
+    if (CheckForIdentifier(level_components.nodes, "XNOD", 4))
+    {
+      nodesVersion = ZDOOM_XNOD_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using XNOD zdoom nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.nodes, "ZNOD", 4))
+    {
+      nodesVersion = ZDOOM_ZNOD_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using ZNOD zdoom nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.nodes, "xNd4\0\0\0\0", 8))
+    { // http://www.sbsoftware.com/files/DeePBSPV4specs.txt
+      nodesVersion = DEEP_BSP_V4_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using v4 DeePBSP nodes\n");
+    }
+    else
+    {
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using normal BSP nodes\n");
+    }
   }
 }
 
@@ -440,11 +408,11 @@ static void P_LoadVertexes(int lump, int gllump)
   numvertexes   = W_LumpLength(lump) / sizeof(mapvertex_t);
   firstglvertex = numvertexes;
 
-  if (nodesVersion > 0 && P_GLLumpsExist())  // check for glVertices
+  if (use_gl_nodes)
   {
     gldata = W_LumpByNum(gllump);
 
-    if (nodesVersion == 2) // 32 bit GL_VERT format (16.16 fixed)
+    if (nodesVersion == GL_V2_NODES) // 32 bit GL_VERT format (16.16 fixed)
     {
       const mapglvertex_t*  mgl;
 
@@ -1233,7 +1201,7 @@ static void P_LoadZSegs (const byte *data)
 
 // MB 2020-03-01: Fix endianess for 32-bit ZDoom nodes
 // https://zdoom.org/wiki/Node#ZDoom_extended_nodes
-static void P_LoadZNodes(int lump, int glnodes, int compressed)
+static void P_LoadZNodes(int lump, int glnodes)
 {
   const byte *data;
   unsigned int i;
@@ -1244,12 +1212,12 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
   unsigned int numSegs;
   unsigned int numNodes;
   vertex_t *newvertarray = NULL;
-  byte *output;
+  byte *output = NULL;
 
   data = W_LumpByNum(lump);
   len =  W_LumpLength(lump);
 
-  if (compressed == ZDOOM_ZNOD_NODES)
+  if (nodesVersion == ZDOOM_ZNOD_NODES)
   {
     int outlen, err;
     z_stream *zstream;
@@ -1440,7 +1408,7 @@ static void P_LoadZNodes(int lump, int glnodes, int compressed)
     }
   }
 
-  if (compressed == ZDOOM_ZNOD_NODES)
+  if (output)
     Z_Free(output);
 }
 
@@ -3418,29 +3386,36 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     memset(blocklinks, 0, bmapwidth*bmapheight*sizeof(*blocklinks));
   }
 
-  if (nodesVersion > 0)
+  switch (nodesVersion)
   {
-    P_LoadSubsectors(level_components.gl_ssect);
-    P_LoadNodes(level_components.gl_nodes);
-    P_LoadGLSegs(level_components.gl_segs);
-  }
-  else
-  {
-    int zdoom_nodes;
-    if ((zdoom_nodes = P_CheckForZDoomUncompressedNodes()))
-      P_LoadZNodes(level_components.nodes, 0, zdoom_nodes);
-    else if (P_CheckForDeePBSPv4Nodes())
-    {
+    case GL_V1_NODES:
+    case GL_V2_NODES:
+      P_LoadSubsectors(level_components.gl_ssect);
+      P_LoadNodes(level_components.gl_nodes);
+      P_LoadGLSegs(level_components.gl_segs);
+
+      break;
+
+    case ZDOOM_XNOD_NODES:
+    case ZDOOM_ZNOD_NODES:
+      P_LoadZNodes(level_components.nodes, 0);
+
+      break;
+
+    case DEEP_BSP_V4_NODES:
       P_LoadSubsectors_V4(level_components.ssectors);
       P_LoadNodes_V4(level_components.nodes);
       P_LoadSegs_V4(level_components.segs);
-    }
-    else
-    {
+
+      break;
+
+    case UNKNOWN_NODES:
+    case DEFAULT_BSP_NODES:
       P_LoadSubsectors(level_components.ssectors);
       P_LoadNodes(level_components.nodes);
       P_LoadSegs(level_components.segs);
-    }
+
+      break;
   }
 
   if (!samelevel)
