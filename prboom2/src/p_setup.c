@@ -1538,6 +1538,92 @@ static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
   }
 }
 
+static void P_LoadUDMFThings(int lump, int *mobjcount, mobj_t ***mobjlist)
+{
+  int i, numthings;
+
+  numthings = udmf.num_things;
+  *mobjcount = numthings;
+  *mobjlist = Z_Malloc(numthings * sizeof(*mobjlist[0]));
+
+  for (i = 0; i < numthings; i++)
+  {
+    mapthing_t mt;
+    udmf_thing_t *dmt = &udmf.things[i];
+
+    mt.x = dsda_FloatToFixed(dmt->x);
+    mt.y = dsda_FloatToFixed(dmt->y);
+    mt.angle = dsda_DegreesToAngle(dmt->angle);
+    mt.type = dmt->type;
+    mt.options = 0;
+    mt.tid = dmt->id;
+    mt.height = dsda_FloatToFixed(dmt->height);
+    mt.special = dmt->special;
+    mt.arg1 = dmt->arg0;
+    mt.arg2 = dmt->arg1;
+    mt.arg3 = dmt->arg2;
+    mt.arg4 = dmt->arg3;
+    mt.arg5 = dmt->arg4;
+
+    // need to disambiguate
+    if (dmt->flags & (UDMF_TF_SKILL1 | UDMF_TF_SKILL2))
+      mt.options |= MTF_EASY;
+
+    if (dmt->flags & UDMF_TF_SKILL3)
+      mt.options |= MTF_NORMAL;
+
+    // need to disambiguate
+    if (dmt->flags & (UDMF_TF_SKILL4 | UDMF_TF_SKILL5))
+      mt.options |= MTF_HARD;
+
+    if (dmt->flags & UDMF_TF_AMBUSH)
+      mt.options |= MTF_AMBUSH;
+
+    if (!(dmt->flags & UDMF_TF_SINGLE))
+      mt.options |= MTF_NOTSINGLE;
+
+    if (!(dmt->flags & UDMF_TF_DM))
+      mt.options |= MTF_NOTDM;
+
+    if (!(dmt->flags & UDMF_TF_COOP))
+      mt.options |= MTF_NOTCOOP;
+
+    if (dmt->flags & UDMF_TF_FRIEND)
+      mt.options |= MTF_FRIEND;
+
+    if (dmt->flags & UDMF_TF_DORMANT)
+      mt.options |= MTF_DORMANT;
+
+    if (dmt->flags & UDMF_TF_CLASS1)
+      mt.options |= MTF_FIGHTER;
+
+    if (dmt->flags & UDMF_TF_CLASS2)
+      mt.options |= MTF_CLERIC;
+
+    if (dmt->flags & UDMF_TF_CLASS3)
+      mt.options |= MTF_MAGE;
+
+    if (dmt->flags & UDMF_TF_TRANSLUCENT)
+      mt.options |= MTF_TRANSLUCENT;
+
+    if (dmt->flags & UDMF_TF_INVISIBLE)
+      mt.options |= MTF_INVISIBLE;
+
+    // UDMF TODO:
+    // gravity
+    // health
+    // scalex
+    // scaley
+    // scale
+    // floatbobphase
+    // UDMF_TF_STANDING
+    // UDMF_TF_STRIFEALLY
+    // UDMF_TF_COUNTSECRET
+
+    P_PostProcessMapThing(&mt, i, mobjlist);
+  }
+}
+
 static void P_LoadThings (int lump)
 {
   int i;
