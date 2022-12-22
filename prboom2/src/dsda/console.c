@@ -769,6 +769,9 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       else if (sscanf(conditions[i], "%3[a-zA-Z] %4[><!=] %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
 
+        if (oper_s[0] == '=' && !oper_s[1])
+          oper_s[1] = '=';
+
         for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
           if (!strcmp(attr_s, dsda_bf_attribute_names[attr_i]))
             break;
