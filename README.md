@@ -16,9 +16,6 @@ Download windows releases [here](https://drive.google.com/drive/folders/1KMU1dY0
 - [v0.24](./patch_notes/v0.24.md)
 - [v0.23](./patch_notes/v0.23.md)
 - [v0.22](./patch_notes/v0.22.md)
-- [v0.21](./patch_notes/v0.21.md)
-- [v0.20](./patch_notes/v0.20.md)
-- [v0.19](./patch_notes/v0.19.md)
 
 ### Launcher
 There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
