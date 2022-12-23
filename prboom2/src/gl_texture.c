@@ -83,6 +83,7 @@ static GLTexture **gld_GLIndexedPatchTextures = NULL;
 static GLTexture **gld_GLIndexedStaticPatchTextures = NULL;
 /* [XA] Colormap textures, for indexed lightmode */
 static GLTexture **gld_GLColormapTextures = NULL;
+static GLTexture **gld_GLFullbrightColormapTextures = NULL; // yeah, a "fullbright colormap" is really just a palette, but it matches the name elsewhere...
 int gld_numGLColormaps = -1;
 int gld_paletteIndex = 0;
 /* [XA] Sky textures for indexed lightmode -- name is sort
@@ -271,9 +272,9 @@ static GLTexture *gld_AddNewGLPatchTexture(int lump, dboolean indexed)
     return gld_AddNewGLTexItem(lump, numlumps, indexed ? &gld_GLIndexedPatchTextures : &gld_GLPatchTextures);
 }
 
-static GLTexture *gld_AddNewGLColormapTexture(int palette_index, int gamma_level)
+static GLTexture *gld_AddNewGLColormapTexture(int palette_index, int gamma_level, dboolean fullbright)
 {
-  return gld_AddNewGLTexItem(palette_index + (gamma_level * V_GetPlaypalCount()), gld_numGLColormaps, &gld_GLColormapTextures);
+  return gld_AddNewGLTexItem(palette_index + (gamma_level * V_GetPlaypalCount()), gld_numGLColormaps, fullbright ? &gld_GLFullbrightColormapTextures : &gld_GLColormapTextures);
 }
 
 // [XA] adds a memory-contiguous batch of sky textures,
@@ -660,7 +661,7 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
   }
 }
 
-static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer, int palette_index, int gamma_level)
+static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer, int palette_index, int gamma_level, dboolean fullbright)
 {
   int x,y,pos;
   const unsigned char *playpal;
@@ -703,10 +704,25 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
         return;
       }
 #endif
-      buffer[pos+0]=gtable[playpal[colormap[y*256+x]*3+0]];
-      buffer[pos+1]=gtable[playpal[colormap[y*256+x]*3+1]];
-      buffer[pos+2]=gtable[playpal[colormap[y*256+x]*3+2]];
-      buffer[pos+3]=255;
+      // [XA] also build a set of "fullbright" colormaps for UI.
+      // this is needed because the first row of the colormap
+      // isn't necessarily identical to the palette itself (e.g.
+      // in Heretic it's slightly off for a few colors), and UI
+      // needs to be drawn with exact palette colors, no lighting.
+      if (fullbright)
+      {
+        buffer[pos+0]=gtable[playpal[x*3+0]];
+        buffer[pos+1]=gtable[playpal[x*3+1]];
+        buffer[pos+2]=gtable[playpal[x*3+2]];
+        buffer[pos+3]=255;
+      }
+      else
+      {
+        buffer[pos+0]=gtable[playpal[colormap[y*256+x]*3+0]];
+        buffer[pos+1]=gtable[playpal[colormap[y*256+x]*3+1]];
+        buffer[pos+2]=gtable[playpal[colormap[y*256+x]*3+2]];
+        buffer[pos+3]=255;
+      }
     }
   }
 }
@@ -1577,11 +1593,11 @@ void gld_BindSkyTexture(GLTexture *gltexture)
   gld_SetTexClamp(gltexture, 0);
 }
 
-GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level)
+GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level, dboolean fullbright)
 {
   GLTexture *gltexture;
 
-  gltexture=gld_AddNewGLColormapTexture(palette_index, gamma_level);
+  gltexture=gld_AddNewGLColormapTexture(palette_index, gamma_level, fullbright);
   if (!gltexture)
     return NULL;
   if (gltexture->textype==GLDT_UNREGISTERED)
@@ -1590,7 +1606,7 @@ GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level)
     gltexture->index=palette_index;
 
     gltexture->realtexwidth=256;
-    gltexture->realtexheight=NUMCOLORMAPS+1; // it's +1 'cause of the invuln palette
+    gltexture->realtexheight=(fullbright ? 1 : NUMCOLORMAPS+1); // it's +1 'cause of the invuln palette
     gltexture->leftoffset=0;
     gltexture->topoffset=0;
     gltexture->tex_width=gld_GetTexDimension(gltexture->realtexwidth);
@@ -1615,7 +1631,7 @@ GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level)
   return gltexture;
 }
 
-void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level)
+void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level, dboolean fullbright)
 {
   unsigned char *buffer;
 
@@ -1652,7 +1668,7 @@ void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_
   buffer = (unsigned char*) Z_Malloc(gltexture->buffer_size);
   memset(buffer, 0, gltexture->buffer_size);
 
-  gld_AddColormapToTexture(gltexture, buffer, palette_index, gamma_level);
+  gld_AddColormapToTexture(gltexture, buffer, palette_index, gamma_level, fullbright);
 
   // bind it, finally :P
   if (*gltexture->texid_p == 0)
@@ -1665,7 +1681,7 @@ void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_
   GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
 }
 
-void gld_InitColormapTextures(void)
+void gld_InitColormapTextures(dboolean fullbright)
 {
   GLTexture *gltexture;
 
@@ -1686,9 +1702,9 @@ void gld_InitColormapTextures(void)
   // the current palette index. since colormaps
   // won't change during the frame, we can go
   // ahead and bind them now and be done with it.
-  gltexture = gld_RegisterColormapTexture(gld_paletteIndex, usegamma);
+  gltexture = gld_RegisterColormapTexture(gld_paletteIndex, usegamma, fullbright);
   if (gltexture)
-    gld_BindColormapTexture(gltexture, gld_paletteIndex, usegamma);
+    gld_BindColormapTexture(gltexture, gld_paletteIndex, usegamma, fullbright);
 }
 
 // e6y
@@ -1738,6 +1754,7 @@ void gld_FlushTextures(void)
   gld_CleanTexItems(numlumps, &gld_GLIndexedPatchTextures);
   gld_CleanTexItems(numlumps, &gld_GLIndexedStaticPatchTextures);
   gld_CleanTexItems(gld_numGLColormaps, &gld_GLColormapTextures);
+  gld_CleanTexItems(gld_numGLColormaps, &gld_GLFullbrightColormapTextures);
   gld_CleanTexItems(numtextures * gld_numGLColormaps, &gld_GLIndexedSkyTextures);
 
   gl_has_hires = 0;
@@ -1748,7 +1765,7 @@ void gld_FlushTextures(void)
 #endif
 
   gld_InitSky();
-  gld_InitColormapTextures();
+  gld_InitColormapTextures(V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
   // do not draw anything in current frame after flushing
   gld_ResetDrawInfo();
@@ -2016,4 +2033,5 @@ void gld_CleanStaticMemory(void)
   gld_CleanTexItems(numlumps, &gld_GLStaticPatchTextures);
   gld_CleanTexItems(numlumps, &gld_GLIndexedStaticPatchTextures);
   gld_CleanTexItems(gld_numGLColormaps, &gld_GLColormapTextures);
+  gld_CleanTexItems(gld_numGLColormaps, &gld_GLFullbrightColormapTextures);
 }

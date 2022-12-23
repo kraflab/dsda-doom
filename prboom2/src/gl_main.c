@@ -544,10 +544,6 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     }
   }
 
-  // [XA] reset lighting so it doesn't interfere with
-  // other drawing steps (e.g. indexed lightmode UI)
-  gld_StaticLight(1.0f);
-
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
   glDisable(GL_SCISSOR_TEST);
@@ -576,9 +572,8 @@ void gld_BeginUIDraw(void)
 {
   if (V_IsWorldLightmodeIndexed())
   {
-    gld_InitColormapTextures();
+    gld_InitColormapTextures(true);
     glsl_SetMainShaderActive();
-    gld_StaticLight(1.0f); // UI is always "fullbright"
     gl_ui_lightmode_indexed = true;
   }
 }
@@ -597,7 +592,7 @@ void gld_BeginAutomapDraw(void)
 {
   if (V_IsWorldLightmodeIndexed())
   {
-    gld_InitColormapTextures();
+    gld_InitColormapTextures(true);
     gl_automap_lightmode_indexed = true;
   }
 }
@@ -1302,7 +1297,7 @@ void gld_StartDrawScene(void)
   glMatrixMode(GL_MODELVIEW);
   glLoadMatrixf(modelMatrix);
 
-  gld_InitColormapTextures();
+  gld_InitColormapTextures(false);
 
   rendermarker++;
   scene_has_overlapped_sprites = false;
