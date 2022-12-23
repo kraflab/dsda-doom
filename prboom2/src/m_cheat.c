@@ -646,6 +646,7 @@ static void cheat_reveal_secret()
   }
 }
 
+// TODO function doesn't work if there's only one item/monster
 static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int alive)
 {
   extern int init_thinkers_count;
@@ -665,8 +666,9 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
   start_th = th;
 
-  for (th = th->next; th != start_th; th = th->next)
+  do
   {
+    th = th->next;
     if (th->function == P_MobjThinker)
     {
       mobj_t *mobj;
@@ -682,7 +684,7 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
         break;
       }
     }
-  }
+  } while (th != start_th);
 }
 
 static void cheat_reveal_kill()
