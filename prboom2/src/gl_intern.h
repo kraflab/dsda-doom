@@ -386,7 +386,7 @@ void gld_BindRaw(GLTexture *gltexture, unsigned int flags);
   gld_BindRaw((gltexture), (flags))
 GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force);
 void gld_BindSkyTexture(GLTexture *gltexture);
-GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level);
+GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level, dboolean fullbright);
 void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level, dboolean fullbright);
 void gld_InitColormapTextures(dboolean fullbright);
 void gld_InitPalettedTextures(void);
