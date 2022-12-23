@@ -766,7 +766,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_AddMiscBruteForceCondition(dsda_bf_line_activation, value);
       }
-      else if (sscanf(conditions[i], "%3[a-zA-Z] %4[><!=] %i", attr_s, oper_s, &value) == 3) {
+      else if (sscanf(conditions[i], "%3[a-zA-Z] %4[a-zA-Z><!=] %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
 
         if (oper_s[0] == '=' && !oper_s[1])
