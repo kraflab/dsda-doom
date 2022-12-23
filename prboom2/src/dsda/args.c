@@ -658,21 +658,21 @@ static arg_config_t arg_config[dsda_arg_count] = {
 static dsda_arg_t arg_value[dsda_arg_count];
 
 static void dsda_ParseIntArg(arg_config_t* config, int* value, const char* param) {
-  if (sscanf(param, "%i", value) != 1) {
+  if (sscanf(param, "%d", value) != 1) {
     if (config->type == arg_int)
       I_Error("%s requires an integer argument", config->name);
     else
       I_Error("%s requires integer arguments", config->name);
   }
   if (*value < config->lower_limit)
-    I_Error("%s argument too low (min is %i)", config->name, config->lower_limit);
+    I_Error("%s argument too low (min is %d)", config->name, config->lower_limit);
   if (*value > config->upper_limit)
-    I_Error("%s argument too high (max is %i)", config->name, config->upper_limit);
+    I_Error("%s argument too high (max is %d)", config->name, config->upper_limit);
 }
 
 static void dsda_ParseStringArg(arg_config_t* config, const char** value, const char* param) {
   if (config->upper_limit && strlen(param) > config->upper_limit)
-    I_Error("%s argument too long (max is %i)", config->name, config->upper_limit);
+    I_Error("%s argument too long (max is %d)", config->name, config->upper_limit);
 
   *value = param;
 }
@@ -680,14 +680,14 @@ static void dsda_ParseStringArg(arg_config_t* config, const char** value, const 
 static void dsda_ValidateArrayArg(arg_config_t* config, dsda_arg_t* arg) {
   if (config->min_count == config->max_count) {
     if (arg->count != config->min_count)
-      I_Error("%s requires exactly %i arguments", config->name, config->min_count);
+      I_Error("%s requires exactly %d arguments", config->name, config->min_count);
   }
   else {
     if (arg->count < config->min_count || arg->count > config->max_count) {
       if (config->max_count == INT_MAX)
-        I_Error("%s requires at least %i argument(s)", config->name, config->min_count);
+        I_Error("%s requires at least %d argument(s)", config->name, config->min_count);
       else
-        I_Error("%s requires %i to %i argument(s)", config->name, config->min_count, config->max_count);
+        I_Error("%s requires %d to %d argument(s)", config->name, config->min_count, config->max_count);
     }
   }
 }
@@ -697,7 +697,7 @@ static void dsda_ParseArg(arg_config_t* config, dsda_arg_t* arg, int argv_i) {
     int x;
     dboolean is_integer;
 
-    is_integer = sscanf(dsda_argv[argv_i + arg->count + 1], "%i", &x);
+    is_integer = sscanf(dsda_argv[argv_i + arg->count + 1], "%d", &x);
 
     if (dsda_argv[argv_i + arg->count + 1][0] == '-' && !is_integer)
       break;
@@ -791,7 +791,7 @@ void dsda_ParseCommandLineArgs(int argc, char** argv) {
     int x;
     dboolean is_integer;
 
-    is_integer = sscanf(dsda_argv[argv_i], "%i", &x);
+    is_integer = sscanf(dsda_argv[argv_i], "%d", &x);
 
     if (dsda_argv[argv_i][0] == '-' && !is_integer) {
       for (i = 0; i < dsda_arg_count; ++i) {
