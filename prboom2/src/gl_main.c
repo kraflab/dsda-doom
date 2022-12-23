@@ -981,6 +981,8 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
   const unsigned char *playpal = V_GetPlaypal();
   color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
+  glsl_SuspendActiveShader();
+
   gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
 
   glColor3f((float)color.r/255.0f,
@@ -995,6 +997,8 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
   glEnd();
   glColor3f(1.0f,1.0f,1.0f);
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
+
+  glsl_ResumeActiveShader();
 }
 
 void gld_SetPalette(int palette)

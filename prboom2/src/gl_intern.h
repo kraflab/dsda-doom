@@ -560,6 +560,8 @@ typedef struct GLShader_s
 
 int glsl_Init(void);
 void glsl_SetActiveShader(GLShader *shader);
+void glsl_SuspendActiveShader(void);
+void glsl_ResumeActiveShader(void);
 void glsl_SetMainShaderActive();
 void glsl_SetFuzzShaderActive();
 void glsl_SetFuzzShaderInactive();

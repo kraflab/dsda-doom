@@ -284,6 +284,12 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
   return shader;
 }
 
+// TODO: replace the active_shader variable with a stack;
+// a few places need to temporarily disable or switch the
+// current active shader (e.g. fuzz, gld_FillBlock, etc.)
+// and the current management around this is very brittle.
+// being able to push & pop to a stack would be quite nice.
+
 void glsl_SetActiveShader(GLShader *shader)
 {
   if (gl_lightmode == gl_lightmode_shaders || V_IsWorldLightmodeIndexed())
@@ -294,6 +300,18 @@ void glsl_SetActiveShader(GLShader *shader)
       active_shader = shader;
     }
   }
+}
+
+void glsl_SuspendActiveShader(void)
+{
+  if (active_shader)
+    GLEXT_glUseProgramObjectARB(0);
+}
+
+void glsl_ResumeActiveShader(void)
+{
+  if (active_shader)
+    GLEXT_glUseProgramObjectARB(active_shader->hShader);
 }
 
 void glsl_SetMainShaderActive()
