@@ -1,4 +1,4 @@
-# dsda-doom v0.24.3
+# dsda-doom v0.25.0
 This is a fork of prboom+ with many new features, including:
 - Heretic, Hexen, MBF21, and Doom-in-Hexen support
 - In-game console and scripting
@@ -13,9 +13,9 @@ This is a fork of prboom+ with many new features, including:
 Download windows releases [here](https://drive.google.com/drive/folders/1KMU1dY0HZrY5h2EyPzxxXuyH8DunAJV_?usp=sharing).
 
 ### Patch Notes
+- [v0.25](./patch_notes/v0.25.md)
 - [v0.24](./patch_notes/v0.24.md)
 - [v0.23](./patch_notes/v0.23.md)
-- [v0.22](./patch_notes/v0.22.md)
 
 ### Launcher
 There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
