@@ -386,9 +386,9 @@ void gld_BindRaw(GLTexture *gltexture, unsigned int flags);
   gld_BindRaw((gltexture), (flags))
 GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force);
 void gld_BindSkyTexture(GLTexture *gltexture);
-GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level);
-void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level);
-void gld_InitColormapTextures(void);
+GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level, dboolean fullbright);
+void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level, dboolean fullbright);
+void gld_InitColormapTextures(dboolean fullbright);
 void gld_InitPalettedTextures(void);
 int gld_GetTexDimension(int value);
 void gld_SetTexturePalette(GLenum target);
@@ -560,6 +560,8 @@ typedef struct GLShader_s
 
 int glsl_Init(void);
 void glsl_SetActiveShader(GLShader *shader);
+void glsl_SuspendActiveShader(void);
+void glsl_ResumeActiveShader(void);
 void glsl_SetMainShaderActive();
 void glsl_SetFuzzShaderActive();
 void glsl_SetFuzzShaderInactive();

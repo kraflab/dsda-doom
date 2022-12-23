@@ -384,6 +384,7 @@ void D_Display (fixed_t frac)
       break;
     }
 
+    V_BeginUIDraw();
     switch (gamestate) {
     case GS_INTERMISSION:
       WI_Drawer();
@@ -397,6 +398,7 @@ void D_Display (fixed_t frac)
     default:
       break;
     }
+    V_EndUIDraw();
   }
   else { // In a level
     dboolean redrawborderstuff;
@@ -612,8 +614,6 @@ void D_PageTicker(void)
 //
 static void D_PageDrawer(void)
 {
-  V_BeginUIDraw();
-
   if (raven)
   {
     V_DrawRawScreen(pagename);
@@ -621,8 +621,6 @@ static void D_PageDrawer(void)
     {
       V_DrawNamePatch(4, 160, 0, "ADVISOR", CR_DEFAULT, VPT_STRETCH);
     }
-
-    V_EndUIDraw();
     return;
   }
 
@@ -637,8 +635,6 @@ static void D_PageDrawer(void)
   }
   else
     M_DrawCredits();
-
-  V_EndUIDraw();
 }
 
 //
