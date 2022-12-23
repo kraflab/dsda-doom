@@ -646,7 +646,6 @@ static void cheat_reveal_secret()
   }
 }
 
-// TODO function doesn't work if there's only one item/monster
 static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int alive)
 {
   extern int init_thinkers_count;
@@ -673,12 +672,11 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
     {
       mobj_t *mobj;
 
-      dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
-
       mobj = (mobj_t *) th;
 
       if ((!alive || mobj->health > 0) && mobj->flags & flags)
       {
+        dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
         AM_SetMapCenter(mobj->x, mobj->y);
         P_SetTarget(last_mobj, mobj);
         break;
