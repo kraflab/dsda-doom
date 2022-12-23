@@ -1,5 +1,5 @@
 # dsda-doom v0.24.3
-This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning. Latest windows release [here](https://drive.google.com/file/d/1pL-59hKPGvgUkL-AQCPuEsR25_fveEhe/view?usp=sharing).
+This is a fork of prboom+ with extra tooling for demo recording and playback, with a focus on speedrunning. Download windows releases [here](https://drive.google.com/drive/folders/1KMU1dY0HZrY5h2EyPzxxXuyH8DunAJV_?usp=sharing).
 
 ### Patch Notes
 - [v0.24](./patch_notes/v0.24.md)
