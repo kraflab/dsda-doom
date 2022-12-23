@@ -665,24 +665,24 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
   start_th = th;
 
-  for (th = th->next; th != start_th; th = th->next)
+  do
   {
+    th = th->next;
     if (th->function == P_MobjThinker)
     {
       mobj_t *mobj;
-
-      dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
 
       mobj = (mobj_t *) th;
 
       if ((!alive || mobj->health > 0) && mobj->flags & flags)
       {
+        dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
         AM_SetMapCenter(mobj->x, mobj->y);
         P_SetTarget(last_mobj, mobj);
         break;
       }
     }
-  }
+  } while (th != start_th);
 }
 
 static void cheat_reveal_kill()
