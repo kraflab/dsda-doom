@@ -1748,6 +1748,7 @@ void gld_FlushTextures(void)
 #endif
 
   gld_InitSky();
+  gld_InitColormapTextures();
 
   // do not draw anything in current frame after flushing
   gld_ResetDrawInfo();
