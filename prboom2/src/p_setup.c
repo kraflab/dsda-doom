@@ -1439,7 +1439,7 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
  * changes like byte order reversals. Take a copy to edit.
  */
 
-static void P_PostProcessMapThing(mapthing_t *mt, int index, mobj_t ***mobjlist)
+static void P_PostProcessMapThing(mapthing_t *mt, int *mobjcount, mobj_t ***mobjlist)
 {
   mobj_t *mobj;
 
@@ -1453,9 +1453,9 @@ static void P_PostProcessMapThing(mapthing_t *mt, int index, mobj_t ***mobjlist)
     mt->type = 3004;
 
   // Do spawn all other stuff.
-  mobj = P_SpawnMapThing(mt, index);
+  mobj = P_SpawnMapThing(mt, *mobjcount);
   if (mobj && mobj->info->speed == 0)
-    *mobjlist[index] = mobj;
+    *mobjlist[*mobjcount++] = mobj;
 }
 
 static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
@@ -1467,7 +1467,7 @@ static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
   data = W_LumpByNum(lump);
   doom_data = (const doom_mapthing_t*) data;
-  *mobjcount = numthings;
+  *mobjcount = 0;
   *mobjlist = Z_Malloc(numthings * sizeof(*mobjlist[0]));
 
   if (!data || !numthings)
@@ -1509,7 +1509,7 @@ static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
       mt.arg5 = 0;
     }
 
-    P_PostProcessMapThing(&mt, i, mobjlist);
+    P_PostProcessMapThing(&mt, mobjcount, mobjlist);
   }
 }
 
@@ -1518,7 +1518,7 @@ static void P_LoadUDMFThings(int lump, int *mobjcount, mobj_t ***mobjlist)
   int i, numthings;
 
   numthings = udmf.num_things;
-  *mobjcount = numthings;
+  *mobjcount = 0;
   *mobjlist = Z_Malloc(numthings * sizeof(*mobjlist[0]));
 
   for (i = 0; i < numthings; i++)
@@ -1595,7 +1595,7 @@ static void P_LoadUDMFThings(int lump, int *mobjcount, mobj_t ***mobjlist)
     // UDMF_TF_STRIFEALLY
     // UDMF_TF_COUNTSECRET
 
-    P_PostProcessMapThing(&mt, i, mobjlist);
+    P_PostProcessMapThing(&mt, mobjcount, mobjlist);
   }
 }
 
