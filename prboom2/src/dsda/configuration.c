@@ -750,11 +750,23 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mus_portmidi_reset_type] = {
     "mus_portmidi_reset_type", dsda_config_mus_portmidi_reset_type,
-    CONF_STRING("gs") // gs, gm, gm2, xg
+    CONF_STRING("gm") // none, gs, gm, gm2, xg
   },
   [dsda_config_mus_portmidi_reset_delay] = {
     "mus_portmidi_reset_delay", dsda_config_mus_portmidi_reset_delay,
     dsda_config_int, 0, 2000, { 0 }
+  },
+  [dsda_config_mus_portmidi_filter_sysex] = {
+    "mus_portmidi_filter_sysex", dsda_config_mus_portmidi_filter_sysex,
+    dsda_config_int, 0, 1, { 1 }
+  },
+  [dsda_config_mus_portmidi_reverb_level] = {
+    "mus_portmidi_reverb_level", dsda_config_mus_portmidi_reverb_level,
+    dsda_config_int, 0, 127, { 40 }
+  },
+  [dsda_config_mus_portmidi_chorus_level] = {
+    "mus_portmidi_chorus_level", dsda_config_mus_portmidi_chorus_level,
+    dsda_config_int, 0, 127, { 0 }
   },
   [dsda_config_cap_soundcommand] = {
     "cap_soundcommand", dsda_config_cap_soundcommand,

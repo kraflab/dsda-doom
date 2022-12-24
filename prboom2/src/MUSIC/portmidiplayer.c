@@ -86,7 +86,7 @@ static midi_file_t *midifile;
 static int pm_playing;
 static int pm_paused;
 static int pm_looping;
-static int pm_volume;
+static int pm_volume = -1;
 static double spmc;
 static double pm_delta;
 
@@ -95,11 +95,14 @@ static unsigned long trackstart;
 static PortMidiStream *pm_stream;
 
 #define SYSEX_BUFF_SIZE 1024
-static unsigned char sysexbuff[SYSEX_BUFF_SIZE];
+static byte sysexbuff[SYSEX_BUFF_SIZE];
 static int sysexbufflen;
 
 static const char *mus_portmidi_reset_type; // portmidi reset type
 static int mus_portmidi_reset_delay; // portmidi delay after reset
+static int mus_portmidi_filter_sysex; // portmidi block sysex from midi files
+static int mus_portmidi_reverb_level; // portmidi reverb send level
+static int mus_portmidi_chorus_level; // portmidi chorus send level
 
 // latency: we're generally writing timestamps slightly in the past (from when the last time
 // render was called to this time.  portmidi latency instruction must be larger than that window
@@ -119,33 +122,33 @@ static const char *pm_name (void)
 #include <delayimp.h>
 #endif
 
+#define DEFAULT_VOLUME 100
+static int channel_volume[16];
+static float volume_scale;
+
 static dboolean use_reset_delay;
-static unsigned char gs_reset[] = {0xf0, 0x41, 0x10, 0x42, 0x12, 0x40, 0x00, 0x7f, 0x00, 0x41, 0xf7};
-static unsigned char gm_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x01, 0xf7};
-static unsigned char gm2_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x03, 0xf7};
-static unsigned char xg_system_on[] = {0xf0, 0x43, 0x10, 0x4c, 0x00, 0x00, 0x7e, 0x00, 0xf7};
-static PmEvent event_buffer[13 * 16];
+static byte *sysex_reset;
+static byte gs_reset[] = {0xf0, 0x41, 0x10, 0x42, 0x12, 0x40, 0x00, 0x7f, 0x00, 0x41, 0xf7};
+static byte gm_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x01, 0xf7};
+static byte gm2_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x03, 0xf7};
+static byte xg_system_on[] = {0xf0, 0x43, 0x10, 0x4c, 0x00, 0x00, 0x7e, 0x00, 0xf7};
+static PmEvent event_notes_off[16];
+static PmEvent event_sound_off[16];
+static PmEvent event_reset[16 * 12];
+static PmEvent event_reverb[16];
+static PmEvent event_chorus[16];
 
-static void reset_device (unsigned long when)
+static void reset_device (void)
 {
-  int i;
+  Pm_Write(pm_stream, event_notes_off, 16);
+  Pm_Write(pm_stream, event_sound_off, 16);
+  Pm_Write(pm_stream, event_reset, 16 * 12);
 
-  // non-sysex resets for compatibility with MS GS Wavetable Synth
-  for (i = 0; i < 13 * 16; ++i)
-  {
-    event_buffer[i].timestamp = when;
-  }
-  Pm_Write(pm_stream, event_buffer, 13 * 16);
+  if (sysex_reset != NULL)
+    Pm_WriteSysEx(pm_stream, 0, sysex_reset);
 
-  // sysex reset
-  if (!strcasecmp(mus_portmidi_reset_type, "gm"))
-    Pm_WriteSysEx(pm_stream, when, gm_system_on);
-  else if (!strcasecmp(mus_portmidi_reset_type, "gm2"))
-    Pm_WriteSysEx(pm_stream, when, gm2_system_on);
-  else if (!strcasecmp(mus_portmidi_reset_type, "xg"))
-    Pm_WriteSysEx(pm_stream, when, xg_system_on);
-  else // default to "gs"
-    Pm_WriteSysEx(pm_stream, when, gs_reset);
+  Pm_Write(pm_stream, event_reverb, 16);
+  Pm_Write(pm_stream, event_chorus, 16);
 
   use_reset_delay = mus_portmidi_reset_delay > 0;
 }
@@ -153,32 +156,40 @@ static void reset_device (unsigned long when)
 static void init_reset_buffer (void)
 {
   int i;
-  PmEvent *event = event_buffer;
+  PmEvent *event = event_reset;
   for (i = 0; i < 16; ++i)
   {
-    // all notes off
-    event[0].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x7b, 0x00);
-    // all sound off
-    event[1].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x78, 0x00);
-    // reset all controllers
-    event[2].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x79, 0x00);
-    // reset channel pressure
-    event[3].message = Pm_Message(MIDI_EVENT_CHAN_AFTERTOUCH | i, 0x00, 0x00);
-    // reset expression
-    event[4].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x0b, 0x7f);
-    // reset pitch bend
-    event[5].message = Pm_Message(MIDI_EVENT_PITCH_BEND | i, 0x00, 0x40);
-    // reset pitch bend sensitivity
-    event[6].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x00);
-    event[7].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x00);
-    event[8].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x06, 0x02);
-    event[9].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x26, 0x00);
-    event[10].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x64, 0x7f);
-    event[11].message = Pm_Message(MIDI_EVENT_CONTROLLER | i, 0x65, 0x7f);
-    // default program change
-    event[12].message = Pm_Message(MIDI_EVENT_PROGRAM_CHANGE | i, 0x00, 0x00);
-    event += 13;
+    event_notes_off[i].message = Pm_Message(0xB0 | i, 0x7B, 0x00);
+    event_sound_off[i].message = Pm_Message(0xB0 | i, 0x78, 0x00);
+
+    event[0].message = Pm_Message(0xB0 | i, 0x79, 0x00); // reset all controllers
+    event[1].message = Pm_Message(0xB0 | i, 0x64, 0x00); // pitch bend sens RPN LSB
+    event[2].message = Pm_Message(0xB0 | i, 0x65, 0x00); // pitch bend sens RPN MSB
+    event[3].message = Pm_Message(0xB0 | i, 0x06, 0x02); // data entry MSB
+    event[4].message = Pm_Message(0xB0 | i, 0x26, 0x00); // data entry LSB
+    event[5].message = Pm_Message(0xB0 | i, 0x64, 0x7F); // null RPN LSB
+    event[6].message = Pm_Message(0xB0 | i, 0x65, 0x7F); // null RPN MSB
+    event[7].message = Pm_Message(0xB0 | i, 0x07, 0x64); // channel volume
+    event[8].message = Pm_Message(0xB0 | i, 0x0A, 0x40); // pan
+    event[9].message = Pm_Message(0xB0 | i, 0x00, 0x00); // bank select msb
+    event[10].message = Pm_Message(0xB0 | i, 0x20, 0x00); // bank select lsb
+    event[11].message = Pm_Message(0xC0 | i, 0x00, 0x00); // program change
+    event += 12;
+
+    event_reverb[i].message = Pm_Message(0xB0 | i, 0x5B, mus_portmidi_reverb_level);
+    event_chorus[i].message = Pm_Message(0xB0 | i, 0x5D, mus_portmidi_chorus_level);
   }
+
+  if (!strcasecmp(mus_portmidi_reset_type, "gs"))
+    sysex_reset = gs_reset;
+  else if (!strcasecmp(mus_portmidi_reset_type, "gm"))
+    sysex_reset = gm_system_on;
+  else if (!strcasecmp(mus_portmidi_reset_type, "gm2"))
+    sysex_reset = gm2_system_on;
+  else if (!strcasecmp(mus_portmidi_reset_type, "xg"))
+    sysex_reset = xg_system_on;
+  else
+    sysex_reset = NULL;
 }
 
 static int pm_init (int samplerate)
@@ -191,6 +202,9 @@ static int pm_init (int samplerate)
 
   mus_portmidi_reset_type = dsda_StringConfig(dsda_config_mus_portmidi_reset_type);
   mus_portmidi_reset_delay = dsda_IntConfig(dsda_config_mus_portmidi_reset_delay);
+  mus_portmidi_filter_sysex = dsda_IntConfig(dsda_config_mus_portmidi_filter_sysex);
+  mus_portmidi_reverb_level = dsda_IntConfig(dsda_config_mus_portmidi_reverb_level);
+  mus_portmidi_chorus_level = dsda_IntConfig(dsda_config_mus_portmidi_chorus_level);
 
   if (Pm_Initialize () != pmNoError)
   {
@@ -229,7 +243,6 @@ static int pm_init (int samplerate)
     }
   }
 
-
   oinfo = Pm_GetDeviceInfo (outputdevice);
 
   lprintf (LO_DEBUG, "portmidiplayer: Opening device %s:%s for output\n", oinfo->interf, oinfo->name);
@@ -242,7 +255,11 @@ static int pm_init (int samplerate)
   }
 
   init_reset_buffer();
-  reset_device(0);
+  reset_device();
+
+  for (int i = 0; i < 16; i++)
+    channel_volume[i] = DEFAULT_VOLUME;
+
   return 1;
 }
 
@@ -308,8 +325,6 @@ static const void *pm_registersong (const void *data, unsigned len)
   }
   eventpos = 0;
 
-  // implicit 120BPM (this is correct to spec)
-  //spmc = compute_spmc (MIDI_GetFileTimeDivision (midifile), 500000, 1000);
   spmc = MIDI_spmc (midifile, NULL, 1000);
 
   // handle not used
@@ -324,37 +339,33 @@ static void writeevent (unsigned long when, int eve, int channel, int v1, int v2
   Pm_WriteShort (pm_stream, when, m);
 }
 
-static int mastervol;
-
-static void set_mastervol (unsigned long when)
+static void write_volume (unsigned long when, int channel, int volume)
 {
-  int vol = mastervol * sqrt((float) pm_volume / 15);
-  unsigned char data[] = {0xf0, 0x7f, 0x7f, 0x04, 0x01, vol & 0x7f, vol >> 7, 0xf7};
-  Pm_WriteSysEx(pm_stream, when, data);
+  int vol = volume * volume_scale + 0.5f;
+  writeevent (when, MIDI_EVENT_CONTROLLER, channel, MIDI_CONTROLLER_MAIN_VOLUME, vol);
+  channel_volume[channel] = volume;
 }
 
-static void refresh_mastervol (void)
+static void update_volume (void)
 {
-  unsigned long when = Pt_Time ();
-  set_mastervol(when);
+  for (int i = 0; i < 16; i++)
+    write_volume (0, i, channel_volume[i]);
 }
 
-static void clear_mastervol (void)
+static void reset_volume (void)
 {
-  mastervol = 16383; // default: max, 14-bit
+  for (int i = 0; i < 16; i++)
+    write_volume (0, i, DEFAULT_VOLUME);
 }
-
-static int firsttime = 1;
 
 static void pm_setvolume (int v)
 {
-  if (pm_volume == v && !firsttime)
+  if (pm_volume == v)
     return;
-  firsttime = 0;
 
   pm_volume = v;
-
-  refresh_mastervol ();
+  volume_scale = sqrtf((float)pm_volume / 15);
+  update_volume();
 }
 
 static void pm_unregistersong (const void *handle)
@@ -373,13 +384,9 @@ static void pm_unregistersong (const void *handle)
 
 static void pm_pause (void)
 {
-  int i;
-  unsigned long when = Pt_Time ();
   pm_paused = 1;
-  for (i = 0; i < 16; i++)
-  {
-    writeevent (when, MIDI_EVENT_CONTROLLER, i, 123, 0); // all notes off
-  }
+  Pm_Write(pm_stream, event_notes_off, 16);
+  Pm_Write(pm_stream, event_sound_off, 16);
 }
 
 static void pm_resume (void)
@@ -393,69 +400,151 @@ static void pm_play (const void *handle, int looping)
   eventpos = 0;
   pm_looping = looping;
   pm_playing = 1;
-  //pm_paused = 0;
   pm_delta = 0.0;
-  clear_mastervol();
-  if (!firsttime) // set pm_volume first, see pm_setvolume()
-  {
-    refresh_mastervol();
-  }
+  if (pm_volume != -1) // set pm_volume first, see pm_setvolume()
+    reset_volume();
   trackstart = Pt_Time ();
 }
 
-static dboolean is_mastervol (unsigned char *data, int len)
+static dboolean is_sysex_reset (byte *msg, int len)
 {
-  unsigned char msg[] = {0xf0, 0x7f, 0x7f, 0x04, 0x01, 0x00, 0x00, 0xf7};
-  return (len == 8 && !memcmp(data, msg, 5));
+  if (len < 6)
+    return false;
+
+  switch (msg[1])
+  {
+    case 0x41: // roland
+      switch (msg[3])
+      {
+        case 0x42: // gs
+          switch (msg[4])
+          {
+            case 0x12: // dt1
+              if (len == 11 &&
+                  msg[5] == 0x00 &&  // address msb
+                  msg[6] == 0x00 &&  // address
+                  msg[7] == 0x7F &&  // address lsb
+                ((msg[8] == 0x00 &&  // data     (mode-1)
+                  msg[9] == 0x01) || // checksum (mode-1)
+                 (msg[8] == 0x01 &&  // data     (mode-2)
+                  msg[9] == 0x00)))  // checksum (mode-2)
+              {
+                // sc-88 system mode set
+                // F0 41 <dev> 42 12 00 00 7F 00 01 F7 (mode-1)
+                // F0 41 <dev> 42 12 00 00 7F 01 00 F7 (mode-2)
+                return true;
+              }
+              else if (len == 11 &&
+                       msg[5] == 0x40 && // address msb
+                       msg[6] == 0x00 && // address
+                       msg[7] == 0x7F && // address lsb
+                       msg[8] == 0x00 && // data (gs reset)
+                       msg[9] == 0x41)   // checksum
+              {
+                // gs reset
+                // F0 41 <dev> 42 12 40 00 7F 00 41 F7
+                return true;
+              }
+              break;
+          }
+          break;
+      }
+      break;
+
+    case 0x43: // yamaha
+      switch (msg[3])
+      {
+        case 0x2B: // tg300
+          if (len == 10 &&
+              msg[4] == 0x00 && // start address b20 - b14
+              msg[5] == 0x00 && // start address b13 - b7
+              msg[6] == 0x7F && // start address b6 - b0
+              msg[7] == 0x00 && // data
+              msg[8] == 0x01)   // checksum
+          {
+            // tg300 all parameter reset
+            // F0 43 <dev> 2B 00 00 7F 00 01 F7
+            return true;
+          }
+          break;
+
+        case 0x4C: // xg
+          if (len == 9 &&
+              msg[4] == 0x00 &&  // address high
+              msg[5] == 0x00 &&  // address mid
+             (msg[6] == 0x7E ||  // address low (xg system on)
+              msg[6] == 0x7F) && // address low (xg all parameter reset)
+              msg[7] == 0x00)    // data
+          {
+            // xg system on, xg all parameter reset
+            // F0 43 <dev> 4C 00 00 7E 00 F7
+            // F0 43 <dev> 4C 00 00 7F 00 F7
+            return true;
+          }
+          break;
+      }
+      break;
+
+    case 0x7E: // universal non-real time
+      switch (msg[3])
+      {
+        case 0x09: // general midi
+          if (len == 6 &&
+             (msg[4] == 0x01 || // gm system on
+              msg[4] == 0x02 || // gm system off
+              msg[4] == 0x03))  // gm2 system on
+          {
+            // gm system on/off, gm2 system on
+            // F0 7E <dev> 09 01 F7
+            // F0 7E <dev> 09 02 F7
+            // F0 7E <dev> 09 03 F7
+            return true;
+          }
+          break;
+      }
+      break;
+  }
+
+  return false;
 }
 
-static dboolean is_sysex_reset (unsigned char *data)
+static void writesysex (unsigned long when, int etype, byte *data, int len)
 {
-  return (!memcmp(data, gs_reset, sizeof(gs_reset))
-          || !memcmp(data, gm_system_on, sizeof(gm_system_on))
-          || !memcmp(data, gm2_system_on, sizeof(gm2_system_on))
-          || !memcmp(data, xg_system_on, sizeof(xg_system_on)));
-}
+  // sysex messages in midi files (smf 1.0 pages 6-7):
+  // complete:        (F0 ... F7)
+  // multi-packet:    (F0 ...) + (F7 ...) + ... + (F7 ... F7)
+  // escape sequence: (F7 ...)
 
-static void writesysex (unsigned long when, int etype, unsigned char *data, int len)
-{
-  // sysex code is untested
-  // it's possible to use an auto-resizing buffer here, but a malformed
-  // midi file could make it grow arbitrarily large (since it must grow
-  // until it hits an 0xf7 terminator)
   if (len + sysexbufflen > SYSEX_BUFF_SIZE - 1)
   {
-    lprintf (LO_WARN, "portmidiplayer: ignoring large or malformed sysex message\n");
+    // ignore messages that are too long
     sysexbufflen = 0;
     return;
   }
+
+  if (etype == MIDI_EVENT_SYSEX_SPLIT && sysexbufflen == 0)
+  {
+    // ignore escape sequence
+    return;
+  }
+
+  if (etype == MIDI_EVENT_SYSEX)
+  {
+    // start a new message (discards any previous incomplete message)
+    sysexbuff[0] = MIDI_EVENT_SYSEX;
+    sysexbufflen = 1;
+  }
+
   memcpy (sysexbuff + sysexbufflen, data, len);
   sysexbufflen += len;
-  if (sysexbuff[sysexbufflen - 1] == 0xf7) // terminator
+
+  // process message if it's complete, otherwise do nothing yet
+  if (sysexbuff[sysexbufflen - 1] == MIDI_EVENT_SYSEX_SPLIT)
   {
-    memmove(&sysexbuff[1], &sysexbuff[0], sysexbufflen * sizeof(*sysexbuff));
-    sysexbuff[0] = 0xf0; // start of exclusive (SOX) in front
-    sysexbufflen++;
-
-    if (is_mastervol(sysexbuff, sysexbufflen))
-    {
-      // master volume message from midi file, scale by volume slider
-      mastervol = sysexbuff[6] << 7 | sysexbuff[5]; // back to 14-bit
-      set_mastervol(when);
-      sysexbufflen = 0;
-      return;
-    }
-
     Pm_WriteSysEx (pm_stream, when, sysexbuff);
 
-    if (is_sysex_reset(sysexbuff))
-    {
-      use_reset_delay = mus_portmidi_reset_delay > 0;
-
-      // sysex reset from midi file, reapply master volume
-      clear_mastervol();
-      set_mastervol(when);
-    }
+    if (is_sysex_reset(sysexbuff, sysexbufflen))
+      reset_volume();
 
     sysexbufflen = 0;
   }
@@ -463,11 +552,11 @@ static void writesysex (unsigned long when, int etype, unsigned char *data, int 
 
 static void pm_stop (void)
 {
-  unsigned long when = Pt_Time ();
   pm_playing = 0;
 
   // songs can be stopped at any time, so reset everything
-  reset_device(when);
+  reset_device();
+
   // abort any partial sysex
   sysexbufflen = 0;
 }
@@ -475,16 +564,9 @@ static void pm_stop (void)
 static void pm_render (void *vdest, unsigned bufflen)
 {
   // wherever you see samples in here, think milliseconds
+  unsigned long when = trackstart;
   unsigned long newtime = Pt_Time ();
-  unsigned long length = newtime - trackstart;
-
-  //timerpos = newtime;
-  unsigned long when;
-
-  midi_event_t *currevent;
-
-  unsigned sampleswritten = 0;
-  unsigned samples;
+  unsigned int samples;
 
   memset (vdest, 0, bufflen * 4);
 
@@ -493,79 +575,70 @@ static void pm_render (void *vdest, unsigned bufflen)
 
   while (1)
   {
-    double eventdelta;
-    currevent = events[eventpos];
+    midi_event_t *currevent = events[eventpos];
 
     // how many samples away event is
-    eventdelta = currevent->delta_time * spmc;
+    double eventdelta = currevent->delta_time * spmc;
 
+    // delay after reset, for real devices only (e.g. roland sc-55)
     if (use_reset_delay)
-    {
-      // delay after reset, for real devices only (e.g. roland sc-55)
       eventdelta += mus_portmidi_reset_delay;
-    }
 
     // how many we will render (rounding down); include delta offset
-    samples = (unsigned) (eventdelta + pm_delta);
+    samples = eventdelta + pm_delta;
 
-    if (samples + sampleswritten > length)
-    { // overshoot; render some samples without processing an event
-      break;
+    if (when + samples > newtime)
+    {
+      // overshoot; render some samples without processing an event
+      pm_delta -= (newtime - when); // save offset
+      trackstart = newtime;
+      return;
     }
 
     use_reset_delay = false;
-    sampleswritten += samples;
-    pm_delta -= samples;
+    pm_delta += eventdelta - samples;
+    when += samples;
 
-    // process event
-    when = trackstart + sampleswritten;
     switch (currevent->event_type)
     {
       case MIDI_EVENT_SYSEX:
       case MIDI_EVENT_SYSEX_SPLIT:
-        writesysex (when, currevent->event_type, currevent->data.sysex.data, currevent->data.sysex.length);
+        if (!mus_portmidi_filter_sysex)
+          writesysex (when, currevent->event_type, currevent->data.sysex.data, currevent->data.sysex.length);
         break;
-      case MIDI_EVENT_META: // tempo is the only meta message we're interested in
-        if (currevent->data.meta.type == MIDI_META_SET_TEMPO)
-          spmc = MIDI_spmc (midifile, currevent, 1000);
-        else if (currevent->data.meta.type == MIDI_META_END_OF_TRACK)
+      case MIDI_EVENT_META:
+        switch (currevent->data.meta.type)
         {
-          if (pm_looping)
-          {
-            int i;
-            eventpos = 0;
-            pm_delta += eventdelta;
-            // fix buggy songs that forget to terminate notes held over loop point
-            // sdl_mixer does this as well
-            for (i = 0; i < 16; i++)
-              writeevent (when, MIDI_EVENT_CONTROLLER, i, 123, 0); // all notes off
-            continue;
-          }
-          // stop
-          pm_stop ();
-          return;
+          case MIDI_META_SET_TEMPO:
+            spmc = MIDI_spmc (midifile, currevent, 1000);
+            break;
+          case MIDI_META_END_OF_TRACK:
+            if (pm_looping)
+            {
+              eventpos = 0;
+              // prevent hanging notes (doom2.wad MAP14, MAP22)
+              for (int i = 0; i < 16; i++)
+                writeevent (when, 0xB0, i, 0x7B, 0x00); // all notes off
+              continue;
+            }
+            pm_stop();
+            return;
         }
         break; // not interested in most metas
+      case MIDI_EVENT_CONTROLLER:
+        if (currevent->data.channel.param1 == MIDI_CONTROLLER_MAIN_VOLUME)
+        {
+          write_volume (when, currevent->data.channel.channel, currevent->data.channel.param2);
+          break;
+        }
+        // fall through
       default:
         writeevent (when, currevent->event_type, currevent->data.channel.channel, currevent->data.channel.param1, currevent->data.channel.param2);
         break;
-
     }
 
-    // event processed so advance midiclock
-    pm_delta += eventdelta;
     eventpos++;
-
   }
-
-  if (samples + sampleswritten > length)
-  { // broke due to next event being past the end of current render buffer
-    // finish buffer, return
-    samples = length - sampleswritten;
-    pm_delta -= samples; // save offset
-  }
-
-  trackstart = newtime;
 }
 
 const music_player_t pm_player =
