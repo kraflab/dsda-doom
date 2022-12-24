@@ -1124,6 +1124,60 @@ static void CheckZNodesOverflow(int *size, int count)
   }
 }
 
+static byte *P_DecompressData(const byte **data, int *len)
+{
+  byte *output;
+  int outlen, err;
+  z_stream *zstream;
+
+  // first estimate for compression rate:
+  // output buffer size == 2.5 * input size
+  outlen = 2.5 * *len;
+  output = Z_Malloc(outlen);
+
+  // initialize stream state for decompression
+  zstream = Z_Malloc(sizeof(*zstream));
+  memset(zstream, 0, sizeof(*zstream));
+
+  // Evidently next_in is the wrong type for legacy reasons
+  #pragma GCC diagnostic push
+  #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
+  zstream->next_in = *data;
+  #pragma GCC diagnostic pop
+  zstream->avail_in = *len;
+  zstream->next_out = output;
+  zstream->avail_out = outlen;
+
+  if (inflateInit(zstream) != Z_OK)
+      I_Error("P_DecompressData: Error during decompression initialization!");
+
+  // resize if output buffer runs full
+  while ((err = inflate(zstream, Z_SYNC_FLUSH)) == Z_OK)
+  {
+      int outlen_old = outlen;
+      outlen = 2 * outlen_old;
+      output = Z_Realloc(output, outlen);
+      zstream->next_out = output + outlen_old;
+      zstream->avail_out = outlen - outlen_old;
+  }
+
+  if (err != Z_STREAM_END)
+      I_Error("P_DecompressData: Error during decompression!");
+
+  lprintf(LO_INFO, "P_DecompressData: compression ratio %.3f\n",
+          (float) zstream->total_out / zstream->total_in);
+
+  *data = output;
+  *len = zstream->total_out;
+
+  if (inflateEnd(zstream) != Z_OK)
+      I_Error("P_DecompressData: Error during decompression shut-down!");
+
+  Z_Free(zstream);
+
+  return output;
+}
+
 // MB 2020-03-01: Fix endianess for 32-bit ZDoom nodes
 static void P_LoadZSegs (const byte *data)
 {
@@ -1217,61 +1271,13 @@ static void P_LoadZNodes(int lump, int glnodes)
   data = W_LumpByNum(lump);
   len =  W_LumpLength(lump);
 
-  if (nodesVersion == ZDOOM_ZNOD_NODES)
-  {
-    int outlen, err;
-    z_stream *zstream;
-
-    // first estimate for compression rate:
-    // output buffer size == 2.5 * input size
-    outlen = 2.5 * len;
-    output = Z_Malloc(outlen);
-
-    // initialize stream state for decompression
-    zstream = Z_Malloc(sizeof(*zstream));
-    memset(zstream, 0, sizeof(*zstream));
-
-    // Evidently next_in is the wrong type for legacy reasons
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-    zstream->next_in = data + 4;
-    #pragma GCC diagnostic pop
-    zstream->avail_in = len - 4;
-    zstream->next_out = output;
-    zstream->avail_out = outlen;
-
-    if (inflateInit(zstream) != Z_OK)
-        I_Error("P_LoadZNodes: Error during ZDoom nodes decompression initialization!");
-
-    // resize if output buffer runs full
-    while ((err = inflate(zstream, Z_SYNC_FLUSH)) == Z_OK)
-    {
-        int outlen_old = outlen;
-        outlen = 2 * outlen_old;
-        output = Z_Realloc(output, outlen);
-        zstream->next_out = output + outlen_old;
-        zstream->avail_out = outlen - outlen_old;
-    }
-
-    if (err != Z_STREAM_END)
-        I_Error("P_LoadZNodes: Error during ZDoom nodes decompression!");
-
-    lprintf(LO_INFO, "P_LoadZNodes: ZDoom nodes compression ratio %.3f\n",
-            (float)zstream->total_out/zstream->total_in);
-
-    data = output;
-    len = zstream->total_out;
-
-    if (inflateEnd(zstream) != Z_OK)
-        I_Error("P_LoadZNodes: Error during ZDoom nodes decompression shut-down!");
-
-    Z_Free(zstream);
-  }
-  else
-  {
   // skip header
   CheckZNodesOverflow(&len, 4);
   data += 4;
+
+  if (nodesVersion == ZDOOM_ZNOD_NODES)
+  {
+    output = P_DecompressData(&data, &len);
   }
 
   // Read extra vertices added during node building
