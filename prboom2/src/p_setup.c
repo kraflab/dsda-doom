@@ -1251,6 +1251,98 @@ static void P_LoadZSegs (const byte *data)
   }
 }
 
+static void P_LoadGLZSegs(const byte *data)
+{
+  int i, j;
+
+  for (i = 0; i < numsubsectors; ++i)
+  {
+    for (j = 0; j < subsectors[i].numlines; ++j)
+    {
+      const mapseg_znod_t *ml = (const mapseg_znod_t *) data + i;
+      unsigned int v1, partner;
+      unsigned int line;
+      unsigned char side;
+      seg_t *seg;
+
+      v1 = LittleLong(ml->v1);
+      partner = LittleLong(ml->v2);
+      line = (unsigned short) LittleShort(ml->linedef);
+      side = ml->side;
+
+      seg = &segs[subsectors[i].firstline + j];
+
+      seg->v1 = &vertexes[v1];
+      if (j == 0)
+      {
+        seg[subsectors[i].numlines - 1].v2 = seg->v1;
+      }
+      else
+      {
+        seg[-1].v2 = seg->v1;
+      }
+
+      seg->miniseg = false;
+
+      if (line != 0xffff)
+      {
+        line_t *ldef;
+
+        if ((unsigned int) line >= (unsigned int) numlines)
+        {
+          I_Error("P_LoadGLZSegs: seg %d, %d references a non-existent linedef %d",
+                  i, j, (unsigned int) line);
+        }
+
+        ldef = &lines[line];
+        seg->linedef = ldef;
+
+        if (side != 0 && side != 1)
+        {
+          I_Error("P_LoadGLZSegs: seg %d, %d references a non-existent side %d",
+                  i, j, (unsigned int) side);
+        }
+
+        if ((unsigned)ldef->sidenum[side] >= (unsigned)numsides)
+        {
+          I_Error("P_LoadGLZSegs: linedef %d for seg %d, %d references a non-existent sidedef %d",
+            line, i, j, (unsigned)ldef->sidenum[side]);
+        }
+
+        seg->sidedef = &sides[ldef->sidenum[side]];
+
+        /* cph 2006/09/30 - our frontsector can be the second side of the
+         * linedef, so must check for NO_INDEX in case we are incorrectly
+         * referencing the back of a 1S line */
+        if (ldef->sidenum[side] != NO_INDEX)
+        {
+          seg->frontsector = sides[ldef->sidenum[side]].sector;
+        }
+        else
+        {
+          seg->frontsector = 0;
+          lprintf(LO_WARN, "P_LoadGLZSegs: front of seg %d, %d has no sidedef\n", i, j);
+        }
+
+        if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side^1] != NO_INDEX))
+          seg->backsector = sides[ldef->sidenum[side^1]].sector;
+        else
+          seg->backsector = 0;
+
+        seg->offset = GetOffset(seg->v1, (side ? ldef->v2 : ldef->v1));
+        seg->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
+      }
+      else
+      {
+        seg->linedef = NULL;
+        seg->sidedef = NULL;
+        seg->frontsector = segs[subsectors[i].firstline].frontsector;
+        seg->backsector = seg->frontsector;
+      }
+    }
+  }
+}
+
 // MB 2020-03-01: Fix endianess for 32-bit ZDoom nodes
 // https://zdoom.org/wiki/Node#ZDoom_extended_nodes
 static void P_LoadZNodes(int lump, int glnodes)
@@ -1379,8 +1471,9 @@ static void P_LoadZNodes(int lump, int glnodes)
   }
   else
   {
-    //P_LoadGLZSegs (data, glnodes);
-    I_Error("P_LoadZNodes: GL segs are not supported.");
+    CheckZNodesOverflow(&len, numsegs * sizeof(mapseg_znod_t));
+    P_LoadGLZSegs(data);
+    data += numsegs * sizeof(mapseg_znod_t);
   }
 
   // Read nodes
