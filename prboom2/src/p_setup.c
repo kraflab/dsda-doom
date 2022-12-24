@@ -1165,9 +1165,6 @@ static byte *P_DecompressData(const byte **data, int *len)
   if (err != Z_STREAM_END)
       I_Error("P_DecompressData: Error during decompression!");
 
-  lprintf(LO_INFO, "P_DecompressData: compression ratio %.3f\n",
-          (float) zstream->total_out / zstream->total_in);
-
   *data = output;
   *len = zstream->total_out;
 
