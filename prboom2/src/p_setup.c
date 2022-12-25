@@ -123,6 +123,8 @@ int firstglvertex = 0;
 static nodes_version_t nodesVersion = DEFAULT_BSP_NODES;
 dboolean use_gl_nodes = false;
 dboolean forceOldBsp = false;
+dboolean has_behavior;
+dboolean udmf_map;
 
 // figgi 08/21/00 -- glSegs
 typedef struct
@@ -3204,16 +3206,41 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
   return true;
 }
 
-//
-// P_CheckLevelFormat
-//
-// Checking for presence of necessary lumps
-//
-
-void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
+static dboolean P_CheckForUDMF(int lumpnum)
 {
   int i;
-  dboolean has_behavior = false;
+
+  i = lumpnum + ML_TEXTMAP;
+  if (P_CheckLumpsForSameSource(lumpnum, i))
+  {
+    if (!strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean P_CheckForBehavior(int lumpnum)
+{
+  int i;
+
+  i = level_components.behavior;
+  if (P_CheckLumpsForSameSource(lumpnum, i))
+  {
+    if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static void P_VerifyLevelComponents(int lumpnum)
+{
+  int i;
 
   static const char *ml_labels[] = {
     "LABEL",             // A separator, name, ExMx or MAPxx
@@ -3229,17 +3256,6 @@ void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
     "BLOCKMAP",          // LUT, motion clipping, walls/grid element
   };
 
-  i = lumpnum + ML_TEXTMAP;
-  if (P_CheckLumpsForSameSource(lumpnum, i))
-  {
-    if (!strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
-    {
-      I_Error("UDMF maps are not supported yet");
-    }
-  }
-
-  P_UpdateLevelComponents(lumpnum, gl_lumpnum);
-
   for (i = ML_THINGS + 1; i <= ML_SECTORS; i++)
   {
     if (!P_CheckLumpsForSameSource(lumpnum, lumpnum + i))
@@ -3247,18 +3263,21 @@ void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
       I_Error("P_SetupLevel: Level wad structure is incomplete. There is no %s lump.", ml_labels[i]);
     }
   }
+}
 
-  // Find out what format we have
-  i = level_components.behavior;
-  if (P_CheckLumpsForSameSource(lumpnum, i))
+static void P_UpdateMapFormat()
+{
+  if (udmf_map)
   {
-    if (!strncasecmp(lumpinfo[i].name, "BEHAVIOR", 8))
-    {
-      has_behavior = true;
-    }
-  }
+    if (heretic)
+      I_Error("UDMF maps are not supported in Heretic yet");
 
-  if (has_behavior && !hexen)
+    if (hexen)
+      I_Error("UDMF maps are not supported in Hexen yet");
+
+    dsda_ApplyZDoomMapFormat();
+  }
+  else if (has_behavior && !hexen)
   {
     if (heretic)
       I_Error("Hexen format maps are not supported in Heretic yet");
@@ -3267,6 +3286,25 @@ void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
   }
   else
     dsda_ApplyDefaultMapFormat();
+}
+
+//
+// P_CheckLevelFormat
+//
+// Checking for presence of necessary lumps
+//
+
+void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
+{
+  udmf_map = P_CheckForUDMF(lumpnum);
+
+  P_UpdateLevelComponents(lumpnum, gl_lumpnum);
+
+  P_VerifyLevelComponents(lumpnum);
+
+  has_behavior = P_CheckForBehavior(lumpnum);
+
+  P_UpdateMapFormat();
 }
 
 void P_InitSubsectorsLines(void)
