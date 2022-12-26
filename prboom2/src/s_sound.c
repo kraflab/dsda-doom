@@ -419,10 +419,8 @@ void S_StopSoundLoops(void)
     return;
 
   for (cnum = 0; cnum < numChannels; ++cnum)
-    if (channels[cnum].active && channels[cnum].loop) {
-      channels[cnum].loop = false;
-      channels[cnum].loop_timeout = 0;
-    }
+    if (channels[cnum].active && channels[cnum].loop)
+      S_StopChannel(cnum);
 }
 
 // [FG] disable sound cutoffs
