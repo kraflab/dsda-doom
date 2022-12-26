@@ -586,11 +586,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
     NOT_STRICT, M_ChangeSkyMode
   },
-  [dsda_config_gl_texture_filter_anisotropic] = {
-    "gl_texture_filter_anisotropic", dsda_config_gl_texture_filter_anisotropic,
-    dsda_config_int, 0, 4, { 3 },
-    NULL, NOT_STRICT, M_ChangeTextureParams
-  },
   [dsda_config_gl_tex_format_string] = {
     "gl_tex_format_string", dsda_config_gl_tex_format_string,
     CONF_STRING("GL_RGBA"),

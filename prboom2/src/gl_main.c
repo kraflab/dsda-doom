@@ -175,9 +175,6 @@ void gld_InitTextureParams(void)
 
   const char* gl_tex_format_string = dsda_StringConfig(dsda_config_gl_tex_format_string);
 
-  gl_texture_filter_anisotropic =
-    (GLfloat) (1 << dsda_IntConfig(dsda_config_gl_texture_filter_anisotropic));
-
   i = 0;
   while (tex_formats[i].tex_format_name)
   {
