@@ -64,10 +64,14 @@ set(COMMON_SRC
     dsda/hud_components/big_ammo.h
     dsda/hud_components/big_armor.c
     dsda/hud_components/big_armor.h
+    dsda/hud_components/big_armor_text.c
+    dsda/hud_components/big_armor_text.h
     dsda/hud_components/big_artifact.c
     dsda/hud_components/big_artifact.h
     dsda/hud_components/big_health.c
     dsda/hud_components/big_health.h
+    dsda/hud_components/big_health_text.c
+    dsda/hud_components/big_health_text.h
     dsda/hud_components/command_display.c
     dsda/hud_components/command_display.h
     dsda/hud_components/composite_time.c

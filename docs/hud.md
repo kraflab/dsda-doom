@@ -46,8 +46,10 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
 - `big_ammo`: shows the ammo for the current weapon in the status bar font
 - `armor_text`: shows the player armor (color-coded)
 - `big_armor`: shows the player armor (color-coded) in the status bar font with the armor sprite
+- `big_armor_text`: shows the player armor (color-coded) in the status bar font
 - `health_text`: shows the player health (color-coded)
 - `big_health`: shows the player health (color-coded) in the status bar font with the health sprite
+- `big_health_text`: shows the player health (color-coded) in the status bar font
 - `big_artifact`: shows the current artifact as seen on the status bar
 - `fps`: shows the current fps
 - `attempts`: shows the current and total demo attempts
