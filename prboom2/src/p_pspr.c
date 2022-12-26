@@ -91,7 +91,7 @@ static const int recoil_values[] = {    // phares
 
 void P_SetPsprite(player_t *player, int position, statenum_t stnum)
 {
-	P_SetPspritePtr(player, &player->psprites[position], stnum);
+  P_SetPspritePtr(player, &player->psprites[position], stnum);
 }
 
 //
@@ -1419,7 +1419,7 @@ void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
   // don't do dumb things, kids
   type = weaponinfo[player->readyweapon].ammo;
   if (player->cheats & CF_INFINITE_AMMO || !psp->state || type == am_noammo)
-	  return;
+    return;
 
   // use the weapon's ammo-per-shot amount if zero.
   // to subtract zero ammo, don't call this function. ;)
@@ -3425,8 +3425,8 @@ void A_CStaffCheckBlink(player_t * player, pspdef_t * psp)
     }
 }
 
-#define FLAMESPEED	(0.45*FRACUNIT)
-#define CFLAMERANGE	(12*64*FRACUNIT)
+#define FLAMESPEED  (0.45*FRACUNIT)
+#define CFLAMERANGE (12*64*FRACUNIT)
 
 void A_CFlameAttack(player_t * player, pspdef_t * psp)
 {
@@ -3496,7 +3496,7 @@ void A_CFlameMissile(mobj_t * actor)
     }
 }
 
-#define FLAMEROTSPEED	2*FRACUNIT
+#define FLAMEROTSPEED 2*FRACUNIT
 
 void A_CFlameRotate(mobj_t * actor)
 {
@@ -3843,10 +3843,10 @@ void A_CHolySpawnPuff(mobj_t * actor)
     P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_HOLY_MISSILE_PUFF);
 }
 
-#define SHARDSPAWN_LEFT		1
-#define SHARDSPAWN_RIGHT	2
-#define SHARDSPAWN_UP		4
-#define SHARDSPAWN_DOWN		8
+#define SHARDSPAWN_LEFT  1
+#define SHARDSPAWN_RIGHT 2
+#define SHARDSPAWN_UP    4
+#define SHARDSPAWN_DOWN  8
 
 void A_FireConePL1(player_t * player, pspdef_t * psp)
 {
