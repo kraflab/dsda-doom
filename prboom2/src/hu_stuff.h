@@ -80,5 +80,6 @@ extern int hud_health_yellow; // health amount less than which status is yellow
 extern int hud_health_green;  // health amount above is blue, below is green
 extern int hud_ammo_red;      // ammo percent less than which status is red
 extern int hud_ammo_yellow;   // ammo percent less is yellow more green
+extern int hud_armor_color_by_class;
 
 #endif

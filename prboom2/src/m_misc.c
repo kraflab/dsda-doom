@@ -337,6 +337,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_hud_health_green),
   MIGRATED_SETTING(dsda_config_hud_ammo_red),
   MIGRATED_SETTING(dsda_config_hud_ammo_yellow),
+  MIGRATED_SETTING(dsda_config_hud_armor_color_by_class),
   MIGRATED_SETTING(dsda_config_hud_displayed),
   MIGRATED_SETTING(dsda_config_hudadd_secretarea),
   MIGRATED_SETTING(dsda_config_hudadd_demoprogressbar),
