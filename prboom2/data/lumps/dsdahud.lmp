@@ -34,6 +34,36 @@ event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
 
+doom off
+tracker 2 32 bottom_left
+render_stats 2 8 top_left
+coordinate_display 2 8 top_left
+line_display 98 8 top_left
+command_display 198 8 bottom_right
+event_split 10 16 top_left
+level_splits 2 2 top
+fps 298 0 top_right
+
+heretic off
+tracker 2 32 bottom_left
+render_stats 2 8 top_left
+coordinate_display 2 8 top_left
+line_display 98 8 top_left
+command_display 198 8 bottom_right
+event_split 10 16 top_left
+level_splits 2 2 top
+fps 298 0 top_right
+
+hexen off
+tracker 2 32 bottom_left
+render_stats 2 8 top_left
+coordinate_display 2 8 top_left
+line_display 98 8 top_left
+command_display 198 8 bottom_right
+event_split 10 16 top_left
+level_splits 2 2 top
+fps 298 0 top_right
+
 doom full
 ready_ammo_text 2 8 bottom_left
 health_text 2 16 bottom_left

@@ -6,7 +6,10 @@ HUD configurations are stored in the DSDAHUD lump. These defaults can be changed
 
 A HUD configuration starts with the environment: `game variant`
 - The `game` is `doom`, `heretic`, or `hexen`
-- The `variant` is `ex` (with status bar) or `full` (without status bar)
+- The `variant` options are:
+  - `ex` (with status bar and extended hud on)
+  - `off` (with status bar and extended hud off)
+  - `full` (without status bar)
 
 The configuration then consists of a series of components to display: `name x y alignment`
 - The `name` specifies which component to display
@@ -21,7 +24,7 @@ The configuration then consists of a series of components to display: `name x y 
   - `bottom_right`
   - `left`
   - `right`
-- For convenience, bottom-aligned `y` values are the distance from the bottom of the screen (`full`) or top of the status bar (`ex`)
+- For convenience, bottom-aligned `y` values are the distance from the bottom of the screen (`full`) or top of the status bar (`ex` and `off`)
 
 This example configures the extended hud for doom with just the stat totals and time in the bottom left (above the status bar):
 ```
