@@ -1418,8 +1418,8 @@ void A_ConsumeAmmo(player_t *player, pspdef_t *psp)
 
   // don't do dumb things, kids
   type = weaponinfo[player->readyweapon].ammo;
-  if (!psp->state || type == am_noammo)
-	return;
+  if (player->cheats & CF_INFINITE_AMMO || !psp->state || type == am_noammo)
+	  return;
 
   // use the weapon's ammo-per-shot amount if zero.
   // to subtract zero ammo, don't call this function. ;)
