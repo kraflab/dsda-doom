@@ -1395,6 +1395,19 @@ const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* val
   return dsda_StringConfig(id);
 }
 
+// No callbacks, to avoid recursion cases
+const char* dsda_HackStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist) {
+  if (dsda_config[id].transient_value.v_string)
+    Z_Free(dsda_config[id].transient_value.v_string);
+
+  dsda_config[id].transient_value.v_string = Z_Strdup(value);
+
+  if (persist)
+    dsda_PersistStringConfig(&dsda_config[id]);
+
+  return dsda_StringConfig(id);
+}
+
 int dsda_IntConfig(dsda_config_identifier_t id) {
   dboolean dsda_StrictMode(void);
 
