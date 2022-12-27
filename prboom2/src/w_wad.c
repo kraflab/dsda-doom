@@ -545,6 +545,11 @@ int W_SafeLumpLength (int lump)
   return W_LumpNumExists(lump) ? lumpinfo[lump].size : 0;
 }
 
+const char *W_LumpName(int lump)
+{
+  return W_LumpNumExists(lump) ? lumpinfo[lump].name : NULL;
+}
+
 //
 // W_ReadLump
 // Loads the lump into the given buffer,
