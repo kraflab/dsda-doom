@@ -3323,7 +3323,7 @@ static void P_UpdateUDMFLevelComponents(int lumpnum, int gl_lumpnum)
     const char* name;
 
     name = W_LumpName(i);
-    if (!name || !strncasecmp(name, "TEXTMAP", 8))
+    if (!name || !strncasecmp(name, "ENDMAP", 8))
       break;
     else if (!strncasecmp(name, "BLOCKMAP", 8))
       level_components.blockmap = i;
