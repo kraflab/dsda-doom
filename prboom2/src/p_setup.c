@@ -280,7 +280,7 @@ static dboolean CheckForIdentifier(int lumpnum, const byte *id, size_t length)
 {
   dboolean result = false;
 
-  if (W_LumpLength(lumpnum) >= length)
+  if (W_SafeLumpLength(lumpnum) >= length)
   {
     const char *data = W_LumpByNum(lumpnum);
 
