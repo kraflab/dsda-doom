@@ -3205,6 +3205,7 @@ static dboolean P_CheckForUDMF(int lumpnum)
   {
     if (!strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
     {
+      dsda_ParseUDMF(W_LumpByNum(i), W_LumpLength(i), I_Error);
       return true;
     }
   }
