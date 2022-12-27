@@ -3292,6 +3292,42 @@ static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {
   has_behavior = P_CheckForBehavior(lumpnum);
 }
 
+static void P_UpdateUDMFLevelComponents(int lumpnum, int gl_lumpnum)
+{
+  int i;
+
+  level_components.label = lumpnum;
+  level_components.things = LUMP_NOT_FOUND;
+  level_components.linedefs = LUMP_NOT_FOUND;
+  level_components.sidedefs = LUMP_NOT_FOUND;
+  level_components.vertexes = LUMP_NOT_FOUND;
+  level_components.segs = LUMP_NOT_FOUND;
+  level_components.ssectors = LUMP_NOT_FOUND;
+  level_components.nodes = LUMP_NOT_FOUND;
+  level_components.sectors = LUMP_NOT_FOUND;
+  level_components.reject = LUMP_NOT_FOUND;
+  level_components.blockmap = LUMP_NOT_FOUND;
+  level_components.behavior = LUMP_NOT_FOUND;
+  level_components.gl_label = LUMP_NOT_FOUND;
+  level_components.gl_verts = LUMP_NOT_FOUND;
+  level_components.gl_segs = LUMP_NOT_FOUND;
+  level_components.gl_ssect = LUMP_NOT_FOUND;
+  level_components.gl_nodes = LUMP_NOT_FOUND;
+
+  for (i = lumpnum + ML_TEXTMAP + 1; ; ++i)
+  {
+    const char* name;
+
+    name = W_LumpName(i);
+    if (!name || !strncasecmp(name, "TEXTMAP", 8))
+      break;
+    else if (!strncasecmp(name, "BLOCKMAP", 8))
+      level_components.blockmap = i;
+    else if (!strncasecmp(name, "REJECT", 8))
+      level_components.reject = i;
+  }
+}
+
 //
 // P_CheckLevelFormat
 //
