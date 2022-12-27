@@ -1390,7 +1390,7 @@ dboolean PO_Detect(int doomednum)
   return false;
 }
 
-static void PO_LoadThings(int lump)
+void PO_LoadThings(int lump)
 {
     const byte *data;
     int i;
@@ -1439,7 +1439,7 @@ static void PO_LoadThings(int lump)
     }
 }
 
-static void PO_LoadUDMFThings(int lump)
+void PO_LoadUDMFThings(int lump)
 {
     int i;
     const udmf_thing_t *mt;
@@ -1479,7 +1479,7 @@ void PO_Init(int lump)
     polyobjs = Z_MallocLevel(po_NumPolyobjs * sizeof(polyobj_t));
     memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
 
-    PO_LoadThings(lump);
+    map_loader.po_load_things(lump);
 
     // check for a startspot without an anchor point
     for (i = 0; i < po_NumPolyobjs; i++)

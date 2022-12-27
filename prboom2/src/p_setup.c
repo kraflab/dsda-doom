@@ -3332,6 +3332,40 @@ static void P_UpdateUDMFLevelComponents(int lumpnum, int gl_lumpnum)
   }
 }
 
+void PO_LoadThings(int lump);
+void PO_LoadUDMFThings(int lump);
+
+map_loader_t udmf_map_loader = {
+  .load_vertexes = P_LoadUDMFVertexes,
+  .load_sectors = P_LoadUDMFSectors,
+  .load_things = P_LoadUDMFThings,
+  .load_linedefs = P_LoadUDMFLineDefs,
+  .allocate_sidedefs = P_AllocateUDMFSideDefs,
+  .load_sidedefs = P_LoadUDMFSideDefs,
+  .update_level_components = P_UpdateUDMFLevelComponents,
+  .po_load_things = PO_LoadUDMFThings,
+};
+
+map_loader_t legacy_map_loader = {
+  .load_vertexes = P_LoadVertexes,
+  .load_sectors = P_LoadSectors,
+  .load_things = P_LoadThings,
+  .load_linedefs = P_LoadLineDefs,
+  .allocate_sidedefs = P_AllocateSideDefs,
+  .load_sidedefs = P_LoadSideDefs,
+  .update_level_components = P_UpdateLevelComponents,
+  .po_load_things = PO_LoadThings,
+};
+
+map_loader_t map_loader;
+
+void P_UpdateMapLoader(int lumpnum)
+{
+  udmf_map = P_CheckForUDMF(lumpnum);
+
+  map_loader = udmf_map ? udmf_map_loader : legacy_map_loader;
+}
+
 //
 // P_CheckLevelFormat
 //
@@ -3340,9 +3374,9 @@ static void P_UpdateUDMFLevelComponents(int lumpnum, int gl_lumpnum)
 
 void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
 {
-  udmf_map = P_CheckForUDMF(lumpnum);
+  P_UpdateMapLoader(lumpnum);
 
-  P_UpdateLevelComponents(lumpnum, gl_lumpnum);
+  map_loader.update_level_components(lumpnum, gl_lumpnum);
 
   P_UpdateMapFormat();
 }
@@ -3539,11 +3573,12 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     Z_Free(vertexes);
   }
 
-  P_LoadVertexes(level_components.vertexes, level_components.gl_verts);
-  P_LoadSectors(level_components.sectors);
-  P_AllocateSideDefs(level_components.sidedefs);
-  P_LoadLineDefs(level_components.linedefs);
-  P_LoadSideDefs(level_components.sidedefs);
+  map_loader.load_vertexes(level_components.vertexes, level_components.gl_verts);
+  map_loader.load_sectors(level_components.sectors);
+  map_loader.allocate_sidedefs(level_components.sidedefs);
+  map_loader.load_linedefs(level_components.linedefs);
+  map_loader.load_sidedefs(level_components.sidedefs);
+
   P_PostProcessLineDefs();
 
   // e6y: speedup of level reloading
@@ -3637,7 +3672,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     PO_ResetBlockMap(true);
   }
 
-  P_LoadThings(level_components.things);
+  map_loader.load_things(level_components.things);
 
   if (map_format.polyobjs)
   {
