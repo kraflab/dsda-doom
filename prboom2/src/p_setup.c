@@ -1480,7 +1480,7 @@ static void P_LoadZNodes(int lump, int glnodes)
 }
 
 static int no_overlapped_sprites;
-#define GETXY(mobj) (mobj->x + (mobj->y >> 16))
+#define GETXY(mobj) ((mobj)->x + ((mobj)->y >> 16))
 static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
 {
   const mobj_t *m1 = (*((const mobj_t * const *)a));
@@ -1498,6 +1498,56 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
  * cph 2001/07/07 - don't write into the lump cache, especially non-idepotent
  * changes like byte order reversals. Take a copy to edit.
  */
+
+static void P_PostProcessThings(int *mobjcount, mobj_t ***mobjlist)
+{
+  int i;
+
+  if (map_format.thing_id)
+  {
+    map_format.build_mobj_thing_id_list();
+  }
+
+  if (hexen)
+  {
+    P_InitCreatureCorpseQueue(false);   // false = do NOT scan for corpses
+  }
+
+  if (V_IsOpenGLMode())
+  {
+    no_overlapped_sprites = true;
+    qsort(*mobjlist, *mobjcount, sizeof(*mobjlist[0]), dicmp_sprite_by_pos);
+    if (!no_overlapped_sprites)
+    {
+      i = 1;
+      while (i < *mobjcount)
+      {
+        mobj_t *m1 = *mobjlist[i - 1];
+        mobj_t *m2 = *mobjlist[i - 0];
+
+        if (GETXY(m1) == GETXY(m2))
+        {
+          mobj_t *mo = (m1->index < m2->index ? m1 : m2);
+          i++;
+          while (i < *mobjcount && GETXY(*mobjlist[i]) == GETXY(m1))
+          {
+            if ((*mobjlist[i])->index < mo->index)
+            {
+              mo = *mobjlist[i];
+            }
+            i++;
+          }
+
+          // 'nearest'
+          mo->flags |= MF_FOREGROUND;
+        }
+        i++;
+      }
+    }
+  }
+
+  Z_Free(*mobjlist);
+}
 
 static void P_PostProcessMapThing(mapthing_t *mt, int *mobjcount, mobj_t ***mobjlist)
 {
@@ -1518,17 +1568,19 @@ static void P_PostProcessMapThing(mapthing_t *mt, int *mobjcount, mobj_t ***mobj
     *mobjlist[*mobjcount++] = mobj;
 }
 
-static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
+static void P_LoadThings(int lump)
 {
   int  i, numthings;
+  int mobjcount;
+  mobj_t **mobjlist;
   const mapthing_t *data;
   const doom_mapthing_t *doom_data;
 
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
   data = W_LumpByNum(lump);
   doom_data = (const doom_mapthing_t*) data;
-  *mobjcount = 0;
-  *mobjlist = Z_Malloc(numthings * sizeof(*mobjlist[0]));
+  mobjcount = 0;
+  mobjlist = Z_Malloc(numthings * sizeof(mobjlist[0]));
 
   if (!data || !numthings)
     I_Error("P_LoadThings: no things in level");
@@ -1569,17 +1621,21 @@ static void P_LoadLegacyThings(int lump, int *mobjcount, mobj_t ***mobjlist)
       mt.arg5 = 0;
     }
 
-    P_PostProcessMapThing(&mt, mobjcount, mobjlist);
+    P_PostProcessMapThing(&mt, &mobjcount, &mobjlist);
   }
+
+  P_PostProcessThings(&mobjcount, &mobjlist);
 }
 
-static void P_LoadUDMFThings(int lump, int *mobjcount, mobj_t ***mobjlist)
+static void P_LoadUDMFThings(int lump)
 {
   int i, numthings;
+  int mobjcount;
+  mobj_t **mobjlist;
 
   numthings = udmf.num_things;
-  *mobjcount = 0;
-  *mobjlist = Z_Malloc(numthings * sizeof(*mobjlist[0]));
+  mobjcount = 0;
+  mobjlist = Z_Malloc(numthings * sizeof(mobjlist[0]));
 
   for (i = 0; i < numthings; i++)
   {
@@ -1655,62 +1711,10 @@ static void P_LoadUDMFThings(int lump, int *mobjcount, mobj_t ***mobjlist)
     // UDMF_TF_STRIFEALLY
     // UDMF_TF_COUNTSECRET
 
-    P_PostProcessMapThing(&mt, mobjcount, mobjlist);
-  }
-}
-
-static void P_LoadThings (int lump)
-{
-  int i;
-  int mobjcount;
-  mobj_t **mobjlist;
-
-  P_LoadLegacyThings(lump, &mobjcount, &mobjlist);
-
-  if (map_format.thing_id)
-  {
-    map_format.build_mobj_thing_id_list();
+    P_PostProcessMapThing(&mt, &mobjcount, &mobjlist);
   }
 
-  if (hexen)
-  {
-    P_InitCreatureCorpseQueue(false);   // false = do NOT scan for corpses
-  }
-
-  if (V_IsOpenGLMode())
-  {
-    no_overlapped_sprites = true;
-    qsort(mobjlist, mobjcount, sizeof(mobjlist[0]), dicmp_sprite_by_pos);
-    if (!no_overlapped_sprites)
-    {
-      i = 1;
-      while (i < mobjcount)
-      {
-        mobj_t *m1 = mobjlist[i - 1];
-        mobj_t *m2 = mobjlist[i - 0];
-
-        if (GETXY(m1) == GETXY(m2))
-        {
-          mobj_t *mo = (m1->index < m2->index ? m1 : m2);
-          i++;
-          while (i < mobjcount && GETXY(mobjlist[i]) == GETXY(m1))
-          {
-            if (mobjlist[i]->index < mo->index)
-            {
-              mo = mobjlist[i];
-            }
-            i++;
-          }
-
-          // 'nearest'
-          mo->flags |= MF_FOREGROUND;
-        }
-        i++;
-      }
-    }
-  }
-
-  Z_Free(mobjlist);
+  P_PostProcessThings(&mobjcount, &mobjlist);
 }
 
 //
