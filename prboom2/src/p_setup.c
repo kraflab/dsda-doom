@@ -243,38 +243,6 @@ static dboolean P_GLLumpsExist(void) {
   return level_components.gl_label != LUMP_NOT_FOUND;
 }
 
-static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {
-  level_components.label = lumpnum;
-  level_components.things = lumpnum + ML_THINGS;
-  level_components.linedefs = lumpnum + ML_LINEDEFS;
-  level_components.sidedefs = lumpnum + ML_SIDEDEFS;
-  level_components.vertexes = lumpnum + ML_VERTEXES;
-  level_components.segs = lumpnum + ML_SEGS;
-  level_components.ssectors = lumpnum + ML_SSECTORS;
-  level_components.nodes = lumpnum + ML_NODES;
-  level_components.sectors = lumpnum + ML_SECTORS;
-  level_components.reject = lumpnum + ML_REJECT;
-  level_components.blockmap = lumpnum + ML_BLOCKMAP;
-  level_components.behavior = lumpnum + ML_BEHAVIOR;
-
-  if (gl_lumpnum > lumpnum)
-  {
-    level_components.gl_label = gl_lumpnum;
-    level_components.gl_verts = gl_lumpnum + ML_GL_VERTS;
-    level_components.gl_segs = gl_lumpnum + ML_GL_SEGS;
-    level_components.gl_ssect = gl_lumpnum + ML_GL_SSECT;
-    level_components.gl_nodes = gl_lumpnum + ML_GL_NODES;
-  }
-  else
-  {
-    level_components.gl_label = LUMP_NOT_FOUND;
-    level_components.gl_verts = LUMP_NOT_FOUND;
-    level_components.gl_segs = LUMP_NOT_FOUND;
-    level_components.gl_ssect = LUMP_NOT_FOUND;
-    level_components.gl_nodes = LUMP_NOT_FOUND;
-  }
-}
-
 // e6y: Smart malloc
 // Used by P_SetupLevel() for smart data loading
 // Do nothing if level is the same
@@ -3288,6 +3256,42 @@ static void P_UpdateMapFormat()
     dsda_ApplyDefaultMapFormat();
 }
 
+static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {
+  level_components.label = lumpnum;
+  level_components.things = lumpnum + ML_THINGS;
+  level_components.linedefs = lumpnum + ML_LINEDEFS;
+  level_components.sidedefs = lumpnum + ML_SIDEDEFS;
+  level_components.vertexes = lumpnum + ML_VERTEXES;
+  level_components.segs = lumpnum + ML_SEGS;
+  level_components.ssectors = lumpnum + ML_SSECTORS;
+  level_components.nodes = lumpnum + ML_NODES;
+  level_components.sectors = lumpnum + ML_SECTORS;
+  level_components.reject = lumpnum + ML_REJECT;
+  level_components.blockmap = lumpnum + ML_BLOCKMAP;
+  level_components.behavior = lumpnum + ML_BEHAVIOR;
+
+  if (gl_lumpnum > lumpnum)
+  {
+    level_components.gl_label = gl_lumpnum;
+    level_components.gl_verts = gl_lumpnum + ML_GL_VERTS;
+    level_components.gl_segs = gl_lumpnum + ML_GL_SEGS;
+    level_components.gl_ssect = gl_lumpnum + ML_GL_SSECT;
+    level_components.gl_nodes = gl_lumpnum + ML_GL_NODES;
+  }
+  else
+  {
+    level_components.gl_label = LUMP_NOT_FOUND;
+    level_components.gl_verts = LUMP_NOT_FOUND;
+    level_components.gl_segs = LUMP_NOT_FOUND;
+    level_components.gl_ssect = LUMP_NOT_FOUND;
+    level_components.gl_nodes = LUMP_NOT_FOUND;
+  }
+
+  P_VerifyLevelComponents(lumpnum);
+
+  has_behavior = P_CheckForBehavior(lumpnum);
+}
+
 //
 // P_CheckLevelFormat
 //
@@ -3299,10 +3303,6 @@ void P_CheckLevelWadStructure(int lumpnum, int gl_lumpnum)
   udmf_map = P_CheckForUDMF(lumpnum);
 
   P_UpdateLevelComponents(lumpnum, gl_lumpnum);
-
-  P_VerifyLevelComponents(lumpnum);
-
-  has_behavior = P_CheckForBehavior(lumpnum);
 
   P_UpdateMapFormat();
 }
