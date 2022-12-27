@@ -117,6 +117,12 @@ typedef enum {
   GL_V2_NODES,
   ZDOOM_XNOD_NODES,
   ZDOOM_ZNOD_NODES,
+  ZDOOM_XGLN_NODES,
+  ZDOOM_ZGLN_NODES,
+  ZDOOM_XGL2_NODES,
+  ZDOOM_ZGL2_NODES,
+  ZDOOM_XGL3_NODES,
+  ZDOOM_ZGL3_NODES,
 } nodes_version_t;
 
 int firstglvertex = 0;
@@ -235,6 +241,8 @@ typedef struct
   int gl_segs;
   int gl_ssect;
   int gl_nodes;
+
+  int znodes;
 } level_components_t;
 
 static level_components_t level_components;
@@ -330,7 +338,17 @@ static void P_GetNodesVersion(void)
         CheckForIdentifier(level_components.ssectors, "XGL", 3))
       I_Error("ZDoom GL nodes are not supported yet");
 
-    if (CheckForIdentifier(level_components.nodes, "XNOD", 4))
+    if (CheckForIdentifier(level_components.znodes, "XGLN", 4))
+    {
+      nodesVersion = ZDOOM_XGLN_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using XGLN zdoom nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.znodes, "ZGLN", 4))
+    {
+      nodesVersion = ZDOOM_ZGLN_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using ZGLN zdoom nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.nodes, "XNOD", 4))
     {
       nodesVersion = ZDOOM_XNOD_NODES;
       lprintf(LO_DEBUG,"P_GetNodesVersion: using XNOD zdoom nodes\n");
@@ -1335,7 +1353,7 @@ static void P_LoadZNodes(int lump, int glnodes)
   CheckZNodesOverflow(&len, 4);
   data += 4;
 
-  if (nodesVersion == ZDOOM_ZNOD_NODES)
+  if (nodesVersion == ZDOOM_ZNOD_NODES || nodesVersion == ZDOOM_ZGLN_NODES)
   {
     output = P_DecompressData(&data, &len);
   }
@@ -3291,6 +3309,8 @@ static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {
     level_components.gl_nodes = LUMP_NOT_FOUND;
   }
 
+  level_components.znodes = LUMP_NOT_FOUND;
+
   P_VerifyLevelComponents(lumpnum);
 
   has_behavior = P_CheckForBehavior(lumpnum);
@@ -3317,6 +3337,7 @@ static void P_UpdateUDMFLevelComponents(int lumpnum, int gl_lumpnum)
   level_components.gl_segs = LUMP_NOT_FOUND;
   level_components.gl_ssect = LUMP_NOT_FOUND;
   level_components.gl_nodes = LUMP_NOT_FOUND;
+  level_components.znodes = LUMP_NOT_FOUND;
 
   for (i = lumpnum + ML_TEXTMAP + 1; ; ++i)
   {
@@ -3325,11 +3346,16 @@ static void P_UpdateUDMFLevelComponents(int lumpnum, int gl_lumpnum)
     name = W_LumpName(i);
     if (!name || !strncasecmp(name, "ENDMAP", 8))
       break;
+    else if (!strncasecmp(name, "ZNODES", 8))
+      level_components.znodes = i;
     else if (!strncasecmp(name, "BLOCKMAP", 8))
       level_components.blockmap = i;
     else if (!strncasecmp(name, "REJECT", 8))
       level_components.reject = i;
   }
+
+  if (level_components.znodes == LUMP_NOT_FOUND)
+    I_Error("P_SetupLevel: Level wad structure is incomplete. There is no ZNODES lump.");
 }
 
 void PO_LoadThings(int lump);
@@ -3609,6 +3635,12 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     case ZDOOM_XNOD_NODES:
     case ZDOOM_ZNOD_NODES:
       P_LoadZNodes(level_components.nodes, 0);
+
+      break;
+
+    case ZDOOM_XGLN_NODES:
+    case ZDOOM_ZGLN_NODES:
+      P_LoadZNodes(level_components.znodes, 1);
 
       break;
 
