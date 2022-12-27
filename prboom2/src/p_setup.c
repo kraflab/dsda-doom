@@ -1270,11 +1270,11 @@ static void P_LoadGLZSegs(const byte *data)
         seg[-1].v2 = seg->v1;
       }
 
-      seg->miniseg = false;
-
       if (line != 0xffff)
       {
         line_t *ldef;
+
+        seg->miniseg = false;
 
         if ((unsigned int) line >= (unsigned int) numlines)
         {
@@ -1318,15 +1318,28 @@ static void P_LoadGLZSegs(const byte *data)
           seg->backsector = 0;
 
         seg->offset = GetOffset(seg->v1, (side ? ldef->v2 : ldef->v1));
-        seg->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
       }
       else
       {
+        seg->miniseg = true;
+        seg->angle = 0;
+        seg->offset = 0;
         seg->linedef = NULL;
         seg->sidedef = NULL;
         seg->frontsector = segs[subsectors[i].firstline].frontsector;
         seg->backsector = seg->frontsector;
       }
+    }
+
+    // Need all vertices to be defined before setting angles
+    for (j = 0; j < subsectors[i].numlines; ++j)
+    {
+      seg_t *seg;
+
+      seg = &segs[subsectors[i].firstline + j];
+
+      if (!seg->miniseg)
+        seg->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
     }
   }
 }
@@ -1459,6 +1472,8 @@ static void P_LoadZNodes(int lump, int glnodes)
   }
   else
   {
+    use_gl_nodes = true;
+
     CheckZNodesOverflow(&len, numsegs * sizeof(mapseg_znod_t));
     P_LoadGLZSegs(data);
     data += numsegs * sizeof(mapseg_znod_t);
