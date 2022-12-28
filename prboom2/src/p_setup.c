@@ -1242,12 +1242,12 @@ static void P_LoadZSegs (const byte *data)
 static void P_LoadGLZSegs(const byte *data)
 {
   int i, j;
+  const mapseg_znod_t *ml = (const mapseg_znod_t *) data;
 
   for (i = 0; i < numsubsectors; ++i)
   {
-    for (j = 0; j < subsectors[i].numlines; ++j)
+    for (j = 0; j < subsectors[i].numlines; ++j, ml++)
     {
-      const mapseg_znod_t *ml = (const mapseg_znod_t *) data + i;
       unsigned int v1, partner;
       unsigned int line;
       unsigned char side;
