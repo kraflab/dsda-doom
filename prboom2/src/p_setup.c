@@ -1675,13 +1675,13 @@ static void P_LoadUDMFThings(int lump)
     mapthing_t mt;
     udmf_thing_t *dmt = &udmf.things[i];
 
-    mt.x = dsda_FloatToFixed(dmt->x);
-    mt.y = dsda_FloatToFixed(dmt->y);
-    mt.angle = dsda_DegreesToAngle(dmt->angle);
+    mt.x = dmt->x;
+    mt.y = dmt->y;
+    mt.angle = dmt->angle;
     mt.type = dmt->type;
     mt.options = 0;
     mt.tid = dmt->id;
-    mt.height = dsda_FloatToFixed(dmt->height);
+    mt.height = dmt->height;
     mt.special = dmt->special;
     mt.arg1 = dmt->arg0;
     mt.arg2 = dmt->arg1;
