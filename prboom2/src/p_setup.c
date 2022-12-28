@@ -2026,6 +2026,8 @@ static void P_LoadUDMFLineDefs(int lump)
     vertex_t *v1, *v2;
     const udmf_line_t *mld = &udmf.lines[i];
 
+    ld->iLineID=i; // proff 04/05/2000: needed for OpenGL
+
     ld->flags = (mld->flags & ML_BOOM);
     ld->special = mld->special;
     ld->tag = mld->id;
