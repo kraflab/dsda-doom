@@ -1454,7 +1454,7 @@ void PO_LoadUDMFThings(int lump)
         {                       // Polyobj StartSpot Pt.
             polyobjs[polyIndex].startSpot.x = dsda_FloatToFixed(mt->x);
             polyobjs[polyIndex].startSpot.y = dsda_FloatToFixed(mt->y);
-            SpawnPolyobj(polyIndex, dsda_DegreesToAngle(mt->angle),
+            SpawnPolyobj(polyIndex, mt->angle,
                          (mt->type != map_format.dn_polyspawn_start),
                          (mt->type == map_format.dn_polyspawn_hurt));
             polyIndex++;
@@ -1465,7 +1465,7 @@ void PO_LoadUDMFThings(int lump)
     {
         if (mt->type == map_format.dn_polyanchor)
         {                       // Polyobj Anchor Pt.
-            TranslateToStartSpot(dsda_DegreesToAngle(mt->angle),
+            TranslateToStartSpot(mt->angle,
                                  dsda_FloatToFixed(mt->x),
                                  dsda_FloatToFixed(mt->y));
         }
