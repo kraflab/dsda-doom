@@ -1703,14 +1703,14 @@ static void P_LoadUDMFThings(int lump)
     if (dmt->flags & UDMF_TF_AMBUSH)
       mt.options |= MTF_AMBUSH;
 
-    if (!(dmt->flags & UDMF_TF_SINGLE))
-      mt.options |= MTF_NOTSINGLE;
+    if (dmt->flags & UDMF_TF_SINGLE)
+      mt.options |= MTF_GSINGLE;
 
-    if (!(dmt->flags & UDMF_TF_DM))
-      mt.options |= MTF_NOTDM;
+    if (dmt->flags & UDMF_TF_DM)
+      mt.options |= MTF_GDEATHMATCH;
 
-    if (!(dmt->flags & UDMF_TF_COOP))
-      mt.options |= MTF_NOTCOOP;
+    if (dmt->flags & UDMF_TF_COOP)
+      mt.options |= MTF_GCOOP;
 
     if (dmt->flags & UDMF_TF_FRIEND)
       mt.options |= MTF_FRIEND;
