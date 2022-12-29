@@ -1,6 +1,6 @@
 ## UDMF (Universal Doom Map Format)
 
-This page tracks support for the universal doom map format, as seen in ZDoom. It is currently possible to parse and load maps that don't violate any engine constraints (for instance, using flats as textures). The different features are being evaluated and implemented one by one. The status for any feature, including whether or not it will be supported in the future, is subject to change.
+This page tracks support for the universal doom map format, as seen in ZDoom. It is currently possible to parse and load maps that don't violate existing engine constraints (for instance, using flats as textures). The different features are being evaluated and implemented one by one. The status for any feature, including whether or not it will be supported in the future, is subject to change. See the [Doom in Hexen docs](./doom_in_hexen.md) for more information about which specials and thing types are supported.
 
 ### Legend
 
