@@ -516,7 +516,6 @@ static void R_DrawVisSprite(vissprite_t *vis)
   R_SetDefaultDrawColumnVars(&dcvars);
 
   dcvars.colormap = vis->colormap;
-  dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
 
   // hexen_note: colfunc: No idea how to merge this right now...
   // if (vis->mobjflags & (MF_SHADOW | MF_ALTSHADOW))
@@ -599,7 +598,6 @@ static void R_DrawVisSprite(vissprite_t *vis)
   for (dcvars.x=vis->x1 ; dcvars.x<=vis->x2 ; dcvars.x++, frac += vis->xiscale)
     {
       texturecolumn = frac>>FRACBITS;
-      dcvars.texu = frac;
 
       R_DrawMaskedColumn(
         patch,

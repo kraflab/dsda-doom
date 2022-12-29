@@ -321,8 +321,6 @@ set(COMMON_SRC
     r_defs.h
     r_draw.c
     r_draw.h
-    r_filter.c
-    r_filter.h
     r_fps.c
     r_fps.h
     r_main.c

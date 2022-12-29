@@ -257,7 +257,6 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   const rpatch_t *patch;
   R_DrawColumn_f colfunc;
   draw_column_vars_t dcvars;
-  angle_t angle;
 
   R_SetDefaultDrawColumnVars(&dcvars);
 
@@ -317,7 +316,6 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
 
   if (fixedcolormap) {
     dcvars.colormap = fixedcolormap;
-    dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
   }
 
   patch = R_TextureCompositePatchByNum(texnum);
@@ -326,13 +324,6 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   for (dcvars.x = x1 ; dcvars.x <= x2 ; dcvars.x++, spryscale += rw_scalestep)
     if (maskedtexturecol[dcvars.x] != INT_MAX) // dropoff overflow
       {
-        // calculate texture offset - POPE
-        angle = (ds->rw_centerangle + xtoviewangle[dcvars.x]) >> ANGLETOFINESHIFT;
-        dcvars.texu = ds->rw_offset - FixedMul(finetangent[angle], ds->rw_distance);
-
-        if (!fixedcolormap)
-          dcvars.z = spryscale; // for filtering -- POPE
-
         if (!fixedcolormap)
         {
           int index = (int)(((int64_t)spryscale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
@@ -340,12 +331,10 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
             index = MAXLIGHTSCALE - 1;
 
           dcvars.colormap = walllights[index];
-          dcvars.nextcolormap = walllightsnext[index];
         }
         else
         {
           dcvars.colormap = fixedcolormap;
-          dcvars.nextcolormap = fixedcolormap;
         }
 
         // killough 3/2/98:
@@ -470,7 +459,6 @@ static void R_RenderSegLoop (void)
           angle_t angle =(rw_centerangle+xtoviewangle[rw_x])>>ANGLETOFINESHIFT;
 
           texturecolumn = rw_offset-FixedMul(finetangent[angle],rw_distance);
-          dcvars.texu = texturecolumn; // for filtering -- POPE
           texturecolumn >>= FRACBITS;
 
           // calculate lighting
@@ -481,14 +469,11 @@ static void R_RenderSegLoop (void)
                index = MAXLIGHTSCALE - 1;
 
             dcvars.colormap = walllights[index];
-            dcvars.nextcolormap = walllightsnext[index];
           }
           else
           {
             dcvars.colormap = fixedcolormap;
-            dcvars.nextcolormap = fixedcolormap;
           }
-          dcvars.z = rw_scale; // for filtering -- POPE
 
           dcvars.x = rw_x;
           dcvars.iscale = 0xffffffffu / (unsigned)rw_scale;
@@ -904,12 +889,6 @@ void R_StoreWallRange(const int start, const int stop)
         walllightsnext = GetLightTable(rw_lightlevel + 1);
       }
   }
-
-  // Remember the vars used to determine fractional U texture
-  // coords for later - POPE
-  ds_p->rw_offset = rw_offset;
-  ds_p->rw_distance = rw_distance;
-  ds_p->rw_centerangle = rw_centerangle;
 
   // if a floor / ceiling plane is on the wrong side of the view
   // plane, it is definitely invisible and doesn't need to be marked.

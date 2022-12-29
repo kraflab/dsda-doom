@@ -51,7 +51,6 @@
 #include "w_wad.h"   /* needed for color translation lump lookup */
 #include "v_video.h"
 #include "i_video.h"
-#include "r_filter.h"
 #include "lprintf.h"
 #include "st_stuff.h"
 #include "e6y.h"
@@ -686,8 +685,6 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
       if (dcvars.x >= SCREENWIDTH)
         break;
 
-      dcvars.texu = ((flags & VPT_FLIP) ? ((patch->width<<FRACBITS)-col) : col) % (patch->width<<FRACBITS);
-
       // step through the posts in a column
       for (i=0; i<column->numPosts; i++) {
         const rpost_t *post = &column->posts[i];
@@ -971,7 +968,6 @@ void V_InitMode(video_mode_t mode) {
       current_videomode = VID_MODEGL;
       break;
   }
-  R_FilterInit();
 }
 
 dboolean V_IsSoftwareMode(void) {
