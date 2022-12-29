@@ -23,6 +23,14 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | strife  | :x:       |
 | zdoom   | :warning: |
 
+### Nodes
+
+| Name          | Status             |
+| ------------- | ------------------ |
+| ZDBSP X/Z GLN | :heavy_check_mark: |
+| ZDBSP X/Z GL2 | :grey_question:    |
+| ZDBSP X/Z GL3 | :grey_question:    |
+
 ### Linedefs
 
 | Field              | Status             |
