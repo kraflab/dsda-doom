@@ -312,7 +312,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
       dcvars.texturemid = dcvars.texturemid - viewz;
     }
 
-  dcvars.texturemid += curline->sidedef->rowoffset;
+  dcvars.texturemid += curline->sidedef->rowoffset + curline->sidedef->rowoffset_mid;
 
   if (fixedcolormap) {
     dcvars.colormap = fixedcolormap;
@@ -744,7 +744,8 @@ void R_StoreWallRange(const int start, const int stop)
     else        // top of texture at top
       rw_midtexturemid = worldtop;
 
-    rw_midtexturemid += FixedMod(sidedef->rowoffset, textureheight[midtexture]);
+    rw_midtexturemid += FixedMod(sidedef->rowoffset + sidedef->rowoffset_mid,
+                                 textureheight[midtexture]);
 
     ds_p->silhouette = SIL_BOTH;
     ds_p->sprtopclip = screenheightarray;
@@ -852,7 +853,8 @@ void R_StoreWallRange(const int start, const int stop)
       toptexheight = (linedef->r_flags & RF_TOP_TILE) ? 0 : textureheight[toptexture] >> FRACBITS;
       rw_toptexturemid = linedef->flags & ML_DONTPEGTOP ? worldtop :
         backsector->ceilingheight+textureheight[sidedef->toptexture]-viewz;
-      rw_toptexturemid += FixedMod(sidedef->rowoffset, textureheight[toptexture]);
+      rw_toptexturemid += FixedMod(sidedef->rowoffset + sidedef->rowoffset_top,
+                                   textureheight[toptexture]);
     }
 
     if (worldlow > worldbottom) // bottom texture
@@ -861,7 +863,8 @@ void R_StoreWallRange(const int start, const int stop)
       bottomtexheight = (linedef->r_flags & RF_BOT_TILE) ? 0 : textureheight[bottomtexture] >> FRACBITS;
       rw_bottomtexturemid = linedef->flags & ML_DONTPEGBOTTOM ? worldtop :
         worldlow;
-      rw_bottomtexturemid += FixedMod(sidedef->rowoffset, textureheight[bottomtexture]);
+      rw_bottomtexturemid += FixedMod(sidedef->rowoffset + sidedef->rowoffset_bottom,
+                                      textureheight[bottomtexture]);
     }
 
     // allocate space for masked texture tables

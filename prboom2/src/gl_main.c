@@ -1570,8 +1570,8 @@ static void gld_DrawWall(GLWall *wall)
   lineheight=((float)fabs(((ceiling_height)/(float)FRACUNIT)-((floor_height)/(float)FRACUNIT)))
 
 #define OU(w,seg,specific_offset) (((float)((seg)->sidedef->textureoffset+specific_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_width)
-#define OV(w,seg) (((float)((seg)->sidedef->rowoffset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height)
-#define OV_PEG(w,seg,v_offset) (OV((w),(seg))-(((float)(v_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height))
+#define OV(w,seg,specific_offset) (((float)((seg)->sidedef->rowoffset+specific_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height)
+#define OV_PEG(w,seg,v_offset,specific_offset) (OV((w),(seg),specific_offset)-(((float)(v_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height))
 #define URUL(w, seg, backseg, linelength, specific_offset)\
   if (backseg){\
     (w).ur=OU((w),(seg),(specific_offset));\
@@ -1585,10 +1585,10 @@ static void gld_DrawWall(GLWall *wall)
   (w).flag=GLDWF_TOP;\
   URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_top);\
   if (peg){\
-    (w).vb=OV((w),(seg))+((w).gltexture->scaleyfac);\
+    (w).vb=OV((w),(seg),(seg)->sidedef->rowoffset_top)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
-    (w).vt=OV((w),(seg));\
+    (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_top);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
 
@@ -1596,10 +1596,10 @@ static void gld_DrawWall(GLWall *wall)
   (w).flag=GLDWF_M1S;\
   URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_mid);\
   if (peg){\
-    (w).vb=OV((w),(seg))+((w).gltexture->scaleyfac);\
+    (w).vb=OV((w),(seg),(seg)->sidedef->rowoffset_mid)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
-    (w).vt=OV((w),(seg));\
+    (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_mid);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
 
@@ -1607,10 +1607,10 @@ static void gld_DrawWall(GLWall *wall)
   (w).flag=GLDWF_BOT;\
   URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_bottom);\
   if (peg){\
-    (w).vb=OV_PEG((w),(seg),(v_offset))+((w).gltexture->scaleyfac);\
+    (w).vb=OV_PEG((w),(seg),(v_offset),(seg)->sidedef->rowoffset_bottom)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
-    (w).vt=OV((w),(seg));\
+    (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_bottom);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
 
@@ -1737,9 +1737,6 @@ void gld_AddWall(seg_t *seg)
       min_ceiling = frontsector->ceilingheight;
     }
 
-    //max_floor_tex = max_floor + seg->sidedef->rowoffset;
-    //min_ceiling_tex = min_ceiling + seg->sidedef->rowoffset;
-
     if (backseg)
     {
       fs = backsector;
@@ -1771,11 +1768,15 @@ void gld_AddWall(seg_t *seg)
           (backsector->ceilingheight<=backsector->floorheight)
          )
       {
+        fixed_t specific_rowoffset;
+
+        specific_rowoffset = seg->sidedef->rowoffset + seg->sidedef->rowoffset_top;
+
         // e6y
         // There is no more visual glitches with sky on Icarus map14 sector 187
         // Old code: wall.ybottom=(float)backsector->floorheight/MAP_SCALE;
         wall.ybottom=((float)(backsector->floorheight +
-          (seg->sidedef->rowoffset > 0 ? seg->sidedef->rowoffset : 0)))/MAP_SCALE;
+          (specific_rowoffset > 0 ? specific_rowoffset : 0)))/MAP_SCALE;
         gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
       }
       else
@@ -1864,15 +1865,15 @@ void gld_AddWall(seg_t *seg)
 
       if ( (LINE->flags & ML_DONTPEGBOTTOM) >0)
       {
-        //floor_height=max_floor_tex;
-        floor_height=MAX(seg->frontsector->floorheight, seg->backsector->floorheight)+(seg->sidedef->rowoffset);
-        ceiling_height=floor_height+(wall.gltexture->realtexheight<<FRACBITS);
+        floor_height = MAX(seg->frontsector->floorheight, seg->backsector->floorheight) +
+                       seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+        ceiling_height = floor_height + (wall.gltexture->realtexheight << FRACBITS);
       }
       else
       {
-        //ceiling_height=min_ceiling_tex;
-        ceiling_height=MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight)+(seg->sidedef->rowoffset);
-        floor_height=ceiling_height-(wall.gltexture->realtexheight<<FRACBITS);
+        ceiling_height = MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight) +
+                         seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+        floor_height = ceiling_height - (wall.gltexture->realtexheight << FRACBITS);
       }
 
       // Depending on missing textures and possible plane intersections
