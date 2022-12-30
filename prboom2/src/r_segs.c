@@ -620,13 +620,13 @@ void R_StoreWallRange(const int start, const int stop)
   int64_t dx, dy, dx1, dy1, len, dist;
 
   if (ds_p == drawsegs+maxdrawsegs)   // killough 1/98 -- fix 2s line HOM
-    {
-      unsigned pos = ds_p - drawsegs; // jff 8/9/98 fix from ZDOOM1.14a
-      unsigned newmax = maxdrawsegs ? maxdrawsegs*2 : 128; // killough
-      drawsegs = Z_Realloc(drawsegs,newmax*sizeof(*drawsegs));
-      ds_p = drawsegs + pos;          // jff 8/9/98 fix from ZDOOM1.14a
-      maxdrawsegs = newmax;
-    }
+  {
+    unsigned pos = ds_p - drawsegs; // jff 8/9/98 fix from ZDOOM1.14a
+    unsigned newmax = maxdrawsegs ? maxdrawsegs*2 : 128; // killough
+    drawsegs = Z_Realloc(drawsegs,newmax*sizeof(*drawsegs));
+    ds_p = drawsegs + pos;          // jff 8/9/98 fix from ZDOOM1.14a
+    maxdrawsegs = newmax;
+  }
 
   if(curline->miniseg == false) // figgi -- skip minisegs
     curline->linedef->flags |= ML_MAPPED;
@@ -676,30 +676,30 @@ void R_StoreWallRange(const int start, const int stop)
     size_t pos = lastopening - openings;
     size_t need = (rw_stopx - start)*sizeof(*lastopening) + pos;
     if (need > maxopenings)
-      {
-        drawseg_t *ds;                //jff 8/9/98 needed for fix from ZDoom
-        int *oldopenings = openings; // dropoff overflow
-        int *oldlast = lastopening; // dropoff overflow
+    {
+      drawseg_t *ds;                //jff 8/9/98 needed for fix from ZDoom
+      int *oldopenings = openings; // dropoff overflow
+      int *oldlast = lastopening; // dropoff overflow
 
-        do
-          maxopenings = maxopenings ? maxopenings*2 : 16384;
-        while (need > maxopenings);
-        openings = Z_Realloc(openings, maxopenings * sizeof(*openings));
-        lastopening = openings + pos;
+      do
+        maxopenings = maxopenings ? maxopenings*2 : 16384;
+      while (need > maxopenings);
+      openings = Z_Realloc(openings, maxopenings * sizeof(*openings));
+      lastopening = openings + pos;
 
       // jff 8/9/98 borrowed fix for openings from ZDOOM1.14
       // [RH] We also need to adjust the openings pointers that
       //    were already stored in drawsegs.
       for (ds = drawsegs; ds < ds_p; ds++)
-        {
+      {
 #define ADJUST(p) if (ds->p + ds->x1 >= oldopenings && ds->p + ds->x1 <= oldlast)\
-            ds->p = ds->p - oldopenings + openings;
-          ADJUST (maskedtexturecol);
-          ADJUST (sprtopclip);
-          ADJUST (sprbottomclip);
-        }
-#undef ADJUST
+                    ds->p = ds->p - oldopenings + openings;
+        ADJUST (maskedtexturecol);
+        ADJUST (sprtopclip);
+        ADJUST (sprbottomclip);
       }
+#undef ADJUST
+    }
   }  // killough: end of code to remove limits on openings
 
   worldtop = frontsector->ceilingheight - viewz;
@@ -713,10 +713,10 @@ void R_StoreWallRange(const int start, const int stop)
     R_ScaleFromGlobalAngle (viewangle + xtoviewangle[start]);
 
   if (stop > start)
-    {
-      ds_p->scale2 = R_ScaleFromGlobalAngle (viewangle + xtoviewangle[stop]);
-      ds_p->scalestep = rw_scalestep = (ds_p->scale2-rw_scale) / (stop-start);
-    }
+  {
+    ds_p->scale2 = R_ScaleFromGlobalAngle (viewangle + xtoviewangle[stop]);
+    ds_p->scalestep = rw_scalestep = (ds_p->scale2-rw_scale) / (stop-start);
+  }
   else
     ds_p->scale2 = ds_p->scale1;
 
@@ -727,175 +727,174 @@ void R_StoreWallRange(const int start, const int stop)
   ds_p->maskedtexturecol = NULL;
 
   if (!backsector)
-    {
-      // single sided line
-      midtexture = texturetranslation[sidedef->midtexture];
-      midtexheight = (linedef->r_flags & RF_MID_TILE) ? 0 : textureheight[midtexture] >> FRACBITS;
+  {
+    // single sided line
+    midtexture = texturetranslation[sidedef->midtexture];
+    midtexheight = (linedef->r_flags & RF_MID_TILE) ? 0 : textureheight[midtexture] >> FRACBITS;
 
-      // a single sided line is terminal, so it must mark ends
-      markfloor = markceiling = true;
+    // a single sided line is terminal, so it must mark ends
+    markfloor = markceiling = true;
 
-      if (linedef->flags & ML_DONTPEGBOTTOM)
-        {         // bottom of texture at bottom
-          fixed_t vtop = frontsector->floorheight +
-            textureheight[sidedef->midtexture];
-          rw_midtexturemid = vtop - viewz;
-        }
-      else        // top of texture at top
-        rw_midtexturemid = worldtop;
+    if (linedef->flags & ML_DONTPEGBOTTOM)
+    {         // bottom of texture at bottom
+      fixed_t vtop = frontsector->floorheight +
+        textureheight[sidedef->midtexture];
+      rw_midtexturemid = vtop - viewz;
+    }
+    else        // top of texture at top
+      rw_midtexturemid = worldtop;
 
-      rw_midtexturemid += FixedMod(sidedef->rowoffset, textureheight[midtexture]);
+    rw_midtexturemid += FixedMod(sidedef->rowoffset, textureheight[midtexture]);
+
+    ds_p->silhouette = SIL_BOTH;
+    ds_p->sprtopclip = screenheightarray;
+    ds_p->sprbottomclip = negonearray;
+    ds_p->bsilheight = INT_MAX;
+    ds_p->tsilheight = INT_MIN;
+  }
+  else      // two sided line
+  {
+    ds_p->sprtopclip = ds_p->sprbottomclip = NULL;
+    ds_p->silhouette = 0;
+
+    if (linedef->r_flags & RF_CLOSED)
+    { /* cph - closed 2S line e.g. door */
+      // cph - killough's (outdated) comment follows - this deals with both
+      // "automap fixes", his and mine
+      // killough 1/17/98: this test is required if the fix
+      // for the automap bug (r_bsp.c) is used, or else some
+      // sprites will be displayed behind closed doors. That
+      // fix prevents lines behind closed doors with dropoffs
+      // from being displayed on the automap.
 
       ds_p->silhouette = SIL_BOTH;
-      ds_p->sprtopclip = screenheightarray;
       ds_p->sprbottomclip = negonearray;
       ds_p->bsilheight = INT_MAX;
+      ds_p->sprtopclip = screenheightarray;
       ds_p->tsilheight = INT_MIN;
     }
-  else      // two sided line
-    {
-      ds_p->sprtopclip = ds_p->sprbottomclip = NULL;
-      ds_p->silhouette = 0;
-
-      if (linedef->r_flags & RF_CLOSED) { /* cph - closed 2S line e.g. door */
-  // cph - killough's (outdated) comment follows - this deals with both
-  // "automap fixes", his and mine
-  // killough 1/17/98: this test is required if the fix
-  // for the automap bug (r_bsp.c) is used, or else some
-  // sprites will be displayed behind closed doors. That
-  // fix prevents lines behind closed doors with dropoffs
-  // from being displayed on the automap.
-
-  ds_p->silhouette = SIL_BOTH;
-  ds_p->sprbottomclip = negonearray;
-  ds_p->bsilheight = INT_MAX;
-  ds_p->sprtopclip = screenheightarray;
-  ds_p->tsilheight = INT_MIN;
-
-      } else { /* not solid - old code */
-
-  if (frontsector->floorheight > backsector->floorheight)
-    {
-      ds_p->silhouette = SIL_BOTTOM;
-      ds_p->bsilheight = frontsector->floorheight;
-    }
-  else
-    if (backsector->floorheight > viewz)
+    else
+    { /* not solid - old code */
+      if (frontsector->floorheight > backsector->floorheight)
+      {
+        ds_p->silhouette = SIL_BOTTOM;
+        ds_p->bsilheight = frontsector->floorheight;
+      }
+      else if (backsector->floorheight > viewz)
       {
         ds_p->silhouette = SIL_BOTTOM;
         ds_p->bsilheight = INT_MAX;
       }
 
-  if (frontsector->ceilingheight < backsector->ceilingheight)
-    {
-      ds_p->silhouette |= SIL_TOP;
-      ds_p->tsilheight = frontsector->ceilingheight;
-    }
-  else
-    if (backsector->ceilingheight < viewz)
+      if (frontsector->ceilingheight < backsector->ceilingheight)
+      {
+        ds_p->silhouette |= SIL_TOP;
+        ds_p->tsilheight = frontsector->ceilingheight;
+      }
+      else if (backsector->ceilingheight < viewz)
       {
         ds_p->silhouette |= SIL_TOP;
         ds_p->tsilheight = INT_MIN;
       }
-      }
-
-      worldhigh = backsector->ceilingheight - viewz;
-      worldlow = backsector->floorheight - viewz;
-
-      // hack to allow height changes in outdoor areas
-      if (frontsector->ceilingpic == skyflatnum
-          && backsector->ceilingpic == skyflatnum)
-        worldtop = worldhigh;
-
-      markfloor = worldlow != worldbottom
-        || backsector->floorpic != frontsector->floorpic
-        || backsector->lightlevel != frontsector->lightlevel
-
-        // killough 3/7/98: Add checks for (x,y) offsets
-        || backsector->floor_xoffs != frontsector->floor_xoffs
-        || backsector->floor_yoffs != frontsector->floor_yoffs
-
-        // killough 4/15/98: prevent 2s normals
-        // from bleeding through deep water
-        || frontsector->heightsec != -1
-
-        // killough 4/17/98: draw floors if different light levels
-        || backsector->floorlightsec != frontsector->floorlightsec
-
-        // hexen flowing water
-        || backsector->special != frontsector->special
-        ;
-
-      markceiling = worldhigh != worldtop
-        || backsector->ceilingpic != frontsector->ceilingpic
-        || backsector->lightlevel != frontsector->lightlevel
-
-        // killough 3/7/98: Add checks for (x,y) offsets
-        || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
-        || backsector->ceiling_yoffs != frontsector->ceiling_yoffs
-
-        // killough 4/15/98: prevent 2s normals
-        // from bleeding through fake ceilings
-        || (frontsector->heightsec != -1 &&
-            frontsector->ceilingpic!=skyflatnum)
-
-        // killough 4/17/98: draw ceilings if different light levels
-        || backsector->ceilinglightsec != frontsector->ceilinglightsec
-        ;
-
-      if (backsector->ceilingheight <= frontsector->floorheight
-          || backsector->floorheight >= frontsector->ceilingheight)
-        markceiling = markfloor = true;   // closed door
-
-      if (worldhigh < worldtop)   // top texture
-        {
-          toptexture = texturetranslation[sidedef->toptexture];
-    toptexheight = (linedef->r_flags & RF_TOP_TILE) ? 0 : textureheight[toptexture] >> FRACBITS;
-          rw_toptexturemid = linedef->flags & ML_DONTPEGTOP ? worldtop :
-            backsector->ceilingheight+textureheight[sidedef->toptexture]-viewz;
-    rw_toptexturemid += FixedMod(sidedef->rowoffset, textureheight[toptexture]);
-        }
-
-      if (worldlow > worldbottom) // bottom texture
-        {
-          bottomtexture = texturetranslation[sidedef->bottomtexture];
-    bottomtexheight = (linedef->r_flags & RF_BOT_TILE) ? 0 : textureheight[bottomtexture] >> FRACBITS;
-          rw_bottomtexturemid = linedef->flags & ML_DONTPEGBOTTOM ? worldtop :
-            worldlow;
-    rw_bottomtexturemid += FixedMod(sidedef->rowoffset, textureheight[bottomtexture]);
-        }
-
-      // allocate space for masked texture tables
-      if (sidedef->midtexture)    // masked midtexture
-        {
-          maskedtexture = true;
-          ds_p->maskedtexturecol = maskedtexturecol = lastopening - rw_x;
-          lastopening += rw_stopx - rw_x;
-        }
     }
+
+    worldhigh = backsector->ceilingheight - viewz;
+    worldlow = backsector->floorheight - viewz;
+
+    // hack to allow height changes in outdoor areas
+    if (frontsector->ceilingpic == skyflatnum
+        && backsector->ceilingpic == skyflatnum)
+      worldtop = worldhigh;
+
+    markfloor = worldlow != worldbottom
+      || backsector->floorpic != frontsector->floorpic
+      || backsector->lightlevel != frontsector->lightlevel
+
+      // killough 3/7/98: Add checks for (x,y) offsets
+      || backsector->floor_xoffs != frontsector->floor_xoffs
+      || backsector->floor_yoffs != frontsector->floor_yoffs
+
+      // killough 4/15/98: prevent 2s normals
+      // from bleeding through deep water
+      || frontsector->heightsec != -1
+
+      // killough 4/17/98: draw floors if different light levels
+      || backsector->floorlightsec != frontsector->floorlightsec
+
+      // hexen flowing water
+      || backsector->special != frontsector->special
+      ;
+
+    markceiling = worldhigh != worldtop
+      || backsector->ceilingpic != frontsector->ceilingpic
+      || backsector->lightlevel != frontsector->lightlevel
+
+      // killough 3/7/98: Add checks for (x,y) offsets
+      || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
+      || backsector->ceiling_yoffs != frontsector->ceiling_yoffs
+
+      // killough 4/15/98: prevent 2s normals
+      // from bleeding through fake ceilings
+      || (frontsector->heightsec != -1 &&
+          frontsector->ceilingpic!=skyflatnum)
+
+      // killough 4/17/98: draw ceilings if different light levels
+      || backsector->ceilinglightsec != frontsector->ceilinglightsec
+      ;
+
+    if (backsector->ceilingheight <= frontsector->floorheight
+        || backsector->floorheight >= frontsector->ceilingheight)
+      markceiling = markfloor = true;   // closed door
+
+    if (worldhigh < worldtop)   // top texture
+    {
+      toptexture = texturetranslation[sidedef->toptexture];
+      toptexheight = (linedef->r_flags & RF_TOP_TILE) ? 0 : textureheight[toptexture] >> FRACBITS;
+      rw_toptexturemid = linedef->flags & ML_DONTPEGTOP ? worldtop :
+        backsector->ceilingheight+textureheight[sidedef->toptexture]-viewz;
+      rw_toptexturemid += FixedMod(sidedef->rowoffset, textureheight[toptexture]);
+    }
+
+    if (worldlow > worldbottom) // bottom texture
+    {
+      bottomtexture = texturetranslation[sidedef->bottomtexture];
+      bottomtexheight = (linedef->r_flags & RF_BOT_TILE) ? 0 : textureheight[bottomtexture] >> FRACBITS;
+      rw_bottomtexturemid = linedef->flags & ML_DONTPEGBOTTOM ? worldtop :
+        worldlow;
+      rw_bottomtexturemid += FixedMod(sidedef->rowoffset, textureheight[bottomtexture]);
+    }
+
+    // allocate space for masked texture tables
+    if (sidedef->midtexture)    // masked midtexture
+    {
+      maskedtexture = true;
+      ds_p->maskedtexturecol = maskedtexturecol = lastopening - rw_x;
+      lastopening += rw_stopx - rw_x;
+    }
+  }
 
   // calculate rw_offset (only needed for textured lines)
   segtextured = midtexture | toptexture | bottomtexture | maskedtexture;
 
   if (segtextured)
+  {
+    rw_offset = (fixed_t)(((dx * dx1 + dy * dy1) / len) << shift_bits);
+
+    rw_offset += sidedef->textureoffset + curline->offset;
+
+    rw_centerangle = ANG90 + viewangle - rw_normalangle;
+
+    rw_lightlevel = frontsector->lightlevel;
+
+    // calculate light table
+    //  use different light tables
+    //  for horizontal / vertical / diagonal
+    // OPTIMIZE: get rid of LIGHTSEGSHIFT globally
+    if (!fixedcolormap)
     {
-      rw_offset = (fixed_t)(((dx * dx1 + dy * dy1) / len) << shift_bits);
-
-      rw_offset += sidedef->textureoffset + curline->offset;
-
-      rw_centerangle = ANG90 + viewangle - rw_normalangle;
-
-      rw_lightlevel = frontsector->lightlevel;
-
-      // calculate light table
-      //  use different light tables
-      //  for horizontal / vertical / diagonal
-      // OPTIMIZE: get rid of LIGHTSEGSHIFT globally
-      if (!fixedcolormap)
-      {
-        walllights = GetLightTable(rw_lightlevel);
-        walllightsnext = GetLightTable(rw_lightlevel + 1);
-      }
+      walllights = GetLightTable(rw_lightlevel);
+      walllightsnext = GetLightTable(rw_lightlevel + 1);
+    }
   }
 
   // if a floor / ceiling plane is on the wrong side of the view
@@ -903,13 +902,13 @@ void R_StoreWallRange(const int start, const int stop)
 
   // killough 3/7/98: add deep water check
   if (frontsector->heightsec == -1)
-    {
-      if (frontsector->floorheight >= viewz)       // above view plane
-        markfloor = false;
-      if (frontsector->ceilingheight <= viewz &&
-          frontsector->ceilingpic != skyflatnum)   // below view plane
-        markceiling = false;
-    }
+  {
+    if (frontsector->floorheight >= viewz)       // above view plane
+      markfloor = false;
+    if (frontsector->ceilingheight <= viewz &&
+        frontsector->ceilingpic != skyflatnum)   // below view plane
+      markceiling = false;
+  }
 
   // The original code compared values after shifting them right.
   // The code above here makes judgements based on the comparison before shifting.
@@ -948,15 +947,18 @@ void R_StoreWallRange(const int start, const int stop)
   }
 
   // render it
-  if (markceiling) {
+  if (markceiling)
+  {
     if (ceilingplane)   // killough 4/11/98: add NULL ptr checks
       ceilingplane = R_CheckPlane (ceilingplane, rw_x, rw_stopx-1);
     else
       markceiling = 0;
   }
 
-  if (markfloor) {
+  if (markfloor)
+  {
     if (floorplane)     // killough 4/11/98: add NULL ptr checks
+    {
       /* cph 2003/04/18  - ceilingplane and floorplane might be the same
        * visplane (e.g. if both skies); R_CheckPlane doesn't know about
        * modifications to the plane that might happen in parallel with the check
@@ -964,23 +966,29 @@ void R_StoreWallRange(const int start, const int stop)
        * a possibility, otherwise the floor marking would overwrite the ceiling
        * marking, resulting in HOM. */
       if (markceiling && ceilingplane == floorplane)
-	floorplane = R_DupPlane (floorplane, rw_x, rw_stopx-1);
+	      floorplane = R_DupPlane (floorplane, rw_x, rw_stopx-1);
       else
-	floorplane = R_CheckPlane (floorplane, rw_x, rw_stopx-1);
+	      floorplane = R_CheckPlane (floorplane, rw_x, rw_stopx-1);
+    }
     else
+    {
       markfloor = 0;
+    }
   }
 
   didsolidcol = 0;
   R_RenderSegLoop();
 
   /* cph - if a column was made solid by this wall, we _must_ save full clipping info */
-  if (backsector && didsolidcol) {
-    if (!(ds_p->silhouette & SIL_BOTTOM)) {
+  if (backsector && didsolidcol)
+  {
+    if (!(ds_p->silhouette & SIL_BOTTOM))
+    {
       ds_p->silhouette |= SIL_BOTTOM;
       ds_p->bsilheight = backsector->floorheight;
     }
-    if (!(ds_p->silhouette & SIL_TOP)) {
+    if (!(ds_p->silhouette & SIL_TOP))
+    {
       ds_p->silhouette |= SIL_TOP;
       ds_p->tsilheight = backsector->ceilingheight;
     }
@@ -988,26 +996,26 @@ void R_StoreWallRange(const int start, const int stop)
 
   // save sprite clipping info
   if ((ds_p->silhouette & SIL_TOP || maskedtexture) && !ds_p->sprtopclip)
-    {
-      memcpy (lastopening, ceilingclip+start, sizeof(*lastopening)*(rw_stopx-start)); // dropoff overflow
-      ds_p->sprtopclip = lastopening - start;
-      lastopening += rw_stopx - start;
-    }
+  {
+    memcpy (lastopening, ceilingclip+start, sizeof(*lastopening)*(rw_stopx-start)); // dropoff overflow
+    ds_p->sprtopclip = lastopening - start;
+    lastopening += rw_stopx - start;
+  }
   if ((ds_p->silhouette & SIL_BOTTOM || maskedtexture) && !ds_p->sprbottomclip)
-    {
-      memcpy (lastopening, floorclip+start, sizeof(*lastopening)*(rw_stopx-start)); // dropoff overflow
-      ds_p->sprbottomclip = lastopening - start;
-      lastopening += rw_stopx - start;
-    }
+  {
+    memcpy (lastopening, floorclip+start, sizeof(*lastopening)*(rw_stopx-start)); // dropoff overflow
+    ds_p->sprbottomclip = lastopening - start;
+    lastopening += rw_stopx - start;
+  }
   if (maskedtexture && !(ds_p->silhouette & SIL_TOP))
-    {
-      ds_p->silhouette |= SIL_TOP;
-      ds_p->tsilheight = INT_MIN;
-    }
+  {
+    ds_p->silhouette |= SIL_TOP;
+    ds_p->tsilheight = INT_MIN;
+  }
   if (maskedtexture && !(ds_p->silhouette & SIL_BOTTOM))
-    {
-      ds_p->silhouette |= SIL_BOTTOM;
-      ds_p->bsilheight = INT_MAX;
-    }
+  {
+    ds_p->silhouette |= SIL_BOTTOM;
+    ds_p->bsilheight = INT_MAX;
+  }
   ds_p++;
 }
