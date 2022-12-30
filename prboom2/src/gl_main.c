@@ -1569,21 +1569,21 @@ static void gld_DrawWall(GLWall *wall)
   (w).ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;\
   lineheight=((float)fabs(((ceiling_height)/(float)FRACUNIT)-((floor_height)/(float)FRACUNIT)))
 
-#define OU(w,seg) (((float)((seg)->sidedef->textureoffset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_width)
+#define OU(w,seg,specific_offset) (((float)((seg)->sidedef->textureoffset+specific_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_width)
 #define OV(w,seg) (((float)((seg)->sidedef->rowoffset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height)
 #define OV_PEG(w,seg,v_offset) (OV((w),(seg))-(((float)(v_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height))
-#define URUL(w, seg, backseg, linelength)\
+#define URUL(w, seg, backseg, linelength, specific_offset)\
   if (backseg){\
-    (w).ur=OU((w),(seg));\
+    (w).ur=OU((w),(seg),(specific_offset));\
     (w).ul=(w).ur+((linelength)/(float)(w).gltexture->buffer_width);\
   }else{\
-    (w).ul=OU((w),(seg));\
+    (w).ul=OU((w),(seg),(specific_offset));\
     (w).ur=(w).ul+((linelength)/(float)(w).gltexture->buffer_width);\
   }
 
 #define CALC_TEX_VALUES_TOP(w, seg, backseg, peg, linelength, lineheight)\
   (w).flag=GLDWF_TOP;\
-  URUL(w, seg, backseg, linelength);\
+  URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_top);\
   if (peg){\
     (w).vb=OV((w),(seg))+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
@@ -1594,7 +1594,7 @@ static void gld_DrawWall(GLWall *wall)
 
 #define CALC_TEX_VALUES_MIDDLE1S(w, seg, backseg, peg, linelength, lineheight)\
   (w).flag=GLDWF_M1S;\
-  URUL(w, seg, backseg, linelength);\
+  URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_mid);\
   if (peg){\
     (w).vb=OV((w),(seg))+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
@@ -1605,7 +1605,7 @@ static void gld_DrawWall(GLWall *wall)
 
 #define CALC_TEX_VALUES_BOTTOM(w, seg, backseg, peg, linelength, lineheight, v_offset)\
   (w).flag=GLDWF_BOT;\
-  URUL(w, seg, backseg, linelength);\
+  URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_bottom);\
   if (peg){\
     (w).vb=OV_PEG((w),(seg),(v_offset))+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
@@ -1935,7 +1935,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom = (float)bottom/(float)MAP_SCALE;
 
       wall.flag = GLDWF_M2S;
-      URUL(wall, seg, backseg, linelength);
+      URUL(wall, seg, backseg, linelength, seg->sidedef->textureoffset_mid);
 
       wall.vt = (float)((-top + ceiling_height))/(float)wall.gltexture->realtexheight;
       wall.vb = (float)((-bottom + ceiling_height))/(float)wall.gltexture->realtexheight;

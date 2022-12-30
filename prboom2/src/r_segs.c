@@ -324,6 +324,8 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
   for (dcvars.x = x1 ; dcvars.x <= x2 ; dcvars.x++, spryscale += rw_scalestep)
     if (maskedtexturecol[dcvars.x] != INT_MAX) // dropoff overflow
       {
+        fixed_t texturecolumn;
+
         if (!fixedcolormap)
         {
           int index = (int)(((int64_t)spryscale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
@@ -358,6 +360,9 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
 
         dcvars.iscale = 0xffffffffu / (unsigned) spryscale;
 
+        texturecolumn = maskedtexturecol[dcvars.x] +
+                        (curline->sidedef->textureoffset_mid >> FRACBITS);
+
         // killough 1/25/98: here's where Medusa came in, because
         // it implicitly assumed that the column was all one patch.
         // Originally, Doom did not construct complete columns for
@@ -371,9 +376,9 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
           patch,
           colfunc,
           &dcvars,
-          R_GetPatchColumnWrapped(patch, maskedtexturecol[dcvars.x]),
-          R_GetPatchColumnWrapped(patch, maskedtexturecol[dcvars.x]-1),
-          R_GetPatchColumnWrapped(patch, maskedtexturecol[dcvars.x]+1)
+          R_GetPatchColumnWrapped(patch, texturecolumn),
+          R_GetPatchColumnWrapped(patch, texturecolumn-1),
+          R_GetPatchColumnWrapped(patch, texturecolumn+1)
         );
 
         maskedtexturecol[dcvars.x] = INT_MAX; // dropoff overflow
@@ -397,6 +402,7 @@ static void R_RenderSegLoop (void)
   R_DrawColumn_f colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_POINT);
   draw_column_vars_t dcvars;
   fixed_t texturecolumn = 0;
+  fixed_t specific_texturecolumn = 0;
 
   R_SetDefaultDrawColumnVars(&dcvars);
 
@@ -478,13 +484,16 @@ static void R_RenderSegLoop (void)
     // draw the wall tiers
     if (midtexture)
     {
+      specific_texturecolumn = texturecolumn +
+                               (curline->sidedef->textureoffset_mid >> FRACBITS);
+
       dcvars.yl = yl;     // single sided line
       dcvars.yh = yh;
       dcvars.texturemid = rw_midtexturemid;
       tex_patch = R_TextureCompositePatchByNum(midtexture);
-      dcvars.source = R_GetTextureColumn(tex_patch, texturecolumn);
-      dcvars.prevsource = R_GetTextureColumn(tex_patch, texturecolumn-1);
-      dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
+      dcvars.source = R_GetTextureColumn(tex_patch, specific_texturecolumn);
+      dcvars.prevsource = R_GetTextureColumn(tex_patch, specific_texturecolumn-1);
+      dcvars.nextsource = R_GetTextureColumn(tex_patch, specific_texturecolumn+1);
       dcvars.texheight = midtexheight;
       colfunc(&dcvars);
       tex_patch = NULL;
@@ -505,13 +514,16 @@ static void R_RenderSegLoop (void)
 
         if (mid >= yl)
         {
+          specific_texturecolumn = texturecolumn +
+                                   (curline->sidedef->textureoffset_top >> FRACBITS);
+
           dcvars.yl = yl;
           dcvars.yh = mid;
           dcvars.texturemid = rw_toptexturemid;
           tex_patch = R_TextureCompositePatchByNum(toptexture);
-          dcvars.source = R_GetTextureColumn(tex_patch,texturecolumn);
-          dcvars.prevsource = R_GetTextureColumn(tex_patch,texturecolumn-1);
-          dcvars.nextsource = R_GetTextureColumn(tex_patch,texturecolumn+1);
+          dcvars.source = R_GetTextureColumn(tex_patch,specific_texturecolumn);
+          dcvars.prevsource = R_GetTextureColumn(tex_patch,specific_texturecolumn-1);
+          dcvars.nextsource = R_GetTextureColumn(tex_patch,specific_texturecolumn+1);
           dcvars.texheight = toptexheight;
           colfunc(&dcvars);
           tex_patch = NULL;
@@ -537,13 +549,16 @@ static void R_RenderSegLoop (void)
 
         if (mid <= yh)
         {
+          specific_texturecolumn = texturecolumn +
+                                   (curline->sidedef->textureoffset_bottom >> FRACBITS);
+
           dcvars.yl = mid;
           dcvars.yh = yh;
           dcvars.texturemid = rw_bottomtexturemid;
           tex_patch = R_TextureCompositePatchByNum(bottomtexture);
-          dcvars.source = R_GetTextureColumn(tex_patch, texturecolumn);
-          dcvars.prevsource = R_GetTextureColumn(tex_patch, texturecolumn-1);
-          dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
+          dcvars.source = R_GetTextureColumn(tex_patch, specific_texturecolumn);
+          dcvars.prevsource = R_GetTextureColumn(tex_patch, specific_texturecolumn-1);
+          dcvars.nextsource = R_GetTextureColumn(tex_patch, specific_texturecolumn+1);
           dcvars.texheight = bottomtexheight;
           colfunc(&dcvars);
           tex_patch = NULL;

@@ -113,11 +113,11 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | scaley_mid     | :grey_question:    |
 | scalex_bottom  | :grey_question:    |
 | scaley_bottom  | :grey_question:    |
-| offsetx_top    | :grey_question:    |
+| offsetx_top    | :heavy_check_mark: |
 | offsety_top    | :grey_question:    |
-| offsetx_mid    | :grey_question:    |
+| offsetx_mid    | :heavy_check_mark: |
 | offsety_mid    | :grey_question:    |
-| offsetx_bottom | :grey_question:    |
+| offsetx_bottom | :heavy_check_mark: |
 | offsety_bottom | :grey_question:    |
 | light          | :grey_question:    |
 | lightabsolute  | :grey_question:    |
