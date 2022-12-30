@@ -226,6 +226,10 @@ typedef struct
 
   int INTERP_WallPanning;
   int skybox_index;
+
+  fixed_t textureoffset_top;
+  fixed_t textureoffset_mid;
+  fixed_t textureoffset_bottom;
 } side_t;
 
 //
