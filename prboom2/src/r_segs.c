@@ -396,191 +396,184 @@ static void R_RenderSegLoop (void)
   const rpatch_t *tex_patch;
   R_DrawColumn_f colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_STANDARD, RDRAW_FILTER_POINT);
   draw_column_vars_t dcvars;
-  fixed_t  texturecolumn = 0;   // shut up compiler warning
+  fixed_t texturecolumn = 0;
 
   R_SetDefaultDrawColumnVars(&dcvars);
 
   dsda_RecordDrawSeg();
 
   for ( ; rw_x < rw_stopx ; rw_x++)
+  {
+    // mark floor / ceiling areas
+    int yh = (int)(bottomfrac>>HEIGHTBITS);
+    int yl = (int)((topfrac+HEIGHTUNIT-1)>>HEIGHTBITS);
+
+    // no space above wall?
+    int bottom,top = ceilingclip[rw_x]+1;
+
+    if (yl < top)
+      yl = top;
+
+    if (markceiling)
+    {
+      bottom = yl-1;
+
+      if (bottom >= floorclip[rw_x])
+        bottom = floorclip[rw_x]-1;
+
+      if (top <= bottom)
+      {
+        ceilingplane->top[rw_x] = top;
+        ceilingplane->bottom[rw_x] = bottom;
+      }
+      // SoM: this should be set here
+      ceilingclip[rw_x] = bottom;
+    }
+
+    bottom = floorclip[rw_x]-1;
+    if (yh > bottom)
+      yh = bottom;
+
+    if (markfloor)
     {
 
-       // mark floor / ceiling areas
+      top  = yh < ceilingclip[rw_x] ? ceilingclip[rw_x] : yh;
 
-      int yh = (int)(bottomfrac>>HEIGHTBITS);
-      int yl = (int)((topfrac+HEIGHTUNIT-1)>>HEIGHTBITS);
+      if (++top <= bottom)
+      {
+        floorplane->top[rw_x] = top;
+        floorplane->bottom[rw_x] = bottom;
+      }
+      // SoM: This should be set here to prevent overdraw
+      floorclip[rw_x] = top;
+    }
 
-      // no space above wall?
-      int bottom,top = ceilingclip[rw_x]+1;
+    // texturecolumn and lighting are independent of wall tiers
+    if (segtextured)
+    {
+      // calculate texture offset
+      angle_t angle =(rw_centerangle+xtoviewangle[rw_x])>>ANGLETOFINESHIFT;
 
-      if (yl < top)
-        yl = top;
+      texturecolumn = rw_offset-FixedMul(finetangent[angle],rw_distance);
+      texturecolumn >>= FRACBITS;
 
-      if (markceiling)
+      // calculate lighting
+      if (!fixedcolormap)
+      {
+        int index = (int)(((int64_t)rw_scale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
+        if (index >= MAXLIGHTSCALE)
+            index = MAXLIGHTSCALE - 1;
+
+        dcvars.colormap = walllights[index];
+      }
+      else
+      {
+        dcvars.colormap = fixedcolormap;
+      }
+
+      dcvars.x = rw_x;
+      dcvars.iscale = 0xffffffffu / (unsigned)rw_scale;
+    }
+
+    // draw the wall tiers
+    if (midtexture)
+    {
+      dcvars.yl = yl;     // single sided line
+      dcvars.yh = yh;
+      dcvars.texturemid = rw_midtexturemid;
+      tex_patch = R_TextureCompositePatchByNum(midtexture);
+      dcvars.source = R_GetTextureColumn(tex_patch, texturecolumn);
+      dcvars.prevsource = R_GetTextureColumn(tex_patch, texturecolumn-1);
+      dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
+      dcvars.texheight = midtexheight;
+      colfunc(&dcvars);
+      tex_patch = NULL;
+      ceilingclip[rw_x] = viewheight;
+      floorclip[rw_x] = -1;
+    }
+    else
+    {
+      // two sided line
+      if (toptexture)
+      {
+        // top wall
+        int mid = (int)(pixhigh>>HEIGHTBITS);
+        pixhigh += pixhighstep;
+
+        if (mid >= floorclip[rw_x])
+          mid = floorclip[rw_x]-1;
+
+        if (mid >= yl)
         {
-          bottom = yl-1;
-
-          if (bottom >= floorclip[rw_x])
-            bottom = floorclip[rw_x]-1;
-
-          if (top <= bottom)
-            {
-              ceilingplane->top[rw_x] = top;
-              ceilingplane->bottom[rw_x] = bottom;
-            }
-          // SoM: this should be set here
-          ceilingclip[rw_x] = bottom;
+          dcvars.yl = yl;
+          dcvars.yh = mid;
+          dcvars.texturemid = rw_toptexturemid;
+          tex_patch = R_TextureCompositePatchByNum(toptexture);
+          dcvars.source = R_GetTextureColumn(tex_patch,texturecolumn);
+          dcvars.prevsource = R_GetTextureColumn(tex_patch,texturecolumn-1);
+          dcvars.nextsource = R_GetTextureColumn(tex_patch,texturecolumn+1);
+          dcvars.texheight = toptexheight;
+          colfunc(&dcvars);
+          tex_patch = NULL;
+          ceilingclip[rw_x] = mid;
         }
+        else
+          ceilingclip[rw_x] = yl-1;
+      }
+      else  // no top wall
+      {
+        if (markceiling)
+          ceilingclip[rw_x] = yl-1;
+      }
 
-//      yh = bottomfrac>>HEIGHTBITS;
+      if (bottomtexture)          // bottom wall
+      {
+        int mid = (int)((pixlow+HEIGHTUNIT-1)>>HEIGHTBITS);
+        pixlow += pixlowstep;
 
-      bottom = floorclip[rw_x]-1;
-      if (yh > bottom)
-        yh = bottom;
+        // no space above wall?
+        if (mid <= ceilingclip[rw_x])
+          mid = ceilingclip[rw_x]+1;
 
-      if (markfloor)
+        if (mid <= yh)
         {
-
-          top  = yh < ceilingclip[rw_x] ? ceilingclip[rw_x] : yh;
-
-          if (++top <= bottom)
-            {
-              floorplane->top[rw_x] = top;
-              floorplane->bottom[rw_x] = bottom;
-            }
-          // SoM: This should be set here to prevent overdraw
-          floorclip[rw_x] = top;
-        }
-
-      // texturecolumn and lighting are independent of wall tiers
-      if (segtextured)
-        {
-          // calculate texture offset
-          angle_t angle =(rw_centerangle+xtoviewangle[rw_x])>>ANGLETOFINESHIFT;
-
-          texturecolumn = rw_offset-FixedMul(finetangent[angle],rw_distance);
-          texturecolumn >>= FRACBITS;
-
-          // calculate lighting
-          if (!fixedcolormap)
-          {
-            int index = (int)(((int64_t)rw_scale * 160 / wide_centerx) >> LIGHTSCALESHIFT);
-            if (index >= MAXLIGHTSCALE)
-               index = MAXLIGHTSCALE - 1;
-
-            dcvars.colormap = walllights[index];
-          }
-          else
-          {
-            dcvars.colormap = fixedcolormap;
-          }
-
-          dcvars.x = rw_x;
-          dcvars.iscale = 0xffffffffu / (unsigned)rw_scale;
-        }
-
-      // draw the wall tiers
-      if (midtexture)
-        {
-
-          dcvars.yl = yl;     // single sided line
+          dcvars.yl = mid;
           dcvars.yh = yh;
-          dcvars.texturemid = rw_midtexturemid;
-          tex_patch = R_TextureCompositePatchByNum(midtexture);
+          dcvars.texturemid = rw_bottomtexturemid;
+          tex_patch = R_TextureCompositePatchByNum(bottomtexture);
           dcvars.source = R_GetTextureColumn(tex_patch, texturecolumn);
           dcvars.prevsource = R_GetTextureColumn(tex_patch, texturecolumn-1);
           dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
-          dcvars.texheight = midtexheight;
+          dcvars.texheight = bottomtexheight;
           colfunc(&dcvars);
           tex_patch = NULL;
-          ceilingclip[rw_x] = viewheight;
-          floorclip[rw_x] = -1;
+          floorclip[rw_x] = mid;
         }
-      else
-        {
+        else
+          floorclip[rw_x] = yh+1;
+      }
+      else        // no bottom wall
+      {
+        if (markfloor)
+          floorclip[rw_x] = yh+1;
+      }
 
-          // two sided line
-          if (toptexture)
-            {
-              // top wall
-              int mid = (int)(pixhigh>>HEIGHTBITS);
-              pixhigh += pixhighstep;
+      // cph - if we completely blocked further sight through this column,
+      // add this info to the solid columns array for r_bsp.c
+      if ((markceiling || markfloor) && (floorclip[rw_x] <= ceilingclip[rw_x] + 1))
+      {
+        solidcol[rw_x] = 1; didsolidcol = 1;
+      }
 
-              if (mid >= floorclip[rw_x])
-                mid = floorclip[rw_x]-1;
-
-              if (mid >= yl)
-                {
-                  dcvars.yl = yl;
-                  dcvars.yh = mid;
-                  dcvars.texturemid = rw_toptexturemid;
-                  tex_patch = R_TextureCompositePatchByNum(toptexture);
-                  dcvars.source = R_GetTextureColumn(tex_patch,texturecolumn);
-                  dcvars.prevsource = R_GetTextureColumn(tex_patch,texturecolumn-1);
-                  dcvars.nextsource = R_GetTextureColumn(tex_patch,texturecolumn+1);
-                  dcvars.texheight = toptexheight;
-                  colfunc(&dcvars);
-                  tex_patch = NULL;
-                  ceilingclip[rw_x] = mid;
-                }
-              else
-                ceilingclip[rw_x] = yl-1;
-            }
-          else  // no top wall
-            {
-
-            if (markceiling)
-              ceilingclip[rw_x] = yl-1;
-             }
-
-          if (bottomtexture)          // bottom wall
-            {
-              int mid = (int)((pixlow+HEIGHTUNIT-1)>>HEIGHTBITS);
-              pixlow += pixlowstep;
-
-              // no space above wall?
-              if (mid <= ceilingclip[rw_x])
-                mid = ceilingclip[rw_x]+1;
-
-              if (mid <= yh)
-                {
-                  dcvars.yl = mid;
-                  dcvars.yh = yh;
-                  dcvars.texturemid = rw_bottomtexturemid;
-                  tex_patch = R_TextureCompositePatchByNum(bottomtexture);
-                  dcvars.source = R_GetTextureColumn(tex_patch, texturecolumn);
-                  dcvars.prevsource = R_GetTextureColumn(tex_patch, texturecolumn-1);
-                  dcvars.nextsource = R_GetTextureColumn(tex_patch, texturecolumn+1);
-                  dcvars.texheight = bottomtexheight;
-                  colfunc(&dcvars);
-                  tex_patch = NULL;
-                  floorclip[rw_x] = mid;
-                }
-              else
-                floorclip[rw_x] = yh+1;
-            }
-          else        // no bottom wall
-            {
-            if (markfloor)
-              floorclip[rw_x] = yh+1;
-            }
-
-    // cph - if we completely blocked further sight through this column,
-    // add this info to the solid columns array for r_bsp.c
-    if ((markceiling || markfloor) &&
-        (floorclip[rw_x] <= ceilingclip[rw_x] + 1)) {
-      solidcol[rw_x] = 1; didsolidcol = 1;
+      // save texturecol for backdrawing of masked mid texture
+      if (maskedtexture)
+        maskedtexturecol[rw_x] = texturecolumn;
     }
 
-          // save texturecol for backdrawing of masked mid texture
-          if (maskedtexture)
-            maskedtexturecol[rw_x] = texturecolumn;
-        }
-
-      rw_scale += rw_scalestep;
-      topfrac += topstep;
-      bottomfrac += bottomstep;
-    }
+    rw_scale += rw_scalestep;
+    topfrac += topstep;
+    bottomfrac += bottomstep;
+  }
 }
 
 // killough 5/2/98: move from r_main.c, made static, simplified
