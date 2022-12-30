@@ -2376,6 +2376,9 @@ static void P_LoadUDMFSideDefs(int lump)
     sd->textureoffset_top = dsda_IntToFixed(msd->offsetx_top);
     sd->textureoffset_mid = dsda_IntToFixed(msd->offsetx_mid);
     sd->textureoffset_bottom = dsda_IntToFixed(msd->offsetx_bottom);
+    sd->rowoffset_top = dsda_IntToFixed(msd->offsety_top);
+    sd->rowoffset_mid = dsda_IntToFixed(msd->offsety_mid);
+    sd->rowoffset_bottom = dsda_IntToFixed(msd->offsety_bottom);
 
     if (msd->sector >= numsectors)
       I_Error("Invalid level data: sidedef %d's sector index is out of range", i);
