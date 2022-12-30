@@ -134,7 +134,8 @@ static byte gm2_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x03, 0xf7};
 static byte xg_system_on[] = {0xf0, 0x43, 0x10, 0x4c, 0x00, 0x00, 0x7e, 0x00, 0xf7};
 static PmEvent event_notes_off[16];
 static PmEvent event_sound_off[16];
-static PmEvent event_reset[16 * 12];
+static PmEvent event_reset[16 * 6];
+static PmEvent event_pbs[16 * 6];
 static PmEvent event_reverb[16];
 static PmEvent event_chorus[16];
 
@@ -142,11 +143,12 @@ static void reset_device (void)
 {
   Pm_Write(pm_stream, event_notes_off, 16);
   Pm_Write(pm_stream, event_sound_off, 16);
-  Pm_Write(pm_stream, event_reset, 16 * 12);
+  Pm_Write(pm_stream, event_reset, 16 * 6);
 
   if (sysex_reset != NULL)
     Pm_WriteSysEx(pm_stream, 0, sysex_reset);
 
+  Pm_Write(pm_stream, event_pbs, 16 * 6);
   Pm_Write(pm_stream, event_reverb, 16);
   Pm_Write(pm_stream, event_chorus, 16);
 
@@ -156,25 +158,28 @@ static void reset_device (void)
 static void init_reset_buffer (void)
 {
   int i;
-  PmEvent *event = event_reset;
+  PmEvent *reset = event_reset;
+  PmEvent *pbs = event_pbs;
   for (i = 0; i < 16; ++i)
   {
     event_notes_off[i].message = Pm_Message(0xB0 | i, 0x7B, 0x00);
     event_sound_off[i].message = Pm_Message(0xB0 | i, 0x78, 0x00);
 
-    event[0].message = Pm_Message(0xB0 | i, 0x79, 0x00); // reset all controllers
-    event[1].message = Pm_Message(0xB0 | i, 0x64, 0x00); // pitch bend sens RPN LSB
-    event[2].message = Pm_Message(0xB0 | i, 0x65, 0x00); // pitch bend sens RPN MSB
-    event[3].message = Pm_Message(0xB0 | i, 0x06, 0x02); // data entry MSB
-    event[4].message = Pm_Message(0xB0 | i, 0x26, 0x00); // data entry LSB
-    event[5].message = Pm_Message(0xB0 | i, 0x64, 0x7F); // null RPN LSB
-    event[6].message = Pm_Message(0xB0 | i, 0x65, 0x7F); // null RPN MSB
-    event[7].message = Pm_Message(0xB0 | i, 0x07, 0x64); // channel volume
-    event[8].message = Pm_Message(0xB0 | i, 0x0A, 0x40); // pan
-    event[9].message = Pm_Message(0xB0 | i, 0x00, 0x00); // bank select msb
-    event[10].message = Pm_Message(0xB0 | i, 0x20, 0x00); // bank select lsb
-    event[11].message = Pm_Message(0xC0 | i, 0x00, 0x00); // program change
-    event += 12;
+    reset[0].message = Pm_Message(0xB0 | i, 0x79, 0x00); // reset all controllers
+    reset[1].message = Pm_Message(0xB0 | i, 0x07, 0x64); // channel volume
+    reset[2].message = Pm_Message(0xB0 | i, 0x0A, 0x40); // pan
+    reset[3].message = Pm_Message(0xB0 | i, 0x00, 0x00); // bank select msb
+    reset[4].message = Pm_Message(0xB0 | i, 0x20, 0x00); // bank select lsb
+    reset[5].message = Pm_Message(0xC0 | i, 0x00, 0x00); // program change
+    reset += 6;
+
+    pbs[0].message = Pm_Message(0xB0 | i, 0x64, 0x00); // pitch bend sens RPN LSB
+    pbs[1].message = Pm_Message(0xB0 | i, 0x65, 0x00); // pitch bend sens RPN MSB
+    pbs[2].message = Pm_Message(0xB0 | i, 0x06, 0x02); // data entry MSB
+    pbs[3].message = Pm_Message(0xB0 | i, 0x26, 0x00); // data entry LSB
+    pbs[4].message = Pm_Message(0xB0 | i, 0x64, 0x7F); // null RPN LSB
+    pbs[5].message = Pm_Message(0xB0 | i, 0x65, 0x7F); // null RPN MSB
+    pbs += 6;
 
     event_reverb[i].message = Pm_Message(0xB0 | i, 0x5B, mus_portmidi_reverb_level);
     event_chorus[i].message = Pm_Message(0xB0 | i, 0x5D, mus_portmidi_chorus_level);
