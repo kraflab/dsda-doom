@@ -15,13 +15,13 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 
 ### Namespaces
 
-| Name    | Status    |
-| ------- | --------- |
-| doom    | :x:       |
-| heretic | :x:       |
-| hexen   | :x:       |
-| strife  | :x:       |
-| zdoom   | :warning: |
+| Name       | Status    |
+| ---------- | --------- |
+| doom       | :x:       |
+| heretic    | :x:       |
+| hexen      | :x:       |
+| strife     | :x:       |
+| zdoom 1.33 | :warning: |
 
 ### Nodes
 
