@@ -2075,6 +2075,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_BLOCKEVERYTHING)
       ld->flags |= ML_BLOCKING | ML_BLOCKEVERYTHING;
 
+    if (mld->flags & UDMF_ML_BLOCKLANDMONSTERS)
+      ld->flags |= ML_BLOCKLANDMONSTERS;
+
     // UDMF TODO:
     // UDMF_ML_TRANSLUCENT
     // UDMF_ML_JUMPOVER
@@ -2099,7 +2102,6 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_DRAWFULLHEIGHT
     // UDMF_ML_DAMAGESPECIAL
     // UDMF_ML_DEATHSPECIAL
-    // UDMF_ML_BLOCKLANDMONSTERS
     // locknumber
     // automapstyle
     // health

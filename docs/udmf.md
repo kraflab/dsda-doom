@@ -99,7 +99,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | healthgroup        | :grey_question:    |
 | damagespecial      | :grey_question:    |
 | deathspecial       | :grey_question:    |
-| blocklandmonsters  | :grey_question:    |
+| blocklandmonsters  | :heavy_check_mark: |
 
 #### Notes
 - `arg*` fields currently have hexen's limit of 0-255.
