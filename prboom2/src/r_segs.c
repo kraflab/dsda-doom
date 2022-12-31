@@ -103,6 +103,9 @@ static int	HEIGHTBITS = 12;
 static int	HEIGHTUNIT = (1 << 12);
 static int	invhgtbits = 4;
 
+/* cph - allow crappy fake contrast to be disabled */
+int fake_contrast;
+
 //
 // R_FixWiggle()
 // Dynamic wall/texture rescaler, AKA "WiggleHack II"
@@ -221,13 +224,18 @@ static fixed_t R_ScaleFromGlobalAngle(angle_t visangle)
   return scale;
 }
 
+dboolean R_FakeContrast(seg_t *seg)
+{
+  return fake_contrast && seg && !(seg->sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
+}
+
 const lighttable_t** GetLightTable(int lightlevel)
 {
   int lightnum = (lightlevel >> LIGHTSEGSHIFT) + (extralight * LIGHTBRIGHT);
 
   /* cph - ...what is this for? adding contrast to rooms?
    * It looks crap in outdoor areas */
-  if (fake_contrast && curline && !hexen)
+  if (R_FakeContrast(curline))
   {
     if (curline->v1->y == curline->v2->y)
     {
