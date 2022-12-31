@@ -70,7 +70,6 @@ angle_t         rw_normalangle; // angle to line origin
 int             rw_angle1;
 fixed_t         rw_distance;
 const lighttable_t    **walllights;
-const lighttable_t    **walllightsnext;
 
 //
 // regular wall
@@ -249,7 +248,6 @@ const lighttable_t** GetLightTable(int lightlevel)
 static void R_UpdateWallLights(int lightlevel)
 {
   walllights = GetLightTable(lightlevel);
-  walllightsnext = GetLightTable(lightlevel + 1);
 }
 
 static int R_SideLightLevel(side_t *side, int base_lightlevel)

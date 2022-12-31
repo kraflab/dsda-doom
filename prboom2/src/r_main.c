@@ -120,7 +120,6 @@ float modelMatrix[16];
 float projMatrix[16];
 
 extern const lighttable_t **walllights;
-extern const lighttable_t **walllightsnext;
 
 //
 // precalculated math tables
@@ -892,7 +891,6 @@ static void R_SetupFrame (player_t *player)
         + player->fixedcolormap*256*sizeof(lighttable_t);
 
       walllights = scalelightfixed;
-      walllightsnext = scalelightfixed;
 
       for (i=0 ; i<MAXLIGHTSCALE ; i++)
         scalelightfixed[i] = fixedcolormap;
