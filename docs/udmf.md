@@ -91,6 +91,15 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | arg0str            | :grey_question:    |
 | moreids            | :grey_question:    |
 | transparent        | :grey_question:    |
+| automapstyle       | :grey_question:    |
+| revealed           | :grey_question:    |
+| noskywalls         | :grey_question:    |
+| drawfullheight     | :grey_question:    |
+| health             | :grey_question:    |
+| healthgroup        | :grey_question:    |
+| damagespecial      | :grey_question:    |
+| deathspecial       | :grey_question:    |
+| blocklandmonsters  | :grey_question:    |
 
 #### Notes
 - `arg*` fields currently have hexen's limit of 0-255.

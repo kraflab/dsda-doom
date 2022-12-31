@@ -2094,7 +2094,16 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_BLOCKSIGHT
     // UDMF_ML_BLOCKHITSCAN
     // UDMF_ML_TRANSPARENT
+    // UDMF_ML_REVEALED
+    // UDMF_ML_NOSKYWALLS
+    // UDMF_ML_DRAWFULLHEIGHT
+    // UDMF_ML_DAMAGESPECIAL
+    // UDMF_ML_DEATHSPECIAL
+    // UDMF_ML_BLOCKLANDMONSTERS
     // locknumber
+    // automapstyle
+    // health
+    // healthgroup
 
     P_CalculateLineDefProperties(ld);
   }

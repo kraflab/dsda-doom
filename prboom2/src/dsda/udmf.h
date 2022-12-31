@@ -63,6 +63,12 @@ extern "C" {
 #define UDMF_ML_BLOCKSIGHT         0x0000001000000000ull
 #define UDMF_ML_BLOCKHITSCAN       0x0000002000000000ull
 #define UDMF_ML_TRANSPARENT        0x0000004000000000ull
+#define UDMF_ML_REVEALED           0x0000008000000000ull
+#define UDMF_ML_NOSKYWALLS         0x0000010000000000ull
+#define UDMF_ML_DRAWFULLHEIGHT     0x0000020000000000ull
+#define UDMF_ML_DAMAGESPECIAL      0x0000040000000000ull
+#define UDMF_ML_DEATHSPECIAL       0x0000080000000000ull
+#define UDMF_ML_BLOCKLANDMONSTERS  0x0000100000000000ull
 
 typedef uint64_t udmf_line_flags_t;
 
@@ -79,6 +85,9 @@ typedef struct {
   int sidefront;
   int sideback;
   int locknumber;
+  int automapstyle;
+  int health;
+  int healthgroup;
   udmf_line_flags_t flags;
 } udmf_line_t;
 

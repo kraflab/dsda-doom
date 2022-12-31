@@ -129,6 +129,15 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     else if (!stricmp(scanner.string, "locknumber")) {
       SCAN_INT(line.locknumber);
     }
+    else if (!stricmp(scanner.string, "automapstyle")) {
+      SCAN_INT(line.automapstyle);
+    }
+    else if (!stricmp(scanner.string, "health")) {
+      SCAN_INT(line.health);
+    }
+    else if (!stricmp(scanner.string, "healthgroup")) {
+      SCAN_INT(line.healthgroup);
+    }
     else if (!stricmp(scanner.string, "blocking")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKING);
     }
@@ -245,6 +254,24 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "transparent")) {
       SCAN_FLAG(line.flags, UDMF_ML_TRANSPARENT);
+    }
+    else if (!stricmp(scanner.string, "revealed")) {
+      SCAN_FLAG(line.flags, UDMF_ML_REVEALED);
+    }
+    else if (!stricmp(scanner.string, "noskywalls")) {
+      SCAN_FLAG(line.flags, UDMF_ML_NOSKYWALLS);
+    }
+    else if (!stricmp(scanner.string, "drawfullheight")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DRAWFULLHEIGHT);
+    }
+    else if (!stricmp(scanner.string, "damagespecial")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DAMAGESPECIAL);
+    }
+    else if (!stricmp(scanner.string, "deathspecial")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DEATHSPECIAL);
+    }
+    else if (!stricmp(scanner.string, "blocklandmonsters")) {
+      SCAN_FLAG(line.flags, UDMF_ML_BLOCKLANDMONSTERS);
     }
     else {
       // known ignored fields:
