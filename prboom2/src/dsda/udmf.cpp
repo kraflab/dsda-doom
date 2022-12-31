@@ -569,6 +569,9 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
     else if (!stricmp(scanner.string, "damagehazard")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_DAMAGEHAZARD);
     }
+    else if (!stricmp(scanner.string, "noattack")) {
+      SCAN_FLAG(sector.flags, UDMF_SECF_NOATTACK);
+    }
     else if (!stricmp(scanner.string, "texturefloor")) {
       SCAN_STRING_N(sector.texturefloor, 8);
     }
@@ -608,6 +611,29 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       // portal_floor_nopass
       // portal_floor_norender
       // portal_floor_overlaytype
+      // floor_reflect
+      // ceiling_reflect
+      // fogdensity
+      // floorglowcolor
+      // floorglowheight
+      // ceilingglowcolor
+      // ceilingglowheight
+      // color_floor
+      // color_ceiling
+      // color_walltop
+      // color_wallbottom
+      // color_sprites
+      // coloradd_floor
+      // coloradd_ceiling
+      // coloradd_sprites
+      // coloradd_walls
+      // colorization_floor
+      // colorization_ceiling
+      // noskywalls
+      // healthfloor
+      // healthfloorgroup
+      // healthceiling
+      // healthceilinggroup
       dsda_SkipValue(scanner);
     }
   }

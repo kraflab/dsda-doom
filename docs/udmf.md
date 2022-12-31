@@ -223,6 +223,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | desaturation             | :x:                |
 | silent                   | :grey_question:    |
 | nofallingdamage          | :grey_question:    |
+| noattack                 | :grey_question:    |
 | dropactors               | :grey_question:    |
 | norespawn                | :grey_question:    |
 | soundsequence            | :x:                |
@@ -247,6 +248,29 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | portal_floor_nopass      | :x:                |
 | portal_floor_norender    | :x:                |
 | portal_floor_overlaytype | :x:                |
+| floor_reflect            | :x:                |
+| ceiling_reflect          | :x:                |
+| fogdensity               | :x:                |
+| floorglowcolor           | :x:                |
+| floorglowheight          | :x:                |
+| ceilingglowcolor         | :x:                |
+| ceilingglowheight        | :x:                |
+| color_floor              | :x:                |
+| color_ceiling            | :x:                |
+| color_walltop            | :x:                |
+| color_wallbottom         | :x:                |
+| color_sprites            | :x:                |
+| coloradd_floor           | :x:                |
+| coloradd_ceiling         | :x:                |
+| coloradd_sprites         | :x:                |
+| coloradd_walls           | :x:                |
+| colorization_floor       | :x:                |
+| colorization_ceiling     | :x:                |
+| noskywalls               | :x:                |
+| healthfloor              | :x:                |
+| healthfloorgroup         | :x:                |
+| healthceiling            | :x:                |
+| healthceilinggroup       | :x:                |
 
 ### Things
 

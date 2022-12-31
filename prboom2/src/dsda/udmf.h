@@ -145,6 +145,7 @@ typedef struct {
 #define UDMF_SECF_WATERZONE            0x0080
 #define UDMF_SECF_DAMAGETERRAINEFFECT  0x0100
 #define UDMF_SECF_DAMAGEHAZARD         0x0200
+#define UDMF_SECF_NOATTACK             0x0400
 
 typedef uint16_t udmf_sector_flags_t;
 
