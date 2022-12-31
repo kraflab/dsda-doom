@@ -316,6 +316,15 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
     else if (!stricmp(scanner.string, "light")) {
       SCAN_INT(side.light);
     }
+    else if (!stricmp(scanner.string, "light_top")) {
+      SCAN_INT(side.light_top);
+    }
+    else if (!stricmp(scanner.string, "light_mid")) {
+      SCAN_INT(side.light_mid);
+    }
+    else if (!stricmp(scanner.string, "light_bottom")) {
+      SCAN_INT(side.light_bottom);
+    }
     else if (!stricmp(scanner.string, "scalex_top")) {
       SCAN_FLOAT(side.scalex_top);
     }
@@ -373,6 +382,15 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
     else if (!stricmp(scanner.string, "nodecals")) {
       SCAN_FLAG(side.flags, UDMF_SF_NODECALS);
     }
+    else if (!stricmp(scanner.string, "lightabsolute_top")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTETOP);
+    }
+    else if (!stricmp(scanner.string, "lightabsolute_mid")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTEMID);
+    }
+    else if (!stricmp(scanner.string, "lightabsolute_bottom")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTEBOTTOM);
+    }
     else if (!stricmp(scanner.string, "texturetop")) {
       SCAN_STRING_N(side.texturetop, 8);
     }
@@ -385,6 +403,33 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
     else {
       // known ignored fields:
       // comment
+      // nogradient_top
+      // flipgradient_top
+      // clampgradient_top
+      // useowncolors_top
+      // uppercolor_top
+      // lowercolor_top
+      // nogradient_mid
+      // flipgradient_mid
+      // clampgradient_mid
+      // useowncolors_mid
+      // uppercolor_mid
+      // lowercolor_mid
+      // nogradient_bottom
+      // flipgradient_bottom
+      // clampgradient_bottom
+      // useowncolors_bottom
+      // uppercolor_bottom
+      // lowercolor_bottom
+      // useowncoloradd_top
+      // useowncoloradd_mid
+      // useowncoloradd_bottom
+      // coloradd_top
+      // coloradd_mid
+      // coloradd_bottom
+      // colorization_top
+      // colorization_mid
+      // colorization_bottom
       dsda_SkipValue(scanner);
     }
   }

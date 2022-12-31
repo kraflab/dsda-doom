@@ -209,13 +209,16 @@ typedef struct
 // The SideDef.
 //
 
-#define SF_LIGHTABSOLUTE  0x01
-// #define SF_LIGHTFOG       0x02
-// #define SF_NOFAKECONTRAST 0x04
-// #define SF_SMOOTHLIGHTING 0x08
-// #define SF_CLIPMIDTEX     0x10
-// #define SF_WRAPMIDTEX     0x20
-// #define SF_NODECALS       0x40
+#define SF_LIGHTABSOLUTE       0x0001
+// #define SF_LIGHTFOG            0x0002
+// #define SF_NOFAKECONTRAST      0x0004
+// #define SF_SMOOTHLIGHTING      0x0008
+// #define SF_CLIPMIDTEX          0x0010
+// #define SF_WRAPMIDTEX          0x0020
+// #define SF_NODECALS            0x0040
+// #define SF_LIGHTABSOLUTETOP    0x0080
+// #define SF_LIGHTABSOLUTEMID    0x0100
+// #define SF_LIGHTABSOLUTEBOTTOM 0x0200
 
 typedef struct
 {

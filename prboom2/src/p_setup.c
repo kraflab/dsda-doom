@@ -2404,6 +2404,9 @@ static void P_LoadUDMFSideDefs(int lump)
     // scaley_mid
     // scalex_bottom
     // scaley_bottom
+    // light_top
+    // light_mid
+    // light_bottom
 
     switch (sd->special)
     {

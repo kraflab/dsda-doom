@@ -91,15 +91,18 @@ typedef struct {
   udmf_line_flags_t flags;
 } udmf_line_t;
 
-#define UDMF_SF_LIGHTABSOLUTE  0x01
-#define UDMF_SF_LIGHTFOG       0x02
-#define UDMF_SF_NOFAKECONTRAST 0x04
-#define UDMF_SF_SMOOTHLIGHTING 0x08
-#define UDMF_SF_CLIPMIDTEX     0x10
-#define UDMF_SF_WRAPMIDTEX     0x20
-#define UDMF_SF_NODECALS       0x40
+#define UDMF_SF_LIGHTABSOLUTE       0x0001
+#define UDMF_SF_LIGHTFOG            0x0002
+#define UDMF_SF_NOFAKECONTRAST      0x0004
+#define UDMF_SF_SMOOTHLIGHTING      0x0008
+#define UDMF_SF_CLIPMIDTEX          0x0010
+#define UDMF_SF_WRAPMIDTEX          0x0020
+#define UDMF_SF_NODECALS            0x0040
+#define UDMF_SF_LIGHTABSOLUTETOP    0x0080
+#define UDMF_SF_LIGHTABSOLUTEMID    0x0100
+#define UDMF_SF_LIGHTABSOLUTEBOTTOM 0x0200
 
-typedef uint8_t udmf_side_flags_t;
+typedef uint16_t udmf_side_flags_t;
 
 typedef struct {
   int offsetx;
@@ -121,6 +124,9 @@ typedef struct {
   float offsetx_bottom;
   float offsety_bottom;
   int light;
+  int light_top;
+  int light_mid;
+  int light_bottom;
   udmf_side_flags_t flags;
 } udmf_side_t;
 
