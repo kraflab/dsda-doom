@@ -209,6 +209,14 @@ typedef struct
 // The SideDef.
 //
 
+#define SF_LIGHTABSOLUTE  0x01
+// #define SF_LIGHTFOG       0x02
+// #define SF_NOFAKECONTRAST 0x04
+// #define SF_SMOOTHLIGHTING 0x08
+// #define SF_CLIPMIDTEX     0x10
+// #define SF_WRAPMIDTEX     0x20
+// #define SF_NODECALS       0x40
+
 typedef struct
 {
   fixed_t textureoffset; // add this to the calculated texture column
@@ -233,6 +241,9 @@ typedef struct
   fixed_t rowoffset_top;
   fixed_t rowoffset_mid;
   fixed_t rowoffset_bottom;
+
+  int lightlevel;
+  unsigned int flags;
 } side_t;
 
 //

@@ -2380,6 +2380,9 @@ static void P_LoadUDMFSideDefs(int lump)
     sd->rowoffset_mid = dsda_IntToFixed(msd->offsety_mid);
     sd->rowoffset_bottom = dsda_IntToFixed(msd->offsety_bottom);
 
+    sd->lightlevel = msd->light;
+    sd->flags = msd->flags;
+
     if (msd->sector >= numsectors)
       I_Error("Invalid level data: sidedef %d's sector index is out of range", i);
 
@@ -2392,8 +2395,6 @@ static void P_LoadUDMFSideDefs(int lump)
     // scaley_mid
     // scalex_bottom
     // scaley_bottom
-    // light
-    // flags
 
     switch (sd->special)
     {
