@@ -216,9 +216,9 @@ typedef struct
 // #define SF_CLIPMIDTEX          0x0010
 // #define SF_WRAPMIDTEX          0x0020
 // #define SF_NODECALS            0x0040
-// #define SF_LIGHTABSOLUTETOP    0x0080
-// #define SF_LIGHTABSOLUTEMID    0x0100
-// #define SF_LIGHTABSOLUTEBOTTOM 0x0200
+#define SF_LIGHTABSOLUTETOP    0x0080
+#define SF_LIGHTABSOLUTEMID    0x0100
+#define SF_LIGHTABSOLUTEBOTTOM 0x0200
 
 typedef struct
 {
@@ -246,6 +246,9 @@ typedef struct
   fixed_t rowoffset_bottom;
 
   int lightlevel;
+  int lightlevel_top;
+  int lightlevel_mid;
+  int lightlevel_bottom;
   unsigned short flags;
 } side_t;
 

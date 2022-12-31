@@ -2390,6 +2390,9 @@ static void P_LoadUDMFSideDefs(int lump)
     sd->rowoffset_bottom = dsda_IntToFixed(msd->offsety_bottom);
 
     sd->lightlevel = msd->light;
+    sd->lightlevel_top = msd->light_top;
+    sd->lightlevel_mid = msd->light_mid;
+    sd->lightlevel_bottom = msd->light_bottom;
     sd->flags = msd->flags;
 
     if (msd->sector >= numsectors)
@@ -2404,9 +2407,6 @@ static void P_LoadUDMFSideDefs(int lump)
     // scaley_mid
     // scalex_bottom
     // scaley_bottom
-    // light_top
-    // light_mid
-    // light_bottom
 
     switch (sd->special)
     {

@@ -260,17 +260,20 @@ static int R_SideLightLevel(side_t *side, int base_lightlevel)
 
 int R_TopLightLevel(side_t *side, int base_lightlevel)
 {
-  return R_SideLightLevel(side, base_lightlevel);
+  return side->lightlevel_top +
+         ((side->flags & SF_LIGHTABSOLUTETOP) ? 0 : R_SideLightLevel(side, base_lightlevel));
 }
 
 int R_MidLightLevel(side_t *side, int base_lightlevel)
 {
-  return R_SideLightLevel(side, base_lightlevel);
+  return side->lightlevel_mid +
+         ((side->flags & SF_LIGHTABSOLUTEMID) ? 0 : R_SideLightLevel(side, base_lightlevel));
 }
 
 int R_BottomLightLevel(side_t *side, int base_lightlevel)
 {
-  return R_SideLightLevel(side, base_lightlevel);
+  return side->lightlevel_bottom +
+         ((side->flags & SF_LIGHTABSOLUTEBOTTOM) ? 0 : R_SideLightLevel(side, base_lightlevel));
 }
 
 static void R_ApplyTopLight(side_t *side)
