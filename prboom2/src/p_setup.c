@@ -2392,9 +2392,6 @@ static void P_LoadUDMFSideDefs(int lump)
     // scaley_mid
     // scalex_bottom
     // scaley_bottom
-    // offsety_top
-    // offsety_mid
-    // offsety_bottom
     // light
     // flags
 
