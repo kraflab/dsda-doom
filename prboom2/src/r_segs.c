@@ -224,31 +224,37 @@ static fixed_t R_ScaleFromGlobalAngle(angle_t visangle)
   return scale;
 }
 
-dboolean R_FakeContrast(seg_t *seg)
+const int fake_contrast_value = 16;
+
+static dboolean R_FakeContrast(seg_t *seg)
 {
   return fake_contrast && seg && !(seg->sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
 }
 
-const lighttable_t** GetLightTable(int lightlevel)
+void R_AddContrast(seg_t *seg, int *base_lightlevel)
 {
-  int lightnum = (lightlevel >> LIGHTSEGSHIFT) + (extralight * LIGHTBRIGHT);
-
   /* cph - ...what is this for? adding contrast to rooms?
    * It looks crap in outdoor areas */
-  if (R_FakeContrast(curline))
+  if (R_FakeContrast(seg))
   {
-    if (curline->v1->y == curline->v2->y)
+    if (seg->linedef->dy == 0)
     {
-      lightnum -= LIGHTBRIGHT;
+      *base_lightlevel -= fake_contrast_value;
     }
-    else
+    else if (seg->linedef->dx == 0)
     {
-      if (curline->v1->x == curline->v2->x)
-      {
-        lightnum += LIGHTBRIGHT;
-      }
+      *base_lightlevel += fake_contrast_value;
     }
-  }
+  };
+}
+
+const lighttable_t** GetLightTable(int lightlevel)
+{
+  int lightnum;
+
+  R_AddContrast(curline, &lightlevel);
+
+  lightnum = (lightlevel >> LIGHTSEGSHIFT) + (extralight * LIGHTBRIGHT);
 
   return scalelight[BETWEEN(0, LIGHTLEVELS - 1, lightnum)];
 }

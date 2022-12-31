@@ -44,6 +44,6 @@ void R_StoreWallRange(const int start, const int stop);
 int R_TopLightLevel(side_t *side, int base_lightlevel);
 int R_MidLightLevel(side_t *side, int base_lightlevel);
 int R_BottomLightLevel(side_t *side, int base_lightlevel);
-dboolean R_FakeContrast(seg_t *seg);
+void R_AddContrast(seg_t *seg, int *base_lightlevel);
 
 #endif
