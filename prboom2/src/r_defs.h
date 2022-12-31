@@ -246,7 +246,7 @@ typedef struct
   fixed_t rowoffset_bottom;
 
   int lightlevel;
-  unsigned int flags;
+  unsigned short flags;
 } side_t;
 
 //
