@@ -119,8 +119,8 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | offsety_mid    | :heavy_check_mark: |
 | offsetx_bottom | :heavy_check_mark: |
 | offsety_bottom | :heavy_check_mark: |
-| light          | :grey_question:    |
-| lightabsolute  | :grey_question:    |
+| light          | :heavy_check_mark: |
+| lightabsolute  | :heavy_check_mark: |
 | lightfog       | :grey_question:    |
 | nofakecontrast | :grey_question:    |
 | smoothlighting | :grey_question:    |

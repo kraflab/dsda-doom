@@ -53,6 +53,7 @@
 #include "r_sky.h"
 #include "r_plane.h"
 #include "r_data.h"
+#include "r_segs.h"
 #include "r_things.h"
 #include "r_fps.h"
 #include "p_maputl.h"
@@ -1625,7 +1626,7 @@ void gld_AddWall(seg_t *seg)
   sector_t ftempsec; // needed for R_FakeFlat
   sector_t btempsec; // needed for R_FakeFlat
   float lineheight, linelength;
-  int rellight = 0;
+  int base_lightlevel;
   int backseg;
   dboolean fix_sky_bleed = false;
   dboolean indexed;
@@ -1663,14 +1664,16 @@ void gld_AddWall(seg_t *seg)
   if (!frontsector)
     return;
 
+  base_lightlevel = frontsector->lightlevel + gld_GetGunFlashLight();
+
   // e6y: fake contrast stuff
   // Original doom added/removed one light level ((1<<LIGHTSEGSHIFT) == 16)
   // for walls exactly vertical/horizontal on the map
   if (fake_contrast)
   {
-    rellight = seg->linedef->dx == 0 ? +gl_rellight : seg->linedef->dy==0 ? -gl_rellight : 0;
+    base_lightlevel += seg->linedef->dx == 0 ? +gl_rellight : seg->linedef->dy==0 ? -gl_rellight : 0;
   }
-  wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+gld_GetGunFlashLight());
+
   wall.fogdensity = gld_CalcFogDensity(frontsector, frontsector->lightlevel, GLDIT_WALL);
   wall.alpha=1.0f;
   wall.gltexture=NULL;
@@ -1678,6 +1681,8 @@ void gld_AddWall(seg_t *seg)
 
   if (!seg->backsector) /* onesided */
   {
+    wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
+
     if (frontsector->ceilingpic==skyflatnum)
     {
       wall.ytop=MAXCOORD;
@@ -1755,6 +1760,7 @@ void gld_AddWall(seg_t *seg)
     /* toptexture */
     ceiling_height=frontsector->ceilingheight;
     floor_height=backsector->ceilingheight;
+    wall.light = gld_CalcLightLevel(R_TopLightLevel(seg->sidedef, base_lightlevel));
     if (frontsector->ceilingpic==skyflatnum)// || backsector->ceilingpic==skyflatnum)
     {
       wall.ytop= MAXCOORD;
@@ -1861,6 +1867,8 @@ void gld_AddWall(seg_t *seg)
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
       int top, bottom;
+
+      wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
       wall.gltexture=temptex;
 
       if ( (LINE->flags & ML_DONTPEGBOTTOM) >0)
@@ -1954,6 +1962,7 @@ bottomtexture:
     /* bottomtexture */
     ceiling_height=backsector->floorheight;
     floor_height=frontsector->floorheight;
+    wall.light = gld_CalcLightLevel(R_BottomLightLevel(seg->sidedef, base_lightlevel));
     if (frontsector->floorpic==skyflatnum)
     {
       wall.ybottom=-MAXCOORD;
