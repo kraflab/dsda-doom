@@ -86,7 +86,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | blockprojectiles   | :grey_question:    |
 | blockuse           | :grey_question:    |
 | blocksight         | :heavy_check_mark: |
-| blockhitscan       | :grey_question:    |
+| blockhitscan       | :heavy_check_mark: |
 | locknumber         | :grey_question:    |
 | arg0str            | :grey_question:    |
 | moreids            | :grey_question:    |

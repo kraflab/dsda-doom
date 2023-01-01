@@ -2081,6 +2081,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_BLOCKSIGHT)
       ld->flags |= ML_BLOCKSIGHT;
 
+    if (mld->flags & UDMF_ML_BLOCKHITSCAN)
+      ld->flags |= ML_BLOCKHITSCAN;
+
     if (mld->flags & UDMF_ML_CLIPMIDTEX)
       ld->flags |= ML_CLIPMIDTEX;
 
@@ -2099,7 +2102,6 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_CHECKSWITCHRANGE
     // UDMF_ML_BLOCKPROJECTILES
     // UDMF_ML_BLOCKUSE
-    // UDMF_ML_BLOCKHITSCAN
     // UDMF_ML_TRANSPARENT
     // UDMF_ML_REVEALED
     // UDMF_ML_NOSKYWALLS

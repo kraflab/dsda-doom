@@ -2196,7 +2196,8 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     if (li->special)
       map_format.shoot_special_line(shootthing, li);
 
-    if (li->flags & ML_TWOSIDED && !(li->flags & ML_BLOCKEVERYTHING))
+    if (li->flags & ML_TWOSIDED &&
+        !(li->flags & (ML_BLOCKEVERYTHING | ML_BLOCKHITSCAN)))
     {  // crosses a two sided (really 2s) line
       P_LineOpening (li);
       dist = FixedMul(attackrange, in->frac);
