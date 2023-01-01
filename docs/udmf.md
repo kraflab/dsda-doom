@@ -138,7 +138,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | lightabsolute_bottom  | :heavy_check_mark: |
 | lightfog              | :x:                |
 | nofakecontrast        | :heavy_check_mark: |
-| smoothlighting        | :grey_question:    |
+| smoothlighting        | :heavy_check_mark: |
 | clipmidtex            | :grey_question:    |
 | wrapmidtex            | :grey_question:    |
 | nodecals              | :x:                |

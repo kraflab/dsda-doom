@@ -36,6 +36,9 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <math.h>
+
 #include "SDL.h"
 
 #include "doomstat.h"
@@ -244,6 +247,16 @@ void R_AddContrast(seg_t *seg, int *base_lightlevel)
     else if (seg->linedef->dx == 0)
     {
       *base_lightlevel += fake_contrast_value;
+    }
+    else if (seg->sidedef->flags & SF_SMOOTHLIGHTING)
+    {
+      double dx, dy;
+
+      dx = (double) seg->linedef->dx / FRACUNIT;
+      dy = (double) seg->linedef->dy / FRACUNIT;
+
+      *base_lightlevel +=
+        lround(fabs(atan(dy / dx) * 2 / M_PI) * (2 * fake_contrast_value) - fake_contrast_value);
     }
   };
 }
