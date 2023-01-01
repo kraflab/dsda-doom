@@ -196,6 +196,7 @@ typedef struct {
 
 // udmf
 #define ML_CLIPMIDTEX 0x00800000
+#define ML_BLOCKSIGHT 0x01000000
 
 // Sector definition, from editing.
 typedef struct {
