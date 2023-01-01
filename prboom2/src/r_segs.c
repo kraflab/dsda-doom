@@ -902,7 +902,7 @@ void R_StoreWallRange(const int start, const int stop)
       // hexen flowing water
       || backsector->special != frontsector->special
 
-      || (sidedef->midtexture && (sidedef->flags & SF_CLIPMIDTEX))
+      || (sidedef->midtexture && (sidedef->flags & SF_CLIPMIDTEX || linedef->flags & ML_CLIPMIDTEX))
       ;
 
     markceiling = worldhigh != worldtop
@@ -921,7 +921,7 @@ void R_StoreWallRange(const int start, const int stop)
       // killough 4/17/98: draw ceilings if different light levels
       || backsector->ceilinglightsec != frontsector->ceilinglightsec
 
-      || (sidedef->midtexture && (sidedef->flags & SF_CLIPMIDTEX))
+      || (sidedef->midtexture && (sidedef->flags & SF_CLIPMIDTEX || linedef->flags & ML_CLIPMIDTEX))
       ;
 
     if (backsector->ceilingheight <= frontsector->floorheight

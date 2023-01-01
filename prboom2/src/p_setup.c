@@ -2078,6 +2078,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_BLOCKLANDMONSTERS)
       ld->flags |= ML_BLOCKLANDMONSTERS;
 
+    if (mld->flags & UDMF_ML_CLIPMIDTEX)
+      ld->flags |= ML_CLIPMIDTEX;
+
     // UDMF TODO:
     // UDMF_ML_TRANSLUCENT
     // UDMF_ML_JUMPOVER
@@ -2087,7 +2090,6 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_PLAYERUSEBACK
     // UDMF_ML_FIRSTSIDEONLY
     // UDMF_ML_ZONEBOUNDARY
-    // UDMF_ML_CLIPMIDTEX
     // UDMF_ML_WRAPMIDTEX
     // UDMF_ML_MIDTEX3D
     // UDMF_ML_MIDTEX3DIMPASSIBLE

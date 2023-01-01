@@ -78,7 +78,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | blockeverything    | :heavy_check_mark: |
 | firstsideonly      | :grey_question:    |
 | zoneboundary       | :grey_question:    |
-| clipmidtex         | :grey_question:    |
+| clipmidtex         | :heavy_check_mark: |
 | wrapmidtex         | :telescope:        |
 | midtex3d           | :grey_question:    |
 | midtex3dimpassible | :grey_question:    |

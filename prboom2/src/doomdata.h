@@ -194,6 +194,9 @@ typedef struct {
 
 #define ML_SPAC_MASK (ML_SPAC_CROSS|ML_SPAC_USE|ML_SPAC_MCROSS|ML_SPAC_IMPACT|ML_SPAC_PUSH|ML_SPAC_PCROSS)
 
+// udmf
+#define ML_CLIPMIDTEX 0x00800000
+
 // Sector definition, from editing.
 typedef struct {
   short floorheight;
