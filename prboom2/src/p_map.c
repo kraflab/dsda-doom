@@ -564,11 +564,17 @@ dboolean PIT_CheckLine (line_t* ld)
   }
 
   // killough 8/10/98: allow bouncing objects to pass through as missiles
-  if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)) || ld->flags & ML_BLOCKEVERYTHING)
+  if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)) ||
+      ld->flags & (ML_BLOCKPROJECTILES | ML_BLOCKEVERYTHING))
   {
     // explicitly blocking everything
     // or blocking player
-    if (ld->flags & ML_BLOCKING || (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS))
+    // or blocking projectile
+    if (
+      ld->flags & ML_BLOCKING ||
+      (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS) ||
+      tmthing->flags & (MF_MISSILE | MF_BOUNCES)
+    )
     {
       if (map_format.hexen)
       {
