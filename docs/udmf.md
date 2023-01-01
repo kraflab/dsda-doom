@@ -79,7 +79,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | firstsideonly      | :grey_question:    |
 | zoneboundary       | :grey_question:    |
 | clipmidtex         | :grey_question:    |
-| wrapmidtex         | :grey_question:    |
+| wrapmidtex         | :telescope:        |
 | midtex3d           | :grey_question:    |
 | midtex3dimpassible | :grey_question:    |
 | checkswitchrange   | :grey_question:    |
@@ -140,7 +140,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | nofakecontrast        | :heavy_check_mark: |
 | smoothlighting        | :heavy_check_mark: |
 | clipmidtex            | :heavy_check_mark: |
-| wrapmidtex            | :grey_question:    |
+| wrapmidtex            | :telescope:        |
 | nodecals              | :x:                |
 | nogradient_top        | :x:                |
 | flipgradient_top      | :x:                |
