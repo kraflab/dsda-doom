@@ -161,7 +161,7 @@ typedef struct {
 
 // Reserved by EE
 // SoM 9/02/02: 3D Middletexture flag!
-#define ML_3DMIDTEX 0x0400
+#define ML_ETERNITY 0x0400
 
 // haleyjd 05/02/06: Although it was believed until now that a reserved line
 // flag was unnecessary, a problem with Ultimate DOOM E2M7 has disproven this
@@ -202,6 +202,7 @@ typedef struct {
 #define ML_BLOCKUSE         0x08000000
 #define ML_BLOCKFLOATERS    0x10000000
 #define ML_JUMPOVER         0x20000000
+#define ML_3DMIDTEX         0x40000000
 
 // Sector definition, from editing.
 typedef struct {
