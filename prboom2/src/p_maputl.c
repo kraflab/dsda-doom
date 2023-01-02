@@ -192,10 +192,10 @@ void P_LineOpening(const line_t *linedef)
   extern int tmfloorpic;
 
   if (linedef->sidenum[1] == NO_INDEX)      // single sided line
-    {
-      openrange = 0;
-      return;
-    }
+  {
+    openrange = 0;
+    return;
+  }
 
   openfrontsector = linedef->frontsector;
   openbacksector = linedef->backsector;
@@ -206,17 +206,17 @@ void P_LineOpening(const line_t *linedef)
     opentop = openbacksector->ceilingheight;
 
   if (openfrontsector->floorheight > openbacksector->floorheight)
-    {
-      openbottom = openfrontsector->floorheight;
-      lowfloor = openbacksector->floorheight;
-      tmfloorpic = openfrontsector->floorpic;
-    }
+  {
+    openbottom = openfrontsector->floorheight;
+    lowfloor = openbacksector->floorheight;
+    tmfloorpic = openfrontsector->floorpic;
+  }
   else
-    {
-      openbottom = openbacksector->floorheight;
-      lowfloor = openfrontsector->floorheight;
-      tmfloorpic = openbacksector->floorpic;
-    }
+  {
+    openbottom = openbacksector->floorheight;
+    lowfloor = openfrontsector->floorheight;
+    tmfloorpic = openbacksector->floorpic;
+  }
   openrange = opentop - openbottom;
 }
 
