@@ -2087,6 +2087,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_BLOCKPROJECTILES)
       ld->flags |= ML_BLOCKPROJECTILES;
 
+    if (mld->flags & UDMF_ML_BLOCKUSE)
+      ld->flags |= ML_BLOCKUSE;
+
     if (mld->flags & UDMF_ML_CLIPMIDTEX)
       ld->flags |= ML_CLIPMIDTEX;
 
@@ -2103,7 +2106,6 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_MIDTEX3D
     // UDMF_ML_MIDTEX3DIMPASSIBLE
     // UDMF_ML_CHECKSWITCHRANGE
-    // UDMF_ML_BLOCKUSE
     // UDMF_ML_TRANSPARENT
     // UDMF_ML_REVEALED
     // UDMF_ML_NOSKYWALLS

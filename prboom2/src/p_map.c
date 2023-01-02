@@ -2451,7 +2451,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
   {
     int sound;
 
-    if (in->d.line->flags & ML_BLOCKEVERYTHING)
+    if (in->d.line->flags & (ML_BLOCKEVERYTHING | ML_BLOCKUSE))
     {
       openrange = 0;
     }

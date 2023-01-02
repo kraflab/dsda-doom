@@ -84,7 +84,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | midtex3dimpassible | :grey_question:    |
 | checkswitchrange   | :grey_question:    |
 | blockprojectiles   | :heavy_check_mark: |
-| blockuse           | :grey_question:    |
+| blockuse           | :heavy_check_mark: |
 | blocksight         | :heavy_check_mark: |
 | blockhitscan       | :heavy_check_mark: |
 | locknumber         | :grey_question:    |
