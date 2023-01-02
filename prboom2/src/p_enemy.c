@@ -112,7 +112,7 @@ static void P_RecursiveSound(sector_t *sec, int soundblocks, mobj_t *soundtarget
     if (!(check->flags & ML_TWOSIDED))
       continue;
 
-    P_LineOpening(check);
+    P_LineOpening(check, NULL);
 
     if (line_opening.range <= 0)
       continue;       // closed door

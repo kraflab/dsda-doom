@@ -77,7 +77,7 @@ dboolean PTR_SightTraverse(intercept_t *in)
   //
   // crosses a two sided line
   //
-  P_LineOpening(li);
+  P_LineOpening(li, NULL);
 
   if (line_opening.bottom >= line_opening.top)  // quick test for totally closed doors
     return false;  // stop

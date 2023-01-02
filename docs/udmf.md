@@ -80,8 +80,8 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | zoneboundary       | :grey_question:    |
 | clipmidtex         | :heavy_check_mark: |
 | wrapmidtex         | :telescope:        |
-| midtex3d           | :grey_question:    |
-| midtex3dimpassible | :grey_question:    |
+| midtex3d           | :heavy_check_mark: |
+| midtex3dimpassible | :heavy_check_mark: |
 | checkswitchrange   | :grey_question:    |
 | blockprojectiles   | :heavy_check_mark: |
 | blockuse           | :heavy_check_mark: |

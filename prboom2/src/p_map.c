@@ -617,7 +617,7 @@ dboolean PIT_CheckLine (line_t* ld)
 
   // defines a 'window' from one sector to another across this line
 
-  P_LineOpening (ld);
+  P_LineOpening (ld, tmthing);
 
   if (rail && line_opening.bottom == tmfloorz)
   {
@@ -1912,7 +1912,7 @@ dboolean PTR_SlideTraverse (intercept_t* in)
 
   // defines a 'window' from one sector to another across a line
 
-  P_LineOpening (li);
+  P_LineOpening (li, slidemo);
 
   if (line_opening.range < slidemo->height)
     goto isblocking;  // doesn't fit
@@ -2108,7 +2108,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
     // A two sided line will restrict
     // the possible target ranges.
 
-    P_LineOpening (li);
+    P_LineOpening (li, NULL);
 
     if (line_opening.bottom >= line_opening.top)
       return false;   // stop
@@ -2218,7 +2218,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     if (li->flags & ML_TWOSIDED &&
         !(li->flags & (ML_BLOCKEVERYTHING | ML_BLOCKHITSCAN)))
     {  // crosses a two sided (really 2s) line
-      P_LineOpening (li);
+      P_LineOpening (li, NULL);
       dist = FixedMul(attackrange, in->frac);
 
       // killough 11/98: simplify
@@ -2470,7 +2470,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
     }
     else
     {
-      P_LineOpening (in->d.line);
+      P_LineOpening (in->d.line, NULL);
     }
 
     if (line_opening.range <= 0)
@@ -2569,7 +2569,7 @@ dboolean PTR_NoWayTraverse(intercept_t* in)
                                            // This linedef
   return ld->special || !(                 // Ignore specials
    ld->flags & ML_BLOCKING || (            // Always blocking
-   P_LineOpening(ld),                      // Find openings
+   P_LineOpening(ld, NULL),                // Find openings
    line_opening.range <= 0 ||                       // No opening
    line_opening.bottom > usething->z+24*FRACUNIT || // Too high it blocks
    line_opening.top < usething->z+usething->height  // Too low it blocks
@@ -3533,7 +3533,7 @@ dboolean PTR_BounceTraverse(intercept_t * in)
         goto bounceblocking;
     }
 
-    P_LineOpening(li);          // set open
+    P_LineOpening(li, slidemo);          // set open
     if (line_opening.range < slidemo->height)
         goto bounceblocking;    // doesn't fit
 
@@ -3825,7 +3825,7 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
     {                           // Check line
         if (in->d.line->special != USE_PUZZLE_ITEM_SPECIAL)
         {
-            P_LineOpening(in->d.line);
+            P_LineOpening(in->d.line, NULL);
             if (line_opening.range <= 0)
             {
                 sound = hexen_sfx_None;

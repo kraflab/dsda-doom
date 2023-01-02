@@ -2099,6 +2099,12 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_JUMPOVER)
       ld->flags |= ML_JUMPOVER;
 
+    if (mld->flags & UDMF_ML_MIDTEX3D)
+      ld->flags |= ML_3DMIDTEX;
+
+    if (mld->flags & UDMF_ML_MIDTEX3DIMPASSIBLE)
+      ld->flags |= ML_3DMIDTEXIMPASSIBLE;
+
     // UDMF TODO:
     // UDMF_ML_TRANSLUCENT
     // UDMF_ML_MONSTERUSE
@@ -2107,8 +2113,6 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_FIRSTSIDEONLY
     // UDMF_ML_ZONEBOUNDARY
     // UDMF_ML_WRAPMIDTEX
-    // UDMF_ML_MIDTEX3D
-    // UDMF_ML_MIDTEX3DIMPASSIBLE
     // UDMF_ML_CHECKSWITCHRANGE
     // UDMF_ML_TRANSPARENT
     // UDMF_ML_REVEALED

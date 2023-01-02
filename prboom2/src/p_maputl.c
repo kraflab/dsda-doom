@@ -177,7 +177,72 @@ fixed_t PUREFUNC P_InterceptVector(const divline_t *v2, const divline_t *v1)
 
 line_opening_t line_opening;
 
-void P_LineOpening(const line_t *linedef)
+dboolean P_GetMidTexturePosition(const line_t *line, int sideno, fixed_t *top, fixed_t *bottom)
+{
+  short texnum;
+  const side_t *side;
+
+  if (line->sidenum[0] == NO_INDEX || line->sidenum[1] == NO_INDEX)
+  {
+    return false;
+  }
+
+  side = &sides[line->sidenum[0]];
+
+  if (!side->midtexture)
+  {
+    return false;
+  }
+
+  texnum = side->midtexture;
+  texnum = texturetranslation[texnum];
+
+  if (line->flags & ML_DONTPEGBOTTOM)
+  {
+    *bottom = side->rowoffset + side->rowoffset_mid +
+                MAX(line->frontsector->floorheight, line->backsector->floorheight);
+    *top = *bottom + textureheight[texnum];
+  }
+  else
+  {
+    *top = side->rowoffset + side->rowoffset_mid +
+             MAX(line->frontsector->ceilingheight, line->backsector->ceilingheight);
+    *bottom = *top - textureheight[texnum];
+  }
+
+  return true;
+}
+
+void P_LineOpening_3dMidtex(const line_t *line, const mobj_t *actor)
+{
+  fixed_t bottom3d, top3d;
+
+  if (line->flags & ML_3DMIDTEXIMPASSIBLE && actor->flags & (MF_MISSILE | MF_BOUNCES))
+  {
+    return;
+  }
+
+  if (!P_GetMidTexturePosition(line, 0, &top3d, &bottom3d))
+  {
+    return;
+  }
+
+  if (actor->z + actor->height / 2 < (top3d + bottom3d) / 2)
+  {
+    line_opening.top = bottom3d;
+  }
+  else
+  {
+    if (top3d > line_opening.bottom)
+    {
+      line_opening.bottom = top3d;
+      line_opening.abovemidtex = true;
+    }
+    line_opening.touchmidtex = (abs(actor->z - top3d) < 24 * FRACUNIT);
+  }
+}
+
+void P_LineOpening(const line_t *linedef, const mobj_t *actor)
 {
   extern int tmfloorpic;
 
@@ -207,6 +272,15 @@ void P_LineOpening(const line_t *linedef)
     line_opening.lowfloor = line_opening.frontsector->floorheight;
     tmfloorpic = line_opening.backsector->floorpic;
   }
+
+  line_opening.abovemidtex = false;
+  line_opening.touchmidtex = false;
+
+  if (actor && linedef->frontsector && linedef->backsector && linedef->flags & ML_3DMIDTEX)
+  {
+    P_LineOpening_3dMidtex(linedef, actor);
+  }
+
   line_opening.range = line_opening.top - line_opening.bottom;
 }
 
