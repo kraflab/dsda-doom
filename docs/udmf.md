@@ -49,7 +49,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | mapped             | :heavy_check_mark: |
 | passuse            | :heavy_check_mark: |
 | translucent        | :grey_question:    |
-| jumpover           | :grey_question:    |
+| jumpover           | :heavy_check_mark: |
 | blockfloaters      | :heavy_check_mark: |
 | playercross        | :heavy_check_mark: |
 | playeruse          | :heavy_check_mark: |

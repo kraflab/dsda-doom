@@ -2096,9 +2096,11 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_CLIPMIDTEX)
       ld->flags |= ML_CLIPMIDTEX;
 
+    if (mld->flags & UDMF_ML_JUMPOVER)
+      ld->flags |= ML_JUMPOVER;
+
     // UDMF TODO:
     // UDMF_ML_TRANSLUCENT
-    // UDMF_ML_JUMPOVER
     // UDMF_ML_MONSTERUSE
     // UDMF_ML_MONSTERPUSH
     // UDMF_ML_PLAYERUSEBACK

@@ -518,6 +518,8 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj);
 static // killough 3/26/98: make static
 dboolean PIT_CheckLine (line_t* ld)
 {
+  dboolean rail = false;
+
   if (tmbbox[BOXRIGHT] <= ld->bbox[BOXLEFT]
    || tmbbox[BOXLEFT] >= ld->bbox[BOXRIGHT]
    || tmbbox[BOXTOP] <= ld->bbox[BOXBOTTOM]
@@ -567,42 +569,49 @@ dboolean PIT_CheckLine (line_t* ld)
   if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)) ||
       ld->flags & (ML_BLOCKPROJECTILES | ML_BLOCKEVERYTHING))
   {
-    // explicitly blocking everything
-    // or blocking player
-    // or blocking projectile
-    if (
-      ld->flags & ML_BLOCKING ||
-      (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS) ||
-      tmthing->flags & (MF_MISSILE | MF_BOUNCES)
-    )
+    if (ld->flags & ML_JUMPOVER)
     {
-      if (map_format.hexen)
+      rail = true;
+    }
+    else
+    {
+      // explicitly blocking everything
+      // or blocking player
+      // or blocking projectile
+      if (
+        ld->flags & ML_BLOCKING ||
+        (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS) ||
+        tmthing->flags & (MF_MISSILE | MF_BOUNCES)
+      )
+      {
+        if (map_format.hexen)
+        {
+          if (tmthing->flags2 & MF2_BLASTED)
+          {
+            P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
+          }
+          CheckForPushSpecial(ld, 0, tmthing);
+        }
+        return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
+      }
+
+      // killough 8/9/98: monster-blockers don't affect friends
+      if (
+        !(tmthing->flags & MF_FRIEND || tmthing->player) &&
+        (
+          ld->flags & ML_BLOCKMONSTERS ||
+          (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT)) ||
+          (ld->flags & ML_BLOCKFLOATERS && tmthing->flags & MF_FLOAT)
+        ) &&
+        (!heretic || tmthing->type != HERETIC_MT_POD)
+      )
       {
         if (tmthing->flags2 & MF2_BLASTED)
         {
           P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
         }
-        CheckForPushSpecial(ld, 0, tmthing);
+        return false; // block monsters only
       }
-      return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
-    }
-
-    // killough 8/9/98: monster-blockers don't affect friends
-    if (
-      !(tmthing->flags & MF_FRIEND || tmthing->player) &&
-      (
-        ld->flags & ML_BLOCKMONSTERS ||
-        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT)) ||
-        (ld->flags & ML_BLOCKFLOATERS && tmthing->flags & MF_FLOAT)
-      ) &&
-      (!heretic || tmthing->type != HERETIC_MT_POD)
-    )
-    {
-      if (tmthing->flags2 & MF2_BLASTED)
-      {
-        P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
-      }
-      return false; // block monsters only
     }
   }
 
@@ -610,6 +619,11 @@ dboolean PIT_CheckLine (line_t* ld)
   // these define a 'window' from one sector to another across this line
 
   P_LineOpening (ld);
+
+  if (rail && openbottom == tmfloorz)
+  {
+    openbottom += (32 << FRACBITS);
+  }
 
   // adjust floor & ceiling heights
 
