@@ -2078,6 +2078,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_BLOCKLANDMONSTERS)
       ld->flags |= ML_BLOCKLANDMONSTERS;
 
+    if (mld->flags & UDMF_ML_BLOCKFLOATERS)
+      ld->flags |= ML_BLOCKFLOATERS;
+
     if (mld->flags & UDMF_ML_BLOCKSIGHT)
       ld->flags |= ML_BLOCKSIGHT;
 
@@ -2096,7 +2099,6 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF TODO:
     // UDMF_ML_TRANSLUCENT
     // UDMF_ML_JUMPOVER
-    // UDMF_ML_BLOCKFLOATERS
     // UDMF_ML_MONSTERUSE
     // UDMF_ML_MONSTERPUSH
     // UDMF_ML_PLAYERUSEBACK

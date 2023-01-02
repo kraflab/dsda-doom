@@ -200,6 +200,7 @@ typedef struct {
 #define ML_BLOCKHITSCAN     0x02000000
 #define ML_BLOCKPROJECTILES 0x04000000
 #define ML_BLOCKUSE         0x08000000
+#define ML_BLOCKFLOATERS    0x10000000
 
 // Sector definition, from editing.
 typedef struct {

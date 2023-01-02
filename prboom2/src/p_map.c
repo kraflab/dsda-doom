@@ -592,7 +592,8 @@ dboolean PIT_CheckLine (line_t* ld)
       !(tmthing->flags & MF_FRIEND || tmthing->player) &&
       (
         ld->flags & ML_BLOCKMONSTERS ||
-        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
+        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT)) ||
+        (ld->flags & ML_BLOCKFLOATERS && tmthing->flags & MF_FLOAT)
       ) &&
       (!heretic || tmthing->type != HERETIC_MT_POD)
     )
