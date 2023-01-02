@@ -171,21 +171,11 @@ fixed_t PUREFUNC P_InterceptVector(const divline_t *v2, const divline_t *v1)
 
 //
 // P_LineOpening
-// Sets opentop and openbottom to the window
-// through a two sided line.
+// Sets line_opening to the window through a two sided line.
 // OPTIMIZE: keep this precalculated
 //
 
-fixed_t opentop;
-fixed_t openbottom;
-fixed_t openrange;
-fixed_t lowfloor;
-
-// moved front and back outside P-LineOpening and changed    // phares 3/7/98
-// them to these so we can pick up the new friction value
-// in PIT_CheckLine()
-sector_t *openfrontsector; // made global                    // phares
-sector_t *openbacksector;  // made global
+line_opening_t line_opening;
 
 void P_LineOpening(const line_t *linedef)
 {
@@ -193,31 +183,31 @@ void P_LineOpening(const line_t *linedef)
 
   if (linedef->sidenum[1] == NO_INDEX)      // single sided line
   {
-    openrange = 0;
+    line_opening.range = 0;
     return;
   }
 
-  openfrontsector = linedef->frontsector;
-  openbacksector = linedef->backsector;
+  line_opening.frontsector = linedef->frontsector;
+  line_opening.backsector = linedef->backsector;
 
-  if (openfrontsector->ceilingheight < openbacksector->ceilingheight)
-    opentop = openfrontsector->ceilingheight;
+  if (line_opening.frontsector->ceilingheight < line_opening.backsector->ceilingheight)
+    line_opening.top = line_opening.frontsector->ceilingheight;
   else
-    opentop = openbacksector->ceilingheight;
+    line_opening.top = line_opening.backsector->ceilingheight;
 
-  if (openfrontsector->floorheight > openbacksector->floorheight)
+  if (line_opening.frontsector->floorheight > line_opening.backsector->floorheight)
   {
-    openbottom = openfrontsector->floorheight;
-    lowfloor = openbacksector->floorheight;
-    tmfloorpic = openfrontsector->floorpic;
+    line_opening.bottom = line_opening.frontsector->floorheight;
+    line_opening.lowfloor = line_opening.backsector->floorheight;
+    tmfloorpic = line_opening.frontsector->floorpic;
   }
   else
   {
-    openbottom = openbacksector->floorheight;
-    lowfloor = openfrontsector->floorheight;
-    tmfloorpic = openbacksector->floorpic;
+    line_opening.bottom = line_opening.backsector->floorheight;
+    line_opening.lowfloor = line_opening.frontsector->floorheight;
+    tmfloorpic = line_opening.backsector->floorpic;
   }
-  openrange = opentop - openbottom;
+  line_opening.range = line_opening.top - line_opening.bottom;
 }
 
 //
@@ -1066,10 +1056,10 @@ intercepts_overrun_t intercepts_overrun[] =
   {4,   NULL,                          NULL},
   {4,   NULL, /* &earlyout, */         NULL},
   {4,   NULL, /* &intercept_p, */      NULL},
-  {4,   &lowfloor,                     NULL},
-  {4,   &openbottom,                   NULL},
-  {4,   &opentop,                      NULL},
-  {4,   &openrange,                    NULL},
+  {4,   &line_opening.lowfloor,        NULL},
+  {4,   &line_opening.bottom,          NULL},
+  {4,   &line_opening.top,             NULL},
+  {4,   &line_opening.range,           NULL},
   {4,   NULL,                          NULL},
   {120, NULL, /* &activeplats, */      NULL},
   {8,   NULL,                          NULL},

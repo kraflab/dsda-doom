@@ -615,34 +615,33 @@ dboolean PIT_CheckLine (line_t* ld)
     }
   }
 
-  // set openrange, opentop, openbottom
-  // these define a 'window' from one sector to another across this line
+  // defines a 'window' from one sector to another across this line
 
   P_LineOpening (ld);
 
-  if (rail && openbottom == tmfloorz)
+  if (rail && line_opening.bottom == tmfloorz)
   {
-    openbottom += (32 << FRACBITS);
+    line_opening.bottom += (32 << FRACBITS);
   }
 
   // adjust floor & ceiling heights
 
-  if (opentop < tmceilingz)
+  if (line_opening.top < tmceilingz)
   {
-    tmceilingz = opentop;
+    tmceilingz = line_opening.top;
     ceilingline = ld;
     blockline = ld;
   }
 
-  if (openbottom > tmfloorz)
+  if (line_opening.bottom > tmfloorz)
   {
-    tmfloorz = openbottom;
+    tmfloorz = line_opening.bottom;
     floorline = ld;          // killough 8/1/98: remember floor linedef
     blockline = ld;
   }
 
-  if (lowfloor < tmdropoffz)
-    tmdropoffz = lowfloor;
+  if (line_opening.lowfloor < tmdropoffz)
+    tmdropoffz = line_opening.lowfloor;
 
   // if contacted a special line, add it to the list
   if (ld->special)
@@ -1911,18 +1910,17 @@ dboolean PTR_SlideTraverse (intercept_t* in)
     goto isblocking;
   }
 
-  // set openrange, opentop, openbottom.
-  // These define a 'window' from one sector to another across a line
+  // defines a 'window' from one sector to another across a line
 
   P_LineOpening (li);
 
-  if (openrange < slidemo->height)
+  if (line_opening.range < slidemo->height)
     goto isblocking;  // doesn't fit
 
-  if (opentop - slidemo->z < slidemo->height)
+  if (line_opening.top - slidemo->z < slidemo->height)
     goto isblocking;  // mobj is too high
 
-  if (openbottom - slidemo->z > 24*FRACUNIT )
+  if (line_opening.bottom - slidemo->z > 24*FRACUNIT )
     goto isblocking;  // too big a step up
 
   // this line doesn't block movement
@@ -2112,7 +2110,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
 
     P_LineOpening (li);
 
-    if (openbottom >= opentop)
+    if (line_opening.bottom >= line_opening.top)
       return false;   // stop
 
     dist = FixedMul (attackrange, in->frac);
@@ -2121,7 +2119,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
     // backsector can be NULL if overrun_missedbackside_emulate is 1
     if (!li->backsector || li->frontsector->floorheight != li->backsector->floorheight)
     {
-      slope = FixedDiv (openbottom - shootz , dist);
+      slope = FixedDiv (line_opening.bottom - shootz , dist);
       if (slope > bottomslope)
         bottomslope = slope;
     }
@@ -2129,7 +2127,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
     // e6y: emulation of missed back side on two-sided lines.
     if (!li->backsector || li->frontsector->ceilingheight != li->backsector->ceilingheight)
     {
-      slope = FixedDiv (opentop - shootz , dist);
+      slope = FixedDiv (line_opening.top - shootz , dist);
       if (slope < topslope)
         topslope = slope;
     }
@@ -2229,15 +2227,15 @@ dboolean PTR_ShootTraverse (intercept_t* in)
       // backsector can be NULL if overrun_missedbackside_emulate is 1
       if (!li->backsector)
       {
-        if ((slope = FixedDiv(openbottom - shootz , dist)) <= aimslope &&
-            (slope = FixedDiv(opentop - shootz , dist)) >= aimslope)
+        if ((slope = FixedDiv(line_opening.bottom - shootz , dist)) <= aimslope &&
+            (slope = FixedDiv(line_opening.top - shootz , dist)) >= aimslope)
           return true;      // shot continues
       }
       else
         if ((li->frontsector->floorheight==li->backsector->floorheight ||
-             (slope = FixedDiv(openbottom - shootz , dist)) <= aimslope) &&
+             (slope = FixedDiv(line_opening.bottom - shootz , dist)) <= aimslope) &&
             (li->frontsector->ceilingheight==li->backsector->ceilingheight ||
-             (slope = FixedDiv (opentop - shootz , dist)) >= aimslope))
+             (slope = FixedDiv (line_opening.top - shootz , dist)) >= aimslope))
           return true;      // shot continues
     }
 
@@ -2468,14 +2466,14 @@ dboolean PTR_UseTraverse (intercept_t* in)
 
     if (in->d.line->flags & (ML_BLOCKEVERYTHING | ML_BLOCKUSE))
     {
-      openrange = 0;
+      line_opening.range = 0;
     }
     else
     {
       P_LineOpening (in->d.line);
     }
 
-    if (openrange <= 0)
+    if (line_opening.range <= 0)
     {
       if (hexen && usething->player)
       {
@@ -2511,7 +2509,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
     if (hexen && usething->player)
     {
       fixed_t pheight = usething->z + (usething->height / 2);
-      if ((opentop < pheight) || (openbottom > pheight))
+      if ((line_opening.top < pheight) || (line_opening.bottom > pheight))
       {
         switch (usething->player->pclass)
         {
@@ -2572,9 +2570,9 @@ dboolean PTR_NoWayTraverse(intercept_t* in)
   return ld->special || !(                 // Ignore specials
    ld->flags & ML_BLOCKING || (            // Always blocking
    P_LineOpening(ld),                      // Find openings
-   openrange <= 0 ||                       // No opening
-   openbottom > usething->z+24*FRACUNIT || // Too high it blocks
-   opentop < usething->z+usething->height  // Too low it blocks
+   line_opening.range <= 0 ||                       // No opening
+   line_opening.bottom > usething->z+24*FRACUNIT || // Too high it blocks
+   line_opening.top < usething->z+usething->height  // Too low it blocks
   )
   );
 }
@@ -3535,11 +3533,11 @@ dboolean PTR_BounceTraverse(intercept_t * in)
         goto bounceblocking;
     }
 
-    P_LineOpening(li);          // set openrange, opentop, openbottom
-    if (openrange < slidemo->height)
+    P_LineOpening(li);          // set open
+    if (line_opening.range < slidemo->height)
         goto bounceblocking;    // doesn't fit
 
-    if (opentop - slidemo->z < slidemo->height)
+    if (line_opening.top - slidemo->z < slidemo->height)
         goto bounceblocking;    // mobj is too high
     return true;                // this line doesn't block movement
 
@@ -3828,7 +3826,7 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
         if (in->d.line->special != USE_PUZZLE_ITEM_SPECIAL)
         {
             P_LineOpening(in->d.line);
-            if (openrange <= 0)
+            if (line_opening.range <= 0)
             {
                 sound = hexen_sfx_None;
                 if (PuzzleItemUser->player)

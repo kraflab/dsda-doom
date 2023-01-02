@@ -48,6 +48,15 @@
 #define PT_EARLYOUT     4
 
 typedef struct {
+  fixed_t top;
+  fixed_t bottom;
+  fixed_t range;
+  fixed_t lowfloor;
+  sector_t *frontsector;
+  sector_t *backsector;
+} line_opening_t;
+
+typedef struct {
   fixed_t     x;
   fixed_t     y;
   fixed_t     dx;
@@ -93,10 +102,7 @@ mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance);
 int P_GetSafeBlockX(int coord);
 int P_GetSafeBlockY(int coord);
 
-extern fixed_t opentop;
-extern fixed_t openbottom;
-extern fixed_t openrange;
-extern fixed_t lowfloor;
+extern line_opening_t line_opening;
 extern divline_t trace;
 
 #endif  /* __P_MAPUTL__ */
