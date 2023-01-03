@@ -2063,6 +2063,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_MISSILECROSS)
       ld->activation |= SPAC_PCROSS;
 
+    if (mld->flags & UDMF_ML_ANYCROSS)
+      ld->activation |= SPAC_ANYCROSS | SPAC_CROSS | SPAC_MCROSS;
+
     if (mld->flags & UDMF_ML_PLAYERUSEBACK)
       ld->activation |= SPAC_USEBACK;
 

@@ -2497,6 +2497,10 @@ void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
   { // [RH] Just a little hack for BOOM compatibility
     P_ActivateLine(line, thing, side, SPAC_MCROSS);
   }
+  else
+  {
+    P_ActivateLine(line, thing, side, SPAC_ANYCROSS);
+  }
 }
 
 //
@@ -5621,6 +5625,11 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
     {
       return false;
     }
+  }
+
+  if (activationType == SPAC_ANYCROSS)
+  {
+    return true;
   }
 
   if (

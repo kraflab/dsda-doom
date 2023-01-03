@@ -327,16 +327,17 @@ typedef struct {
 #define ZML_BLOCKEVERYTHING     0x8000 // Blocks everything
 
 // line activation
-#define SPAC_NONE    0x0000
-#define SPAC_CROSS   0x0001
-#define SPAC_USE     0x0002
-#define SPAC_MCROSS  0x0004
-#define SPAC_IMPACT  0x0008
-#define SPAC_PUSH    0x0010
-#define SPAC_PCROSS  0x0020
-#define SPAC_USEBACK 0x0040
-#define SPAC_MPUSH   0x0080
-#define SPAC_MUSE    0x0100
+#define SPAC_NONE     0x0000
+#define SPAC_CROSS    0x0001
+#define SPAC_USE      0x0002
+#define SPAC_MCROSS   0x0004
+#define SPAC_IMPACT   0x0008
+#define SPAC_PUSH     0x0010
+#define SPAC_PCROSS   0x0020
+#define SPAC_USEBACK  0x0040
+#define SPAC_MPUSH    0x0080
+#define SPAC_MUSE     0x0100
+#define SPAC_ANYCROSS 0x0200
 
 #ifdef _MSC_VER
 #pragma pack(pop)
