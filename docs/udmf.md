@@ -72,7 +72,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | alpha              | :x:                |
 | renderstyle        | :x:                |
 | playeruseback      | :heavy_check_mark: |
-| anycross           | :warning:          |
+| anycross           | :grey_question:    |
 | monsteractivate    | :heavy_check_mark: |
 | blockplayers       | :heavy_check_mark: |
 | blockeverything    | :heavy_check_mark: |
@@ -103,7 +103,6 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 
 #### Notes
 - `arg*` fields currently have hexen's limit of 0-255.
-- `anycross` may not support every case (under investigation).
 
 ### Sidedefs
 
