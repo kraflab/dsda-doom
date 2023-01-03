@@ -2063,9 +2063,6 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_MISSILECROSS)
       ld->activation |= SPAC_PCROSS;
 
-    if (mld->flags & UDMF_ML_REPEATSPECIAL)
-      ld->flags |= ML_REPEATSPECIAL;
-
     if (mld->flags & UDMF_ML_PLAYERUSEBACK)
       ld->activation |= SPAC_USEBACK;
 
@@ -2074,6 +2071,9 @@ static void P_LoadUDMFLineDefs(int lump)
 
     if (mld->flags & UDMF_ML_MONSTERUSE)
       ld->activation |= SPAC_MUSE;
+
+    if (mld->flags & UDMF_ML_REPEATSPECIAL)
+      ld->flags |= ML_REPEATSPECIAL;
 
     if (mld->flags & UDMF_ML_MONSTERACTIVATE)
       ld->flags |= ML_MONSTERSCANACTIVATE;
