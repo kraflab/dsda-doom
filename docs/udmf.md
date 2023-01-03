@@ -57,7 +57,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | monsteruse         | :grey_question:    |
 | impact             | :heavy_check_mark: |
 | playerpush         | :heavy_check_mark: |
-| monsterpush        | :grey_question:    |
+| monsterpush        | :heavy_check_mark: |
 | missilecross       | :heavy_check_mark: |
 | repeatspecial      | :heavy_check_mark: |
 | special            | :heavy_check_mark: |

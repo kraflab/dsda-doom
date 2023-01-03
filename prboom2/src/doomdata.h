@@ -335,6 +335,7 @@ typedef struct {
 #define SPAC_PUSH    0x0010
 #define SPAC_PCROSS  0x0020
 #define SPAC_USEBACK 0x0040
+#define SPAC_MPUSH   0x0080
 
 #ifdef _MSC_VER
 #pragma pack(pop)

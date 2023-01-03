@@ -5601,6 +5601,13 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
     lineActivation |= SPAC_PCROSS;
   }
 
+  if (activationType == SPAC_PUSH &&
+      lineActivation & SPAC_MPUSH &&
+      mo && !mo->player && mo->flags2 & MF2_PUSHWALL)
+  {
+    return true;
+  }
+
   if (!(lineActivation & activationType))
   {
     if (activationType != SPAC_MCROSS || lineActivation != SPAC_CROSS)
