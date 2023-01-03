@@ -3652,11 +3652,11 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
     {
         if (mobj->flags2 & MF2_PUSHWALL)
         {
-            P_ActivateLine(line, mobj, side, ML_SPAC_PUSH);
+            P_ActivateLine(line, mobj, side, SPAC_PUSH);
         }
         else if (mobj->flags2 & MF2_IMPACT)
         {
-            P_ActivateLine(line, mobj, side, ML_SPAC_IMPACT);
+            P_ActivateLine(line, mobj, side, SPAC_IMPACT);
         }
     }
 }

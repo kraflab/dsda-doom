@@ -181,8 +181,8 @@ extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dbool
 extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
 extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
 
-extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned int activationType);
-extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned int activationType);
+extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
+extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
 
 extern void P_PostProcessCompatibleLineSpecial(line_t *ld);
 extern void P_PostProcessHereticLineSpecial(line_t *ld);
@@ -203,9 +203,9 @@ extern void P_CheckCompatibleImpact(mobj_t *);
 extern void P_CheckHereticImpact(mobj_t *);
 extern void P_CheckZDoomImpact(mobj_t *);
 
-extern void P_TranslateHexenLineFlags(unsigned int *);
-extern void P_TranslateZDoomLineFlags(unsigned int *);
-extern void P_TranslateCompatibleLineFlags(unsigned int *);
+extern void P_TranslateHexenLineFlags(unsigned int *, line_activation_t *);
+extern void P_TranslateZDoomLineFlags(unsigned int *, line_activation_t *);
+extern void P_TranslateCompatibleLineFlags(unsigned int *, line_activation_t *);
 
 extern void P_ApplyCompatibleSectorMovementSpecial(mobj_t *, int);
 extern void P_ApplyHereticSectorMovementSpecial(mobj_t *, int);
@@ -267,7 +267,7 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .map99 = false,
   .lax_monster_activation = true,
   .generalized_mask = ~0xff,
-  .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT | ML_SPAC_PUSH,
+  .switch_activation = SPAC_USE | SPAC_IMPACT | SPAC_PUSH,
   .init_sector_special = P_SpawnZDoomSectorSpecial,
   .player_in_special_sector = P_PlayerInZDoomSector,
   .mobj_in_special_sector = P_MobjInZDoomSector,
@@ -321,7 +321,7 @@ static const map_format_t hexen_map_format = {
   .map99 = true,
   .lax_monster_activation = false,
   .generalized_mask = 0, // not used
-  .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT,
+  .switch_activation = SPAC_USE | SPAC_IMPACT,
   .init_sector_special = NULL, // not used
   .player_in_special_sector = P_PlayerInHexenSector,
   .mobj_in_special_sector = P_MobjInHexenSector,

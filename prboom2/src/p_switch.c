@@ -325,7 +325,7 @@ P_UseSpecialLine
     if (side) //jff 6/1/98 fix inadvertent deletion of side test
       return false;
 
-  if (map_format.hexen) return P_ActivateLine(line, thing, side, ML_SPAC_USE);
+  if (map_format.hexen) return P_ActivateLine(line, thing, side, SPAC_USE);
   if (heretic) return Heretic_P_UseSpecialLine(thing, line, side, bossaction);
 
   //jff 02/04/98 add check here for generalized floor/ceil mover

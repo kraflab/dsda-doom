@@ -1499,7 +1499,7 @@ void dsda_SpawnQuake(mobj_t* location, int intensity, int duration,
 
 //
 
-dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activationType);
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t activationType);
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
 line_t *P_FindLine(int lineTag, int *searchPosition);
 int P_FindSectorFromTag(int tag, int start);

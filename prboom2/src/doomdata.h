@@ -185,25 +185,16 @@ typedef struct {
 
 #define ML_REPEATSPECIAL       0x00010000 // hexen
 
-#define ML_SPAC_CROSS          0x00020000 // hexen activation
-#define ML_SPAC_USE            0x00040000 // hexen activation
-#define ML_SPAC_MCROSS         0x00080000 // hexen activation
-#define ML_SPAC_IMPACT         0x00100000 // hexen activation
-#define ML_SPAC_PUSH           0x00200000 // hexen activation
-#define ML_SPAC_PCROSS         0x00400000 // hexen activation
-
-#define ML_SPAC_MASK (ML_SPAC_CROSS|ML_SPAC_USE|ML_SPAC_MCROSS|ML_SPAC_IMPACT|ML_SPAC_PUSH|ML_SPAC_PCROSS)
-
 // udmf
-#define ML_CLIPMIDTEX         0x00800000
-#define ML_BLOCKSIGHT         0x01000000
-#define ML_BLOCKHITSCAN       0x02000000
-#define ML_BLOCKPROJECTILES   0x04000000
-#define ML_BLOCKUSE           0x08000000
-#define ML_BLOCKFLOATERS      0x10000000
-#define ML_JUMPOVER           0x20000000
-#define ML_3DMIDTEX           0x40000000
-#define ML_3DMIDTEXIMPASSIBLE 0x80000000
+#define ML_CLIPMIDTEX          0x00020000
+#define ML_BLOCKSIGHT          0x00040000
+#define ML_BLOCKHITSCAN        0x00080000
+#define ML_BLOCKPROJECTILES    0x00100000
+#define ML_BLOCKUSE            0x00200000
+#define ML_BLOCKFLOATERS       0x00400000
+#define ML_JUMPOVER            0x00800000
+#define ML_3DMIDTEX            0x01000000
+#define ML_3DMIDTEXIMPASSIBLE  0x02000000
 
 // Sector definition, from editing.
 typedef struct {
@@ -328,12 +319,21 @@ typedef struct {
 #define HML_REPEATSPECIAL 0x0200  // special is repeatable
 #define HML_SPAC_SHIFT 10
 #define HML_SPAC_MASK 0x1c00
-#define GET_SPAC(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
+#define GET_SPAC_INDEX(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
 
 // zdoom
 #define ZML_MONSTERSCANACTIVATE 0x2000 // Monsters and players can activate
 #define ZML_BLOCKPLAYERS        0x4000 // Blocks players
 #define ZML_BLOCKEVERYTHING     0x8000 // Blocks everything
+
+// line activation
+#define SPAC_NONE   0x0000
+#define SPAC_CROSS  0x0001
+#define SPAC_USE    0x0002
+#define SPAC_MCROSS 0x0004
+#define SPAC_IMPACT 0x0008
+#define SPAC_PUSH   0x0010
+#define SPAC_PCROSS 0x0020
 
 #ifdef _MSC_VER
 #pragma pack(pop)

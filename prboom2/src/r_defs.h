@@ -271,6 +271,8 @@ typedef byte r_flags_t;
 #define RF_CLOSED   0x10 // Line blocks view
 #define RF_ISOLATED 0x20 // Isolated line
 
+typedef unsigned short line_activation_t;
+
 typedef struct line_s
 {
   int iLineID;           // proff 04/05/2000: needed for OpenGL
@@ -303,6 +305,9 @@ typedef struct line_s
   byte arg3;
   byte arg4;
   byte arg5;
+
+  // zdoom
+  line_activation_t activation;
 } line_t;
 
 #define LINE_ARG_COUNT 5

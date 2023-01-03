@@ -1761,25 +1761,28 @@ static void P_LoadUDMFThings(int lump)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_TranslateZDoomLineFlags(unsigned int *flags)
+void P_TranslateZDoomLineFlags(unsigned int *flags, line_activation_t *spac)
 {
   unsigned int result;
-  static unsigned int spac_to_flags[8] = {
-    ML_SPAC_CROSS,
-    ML_SPAC_USE,
-    ML_SPAC_MCROSS,
-    ML_SPAC_IMPACT,
-    ML_SPAC_PUSH,
-    ML_SPAC_PCROSS,
-    ML_SPAC_USE | ML_PASSUSE,
-    ML_SPAC_IMPACT | ML_SPAC_PCROSS
+  static unsigned int spac_lookup[8] = {
+    SPAC_CROSS,
+    SPAC_USE,
+    SPAC_MCROSS,
+    SPAC_IMPACT,
+    SPAC_PUSH,
+    SPAC_PCROSS,
+    SPAC_USE,
+    SPAC_IMPACT | SPAC_PCROSS
   };
 
   result = *flags & 0x1ff;
 
   // from zdoom-in-hexen to dsda-doom
 
-  result |= spac_to_flags[GET_SPAC(*flags)];
+  *spac = spac_lookup[GET_SPAC_INDEX(*flags)];
+
+  if (GET_SPAC_INDEX(*flags) == 6)
+    result |= ML_PASSUSE;
 
   if (*flags & HML_REPEATSPECIAL)
     result |= ML_REPEATSPECIAL;
@@ -1796,25 +1799,25 @@ void P_TranslateZDoomLineFlags(unsigned int *flags)
   *flags = result;
 }
 
-void P_TranslateHexenLineFlags(unsigned int *flags)
+void P_TranslateHexenLineFlags(unsigned int *flags, line_activation_t *spac)
 {
   unsigned int result;
-  static unsigned int spac_to_flags[8] = {
-    ML_SPAC_CROSS,
-    ML_SPAC_USE,
-    ML_SPAC_MCROSS,
-    ML_SPAC_IMPACT,
-    ML_SPAC_PUSH,
-    ML_SPAC_PCROSS,
-    0,
-    0
+  static unsigned int spac_lookup[8] = {
+    SPAC_CROSS,
+    SPAC_USE,
+    SPAC_MCROSS,
+    SPAC_IMPACT,
+    SPAC_PUSH,
+    SPAC_PCROSS,
+    SPAC_NONE,
+    SPAC_NONE
   };
 
   result = *flags & 0x1ff;
 
   // from hexen to dsda-doom
 
-  result |= spac_to_flags[GET_SPAC(*flags)];
+  *spac = spac_lookup[GET_SPAC_INDEX(*flags)];
 
   if (*flags & HML_REPEATSPECIAL)
     result |= ML_REPEATSPECIAL;
@@ -1822,7 +1825,7 @@ void P_TranslateHexenLineFlags(unsigned int *flags)
   *flags = result;
 }
 
-void P_TranslateCompatibleLineFlags(unsigned int *flags)
+void P_TranslateCompatibleLineFlags(unsigned int *flags, line_activation_t *spac)
 {
   int filter;
 
@@ -1832,6 +1835,7 @@ void P_TranslateCompatibleLineFlags(unsigned int *flags)
     filter = ML_BOOM;
 
   *flags = *flags & filter;
+  *spac = SPAC_NONE;
 }
 
 static void P_SetLineID(line_t *ld)
@@ -2007,7 +2011,7 @@ static void P_LoadLineDefs (int lump)
       ld->sidenum[1] = LittleShort(mld->sidenum[1]);
     }
 
-    map_format.translate_line_flags(&ld->flags);
+    map_format.translate_line_flags(&ld->flags, &ld->activation);
 
     P_CalculateLineDefProperties(ld);
   }
@@ -2042,29 +2046,29 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->sidenum[1] = mld->sideback;
 
     if (mld->flags & UDMF_ML_PLAYERCROSS)
-      ld->flags |= ML_SPAC_CROSS;
+      ld->activation |= SPAC_CROSS;
 
     if (mld->flags & UDMF_ML_PLAYERUSE)
-      ld->flags |= ML_SPAC_USE;
+      ld->activation |= SPAC_USE;
 
     if (mld->flags & UDMF_ML_MONSTERCROSS)
-      ld->flags |= ML_SPAC_MCROSS;
+      ld->activation |= SPAC_MCROSS;
 
     if (mld->flags & UDMF_ML_IMPACT)
-      ld->flags |= ML_SPAC_IMPACT;
+      ld->activation |= SPAC_IMPACT;
 
     if (mld->flags & UDMF_ML_PLAYERPUSH)
-      ld->flags |= ML_SPAC_PUSH;
+      ld->activation |= SPAC_PUSH;
 
     if (mld->flags & UDMF_ML_MISSILECROSS)
-      ld->flags |= ML_SPAC_PCROSS;
+      ld->activation |= SPAC_PCROSS;
 
     if (mld->flags & UDMF_ML_REPEATSPECIAL)
       ld->flags |= ML_REPEATSPECIAL;
 
     // check what else this can do
     if (mld->flags & UDMF_ML_ANYCROSS)
-      ld->flags |= ML_SPAC_CROSS | ML_SPAC_MCROSS | ML_SPAC_PCROSS;
+      ld->activation |= SPAC_CROSS | SPAC_MCROSS | SPAC_PCROSS;
 
     if (mld->flags & UDMF_ML_MONSTERACTIVATE)
       ld->flags |= ML_MONSTERSCANACTIVATE;

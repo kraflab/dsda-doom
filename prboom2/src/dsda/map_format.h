@@ -42,7 +42,7 @@ typedef struct {
   dboolean map99;
   dboolean lax_monster_activation;
   short generalized_mask;
-  unsigned int switch_activation;
+  line_activation_t switch_activation;
   void (*init_sector_special)(sector_t*, int);
   void (*player_in_special_sector)(player_t*, sector_t*);
   dboolean (*mobj_in_special_sector)(mobj_t*);
@@ -52,13 +52,13 @@ typedef struct {
   void (*spawn_extra)(line_t*, int);
   void (*cross_special_line)(line_t *, int, mobj_t *, dboolean);
   void (*shoot_special_line)(mobj_t *, line_t *);
-  dboolean (*test_activate_line)(line_t *, mobj_t *, int, unsigned int);
+  dboolean (*test_activate_line)(line_t *, mobj_t *, int, line_activation_t);
   dboolean (*execute_line_special)(int, byte *, line_t *, int, mobj_t *);
   void (*post_process_line_special)(line_t *);
   void (*post_process_sidedef_special)(side_t *, const mapsidedef_t *, sector_t *, int);
   void (*animate_surfaces)(void);
   void (*check_impact)(mobj_t *);
-  void (*translate_line_flags)(unsigned int *);
+  void (*translate_line_flags)(unsigned int *, line_activation_t *);
   void (*apply_sector_movement_special)(mobj_t *, int);
   void (*t_vertical_door)(vldoor_t *);
   void (*t_move_floor)(floormove_t *);
