@@ -2072,6 +2072,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_MONSTERPUSH)
       ld->activation |= SPAC_MPUSH;
 
+    if (mld->flags & UDMF_ML_MONSTERUSE)
+      ld->activation |= SPAC_MUSE;
+
     if (mld->flags & UDMF_ML_MONSTERACTIVATE)
       ld->flags |= ML_MONSTERSCANACTIVATE;
 

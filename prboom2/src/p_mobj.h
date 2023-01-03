@@ -509,6 +509,9 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 #define MF2_SEEKERMISSILE     0x0000800000000000ull // is a seeker (for reflection)
 #define MF2_REFLECTIVE        0x0001000000000000ull // reflects missiles
 
+// zdoom
+#define MF2_CANUSEWALLS       0x0002000000000000ull // can activate use lines
+
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50
 #define AMMO_CBOW_WIMPY 5

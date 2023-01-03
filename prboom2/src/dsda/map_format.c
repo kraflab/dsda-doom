@@ -123,15 +123,15 @@ static void dsda_MigrateMobjInfo(void) {
 
     for (i = mobj_types_zero; i < num_mobj_types; ++i) {
       if (mobjinfo[i].flags & MF_COUNTKILL)
-        mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+        mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS;
 
       if (mobjinfo[i].flags & MF_MISSILE)
         mobjinfo[i].flags2 |= MF2_PCROSS | MF2_IMPACT;
     }
 
     if (!raven) {
-      mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
-      mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
+      mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS;
+      mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL | MF2_CANUSEWALLS;
     }
   }
   else if (!map_format.zdoom && migrated)
@@ -140,15 +140,15 @@ static void dsda_MigrateMobjInfo(void) {
 
     for (i = mobj_types_zero; i < num_mobj_types; ++i) {
       if (mobjinfo[i].flags & MF_COUNTKILL)
-        mobjinfo[i].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
+        mobjinfo[i].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS);
 
       if (mobjinfo[i].flags & MF_MISSILE)
         mobjinfo[i].flags2 &= ~(MF2_PCROSS | MF2_IMPACT);
     }
 
     if (!raven) {
-      mobjinfo[MT_SKULL].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
-      mobjinfo[MT_PLAYER].flags2 &= ~(MF2_WINDTHRUST | MF2_PUSHWALL);
+      mobjinfo[MT_SKULL].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS);
+      mobjinfo[MT_PLAYER].flags2 &= ~(MF2_WINDTHRUST | MF2_PUSHWALL | MF2_CANUSEWALLS);
     }
   }
 }
