@@ -71,7 +71,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | comment            | :x:                |
 | alpha              | :x:                |
 | renderstyle        | :x:                |
-| playeruseback      | :grey_question:    |
+| playeruseback      | :heavy_check_mark: |
 | anycross           | :warning:          |
 | monsteractivate    | :heavy_check_mark: |
 | blockplayers       | :heavy_check_mark: |

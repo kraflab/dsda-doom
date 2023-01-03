@@ -2070,6 +2070,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_ANYCROSS)
       ld->activation |= SPAC_CROSS | SPAC_MCROSS | SPAC_PCROSS;
 
+    if (mld->flags & UDMF_ML_PLAYERUSEBACK)
+      ld->activation |= SPAC_USEBACK;
+
     if (mld->flags & UDMF_ML_MONSTERACTIVATE)
       ld->flags |= ML_MONSTERSCANACTIVATE;
 
