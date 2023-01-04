@@ -88,7 +88,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | blocksight         | :heavy_check_mark: |
 | blockhitscan       | :heavy_check_mark: |
 | locknumber         | :heavy_check_mark: |
-| arg0str            | :grey_question:    |
+| arg0str            | :x:                |
 | moreids            | :grey_question:    |
 | transparent        | :grey_question:    |
 | automapstyle       | :grey_question:    |
@@ -310,7 +310,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | class4-16     | :x:                |
 | conversation  | :x:                |
 | countsecret   | :grey_question:    |
-| arg0str       | :grey_question:    |
+| arg0str       | :x:                |
 | gravity       | :grey_question:    |
 | health        | :grey_question:    |
 | renderstyle   | :x:                |
