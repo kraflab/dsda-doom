@@ -2117,6 +2117,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_MIDTEX3DIMPASSIBLE)
       ld->flags |= ML_3DMIDTEXIMPASSIBLE;
 
+    if (mld->flags & UDMF_ML_FIRSTSIDEONLY)
+      ld->flags |= ML_FIRSTSIDEONLY;
+
     // UDMF TODO:
     // UDMF_ML_TRANSLUCENT
     // UDMF_ML_FIRSTSIDEONLY

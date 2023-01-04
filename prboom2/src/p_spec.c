@@ -5595,6 +5595,11 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
 
   lineActivation = line->activation;
 
+  if (line->flags & ML_FIRSTSIDEONLY && side)
+  {
+    return false;
+  }
+
   if (
     line->special == zl_teleport &&
     lineActivation & SPAC_CROSS &&
