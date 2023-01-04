@@ -2044,6 +2044,7 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->v2 = &vertexes[mld->v2];
     ld->sidenum[0] = mld->sidefront;
     ld->sidenum[1] = mld->sideback;
+    ld->locknumber = mld->locknumber;
 
     if (mld->flags & UDMF_ML_PLAYERCROSS)
       ld->activation |= SPAC_CROSS;

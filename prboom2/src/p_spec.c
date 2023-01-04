@@ -5764,6 +5764,11 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t 
     return false;
   }
 
+  if (line->locknumber && !P_CheckKeys(mo, line->locknumber, false))
+  {
+    return false;
+  }
+
   repeat = (line->flags & ML_REPEATSPECIAL) != 0;
 
   P_TransferLineArgs(line, args);
