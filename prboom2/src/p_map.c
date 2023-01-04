@@ -2265,6 +2265,11 @@ dboolean PTR_ShootTraverse (intercept_t* in)
           return false;
     }
 
+    if (li->health)
+    {
+      P_DamageLinedef(li, shootthing, la_damage);
+    }
+
     // Spawn bullet puffs.
 
     P_SpawnPuff (x,y,z);

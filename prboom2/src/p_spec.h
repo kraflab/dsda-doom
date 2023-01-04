@@ -1700,4 +1700,6 @@ int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
 #define TELF_VANILLA (TELF_SOURCEFOG|TELF_DESTFOG)
 #define TELF_SILENT (TELF_KEEPORIENTATION|TELF_ROTATEBOOM|TELF_KEEPHEIGHT)
 
+void P_DamageLinedef(line_t *line, mobj_t *source, int damage);
+
 #endif
