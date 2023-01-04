@@ -2045,6 +2045,7 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->sidenum[0] = mld->sidefront;
     ld->sidenum[1] = mld->sideback;
     ld->locknumber = mld->locknumber;
+    ld->health = mld->health;
 
     if (mld->flags & UDMF_ML_PLAYERCROSS)
       ld->activation |= SPAC_CROSS;
@@ -2075,6 +2076,12 @@ static void P_LoadUDMFLineDefs(int lump)
 
     if (mld->flags & UDMF_ML_MONSTERUSE)
       ld->activation |= SPAC_MUSE;
+
+    if (mld->flags & UDMF_ML_DAMAGESPECIAL)
+      ld->activation |= SPAC_DAMAGE;
+
+    if (mld->flags & UDMF_ML_DEATHSPECIAL)
+      ld->activation |= SPAC_DEATH;
 
     if (mld->flags & UDMF_ML_REPEATSPECIAL)
       ld->flags |= ML_REPEATSPECIAL;
@@ -2129,10 +2136,7 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_REVEALED
     // UDMF_ML_NOSKYWALLS
     // UDMF_ML_DRAWFULLHEIGHT
-    // UDMF_ML_DAMAGESPECIAL
-    // UDMF_ML_DEATHSPECIAL
     // automapstyle
-    // health
     // healthgroup
 
     P_CalculateLineDefProperties(ld);

@@ -339,6 +339,8 @@ typedef struct {
 #define SPAC_MPUSH    0x0080
 #define SPAC_MUSE     0x0100
 #define SPAC_ANYCROSS 0x0200
+#define SPAC_DAMAGE   0x0400
+#define SPAC_DEATH    0x0800
 
 #ifdef _MSC_VER
 #pragma pack(pop)

@@ -309,6 +309,7 @@ typedef struct line_s
   // zdoom
   line_activation_t activation;
   byte locknumber;
+  int health;
 } line_t;
 
 #define LINE_ARG_COUNT 5
