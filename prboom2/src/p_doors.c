@@ -1071,7 +1071,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
 
   speed = (fixed_t) speed_byte * FRACUNIT / 8;
 
-  if (lock && !P_CanUnlockZDoomDoor(mo->player, lock))
+  if (lock && !P_CheckKeys(mo, lock, true))
     return 0;
 
   if (!tag)
