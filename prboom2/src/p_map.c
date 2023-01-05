@@ -513,6 +513,25 @@ static int untouched(line_t *ld)
 // Adjusts tmfloorz and tmceilingz as lines are contacted
 //
 
+static void CheckForDamageSpecial(line_t *line, mobj_t *mo)
+{
+  int damage;
+
+  // TODO: bouncing against a damage line
+  // TODO: lost souls don't damage walls in gzdoom
+  if (
+    !line->health ||
+    !(mo->flags & (/* MF_SKULLFLY |*/ MF_MISSILE /*| MF_BOUNCES */)) ||
+    !mo->info->damage
+  )
+  {
+    return;
+  }
+
+  damage = ((P_Random(pr_damage) % 8) + 1) * mo->info->damage;
+  P_DamageLinedef(line, mo->target, damage);
+}
+
 static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj);
 
 static // killough 3/26/98: make static
@@ -559,6 +578,7 @@ dboolean PIT_CheckLine (line_t* ld)
         P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
       }
       CheckForPushSpecial(ld, 0, tmthing);
+      CheckForDamageSpecial(ld, tmthing);
     }
     blockline = ld;
     return tmunstuck && !untouched(ld) &&
@@ -591,6 +611,7 @@ dboolean PIT_CheckLine (line_t* ld)
             P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
           }
           CheckForPushSpecial(ld, 0, tmthing);
+          CheckForDamageSpecial(ld, tmthing);
         }
         return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
       }
@@ -1363,6 +1384,7 @@ void P_CheckZDoomImpact(mobj_t *thing)
       ld = spechit[i];
       side = P_PointOnLineSide(thing->x, thing->y, ld);
       CheckForPushSpecial(ld, side, thing);
+      CheckForDamageSpecial(ld, tmthing);
     }
   }
 }
