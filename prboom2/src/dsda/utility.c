@@ -20,6 +20,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "p_maputl.h"
+#include "r_main.h"
 #include "z_zone.h"
 
 #include "utility.h"
@@ -191,6 +193,59 @@ double dsda_DistancePointToLine(fixed_t line_x1, fixed_t line_y1,
   intersect_y = y1 + intersect * dy;
 
   return dsda_DistanceLF(intersect_x, intersect_y, px, py);
+}
+
+angle_t dsda_IntersectionAngle(fixed_t x, fixed_t y,
+                               fixed_t x1, fixed_t y1,
+                               fixed_t x2, fixed_t y2) {
+  angle_t angle;
+
+  angle = R_PointToAngleEx2(x, y, x2, y2) - R_PointToAngleEx2(x, y, x1, y1);
+
+  return (angle > ANG180) ? (ANGLE_MAX - angle + 1) : angle;
+}
+
+fixed_t dsda_FixedDistancePointToLine(fixed_t line_x1, fixed_t line_y1,
+                                      fixed_t line_x2, fixed_t line_y2,
+                                      fixed_t point_x, fixed_t point_y,
+                                      fixed_t *closest_x, fixed_t *closest_y) {
+  angle_t angle;
+  fixed_t line_length;
+  fixed_t distance_to_v1;
+  fixed_t distance_to_v2;
+  fixed_t distance_along_line;
+  fixed_t distance_ratio;
+
+  line_length = P_AproxDistance(line_x2 - line_x1, line_y2 - line_y1);
+  distance_to_v1 = P_AproxDistance(point_x - line_x1, point_y - line_y1);
+
+  angle = dsda_IntersectionAngle(line_x1, line_y1, line_x2, line_y2, point_x, point_y);
+
+  if (angle > ANG90) {
+    *closest_x = line_x1;
+    *closest_y = line_y1;
+
+    return distance_to_v1;
+  }
+
+  distance_along_line = FixedMul(distance_to_v1, finecosine[angle >> ANGLETOFINESHIFT]);
+
+  if (distance_along_line > line_length)
+  {
+    distance_to_v2 = P_AproxDistance(point_x - line_x2, point_y - line_y2);
+
+    *closest_x = line_x2;
+    *closest_y = line_y2;
+
+    return distance_to_v2;
+  }
+
+  distance_ratio = FixedDiv(distance_along_line, line_length);
+
+  *closest_x = FixedMul(line_x2 - line_x1, distance_ratio) + line_x1;
+  *closest_y = FixedMul(line_y2 - line_y1, distance_ratio) + line_y1;
+
+  return P_AproxDistance(point_x - *closest_x, point_y - *closest_y);
 }
 
 fixed_t dsda_FloatToFixed(float x)
