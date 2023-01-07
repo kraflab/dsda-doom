@@ -2707,22 +2707,6 @@ void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line)
   P_ActivateLine(line, thing, 0, SPAC_IMPACT);
 }
 
-void P_DamageLinedef(line_t *line, mobj_t *source, int damage)
-{
-  if (damage <= 0)
-  {
-    return;
-  }
-
-  line->health -= damage;
-  if (line->health < 0)
-  {
-    line->health = 0;
-  }
-
-  P_ActivateLine(line, source, 0, SPAC_DAMAGE | (line->health ? 0 : SPAC_DEATH));
-}
-
 static void P_ApplySectorDamage(player_t *player, int damage, int leak)
 {
   if (!player->powers[pw_ironfeet] || (leak && P_Random(pr_slimehurt) < leak))

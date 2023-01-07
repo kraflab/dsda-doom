@@ -33,6 +33,8 @@ set(COMMON_SRC
     dsda/deh_hash.h
     dsda/demo.c
     dsda/demo.h
+    dsda/destructible.c
+    dsda/destructible.h
     dsda/endoom.c
     dsda/endoom.h
     dsda/excmd.c

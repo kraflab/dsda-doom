@@ -135,5 +135,6 @@ void PIT_ThrustSpike(mobj_t * actor);
 // zdoom
 
 dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fog);
+int P_SplashDamage(fixed_t dist);
 
 #endif // __P_MAP__

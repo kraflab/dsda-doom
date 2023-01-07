@@ -51,8 +51,8 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/destructible.h"
 #include "dsda/map_format.h"
-#include "dsda/utility.h"
 
 #include "heretic/def.h"
 
@@ -530,7 +530,7 @@ static void CheckForDamageSpecial(line_t *line, mobj_t *mo)
   }
 
   damage = ((P_Random(pr_damage) % 8) + 1) * mo->info->damage;
-  P_DamageLinedef(line, mo->target, damage);
+  dsda_DamageLinedef(line, mo->target, damage);
 }
 
 static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj);
@@ -2290,7 +2290,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
     if (li->health)
     {
-      P_DamageLinedef(li, shootthing, la_damage);
+      dsda_DamageLinedef(li, shootthing, la_damage);
     }
 
     // Spawn bullet puffs.
@@ -2750,106 +2750,6 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   return true;
 }
 
-dboolean PIT_RadiusAttackLine(line_t *line)
-{
-  fixed_t dist;
-  mobj_t target;
-  sector_t *frontsector, *backsector;
-  int bombside;
-  dboolean sighted;
-  const fixed_t fudge = (FRACUNIT >> 4);
-
-  if (!line->health)
-  {
-    return true;
-  }
-
-  bombside = P_PointOnLineSide(bombspot->x, bombspot->y, line);
-  if (line->sidenum[bombside] == NO_INDEX)
-  {
-    return true;
-  }
-
-  dist = dsda_FixedDistancePointToLine(line->v1->x, line->v1->y,
-                                       line->v2->x, line->v2->y,
-                                       bombspot->x, bombspot->y,
-                                       &target.x, &target.y);
-  dist = (dist >> FRACBITS);
-  if (dist >= bombdistance)
-  {
-    return true;
-  }
-
-  // The target is currently "on the line"
-  // Move it towards the bomb slightly to make sure it's on the right side
-  if (bombspot->x - target.x > fudge)
-    target.x += fudge;
-  if (target.x - bombspot->x > fudge)
-    target.x -= fudge;
-  if (bombspot->y - target.y > fudge)
-    target.y += fudge;
-  if (target.y - bombspot->y > fudge)
-    target.y -= fudge;
-
-  // P_CheckSight needs subsector
-  target.subsector = R_PointInSubsector(target.x, target.y);
-
-  frontsector = sides[line->sidenum[bombside]].sector;
-  if (line->sidenum[!bombside] != NO_INDEX)
-    backsector = sides[line->sidenum[!bombside]].sector;
-  else
-    backsector = NULL;
-
-  sighted = false;
-
-  if (!backsector || line->flags & ML_BLOCKEVERYTHING)
-  {
-    if (frontsector->ceilingheight > frontsector->floorheight)
-    {
-      target.z = frontsector->floorheight;
-      target.height = frontsector->ceilingheight - frontsector->floorheight;
-
-      sighted = P_CheckSight(&target, bombspot);
-    }
-  }
-  else
-  {
-    fixed_t front_top, back_top, front_bottom, back_bottom;
-
-    front_top = frontsector->ceilingheight;
-    back_top = backsector->ceilingheight;
-    front_bottom = frontsector->floorheight;
-    back_bottom = backsector->floorheight;
-
-    if (front_top > back_top)
-    {
-      target.z = back_top;
-      target.height = front_top - back_top;
-
-      sighted = P_CheckSight(&target, bombspot);
-    }
-
-    if (!sighted && front_bottom < back_bottom)
-    {
-      target.z = front_bottom;
-      target.height = back_bottom - front_bottom;
-
-      sighted = P_CheckSight(&target, bombspot);
-    }
-  }
-
-  if (sighted)
-  {
-    int damage;
-
-    damage = P_SplashDamage(dist);
-
-    P_DamageLinedef(line, bombsource, damage);
-  }
-
-  return true;
-}
-
 //
 // P_RadiusAttack
 // Source is the creature that caused the explosion at spot.
@@ -2889,12 +2789,7 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source, int damage, int distance, dbool
 
   if (map_format.zdoom)
   {
-    // avoid collision with nested P_BlockLinesIterator
-    validcount2++;
-
-    for (y = yl; y <= yh; ++y)
-      for (x = xl; x <= xh; ++x)
-       P_BlockLinesIterator2(x, y, PIT_RadiusAttackLine);
+    dsda_RadiusAttackDestructibles(xl, xh, yl, yh);
   }
 }
 
