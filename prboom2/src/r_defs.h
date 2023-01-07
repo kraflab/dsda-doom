@@ -310,6 +310,7 @@ typedef struct line_s
   line_activation_t activation;
   byte locknumber;
   int health;
+  int healthgroup;
 } line_t;
 
 #define LINE_ARG_COUNT 5

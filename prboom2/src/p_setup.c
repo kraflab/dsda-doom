@@ -60,6 +60,7 @@
 #include "dsda.h"
 #include "dsda/args.h"
 #include "dsda/compatibility.h"
+#include "dsda/destructible.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
@@ -2046,6 +2047,7 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->sidenum[1] = mld->sideback;
     ld->locknumber = mld->locknumber;
     ld->health = mld->health;
+    ld->healthgroup = mld->healthgroup;
 
     if (mld->flags & UDMF_ML_PLAYERCROSS)
       ld->activation |= SPAC_CROSS;
@@ -2137,9 +2139,11 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_NOSKYWALLS
     // UDMF_ML_DRAWFULLHEIGHT
     // automapstyle
-    // healthgroup
 
     P_CalculateLineDefProperties(ld);
+
+    if (ld->healthgroup)
+      dsda_AddLineToHealthGroup(ld);
   }
 }
 
@@ -3664,6 +3668,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     Z_Free(sectors);
     Z_Free(vertexes);
   }
+
+  dsda_ResetHealthGroups();
 
   map_loader.load_vertexes(level_components.vertexes, level_components.gl_verts);
   map_loader.load_sectors(level_components.sectors);

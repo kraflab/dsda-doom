@@ -96,7 +96,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | noskywalls         | :grey_question:    |
 | drawfullheight     | :grey_question:    |
 | health             | :heavy_check_mark: |
-| healthgroup        | :grey_question:    |
+| healthgroup        | :heavy_check_mark: |
 | damagespecial      | :grey_question:    |
 | deathspecial       | :grey_question:    |
 | blocklandmonsters  | :heavy_check_mark: |

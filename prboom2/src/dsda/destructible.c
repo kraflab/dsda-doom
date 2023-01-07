@@ -15,6 +15,7 @@
 //	DSDA Destructible
 //
 
+#include "lprintf.h"
 #include "p_map.h"
 #include "p_maputl.h"
 #include "p_spec.h"
@@ -27,15 +28,97 @@ extern mobj_t* bombspot;
 extern int bombdamage;
 extern int bombdistance;
 
-void dsda_DamageLinedef(line_t *line, mobj_t *source, int damage) {
+typedef struct {
+  int health;
+  int size;
+  int* line_ids;
+} health_group_t;
+
+typedef struct {
+  int id;
+  health_group_t group;
+} health_group_entry_t;
+
+#define HEALTH_GROUP_HASH_MAX 128
+
+static health_group_entry_t* health_group_hash[HEALTH_GROUP_HASH_MAX];
+
+static health_group_t* dsda_HealthGroup(int id) {
+  int i;
+  int hash_id;
+  health_group_entry_t* list;
+
+  hash_id = (id % HEALTH_GROUP_HASH_MAX);
+  list = health_group_hash[hash_id];
+
+  if (!list) {
+    list = Z_CallocLevel(2, sizeof(*list));
+    health_group_hash[hash_id] = list;
+    list[0].id = id;
+    return &list[0].group;
+  }
+
+  for (i = 0; list[i].id; ++i)
+    if (list[i].id == id)
+      return &list[i].group;
+
+  list = Z_ReallocLevel(list, sizeof(*list) * (i + 2));
+  health_group_hash[hash_id] = list;
+  memset(&list[i + 1], 0, sizeof(*list));
+  list[i].id = id;
+  return &list[i].group;
+}
+
+void dsda_AddLineToHealthGroup(line_t* line) {
+  health_group_t* group;
+
+  group = dsda_HealthGroup(line->healthgroup);
+  if (group->health && group->health != line->health)
+    lprintf(LO_WARN, "Line %d health does not match group %d!\n",
+                     line->iLineID, line->healthgroup);
+
+  group->health = line->health;
+  group->line_ids =
+    Z_ReallocLevel(group->line_ids, sizeof(*group->line_ids) * (group->size + 1));
+  group->line_ids[group->size++] = line->iLineID;
+}
+
+void dsda_ResetHealthGroups(void) {
+  memset(health_group_hash, 0, HEALTH_GROUP_HASH_MAX * sizeof(*health_group_hash));
+}
+
+static void dsda_DamageHealthGroup(int id, mobj_t* source, int damage) {
+  int i;
+  health_group_t* group;
+
+  group = dsda_HealthGroup(id);
+  group->health -= damage;
+  if (group->health < 0)
+    group->health = 0;
+
+  for (i = 0; i < group->size; ++i) {
+    line_t* line;
+
+    line = &lines[group->line_ids[i]];
+    line->health = group->health;
+    P_ActivateLine(line, source, 0, SPAC_DAMAGE | (line->health ? 0 : SPAC_DEATH));
+  }
+}
+
+void dsda_DamageLinedef(line_t* line, mobj_t* source, int damage) {
   if (damage <= 0)
     return;
 
-  line->health -= damage;
-  if (line->health < 0)
-    line->health = 0;
+  if (line->healthgroup) {
+    dsda_DamageHealthGroup(line->healthgroup, source, damage);
+  }
+  else {
+    line->health -= damage;
+    if (line->health < 0)
+      line->health = 0;
 
-  P_ActivateLine(line, source, 0, SPAC_DAMAGE | (line->health ? 0 : SPAC_DEATH));
+    P_ActivateLine(line, source, 0, SPAC_DAMAGE | (line->health ? 0 : SPAC_DEATH));
+  }
 }
 
 static dboolean dsda_RadiusAttackLine(line_t *line) {
