@@ -206,7 +206,7 @@ dboolean P_GetMidTexturePosition(const line_t *line, int sideno, fixed_t *top, f
   else
   {
     *top = side->rowoffset + side->rowoffset_mid +
-             MAX(line->frontsector->ceilingheight, line->backsector->ceilingheight);
+             MIN(line->frontsector->ceilingheight, line->backsector->ceilingheight);
     *bottom = *top - textureheight[texnum];
   }
 
