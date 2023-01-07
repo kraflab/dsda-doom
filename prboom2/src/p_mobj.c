@@ -366,7 +366,7 @@ static void P_XYMovement (mobj_t* mo)
       }
       else if (player || mo->flags2 & MF2_SLIDE) // try to slide along it
       {
-        if (BlockingMobj == NULL)
+        if (BlockingMobj == NULL || map_format.zdoom)
         {
           P_SlideMove(mo);
         }
