@@ -82,7 +82,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | wrapmidtex         | :telescope:        |
 | midtex3d           | :heavy_check_mark: |
 | midtex3dimpassible | :heavy_check_mark: |
-| checkswitchrange   | :grey_question:    |
+| checkswitchrange   | :heavy_check_mark: |
 | blockprojectiles   | :heavy_check_mark: |
 | blockuse           | :heavy_check_mark: |
 | blocksight         | :heavy_check_mark: |

@@ -5626,6 +5626,14 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
     lineActivation |= SPAC_PCROSS;
   }
 
+  if (activationType == SPAC_USE || activationType == SPAC_USEBACK)
+  {
+    if (line->flags & ML_CHECKSWITCHRANGE && !P_CheckSwitchRange(line, mo, side))
+    {
+      return false;
+    }
+  }
+
   if (activationType == SPAC_USE &&
       lineActivation & SPAC_MUSE &&
       mo && !mo->player && mo->flags2 & MF2_CANUSEWALLS)

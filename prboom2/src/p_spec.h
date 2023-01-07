@@ -1649,6 +1649,7 @@ typedef enum {
 } zdoom_lock_t;
 
 dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy);
+dboolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno);
 int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
                    zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,

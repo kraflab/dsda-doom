@@ -34,6 +34,7 @@
 #include "doomstat.h"
 #include "w_wad.h"
 #include "r_main.h"
+#include "p_maputl.h"
 #include "p_spec.h"
 #include "g_game.h"
 #include "s_sound.h"
@@ -267,6 +268,101 @@ void P_ChangeSwitchTexture
 
   if (useAgain)
     P_StartButton(line, position, switchlist[i], BUTTONTIME);
+}
+
+static dboolean P_IsSwitchTexture(short texture)
+{
+  int i;
+
+  for (i = 0; i < numswitches * 2; ++i)
+    if (switchlist[i] == texture)
+      return true;
+
+  return false;
+}
+
+dboolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno)
+{
+  side_t *side;
+  sector_t *front;
+  dboolean can_hit_top, can_hit_bottom;
+  dboolean found_switch;
+
+  // Is it possible to use a side that doesn't exist?
+  if (line->sidenum[sideno] == NO_INDEX)
+  {
+    return true;
+  }
+
+  side = &sides[line->sidenum[sideno]];
+  front = side->sector;
+
+  if (mo->z + mo->height <= front->floorheight || mo->z >= front->ceilingheight)
+  {
+    return false;
+  }
+
+  // one-sided
+  if (line->sidenum[1] == NO_INDEX)
+  {
+    return true;
+  }
+
+  P_LineOpening(line, NULL);
+
+  // acts like one-sided
+  if (line_opening.range <= 0)
+  {
+    return true;
+  }
+
+  can_hit_top = (front->ceilingheight > line_opening.top) &&
+                (mo->z + mo->height > line_opening.top && mo->z < front->ceilingheight);
+
+  can_hit_bottom = (front->floorheight < line_opening.bottom) &&
+                   (mo->z + mo->height > front->floorheight && mo->z < line_opening.bottom);
+
+  found_switch = false;
+
+  if (side->toptexture && P_IsSwitchTexture(side->toptexture))
+  {
+    found_switch = true;
+
+    if (can_hit_top)
+    {
+      return true;
+    }
+  }
+
+  if (side->bottomtexture && P_IsSwitchTexture(side->bottomtexture))
+  {
+    found_switch = true;
+
+    if (can_hit_bottom)
+    {
+      return true;
+    }
+  }
+
+  if (side->midtexture && P_IsSwitchTexture(side->midtexture))
+  {
+    fixed_t top, bottom;
+
+    found_switch = true;
+
+    if (P_GetMidTexturePosition(line, sideno, &top, &bottom))
+    {
+      if (front->ceilingheight > bottom && front->floorheight < top)
+      {
+        if (mo->z + mo->height > bottom && mo->z < top)
+        {
+          return true;
+        }
+      }
+    }
+  }
+
+  return !found_switch && (can_hit_top || can_hit_bottom);
 }
 
 //
