@@ -97,8 +97,8 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | drawfullheight     | :grey_question:    |
 | health             | :heavy_check_mark: |
 | healthgroup        | :heavy_check_mark: |
-| damagespecial      | :grey_question:    |
-| deathspecial       | :grey_question:    |
+| damagespecial      | :heavy_check_mark: |
+| deathspecial       | :heavy_check_mark: |
 | blocklandmonsters  | :heavy_check_mark: |
 
 #### Notes
