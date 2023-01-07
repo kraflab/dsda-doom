@@ -1679,9 +1679,9 @@ static void AM_drawWalls(void)
           AM_drawMline(&l, (*mapcolor_flat_p)); //2S lines that appear only in IDDT
         }
       }
-    } // now draw the lines only visible because the player has computermap
-    else if (plr->powers[pw_allmap]) // computermap visible lines
-    {
+    }
+    else if (plr->powers[pw_allmap] || (lines[i].flags & ML_REVEALED))
+    { // if the player has the computer map or the line was revealed (udmf)
       if (!(lines[i].flags & ML_DONTDRAW)) // invisible flag lines do not show
       {
         if

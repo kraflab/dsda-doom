@@ -2130,12 +2130,14 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_FIRSTSIDEONLY)
       ld->flags |= ML_FIRSTSIDEONLY;
 
+    if (mld->flags & UDMF_ML_REVEALED)
+      ld->flags |= ML_REVEALED;
+
     // UDMF TODO:
     // UDMF_ML_TRANSLUCENT
     // UDMF_ML_WRAPMIDTEX
     // UDMF_ML_CHECKSWITCHRANGE
     // UDMF_ML_TRANSPARENT
-    // UDMF_ML_REVEALED
     // UDMF_ML_NOSKYWALLS
     // UDMF_ML_DRAWFULLHEIGHT
     // automapstyle

@@ -196,6 +196,7 @@ typedef struct {
 #define ML_3DMIDTEX            0x01000000
 #define ML_3DMIDTEXIMPASSIBLE  0x02000000
 #define ML_FIRSTSIDEONLY       0x04000000
+#define ML_REVEALED            0x08000000
 
 // Sector definition, from editing.
 typedef struct {
