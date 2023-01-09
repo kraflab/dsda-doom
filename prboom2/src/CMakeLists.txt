@@ -118,6 +118,8 @@ set(COMMON_SRC
     dsda/hud_components/tracker.h
     dsda/hud_components/weapon_text.c
     dsda/hud_components/weapon_text.h
+    dsda/id_list.c
+    dsda/id_list.h
     dsda/input.c
     dsda/input.h
     dsda/key_frame.c
