@@ -2035,7 +2035,7 @@ static void P_LoadUDMFLineDefs(int lump)
 
     ld->flags = (mld->flags & ML_BOOM);
     ld->special = mld->special;
-    ld->tag = mld->id;
+    ld->tag = (mld->id >= 0 ? mld->id : 0);
     ld->arg1 = mld->arg0;
     ld->arg2 = mld->arg1;
     ld->arg3 = mld->arg2;
