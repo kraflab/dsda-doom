@@ -932,6 +932,8 @@ static void P_LoadSectors (int lump)
   sectors = calloc_IfSameLevel(sectors, numsectors, sizeof(sector_t));
   data = W_LumpByNum (lump); // cph - wad lump handling updated
 
+  dsda_ResetSectorIDList(numsectors);
+
   for (i=0; i<numsectors; i++)
   {
     sector_t *ss = sectors + i;
@@ -947,6 +949,9 @@ static void P_LoadSectors (int lump)
     ss->lightlevel = LittleShort(ms->lightlevel);
     ss->special = LittleShort(ms->special);
     ss->tag = LittleShort(ms->tag);
+
+    if (ss->tag)
+      dsda_AddSectorID(ss->tag, i);
   }
 }
 
@@ -956,6 +961,8 @@ static void P_LoadUDMFSectors(int lump)
 
   numsectors = udmf.num_sectors;
   sectors = calloc_IfSameLevel(sectors, numsectors, sizeof(sector_t));
+
+  dsda_ResetSectorIDList(numsectors);
 
   for (i = 0; i < numsectors; ++i)
   {
@@ -991,6 +998,9 @@ static void P_LoadUDMFSectors(int lump)
     // damageinterval
     // leakiness
     // flags
+
+    if (ss->tag)
+      dsda_AddSectorID(ss->tag, i);
   }
 }
 
