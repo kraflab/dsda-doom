@@ -54,6 +54,7 @@
 
 #include "dsda.h"
 #include "dsda/configuration.h"
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 
@@ -284,7 +285,7 @@ static dboolean P_CheckMissileRange(mobj_t *actor)
 static dboolean P_IsOnLift(const mobj_t *actor)
 {
   const sector_t *sec = actor->subsector->sector;
-  int l;
+  const int *l;
 
   // Short-circuit: it's on a lift which is active.
   if (sec->floordata && ((thinker_t *) sec->floordata)->function==T_PlatRaise)
@@ -292,8 +293,8 @@ static dboolean P_IsOnLift(const mobj_t *actor)
 
   // Check to see if it's in a sector which can be activated as a lift.
   if (sec->tag)
-    for (l = -1; (l = P_FindLineFromTag(sec->tag, l)) >= 0;)
-      switch (lines[l].special)
+    for (l = dsda_FindLinesFromID(sec->tag); *l >= 0; l++)
+      switch (lines[*l].special)
   {
   case  10: case  14: case  15: case  20: case  21: case  22:
   case  47: case  53: case  62: case  66: case  67: case  68:

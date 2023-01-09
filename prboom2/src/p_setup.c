@@ -61,6 +61,7 @@
 #include "dsda/args.h"
 #include "dsda/compatibility.h"
 #include "dsda/destructible.h"
+#include "dsda/id_list.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
@@ -1970,6 +1971,8 @@ static void P_LoadLineDefs (int lump)
   lines = calloc_IfSameLevel(lines, numlines, sizeof(line_t));
   data = W_LumpByNum (lump); // cph - wad lump handling updated
 
+  dsda_ResetLineIDList(numlines);
+
   for (i=0; i<numlines; i++)
   {
     line_t *ld = lines+i;
@@ -2015,6 +2018,9 @@ static void P_LoadLineDefs (int lump)
     map_format.translate_line_flags(&ld->flags, &ld->activation);
 
     P_CalculateLineDefProperties(ld);
+
+    if (ld->tag)
+      dsda_AddLineID(ld->tag, i);
   }
 }
 
@@ -2024,6 +2030,8 @@ static void P_LoadUDMFLineDefs(int lump)
 
   numlines = udmf.num_lines;
   lines = calloc_IfSameLevel(lines, numlines, sizeof(line_t));
+
+  dsda_ResetLineIDList(numlines);
 
   for (i = 0; i < numlines; ++i)
   {
@@ -2148,6 +2156,9 @@ static void P_LoadUDMFLineDefs(int lump)
 
     if (ld->healthgroup)
       dsda_AddLineToHealthGroup(ld);
+
+    if (ld->tag)
+      dsda_AddLineID(ld->tag, i);
   }
 }
 
@@ -2184,20 +2195,19 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
   switch (ld->special)
   {                           // killough 4/11/98: handle special types
     case zl_translucent_line: // killough 4/11/98: translucent 2s textures
-      {
-        int i, lump;
+    {
+      const int *id_p;
+      int lump;
 
-        lump = sides[*ld->sidenum].special; // translucency from sidedef
-        if (!ld->arg1)
-          ld->tranlump = lump;
-        else
-          // for (i = -1; (i = P_FindLineFromTag(ld->arg1, i)) >= 0;)
-          for (i = 0; i < numlines; i++)
-            if (lines[i].tag == ld->arg1)
-              lines[i].tranlump = lump;
-        ld->special = 0;
-      }
-      break;
+      lump = sides[*ld->sidenum].special; // translucency from sidedef
+      if (!ld->arg1)
+        ld->tranlump = lump;
+      else
+        for (id_p = dsda_FindLinesFromID(ld->arg1); *id_p >= 0; id_p++)
+          lines[*id_p].tranlump = lump;
+      ld->special = 0;
+    }
+    break;
   }
 }
 

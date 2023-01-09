@@ -67,6 +67,7 @@
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/global.h"
+#include "dsda/id_list.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/thing_id.h"
@@ -907,26 +908,6 @@ int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start)
     return P_FindSectorFromTag(tag, start);
 }
 
-// killough 4/16/98: Same thing, only for linedefs
-
-int P_FindLineFromLineTag(const line_t *line, int start)
-{
-  start = start >= 0 ? lines[start].nexttag :
-    lines[(unsigned) line->tag % (unsigned) numlines].firsttag;
-  while (start >= 0 && lines[start].tag != line->tag)
-    start = lines[start].nexttag;
-  return start;
-}
-
-int P_FindLineFromTag(int tag, int start)
-{
-  start = start >= 0 ? lines[start].nexttag :
-    lines[(unsigned) tag % (unsigned) numlines].firsttag;
-  while (start >= 0 && lines[start].tag != tag)
-    start = lines[start].nexttag;
-  return start;
-}
-
 // Hash the sector tags across the sectors and linedefs.
 static void P_InitTagLists(void)
 {
@@ -939,17 +920,6 @@ static void P_InitTagLists(void)
       int j = (unsigned) sectors[i].tag % (unsigned) numsectors; // Hash func
       sectors[i].nexttag = sectors[j].firsttag;   // Prepend sector to chain
       sectors[j].firsttag = i;
-    }
-
-  // killough 4/17/98: same thing, only for linedefs
-
-  for (i=numlines; --i>=0; )        // Initially make all slots empty.
-    lines[i].firsttag = -1;
-  for (i=numlines; --i>=0; )        // Proceed from last to first linedef
-    {                               // so that lower linedefs appear first
-      int j = (unsigned) lines[i].tag % (unsigned) numlines; // Hash func
-      lines[i].nexttag = lines[j].firsttag;   // Prepend linedef to chain
-      lines[j].firsttag = i;
     }
 }
 
@@ -3944,6 +3914,7 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
   switch (special)
   {
     register int s;
+    const int *id_p;
 
     case 250:   // scroll effect ceiling
       for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
@@ -3974,9 +3945,9 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       }
       else
       {
-        for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
-          if (s != i)
-            Add_WallScroller(dx, dy, lines + s, control, accel);
+        for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
+          if (*id_p != i)
+            Add_WallScroller(dx, dy, lines + *id_p, control, accel);
       }
       break;
 
@@ -4001,9 +3972,9 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       s = lines[i].sidenum[0];
       dx = -sides[s].textureoffset / 8;
       dy = sides[s].rowoffset / 8;
-      for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
-        if (s != i)
-          Add_Scroller(sc_side, dx, dy, control, lines[s].sidenum[0], accel);
+      for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          Add_Scroller(sc_side, dx, dy, control, lines[*id_p].sidenum[0], accel);
 
       break;
 
@@ -4099,6 +4070,7 @@ void P_SpawnZDoomScroller(line_t *l, int i)
   switch (special)
   {
     int s;
+    const int *id_p;
 
     case zl_scroll_ceiling:
       for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
@@ -4150,9 +4122,9 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_texture_model:
       // killough 3/1/98: scroll wall according to linedef
       // (same direction and speed as scrolling floors)
-      for (s = -1; (s = P_FindLineFromTag(l->arg1, s)) >= 0;)
-        if (s != i)
-          Add_WallScroller(dx, dy, lines + s, control, accel);
+      for (id_p = dsda_FindLinesFromID(l->arg1); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          Add_WallScroller(dx, dy, lines + *id_p, control, accel);
 
       l->special = 0;
       break;
@@ -6611,7 +6583,8 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_line_set_blocking:
       if (args[0])
       {
-        int i, s;
+        int i;
+        const int *id_p;
         static const int flags[] =
         {
           ML_BLOCKING,
@@ -6637,9 +6610,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           if (args[2] & 1) clearflags |= flags[i];
         }
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          lines[s].flags = (lines[s].flags & ~clearflags) | setflags;
+          lines[*id_p].flags = (lines[*id_p].flags & ~clearflags) | setflags;
         }
 
         buttonSuccess = 1;
@@ -6648,12 +6621,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_scroll_wall:
       if (args[0])
       {
-        int s;
+        const int *id_p;
         int side = !!args[3];
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          Add_Scroller(sc_side, args[1], args[2], -1, lines[s].sidenum[side], 0);
+          Add_Scroller(sc_side, args[1], args[2], -1, lines[*id_p].sidenum[side], 0);
         }
 
         buttonSuccess = 1;
@@ -6662,12 +6635,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_line_set_texture_offset:
       if (args[0] && args[3] <= 1)
       {
-        int s;
+        const int *id_p;
         int sidenum = !!args[3];
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          side_t *side = &sides[lines[s].sidenum[sidenum]];
+          side_t *side = &sides[lines[*id_p].sidenum[sidenum]];
           side->textureoffset = args[1];
           side->rowoffset = args[2];
         }

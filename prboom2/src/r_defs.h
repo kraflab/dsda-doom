@@ -292,7 +292,6 @@ typedef struct line_s
   int validcount2;
   void *specialdata;     // thinker_t for reversable actions
   int tranlump;          // killough 4/11/98: translucency filter, -1 == none
-  int firsttag,nexttag;  // killough 4/17/98: improves searches for tags.
   int r_validcount;      // cph: if == gametic, r_flags already done
   r_flags_t r_flags;     // cph
   degenmobj_t soundorg;  // sound origin for switches/buttons

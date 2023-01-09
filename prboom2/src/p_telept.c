@@ -44,6 +44,7 @@
 #include "smooth.h"
 #include "m_random.h"
 
+#include "dsda/id_list.h"
 #include "dsda/thing_id.h"
 
 // More will be added
@@ -431,14 +432,14 @@ int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_
 int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
                           int tag, dboolean reverse)
 {
-  int i;
+  const int *i;
   line_t *l;
 
   if (side || thing->flags & MF_MISSILE)
     return 0;
 
-  for (i = -1; (i = P_FindLineFromTag(tag, i)) >= 0;)
-    if ((l=lines+i) != line && l->backsector)
+  for (i = dsda_FindLinesFromID(tag); *i >= 0; i++)
+    if ((l = lines + *i) != line && l->backsector)
       {
         // Get the thing's position along the source linedef
         fixed_t pos = D_abs(line->dx) > D_abs(line->dy) ?
