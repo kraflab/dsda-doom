@@ -375,6 +375,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
     {
       channels[cnum].handle = h;
       channels[cnum].pitch = params.pitch;
+      channels[cnum].priority = params.priority;
       channels[cnum].ambient = params.ambient;
       channels[cnum].loop = params.loop;
       channels[cnum].loop_timeout = params.loop_timeout;
