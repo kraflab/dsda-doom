@@ -43,6 +43,7 @@
 #include "g_overflow.h"
 #include "e6y.h"//e6y
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 #include "hexen/p_acs.h"
@@ -766,16 +767,6 @@ int EV_DoChange
  * stairs
  * - Boom fixed the bug, and MBF/PrBoom without comp_stairs work right
  */
-static inline int P_FindSectorFromLineTagWithLowerBound
-(line_t* l, int start, int min)
-{
-  /* Emulate original Doom's linear lower-bounded P_FindSectorFromLineTag
-   * as needed */
-  do {
-    start = P_FindSectorFromLineTag(l,start);
-  } while (start >= 0 && start <= min);
-  return start;
-}
 
 int EV_BuildStairs
 ( line_t*       line,
@@ -784,9 +775,8 @@ int EV_BuildStairs
   /* cph 2001/09/22 - cleaned up this function to save my sanity. A separate
    * outer loop index makes the logic much cleared, and local variables moved
    * into the inner blocks helps too */
-  int                   ssec = -1;
-  int                   minssec = -1;
-  int                   rtn = 0;
+  const int *ssec = NULL;
+  int rtn = 0;
 
   //e6y
   int           secnum = -1;
@@ -794,177 +784,187 @@ int EV_BuildStairs
   if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_stair; else {return rtn;}};//e6y
 
   // start a stair at each sector tagged the same as the linedef
-  while ((ssec = P_FindSectorFromLineTagWithLowerBound(line,ssec,minssec)) >= 0)
+  for (ssec = dsda_FindSectorsFromID(line->tag); *ssec >= 0; ssec++)
   {
-   //e6y int
-   secnum = ssec;
-   //e6y sector_t*
-   sec = &sectors[secnum];
+    //e6y int
+    secnum = *ssec;
+    //e6y sector_t*
+    sec = &sectors[secnum];
 
 manual_stair://e6y
-   // don't start a stair if the first step's floor is already moving
-   if (!P_FloorActive(sec)) { //jff 2/22/98
-    floormove_t*  floor;
-    int           texture, height;
-    fixed_t       stairsize;
-    fixed_t       speed;
-    int           crush;
-    int           ok;
+    // don't start a stair if the first step's floor is already moving
+    if (!P_FloorActive(sec)) { //jff 2/22/98
+      floormove_t*  floor;
+      int           texture, height;
+      fixed_t       stairsize;
+      fixed_t       speed;
+      int           crush;
+      int           ok;
 
-    // create new floor thinker for first step
-    rtn = 1;
-    floor = Z_MallocLevel (sizeof(*floor));
-    memset(floor, 0, sizeof(*floor));
-    P_AddThinker (&floor->thinker);
-    sec->floordata = floor;
-    floor->thinker.function = T_MoveFloor;
-    floor->direction = 1;
-    floor->sector = sec;
-    floor->type = buildStair;   //jff 3/31/98 do not leave uninited
-    floor->crush = NO_CRUSH;
-    crush = floor->crush;
+      // create new floor thinker for first step
+      rtn = 1;
+      floor = Z_MallocLevel (sizeof(*floor));
+      memset(floor, 0, sizeof(*floor));
+      P_AddThinker (&floor->thinker);
+      sec->floordata = floor;
+      floor->thinker.function = T_MoveFloor;
+      floor->direction = 1;
+      floor->sector = sec;
+      floor->type = buildStair;   //jff 3/31/98 do not leave uninited
+      floor->crush = NO_CRUSH;
+      crush = floor->crush;
 
-    // set up the speed and stepsize according to the stairs type
-    switch(type)
-    {
-      default: // killough -- prevent compiler warning
-      case build8:
-        speed = FLOORSPEED/4;
-        stairsize = 8*FRACUNIT;
-        if (!demo_compatibility)
-          crush = NO_CRUSH; //jff 2/27/98 fix uninitialized crush field
-        // e6y
-        // Uninitialized crush field will not be equal to 0 or 1 (true)
-        // with high probability. So, initialize it with any other value
-        // There is no more desync on icarus.wad/ic29uv.lmp
-        // http://competn.doom2.net/pub/sda/i-o/icuvlmps.zip
-        // http://www.doomworld.com/idgames/index.php?id=5191
-        else
-        {
-          if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
-        }
-
-        break;
-      case turbo16:
-        speed = FLOORSPEED*4;
-        stairsize = 16*FRACUNIT;
-        if (!demo_compatibility)
-          crush = DOOM_CRUSH;  //jff 2/27/98 fix uninitialized crush field
-        // e6y
-        // Uninitialized crush field will not be equal to 0 or 1 (true)
-        // with high probability. So, initialize it with any other value
-        else
-        {
-          if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
-        }
-
-        break;
-      case heretic_build8:
-        speed = FLOORSPEED;
-        stairsize = 8 * FRACUNIT;
-        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
-
-        break;
-      case heretic_turbo16:
-        speed = FLOORSPEED;
-        stairsize = 16 * FRACUNIT;
-        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
-
-        break;
-    }
-    floor->speed = speed;
-    floor->crush = crush;
-    height = sec->floorheight + stairsize;
-    floor->floordestheight = height;
-
-    texture = sec->floorpic;
-
-    // Find next sector to raise
-    //   1. Find 2-sided line with same sector side[0] (lowest numbered)
-    //   2. Other side is the next sector to raise
-    //   3. Unless already moving, or different texture, then stop building
-    do
-    {
-      int i;
-      ok = 0;
-
-      for (i = 0;i < sec->linecount;i++)
+      // set up the speed and stepsize according to the stairs type
+      switch(type)
       {
-        sector_t* tsec = (sec->lines[i])->frontsector;
-        int newsecnum;
-        if ( !((sec->lines[i])->flags & ML_TWOSIDED) )
-          continue;
+        default: // killough -- prevent compiler warning
+        case build8:
+          speed = FLOORSPEED/4;
+          stairsize = 8*FRACUNIT;
+          if (!demo_compatibility)
+            crush = NO_CRUSH; //jff 2/27/98 fix uninitialized crush field
+          // e6y
+          // Uninitialized crush field will not be equal to 0 or 1 (true)
+          // with high probability. So, initialize it with any other value
+          // There is no more desync on icarus.wad/ic29uv.lmp
+          // http://competn.doom2.net/pub/sda/i-o/icuvlmps.zip
+          // http://www.doomworld.com/idgames/index.php?id=5191
+          else
+          {
+            if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
+              crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+          }
 
-        newsecnum = tsec->iSectorID;
+          break;
+        case turbo16:
+          speed = FLOORSPEED*4;
+          stairsize = 16*FRACUNIT;
+          if (!demo_compatibility)
+            crush = DOOM_CRUSH;  //jff 2/27/98 fix uninitialized crush field
+          // e6y
+          // Uninitialized crush field will not be equal to 0 or 1 (true)
+          // with high probability. So, initialize it with any other value
+          else
+          {
+            if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
+              crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+          }
 
-        if (secnum != newsecnum)
-          continue;
+          break;
+        case heretic_build8:
+          speed = FLOORSPEED;
+          stairsize = 8 * FRACUNIT;
+          crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
 
-        tsec = (sec->lines[i])->backsector;
-        if (!tsec) continue;     //jff 5/7/98 if no backside, continue
-        newsecnum = tsec->iSectorID;
+          break;
+        case heretic_turbo16:
+          speed = FLOORSPEED;
+          stairsize = 16 * FRACUNIT;
+          crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
 
-        // if sector's floor is different texture, look for another
-        if (tsec->floorpic != texture)
-          continue;
-
-        /* jff 6/19/98 prevent double stepsize
-   * killough 10/98: intentionally left this way [MBF comment]
-   * cph 2001/02/06: stair bug fix should be controlled by comp_stairs,
-   *  except if we're emulating MBF which perversly reverted the fix
-   */
-        if (comp[comp_stairs] || (compatibility_level == mbf_compatibility))
-          height += stairsize; // jff 6/28/98 change demo compatibility
-
-        // if sector's floor already moving, look for another
-        if (P_FloorActive(tsec)) //jff 2/22/98
-          continue;
-
-  /* cph - see comment above - do this iff we didn't do so above */
-        if (!comp[comp_stairs] && (compatibility_level != mbf_compatibility))
-          height += stairsize;
-
-        sec = tsec;
-        secnum = newsecnum;
-
-        // create and initialize a thinker for the next step
-        floor = Z_MallocLevel (sizeof(*floor));
-        memset(floor, 0, sizeof(*floor));
-        P_AddThinker (&floor->thinker);
-
-        sec->floordata = floor; //jff 2/22/98
-        floor->thinker.function = T_MoveFloor;
-        floor->direction = 1;
-        floor->sector = sec;
-        floor->speed = speed;
-        floor->floordestheight = height;
-        floor->type = buildStair; //jff 3/31/98 do not leave uninited
-        floor->crush = crush; //jff 2/27/98 fix uninitialized crush field
-
-        ok = 1;
-        break;
+          break;
       }
-    } while(ok);      // continue until no next step is found
+      floor->speed = speed;
+      floor->crush = crush;
+      height = sec->floorheight + stairsize;
+      floor->floordestheight = height;
 
-   }
-   /* killough 10/98: compatibility option */
-   if (comp[comp_stairs]) {
-     /* cph 2001/09/22 - emulate buggy MBF comp_stairs for demos, with logic
-      * reversed since we now have a separate outer loop index.
-      * DEMOSYNC - what about boom_compatibility_compatibility?
-      */
-     if ((compatibility_level >= mbf_compatibility) && (compatibility_level <
-           prboom_3_compatibility)) ssec = secnum; /* Trash outer loop index */
-     else {
-       /* cph 2001/09/22 - now the correct comp_stairs - Doom used a linear
-        * search from the last secnum, so we set that as a minimum value and do
-        * a fresh tag search
-        */
-       ssec = -1; minssec = secnum;
-     }
-   }
+      texture = sec->floorpic;
+
+      // Find next sector to raise
+      //   1. Find 2-sided line with same sector side[0] (lowest numbered)
+      //   2. Other side is the next sector to raise
+      //   3. Unless already moving, or different texture, then stop building
+      do
+      {
+        int i;
+        ok = 0;
+
+        for (i = 0;i < sec->linecount;i++)
+        {
+          sector_t* tsec = (sec->lines[i])->frontsector;
+          int newsecnum;
+          if ( !((sec->lines[i])->flags & ML_TWOSIDED) )
+            continue;
+
+          newsecnum = tsec->iSectorID;
+
+          if (secnum != newsecnum)
+            continue;
+
+          tsec = (sec->lines[i])->backsector;
+          if (!tsec) continue;     //jff 5/7/98 if no backside, continue
+          newsecnum = tsec->iSectorID;
+
+          // if sector's floor is different texture, look for another
+          if (tsec->floorpic != texture)
+            continue;
+
+          /* jff 6/19/98 prevent double stepsize
+          * killough 10/98: intentionally left this way [MBF comment]
+          * cph 2001/02/06: stair bug fix should be controlled by comp_stairs,
+          *  except if we're emulating MBF which perversly reverted the fix
+          */
+          if (comp[comp_stairs] || (compatibility_level == mbf_compatibility))
+            height += stairsize; // jff 6/28/98 change demo compatibility
+
+          // if sector's floor already moving, look for another
+          if (P_FloorActive(tsec)) //jff 2/22/98
+            continue;
+
+          /* cph - see comment above - do this iff we didn't do so above */
+          if (!comp[comp_stairs] && (compatibility_level != mbf_compatibility))
+            height += stairsize;
+
+          sec = tsec;
+          secnum = newsecnum;
+
+          // create and initialize a thinker for the next step
+          floor = Z_MallocLevel (sizeof(*floor));
+          memset(floor, 0, sizeof(*floor));
+          P_AddThinker (&floor->thinker);
+
+          sec->floordata = floor; //jff 2/22/98
+          floor->thinker.function = T_MoveFloor;
+          floor->direction = 1;
+          floor->sector = sec;
+          floor->speed = speed;
+          floor->floordestheight = height;
+          floor->type = buildStair; //jff 3/31/98 do not leave uninited
+          floor->crush = crush; //jff 2/27/98 fix uninitialized crush field
+
+          ok = 1;
+          break;
+        }
+      } while(ok);      // continue until no next step is found
+    }
+    /* killough 10/98: compatibility option */
+    if (comp[comp_stairs]) {
+      ssec = dsda_FindSectorsFromID(line->tag);
+
+      /* cph 2001/09/22 - emulate buggy MBF comp_stairs for demos, with logic
+       * reversed since we now have a separate outer loop index.
+       * DEMOSYNC - what about boom_compatibility_compatibility?
+       */
+      if (
+        compatibility_level >= mbf_compatibility &&
+        compatibility_level < prboom_3_compatibility
+      ) {
+        // Trash outer loop index
+        for (; *ssec >= 0; ssec++)
+          if (*ssec == secnum || ssec[1] < 0)
+            break;
+      }
+      else {
+        /* cph 2001/09/22 - now the correct comp_stairs - Doom used a linear
+         * search from the last secnum, so we set that as a minimum value and do
+         * a fresh tag search
+         */
+        for (; *ssec >= 0; ssec++)
+          if (ssec[1] > secnum || ssec[1] < 0)
+            break;
+      }
+    }
     if (zerotag_manual) return rtn; //e6y
   }
   return rtn;
