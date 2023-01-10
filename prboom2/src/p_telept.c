@@ -408,9 +408,6 @@ int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_
   if (side || thing->flags & MF_MISSILE)
     return 0;
 
-  // killough 1/31/98: improve performance by using
-  // P_FindSectorFromLineTag instead of simple linear search.
-
   if ((m = P_TeleportDestination(thing_id, tag)) != NULL)
   {
     return P_TeleportToDestination(m, line, thing, flags);
