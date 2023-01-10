@@ -778,8 +778,11 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
   {
     params->pitch = channel->pitch;
     params->priority = channel->sfxinfo->priority;
+    if (!raven)
+      params->priority = 128 - params->priority;
     // heretic_note: divides by 256 instead of the dist_adjust
-    params->priority *= (10 - approx_dist / dist_adjust);
+    if (raven)
+      params->priority *= (10 - approx_dist / dist_adjust);
   }
 
   return (params->volume > 0);
