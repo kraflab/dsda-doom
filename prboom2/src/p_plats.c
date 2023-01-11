@@ -41,6 +41,7 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 #include "hexen/p_acs.h"
@@ -339,7 +340,7 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
                    fixed_t speed, int delay, fixed_t lip, int change)
 {
   plat_t *plat;
-  int secnum = -1;
+  const int *id_p;
   int rtn = 0;
   sector_t *sec;
 
@@ -361,9 +362,9 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
     }
   }
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     if (P_FloorActive(sec))
       continue;

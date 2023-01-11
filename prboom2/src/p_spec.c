@@ -895,19 +895,6 @@ int P_FindSectorFromTag(int tag, int start)
   return start;
 }
 
-int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start)
-{
-  if (tag == 0)
-  {
-    if (!line || !line->backsector || line->backsector->iSectorID == start)
-      return -1;
-
-    return line->backsector->iSectorID;
-  }
-  else
-    return P_FindSectorFromTag(tag, start);
-}
-
 // Hash the sector tags across the sectors and linedefs.
 static void P_InitTagLists(void)
 {

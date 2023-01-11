@@ -1112,11 +1112,11 @@ int EV_DoDonut(line_t *line)
 
 int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespeed)
 {
-  int secnum = -1;
+  const int *id_p;
   int rtn = 0;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
-    rtn |= P_SpawnDonut(secnum, line, pillarspeed, slimespeed);
+  FIND_SECTORS2(id_p, tag, line)
+    rtn |= P_SpawnDonut(*id_p, line, pillarspeed, slimespeed);
 
   return rtn;
 }
@@ -1180,7 +1180,7 @@ void P_SpawnElevator(sector_t *sec, line_t *line, elevator_e type, fixed_t speed
 
 int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t height, int tag)
 {
-  int secnum = -1;
+  const int *id_p;
   int rtn = 0;
   sector_t *sec;
   elevator_t *elevator;
@@ -1190,9 +1190,9 @@ int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t hei
   if (!line && type == elevateCurrent)
     return 0;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     if (P_FloorActive(sec) || P_CeilingActive(sec))
       continue;
@@ -1414,15 +1414,15 @@ int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fi
                     int crush, int change, dboolean hexencrush, dboolean hereticlower)
 {
   sector_t *sec;
-  int secnum = -1;
+  const int *id_p;
   int retcode = 0;
 
   speed *= FRACUNIT / 8;
   height *= FRACUNIT;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
     if (sec->floordata)
     {
       continue;
@@ -1790,8 +1790,8 @@ static void P_SpawnZDoomStair(sector_t *sec, stair_e type, fixed_t stairstep,
 int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
                         fixed_t speed, int delay, int reset, int igntxt, int usespecials)
 {
-  int secnum = -1;
-  int osecnum; //jff 3/4/98 save old loop index
+  const int *id_p;
+  int oldsecnum;
   int newsecnum;
   dboolean rtn = 0;
   fixed_t height;
@@ -1809,9 +1809,9 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
 
   validcount++;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     // ALREADY MOVING?  IF SO, KEEP GOING...
     // jff 2/26/98 add special lockout condition to wait for entire
@@ -1834,7 +1834,7 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
     sec->prevsec = -1;
     sec->validcount = validcount;
 
-    osecnum = secnum; //jff 3/4/98 preserve loop index
+    oldsecnum = *id_p;
 
     // Find next sector to raise
     // 1. Find 2-sided line with same sector side[0] (lowest numbered)
@@ -1880,7 +1880,7 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
           tsec = sec->lines[i]->frontsector;
           newsecnum = tsec->iSectorID;
 
-          if (secnum != newsecnum)
+          if (oldsecnum != newsecnum)
             continue;
 
           tsec = sec->lines[i]->backsector;
@@ -1908,12 +1908,12 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
         // link the stair chain in both directions
         // lock the stair sector until building complete
         sec->nextsec = newsecnum; // link step to next
-        tsec->prevsec = secnum;   // link next back
+        tsec->prevsec = oldsecnum; // link next back
         tsec->nextsec = -1;       // set next forward link as end
         tsec->stairlock = -2;     // lock the step
 
         sec = tsec;
-        secnum = newsecnum;
+        oldsecnum = newsecnum;
 
         P_SpawnZDoomStair(sec, type, stairstep, speed, height, delay, reset, usespecials);
       }
@@ -1921,8 +1921,7 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
 
     // [RH] make sure the first sector doesn't point to a previous one, otherwise
     // it can infinite loop when the first sector stops moving.
-    sectors[osecnum].prevsec = -1;
-    secnum = osecnum; //jff 3/4/98 restore old loop index
+    sectors[*id_p].prevsec = -1;
   }
   return rtn;
 }
@@ -2110,16 +2109,16 @@ void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
 int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
                      fixed_t floordist, fixed_t ceilingdist, int crush, dboolean hexencrush)
 {
-  int secnum = -1;
+  const int *id_p;
   sector_t *sec;
   dboolean rtn = 0;
 
   floordist *= FRACUNIT;
   ceilingdist *= FRACUNIT;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     if (P_FloorActive(sec) || P_CeilingActive(sec))
       continue;
@@ -2409,15 +2408,14 @@ static void P_SpawnPlaneWaggle(sector_t *sector, int height, int speed,
 dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,
                              int speed, int offset, int timer, dboolean ceiling)
 {
-  int sectorIndex;
+  const int *id_p;
   sector_t *sector;
   dboolean retCode;
 
   retCode = false;
-  sectorIndex = -1;
-  while ((sectorIndex = P_FindSectorFromTagOrLine(tag, line, sectorIndex)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sector = &sectors[sectorIndex];
+    sector = &sectors[*id_p];
     if (ceiling ? P_CeilingActive(sector) : P_FloorActive(sector))
     { // Already busy with another thinker
       continue;

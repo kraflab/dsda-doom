@@ -1499,7 +1499,6 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t 
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
 line_t *P_FindLine(int lineTag, int *searchPosition);
 int P_FindSectorFromTag(int tag, int start);
-int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start);
 
 dboolean P_IsSpecialSector(sector_t *sector);
 void P_CopySectorSpecial(sector_t *dest, sector_t *source);
