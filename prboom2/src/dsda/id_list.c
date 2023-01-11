@@ -17,6 +17,8 @@
 
 #include "z_zone.h"
 
+#include "id_list.h"
+
 typedef struct {
   int id;
   int size;
@@ -81,6 +83,7 @@ void dsda_AddSectorID(int id, int value) {
 }
 
 static int empty_list[] = { -1 };
+static int missing_id_list[] = { -1, -1 };
 
 const int* dsda_FindLinesFromID(int id) {
   if (id <= 0)
@@ -94,6 +97,19 @@ const int* dsda_FindSectorsFromID(int id) {
     return empty_list;
 
   return dsda_GetIDList(&sector_id_hash, id)->data;
+}
+
+const int* dsda_FindSectorsFromIDOrLine(int id, const line_t* line)
+{
+  if (id == 0) {
+    if (!line || !line->backsector)
+      return empty_list;
+
+    missing_id_list[0] = line->backsector->iSectorID;
+    return missing_id_list;
+  }
+  else
+    return dsda_FindSectorsFromID(id);
 }
 
 const int hash_factor = 10;

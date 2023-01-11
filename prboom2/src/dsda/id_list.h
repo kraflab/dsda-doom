@@ -18,13 +18,17 @@
 #ifndef __DSDA_ID_LIST__
 #define __DSDA_ID_LIST__
 
+#include "r_main.h"
+
 void dsda_AddLineID(int id, int value);
 void dsda_AddSectorID(int id, int value);
 const int* dsda_FindLinesFromID(int id);
 const int* dsda_FindSectorsFromID(int id);
+const int* dsda_FindSectorsFromIDOrLine(int id, const line_t *line);
 void dsda_ResetLineIDList(int size);
 void dsda_ResetSectorIDList(int size);
 
 #define FIND_SECTORS(id_p, tag) for (id_p = dsda_FindSectorsFromID(tag); *id_p >= 0; id_p++)
+#define FIND_SECTORS2(id_p, tag, line) for (id_p = dsda_FindSectorsFromIDOrLine(tag, line); *id_p >= 0; id_p++)
 
 #endif
