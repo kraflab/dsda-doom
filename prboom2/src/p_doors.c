@@ -42,6 +42,7 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 #include "hexen/p_acs.h"
@@ -508,17 +509,17 @@ int EV_DoDoor
 ( line_t* line,
   vldoor_e  type )
 {
-  int   secnum,rtn;
+  const int *id_p;
+  int rtn;
   sector_t* sec;
   vldoor_t* door;
 
-  secnum = -1;
   rtn = 0;
 
   // open all doors with the same tag as the activating line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
     // if the ceiling already moving, don't start the door action
     if (P_CeilingActive(sec)) //jff 2/22/98
       continue;
@@ -1135,12 +1136,12 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
   }
   else
   {
-    int secnum = -1;
+    const int *id_p;
     int retcode = 0;
 
-    while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+    FIND_SECTORS(id_p, tag)
     {
-      sec = &sectors[secnum];
+      sec = &sectors[*id_p];
       if (sec->ceilingdata)
       {
         continue;
@@ -1155,18 +1156,17 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
 
 int Hexen_EV_DoDoor(line_t * line, byte * args, vldoor_e type)
 {
-    int secnum;
+    const int *id_p;
     int retcode;
     sector_t *sec;
     vldoor_t *door;
     fixed_t speed;
 
     speed = args[1] * FRACUNIT / 8;
-    secnum = -1;
     retcode = 0;
-    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
         if (sec->floordata || sec->ceilingdata)
         {
             continue;
