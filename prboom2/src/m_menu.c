@@ -3015,11 +3015,10 @@ setup_menu_t mapping_settings[] = {
   { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_overrun_playeringame_emulate },
 
   { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G_X, G_Y + 11 * 8 },
-  { "LINEDEFS W/O TAGS APPLY LOCALLY", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_comperr_zerotag },
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_comperr_passuse },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_comperr_hangsolid },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_comperr_blockmap },
-  { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_comperr_freeaim },
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_comperr_passuse },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_comperr_hangsolid },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_comperr_blockmap },
+  { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_comperr_freeaim },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, demo_settings),

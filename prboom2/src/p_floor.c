@@ -489,16 +489,14 @@ int EV_DoFloor
   secnum = -1;
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_floor; else {return rtn;}};//e6y
   // move all floors with the same tag as the linedef
   while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
   {
     sec = &sectors[secnum];
 
-manual_floor://e6y
     // Don't start a second thinker on the same floor
     if (P_FloorActive(sec)) //jff 2/23/98
-      { if (!zerotag_manual) continue; else return rtn; }//e6y
+      continue;
 
     // new floor thinker
     rtn = 1;
@@ -684,7 +682,6 @@ manual_floor://e6y
       default:
         break;
     }
-    if (zerotag_manual) return rtn; //e6y
   }
   return rtn;
 }
@@ -781,7 +778,6 @@ int EV_BuildStairs
   //e6y
   int           secnum = -1;
   sector_t*     sec;
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_stair; else {return rtn;}};//e6y
 
   // start a stair at each sector tagged the same as the linedef
   for (ssec = dsda_FindSectorsFromID(line->tag); *ssec >= 0; ssec++)
@@ -791,7 +787,6 @@ int EV_BuildStairs
     //e6y sector_t*
     sec = &sectors[secnum];
 
-manual_stair://e6y
     // don't start a stair if the first step's floor is already moving
     if (!P_FloorActive(sec)) { //jff 2/22/98
       floormove_t*  floor;
@@ -965,7 +960,6 @@ manual_stair://e6y
             break;
       }
     }
-    if (zerotag_manual) return rtn; //e6y
   }
   return rtn;
 }

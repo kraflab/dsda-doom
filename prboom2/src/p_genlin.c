@@ -63,7 +63,7 @@ int EV_DoGenFloor
 {
   int                   secnum;
   int                   rtn;
-  dboolean               manual;
+  dboolean              manual;
   sector_t*             sec;
   floormove_t*          floor;
   unsigned              value = (unsigned)line->special - GenFloorBase;
@@ -80,7 +80,6 @@ int EV_DoGenFloor
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_floor;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
@@ -257,7 +256,7 @@ int EV_DoGenCeiling
 {
   int                   secnum;
   int                   rtn;
-  dboolean               manual;
+  dboolean              manual;
   fixed_t               targheight;
   sector_t*             sec;
   ceiling_t*            ceiling;
@@ -275,7 +274,6 @@ int EV_DoGenCeiling
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_ceiling;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
@@ -455,7 +453,7 @@ int EV_DoGenLift
   plat_t*         plat;
   int             secnum;
   int             rtn;
-  dboolean         manual;
+  dboolean        manual;
   sector_t*       sec;
   unsigned        value = (unsigned)line->special - GenLiftBase;
 
@@ -474,7 +472,6 @@ int EV_DoGenLift
   if (Targ==LnF2HnF)
     P_ActivateInStasis(line->tag);
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_lift;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
@@ -611,7 +608,7 @@ int EV_DoGenStairs
   int                   texture;
   int                   ok;
   int                   rtn;
-  dboolean               manual;
+  dboolean              manual;
 
   sector_t*             sec;
   sector_t*             tsec;
@@ -633,7 +630,6 @@ int EV_DoGenStairs
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_stair;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
@@ -807,7 +803,7 @@ int EV_DoGenCrusher
 {
   int                   secnum;
   int                   rtn;
-  dboolean               manual;
+  dboolean              manual;
   sector_t*             sec;
   ceiling_t*            ceiling;
   unsigned              value = (unsigned)line->special - GenCrusherBase;
@@ -822,7 +818,6 @@ int EV_DoGenCrusher
   //jff 4/5/98 return if activated
   rtn = P_ActivateInStasisCeiling(line->tag);
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_crusher;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
@@ -919,7 +914,6 @@ int EV_DoGenLockedDoor
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_locked;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
@@ -1016,7 +1010,7 @@ int EV_DoGenDoor
 {
   int   secnum,rtn;
   sector_t* sec;
-  dboolean   manual;
+  dboolean  manual;
   vldoor_t* door;
   unsigned  value = (unsigned)line->special - GenDoorBase;
 
@@ -1029,7 +1023,6 @@ int EV_DoGenDoor
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_door;} else {return rtn;}};//e6y
   // check if a manual trigger, if so do just the sector on the backside
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)

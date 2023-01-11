@@ -422,7 +422,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_overrun_missedbackside_emulate),
 
   SETTING_HEADING("Mapping error compatibility settings"),
-  MIGRATED_SETTING(dsda_config_comperr_zerotag),
   MIGRATED_SETTING(dsda_config_comperr_passuse),
   MIGRATED_SETTING(dsda_config_comperr_hangsolid),
   MIGRATED_SETTING(dsda_config_comperr_blockmap),

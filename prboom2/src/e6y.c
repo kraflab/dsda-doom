@@ -765,22 +765,6 @@ void e6y_G_Compatibility(void)
   }
 }
 
-dboolean zerotag_manual;
-
-dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum)
-{
-  zerotag_manual = false;
-  if (line->tag == 0 && comperr(comperr_zerotag))
-  {
-    if (!(*sec=line->backsector))
-      return true;
-    *secnum = (*sec)->iSectorID;
-    zerotag_manual = true;
-    return true;
-  }
-  return false;
-}
-
 const char* PathFindFileName(const char* pPath)
 {
   const char* pT = pPath;
