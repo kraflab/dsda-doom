@@ -25,4 +25,6 @@ const int* dsda_FindSectorsFromID(int id);
 void dsda_ResetLineIDList(int size);
 void dsda_ResetSectorIDList(int size);
 
+#define FIND_SECTORS(id_p, tag) for (id_p = dsda_FindSectorsFromID(tag); *id_p >= 0; id_p++)
+
 #endif
