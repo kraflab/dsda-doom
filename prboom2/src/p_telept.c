@@ -66,7 +66,7 @@ static dboolean P_IsMapSpot(mobj_t *mo)
 
 static mobj_t* P_TeleportDestination(short thing_id, int tag)
 {
-  int i;
+  const int *id_p;
 
   if (thing_id)
   {
@@ -142,13 +142,14 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
     return NULL;
   }
 
-  for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
+  FIND_SECTORS(id_p, tag)
+  {
     register thinker_t* th = NULL;
     while ((th = P_NextThinker(th,th_misc)) != NULL)
       if (th->function == P_MobjThinker) {
         register mobj_t* m = (mobj_t*)th;
         if (m->type == MT_TELEPORTMAN  &&
-            m->subsector->sector->iSectorID == i)
+            m->subsector->sector->iSectorID == *id_p)
             return m;
       }
   }
@@ -358,7 +359,7 @@ int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
 
   if (source && dest)
   {
-    int i;
+    const int *id_p;
     int flags;
     angle_t an;
     fixed_t dcos, dsin;
@@ -369,10 +370,11 @@ int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
     dcos = finecosine[an >> ANGLETOFINESHIFT];
     dsin = finesine[an >> ANGLETOFINESHIFT];
 
-    for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
+    FIND_SECTORS(id_p, tag)
+    {
       mobj_in_sector_t mis;
 
-      P_InitSectorSearch(&mis, &sectors[i]);
+      P_InitSectorSearch(&mis, &sectors[*id_p]);
       while ((target = P_FindMobjInSector(&mis)))
       {
         fixed_t dx, dy;
