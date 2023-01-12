@@ -43,6 +43,7 @@
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 // the list of ceilings moving currently, including crushers
@@ -427,12 +428,11 @@ int EV_DoCeiling
 ( line_t* line,
   ceiling_e type )
 {
-  int   secnum;
+  const int *id_p;
   int   rtn;
   sector_t* sec;
   ceiling_t*  ceiling;
 
-  secnum = -1;
   rtn = 0;
 
   // Reactivate in-stasis ceilings...for certain types.
@@ -449,9 +449,9 @@ int EV_DoCeiling
   }
 
   // affects all sectors with the same tag as the linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     // if ceiling already moving, don't start a second function on it
     if (P_CeilingActive(sec)) //jff 2/22/98
@@ -909,7 +909,7 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode)
 {
   sector_t *sec;
-  int secnum = -1;
+  const int *id_p;
   int retcode = 0;
 
   height *= FRACUNIT;
@@ -917,6 +917,8 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
   // check if a manual trigger, if so do just the sector on the backside
   if (tag == 0)
   {
+    int secnum;
+
     if (!line || !(sec = line->backsector))
       return 0;
 
@@ -940,9 +942,9 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
     P_ActivateInStasisCeiling(tag);
   }
 
-  while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
     if (sec->ceilingdata)
     {
       continue;
@@ -957,16 +959,16 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
 
 int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
 {
-    int secnum, rtn;
+    const int *id_p;
+    int rtn;
     sector_t *sec;
     ceiling_t *ceiling;
 
-    secnum = -1;
     rtn = 0;
 
-    while ((secnum = P_FindSectorFromTag(arg[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, arg[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
         if (sec->floordata || sec->ceilingdata)
             continue;
 
