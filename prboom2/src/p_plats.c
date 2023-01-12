@@ -478,11 +478,10 @@ int EV_DoPlat
   int           amount )
 {
   plat_t* plat;
-  int             secnum;
+  const int *id_p;
   int             rtn;
   sector_t*       sec;
 
-  secnum = -1;
   rtn = 0;
 
   // Activate all <type> plats that are in_stasis
@@ -502,9 +501,9 @@ int EV_DoPlat
   }
 
   // act on all sectors tagged the same as the activating linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     // don't start a second floor function if already moving
     if (P_FloorActive(sec)) //jff 2/23/98 multiple thinkers
@@ -819,16 +818,15 @@ void T_HexenPlatRaise(plat_t * plat)
 int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount)
 {
     plat_t *plat;
-    int secnum;
+    const int *id_p;
     int rtn;
     sector_t *sec;
 
-    secnum = -1;
     rtn = 0;
 
-    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
         if (sec->floordata || sec->ceilingdata)
             continue;
 
