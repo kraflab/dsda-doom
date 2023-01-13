@@ -752,15 +752,13 @@ int EV_DoChange
  * cph 2001/09/21 - compatibility nightmares again
  * There are three different ways this function has, during its history, stepped
  * through all the stairs to be triggered by the single switch
- * - original Doom used a linear P_FindSectorFromLineTag, but failed to preserve
+ * - original Doom used a linear search, but failed to preserve
  * the index of the previous sector found, so instead it would restart its
  * linear search from the last sector of the previous staircase
- * - MBF/PrBoom with comp_stairs fail to emulate this, because their
- * P_FindSectorFromLineTag is a chained hash table implementation. Instead they
- * start following the hash chain from the last sector of the previous
- * staircase, which will (probably) have the wrong tag, so they miss any further
- * stairs
- * - Boom fixed the bug, and MBF/PrBoom without comp_stairs work right
+ * - cl11-13 with comp_stairs failed to emulate this with its chained hash search.
+ * It started following the hash chain from the last sector of the previous
+ * staircase, which would (probably) have the wrong tag, so it missed further stairs
+ * - Boom fixed the bug, cl11-13 without comp_stairs works right, and cl14+ works right
  */
 
 int EV_BuildStairs
