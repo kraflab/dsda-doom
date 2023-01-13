@@ -127,7 +127,6 @@ typedef struct
   unsigned int flags;    //e6y: instead of .no_toptextures and .no_bottomtextures
   fixed_t floorheight;
   fixed_t ceilingheight;
-  int nexttag,firsttag;  // killough 1/30/98: improves searches for tags.
   byte soundtraversed;   // 0 = untraversed, 1,2 = sndlines-1
   mobj_t *soundtarget;   // thing that made a sound (or null)
   int blockbox[4];       // mapblock bounding box for height changes

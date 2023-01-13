@@ -1029,10 +1029,6 @@ sector_t* P_FindModelCeilingSector
 ( fixed_t ceildestheight,
   int secnum ); //jff 02/04/98
 
-int P_FindSectorFromLineTag
-( const line_t *line,
-  int start ); // killough 4/17/98
-
 int P_FindMinSurroundingLight
 ( sector_t* sector,
   int max );
@@ -1498,7 +1494,6 @@ void dsda_SpawnQuake(mobj_t* location, int intensity, int duration,
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t activationType);
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
 line_t *P_FindLine(int lineTag, int *searchPosition);
-int P_FindSectorFromTag(int tag, int start);
 
 dboolean P_IsSpecialSector(sector_t *sector);
 void P_CopySectorSpecial(sector_t *dest, sector_t *source);

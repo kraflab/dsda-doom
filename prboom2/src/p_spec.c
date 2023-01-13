@@ -870,46 +870,6 @@ sector_t *P_FindModelCeilingSector(fixed_t ceildestheight,int secnum)
   return NULL;
 }
 
-//
-// RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
-//
-
-// Find the next sector with the same tag as a linedef.
-// Rewritten by Lee Killough to use chained hashing to improve speed
-
-int P_FindSectorFromLineTag(const line_t *line, int start)
-{
-  start = start >= 0 ? sectors[start].nexttag :
-    sectors[(unsigned) line->tag % (unsigned) numsectors].firsttag;
-  while (start >= 0 && sectors[start].tag != line->tag)
-    start = sectors[start].nexttag;
-  return start;
-}
-
-int P_FindSectorFromTag(int tag, int start)
-{
-  start = start >= 0 ? sectors[start].nexttag :
-    sectors[(unsigned) tag % (unsigned) numsectors].firsttag;
-  while (start >= 0 && sectors[start].tag != tag)
-    start = sectors[start].nexttag;
-  return start;
-}
-
-// Hash the sector tags across the sectors and linedefs.
-static void P_InitTagLists(void)
-{
-  register int i;
-
-  for (i=numsectors; --i>=0; )        // Initially make all slots empty.
-    sectors[i].firsttag = -1;
-  for (i=numsectors; --i>=0; )        // Proceed from last to first sector
-    {                                 // so that lower sectors appear first
-      int j = (unsigned) sectors[i].tag % (unsigned) numsectors; // Hash func
-      sectors[i].nexttag = sectors[j].firsttag;   // Prepend sector to chain
-      sectors[j].firsttag = i;
-    }
-}
-
 // Converts Hexen's 0 (meaning no crush) to the internal value
 int P_ConvertHexenCrush(int crush)
 {
@@ -3721,7 +3681,6 @@ void P_SpawnSpecials (void)
   P_RemoveAllActivePlats();     // killough
 
   P_InitButtons();
-  P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
   P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 
@@ -7838,8 +7797,6 @@ static void Hexen_P_SpawnSpecials(void)
     P_RemoveAllActivePlats();
     for (i = 0; i < MAXBUTTONS; i++)
         memset(&buttonlist[i], 0, sizeof(button_t));
-
-    P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
     // Initialize flat and texture animations
     P_InitFTAnims();
