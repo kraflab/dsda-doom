@@ -998,7 +998,8 @@ static void P_LoadUDMFSectors(int lump)
     // leakiness
     // flags
 
-    dsda_AddSectorID(ss->tag, i);
+    if (ss->tag > 0)
+      dsda_AddSectorID(ss->tag, i);
 
     if (ms->moreids)
     {
@@ -1011,7 +1012,7 @@ static void P_LoadUDMFSectors(int lump)
         int j, id;
 
         for (j = 0; more_ids[j]; ++j)
-          if (sscanf(more_ids[j], "%d", &id) == 1)
+          if (sscanf(more_ids[j], "%d", &id) == 1 && id > 0)
             dsda_AddSectorID(id, i);
 
         Z_Free(more_ids);
@@ -2182,7 +2183,7 @@ static void P_LoadUDMFLineDefs(int lump)
     if (ld->healthgroup)
       dsda_AddLineToHealthGroup(ld);
 
-    if (mld->id >= 0)
+    if (ld->tag > 0)
       dsda_AddLineID(ld->tag, i);
 
     if (mld->moreids)
@@ -2196,7 +2197,7 @@ static void P_LoadUDMFLineDefs(int lump)
         int j, id;
 
         for (j = 0; more_ids[j]; ++j)
-          if (sscanf(more_ids[j], "%d", &id) == 1)
+          if (sscanf(more_ids[j], "%d", &id) == 1 && id > 0)
             dsda_AddLineID(id, i);
 
         Z_Free(more_ids);
