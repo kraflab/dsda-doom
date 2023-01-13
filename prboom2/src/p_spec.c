@@ -3450,19 +3450,20 @@ static void P_SpawnVanillaExtras(void)
     for (i = 0; i < numlines; ++i)
       switch (lines[i].special)
       {
-        int s;
+        const int *id_p;
 
         case 271:   // Regular sky
         case 272:   // Same, only flipped
-          for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-            sectors[s].sky = i | PL_SKYFLAT;
+          FIND_SECTORS(id_p, lines[i].tag)
+            sectors[*id_p].sky = i | PL_SKYFLAT;
         break;
       }
 }
 
 void P_SpawnCompatibleExtra(line_t *l, int i)
 {
-  int s, sec;
+  const int *id_p;
+  int sec;
 
   switch (l->special)
   {
@@ -3470,24 +3471,24 @@ void P_SpawnCompatibleExtra(line_t *l, int i)
     // support for drawn heights coming from different sector
     case 242:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].heightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].heightsec = sec;
       break;
 
     // killough 3/16/98: Add support for setting
     // floor lighting independently (e.g. lava)
     case 213:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].floorlightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].floorlightsec = sec;
       break;
 
     // killough 4/11/98: Add support for setting
     // ceiling lighting independently
     case 261:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].ceilinglightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].ceilinglightsec = sec;
       break;
 
       // killough 10/98:
@@ -3501,15 +3502,16 @@ void P_SpawnCompatibleExtra(line_t *l, int i)
 
     case 271:   // Regular sky
     case 272:   // Same, only flipped
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].sky = i | PL_SKYFLAT;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].sky = i | PL_SKYFLAT;
       break;
   }
 }
 
 void P_SpawnZDoomExtra(line_t *l, int i)
 {
-  int s, sec;
+  const int *id_p;
+  int sec;
 
   switch (l->special)
   {
@@ -3517,24 +3519,24 @@ void P_SpawnZDoomExtra(line_t *l, int i)
     // support for drawn heights coming from different sector
     case zl_transfer_heights:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].heightsec = sec;
+      FIND_SECTORS(id_p, l->arg1)
+        sectors[*id_p].heightsec = sec;
       break;
 
     // killough 3/16/98: Add support for setting
     // floor lighting independently (e.g. lava)
     case zl_transfer_floor_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].floorlightsec = sec;
+      FIND_SECTORS(id_p, l->arg1)
+        sectors[*id_p].floorlightsec = sec;
       break;
 
     // killough 4/11/98: Add support for setting
     // ceiling lighting independently
     case zl_transfer_ceiling_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].ceilinglightsec = sec;
+      FIND_SECTORS(id_p, l->arg1)
+        sectors[*id_p].ceilinglightsec = sec;
       break;
 
     // [Graf Zahl] Add support for setting lighting
@@ -3592,8 +3594,8 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         {
           fixed_t grav = FixedDiv(P_AproxDistance(l->dx, l->dy), 100 * FRACUNIT);
           sec = sides[*l->sidenum].sector->iSectorID;
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-            sectors[s].gravity = grav;
+          FIND_SECTORS(id_p, l->arg1)
+            sectors[*id_p].gravity = grav;
         }
         break;
 
@@ -3621,10 +3623,10 @@ void P_SpawnZDoomExtra(line_t *l, int i)
           }
 
           sec = sides[*l->sidenum].sector->iSectorID;
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+          FIND_SECTORS(id_p, l->arg1)
           {
-            sectors[s].damage = damage;
-            sectors[s].flags |= flags;
+            sectors[*id_p].damage = damage;
+            sectors[*id_p].flags |= flags;
           }
         }
         break;
@@ -3643,8 +3645,8 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         // linedef). Still requires user to use F_SKY1 for the floor
         // or ceiling texture, to distinguish floor and ceiling sky.
         case zi_init_transfer_sky:
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-            sectors[s].sky = i | PL_SKYFLAT;
+          FIND_SECTORS(id_p, l->arg1)
+            sectors[*id_p].sky = i | PL_SKYFLAT;
           break;
       }
       break;
@@ -3900,18 +3902,18 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
 
   switch (special)
   {
-    register int s;
+    int side;
     const int *id_p;
 
     case 250:   // scroll effect ceiling
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel);
       break;
 
     case 251:   // scroll effect floor
     case 253:   // scroll and carry objects on floor
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel);
       if (special != 253)
         break;
       // fallthrough
@@ -3919,8 +3921,8 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
     case 252: // carry objects on floor
       dx = FixedMul(dx, CARRYFACTOR);
       dy = FixedMul(dy, CARRYFACTOR);
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_carry, dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Scroller(sc_carry, dx, dy, control, *id_p, accel);
       break;
 
       // killough 3/1/98: scroll wall according to linedef
@@ -3932,9 +3934,9 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       break;
 
     case 255:    // killough 3/2/98: scroll according to sidedef offsets
-      s = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[s].textureoffset,
-                   sides[s].rowoffset, -1, s, accel);
+      side = lines[i].sidenum[0];
+      Add_Scroller(sc_side, -sides[side].textureoffset,
+                   sides[side].rowoffset, -1, side, accel);
       break;
 
     case 1024: // special 255 with tag control
@@ -3949,9 +3951,9 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       if (special == 1026)
         accel = 1;
 
-      s = lines[i].sidenum[0];
-      dx = -sides[s].textureoffset / 8;
-      dy = sides[s].rowoffset / 8;
+      side = lines[i].sidenum[0];
+      dx = -sides[side].textureoffset / 8;
+      dy = sides[side].rowoffset / 8;
       for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
         if (*id_p != i)
           Add_Scroller(sc_side, dx, dy, control, lines[*id_p].sidenum[0], accel);
@@ -4049,16 +4051,16 @@ void P_SpawnZDoomScroller(line_t *l, int i)
 
   switch (special)
   {
-    int s;
+    int j;
     const int *id_p;
 
     case zl_scroll_ceiling:
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->arg1)
+        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel);
 
-      for (s = 0; s < copyscroller_count; ++s)
+      for (j = 0; j < copyscroller_count; ++j)
       {
-        line_t *cs = copyscrollers[s];
+        line_t *cs = copyscrollers[j];
 
         if (cs->arg1 == l->arg1 && cs->arg2 & 1)
           Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel);
@@ -4069,12 +4071,12 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_floor:
       if (l->arg3 != 1)
       { // scroll the floor texture
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-          Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+        FIND_SECTORS(id_p, l->arg1)
+          Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel);
 
-        for (s = 0; s < copyscroller_count; ++s)
+        for (j = 0; j < copyscroller_count; ++j)
         {
-          line_t *cs = copyscrollers[s];
+          line_t *cs = copyscrollers[j];
 
           if (cs->arg1 == l->arg1 && cs->arg2 & 2)
             Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel);
@@ -4085,12 +4087,12 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       { // carry objects on the floor
         dx = FixedMul(dx, CARRYFACTOR);
         dy = FixedMul(dy, CARRYFACTOR);
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-          Add_Scroller(sc_carry, dx, dy, control, s, accel);
+        FIND_SECTORS(id_p, l->arg1)
+          Add_Scroller(sc_carry, dx, dy, control, *id_p, accel);
 
-        for (s = 0; s < copyscroller_count; ++s)
+        for (j = 0; j < copyscroller_count; ++j)
         {
-          line_t *cs = copyscrollers[s];
+          line_t *cs = copyscrollers[j];
 
           if (cs->arg1 == l->arg1 && cs->arg2 & 4)
             Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel);
@@ -4111,37 +4113,37 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_texture_offsets:
       // killough 3/2/98: scroll according to sidedef offsets
       // MAP_FORMAT_TODO: l->arg1 SCROLLTYPE
-      s = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[s].textureoffset, sides[s].rowoffset, -1, s, accel);
+      j = lines[i].sidenum[0];
+      Add_Scroller(sc_side, -sides[j].textureoffset, sides[j].rowoffset, -1, j, accel);
       l->special = 0;
       break;
     case zl_scroll_texture_left:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, l->arg1 / 64, 0, -1, s, accel);
+      Add_Scroller(sc_side, l->arg1 / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_right:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, -l->arg1 / 64, 0, -1, s, accel);
+      Add_Scroller(sc_side, -l->arg1 / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_up:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, 0, l->arg1 / 64, -1, s, accel);
+      Add_Scroller(sc_side, 0, l->arg1 / 64, -1, j, accel);
       break;
     case zl_scroll_texture_down:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, 0, -l->arg1 / 64, -1, s, accel);
+      Add_Scroller(sc_side, 0, -l->arg1 / 64, -1, j, accel);
       break;
     case zl_scroll_texture_both:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
 
       if (l->arg1 == 0) {
         dx = (l->arg2 - l->arg3) / 64;
         dy = (l->arg5 - l->arg4) / 64;
-        Add_Scroller(sc_side, dx, dy, -1, s, accel);
+        Add_Scroller(sc_side, dx, dy, -1, j, accel);
       }
 
       l->special = 0;
@@ -4293,7 +4295,8 @@ void T_Friction(friction_t *f)
 
 static void P_ApplySectorFriction(int tag, int value, int use_thinker)
 {
-  int friction, movefactor, s;
+  const int *id_p;
+  int friction, movefactor;
 
   friction = (0x1EB8 * value) / 0x80 + 0xD000;
 
@@ -4316,7 +4319,7 @@ static void P_ApplySectorFriction(int tag, int value, int use_thinker)
       movefactor = 32;
   }
 
-  for (s = -1; (s = P_FindSectorFromTag(tag, s)) >= 0;)
+  FIND_SECTORS(id_p, tag)
   {
     // killough 8/28/98:
     //
@@ -4330,10 +4333,10 @@ static void P_ApplySectorFriction(int tag, int value, int use_thinker)
 
     //e6y: boom's friction code for boom compatibility
     if (use_thinker)
-      Add_Friction(friction, movefactor, s);
+      Add_Friction(friction, movefactor, *id_p);
 
-    sectors[s].friction = friction;
-    sectors[s].movefactor = movefactor;
+    sectors[*id_p].friction = friction;
+    sectors[*id_p].movefactor = movefactor;
   }
 }
 
@@ -4674,25 +4677,25 @@ mobj_t* P_GetPushThing(int s)
 
 void P_SpawnCompatiblePusher(line_t *l)
 {
-  register int s;
+  const int *id_p;
   mobj_t* thing;
 
   switch(l->special)
   {
     case 224: // wind
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Pusher(p_wind, l->dx, l->dy, NULL, s);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Pusher(p_wind, l->dx, l->dy, NULL, *id_p);
       break;
     case 225: // current
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Pusher(p_current, l->dx, l->dy, NULL, s);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Pusher(p_current, l->dx, l->dy, NULL, *id_p);
       break;
     case 226: // push/pull
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+      FIND_SECTORS(id_p, l->tag)
       {
-        thing = P_GetPushThing(s);
+        thing = P_GetPushThing(*id_p);
         if (thing) // No MT_P* means no effect
-          Add_Pusher(p_push, l->dx, l->dy, thing, s);
+          Add_Pusher(p_push, l->dx, l->dy, thing, *id_p);
       }
       break;
   }
@@ -4717,7 +4720,7 @@ static void CalculatePushVector(line_t *l, int magnitude, int angle, fixed_t *dx
 
 void P_SpawnZDoomPusher(line_t *l)
 {
-  int s;
+  const int *id_p;
   mobj_t* thing;
   fixed_t dx, dy;
 
@@ -4725,33 +4728,35 @@ void P_SpawnZDoomPusher(line_t *l)
   {
     case zl_sector_set_wind: // wind
       CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Pusher(p_wind, dx, dy, NULL, s);
+      FIND_SECTORS(id_p, l->arg1)
+        Add_Pusher(p_wind, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_sector_set_current: // current
       CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Pusher(p_current, dx, dy, NULL, s);
+      FIND_SECTORS(id_p, l->arg1)
+        Add_Pusher(p_current, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_point_push_set_force: // push/pull
       CalculatePushVector(l, l->arg3, 0, &dx, &dy);
       if (l->arg1)
       {  // [RH] Find thing by sector
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+        FIND_SECTORS(id_p, l->arg1)
         {
-          thing = P_GetPushThing(s);
+          thing = P_GetPushThing(*id_p);
           if (thing) // No MT_P* means no effect
           {
             // [RH] Allow narrowing it down by tid
             if (!l->arg2 || l->arg2 == thing->tid)
-              Add_Pusher(p_push, dx, dy, thing, s);
+              Add_Pusher(p_push, dx, dy, thing, *id_p);
           }
         }
       }
       else
       {  // [RH] Find thing by tid
+        int s;
+
         for (s = -1; (thing = P_FindMobjFromTID(l->arg2, &s)) != NULL;)
           if (thing->type == map_format.mt_push || thing->type == map_format.mt_pull)
             Add_Pusher(p_push, dx, dy, thing, thing->subsector->sector->iSectorID);
@@ -5469,18 +5474,17 @@ line_t *P_FindLine(int lineTag, int *searchPosition)
 
 dboolean EV_SectorSoundChange(byte * args)
 {
-    int secNum;
+    const int *id_p;
     dboolean rtn;
 
     if (!args[0])
     {
         return false;
     }
-    secNum = -1;
     rtn = false;
-    while ((secNum = P_FindSectorFromTag(args[0], secNum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sectors[secNum].seqType = args[1];
+        sectors[*id_p].seqType = args[1];
         rtn = true;
     }
     return rtn;
@@ -6665,21 +6669,21 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_sector_set_gravity:
       {
         fixed_t gravity;
-        int s = -1;
+        const int *id_p;
 
         if (args[2] > 99)
           args[2] = 99;
 
         gravity = P_ArgsToFixed(args[1], args[2]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
-          sectors[s].gravity = gravity;
+        FIND_SECTORS(id_p, args[0])
+          sectors[*id_p].gravity = gravity;
       }
       buttonSuccess = 1;
       break;
     case zl_sector_set_damage:
       {
-        int s = -1;
+        const int *id_p;
         dboolean unblockable = false;
 
         if (args[3] == 0)
@@ -6702,15 +6706,15 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           }
         }
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].damage.amount = args[1];
-          sectors[s].damage.interval = args[3];
-          sectors[s].damage.leakrate = args[4];
+          sectors[*id_p].damage.amount = args[1];
+          sectors[*id_p].damage.interval = args[3];
+          sectors[*id_p].damage.leakrate = args[4];
           if (unblockable)
-            sectors[s].flags |= SECF_DMGUNBLOCKABLE;
+            sectors[*id_p].flags |= SECF_DMGUNBLOCKABLE;
           else
-            sectors[s].flags &= ~SECF_DMGUNBLOCKABLE;
+            sectors[*id_p].flags &= ~SECF_DMGUNBLOCKABLE;
         }
       }
       buttonSuccess = 1;
@@ -6723,32 +6727,32 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_sector_set_floor_panning:
       {
-        int s = -1;
+        const int *id_p;
         fixed_t xoffs, yoffs;
 
         xoffs = P_ArgsToFixed(args[1], args[2]);
         yoffs = P_ArgsToFixed(args[3], args[4]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].floor_xoffs = xoffs;
-          sectors[s].floor_yoffs = yoffs;
+          sectors[*id_p].floor_xoffs = xoffs;
+          sectors[*id_p].floor_yoffs = yoffs;
         }
       }
       buttonSuccess = 1;
       break;
     case zl_sector_set_ceiling_panning:
       {
-        int s = -1;
+        const int *id_p;
         fixed_t xoffs, yoffs;
 
         xoffs = P_ArgsToFixed(args[1], args[2]);
         yoffs = P_ArgsToFixed(args[3], args[4]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].ceiling_xoffs = xoffs;
-          sectors[s].ceiling_yoffs = yoffs;
+          sectors[*id_p].ceiling_xoffs = xoffs;
+          sectors[*id_p].ceiling_yoffs = yoffs;
         }
       }
       buttonSuccess = 1;
@@ -6791,18 +6795,18 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_clear_force_field:
       {
-        int s = -1;
+        const int *id_p;
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
           int i;
           line_t *line;
 
           buttonSuccess = 1;
 
-          for (i = 0; i < sectors[s].linecount; i++)
+          for (i = 0; i < sectors[*id_p].linecount; i++)
           {
-            line_t *line = sectors[s].lines[i];
+            line_t *line = sectors[*id_p].lines[i];
 
             if (line->backsector && line->special == zl_force_field)
             {
@@ -7402,14 +7406,14 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       }
       else if (!args[0])
       {
-        int s = -1;
+        const int *id_p;
 
-        while ((s = P_FindSectorFromTag(args[2], s)) >= 0)
+        FIND_SECTORS(id_p, args[2])
         {
           msecnode_t *n;
           sector_t *sec;
 
-          sec = &sectors[s];
+          sec = &sectors[*id_p];
           for (n = sec->touching_thinglist; n;)
           {
             mobj_t *target = n->m_thing;
