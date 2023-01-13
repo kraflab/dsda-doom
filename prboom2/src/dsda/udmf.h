@@ -74,6 +74,7 @@ typedef uint64_t udmf_line_flags_t;
 
 typedef struct {
   int id;
+  char* moreids;
   int v1;
   int v2;
   int special;
@@ -157,6 +158,7 @@ typedef struct {
   int lightlevel;
   int special;
   int id;
+  char* moreids;
   float xpanningfloor;
   float ypanningfloor;
   float xpanningceiling;

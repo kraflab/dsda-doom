@@ -18,6 +18,10 @@
 #include <cstring>
 #include <vector>
 
+extern "C" {
+char *Z_StrdupLevel(const char *s);
+}
+
 #include "scanner.h"
 
 #include "udmf.h"
@@ -82,6 +86,11 @@ static void dsda_SkipValue(Scanner &scanner) {
                               scanner.MustGetToken(TK_StringConst); \
                               strncpy(x, scanner.string, n); \
                               scanner.MustGetToken(';'); }
+
+#define SCAN_STRING(x) { scanner.MustGetToken('='); \
+                         scanner.MustGetToken(TK_StringConst); \
+                         x = Z_StrdupLevel(scanner.string); \
+                         scanner.MustGetToken(';'); }
 
 static void dsda_ParseUDMFLineDef(Scanner &scanner) {
   udmf_line_t line = { 0 };
@@ -273,13 +282,15 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     else if (!stricmp(scanner.string, "blocklandmonsters")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKLANDMONSTERS);
     }
+    else if (!stricmp(scanner.string, "moreids")) {
+      SCAN_STRING(line.moreids);
+    }
     else {
       // known ignored fields:
       // comment
       // alpha
       // renderstyle
       // arg0str
-      // moreids
       dsda_SkipValue(scanner);
     }
   }
@@ -578,6 +589,9 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
     else if (!stricmp(scanner.string, "textureceiling")) {
       SCAN_STRING_N(sector.textureceiling, 8);
     }
+    else if (!stricmp(scanner.string, "moreids")) {
+      SCAN_STRING(sector.moreids);
+    }
     else {
       // known ignored fields:
       // comment
@@ -597,7 +611,6 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       // fadecolor
       // desaturation
       // soundsequence
-      // moreids
       // damagetype
       // floorterrain
       // ceilingterrain
