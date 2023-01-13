@@ -228,7 +228,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | soundsequence            | :x:                |
 | hidden                   | :grey_question:    |
 | waterzone                | :grey_question:    |
-| moreids                  | :grey_question:    |
+| moreids                  | :heavy_check_mark: |
 | damageamount             | :grey_question:    |
 | damagetype               | :x:                |
 | damageinterval           | :grey_question:    |

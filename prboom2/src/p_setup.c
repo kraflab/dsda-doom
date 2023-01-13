@@ -999,6 +999,24 @@ static void P_LoadUDMFSectors(int lump)
     // flags
 
     dsda_AddSectorID(ss->tag, i);
+
+    if (ms->moreids)
+    {
+      char **more_ids;
+
+      more_ids = dsda_SplitString(ms->moreids, " ");
+
+      if (more_ids)
+      {
+        int j, id;
+
+        for (j = 0; more_ids[j]; ++j)
+          if (sscanf(more_ids[j], "%d", &id) == 1)
+            dsda_AddSectorID(id, i);
+
+        Z_Free(more_ids);
+      }
+    }
   }
 }
 
