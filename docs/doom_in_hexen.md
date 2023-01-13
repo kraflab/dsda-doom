@@ -437,7 +437,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 - There may be undefined behaviour when combining new exit specials with UMAPINFO
 - Line flags coming from extra arguments are ignored.
 - Line translucency works like boom (fixed alpha).
-- Line_SetBlocking only applies flags for creatures, players, monsters, sound, and everything.
+- Line_SetBlocking does not support sight, hitscan, or sound (due to hexen format limits).
 - NoiseAlert only works with the default arguments.
 - Thing_Hate only supports 0 for the third argument ("target only").
 - ThrustThing has an implicit speed limit.

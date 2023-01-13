@@ -6533,13 +6533,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           ML_BLOCKING,
           ML_BLOCKMONSTERS,
           ML_BLOCKPLAYERS,
-          0, // block floaters (not supported)
-          0, // block projectiles (not supported)
+          ML_BLOCKFLOATERS,
+          ML_BLOCKPROJECTILES,
           ML_BLOCKEVERYTHING,
-          0, // railing (not supported)
-          0, // block use (not supported)
-          0, // block sight (not supported)
-          0, // block hitscan (not supported)
+          ML_JUMPOVER,
+          ML_BLOCKUSE,
+          ML_BLOCKSIGHT,
+          ML_BLOCKHITSCAN,
           ML_SOUNDBLOCK,
           -1
         };
