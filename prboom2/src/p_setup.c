@@ -2184,6 +2184,24 @@ static void P_LoadUDMFLineDefs(int lump)
 
     if (mld->id >= 0)
       dsda_AddLineID(ld->tag, i);
+
+    if (mld->moreids)
+    {
+      char **more_ids;
+
+      more_ids = dsda_SplitString(mld->moreids, " ");
+
+      if (more_ids)
+      {
+        int j, id;
+
+        for (j = 0; more_ids[j]; ++j)
+          if (sscanf(more_ids[j], "%d", &id) == 1)
+            dsda_AddLineID(id, i);
+
+        Z_Free(more_ids);
+      }
+    }
   }
 }
 

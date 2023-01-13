@@ -89,7 +89,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | blockhitscan       | :heavy_check_mark: |
 | locknumber         | :heavy_check_mark: |
 | arg0str            | :x:                |
-| moreids            | :grey_question:    |
+| moreids            | :heavy_check_mark: |
 | transparent        | :grey_question:    |
 | automapstyle       | :grey_question:    |
 | revealed           | :heavy_check_mark: |
