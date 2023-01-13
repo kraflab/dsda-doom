@@ -950,8 +950,7 @@ static void P_LoadSectors (int lump)
     ss->special = LittleShort(ms->special);
     ss->tag = LittleShort(ms->tag);
 
-    if (ss->tag)
-      dsda_AddSectorID(ss->tag, i);
+    dsda_AddSectorID(ss->tag, i);
   }
 }
 
@@ -999,8 +998,7 @@ static void P_LoadUDMFSectors(int lump)
     // leakiness
     // flags
 
-    if (ss->tag)
-      dsda_AddSectorID(ss->tag, i);
+    dsda_AddSectorID(ss->tag, i);
   }
 }
 
@@ -2029,8 +2027,7 @@ static void P_LoadLineDefs (int lump)
 
     P_CalculateLineDefProperties(ld);
 
-    if (ld->tag)
-      dsda_AddLineID(ld->tag, i);
+    dsda_AddLineID(ld->tag, i);
   }
 }
 
@@ -2167,7 +2164,7 @@ static void P_LoadUDMFLineDefs(int lump)
     if (ld->healthgroup)
       dsda_AddLineToHealthGroup(ld);
 
-    if (ld->tag)
+    if (mld->id >= 0)
       dsda_AddLineID(ld->tag, i);
   }
 }

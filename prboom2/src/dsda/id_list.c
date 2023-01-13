@@ -75,25 +75,27 @@ static void dsda_AddToIDHash(id_hash_t* hash, int id, int value) {
 }
 
 void dsda_AddLineID(int id, int value) {
-  dsda_AddToIDHash(&line_id_hash, id, value);
+  if (id >= 0)
+    dsda_AddToIDHash(&line_id_hash, id, value);
 }
 
 void dsda_AddSectorID(int id, int value) {
-  dsda_AddToIDHash(&sector_id_hash, id, value);
+  if (id >= 0)
+    dsda_AddToIDHash(&sector_id_hash, id, value);
 }
 
 static int empty_list[] = { -1 };
 static int missing_id_list[] = { -1, -1 };
 
 const int* dsda_FindLinesFromID(int id) {
-  if (id <= 0)
+  if (id < 0)
     return empty_list;
 
   return dsda_GetIDList(&line_id_hash, id)->data;
 }
 
 const int* dsda_FindSectorsFromID(int id) {
-  if (id <= 0)
+  if (id < 0)
     return empty_list;
 
   return dsda_GetIDList(&sector_id_hash, id)->data;
