@@ -830,9 +830,9 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, sfx_params_t *params)
   if (nosfxparm)
     return channel_not_found;
 
-  // Find an open channel
-  for (cnum = 0; cnum < numChannels && channels[cnum].active; cnum++)
-    if (channels[cnum].origin == origin &&
+  // Only allow one sound per origin
+  for (cnum = 0; cnum < numChannels; cnum++)
+    if (channels[cnum].active && channels[cnum].origin == origin &&
         (comp[comp_sound] || channels[cnum].sfx_class == params->sfx_class))
     {
       // The sound is already playing
@@ -845,6 +845,11 @@ static int S_getChannel(void *origin, sfxinfo_t *sfxinfo, sfx_params_t *params)
       S_StopChannel(cnum);
       break;
     }
+
+  // Find an open channel
+  for (cnum = 0; cnum < numChannels; cnum++)
+    if (!channels[cnum].active)
+      break;
 
   // None available
   if (cnum == numChannels)
