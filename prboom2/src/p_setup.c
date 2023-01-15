@@ -2292,8 +2292,6 @@ static void P_CreateBlockMap(void)
   blockmaplump[2] = bmapwidth  = ncols;
   blockmaplump[3] = bmapheight = nrows;
 
-  RememberOriginalBlockMap();
-
   // offsets to lists and block lists
 
   for (i=0;i<NBlocks;i++)
@@ -2440,8 +2438,6 @@ static void P_LoadBlockMap (int lump)
     bmapwidth = blockmaplump[2];
     bmapheight = blockmaplump[3];
 
-    RememberOriginalBlockMap();
-
     // haleyjd 03/04/10: check for blockmap problems
     // http://www.doomworld.com/idgames/index.php?id=12935
     if (!P_VerifyBlockMap(count))
@@ -2450,6 +2446,8 @@ static void P_LoadBlockMap (int lump)
       lprintf(LO_INFO, "P_LoadBlockMap: use \"-blockmap\" command line switch for rebuilding\n");
     }
   }
+
+  RememberOriginalBlockMap();
 
   // clear out mobj chains - CPhipps - use calloc
   blocklinks_count = bmapwidth * bmapheight;
