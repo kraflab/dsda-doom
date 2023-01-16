@@ -85,6 +85,7 @@ typedef struct {
   int arg4;
   int sidefront;
   int sideback;
+  float alpha;
   int locknumber;
   int automapstyle;
   int health;

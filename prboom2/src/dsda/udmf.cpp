@@ -97,6 +97,7 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
 
   line.id = -1;
   line.sideback = -1;
+  line.alpha = 1.0;
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
@@ -146,6 +147,9 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "healthgroup")) {
       SCAN_INT(line.healthgroup);
+    }
+    else if (!stricmp(scanner.string, "alpha")) {
+      SCAN_FLOAT(line.alpha);
     }
     else if (!stricmp(scanner.string, "blocking")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKING);
@@ -288,7 +292,6 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     else {
       // known ignored fields:
       // comment
-      // alpha
       // renderstyle
       // arg0str
       dsda_SkipValue(scanner);
