@@ -69,7 +69,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | sidefront          | :heavy_check_mark: |
 | sideback           | :heavy_check_mark: |
 | comment            | :x:                |
-| alpha              | :x:                |
+| alpha              | :grey_question:    |
 | renderstyle        | :x:                |
 | playeruseback      | :heavy_check_mark: |
 | anycross           | :heavy_check_mark: |
