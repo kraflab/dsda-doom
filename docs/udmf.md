@@ -91,7 +91,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | arg0str            | :x:                |
 | moreids            | :heavy_check_mark: |
 | transparent        | :grey_question:    |
-| automapstyle       | :grey_question:    |
+| automapstyle       | :heavy_check_mark: |
 | revealed           | :heavy_check_mark: |
 | noskywalls         | :x:                |
 | drawfullheight     | :x:                |

@@ -270,6 +270,28 @@ typedef byte r_flags_t;
 #define RF_CLOSED   0x10 // Line blocks view
 #define RF_ISOLATED 0x20 // Isolated line
 
+typedef enum
+{
+  ams_default,
+  ams_one_sided,
+  ams_two_sided,
+  ams_floor_diff,
+  ams_ceiling_diff,
+  ams_extra_floor,
+  ams_special,
+  ams_secret,
+  ams_unseen,
+  ams_locked,
+  ams_teleport,
+  ams_exit,
+  ams_unseen_secret,
+  ams_portal,
+
+  ams_invisible,
+  ams_revealed_secret,
+  ams_closed_door,
+} automap_style_t;
+
 typedef unsigned short line_activation_t;
 typedef unsigned int line_flags_t;
 
@@ -308,6 +330,7 @@ typedef struct line_s
   // zdoom
   line_activation_t activation;
   byte locknumber;
+  automap_style_t automap_style;
   int health;
   int healthgroup;
 } line_t;
