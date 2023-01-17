@@ -319,9 +319,9 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | score         | :x:                |
 | pitch         | :x:                |
 | roll          | :x:                |
-| scalex        | :grey_question:    |
-| scaley        | :grey_question:    |
-| scale         | :grey_question:    |
+| scalex        | :x:                |
+| scaley        | :x:                |
+| scale         | :x:                |
 | floatbobphase | :grey_question:    |
 
 #### Notes
