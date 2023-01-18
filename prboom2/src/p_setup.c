@@ -2078,6 +2078,7 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->v2 = &vertexes[mld->v2];
     ld->sidenum[0] = mld->sidefront;
     ld->sidenum[1] = mld->sideback;
+    ld->alpha = mld->alpha;
     ld->locknumber = mld->locknumber;
     ld->automap_style = mld->automapstyle;
     ld->health = mld->health;

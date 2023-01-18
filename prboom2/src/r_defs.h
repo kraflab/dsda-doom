@@ -333,6 +333,7 @@ typedef struct line_s
   automap_style_t automap_style;
   int health;
   int healthgroup;
+  float alpha;
 } line_t;
 
 #define LINE_ARG_COUNT 5
