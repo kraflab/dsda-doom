@@ -1910,8 +1910,6 @@ static void P_CalculateLineDefProperties(line_t *ld)
   // There is no more glitches on seams between identical textures.
   ld->texel_length = GetTexelDistance(ld->dx, ld->dy);
 
-  ld->tranlump = -1;  // killough 4/11/98: no translucency by default
-
   ld->slopetype = !ld->dx                      ? ST_VERTICAL   :
                   !ld->dy                      ? ST_HORIZONTAL :
                   FixedDiv(ld->dy, ld->dx) > 0 ? ST_POSITIVE   : ST_NEGATIVE;
@@ -2210,17 +2208,32 @@ void P_PostProcessCompatibleLineSpecial(line_t *ld)
 {
   switch (ld->special)
   {                         // killough 4/11/98: handle special types
-    int lump, j;
-
     case 260:               // killough 4/11/98: translucent 2s textures
+    {
+      const byte* tranmap;
+      int lump, j;
+
       lump = sides[*ld->sidenum].special; // translucency from sidedef
-      if (!ld->tag)                       // if tag==0,
-        ld->tranlump = lump;              // affect this linedef only
+
+      if (!lump)
+        tranmap = main_tranmap;
+      else
+        tranmap = W_LumpByNum(lump - 1);
+
+      if (!ld->tag)             // if tag==0,
+      {
+        ld->tranmap = tranmap;  // affect this linedef only
+        ld->alpha = 66;
+      }
       else
         for (j=0;j<numlines;j++)          // if tag!=0,
           if (lines[j].tag == ld->tag)    // affect all matching linedefs
-            lines[j].tranlump = lump;
+          {
+            lines[j].tranmap = tranmap;
+            lines[j].alpha = 66;
+          }
       break;
+    }
   }
 }
 
@@ -2240,15 +2253,27 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
   {                           // killough 4/11/98: handle special types
     case zl_translucent_line: // killough 4/11/98: translucent 2s textures
     {
+      const byte* tranmap;
       const int *id_p;
       int lump;
 
       lump = sides[*ld->sidenum].special; // translucency from sidedef
+      if (!lump)
+        tranmap = main_tranmap;
+      else
+        tranmap = W_LumpByNum(lump - 1);
+
       if (!ld->arg1)
-        ld->tranlump = lump;
+      {
+        ld->tranmap = tranmap;
+        ld->alpha = 66;
+      }
       else
         for (id_p = dsda_FindLinesFromID(ld->arg1); *id_p >= 0; id_p++)
-          lines[*id_p].tranlump = lump;
+        {
+          lines[*id_p].tranmap = tranmap;
+          lines[*id_p].alpha = 66;
+        }
       ld->special = 0;
     }
     break;

@@ -1947,10 +1947,9 @@ void gld_AddWall(seg_t *seg)
       wall.vt /= FRACUNIT;
       wall.vb /= FRACUNIT;
 
-      if (seg->linedef->tranlump >= 0)
-        wall.alpha=(float)tran_filter_pct/100.0f;
+      wall.alpha = seg->linedef->alpha;
       gld_AddDrawWallItem((wall.alpha == 1.0f ? GLDIT_MWALL : GLDIT_TWALL), &wall);
-      wall.alpha=1.0f;
+      wall.alpha = 1.0f;
     }
 bottomtexture:
     /* bottomtexture */
