@@ -157,7 +157,7 @@ static byte* dsda_GenerateTranMap(unsigned int alpha) {
 
 const byte* dsda_TranMap(unsigned int alpha) {
   int length;
-  byte *buffer;
+  byte *buffer = NULL;
 
   if (alpha > 99)
     return NULL;
@@ -173,7 +173,7 @@ const byte* dsda_TranMap(unsigned int alpha) {
     snprintf(filename, length, "%s/tranmap_%02d.dat", tranmap_palette_dir, alpha);
 
     length = M_ReadFile(filename, &buffer);
-    if (length != tranmap_length) {
+    if (buffer && length != tranmap_length) {
       Z_Free(buffer);
       buffer = NULL;
     }
