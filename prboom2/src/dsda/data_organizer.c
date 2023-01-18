@@ -91,17 +91,23 @@ char* dsda_DetectDirectory(const char* env_key, int arg_id) {
 }
 
 void dsda_InitDataDir(void) {
-  dsda_base_data_dir = dsda_DetectDirectory("DOOMDATADIR", dsda_arg_data);
+  int length;
+  char* parent_directory;
+
+  parent_directory = dsda_DetectDirectory("DOOMDATADIR", dsda_arg_data);
+  length = strlen(parent_directory) + strlen(dsda_data_root) + 2; // "/" + "\0"
+  dsda_base_data_dir = Z_Malloc(length);
+  snprintf(dsda_base_data_dir, length, "%s/%s", parent_directory, dsda_data_root);
+
+  Z_Free(parent_directory);
 }
 
 static void dsda_InitWadDataDir(void) {
   int i;
   int length = 0;
-  const int iwad_index = 1;
-  int pwad_index = 2;
+  const int iwad_index = 0;
+  int pwad_index = 1;
   struct stat sbuf;
-
-  dsda_data_dir_strings[0] = Z_Strdup(dsda_data_root);
 
   for (i = 0; i < numwadfiles; ++i) {
     const char* start;
@@ -162,4 +168,8 @@ char* dsda_DataDir(void) {
     dsda_InitWadDataDir();
 
   return dsda_wad_data_dir;
+}
+
+const char* dsda_DataRoot(void) {
+  return dsda_base_data_dir;
 }
