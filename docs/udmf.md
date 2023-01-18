@@ -48,7 +48,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | dontdraw           | :heavy_check_mark: |
 | mapped             | :heavy_check_mark: |
 | passuse            | :heavy_check_mark: |
-| translucent        | :grey_question:    |
+| translucent        | :heavy_check_mark: |
 | jumpover           | :heavy_check_mark: |
 | blockfloaters      | :heavy_check_mark: |
 | playercross        | :heavy_check_mark: |
@@ -69,7 +69,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | sidefront          | :heavy_check_mark: |
 | sideback           | :heavy_check_mark: |
 | comment            | :x:                |
-| alpha              | :grey_question:    |
+| alpha              | :heavy_check_mark: |
 | renderstyle        | :x:                |
 | playeruseback      | :heavy_check_mark: |
 | anycross           | :heavy_check_mark: |
@@ -90,7 +90,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | locknumber         | :heavy_check_mark: |
 | arg0str            | :x:                |
 | moreids            | :heavy_check_mark: |
-| transparent        | :grey_question:    |
+| transparent        | :heavy_check_mark: |
 | automapstyle       | :heavy_check_mark: |
 | revealed           | :heavy_check_mark: |
 | noskywalls         | :x:                |
