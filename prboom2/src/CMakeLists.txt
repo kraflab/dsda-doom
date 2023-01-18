@@ -189,6 +189,8 @@ set(COMMON_SRC
     dsda/time.h
     dsda/tracker.c
     dsda/tracker.h
+    dsda/tranmap.c
+    dsda/tranmap.h
     dsda/udmf.cpp
     dsda/udmf.h
     dsda/utility.c

@@ -66,6 +66,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/skip.h"
+#include "dsda/tranmap.h"
 #include "dsda/udmf.h"
 #include "dsda/utility.h"
 
@@ -3645,6 +3646,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   //e6y
   totallive = 0;
+
+  main_tranmap = dsda_DefaultTranMap();
 
   dsda_WatchBeforeLevelSetup();
 

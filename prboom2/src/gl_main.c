@@ -92,7 +92,7 @@ float bw_red = 0.3f;
 float bw_green = 0.59f;
 float bw_blue = 0.11f;
 
-extern const int tran_filter_pct;
+const int tran_filter_pct = 66;
 
 dboolean use_fog=false;
 
