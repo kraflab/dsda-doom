@@ -68,6 +68,7 @@ fixed_t dsda_FixedDistancePointToLine(fixed_t line_x1, fixed_t line_y1,
                                       fixed_t point_x, fixed_t point_y,
                                       fixed_t *closest_x, fixed_t *closest_y);
 fixed_t dsda_FloatToFixed(float x);
+byte dsda_FloatToPercent(float x);
 int dsda_IntToFixed(int x);
 angle_t dsda_DegreesToAngle(int x);
 

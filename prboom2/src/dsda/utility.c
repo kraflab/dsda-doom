@@ -253,6 +253,17 @@ fixed_t dsda_FloatToFixed(float x)
   return (fixed_t) (x * FRACUNIT);
 }
 
+byte dsda_FloatToPercent(float x)
+{
+  if (x > 1.f)
+    x = 1.f;
+
+  if (x < 0.f)
+    x = 0.f;
+
+  return (byte) floorf(x * 100);
+}
+
 int dsda_IntToFixed(int x)
 {
   return (fixed_t) (x << FRACBITS);
