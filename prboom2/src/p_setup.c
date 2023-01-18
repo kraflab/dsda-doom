@@ -2178,6 +2178,9 @@ static void P_LoadUDMFLineDefs(int lump)
 
     P_CalculateLineDefProperties(ld);
 
+    if (ld->alpha < 1.f)
+      ld->tranmap = dsda_TranMap(dsda_FloatToPercent(ld->alpha));
+
     if (ld->healthgroup)
       dsda_AddLineToHealthGroup(ld);
 
