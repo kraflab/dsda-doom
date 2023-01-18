@@ -2169,10 +2169,14 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_CHECKSWITCHRANGE)
       ld->flags |= ML_CHECKSWITCHRANGE;
 
+    if (mld->flags & UDMF_ML_TRANSLUCENT)
+      ld->alpha = 0.75f;
+
+    if (mld->flags & UDMF_ML_TRANSPARENT)
+      ld->alpha = 0.25f;
+
     // UDMF TODO:
-    // UDMF_ML_TRANSLUCENT
     // UDMF_ML_WRAPMIDTEX
-    // UDMF_ML_TRANSPARENT
     // UDMF_ML_NOSKYWALLS
     // UDMF_ML_DRAWFULLHEIGHT
 
