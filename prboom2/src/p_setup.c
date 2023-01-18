@@ -2176,7 +2176,6 @@ static void P_LoadUDMFLineDefs(int lump)
     // UDMF_ML_TRANSPARENT
     // UDMF_ML_NOSKYWALLS
     // UDMF_ML_DRAWFULLHEIGHT
-    // automapstyle
 
     P_CalculateLineDefProperties(ld);
 
