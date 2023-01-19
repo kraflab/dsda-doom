@@ -224,23 +224,6 @@ void P_ChangeSwitchTexture
   tmid = &sides[line->sidenum[0]].midtexture;
   tbot = &sides[line->sidenum[0]].bottomtexture;
 
-  if (hexen)
-  {
-    soundorg = (mobj_t *)&line->frontsector->soundorg;
-  }
-  else
-  {
-    sound = g_sfx_swtchn;
-    /* use the sound origin of the linedef (its midpoint)
-     * unless in a compatibility mode */
-    soundorg = (mobj_t *)&line->soundorg;
-    if (comp[comp_sound] || compatibility_level < prboom_6_compatibility) {
-      /* usually NULL, unless there is another button already pressed in,
-       * in which case it's the sound origin of that button press... */
-      soundorg = buttonlist->soundorg;
-    }
-  }
-
   /* don't zero line->special until after exit switch test */
   if (!hexen && !useAgain)
     line->special = 0;
@@ -260,9 +243,24 @@ void P_ChangeSwitchTexture
     return; /* no switch texture was found to change */
   *texture = switchlist[i^1];
 
-  // hexen has sound id in episode field
   if (hexen)
+  {
+    // hexen has sound id in episode field
     sound = alphSwitchList[i / 2].episode;
+    soundorg = (mobj_t *)&line->frontsector->soundorg;
+  }
+  else
+  {
+    sound = g_sfx_swtchn;
+    /* use the sound origin of the linedef (its midpoint)
+     * unless in a compatibility mode */
+    soundorg = (mobj_t *)&line->soundorg;
+    if (comp[comp_sound] || compatibility_level < prboom_6_compatibility) {
+      /* usually NULL, unless there is another button already pressed in,
+       * in which case it's the sound origin of that button press... */
+      soundorg = buttonlist->soundorg;
+    }
+  }
 
   S_StartSound(soundorg, sound);
 
