@@ -401,6 +401,14 @@ void S_LoopSectorSound(sector_t *sector, int sfx_id, int timeout)
   S_LoopSound((mobj_t *) &sector->soundorg, sfx_id, timeout);
 }
 
+void S_StartMobjSound(mobj_t *mobj, int sfx_id)
+{
+  if (mobj->subsector->sector->flags & SECF_SILENT)
+    return;
+
+  S_StartSound(mobj, sfx_id);
+}
+
 void S_StartSound(void *origin, int sfx_id)
 {
   S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, 0);
