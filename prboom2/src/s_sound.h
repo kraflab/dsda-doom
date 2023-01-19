@@ -73,6 +73,7 @@ void S_LoopSectorSound(sector_t *sector, int sfx_id, int timeout);
 
 void S_StartMobjSound(mobj_t *mobj, int sfx_id);
 void S_StartVoidSound(int sfx_id);
+void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id);
 
 // Will start a sound at a given volume.
 void S_StartSoundAtVolume(void *origin, int sound_id, int volume, int loop_timeout);
