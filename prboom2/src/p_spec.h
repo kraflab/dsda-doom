@@ -698,7 +698,7 @@ typedef struct
   bwhere_e where;
   int   btexture;
   int   btimer;
-  mobj_t* soundorg;
+  degenmobj_t* soundorg;
 
 } button_t;
 

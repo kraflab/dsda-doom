@@ -3050,12 +3050,12 @@ void P_UpdateSpecials (void)
         {
           /* don't take the address of the switch's sound origin,
            * unless in a compatibility mode. */
-          mobj_t *so = (mobj_t *)buttonlist[i].soundorg;
+          degenmobj_t *so = buttonlist[i].soundorg;
           if (comp[comp_sound] || compatibility_level < prboom_6_compatibility)
             /* since the buttonlist array is usually zeroed out,
              * button popouts generally appear to come from (0,0) */
-            so = (mobj_t *)&buttonlist[i].soundorg;
-          S_StartSound(so, g_sfx_swtchn);
+            so = (degenmobj_t *) &buttonlist[i].soundorg;
+          S_StartLineSound(buttonlist[i].line, so, g_sfx_swtchn);
         }
         memset(&buttonlist[i],0,sizeof(button_t));
       }
