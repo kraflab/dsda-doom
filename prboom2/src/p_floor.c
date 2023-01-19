@@ -233,13 +233,13 @@ void T_MoveCompatibleFloor(floormove_t * floor)
   }
 
   if (!(leveltime&7))     // make the floormove sound
-    S_LoopSound((mobj_t *)&floor->sector->soundorg, g_sfx_stnmov, 8);
+    S_LoopSectorSound(floor->sector, g_sfx_stnmov, 8);
 
   if (res == pastdest)    // if destination height is reached
   {
     if (heretic && floor->type == buildStair)
     {
-        S_StartSound(&floor->sector->soundorg, heretic_sfx_pstop);
+        S_StartSectorSound(floor->sector, heretic_sfx_pstop);
     }
 
     if (floor->type == floorBuildStair)
@@ -314,7 +314,7 @@ void T_MoveCompatibleFloor(floormove_t * floor)
       // Moving floors (but not plats) in versions <= v1.2 did not
       // make floor stop sound
       if (compatibility_level > doom_12_compatibility)
-          S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
+          S_StartSectorSound(floor->sector, sfx_pstop);
     }
   }
 }
@@ -449,7 +449,7 @@ void T_MoveElevator(elevator_t* elevator)
 
   // make floor move sound
   if (!(leveltime&7))
-    S_LoopSound((mobj_t *)&elevator->sector->soundorg, sfx_stnmov, 8);
+    S_LoopSectorSound(elevator->sector, sfx_stnmov, 8);
 
   if (res == pastdest)            // if destination height acheived
   {
@@ -458,7 +458,7 @@ void T_MoveElevator(elevator_t* elevator)
     P_RemoveThinker(&elevator->thinker);    // remove elevator from actives
 
     // make floor stop sound
-    S_StartSound((mobj_t *)&elevator->sector->soundorg, sfx_pstop);
+    S_StartSectorSound(elevator->sector, sfx_pstop);
   }
 }
 
@@ -2003,7 +2003,7 @@ void T_BuildZDoomPillar(pillar_t * pillar)
                             pillar->crush, -pillar->direction, pillar->hexencrush);
 
   if (!(leveltime & 7))
-    S_LoopSound((mobj_t *) &pillar->sector->soundorg, g_sfx_stnmov, 8);
+    S_LoopSectorSound(pillar->sector, g_sfx_stnmov, 8);
 
   if (res1 == pastdest && res2 == pastdest)
   {
@@ -2012,7 +2012,7 @@ void T_BuildZDoomPillar(pillar_t * pillar)
     P_RemoveThinker(&pillar->thinker);
 
     // make floor stop sound
-    S_StartSound((mobj_t *) &pillar->sector->soundorg, sfx_pstop);
+    S_StartSectorSound(pillar->sector, sfx_pstop);
   }
   else
   {
