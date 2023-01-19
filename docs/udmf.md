@@ -222,7 +222,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | desaturation             | :x:                |
 | silent                   | :grey_question:    |
 | nofallingdamage          | :grey_question:    |
-| noattack                 | :grey_question:    |
+| noattack                 | :heavy_check_mark: |
 | dropactors               | :grey_question:    |
 | norespawn                | :grey_question:    |
 | soundsequence            | :x:                |

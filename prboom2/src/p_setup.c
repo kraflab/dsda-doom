@@ -985,6 +985,9 @@ static void P_LoadUDMFSectors(int lump)
     ss->ceiling_yoffs = dsda_FloatToFixed(ms->ypanningceiling);
     ss->gravity = dsda_FloatToFixed(ms->gravity);
 
+    if (ms->flags & UDMF_SECF_NOATTACK)
+      ss->flags |= SECF_NOATTACK;
+
     // UDMF TODO:
     // xscalefloor
     // yscalefloor

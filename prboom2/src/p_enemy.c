@@ -172,6 +172,9 @@ static dboolean P_CheckMeleeRange(mobj_t *actor)
 {
   int range;
 
+  if (actor->subsector->sector->flags & SECF_NOATTACK)
+    return false;
+
   range = actor->info->meleerange;
 
   if (compatibility_level != doom_12_compatibility)
@@ -204,6 +207,9 @@ static dboolean P_HitFriend(mobj_t *actor)
 static dboolean P_CheckMissileRange(mobj_t *actor)
 {
   fixed_t dist;
+
+  if (actor->subsector->sector->flags & SECF_NOATTACK)
+    return false;
 
   if (!P_CheckSight(actor, actor->target))
     return false;
