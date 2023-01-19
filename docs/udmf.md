@@ -229,12 +229,12 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | hidden                   | :grey_question:    |
 | waterzone                | :x:                |
 | moreids                  | :heavy_check_mark: |
-| damageamount             | :grey_question:    |
+| damageamount             | :heavy_check_mark: |
 | damagetype               | :x:                |
-| damageinterval           | :grey_question:    |
-| leakiness                | :grey_question:    |
+| damageinterval           | :heavy_check_mark: |
+| leakiness                | :heavy_check_mark: |
 | damageterraineffect      | :x:                |
-| damagehazard             | :grey_question:    |
+| damagehazard             | :heavy_check_mark: |
 | floorterrain             | :x:                |
 | ceilingterrain           | :x:                |
 | portal_ceil_blocksound   | :x:                |
