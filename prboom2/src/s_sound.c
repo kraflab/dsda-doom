@@ -409,6 +409,11 @@ void S_StartMobjSound(mobj_t *mobj, int sfx_id)
   S_StartSound(mobj, sfx_id);
 }
 
+void S_StartVoidSound(int sfx_id)
+{
+  S_StartSound(NULL, sfx_id);
+}
+
 void S_StartSound(void *origin, int sfx_id)
 {
   S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, 0);
