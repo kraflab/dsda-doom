@@ -998,6 +998,9 @@ static void P_LoadUDMFSectors(int lump)
     if (ms->flags & UDMF_SECF_NOATTACK)
       ss->flags |= SECF_NOATTACK;
 
+    if (ms->flags & UDMF_SECF_SILENT)
+      ss->flags |= SECF_SILENT;
+
     // UDMF TODO:
     // xscalefloor
     // yscalefloor
