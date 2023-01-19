@@ -220,7 +220,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | lightcolor               | :x:                |
 | fadecolor                | :x:                |
 | desaturation             | :x:                |
-| silent                   | :grey_question:    |
+| silent                   | :heavy_check_mark: |
 | nofallingdamage          | :x:                |
 | noattack                 | :heavy_check_mark: |
 | dropactors               | :grey_question:    |
