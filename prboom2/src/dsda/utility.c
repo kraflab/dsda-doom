@@ -255,13 +255,17 @@ fixed_t dsda_FloatToFixed(float x)
 
 byte dsda_FloatToPercent(float x)
 {
+  float flr;
+
   if (x > 1.f)
     x = 1.f;
 
   if (x < 0.f)
     x = 0.f;
 
-  return (byte) floorf(x * 100);
+  flr = floorf(x * 100);
+
+  return (byte) flr;
 }
 
 int dsda_IntToFixed(int x)
