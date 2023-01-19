@@ -5505,11 +5505,11 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
                 {
                     if (arti < hexen_arti_firstpuzzitem)
                     {
-                        S_StartSound(NULL, hexen_sfx_artifact_use);
+                        S_StartVoidSound(hexen_sfx_artifact_use);
                     }
                     else
                     {
-                        S_StartSound(NULL, hexen_sfx_puzzle_success);
+                        S_StartVoidSound(hexen_sfx_puzzle_success);
                     }
                     ArtifactFlash = 4;
                 }

@@ -889,7 +889,7 @@ void HU_Ticker(void)
 
     if (custom_message_p->sfx > 0 && custom_message_p->sfx < num_sfx)
     {
-      S_StartSound(NULL, custom_message_p->sfx);
+      S_StartVoidSound(custom_message_p->sfx);
     }
   }
 

@@ -4159,7 +4159,7 @@ void G_Completed(int map, int position, int flags, angle_t angle)
     if (hexen && gamemode == shareware && map > 4)
     {
         P_SetMessage(&players[consoleplayer], "ACCESS DENIED -- DEMO", true);
-        S_StartSound(NULL, hexen_sfx_chat);
+        S_StartVoidSound(hexen_sfx_chat);
         return;
     }
 

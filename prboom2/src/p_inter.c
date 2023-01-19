@@ -855,7 +855,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       {
         if (source->player == &players[consoleplayer])
         {
-          S_StartSound(NULL, heretic_sfx_gfrag);
+          S_StartVoidSound(heretic_sfx_gfrag);
         }
         if (source->player->chickenTics)
         {               // Make a super chicken
@@ -2143,7 +2143,7 @@ static void Heretic_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     player->bonuscount += BONUSADD;
     if (player == &players[consoleplayer])
     {
-        S_StartSound(NULL, sound);
+        S_StartVoidSound(sound);
         SB_PaletteFlash(false);
     }
 }
@@ -2274,7 +2274,7 @@ dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon)
         player->pendingweapon = weapon;
         if (player == &players[consoleplayer])
         {
-            S_StartSound(NULL, heretic_sfx_wpnup);
+            S_StartVoidSound(heretic_sfx_wpnup);
         }
         return (false);
     }
@@ -2871,7 +2871,7 @@ void TryPickupWeapon(player_t * player, pclass_t weaponClass,
     player->bonuscount += BONUSADD;
     if (player == &players[consoleplayer])
     {
-        S_StartSound(NULL, hexen_sfx_pickup_weapon);
+        S_StartVoidSound(hexen_sfx_pickup_weapon);
         SB_PaletteFlash(false);
     }
 }
@@ -2984,14 +2984,14 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
     {
         P_SetMessage(player, fourthWeaponText[matchClass], false);
         // Play the build-sound full volume for all players
-        S_StartSound(NULL, hexen_sfx_weapon_build);
+        S_StartVoidSound(hexen_sfx_weapon_build);
     }
     else
     {
         P_SetMessage(player, weaponPieceText[matchClass], false);
         if (player == &players[consoleplayer])
         {
-            S_StartSound(NULL, hexen_sfx_pickup_weapon);
+            S_StartVoidSound(hexen_sfx_pickup_weapon);
         }
     }
 }
@@ -3095,7 +3095,7 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType, mobj_t
         }
         else
         {                       // Puzzle item
-            S_StartSound(NULL, hexen_sfx_pickup_item);
+            S_StartVoidSound(hexen_sfx_pickup_item);
             P_SetMessage(player, artifactMessages[artifactType], true);
             if (!netgame || deathmatch)
             {                   // Remove puzzle items if not cooperative netplay
@@ -3198,7 +3198,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             player->bonuscount += BONUSADD;
             if (player == &players[consoleplayer])
             {
-                S_StartSound(NULL, sound);
+                S_StartVoidSound(sound);
                 SB_PaletteFlash(false);
             }
             return;
@@ -3411,7 +3411,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     player->bonuscount += BONUSADD;
     if (player == &players[consoleplayer])
     {
-        S_StartSound(NULL, sound);
+        S_StartVoidSound(sound);
         SB_PaletteFlash(false);
     }
 }

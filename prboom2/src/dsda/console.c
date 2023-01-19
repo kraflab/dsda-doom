@@ -2251,16 +2251,16 @@ static dboolean dsda_ExecuteConsole(const char* command_line) {
         if (dsda_AuthorizeCommand(entry)) {
           if (entry->command(command, args)) {
             dsda_AddConsoleMessage("command executed");
-            S_StartSound(NULL, g_sfx_console);
+            S_StartVoidSound(g_sfx_console);
           }
           else {
             dsda_AddConsoleMessage("command invalid");
             ret = false;
-            S_StartSound(NULL, g_sfx_oof);
+            S_StartVoidSound(g_sfx_oof);
           }
         }
         else {
-          S_StartSound(NULL, g_sfx_oof);
+          S_StartVoidSound(g_sfx_oof);
           ret = false;
         }
 
@@ -2270,7 +2270,7 @@ static dboolean dsda_ExecuteConsole(const char* command_line) {
 
     if (!entry->command) {
       dsda_AddConsoleMessage("command unknown");
-      S_StartSound(NULL, g_sfx_oof);
+      S_StartVoidSound(g_sfx_oof);
       ret = false;
     }
   }

@@ -967,7 +967,7 @@ void M_ScreenShot(void)
 
     if (access(lbmname,0))
     {
-      S_StartSound(NULL,gamemode==commercial ? sfx_radio : sfx_tink);
+      S_StartVoidSound(gamemode==commercial ? sfx_radio : sfx_tink);
       M_DoScreenShot(lbmname); // cph
       success = 1;
     }

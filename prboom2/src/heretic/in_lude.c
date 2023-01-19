@@ -446,13 +446,13 @@ void IN_Ticker(void)
         {
             interstate = 2;
             skipintermission = false;
-            S_StartSound(NULL, heretic_sfx_dorcls);
+            S_StartVoidSound(heretic_sfx_dorcls);
             return;
         }
         interstate = 3;
         cnt = 10;
         skipintermission = false;
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
     }
 }
 
@@ -521,7 +521,7 @@ void IN_Drawer(void)
 
     if (oldinterstate != 2 && interstate == 2)
     {
-        S_StartSound(NULL, heretic_sfx_pstop);
+        S_StartVoidSound(heretic_sfx_pstop);
     }
     oldinterstate = interstate;
     switch (interstate)
@@ -698,7 +698,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 1 && intertime >= 30)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].killcount, 200, 65 - yoffset, 3);
@@ -710,7 +710,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 2 && intertime >= 60)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].itemcount, 200, 90 - yoffset, 3);
@@ -722,7 +722,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 3 && intertime >= 90)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].secretcount, 200, 115 - yoffset, 3);
@@ -734,7 +734,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 4 && intertime >= 150)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
 
@@ -803,7 +803,7 @@ void IN_DrawCoopStats(void)
             }
             else if (intertime >= 40 && sounds < 1)
             {
-                S_StartSound(NULL, heretic_sfx_dorcls);
+                S_StartVoidSound(heretic_sfx_dorcls);
                 sounds++;
             }
             IN_DrawNumber(killPercent[i], 85, ypos + 10, 3);
@@ -865,12 +865,12 @@ void IN_DrawDMStats(void)
     }
     if (intertime >= 20 && sounds < 1)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     if (intertime >= 100 && slaughterboy && sounds < 2)
     {
-        S_StartSound(NULL, heretic_sfx_wpnup);
+        S_StartVoidSound(heretic_sfx_wpnup);
         sounds++;
     }
     for (i = 0; i < g_maxplayers; i++)

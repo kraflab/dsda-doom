@@ -1152,7 +1152,7 @@ void A_Look(mobj_t *actor)
       }
 
     if (actor->flags2 & (MF2_BOSS | MF2_FULLVOLSOUNDS))
-      S_StartSound(NULL, sound);          // full volume
+      S_StartVoidSound(sound);          // full volume
     else
     {
       S_StartSound(actor, sound);
@@ -1341,7 +1341,7 @@ void A_Chase(mobj_t *actor)
     }
     else if (heretic && actor->type == HERETIC_MT_SORCERER2)
     {
-      S_StartSound(NULL, actor->info->activesound);
+      S_StartVoidSound(actor->info->activesound);
     }
     else if (hexen && actor->type == HEXEN_MT_BISHOP && P_Random(pr_hexen) < 128)
     {
@@ -1353,7 +1353,7 @@ void A_Chase(mobj_t *actor)
     }
     else if (hexen && actor->flags2 & MF2_BOSS)
     {
-      S_StartSound(NULL, actor->info->activesound);
+      S_StartVoidSound(actor->info->activesound);
     }
     else
     {
@@ -2378,7 +2378,7 @@ void A_Scream(mobj_t *actor)
 
   // Check for bosses.
   if (actor->flags2 & (MF2_BOSS | MF2_FULLVOLSOUNDS))
-    S_StartSound(NULL, sound); // full volume
+    S_StartVoidSound(sound); // full volume
   else
     S_StartSound(actor, sound);
 }
@@ -2796,12 +2796,12 @@ void A_BrainAwake(mobj_t *mo)
     brain.easy = 0;
   }
 
-  S_StartSound(NULL,sfx_bossit); // killough 3/26/98: only generates sound now
+  S_StartVoidSound(sfx_bossit); // killough 3/26/98: only generates sound now
 }
 
 void A_BrainPain(mobj_t *mo)
 {
-  S_StartSound(NULL,sfx_bospn);
+  S_StartVoidSound(sfx_bospn);
 }
 
 void A_BrainScream(mobj_t *mo)
@@ -2818,7 +2818,7 @@ void A_BrainScream(mobj_t *mo)
       if (th->tics < 1)
         th->tics = 1;
     }
-  S_StartSound(NULL,sfx_bosdth);
+  S_StartVoidSound(sfx_bosdth);
 }
 
 void A_BrainExplode(mobj_t *mo)
@@ -2871,7 +2871,7 @@ void A_BrainSpit(mobj_t *mo)
   // killough 8/29/98: add to appropriate thread
   P_UpdateThinker(&newmobj->thinker);
 
-  S_StartSound(NULL, sfx_bospit);
+  S_StartVoidSound(sfx_bospit);
 }
 
 // travelling cube sound
@@ -4087,7 +4087,7 @@ void A_Srcr2Attack(mobj_t * actor)
     {
         return;
     }
-    S_StartSound(NULL, actor->info->attacksound);
+    S_StartVoidSound(actor->info->attacksound);
     if (P_CheckMeleeRange(actor))
     {
         P_DamageMobj(actor->target, actor, actor, HITDICE(20));
@@ -4180,32 +4180,32 @@ void A_Sor2DthLoop(mobj_t * actor)
 
 void A_SorZap(mobj_t * actor)
 {
-    S_StartSound(NULL, heretic_sfx_sorzap);
+    S_StartVoidSound(heretic_sfx_sorzap);
 }
 
 void A_SorRise(mobj_t * actor)
 {
-    S_StartSound(NULL, heretic_sfx_sorrise);
+    S_StartVoidSound(heretic_sfx_sorrise);
 }
 
 void A_SorDSph(mobj_t * actor)
 {
-    S_StartSound(NULL, heretic_sfx_sordsph);
+    S_StartVoidSound(heretic_sfx_sordsph);
 }
 
 void A_SorDExp(mobj_t * actor)
 {
-    S_StartSound(NULL, heretic_sfx_sordexp);
+    S_StartVoidSound(heretic_sfx_sordexp);
 }
 
 void A_SorDBon(mobj_t * actor)
 {
-    S_StartSound(NULL, heretic_sfx_sordbon);
+    S_StartVoidSound(heretic_sfx_sordbon);
 }
 
 void A_SorSightSnd(mobj_t * actor)
 {
-    S_StartSound(NULL, heretic_sfx_sorsit);
+    S_StartVoidSound(heretic_sfx_sorsit);
 }
 
 void A_MinotaurAtk1(mobj_t * actor)
@@ -4892,7 +4892,7 @@ void Heretic_A_Scream(mobj_t * actor)
         case HERETIC_MT_SORCERER1:
         case HERETIC_MT_MINOTAUR:
             // Make boss death sounds full volume
-            S_StartSound(NULL, actor->info->deathsound);
+            S_StartVoidSound(actor->info->deathsound);
             break;
         case HERETIC_MT_PLAYER:
             // Handle the different player death screams
@@ -7532,7 +7532,7 @@ void A_SorcBallOrbit(mobj_t * actor)
 
                 if (actor->type == HEXEN_MT_SORCBALL1 && P_Random(pr_hexen) < 200)
                 {
-                    S_StartSound(NULL, hexen_sfx_sorcerer_spellcast);
+                    S_StartVoidSound(hexen_sfx_sorcerer_spellcast);
                     actor->special2.i = SORCFX4_RAPIDFIRE_TIME;
                     actor->args[4] = 128;
                     parent->args[3] = SORC_FIRING_SPELL;
@@ -7663,7 +7663,7 @@ void A_CastSorcererSpell(mobj_t * actor)
     fixed_t z;
     mobj_t *parent = actor->target;
 
-    S_StartSound(NULL, hexen_sfx_sorcerer_spellcast);
+    S_StartVoidSound(hexen_sfx_sorcerer_spellcast);
 
     // Put sorcerer into throw spell animation
     if (parent->health > 0)
@@ -7931,7 +7931,7 @@ void A_SorcFX4Check(mobj_t * actor)
 
 void A_SorcBallPop(mobj_t * actor)
 {
-    S_StartSound(NULL, hexen_sfx_sorcerer_ballpop);
+    S_StartVoidSound(hexen_sfx_sorcerer_ballpop);
     actor->flags &= ~MF_NOGRAVITY;
     actor->flags2 |= MF2_LOGRAV;
     actor->momx = ((P_Random(pr_hexen) % 10) - 5) << FRACBITS;
@@ -7954,10 +7954,10 @@ void A_BounceCheck(mobj_t * actor)
                 case HEXEN_MT_SORCBALL1:
                 case HEXEN_MT_SORCBALL2:
                 case HEXEN_MT_SORCBALL3:
-                    S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
+                    S_StartVoidSound(hexen_sfx_sorcerer_bigballexplode);
                     break;
                 case HEXEN_MT_SORCFX1:
-                    S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
+                    S_StartVoidSound(hexen_sfx_sorcerer_headscream);
                     break;
                 default:
                     break;
@@ -8215,7 +8215,7 @@ void A_KoraxChase(mobj_t * actor)
     }
     else if (P_Random(pr_hexen) < 30)
     {
-        S_StartSound(NULL, hexen_sfx_korax_active);
+        S_StartVoidSound(hexen_sfx_korax_active);
     }
 
     // Teleport away
@@ -8241,7 +8241,7 @@ void A_KoraxStep(mobj_t * actor)
 
 void A_KoraxStep2(mobj_t * actor)
 {
-    S_StartSound(NULL, hexen_sfx_korax_step);
+    S_StartVoidSound(hexen_sfx_korax_step);
     A_Chase(actor);
 }
 
@@ -8355,7 +8355,7 @@ void A_KoraxMissile(mobj_t * actor)
     }
 
     // Fire all 6 missiles at once
-    S_StartSound(NULL, sound);
+    S_StartVoidSound(sound);
     KoraxFire1(actor, type);
     KoraxFire2(actor, type);
     KoraxFire3(actor, type);
@@ -8612,7 +8612,7 @@ void A_KSpiritRoam(mobj_t * actor)
         A_KSpiritWeave(actor);
         if (P_Random(pr_hexen) < 50)
         {
-            S_StartSound(NULL, hexen_sfx_spirit_active);
+            S_StartVoidSound(hexen_sfx_spirit_active);
         }
     }
 }

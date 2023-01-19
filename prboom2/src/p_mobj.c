@@ -175,10 +175,10 @@ void P_ExplodeMissile (mobj_t* mo)
       case HEXEN_MT_SORCBALL1:
       case HEXEN_MT_SORCBALL2:
       case HEXEN_MT_SORCBALL3:
-        S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
+        S_StartVoidSound(hexen_sfx_sorcerer_bigballexplode);
         break;
       case HEXEN_MT_SORCFX1:
-        S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
+        S_StartVoidSound(hexen_sfx_sorcerer_headscream);
         break;
       default:
         if (mo->info->deathsound)

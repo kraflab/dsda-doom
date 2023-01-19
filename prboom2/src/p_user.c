@@ -1209,7 +1209,7 @@ void P_ArtiTele(player_t * player)
       P_UndoPlayerMorph(player);
     }
     if (heretic)
-      S_StartSound(NULL, heretic_sfx_wpnup);      // Full volume laugh
+      S_StartVoidSound(heretic_sfx_wpnup);      // Full volume laugh
 }
 
 void P_PlayerNextArtifact(player_t * player)
@@ -1295,16 +1295,16 @@ void P_PlayerUseArtifact(player_t * player, artitype_t arti)
                     {
                         if (arti < hexen_arti_firstpuzzitem)
                         {
-                            S_StartSound(NULL, hexen_sfx_artifact_use);
+                            S_StartVoidSound(hexen_sfx_artifact_use);
                         }
                         else
                         {
-                            S_StartSound(NULL, hexen_sfx_puzzle_success);
+                            S_StartVoidSound(hexen_sfx_puzzle_success);
                         }
                     }
                     else
                     {
-                        S_StartSound(NULL, heretic_sfx_artiuse);
+                        S_StartVoidSound(heretic_sfx_artiuse);
                     }
                     ArtifactFlash = 4;
                 }
