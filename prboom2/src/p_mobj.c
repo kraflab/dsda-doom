@@ -166,7 +166,7 @@ void P_ExplodeMissile (mobj_t* mo)
   if (!hexen)
   {
     if (mo->info->deathsound)
-      S_StartSound(mo, mo->info->deathsound);
+      S_StartMobjSound(mo, mo->info->deathsound);
   }
   else
   {
@@ -182,7 +182,7 @@ void P_ExplodeMissile (mobj_t* mo)
         break;
       default:
         if (mo->info->deathsound)
-          S_StartSound(mo, mo->info->deathsound);
+          S_StartMobjSound(mo, mo->info->deathsound);
         break;
     }
   }
@@ -408,7 +408,7 @@ static void P_XYMovement (mobj_t* mo)
               mo->momy = FixedMul(speed, finesine[angle]);
               if (mo->info->seesound)
               {
-                S_StartSound(mo, mo->info->seesound);
+                S_StartMobjSound(mo, mo->info->seesound);
               }
               return;
             }
@@ -430,7 +430,7 @@ static void P_XYMovement (mobj_t* mo)
               default:
                 if (mo->info->seesound)
                 {
-                  S_StartSound(mo, mo->info->seesound);
+                  S_StartMobjSound(mo, mo->info->seesound);
                 }
                 break;
             }
@@ -952,7 +952,7 @@ floater:
 
           if (heretic)
           {
-            S_StartSound(mo, heretic_sfx_plroof);
+            S_StartMobjSound(mo, heretic_sfx_plroof);
             mo->player->centering = true;
           }
           else if (hexen)
@@ -964,17 +964,17 @@ floater:
             }
             else if (mo->momz < -gravity * 12 && !mo->player->morphTics)
             {
-              S_StartSound(mo, hexen_sfx_player_land);
+              S_StartMobjSound(mo, hexen_sfx_player_land);
               switch (mo->player->pclass)
               {
                 case PCLASS_FIGHTER:
-                  S_StartSound(mo, hexen_sfx_player_fighter_grunt);
+                  S_StartMobjSound(mo, hexen_sfx_player_fighter_grunt);
                   break;
                 case PCLASS_CLERIC:
-                  S_StartSound(mo, hexen_sfx_player_cleric_grunt);
+                  S_StartMobjSound(mo, hexen_sfx_player_cleric_grunt);
                   break;
                 case PCLASS_MAGE:
-                  S_StartSound(mo, hexen_sfx_player_mage_grunt);
+                  S_StartMobjSound(mo, hexen_sfx_player_mage_grunt);
                   break;
                 default:
                   break;
@@ -982,7 +982,7 @@ floater:
             }
             else if (P_GetThingFloorType(mo) < FLOOR_LIQUID && !mo->player->morphTics)
             {
-              S_StartSound(mo, hexen_sfx_player_land);
+              S_StartMobjSound(mo, hexen_sfx_player_land);
             }
             mo->player->centering = true;
           }
@@ -1055,7 +1055,7 @@ floater:
     {
       if (mo->info->seesound)
       {
-        S_StartSound(mo, mo->info->seesound);
+        S_StartMobjSound(mo, mo->info->seesound);
       }
       return;
     }
@@ -1497,7 +1497,7 @@ dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_
 
           if (new_mobj->info->seesound)
           {
-            S_StartSound(new_mobj, new_mobj->info->seesound);
+            S_StartMobjSound(new_mobj, new_mobj->info->seesound);
           }
 
           if (gravity)
@@ -1597,7 +1597,7 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
         mobj_t *fog_mobj;
         fog_mobj = P_SpawnMobj(spawn_location->x, spawn_location->y,
                               spawn_location->z + TELEFOGHEIGHT, g_mt_tfog);
-        S_StartSound(fog_mobj, g_sfx_telept);
+        S_StartMobjSound(fog_mobj, g_sfx_telept);
       }
       if (new_thing_id)
         dsda_AddMobjThingID(new_mobj, new_thing_id);
@@ -2680,7 +2680,7 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
   th = P_SpawnMobj(source->x, source->y, z, type);
 
   if (th->info->seesound)
-    S_StartSound(th, th->info->seesound);
+    S_StartMobjSound(th, th->info->seesound);
 
   P_SetTarget(&th->target, source);    // where it came from
   an = R_PointToAngle2(source->x, source->y, dest->x, dest->y);
@@ -2794,7 +2794,7 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
   MissileMobj = th = P_SpawnMobj(x, y, z, type);
 
   if (!hexen && th->info->seesound)
-    S_StartSound(th, th->info->seesound);
+    S_StartMobjSound(th, th->info->seesound);
 
   P_SetTarget(&th->target, source);
   th->angle = an;
@@ -2939,19 +2939,19 @@ void A_ContMobjSound(mobj_t * actor)
     switch (actor->type)
     {
         case HERETIC_MT_KNIGHTAXE:
-            S_StartSound(actor, heretic_sfx_kgtatk);
+            S_StartMobjSound(actor, heretic_sfx_kgtatk);
             break;
         case HERETIC_MT_MUMMYFX1:
-            S_StartSound(actor, heretic_sfx_mumhed);
+            S_StartMobjSound(actor, heretic_sfx_mumhed);
             break;
         case HEXEN_MT_SERPENTFX:
-            S_StartSound(actor, hexen_sfx_serpentfx_continuous);
+            S_StartMobjSound(actor, hexen_sfx_serpentfx_continuous);
             break;
         case HEXEN_MT_HAMMER_MISSILE:
-            S_StartSound(actor, hexen_sfx_fighter_hammer_continuous);
+            S_StartMobjSound(actor, hexen_sfx_fighter_hammer_continuous);
             break;
         case HEXEN_MT_QUAKE_FOCUS:
-            S_StartSound(actor, hexen_sfx_earthquake);
+            S_StartMobjSound(actor, hexen_sfx_earthquake);
             break;
         default:
             break;
@@ -2999,7 +2999,7 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fix
     mo = P_SpawnMobj(source->x, source->y, z, type);
     if (mo->info->seesound)
     {
-        S_StartSound(mo, mo->info->seesound);
+        S_StartMobjSound(mo, mo->info->seesound);
     }
     P_SetTarget(&mo->target, source); // Originator
     mo->angle = angle;
@@ -3131,7 +3131,7 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     th = P_SpawnMobj(x, y, z, type);
     if (!hexen && th->info->seesound)
     {
-        S_StartSound(th, th->info->seesound);
+        S_StartMobjSound(th, th->info->seesound);
     }
     P_SetTarget(&th->target, source);
     th->angle = an;
@@ -3163,13 +3163,13 @@ int P_HitFloor(mobj_t * thing)
             mo->momx = P_SubRandom() << 8;
             mo->momy = P_SubRandom() << 8;
             mo->momz = 2 * FRACUNIT + (P_Random(pr_heretic) << 8);
-            S_StartSound(mo, heretic_sfx_gloop);
+            S_StartMobjSound(mo, heretic_sfx_gloop);
             return (FLOOR_WATER);
         case FLOOR_LAVA:
             P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASPLASH);
             mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASMOKE);
             mo->momz = FRACUNIT + (P_Random(pr_heretic) << 7);
-            S_StartSound(mo, heretic_sfx_burn);
+            S_StartMobjSound(mo, heretic_sfx_burn);
             return (FLOOR_LAVA);
         case FLOOR_SLUDGE:
             P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SLUDGESPLASH);
@@ -3312,13 +3312,13 @@ void P_FloorBounceMissile(mobj_t * mo)
                 case HEXEN_MT_SORCBALL2:
                 case HEXEN_MT_SORCBALL3:
                     if (!mo->args[0])
-                        S_StartSound(mo, mo->info->seesound);
+                        S_StartMobjSound(mo, mo->info->seesound);
                     break;
                 default:
-                    S_StartSound(mo, mo->info->seesound);
+                    S_StartMobjSound(mo, mo->info->seesound);
                     break;
             }
-            S_StartSound(mo, mo->info->seesound);
+            S_StartMobjSound(mo, mo->info->seesound);
         }
     }
     else
@@ -3338,11 +3338,11 @@ void Raven_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
     puff = P_SpawnMobj(x, y, z, PuffType);
     if (hexen && linetarget && puff->info->seesound)
     {                           // Hit thing sound
-        S_StartSound(puff, puff->info->seesound);
+        S_StartMobjSound(puff, puff->info->seesound);
     }
     else if (puff->info->attacksound)
     {
-        S_StartSound(puff, puff->info->attacksound);
+        S_StartMobjSound(puff, puff->info->attacksound);
     }
     switch (PuffType)
     {
@@ -3463,17 +3463,17 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj, fixed_t gravity)
     }
     else if (mo->momz < -gravity * 12 && !mo->player->morphTics)
     {
-        S_StartSound(mo, hexen_sfx_player_land);
+        S_StartMobjSound(mo, hexen_sfx_player_land);
         switch (mo->player->pclass)
         {
             case PCLASS_FIGHTER:
-                S_StartSound(mo, hexen_sfx_player_fighter_grunt);
+                S_StartMobjSound(mo, hexen_sfx_player_fighter_grunt);
                 break;
             case PCLASS_CLERIC:
-                S_StartSound(mo, hexen_sfx_player_cleric_grunt);
+                S_StartMobjSound(mo, hexen_sfx_player_cleric_grunt);
                 break;
             case PCLASS_MAGE:
-                S_StartSound(mo, hexen_sfx_player_mage_grunt);
+                S_StartMobjSound(mo, hexen_sfx_player_mage_grunt);
                 break;
             default:
                 break;
@@ -3481,7 +3481,7 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj, fixed_t gravity)
     }
     else if (!mo->player->morphTics)
     {
-        S_StartSound(mo, hexen_sfx_player_land);
+        S_StartMobjSound(mo, hexen_sfx_player_land);
     }
     mo->player->centering = true;
 }
@@ -3625,7 +3625,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
                 if (mo)
                     mo->floorclip += SMALLSPLASHCLIP;
-                S_StartSound(mo, hexen_sfx_ambient10);        // small drip
+                S_StartMobjSound(mo, hexen_sfx_ambient10);        // small drip
             }
             else
             {
@@ -3637,7 +3637,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
-                S_StartSound(mo, hexen_sfx_water_splash);
+                S_StartMobjSound(mo, hexen_sfx_water_splash);
             }
             return (FLOOR_WATER);
         case FLOOR_LAVA:
@@ -3655,7 +3655,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
             }
-            S_StartSound(mo, hexen_sfx_lava_sizzle);
+            S_StartMobjSound(mo, hexen_sfx_lava_sizzle);
             if (thing->player && leveltime & 31)
             {
                 P_DamageMobj(thing, &LavaInflictor, NULL, 5);
@@ -3682,7 +3682,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
             }
-            S_StartSound(mo, hexen_sfx_sludge_gloop);
+            S_StartMobjSound(mo, hexen_sfx_sludge_gloop);
             return (FLOOR_SLUDGE);
     }
     return (FLOOR_SOLID);
@@ -3699,7 +3699,7 @@ mobj_t *P_SpawnMissileXYZ(fixed_t x, fixed_t y, fixed_t z,
     th = P_SpawnMobj(x, y, z, type);
     if (th->info->seesound)
     {
-        S_StartSound(th, th->info->seesound);
+        S_StartMobjSound(th, th->info->seesound);
     }
     P_SetTarget(&th->target, source); // Originator
     an = R_PointToAngle2(source->x, source->y, dest->x, dest->y);
@@ -3732,7 +3732,7 @@ mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
     th = P_SpawnMobj(x, y, z, type);
     if (th->info->seesound)
     {
-        S_StartSound(th, th->info->seesound);
+        S_StartMobjSound(th, th->info->seesound);
     }
     P_SetTarget(&th->target, source); // Originator
     an = R_PointToAngle2(x, y, dest->x, dest->y);

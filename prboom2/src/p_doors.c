@@ -466,7 +466,7 @@ int EV_DoLockedDoor
       if (!p->cards[it_bluecard] && !p->cards[it_blueskull])
       {
         p->message = s_PD_BLUEO;             // Ty 03/27/98 - externalized
-        S_StartSound(p->mo,sfx_oof);         // killough 3/20/98
+        S_StartMobjSound(p->mo,sfx_oof);         // killough 3/20/98
         return 0;
       }
       break;
@@ -476,7 +476,7 @@ int EV_DoLockedDoor
       if (!p->cards[it_redcard] && !p->cards[it_redskull])
       {
         p->message = s_PD_REDO;              // Ty 03/27/98 - externalized
-        S_StartSound(p->mo,sfx_oof);         // killough 3/20/98
+        S_StartMobjSound(p->mo,sfx_oof);         // killough 3/20/98
         return 0;
       }
       break;
@@ -486,7 +486,7 @@ int EV_DoLockedDoor
       if (!p->cards[it_yellowcard] && !p->cards[it_yellowskull])
       {
         p->message = s_PD_YELLOWO;           // Ty 03/27/98 - externalized
-        S_StartSound(p->mo,sfx_oof);         // killough 3/20/98
+        S_StartMobjSound(p->mo,sfx_oof);         // killough 3/20/98
         return 0;
       }
       break;
@@ -632,7 +632,7 @@ int EV_VerticalDoor
       if (!player->cards[it_bluecard] && !player->cards[it_blueskull])
       {
           player->message = s_PD_BLUEK;         // Ty 03/27/98 - externalized
-          S_StartSound(player->mo,sfx_oof);     // killough 3/20/98
+          S_StartMobjSound(player->mo,sfx_oof);     // killough 3/20/98
           return 0;
       }
       break;
@@ -644,7 +644,7 @@ int EV_VerticalDoor
       if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
       {
           player->message = s_PD_YELLOWK;       // Ty 03/27/98 - externalized
-          S_StartSound(player->mo,sfx_oof);     // killough 3/20/98
+          S_StartMobjSound(player->mo,sfx_oof);     // killough 3/20/98
           return 0;
       }
       break;
@@ -656,7 +656,7 @@ int EV_VerticalDoor
       if (!player->cards[it_redcard] && !player->cards[it_redskull])
       {
           player->message = s_PD_REDK;          // Ty 03/27/98 - externalized
-          S_StartSound(player->mo,sfx_oof);     // killough 3/20/98
+          S_StartMobjSound(player->mo,sfx_oof);     // killough 3/20/98
           return 0;
       }
       break;
@@ -668,7 +668,7 @@ int EV_VerticalDoor
   // if the wrong side of door is pushed, give oof sound
   if (line->sidenum[1]==NO_INDEX)                     // killough
   {
-    S_StartSound(player->mo,sfx_oof);           // killough 3/20/98
+    S_StartMobjSound(player->mo,sfx_oof);           // killough 3/20/98
     return 0;
   }
 
@@ -1081,7 +1081,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed
     if (line->sidenum[1] == NO_INDEX)
     {
       if (mo->player) // is this check necessary?
-        S_StartSound(mo, sfx_oof);
+        S_StartMobjSound(mo, sfx_oof);
       return 0;
     }
 

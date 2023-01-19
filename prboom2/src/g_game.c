@@ -1829,7 +1829,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
                      ss->sector->floorheight + TELEFOGHEIGHT, g_mt_tfog);
 
     if (players[consoleplayer].viewz != 1)
-      S_StartSound(mo, g_sfx_telept);   // don't start sound on first frame
+      S_StartMobjSound(mo, g_sfx_telept);   // don't start sound on first frame
 
     return true;
   }
@@ -1892,7 +1892,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     mo = P_SpawnMobj(x+20*xa, y+20*ya, ss->sector->floorheight, MT_TFOG);
 
     if (players[consoleplayer].viewz != 1)
-      S_StartSound(mo, sfx_telept);  // don't start sound on first frame
+      S_StartMobjSound(mo, sfx_telept);  // don't start sound on first frame
   }
 
   return true;

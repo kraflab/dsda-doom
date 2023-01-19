@@ -942,7 +942,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = s_PD_ANY; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -954,7 +954,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_REDK : s_PD_REDC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -966,7 +966,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_BLUEK : s_PD_BLUEC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -978,7 +978,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -990,7 +990,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_REDK : s_PD_REDS; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1002,7 +1002,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_BLUEK : s_PD_BLUES; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1014,7 +1014,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWS; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1033,7 +1033,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = s_PD_ALL6; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       if
@@ -1057,7 +1057,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = s_PD_ALL3; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1207,7 +1207,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
 
   if (sfx != sfx_None)
   {
-    S_StartSound(mo, sfx);
+    S_StartMobjSound(mo, sfx);
   }
 
   return true;
@@ -5407,7 +5407,7 @@ void P_PlayerOnSpecialFlat(player_t * player, int floorType)
             if (!(leveltime & 31))
             {
                 P_DamageMobj(player->mo, &LavaInflictor, NULL, 10);
-                S_StartSound(player->mo, hexen_sfx_lava_sizzle);
+                S_StartMobjSound(player->mo, hexen_sfx_lava_sizzle);
             }
             break;
         default:
@@ -5468,7 +5468,7 @@ static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
         snprintf(LockedBuffer, sizeof(LockedBuffer),
                  "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
         P_SetMessage(mo->player, LockedBuffer, true);
-        S_StartSound(mo, hexen_sfx_door_locked);
+        S_StartMobjSound(mo, hexen_sfx_door_locked);
         return false;
     }
     return true;

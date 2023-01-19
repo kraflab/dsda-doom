@@ -639,7 +639,7 @@ P_UseSpecialLine
        */
       if (!bossaction && thing->player && thing->player->health <= 0 && !comp[comp_zombie])
       {
-        S_StartSound(thing, sfx_noway);
+        S_StartMobjSound(thing, sfx_noway);
         return false;
       }
 
@@ -719,7 +719,7 @@ P_UseSpecialLine
        */
       if (!bossaction && thing->player && thing->player->health <= 0 && !comp[comp_zombie])
       {
-        S_StartSound(thing, sfx_noway);
+        S_StartMobjSound(thing, sfx_noway);
         return false;
       }
 

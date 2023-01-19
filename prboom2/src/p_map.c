@@ -337,12 +337,12 @@ dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fo
                             oldy,
                             oldfloorz + g_telefog_height,
                             g_mt_tfog);
-      S_StartSound(telefog, g_sfx_telept);
+      S_StartMobjSound(telefog, g_sfx_telept);
       telefog = P_SpawnMobj(thing->x,
                             thing->y,
                             thing->floorz + g_telefog_height,
                             g_mt_tfog);
-      S_StartSound(telefog, g_sfx_telept);
+      S_StartMobjSound(telefog, g_sfx_telept);
     }
 
     thing->PrevX = x;
@@ -829,7 +829,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
             {
               P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
                           HEXEN_MT_HOLY_PUFF);
-              S_StartSound(tmthing, hexen_sfx_spirit_attack);
+              S_StartMobjSound(tmthing, hexen_sfx_spirit_attack);
               if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                   && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
               {
@@ -837,7 +837,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
                     (thing->type == HEXEN_MT_CENTAURLEADER) ||
                     (thing->type == HEXEN_MT_ETTIN))
                 {
-                  S_StartSound(thing, hexen_sfx_puppybeat);
+                  S_StartMobjSound(thing, hexen_sfx_puppybeat);
                 }
               }
             }
@@ -952,7 +952,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
             if (!(S_GetSoundPlayingInfo(tmthing,
                                         hexen_sfx_mage_lightning_zap)))
             {
-              S_StartSound(tmthing, hexen_sfx_mage_lightning_zap);
+              S_StartMobjSound(tmthing, hexen_sfx_mage_lightning_zap);
             }
             if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
                 && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
@@ -961,7 +961,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
                   (thing->type == HEXEN_MT_CENTAURLEADER) ||
                   (thing->type == HEXEN_MT_ETTIN))
               {
-                S_StartSound(thing, hexen_sfx_puppybeat);
+                S_StartMobjSound(thing, hexen_sfx_puppybeat);
               }
             }
           }
@@ -1076,7 +1076,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         {                   // Ok to spawn some blood
           P_RipperBlood(tmthing, thing);
         }
-        if (heretic) S_StartSound(tmthing, heretic_sfx_ripslop);
+        if (heretic) S_StartMobjSound(tmthing, heretic_sfx_ripslop);
         damage = ((P_Random(pr_heretic) & 3) + 2) * tmthing->damage;
       }
       else
@@ -1085,7 +1085,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         if (!(thing->flags & MF_NOBLOOD))
           P_SpawnBlood(tmthing->x, tmthing->y, tmthing->z, damage, thing);
         if (tmthing->info->ripsound)
-          S_StartSound(tmthing, tmthing->info->ripsound);
+          S_StartMobjSound(tmthing, tmthing->info->ripsound);
       }
 
       P_DamageMobj(thing, tmthing, tmthing->target, damage);
@@ -1851,7 +1851,7 @@ void P_HitSlideLine (line_t* ld)
     {
       tmxmove /= 2; // absorb half the momentum
       tmymove = -tmymove/2;
-      S_StartSound(slidemo,sfx_oof); // oooff!
+      S_StartMobjSound(slidemo,sfx_oof); // oooff!
     }
     else
       tmymove = 0; // no more movement in the Y direction
@@ -1864,7 +1864,7 @@ void P_HitSlideLine (line_t* ld)
     {
       tmxmove = -tmxmove/2; // absorb half the momentum
       tmymove /= 2;
-      S_StartSound(slidemo,sfx_oof); // oooff!                      //   ^
+      S_StartMobjSound(slidemo,sfx_oof); // oooff!                      //   ^
     }                                                               //   |
     else                                                            // phares
       tmxmove = 0; // no more movement in the X direction
@@ -1894,7 +1894,7 @@ void P_HitSlideLine (line_t* ld)
   {
     moveangle = lineangle - deltaangle;
     movelen /= 2; // absorb
-    S_StartSound(slidemo,sfx_oof); // oooff!
+    S_StartMobjSound(slidemo,sfx_oof); // oooff!
     moveangle >>= ANGLETOFINESHIFT;
     tmxmove = FixedMul (movelen, finecosine[moveangle]);
     tmymove = FixedMul (movelen, finesine[moveangle]);
@@ -2342,7 +2342,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
   {                           // Make blaster big puff
     mobj_t* mo;
     mo = P_SpawnMobj(x, y, z, HERETIC_MT_BLASTERPUFF2);
-    S_StartSound(mo, heretic_sfx_blshit);
+    S_StartMobjSound(mo, heretic_sfx_blshit);
   }
   else
   {
@@ -2460,12 +2460,12 @@ void P_LineAttack(mobj_t* t1, angle_t angle, fixed_t distance, fixed_t slope,
       switch (PuffType)
       {
         case HEXEN_MT_PUNCHPUFF:
-          S_StartSound(t1, hexen_sfx_fighter_punch_miss);
+          S_StartMobjSound(t1, hexen_sfx_fighter_punch_miss);
           break;
         case HEXEN_MT_HAMMERPUFF:
         case HEXEN_MT_AXEPUFF:
         case HEXEN_MT_AXEPUFF_GLOW:
-          S_StartSound(t1, hexen_sfx_fighter_hammer_miss);
+          S_StartMobjSound(t1, hexen_sfx_fighter_hammer_miss);
           break;
         case HEXEN_MT_FLAMEPUFF:
           P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
@@ -2523,7 +2523,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
             sound = hexen_sfx_None;
             break;
         }
-        S_StartSound(usething, sound);
+        S_StartMobjSound(usething, sound);
       }
       else if (!heretic)
       {
@@ -2557,7 +2557,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
             sound = hexen_sfx_None;
             break;
         }
-        S_StartSound(usething, sound);
+        S_StartMobjSound(usething, sound);
       }
     }
 
@@ -2824,7 +2824,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
             P_SetMobjState(thing, HEXEN_S_GIBS1);
             thing->height = 0;
             thing->radius = 0;
-            S_StartSound(thing, hexen_sfx_player_falling_splat);
+            S_StartMobjSound(thing, hexen_sfx_player_falling_splat);
           }
         }
         return true;            // keep checking
@@ -3888,7 +3888,7 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
                             break;
                     }
                 }
-                S_StartSound(PuzzleItemUser, sound);
+                S_StartMobjSound(PuzzleItemUser, sound);
                 return false;   // can't use through a wall
             }
             return true;        // Continue searching

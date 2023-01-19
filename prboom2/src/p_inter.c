@@ -951,15 +951,15 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
           P_SetMobjState(target, HERETIC_S_PLAY_FDTH1);
           return;
         case PCLASS_FIGHTER:
-          S_StartSound(target, hexen_sfx_player_fighter_burn_death);
+          S_StartMobjSound(target, hexen_sfx_player_fighter_burn_death);
           P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
           return;
         case PCLASS_CLERIC:
-          S_StartSound(target, hexen_sfx_player_cleric_burn_death);
+          S_StartMobjSound(target, hexen_sfx_player_cleric_burn_death);
           P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
           return;
         case PCLASS_MAGE:
-          S_StartSound(target, hexen_sfx_player_mage_burn_death);
+          S_StartMobjSound(target, hexen_sfx_player_mage_burn_death);
           P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
           return;
         default:
@@ -1006,15 +1006,15 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
         switch (target->type)
         {
           case HEXEN_MT_FIGHTER_BOSS:
-            S_StartSound(target, hexen_sfx_player_fighter_burn_death);
+            S_StartMobjSound(target, hexen_sfx_player_fighter_burn_death);
             P_SetMobjState(target, HEXEN_S_PLAY_F_FDTH1);
             return;
           case HEXEN_MT_CLERIC_BOSS:
-            S_StartSound(target, hexen_sfx_player_cleric_burn_death);
+            S_StartMobjSound(target, hexen_sfx_player_cleric_burn_death);
             P_SetMobjState(target, HEXEN_S_PLAY_C_FDTH1);
             return;
           case HEXEN_MT_MAGE_BOSS:
-            S_StartSound(target, hexen_sfx_player_mage_burn_death);
+            S_StartMobjSound(target, hexen_sfx_player_mage_burn_death);
             P_SetMobjState(target, HEXEN_S_PLAY_M_FDTH1);
             return;
           default:
@@ -1025,7 +1025,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       {
         P_SetMobjState(target, HEXEN_S_ZTREEDES_X1);
         target->height = 24 * FRACUNIT;
-        S_StartSound(target, hexen_sfx_tree_explode);
+        S_StartMobjSound(target, hexen_sfx_tree_explode);
         return;
       }
     }
@@ -1400,7 +1400,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
           {
             P_PoisonDamage(target->player, source, 15 + (P_Random(pr_hexen) & 15), false);  // Don't play painsound
             P_PoisonPlayer(target->player, source, 50);
-            S_StartSound(target, hexen_sfx_player_poisoncough);
+            S_StartMobjSound(target, hexen_sfx_player_poisoncough);
           }
           return;
         }
@@ -1690,7 +1690,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
               (target->type == HEXEN_MT_CENTAURLEADER) ||
               (target->type == HEXEN_MT_ETTIN))
           {
-            S_StartSound(target, hexen_sfx_puppybeat);
+            S_StartMobjSound(target, hexen_sfx_puppybeat);
           }
         }
       }
@@ -1713,7 +1713,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
               (target->type == HEXEN_MT_CENTAURLEADER) ||
               (target->type == HEXEN_MT_ETTIN))
           {
-            S_StartSound(target, hexen_sfx_puppybeat);
+            S_StartMobjSound(target, hexen_sfx_puppybeat);
           }
         }
       }
@@ -1786,7 +1786,7 @@ void A_RestoreArtifact(mobj_t * arti)
 {
     arti->flags |= MF_SPECIAL;
     P_SetMobjState(arti, arti->info->spawnstate);
-    S_StartSound(arti, g_sfx_respawn);
+    S_StartMobjSound(arti, g_sfx_respawn);
 }
 
 void A_RestoreSpecialThing1(mobj_t * thing)
@@ -1796,7 +1796,7 @@ void A_RestoreSpecialThing1(mobj_t * thing)
         P_RepositionMace(thing);
     }
     thing->flags2 &= ~MF2_DONTDRAW;
-    S_StartSound(thing, g_sfx_respawn);
+    S_StartMobjSound(thing, g_sfx_respawn);
 }
 
 void A_RestoreSpecialThing2(mobj_t * thing)
@@ -2230,7 +2230,7 @@ void P_SetDormantArtifact(mobj_t * arti)
     {                           // Don't respawn
         P_SetMobjState(arti, HERETIC_S_DEADARTI1);
     }
-    S_StartSound(arti, heretic_sfx_artiup);
+    S_StartMobjSound(arti, heretic_sfx_artiup);
 }
 
 int GetWeaponAmmo[NUMWEAPONS] = {
@@ -2388,7 +2388,7 @@ dboolean P_ChickenMorphPlayer(player_t * player)
     oldFlags2 = pmo->flags2;
     P_SetMobjState(pmo, HERETIC_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
-    S_StartSound(fog, heretic_sfx_telept);
+    S_StartMobjSound(fog, heretic_sfx_telept);
     chicken = P_SpawnMobj(x, y, z, HERETIC_MT_CHICPLAYER);
     chicken->special1.i = player->readyweapon;
     chicken->angle = angle;
@@ -2444,7 +2444,7 @@ dboolean P_ChickenMorph(mobj_t * actor)
     target = actor->target;
     P_SetMobjState(actor, HERETIC_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
-    S_StartSound(fog, heretic_sfx_telept);
+    S_StartMobjSound(fog, heretic_sfx_telept);
     chicken = P_SpawnMobj(x, y, z, HERETIC_MT_CHICKEN);
     chicken->special2.i = moType;
     chicken->special1.i = CHICKENTICS + P_Random(pr_heretic);
@@ -2624,7 +2624,7 @@ void P_FallingDamage(player_t * player)
     {                           // No-death threshold
         damage = player->mo->health - 1;
     }
-    S_StartSound(player->mo, hexen_sfx_player_land);
+    S_StartMobjSound(player->mo, hexen_sfx_player_land);
     P_DamageMobj(player->mo, NULL, NULL, damage);
 }
 
@@ -3090,7 +3090,7 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType, mobj_t
         if (artifactType < hexen_arti_firstpuzzitem)
         {
             SetDormantArtifact(artifact);
-            S_StartSound(artifact, hexen_sfx_pickup_artifact);
+            S_StartMobjSound(artifact, hexen_sfx_pickup_artifact);
             P_SetMessage(player, artifactMessages[artifactType], false);
         }
         else
@@ -3474,7 +3474,7 @@ dboolean P_MorphPlayer(player_t * player)
     oldFlags2 = pmo->flags2;
     P_SetMobjState(pmo, HEXEN_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    S_StartSound(fog, hexen_sfx_teleport);
+    S_StartMobjSound(fog, hexen_sfx_teleport);
     beastMo = P_SpawnMobj(x, y, z, HEXEN_MT_PIGPLAYER);
     beastMo->special1.i = player->readyweapon;
     beastMo->angle = angle;
@@ -3527,7 +3527,7 @@ static dboolean P_MorphMonster(mobj_t * actor)
     map_format.remove_mobj_thing_id(actor);
     P_SetMobjState(actor, HEXEN_S_FREETARGMOBJ);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    S_StartSound(fog, hexen_sfx_teleport);
+    S_StartMobjSound(fog, hexen_sfx_teleport);
     monster = P_SpawnMobj(x, y, z, HEXEN_MT_PIG);
     monster->special2.i = moType;
     monster->special1.i = MORPHTICS + P_Random(pr_hexen);
