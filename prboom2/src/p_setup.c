@@ -977,6 +977,8 @@ static void P_LoadUDMFSectors(int lump)
     ss->floorpic = R_FlatNumForName(ms->texturefloor);
     ss->ceilingpic = R_FlatNumForName(ms->textureceiling);
     ss->lightlevel = ms->lightlevel;
+    ss->lightlevel_floor = ms->lightfloor;
+    ss->lightlevel_ceiling = ms->lightceiling;
     ss->special = ms->special;
     ss->tag = ms->id;
     ss->floor_xoffs = dsda_FloatToFixed(ms->xpanningfloor);
@@ -1000,6 +1002,12 @@ static void P_LoadUDMFSectors(int lump)
 
     if (ms->flags & UDMF_SECF_SILENT)
       ss->flags |= SECF_SILENT;
+
+    if (ms->flags & UDMF_SECF_LIGHTFLOORABSOLUTE)
+      ss->flags |= SECF_LIGHTFLOORABSOLUTE;
+
+    if (ms->flags & UDMF_SECF_LIGHTCEILINGABSOLUTE)
+      ss->flags |= SECF_LIGHTCEILINGABSOLUTE;
 
     // UDMF TODO:
     // xscalefloor

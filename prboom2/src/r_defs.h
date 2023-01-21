@@ -113,6 +113,8 @@ typedef struct
 #define SECF_PUSH                  0x00008000
 #define SECF_NOATTACK              0x00010000
 #define SECF_SILENT                0x00020000
+#define SECF_LIGHTFLOORABSOLUTE    0x00040000
+#define SECF_LIGHTCEILINGABSOLUTE  0x00080000
 #define SECF_DAMAGEFLAGS (SECF_ENDGODMODE|SECF_ENDLEVEL|SECF_DMGTERRAINFX|SECF_HAZARD|SECF_DMGUNBLOCKABLE)
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET|SECF_DAMAGEFLAGS|SECF_FRICTION|SECF_PUSH)
 
@@ -204,6 +206,8 @@ typedef struct
   // zdoom
   fixed_t gravity;
   damage_t damage;
+  short lightlevel_floor;
+  short lightlevel_ceiling;
 } sector_t;
 
 //
