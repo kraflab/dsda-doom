@@ -215,7 +215,7 @@ typedef struct {
   int arg3;
   int arg4;
   float gravity;
-  int health;
+  float health;
   float scalex;
   float scaley;
   float scale;

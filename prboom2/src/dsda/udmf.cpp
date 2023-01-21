@@ -695,9 +695,6 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
     else if (!stricmp(scanner.string, "arg4")) {
       SCAN_INT(thing.arg4);
     }
-    else if (!stricmp(scanner.string, "health")) {
-      SCAN_INT(thing.health);
-    }
     else if (!stricmp(scanner.string, "floatbobphase")) {
       SCAN_INT(thing.floatbobphase);
     }
@@ -712,6 +709,9 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "gravity")) {
       SCAN_FLOAT(thing.gravity);
+    }
+    else if (!stricmp(scanner.string, "health")) {
+      SCAN_FLOAT(thing.health);
     }
     else if (!stricmp(scanner.string, "scalex")) {
       SCAN_FLOAT(thing.scalex);
