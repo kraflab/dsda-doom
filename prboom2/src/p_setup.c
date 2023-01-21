@@ -1009,6 +1009,9 @@ static void P_LoadUDMFSectors(int lump)
     if (ms->flags & UDMF_SECF_LIGHTCEILINGABSOLUTE)
       ss->flags |= SECF_LIGHTCEILINGABSOLUTE;
 
+    if (ms->flags & UDMF_SECF_HIDDEN)
+      ss->flags |= SECF_HIDDEN;
+
     // UDMF TODO:
     // xscalefloor
     // yscalefloor

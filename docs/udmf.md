@@ -226,7 +226,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | dropactors               | :grey_question:    |
 | norespawn                | :grey_question:    |
 | soundsequence            | :x:                |
-| hidden                   | :grey_question:    |
+| hidden                   | :heavy_check_mark: |
 | waterzone                | :x:                |
 | moreids                  | :heavy_check_mark: |
 | damageamount             | :heavy_check_mark: |
