@@ -223,8 +223,8 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | silent                   | :heavy_check_mark: |
 | nofallingdamage          | :x:                |
 | noattack                 | :heavy_check_mark: |
-| dropactors               | :grey_question:    |
-| norespawn                | :grey_question:    |
+| dropactors               | :x:                |
+| norespawn                | :x:                |
 | soundsequence            | :x:                |
 | hidden                   | :heavy_check_mark: |
 | waterzone                | :x:                |
@@ -295,8 +295,8 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | class1        | :x:                |
 | class2        | :x:                |
 | class3        | :x:                |
-| standing      | :grey_question:    |
-| strifeally    | :grey_question:    |
+| standing      | :x:                |
+| strifeally    | :x:                |
 | translucent   | :heavy_check_mark: |
 | invisible     | :heavy_check_mark: |
 | special       | :heavy_check_mark: |
@@ -322,7 +322,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | scalex        | :x:                |
 | scaley        | :x:                |
 | scale         | :x:                |
-| floatbobphase | :grey_question:    |
+| floatbobphase | :x:                |
 
 #### Notes
 - `skill1-2` and `skill4-5` are currently collapsed to the existing `easy` and `hard` flags.
