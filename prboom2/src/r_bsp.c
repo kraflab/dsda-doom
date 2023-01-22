@@ -148,17 +148,23 @@ static void R_RecalcLineFlags(line_t *linedef)
     // Identical floor and ceiling on both sides,
     // identical light levels on both sides,
     // and no middle texture.
-    // CPhipps - recode for speed, not certain if this is portable though
-    if (backsector->ceilingheight != frontsector->ceilingheight
-  || backsector->floorheight != frontsector->floorheight
-  || curline->sidedef->midtexture
-  || memcmp(&backsector->floor_xoffs, &frontsector->floor_xoffs,
-      sizeof(frontsector->floor_xoffs) + sizeof(frontsector->floor_yoffs) +
-      sizeof(frontsector->ceiling_xoffs) + sizeof(frontsector->ceiling_yoffs) +
-      sizeof(frontsector->ceilingpic) + sizeof(frontsector->floorpic) +
-      sizeof(frontsector->lightlevel) + sizeof(frontsector->floorlightsec) +
-      sizeof(frontsector->ceilinglightsec) + sizeof(frontsector->special))) {
-      linedef->r_flags = 0; return;
+    if (
+      backsector->ceilingheight != frontsector->ceilingheight
+      || backsector->floorheight != frontsector->floorheight
+      || curline->sidedef->midtexture
+      || backsector->floor_xoffs != frontsector->floor_xoffs
+      || backsector->floor_yoffs != frontsector->floor_yoffs
+      || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
+      || backsector->ceiling_yoffs != frontsector->ceiling_yoffs
+      || backsector->ceilingpic != frontsector->ceilingpic
+      || backsector->floorpic != frontsector->floorpic
+      || backsector->lightlevel != frontsector->lightlevel
+      || backsector->floorlightsec != frontsector->floorlightsec
+      || backsector->ceilinglightsec != frontsector->ceilinglightsec
+      || backsector->special != frontsector->special
+    ) {
+      linedef->r_flags = 0;
+      return;
     } else
       linedef->r_flags = RF_IGNORE;
   }
