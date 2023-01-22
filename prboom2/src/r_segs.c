@@ -42,6 +42,7 @@
 #include "SDL.h"
 
 #include "doomstat.h"
+#include "p_spec.h"
 #include "r_main.h"
 #include "r_bsp.h"
 #include "r_segs.h"
@@ -884,7 +885,6 @@ void R_StoreWallRange(const int start, const int stop)
 
     markfloor = worldlow != worldbottom
       || backsector->floorpic != frontsector->floorpic
-      || backsector->lightlevel != frontsector->lightlevel
 
       // killough 3/7/98: Add checks for (x,y) offsets
       || backsector->floor_xoffs != frontsector->floor_xoffs
@@ -895,7 +895,7 @@ void R_StoreWallRange(const int start, const int stop)
       || frontsector->heightsec != -1
 
       // killough 4/17/98: draw floors if different light levels
-      || backsector->floorlightsec != frontsector->floorlightsec
+      || P_FloorLightLevel(backsector) != P_FloorLightLevel(frontsector)
 
       // hexen flowing water
       || backsector->special != frontsector->special
@@ -905,7 +905,6 @@ void R_StoreWallRange(const int start, const int stop)
 
     markceiling = worldhigh != worldtop
       || backsector->ceilingpic != frontsector->ceilingpic
-      || backsector->lightlevel != frontsector->lightlevel
 
       // killough 3/7/98: Add checks for (x,y) offsets
       || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
@@ -917,7 +916,7 @@ void R_StoreWallRange(const int start, const int stop)
           frontsector->ceilingpic!=skyflatnum)
 
       // killough 4/17/98: draw ceilings if different light levels
-      || backsector->ceilinglightsec != frontsector->ceilinglightsec
+      || P_CeilingLightLevel(backsector) != P_CeilingLightLevel(frontsector)
 
       || (sidedef->midtexture && (sidedef->flags & SF_CLIPMIDTEX || linedef->flags & ML_CLIPMIDTEX))
       ;

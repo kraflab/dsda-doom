@@ -1241,6 +1241,18 @@ dboolean PUREFUNC P_LightingActive(const sector_t *sec)
   return sec->lightingdata != NULL;
 }
 
+short P_FloorLightLevel(const sector_t *sec)
+{
+  return sec->floorlightsec == -1 ? sec->lightlevel
+                                  : sectors[sec->floorlightsec].lightlevel;
+}
+
+short P_CeilingLightLevel(const sector_t *sec)
+{
+  return sec->ceilinglightsec == -1 ? sec->lightlevel
+                                  : sectors[sec->ceilinglightsec].lightlevel;
+}
+
 //
 // P_CheckTag()
 //

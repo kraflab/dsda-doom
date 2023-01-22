@@ -1049,6 +1049,9 @@ dboolean PUREFUNC P_CeilingActive(const sector_t *sec);
 dboolean PUREFUNC P_FloorActive(const sector_t *sec);
 dboolean PUREFUNC P_LightingActive(const sector_t *sec);
 
+short P_FloorLightLevel(const sector_t *sec);
+short P_CeilingLightLevel(const sector_t *sec);
+
 dboolean PUREFUNC P_IsSecret
 ( const sector_t *sec );
 
