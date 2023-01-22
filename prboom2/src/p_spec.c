@@ -1243,14 +1243,22 @@ dboolean PUREFUNC P_LightingActive(const sector_t *sec)
 
 short P_FloorLightLevel(const sector_t *sec)
 {
-  return sec->floorlightsec == -1 ? sec->lightlevel
-                                  : sectors[sec->floorlightsec].lightlevel;
+  return sec->lightlevel_floor + (
+    (sec->flags & SECF_LIGHTFLOORABSOLUTE) ? 0 : (
+      sec->floorlightsec == -1 ? sec->lightlevel
+                               : sectors[sec->floorlightsec].lightlevel
+    )
+  );
 }
 
 short P_CeilingLightLevel(const sector_t *sec)
 {
-  return sec->ceilinglightsec == -1 ? sec->lightlevel
-                                  : sectors[sec->ceilinglightsec].lightlevel;
+  return sec->lightlevel_ceiling + (
+    (sec->flags & SECF_LIGHTCEILINGABSOLUTE) ? 0 : (
+      sec->ceilinglightsec == -1 ? sec->lightlevel
+                               : sectors[sec->ceilinglightsec].lightlevel
+    )
+  );
 }
 
 //

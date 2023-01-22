@@ -208,10 +208,10 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | floorplane_b             | :x:                |
 | floorplane_c             | :x:                |
 | floorplane_d             | :x:                |
-| lightfloor               | :grey_question:    |
-| lightceiling             | :grey_question:    |
-| lightfloorabsolute       | :grey_question:    |
-| lightceilingabsolute     | :grey_question:    |
+| lightfloor               | :heavy_check_mark: |
+| lightceiling             | :heavy_check_mark: |
+| lightfloorabsolute       | :heavy_check_mark: |
+| lightceilingabsolute     | :heavy_check_mark: |
 | alphafloor               | :x:                |
 | alphaceiling             | :x:                |
 | renderstylefloor         | :x:                |
