@@ -1770,7 +1770,7 @@ static void P_LoadUDMFThings(int lump)
       mt.options |= MTF_GCOOP;
 
     if (dmt->flags & UDMF_TF_FRIEND)
-      mt.options |= MTF_FRIEND;
+      mt.options |= MTF_FRIENDLY;
 
     if (dmt->flags & UDMF_TF_DORMANT)
       mt.options |= MTF_DORMANT;
