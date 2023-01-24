@@ -1012,20 +1012,6 @@ static void P_LoadUDMFSectors(int lump)
     if (ms->flags & UDMF_SECF_HIDDEN)
       ss->flags |= SECF_HIDDEN;
 
-    // UDMF TODO:
-    // xscalefloor
-    // yscalefloor
-    // xscaleceiling
-    // yscaleceiling
-    // rotationfloor
-    // rotationceiling
-    // lightfloor
-    // lightceiling
-    // damageamount
-    // damageinterval
-    // leakiness
-    // flags
-
     if (ss->tag > 0)
       dsda_AddSectorID(ss->tag, i);
 
@@ -1793,17 +1779,6 @@ static void P_LoadUDMFThings(int lump)
     if (dmt->flags & UDMF_TF_COUNTSECRET)
       mt.options |= MTF_COUNTSECRET;
 
-    // UDMF TODO:
-    // gravity
-    // health
-    // scalex
-    // scaley
-    // scale
-    // floatbobphase
-    // UDMF_TF_STANDING
-    // UDMF_TF_STRIFEALLY
-    // UDMF_TF_COUNTSECRET
-
     P_PostProcessMapThing(&mt, &mobjcount, &mobjlist);
   }
 
@@ -2205,11 +2180,6 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_TRANSPARENT)
       ld->alpha = 0.25f;
 
-    // UDMF TODO:
-    // UDMF_ML_WRAPMIDTEX
-    // UDMF_ML_NOSKYWALLS
-    // UDMF_ML_DRAWFULLHEIGHT
-
     P_CalculateLineDefProperties(ld);
 
     if (ld->alpha < 1.f)
@@ -2557,14 +2527,6 @@ static void P_LoadUDMFSideDefs(int lump)
       I_Error("Invalid level data: sidedef %d's sector index is out of range", i);
 
     sd->sector = &sectors[msd->sector];
-
-    // UDMF TODO:
-    // scalex_top
-    // scaley_top
-    // scalex_mid
-    // scaley_mid
-    // scalex_bottom
-    // scaley_bottom
 
     switch (sd->special)
     {
