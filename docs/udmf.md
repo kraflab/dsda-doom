@@ -309,7 +309,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | skill6-16     | :x:                |
 | class4-16     | :x:                |
 | conversation  | :x:                |
-| countsecret   | :grey_question:    |
+| countsecret   | :heavy_check_mark: |
 | arg0str       | :x:                |
 | gravity       | :grey_question:    |
 | health        | :grey_question:    |

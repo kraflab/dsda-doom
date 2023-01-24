@@ -774,6 +774,10 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
   if (special->flags & MF_COUNTITEM)
     player->itemcount++;
+
+  if (special->flags2 & MF2_COUNTSECRET)
+    P_PlayerCollectSecret(player);
+
   P_RemoveMobj (special);
   player->bonuscount += BONUSADD;
 

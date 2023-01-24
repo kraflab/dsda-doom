@@ -2481,6 +2481,9 @@ spawnit:
       mobj->flags |= MF_NOSECTOR;
       P_SetThingPosition(mobj);
     }
+
+    if (options & MTF_COUNTSECRET)
+      P_AddMobjSecret(mobj);
   }
 
   /* killough 7/20/98: exclude friends */

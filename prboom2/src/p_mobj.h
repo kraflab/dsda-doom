@@ -511,6 +511,7 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 
 // zdoom
 #define MF2_CANUSEWALLS       0x0002000000000000ull // can activate use lines
+#define MF2_COUNTSECRET       0x0004000000000000ull // picking up counts as a secret
 
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50

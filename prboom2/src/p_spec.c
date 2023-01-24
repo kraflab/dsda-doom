@@ -1407,10 +1407,15 @@ static void P_AddSectorSecret(sector_t *sector)
   sector->flags |= SECF_SECRET | SECF_WASSECRET;
 }
 
-static void P_CollectSecretCommon(sector_t *sector, player_t *player)
+void P_AddMobjSecret(mobj_t *mobj)
+{
+  totalsecret++;
+  mobj->flags2 |= MF2_COUNTSECRET;
+}
+
+void P_PlayerCollectSecret(player_t *player)
 {
   player->secretcount++;
-  sector->flags &= ~SECF_SECRET;
 
   if (dsda_IntConfig(dsda_config_hudadd_secretarea))
   {
@@ -1418,6 +1423,13 @@ static void P_CollectSecretCommon(sector_t *sector, player_t *player)
                  I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
     SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
   }
+}
+
+static void P_CollectSecretCommon(sector_t *sector, player_t *player)
+{
+  sector->flags &= ~SECF_SECRET;
+
+  P_PlayerCollectSecret(player);
 
   dsda_WatchSecret();
 }

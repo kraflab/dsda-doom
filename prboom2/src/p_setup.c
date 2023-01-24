@@ -1790,6 +1790,9 @@ static void P_LoadUDMFThings(int lump)
     if (dmt->flags & UDMF_TF_INVISIBLE)
       mt.options |= MTF_INVISIBLE;
 
+    if (dmt->flags & UDMF_TF_COUNTSECRET)
+      mt.options |= MTF_COUNTSECRET;
+
     // UDMF TODO:
     // gravity
     // health
