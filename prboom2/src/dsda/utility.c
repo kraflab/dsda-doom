@@ -253,6 +253,30 @@ fixed_t dsda_FloatToFixed(float x)
   return (fixed_t) (x * FRACUNIT);
 }
 
+// Scanning a float is a lossy process, so we must go directly from string to fixed
+fixed_t dsda_StringToFixed(const char* x)
+{
+  int i;
+  dboolean negative;
+  fixed_t result;
+  char frac[4] = { 0 };
+
+  result = 0;
+
+  sscanf(x, "%d.%3s", &result, frac);
+  negative = (result < 0);
+  result = abs(result);
+  result <<= FRACBITS;
+
+  for (i = 0; i < 3; ++i)
+    if (!frac[i])
+      frac[i] = '0';
+
+  result += (fixed_t) ((int64_t) atoi(frac) * FRACUNIT / 1000);
+
+  return negative ? -result : result;
+}
+
 byte dsda_FloatToPercent(float x)
 {
   float flr;
