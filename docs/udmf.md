@@ -327,3 +327,4 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 #### Notes
 - `skill1-2` and `skill4-5` are currently collapsed to the existing `easy` and `hard` flags.
 - `arg*` fields currently have hexen's limit of 0-255.
+- `x`, `y`, and `height` are currently converted to integer values.
