@@ -261,6 +261,9 @@ fixed_t dsda_StringToFixed(const char* x)
   fixed_t result;
   char frac[4] = { 0 };
 
+  if (!x)
+    return 0;
+
   result = 0;
 
   sscanf(x, "%d.%3s", &result, frac);
