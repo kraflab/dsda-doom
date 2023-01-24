@@ -133,8 +133,8 @@ typedef struct {
 } udmf_side_t;
 
 typedef struct {
-  float x;
-  float y;
+  const char* x;
+  const char* y;
 } udmf_vertex_t;
 
 #define UDMF_SECF_LIGHTFLOORABSOLUTE   0x0001
@@ -172,7 +172,7 @@ typedef struct {
   float rotationceiling;
   int lightfloor;
   int lightceiling;
-  float gravity;
+  const char* gravity;
   int damageamount;
   int damageinterval;
   int leakiness;
@@ -203,9 +203,9 @@ typedef uint32_t udmf_thing_flags_t;
 
 typedef struct {
   int id;
-  float x;
-  float y;
-  float height;
+  const char* x;
+  const char* y;
+  const char* height;
   int angle;
   int type;
   int special;
@@ -214,8 +214,8 @@ typedef struct {
   int arg2;
   int arg3;
   int arg4;
-  float gravity;
-  float health;
+  const char* gravity;
+  const char* health;
   float scalex;
   float scaley;
   float scale;

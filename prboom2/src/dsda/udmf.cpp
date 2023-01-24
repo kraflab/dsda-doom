@@ -478,10 +478,10 @@ static void dsda_ParseUDMFVertex(Scanner &scanner) {
     scanner.MustGetToken(TK_Identifier);
 
     if (!stricmp(scanner.string, "x")) {
-      SCAN_FLOAT(vertex.x);
+      SCAN_FLOAT_STRING(vertex.x);
     }
     else if (!stricmp(scanner.string, "y")) {
-      SCAN_FLOAT(vertex.y);
+      SCAN_FLOAT_STRING(vertex.y);
     }
     else {
       // known ignored fields:
@@ -502,7 +502,7 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
   sector.yscalefloor = 1.f;
   sector.xscaleceiling = 1.f;
   sector.yscaleceiling = 1.f;
-  sector.gravity = 1.f;
+  sector.gravity = "1.0";
   sector.damageinterval = 32;
 
   scanner.MustGetToken('{');
@@ -570,7 +570,7 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       SCAN_FLOAT(sector.rotationceiling);
     }
     else if (!stricmp(scanner.string, "gravity")) {
-      SCAN_FLOAT(sector.gravity);
+      SCAN_FLOAT_STRING(sector.gravity);
     }
     else if (!stricmp(scanner.string, "lightfloorabsolute")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_LIGHTFLOORABSOLUTE);
@@ -679,8 +679,8 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
 static void dsda_ParseUDMFThing(Scanner &scanner) {
   udmf_thing_t thing = { 0 };
 
-  thing.gravity = 1.f;
-  thing.health = 1;
+  thing.gravity = "1.0";
+  thing.health = "1.0";
   thing.floatbobphase = -1;
 
   scanner.MustGetToken('{');
@@ -718,19 +718,19 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
       SCAN_INT(thing.floatbobphase);
     }
     else if (!stricmp(scanner.string, "x")) {
-      SCAN_FLOAT(thing.x);
+      SCAN_FLOAT_STRING(thing.x);
     }
     else if (!stricmp(scanner.string, "y")) {
-      SCAN_FLOAT(thing.y);
+      SCAN_FLOAT_STRING(thing.y);
     }
     else if (!stricmp(scanner.string, "height")) {
-      SCAN_FLOAT(thing.height);
+      SCAN_FLOAT_STRING(thing.height);
     }
     else if (!stricmp(scanner.string, "gravity")) {
-      SCAN_FLOAT(thing.gravity);
+      SCAN_FLOAT_STRING(thing.gravity);
     }
     else if (!stricmp(scanner.string, "health")) {
-      SCAN_FLOAT(thing.health);
+      SCAN_FLOAT_STRING(thing.health);
     }
     else if (!stricmp(scanner.string, "scalex")) {
       SCAN_FLOAT(thing.scalex);

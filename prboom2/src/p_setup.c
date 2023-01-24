@@ -462,8 +462,8 @@ static void P_LoadUDMFVertexes(int lump, int gllump)
 
   for (i = 0; i < numvertexes; ++i)
   {
-    vertexes[i].x = dsda_FloatToFixed(udmf.vertices[i].x);
-    vertexes[i].y = dsda_FloatToFixed(udmf.vertices[i].y);
+    vertexes[i].x = dsda_StringToFixed(udmf.vertices[i].x);
+    vertexes[i].y = dsda_StringToFixed(udmf.vertices[i].y);
   }
 }
 
@@ -985,7 +985,7 @@ static void P_LoadUDMFSectors(int lump)
     ss->floor_yoffs = dsda_FloatToFixed(ms->ypanningfloor);
     ss->ceiling_xoffs = dsda_FloatToFixed(ms->xpanningceiling);
     ss->ceiling_yoffs = dsda_FloatToFixed(ms->ypanningceiling);
-    ss->gravity = dsda_FloatToFixed(ms->gravity);
+    ss->gravity = dsda_StringToFixed(ms->gravity);
 
     ss->damage.amount = ms->damageamount;
     ss->damage.leakrate = ms->leakiness;
@@ -1732,13 +1732,13 @@ static void P_LoadUDMFThings(int lump)
     mapthing_t mt;
     udmf_thing_t *dmt = &udmf.things[i];
 
-    mt.x = dmt->x;
-    mt.y = dmt->y;
+    mt.x = dsda_StringToFixed(dmt->x) >> FRACBITS;
+    mt.y = dsda_StringToFixed(dmt->y) >> FRACBITS;
     mt.angle = dmt->angle;
     mt.type = dmt->type;
     mt.options = 0;
     mt.tid = dmt->id;
-    mt.height = dmt->height;
+    mt.height = dsda_StringToFixed(dmt->height) >> FRACBITS;
     mt.special = dmt->special;
     mt.arg1 = dmt->arg0;
     mt.arg2 = dmt->arg1;
