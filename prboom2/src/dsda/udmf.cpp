@@ -20,6 +20,7 @@
 
 extern "C" {
 char *Z_StrdupLevel(const char *s);
+void *Z_MallocLevel(size_t size);
 }
 
 #include "scanner.h"
@@ -66,6 +67,19 @@ static void dsda_SkipValue(Scanner &scanner) {
   }
 }
 
+// The scanner drops the sign when scanning, and we need it back
+static char* dsda_FloatString(Scanner &scanner) {
+  if (scanner.decimal >= 0)
+    return Z_StrdupLevel(scanner.string);
+
+  char* buffer = (char*) Z_MallocLevel(strlen(scanner.string) + 2);
+  buffer[0] = '-';
+  buffer[1] = '\0';
+  strcat(buffer, scanner.string);
+
+  return buffer;
+}
+
 #define SCAN_INT(x)  { scanner.MustGetToken('='); \
                        scanner.MustGetInteger(); \
                        x = scanner.number; \
@@ -91,6 +105,11 @@ static void dsda_SkipValue(Scanner &scanner) {
                          scanner.MustGetToken(TK_StringConst); \
                          x = Z_StrdupLevel(scanner.string); \
                          scanner.MustGetToken(';'); }
+
+#define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
+                               scanner.MustGetFloat(); \
+                               x = dsda_FloatString(scanner); \
+                               scanner.MustGetToken(';'); }
 
 static void dsda_ParseUDMFLineDef(Scanner &scanner) {
   udmf_line_t line = { 0 };
