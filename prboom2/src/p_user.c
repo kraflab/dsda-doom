@@ -1193,14 +1193,14 @@ void P_ArtiTele(player_t * player)
     {
         selections = deathmatch_p - deathmatchstarts;
         i = P_Random(pr_heretic) % selections;
-        destX = deathmatchstarts[i].x << FRACBITS;
-        destY = deathmatchstarts[i].y << FRACBITS;
+        destX = deathmatchstarts[i].x;
+        destY = deathmatchstarts[i].y;
         destAngle = ANG45 * (deathmatchstarts[i].angle / 45);
     }
     else
     {
-        destX = playerstarts[0][0].x << FRACBITS;
-        destY = playerstarts[0][0].y << FRACBITS;
+        destX = playerstarts[0][0].x;
+        destY = playerstarts[0][0].y;
         destAngle = ANG45 * (playerstarts[0][0].angle / 45);
     }
     P_Teleport(player->mo, destX, destY, destAngle, true);
@@ -1903,8 +1903,8 @@ void P_TeleportToPlayerStarts(mobj_t * victim)
         selections++;
     }
     i = P_Random(pr_hexen) % selections;
-    destX = playerstarts[0][i].x << FRACBITS;
-    destY = playerstarts[0][i].y << FRACBITS;
+    destX = playerstarts[0][i].x;
+    destY = playerstarts[0][i].y;
     destAngle = ANG45 * (playerstarts[0][i].angle / 45);
     P_Teleport(victim, destX, destY, destAngle, true);
 }
@@ -1919,8 +1919,8 @@ void P_TeleportToDeathmatchStarts(mobj_t * victim)
     if (selections)
     {
         i = P_Random(pr_hexen) % selections;
-        destX = deathmatchstarts[i].x << FRACBITS;
-        destY = deathmatchstarts[i].y << FRACBITS;
+        destX = deathmatchstarts[i].x;
+        destY = deathmatchstarts[i].y;
         destAngle = ANG45 * (deathmatchstarts[i].angle / 45);
         P_Teleport(victim, destX, destY, destAngle, true);
     }

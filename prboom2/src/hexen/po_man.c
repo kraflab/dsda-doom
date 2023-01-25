@@ -1394,14 +1394,14 @@ void PO_LoadThings(int lump)
 {
     const byte *data;
     int i;
-    mapthing_t spawnthing;
-    const mapthing_t *mt;
+    hexen_mapthing_t spawnthing;
+    const hexen_mapthing_t *mt;
     int numthings;
     int polyIndex;
 
     data = W_LumpByNum(lump);
-    numthings = W_LumpLength(lump) / sizeof(mapthing_t);
-    mt = (const mapthing_t *) data;
+    numthings = W_LumpLength(lump) / sizeof(hexen_mapthing_t);
+    mt = (const hexen_mapthing_t *) data;
     polyIndex = 0;              // index polyobj number
     // Find the startSpot points, and spawn each polyobj
     for (i = 0; i < numthings; i++, mt++)
@@ -1423,7 +1423,7 @@ void PO_LoadThings(int lump)
             polyIndex++;
         }
     }
-    mt = (const mapthing_t *) data;
+    mt = (const hexen_mapthing_t *) data;
     for (i = 0; i < numthings; i++, mt++)
     {
         spawnthing.x = LittleShort(mt->x);

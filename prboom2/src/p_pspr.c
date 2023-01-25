@@ -2523,8 +2523,8 @@ void P_AddMaceSpot(const mapthing_t * mthing)
     {
         I_Error("Too many mace spots.");
     }
-    MaceSpots[MaceSpotCount].x = mthing->x << FRACBITS;
-    MaceSpots[MaceSpotCount].y = mthing->y << FRACBITS;
+    MaceSpots[MaceSpotCount].x = mthing->x;
+    MaceSpots[MaceSpotCount].y = mthing->y;
     MaceSpotCount++;
 }
 

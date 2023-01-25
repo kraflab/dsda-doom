@@ -687,6 +687,10 @@ static void P_XYMovement (mobj_t* mo)
   }
 }
 
+fixed_t P_MobjGravity(mobj_t* mo)
+{
+  return FixedMul(mo->subsector->sector->gravity, mo->gravity);
+}
 
 //
 // P_ZMovement
@@ -695,7 +699,7 @@ static void P_XYMovement (mobj_t* mo)
 
 static void P_ZMovement (mobj_t* mo)
 {
-  fixed_t gravity = mo->subsector->sector->gravity;
+  fixed_t gravity = P_MobjGravity(mo);
 
   /* killough 7/11/98:
    * BFG fireballs bounced on floors and ceilings in Pre-Beta Doom
@@ -1110,8 +1114,8 @@ static void P_NightmareRespawn(mobj_t* mobj)
   mobj_t*      mo;
   mapthing_t*  mthing;
 
-  x = mobj->spawnpoint.x << FRACBITS;
-  y = mobj->spawnpoint.y << FRACBITS;
+  x = mobj->spawnpoint.x;
+  y = mobj->spawnpoint.y;
 
   /* haleyjd: stupid nightmare respawning bug fix
    *
@@ -1274,7 +1278,7 @@ void P_MobjThinker (mobj_t* mobj)
         {
           if (hexen)
           {
-            fixed_t gravity = mobj->subsector->sector->gravity;
+            fixed_t gravity = P_MobjGravity(mobj);
 
             if (mobj->momz < -gravity * 8 && !(mobj->flags2 & MF2_FLY))
             {
@@ -1732,6 +1736,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
 
   //e6y
   mobj->friction = ORIG_FRICTION;                        // phares 3/17/98
+  mobj->gravity = GRAVITY;
   mobj->index = -1;
 
   mobj->target = mobj->tracer = mobj->lastenemy = NULL;
@@ -1876,8 +1881,8 @@ void P_RespawnSpecials (void)
 
   mthing = &itemrespawnque[iquetail];
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   // spawn a teleport fog at the new spot
 
@@ -1947,8 +1952,8 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   if (!mthing->options)
     I_Error("P_SpawnPlayer: attempt to spawn player at unavailable start point");
 
-  x    = mthing->x << FRACBITS;
-  y    = mthing->y << FRACBITS;
+  x    = mthing->x;
+  y    = mthing->y;
   z    = ONFLOORZ;
 
   if (hexen)
@@ -2257,7 +2262,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     // Check for boss spots
     if (mthing->type == 56)     // Monster_BossSpot
     {
-      P_AddBossSpot(mthing->x << FRACBITS, mthing->y << FRACBITS,
+      P_AddBossSpot(mthing->x, mthing->y,
                     ANG45 * (mthing->angle / 45));
       return NULL;
     }
@@ -2287,8 +2292,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     if (mthing->type >= 1400 && mthing->type < 1410)
     {
       R_PointInSubsector(
-        mthing->x << FRACBITS,
-        mthing->y << FRACBITS
+        mthing->x, mthing->y
       )->sector->seqType = mthing->type - 1400;
       return NULL;
     }
@@ -2413,15 +2417,15 @@ spawnit:
     return NULL;
   }
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   if (mobjinfo[i].flags & MF_SPAWNCEILING)
     z = ONCEILINGZ;
   else if (mobjinfo[i].flags2 & MF2_SPAWNFLOAT)
     z = FLOATRANDZ;
   else if (hexen && mobjinfo[i].flags2 & MF2_FLOATBOB)
-    z = mthing->height << FRACBITS;
+    z = mthing->height;
   else
     z = ONFLOORZ;
 
@@ -2429,6 +2433,24 @@ spawnit:
     P_SpawnMobj(x, y, ONFLOORZ, HEXEN_MT_BLOODPOOL);
 
   mobj = P_SpawnMobj (x, y, z, i);
+
+  if (mthing->health != FRACUNIT)
+  {
+    if (mthing->health < 0)
+      mobj->health = -mthing->health;
+    else
+      mobj->health *= mthing->health;
+
+    mobj->health >>= FRACBITS;
+  }
+
+  if (mthing->gravity != FRACUNIT)
+  {
+    if (mthing->gravity < 0)
+      mobj->gravity = -mthing->gravity;
+    else
+      mobj->gravity = FixedMul(GRAVITY, mthing->gravity);
+  }
 
   mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y
@@ -2438,11 +2460,11 @@ spawnit:
   {
     if (z == ONFLOORZ)
     {
-      mobj->z += mthing->height << FRACBITS;
+      mobj->z += mthing->height;
     }
     else if (z == ONCEILINGZ)
     {
-      mobj->z -= mthing->height << FRACBITS;
+      mobj->z -= mthing->height;
     }
     mobj->tid = mthing->tid;
     mobj->special = mthing->special;
@@ -2456,7 +2478,7 @@ spawnit:
   if (mobj->flags2 & MF2_FLOATBOB)
   {                           // Seed random starting index for bobbing motion
     mobj->health = P_Random(pr_heretic);
-    if (hexen) mobj->special1.i = mthing->height << FRACBITS;
+    if (hexen) mobj->special1.i = mthing->height;
   }
 
   if (mobj->tics > 0)

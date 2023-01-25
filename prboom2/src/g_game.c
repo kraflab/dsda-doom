@@ -1799,14 +1799,13 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     {
       // first spawn of level, before corpses
       for (i=0 ; i<playernum ; i++)
-        if (players[i].mo->x == mthing->x << FRACBITS
-            && players[i].mo->y == mthing->y << FRACBITS)
+        if (players[i].mo->x == mthing->x && players[i].mo->y == mthing->y)
           return false;
       return true;
     }
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   if (raven)
   {

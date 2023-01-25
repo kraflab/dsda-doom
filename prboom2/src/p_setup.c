@@ -1649,11 +1649,13 @@ static void P_LoadThings(int lump)
   int  i, numthings;
   int mobjcount;
   mobj_t **mobjlist;
-  const mapthing_t *data;
+  const byte *data;
+  const hexen_mapthing_t *hexen_data;
   const doom_mapthing_t *doom_data;
 
   numthings = W_LumpLength (lump) / map_format.mapthing_size;
   data = W_LumpByNum(lump);
+  hexen_data = (const hexen_mapthing_t*) data;
   doom_data = (const doom_mapthing_t*) data;
   mobjcount = 0;
   mobjlist = Z_Malloc(numthings * sizeof(mobjlist[0]));
@@ -1667,34 +1669,43 @@ static void P_LoadThings(int lump)
 
     if (map_format.hexen)
     {
-      mt = data[i];
+      const hexen_mapthing_t *hmt = &hexen_data[i];
 
-      mt.tid = LittleShort(mt.tid);
-      mt.x = LittleShort(mt.x);
-      mt.y = LittleShort(mt.y);
-      mt.height = LittleShort(mt.height);
-      mt.angle = LittleShort(mt.angle);
-      mt.type = LittleShort(mt.type);
-      mt.options = LittleShort(mt.options);
-      // special & args are bytes - don't need to convert anything
+      mt.tid = LittleShort(hmt->tid);
+      mt.x = LittleShort(hmt->x) << FRACBITS;
+      mt.y = LittleShort(hmt->y) << FRACBITS;
+      mt.height = LittleShort(hmt->height) << FRACBITS;
+      mt.angle = LittleShort(hmt->angle);
+      mt.type = LittleShort(hmt->type);
+      mt.options = LittleShort(hmt->options);
+      mt.special = hmt->special;
+      mt.arg1 = hmt->arg1;
+      mt.arg2 = hmt->arg2;
+      mt.arg3 = hmt->arg3;
+      mt.arg4 = hmt->arg4;
+      mt.arg5 = hmt->arg5;
+      mt.gravity = FRACUNIT;
+      mt.health = FRACUNIT;
     }
     else
     {
-      doom_mapthing_t dmt = doom_data[i];
+      const doom_mapthing_t *dmt = &doom_data[i];
 
-      mt.x = LittleShort(dmt.x);
-      mt.y = LittleShort(dmt.y);
-      mt.angle = LittleShort(dmt.angle);
-      mt.type = LittleShort(dmt.type);
-      mt.options = LittleShort(dmt.options);
       mt.tid = 0;
+      mt.x = LittleShort(dmt->x) << FRACBITS;
+      mt.y = LittleShort(dmt->y) << FRACBITS;
       mt.height = 0;
+      mt.angle = LittleShort(dmt->angle);
+      mt.type = LittleShort(dmt->type);
+      mt.options = LittleShort(dmt->options);
       mt.special = 0;
       mt.arg1 = 0;
       mt.arg2 = 0;
       mt.arg3 = 0;
       mt.arg4 = 0;
       mt.arg5 = 0;
+      mt.gravity = FRACUNIT;
+      mt.health = FRACUNIT;
     }
 
     P_PostProcessMapThing(&mt, &mobjcount, &mobjlist);
@@ -1716,21 +1727,23 @@ static void P_LoadUDMFThings(int lump)
   for (i = 0; i < numthings; i++)
   {
     mapthing_t mt;
-    udmf_thing_t *dmt = &udmf.things[i];
+    const udmf_thing_t *dmt = &udmf.things[i];
 
-    mt.x = dsda_StringToFixed(dmt->x) >> FRACBITS;
-    mt.y = dsda_StringToFixed(dmt->y) >> FRACBITS;
+    mt.tid = dmt->id;
+    mt.x = dsda_StringToFixed(dmt->x);
+    mt.y = dsda_StringToFixed(dmt->y);
+    mt.height = dsda_StringToFixed(dmt->height);
     mt.angle = dmt->angle;
     mt.type = dmt->type;
     mt.options = 0;
-    mt.tid = dmt->id;
-    mt.height = dsda_StringToFixed(dmt->height) >> FRACBITS;
     mt.special = dmt->special;
     mt.arg1 = dmt->arg0;
     mt.arg2 = dmt->arg1;
     mt.arg3 = dmt->arg2;
     mt.arg4 = dmt->arg3;
     mt.arg5 = dmt->arg4;
+    mt.gravity = dsda_StringToFixed(dmt->gravity);
+    mt.health = dsda_StringToFixed(dmt->health);
 
     // need to disambiguate
     if (dmt->flags & (UDMF_TF_SKILL1 | UDMF_TF_SKILL2))

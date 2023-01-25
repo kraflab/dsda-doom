@@ -309,8 +309,8 @@ void M_CheatGod(void)
     mapthing_t mt = {0};
 
     P_MapStart();
-    mt.x = plyr->mo->x >> FRACBITS;
-    mt.y = plyr->mo->y >> FRACBITS;
+    mt.x = plyr->mo->x;
+    mt.y = plyr->mo->y;
     mt.angle = (plyr->mo->angle + ANG45/2)*(uint64_t)45/ANG45;
     mt.type = consoleplayer + 1;
     mt.options = 1; // arbitrary non-zero value

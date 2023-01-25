@@ -39,6 +39,7 @@
 // The most basic types we use, portability.
 #include "config.h"
 #include "doomtype.h"
+#include "m_fixed.h"
 
 //
 // Map level types.
@@ -296,6 +297,24 @@ typedef struct {
 
 typedef struct {
   short tid;
+  fixed_t x;
+  fixed_t y;
+  fixed_t height;
+  short angle;
+  short type;
+  short options;
+  byte special;
+  byte arg1;
+  byte arg2;
+  byte arg3;
+  byte arg4;
+  byte arg5;
+  fixed_t gravity;
+  fixed_t health;
+} mapthing_t;
+
+typedef struct {
+  short tid;
   short x;
   short y;
   short height;
@@ -308,7 +327,7 @@ typedef struct {
   byte arg3;
   byte arg4;
   byte arg5;
-} PACKEDATTR mapthing_t;
+} PACKEDATTR hexen_mapthing_t;
 
 typedef struct {
   short x;

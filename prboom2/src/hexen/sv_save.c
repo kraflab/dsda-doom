@@ -464,6 +464,7 @@ static void StreamIn_mobj_t(mobj_t *str)
     }
 
     str->friction = ORIG_FRICTION;
+    str->gravity = GRAVITY;
 }
 
 static void StreamOutMobjSpecials(mobj_t *mobj)
@@ -2073,8 +2074,8 @@ void SV_MapTeleport(int map, int position)
         if (deathmatch)
         {
             memset(players[i].frags, 0, sizeof(players[i].frags));
-            mobj = P_SpawnMobj(playerstarts[0][i].x << 16,
-                               playerstarts[0][i].y << 16, 0,
+            mobj = P_SpawnMobj(playerstarts[0][i].x,
+                               playerstarts[0][i].y, 0,
                                HEXEN_MT_PLAYER_FIGHTER);
             players[i].mo = mobj;
             G_DeathMatchSpawnPlayer(i);

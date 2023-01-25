@@ -401,6 +401,9 @@ typedef struct mobj_s
     byte special;               // special
     byte args[5];               // special arguments
 
+    // zdoom
+    fixed_t gravity;
+
     // misc
     byte color;
 
@@ -558,6 +561,7 @@ void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 
 // zdoom
 
+fixed_t P_MobjGravity(mobj_t* mo);
 dboolean P_SpawnThing(short thing_id, mobj_t *source, int type,
                       angle_t angle, dboolean fog, short new_thing_id);
 dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_t angle,

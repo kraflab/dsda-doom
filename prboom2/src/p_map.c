@@ -3495,7 +3495,7 @@ void P_FakeZMovement(mobj_t * mo)
     }
     else if (mo->flags2 & MF2_LOGRAV)
     {
-        fixed_t gravity = mo->subsector->sector->gravity;
+        fixed_t gravity = P_MobjGravity(mo);
 
         if (mo->momz == 0)
             mo->momz = -(gravity >> 3) * 2;
@@ -3504,7 +3504,7 @@ void P_FakeZMovement(mobj_t * mo)
     }
     else if (!(mo->flags & MF_NOGRAVITY))
     {
-        fixed_t gravity = mo->subsector->sector->gravity;
+        fixed_t gravity = P_MobjGravity(mo);
 
         if (mo->momz == 0)
             mo->momz = -gravity * 2;
