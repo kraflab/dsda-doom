@@ -102,7 +102,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | blocklandmonsters  | :heavy_check_mark: |
 
 #### Notes
-- `arg*` fields currently have hexen's limit of 0-255.
+- `arg*` currently has hexen's limit of 0-255.
 
 ### Sidedefs
 
@@ -194,12 +194,12 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | ypanningfloor            | :heavy_check_mark: |
 | xpanningceiling          | :heavy_check_mark: |
 | ypanningceiling          | :heavy_check_mark: |
-| xscalefloor              | :telescope:        |
-| yscalefloor              | :telescope:        |
-| xscaleceiling            | :telescope:        |
-| yscaleceiling            | :telescope:        |
-| rotationfloor            | :telescope:        |
-| rotationceiling          | :telescope:        |
+| xscalefloor              | :comet:            |
+| yscalefloor              | :comet:            |
+| xscaleceiling            | :comet:            |
+| yscaleceiling            | :comet:            |
+| rotationfloor            | :comet:            |
+| rotationceiling          | :comet:            |
 | ceilingplane_a           | :x:                |
 | ceilingplane_b           | :x:                |
 | ceilingplane_c           | :x:                |
@@ -311,8 +311,8 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | conversation  | :x:                |
 | countsecret   | :heavy_check_mark: |
 | arg0str       | :x:                |
-| gravity       | :grey_question:    |
-| health        | :grey_question:    |
+| gravity       | :heavy_check_mark: |
+| health        | :heavy_check_mark: |
 | renderstyle   | :x:                |
 | fillcolor     | :x:                |
 | alpha         | :x:                |
@@ -326,5 +326,4 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 
 #### Notes
 - `skill1-2` and `skill4-5` are currently collapsed to the existing `easy` and `hard` flags.
-- `arg*` fields currently have hexen's limit of 0-255.
-- `x`, `y`, and `height` are currently converted to integer values.
+- `arg*` currently has hexen's limit of 0-255.
