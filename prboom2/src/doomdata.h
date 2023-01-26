@@ -303,7 +303,7 @@ typedef struct {
   short angle;
   short type;
   short options;
-  byte special;
+  int special;
   byte arg1;
   byte arg2;
   byte arg3;

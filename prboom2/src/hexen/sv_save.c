@@ -454,8 +454,8 @@ static void StreamIn_mobj_t(mobj_t *str)
     // short tid;
     str->tid = SV_ReadWord();
 
-    // byte special;
-    str->special = SV_ReadByte();
+    // int special;
+    str->special = SV_ReadLong();
 
     // byte args[5];
     for (i=0; i<5; ++i)
@@ -605,8 +605,8 @@ static void StreamOut_mobj_t(mobj_t *str)
     // short tid;
     SV_WriteWord(str->tid);
 
-    // byte special;
-    SV_WriteByte(str->special);
+    // int special;
+    SV_WriteLong(str->special);
 
     // byte args[5];
     for (i=0; i<5; ++i)

@@ -398,7 +398,7 @@ typedef struct mobj_s
     fixed_t floorclip;          // value to use for floor clipping
     int archiveNum;             // Identity during archive
     short tid;                  // thing identifier
-    byte special;               // special
+    int special;                // special
     byte args[5];               // special arguments
 
     // zdoom
