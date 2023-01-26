@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2023 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,15 +12,15 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Data Organizer
+//	DSDA TRANMAP
 //
 
-#ifndef __DSDA_DATA_ORGANIZER__
-#define __DSDA_DATA_ORGANIZER__
+#ifndef __DSDA_TRANMAP__
+#define __DSDA_TRANMAP__
 
-char* dsda_DetectDirectory(const char* env_key, int arg_id);
-void dsda_InitDataDir(void);
-char* dsda_DataDir(void);
-const char* dsda_DataRoot(void);
+#include "doomtype.h"
+
+const byte* dsda_TranMap(unsigned int alpha);
+const byte* dsda_DefaultTranMap(void);
 
 #endif

@@ -31,6 +31,8 @@
 #include "hexen/sn_sonix.h"
 
 #include "dsda/map_format.h"
+#include "dsda/udmf.h"
+#include "dsda/utility.h"
 
 #include "po_man.h"
 
@@ -1388,21 +1390,18 @@ dboolean PO_Detect(int doomednum)
   return false;
 }
 
-void PO_Init(int lump)
+void PO_LoadThings(int lump)
 {
     const byte *data;
     int i;
-    mapthing_t spawnthing;
-    const mapthing_t *mt;
+    hexen_mapthing_t spawnthing;
+    const hexen_mapthing_t *mt;
     int numthings;
     int polyIndex;
 
-    polyobjs = Z_MallocLevel(po_NumPolyobjs * sizeof(polyobj_t));
-    memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
-
     data = W_LumpByNum(lump);
-    numthings = W_LumpLength(lump) / sizeof(mapthing_t);
-    mt = (const mapthing_t *) data;
+    numthings = W_LumpLength(lump) / sizeof(hexen_mapthing_t);
+    mt = (const hexen_mapthing_t *) data;
     polyIndex = 0;              // index polyobj number
     // Find the startSpot points, and spawn each polyobj
     for (i = 0; i < numthings; i++, mt++)
@@ -1424,7 +1423,7 @@ void PO_Init(int lump)
             polyIndex++;
         }
     }
-    mt = (const mapthing_t *) data;
+    mt = (const hexen_mapthing_t *) data;
     for (i = 0; i < numthings; i++, mt++)
     {
         spawnthing.x = LittleShort(mt->x);
@@ -1438,6 +1437,50 @@ void PO_Init(int lump)
                                  spawnthing.y << FRACBITS);
         }
     }
+}
+
+void PO_LoadUDMFThings(int lump)
+{
+    int i;
+    const udmf_thing_t *mt;
+    int polyIndex = 0;
+
+    // Find the startSpot points, and spawn each polyobj
+    for (i = 0, mt = &udmf.things[0]; i < udmf.num_things; i++, mt++)
+    {
+        // 3001 = no crush, 3002 = crushing
+        if (mt->type >= map_format.dn_polyspawn_start &&
+            mt->type <= map_format.dn_polyspawn_end)
+        {                       // Polyobj StartSpot Pt.
+            polyobjs[polyIndex].startSpot.x = dsda_StringToFixed(mt->x);
+            polyobjs[polyIndex].startSpot.y = dsda_StringToFixed(mt->y);
+            SpawnPolyobj(polyIndex, mt->angle,
+                         (mt->type != map_format.dn_polyspawn_start),
+                         (mt->type == map_format.dn_polyspawn_hurt));
+            polyIndex++;
+        }
+    }
+
+    for (i = 0, mt = &udmf.things[0]; i < udmf.num_things; i++, mt++)
+    {
+        if (mt->type == map_format.dn_polyanchor)
+        {                       // Polyobj Anchor Pt.
+            TranslateToStartSpot(mt->angle,
+                                 dsda_StringToFixed(mt->x),
+                                 dsda_StringToFixed(mt->y));
+        }
+    }
+}
+
+void PO_Init(int lump)
+{
+    int i;
+
+    polyobjs = Z_MallocLevel(po_NumPolyobjs * sizeof(polyobj_t));
+    memset(polyobjs, 0, po_NumPolyobjs * sizeof(polyobj_t));
+
+    map_loader.po_load_things(lump);
+
     // check for a startspot without an anchor point
     for (i = 0; i < po_NumPolyobjs; i++)
     {

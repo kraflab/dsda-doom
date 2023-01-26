@@ -540,6 +540,16 @@ int W_LumpLength (int lump)
   return lumpinfo[lump].size;
 }
 
+int W_SafeLumpLength (int lump)
+{
+  return W_LumpNumExists(lump) ? lumpinfo[lump].size : 0;
+}
+
+const char *W_LumpName(int lump)
+{
+  return W_LumpNumExists(lump) ? lumpinfo[lump].name : NULL;
+}
+
 //
 // W_ReadLump
 // Loads the lump into the given buffer,
@@ -590,6 +600,16 @@ int W_LumpNumInPortWad(int lump) {
 
   return name_length >= default_name_length &&
          !strcmp(info->wadfile->name + name_length - default_name_length, WAD_DATA);
+}
+
+const void *W_SafeLumpByNum(int lump)
+{
+  return W_LumpNumExists(lump) ? W_LumpByNum(lump) : NULL;
+}
+
+int W_LumpNumExists(int lump)
+{
+  return lump != LUMP_NOT_FOUND && lump < numlumps;
 }
 
 int W_LumpNameExists(const char *name)

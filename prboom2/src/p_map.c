@@ -51,6 +51,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/destructible.h"
 #include "dsda/map_format.h"
 
 #include "heretic/def.h"
@@ -336,12 +337,12 @@ dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fo
                             oldy,
                             oldfloorz + g_telefog_height,
                             g_mt_tfog);
-      S_StartSound(telefog, g_sfx_telept);
+      S_StartMobjSound(telefog, g_sfx_telept);
       telefog = P_SpawnMobj(thing->x,
                             thing->y,
                             thing->floorz + g_telefog_height,
                             g_mt_tfog);
-      S_StartSound(telefog, g_sfx_telept);
+      S_StartMobjSound(telefog, g_sfx_telept);
     }
 
     thing->PrevX = x;
@@ -513,11 +514,32 @@ static int untouched(line_t *ld)
 // Adjusts tmfloorz and tmceilingz as lines are contacted
 //
 
+static void CheckForDamageSpecial(line_t *line, mobj_t *mo)
+{
+  int damage;
+
+  // TODO: bouncing against a damage line
+  // TODO: lost souls don't damage walls in gzdoom
+  if (
+    !line->health ||
+    !(mo->flags & (/* MF_SKULLFLY |*/ MF_MISSILE /*| MF_BOUNCES */)) ||
+    !mo->info->damage
+  )
+  {
+    return;
+  }
+
+  damage = ((P_Random(pr_damage) % 8) + 1) * mo->info->damage;
+  dsda_DamageLinedef(line, mo->target, damage);
+}
+
 static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj);
 
 static // killough 3/26/98: make static
 dboolean PIT_CheckLine (line_t* ld)
 {
+  dboolean rail = false;
+
   if (tmbbox[BOXRIGHT] <= ld->bbox[BOXLEFT]
    || tmbbox[BOXLEFT] >= ld->bbox[BOXRIGHT]
    || tmbbox[BOXTOP] <= ld->bbox[BOXBOTTOM]
@@ -557,6 +579,7 @@ dboolean PIT_CheckLine (line_t* ld)
         P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
       }
       CheckForPushSpecial(ld, 0, tmthing);
+      CheckForDamageSpecial(ld, tmthing);
     }
     blockline = ld;
     return tmunstuck && !untouched(ld) &&
@@ -564,64 +587,83 @@ dboolean PIT_CheckLine (line_t* ld)
   }
 
   // killough 8/10/98: allow bouncing objects to pass through as missiles
-  if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)) || ld->flags & ML_BLOCKEVERYTHING)
+  if (!(tmthing->flags & (MF_MISSILE | MF_BOUNCES)) ||
+      ld->flags & (ML_BLOCKPROJECTILES | ML_BLOCKEVERYTHING))
   {
-    // explicitly blocking everything
-    // or blocking player
-    if (ld->flags & ML_BLOCKING || (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS))
+    if (ld->flags & ML_JUMPOVER)
     {
-      if (map_format.hexen)
+      rail = true;
+    }
+    else
+    {
+      // explicitly blocking everything
+      // or blocking player
+      // or blocking projectile
+      if (
+        ld->flags & ML_BLOCKING ||
+        (mbf21 && tmthing->player && ld->flags & ML_BLOCKPLAYERS) ||
+        tmthing->flags & (MF_MISSILE | MF_BOUNCES)
+      )
+      {
+        if (map_format.hexen)
+        {
+          if (tmthing->flags2 & MF2_BLASTED)
+          {
+            P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
+          }
+          CheckForPushSpecial(ld, 0, tmthing);
+          CheckForDamageSpecial(ld, tmthing);
+        }
+        return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
+      }
+
+      // killough 8/9/98: monster-blockers don't affect friends
+      if (
+        !(tmthing->flags & MF_FRIEND || tmthing->player) &&
+        (
+          ld->flags & ML_BLOCKMONSTERS ||
+          (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT)) ||
+          (ld->flags & ML_BLOCKFLOATERS && tmthing->flags & MF_FLOAT)
+        ) &&
+        (!heretic || tmthing->type != HERETIC_MT_POD)
+      )
       {
         if (tmthing->flags2 & MF2_BLASTED)
         {
           P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
         }
-        CheckForPushSpecial(ld, 0, tmthing);
+        return false; // block monsters only
       }
-      return tmunstuck && !untouched(ld);  // killough 8/1/98: allow escape
-    }
-
-    // killough 8/9/98: monster-blockers don't affect friends
-    if (
-      !(tmthing->flags & MF_FRIEND || tmthing->player) &&
-      (
-        ld->flags & ML_BLOCKMONSTERS ||
-        (mbf21 && ld->flags & ML_BLOCKLANDMONSTERS && !(tmthing->flags & MF_FLOAT))
-      ) &&
-      (!heretic || tmthing->type != HERETIC_MT_POD)
-    )
-    {
-      if (tmthing->flags2 & MF2_BLASTED)
-      {
-        P_DamageMobj(tmthing, NULL, NULL, tmthing->info->mass >> 5);
-      }
-      return false; // block monsters only
     }
   }
 
-  // set openrange, opentop, openbottom
-  // these define a 'window' from one sector to another across this line
+  // defines a 'window' from one sector to another across this line
 
-  P_LineOpening (ld);
+  P_LineOpening (ld, tmthing);
+
+  if (rail && line_opening.bottom == tmfloorz)
+  {
+    line_opening.bottom += (32 << FRACBITS);
+  }
 
   // adjust floor & ceiling heights
 
-  if (opentop < tmceilingz)
+  if (line_opening.top < tmceilingz)
   {
-    tmceilingz = opentop;
+    tmceilingz = line_opening.top;
     ceilingline = ld;
     blockline = ld;
   }
 
-  if (openbottom > tmfloorz)
+  if (line_opening.bottom > tmfloorz)
   {
-    tmfloorz = openbottom;
+    tmfloorz = line_opening.bottom;
     floorline = ld;          // killough 8/1/98: remember floor linedef
     blockline = ld;
   }
 
-  if (lowfloor < tmdropoffz)
-    tmdropoffz = lowfloor;
+  if (line_opening.lowfloor < tmdropoffz)
+    tmdropoffz = line_opening.lowfloor;
 
   // if contacted a special line, add it to the list
   if (ld->special)
@@ -787,7 +829,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
             {
               P_SpawnMobj(tmthing->x, tmthing->y, tmthing->z,
                           HEXEN_MT_HOLY_PUFF);
-              S_StartSound(tmthing, hexen_sfx_spirit_attack);
+              S_StartMobjSound(tmthing, hexen_sfx_spirit_attack);
               if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 128
                   && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
               {
@@ -795,7 +837,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
                     (thing->type == HEXEN_MT_CENTAURLEADER) ||
                     (thing->type == HEXEN_MT_ETTIN))
                 {
-                  S_StartSound(thing, hexen_sfx_puppybeat);
+                  S_StartMobjSound(thing, hexen_sfx_puppybeat);
                 }
               }
             }
@@ -910,7 +952,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
             if (!(S_GetSoundPlayingInfo(tmthing,
                                         hexen_sfx_mage_lightning_zap)))
             {
-              S_StartSound(tmthing, hexen_sfx_mage_lightning_zap);
+              S_StartMobjSound(tmthing, hexen_sfx_mage_lightning_zap);
             }
             if (thing->flags & MF_COUNTKILL && P_Random(pr_hexen) < 64
                 && !S_GetSoundPlayingInfo(thing, hexen_sfx_puppybeat))
@@ -919,7 +961,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
                   (thing->type == HEXEN_MT_CENTAURLEADER) ||
                   (thing->type == HEXEN_MT_ETTIN))
               {
-                S_StartSound(thing, hexen_sfx_puppybeat);
+                S_StartMobjSound(thing, hexen_sfx_puppybeat);
               }
             }
           }
@@ -1034,7 +1076,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         {                   // Ok to spawn some blood
           P_RipperBlood(tmthing, thing);
         }
-        if (heretic) S_StartSound(tmthing, heretic_sfx_ripslop);
+        if (heretic) S_StartMobjSound(tmthing, heretic_sfx_ripslop);
         damage = ((P_Random(pr_heretic) & 3) + 2) * tmthing->damage;
       }
       else
@@ -1043,7 +1085,7 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
         if (!(thing->flags & MF_NOBLOOD))
           P_SpawnBlood(tmthing->x, tmthing->y, tmthing->z, damage, thing);
         if (tmthing->info->ripsound)
-          S_StartSound(tmthing, tmthing->info->ripsound);
+          S_StartMobjSound(tmthing, tmthing->info->ripsound);
       }
 
       P_DamageMobj(thing, tmthing, tmthing->target, damage);
@@ -1343,6 +1385,7 @@ void P_CheckZDoomImpact(mobj_t *thing)
       ld = spechit[i];
       side = P_PointOnLineSide(thing->x, thing->y, ld);
       CheckForPushSpecial(ld, side, thing);
+      CheckForDamageSpecial(ld, tmthing);
     }
   }
 }
@@ -1808,7 +1851,7 @@ void P_HitSlideLine (line_t* ld)
     {
       tmxmove /= 2; // absorb half the momentum
       tmymove = -tmymove/2;
-      S_StartSound(slidemo,sfx_oof); // oooff!
+      S_StartMobjSound(slidemo,sfx_oof); // oooff!
     }
     else
       tmymove = 0; // no more movement in the Y direction
@@ -1821,7 +1864,7 @@ void P_HitSlideLine (line_t* ld)
     {
       tmxmove = -tmxmove/2; // absorb half the momentum
       tmymove /= 2;
-      S_StartSound(slidemo,sfx_oof); // oooff!                      //   ^
+      S_StartMobjSound(slidemo,sfx_oof); // oooff!                      //   ^
     }                                                               //   |
     else                                                            // phares
       tmxmove = 0; // no more movement in the X direction
@@ -1851,7 +1894,7 @@ void P_HitSlideLine (line_t* ld)
   {
     moveangle = lineangle - deltaangle;
     movelen /= 2; // absorb
-    S_StartSound(slidemo,sfx_oof); // oooff!
+    S_StartMobjSound(slidemo,sfx_oof); // oooff!
     moveangle >>= ANGLETOFINESHIFT;
     tmxmove = FixedMul (movelen, finecosine[moveangle]);
     tmymove = FixedMul (movelen, finesine[moveangle]);
@@ -1890,18 +1933,17 @@ dboolean PTR_SlideTraverse (intercept_t* in)
     goto isblocking;
   }
 
-  // set openrange, opentop, openbottom.
-  // These define a 'window' from one sector to another across a line
+  // defines a 'window' from one sector to another across a line
 
-  P_LineOpening (li);
+  P_LineOpening (li, slidemo);
 
-  if (openrange < slidemo->height)
+  if (line_opening.range < slidemo->height)
     goto isblocking;  // doesn't fit
 
-  if (opentop - slidemo->z < slidemo->height)
+  if (line_opening.top - slidemo->z < slidemo->height)
     goto isblocking;  // mobj is too high
 
-  if (openbottom - slidemo->z > 24*FRACUNIT )
+  if (line_opening.bottom - slidemo->z > 24*FRACUNIT )
     goto isblocking;  // too big a step up
 
   // this line doesn't block movement
@@ -2089,9 +2131,9 @@ dboolean PTR_AimTraverse (intercept_t* in)
     // A two sided line will restrict
     // the possible target ranges.
 
-    P_LineOpening (li);
+    P_LineOpening (li, NULL);
 
-    if (openbottom >= opentop)
+    if (line_opening.bottom >= line_opening.top)
       return false;   // stop
 
     dist = FixedMul (attackrange, in->frac);
@@ -2100,7 +2142,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
     // backsector can be NULL if overrun_missedbackside_emulate is 1
     if (!li->backsector || li->frontsector->floorheight != li->backsector->floorheight)
     {
-      slope = FixedDiv (openbottom - shootz , dist);
+      slope = FixedDiv (line_opening.bottom - shootz , dist);
       if (slope > bottomslope)
         bottomslope = slope;
     }
@@ -2108,7 +2150,7 @@ dboolean PTR_AimTraverse (intercept_t* in)
     // e6y: emulation of missed back side on two-sided lines.
     if (!li->backsector || li->frontsector->ceilingheight != li->backsector->ceilingheight)
     {
-      slope = FixedDiv (opentop - shootz , dist);
+      slope = FixedDiv (line_opening.top - shootz , dist);
       if (slope < topslope)
         topslope = slope;
     }
@@ -2196,9 +2238,10 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     if (li->special)
       map_format.shoot_special_line(shootthing, li);
 
-    if (li->flags & ML_TWOSIDED && !(li->flags & ML_BLOCKEVERYTHING))
+    if (li->flags & ML_TWOSIDED &&
+        !(li->flags & (ML_BLOCKEVERYTHING | ML_BLOCKHITSCAN)))
     {  // crosses a two sided (really 2s) line
-      P_LineOpening (li);
+      P_LineOpening (li, NULL);
       dist = FixedMul(attackrange, in->frac);
 
       // killough 11/98: simplify
@@ -2207,15 +2250,15 @@ dboolean PTR_ShootTraverse (intercept_t* in)
       // backsector can be NULL if overrun_missedbackside_emulate is 1
       if (!li->backsector)
       {
-        if ((slope = FixedDiv(openbottom - shootz , dist)) <= aimslope &&
-            (slope = FixedDiv(opentop - shootz , dist)) >= aimslope)
+        if ((slope = FixedDiv(line_opening.bottom - shootz , dist)) <= aimslope &&
+            (slope = FixedDiv(line_opening.top - shootz , dist)) >= aimslope)
           return true;      // shot continues
       }
       else
         if ((li->frontsector->floorheight==li->backsector->floorheight ||
-             (slope = FixedDiv(openbottom - shootz , dist)) <= aimslope) &&
+             (slope = FixedDiv(line_opening.bottom - shootz , dist)) <= aimslope) &&
             (li->frontsector->ceilingheight==li->backsector->ceilingheight ||
-             (slope = FixedDiv (opentop - shootz , dist)) >= aimslope))
+             (slope = FixedDiv (line_opening.top - shootz , dist)) >= aimslope))
           return true;      // shot continues
     }
 
@@ -2243,6 +2286,11 @@ dboolean PTR_ShootTraverse (intercept_t* in)
         // demo_compatibility flag check!!! killough 1/18/98
         if (demo_compatibility || li->backsector->ceilingheight < z)
           return false;
+    }
+
+    if (li->health)
+    {
+      dsda_DamageLinedef(li, shootthing, la_damage);
     }
 
     // Spawn bullet puffs.
@@ -2294,7 +2342,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
   {                           // Make blaster big puff
     mobj_t* mo;
     mo = P_SpawnMobj(x, y, z, HERETIC_MT_BLASTERPUFF2);
-    S_StartSound(mo, heretic_sfx_blshit);
+    S_StartMobjSound(mo, heretic_sfx_blshit);
   }
   else
   {
@@ -2412,12 +2460,12 @@ void P_LineAttack(mobj_t* t1, angle_t angle, fixed_t distance, fixed_t slope,
       switch (PuffType)
       {
         case HEXEN_MT_PUNCHPUFF:
-          S_StartSound(t1, hexen_sfx_fighter_punch_miss);
+          S_StartMobjSound(t1, hexen_sfx_fighter_punch_miss);
           break;
         case HEXEN_MT_HAMMERPUFF:
         case HEXEN_MT_AXEPUFF:
         case HEXEN_MT_AXEPUFF_GLOW:
-          S_StartSound(t1, hexen_sfx_fighter_hammer_miss);
+          S_StartMobjSound(t1, hexen_sfx_fighter_hammer_miss);
           break;
         case HEXEN_MT_FLAMEPUFF:
           P_SpawnPuff(x2, y2, shootz + FixedMul(slope, distance));
@@ -2444,16 +2492,16 @@ dboolean PTR_UseTraverse (intercept_t* in)
   {
     int sound;
 
-    if (in->d.line->flags & ML_BLOCKEVERYTHING)
+    if (in->d.line->flags & (ML_BLOCKEVERYTHING | ML_BLOCKUSE))
     {
-      openrange = 0;
+      line_opening.range = 0;
     }
     else
     {
-      P_LineOpening (in->d.line);
+      P_LineOpening (in->d.line, NULL);
     }
 
-    if (openrange <= 0)
+    if (line_opening.range <= 0)
     {
       if (hexen && usething->player)
       {
@@ -2475,7 +2523,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
             sound = hexen_sfx_None;
             break;
         }
-        S_StartSound(usething, sound);
+        S_StartMobjSound(usething, sound);
       }
       else if (!heretic)
       {
@@ -2489,7 +2537,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
     if (hexen && usething->player)
     {
       fixed_t pheight = usething->z + (usething->height / 2);
-      if ((opentop < pheight) || (openbottom > pheight))
+      if ((line_opening.top < pheight) || (line_opening.bottom > pheight))
       {
         switch (usething->player->pclass)
         {
@@ -2509,7 +2557,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
             sound = hexen_sfx_None;
             break;
         }
-        S_StartSound(usething, sound);
+        S_StartMobjSound(usething, sound);
       }
     }
 
@@ -2549,10 +2597,10 @@ dboolean PTR_NoWayTraverse(intercept_t* in)
                                            // This linedef
   return ld->special || !(                 // Ignore specials
    ld->flags & ML_BLOCKING || (            // Always blocking
-   P_LineOpening(ld),                      // Find openings
-   openrange <= 0 ||                       // No opening
-   openbottom > usething->z+24*FRACUNIT || // Too high it blocks
-   opentop < usething->z+usething->height  // Too low it blocks
+   P_LineOpening(ld, NULL),                // Find openings
+   line_opening.range <= 0 ||                       // No opening
+   line_opening.bottom > usething->z+24*FRACUNIT || // Too high it blocks
+   line_opening.top < usething->z+usething->height  // Too low it blocks
   )
   );
 }
@@ -2616,6 +2664,20 @@ static dboolean P_SplashImmune(mobj_t *target, mobj_t *spot)
     mobjinfo[target->type].splash_group == mobjinfo[spot->type].splash_group;
 }
 
+int P_SplashDamage(fixed_t dist)
+{
+  int damage;
+
+  // [XA] independent damage/distance calculation.
+  //      same formula as eternity; thanks Quas :P
+  if (!hexen && bombdamage == bombdistance)
+    damage = bombdamage - dist;
+  else
+    damage = (bombdamage * (bombdistance - dist) / bombdistance) + 1;
+
+  return damage;
+}
+
 dboolean PIT_RadiusAttack (mobj_t* thing)
 {
   fixed_t dx;
@@ -2675,12 +2737,7 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   {
     // must be in direct path
 
-    // [XA] independent damage/distance calculation.
-    //      same formula as eternity; thanks Quas :P
-    if (!hexen && bombdamage == bombdistance)
-      damage = bombdamage - dist;
-    else
-      damage = (bombdamage * (bombdistance - dist) / bombdistance) + 1;
+    damage = P_SplashDamage(dist);
 
     if (hexen && thing->player)
     {
@@ -2692,7 +2749,6 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
   return true;
 }
-
 
 //
 // P_RadiusAttack
@@ -2730,6 +2786,11 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source, int damage, int distance, dbool
   for (y=yl ; y<=yh ; y++)
     for (x=xl ; x<=xh ; x++)
       P_BlockThingsIterator (x, y, PIT_RadiusAttack );
+
+  if (map_format.zdoom)
+  {
+    dsda_RadiusAttackDestructibles(xl, xh, yl, yh);
+  }
 }
 
 
@@ -2763,7 +2824,7 @@ dboolean PIT_ChangeSector (mobj_t* thing)
             P_SetMobjState(thing, HEXEN_S_GIBS1);
             thing->height = 0;
             thing->radius = 0;
-            S_StartSound(thing, hexen_sfx_player_falling_splat);
+            S_StartMobjSound(thing, hexen_sfx_player_falling_splat);
           }
         }
         return true;            // keep checking
@@ -3434,7 +3495,7 @@ void P_FakeZMovement(mobj_t * mo)
     }
     else if (mo->flags2 & MF2_LOGRAV)
     {
-        fixed_t gravity = mo->subsector->sector->gravity;
+        fixed_t gravity = P_MobjGravity(mo);
 
         if (mo->momz == 0)
             mo->momz = -(gravity >> 3) * 2;
@@ -3443,7 +3504,7 @@ void P_FakeZMovement(mobj_t * mo)
     }
     else if (!(mo->flags & MF_NOGRAVITY))
     {
-        fixed_t gravity = mo->subsector->sector->gravity;
+        fixed_t gravity = P_MobjGravity(mo);
 
         if (mo->momz == 0)
             mo->momz = -gravity * 2;
@@ -3513,11 +3574,11 @@ dboolean PTR_BounceTraverse(intercept_t * in)
         goto bounceblocking;
     }
 
-    P_LineOpening(li);          // set openrange, opentop, openbottom
-    if (openrange < slidemo->height)
+    P_LineOpening(li, slidemo);          // set open
+    if (line_opening.range < slidemo->height)
         goto bounceblocking;    // doesn't fit
 
-    if (opentop - slidemo->z < slidemo->height)
+    if (line_opening.top - slidemo->z < slidemo->height)
         goto bounceblocking;    // mobj is too high
     return true;                // this line doesn't block movement
 
@@ -3632,11 +3693,11 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
     {
         if (mobj->flags2 & MF2_PUSHWALL)
         {
-            P_ActivateLine(line, mobj, side, ML_SPAC_PUSH);
+            P_ActivateLine(line, mobj, side, SPAC_PUSH);
         }
         else if (mobj->flags2 & MF2_IMPACT)
         {
-            P_ActivateLine(line, mobj, side, ML_SPAC_IMPACT);
+            P_ActivateLine(line, mobj, side, SPAC_IMPACT);
         }
     }
 }
@@ -3805,8 +3866,8 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
     {                           // Check line
         if (in->d.line->special != USE_PUZZLE_ITEM_SPECIAL)
         {
-            P_LineOpening(in->d.line);
-            if (openrange <= 0)
+            P_LineOpening(in->d.line, NULL);
+            if (line_opening.range <= 0)
             {
                 sound = hexen_sfx_None;
                 if (PuzzleItemUser->player)
@@ -3827,7 +3888,7 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
                             break;
                     }
                 }
-                S_StartSound(PuzzleItemUser, sound);
+                S_StartMobjSound(PuzzleItemUser, sound);
                 return false;   // can't use through a wall
             }
             return true;        // Continue searching

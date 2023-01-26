@@ -698,7 +698,7 @@ typedef struct
   bwhere_e where;
   int   btexture;
   int   btimer;
-  mobj_t* soundorg;
+  degenmobj_t* soundorg;
 
 } button_t;
 
@@ -1029,14 +1029,6 @@ sector_t* P_FindModelCeilingSector
 ( fixed_t ceildestheight,
   int secnum ); //jff 02/04/98
 
-int P_FindSectorFromLineTag
-( const line_t *line,
-  int start ); // killough 4/17/98
-
-int P_FindLineFromLineTag
-( const line_t *line,
-  int start );   // killough 4/17/98
-
 int P_FindMinSurroundingLight
 ( sector_t* sector,
   int max );
@@ -1056,6 +1048,9 @@ dboolean PUREFUNC P_PlaneActive(const sector_t *sec);
 dboolean PUREFUNC P_CeilingActive(const sector_t *sec);
 dboolean PUREFUNC P_FloorActive(const sector_t *sec);
 dboolean PUREFUNC P_LightingActive(const sector_t *sec);
+
+short P_FloorLightLevel(const sector_t *sec);
+short P_CeilingLightLevel(const sector_t *sec);
 
 dboolean PUREFUNC P_IsSecret
 ( const sector_t *sec );
@@ -1499,12 +1494,9 @@ void dsda_SpawnQuake(mobj_t* location, int intensity, int duration,
 
 //
 
-dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activationType);
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t activationType);
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
 line_t *P_FindLine(int lineTag, int *searchPosition);
-int P_FindSectorFromTag(int tag, int start);
-int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start);
-int P_FindLineFromTag(int tag, int start);
 
 dboolean P_IsSpecialSector(sector_t *sector);
 void P_CopySectorSpecial(sector_t *dest, sector_t *source);
@@ -1648,7 +1640,10 @@ typedef enum {
   zk_each_color   = 229,
 } zdoom_lock_t;
 
-dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock);
+void P_AddMobjSecret(mobj_t *mobj);
+void P_PlayerCollectSecret(player_t *player);
+dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy);
+dboolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno);
 int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
                    zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,

@@ -33,6 +33,8 @@ set(COMMON_SRC
     dsda/deh_hash.h
     dsda/demo.c
     dsda/demo.h
+    dsda/destructible.c
+    dsda/destructible.h
     dsda/endoom.c
     dsda/endoom.h
     dsda/excmd.c
@@ -116,6 +118,8 @@ set(COMMON_SRC
     dsda/hud_components/tracker.h
     dsda/hud_components/weapon_text.c
     dsda/hud_components/weapon_text.h
+    dsda/id_list.c
+    dsda/id_list.h
     dsda/input.c
     dsda/input.h
     dsda/key_frame.c
@@ -185,6 +189,8 @@ set(COMMON_SRC
     dsda/time.h
     dsda/tracker.c
     dsda/tracker.h
+    dsda/tranmap.c
+    dsda/tranmap.h
     dsda/udmf.cpp
     dsda/udmf.h
     dsda/utility.c
@@ -321,8 +327,6 @@ set(COMMON_SRC
     r_defs.h
     r_draw.c
     r_draw.h
-    r_filter.c
-    r_filter.h
     r_fps.c
     r_fps.h
     r_main.c

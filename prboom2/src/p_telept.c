@@ -44,6 +44,7 @@
 #include "smooth.h"
 #include "m_random.h"
 
+#include "dsda/id_list.h"
 #include "dsda/thing_id.h"
 
 // More will be added
@@ -65,7 +66,7 @@ static dboolean P_IsMapSpot(mobj_t *mo)
 
 static mobj_t* P_TeleportDestination(short thing_id, int tag)
 {
-  int i;
+  const int *id_p;
 
   if (thing_id)
   {
@@ -141,13 +142,14 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
     return NULL;
   }
 
-  for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
+  FIND_SECTORS(id_p, tag)
+  {
     register thinker_t* th = NULL;
     while ((th = P_NextThinker(th,th_misc)) != NULL)
       if (th->function == P_MobjThinker) {
         register mobj_t* m = (mobj_t*)th;
         if (m->type == MT_TELEPORTMAN  &&
-            m->subsector->sector->iSectorID == i)
+            m->subsector->sector->iSectorID == *id_p)
             return m;
       }
   }
@@ -220,13 +222,13 @@ static int P_TeleportToDestination(mobj_t *destination, line_t *line, mobj_t *th
   if (flags & TELF_SOURCEFOG)
   {
     // spawn teleport fog and emit sound at source
-    S_StartSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
+    S_StartMobjSound(P_SpawnMobj(oldx, oldy, oldz, MT_TFOG), sfx_telept);
   }
 
   if (flags & TELF_DESTFOG)
   {
     // spawn teleport fog and emit sound at destination
-    S_StartSound(
+    S_StartMobjSound(
       P_SpawnMobj(
         destination->x + 20 * finecosine[destination->angle >> ANGLETOFINESHIFT],
         destination->y + 20 * finesine[destination->angle >> ANGLETOFINESHIFT],
@@ -357,7 +359,7 @@ int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
 
   if (source && dest)
   {
-    int i;
+    const int *id_p;
     int flags;
     angle_t an;
     fixed_t dcos, dsin;
@@ -368,10 +370,11 @@ int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
     dcos = finecosine[an >> ANGLETOFINESHIFT];
     dsin = finesine[an >> ANGLETOFINESHIFT];
 
-    for (i = -1; (i = P_FindSectorFromTag(tag, i)) >= 0;) {
+    FIND_SECTORS(id_p, tag)
+    {
       mobj_in_sector_t mis;
 
-      P_InitSectorSearch(&mis, &sectors[i]);
+      P_InitSectorSearch(&mis, &sectors[*id_p]);
       while ((target = P_FindMobjInSector(&mis)))
       {
         fixed_t dx, dy;
@@ -407,9 +410,6 @@ int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_
   if (side || thing->flags & MF_MISSILE)
     return 0;
 
-  // killough 1/31/98: improve performance by using
-  // P_FindSectorFromLineTag instead of simple linear search.
-
   if ((m = P_TeleportDestination(thing_id, tag)) != NULL)
   {
     return P_TeleportToDestination(m, line, thing, flags);
@@ -431,14 +431,14 @@ int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_
 int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
                           int tag, dboolean reverse)
 {
-  int i;
+  const int *i;
   line_t *l;
 
   if (side || thing->flags & MF_MISSILE)
     return 0;
 
-  for (i = -1; (i = P_FindLineFromTag(tag, i)) >= 0;)
-    if ((l=lines+i) != line && l->backsector)
+  for (i = dsda_FindLinesFromID(tag); *i >= 0; i++)
+    if ((l = lines + *i) != line && l->backsector)
       {
         // Get the thing's position along the source linedef
         fixed_t pos = D_abs(line->dx) > D_abs(line->dy) ?
@@ -619,11 +619,11 @@ dboolean P_Teleport(mobj_t * thing, fixed_t x, fixed_t y, angle_t angle, dboolea
     {
         fogDelta = thing->flags & MF_MISSILE ? 0 : TELEFOGHEIGHT;
         fog = P_SpawnMobj(oldx, oldy, oldz + fogDelta, g_mt_tfog);
-        S_StartSound(fog, g_sfx_telept);
+        S_StartMobjSound(fog, g_sfx_telept);
         an = angle >> ANGLETOFINESHIFT;
         fog = P_SpawnMobj(x + 20 * finecosine[an],
                           y + 20 * finesine[an], thing->z + fogDelta, g_mt_tfog);
-        S_StartSound(fog, g_sfx_telept);
+        S_StartMobjSound(fog, g_sfx_telept);
         if (thing->player &&
             !thing->player->powers[pw_weaponlevel2] &&
             !thing->player->powers[pw_speed])

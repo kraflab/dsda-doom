@@ -18,6 +18,11 @@
 #include <cstring>
 #include <vector>
 
+extern "C" {
+char *Z_StrdupLevel(const char *s);
+void *Z_MallocLevel(size_t size);
+}
+
 #include "scanner.h"
 
 #include "udmf.h"
@@ -62,6 +67,19 @@ static void dsda_SkipValue(Scanner &scanner) {
   }
 }
 
+// The scanner drops the sign when scanning, and we need it back
+static char* dsda_FloatString(Scanner &scanner) {
+  if (scanner.decimal >= 0)
+    return Z_StrdupLevel(scanner.string);
+
+  char* buffer = (char*) Z_MallocLevel(strlen(scanner.string) + 2);
+  buffer[0] = '-';
+  buffer[1] = '\0';
+  strcat(buffer, scanner.string);
+
+  return buffer;
+}
+
 #define SCAN_INT(x)  { scanner.MustGetToken('='); \
                        scanner.MustGetInteger(); \
                        x = scanner.number; \
@@ -83,11 +101,22 @@ static void dsda_SkipValue(Scanner &scanner) {
                               strncpy(x, scanner.string, n); \
                               scanner.MustGetToken(';'); }
 
+#define SCAN_STRING(x) { scanner.MustGetToken('='); \
+                         scanner.MustGetToken(TK_StringConst); \
+                         x = Z_StrdupLevel(scanner.string); \
+                         scanner.MustGetToken(';'); }
+
+#define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
+                               scanner.MustGetFloat(); \
+                               x = dsda_FloatString(scanner); \
+                               scanner.MustGetToken(';'); }
+
 static void dsda_ParseUDMFLineDef(Scanner &scanner) {
   udmf_line_t line = { 0 };
 
   line.id = -1;
   line.sideback = -1;
+  line.alpha = 1.0;
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
@@ -128,6 +157,18 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "locknumber")) {
       SCAN_INT(line.locknumber);
+    }
+    else if (!stricmp(scanner.string, "automapstyle")) {
+      SCAN_INT(line.automapstyle);
+    }
+    else if (!stricmp(scanner.string, "health")) {
+      SCAN_INT(line.health);
+    }
+    else if (!stricmp(scanner.string, "healthgroup")) {
+      SCAN_INT(line.healthgroup);
+    }
+    else if (!stricmp(scanner.string, "alpha")) {
+      SCAN_FLOAT(line.alpha);
     }
     else if (!stricmp(scanner.string, "blocking")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKING);
@@ -246,13 +287,32 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     else if (!stricmp(scanner.string, "transparent")) {
       SCAN_FLAG(line.flags, UDMF_ML_TRANSPARENT);
     }
+    else if (!stricmp(scanner.string, "revealed")) {
+      SCAN_FLAG(line.flags, UDMF_ML_REVEALED);
+    }
+    else if (!stricmp(scanner.string, "noskywalls")) {
+      SCAN_FLAG(line.flags, UDMF_ML_NOSKYWALLS);
+    }
+    else if (!stricmp(scanner.string, "drawfullheight")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DRAWFULLHEIGHT);
+    }
+    else if (!stricmp(scanner.string, "damagespecial")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DAMAGESPECIAL);
+    }
+    else if (!stricmp(scanner.string, "deathspecial")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DEATHSPECIAL);
+    }
+    else if (!stricmp(scanner.string, "blocklandmonsters")) {
+      SCAN_FLAG(line.flags, UDMF_ML_BLOCKLANDMONSTERS);
+    }
+    else if (!stricmp(scanner.string, "moreids")) {
+      SCAN_STRING(line.moreids);
+    }
     else {
       // known ignored fields:
       // comment
-      // alpha
       // renderstyle
       // arg0str
-      // moreids
       dsda_SkipValue(scanner);
     }
   }
@@ -288,6 +348,15 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "light")) {
       SCAN_INT(side.light);
+    }
+    else if (!stricmp(scanner.string, "light_top")) {
+      SCAN_INT(side.light_top);
+    }
+    else if (!stricmp(scanner.string, "light_mid")) {
+      SCAN_INT(side.light_mid);
+    }
+    else if (!stricmp(scanner.string, "light_bottom")) {
+      SCAN_INT(side.light_bottom);
     }
     else if (!stricmp(scanner.string, "scalex_top")) {
       SCAN_FLOAT(side.scalex_top);
@@ -346,6 +415,15 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
     else if (!stricmp(scanner.string, "nodecals")) {
       SCAN_FLAG(side.flags, UDMF_SF_NODECALS);
     }
+    else if (!stricmp(scanner.string, "lightabsolute_top")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTETOP);
+    }
+    else if (!stricmp(scanner.string, "lightabsolute_mid")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTEMID);
+    }
+    else if (!stricmp(scanner.string, "lightabsolute_bottom")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTEBOTTOM);
+    }
     else if (!stricmp(scanner.string, "texturetop")) {
       SCAN_STRING_N(side.texturetop, 8);
     }
@@ -358,6 +436,33 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
     else {
       // known ignored fields:
       // comment
+      // nogradient_top
+      // flipgradient_top
+      // clampgradient_top
+      // useowncolors_top
+      // uppercolor_top
+      // lowercolor_top
+      // nogradient_mid
+      // flipgradient_mid
+      // clampgradient_mid
+      // useowncolors_mid
+      // uppercolor_mid
+      // lowercolor_mid
+      // nogradient_bottom
+      // flipgradient_bottom
+      // clampgradient_bottom
+      // useowncolors_bottom
+      // uppercolor_bottom
+      // lowercolor_bottom
+      // useowncoloradd_top
+      // useowncoloradd_mid
+      // useowncoloradd_bottom
+      // coloradd_top
+      // coloradd_mid
+      // coloradd_bottom
+      // colorization_top
+      // colorization_mid
+      // colorization_bottom
       dsda_SkipValue(scanner);
     }
   }
@@ -373,10 +478,10 @@ static void dsda_ParseUDMFVertex(Scanner &scanner) {
     scanner.MustGetToken(TK_Identifier);
 
     if (!stricmp(scanner.string, "x")) {
-      SCAN_FLOAT(vertex.x);
+      SCAN_FLOAT_STRING(vertex.x);
     }
     else if (!stricmp(scanner.string, "y")) {
-      SCAN_FLOAT(vertex.y);
+      SCAN_FLOAT_STRING(vertex.y);
     }
     else {
       // known ignored fields:
@@ -397,7 +502,7 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
   sector.yscalefloor = 1.f;
   sector.xscaleceiling = 1.f;
   sector.yscaleceiling = 1.f;
-  sector.gravity = 1.f;
+  sector.gravity = "1.0";
   sector.damageinterval = 32;
 
   scanner.MustGetToken('{');
@@ -465,7 +570,7 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       SCAN_FLOAT(sector.rotationceiling);
     }
     else if (!stricmp(scanner.string, "gravity")) {
-      SCAN_FLOAT(sector.gravity);
+      SCAN_FLOAT_STRING(sector.gravity);
     }
     else if (!stricmp(scanner.string, "lightfloorabsolute")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_LIGHTFLOORABSOLUTE);
@@ -497,11 +602,17 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
     else if (!stricmp(scanner.string, "damagehazard")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_DAMAGEHAZARD);
     }
+    else if (!stricmp(scanner.string, "noattack")) {
+      SCAN_FLAG(sector.flags, UDMF_SECF_NOATTACK);
+    }
     else if (!stricmp(scanner.string, "texturefloor")) {
       SCAN_STRING_N(sector.texturefloor, 8);
     }
     else if (!stricmp(scanner.string, "textureceiling")) {
       SCAN_STRING_N(sector.textureceiling, 8);
+    }
+    else if (!stricmp(scanner.string, "moreids")) {
+      SCAN_STRING(sector.moreids);
     }
     else {
       // known ignored fields:
@@ -522,7 +633,6 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       // fadecolor
       // desaturation
       // soundsequence
-      // moreids
       // damagetype
       // floorterrain
       // ceilingterrain
@@ -536,6 +646,29 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       // portal_floor_nopass
       // portal_floor_norender
       // portal_floor_overlaytype
+      // floor_reflect
+      // ceiling_reflect
+      // fogdensity
+      // floorglowcolor
+      // floorglowheight
+      // ceilingglowcolor
+      // ceilingglowheight
+      // color_floor
+      // color_ceiling
+      // color_walltop
+      // color_wallbottom
+      // color_sprites
+      // coloradd_floor
+      // coloradd_ceiling
+      // coloradd_sprites
+      // coloradd_walls
+      // colorization_floor
+      // colorization_ceiling
+      // noskywalls
+      // healthfloor
+      // healthfloorgroup
+      // healthceiling
+      // healthceilinggroup
       dsda_SkipValue(scanner);
     }
   }
@@ -546,8 +679,8 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
 static void dsda_ParseUDMFThing(Scanner &scanner) {
   udmf_thing_t thing = { 0 };
 
-  thing.gravity = 1.f;
-  thing.health = 1;
+  thing.gravity = "1.0";
+  thing.health = "1.0";
   thing.floatbobphase = -1;
 
   scanner.MustGetToken('{');
@@ -581,23 +714,23 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
     else if (!stricmp(scanner.string, "arg4")) {
       SCAN_INT(thing.arg4);
     }
-    else if (!stricmp(scanner.string, "health")) {
-      SCAN_INT(thing.health);
-    }
     else if (!stricmp(scanner.string, "floatbobphase")) {
       SCAN_INT(thing.floatbobphase);
     }
     else if (!stricmp(scanner.string, "x")) {
-      SCAN_FLOAT(thing.x);
+      SCAN_FLOAT_STRING(thing.x);
     }
     else if (!stricmp(scanner.string, "y")) {
-      SCAN_FLOAT(thing.y);
+      SCAN_FLOAT_STRING(thing.y);
     }
     else if (!stricmp(scanner.string, "height")) {
-      SCAN_FLOAT(thing.height);
+      SCAN_FLOAT_STRING(thing.height);
     }
     else if (!stricmp(scanner.string, "gravity")) {
-      SCAN_FLOAT(thing.gravity);
+      SCAN_FLOAT_STRING(thing.gravity);
+    }
+    else if (!stricmp(scanner.string, "health")) {
+      SCAN_FLOAT_STRING(thing.health);
     }
     else if (!stricmp(scanner.string, "scalex")) {
       SCAN_FLOAT(thing.scalex);
@@ -743,8 +876,17 @@ void dsda_ParseUDMF(const unsigned char* buffer, size_t length, udmf_errorfunc e
     scanner.ErrorF("Insufficient UDMF data");
 
   udmf.lines = &udmf_lines[0];
+  udmf.num_lines = udmf_lines.size();
+
   udmf.sides = &udmf_sides[0];
+  udmf.num_sides = udmf_sides.size();
+
   udmf.vertices = &udmf_vertices[0];
+  udmf.num_vertices = udmf_vertices.size();
+
   udmf.sectors = &udmf_sectors[0];
+  udmf.num_sectors = udmf_sectors.size();
+
   udmf.things = &udmf_things[0];
+  udmf.num_things = udmf_things.size();
 }

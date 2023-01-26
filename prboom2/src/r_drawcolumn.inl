@@ -56,7 +56,6 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
   byte             *dest;            // killough
   fixed_t          frac;
   const fixed_t    fracstep = dcvars->iscale;
-  const fixed_t    slope_texu = dcvars->texu;
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
   // Adjust borders. Low...

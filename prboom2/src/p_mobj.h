@@ -398,8 +398,11 @@ typedef struct mobj_s
     fixed_t floorclip;          // value to use for floor clipping
     int archiveNum;             // Identity during archive
     short tid;                  // thing identifier
-    byte special;               // special
+    int special;                // special
     byte args[5];               // special arguments
+
+    // zdoom
+    fixed_t gravity;
 
     // misc
     byte color;
@@ -509,6 +512,10 @@ void    P_ExplodeMissile(mobj_t*);    // killough
 #define MF2_SEEKERMISSILE     0x0000800000000000ull // is a seeker (for reflection)
 #define MF2_REFLECTIVE        0x0001000000000000ull // reflects missiles
 
+// zdoom
+#define MF2_CANUSEWALLS       0x0002000000000000ull // can activate use lines
+#define MF2_COUNTSECRET       0x0004000000000000ull // picking up counts as a secret
+
 #define AMMO_GWND_WIMPY 10
 #define AMMO_GWND_HEFTY 50
 #define AMMO_CBOW_WIMPY 5
@@ -554,6 +561,7 @@ void P_BloodSplatter2(fixed_t x, fixed_t y, fixed_t z, mobj_t * originator);
 
 // zdoom
 
+fixed_t P_MobjGravity(mobj_t* mo);
 dboolean P_SpawnThing(short thing_id, mobj_t *source, int type,
                       angle_t angle, dboolean fog, short new_thing_id);
 dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_t angle,

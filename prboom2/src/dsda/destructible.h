@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2023 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,15 +12,17 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Data Organizer
+//	DSDA Destructible
 //
 
-#ifndef __DSDA_DATA_ORGANIZER__
-#define __DSDA_DATA_ORGANIZER__
+#ifndef __DSDA_DESTRUCTIBLE__
+#define __DSDA_DESTRUCTIBLE__
 
-char* dsda_DetectDirectory(const char* env_key, int arg_id);
-void dsda_InitDataDir(void);
-char* dsda_DataDir(void);
-const char* dsda_DataRoot(void);
+#include "p_mobj.h"
+
+void dsda_AddLineToHealthGroup(line_t* line);
+void dsda_ResetHealthGroups(void);
+void dsda_DamageLinedef(line_t* line, mobj_t* source, int damage);
+void dsda_RadiusAttackDestructibles(int xl, int xh, int yl, int yh);
 
 #endif

@@ -422,7 +422,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_overrun_missedbackside_emulate),
 
   SETTING_HEADING("Mapping error compatibility settings"),
-  MIGRATED_SETTING(dsda_config_comperr_zerotag),
   MIGRATED_SETTING(dsda_config_comperr_passuse),
   MIGRATED_SETTING(dsda_config_comperr_hangsolid),
   MIGRATED_SETTING(dsda_config_comperr_blockmap),
@@ -968,7 +967,7 @@ void M_ScreenShot(void)
 
     if (access(lbmname,0))
     {
-      S_StartSound(NULL,gamemode==commercial ? sfx_radio : sfx_tink);
+      S_StartVoidSound(gamemode==commercial ? sfx_radio : sfx_tink);
       M_DoScreenShot(lbmname); // cph
       success = 1;
     }

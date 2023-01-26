@@ -120,7 +120,6 @@ float modelMatrix[16];
 float projMatrix[16];
 
 extern const lighttable_t **walllights;
-extern const lighttable_t **walllightsnext;
 
 //
 // precalculated math tables
@@ -152,8 +151,6 @@ const lighttable_t *(*scalelight)[MAXLIGHTSCALE];
 const lighttable_t *(*zlight)[MAXLIGHTZ];
 const lighttable_t *fullcolormap;
 const lighttable_t **colormaps;
-/* cph - allow crappy fake contrast to be disabled */
-int fake_contrast;
 
 // killough 3/20/98, 4/4/98: end dynamic colormaps
 
@@ -892,7 +889,6 @@ static void R_SetupFrame (player_t *player)
         + player->fixedcolormap*256*sizeof(lighttable_t);
 
       walllights = scalelightfixed;
-      walllightsnext = scalelightfixed;
 
       for (i=0 ; i<MAXLIGHTSCALE ; i++)
         scalelightfixed[i] = fixedcolormap;

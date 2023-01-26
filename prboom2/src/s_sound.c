@@ -385,6 +385,43 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
   }
 }
 
+void S_StartSectorSound(sector_t *sector, int sfx_id)
+{
+  if (sector->flags & SECF_SILENT)
+    return;
+
+  S_StartSound((mobj_t *) &sector->soundorg, sfx_id);
+}
+
+void S_LoopSectorSound(sector_t *sector, int sfx_id, int timeout)
+{
+  if (sector->flags & SECF_SILENT)
+    return;
+
+  S_LoopSound((mobj_t *) &sector->soundorg, sfx_id, timeout);
+}
+
+void S_StartMobjSound(mobj_t *mobj, int sfx_id)
+{
+  if (mobj && mobj->subsector && mobj->subsector->sector->flags & SECF_SILENT)
+    return;
+
+  S_StartSound(mobj, sfx_id);
+}
+
+void S_StartVoidSound(int sfx_id)
+{
+  S_StartSound(NULL, sfx_id);
+}
+
+void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id)
+{
+  if (line && line->frontsector && line->frontsector->flags & SECF_SILENT)
+    return;
+
+  S_StartSound((mobj_t *) soundorg, sfx_id);
+}
+
 void S_StartSound(void *origin, int sfx_id)
 {
   S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, 0);

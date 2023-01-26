@@ -36,7 +36,7 @@
 
 #include <SDL_opengl.h>
 
-extern int nodesVersion;
+extern dboolean use_gl_nodes;
 
 typedef enum {
   skytype_auto,

@@ -53,6 +53,7 @@
 #include "r_sky.h"
 #include "r_plane.h"
 #include "r_data.h"
+#include "r_segs.h"
 #include "r_things.h"
 #include "r_fps.h"
 #include "p_maputl.h"
@@ -91,7 +92,7 @@ float bw_red = 0.3f;
 float bw_green = 0.59f;
 float bw_blue = 0.11f;
 
-extern const int tran_filter_pct;
+const int tran_filter_pct = 66;
 
 dboolean use_fog=false;
 
@@ -451,7 +452,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     visible_subsectors_count = 0;
     for (i = 0; i < numsubsectors; i++)
     {
-      if ((map_subsectors[i] && !(subsectors[i].sector->flags & SECF_HIDDEN)) || dsda_RevealAutomap())
+      if (map_subsectors[i] || dsda_RevealAutomap())
       {
         visible_subsectors[visible_subsectors_count++] = &subsectors[i];
       }
@@ -495,7 +496,8 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
     if (sub->sector->bbox[BOXLEFT] > am_frame.bbox[BOXRIGHT] ||
       sub->sector->bbox[BOXRIGHT] < am_frame.bbox[BOXLEFT] ||
       sub->sector->bbox[BOXBOTTOM] > am_frame.bbox[BOXTOP] ||
-      sub->sector->bbox[BOXTOP] < am_frame.bbox[BOXBOTTOM])
+      sub->sector->bbox[BOXTOP] < am_frame.bbox[BOXBOTTOM] ||
+      sub->sector->flags & SECF_HIDDEN)
     {
       continue;
     }
@@ -1569,48 +1571,48 @@ static void gld_DrawWall(GLWall *wall)
   (w).ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;\
   lineheight=((float)fabs(((ceiling_height)/(float)FRACUNIT)-((floor_height)/(float)FRACUNIT)))
 
-#define OU(w,seg) (((float)((seg)->sidedef->textureoffset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_width)
-#define OV(w,seg) (((float)((seg)->sidedef->rowoffset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height)
-#define OV_PEG(w,seg,v_offset) (OV((w),(seg))-(((float)(v_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height))
-#define URUL(w, seg, backseg, linelength)\
+#define OU(w,seg,specific_offset) (((float)((seg)->sidedef->textureoffset+specific_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_width)
+#define OV(w,seg,specific_offset) (((float)((seg)->sidedef->rowoffset+specific_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height)
+#define OV_PEG(w,seg,v_offset,specific_offset) (OV((w),(seg),specific_offset)-(((float)(v_offset)/(float)FRACUNIT)/(float)(w).gltexture->buffer_height))
+#define URUL(w, seg, backseg, linelength, specific_offset)\
   if (backseg){\
-    (w).ur=OU((w),(seg));\
+    (w).ur=OU((w),(seg),(specific_offset));\
     (w).ul=(w).ur+((linelength)/(float)(w).gltexture->buffer_width);\
   }else{\
-    (w).ul=OU((w),(seg));\
+    (w).ul=OU((w),(seg),(specific_offset));\
     (w).ur=(w).ul+((linelength)/(float)(w).gltexture->buffer_width);\
   }
 
 #define CALC_TEX_VALUES_TOP(w, seg, backseg, peg, linelength, lineheight)\
   (w).flag=GLDWF_TOP;\
-  URUL(w, seg, backseg, linelength);\
+  URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_top);\
   if (peg){\
-    (w).vb=OV((w),(seg))+((w).gltexture->scaleyfac);\
+    (w).vb=OV((w),(seg),(seg)->sidedef->rowoffset_top)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
-    (w).vt=OV((w),(seg));\
+    (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_top);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
 
 #define CALC_TEX_VALUES_MIDDLE1S(w, seg, backseg, peg, linelength, lineheight)\
   (w).flag=GLDWF_M1S;\
-  URUL(w, seg, backseg, linelength);\
+  URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_mid);\
   if (peg){\
-    (w).vb=OV((w),(seg))+((w).gltexture->scaleyfac);\
+    (w).vb=OV((w),(seg),(seg)->sidedef->rowoffset_mid)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
-    (w).vt=OV((w),(seg));\
+    (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_mid);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
 
 #define CALC_TEX_VALUES_BOTTOM(w, seg, backseg, peg, linelength, lineheight, v_offset)\
   (w).flag=GLDWF_BOT;\
-  URUL(w, seg, backseg, linelength);\
+  URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_bottom);\
   if (peg){\
-    (w).vb=OV_PEG((w),(seg),(v_offset))+((w).gltexture->scaleyfac);\
+    (w).vb=OV_PEG((w),(seg),(v_offset),(seg)->sidedef->rowoffset_bottom)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
-    (w).vt=OV((w),(seg));\
+    (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_bottom);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
 
@@ -1625,7 +1627,7 @@ void gld_AddWall(seg_t *seg)
   sector_t ftempsec; // needed for R_FakeFlat
   sector_t btempsec; // needed for R_FakeFlat
   float lineheight, linelength;
-  int rellight = 0;
+  int base_lightlevel;
   int backseg;
   dboolean fix_sky_bleed = false;
   dboolean indexed;
@@ -1663,14 +1665,10 @@ void gld_AddWall(seg_t *seg)
   if (!frontsector)
     return;
 
-  // e6y: fake contrast stuff
-  // Original doom added/removed one light level ((1<<LIGHTSEGSHIFT) == 16)
-  // for walls exactly vertical/horizontal on the map
-  if (fake_contrast)
-  {
-    rellight = seg->linedef->dx == 0 ? +gl_rellight : seg->linedef->dy==0 ? -gl_rellight : 0;
-  }
-  wall.light=gld_CalcLightLevel(frontsector->lightlevel+rellight+gld_GetGunFlashLight());
+  base_lightlevel = frontsector->lightlevel + gld_GetGunFlashLight();
+
+  R_AddContrast(seg, &base_lightlevel);
+
   wall.fogdensity = gld_CalcFogDensity(frontsector, frontsector->lightlevel, GLDIT_WALL);
   wall.alpha=1.0f;
   wall.gltexture=NULL;
@@ -1678,6 +1676,8 @@ void gld_AddWall(seg_t *seg)
 
   if (!seg->backsector) /* onesided */
   {
+    wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
+
     if (frontsector->ceilingpic==skyflatnum)
     {
       wall.ytop=MAXCOORD;
@@ -1737,9 +1737,6 @@ void gld_AddWall(seg_t *seg)
       min_ceiling = frontsector->ceilingheight;
     }
 
-    //max_floor_tex = max_floor + seg->sidedef->rowoffset;
-    //min_ceiling_tex = min_ceiling + seg->sidedef->rowoffset;
-
     if (backseg)
     {
       fs = backsector;
@@ -1758,6 +1755,7 @@ void gld_AddWall(seg_t *seg)
     /* toptexture */
     ceiling_height=frontsector->ceilingheight;
     floor_height=backsector->ceilingheight;
+    wall.light = gld_CalcLightLevel(R_TopLightLevel(seg->sidedef, base_lightlevel));
     if (frontsector->ceilingpic==skyflatnum)// || backsector->ceilingpic==skyflatnum)
     {
       wall.ytop= MAXCOORD;
@@ -1771,11 +1769,15 @@ void gld_AddWall(seg_t *seg)
           (backsector->ceilingheight<=backsector->floorheight)
          )
       {
+        fixed_t specific_rowoffset;
+
+        specific_rowoffset = seg->sidedef->rowoffset + seg->sidedef->rowoffset_top;
+
         // e6y
         // There is no more visual glitches with sky on Icarus map14 sector 187
         // Old code: wall.ybottom=(float)backsector->floorheight/MAP_SCALE;
         wall.ybottom=((float)(backsector->floorheight +
-          (seg->sidedef->rowoffset > 0 ? seg->sidedef->rowoffset : 0)))/MAP_SCALE;
+          (specific_rowoffset > 0 ? specific_rowoffset : 0)))/MAP_SCALE;
         gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
       }
       else
@@ -1860,19 +1862,21 @@ void gld_AddWall(seg_t *seg)
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
       int top, bottom;
+
+      wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
       wall.gltexture=temptex;
 
       if ( (LINE->flags & ML_DONTPEGBOTTOM) >0)
       {
-        //floor_height=max_floor_tex;
-        floor_height=MAX(seg->frontsector->floorheight, seg->backsector->floorheight)+(seg->sidedef->rowoffset);
-        ceiling_height=floor_height+(wall.gltexture->realtexheight<<FRACBITS);
+        floor_height = MAX(seg->frontsector->floorheight, seg->backsector->floorheight) +
+                       seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+        ceiling_height = floor_height + (wall.gltexture->realtexheight << FRACBITS);
       }
       else
       {
-        //ceiling_height=min_ceiling_tex;
-        ceiling_height=MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight)+(seg->sidedef->rowoffset);
-        floor_height=ceiling_height-(wall.gltexture->realtexheight<<FRACBITS);
+        ceiling_height = MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight) +
+                         seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+        floor_height = ceiling_height - (wall.gltexture->realtexheight << FRACBITS);
       }
 
       // Depending on missing textures and possible plane intersections
@@ -1935,7 +1939,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom = (float)bottom/(float)MAP_SCALE;
 
       wall.flag = GLDWF_M2S;
-      URUL(wall, seg, backseg, linelength);
+      URUL(wall, seg, backseg, linelength, seg->sidedef->textureoffset_mid);
 
       wall.vt = (float)((-top + ceiling_height))/(float)wall.gltexture->realtexheight;
       wall.vb = (float)((-bottom + ceiling_height))/(float)wall.gltexture->realtexheight;
@@ -1944,15 +1948,15 @@ void gld_AddWall(seg_t *seg)
       wall.vt /= FRACUNIT;
       wall.vb /= FRACUNIT;
 
-      if (seg->linedef->tranlump >= 0)
-        wall.alpha=(float)tran_filter_pct/100.0f;
+      wall.alpha = seg->linedef->alpha;
       gld_AddDrawWallItem((wall.alpha == 1.0f ? GLDIT_MWALL : GLDIT_TWALL), &wall);
-      wall.alpha=1.0f;
+      wall.alpha = 1.0f;
     }
 bottomtexture:
     /* bottomtexture */
     ceiling_height=backsector->floorheight;
     floor_height=frontsector->floorheight;
+    wall.light = gld_CalcLightLevel(R_BottomLightLevel(seg->sidedef, base_lightlevel));
     if (frontsector->floorpic==skyflatnum)
     {
       wall.ybottom=-MAXCOORD;

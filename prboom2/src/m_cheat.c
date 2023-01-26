@@ -309,8 +309,8 @@ void M_CheatGod(void)
     mapthing_t mt = {0};
 
     P_MapStart();
-    mt.x = plyr->mo->x >> FRACBITS;
-    mt.y = plyr->mo->y >> FRACBITS;
+    mt.x = plyr->mo->x;
+    mt.y = plyr->mo->y;
     mt.angle = (plyr->mo->angle + ANG45/2)*(uint64_t)45/ANG45;
     mt.type = consoleplayer + 1;
     mt.options = 1; // arbitrary non-zero value
@@ -322,7 +322,7 @@ void M_CheatGod(void)
                 plyr->mo->y + 20*finesine[an],
                 plyr->mo->z + g_telefog_height,
                 g_mt_tfog);
-    S_StartSound(plyr, g_sfx_revive);
+    S_StartMobjSound(plyr->mo, g_sfx_revive);
     P_MapEnd();
   }
 

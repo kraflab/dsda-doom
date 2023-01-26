@@ -985,7 +985,7 @@ static void gld_PreprocessSectors(void)
   // figgi -- adapted for glnodes
   if (numnodes)
   {
-    if (nodesVersion == 0)
+    if (!use_gl_nodes)
       gld_CarveFlats(numnodes-1, 0, 0);
     else
       gld_GetSubSectorVertices();
@@ -1123,7 +1123,7 @@ void gld_ProcessTexturedMap(void)
   if (map_textured && subsectorloops && subsectorloops[0].loops == NULL)
   {
     triangulate_subsectors = 1;
-    if (nodesVersion == 0)
+    if (!use_gl_nodes)
       gld_CarveFlats(numnodes-1, 0, 0);
     else
       gld_GetSubSectorVertices();

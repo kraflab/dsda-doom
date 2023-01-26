@@ -171,53 +171,117 @@ fixed_t PUREFUNC P_InterceptVector(const divline_t *v2, const divline_t *v1)
 
 //
 // P_LineOpening
-// Sets opentop and openbottom to the window
-// through a two sided line.
+// Sets line_opening to the window through a two sided line.
 // OPTIMIZE: keep this precalculated
 //
 
-fixed_t opentop;
-fixed_t openbottom;
-fixed_t openrange;
-fixed_t lowfloor;
+line_opening_t line_opening;
 
-// moved front and back outside P-LineOpening and changed    // phares 3/7/98
-// them to these so we can pick up the new friction value
-// in PIT_CheckLine()
-sector_t *openfrontsector; // made global                    // phares
-sector_t *openbacksector;  // made global
+dboolean P_GetMidTexturePosition(const line_t *line, int sideno, fixed_t *top, fixed_t *bottom)
+{
+  short texnum;
+  const side_t *side;
 
-void P_LineOpening(const line_t *linedef)
+  if (line->sidenum[0] == NO_INDEX || line->sidenum[1] == NO_INDEX)
+  {
+    return false;
+  }
+
+  side = &sides[line->sidenum[0]];
+
+  if (!side->midtexture)
+  {
+    return false;
+  }
+
+  texnum = side->midtexture;
+  texnum = texturetranslation[texnum];
+
+  if (line->flags & ML_DONTPEGBOTTOM)
+  {
+    *bottom = side->rowoffset + side->rowoffset_mid +
+                MAX(line->frontsector->floorheight, line->backsector->floorheight);
+    *top = *bottom + textureheight[texnum];
+  }
+  else
+  {
+    *top = side->rowoffset + side->rowoffset_mid +
+             MIN(line->frontsector->ceilingheight, line->backsector->ceilingheight);
+    *bottom = *top - textureheight[texnum];
+  }
+
+  return true;
+}
+
+void P_LineOpening_3dMidtex(const line_t *line, const mobj_t *actor)
+{
+  fixed_t bottom3d, top3d;
+
+  if (line->flags & ML_3DMIDTEXIMPASSIBLE && actor->flags & (MF_MISSILE | MF_BOUNCES))
+  {
+    return;
+  }
+
+  if (!P_GetMidTexturePosition(line, 0, &top3d, &bottom3d))
+  {
+    return;
+  }
+
+  if (actor->z + actor->height / 2 < (top3d + bottom3d) / 2)
+  {
+    line_opening.top = bottom3d;
+  }
+  else
+  {
+    if (top3d > line_opening.bottom)
+    {
+      line_opening.bottom = top3d;
+      line_opening.abovemidtex = true;
+    }
+    line_opening.touchmidtex = (abs(actor->z - top3d) < 24 * FRACUNIT);
+  }
+}
+
+void P_LineOpening(const line_t *linedef, const mobj_t *actor)
 {
   extern int tmfloorpic;
 
   if (linedef->sidenum[1] == NO_INDEX)      // single sided line
-    {
-      openrange = 0;
-      return;
-    }
+  {
+    line_opening.range = 0;
+    return;
+  }
 
-  openfrontsector = linedef->frontsector;
-  openbacksector = linedef->backsector;
+  line_opening.frontsector = linedef->frontsector;
+  line_opening.backsector = linedef->backsector;
 
-  if (openfrontsector->ceilingheight < openbacksector->ceilingheight)
-    opentop = openfrontsector->ceilingheight;
+  if (line_opening.frontsector->ceilingheight < line_opening.backsector->ceilingheight)
+    line_opening.top = line_opening.frontsector->ceilingheight;
   else
-    opentop = openbacksector->ceilingheight;
+    line_opening.top = line_opening.backsector->ceilingheight;
 
-  if (openfrontsector->floorheight > openbacksector->floorheight)
-    {
-      openbottom = openfrontsector->floorheight;
-      lowfloor = openbacksector->floorheight;
-      tmfloorpic = openfrontsector->floorpic;
-    }
+  if (line_opening.frontsector->floorheight > line_opening.backsector->floorheight)
+  {
+    line_opening.bottom = line_opening.frontsector->floorheight;
+    line_opening.lowfloor = line_opening.backsector->floorheight;
+    tmfloorpic = line_opening.frontsector->floorpic;
+  }
   else
-    {
-      openbottom = openbacksector->floorheight;
-      lowfloor = openfrontsector->floorheight;
-      tmfloorpic = openbacksector->floorpic;
-    }
-  openrange = opentop - openbottom;
+  {
+    line_opening.bottom = line_opening.backsector->floorheight;
+    line_opening.lowfloor = line_opening.frontsector->floorheight;
+    tmfloorpic = line_opening.backsector->floorpic;
+  }
+
+  line_opening.abovemidtex = false;
+  line_opening.touchmidtex = false;
+
+  if (actor && linedef->frontsector && linedef->backsector && linedef->flags & ML_3DMIDTEX)
+  {
+    P_LineOpening_3dMidtex(linedef, actor);
+  }
+
+  line_opening.range = line_opening.top - line_opening.bottom;
 }
 
 //
@@ -1066,10 +1130,10 @@ intercepts_overrun_t intercepts_overrun[] =
   {4,   NULL,                          NULL},
   {4,   NULL, /* &earlyout, */         NULL},
   {4,   NULL, /* &intercept_p, */      NULL},
-  {4,   &lowfloor,                     NULL},
-  {4,   &openbottom,                   NULL},
-  {4,   &opentop,                      NULL},
-  {4,   &openrange,                    NULL},
+  {4,   &line_opening.lowfloor,        NULL},
+  {4,   &line_opening.bottom,          NULL},
+  {4,   &line_opening.top,             NULL},
+  {4,   &line_opening.range,           NULL},
   {4,   NULL,                          NULL},
   {120, NULL, /* &activeplats, */      NULL},
   {8,   NULL,                          NULL},

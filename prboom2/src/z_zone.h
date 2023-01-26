@@ -60,5 +60,6 @@ char *Z_Strdup(const char *s);
 void *Z_MallocLevel(size_t size);
 void *Z_CallocLevel(size_t n, size_t n2);
 void *Z_ReallocLevel(void *p, size_t n);
+char *Z_StrdupLevel(const char *s);
 
 #endif

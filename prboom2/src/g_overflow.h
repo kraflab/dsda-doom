@@ -125,7 +125,7 @@ void SpechitOverrun(spechit_overrun_param_t *params);
 // reject overrun emulation
 //
 
-void RejectOverrun(int rejectlump, const byte **rejectmatrix, int totallines);
+void RejectOverrun(unsigned int length, const byte **rejectmatrix, int totallines);
 
 //
 // donut overrun emulation (linedef action 9)

@@ -70,16 +70,13 @@ typedef struct draw_column_vars_s
   int                 yl;
   int                 yh;
   int                 dy;
-  fixed_t             z; // the current column z coord
   fixed_t             iscale;
   fixed_t             texturemid;
   int                 texheight;    // killough
-  fixed_t             texu; // the current column u coord
   const byte          *source; // first pixel in a column
   const byte          *prevsource; // first pixel in previous column
   const byte          *nextsource; // first pixel in next column
   const lighttable_t  *colormap;
-  const lighttable_t  *nextcolormap;
   const byte          *translation;
   int                 edgeslope; // OR'ed RDRAW_EDGESLOPE_*
   // 1 if R_DrawColumn* is currently drawing a masked column, otherwise 0
@@ -105,7 +102,6 @@ typedef struct {
   fixed_t             ystep;
   const byte          *source; // start of a 64*64 tile image
   const lighttable_t  *colormap;
-  const lighttable_t  *nextcolormap;
 } draw_span_vars_t;
 
 typedef struct {

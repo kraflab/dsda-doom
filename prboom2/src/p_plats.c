@@ -41,6 +41,7 @@
 #include "lprintf.h"
 #include "e6y.h"//e6y
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 #include "hexen/p_acs.h"
@@ -71,7 +72,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
 
       if (heretic && !(leveltime & 31))
       {
-        S_LoopSound(&plat->sector->soundorg, g_sfx_stnmov_plats, 32);
+        S_LoopSectorSound(plat->sector, g_sfx_stnmov_plats, 32);
       }
 
       // if a pure raise type, make the plat moving sound
@@ -79,7 +80,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
           || plat->type == raiseToNearestAndChange)
       {
         if (!(leveltime&7))
-          S_LoopSound((mobj_t *)&plat->sector->soundorg, g_sfx_stnmov_plats, 8);
+          S_LoopSectorSound(plat->sector, g_sfx_stnmov_plats, 8);
       }
 
       // if encountered an obstacle, and not a crush type, reverse direction
@@ -87,7 +88,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
       {
         plat->count = plat->wait;
         plat->status = down;
-        S_StartSound((mobj_t *)&plat->sector->soundorg, g_sfx_pstart);
+        S_StartSectorSound(plat->sector, g_sfx_pstart);
 
         if (demo_compatibility &&
             (plat->type == raiseToNearestAndChange ||
@@ -111,7 +112,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
           {
             plat->count = plat->wait;
             plat->status = waiting;
-            S_StartSound((mobj_t *)&plat->sector->soundorg, g_sfx_pstop);
+            S_StartSectorSound(plat->sector, g_sfx_pstop);
           }
           else // else go into stasis awaiting next toggle activation
           {
@@ -148,7 +149,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
         {                           // is silent, instant, no waiting
           plat->count = plat->wait;
           plat->status = waiting;
-          S_StartSound((mobj_t *)&plat->sector->soundorg,g_sfx_pstop);
+          S_StartSectorSound(plat->sector, g_sfx_pstop);
         }
         else // instant toggles go into stasis awaiting next activation
         {
@@ -175,7 +176,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
       }
       else if (heretic && !(leveltime & 31))
       {
-        S_LoopSound(&plat->sector->soundorg, g_sfx_stnmov_plats, 32);
+        S_LoopSectorSound(plat->sector, g_sfx_stnmov_plats, 32);
       }
       break;
 
@@ -188,7 +189,7 @@ void T_CompatiblePlatRaise(plat_t * plat)
           plat->status = down;   // if at top, start down
 
         // make plat start sound
-        S_StartSound((mobj_t *)&plat->sector->soundorg,g_sfx_pstart);
+        S_StartSectorSound(plat->sector, g_sfx_pstart);
       }
       break; //jff 1/27/98 don't pickup code added later to in_stasis
 
@@ -212,14 +213,14 @@ void T_ZDoomPlatRaise(plat_t * plat)
           || plat->type == platRaiseAndStayLockout)
       {
         if (!(leveltime & 7))
-          S_LoopSound((mobj_t *) &plat->sector->soundorg, g_sfx_stnmov_plats, 8);
+          S_LoopSectorSound(plat->sector, g_sfx_stnmov_plats, 8);
       }
 
       if (res == crushed && plat->crush == NO_CRUSH)
       {
         plat->count = plat->wait;
         plat->status = down;
-        S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstart);
+        S_StartSectorSound(plat->sector, g_sfx_pstart);
       }
       else if (res == pastdest)
       {
@@ -227,7 +228,7 @@ void T_ZDoomPlatRaise(plat_t * plat)
         {
           plat->count = plat->wait;
           plat->status = waiting;
-          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstop);
+          S_StartSectorSound(plat->sector, g_sfx_pstop);
 
           switch (plat->type)
           {
@@ -261,7 +262,7 @@ void T_ZDoomPlatRaise(plat_t * plat)
         {
           plat->count = plat->wait;
           plat->status = waiting;
-          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstop);
+          S_StartSectorSound(plat->sector, g_sfx_pstop);
 
           switch (plat->type)
           {
@@ -284,7 +285,7 @@ void T_ZDoomPlatRaise(plat_t * plat)
       {
         plat->count = plat->wait;
         plat->status = up;
-        S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstart);
+        S_StartSectorSound(plat->sector, g_sfx_pstart);
       }
 
       // jff 1/26/98 remove the plat if it bounced so it can be tried again
@@ -311,7 +312,7 @@ void T_ZDoomPlatRaise(plat_t * plat)
           plat->status = down;
 
         if (plat->type != platToggle)
-          S_StartSound((mobj_t *) &plat->sector->soundorg, g_sfx_pstart);
+          S_StartSectorSound(plat->sector, g_sfx_pstart);
       }
       break;
     case in_stasis:
@@ -339,7 +340,7 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
                    fixed_t speed, int delay, fixed_t lip, int change)
 {
   plat_t *plat;
-  int secnum = -1;
+  const int *id_p;
   int rtn = 0;
   sector_t *sec;
 
@@ -361,9 +362,9 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
     }
   }
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     if (P_FloorActive(sec))
       continue;
@@ -400,18 +401,18 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
         plat->high = P_FindNextHighestFloor(sec, sec->floorheight);
         plat->status = up;
         P_ResetSectorSpecial(sec);
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_stnmov_plats);
+        S_StartSectorSound(sec, g_sfx_stnmov_plats);
         break;
       case platUpByValue:
       case platUpByValueStay:
         plat->high = sec->floorheight + height;
         plat->status = up;
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_stnmov_plats);
+        S_StartSectorSound(sec, g_sfx_stnmov_plats);
         break;
       case platDownByValue:
         plat->low = sec->floorheight - height;
         plat->status = down;
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_stnmov_plats);
+        S_StartSectorSound(sec, g_sfx_stnmov_plats);
         break;
       case platDownWaitUpStay:
       case platDownWaitUpStayStone:
@@ -419,20 +420,19 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
         if (plat->low > sec->floorheight)
           plat->low = sec->floorheight;
         plat->status = down;
-        S_StartSound((mobj_t *) &sec->soundorg,
-                     type == platDownWaitUpStay ? g_sfx_pstart : g_sfx_stnmov_plats);
+        S_StartSectorSound(sec, type == platDownWaitUpStay ? g_sfx_pstart : g_sfx_stnmov_plats);
         break;
       case platUpNearestWaitDownStay:
         plat->high = P_FindNextHighestFloor(sec, sec->floorheight);
         plat->status = up;
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        S_StartSectorSound(sec, g_sfx_pstart);
         break;
       case platUpWaitDownStay:
         plat->high = P_FindHighestFloorSurrounding(sec);
         if (plat->high < sec->floorheight)
           plat->high = sec->floorheight;
         plat->status = up;
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        S_StartSectorSound(sec, g_sfx_pstart);
         break;
       case platPerpetualRaise:
         plat->low = P_FindLowestFloorSurrounding(sec) + lip;
@@ -442,7 +442,7 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
         if (plat->high < sec->floorheight)
           plat->high = sec->floorheight;
         plat->status = (P_Random(pr_plats) & 1) ? up : down;
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        S_StartSectorSound(sec, g_sfx_pstart);
         break;
       case platToggle:
         plat->crush = DOOM_CRUSH;
@@ -452,14 +452,14 @@ int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
       case platDownToNearestFloor:
         plat->low = P_FindNextLowestFloor(sec, sec->floorheight) + lip;
         plat->status = down;
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        S_StartSectorSound(sec, g_sfx_pstart);
         break;
       case platDownToLowestCeiling:
         plat->low = P_FindLowestCeilingSurrounding(sec);
         if (plat->low > sec->floorheight)
           plat->low = sec->floorheight;
         plat->status = down;
-        S_StartSound((mobj_t *) &sec->soundorg, g_sfx_pstart);
+        S_StartSectorSound(sec, g_sfx_pstart);
         break;
       default:
         break;
@@ -477,14 +477,12 @@ int EV_DoPlat
   int           amount )
 {
   plat_t* plat;
-  int             secnum;
+  const int *id_p;
   int             rtn;
   sector_t*       sec;
 
-  secnum = -1;
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_plat; else {return rtn;}};//e6y
   // Activate all <type> plats that are in_stasis
   switch(type)
   {
@@ -502,14 +500,13 @@ int EV_DoPlat
   }
 
   // act on all sectors tagged the same as the activating linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_plat://e6y
     // don't start a second floor function if already moving
-    if (P_FloorActive(sec)) {//jff 2/23/98 multiple thinkers
-      if (!zerotag_manual) continue; else {return rtn;}};//e6y
+    if (P_FloorActive(sec)) //jff 2/23/98 multiple thinkers
+      continue;
 
     // Create a thinker
     rtn = 1;
@@ -539,7 +536,7 @@ manual_plat://e6y
         plat->status = up;
         P_ResetSectorSpecial(sec);
 
-        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_stnmov_plats);
+        S_StartSectorSound(sec, g_sfx_stnmov_plats);
         break;
 
       case raiseAndChange:
@@ -549,7 +546,7 @@ manual_plat://e6y
         plat->wait = 0;
         plat->status = up;
 
-        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_stnmov_plats);
+        S_StartSectorSound(sec, g_sfx_stnmov_plats);
         break;
 
       case downWaitUpStay:
@@ -562,7 +559,7 @@ manual_plat://e6y
         plat->high = sec->floorheight;
         plat->wait = 35*PLATWAIT;
         plat->status = down;
-        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_pstart);
+        S_StartSectorSound(sec, g_sfx_pstart);
         break;
 
       case blazeDWUS:
@@ -575,7 +572,7 @@ manual_plat://e6y
         plat->high = sec->floorheight;
         plat->wait = 35*PLATWAIT;
         plat->status = down;
-        S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+        S_StartSectorSound(sec, sfx_pstart);
         break;
 
       case perpetualRaise:
@@ -593,7 +590,7 @@ manual_plat://e6y
         plat->wait = 35*PLATWAIT;
         plat->status = P_Random(pr_plats)&1;
 
-        S_StartSound((mobj_t *)&sec->soundorg,g_sfx_pstart);
+        S_StartSectorSound(sec, g_sfx_pstart);
         break;
 
       case toggleUpDn: //jff 3/14/98 add new type to support instant toggle
@@ -611,7 +608,6 @@ manual_plat://e6y
         break;
     }
     P_AddActivePlat(plat);  // add plat to list of active plats
-    if (zerotag_manual) return rtn; //e6y
   }
   return rtn;
 }
@@ -821,16 +817,15 @@ void T_HexenPlatRaise(plat_t * plat)
 int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount)
 {
     plat_t *plat;
-    int secnum;
+    const int *id_p;
     int rtn;
     sector_t *sec;
 
-    secnum = -1;
     rtn = 0;
 
-    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
         if (sec->floordata || sec->ceilingdata)
             continue;
 

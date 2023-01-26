@@ -48,6 +48,18 @@
 #define PT_EARLYOUT     4
 
 typedef struct {
+  fixed_t top;
+  fixed_t bottom;
+  fixed_t range;
+  fixed_t lowfloor;
+  sector_t *frontsector;
+  sector_t *backsector;
+
+  dboolean touchmidtex;
+  dboolean abovemidtex;
+} line_opening_t;
+
+typedef struct {
   fixed_t     x;
   fixed_t     y;
   fixed_t     dx;
@@ -77,7 +89,7 @@ void P_MakeDivline(const line_t *li, divline_t *dl);
 int PUREFUNC P_PointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line);
 void check_intercept(void);
 
-void    P_LineOpening (const line_t *linedef);
+void    P_LineOpening (const line_t *linedef, const mobj_t *actor);
 void    P_UnsetThingPosition(mobj_t *thing);
 void    P_SetThingPosition(mobj_t *thing);
 dboolean P_BlockLinesIterator (int x, int y, dboolean func(line_t *));
@@ -93,10 +105,9 @@ mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance);
 int P_GetSafeBlockX(int coord);
 int P_GetSafeBlockY(int coord);
 
-extern fixed_t opentop;
-extern fixed_t openbottom;
-extern fixed_t openrange;
-extern fixed_t lowfloor;
+extern line_opening_t line_opening;
 extern divline_t trace;
+
+dboolean P_GetMidTexturePosition(const line_t *line, int sideno, fixed_t *top, fixed_t *bottom);
 
 #endif  /* __P_MAPUTL__ */

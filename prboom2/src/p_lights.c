@@ -40,6 +40,8 @@
 #include "p_spec.h"
 #include "p_tick.h"
 
+#include "dsda/id_list.h"
+
 //////////////////////////////////////////////////////////
 //
 // Lighting action routines, called once per tick
@@ -309,14 +311,13 @@ void P_SpawnGlowingLight(sector_t*  sector)
 //
 int EV_StartLightStrobing(line_t* line)
 {
-  int   secnum;
+  const int *id_p;
   sector_t* sec;
 
-  secnum = -1;
   // start lights strobing in all sectors tagged same as line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     // Original code never stored lighting data,
     //   so this only stops a light appearing in old complevels,
@@ -341,22 +342,22 @@ int EV_StartLightStrobing(line_t* line)
 //
 int EV_TurnTagLightsOff(line_t* line)
 {
-  int j;
+  const int *id_p;
 
   // search sectors for those with same tag as activating line
 
   // killough 10/98: replaced inefficient search with fast search
-  for (j = -1; (j = P_FindSectorFromLineTag(line,j)) >= 0;)
-    {
-      sector_t *sector = sectors + j, *tsec;
-      int i, min = sector->lightlevel;
-      // find min neighbor light level
-      for (i = 0;i < sector->linecount; i++)
-  if ((tsec = getNextSector(sector->lines[i], sector)) &&
-      tsec->lightlevel < min)
+  FIND_SECTORS(id_p, line->tag)
+  {
+    sector_t *sector = sectors + *id_p, *tsec;
+    int i, min = sector->lightlevel;
+    // find min neighbor light level
+    for (i = 0;i < sector->linecount; i++)
+      if ((tsec = getNextSector(sector->lines[i], sector)) &&
+        tsec->lightlevel < min)
     min = tsec->lightlevel;
-      sector->lightlevel = min;
-    }
+    sector->lightlevel = min;
+  }
   return 1;
 }
 
@@ -373,31 +374,31 @@ int EV_TurnTagLightsOff(line_t* line)
 //
 int EV_LightTurnOn(line_t *line, int bright)
 {
-  int i;
+  const int *id_p;
 
   // search all sectors for ones with same tag as activating line
 
   // killough 10/98: replace inefficient search with fast search
-  for (i = -1; (i = P_FindSectorFromLineTag(line,i)) >= 0;)
-    {
-      sector_t *temp, *sector = sectors+i;
-      int j, tbright = bright; //jff 5/17/98 search for maximum PER sector
+  FIND_SECTORS(id_p, line->tag)
+  {
+    sector_t *temp, *sector = sectors+*id_p;
+    int j, tbright = bright; //jff 5/17/98 search for maximum PER sector
 
-      // bright = 0 means to search for highest light level surrounding sector
+    // bright = 0 means to search for highest light level surrounding sector
 
-      if (!bright)
-  for (j = 0;j < sector->linecount; j++)
-    if ((temp = getNextSector(sector->lines[j],sector)) &&
-        temp->lightlevel > tbright)
-      tbright = temp->lightlevel;
+    if (!bright)
+      for (j = 0;j < sector->linecount; j++)
+        if ((temp = getNextSector(sector->lines[j],sector)) &&
+            temp->lightlevel > tbright)
+    tbright = temp->lightlevel;
 
-  sector->lightlevel = tbright;
+    sector->lightlevel = tbright;
 
-      //jff 5/17/98 unless compatibility optioned
-      //then maximum near ANY tagged sector
-      if (comp[comp_model])
-  bright = tbright;
-    }
+    //jff 5/17/98 unless compatibility optioned
+    //then maximum near ANY tagged sector
+    if (comp[comp_model])
+      bright = tbright;
+  }
   return 1;
 }
 
@@ -416,7 +417,7 @@ int EV_LightTurnOn(line_t *line, int bright)
 
 int EV_LightTurnOnPartway(line_t *line, fixed_t level)
 {
-  int i;
+  const int *id_p;
 
   if (level < 0)          // clip at extremes
     level = 0;
@@ -424,53 +425,53 @@ int EV_LightTurnOnPartway(line_t *line, fixed_t level)
     level = FRACUNIT;
 
   // search all sectors for ones with same tag as activating line
-  for (i = -1; (i = P_FindSectorFromLineTag(line,i)) >= 0;)
-    {
-      sector_t *temp, *sector = sectors+i;
-      int j, bright = 0, min = sector->lightlevel;
+  FIND_SECTORS(id_p, line->tag)
+  {
+    sector_t *temp, *sector = sectors+*id_p;
+    int j, bright = 0, min = sector->lightlevel;
 
-      for (j = 0; j < sector->linecount; j++)
-  if ((temp = getNextSector(sector->lines[j],sector)))
-    {
-      if (temp->lightlevel > bright)
-        bright = temp->lightlevel;
-      if (temp->lightlevel < min)
-        min = temp->lightlevel;
-    }
+    for (j = 0; j < sector->linecount; j++)
+      if ((temp = getNextSector(sector->lines[j],sector)))
+      {
+        if (temp->lightlevel > bright)
+          bright = temp->lightlevel;
+        if (temp->lightlevel < min)
+          min = temp->lightlevel;
+      }
 
-      sector->lightlevel =   // Set level in-between extremes
-  (level * bright + (FRACUNIT-level) * min) >> FRACBITS;
-    }
+    sector->lightlevel =   // Set level in-between extremes
+      (level * bright + (FRACUNIT-level) * min) >> FRACBITS;
+  }
   return 1;
 }
 
 void EV_LightChange(int tag, short change)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
-    sectors[s].lightlevel += change;
+  FIND_SECTORS(id_p, tag)
+    sectors[*id_p].lightlevel += change;
 }
 
 void EV_LightSet(int tag, short level)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
-    sectors[s].lightlevel = level;
+  FIND_SECTORS(id_p, tag)
+    sectors[*id_p].lightlevel = level;
 }
 
 void EV_LightSetMinNeighbor(int tag)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
     int i;
     short level;
     sector_t *temp, *sector;
 
-    sector = &sectors[s];
+    sector = &sectors[*id_p];
     level = sector->lightlevel;
 
     for (i = 0; i < sector->linecount; i++)
@@ -483,15 +484,15 @@ void EV_LightSetMinNeighbor(int tag)
 
 void EV_LightSetMaxNeighbor(int tag)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
     int i;
     short level;
     sector_t *temp, *sector;
 
-    sector = &sectors[s];
+    sector = &sectors[*id_p];
     level = 0;
 
     for (i = 0; i < sector->linecount; i++)
@@ -547,11 +548,11 @@ static void P_SpawnZDoomLightGlow(sector_t *sec, short startlevel, short endleve
 
 void EV_StartLightFading(int tag, byte level, byte tics)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sector_t *sec = &sectors[s];
+    sector_t *sec = &sectors[*id_p];
 
     if (sec->lightingdata || sec->lightlevel == level)
       continue;
@@ -569,7 +570,7 @@ void EV_StartLightFading(int tag, byte level, byte tics)
 
 void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
 {
-  int s = -1;
+  const int *id_p;
 
   if (tics == 0)
     return;
@@ -581,14 +582,14 @@ void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
     lower = temp;
   }
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sector_t *sec = &sectors[s];
+    sector_t *sec = &sectors[*id_p];
 
     if (sec->lightingdata)
       continue;
 
-    P_SpawnZDoomLightGlow(&sectors[s], upper, lower, tics, false);
+    P_SpawnZDoomLightGlow(sec, upper, lower, tics, false);
   }
 }
 
@@ -629,16 +630,16 @@ static void P_SpawnZDoomLightFlicker(sector_t *sec, short upper, short lower)
 
 void EV_StartLightFlickering(int tag, byte upper, byte lower)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sector_t *sec = &sectors[s];
+    sector_t *sec = &sectors[*id_p];
 
     if (sec->lightingdata)
       continue;
 
-    P_SpawnZDoomLightFlicker(&sectors[s], upper, lower);
+    P_SpawnZDoomLightFlicker(sec, upper, lower);
   }
 }
 
@@ -678,11 +679,11 @@ static void P_SpawnZDoomLightStrobeDoom(sector_t* sector, int brighttime, int da
 
 void EV_StartZDoomLightStrobing(int tag, int upper, int lower, int brighttime, int darktime)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sector_t *sec = &sectors[s];
+    sector_t *sec = &sectors[*id_p];
 
     if (sec->lightingdata)
       continue;
@@ -693,11 +694,11 @@ void EV_StartZDoomLightStrobing(int tag, int upper, int lower, int brighttime, i
 
 void EV_StartZDoomLightStrobingDoom(int tag, int brighttime, int darktime)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sector_t *sec = &sectors[s];
+    sector_t *sec = &sectors[*id_p];
 
     if (sec->lightingdata)
       continue;
@@ -708,11 +709,11 @@ void EV_StartZDoomLightStrobingDoom(int tag, int brighttime, int darktime)
 
 void EV_StopLightEffect(int tag)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sector_t *sec = &sectors[s];
+    sector_t *sec = &sectors[*id_p];
 
     if (sec->lightingdata)
     {
@@ -804,7 +805,7 @@ dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
 {
     light_t *light;
     sector_t *sec;
-    int secNum;
+    const int *id_p;
     int arg1, arg2, arg3, arg4;
     dboolean think;
     dboolean rtn;
@@ -814,12 +815,11 @@ dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
     arg3 = arg[3];
     arg4 = arg[4];
 
-    secNum = -1;
     rtn = false;
-    while ((secNum = P_FindSectorFromTag(arg[0], secNum)) >= 0)
+    FIND_SECTORS(id_p, arg[0])
     {
         think = false;
-        sec = &sectors[secNum];
+        sec = &sectors[*id_p];
 
         light = (light_t *) Z_MallocLevel(sizeof(light_t));
         light->type = type;

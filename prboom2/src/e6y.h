@@ -237,10 +237,6 @@ extern int mlooky;
 
 void e6y_G_Compatibility(void);
 
-extern dboolean zerotag_manual;
-
-dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum);
-
 const char* PathFindFileName(const char* pPath);
 void NormalizeSlashes2(char *str);
 unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax);

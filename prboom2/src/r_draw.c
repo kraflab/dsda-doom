@@ -39,7 +39,6 @@
 #include "w_wad.h"
 #include "r_main.h"
 #include "r_draw.h"
-#include "r_filter.h"
 #include "v_video.h"
 #include "st_stuff.h"
 #include "g_game.h"
@@ -336,10 +335,10 @@ R_DrawColumn_f R_GetDrawColumnFunc(enum column_pipeline_e type, enum draw_filter
 }
 
 void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars) {
-  dcvars->x = dcvars->yl = dcvars->yh = dcvars->z = 0;
-  dcvars->iscale = dcvars->texturemid = dcvars->texheight = dcvars->texu = 0;
+  dcvars->x = dcvars->yl = dcvars->yh = 0;
+  dcvars->iscale = dcvars->texturemid = dcvars->texheight = 0;
   dcvars->source = dcvars->prevsource = dcvars->nextsource = NULL;
-  dcvars->colormap = dcvars->nextcolormap = colormaps[0];
+  dcvars->colormap = colormaps[0];
   dcvars->translation = NULL;
   dcvars->edgeslope = dcvars->drawingmasked = 0;
   dcvars->flags = 0;

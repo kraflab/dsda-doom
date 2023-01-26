@@ -78,13 +78,7 @@ endif()
 
 find_package(SDL2_mixer REQUIRED)
 
-option(WITH_ZLIB "Use ZLIB if available" ON)
-if(WITH_ZLIB)
-    find_package(ZLIB)
-    if(ZLIB_FOUND)
-        set(HAVE_LIBZ TRUE)
-    endif()
-endif()
+find_package(ZLIB REQUIRED)
 
 option(WITH_MAD "Use libmad if available" ON)
 if(WITH_MAD)

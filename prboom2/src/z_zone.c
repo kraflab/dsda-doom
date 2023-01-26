@@ -226,3 +226,8 @@ void *Z_ReallocLevel(void *p, size_t n)
 {
   return Z_ReallocTag(p, n, ZONE_LEVEL);
 }
+
+char *Z_StrdupLevel(const char *s)
+{
+  return Z_StrdupTag(s, ZONE_LEVEL);
+}

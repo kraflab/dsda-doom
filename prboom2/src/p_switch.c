@@ -34,6 +34,7 @@
 #include "doomstat.h"
 #include "w_wad.h"
 #include "r_main.h"
+#include "p_maputl.h"
 #include "p_spec.h"
 #include "g_game.h"
 #include "s_sound.h"
@@ -192,7 +193,7 @@ static void P_StartButton
       buttonlist[i].btimer = time;
       /* use sound origin of line itself - no need to compatibility-wrap
        * as the popout code gets it wrong whatever its value */
-      buttonlist[i].soundorg = (mobj_t *)&line->soundorg;
+      buttonlist[i].soundorg = &line->soundorg;
       return;
     }
 
@@ -214,7 +215,7 @@ void P_ChangeSwitchTexture
   int           useAgain )
 {
   /* Rearranged a bit to avoid too much code duplication */
-  mobj_t  *soundorg;
+  degenmobj_t *soundorg;
   int     i, sound;
   short   *texture, *ttop, *tmid, *tbot;
   bwhere_e position;
@@ -222,23 +223,6 @@ void P_ChangeSwitchTexture
   ttop = &sides[line->sidenum[0]].toptexture;
   tmid = &sides[line->sidenum[0]].midtexture;
   tbot = &sides[line->sidenum[0]].bottomtexture;
-
-  if (hexen)
-  {
-    soundorg = (mobj_t *)&line->frontsector->soundorg;
-  }
-  else
-  {
-    sound = g_sfx_swtchn;
-    /* use the sound origin of the linedef (its midpoint)
-     * unless in a compatibility mode */
-    soundorg = (mobj_t *)&line->soundorg;
-    if (comp[comp_sound] || compatibility_level < prboom_6_compatibility) {
-      /* usually NULL, unless there is another button already pressed in,
-       * in which case it's the sound origin of that button press... */
-      soundorg = buttonlist->soundorg;
-    }
-  }
 
   /* don't zero line->special until after exit switch test */
   if (!hexen && !useAgain)
@@ -259,14 +243,124 @@ void P_ChangeSwitchTexture
     return; /* no switch texture was found to change */
   *texture = switchlist[i^1];
 
-  // hexen has sound id in episode field
   if (hexen)
+  {
+    // hexen has sound id in episode field
     sound = alphSwitchList[i / 2].episode;
+    soundorg = &line->frontsector->soundorg;
+  }
+  else
+  {
+    sound = g_sfx_swtchn;
+    /* use the sound origin of the linedef (its midpoint)
+     * unless in a compatibility mode */
+    soundorg = &line->soundorg;
+    if (comp[comp_sound] || compatibility_level < prboom_6_compatibility) {
+      /* usually NULL, unless there is another button already pressed in,
+       * in which case it's the sound origin of that button press... */
+      soundorg = buttonlist->soundorg;
+    }
+  }
 
-  S_StartSound(soundorg, sound);
+  S_StartLineSound(line, soundorg, sound);
 
   if (useAgain)
     P_StartButton(line, position, switchlist[i], BUTTONTIME);
+}
+
+static dboolean P_IsSwitchTexture(short texture)
+{
+  int i;
+
+  for (i = 0; i < numswitches * 2; ++i)
+    if (switchlist[i] == texture)
+      return true;
+
+  return false;
+}
+
+dboolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno)
+{
+  side_t *side;
+  sector_t *front;
+  dboolean can_hit_top, can_hit_bottom;
+  dboolean found_switch;
+
+  // Is it possible to use a side that doesn't exist?
+  if (line->sidenum[sideno] == NO_INDEX)
+  {
+    return true;
+  }
+
+  side = &sides[line->sidenum[sideno]];
+  front = side->sector;
+
+  if (mo->z + mo->height <= front->floorheight || mo->z >= front->ceilingheight)
+  {
+    return false;
+  }
+
+  // one-sided
+  if (line->sidenum[1] == NO_INDEX)
+  {
+    return true;
+  }
+
+  P_LineOpening(line, NULL);
+
+  // acts like one-sided
+  if (line_opening.range <= 0)
+  {
+    return true;
+  }
+
+  can_hit_top = (front->ceilingheight > line_opening.top) &&
+                (mo->z + mo->height > line_opening.top && mo->z < front->ceilingheight);
+
+  can_hit_bottom = (front->floorheight < line_opening.bottom) &&
+                   (mo->z + mo->height > front->floorheight && mo->z < line_opening.bottom);
+
+  found_switch = false;
+
+  if (side->toptexture && P_IsSwitchTexture(side->toptexture))
+  {
+    found_switch = true;
+
+    if (can_hit_top)
+    {
+      return true;
+    }
+  }
+
+  if (side->bottomtexture && P_IsSwitchTexture(side->bottomtexture))
+  {
+    found_switch = true;
+
+    if (can_hit_bottom)
+    {
+      return true;
+    }
+  }
+
+  if (side->midtexture && P_IsSwitchTexture(side->midtexture))
+  {
+    fixed_t top, bottom;
+
+    found_switch = true;
+
+    if (P_GetMidTexturePosition(line, sideno, &top, &bottom))
+    {
+      if (front->ceilingheight > bottom && front->floorheight < top)
+      {
+        if (mo->z + mo->height > bottom && mo->z < top)
+        {
+          return true;
+        }
+      }
+    }
+  }
+
+  return !found_switch && (can_hit_top || can_hit_bottom);
 }
 
 //
@@ -319,13 +413,27 @@ P_UseSpecialLine
 {
   dsda_WatchLineActivation(line, thing);
 
+  if (map_format.hexen)
+  {
+    if (side)
+    {
+      if (line->activation & SPAC_USEBACK)
+      {
+        return P_ActivateLine(line, thing, side, SPAC_USEBACK);
+      }
+
+      return false;
+    }
+
+    return P_ActivateLine(line, thing, side, SPAC_USE);
+  }
+
   // e6y
   // b.m. side test was broken in boom201
   if ((demoplayback ? (demover != 201) : (compatibility_level != boom_201_compatibility)))
     if (side) //jff 6/1/98 fix inadvertent deletion of side test
       return false;
 
-  if (map_format.hexen) return P_ActivateLine(line, thing, side, ML_SPAC_USE);
   if (heretic) return Heretic_P_UseSpecialLine(thing, line, side, bossaction);
 
   //jff 02/04/98 add check here for generalized floor/ceil mover
@@ -345,7 +453,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if ((line->special & FloorChange) || !(line->special & FloorModel))
           return false; // FloorModel is "Allow Monsters" if FloorChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag && ((line->special&6)!=6)) //e6y //jff 2/27/98 all non-manual
+      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenFloor;
     }
@@ -354,7 +462,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if ((line->special & CeilingChange) || !(line->special & CeilingModel))
           return false;   // CeilingModel is "Allow Monsters" if CeilingChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag && ((line->special&6)!=6)) //e6y //jff 2/27/98 all non-manual
+      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenCeiling;
     }
@@ -367,7 +475,7 @@ P_UseSpecialLine
         if (line->flags & ML_SECRET) // they can't open secret doors either
           return false;
       }
-      if (!comperr(comperr_zerotag) && !line->tag && ((line->special&6)!=6)) //e6y //jff 3/2/98 all non-manual
+      if (!line->tag && ((line->special&6)!=6)) //jff 3/2/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenDoor;
     }
@@ -377,7 +485,7 @@ P_UseSpecialLine
         return false;   // monsters disallowed from unlocking doors
       if (!P_CanUnlockGenDoor(line,thing->player))
         return false;
-      if (!comperr(comperr_zerotag) && !line->tag && ((line->special&6)!=6)) //e6y //jff 2/27/98 all non-manual
+      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
 
       linefunc = EV_DoGenLockedDoor;
@@ -387,7 +495,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if (!(line->special & LiftMonster))
           return false; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag && ((line->special&6)!=6)) //e6y //jff 2/27/98 all non-manual
+      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenLift;
     }
@@ -396,7 +504,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if (!(line->special & StairMonster))
           return false; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag && ((line->special&6)!=6)) //e6y //jff 2/27/98 all non-manual
+      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenStairs;
     }
@@ -405,7 +513,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if (!(line->special & CrusherMonster))
           return false; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag && ((line->special&6)!=6)) //e6y //jff 2/27/98 all non-manual
+      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenCrusher;
     }
@@ -531,7 +639,7 @@ P_UseSpecialLine
        */
       if (!bossaction && thing->player && thing->player->health <= 0 && !comp[comp_zombie])
       {
-        S_StartSound(thing, sfx_noway);
+        S_StartMobjSound(thing, sfx_noway);
         return false;
       }
 
@@ -611,7 +719,7 @@ P_UseSpecialLine
        */
       if (!bossaction && thing->player && thing->player->health <= 0 && !comp[comp_zombie])
       {
-        S_StartSound(thing, sfx_noway);
+        S_StartMobjSound(thing, sfx_noway);
         return false;
       }
 

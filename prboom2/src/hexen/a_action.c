@@ -115,7 +115,7 @@ void A_PotteryExplode(mobj_t * actor)
         mo->momx = P_SubRandom() << (FRACBITS - 6);
         mo->momy = P_SubRandom() << (FRACBITS - 6);
     }
-    S_StartSound(mo, hexen_sfx_pottery_explode);
+    S_StartMobjSound(mo, hexen_sfx_pottery_explode);
     if (actor->args[0])
     {                           // Spawn an item
         if (!nomonsters
@@ -244,7 +244,7 @@ void A_CorpseExplode(mobj_t * actor)
         mo->momz = ((P_Random(pr_hexen) & 7) + 5) * (3 * FRACUNIT / 4);
         mo->momx = P_SubRandom() << (FRACBITS - 6);
         mo->momy = P_SubRandom() << (FRACBITS - 6);
-        S_StartSound(mo, hexen_sfx_fired_death);
+        S_StartMobjSound(mo, hexen_sfx_fired_death);
     }
     P_RemoveMobj(actor);
 }
@@ -410,7 +410,7 @@ void A_Summon(mobj_t * actor)
 
         // Make smoke puff
         P_SpawnMobj(actor->x, actor->y, actor->z, HEXEN_MT_MNTRSMOKE);
-        S_StartSound(actor, hexen_sfx_maulator_active);
+        S_StartMobjSound(actor, hexen_sfx_maulator_active);
     }
 }
 
@@ -839,7 +839,7 @@ void A_SoAExplode(mobj_t * actor)
                         TranslateThingType[actor->args[0]]);
         }
     }
-    S_StartSound(mo, hexen_sfx_suitofarmor_break);
+    S_StartMobjSound(mo, hexen_sfx_suitofarmor_break);
     P_RemoveMobj(actor);
 }
 
@@ -936,7 +936,7 @@ void A_BatMove(mobj_t * actor)
     actor->momy = FixedMul(speed, finesine[newangle]);
 
     if (P_Random(pr_hexen) < 15)
-        S_StartSound(actor, hexen_sfx_bat_scream);
+        S_StartMobjSound(actor, hexen_sfx_bat_scream);
 
     // Handle Z movement
     actor->z = actor->target->z + 2 * FloatBobOffsets[actor->args[0]];

@@ -63,11 +63,18 @@ extern "C" {
 #define UDMF_ML_BLOCKSIGHT         0x0000001000000000ull
 #define UDMF_ML_BLOCKHITSCAN       0x0000002000000000ull
 #define UDMF_ML_TRANSPARENT        0x0000004000000000ull
+#define UDMF_ML_REVEALED           0x0000008000000000ull
+#define UDMF_ML_NOSKYWALLS         0x0000010000000000ull
+#define UDMF_ML_DRAWFULLHEIGHT     0x0000020000000000ull
+#define UDMF_ML_DAMAGESPECIAL      0x0000040000000000ull
+#define UDMF_ML_DEATHSPECIAL       0x0000080000000000ull
+#define UDMF_ML_BLOCKLANDMONSTERS  0x0000100000000000ull
 
 typedef uint64_t udmf_line_flags_t;
 
 typedef struct {
   int id;
+  char* moreids;
   int v1;
   int v2;
   int special;
@@ -78,19 +85,26 @@ typedef struct {
   int arg4;
   int sidefront;
   int sideback;
+  float alpha;
   int locknumber;
+  int automapstyle;
+  int health;
+  int healthgroup;
   udmf_line_flags_t flags;
 } udmf_line_t;
 
-#define UDMF_SF_LIGHTABSOLUTE  0x01
-#define UDMF_SF_LIGHTFOG       0x02
-#define UDMF_SF_NOFAKECONTRAST 0x04
-#define UDMF_SF_SMOOTHLIGHTING 0x08
-#define UDMF_SF_CLIPMIDTEX     0x10
-#define UDMF_SF_WRAPMIDTEX     0x20
-#define UDMF_SF_NODECALS       0x40
+#define UDMF_SF_LIGHTABSOLUTE       0x0001
+#define UDMF_SF_LIGHTFOG            0x0002
+#define UDMF_SF_NOFAKECONTRAST      0x0004
+#define UDMF_SF_SMOOTHLIGHTING      0x0008
+#define UDMF_SF_CLIPMIDTEX          0x0010
+#define UDMF_SF_WRAPMIDTEX          0x0020
+#define UDMF_SF_NODECALS            0x0040
+#define UDMF_SF_LIGHTABSOLUTETOP    0x0080
+#define UDMF_SF_LIGHTABSOLUTEMID    0x0100
+#define UDMF_SF_LIGHTABSOLUTEBOTTOM 0x0200
 
-typedef uint8_t udmf_side_flags_t;
+typedef uint16_t udmf_side_flags_t;
 
 typedef struct {
   int offsetx;
@@ -112,12 +126,15 @@ typedef struct {
   float offsetx_bottom;
   float offsety_bottom;
   int light;
+  int light_top;
+  int light_mid;
+  int light_bottom;
   udmf_side_flags_t flags;
 } udmf_side_t;
 
 typedef struct {
-  float x;
-  float y;
+  const char* x;
+  const char* y;
 } udmf_vertex_t;
 
 #define UDMF_SECF_LIGHTFLOORABSOLUTE   0x0001
@@ -130,6 +147,7 @@ typedef struct {
 #define UDMF_SECF_WATERZONE            0x0080
 #define UDMF_SECF_DAMAGETERRAINEFFECT  0x0100
 #define UDMF_SECF_DAMAGEHAZARD         0x0200
+#define UDMF_SECF_NOATTACK             0x0400
 
 typedef uint16_t udmf_sector_flags_t;
 
@@ -141,6 +159,7 @@ typedef struct {
   int lightlevel;
   int special;
   int id;
+  char* moreids;
   float xpanningfloor;
   float ypanningfloor;
   float xpanningceiling;
@@ -153,7 +172,7 @@ typedef struct {
   float rotationceiling;
   int lightfloor;
   int lightceiling;
-  float gravity;
+  const char* gravity;
   int damageamount;
   int damageinterval;
   int leakiness;
@@ -184,9 +203,9 @@ typedef uint32_t udmf_thing_flags_t;
 
 typedef struct {
   int id;
-  float x;
-  float y;
-  float height;
+  const char* x;
+  const char* y;
+  const char* height;
   int angle;
   int type;
   int special;
@@ -195,8 +214,8 @@ typedef struct {
   int arg2;
   int arg3;
   int arg4;
-  float gravity;
-  int health;
+  const char* gravity;
+  const char* health;
   float scalex;
   float scaley;
   float scale;
@@ -205,10 +224,19 @@ typedef struct {
 } udmf_thing_t;
 
 typedef struct {
+  size_t num_lines;
   udmf_line_t* lines;
+
+  size_t num_sides;
   udmf_side_t* sides;
+
+  size_t num_vertices;
   udmf_vertex_t* vertices;
+
+  size_t num_sectors;
   udmf_sector_t* sectors;
+
+  size_t num_things;
   udmf_thing_t* things;
 } udmf_t;
 

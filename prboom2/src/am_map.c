@@ -1540,9 +1540,121 @@ static dboolean AM_DrawRevealedSecrets(void)
 // jff 4/3/98 changed mapcolor_xxxx=0 as control to disable feature
 // jff 4/3/98 changed mapcolor_xxxx=-1 to disable drawing line completely
 //
+
+static automap_style_t AM_wallStyle(int i)
+{
+  switch (lines[i].automap_style)
+  {
+    case ams_default:
+      break;
+
+    // These styles have no corresponding colors in dsda-doom
+    case ams_extra_floor:
+    case ams_portal:
+    case ams_special:
+      if (!lines[i].backsector)
+        return ams_one_sided;
+      return ams_two_sided;
+
+    default:
+      return lines[i].automap_style;
+  }
+
+  // if line has been seen or IDDT has been used
+  if (dsda_RevealAutomap() || (lines[i].flags & ML_MAPPED))
+  {
+    if ((lines[i].flags & ML_DONTDRAW) && !dsda_RevealAutomap())
+      return ams_invisible;
+
+    if (
+      ((*mapcolor_bdor_p) || (*mapcolor_ydor_p) || (*mapcolor_rdor_p)) &&
+      !(lines[i].flags & ML_SECRET) && dsda_DoorType(i) != -1
+    )
+      return ams_locked;
+
+    if ((*mapcolor_exit_p) && dsda_IsExitLine(i))
+      return ams_exit;
+
+    if (!lines[i].backsector) // 1-sided
+    {
+      if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
+        return ams_secret;
+      else if (AM_DrawRevealedSecrets() && P_RevealedSecret(lines[i].frontsector))
+        return ams_revealed_secret;
+      else
+        return ams_one_sided;
+    }
+    else // 2-sided
+    {
+      if ((*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) && dsda_IsTeleportLine(i))
+      {
+        return ams_teleport;
+      }
+      else if (lines[i].flags & ML_SECRET)
+      {
+        return ams_one_sided;
+      }
+      else if (
+        (*mapcolor_clsd_p) &&
+        !(lines[i].flags & ML_SECRET) &&
+        ((lines[i].backsector->floorheight==lines[i].backsector->ceilingheight) ||
+        (lines[i].frontsector->floorheight==lines[i].frontsector->ceilingheight))
+      )
+      {
+        return ams_closed_door;
+      }
+      else if (
+        AM_DrawHiddenSecrets() &&
+        (P_IsSecret(lines[i].frontsector) || P_IsSecret(lines[i].backsector))
+      )
+      {
+        return ams_secret;
+      }
+      else if (
+        AM_DrawRevealedSecrets() &&
+        (P_RevealedSecret(lines[i].frontsector) || P_RevealedSecret(lines[i].backsector))
+      )
+      {
+        return ams_revealed_secret;
+      }
+      else if (lines[i].backsector->floorheight !=
+                lines[i].frontsector->floorheight)
+      {
+        return ams_floor_diff;
+      }
+      else if (lines[i].backsector->ceilingheight !=
+                lines[i].frontsector->ceilingheight)
+      {
+        return ams_ceiling_diff;
+      }
+      else if ((*mapcolor_flat_p) && dsda_RevealAutomap())
+      {
+        return ams_two_sided;
+      }
+    }
+  }
+  else if (plr->powers[pw_allmap] || (lines[i].flags & ML_REVEALED))
+  {
+    if (!(lines[i].flags & ML_DONTDRAW))
+    {
+      if
+      (
+        (*mapcolor_flat_p) ||
+        !lines[i].backsector ||
+        lines[i].backsector->floorheight != lines[i].frontsector->floorheight ||
+        lines[i].backsector->ceilingheight != lines[i].frontsector->ceilingheight
+      )
+        return ams_unseen;
+    }
+  }
+
+  return ams_invisible;
+}
+
 static void AM_drawWalls(void)
 {
   int i;
+  automap_style_t automap_style;
   static mline_t l;
 
   // draw the unclipped visible portions of all lines
@@ -1572,132 +1684,70 @@ static void AM_drawWalls(void)
       AM_SetMPointFloatValue(&l.b);
     }
 
-    // if line has been seen or IDDT has been used
-    if (dsda_RevealAutomap() || (lines[i].flags & ML_MAPPED))
+    automap_style = AM_wallStyle(i);
+
+    switch (automap_style)
     {
-      if ((lines[i].flags & ML_DONTDRAW) && !dsda_RevealAutomap())
+      case ams_invisible:
         continue;
-      {
-        /* cph - show keyed doors and lines */
-        int amd;
-        if (((*mapcolor_bdor_p) || (*mapcolor_ydor_p) || (*mapcolor_rdor_p)) &&
-            !(lines[i].flags & ML_SECRET) &&    /* non-secret */
-          (amd = dsda_DoorType(i)) != -1
-        )
+
+      case ams_locked:
+        switch (dsda_DoorType(i))
         {
-          {
-            switch (amd) /* closed keyed door */
-            {
-              case 1:
-                /*bluekey*/
-                AM_drawMline(&l,
-                  (*mapcolor_bdor_p)? (*mapcolor_bdor_p) : (*mapcolor_cchg_p));
-                continue;
-              case 2:
-                /*yellowkey*/
-                AM_drawMline(&l,
-                  (*mapcolor_ydor_p)? (*mapcolor_ydor_p) : (*mapcolor_cchg_p));
-                continue;
-              case 0:
-                /*redkey*/
-                AM_drawMline(&l,
-                  (*mapcolor_rdor_p)? (*mapcolor_rdor_p) : (*mapcolor_cchg_p));
-                continue;
-              case 3:
-                /*any or all*/
-                AM_drawMline(&l,
-                  (*mapcolor_clsd_p)? (*mapcolor_clsd_p) : (*mapcolor_cchg_p));
-                continue;
-            }
-          }
+          case 0: // red
+            AM_drawMline(&l, (*mapcolor_rdor_p)? (*mapcolor_rdor_p) : (*mapcolor_cchg_p));
+            continue;
+          case 1: // blue
+            AM_drawMline(&l, (*mapcolor_bdor_p)? (*mapcolor_bdor_p) : (*mapcolor_cchg_p));
+            continue;
+          case 2: // yellow
+            AM_drawMline(&l, (*mapcolor_ydor_p)? (*mapcolor_ydor_p) : (*mapcolor_cchg_p));
+            continue;
+          default:
+            AM_drawMline(&l, (*mapcolor_clsd_p)? (*mapcolor_clsd_p) : (*mapcolor_cchg_p));
+            continue;
         }
-      }
-      if ((*mapcolor_exit_p) && dsda_IsExitLine(i))
-      { /* jff 4/23/98 add exit lines to automap */
+
+      case ams_exit:
         AM_drawMline(&l, (*mapcolor_exit_p));
         continue;
-      }
 
-      if (!lines[i].backsector)
-      {
-        // jff 1/10/98 add new color for 1S secret sector boundary
-        if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
-          AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
-        else if (AM_DrawRevealedSecrets() && P_RevealedSecret(lines[i].frontsector))
-          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
-        else                               //jff 2/16/98 fixed bug
-          AM_drawMline(&l, (*mapcolor_wall_p)); // special was cleared
-      }
-      else /* now for 2S lines */
-      {
-        // jff 1/10/98 add color change for all teleporter types
-        if ((*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) && dsda_IsTeleportLine(i))
-        { // teleporters
-          AM_drawMline(&l, (*mapcolor_tele_p));
-        }
-        else if (lines[i].flags & ML_SECRET)    // secret door
-        {
-          AM_drawMline(&l, (*mapcolor_wall_p));      // wall color
-        }
-        else if
-        (
-            (*mapcolor_clsd_p) &&
-            !(lines[i].flags & ML_SECRET) &&    // non-secret closed door
-            ((lines[i].backsector->floorheight==lines[i].backsector->ceilingheight) ||
-            (lines[i].frontsector->floorheight==lines[i].frontsector->ceilingheight))
-        )
-        {
-          AM_drawMline(&l, (*mapcolor_clsd_p));      // non-secret closed door
-        } //jff 1/6/98 show secret sector 2S lines
-        else if (
-          AM_DrawHiddenSecrets() &&
-          (P_IsSecret(lines[i].frontsector) || P_IsSecret(lines[i].backsector))
-        )
-        {
-          AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
-        } //jff 1/6/98 end secret sector line change
-        else if
-        (
-          AM_DrawRevealedSecrets() &&
-          (P_RevealedSecret(lines[i].frontsector) || P_RevealedSecret(lines[i].backsector))
-        )
-        {
-          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
-        }
-        else if (lines[i].backsector->floorheight !=
-                  lines[i].frontsector->floorheight)
-        {
-          AM_drawMline(&l, (*mapcolor_fchg_p)); // floor level change
-        }
-        else if (lines[i].backsector->ceilingheight !=
-                  lines[i].frontsector->ceilingheight)
-        {
-          AM_drawMline(&l, (*mapcolor_cchg_p)); // ceiling level change
-        }
-        else if ((*mapcolor_flat_p) && dsda_RevealAutomap())
-        {
-          AM_drawMline(&l, (*mapcolor_flat_p)); //2S lines that appear only in IDDT
-        }
-      }
-    } // now draw the lines only visible because the player has computermap
-    else if (plr->powers[pw_allmap]) // computermap visible lines
-    {
-      if (!(lines[i].flags & ML_DONTDRAW)) // invisible flag lines do not show
-      {
-        if
-        (
-          (*mapcolor_flat_p)
-          ||
-          !lines[i].backsector
-          ||
-          lines[i].backsector->floorheight
-          != lines[i].frontsector->floorheight
-          ||
-          lines[i].backsector->ceilingheight
-          != lines[i].frontsector->ceilingheight
-        )
-          AM_drawMline(&l, (*mapcolor_unsn_p));
-      }
+      case ams_one_sided:
+        AM_drawMline(&l, (*mapcolor_wall_p));
+        continue;
+
+      case ams_secret:
+      case ams_unseen_secret:
+        AM_drawMline(&l, (*mapcolor_secr_p));
+        continue;
+
+      case ams_revealed_secret:
+        AM_drawMline(&l, (*mapcolor_revsecr_p));
+        continue;
+
+      case ams_teleport:
+        AM_drawMline(&l, (*mapcolor_tele_p));
+        continue;
+
+      case ams_closed_door:
+        AM_drawMline(&l, (*mapcolor_clsd_p));
+        continue;
+
+      case ams_floor_diff:
+        AM_drawMline(&l, (*mapcolor_fchg_p));
+        continue;
+
+      case ams_ceiling_diff:
+        AM_drawMline(&l, (*mapcolor_cchg_p));
+        continue;
+
+      case ams_two_sided:
+        AM_drawMline(&l, (*mapcolor_flat_p));
+        continue;
+
+      case ams_unseen:
+        AM_drawMline(&l, (*mapcolor_unsn_p));
+        continue;
     }
   }
 }

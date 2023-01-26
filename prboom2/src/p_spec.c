@@ -67,6 +67,7 @@
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/global.h"
+#include "dsda/id_list.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/thing_id.h"
@@ -869,90 +870,6 @@ sector_t *P_FindModelCeilingSector(fixed_t ceildestheight,int secnum)
   return NULL;
 }
 
-//
-// RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
-//
-
-// Find the next sector with the same tag as a linedef.
-// Rewritten by Lee Killough to use chained hashing to improve speed
-
-int P_FindSectorFromLineTag(const line_t *line, int start)
-{
-  start = start >= 0 ? sectors[start].nexttag :
-    sectors[(unsigned) line->tag % (unsigned) numsectors].firsttag;
-  while (start >= 0 && sectors[start].tag != line->tag)
-    start = sectors[start].nexttag;
-  return start;
-}
-
-int P_FindSectorFromTag(int tag, int start)
-{
-  start = start >= 0 ? sectors[start].nexttag :
-    sectors[(unsigned) tag % (unsigned) numsectors].firsttag;
-  while (start >= 0 && sectors[start].tag != tag)
-    start = sectors[start].nexttag;
-  return start;
-}
-
-int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start)
-{
-  if (tag == 0)
-  {
-    if (!line || !line->backsector || line->backsector->iSectorID == start)
-      return -1;
-
-    return line->backsector->iSectorID;
-  }
-  else
-    return P_FindSectorFromTag(tag, start);
-}
-
-// killough 4/16/98: Same thing, only for linedefs
-
-int P_FindLineFromLineTag(const line_t *line, int start)
-{
-  start = start >= 0 ? lines[start].nexttag :
-    lines[(unsigned) line->tag % (unsigned) numlines].firsttag;
-  while (start >= 0 && lines[start].tag != line->tag)
-    start = lines[start].nexttag;
-  return start;
-}
-
-int P_FindLineFromTag(int tag, int start)
-{
-  start = start >= 0 ? lines[start].nexttag :
-    lines[(unsigned) tag % (unsigned) numlines].firsttag;
-  while (start >= 0 && lines[start].tag != tag)
-    start = lines[start].nexttag;
-  return start;
-}
-
-// Hash the sector tags across the sectors and linedefs.
-static void P_InitTagLists(void)
-{
-  register int i;
-
-  for (i=numsectors; --i>=0; )        // Initially make all slots empty.
-    sectors[i].firsttag = -1;
-  for (i=numsectors; --i>=0; )        // Proceed from last to first sector
-    {                                 // so that lower sectors appear first
-      int j = (unsigned) sectors[i].tag % (unsigned) numsectors; // Hash func
-      sectors[i].nexttag = sectors[j].firsttag;   // Prepend sector to chain
-      sectors[j].firsttag = i;
-    }
-
-  // killough 4/17/98: same thing, only for linedefs
-
-  for (i=numlines; --i>=0; )        // Initially make all slots empty.
-    lines[i].firsttag = -1;
-  for (i=numlines; --i>=0; )        // Proceed from last to first linedef
-    {                               // so that lower linedefs appear first
-      int j = (unsigned) lines[i].tag % (unsigned) numlines; // Hash func
-      lines[i].nexttag = lines[j].firsttag;   // Prepend linedef to chain
-      lines[j].firsttag = i;
-    }
-}
-
 // Converts Hexen's 0 (meaning no crush) to the internal value
 int P_ConvertHexenCrush(int crush)
 {
@@ -1025,7 +942,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = s_PD_ANY; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1037,7 +954,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_REDK : s_PD_REDC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1049,7 +966,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_BLUEK : s_PD_BLUEC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1061,7 +978,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1073,7 +990,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_REDK : s_PD_REDS; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1085,7 +1002,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_BLUEK : s_PD_BLUES; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1097,7 +1014,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWS; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1116,7 +1033,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = s_PD_ALL6; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       if
@@ -1140,7 +1057,7 @@ dboolean P_CanUnlockGenDoor
       )
       {
         player->message = s_PD_ALL3; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1148,10 +1065,16 @@ dboolean P_CanUnlockGenDoor
   return true;
 }
 
-dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
+dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
 {
-  if (!player)
+  player_t *player;
+  const char *message = NULL;
+  int sfx = sfx_None;
+
+  if (!mo || !mo->player)
     return false;
+
+  player = mo->player;
 
   switch (lock)
   {
@@ -1160,48 +1083,48 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
     case zk_red_card:
       if (!player->cards[it_redcard])
       {
-        player->message = s_PD_REDC;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_REDC : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
     case zk_blue_card:
       if (!player->cards[it_bluecard])
       {
-        player->message = s_PD_BLUEC;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_BLUEC : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
     case zk_yellow_card:
       if (!player->cards[it_yellowcard])
       {
-        player->message = s_PD_YELLOWC;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_YELLOWC : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
     case zk_red_skull:
       if (!player->cards[it_redskull])
       {
-        player->message = s_PD_REDS;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_REDS : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
     case zk_blue_skull:
       if (!player->cards[it_blueskull])
       {
-        player->message = s_PD_BLUES;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_BLUES : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
     case zk_yellow_skull:
       if (!player->cards[it_yellowskull])
       {
-        player->message = s_PD_YELLOWS;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_YELLOWS : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
@@ -1215,8 +1138,8 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
         !player->cards[it_yellowskull]
       )
       {
-        player->message = s_PD_ANY;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_ANY : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
@@ -1230,8 +1153,8 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
         !player->cards[it_yellowskull]
       )
       {
-        player->message = s_PD_ALL6;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_ALL6 : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
@@ -1239,8 +1162,8 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
     case zk_redx:
       if (!player->cards[it_redcard] && !player->cards[it_redskull])
       {
-        player->message = s_PD_REDK;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_REDK : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
@@ -1248,8 +1171,8 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
     case zk_bluex:
       if (!player->cards[it_bluecard] && !player->cards[it_blueskull])
       {
-        player->message = s_PD_BLUEK;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_BLUEK : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
@@ -1257,8 +1180,8 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
     case zk_yellowx:
       if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
       {
-        player->message = s_PD_YELLOWK;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_YELLOWK : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
       break;
@@ -1269,12 +1192,22 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
         (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
       )
       {
-        player->message = s_PD_ALL3;
-        S_StartSound(player->mo, sfx_oof);
+        message = legacy ? s_PD_ALL3 : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
         return false;
       }
     default:
       break;
+  }
+
+  if (message)
+  {
+    player->message = message;
+  }
+
+  if (sfx != sfx_None)
+  {
+    S_StartMobjSound(mo, sfx);
   }
 
   return true;
@@ -1308,6 +1241,26 @@ dboolean PUREFUNC P_LightingActive(const sector_t *sec)
   return sec->lightingdata != NULL;
 }
 
+short P_FloorLightLevel(const sector_t *sec)
+{
+  return sec->lightlevel_floor + (
+    (sec->flags & SECF_LIGHTFLOORABSOLUTE) ? 0 : (
+      sec->floorlightsec == -1 ? sec->lightlevel
+                               : sectors[sec->floorlightsec].lightlevel
+    )
+  );
+}
+
+short P_CeilingLightLevel(const sector_t *sec)
+{
+  return sec->lightlevel_ceiling + (
+    (sec->flags & SECF_LIGHTCEILINGABSOLUTE) ? 0 : (
+      sec->ceilinglightsec == -1 ? sec->lightlevel
+                               : sectors[sec->ceilinglightsec].lightlevel
+    )
+  );
+}
+
 //
 // P_CheckTag()
 //
@@ -1324,7 +1277,7 @@ int P_CheckTag(line_t *line)
 {
   /* tag not zero, allowed, or
    * killough 11/98: compatibility option */
-  if (comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
+  if (comp[comp_zerotags] || line->tag)//e6y
     return 1;
 
   switch(line->special)
@@ -1454,10 +1407,15 @@ static void P_AddSectorSecret(sector_t *sector)
   sector->flags |= SECF_SECRET | SECF_WASSECRET;
 }
 
-static void P_CollectSecretCommon(sector_t *sector, player_t *player)
+void P_AddMobjSecret(mobj_t *mobj)
+{
+  totalsecret++;
+  mobj->flags2 |= MF2_COUNTSECRET;
+}
+
+void P_PlayerCollectSecret(player_t *player)
 {
   player->secretcount++;
-  sector->flags &= ~SECF_SECRET;
 
   if (dsda_IntConfig(dsda_config_hudadd_secretarea))
   {
@@ -1465,6 +1423,13 @@ static void P_CollectSecretCommon(sector_t *sector, player_t *player)
                  I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
     SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
   }
+}
+
+static void P_CollectSecretCommon(sector_t *sector, player_t *player)
+{
+  sector->flags &= ~SECF_SECRET;
+
+  P_PlayerCollectSecret(player);
 
   dsda_WatchSecret();
 }
@@ -1534,15 +1499,15 @@ void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
 {
   if (thing->player)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_CROSS);
+    P_ActivateLine(line, thing, side, SPAC_CROSS);
   }
   else if (thing->flags2 & MF2_MCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
   }
   else if (thing->flags2 & MF2_PCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_PCROSS);
+    P_ActivateLine(line, thing, side, SPAC_PCROSS);
   }
 }
 
@@ -1621,7 +1586,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if ((line->special & FloorChange) || !(line->special & FloorModel))
           return;     // FloorModel is "Allow Monsters" if FloorChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenFloor;
     }
@@ -1630,7 +1595,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if ((line->special & CeilingChange) || !(line->special & CeilingModel))
           return;     // CeilingModel is "Allow Monsters" if CeilingChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenCeiling;
     }
@@ -1643,7 +1608,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
         if (line->flags & ML_SECRET) // they can't open secret doors either
           return;
       }
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //3/2/98 move outside the monster check
+      if (!line->tag) //3/2/98 move outside the monster check
         return;
       linefunc = EV_DoGenDoor;
     }
@@ -1665,7 +1630,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if (!(line->special & LiftMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenLift;
     }
@@ -1674,7 +1639,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenStairs;
     }
@@ -1685,7 +1650,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenCrusher;
     }
@@ -2481,21 +2446,25 @@ void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
 {
   if (thing->player)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_CROSS);
+    P_ActivateLine(line, thing, side, SPAC_CROSS);
   }
   else if (thing->flags2 & MF2_MCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
   }
   else if (thing->flags2 & MF2_PCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_PCROSS);
+    P_ActivateLine(line, thing, side, SPAC_PCROSS);
   }
   else if (line->special == zl_teleport ||
            line->special == zl_teleport_no_fog ||
            line->special == zl_teleport_line)
   { // [RH] Just a little hack for BOOM compatibility
-    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+  }
+  else
+  {
+    P_ActivateLine(line, thing, side, SPAC_ANYCROSS);
   }
 }
 
@@ -2529,7 +2498,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if ((line->special & FloorChange) || !(line->special & FloorModel))
           return;   // FloorModel is "Allow Monsters" if FloorChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
 
       linefunc = EV_DoGenFloor;
@@ -2539,7 +2508,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if ((line->special & CeilingChange) || !(line->special & CeilingModel))
           return;   // CeilingModel is "Allow Monsters" if CeilingChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenCeiling;
     }
@@ -2552,7 +2521,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
         if (line->flags & ML_SECRET) // they can't open secret doors either
           return;
       }
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 3/2/98 all gun generalized types require tag
+      if (!line->tag) //jff 3/2/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenDoor;
     }
@@ -2567,7 +2536,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       }
       else
         return;
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
 
       linefunc = EV_DoGenLockedDoor;
@@ -2584,7 +2553,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenStairs;
     }
@@ -2593,7 +2562,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenCrusher;
     }
@@ -2684,7 +2653,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
 
 void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line)
 {
-  P_ActivateLine(line, thing, 0, ML_SPAC_IMPACT);
+  P_ActivateLine(line, thing, 0, SPAC_IMPACT);
 }
 
 static void P_ApplySectorDamage(player_t *player, int damage, int leak)
@@ -3113,12 +3082,12 @@ void P_UpdateSpecials (void)
         {
           /* don't take the address of the switch's sound origin,
            * unless in a compatibility mode. */
-          mobj_t *so = (mobj_t *)buttonlist[i].soundorg;
+          degenmobj_t *so = buttonlist[i].soundorg;
           if (comp[comp_sound] || compatibility_level < prboom_6_compatibility)
             /* since the buttonlist array is usually zeroed out,
              * button popouts generally appear to come from (0,0) */
-            so = (mobj_t *)&buttonlist[i].soundorg;
-          S_StartSound(so, g_sfx_swtchn);
+            so = (degenmobj_t *) &buttonlist[i].soundorg;
+          S_StartLineSound(buttonlist[i].line, so, g_sfx_swtchn);
         }
         memset(&buttonlist[i],0,sizeof(button_t));
       }
@@ -3473,19 +3442,20 @@ static void P_SpawnVanillaExtras(void)
     for (i = 0; i < numlines; ++i)
       switch (lines[i].special)
       {
-        int s;
+        const int *id_p;
 
         case 271:   // Regular sky
         case 272:   // Same, only flipped
-          for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-            sectors[s].sky = i | PL_SKYFLAT;
+          FIND_SECTORS(id_p, lines[i].tag)
+            sectors[*id_p].sky = i | PL_SKYFLAT;
         break;
       }
 }
 
 void P_SpawnCompatibleExtra(line_t *l, int i)
 {
-  int s, sec;
+  const int *id_p;
+  int sec;
 
   switch (l->special)
   {
@@ -3493,24 +3463,24 @@ void P_SpawnCompatibleExtra(line_t *l, int i)
     // support for drawn heights coming from different sector
     case 242:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].heightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].heightsec = sec;
       break;
 
     // killough 3/16/98: Add support for setting
     // floor lighting independently (e.g. lava)
     case 213:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].floorlightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].floorlightsec = sec;
       break;
 
     // killough 4/11/98: Add support for setting
     // ceiling lighting independently
     case 261:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].ceilinglightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].ceilinglightsec = sec;
       break;
 
       // killough 10/98:
@@ -3524,15 +3494,16 @@ void P_SpawnCompatibleExtra(line_t *l, int i)
 
     case 271:   // Regular sky
     case 272:   // Same, only flipped
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].sky = i | PL_SKYFLAT;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].sky = i | PL_SKYFLAT;
       break;
   }
 }
 
 void P_SpawnZDoomExtra(line_t *l, int i)
 {
-  int s, sec;
+  const int *id_p;
+  int sec;
 
   switch (l->special)
   {
@@ -3540,24 +3511,24 @@ void P_SpawnZDoomExtra(line_t *l, int i)
     // support for drawn heights coming from different sector
     case zl_transfer_heights:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].heightsec = sec;
+      FIND_SECTORS(id_p, l->arg1)
+        sectors[*id_p].heightsec = sec;
       break;
 
     // killough 3/16/98: Add support for setting
     // floor lighting independently (e.g. lava)
     case zl_transfer_floor_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].floorlightsec = sec;
+      FIND_SECTORS(id_p, l->arg1)
+        sectors[*id_p].floorlightsec = sec;
       break;
 
     // killough 4/11/98: Add support for setting
     // ceiling lighting independently
     case zl_transfer_ceiling_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].ceilinglightsec = sec;
+      FIND_SECTORS(id_p, l->arg1)
+        sectors[*id_p].ceilinglightsec = sec;
       break;
 
     // [Graf Zahl] Add support for setting lighting
@@ -3615,8 +3586,8 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         {
           fixed_t grav = FixedDiv(P_AproxDistance(l->dx, l->dy), 100 * FRACUNIT);
           sec = sides[*l->sidenum].sector->iSectorID;
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-            sectors[s].gravity = grav;
+          FIND_SECTORS(id_p, l->arg1)
+            sectors[*id_p].gravity = grav;
         }
         break;
 
@@ -3644,10 +3615,10 @@ void P_SpawnZDoomExtra(line_t *l, int i)
           }
 
           sec = sides[*l->sidenum].sector->iSectorID;
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+          FIND_SECTORS(id_p, l->arg1)
           {
-            sectors[s].damage = damage;
-            sectors[s].flags |= flags;
+            sectors[*id_p].damage = damage;
+            sectors[*id_p].flags |= flags;
           }
         }
         break;
@@ -3666,8 +3637,8 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         // linedef). Still requires user to use F_SKY1 for the floor
         // or ceiling texture, to distinguish floor and ceiling sky.
         case zi_init_transfer_sky:
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-            sectors[s].sky = i | PL_SKYFLAT;
+          FIND_SECTORS(id_p, l->arg1)
+            sectors[*id_p].sky = i | PL_SKYFLAT;
           break;
       }
       break;
@@ -3742,7 +3713,6 @@ void P_SpawnSpecials (void)
   P_RemoveAllActivePlats();     // killough
 
   P_InitButtons();
-  P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
   P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 
@@ -3923,17 +3893,18 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
 
   switch (special)
   {
-    register int s;
+    int side;
+    const int *id_p;
 
     case 250:   // scroll effect ceiling
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel);
       break;
 
     case 251:   // scroll effect floor
     case 253:   // scroll and carry objects on floor
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel);
       if (special != 253)
         break;
       // fallthrough
@@ -3941,29 +3912,22 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
     case 252: // carry objects on floor
       dx = FixedMul(dx, CARRYFACTOR);
       dy = FixedMul(dy, CARRYFACTOR);
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_carry, dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Scroller(sc_carry, dx, dy, control, *id_p, accel);
       break;
 
       // killough 3/1/98: scroll wall according to linedef
       // (same direction and speed as scrolling floors)
     case 254:
-      if (l->tag == 0 && comperr(comperr_zerotag))
-      {
-        Add_WallScroller(dx, dy, l, control, accel);
-      }
-      else
-      {
-        for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
-          if (s != i)
-            Add_WallScroller(dx, dy, lines + s, control, accel);
-      }
+      for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          Add_WallScroller(dx, dy, lines + *id_p, control, accel);
       break;
 
     case 255:    // killough 3/2/98: scroll according to sidedef offsets
-      s = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[s].textureoffset,
-                   sides[s].rowoffset, -1, s, accel);
+      side = lines[i].sidenum[0];
+      Add_Scroller(sc_side, -sides[side].textureoffset,
+                   sides[side].rowoffset, -1, side, accel);
       break;
 
     case 1024: // special 255 with tag control
@@ -3978,12 +3942,12 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       if (special == 1026)
         accel = 1;
 
-      s = lines[i].sidenum[0];
-      dx = -sides[s].textureoffset / 8;
-      dy = sides[s].rowoffset / 8;
-      for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
-        if (s != i)
-          Add_Scroller(sc_side, dx, dy, control, lines[s].sidenum[0], accel);
+      side = lines[i].sidenum[0];
+      dx = -sides[side].textureoffset / 8;
+      dy = sides[side].rowoffset / 8;
+      for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          Add_Scroller(sc_side, dx, dy, control, lines[*id_p].sidenum[0], accel);
 
       break;
 
@@ -4078,15 +4042,16 @@ void P_SpawnZDoomScroller(line_t *l, int i)
 
   switch (special)
   {
-    int s;
+    int j;
+    const int *id_p;
 
     case zl_scroll_ceiling:
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->arg1)
+        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel);
 
-      for (s = 0; s < copyscroller_count; ++s)
+      for (j = 0; j < copyscroller_count; ++j)
       {
-        line_t *cs = copyscrollers[s];
+        line_t *cs = copyscrollers[j];
 
         if (cs->arg1 == l->arg1 && cs->arg2 & 1)
           Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel);
@@ -4097,12 +4062,12 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_floor:
       if (l->arg3 != 1)
       { // scroll the floor texture
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-          Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+        FIND_SECTORS(id_p, l->arg1)
+          Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel);
 
-        for (s = 0; s < copyscroller_count; ++s)
+        for (j = 0; j < copyscroller_count; ++j)
         {
-          line_t *cs = copyscrollers[s];
+          line_t *cs = copyscrollers[j];
 
           if (cs->arg1 == l->arg1 && cs->arg2 & 2)
             Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel);
@@ -4113,12 +4078,12 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       { // carry objects on the floor
         dx = FixedMul(dx, CARRYFACTOR);
         dy = FixedMul(dy, CARRYFACTOR);
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-          Add_Scroller(sc_carry, dx, dy, control, s, accel);
+        FIND_SECTORS(id_p, l->arg1)
+          Add_Scroller(sc_carry, dx, dy, control, *id_p, accel);
 
-        for (s = 0; s < copyscroller_count; ++s)
+        for (j = 0; j < copyscroller_count; ++j)
         {
-          line_t *cs = copyscrollers[s];
+          line_t *cs = copyscrollers[j];
 
           if (cs->arg1 == l->arg1 && cs->arg2 & 4)
             Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel);
@@ -4130,46 +4095,46 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_texture_model:
       // killough 3/1/98: scroll wall according to linedef
       // (same direction and speed as scrolling floors)
-      for (s = -1; (s = P_FindLineFromTag(l->arg1, s)) >= 0;)
-        if (s != i)
-          Add_WallScroller(dx, dy, lines + s, control, accel);
+      for (id_p = dsda_FindLinesFromID(l->arg1); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          Add_WallScroller(dx, dy, lines + *id_p, control, accel);
 
       l->special = 0;
       break;
     case zl_scroll_texture_offsets:
       // killough 3/2/98: scroll according to sidedef offsets
       // MAP_FORMAT_TODO: l->arg1 SCROLLTYPE
-      s = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[s].textureoffset, sides[s].rowoffset, -1, s, accel);
+      j = lines[i].sidenum[0];
+      Add_Scroller(sc_side, -sides[j].textureoffset, sides[j].rowoffset, -1, j, accel);
       l->special = 0;
       break;
     case zl_scroll_texture_left:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, l->arg1 / 64, 0, -1, s, accel);
+      Add_Scroller(sc_side, l->arg1 / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_right:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, -l->arg1 / 64, 0, -1, s, accel);
+      Add_Scroller(sc_side, -l->arg1 / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_up:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, 0, l->arg1 / 64, -1, s, accel);
+      Add_Scroller(sc_side, 0, l->arg1 / 64, -1, j, accel);
       break;
     case zl_scroll_texture_down:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, 0, -l->arg1 / 64, -1, s, accel);
+      Add_Scroller(sc_side, 0, -l->arg1 / 64, -1, j, accel);
       break;
     case zl_scroll_texture_both:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
 
       if (l->arg1 == 0) {
         dx = (l->arg2 - l->arg3) / 64;
         dy = (l->arg5 - l->arg4) / 64;
-        Add_Scroller(sc_side, dx, dy, -1, s, accel);
+        Add_Scroller(sc_side, dx, dy, -1, j, accel);
       }
 
       l->special = 0;
@@ -4321,7 +4286,8 @@ void T_Friction(friction_t *f)
 
 static void P_ApplySectorFriction(int tag, int value, int use_thinker)
 {
-  int friction, movefactor, s;
+  const int *id_p;
+  int friction, movefactor;
 
   friction = (0x1EB8 * value) / 0x80 + 0xD000;
 
@@ -4344,7 +4310,7 @@ static void P_ApplySectorFriction(int tag, int value, int use_thinker)
       movefactor = 32;
   }
 
-  for (s = -1; (s = P_FindSectorFromTag(tag, s)) >= 0;)
+  FIND_SECTORS(id_p, tag)
   {
     // killough 8/28/98:
     //
@@ -4358,10 +4324,10 @@ static void P_ApplySectorFriction(int tag, int value, int use_thinker)
 
     //e6y: boom's friction code for boom compatibility
     if (use_thinker)
-      Add_Friction(friction, movefactor, s);
+      Add_Friction(friction, movefactor, *id_p);
 
-    sectors[s].friction = friction;
-    sectors[s].movefactor = movefactor;
+    sectors[*id_p].friction = friction;
+    sectors[*id_p].movefactor = movefactor;
   }
 }
 
@@ -4702,25 +4668,25 @@ mobj_t* P_GetPushThing(int s)
 
 void P_SpawnCompatiblePusher(line_t *l)
 {
-  register int s;
+  const int *id_p;
   mobj_t* thing;
 
   switch(l->special)
   {
     case 224: // wind
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Pusher(p_wind, l->dx, l->dy, NULL, s);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Pusher(p_wind, l->dx, l->dy, NULL, *id_p);
       break;
     case 225: // current
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Pusher(p_current, l->dx, l->dy, NULL, s);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Pusher(p_current, l->dx, l->dy, NULL, *id_p);
       break;
     case 226: // push/pull
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+      FIND_SECTORS(id_p, l->tag)
       {
-        thing = P_GetPushThing(s);
+        thing = P_GetPushThing(*id_p);
         if (thing) // No MT_P* means no effect
-          Add_Pusher(p_push, l->dx, l->dy, thing, s);
+          Add_Pusher(p_push, l->dx, l->dy, thing, *id_p);
       }
       break;
   }
@@ -4745,7 +4711,7 @@ static void CalculatePushVector(line_t *l, int magnitude, int angle, fixed_t *dx
 
 void P_SpawnZDoomPusher(line_t *l)
 {
-  int s;
+  const int *id_p;
   mobj_t* thing;
   fixed_t dx, dy;
 
@@ -4753,33 +4719,35 @@ void P_SpawnZDoomPusher(line_t *l)
   {
     case zl_sector_set_wind: // wind
       CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Pusher(p_wind, dx, dy, NULL, s);
+      FIND_SECTORS(id_p, l->arg1)
+        Add_Pusher(p_wind, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_sector_set_current: // current
       CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Pusher(p_current, dx, dy, NULL, s);
+      FIND_SECTORS(id_p, l->arg1)
+        Add_Pusher(p_current, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_point_push_set_force: // push/pull
       CalculatePushVector(l, l->arg3, 0, &dx, &dy);
       if (l->arg1)
       {  // [RH] Find thing by sector
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+        FIND_SECTORS(id_p, l->arg1)
         {
-          thing = P_GetPushThing(s);
+          thing = P_GetPushThing(*id_p);
           if (thing) // No MT_P* means no effect
           {
             // [RH] Allow narrowing it down by tid
             if (!l->arg2 || l->arg2 == thing->tid)
-              Add_Pusher(p_push, dx, dy, thing, s);
+              Add_Pusher(p_push, dx, dy, thing, *id_p);
           }
         }
       }
       else
       {  // [RH] Find thing by tid
+        int s;
+
         for (s = -1; (thing = P_FindMobjFromTID(l->arg2, &s)) != NULL;)
           if (thing->type == map_format.mt_push || thing->type == map_format.mt_pull)
             Add_Pusher(p_push, dx, dy, thing, thing->subsector->sector->iSectorID);
@@ -5471,7 +5439,7 @@ void P_PlayerOnSpecialFlat(player_t * player, int floorType)
             if (!(leveltime & 31))
             {
                 P_DamageMobj(player->mo, &LavaInflictor, NULL, 10);
-                S_StartSound(player->mo, hexen_sfx_lava_sizzle);
+                S_StartMobjSound(player->mo, hexen_sfx_lava_sizzle);
             }
             break;
         default:
@@ -5497,18 +5465,17 @@ line_t *P_FindLine(int lineTag, int *searchPosition)
 
 dboolean EV_SectorSoundChange(byte * args)
 {
-    int secNum;
+    const int *id_p;
     dboolean rtn;
 
     if (!args[0])
     {
         return false;
     }
-    secNum = -1;
     rtn = false;
-    while ((secNum = P_FindSectorFromTag(args[0], secNum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sectors[secNum].seqType = args[1];
+        sectors[*id_p].seqType = args[1];
         rtn = true;
     }
     return rtn;
@@ -5533,7 +5500,7 @@ static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
         snprintf(LockedBuffer, sizeof(LockedBuffer),
                  "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
         P_SetMessage(mo->player, LockedBuffer, true);
-        S_StartSound(mo, hexen_sfx_door_locked);
+        S_StartMobjSound(mo, hexen_sfx_door_locked);
         return false;
     }
     return true;
@@ -5570,11 +5537,11 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
                 {
                     if (arti < hexen_arti_firstpuzzitem)
                     {
-                        S_StartSound(NULL, hexen_sfx_artifact_use);
+                        S_StartVoidSound(hexen_sfx_artifact_use);
                     }
                     else
                     {
-                        S_StartSound(NULL, hexen_sfx_puzzle_success);
+                        S_StartVoidSound(hexen_sfx_puzzle_success);
                     }
                     ArtifactFlash = 4;
                 }
@@ -5585,35 +5552,67 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
     return false;
 }
 
-dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned int activationType)
+dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType)
 {
-  unsigned int lineActivation;
+  line_activation_t lineActivation;
 
-  lineActivation = line->flags & ML_SPAC_MASK;
+  lineActivation = line->activation;
+
+  if (line->flags & ML_FIRSTSIDEONLY && side)
+  {
+    return false;
+  }
 
   if (
     line->special == zl_teleport &&
-    lineActivation & ML_SPAC_CROSS &&
-    activationType == ML_SPAC_PCROSS &&
+    lineActivation & SPAC_CROSS &&
+    activationType == SPAC_PCROSS &&
     mo && mo->flags & MF_MISSILE
   )
   { // Let missiles use regular player teleports
-    lineActivation |= ML_SPAC_PCROSS;
+    lineActivation |= SPAC_PCROSS;
+  }
+
+  if (activationType == SPAC_USE || activationType == SPAC_USEBACK)
+  {
+    if (line->flags & ML_CHECKSWITCHRANGE && !P_CheckSwitchRange(line, mo, side))
+    {
+      return false;
+    }
+  }
+
+  if (activationType == SPAC_USE &&
+      lineActivation & SPAC_MUSE &&
+      mo && !mo->player && mo->flags2 & MF2_CANUSEWALLS)
+  {
+    return true;
+  }
+
+  if (activationType == SPAC_PUSH &&
+      lineActivation & SPAC_MPUSH &&
+      mo && !mo->player && mo->flags2 & MF2_PUSHWALL)
+  {
+    return true;
   }
 
   if (!(lineActivation & activationType))
   {
-    if (activationType != ML_SPAC_MCROSS || lineActivation != ML_SPAC_CROSS)
+    if (activationType != SPAC_MCROSS || lineActivation != SPAC_CROSS)
     {
       return false;
     }
+  }
+
+  if (activationType == SPAC_ANYCROSS)
+  {
+    return true;
   }
 
   if (
     mo && !mo->player &&
     !(mo->flags & MF_MISSILE) &&
     !(line->flags & ML_MONSTERSCANACTIVATE) &&
-    (activationType != ML_SPAC_MCROSS || !(lineActivation & ML_SPAC_MCROSS))
+    (activationType != SPAC_MCROSS || !(lineActivation & SPAC_MCROSS))
   )
   {
     dboolean noway = true;
@@ -5628,13 +5627,13 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
       return false;
     }
 
-    if ((activationType == ML_SPAC_USE || activationType == ML_SPAC_PUSH) && line->flags & ML_SECRET)
+    if ((activationType == SPAC_USE || activationType == SPAC_PUSH) && line->flags & ML_SECRET)
       return false;    // never open secret doors
 
     switch (activationType)
     {
-      case ML_SPAC_USE:
-      case ML_SPAC_PUSH:
+      case SPAC_USE:
+      case SPAC_PUSH:
         switch (line->special)
         {
           case zl_door_raise:
@@ -5647,8 +5646,8 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
         }
         break;
 
-      case ML_SPAC_MCROSS:
-        if (!(lineActivation & ML_SPAC_MCROSS))
+      case SPAC_MCROSS:
+        if (!(lineActivation & SPAC_MCROSS))
         {
           switch (line->special)
           {
@@ -5674,8 +5673,8 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
   }
 
   if (
-    activationType == ML_SPAC_MCROSS &&
-    !(lineActivation & ML_SPAC_MCROSS) &&
+    activationType == SPAC_MCROSS &&
+    !(lineActivation & SPAC_MCROSS) &&
     !(line->flags & ML_MONSTERSCANACTIVATE)
   )
   {
@@ -5685,11 +5684,11 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
   return true;
 }
 
-dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned int activationType)
+dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType)
 {
-  unsigned int lineActivation;
+  line_activation_t lineActivation;
 
-  lineActivation = line->flags & ML_SPAC_MASK;
+  lineActivation = line->activation;
 
   if (lineActivation != activationType)
   {
@@ -5698,7 +5697,7 @@ dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned in
 
   if (!mo->player && !(mo->flags & MF_MISSILE))
   {
-      if (lineActivation != ML_SPAC_MCROSS)
+      if (lineActivation != SPAC_MCROSS)
       {                       // currently, monsters can only activate the MCROSS activation type
           return false;
       }
@@ -5709,13 +5708,18 @@ dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned in
   return true;
 }
 
-dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activationType)
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t activationType)
 {
   byte args[5];
   dboolean repeat;
   dboolean buttonSuccess;
 
   if (!map_format.test_activate_line(line, mo, side, activationType))
+  {
+    return false;
+  }
+
+  if (line->locknumber && !P_CheckKeys(mo, line->locknumber, false))
   {
     return false;
   }
@@ -5731,7 +5735,7 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activ
     line->special = 0;
   }
 
-  if (buttonSuccess && line->flags & map_format.switch_activation)
+  if (buttonSuccess && line->activation & map_format.switch_activation)
   {
     P_ChangeSwitchTexture(line, repeat);
   }
@@ -6554,19 +6558,20 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_line_set_blocking:
       if (args[0])
       {
-        int i, s;
+        int i;
+        const int *id_p;
         static const int flags[] =
         {
           ML_BLOCKING,
           ML_BLOCKMONSTERS,
           ML_BLOCKPLAYERS,
-          0, // block floaters (not supported)
-          0, // block projectiles (not supported)
+          ML_BLOCKFLOATERS,
+          ML_BLOCKPROJECTILES,
           ML_BLOCKEVERYTHING,
-          0, // railing (not supported)
-          0, // block use (not supported)
-          0, // block sight (not supported)
-          0, // block hitscan (not supported)
+          ML_JUMPOVER,
+          ML_BLOCKUSE,
+          ML_BLOCKSIGHT,
+          ML_BLOCKHITSCAN,
           ML_SOUNDBLOCK,
           -1
         };
@@ -6580,9 +6585,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           if (args[2] & 1) clearflags |= flags[i];
         }
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          lines[s].flags = (lines[s].flags & ~clearflags) | setflags;
+          lines[*id_p].flags = (lines[*id_p].flags & ~clearflags) | setflags;
         }
 
         buttonSuccess = 1;
@@ -6591,12 +6596,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_scroll_wall:
       if (args[0])
       {
-        int s;
+        const int *id_p;
         int side = !!args[3];
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          Add_Scroller(sc_side, args[1], args[2], -1, lines[s].sidenum[side], 0);
+          Add_Scroller(sc_side, args[1], args[2], -1, lines[*id_p].sidenum[side], 0);
         }
 
         buttonSuccess = 1;
@@ -6605,12 +6610,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_line_set_texture_offset:
       if (args[0] && args[3] <= 1)
       {
-        int s;
+        const int *id_p;
         int sidenum = !!args[3];
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          side_t *side = &sides[lines[s].sidenum[sidenum]];
+          side_t *side = &sides[lines[*id_p].sidenum[sidenum]];
           side->textureoffset = args[1];
           side->rowoffset = args[2];
         }
@@ -6655,21 +6660,21 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_sector_set_gravity:
       {
         fixed_t gravity;
-        int s = -1;
+        const int *id_p;
 
         if (args[2] > 99)
           args[2] = 99;
 
         gravity = P_ArgsToFixed(args[1], args[2]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
-          sectors[s].gravity = gravity;
+        FIND_SECTORS(id_p, args[0])
+          sectors[*id_p].gravity = gravity;
       }
       buttonSuccess = 1;
       break;
     case zl_sector_set_damage:
       {
-        int s = -1;
+        const int *id_p;
         dboolean unblockable = false;
 
         if (args[3] == 0)
@@ -6692,15 +6697,15 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           }
         }
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].damage.amount = args[1];
-          sectors[s].damage.interval = args[3];
-          sectors[s].damage.leakrate = args[4];
+          sectors[*id_p].damage.amount = args[1];
+          sectors[*id_p].damage.interval = args[3];
+          sectors[*id_p].damage.leakrate = args[4];
           if (unblockable)
-            sectors[s].flags |= SECF_DMGUNBLOCKABLE;
+            sectors[*id_p].flags |= SECF_DMGUNBLOCKABLE;
           else
-            sectors[s].flags &= ~SECF_DMGUNBLOCKABLE;
+            sectors[*id_p].flags &= ~SECF_DMGUNBLOCKABLE;
         }
       }
       buttonSuccess = 1;
@@ -6713,32 +6718,32 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_sector_set_floor_panning:
       {
-        int s = -1;
+        const int *id_p;
         fixed_t xoffs, yoffs;
 
         xoffs = P_ArgsToFixed(args[1], args[2]);
         yoffs = P_ArgsToFixed(args[3], args[4]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].floor_xoffs = xoffs;
-          sectors[s].floor_yoffs = yoffs;
+          sectors[*id_p].floor_xoffs = xoffs;
+          sectors[*id_p].floor_yoffs = yoffs;
         }
       }
       buttonSuccess = 1;
       break;
     case zl_sector_set_ceiling_panning:
       {
-        int s = -1;
+        const int *id_p;
         fixed_t xoffs, yoffs;
 
         xoffs = P_ArgsToFixed(args[1], args[2]);
         yoffs = P_ArgsToFixed(args[3], args[4]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].ceiling_xoffs = xoffs;
-          sectors[s].ceiling_yoffs = yoffs;
+          sectors[*id_p].ceiling_xoffs = xoffs;
+          sectors[*id_p].ceiling_yoffs = yoffs;
         }
       }
       buttonSuccess = 1;
@@ -6781,18 +6786,18 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_clear_force_field:
       {
-        int s = -1;
+        const int *id_p;
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
           int i;
           line_t *line;
 
           buttonSuccess = 1;
 
-          for (i = 0; i < sectors[s].linecount; i++)
+          for (i = 0; i < sectors[*id_p].linecount; i++)
           {
-            line_t *line = sectors[s].lines[i];
+            line_t *line = sectors[*id_p].lines[i];
 
             if (line->backsector && line->special == zl_force_field)
             {
@@ -7392,14 +7397,14 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       }
       else if (!args[0])
       {
-        int s = -1;
+        const int *id_p;
 
-        while ((s = P_FindSectorFromTag(args[2], s)) >= 0)
+        FIND_SECTORS(id_p, args[2])
         {
           msecnode_t *n;
           sector_t *sec;
 
-          sec = &sectors[s];
+          sec = &sectors[*id_p];
           for (n = sec->touching_thinglist; n;)
           {
             mobj_t *target = n->m_thing;
@@ -7824,8 +7829,6 @@ static void Hexen_P_SpawnSpecials(void)
     P_RemoveAllActivePlats();
     for (i = 0; i < MAXBUTTONS; i++)
         memset(&buttonlist[i], 0, sizeof(button_t));
-
-    P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
     // Initialize flat and texture animations
     P_InitFTAnims();

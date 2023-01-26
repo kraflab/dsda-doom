@@ -43,6 +43,7 @@
 #include "g_overflow.h"
 #include "e6y.h"//e6y
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 #include "hexen/p_acs.h"
@@ -232,13 +233,13 @@ void T_MoveCompatibleFloor(floormove_t * floor)
   }
 
   if (!(leveltime&7))     // make the floormove sound
-    S_LoopSound((mobj_t *)&floor->sector->soundorg, g_sfx_stnmov, 8);
+    S_LoopSectorSound(floor->sector, g_sfx_stnmov, 8);
 
   if (res == pastdest)    // if destination height is reached
   {
     if (heretic && floor->type == buildStair)
     {
-        S_StartSound(&floor->sector->soundorg, heretic_sfx_pstop);
+        S_StartSectorSound(floor->sector, heretic_sfx_pstop);
     }
 
     if (floor->type == floorBuildStair)
@@ -313,7 +314,7 @@ void T_MoveCompatibleFloor(floormove_t * floor)
       // Moving floors (but not plats) in versions <= v1.2 did not
       // make floor stop sound
       if (compatibility_level > doom_12_compatibility)
-          S_StartSound((mobj_t *)&floor->sector->soundorg, sfx_pstop);
+          S_StartSectorSound(floor->sector, sfx_pstop);
     }
   }
 }
@@ -448,7 +449,7 @@ void T_MoveElevator(elevator_t* elevator)
 
   // make floor move sound
   if (!(leveltime&7))
-    S_LoopSound((mobj_t *)&elevator->sector->soundorg, sfx_stnmov, 8);
+    S_LoopSectorSound(elevator->sector, sfx_stnmov, 8);
 
   if (res == pastdest)            // if destination height acheived
   {
@@ -457,7 +458,7 @@ void T_MoveElevator(elevator_t* elevator)
     P_RemoveThinker(&elevator->thinker);    // remove elevator from actives
 
     // make floor stop sound
-    S_StartSound((mobj_t *)&elevator->sector->soundorg, sfx_pstop);
+    S_StartSectorSound(elevator->sector, sfx_pstop);
   }
 }
 
@@ -479,25 +480,22 @@ int EV_DoFloor
 ( line_t*       line,
   floor_e       floortype )
 {
-  int           secnum;
+  const int *id_p;
   int           rtn;
   int           i;
   sector_t*     sec;
   floormove_t*  floor;
 
-  secnum = -1;
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_floor; else {return rtn;}};//e6y
   // move all floors with the same tag as the linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_floor://e6y
     // Don't start a second thinker on the same floor
     if (P_FloorActive(sec)) //jff 2/23/98
-      { if (!zerotag_manual) continue; else return rtn; }//e6y
+      continue;
 
     // new floor thinker
     rtn = 1;
@@ -631,15 +629,15 @@ manual_floor://e6y
           floor->speed = FLOORSPEED;
           for (i = 0; i < sec->linecount; i++)
           {
-            if (twoSided (secnum, i) )
+            if (twoSided (*id_p, i) )
             {
-              side = getSide(secnum,i,0);
+              side = getSide(*id_p,i,0);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
                   (comp[comp_model] && !side->bottomtexture))
                 if (textureheight[side->bottomtexture] < minsize)
                   minsize = textureheight[side->bottomtexture];
-              side = getSide(secnum,i,1);
+              side = getSide(*id_p,i,1);
               // jff 8/14/98 don't scan texture 0, its not real
               if (side->bottomtexture > 0 ||
                   (comp[comp_model] && !side->bottomtexture))
@@ -683,7 +681,6 @@ manual_floor://e6y
       default:
         break;
     }
-    if (zerotag_manual) return rtn; //e6y
   }
   return rtn;
 }
@@ -704,17 +701,16 @@ int EV_DoChange
   change_e      changetype,
   int tag )
 {
-  int                   secnum;
+  const int *id_p;
   int                   rtn;
   sector_t*             sec;
   sector_t*             secm;
 
-  secnum = -1;
   rtn = 0;
   // change all sectors with the same tag as the linedef
-  while ((secnum = P_FindSectorFromTag(tag,secnum)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     rtn = 1;
 
@@ -729,7 +725,7 @@ int EV_DoChange
         }
         break;
       case numChangeOnly:
-        secm = P_FindModelFloorSector(sec->floorheight,secnum);
+        secm = P_FindModelFloorSector(sec->floorheight,*id_p);
         if (secm) // if no model, no change
         {
           sec->floorpic = secm->floorpic;
@@ -756,26 +752,14 @@ int EV_DoChange
  * cph 2001/09/21 - compatibility nightmares again
  * There are three different ways this function has, during its history, stepped
  * through all the stairs to be triggered by the single switch
- * - original Doom used a linear P_FindSectorFromLineTag, but failed to preserve
+ * - original Doom used a linear search, but failed to preserve
  * the index of the previous sector found, so instead it would restart its
  * linear search from the last sector of the previous staircase
- * - MBF/PrBoom with comp_stairs fail to emulate this, because their
- * P_FindSectorFromLineTag is a chained hash table implementation. Instead they
- * start following the hash chain from the last sector of the previous
- * staircase, which will (probably) have the wrong tag, so they miss any further
- * stairs
- * - Boom fixed the bug, and MBF/PrBoom without comp_stairs work right
+ * - cl11-13 with comp_stairs failed to emulate this with its chained hash search.
+ * It started following the hash chain from the last sector of the previous
+ * staircase, which would (probably) have the wrong tag, so it missed further stairs
+ * - Boom fixed the bug, cl11-13 without comp_stairs works right, and cl14+ works right
  */
-static inline int P_FindSectorFromLineTagWithLowerBound
-(line_t* l, int start, int min)
-{
-  /* Emulate original Doom's linear lower-bounded P_FindSectorFromLineTag
-   * as needed */
-  do {
-    start = P_FindSectorFromLineTag(l,start);
-  } while (start >= 0 && start <= min);
-  return start;
-}
 
 int EV_BuildStairs
 ( line_t*       line,
@@ -784,188 +768,194 @@ int EV_BuildStairs
   /* cph 2001/09/22 - cleaned up this function to save my sanity. A separate
    * outer loop index makes the logic much cleared, and local variables moved
    * into the inner blocks helps too */
-  int                   ssec = -1;
-  int                   minssec = -1;
-  int                   rtn = 0;
+  const int *id_p;
+  int rtn = 0;
 
   //e6y
-  int           secnum = -1;
+  int           oldsecnum;
   sector_t*     sec;
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_stair; else {return rtn;}};//e6y
 
   // start a stair at each sector tagged the same as the linedef
-  while ((ssec = P_FindSectorFromLineTagWithLowerBound(line,ssec,minssec)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-   //e6y int
-   secnum = ssec;
-   //e6y sector_t*
-   sec = &sectors[secnum];
+    //e6y sector_t*
+    sec = &sectors[*id_p];
 
-manual_stair://e6y
-   // don't start a stair if the first step's floor is already moving
-   if (!P_FloorActive(sec)) { //jff 2/22/98
-    floormove_t*  floor;
-    int           texture, height;
-    fixed_t       stairsize;
-    fixed_t       speed;
-    int           crush;
-    int           ok;
+    oldsecnum = *id_p;
 
-    // create new floor thinker for first step
-    rtn = 1;
-    floor = Z_MallocLevel (sizeof(*floor));
-    memset(floor, 0, sizeof(*floor));
-    P_AddThinker (&floor->thinker);
-    sec->floordata = floor;
-    floor->thinker.function = T_MoveFloor;
-    floor->direction = 1;
-    floor->sector = sec;
-    floor->type = buildStair;   //jff 3/31/98 do not leave uninited
-    floor->crush = NO_CRUSH;
-    crush = floor->crush;
+    // don't start a stair if the first step's floor is already moving
+    if (!P_FloorActive(sec)) { //jff 2/22/98
+      floormove_t*  floor;
+      int           texture, height;
+      fixed_t       stairsize;
+      fixed_t       speed;
+      int           crush;
+      int           ok;
 
-    // set up the speed and stepsize according to the stairs type
-    switch(type)
-    {
-      default: // killough -- prevent compiler warning
-      case build8:
-        speed = FLOORSPEED/4;
-        stairsize = 8*FRACUNIT;
-        if (!demo_compatibility)
-          crush = NO_CRUSH; //jff 2/27/98 fix uninitialized crush field
-        // e6y
-        // Uninitialized crush field will not be equal to 0 or 1 (true)
-        // with high probability. So, initialize it with any other value
-        // There is no more desync on icarus.wad/ic29uv.lmp
-        // http://competn.doom2.net/pub/sda/i-o/icuvlmps.zip
-        // http://www.doomworld.com/idgames/index.php?id=5191
-        else
-        {
-          if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
-        }
+      // create new floor thinker for first step
+      rtn = 1;
+      floor = Z_MallocLevel (sizeof(*floor));
+      memset(floor, 0, sizeof(*floor));
+      P_AddThinker (&floor->thinker);
+      sec->floordata = floor;
+      floor->thinker.function = T_MoveFloor;
+      floor->direction = 1;
+      floor->sector = sec;
+      floor->type = buildStair;   //jff 3/31/98 do not leave uninited
+      floor->crush = NO_CRUSH;
+      crush = floor->crush;
 
-        break;
-      case turbo16:
-        speed = FLOORSPEED*4;
-        stairsize = 16*FRACUNIT;
-        if (!demo_compatibility)
-          crush = DOOM_CRUSH;  //jff 2/27/98 fix uninitialized crush field
-        // e6y
-        // Uninitialized crush field will not be equal to 0 or 1 (true)
-        // with high probability. So, initialize it with any other value
-        else
-        {
-          if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
-            crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
-        }
-
-        break;
-      case heretic_build8:
-        speed = FLOORSPEED;
-        stairsize = 8 * FRACUNIT;
-        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
-
-        break;
-      case heretic_turbo16:
-        speed = FLOORSPEED;
-        stairsize = 16 * FRACUNIT;
-        crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
-
-        break;
-    }
-    floor->speed = speed;
-    floor->crush = crush;
-    height = sec->floorheight + stairsize;
-    floor->floordestheight = height;
-
-    texture = sec->floorpic;
-
-    // Find next sector to raise
-    //   1. Find 2-sided line with same sector side[0] (lowest numbered)
-    //   2. Other side is the next sector to raise
-    //   3. Unless already moving, or different texture, then stop building
-    do
-    {
-      int i;
-      ok = 0;
-
-      for (i = 0;i < sec->linecount;i++)
+      // set up the speed and stepsize according to the stairs type
+      switch(type)
       {
-        sector_t* tsec = (sec->lines[i])->frontsector;
-        int newsecnum;
-        if ( !((sec->lines[i])->flags & ML_TWOSIDED) )
-          continue;
+        default: // killough -- prevent compiler warning
+        case build8:
+          speed = FLOORSPEED/4;
+          stairsize = 8*FRACUNIT;
+          if (!demo_compatibility)
+            crush = NO_CRUSH; //jff 2/27/98 fix uninitialized crush field
+          // e6y
+          // Uninitialized crush field will not be equal to 0 or 1 (true)
+          // with high probability. So, initialize it with any other value
+          // There is no more desync on icarus.wad/ic29uv.lmp
+          // http://competn.doom2.net/pub/sda/i-o/icuvlmps.zip
+          // http://www.doomworld.com/idgames/index.php?id=5191
+          else
+          {
+            if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
+              crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+          }
 
-        newsecnum = tsec->iSectorID;
+          break;
+        case turbo16:
+          speed = FLOORSPEED*4;
+          stairsize = 16*FRACUNIT;
+          if (!demo_compatibility)
+            crush = DOOM_CRUSH;  //jff 2/27/98 fix uninitialized crush field
+          // e6y
+          // Uninitialized crush field will not be equal to 0 or 1 (true)
+          // with high probability. So, initialize it with any other value
+          else
+          {
+            if (!prboom_comp[PC_UNINITIALIZE_CRUSH_FIELD_FOR_STAIRS].state)
+              crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE;
+          }
 
-        if (secnum != newsecnum)
-          continue;
+          break;
+        case heretic_build8:
+          speed = FLOORSPEED;
+          stairsize = 8 * FRACUNIT;
+          crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
 
-        tsec = (sec->lines[i])->backsector;
-        if (!tsec) continue;     //jff 5/7/98 if no backside, continue
-        newsecnum = tsec->iSectorID;
+          break;
+        case heretic_turbo16:
+          speed = FLOORSPEED;
+          stairsize = 16 * FRACUNIT;
+          crush = STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE; // heretic_note: I guess
 
-        // if sector's floor is different texture, look for another
-        if (tsec->floorpic != texture)
-          continue;
-
-        /* jff 6/19/98 prevent double stepsize
-   * killough 10/98: intentionally left this way [MBF comment]
-   * cph 2001/02/06: stair bug fix should be controlled by comp_stairs,
-   *  except if we're emulating MBF which perversly reverted the fix
-   */
-        if (comp[comp_stairs] || (compatibility_level == mbf_compatibility))
-          height += stairsize; // jff 6/28/98 change demo compatibility
-
-        // if sector's floor already moving, look for another
-        if (P_FloorActive(tsec)) //jff 2/22/98
-          continue;
-
-  /* cph - see comment above - do this iff we didn't do so above */
-        if (!comp[comp_stairs] && (compatibility_level != mbf_compatibility))
-          height += stairsize;
-
-        sec = tsec;
-        secnum = newsecnum;
-
-        // create and initialize a thinker for the next step
-        floor = Z_MallocLevel (sizeof(*floor));
-        memset(floor, 0, sizeof(*floor));
-        P_AddThinker (&floor->thinker);
-
-        sec->floordata = floor; //jff 2/22/98
-        floor->thinker.function = T_MoveFloor;
-        floor->direction = 1;
-        floor->sector = sec;
-        floor->speed = speed;
-        floor->floordestheight = height;
-        floor->type = buildStair; //jff 3/31/98 do not leave uninited
-        floor->crush = crush; //jff 2/27/98 fix uninitialized crush field
-
-        ok = 1;
-        break;
+          break;
       }
-    } while(ok);      // continue until no next step is found
+      floor->speed = speed;
+      floor->crush = crush;
+      height = sec->floorheight + stairsize;
+      floor->floordestheight = height;
 
-   }
-   /* killough 10/98: compatibility option */
-   if (comp[comp_stairs]) {
-     /* cph 2001/09/22 - emulate buggy MBF comp_stairs for demos, with logic
-      * reversed since we now have a separate outer loop index.
-      * DEMOSYNC - what about boom_compatibility_compatibility?
-      */
-     if ((compatibility_level >= mbf_compatibility) && (compatibility_level <
-           prboom_3_compatibility)) ssec = secnum; /* Trash outer loop index */
-     else {
-       /* cph 2001/09/22 - now the correct comp_stairs - Doom used a linear
-        * search from the last secnum, so we set that as a minimum value and do
-        * a fresh tag search
-        */
-       ssec = -1; minssec = secnum;
-     }
-   }
-    if (zerotag_manual) return rtn; //e6y
+      texture = sec->floorpic;
+
+      // Find next sector to raise
+      //   1. Find 2-sided line with same sector side[0] (lowest numbered)
+      //   2. Other side is the next sector to raise
+      //   3. Unless already moving, or different texture, then stop building
+      do
+      {
+        int i;
+        ok = 0;
+
+        for (i = 0;i < sec->linecount;i++)
+        {
+          sector_t* tsec = (sec->lines[i])->frontsector;
+          int newsecnum;
+          if ( !((sec->lines[i])->flags & ML_TWOSIDED) )
+            continue;
+
+          newsecnum = tsec->iSectorID;
+
+          if (oldsecnum != newsecnum)
+            continue;
+
+          tsec = (sec->lines[i])->backsector;
+          if (!tsec) continue;     //jff 5/7/98 if no backside, continue
+          newsecnum = tsec->iSectorID;
+
+          // if sector's floor is different texture, look for another
+          if (tsec->floorpic != texture)
+            continue;
+
+          /* jff 6/19/98 prevent double stepsize
+          * killough 10/98: intentionally left this way [MBF comment]
+          * cph 2001/02/06: stair bug fix should be controlled by comp_stairs,
+          *  except if we're emulating MBF which perversly reverted the fix
+          */
+          if (comp[comp_stairs] || (compatibility_level == mbf_compatibility))
+            height += stairsize; // jff 6/28/98 change demo compatibility
+
+          // if sector's floor already moving, look for another
+          if (P_FloorActive(tsec)) //jff 2/22/98
+            continue;
+
+          /* cph - see comment above - do this iff we didn't do so above */
+          if (!comp[comp_stairs] && (compatibility_level != mbf_compatibility))
+            height += stairsize;
+
+          sec = tsec;
+          oldsecnum = newsecnum;
+
+          // create and initialize a thinker for the next step
+          floor = Z_MallocLevel (sizeof(*floor));
+          memset(floor, 0, sizeof(*floor));
+          P_AddThinker (&floor->thinker);
+
+          sec->floordata = floor; //jff 2/22/98
+          floor->thinker.function = T_MoveFloor;
+          floor->direction = 1;
+          floor->sector = sec;
+          floor->speed = speed;
+          floor->floordestheight = height;
+          floor->type = buildStair; //jff 3/31/98 do not leave uninited
+          floor->crush = crush; //jff 2/27/98 fix uninitialized crush field
+
+          ok = 1;
+          break;
+        }
+      } while(ok);      // continue until no next step is found
+    }
+    /* killough 10/98: compatibility option */
+    if (comp[comp_stairs]) {
+      id_p = dsda_FindSectorsFromID(line->tag);
+
+      /* cph 2001/09/22 - emulate buggy MBF comp_stairs for demos, with logic
+       * reversed since we now have a separate outer loop index.
+       * DEMOSYNC - what about boom_compatibility_compatibility?
+       */
+      if (
+        compatibility_level >= mbf_compatibility &&
+        compatibility_level < prboom_3_compatibility
+      ) {
+        // Trash outer loop index
+        for (; *id_p >= 0; id_p++)
+          if (*id_p == oldsecnum || id_p[1] < 0)
+            break;
+      }
+      else {
+        /* cph 2001/09/22 - now the correct comp_stairs - Doom used a linear
+         * search from the last secnum, so we set that as a minimum value and do
+         * a fresh tag search
+         */
+        for (; *id_p >= 0; id_p++)
+          if (id_p[1] > oldsecnum || id_p[1] < 0)
+            break;
+      }
+    }
   }
   return rtn;
 }
@@ -1106,23 +1096,23 @@ int P_SpawnDonut(int secnum, line_t *line, fixed_t pillarspeed, fixed_t slimespe
 
 int EV_DoDonut(line_t *line)
 {
-  int secnum = -1;
+  const int *id_p;
   int rtn = 0;
 
   // do function on all sectors with same tag as linedef
-  while ((secnum = P_FindSectorFromLineTag(line, secnum)) >= 0)
-    rtn |= P_SpawnDonut(secnum, line, FLOORSPEED / 2, FLOORSPEED / 2);
+  FIND_SECTORS(id_p, line->tag)
+    rtn |= P_SpawnDonut(*id_p, line, FLOORSPEED / 2, FLOORSPEED / 2);
 
   return rtn;
 }
 
 int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespeed)
 {
-  int secnum = -1;
+  const int *id_p;
   int rtn = 0;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
-    rtn |= P_SpawnDonut(secnum, line, pillarspeed, slimespeed);
+  FIND_SECTORS2(id_p, tag, line)
+    rtn |= P_SpawnDonut(*id_p, line, pillarspeed, slimespeed);
 
   return rtn;
 }
@@ -1186,7 +1176,7 @@ void P_SpawnElevator(sector_t *sec, line_t *line, elevator_e type, fixed_t speed
 
 int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t height, int tag)
 {
-  int secnum = -1;
+  const int *id_p;
   int rtn = 0;
   sector_t *sec;
   elevator_t *elevator;
@@ -1196,9 +1186,9 @@ int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t hei
   if (!line && type == elevateCurrent)
     return 0;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     if (P_FloorActive(sec) || P_CeilingActive(sec))
       continue;
@@ -1214,17 +1204,16 @@ int EV_DoElevator
 ( line_t*       line,
   elevator_e    elevtype )
 {
-  int                   secnum;
+  const int *id_p;
   int                   rtn;
   sector_t*             sec;
   elevator_t*           elevator;
 
-  secnum = -1;
   rtn = 0;
   // act on all sectors with the same tag as the triggering linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     // If either floor or ceiling is already activated, skip it
     if (sec->floordata || sec->ceilingdata) //jff 2/22/98
@@ -1420,15 +1409,15 @@ int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fi
                     int crush, int change, dboolean hexencrush, dboolean hereticlower)
 {
   sector_t *sec;
-  int secnum = -1;
+  const int *id_p;
   int retcode = 0;
 
   speed *= FRACUNIT / 8;
   height *= FRACUNIT;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
     if (sec->floordata)
     {
       continue;
@@ -1443,16 +1432,15 @@ int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fi
 
 int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
 {
-    int secnum;
+    const int *id_p;
     int rtn;
     sector_t *sec;
     floormove_t *floor = NULL;
 
-    secnum = -1;
     rtn = 0;
-    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
 
         //      ALREADY MOVING?  IF SO, KEEP GOING...
         if (sec->floordata || sec->ceilingdata)
@@ -1568,16 +1556,15 @@ int Hexen_EV_DoFloor(line_t * line, byte * args, floor_e floortype)
 int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise)
 {
     dboolean floor, ceiling;
-    int secnum;
+    const int *id_p;
     sector_t *sec;
 
     if (raise)
     {
         floor = Hexen_EV_DoFloor(line, args, FLEV_RAISEFLOORBYVALUE);
-        secnum = -1;
-        while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-            sec = &sectors[secnum];
+            sec = &sectors[*id_p];
             sec->floordata = NULL;
             sec->ceilingdata = NULL;
         }
@@ -1586,10 +1573,9 @@ int EV_DoFloorAndCeiling(line_t * line, byte * args, dboolean raise)
     else
     {
         floor = Hexen_EV_DoFloor(line, args, FLEV_LOWERFLOORBYVALUE);
-        secnum = -1;
-        while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-            sec = &sectors[secnum];
+            sec = &sectors[*id_p];
             sec->floordata = NULL;
             sec->ceilingdata = NULL;
         }
@@ -1796,8 +1782,8 @@ static void P_SpawnZDoomStair(sector_t *sec, stair_e type, fixed_t stairstep,
 int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
                         fixed_t speed, int delay, int reset, int igntxt, int usespecials)
 {
-  int secnum = -1;
-  int osecnum; //jff 3/4/98 save old loop index
+  const int *id_p;
+  int oldsecnum;
   int newsecnum;
   dboolean rtn = 0;
   fixed_t height;
@@ -1815,9 +1801,9 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
 
   validcount++;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     // ALREADY MOVING?  IF SO, KEEP GOING...
     // jff 2/26/98 add special lockout condition to wait for entire
@@ -1840,7 +1826,7 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
     sec->prevsec = -1;
     sec->validcount = validcount;
 
-    osecnum = secnum; //jff 3/4/98 preserve loop index
+    oldsecnum = *id_p;
 
     // Find next sector to raise
     // 1. Find 2-sided line with same sector side[0] (lowest numbered)
@@ -1886,7 +1872,7 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
           tsec = sec->lines[i]->frontsector;
           newsecnum = tsec->iSectorID;
 
-          if (secnum != newsecnum)
+          if (oldsecnum != newsecnum)
             continue;
 
           tsec = sec->lines[i]->backsector;
@@ -1914,12 +1900,12 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
         // link the stair chain in both directions
         // lock the stair sector until building complete
         sec->nextsec = newsecnum; // link step to next
-        tsec->prevsec = secnum;   // link next back
+        tsec->prevsec = oldsecnum; // link next back
         tsec->nextsec = -1;       // set next forward link as end
         tsec->stairlock = -2;     // lock the step
 
         sec = tsec;
-        secnum = newsecnum;
+        oldsecnum = newsecnum;
 
         P_SpawnZDoomStair(sec, type, stairstep, speed, height, delay, reset, usespecials);
       }
@@ -1927,15 +1913,14 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
 
     // [RH] make sure the first sector doesn't point to a previous one, otherwise
     // it can infinite loop when the first sector stops moving.
-    sectors[osecnum].prevsec = -1;
-    secnum = osecnum; //jff 3/4/98 restore old loop index
+    sectors[*id_p].prevsec = -1;
   }
   return rtn;
 }
 
 int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e stairsType)
 {
-    int secnum;
+    const int *id_p;
     int height;
     int delay;
     int resetDelay;
@@ -1959,12 +1944,10 @@ int Hexen_EV_BuildStairs(line_t * line, byte * args, int direction, stairs_e sta
         TextureChange = args[4];
     }
 
-    secnum = -1;
-
     validcount++;
-    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
 
         Texture = sec->floorpic;
         StartHeight = sec->floorheight;
@@ -2020,7 +2003,7 @@ void T_BuildZDoomPillar(pillar_t * pillar)
                             pillar->crush, -pillar->direction, pillar->hexencrush);
 
   if (!(leveltime & 7))
-    S_LoopSound((mobj_t *) &pillar->sector->soundorg, g_sfx_stnmov, 8);
+    S_LoopSectorSound(pillar->sector, g_sfx_stnmov, 8);
 
   if (res1 == pastdest && res2 == pastdest)
   {
@@ -2029,7 +2012,7 @@ void T_BuildZDoomPillar(pillar_t * pillar)
     P_RemoveThinker(&pillar->thinker);
 
     // make floor stop sound
-    S_StartSound((mobj_t *) &pillar->sector->soundorg, sfx_pstop);
+    S_StartSectorSound(pillar->sector, sfx_pstop);
   }
   else
   {
@@ -2116,16 +2099,16 @@ void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
 int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
                      fixed_t floordist, fixed_t ceilingdist, int crush, dboolean hexencrush)
 {
-  int secnum = -1;
+  const int *id_p;
   sector_t *sec;
   dboolean rtn = 0;
 
   floordist *= FRACUNIT;
   ceilingdist *= FRACUNIT;
 
-  while ((secnum = P_FindSectorFromTagOrLine(tag, line, secnum)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
     if (P_FloorActive(sec) || P_CeilingActive(sec))
       continue;
@@ -2146,17 +2129,16 @@ int EV_DoZDoomPillar(pillar_e type, line_t *line, int tag, fixed_t speed,
 
 int EV_BuildPillar(line_t * line, byte * args, int crush)
 {
-    int secnum;
+    const int *id_p;
     sector_t *sec;
     pillar_t *pillar;
     int newHeight;
     int rtn;
 
     rtn = 0;
-    secnum = -1;
-    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
         if (sec->floordata || sec->ceilingdata)
             continue;           // already moving
         if (sec->floorheight == sec->ceilingheight)
@@ -2214,16 +2196,15 @@ int EV_BuildPillar(line_t * line, byte * args, int crush)
 
 int EV_OpenPillar(line_t * line, byte * args)
 {
-    int secnum;
+    const int *id_p;
     sector_t *sec;
     pillar_t *pillar;
     int rtn;
 
     rtn = 0;
-    secnum = -1;
-    while ((secnum = P_FindSectorFromTag(args[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
         if (sec->floordata || sec->ceilingdata)
             continue;           // already moving
         if (sec->floorheight != sec->ceilingheight)
@@ -2281,11 +2262,11 @@ int EV_OpenPillar(line_t * line, byte * args)
 
 int EV_ZDoomFloorCrushStop(int tag)
 {
-  int s = -1;
+  const int *id_p;
 
-  while ((s = P_FindSectorFromTag(tag, s)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sector_t *sec = &sectors[s];
+    sector_t *sec = &sectors[*id_p];
     floormove_t *floor = (floormove_t *) sec->floordata;
 
     if (floor &&
@@ -2415,15 +2396,14 @@ static void P_SpawnPlaneWaggle(sector_t *sector, int height, int speed,
 dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,
                              int speed, int offset, int timer, dboolean ceiling)
 {
-  int sectorIndex;
+  const int *id_p;
   sector_t *sector;
   dboolean retCode;
 
   retCode = false;
-  sectorIndex = -1;
-  while ((sectorIndex = P_FindSectorFromTagOrLine(tag, line, sectorIndex)) >= 0)
+  FIND_SECTORS2(id_p, tag, line)
   {
-    sector = &sectors[sectorIndex];
+    sector = &sectors[*id_p];
     if (ceiling ? P_CeilingActive(sector) : P_FloorActive(sector))
     { // Already busy with another thinker
       continue;
@@ -2444,16 +2424,15 @@ dboolean EV_StartPlaneWaggle(int tag, line_t *line, int height,
 dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
                             int timer)
 {
-    int sectorIndex;
+    const int *id_p;
     sector_t *sector;
     planeWaggle_t *waggle;
     dboolean retCode;
 
     retCode = false;
-    sectorIndex = -1;
-    while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
+    FIND_SECTORS(id_p, tag)
     {
-        sector = &sectors[sectorIndex];
+        sector = &sectors[*id_p];
         if (sector->floordata || sector->ceilingdata)
         {                       // Already busy with another thinker
             continue;

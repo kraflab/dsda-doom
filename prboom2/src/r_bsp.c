@@ -33,6 +33,7 @@
 
 #include "doomstat.h"
 #include "m_bbox.h"
+#include "p_spec.h"
 #include "r_main.h"
 #include "r_segs.h"
 #include "r_plane.h"
@@ -148,17 +149,22 @@ static void R_RecalcLineFlags(line_t *linedef)
     // Identical floor and ceiling on both sides,
     // identical light levels on both sides,
     // and no middle texture.
-    // CPhipps - recode for speed, not certain if this is portable though
-    if (backsector->ceilingheight != frontsector->ceilingheight
-  || backsector->floorheight != frontsector->floorheight
-  || curline->sidedef->midtexture
-  || memcmp(&backsector->floor_xoffs, &frontsector->floor_xoffs,
-      sizeof(frontsector->floor_xoffs) + sizeof(frontsector->floor_yoffs) +
-      sizeof(frontsector->ceiling_xoffs) + sizeof(frontsector->ceiling_yoffs) +
-      sizeof(frontsector->ceilingpic) + sizeof(frontsector->floorpic) +
-      sizeof(frontsector->lightlevel) + sizeof(frontsector->floorlightsec) +
-      sizeof(frontsector->ceilinglightsec) + sizeof(frontsector->special))) {
-      linedef->r_flags = 0; return;
+    if (
+      backsector->ceilingheight != frontsector->ceilingheight
+      || backsector->floorheight != frontsector->floorheight
+      || curline->sidedef->midtexture
+      || backsector->floor_xoffs != frontsector->floor_xoffs
+      || backsector->floor_yoffs != frontsector->floor_yoffs
+      || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
+      || backsector->ceiling_yoffs != frontsector->ceiling_yoffs
+      || backsector->ceilingpic != frontsector->ceilingpic
+      || backsector->floorpic != frontsector->floorpic
+      || P_FloorLightLevel(backsector) != P_FloorLightLevel(frontsector)
+      || P_CeilingLightLevel(backsector) != P_CeilingLightLevel(frontsector)
+      || backsector->special != frontsector->special
+    ) {
+      linedef->r_flags = 0;
+      return;
     } else
       linedef->r_flags = RF_IGNORE;
   }
@@ -206,12 +212,10 @@ sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
                      dboolean back)
 {
   if (floorlightlevel)
-    *floorlightlevel = sec->floorlightsec == -1 ?
-      sec->lightlevel : sectors[sec->floorlightsec].lightlevel;
+    *floorlightlevel = P_FloorLightLevel(sec);
 
   if (ceilinglightlevel)
-    *ceilinglightlevel = sec->ceilinglightsec == -1 ? // killough 4/11/98
-      sec->lightlevel : sectors[sec->ceilinglightsec].lightlevel;
+    *ceilinglightlevel = P_CeilingLightLevel(sec);
 
   if (sec->heightsec != -1)
     {
@@ -250,12 +254,10 @@ sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
           tempsec->lightlevel  = s->lightlevel;
 
           if (floorlightlevel)
-            *floorlightlevel = s->floorlightsec == -1 ? s->lightlevel :
-            sectors[s->floorlightsec].lightlevel; // killough 3/16/98
+            *floorlightlevel = P_FloorLightLevel(s);
 
           if (ceilinglightlevel)
-            *ceilinglightlevel = s->ceilinglightsec == -1 ? s->lightlevel :
-            sectors[s->ceilinglightsec].lightlevel; // killough 4/11/98
+            *ceilinglightlevel = P_CeilingLightLevel(s);
         }
       else
         if (heightsec != -1 && viewz >= sectors[heightsec].ceilingheight &&
@@ -279,12 +281,10 @@ sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
             tempsec->lightlevel  = s->lightlevel;
 
             if (floorlightlevel)
-              *floorlightlevel = s->floorlightsec == -1 ? s->lightlevel :
-              sectors[s->floorlightsec].lightlevel; // killough 3/16/98
+              *floorlightlevel = P_FloorLightLevel(s);
 
             if (ceilinglightlevel)
-              *ceilinglightlevel = s->ceilinglightsec == -1 ? s->lightlevel :
-              sectors[s->ceilinglightsec].lightlevel; // killough 4/11/98
+              *ceilinglightlevel = P_CeilingLightLevel(s);
           }
       sec = tempsec;               // Use other sector
     }

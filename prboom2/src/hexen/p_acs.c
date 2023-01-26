@@ -31,6 +31,7 @@
 #include "hexen/po_man.h"
 #include "hexen/sn_sonix.h"
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 #include "p_acs.h"
@@ -583,7 +584,7 @@ dboolean P_StartLockedACS(line_t * line, byte * args, mobj_t * mo, int side)
             snprintf(LockedBuffer, sizeof(LockedBuffer),
                      "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
             P_SetMessage(mo->player, LockedBuffer, true);
-            S_StartSound(mo, hexen_sfx_door_locked);
+            S_StartMobjSound(mo, hexen_sfx_door_locked);
             return false;
         }
     }
@@ -741,13 +742,11 @@ static void ScriptFinished(int number)
 
 static dboolean TagBusy(int tag)
 {
-    int sectorIndex;
+    const int *id_p;
 
-    sectorIndex = -1;
-    while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
+    FIND_SECTORS(id_p, tag)
     {
-        if (sectors[sectorIndex].floordata ||
-            sectors[sectorIndex].ceilingdata)
+        if (sectors[*id_p].floordata || sectors[*id_p].ceilingdata)
         {
             return true;
         }
@@ -1370,14 +1369,13 @@ static int CmdChangeFloor(void)
 {
     int tag;
     int flat;
-    int sectorIndex;
+    const int *id_p;
 
     flat = R_FlatNumForName(StringLookup(Pop()));
     tag = Pop();
-    sectorIndex = -1;
-    while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
+    FIND_SECTORS(id_p, tag)
     {
-        sectors[sectorIndex].floorpic = flat;
+        sectors[*id_p].floorpic = flat;
     }
     return SCRIPT_CONTINUE;
 }
@@ -1386,14 +1384,13 @@ static int CmdChangeFloorDirect(void)
 {
     int tag;
     int flat;
-    int sectorIndex;
+    const int *id_p;
 
     tag = ReadCodeInt();
     flat = R_FlatNumForName(StringLookup(ReadCodeInt()));
-    sectorIndex = -1;
-    while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
+    FIND_SECTORS(id_p, tag)
     {
-        sectors[sectorIndex].floorpic = flat;
+        sectors[*id_p].floorpic = flat;
     }
     return SCRIPT_CONTINUE;
 }
@@ -1402,14 +1399,13 @@ static int CmdChangeCeiling(void)
 {
     int tag;
     int flat;
-    int sectorIndex;
+    const int *id_p;
 
     flat = R_FlatNumForName(StringLookup(Pop()));
     tag = Pop();
-    sectorIndex = -1;
-    while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
+    FIND_SECTORS(id_p, tag)
     {
-        sectors[sectorIndex].ceilingpic = flat;
+        sectors[*id_p].ceilingpic = flat;
     }
     return SCRIPT_CONTINUE;
 }
@@ -1418,14 +1414,13 @@ static int CmdChangeCeilingDirect(void)
 {
     int tag;
     int flat;
-    int sectorIndex;
+    const int *id_p;
 
     tag = ReadCodeInt();
     flat = R_FlatNumForName(StringLookup(ReadCodeInt()));
-    sectorIndex = -1;
-    while ((sectorIndex = P_FindSectorFromTag(tag, sectorIndex)) >= 0)
+    FIND_SECTORS(id_p, tag)
     {
-        sectors[sectorIndex].ceilingpic = flat;
+        sectors[*id_p].ceilingpic = flat;
     }
     return SCRIPT_CONTINUE;
 }

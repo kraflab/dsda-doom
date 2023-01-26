@@ -449,10 +449,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "overrun_missedbackside_emulate", dsda_config_overrun_missedbackside_emulate,
     CONF_BOOL(0), &overflows[OVERFLOW_MISSEDBACKSIDE].emulate
   },
-  [dsda_config_comperr_zerotag] = {
-    "comperr_zerotag", dsda_config_comperr_zerotag,
-    CONF_BOOL(0), &default_comperr[comperr_zerotag]
-  },
   [dsda_config_comperr_passuse] = {
     "comperr_passuse", dsda_config_comperr_passuse,
     CONF_BOOL(0), &default_comperr[comperr_passuse]

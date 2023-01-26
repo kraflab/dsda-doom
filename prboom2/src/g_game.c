@@ -1799,14 +1799,13 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     {
       // first spawn of level, before corpses
       for (i=0 ; i<playernum ; i++)
-        if (players[i].mo->x == mthing->x << FRACBITS
-            && players[i].mo->y == mthing->y << FRACBITS)
+        if (players[i].mo->x == mthing->x && players[i].mo->y == mthing->y)
           return false;
       return true;
     }
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   if (raven)
   {
@@ -1829,7 +1828,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
                      ss->sector->floorheight + TELEFOGHEIGHT, g_mt_tfog);
 
     if (players[consoleplayer].viewz != 1)
-      S_StartSound(mo, g_sfx_telept);   // don't start sound on first frame
+      S_StartMobjSound(mo, g_sfx_telept);   // don't start sound on first frame
 
     return true;
   }
@@ -1892,7 +1891,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     mo = P_SpawnMobj(x+20*xa, y+20*ya, ss->sector->floorheight, MT_TFOG);
 
     if (players[consoleplayer].viewz != 1)
-      S_StartSound(mo, sfx_telept);  // don't start sound on first frame
+      S_StartMobjSound(mo, sfx_telept);  // don't start sound on first frame
   }
 
   return true;
@@ -4159,7 +4158,7 @@ void G_Completed(int map, int position, int flags, angle_t angle)
     if (hexen && gamemode == shareware && map > 4)
     {
         P_SetMessage(&players[consoleplayer], "ACCESS DENIED -- DEMO", true);
-        S_StartSound(NULL, hexen_sfx_chat);
+        S_StartVoidSound(hexen_sfx_chat);
         return;
     }
 

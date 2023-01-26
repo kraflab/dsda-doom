@@ -41,6 +41,21 @@
 #include "sounds.h"
 #include "e6y.h"
 
+#include "dsda/id_list.h"
+
+// check if a manual trigger, if so do just the sector on the backside
+#define FIND_GENLIN_SECTORS if (Trig == PushOnce || Trig == PushMany) \
+                            { \
+                              if (!(sec = line->backsector)) \
+                                return rtn; \
+                              manual_list[0] = sec->iSectorID; \
+                              id_p = manual_list; \
+                            } \
+                            else \
+                            { \
+                              id_p = dsda_FindSectorsFromID(line->tag); \
+                            }
+
 //////////////////////////////////////////////////////////
 //
 // Generalized Linedef Type handlers
@@ -61,9 +76,9 @@
 int EV_DoGenFloor
 ( line_t*       line )
 {
-  int                   secnum;
+  const int *id_p;
+  int manual_list[2] = { -1, -1 };
   int                   rtn;
-  dboolean               manual;
   sector_t*             sec;
   floormove_t*          floor;
   unsigned              value = (unsigned)line->special - GenFloorBase;
@@ -80,33 +95,15 @@ int EV_DoGenFloor
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_floor;} else {return rtn;}};//e6y
-  // check if a manual trigger, if so do just the sector on the backside
-  manual = false;
-  if (Trig==PushOnce || Trig==PushMany)
-  {
-    if (!(sec = line->backsector))
-      return rtn;
-    secnum = sec->iSectorID;
-    manual = true;
-    goto manual_floor;
-  }
+  FIND_GENLIN_SECTORS;
 
-  secnum = -1;
-  // if not manual do all sectors tagged the same as the line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  for (; *id_p >= 0; id_p++)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_floor:
     // Do not start another function if floor already moving
     if (P_FloorActive(sec))
-    {
-      if (!manual)
-        continue;
-      else
-        return rtn;
-    }
+      continue;
 
     // new floor thinker
     rtn = 1;
@@ -163,7 +160,7 @@ manual_floor:
         break;
       case FbyST:
         floor->floordestheight = (floor->sector->floorheight>>FRACBITS) +
-          floor->direction * (P_FindShortestTextureAround(secnum)>>FRACBITS);
+          floor->direction * (P_FindShortestTextureAround(*id_p)>>FRACBITS);
         if (floor->floordestheight>32000)  //jff 3/13/98 prevent overflow
           floor->floordestheight=32000;    // wraparound in floor height
         if (floor->floordestheight<-32000)
@@ -192,8 +189,8 @@ manual_floor:
         //jff 5/23/98 find model with ceiling at target height if target
         //is a ceiling type
         sec = (Targ==FtoLnC || Targ==FtoC)?
-          P_FindModelCeilingSector(floor->floordestheight,secnum) :
-          P_FindModelFloorSector(floor->floordestheight,secnum);
+          P_FindModelCeilingSector(floor->floordestheight,*id_p) :
+          P_FindModelFloorSector(floor->floordestheight,*id_p);
         if (sec)
         {
           floor->texture = sec->floorpic;
@@ -235,7 +232,6 @@ manual_floor:
         }
       }
     }
-    if (manual) return rtn;
   }
   return rtn;
 }
@@ -255,9 +251,9 @@ manual_floor:
 int EV_DoGenCeiling
 ( line_t*       line )
 {
-  int                   secnum;
+  const int *id_p;
+  int manual_list[2] = { -1, -1 };
   int                   rtn;
-  dboolean               manual;
   fixed_t               targheight;
   sector_t*             sec;
   ceiling_t*            ceiling;
@@ -275,33 +271,15 @@ int EV_DoGenCeiling
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_ceiling;} else {return rtn;}};//e6y
-  // check if a manual trigger, if so do just the sector on the backside
-  manual = false;
-  if (Trig==PushOnce || Trig==PushMany)
-  {
-    if (!(sec = line->backsector))
-      return rtn;
-    secnum = sec->iSectorID;
-    manual = true;
-    goto manual_ceiling;
-  }
+  FIND_GENLIN_SECTORS;
 
-  secnum = -1;
-  // if not manual do all sectors tagged the same as the line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  for (; *id_p >= 0; id_p++)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_ceiling:
     // Do not start another function if ceiling already moving
     if (P_CeilingActive(sec)) //jff 2/22/98
-    {
-      if (!manual)
-        continue;
-      else
-        return rtn;
-    }
+      continue;
 
     // new ceiling thinker
     rtn = 1;
@@ -360,7 +338,7 @@ manual_ceiling:
         break;
       case CbyST:
         targheight = (ceiling->sector->ceilingheight>>FRACBITS) +
-          ceiling->direction * (P_FindShortestUpperAround(secnum)>>FRACBITS);
+          ceiling->direction * (P_FindShortestUpperAround(*id_p)>>FRACBITS);
         if (targheight>32000)  //jff 3/13/98 prevent overflow
           targheight=32000;    // wraparound in ceiling height
         if (targheight<-32000)
@@ -391,8 +369,8 @@ manual_ceiling:
         //jff 5/23/98 find model with floor at target height if target
         //is a floor type
         sec = (Targ==CtoHnF || Targ==CtoF)?
-          P_FindModelFloorSector(targheight,secnum) :
-          P_FindModelCeilingSector(targheight,secnum);
+          P_FindModelFloorSector(targheight,*id_p) :
+          P_FindModelCeilingSector(targheight,*id_p);
         if (sec)
         {
           ceiling->texture = sec->ceilingpic;
@@ -436,7 +414,6 @@ manual_ceiling:
       }
     }
     P_AddActiveCeiling(ceiling);  // add this ceiling to the active list
-    if (manual) return rtn;
   }
   return rtn;
 }
@@ -452,10 +429,10 @@ manual_ceiling:
 int EV_DoGenLift
 ( line_t*       line )
 {
+  const int *id_p;
+  int manual_list[2] = { -1, -1 };
   plat_t*         plat;
-  int             secnum;
   int             rtn;
-  dboolean         manual;
   sector_t*       sec;
   unsigned        value = (unsigned)line->special - GenLiftBase;
 
@@ -466,7 +443,6 @@ int EV_DoGenLift
   int Sped = (value & LiftSpeed) >> LiftSpeedShift;
   int Trig = (value & TriggerType) >> TriggerTypeShift;
 
-  secnum = -1;
   rtn = 0;
 
   // Activate all <type> plats that are in_stasis
@@ -474,32 +450,15 @@ int EV_DoGenLift
   if (Targ==LnF2HnF)
     P_ActivateInStasis(line->tag);
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_lift;} else {return rtn;}};//e6y
-  // check if a manual trigger, if so do just the sector on the backside
-  manual = false;
-  if (Trig==PushOnce || Trig==PushMany)
-  {
-    if (!(sec = line->backsector))
-      return rtn;
-    secnum = sec->iSectorID;
-    manual = true;
-    goto manual_lift;
-  }
+  FIND_GENLIN_SECTORS;
 
-  // if not manual do all sectors tagged the same as the line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  for (; *id_p >= 0; id_p++)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_lift:
     // Do not start another function if floor already moving
     if (P_FloorActive(sec))
-    {
-      if (!manual)
-        continue;
-      else
-        return rtn;
-    }
+      continue;
 
     // Setup the plat thinker
     rtn = 1;
@@ -583,11 +542,8 @@ manual_lift:
         break;
     }
 
-    S_StartSound((mobj_t *)&sec->soundorg,sfx_pstart);
+    S_StartSectorSound(sec, sfx_pstart);
     P_AddActivePlat(plat); // add this plat to the list of active plats
-
-    if (manual)
-      return rtn;
   }
   return rtn;
 }
@@ -603,15 +559,15 @@ manual_lift:
 int EV_DoGenStairs
 ( line_t*       line )
 {
-  int                   secnum;
-  int                   osecnum; //jff 3/4/98 preserve loop index
+  const int *id_p;
+  int manual_list[2] = { -1, -1 };
   int                   height;
   int                   i;
+  int                   oldsecnum;
   int                   newsecnum;
   int                   texture;
   int                   ok;
   int                   rtn;
-  dboolean               manual;
 
   sector_t*             sec;
   sector_t*             tsec;
@@ -633,35 +589,17 @@ int EV_DoGenStairs
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_stair;} else {return rtn;}};//e6y
-  // check if a manual trigger, if so do just the sector on the backside
-  manual = false;
-  if (Trig==PushOnce || Trig==PushMany)
-  {
-    if (!(sec = line->backsector))
-      return rtn;
-    secnum = sec->iSectorID;
-    manual = true;
-    goto manual_stair;
-  }
+  FIND_GENLIN_SECTORS;
 
-  secnum = -1;
-  // if not manual do all sectors tagged the same as the line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  for (; *id_p >= 0; id_p++)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_stair:
     //Do not start another function if floor already moving
     //jff 2/26/98 add special lockout condition to wait for entire
     //staircase to build before retriggering
     if (P_FloorActive(sec) || sec->stairlock)
-    {
-      if (!manual)
-        continue;
-      else
-        return rtn;
-    }
+      continue;
 
     // new floor thinker
     rtn = 1;
@@ -720,7 +658,7 @@ manual_stair:
     sec->nextsec = -1;
     sec->prevsec = -1;
 
-    osecnum = secnum;            //jff 3/4/98 preserve loop index
+    oldsecnum = *id_p;
     // Find next sector to raise
     // 1.     Find 2-sided line with same sector side[0]
     // 2.     Other side is the next sector to raise
@@ -735,7 +673,7 @@ manual_stair:
         tsec = (sec->lines[i])->frontsector;
         newsecnum = tsec->iSectorID;
 
-        if (secnum != newsecnum)
+        if (oldsecnum != newsecnum)
           continue;
 
         tsec = (sec->lines[i])->backsector;
@@ -760,12 +698,12 @@ manual_stair:
         // link the stair chain in both directions
         // lock the stair sector until building complete
         sec->nextsec = newsecnum; // link step to next
-        tsec->prevsec = secnum;   // link next back
+        tsec->prevsec = oldsecnum;   // link next back
         tsec->nextsec = -1;       // set next forward link as end
         tsec->stairlock = -2;     // lock the step
 
         sec = tsec;
-        secnum = newsecnum;
+        oldsecnum = newsecnum;
         floor = Z_MallocLevel (sizeof(*floor));
 
         memset(floor, 0, sizeof(*floor));
@@ -784,9 +722,6 @@ manual_stair:
         break;
       }
     } while(ok);
-      if (manual)
-        return rtn;
-      secnum = osecnum; //jff 3/4/98 restore old loop index
   }
   // retriggerable generalized stairs build up or down alternately
   if (rtn)
@@ -805,9 +740,9 @@ manual_stair:
 int EV_DoGenCrusher
 ( line_t*       line )
 {
-  int                   secnum;
+  const int *id_p;
+  int manual_list[2] = { -1, -1 };
   int                   rtn;
-  dboolean               manual;
   sector_t*             sec;
   ceiling_t*            ceiling;
   unsigned              value = (unsigned)line->special - GenCrusherBase;
@@ -822,33 +757,15 @@ int EV_DoGenCrusher
   //jff 4/5/98 return if activated
   rtn = P_ActivateInStasisCeiling(line->tag);
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_crusher;} else {return rtn;}};//e6y
-  // check if a manual trigger, if so do just the sector on the backside
-  manual = false;
-  if (Trig==PushOnce || Trig==PushMany)
-  {
-    if (!(sec = line->backsector))
-      return rtn;
-    secnum = sec->iSectorID;
-    manual = true;
-    goto manual_crusher;
-  }
+  FIND_GENLIN_SECTORS;
 
-  secnum = -1;
-  // if not manual do all sectors tagged the same as the line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  for (; *id_p >= 0; id_p++)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_crusher:
     // Do not start another function if ceiling already moving
     if (P_CeilingActive(sec)) //jff 2/22/98
-    {
-      if (!manual)
-        continue;
-      else
-        return rtn;
-    }
+      continue;
 
     // new ceiling thinker
     rtn = 1;
@@ -889,7 +806,6 @@ manual_crusher:
     ceiling->oldspeed=ceiling->speed;
 
     P_AddActiveCeiling(ceiling);  // add to list of active ceilings
-    if (manual) return rtn;
   }
   return rtn;
 }
@@ -905,10 +821,11 @@ manual_crusher:
 int EV_DoGenLockedDoor
 ( line_t* line )
 {
-  int   secnum,rtn;
+  const int *id_p;
+  int manual_list[2] = { -1, -1 };
+  int       rtn;
   sector_t* sec;
   vldoor_t* door;
-  dboolean manual;
   unsigned  value = (unsigned)line->special - GenLockedBase;
 
   // parse the bit fields in the line's special type
@@ -919,34 +836,17 @@ int EV_DoGenLockedDoor
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_locked;} else {return rtn;}};//e6y
-  // check if a manual trigger, if so do just the sector on the backside
-  manual = false;
-  if (Trig==PushOnce || Trig==PushMany)
-  {
-    if (!(sec = line->backsector))
-      return rtn;
-    secnum = sec->iSectorID;
-    manual = true;
-    goto manual_locked;
-  }
+  FIND_GENLIN_SECTORS;
 
-  secnum = -1;
   rtn = 0;
 
-  // if not manual do all sectors tagged the same as the line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  for (; *id_p >= 0; id_p++)
   {
-    sec = &sectors[secnum];
-manual_locked:
+    sec = &sectors[*id_p];
+
     // Do not start another function if ceiling already moving
     if (P_CeilingActive(sec)) //jff 2/22/98
-    {
-      if (!manual)
-        continue;
-      else
-        return rtn;
-    }
+      continue;
 
     // new door thinker
     rtn = 1;
@@ -993,12 +893,7 @@ manual_locked:
 
     // killough 4/15/98: fix generalized door opening sounds
     // (previously they always had the blazing door close sound)
-
-    S_StartSound((mobj_t *)&door->sector->soundorg,   // killough 4/15/98
-                 door->speed >= VDOORSPEED*4 ? sfx_bdopn : sfx_doropn);
-
-    if (manual)
-      return rtn;
+    S_StartSectorSound(door->sector, door->speed >= VDOORSPEED * 4 ? sfx_bdopn : sfx_doropn);
   }
   return rtn;
 }
@@ -1014,9 +909,10 @@ manual_locked:
 int EV_DoGenDoor
 ( line_t* line )
 {
-  int   secnum,rtn;
+  const int *id_p;
+  int manual_list[2] = { -1, -1 };
+  int       rtn;
   sector_t* sec;
-  dboolean   manual;
   vldoor_t* door;
   unsigned  value = (unsigned)line->special - GenDoorBase;
 
@@ -1029,35 +925,17 @@ int EV_DoGenDoor
 
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) {manual = true; goto manual_door;} else {return rtn;}};//e6y
-  // check if a manual trigger, if so do just the sector on the backside
-  manual = false;
-  if (Trig==PushOnce || Trig==PushMany)
-  {
-    if (!(sec = line->backsector))
-      return rtn;
-    secnum = sec->iSectorID;
-    manual = true;
-    goto manual_door;
-  }
+  FIND_GENLIN_SECTORS;
 
-
-  secnum = -1;
   rtn = 0;
 
-  // if not manual do all sectors tagged the same as the line
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  for (; *id_p >= 0; id_p++)
   {
-    sec = &sectors[secnum];
-manual_door:
+    sec = &sectors[*id_p];
+
     // Do not start another function if ceiling already moving
     if (P_CeilingActive(sec)) //jff 2/22/98
-    {
-      if (!manual)
-        continue;
-      else
-        return rtn;
-    }
+      continue;
 
     // new door thinker
     rtn = 1;
@@ -1119,7 +997,8 @@ manual_door:
         door->topheight = P_FindLowestCeilingSurrounding(sec);
         door->topheight -= 4*FRACUNIT;
         if (door->topheight != sec->ceilingheight)
-          S_StartSound((mobj_t *)&door->sector->soundorg,Sped>=SpeedFast || comp[comp_sound] ? sfx_bdopn : sfx_doropn);
+          S_StartSectorSound(door->sector,
+                             Sped >= SpeedFast || comp[comp_sound] ? sfx_bdopn : sfx_doropn);
         door->type = Sped>=SpeedFast? genBlazeRaise : genRaise;
         break;
       case ODoor:
@@ -1127,27 +1006,28 @@ manual_door:
         door->topheight = P_FindLowestCeilingSurrounding(sec);
         door->topheight -= 4*FRACUNIT;
         if (door->topheight != sec->ceilingheight)
-          S_StartSound((mobj_t *)&door->sector->soundorg,Sped>=SpeedFast || comp[comp_sound] ? sfx_bdopn : sfx_doropn);
+          S_StartSectorSound(door->sector,
+                             Sped >= SpeedFast || comp[comp_sound] ? sfx_bdopn : sfx_doropn);
         door->type = Sped>=SpeedFast? genBlazeOpen : genOpen;
         break;
       case CdODoor:
         door->topheight = sec->ceilingheight;
         door->direction = -1;
-        S_StartSound((mobj_t *)&door->sector->soundorg,Sped>=SpeedFast && !comp[comp_sound] ? sfx_bdcls : sfx_dorcls);
+        S_StartSectorSound(door->sector,
+                             Sped >= SpeedFast && !comp[comp_sound] ? sfx_bdcls : sfx_dorcls);
         door->type = Sped>=SpeedFast? genBlazeCdO : genCdO;
         break;
       case CDoor:
         door->topheight = P_FindLowestCeilingSurrounding(sec);
         door->topheight -= 4*FRACUNIT;
         door->direction = -1;
-        S_StartSound((mobj_t *)&door->sector->soundorg,Sped>=SpeedFast && !comp[comp_sound] ? sfx_bdcls : sfx_dorcls);
+        S_StartSectorSound(door->sector,
+                             Sped >= SpeedFast && !comp[comp_sound] ? sfx_bdcls : sfx_dorcls);
         door->type = Sped>=SpeedFast? genBlazeClose : genClose;
         break;
       default:
         break;
     }
-    if (manual)
-      return rtn;
   }
   return rtn;
 }
