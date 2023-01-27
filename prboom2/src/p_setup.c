@@ -2020,6 +2020,7 @@ static void P_LoadLineDefs (int lump)
     line_t *ld = lines+i;
 
     ld->iLineID=i; // proff 04/05/2000: needed for OpenGL
+    ld->alpha = 1.f;
 
     if (map_format.hexen)
     {
