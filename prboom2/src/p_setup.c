@@ -2244,14 +2244,14 @@ void P_PostProcessCompatibleLineSpecial(line_t *ld)
       if (!ld->tag)             // if tag==0,
       {
         ld->tranmap = tranmap;  // affect this linedef only
-        ld->alpha = 66;
+        ld->alpha = 0.66f;
       }
       else
         for (j=0;j<numlines;j++)          // if tag!=0,
           if (lines[j].tag == ld->tag)    // affect all matching linedefs
           {
             lines[j].tranmap = tranmap;
-            lines[j].alpha = 66;
+            lines[j].alpha = 0.66f;
           }
       break;
     }
@@ -2287,13 +2287,13 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
       if (!ld->arg1)
       {
         ld->tranmap = tranmap;
-        ld->alpha = 66;
+        ld->alpha = 0.66f;
       }
       else
         for (id_p = dsda_FindLinesFromID(ld->arg1); *id_p >= 0; id_p++)
         {
           lines[*id_p].tranmap = tranmap;
-          lines[*id_p].alpha = 66;
+          lines[*id_p].alpha = 0.66f;
         }
       ld->special = 0;
     }
