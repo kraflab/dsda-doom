@@ -303,5 +303,5 @@ int dsda_IntToFixed(int x)
 // ANG1 is off by 256 / 360 due to rounding
 angle_t dsda_DegreesToAngle(int x)
 {
-  return ANG1 * x / 360 + 256 * x / 360;
+  return ANG1 * x + 256 * x / 360;
 }
