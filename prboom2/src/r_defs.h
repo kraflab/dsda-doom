@@ -208,6 +208,8 @@ typedef struct
   damage_t damage;
   short lightlevel_floor;
   short lightlevel_ceiling;
+  angle_t floor_rotation;
+  angle_t ceiling_rotation;
 } sector_t;
 
 //
@@ -563,6 +565,7 @@ typedef struct visplane
   int special; // heretic
   fixed_t height;
   fixed_t xoffs, yoffs;         // killough 2/28/98: Support scrolling flats
+  angle_t rotation;
   // e6y: resolution limitation is removed
   // bottom and top arrays are dynamically
   // allocated immediately after the visplane

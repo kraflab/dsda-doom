@@ -102,6 +102,11 @@ typedef struct {
   fixed_t             ystep;
   const byte          *source; // start of a 64*64 tile image
   const lighttable_t  *colormap;
+
+  fixed_t xoffs;
+  fixed_t yoffs;
+  fixed_t sine;
+  fixed_t cosine;
 } draw_span_vars_t;
 
 typedef struct {

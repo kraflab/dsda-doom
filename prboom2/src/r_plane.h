@@ -62,7 +62,8 @@ visplane_t *R_FindPlane(
                         int lightlevel,
                         int special,
                         fixed_t xoffs,  /* killough 2/28/98: add x-y offsets */
-                        fixed_t yoffs
+                        fixed_t yoffs,
+                        angle_t rotation
                        );
 
 visplane_t *R_CheckPlane(visplane_t *pl, int start, int stop);

@@ -155,8 +155,10 @@ static void R_RecalcLineFlags(line_t *linedef)
       || curline->sidedef->midtexture
       || backsector->floor_xoffs != frontsector->floor_xoffs
       || backsector->floor_yoffs != frontsector->floor_yoffs
+      || backsector->floor_rotation != frontsector->floor_rotation
       || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
       || backsector->ceiling_yoffs != frontsector->ceiling_yoffs
+      || backsector->ceiling_rotation != frontsector->ceiling_rotation
       || backsector->ceilingpic != frontsector->ceilingpic
       || backsector->floorpic != frontsector->floorpic
       || P_FloorLightLevel(backsector) != P_FloorLightLevel(frontsector)
@@ -636,7 +638,8 @@ static void R_Subsector(int num)
                   floorlightlevel,                // killough 3/16/98
                   frontsector->special,
                   frontsector->floor_xoffs,       // killough 3/7/98
-                  frontsector->floor_yoffs
+                  frontsector->floor_yoffs,
+                  frontsector->floor_rotation
                   ) : NULL;
 
     ceilingplane = frontsector->ceilingheight > viewz ||
@@ -650,7 +653,8 @@ static void R_Subsector(int num)
                   ceilinglightlevel,              // killough 4/11/98
                   0,
                   frontsector->ceiling_xoffs,     // killough 3/7/98
-                  frontsector->ceiling_yoffs
+                  frontsector->ceiling_yoffs,
+                  frontsector->ceiling_rotation
                   ) : NULL;
   }
 

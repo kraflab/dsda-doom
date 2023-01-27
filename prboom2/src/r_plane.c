@@ -111,7 +111,6 @@ static fixed_t planeheight;
 
 static fixed_t basexscale, baseyscale;
 static fixed_t *cachedheight = NULL;
-static fixed_t xoffs,yoffs;    // killough 2/28/98: flat offsets
 
 // e6y: resolution limitation is removed
 fixed_t *yslope = NULL;
@@ -167,10 +166,6 @@ void R_InitPlanes (void)
 //  dsvars.source
 //  basexscale
 //  baseyscale
-//  viewx
-//  viewy
-//  xoffs
-//  yoffs
 //
 // BASIC PRIMITIVE
 //
@@ -200,12 +195,12 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
   den = (int64_t)FRACUNIT * FRACUNIT * D_abs(centery - y);
   distance = FixedMul (planeheight, yslope[y]);
 
-  dsvars->xstep = (fixed_t)((int64_t)viewsin * planeheight * viewfocratio / den);
-  dsvars->ystep = (fixed_t)((int64_t)viewcos * planeheight * viewfocratio / den);
+  dsvars->xstep = (fixed_t)((int64_t)dsvars->sine * planeheight * viewfocratio / den);
+  dsvars->ystep = (fixed_t)((int64_t)dsvars->cosine * planeheight * viewfocratio / den);
 
   // killough 2/28/98: Add offsets
-  dsvars->xfrac =  viewx + xoffs + FixedMul(viewcos, distance) + (x1 - centerx) * dsvars->xstep;
-  dsvars->yfrac = -viewy + yoffs - FixedMul(viewsin, distance) + (x1 - centerx) * dsvars->ystep;
+  dsvars->xfrac = dsvars->xoffs + FixedMul(dsvars->cosine, distance) + (x1 - centerx) * dsvars->xstep;
+  dsvars->yfrac = dsvars->yoffs - FixedMul(dsvars->sine, distance) + (x1 - centerx) * dsvars->ystep;
 
   if (!(dsvars->colormap = fixedcolormap))
   {
@@ -291,6 +286,7 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
       new_pl->special = pl->special;
       new_pl->xoffs = pl->xoffs;           // killough 2/28/98
       new_pl->yoffs = pl->yoffs;
+      new_pl->rotation = pl->rotation;
       new_pl->minx = start;
       new_pl->maxx = stop;
       for (i = 0; i != SCREENWIDTH; i++)
@@ -303,7 +299,7 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
 // killough 2/28/98: Add offsets
 
 visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
-                        fixed_t xoffs, fixed_t yoffs)
+                        fixed_t xoffs, fixed_t yoffs, angle_t rotation)
 {
   visplane_t *check;
   unsigned hash;                      // killough
@@ -325,7 +321,8 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
         lightlevel == check->lightlevel &&
         special == check->special &&
         xoffs == check->xoffs &&      // killough 2/28/98: Add offset checks
-        yoffs == check->yoffs)
+        yoffs == check->yoffs &&
+        rotation == check->rotation)
       return check;
 
   check = new_visplane(hash);         // killough
@@ -336,6 +333,7 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
   check->special = special;
   check->xoffs = xoffs;               // killough 2/28/98: Save offsets
   check->yoffs = yoffs;
+  check->rotation = rotation;
 
   if (V_IsSoftwareMode())
   {
@@ -591,6 +589,28 @@ static void R_DoDrawPlane(visplane_t *pl)
       draw_span_vars_t dsvars;
 
       dsvars.source = W_LumpByNum(firstflat + flattranslation[pl->picnum]);
+      dsvars.xoffs = pl->xoffs;
+      dsvars.yoffs = pl->yoffs;
+
+      if (pl->rotation)
+      {
+        fixed_t rotation_cos, rotation_sin;
+
+        rotation_cos = finecosine[pl->rotation >> ANGLETOFINESHIFT];
+        rotation_sin = finesine[pl->rotation >> ANGLETOFINESHIFT];
+
+        dsvars.xoffs += FixedMul(rotation_cos, viewx) - FixedMul(rotation_sin, viewy);
+        dsvars.yoffs -= FixedMul(rotation_sin, viewx) + FixedMul(rotation_cos, viewy);
+        dsvars.sine = finesine[(viewangle + pl->rotation) >> ANGLETOFINESHIFT];
+        dsvars.cosine = finecosine[(viewangle + pl->rotation) >> ANGLETOFINESHIFT];
+      }
+      else
+      {
+        dsvars.xoffs += viewx;
+        dsvars.yoffs -= viewy;
+        dsvars.sine = viewsin;
+        dsvars.cosine = viewcos;
+      }
 
       if (map_format.hexen)
       {
@@ -673,8 +693,6 @@ static void R_DoDrawPlane(visplane_t *pl)
         }
       }
 
-      xoffs = pl->xoffs;  // killough 2/28/98: Add offsets
-      yoffs = pl->yoffs;
       planeheight = D_abs(pl->height-viewz);
 
       // SoM 10/19/02: deep water colormap fix

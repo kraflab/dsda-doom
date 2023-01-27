@@ -894,8 +894,10 @@ static void P_InitializeSectorDefaults(sector_t *ss)
   // killough 3/7/98:
   ss->floor_xoffs = 0;
   ss->floor_yoffs = 0;      // floor and ceiling flats offsets
+  ss->floor_rotation = 0;
   ss->ceiling_xoffs = 0;
   ss->ceiling_yoffs = 0;
+  ss->ceiling_rotation = 0;
   ss->heightsec = -1;       // sector used to get floor and ceiling height
   ss->floorlightsec = -1;   // sector used to get floor lighting
   // killough 3/7/98: end changes
@@ -983,8 +985,10 @@ static void P_LoadUDMFSectors(int lump)
     ss->tag = ms->id;
     ss->floor_xoffs = dsda_FloatToFixed(ms->xpanningfloor);
     ss->floor_yoffs = dsda_FloatToFixed(ms->ypanningfloor);
+    ss->floor_rotation = dsda_DegreesToAngle(ms->rotationfloor);
     ss->ceiling_xoffs = dsda_FloatToFixed(ms->xpanningceiling);
     ss->ceiling_yoffs = dsda_FloatToFixed(ms->ypanningceiling);
+    ss->ceiling_rotation = dsda_DegreesToAngle(ms->rotationceiling);
     ss->gravity = dsda_StringToFixed(ms->gravity);
 
     ss->damage.amount = ms->damageamount;
