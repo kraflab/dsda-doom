@@ -71,6 +71,6 @@ fixed_t dsda_FloatToFixed(float x);
 fixed_t dsda_StringToFixed(const char* x);
 byte dsda_FloatToPercent(float x);
 int dsda_IntToFixed(int x);
-angle_t dsda_DegreesToAngle(int x);
+angle_t dsda_DegreesToAngle(float x);
 
 #endif
