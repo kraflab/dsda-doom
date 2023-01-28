@@ -509,6 +509,8 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       int floorlight;
       float light;
       float floor_uoffs, floor_voffs;
+      float rotation;
+      dboolean transform;
       int loopnum;
 
       // For lighting and texture determination
@@ -521,6 +523,16 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       // Find texture origin.
       floor_uoffs = (float)sec->floor_xoffs/(float)(FRACUNIT*64);
       floor_voffs = (float)sec->floor_yoffs/(float)(FRACUNIT*64);
+      rotation = ((float) sec->floor_rotation / ANG45) * 45;
+      transform = floor_uoffs || floor_voffs || rotation;
+
+      if (transform)
+      {
+        glMatrixMode(GL_TEXTURE);
+        glPushMatrix();
+        glTranslatef(floor_uoffs, floor_voffs, 0.0f);
+        glRotatef(-rotation, 0, 0, 1);
+      }
 
       for (loopnum = 0; loopnum < subsectorloops[ssidx].loopcount; loopnum++)
       {
@@ -535,10 +547,16 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
         // go through all vertexes of this loop
         for (vertexnum = currentloop->vertexindex; vertexnum < (currentloop->vertexindex + currentloop->vertexcount); vertexnum++)
         {
-          glTexCoord2f(flats_vbo[vertexnum].u + floor_uoffs, flats_vbo[vertexnum].v + floor_voffs);
+          glTexCoord2f(flats_vbo[vertexnum].u, flats_vbo[vertexnum].v);
+
           glVertex3f(flats_vbo[vertexnum].x, flats_vbo[vertexnum].z, 0);
         }
         glEnd();
+      }
+
+      if (transform)
+      {
+        glPopMatrix();
       }
     }
   }
