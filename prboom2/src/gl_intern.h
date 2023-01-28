@@ -152,7 +152,7 @@ typedef struct
 typedef enum
 {
   GLFLAT_CEILING      = 0x00000001,
-  GLFLAT_HAVE_OFFSET  = 0x00000002,
+  GLFLAT_HAVE_TRANSFORM  = 0x00000002,
 } GLFlat_flag_t;
 
 typedef struct

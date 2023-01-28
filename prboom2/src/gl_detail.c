@@ -356,7 +356,7 @@ void gld_DrawFlatDetail_NoARB(GLFlat *flat)
   dx = detail->offsetx;
   dy = detail->offsety;
 
-  if ((flat->flags & GLFLAT_HAVE_OFFSET) || dx || dy)
+  if ((flat->flags & GLFLAT_HAVE_TRANSFORM) || dx || dy)
   {
     glTranslatef(flat->uoffs * w + dx, flat->voffs * h + dy, 0.0f);
   }

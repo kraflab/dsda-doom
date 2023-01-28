@@ -2062,11 +2062,11 @@ static void gld_DrawFlat(GLFlat *flat)
     gl_arb_multitexture &&
     flat->gltexture->detail;
 
-  has_offset = (has_detail || (flat->flags & GLFLAT_HAVE_OFFSET));
+  has_offset = (has_detail || (flat->flags & GLFLAT_HAVE_TRANSFORM));
 
   if ((sectorloops[flat->sectornum].flags & SECTOR_CLAMPXY) && (!has_detail) &&
       (flat->gltexture->flags & GLTEXTURE_HIRES) &&
-      !(flat->flags & GLFLAT_HAVE_OFFSET))
+      !(flat->flags & GLFLAT_HAVE_TRANSFORM))
     flags = GLTEXTURE_CLAMPXY;
   else
     flags = 0;
@@ -2101,7 +2101,7 @@ static void gld_DrawFlat(GLFlat *flat)
     dx = detail->offsetx;
     dy = detail->offsety;
 
-    if ((flat->flags & GLFLAT_HAVE_OFFSET) || dx || dy)
+    if ((flat->flags & GLFLAT_HAVE_TRANSFORM) || dx || dy)
     {
       glTranslatef(flat->uoffs * w + dx, flat->voffs * h + dy, 0.0f);
     }
@@ -2174,7 +2174,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
     // calculate texture offsets
     if (sector->floor_xoffs | sector->floor_yoffs)
     {
-      flat.flags |= GLFLAT_HAVE_OFFSET;
+      flat.flags |= GLFLAT_HAVE_TRANSFORM;
       flat.uoffs=(float)sector->floor_xoffs/(float)(FRACUNIT*64);
       flat.voffs=(float)sector->floor_yoffs/(float)(FRACUNIT*64);
     }
@@ -2192,52 +2192,52 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
           case 201:
           case 202:
           case 203:          // Scroll_North_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.voffs = (float) (scrollOffset << (plane->special - 201) & 63) / 64;
             break;
           case 204:
           case 205:
           case 206:          // Scroll_East_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.uoffs = (float) ((63 - scrollOffset) << (plane->special - 204) & 63) / 64;
             break;
           case 207:
           case 208:
           case 209:          // Scroll_South_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.voffs = (float) ((63 - scrollOffset) << (plane->special - 207) & 63) / 64;
             break;
           case 210:
           case 211:
           case 212:          // Scroll_West_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.uoffs = (float) (scrollOffset << (plane->special - 210) & 63) / 64;
             break;
           case 213:
           case 214:
           case 215:          // Scroll_NorthWest_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.voffs = (float) (scrollOffset << (plane->special - 213) & 63) / 64;
             flat.uoffs = (float) (scrollOffset << (plane->special - 213) & 63) / 64;
             break;
           case 216:
           case 217:
           case 218:          // Scroll_NorthEast_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.voffs = (float) (scrollOffset << (plane->special - 216) & 63) / 64;
             flat.uoffs = (float) ((63 - scrollOffset) << (plane->special - 216) & 63) / 64;
             break;
           case 219:
           case 220:
           case 221:          // Scroll_SouthEast_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.voffs = (float) ((63 - scrollOffset) << (plane->special - 219) & 63) / 64;
             flat.uoffs = (float) ((63 - scrollOffset) << (plane->special - 219) & 63) / 64;
             break;
           case 222:
           case 223:
           case 224:          // Scroll_SouthWest_xxx
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.voffs = (float) ((63 - scrollOffset) << (plane->special - 222) & 63) / 64;
             flat.uoffs = (float) (scrollOffset << (plane->special - 222) & 63) / 64;
             break;
@@ -2254,11 +2254,11 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
           case 22:
           case 23:
           case 24:           // Scroll_East
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.uoffs = (float) ((63 - ((leveltime >> 1) & 63)) << (plane->special - 20) & 63) / 64;
             break;
           case 4:            // Scroll_EastLavaDamage
-            flat.flags |= GLFLAT_HAVE_OFFSET;
+            flat.flags |= GLFLAT_HAVE_TRANSFORM;
             flat.uoffs = (float) (((63 - ((leveltime >> 1) & 63)) << 3) & 63) / 64;
             break;
         }
@@ -2280,7 +2280,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
     // calculate texture offsets
     if (sector->ceiling_xoffs | sector->ceiling_yoffs)
     {
-      flat.flags |= GLFLAT_HAVE_OFFSET;
+      flat.flags |= GLFLAT_HAVE_TRANSFORM;
       flat.uoffs=(float)sector->ceiling_xoffs/(float)(FRACUNIT*64);
       flat.voffs=(float)sector->ceiling_yoffs/(float)(FRACUNIT*64);
     }
