@@ -15,6 +15,11 @@
 //	DSDA Utility
 //
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,6 +55,30 @@ void dsda_StringCat(dsda_string_t* dest, const char* source) {
     dest->string = Z_Calloc(dest->size, 1);
   strcat(dest->string, source);
 }
+
+#ifdef _WIN32
+wchar_t *dsda_ConvertUtf8ToWide(const char *str) {
+  wchar_t *wstr = NULL;
+  int wlen = 0;
+
+  wlen = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+
+  if (!wlen)
+    return NULL;
+
+  wstr = malloc(sizeof(wchar_t) * wlen);
+
+  if (!wstr)
+    return NULL;
+
+  if (MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr, wlen) == 0) {
+    free(wstr);
+    return NULL;
+  }
+
+  return wstr;
+}
+#endif
 
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
   unsigned int i;

@@ -44,34 +44,7 @@
 #define SLASH  "\\"
 
 #include "win_opendir.h"
-
-static wchar_t *ConvertUtf8ToWide(const char *str)
-{
-    wchar_t *wstr = NULL;
-    int wlen = 0;
-
-    wlen = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
-
-    if (!wlen)
-    {
-        return NULL;
-    }
-
-    wstr = malloc(sizeof(wchar_t) * wlen);
-
-    if (!wstr)
-    {
-        return NULL;
-    }
-
-    if (MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr, wlen) == 0)
-    {
-        free(wstr);
-        return NULL;
-    }
-
-    return wstr;
-}
+#include "dsda/utility.h"
 
 //
 // opendir
@@ -100,7 +73,7 @@ DIR *opendir(const char *szPath)
       return (DIR *)0;
    }
 
-   wPath = ConvertUtf8ToWide(szPath);
+   wPath = dsda_ConvertUtf8ToWide(szPath);
 
    if (!wPath)
    {

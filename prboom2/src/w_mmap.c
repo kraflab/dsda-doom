@@ -40,6 +40,7 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "dsda/utility.h"
 #else
 #include <sys/mman.h>
 #endif
@@ -102,34 +103,6 @@ void W_DoneCache(void)
   mapped_wad = NULL;
 }
 
-static wchar_t *ConvertUtf8ToWide(const char *str)
-{
-    wchar_t *wstr = NULL;
-    int wlen = 0;
-
-    wlen = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
-
-    if (!wlen)
-    {
-        return NULL;
-    }
-
-    wstr = malloc(sizeof(wchar_t) * wlen);
-
-    if (!wstr)
-    {
-        return NULL;
-    }
-
-    if (MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr, wlen) == 0)
-    {
-        free(wstr);
-        return NULL;
-    }
-
-    return wstr;
-}
-
 void W_InitCache(void)
 {
   // Wipe any existing cache
@@ -156,7 +129,7 @@ void W_InitCache(void)
 #endif
       if (!mapped_wad[wad_index].data)
       {
-        wchar_t *wname = ConvertUtf8ToWide(wadfiles[wad_index].name);
+        wchar_t *wname = dsda_ConvertUtf8ToWide(wadfiles[wad_index].name);
         mapped_wad[wad_index].hnd = CreateFileW(wname,
           GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL, OPEN_EXISTING, 0, NULL);
