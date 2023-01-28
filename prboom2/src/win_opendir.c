@@ -40,11 +40,38 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h> /* for GetFileAttributes */
 
-#include <tchar.h>
-#define SUFFIX	_T("*")
-#define	SLASH	_T("\\")
+#define SUFFIX "*"
+#define SLASH  "\\"
 
 #include "win_opendir.h"
+
+static wchar_t *ConvertUtf8ToWide(const char *str)
+{
+    wchar_t *wstr = NULL;
+    int wlen = 0;
+
+    wlen = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+
+    if (!wlen)
+    {
+        return NULL;
+    }
+
+    wstr = malloc(sizeof(wchar_t) * wlen);
+
+    if (!wstr)
+    {
+        return NULL;
+    }
+
+    if (MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr, wlen) == 0)
+    {
+        free(wstr);
+        return NULL;
+    }
+
+    return wstr;
+}
 
 //
 // opendir
@@ -52,12 +79,13 @@
 // Returns a pointer to a DIR structure appropriately filled in to begin
 // searching a directory.
 //
-DIR *opendir(const _TCHAR *szPath)
+DIR *opendir(const char *szPath)
 {
    DIR *nd;
    unsigned int rc;
-   _TCHAR szFullPath[MAX_PATH];
-	
+   char *szFullPath = NULL;
+   wchar_t *wPath;
+
    errno = 0;
    
    if(!szPath)
@@ -66,14 +94,23 @@ DIR *opendir(const _TCHAR *szPath)
       return (DIR *)0;
    }
    
-   if(szPath[0] == _T('\0'))
+   if(szPath[0] == '\0')
    {
       errno = ENOTDIR;
       return (DIR *)0;
    }
 
+   wPath = ConvertUtf8ToWide(szPath);
+
+   if (!wPath)
+   {
+      errno = ENOENT;
+      return (DIR *)0;
+   }
+
    /* Attempt to determine if the given path really is a directory. */
-   rc = GetFileAttributes(szPath);
+   rc = GetFileAttributesW(wPath);
+   free(wPath);
    if(rc == (unsigned int)-1)
    {
       /* call GetLastError for more error info */
@@ -88,37 +125,39 @@ DIR *opendir(const _TCHAR *szPath)
    }
 
    /* Make an absolute pathname.  */
-   _tfullpath(szFullPath, szPath, MAX_PATH);
+   szFullPath = _fullpath(NULL, szPath, 0);
 
    /* Allocate enough space to store DIR structure and the complete
    * directory path given. */
-   nd = (DIR *)(malloc(sizeof(DIR) + (_tcslen(szFullPath)
-                                       + _tcslen(SLASH)
-                                       + _tcslen(SUFFIX) + 1)
-                                     * sizeof(_TCHAR)));
+   nd = (DIR *)(malloc(sizeof(DIR) + (strlen(szFullPath)
+                                       + strlen(SLASH)
+                                       + strlen(SUFFIX) + 1)
+                                     * sizeof(char)));
 
    if(!nd)
    {
       /* Error, out of memory. */
+      free(szFullPath);
       errno = ENOMEM;
       return (DIR *)0;
    }
 
    /* Create the search expression. */
-   _tcscpy(nd->dd_name, szFullPath);
+   strcpy(nd->dd_name, szFullPath);
+   free(szFullPath);
 
    /* Add on a slash if the path does not end with one. */
-   if(nd->dd_name[0] != _T('\0')
-      && _tcsrchr(nd->dd_name, _T('/'))  != nd->dd_name
-					    + _tcslen(nd->dd_name) - 1
-      && _tcsrchr(nd->dd_name, _T('\\')) != nd->dd_name
-      					    + _tcslen(nd->dd_name) - 1)
+   if(nd->dd_name[0] != '\0'
+      && strchr(nd->dd_name, '/')  != nd->dd_name
+                   + strlen(nd->dd_name) - 1
+      && strchr(nd->dd_name, '\\') != nd->dd_name
+                         + strlen(nd->dd_name) - 1)
    {
-      _tcscat(nd->dd_name, SLASH);
+      strcat(nd->dd_name, SLASH);
    }
 
    /* Add on the search pattern */
-   _tcscat(nd->dd_name, SUFFIX);
+   strcat(nd->dd_name, SUFFIX);
    
    /* Initialize handle to -1 so that a premature closedir doesn't try
    * to call _findclose on it. */
@@ -165,7 +204,7 @@ struct dirent *readdir(DIR *dirp)
    {
       /* We haven't started the search yet. */
       /* Start the search */
-      dirp->dd_handle = _tfindfirst(dirp->dd_name, &(dirp->dd_dta));
+      dirp->dd_handle = _findfirst(dirp->dd_name, &(dirp->dd_dta));
 
       if(dirp->dd_handle == -1)
       {
@@ -181,7 +220,7 @@ struct dirent *readdir(DIR *dirp)
    else
    {
       /* Get the next search entry. */
-      if(_tfindnext(dirp->dd_handle, &(dirp->dd_dta)))
+      if(_findnext(dirp->dd_handle, &(dirp->dd_dta)))
       {
          /* We are off the end or otherwise error.	
             _findnext sets errno to ENOENT if no more file
@@ -206,8 +245,8 @@ struct dirent *readdir(DIR *dirp)
       /* Successfully got an entry. Everything about the file is
        * already appropriately filled in except the length of the
        * file name. */
-      dirp->dd_dir.d_namlen = _tcslen(dirp->dd_dta.name);
-      _tcscpy(dirp->dd_dir.d_name, dirp->dd_dta.name);
+      dirp->dd_dir.d_namlen = strlen(dirp->dd_dta.name);
+      strcpy(dirp->dd_dir.d_name, dirp->dd_dta.name);
       return &dirp->dd_dir;
    }
 

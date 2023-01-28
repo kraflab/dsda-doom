@@ -68,6 +68,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
 
 #include "e6y.h"
 
@@ -244,6 +245,8 @@ void I_SetProcessPriority(void)
 //int main(int argc, const char * const * argv)
 int main(int argc, char **argv)
 {
+  setlocale(LC_ALL, ".UTF8");
+
   dsda_ParseCommandLineArgs(argc, argv);
 
   if (dsda_Flag(dsda_arg_verbose))
