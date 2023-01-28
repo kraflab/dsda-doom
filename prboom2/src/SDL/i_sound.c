@@ -783,9 +783,6 @@ void I_InitSound(void)
     return;
   }
 
-  // [FG] feed actual sample frequency back into config variable
-  Mix_QuerySpec(&snd_samplerate, NULL, NULL);
-
   sound_was_initialized = true;
 
   Mix_SetPostMix(I_UpdateSound, NULL);

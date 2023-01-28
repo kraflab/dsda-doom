@@ -690,7 +690,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_snd_samplerate] = {
     "snd_samplerate", dsda_config_snd_samplerate,
-    dsda_config_int, 11025, 48000, { 44100 }, NULL, NOT_STRICT, I_InitSoundParams
+    dsda_config_int, 11025, 96000, { 44100 }, NULL, NOT_STRICT, I_InitSoundParams
   },
   [dsda_config_snd_samplecount] = {
     "snd_samplecount", dsda_config_snd_samplecount,
