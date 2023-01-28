@@ -2083,6 +2083,7 @@ static void gld_DrawFlat(GLFlat *flat)
     glMatrixMode(GL_TEXTURE);
     glPushMatrix();
     glTranslatef(flat->uoffs, flat->voffs, 0.0f);
+    glRotatef(-flat->rotation, 0, 0, 1);
   }
 
   gld_BindDetailARB(flat->gltexture, has_detail);
@@ -2293,6 +2294,16 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
 
   // get height from plane
   flat.z=(float)plane->height/MAP_SCALE;
+
+  if (plane->rotation)
+  {
+    flat.flags |= GLFLAT_HAVE_TRANSFORM;
+    flat.rotation = ((float) plane->rotation / ANG45) * 45;
+  }
+  else
+  {
+    flat.rotation = 0;
+  }
 
   if (gl_blend_animations)
   {

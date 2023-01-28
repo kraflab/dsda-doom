@@ -161,6 +161,7 @@ typedef struct
   float light; // the lightlevel of the flat
   float fogdensity;
   float uoffs,voffs; // the texture coordinates
+  float rotation;
   float z; // the z position of the flat (height)
   GLTexture *gltexture;
   unsigned int flags;
