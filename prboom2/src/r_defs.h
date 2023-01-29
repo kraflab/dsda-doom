@@ -572,6 +572,9 @@ typedef struct visplane
   unsigned short *bottom;
   unsigned short pad1;          // leave pads for [minx-1]/[maxx+1]
   unsigned short top[3];
+
+  // NEW FIELDS MUST BE ADDED **ABOVE** `unsigned short *bottom;`
+
 } visplane_t;
 
 // hexen
