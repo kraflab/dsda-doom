@@ -630,7 +630,9 @@ static void R_Subsector(int num)
                   frontsector->special,
                   frontsector->floor_xoffs,       // killough 3/7/98
                   frontsector->floor_yoffs,
-                  frontsector->floor_rotation
+                  frontsector->floor_rotation,
+                  frontsector->floor_xscale,
+                  frontsector->floor_yscale
                   ) : NULL;
 
     ceilingplane = frontsector->ceilingheight > viewz ||
@@ -645,7 +647,9 @@ static void R_Subsector(int num)
                   0,
                   frontsector->ceiling_xoffs,     // killough 3/7/98
                   frontsector->ceiling_yoffs,
-                  frontsector->ceiling_rotation
+                  frontsector->ceiling_rotation,
+                  frontsector->ceiling_xscale,
+                  frontsector->ceiling_yscale
                   ) : NULL;
   }
 

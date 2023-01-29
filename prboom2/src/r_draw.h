@@ -105,6 +105,8 @@ typedef struct {
 
   fixed_t xoffs;
   fixed_t yoffs;
+  fixed_t xscale;
+  fixed_t yscale;
   fixed_t sine;
   fixed_t cosine;
   fixed_t planeheight;

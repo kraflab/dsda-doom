@@ -210,6 +210,10 @@ typedef struct
   short lightlevel_ceiling;
   angle_t floor_rotation;
   angle_t ceiling_rotation;
+  fixed_t floor_xscale;
+  fixed_t floor_yscale;
+  fixed_t ceiling_xscale;
+  fixed_t ceiling_yscale;
 } sector_t;
 
 //
@@ -566,6 +570,8 @@ typedef struct visplane
   fixed_t height;
   fixed_t xoffs, yoffs;         // killough 2/28/98: Support scrolling flats
   angle_t rotation;
+  fixed_t xscale;
+  fixed_t yscale;
   // e6y: resolution limitation is removed
   // bottom and top arrays are dynamically
   // allocated immediately after the visplane

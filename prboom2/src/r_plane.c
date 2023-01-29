@@ -190,6 +190,12 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
   dsvars->xfrac = dsvars->xoffs + FixedMul(dsvars->cosine, distance) + (x1 - centerx) * dsvars->xstep;
   dsvars->yfrac = dsvars->yoffs - FixedMul(dsvars->sine, distance) + (x1 - centerx) * dsvars->ystep;
 
+  dsvars->xstep = FixedMul(dsvars->xstep, dsvars->xscale);
+  dsvars->ystep = FixedMul(dsvars->ystep, dsvars->yscale);
+
+  dsvars->xfrac = FixedMul(dsvars->xfrac, dsvars->xscale);
+  dsvars->yfrac = FixedMul(dsvars->yfrac, dsvars->yscale);
+
   if (!(dsvars->colormap = fixedcolormap))
   {
     dsvars->z = distance;
@@ -271,6 +277,8 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
       new_pl->xoffs = pl->xoffs;           // killough 2/28/98
       new_pl->yoffs = pl->yoffs;
       new_pl->rotation = pl->rotation;
+      new_pl->xscale = pl->xscale;
+      new_pl->yscale = pl->yscale;
       new_pl->minx = start;
       new_pl->maxx = stop;
       for (i = 0; i != SCREENWIDTH; i++)
@@ -283,7 +291,7 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
 // killough 2/28/98: Add offsets
 
 visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
-                        fixed_t xoffs, fixed_t yoffs, angle_t rotation)
+                        fixed_t xoffs, fixed_t yoffs, angle_t rotation, fixed_t xscale, fixed_t yscale)
 {
   visplane_t *check;
   unsigned hash;                      // killough
@@ -306,7 +314,9 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
         special == check->special &&
         xoffs == check->xoffs &&      // killough 2/28/98: Add offset checks
         yoffs == check->yoffs &&
-        rotation == check->rotation)
+        rotation == check->rotation &&
+        xscale == check->xscale &&
+        yscale == check->yscale)
       return check;
 
   check = new_visplane(hash);         // killough
@@ -318,6 +328,8 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
   check->xoffs = xoffs;               // killough 2/28/98: Save offsets
   check->yoffs = yoffs;
   check->rotation = rotation;
+  check->xscale = xscale;
+  check->yscale = yscale;
 
   if (V_IsSoftwareMode())
   {
@@ -575,6 +587,8 @@ static void R_DoDrawPlane(visplane_t *pl)
       dsvars.source = W_LumpByNum(firstflat + flattranslation[pl->picnum]);
       dsvars.xoffs = pl->xoffs;
       dsvars.yoffs = pl->yoffs;
+      dsvars.xscale = pl->xscale;
+      dsvars.yscale = pl->yscale;
 
       if (pl->rotation)
       {

@@ -1267,6 +1267,8 @@ dboolean P_FloorPlanesDiffer(const sector_t *sec, const sector_t *other)
          sec->floor_xoffs != other->floor_xoffs ||
          sec->floor_yoffs != other->floor_yoffs ||
          sec->floor_rotation != other->floor_rotation ||
+         sec->floor_xscale != other->floor_xscale ||
+         sec->floor_yscale != other->floor_yscale ||
          sec->special != other->special ||
          P_FloorLightLevel(sec) != P_FloorLightLevel(other);
 }
@@ -1277,6 +1279,8 @@ dboolean P_CeilingPlanesDiffer(const sector_t *sec, const sector_t *other)
          sec->ceiling_xoffs != other->ceiling_xoffs ||
          sec->ceiling_yoffs != other->ceiling_yoffs ||
          sec->ceiling_rotation != other->ceiling_rotation ||
+         sec->ceiling_xscale != other->ceiling_xscale ||
+         sec->ceiling_yscale != other->ceiling_yscale ||
          P_CeilingLightLevel(sec) != P_CeilingLightLevel(other);
 }
 
