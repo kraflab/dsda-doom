@@ -508,8 +508,6 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       sector_t tempsec;
       int floorlight;
       float light;
-      float floor_uoffs, floor_voffs;
-      float rotation;
       dboolean transform;
       int loopnum;
 
@@ -520,17 +518,30 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
       light = gld_Calc2DLightLevel(floorlight);
       gld_StaticLightAlpha(light, alpha);
 
-      // Find texture origin.
-      floor_uoffs = (float)sec->floor_xoffs/(float)(FRACUNIT*64);
-      floor_voffs = (float)sec->floor_yoffs/(float)(FRACUNIT*64);
-      rotation = ((float) sec->floor_rotation / ANG45) * 45;
-      transform = floor_uoffs || floor_voffs || rotation;
+      transform = sec->floor_xoffs ||
+                  sec->floor_yoffs ||
+                  sec->floor_rotation ||
+                  sec->floor_xscale != FRACUNIT ||
+                  sec->floor_yscale != FRACUNIT;
 
       if (transform)
       {
+        float uoffs;
+        float voffs;
+        float rotation;
+        float xscale;
+        float yscale;
+
+        uoffs = (float) sec->floor_xoffs / (64 * FRACUNIT);
+        voffs = (float) sec->floor_yoffs / (64 * FRACUNIT);
+        rotation = ((float) sec->floor_rotation / ANG45) * 45;
+        xscale = (float) sec->floor_xscale / FRACUNIT;
+        yscale = (float) sec->floor_yscale / FRACUNIT;
+
         glMatrixMode(GL_TEXTURE);
         glPushMatrix();
-        glTranslatef(floor_uoffs, floor_voffs, 0.0f);
+        glScalef(xscale, yscale, 1);
+        glTranslatef(uoffs, voffs, 0.0f);
         glRotatef(-rotation, 0, 0, 1);
       }
 
