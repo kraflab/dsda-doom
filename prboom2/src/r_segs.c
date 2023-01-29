@@ -884,41 +884,22 @@ void R_StoreWallRange(const int start, const int stop)
       worldtop = worldhigh;
 
     markfloor = worldlow != worldbottom
-      || backsector->floorpic != frontsector->floorpic
-
-      // killough 3/7/98: Add checks for (x,y) offsets
-      || backsector->floor_xoffs != frontsector->floor_xoffs
-      || backsector->floor_yoffs != frontsector->floor_yoffs
-      || backsector->floor_rotation != frontsector->floor_rotation
+      || P_FloorPlanesDiffer(frontsector, backsector)
 
       // killough 4/15/98: prevent 2s normals
       // from bleeding through deep water
       || frontsector->heightsec != -1
 
-      // killough 4/17/98: draw floors if different light levels
-      || P_FloorLightLevel(backsector) != P_FloorLightLevel(frontsector)
-
-      // hexen flowing water
-      || backsector->special != frontsector->special
-
       || (sidedef->midtexture && (sidedef->flags & SF_CLIPMIDTEX || linedef->flags & ML_CLIPMIDTEX))
       ;
 
     markceiling = worldhigh != worldtop
-      || backsector->ceilingpic != frontsector->ceilingpic
-
-      // killough 3/7/98: Add checks for (x,y) offsets
-      || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
-      || backsector->ceiling_yoffs != frontsector->ceiling_yoffs
-      || backsector->ceiling_rotation != frontsector->ceiling_rotation
+      || P_CeilingPlanesDiffer(frontsector, backsector)
 
       // killough 4/15/98: prevent 2s normals
       // from bleeding through fake ceilings
       || (frontsector->heightsec != -1 &&
           frontsector->ceilingpic!=skyflatnum)
-
-      // killough 4/17/98: draw ceilings if different light levels
-      || P_CeilingLightLevel(backsector) != P_CeilingLightLevel(frontsector)
 
       || (sidedef->midtexture && (sidedef->flags & SF_CLIPMIDTEX || linedef->flags & ML_CLIPMIDTEX))
       ;

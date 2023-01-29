@@ -1261,6 +1261,25 @@ short P_CeilingLightLevel(const sector_t *sec)
   );
 }
 
+dboolean P_FloorPlanesDiffer(const sector_t *sec, const sector_t *other)
+{
+  return sec->floorpic != other->floorpic ||
+         sec->floor_xoffs != other->floor_xoffs ||
+         sec->floor_yoffs != other->floor_yoffs ||
+         sec->floor_rotation != other->floor_rotation ||
+         sec->special != other->special ||
+         P_FloorLightLevel(sec) != P_FloorLightLevel(other);
+}
+
+dboolean P_CeilingPlanesDiffer(const sector_t *sec, const sector_t *other)
+{
+  return sec->ceilingpic != other->ceilingpic ||
+         sec->ceiling_xoffs != other->ceiling_xoffs ||
+         sec->ceiling_yoffs != other->ceiling_yoffs ||
+         sec->ceiling_rotation != other->ceiling_rotation ||
+         P_CeilingLightLevel(sec) != P_CeilingLightLevel(other);
+}
+
 //
 // P_CheckTag()
 //

@@ -1051,6 +1051,8 @@ dboolean PUREFUNC P_LightingActive(const sector_t *sec);
 
 short P_FloorLightLevel(const sector_t *sec);
 short P_CeilingLightLevel(const sector_t *sec);
+dboolean P_FloorPlanesDiffer(const sector_t *sec, const sector_t *other);
+dboolean P_CeilingPlanesDiffer(const sector_t *sec, const sector_t *other);
 
 dboolean PUREFUNC P_IsSecret
 ( const sector_t *sec );

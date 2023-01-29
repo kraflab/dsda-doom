@@ -153,17 +153,8 @@ static void R_RecalcLineFlags(line_t *linedef)
       backsector->ceilingheight != frontsector->ceilingheight
       || backsector->floorheight != frontsector->floorheight
       || curline->sidedef->midtexture
-      || backsector->floor_xoffs != frontsector->floor_xoffs
-      || backsector->floor_yoffs != frontsector->floor_yoffs
-      || backsector->floor_rotation != frontsector->floor_rotation
-      || backsector->ceiling_xoffs != frontsector->ceiling_xoffs
-      || backsector->ceiling_yoffs != frontsector->ceiling_yoffs
-      || backsector->ceiling_rotation != frontsector->ceiling_rotation
-      || backsector->ceilingpic != frontsector->ceilingpic
-      || backsector->floorpic != frontsector->floorpic
-      || P_FloorLightLevel(backsector) != P_FloorLightLevel(frontsector)
-      || P_CeilingLightLevel(backsector) != P_CeilingLightLevel(frontsector)
-      || backsector->special != frontsector->special
+      || P_FloorPlanesDiffer(frontsector, backsector)
+      || P_CeilingPlanesDiffer(frontsector, backsector)
     ) {
       linedef->r_flags = 0;
       return;
