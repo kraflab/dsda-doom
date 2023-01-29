@@ -540,9 +540,9 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
 
         glMatrixMode(GL_TEXTURE);
         glPushMatrix();
-        glScalef(xscale, yscale, 1);
-        glTranslatef(uoffs, voffs, 0.0f);
-        glRotatef(-rotation, 0, 0, 1);
+        glScalef(xscale, yscale, 1.f);
+        glTranslatef(uoffs, voffs, 0.f);
+        glRotatef(-rotation, 0.f, 0.f, 1.f);
       }
 
       for (loopnum = 0; loopnum < subsectorloops[ssidx].loopcount; loopnum++)
@@ -2111,9 +2111,9 @@ static void gld_DrawFlat(GLFlat *flat)
   {
     glMatrixMode(GL_TEXTURE);
     glPushMatrix();
-    glScalef(flat->xscale, flat->yscale, 1);
-    glTranslatef(flat->uoffs, flat->voffs, 0.0f);
-    glRotatef(-flat->rotation, 0, 0, 1);
+    glScalef(flat->xscale, flat->yscale, 1.f);
+    glTranslatef(flat->uoffs, flat->voffs, 0.f);
+    glRotatef(-flat->rotation, 0.f, 0.f, 1.f);
   }
 
   gld_BindDetailARB(flat->gltexture, has_detail);
