@@ -2100,6 +2100,7 @@ static void gld_DrawFlat(GLFlat *flat)
   {
     glMatrixMode(GL_TEXTURE);
     glPushMatrix();
+    glScalef(flat->xscale, flat->yscale, 1);
     glTranslatef(flat->uoffs, flat->voffs, 0.0f);
     glRotatef(-flat->rotation, 0, 0, 1);
   }
@@ -2321,6 +2322,18 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   else
   {
     flat.rotation = 0;
+  }
+
+  if (plane->xscale != FRACUNIT || plane->yscale != FRACUNIT)
+  {
+    flat.flags |= GLFLAT_HAVE_TRANSFORM;
+    flat.xscale = (float) plane->xscale / FRACUNIT;
+    flat.yscale = (float) plane->yscale / FRACUNIT;
+  }
+  else
+  {
+    flat.xscale = 1.f;
+    flat.yscale = 1.f;
   }
 
   if (gl_blend_animations)
