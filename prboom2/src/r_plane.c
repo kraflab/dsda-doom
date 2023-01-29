@@ -109,7 +109,6 @@ static fixed_t planeheight;
 
 // killough 2/8/98: make variables static
 
-static fixed_t basexscale, baseyscale;
 static fixed_t *cachedheight = NULL;
 
 // e6y: resolution limitation is removed
@@ -164,8 +163,6 @@ void R_InitPlanes (void)
 // Uses global vars:
 //  planeheight
 //  dsvars.source
-//  basexscale
-//  baseyscale
 //
 // BASIC PRIMITIVE
 //
@@ -244,10 +241,6 @@ void R_ClearPlanes(void)
 
   // texture calculation
   memset (cachedheight, 0, SCREENHEIGHT * sizeof(*cachedheight));
-
-  // scale will be unit scale at SCREENWIDTH/2 distance
-  basexscale = FixedDiv (viewsin,projection);
-  baseyscale = FixedDiv (viewcos,projection);
 }
 
 // New function, by Lee Killough
