@@ -104,9 +104,6 @@ static int *spanstart = NULL;                // killough 2/8/98
 // texture mapping
 //
 
-static const lighttable_t **planezlight;
-static fixed_t planeheight;
-
 // killough 2/8/98: make variables static
 
 static fixed_t *cachedheight = NULL;
@@ -160,12 +157,6 @@ void R_InitPlanes (void)
 //
 // R_MapPlane
 //
-// Uses global vars:
-//  planeheight
-//  dsvars.source
-//
-// BASIC PRIMITIVE
-//
 
 static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
 {
@@ -190,10 +181,10 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
   if (centery == y)
     return;
   den = (int64_t)FRACUNIT * FRACUNIT * D_abs(centery - y);
-  distance = FixedMul (planeheight, yslope[y]);
+  distance = FixedMul(dsvars->planeheight, yslope[y]);
 
-  dsvars->xstep = (fixed_t)((int64_t)dsvars->sine * planeheight * viewfocratio / den);
-  dsvars->ystep = (fixed_t)((int64_t)dsvars->cosine * planeheight * viewfocratio / den);
+  dsvars->xstep = (fixed_t)((int64_t)dsvars->sine * dsvars->planeheight * viewfocratio / den);
+  dsvars->ystep = (fixed_t)((int64_t)dsvars->cosine * dsvars->planeheight * viewfocratio / den);
 
   // killough 2/28/98: Add offsets
   dsvars->xfrac = dsvars->xoffs + FixedMul(dsvars->cosine, distance) + (x1 - centerx) * dsvars->xstep;
@@ -205,7 +196,7 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
     index = distance >> LIGHTZSHIFT;
     if (index >= MAXLIGHTZ )
       index = MAXLIGHTZ-1;
-    dsvars->colormap = planezlight[index];
+    dsvars->colormap = dsvars->planezlight[index];
   }
   else
   {
@@ -686,7 +677,7 @@ static void R_DoDrawPlane(visplane_t *pl)
         }
       }
 
-      planeheight = D_abs(pl->height-viewz);
+      dsvars.planeheight = D_abs(pl->height-viewz);
 
       // SoM 10/19/02: deep water colormap fix
       if(fixedcolormap)
@@ -701,7 +692,7 @@ static void R_DoDrawPlane(visplane_t *pl)
         light = 0;
 
       stop = pl->maxx + 1;
-      planezlight = zlight[light];
+      dsvars.planezlight = zlight[light];
       pl->top[pl->minx-1] = pl->top[stop] = SHRT_MAX; // dropoff overflow
 
       for (x = pl->minx ; x <= stop ; x++)

@@ -107,6 +107,8 @@ typedef struct {
   fixed_t yoffs;
   fixed_t sine;
   fixed_t cosine;
+  fixed_t planeheight;
+  const lighttable_t **planezlight;
 } draw_span_vars_t;
 
 typedef struct {
