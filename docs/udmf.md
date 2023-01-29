@@ -194,10 +194,10 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | ypanningfloor            | :heavy_check_mark: |
 | xpanningceiling          | :heavy_check_mark: |
 | ypanningceiling          | :heavy_check_mark: |
-| xscalefloor              | :comet:            |
-| yscalefloor              | :comet:            |
-| xscaleceiling            | :comet:            |
-| yscaleceiling            | :comet:            |
+| xscalefloor              | :heavy_check_mark: |
+| yscalefloor              | :heavy_check_mark: |
+| xscaleceiling            | :heavy_check_mark: |
+| yscaleceiling            | :heavy_check_mark: |
 | rotationfloor            | :heavy_check_mark: |
 | rotationceiling          | :heavy_check_mark: |
 | ceilingplane_a           | :x:                |
