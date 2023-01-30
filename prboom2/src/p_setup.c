@@ -351,6 +351,26 @@ static void P_GetNodesVersion(void)
       nodesVersion = ZDOOM_ZGLN_NODES;
       lprintf(LO_DEBUG,"P_GetNodesVersion: using ZGLN zdoom nodes\n");
     }
+    else if (CheckForIdentifier(level_components.znodes, "ZGL2", 4))
+    {
+      nodesVersion = ZDOOM_ZGL2_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using ZGL2 zdoom nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.znodes, "XGL2", 4))
+    {
+      nodesVersion = ZDOOM_XGL2_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using XGL2 zdoom nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.znodes, "ZGL3", 4))
+    {
+      nodesVersion = ZDOOM_ZGL3_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using ZGL3 zdoom nodes\n");
+    }
+    else if (CheckForIdentifier(level_components.znodes, "XGL3", 4))
+    {
+      nodesVersion = ZDOOM_XGL3_NODES;
+      lprintf(LO_DEBUG,"P_GetNodesVersion: using XGL3 zdoom nodes\n");
+    }
     else if (CheckForIdentifier(level_components.nodes, "XNOD", 4))
     {
       nodesVersion = ZDOOM_XNOD_NODES;
@@ -1294,24 +1314,42 @@ static void P_LoadZSegs (const byte *data)
   }
 }
 
-static void P_LoadGLZSegs(const byte *data)
+static void P_LoadGLZSegs(const byte *data, int type)
 {
   int i, j;
   const mapseg_znod_t *ml = (const mapseg_znod_t *) data;
+  const mapseg_znod2_t *ml2 = (const mapseg_znod2_t *) data;
 
   for (i = 0; i < numsubsectors; ++i)
   {
-    for (j = 0; j < subsectors[i].numlines; ++j, ml++)
+    for (j = 0; j < subsectors[i].numlines; ++j)
     {
       unsigned int v1, partner;
       unsigned int line;
       unsigned char side;
       seg_t *seg;
 
-      v1 = LittleLong(ml->v1);
-      partner = LittleLong(ml->v2);
-      line = (unsigned short) LittleShort(ml->linedef);
-      side = ml->side;
+      if (type < 2)
+      {
+        v1 = LittleLong(ml->v1);
+        partner = LittleLong(ml->v2);
+        line = (unsigned short) LittleShort(ml->linedef);
+        side = ml->side;
+
+        if (line == 0xffff)
+          line = 0xffffffff;
+
+        ml++;
+      }
+      else
+      {
+        v1 = LittleLong(ml2->v1);
+        partner = LittleLong(ml2->v2);
+        line = (unsigned int) LittleLong(ml2->linedef);
+        side = ml2->side;
+
+        ml2++;
+      }
 
       seg = &segs[subsectors[i].firstline + j];
 
@@ -1325,7 +1363,7 @@ static void P_LoadGLZSegs(const byte *data)
         seg[-1].v2 = seg->v1;
       }
 
-      if (line != 0xffff)
+      if (line != 0xffffffff)
       {
         line_t *ldef;
 
@@ -1404,6 +1442,7 @@ static void P_LoadGLZSegs(const byte *data)
 static void P_LoadZNodes(int lump, int glnodes)
 {
   const byte *data;
+  size_t node_size;
   unsigned int i;
   int len;
 
@@ -1421,7 +1460,10 @@ static void P_LoadZNodes(int lump, int glnodes)
   CheckZNodesOverflow(&len, 4);
   data += 4;
 
-  if (nodesVersion == ZDOOM_ZNOD_NODES || nodesVersion == ZDOOM_ZGLN_NODES)
+  if (nodesVersion == ZDOOM_ZNOD_NODES ||
+      nodesVersion == ZDOOM_ZGLN_NODES ||
+      nodesVersion == ZDOOM_ZGL2_NODES ||
+      nodesVersion == ZDOOM_ZGL3_NODES)
   {
     output = P_DecompressData(&data, &len);
   }
@@ -1527,11 +1569,14 @@ static void P_LoadZNodes(int lump, int glnodes)
   }
   else
   {
+    size_t seg_size;
     use_gl_nodes = true;
 
-    CheckZNodesOverflow(&len, numsegs * sizeof(mapseg_znod_t));
-    P_LoadGLZSegs(data);
-    data += numsegs * sizeof(mapseg_znod_t);
+    seg_size = (glnodes < 2 ? sizeof(mapseg_znod_t) : sizeof(mapseg_znod2_t));
+
+    CheckZNodesOverflow(&len, numsegs * seg_size);
+    P_LoadGLZSegs(data, glnodes);
+    data += numsegs * seg_size;
   }
 
   // Read nodes
@@ -1542,24 +1587,46 @@ static void P_LoadZNodes(int lump, int glnodes)
   numnodes = numNodes;
   nodes = calloc_IfSameLevel(nodes, numNodes, sizeof(node_t));
 
-  CheckZNodesOverflow(&len, numNodes * sizeof(mapnode_znod_t));
+  node_size = (glnodes < 3 ? sizeof(mapnode_znod_t) : sizeof(mapnode_znod2_t));
+  CheckZNodesOverflow(&len, numNodes * node_size);
   for (i = 0; i < numNodes; i++)
   {
     int j, k;
     node_t *no = nodes + i;
-    const mapnode_znod_t *mn = (const mapnode_znod_t *) data + i;
 
-    no->x = LittleShort(mn->x)<<FRACBITS;
-    no->y = LittleShort(mn->y)<<FRACBITS;
-    no->dx = LittleShort(mn->dx)<<FRACBITS;
-    no->dy = LittleShort(mn->dy)<<FRACBITS;
-
-    for (j = 0; j < 2; j++)
+    if (glnodes < 3)
     {
-      no->children[j] = LittleLong(mn->children[j]);
+      const mapnode_znod_t *mn = (const mapnode_znod_t *) data + i;
 
-      for (k = 0; k < 4; k++)
-        no->bbox[j][k] = LittleShort(mn->bbox[j][k])<<FRACBITS;
+      no->x = LittleShort(mn->x)<<FRACBITS;
+      no->y = LittleShort(mn->y)<<FRACBITS;
+      no->dx = LittleShort(mn->dx)<<FRACBITS;
+      no->dy = LittleShort(mn->dy)<<FRACBITS;
+
+      for (j = 0; j < 2; j++)
+      {
+        no->children[j] = LittleLong(mn->children[j]);
+
+        for (k = 0; k < 4; k++)
+          no->bbox[j][k] = LittleShort(mn->bbox[j][k])<<FRACBITS;
+      }
+    }
+    else
+    {
+      const mapnode_znod2_t *mn2 = (const mapnode_znod2_t *) data + i;
+
+      no->x = LittleLong(mn2->x);
+      no->y = LittleLong(mn2->y);
+      no->dx = LittleLong(mn2->dx);
+      no->dy = LittleLong(mn2->dy);
+
+      for (j = 0; j < 2; j++)
+      {
+        no->children[j] = LittleLong(mn2->children[j]);
+
+        for (k = 0; k < 4; k++)
+          no->bbox[j][k] = LittleShort(mn2->bbox[j][k])<<FRACBITS;
+      }
     }
   }
 
@@ -3826,6 +3893,18 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     case ZDOOM_XGLN_NODES:
     case ZDOOM_ZGLN_NODES:
       P_LoadZNodes(level_components.znodes, 1);
+
+      break;
+
+    case ZDOOM_XGL2_NODES:
+    case ZDOOM_ZGL2_NODES:
+      P_LoadZNodes(level_components.znodes, 2);
+
+      break;
+
+    case ZDOOM_XGL3_NODES:
+    case ZDOOM_ZGL3_NODES:
+      P_LoadZNodes(level_components.znodes, 3);
 
       break;
 

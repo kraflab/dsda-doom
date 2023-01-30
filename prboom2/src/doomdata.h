@@ -253,6 +253,11 @@ typedef struct {
   unsigned char side;
 } PACKEDATTR mapseg_znod_t;
 
+typedef struct {
+  unsigned int v1, v2;
+  unsigned int linedef;
+  unsigned char side;
+} PACKEDATTR mapseg_znod2_t;
 
 // BSP node structure.
 
@@ -292,6 +297,17 @@ typedef struct {
   // If NF_SUBSECTOR its a subsector, else it's a node of another subtree.
   int children[2];
 } PACKEDATTR mapnode_znod_t;
+
+typedef struct {
+  int x;  // Partition line from (x,y) to x+dx,y+dy)
+  int y;
+  int dx;
+  int dy;
+  // Bounding box for each child, clip against view frustum.
+  short bbox[2][4];
+  // If NF_SUBSECTOR its a subsector, else it's a node of another subtree.
+  int children[2];
+} PACKEDATTR mapnode_znod2_t;
 
 // Thing definition, position, orientation and type,
 // plus skill/visibility flags and attributes.
