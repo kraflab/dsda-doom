@@ -339,7 +339,7 @@ static void P_GetNodesVersion(void)
     // https://zdoom.org/wiki/Node
     if (CheckForIdentifier(level_components.ssectors, "ZGL", 3) ||
         CheckForIdentifier(level_components.ssectors, "XGL", 3))
-      I_Error("ZDoom GL nodes are not supported yet");
+      level_components.znodes = level_components.ssectors;
 
     if (CheckForIdentifier(level_components.znodes, "XGLN", 4))
     {
