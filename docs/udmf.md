@@ -79,7 +79,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | firstsideonly      | :heavy_check_mark: |
 | zoneboundary       | :x:                |
 | clipmidtex         | :heavy_check_mark: |
-| wrapmidtex         | :telescope:        |
+| wrapmidtex         | :warning:          |
 | midtex3d           | :heavy_check_mark: |
 | midtex3dimpassible | :heavy_check_mark: |
 | checkswitchrange   | :heavy_check_mark: |
@@ -103,6 +103,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 
 #### Notes
 - `arg*` currently has hexen's limit of 0-255.
+- `wrapmidtex` currently only works in opengl.
 
 ### Sidedefs
 
@@ -139,7 +140,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | nofakecontrast        | :heavy_check_mark: |
 | smoothlighting        | :heavy_check_mark: |
 | clipmidtex            | :heavy_check_mark: |
-| wrapmidtex            | :telescope:        |
+| wrapmidtex            | :warning:          |
 | nodecals              | :x:                |
 | nogradient_top        | :x:                |
 | flipgradient_top      | :x:                |
@@ -168,6 +169,9 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | colorization_top      | :x:                |
 | colorization_mid      | :x:                |
 | colorization_bottom   | :x:                |
+
+#### Notes
+- `wrapmidtex` currently only works in opengl.
 
 ### Vertices
 
