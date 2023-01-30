@@ -336,7 +336,7 @@ static void P_GetNodesVersion(void)
 
   if (nodesVersion == DEFAULT_BSP_NODES)
   {
-    // http://zdoom.org/wiki/ZDBSP
+    // https://zdoom.org/wiki/Node
     if (CheckForIdentifier(level_components.ssectors, "ZGL", 3) ||
         CheckForIdentifier(level_components.ssectors, "XGL", 3))
       I_Error("ZDoom GL nodes are not supported yet");
