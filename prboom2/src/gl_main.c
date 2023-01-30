@@ -1891,21 +1891,46 @@ void gld_AddWall(seg_t *seg)
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
       int top, bottom;
+      dboolean wrapmidtex;
 
       wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
       wall.gltexture=temptex;
 
-      if ( (LINE->flags & ML_DONTPEGBOTTOM) >0)
+      wrapmidtex = seg->sidedef->flags & SF_WRAPMIDTEX || seg->linedef->flags & ML_WRAPMIDTEX;
+
+      if (wrapmidtex)
       {
-        floor_height = MAX(seg->frontsector->floorheight, seg->backsector->floorheight) +
-                       seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
-        ceiling_height = floor_height + (wall.gltexture->realtexheight << FRACBITS);
+        fixed_t real_ceiling_height;
+
+        floor_height = MAX(seg->frontsector->floorheight, seg->backsector->floorheight);
+        real_ceiling_height = MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight);
+
+        if (LINE->flags & ML_DONTPEGBOTTOM)
+        {
+          ceiling_height = floor_height + seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+        }
+        else
+        {
+          ceiling_height = real_ceiling_height + seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+        }
+
+        while (ceiling_height < real_ceiling_height)
+          ceiling_height += (wall.gltexture->realtexheight << FRACBITS);
       }
       else
       {
-        ceiling_height = MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight) +
-                         seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
-        floor_height = ceiling_height - (wall.gltexture->realtexheight << FRACBITS);
+        if (LINE->flags & ML_DONTPEGBOTTOM)
+        {
+          floor_height = MAX(seg->frontsector->floorheight, seg->backsector->floorheight) +
+                        seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+          ceiling_height = floor_height + (wall.gltexture->realtexheight << FRACBITS);
+        }
+        else
+        {
+          ceiling_height = MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight) +
+                          seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid;
+          floor_height = ceiling_height - (wall.gltexture->realtexheight << FRACBITS);
+        }
       }
 
       // Depending on missing textures and possible plane intersections
@@ -1967,7 +1992,9 @@ void gld_AddWall(seg_t *seg)
       wall.ytop = (float)top/(float)MAP_SCALE;
       wall.ybottom = (float)bottom/(float)MAP_SCALE;
 
-      wall.flag = GLDWF_M2S;
+      if (!wrapmidtex)
+        wall.flag = GLDWF_M2S;
+
       URUL(wall, seg, backseg, linelength, seg->sidedef->textureoffset_mid);
 
       wall.vt = (float)((-top + ceiling_height))/(float)wall.gltexture->realtexheight;
