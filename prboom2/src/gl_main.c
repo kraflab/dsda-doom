@@ -1883,11 +1883,11 @@ void gld_AddWall(seg_t *seg)
     if (comp[comp_maskedanim])
       temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed);
     else
+      // e6y
+      // Animated middle textures with a zero index should be forced
+      // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
+      temptex=gld_RegisterTexture(midtexture, true, true, indexed);
 
-    // e6y
-    // Animated middle textures with a zero index should be forced
-    // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
-    temptex=gld_RegisterTexture(midtexture, true, true, indexed);
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
       int top, bottom;
