@@ -225,7 +225,7 @@ typedef struct
 #define SF_NOFAKECONTRAST      0x0004
 #define SF_SMOOTHLIGHTING      0x0008
 #define SF_CLIPMIDTEX          0x0010
-// #define SF_WRAPMIDTEX          0x0020
+#define SF_WRAPMIDTEX          0x0020
 // #define SF_NODECALS            0x0040
 #define SF_LIGHTABSOLUTETOP    0x0080
 #define SF_LIGHTABSOLUTEMID    0x0100

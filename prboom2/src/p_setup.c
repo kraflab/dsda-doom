@@ -2206,6 +2206,9 @@ static void P_LoadUDMFLineDefs(int lump)
     if (mld->flags & UDMF_ML_TRANSPARENT)
       ld->alpha = 0.25f;
 
+    if (mld->flags & UDMF_ML_WRAPMIDTEX)
+      ld->flags |= ML_WRAPMIDTEX;
+
     P_CalculateLineDefProperties(ld);
 
     if (ld->alpha < 1.f)
