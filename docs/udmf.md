@@ -114,12 +114,12 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | texturemiddle         | :heavy_check_mark: |
 | sector                | :heavy_check_mark: |
 | comment               | :x:                |
-| scalex_top            | :comet:            |
-| scaley_top            | :comet:            |
-| scalex_mid            | :comet:            |
-| scaley_mid            | :comet:            |
-| scalex_bottom         | :comet:            |
-| scaley_bottom         | :comet:            |
+| scalex_top            | :warning:          |
+| scaley_top            | :warning:          |
+| scalex_mid            | :warning:          |
+| scaley_mid            | :warning:          |
+| scalex_bottom         | :warning:          |
+| scaley_bottom         | :warning:          |
 | offsetx_top           | :heavy_check_mark: |
 | offsety_top           | :heavy_check_mark: |
 | offsetx_mid           | :heavy_check_mark: |
@@ -169,7 +169,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | colorization_bottom   | :x:                |
 
 #### Notes
-- `wrapmidtex` currently only works in opengl.
+- `wrapmidtex` and `scale*` currently only work in opengl.
 
 ### Vertices
 
