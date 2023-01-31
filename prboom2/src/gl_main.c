@@ -1561,6 +1561,20 @@ static void gld_DrawWall(GLWall *wall)
     }
     else
     {
+      if (wall->xscale != 1.f)
+      {
+        wall->ur = wall->ul + (wall->ur - wall->ul) * wall->xscale;
+      }
+
+      // TODO: midtex world position is wrong
+      if (wall->yscale != 1.f)
+      {
+        if (wall->anchor_vb)
+          wall->vt = wall->vb + (wall->vt - wall->vb) * wall->yscale;
+        else
+          wall->vb = wall->vt + (wall->vb - wall->vt) * wall->yscale;
+      }
+
       gld_StaticLightAlpha(wall->light, wall->alpha);
 
       glBegin(GL_TRIANGLE_FAN);
@@ -1616,9 +1630,11 @@ static void gld_DrawWall(GLWall *wall)
   (w).flag=GLDWF_TOP;\
   URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_top);\
   if (peg){\
+    (w).anchor_vb=true;\
     (w).vb=OV((w),(seg),(seg)->sidedef->rowoffset_top)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
+    (w).anchor_vb=false;\
     (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_top);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
@@ -1627,9 +1643,11 @@ static void gld_DrawWall(GLWall *wall)
   (w).flag=GLDWF_M1S;\
   URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_mid);\
   if (peg){\
+    (w).anchor_vb=true;\
     (w).vb=OV((w),(seg),(seg)->sidedef->rowoffset_mid)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
+    (w).anchor_vb=false;\
     (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_mid);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
@@ -1638,9 +1656,11 @@ static void gld_DrawWall(GLWall *wall)
   (w).flag=GLDWF_BOT;\
   URUL(w, seg, backseg, linelength, (seg)->sidedef->textureoffset_bottom);\
   if (peg){\
+    (w).anchor_vb=true;\
     (w).vb=OV_PEG((w),(seg),(v_offset),(seg)->sidedef->rowoffset_bottom)+((w).gltexture->scaleyfac);\
     (w).vt=((w).vb-((float)(lineheight)/(float)(w).gltexture->buffer_height));\
   }else{\
+    (w).anchor_vb=false;\
     (w).vt=OV((w),(seg),(seg)->sidedef->rowoffset_bottom);\
     (w).vb=(w).vt+((float)(lineheight)/(float)(w).gltexture->buffer_height);\
   }
@@ -1706,6 +1726,8 @@ void gld_AddWall(seg_t *seg)
   if (!seg->backsector) /* onesided */
   {
     wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
+    wall.xscale = (float) seg->sidedef->scalex_mid / FRACUNIT;
+    wall.yscale = (float) seg->sidedef->scaley_mid / FRACUNIT;
 
     if (frontsector->ceilingpic==skyflatnum)
     {
@@ -1785,6 +1807,8 @@ void gld_AddWall(seg_t *seg)
     ceiling_height=frontsector->ceilingheight;
     floor_height=backsector->ceilingheight;
     wall.light = gld_CalcLightLevel(R_TopLightLevel(seg->sidedef, base_lightlevel));
+    wall.xscale = (float) seg->sidedef->scalex_top / FRACUNIT;
+    wall.yscale = (float) seg->sidedef->scaley_top / FRACUNIT;
     if (frontsector->ceilingpic==skyflatnum)// || backsector->ceilingpic==skyflatnum)
     {
       wall.ytop= MAXCOORD;
@@ -1894,6 +1918,8 @@ void gld_AddWall(seg_t *seg)
       dboolean wrapmidtex;
 
       wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
+      wall.xscale = (float) seg->sidedef->scalex_mid / FRACUNIT;
+      wall.yscale = (float) seg->sidedef->scaley_mid / FRACUNIT;
       wall.gltexture=temptex;
 
       wrapmidtex = seg->sidedef->flags & SF_WRAPMIDTEX || seg->linedef->flags & ML_WRAPMIDTEX;
@@ -1997,6 +2023,7 @@ void gld_AddWall(seg_t *seg)
 
       URUL(wall, seg, backseg, linelength, seg->sidedef->textureoffset_mid);
 
+      wall.anchor_vb = false;
       wall.vt = (float)((-top + ceiling_height))/(float)wall.gltexture->realtexheight;
       wall.vb = (float)((-bottom + ceiling_height))/(float)wall.gltexture->realtexheight;
 
@@ -2013,6 +2040,8 @@ bottomtexture:
     ceiling_height=backsector->floorheight;
     floor_height=frontsector->floorheight;
     wall.light = gld_CalcLightLevel(R_BottomLightLevel(seg->sidedef, base_lightlevel));
+    wall.xscale = (float) seg->sidedef->scalex_bottom / FRACUNIT;
+    wall.yscale = (float) seg->sidedef->scaley_bottom / FRACUNIT;
     if (frontsector->floorpic==skyflatnum)
     {
       wall.ybottom=-MAXCOORD;

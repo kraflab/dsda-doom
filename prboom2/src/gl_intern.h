@@ -144,6 +144,9 @@ typedef struct
   float alpha;
   float skyymid;
   float skyyaw;
+  float xscale;
+  float yscale;
+  dboolean anchor_vb;
   GLTexture *gltexture;
   byte flag;
   seg_t *seg;
