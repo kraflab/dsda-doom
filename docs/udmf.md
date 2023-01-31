@@ -8,7 +8,6 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | ------------------ | ------------------------------ |
 | :heavy_check_mark: | Feature is fully supported     |
 | :warning:          | Feature is partially supported |
-| :comet:            | Feature is planned later       |
 | :x:                | Feature is not planned         |
 
 ### Namespaces
