@@ -2580,6 +2580,13 @@ static void P_LoadSideDefs(int lump)
     sd->textureoffset = LittleShort(msd->textureoffset)<<FRACBITS;
     sd->rowoffset = LittleShort(msd->rowoffset)<<FRACBITS;
 
+    sd->scalex_top = FRACUNIT;
+    sd->scaley_top = FRACUNIT;
+    sd->scalex_mid = FRACUNIT;
+    sd->scaley_mid = FRACUNIT;
+    sd->scalex_bottom = FRACUNIT;
+    sd->scaley_bottom = FRACUNIT;
+
     { /* cph 2006/09/30 - catch out-of-range sector numbers; use sector 0 instead */
       unsigned short sector_num = LittleShort(msd->sector);
       if (sector_num >= numsectors) {
@@ -2612,6 +2619,13 @@ static void P_LoadUDMFSideDefs(int lump)
     sd->rowoffset_top = dsda_IntToFixed(msd->offsety_top);
     sd->rowoffset_mid = dsda_IntToFixed(msd->offsety_mid);
     sd->rowoffset_bottom = dsda_IntToFixed(msd->offsety_bottom);
+
+    sd->scalex_top = dsda_FloatToFixed(msd->scalex_top);
+    sd->scaley_top = dsda_FloatToFixed(msd->scaley_top);
+    sd->scalex_mid = dsda_FloatToFixed(msd->scalex_mid);
+    sd->scaley_mid = dsda_FloatToFixed(msd->scaley_mid);
+    sd->scalex_bottom = dsda_FloatToFixed(msd->scalex_bottom);
+    sd->scaley_bottom = dsda_FloatToFixed(msd->scaley_bottom);
 
     sd->lightlevel = msd->light;
     sd->lightlevel_top = msd->light_top;

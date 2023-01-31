@@ -256,6 +256,13 @@ typedef struct
   fixed_t rowoffset_mid;
   fixed_t rowoffset_bottom;
 
+  fixed_t scalex_top;
+  fixed_t scaley_top;
+  fixed_t scalex_mid;
+  fixed_t scaley_mid;
+  fixed_t scalex_bottom;
+  fixed_t scaley_bottom;
+
   int lightlevel;
   int lightlevel_top;
   int lightlevel_mid;
