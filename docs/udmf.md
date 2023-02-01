@@ -282,11 +282,11 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | height        | :heavy_check_mark: |
 | angle         | :heavy_check_mark: |
 | type          | :heavy_check_mark: |
-| skill1        | :warning:          |
-| skill2        | :warning:          |
+| skill1        | :heavy_check_mark: |
+| skill2        | :heavy_check_mark: |
 | skill3        | :heavy_check_mark: |
-| skill4        | :warning:          |
-| skill5        | :warning:          |
+| skill4        | :heavy_check_mark: |
+| skill5        | :heavy_check_mark: |
 | ambush        | :heavy_check_mark: |
 | single        | :heavy_check_mark: |
 | dm            | :heavy_check_mark: |
@@ -326,5 +326,4 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | floatbobphase | :x:                |
 
 #### Notes
-- `skill1-2` and `skill4-5` are currently collapsed to the existing `easy` and `hard` flags.
 - `arg*` currently has hexen's limit of 0-255.

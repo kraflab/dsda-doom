@@ -189,6 +189,11 @@ typedef enum {
 #define MTF_FRIENDLY    0x2000
 #define MTF_STANDSTILL  0x4000
 #define MTF_COUNTSECRET 0x8000
+#define MTF_SKILL1  0x00010000
+#define MTF_SKILL2  0x00020000
+#define MTF_SKILL3  0x00040000
+#define MTF_SKILL4  0x00080000
+#define MTF_SKILL5  0x00100000
 
 typedef enum {
   sk_none=-1, //jff 3/24/98 create unpicked skill setting

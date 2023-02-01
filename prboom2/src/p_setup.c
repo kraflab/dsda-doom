@@ -1787,6 +1787,15 @@ static void P_LoadThings(int lump)
       mt.health = FRACUNIT;
     }
 
+    if (mt.options & MTF_EASY)
+      mt.options |= MTF_SKILL1 | MTF_SKILL2;
+
+    if (mt.options & MTF_NORMAL)
+      mt.options |= MTF_SKILL3;
+
+    if (mt.options & MTF_HARD)
+      mt.options |= MTF_SKILL4 | MTF_SKILL5;
+
     P_PostProcessMapThing(&mt, &mobjcount, &mobjlist);
   }
 
@@ -1824,16 +1833,20 @@ static void P_LoadUDMFThings(int lump)
     mt.gravity = dsda_StringToFixed(dmt->gravity);
     mt.health = dsda_StringToFixed(dmt->health);
 
-    // need to disambiguate
-    if (dmt->flags & (UDMF_TF_SKILL1 | UDMF_TF_SKILL2))
-      mt.options |= MTF_EASY;
+    if (dmt->flags & UDMF_TF_SKILL1)
+      mt.options |= MTF_SKILL1;
+
+    if (dmt->flags & UDMF_TF_SKILL2)
+      mt.options |= MTF_SKILL2;
 
     if (dmt->flags & UDMF_TF_SKILL3)
-      mt.options |= MTF_NORMAL;
+      mt.options |= MTF_SKILL3;
 
-    // need to disambiguate
-    if (dmt->flags & (UDMF_TF_SKILL4 | UDMF_TF_SKILL5))
-      mt.options |= MTF_HARD;
+    if (dmt->flags & UDMF_TF_SKILL4)
+      mt.options |= MTF_SKILL4;
+
+    if (dmt->flags & UDMF_TF_SKILL5)
+      mt.options |= MTF_SKILL5;
 
     if (dmt->flags & UDMF_TF_AMBUSH)
       mt.options |= MTF_AMBUSH;

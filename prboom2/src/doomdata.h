@@ -319,7 +319,7 @@ typedef struct {
   fixed_t height;
   short angle;
   short type;
-  short options;
+  int options;
   int special;
   byte arg1;
   byte arg2;

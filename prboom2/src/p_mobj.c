@@ -2157,7 +2157,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   {
     if (!demo_compatibility) // cph - Add warning about bad thing flags
       lprintf(LO_WARN, "P_SpawnMapThing: correcting bad flags (%u) (thing type %d)\n", options, thingtype);
-    options &= MTF_EASY|MTF_NORMAL|MTF_HARD|MTF_AMBUSH|MTF_NOTSINGLE;
+    options &= MTF_SKILL1|MTF_SKILL2|MTF_SKILL3|MTF_SKILL4|MTF_SKILL5|MTF_AMBUSH|MTF_NOTSINGLE;
   }
 
   // count deathmatch start positions
@@ -2333,13 +2333,13 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   }
 
   // check for apropriate skill level
-
-  // killough 11/98: simplify
-  if (gameskill == sk_baby || gameskill == sk_easy ?
-      !(options & MTF_EASY) :
-      gameskill == sk_hard || gameskill == sk_nightmare ?
-      !(options & MTF_HARD) :
-      !(options & MTF_NORMAL))
+  if (
+    gameskill == sk_baby   ? !(options & MTF_SKILL1) :
+    gameskill == sk_easy   ? !(options & MTF_SKILL2) :
+    gameskill == sk_medium ? !(options & MTF_SKILL3) :
+    gameskill == sk_hard   ? !(options & MTF_SKILL4) :
+                             !(options & MTF_SKILL5)
+  )
     return NULL;
 
   if (!raven && thingtype >= 14100 && thingtype <= 14164)
