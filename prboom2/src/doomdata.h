@@ -321,11 +321,7 @@ typedef struct {
   short type;
   int options;
   int special;
-  byte arg1;
-  byte arg2;
-  byte arg3;
-  byte arg4;
-  byte arg5;
+  byte args[5];
   fixed_t gravity;
   fixed_t health;
 } mapthing_t;

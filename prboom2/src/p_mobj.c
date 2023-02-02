@@ -2099,7 +2099,7 @@ dboolean P_IsDoomnumAllowed(int doomnum)
 static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
 {
   return !deathmatch &&
-         (map_format.zdoom ? mthing->arg1 == leave_data.position : !mthing->arg1);
+         (map_format.zdoom ? mthing->args[0] == leave_data.position : !mthing->args[0]);
 }
 
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
@@ -2234,7 +2234,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     }
 
     if (map_format.hexen)
-      start = mthing->arg1;
+      start = mthing->args[0];
 
     // save spots for respawning in coop games
     playerstarts[start][thingtype - 1] = *mthing;
@@ -2278,7 +2278,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
       player = 4 + mthing->type - 9100;
 
-      player_start = &playerstarts[mthing->arg1][player];
+      player_start = &playerstarts[mthing->args[0]][player];
       memcpy(player_start, mthing, sizeof(mapthing_t));
       player_start->type = player + 1;
 
@@ -2352,7 +2352,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   if (!raven && thingtype == 14165 && map_format.hexen)
   {
     // Use the ambient number
-    iden_num = BETWEEN(0, 64, mthing->arg1); // Mus change
+    iden_num = BETWEEN(0, 64, mthing->args[0]); // Mus change
     thingtype = 14164;            // MT_MUSICSOURCE
   }
 
@@ -2468,11 +2468,11 @@ spawnit:
     }
     mobj->tid = mthing->tid;
     mobj->special = mthing->special;
-    mobj->args[0] = mthing->arg1;
-    mobj->args[1] = mthing->arg2;
-    mobj->args[2] = mthing->arg3;
-    mobj->args[3] = mthing->arg4;
-    mobj->args[4] = mthing->arg5;
+    mobj->args[0] = mthing->args[0];
+    mobj->args[1] = mthing->args[1];
+    mobj->args[2] = mthing->args[2];
+    mobj->args[3] = mthing->args[3];
+    mobj->args[4] = mthing->args[4];
   }
 
   if (mobj->flags2 & MF2_FLOATBOB)
