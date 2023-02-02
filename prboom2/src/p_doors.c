@@ -1202,7 +1202,7 @@ int Hexen_EV_DoDoor(line_t * line, byte * args, vldoor_e type)
         }
         door->type = type;
         door->speed = speed;
-        door->topwait = args[2];        // line->arg3
+        door->topwait = args[2];
         SN_StartSequence((mobj_t *) & door->sector->soundorg,
                          SEQ_DOOR_STONE + door->sector->seqType);
     }
@@ -1248,8 +1248,8 @@ dboolean Hexen_EV_VerticalDoor(line_t * line, mobj_t * thing)
             door->type = DREV_NORMAL;
             break;
     }
-    door->speed = line->arg2 * (FRACUNIT / 8);
-    door->topwait = line->arg3;
+    door->speed = line->args[1] * (FRACUNIT / 8);
+    door->topwait = line->args[2];
 
     //
     // find the top and bottom of the movement range

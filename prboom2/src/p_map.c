@@ -3898,18 +3898,18 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
         {                       // Don't use back sides
             return false;
         }
-        if (PuzzleItemType != in->d.line->arg1)
+        if (PuzzleItemType != in->d.line->args[0])
         {                       // Item type doesn't match
             return false;
         }
 
         // Construct an args[] array that would contain the values from
         // the line that would be passed by Vanilla Hexen.
-        args[0] = in->d.line->arg3;
-        args[1] = in->d.line->arg4;
-        args[2] = in->d.line->arg5;
+        args[0] = in->d.line->args[2];
+        args[1] = in->d.line->args[3];
+        args[2] = in->d.line->args[4];
 
-        P_StartACS(in->d.line->arg2, 0, args, PuzzleItemUser, in->d.line, 0);
+        P_StartACS(in->d.line->args[1], 0, args, PuzzleItemUser, in->d.line, 0);
         in->d.line->special = 0;
         PuzzleActivated = true;
         return false;           // Stop searching

@@ -1781,11 +1781,11 @@ static int CmdSetLineSpecial(void)
     while ((line = P_FindLine(lineTag, &searcher)) != NULL)
     {
         line->special = special;
-        line->arg1 = arg1;
-        line->arg2 = arg2;
-        line->arg3 = arg3;
-        line->arg4 = arg4;
-        line->arg5 = arg5;
+        line->args[0] = arg1;
+        line->args[1] = arg2;
+        line->args[2] = arg3;
+        line->args[3] = arg4;
+        line->args[4] = arg5;
     }
     return SCRIPT_CONTINUE;
 }

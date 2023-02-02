@@ -339,11 +339,7 @@ typedef struct line_s
   byte player_activations;
 
   // hexen
-  byte arg1;
-  byte arg2;
-  byte arg3;
-  byte arg4;
-  byte arg5;
+  byte args[5];
 
   // zdoom
   line_activation_t activation;

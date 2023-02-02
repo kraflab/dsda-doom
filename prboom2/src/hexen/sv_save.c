@@ -1351,11 +1351,11 @@ static void ArchiveWorld(void)
     {
         SV_WriteLong(li->flags);
         SV_WriteByte(li->special);
-        SV_WriteByte(li->arg1);
-        SV_WriteByte(li->arg2);
-        SV_WriteByte(li->arg3);
-        SV_WriteByte(li->arg4);
-        SV_WriteByte(li->arg5);
+        SV_WriteByte(li->args[0]);
+        SV_WriteByte(li->args[1]);
+        SV_WriteByte(li->args[2]);
+        SV_WriteByte(li->args[3]);
+        SV_WriteByte(li->args[4]);
         for (j = 0; j < 2; j++)
         {
             if (li->sidenum[j] == NO_INDEX)
@@ -1400,11 +1400,11 @@ static void UnarchiveWorld(void)
     {
         li->flags = SV_ReadLong();
         li->special = SV_ReadByte();
-        li->arg1 = SV_ReadByte();
-        li->arg2 = SV_ReadByte();
-        li->arg3 = SV_ReadByte();
-        li->arg4 = SV_ReadByte();
-        li->arg5 = SV_ReadByte();
+        li->args[0] = SV_ReadByte();
+        li->args[1] = SV_ReadByte();
+        li->args[2] = SV_ReadByte();
+        li->args[3] = SV_ReadByte();
+        li->args[4] = SV_ReadByte();
         for (j = 0; j < 2; j++)
         {
             if (li->sidenum[j] == NO_INDEX)
