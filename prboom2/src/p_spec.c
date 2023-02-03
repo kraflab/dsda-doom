@@ -3447,11 +3447,11 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
 
 static void P_TransferLineArgs(line_t *l, byte *args)
 {
-  args[0] = l->args[0];
-  args[1] = l->args[1];
-  args[2] = l->args[2];
-  args[3] = l->args[3];
-  args[4] = l->args[4];
+  args[0] = l->special_args[0];
+  args[1] = l->special_args[1];
+  args[2] = l->special_args[2];
+  args[3] = l->special_args[3];
+  args[4] = l->special_args[4];
 }
 
 static void P_SpawnVanillaExtras(void)
@@ -3532,7 +3532,7 @@ void P_SpawnZDoomExtra(line_t *l, int i)
     // support for drawn heights coming from different sector
     case zl_transfer_heights:
       sec = sides[*l->sidenum].sector->iSectorID;
-      FIND_SECTORS(id_p, l->args[0])
+      FIND_SECTORS(id_p, l->special_args[0])
         sectors[*id_p].heightsec = sec;
       break;
 
@@ -3540,7 +3540,7 @@ void P_SpawnZDoomExtra(line_t *l, int i)
     // floor lighting independently (e.g. lava)
     case zl_transfer_floor_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      FIND_SECTORS(id_p, l->args[0])
+      FIND_SECTORS(id_p, l->special_args[0])
         sectors[*id_p].floorlightsec = sec;
       break;
 
@@ -3548,24 +3548,24 @@ void P_SpawnZDoomExtra(line_t *l, int i)
     // ceiling lighting independently
     case zl_transfer_ceiling_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      FIND_SECTORS(id_p, l->args[0])
+      FIND_SECTORS(id_p, l->special_args[0])
         sectors[*id_p].ceilinglightsec = sec;
       break;
 
     // [Graf Zahl] Add support for setting lighting
     // per wall independently
     case zl_transfer_wall_light:
-      // new DWallLightTransfer (lines[i].frontsector, lines[i].args[0], lines[i].args[1]);
+      // new DWallLightTransfer (lines[i].frontsector, lines[i].special_args[0], lines[i].special_args[1]);
       break;
 
     case zl_sector_attach_3d_midtex:
-      // P_Attach3dMidtexLinesToSector(lines[i].frontsector, lines[i].args[0], lines[i].args[1], !!lines[i].args[2]);
+      // P_Attach3dMidtexLinesToSector(lines[i].frontsector, lines[i].special_args[0], lines[i].special_args[1], !!lines[i].special_args[2]);
       break;
 
     case zl_sector_set_link:
-      // if (lines[i].args[0] == 0)
+      // if (lines[i].special_args[0] == 0)
       // {
-      //   P_AddSectorLinks(lines[i].frontsector, lines[i].args[1], lines[i].args[2], lines[i].args[3]);
+      //   P_AddSectorLinks(lines[i].frontsector, lines[i].special_args[1], lines[i].special_args[2], lines[i].special_args[3]);
       // }
       break;
 
@@ -3583,15 +3583,15 @@ void P_SpawnZDoomExtra(line_t *l, int i)
       // arg 2 = 0:floor, 1:ceiling, 2:both
       // arg 3 = 0: anchor, 1: reference line
       // arg 4 = for the anchor only: alpha
-      // if ((lines[i].args[1] == 0 || lines[i].args[1] == 6) && lines[i].args[3] == 0)
+      // if ((lines[i].special_args[1] == 0 || lines[i].special_args[1] == 6) && lines[i].special_args[3] == 0)
       // {
-      //   P_SpawnPortal(&lines[i], lines[i].args[0], lines[i].args[2], lines[i].args[4], lines[i].args[1]);
+      //   P_SpawnPortal(&lines[i], lines[i].special_args[0], lines[i].special_args[2], lines[i].special_args[4], lines[i].special_args[1]);
       // }
-      // else if (lines[i].args[1] == 3 || lines[i].args[1] == 4)
+      // else if (lines[i].special_args[1] == 3 || lines[i].special_args[1] == 4)
       // {
       //   line_t *line = &lines[i];
-      //   unsigned pnum = P_GetPortal(line->args[1] == 3 ? PORTS_PLANE : PORTS_HORIZON, line->args[2], line->frontsector, NULL, { 0,0 });
-      //   CopyPortal(line->args[0], line->args[2], pnum, 0, true);
+      //   unsigned pnum = P_GetPortal(line->special_args[1] == 3 ? PORTS_PLANE : PORTS_HORIZON, line->special_args[2], line->frontsector, NULL, { 0,0 });
+      //   CopyPortal(line->special_args[0], line->special_args[2], pnum, 0, true);
       // }
       break;
 
@@ -3601,13 +3601,13 @@ void P_SpawnZDoomExtra(line_t *l, int i)
 
     // [RH] ZDoom Static_Init settings
     case zl_static_init:
-      switch (l->args[1])
+      switch (l->special_args[1])
       {
         case zi_init_gravity:
         {
           fixed_t grav = FixedDiv(P_AproxDistance(l->dx, l->dy), 100 * FRACUNIT);
           sec = sides[*l->sidenum].sector->iSectorID;
-          FIND_SECTORS(id_p, l->args[0])
+          FIND_SECTORS(id_p, l->special_args[0])
             sectors[*id_p].gravity = grav;
         }
         break;
@@ -3636,7 +3636,7 @@ void P_SpawnZDoomExtra(line_t *l, int i)
           }
 
           sec = sides[*l->sidenum].sector->iSectorID;
-          FIND_SECTORS(id_p, l->args[0])
+          FIND_SECTORS(id_p, l->special_args[0])
           {
             sectors[*id_p].damage = damage;
             sectors[*id_p].flags |= flags;
@@ -3645,8 +3645,8 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         break;
 
         case zi_init_sector_link:
-          // if (lines[i].args[3] == 0)
-          //   P_AddSectorLinksByID(lines[i].frontsector, lines[i].args[0], lines[i].args[2]);
+          // if (lines[i].special_args[3] == 0)
+          //   P_AddSectorLinksByID(lines[i].frontsector, lines[i].special_args[0], lines[i].special_args[2]);
           break;
 
         // killough 10/98:
@@ -3658,7 +3658,7 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         // linedef). Still requires user to use F_SKY1 for the floor
         // or ceiling texture, to distinguish floor and ceiling sky.
         case zi_init_transfer_sky:
-          FIND_SECTORS(id_p, l->args[0])
+          FIND_SECTORS(id_p, l->special_args[0])
             sectors[*id_p].sky = i | PL_SKYFLAT;
           break;
       }
@@ -4009,7 +4009,7 @@ static void P_InitCopyScrollers(void)
     {
       // don't allow copying the scroller if the sector has the same tag
       //   as it would just duplicate it.
-      if (l->frontsector->tag == l->args[0])
+      if (l->frontsector->tag == l->special_args[0])
         P_AddCopyScroller(l);
 
       l->special = 0;
@@ -4037,16 +4037,16 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       special == zl_scroll_floor   ||
       special == zl_scroll_texture_model)
   {
-    if (l->args[1] & 3)
+    if (l->special_args[1] & 3)
     {
       // if 1, then displacement
       // if 2, then accelerative (also if 3)
       control = sides[*l->sidenum].sector->iSectorID;
-      if (l->args[1] & 2)
+      if (l->special_args[1] & 2)
         accel = 1;
     }
 
-    if (special == zl_scroll_texture_model || l->args[1] & 4)
+    if (special == zl_scroll_texture_model || l->special_args[1] & 4)
     {
       // The line housing the special controls the
       // direction and speed of scrolling.
@@ -4056,8 +4056,8 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     else
     {
       // The speed and direction are parameters to the special.
-      dx = (fixed_t) (l->args[3] - 128) * FRACUNIT / 32;
-      dy = (fixed_t) (l->args[4] - 128) * FRACUNIT / 32;
+      dx = (fixed_t) (l->special_args[3] - 128) * FRACUNIT / 32;
+      dy = (fixed_t) (l->special_args[4] - 128) * FRACUNIT / 32;
     }
   }
 
@@ -4067,46 +4067,46 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     const int *id_p;
 
     case zl_scroll_ceiling:
-      FIND_SECTORS(id_p, l->args[0])
+      FIND_SECTORS(id_p, l->special_args[0])
         Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel);
 
       for (j = 0; j < copyscroller_count; ++j)
       {
         line_t *cs = copyscrollers[j];
 
-        if (cs->args[0] == l->args[0] && cs->args[1] & 1)
+        if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 1)
           Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel);
       }
 
       l->special = 0;
       break;
     case zl_scroll_floor:
-      if (l->args[2] != 1)
+      if (l->special_args[2] != 1)
       { // scroll the floor texture
-        FIND_SECTORS(id_p, l->args[0])
+        FIND_SECTORS(id_p, l->special_args[0])
           Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel);
 
         for (j = 0; j < copyscroller_count; ++j)
         {
           line_t *cs = copyscrollers[j];
 
-          if (cs->args[0] == l->args[0] && cs->args[1] & 2)
+          if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 2)
             Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel);
         }
       }
 
-      if (l->args[2] > 0)
+      if (l->special_args[2] > 0)
       { // carry objects on the floor
         dx = FixedMul(dx, CARRYFACTOR);
         dy = FixedMul(dy, CARRYFACTOR);
-        FIND_SECTORS(id_p, l->args[0])
+        FIND_SECTORS(id_p, l->special_args[0])
           Add_Scroller(sc_carry, dx, dy, control, *id_p, accel);
 
         for (j = 0; j < copyscroller_count; ++j)
         {
           line_t *cs = copyscrollers[j];
 
-          if (cs->args[0] == l->args[0] && cs->args[1] & 4)
+          if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 4)
             Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel);
         }
       }
@@ -4116,7 +4116,7 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_texture_model:
       // killough 3/1/98: scroll wall according to linedef
       // (same direction and speed as scrolling floors)
-      for (id_p = dsda_FindLinesFromID(l->args[0]); *id_p >= 0; id_p++)
+      for (id_p = dsda_FindLinesFromID(l->special_args[0]); *id_p >= 0; id_p++)
         if (*id_p != i)
           Add_WallScroller(dx, dy, lines + *id_p, control, accel);
 
@@ -4124,37 +4124,37 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       break;
     case zl_scroll_texture_offsets:
       // killough 3/2/98: scroll according to sidedef offsets
-      // MAP_FORMAT_TODO: l->args[0] SCROLLTYPE
+      // MAP_FORMAT_TODO: l->special_args[0] SCROLLTYPE
       j = lines[i].sidenum[0];
       Add_Scroller(sc_side, -sides[j].textureoffset, sides[j].rowoffset, -1, j, accel);
       l->special = 0;
       break;
     case zl_scroll_texture_left:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->args[1] SCROLLTYPE
-      Add_Scroller(sc_side, l->args[0] / 64, 0, -1, j, accel);
+      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
+      Add_Scroller(sc_side, l->special_args[0] / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_right:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->args[1] SCROLLTYPE
-      Add_Scroller(sc_side, -l->args[0] / 64, 0, -1, j, accel);
+      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
+      Add_Scroller(sc_side, -l->special_args[0] / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_up:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->args[1] SCROLLTYPE
-      Add_Scroller(sc_side, 0, l->args[0] / 64, -1, j, accel);
+      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
+      Add_Scroller(sc_side, 0, l->special_args[0] / 64, -1, j, accel);
       break;
     case zl_scroll_texture_down:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->args[1] SCROLLTYPE
-      Add_Scroller(sc_side, 0, -l->args[0] / 64, -1, j, accel);
+      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
+      Add_Scroller(sc_side, 0, -l->special_args[0] / 64, -1, j, accel);
       break;
     case zl_scroll_texture_both:
       j = lines[i].sidenum[0];
 
-      if (l->args[0] == 0) {
-        dx = (l->args[1] - l->args[2]) / 64;
-        dy = (l->args[4] - l->args[3]) / 64;
+      if (l->special_args[0] == 0) {
+        dx = (l->special_args[1] - l->special_args[2]) / 64;
+        dy = (l->special_args[4] - l->special_args[3]) / 64;
         Add_Scroller(sc_side, dx, dy, -1, j, accel);
       }
 
@@ -4371,12 +4371,12 @@ void P_SpawnZDoomFriction(line_t *l)
   {
     int value;
 
-    if (l->args[1])
-      value = l->args[1] <= 200 ? l->args[1] : 200;
+    if (l->special_args[1])
+      value = l->special_args[1] <= 200 ? l->special_args[1] : 200;
     else
       value = P_AproxDistance(l->dx, l->dy) >> FRACBITS;
 
-    P_ApplySectorFriction(l->args[0], value, false);
+    P_ApplySectorFriction(l->special_args[0], value, false);
 
     l->special = 0;
   }
@@ -4715,7 +4715,7 @@ void P_SpawnCompatiblePusher(line_t *l)
 
 static void CalculatePushVector(line_t *l, int magnitude, int angle, fixed_t *dx, fixed_t *dy)
 {
-  if (l->args[3])
+  if (l->special_args[3])
   {
     *dx = l->dx;
     *dy = l->dy;
@@ -4739,28 +4739,28 @@ void P_SpawnZDoomPusher(line_t *l)
   switch (l->special)
   {
     case zl_sector_set_wind: // wind
-      CalculatePushVector(l, l->args[1], l->args[2], &dx, &dy);
-      FIND_SECTORS(id_p, l->args[0])
+      CalculatePushVector(l, l->special_args[1], l->special_args[2], &dx, &dy);
+      FIND_SECTORS(id_p, l->special_args[0])
         Add_Pusher(p_wind, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_sector_set_current: // current
-      CalculatePushVector(l, l->args[1], l->args[2], &dx, &dy);
-      FIND_SECTORS(id_p, l->args[0])
+      CalculatePushVector(l, l->special_args[1], l->special_args[2], &dx, &dy);
+      FIND_SECTORS(id_p, l->special_args[0])
         Add_Pusher(p_current, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_point_push_set_force: // push/pull
-      CalculatePushVector(l, l->args[2], 0, &dx, &dy);
-      if (l->args[0])
+      CalculatePushVector(l, l->special_args[2], 0, &dx, &dy);
+      if (l->special_args[0])
       {  // [RH] Find thing by sector
-        FIND_SECTORS(id_p, l->args[0])
+        FIND_SECTORS(id_p, l->special_args[0])
         {
           thing = P_GetPushThing(*id_p);
           if (thing) // No MT_P* means no effect
           {
             // [RH] Allow narrowing it down by tid
-            if (!l->args[1] || l->args[1] == thing->tid)
+            if (!l->special_args[1] || l->special_args[1] == thing->tid)
               Add_Pusher(p_push, dx, dy, thing, *id_p);
           }
         }
@@ -4769,7 +4769,7 @@ void P_SpawnZDoomPusher(line_t *l)
       {  // [RH] Find thing by tid
         int s;
 
-        for (s = -1; (thing = P_FindMobjFromTID(l->args[1], &s)) != NULL;)
+        for (s = -1; (thing = P_FindMobjFromTID(l->special_args[1], &s)) != NULL;)
           if (thing->type == map_format.mt_push || thing->type == map_format.mt_pull)
             Add_Pusher(p_push, dx, dy, thing, thing->subsector->sector->iSectorID);
       }
@@ -5547,7 +5547,7 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
         type = arti - hexen_arti_firstpuzzitem;
         if (type < 0)
             continue;
-        if (type == line->args[0])
+        if (type == line->special_args[0])
         {
             // A puzzle item was found for the line
             if (P_UseArtifact(player, arti))
@@ -5658,7 +5658,7 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
         switch (line->special)
         {
           case zl_door_raise:
-            if (line->args[0] == 0 && line->args[1] < 64)
+            if (line->special_args[0] == 0 && line->special_args[1] < 64)
               noway = false;
             break;
           case zl_teleport:
@@ -5673,7 +5673,7 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
           switch (line->special)
           {
             case zl_door_raise:
-              if (line->args[1] >= 64)
+              if (line->special_args[1] >= 64)
                 break;
             case zl_teleport:
             case zl_teleport_no_fog:
@@ -6464,7 +6464,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
             line->flags & ML_REPEATSPECIAL &&
             line->special == zl_generic_stairs)
         {
-          line->args[3] ^= 1;
+          line->special_args[3] ^= 1;
         }
       }
       break;
@@ -7108,9 +7108,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           target->special = args[1];
-          target->args[0] = args[2];
-          target->args[1] = args[3];
-          target->args[2] = args[4];
+          target->special_args[0] = args[2];
+          target->special_args[1] = args[3];
+          target->special_args[2] = args[4];
         }
       }
       buttonSuccess = 1;
@@ -7828,7 +7828,7 @@ static void Hexen_P_SpawnSpecials(void)
                 numlinespecials++;
                 break;
             case 121:          // Line_SetIdentification
-                if (lines[i].args[0])
+                if (lines[i].special_args[0])
                 {
                     if (TaggedLineCount == MAX_TAGGED_LINES)
                     {
@@ -7836,7 +7836,7 @@ static void Hexen_P_SpawnSpecials(void)
                                 "(%d) exceeded.", MAX_TAGGED_LINES);
                     }
                     TaggedLines[TaggedLineCount].line = &lines[i];
-                    TaggedLines[TaggedLineCount++].lineTag = lines[i].args[0];
+                    TaggedLines[TaggedLineCount++].lineTag = lines[i].special_args[0];
                 }
                 lines[i].special = 0;
                 break;

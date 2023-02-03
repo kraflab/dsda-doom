@@ -1985,21 +1985,21 @@ static void P_SetLineID(line_t *ld)
   switch (ld->special)
   {
     case zl_line_set_identification:
-      ld->tag = (unsigned short) 256 * ld->args[4] + ld->args[0];
+      ld->tag = (unsigned short) 256 * ld->special_args[4] + ld->special_args[0];
       ld->special = 0;
       break;
     case zl_translucent_line:
-      ld->tag = ld->args[0];
+      ld->tag = ld->special_args[0];
       break;
     case zl_teleport_line:
     case zl_scroll_texture_model:
-      ld->tag = ld->args[0];
+      ld->tag = ld->special_args[0];
       break;
     case zl_polyobj_start_line:
-      ld->tag = ld->args[3];
+      ld->tag = ld->special_args[3];
       break;
     case zl_polyobj_explicit_line:
-      ld->tag = ld->args[4];
+      ld->tag = ld->special_args[4];
       break;
   }
 }
@@ -2121,11 +2121,11 @@ static void P_LoadLineDefs (int lump)
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = mld->special; // just a byte in hexen
       ld->tag = 0;
-      ld->args[0] = mld->arg1;
-      ld->args[1] = mld->arg2;
-      ld->args[2] = mld->arg3;
-      ld->args[3] = mld->arg4;
-      ld->args[4] = mld->arg5;
+      ld->special_args[0] = mld->arg1;
+      ld->special_args[1] = mld->arg2;
+      ld->special_args[2] = mld->arg3;
+      ld->special_args[3] = mld->arg4;
+      ld->special_args[4] = mld->arg5;
       ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
       ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
       ld->sidenum[0] = LittleShort(mld->sidenum[0]);
@@ -2139,11 +2139,11 @@ static void P_LoadLineDefs (int lump)
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = LittleShort(mld->special);
       ld->tag = LittleShort(mld->tag);
-      ld->args[0] = 0;
-      ld->args[1] = 0;
-      ld->args[2] = 0;
-      ld->args[3] = 0;
-      ld->args[4] = 0;
+      ld->special_args[0] = 0;
+      ld->special_args[1] = 0;
+      ld->special_args[2] = 0;
+      ld->special_args[3] = 0;
+      ld->special_args[4] = 0;
       ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
       ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
       ld->sidenum[0] = LittleShort(mld->sidenum[0]);
@@ -2178,11 +2178,11 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->flags = (mld->flags & ML_BOOM);
     ld->special = mld->special;
     ld->tag = (mld->id >= 0 ? mld->id : 0);
-    ld->args[0] = mld->arg0;
-    ld->args[1] = mld->arg1;
-    ld->args[2] = mld->arg2;
-    ld->args[3] = mld->arg3;
-    ld->args[4] = mld->arg4;
+    ld->special_args[0] = mld->arg0;
+    ld->special_args[1] = mld->arg1;
+    ld->special_args[2] = mld->arg2;
+    ld->special_args[3] = mld->arg3;
+    ld->special_args[4] = mld->arg4;
     ld->v1 = &vertexes[mld->v1];
     ld->v2 = &vertexes[mld->v2];
     ld->sidenum[0] = mld->sidefront;
@@ -2379,13 +2379,13 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
       else
         tranmap = W_LumpByNum(lump - 1);
 
-      if (!ld->args[0])
+      if (!ld->special_args[0])
       {
         ld->tranmap = tranmap;
         ld->alpha = 0.66f;
       }
       else
-        for (id_p = dsda_FindLinesFromID(ld->args[0]); *id_p >= 0; id_p++)
+        for (id_p = dsda_FindLinesFromID(ld->special_args[0]); *id_p >= 0; id_p++)
         {
           lines[*id_p].tranmap = tranmap;
           lines[*id_p].alpha = 0.66f;

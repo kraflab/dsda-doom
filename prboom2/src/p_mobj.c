@@ -2468,11 +2468,11 @@ spawnit:
     }
     mobj->tid = mthing->tid;
     mobj->special = mthing->special;
-    mobj->args[0] = mthing->args[0];
-    mobj->args[1] = mthing->args[1];
-    mobj->args[2] = mthing->args[2];
-    mobj->args[3] = mthing->args[3];
-    mobj->args[4] = mthing->args[4];
+    mobj->special_args[0] = mthing->args[0];
+    mobj->special_args[1] = mthing->args[1];
+    mobj->special_args[2] = mthing->args[2];
+    mobj->special_args[3] = mthing->args[3];
+    mobj->special_args[4] = mthing->args[4];
   }
 
   if (mobj->flags2 & MF2_FLOATBOB)
@@ -3336,7 +3336,7 @@ void P_FloorBounceMissile(mobj_t * mo)
                 case HEXEN_MT_SORCBALL1:
                 case HEXEN_MT_SORCBALL2:
                 case HEXEN_MT_SORCBALL3:
-                    if (!mo->args[0])
+                    if (!mo->special_args[0])
                         S_StartMobjSound(mo, mo->info->seesound);
                     break;
                 default:

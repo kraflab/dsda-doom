@@ -357,11 +357,11 @@ static dboolean ActivateThing(mobj_t * mobj)
             break;
         case HEXEN_MT_THRUSTFLOOR_UP:
         case HEXEN_MT_THRUSTFLOOR_DOWN:
-            if (mobj->args[0] == 0)
+            if (mobj->special_args[0] == 0)
             {
                 S_StartMobjSound(mobj, hexen_sfx_thrustspike_lower);
                 mobj->flags2 &= ~MF2_DONTDRAW;
-                if (mobj->args[1])
+                if (mobj->special_args[1])
                     P_SetMobjState(mobj, HEXEN_S_BTHRUSTRAISE1);
                 else
                     P_SetMobjState(mobj, HEXEN_S_THRUSTRAISE1);
@@ -425,10 +425,10 @@ static dboolean DeactivateThing(mobj_t * mobj)
             break;
         case HEXEN_MT_THRUSTFLOOR_UP:
         case HEXEN_MT_THRUSTFLOOR_DOWN:
-            if (mobj->args[0] == 1)
+            if (mobj->special_args[0] == 1)
             {
                 S_StartMobjSound(mobj, hexen_sfx_thrustspike_raise);
-                if (mobj->args[1])
+                if (mobj->special_args[1])
                     P_SetMobjState(mobj, HEXEN_S_BTHRUSTLOWER);
                 else
                     P_SetMobjState(mobj, HEXEN_S_THRUSTLOWER);

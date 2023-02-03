@@ -151,16 +151,16 @@ void P_AnimateHexenSurfaces(void)
         switch (line->special)
         {
             case 100:          // Scroll_Texture_Left
-                sides[line->sidenum[0]].textureoffset += line->args[0] << 10;
+                sides[line->sidenum[0]].textureoffset += line->special_args[0] << 10;
                 break;
             case 101:          // Scroll_Texture_Right
-                sides[line->sidenum[0]].textureoffset -= line->args[0] << 10;
+                sides[line->sidenum[0]].textureoffset -= line->special_args[0] << 10;
                 break;
             case 102:          // Scroll_Texture_Up
-                sides[line->sidenum[0]].rowoffset += line->args[0] << 10;
+                sides[line->sidenum[0]].rowoffset += line->special_args[0] << 10;
                 break;
             case 103:          // Scroll_Texture_Down
-                sides[line->sidenum[0]].rowoffset -= line->args[0] << 10;
+                sides[line->sidenum[0]].rowoffset -= line->special_args[0] << 10;
                 break;
         }
     }

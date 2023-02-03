@@ -614,7 +614,7 @@ static int GetPolyobjMirror(int poly)
     {
         if (polyobjs[i].tag == poly)
         {
-            return ((*polyobjs[i].segs)->linedef->args[1]);
+            return ((*polyobjs[i].segs)->linedef->special_args[1]);
         }
     }
     return 0;
@@ -1174,14 +1174,14 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
     for (i = 0; i < numsegs; i++)
     {
         if (segs[i].linedef->special == PO_LINE_START &&
-            segs[i].linedef->args[0] == tag)
+            segs[i].linedef->special_args[0] == tag)
         {
             if (polyobjs[index].segs)
             {
                 I_Error("SpawnPolyobj:  Polyobj %d already spawned.\n", tag);
             }
             segs[i].linedef->special = 0;
-            segs[i].linedef->args[0] = 0;
+            segs[i].linedef->special_args[0] = 0;
             PolySegCount = 1;
             PolyStartX = segs[i].v1->x;
             PolyStartY = segs[i].v1->y;
@@ -1195,7 +1195,7 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             polyobjs[index].crush = crush;
             polyobjs[index].hurt = hurt;
             polyobjs[index].tag = tag;
-            polyobjs[index].seqType = segs[i].linedef->args[2];
+            polyobjs[index].seqType = segs[i].linedef->special_args[2];
             if (polyobjs[index].seqType < 0
                 || polyobjs[index].seqType >= SEQTYPE_NUMSEQ)
             {
@@ -1214,15 +1214,15 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             for (i = 0; i < numsegs; i++)
             {
                 if (segs[i].linedef->special == PO_LINE_EXPLICIT &&
-                    segs[i].linedef->args[0] == tag)
+                    segs[i].linedef->special_args[0] == tag)
                 {
-                    if (!segs[i].linedef->args[1])
+                    if (!segs[i].linedef->special_args[1])
                     {
                         I_Error
                             ("SpawnPolyobj:  Explicit line missing order number (probably %d) in poly %d.\n",
                              j + 1, tag);
                     }
-                    if (segs[i].linedef->args[1] == j)
+                    if (segs[i].linedef->special_args[1] == j)
                     {
                         polySegList[psIndex] = &segs[i];
                         polyobjs[index].numsegs++;
@@ -1241,11 +1241,11 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             for (i = 0; i < numsegs; i++)
             {
                 if (segs[i].linedef->special == PO_LINE_EXPLICIT &&
-                    segs[i].linedef->args[0] == tag
-                    && segs[i].linedef->args[1] == j)
+                    segs[i].linedef->special_args[0] == tag
+                    && segs[i].linedef->special_args[1] == j)
                 {
                     segs[i].linedef->special = 0;
-                    segs[i].linedef->args[0] = 0;
+                    segs[i].linedef->special_args[0] = 0;
                 }
             }
             if (psIndex == psIndexOld)
@@ -1255,7 +1255,7 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
                 for (i = 0; i < numsegs; i++)
                 {
                     if (segs[i].linedef->special == PO_LINE_EXPLICIT &&
-                        segs[i].linedef->args[0] == tag)
+                        segs[i].linedef->special_args[0] == tag)
                     {
                         I_Error
                             ("SpawnPolyobj:  Missing explicit line %d for poly %d\n",
@@ -1275,12 +1275,12 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             {
                 polyobjs[index].segs[i] = polySegList[i];
             }
-            polyobjs[index].seqType = (*polyobjs[index].segs)->linedef->args[3];
+            polyobjs[index].seqType = (*polyobjs[index].segs)->linedef->special_args[3];
         }
         // Next, change the polyobjs first line to point to a mirror
         //              if it exists
-        (*polyobjs[index].segs)->linedef->args[1] =
-            (*polyobjs[index].segs)->linedef->args[2];
+        (*polyobjs[index].segs)->linedef->special_args[1] =
+            (*polyobjs[index].segs)->linedef->special_args[2];
     }
 }
 

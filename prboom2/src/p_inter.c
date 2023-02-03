@@ -768,7 +768,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
   if (special->special)
   {
-    map_format.execute_line_special(special->special, special->args, NULL, 0, player->mo);
+    map_format.execute_line_special(special->special, special->special_args, NULL, 0, player->mo);
     special->special = 0;
   }
 
@@ -839,7 +839,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
         }
         else
         {
-            map_format.execute_line_special(target->special, target->args, NULL, 0, target);
+            map_format.execute_line_special(target->special, target->special_args, NULL, 0, target);
         }
     }
   }
@@ -2329,7 +2329,7 @@ void P_MinotaurSlam(mobj_t * source, mobj_t * target)
     {
         target->reactiontime = 14 + (P_Random(pr_heretic) & 7);
     }
-    source->args[0] = 0;        // Stop charging
+    source->special_args[0] = 0;        // Stop charging
 }
 
 void P_TouchWhirlwind(mobj_t * target)
@@ -2856,7 +2856,7 @@ void TryPickupWeapon(player_t * player, pclass_t weaponClass,
     P_SetMessage(player, message, false);
     if (weapon->special)
     {
-        map_format.execute_line_special(weapon->special, weapon->args, NULL, 0, player->mo);
+        map_format.execute_line_special(weapon->special, weapon->special_args, NULL, 0, player->mo);
         weapon->special = 0;
     }
 
@@ -2952,7 +2952,7 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
     // Pick up the weapon piece
     if (pieceMobj->special)
     {
-        map_format.execute_line_special(pieceMobj->special, pieceMobj->args, NULL, 0, player->mo);
+        map_format.execute_line_special(pieceMobj->special, pieceMobj->special_args, NULL, 0, player->mo);
         pieceMobj->special = 0;
     }
     if (remove)
@@ -3087,7 +3087,7 @@ static void TryPickupArtifact(player_t * player, artitype_t artifactType, mobj_t
     {
         if (artifact->special)
         {
-            map_format.execute_line_special(artifact->special, artifact->args, NULL, 0, NULL);
+            map_format.execute_line_special(artifact->special, artifact->special_args, NULL, 0, NULL);
             artifact->special = 0;
         }
         player->bonuscount += BONUSADD;
@@ -3191,7 +3191,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
             // get removed for coop netplay
             if (special->special)
             {
-                map_format.execute_line_special(special->special, special->args, NULL, 0, toucher);
+                map_format.execute_line_special(special->special, special->special_args, NULL, 0, toucher);
                 special->special = 0;
             }
 
@@ -3401,7 +3401,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
     }
     if (special->special)
     {
-        map_format.execute_line_special(special->special, special->args, NULL, 0, toucher);
+        map_format.execute_line_special(special->special, special->special_args, NULL, 0, toucher);
         special->special = 0;
     }
     if (deathmatch && respawn && !(special->flags & MF_DROPPED))
@@ -3441,7 +3441,7 @@ static mobj_t *ActiveMinotaur(player_t * master)
             continue;           // for morphed minotaurs
         if (mo->flags & MF_CORPSE)
             continue;
-        starttime = (unsigned int *) mo->args;
+        starttime = (unsigned int *) mo->special_args;
         if ((leveltime - *starttime) >= MAULATORTICS)
             continue;
         plr = mo->special1.m->player;
@@ -3541,7 +3541,7 @@ static dboolean P_MorphMonster(mobj_t * actor)
     monster->tid = oldMonster.tid;
     monster->special = oldMonster.special;
     map_format.add_mobj_thing_id(monster, oldMonster.tid);
-    memcpy(monster->args, oldMonster.args, 5);
+    memcpy(monster->special_args, oldMonster.special_args, 5);
     dsda_WatchMorph(monster);
 
     // check for turning off minotaur power for active icon

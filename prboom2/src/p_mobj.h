@@ -399,7 +399,7 @@ typedef struct mobj_s
     int archiveNum;             // Identity during archive
     short tid;                  // thing identifier
     int special;                // special
-    byte args[5];               // special arguments
+    byte special_args[5];        // special arguments
 
     // zdoom
     fixed_t gravity;

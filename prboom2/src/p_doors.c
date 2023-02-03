@@ -1248,8 +1248,8 @@ dboolean Hexen_EV_VerticalDoor(line_t * line, mobj_t * thing)
             door->type = DREV_NORMAL;
             break;
     }
-    door->speed = line->args[1] * (FRACUNIT / 8);
-    door->topwait = line->args[2];
+    door->speed = line->special_args[1] * (FRACUNIT / 8);
+    door->topwait = line->special_args[2];
 
     //
     // find the top and bottom of the movement range
