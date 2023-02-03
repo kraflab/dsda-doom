@@ -80,6 +80,8 @@ typedef struct
   int     tics;
   fixed_t sx;
   fixed_t sy;
+  fixed_t sx2;
+  fixed_t sy2;
 } pspdef_t;
 
 enum

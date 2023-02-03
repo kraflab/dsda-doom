@@ -44,6 +44,7 @@
 #include "sounds.h"
 #include "d_event.h"
 #include "smooth.h"
+#include "r_fps.h"
 #include "g_game.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
@@ -120,10 +121,12 @@ void P_SetPspritePtr(player_t *player, pspdef_t *psp, statenum_t stnum)
       if (state->misc1)
       {                       // Set coordinates.
         psp->sx = state->misc1 << FRACBITS;
+        psp->sx2 = psp->sx;
       }
       if (state->misc2)
       {
         psp->sy = state->misc2 << FRACBITS;
+        psp->sy2 = psp->sy;
       }
     }
     else if (state->misc1)
@@ -131,6 +134,8 @@ void P_SetPspritePtr(player_t *player, pspdef_t *psp, statenum_t stnum)
       // coordinate set
       psp->sx = state->misc1 << FRACBITS;
       psp->sy = state->misc2 << FRACBITS;
+      psp->sx2 = psp->sx;
+      psp->sy2 = psp->sy;
     }
 
     // Call action routine.
@@ -1540,6 +1545,23 @@ void P_MovePsprites(player_t *player)
 
   player->psprites[ps_flash].sx = player->psprites[ps_weapon].sx;
   player->psprites[ps_flash].sy = player->psprites[ps_weapon].sy;
+
+  // [crispy] weapon bobbing interpolation
+  psp = player->psprites;
+  if (!player->morphTics && psp->state && psp->state->action == A_WeaponReady && movement_smooth)
+  {
+    angle_t angle = (128 * leveltime) & FINEMASK;
+    psp->sx2 = FRACUNIT + FixedMul(player->bob, finecosine[angle]);
+    angle &= FINEANGLES / 2 - 1;
+    psp->sy2 = WEAPONTOP + FixedMul(player->bob, finesine[angle]);
+  }
+  else
+  {
+    psp->sx2 = psp->sx;
+    psp->sy2 = psp->sy;
+  }
+  player->psprites[ps_flash].sx2 = psp->sx2;
+  player->psprites[ps_flash].sy2 = psp->sy2;
 }
 
 // heretic
@@ -2576,10 +2598,12 @@ void P_SetPspriteNF(player_t * player, int position, statenum_t stnum)
         if (state->misc1)
         {                       // Set coordinates.
             psp->sx = state->misc1 << FRACBITS;
+            psp->sx2 = psp->sx;
         }
         if (state->misc2)
         {
             psp->sy = state->misc2 << FRACBITS;
+            psp->sy2 = psp->sy;
         }
         stnum = psp->state->nextstate;
     }

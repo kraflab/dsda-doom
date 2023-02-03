@@ -1015,8 +1015,8 @@ static void R_DrawPSprite (pspdef_t *psp)
   vissprite_t   avis;
   int           width;
   fixed_t       topoffset;
-  fixed_t       psp_sx = psp->sx;
-  fixed_t       psp_sy = psp->sy;
+  fixed_t       psp_sx = psp->sx2;
+  fixed_t       psp_sy = psp->sy2;
 
   // decide which patch to use
 
@@ -1063,7 +1063,7 @@ static void R_DrawPSprite (pspdef_t *psp)
 
       if (state != winfo->downstate && state != winfo->upstate)
       {
-        last_sy = psp->sy;
+        last_sy = psp_sy;
         psp_sy = 32 * FRACUNIT;
       }
       else if (state == winfo->downstate)
