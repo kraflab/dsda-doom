@@ -3925,7 +3925,11 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
         return true;
     }
 
-    P_StartACS(mobj->special_args[1], 0, &mobj->special_args[2], PuzzleItemUser, NULL, 0);
+    args[0] = mobj->special_args[2];
+    args[1] = mobj->special_args[3];
+    args[2] = mobj->special_args[4];
+
+    P_StartACS(mobj->special_args[1], 0, args, PuzzleItemUser, NULL, 0);
     mobj->special = 0;
     PuzzleActivated = true;
     return false;               // Stop searching

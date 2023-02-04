@@ -314,6 +314,7 @@ void A_BridgeOrbit(mobj_t * actor)
         P_SetMobjState(actor, HEXEN_S_NULL);
     }
     actor->special_args[0] += 3;
+    actor->special_args[0] &= 0xff;
     actor->x = actor->target->x + orbitTableX[actor->special_args[0]];
     actor->y = actor->target->y + orbitTableY[actor->special_args[0]];
     actor->z = actor->target->z;
@@ -829,6 +830,7 @@ void A_SoAExplode(mobj_t * actor)
     }
     if (actor->special_args[0])
     {                           // Spawn an item
+        // TODO: should this be on or off?
 #if 0 // Checks are not present in version 1.1
         if (!nomonsters
             || !(mobjinfo[TranslateThingType[actor->special_args[0]]].

@@ -3445,15 +3445,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   }
 }
 
-static void P_TransferLineArgs(line_t *l, byte *args)
-{
-  args[0] = l->special_args[0];
-  args[1] = l->special_args[1];
-  args[2] = l->special_args[2];
-  args[3] = l->special_args[3];
-  args[4] = l->special_args[4];
-}
-
 static void P_SpawnVanillaExtras(void)
 {
   int i;
@@ -5731,7 +5722,6 @@ dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activa
 
 dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t activationType)
 {
-  byte args[5];
   dboolean repeat;
   dboolean buttonSuccess;
 
@@ -5747,9 +5737,8 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t 
 
   repeat = (line->flags & ML_REPEATSPECIAL) != 0;
 
-  P_TransferLineArgs(line, args);
-
-  buttonSuccess = map_format.execute_line_special(line->special, args, line, side, mo);
+  buttonSuccess =
+    map_format.execute_line_special(line->special, line->special_args, line, side, mo);
 
   if (!repeat && buttonSuccess)
   {                           // clear the special on non-retriggerable lines
@@ -5897,9 +5886,12 @@ static angle_t P_ArgToAngle(angle_t arg)
   return arg * (ANG180 / 128);
 }
 
-dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
+dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * line, int side, mobj_t * mo)
 {
+  byte args[5];
   dboolean buttonSuccess = false;
+
+  COLLAPSE_SPECIAL_ARGS(args, special_args);
 
   switch (special)
   {
@@ -7463,11 +7455,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
   return buttonSuccess;
 }
 
-dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
+dboolean P_ExecuteHexenLineSpecial(int special, int * special_args, line_t * line, int side, mobj_t * mo)
 {
-    dboolean buttonSuccess;
+    byte args[5];
+    dboolean buttonSuccess = false;
 
-    buttonSuccess = false;
+    COLLAPSE_SPECIAL_ARGS(args, special_args);
+
     switch (special)
     {
         case 1:                // Poly Start Line

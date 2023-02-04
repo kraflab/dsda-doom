@@ -3423,6 +3423,7 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
 // Search thinker list for minotaur
 static mobj_t *ActiveMinotaur(player_t * master)
 {
+    byte args[5];
     mobj_t *mo;
     player_t *plr;
     thinker_t *think;
@@ -3441,7 +3442,9 @@ static mobj_t *ActiveMinotaur(player_t * master)
             continue;           // for morphed minotaurs
         if (mo->flags & MF_CORPSE)
             continue;
-        starttime = (unsigned int *) mo->special_args;
+        // TODO: CheckMinotaurAge uses LittleLong, why not here?
+        COLLAPSE_SPECIAL_ARGS(args, mo->special_args);
+        starttime = (unsigned int *) args;
         if ((leveltime - *starttime) >= MAULATORTICS)
             continue;
         plr = mo->special1.m->player;
@@ -3541,7 +3544,7 @@ static dboolean P_MorphMonster(mobj_t * actor)
     monster->tid = oldMonster.tid;
     monster->special = oldMonster.special;
     map_format.add_mobj_thing_id(monster, oldMonster.tid);
-    memcpy(monster->special_args, oldMonster.special_args, 5);
+    memcpy(monster->special_args, oldMonster.special_args, SPECIAL_ARGS_SIZE);
     dsda_WatchMorph(monster);
 
     // check for turning off minotaur power for active icon

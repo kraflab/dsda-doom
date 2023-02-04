@@ -5298,7 +5298,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
         mo->special1.i = 5 * 35;  // Next try in 5 seconds
         mo->special2.i = moType;
         mo->tid = oldMonster.tid;
-        memcpy(mo->special_args, oldMonster.special_args, 5);
+        memcpy(mo->special_args, oldMonster.special_args, SPECIAL_ARGS_SIZE);
         map_format.add_mobj_thing_id(mo, oldMonster.tid);
         dsda_WatchMorph(mo);
         return (false);
@@ -5307,7 +5307,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
     P_SetTarget(&mo->target, oldMonster.target);
     mo->tid = oldMonster.tid;
     mo->special = oldMonster.special;
-    memcpy(mo->special_args, oldMonster.special_args, 5);
+    memcpy(mo->special_args, oldMonster.special_args, SPECIAL_ARGS_SIZE);
     map_format.add_mobj_thing_id(mo, oldMonster.tid);
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
     S_StartMobjSound(fog, hexen_sfx_teleport);
@@ -5428,12 +5428,15 @@ void A_MinotaurLook(mobj_t * actor);
 // have passed. Returns false if killed.
 static dboolean CheckMinotaurAge(mobj_t *mo)
 {
+    byte args[5];
     unsigned int starttime;
+
+    COLLAPSE_SPECIAL_ARGS(args, mo->special_args);
 
     // The start time is stored in the mobj_t structure, but it is stored
     // in little endian format. For Vanilla savegame compatibility we must
     // swap it to the native endianness.
-    memcpy(&starttime, mo->special_args, sizeof(unsigned int));
+    memcpy(&starttime, args, sizeof(unsigned int));
 
     if (leveltime - LittleLong(starttime) >= MAULATORTICS)
     {
