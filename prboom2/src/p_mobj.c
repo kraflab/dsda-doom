@@ -2098,8 +2098,9 @@ dboolean P_IsDoomnumAllowed(int doomnum)
 
 static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
 {
-  return !deathmatch &&
-         (map_format.zdoom ? mthing->args[0] == leave_data.position : !mthing->args[0]);
+  return !deathmatch && (map_format.zdoom ?
+                         mthing->special_args[0] == leave_data.position :
+                         !mthing->special_args[0]);
 }
 
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
@@ -2234,7 +2235,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     }
 
     if (map_format.hexen)
-      start = mthing->args[0];
+      start = mthing->special_args[0];
 
     // save spots for respawning in coop games
     playerstarts[start][thingtype - 1] = *mthing;
@@ -2278,7 +2279,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
       player = 4 + mthing->type - 9100;
 
-      player_start = &playerstarts[mthing->args[0]][player];
+      player_start = &playerstarts[mthing->special_args[0]][player];
       memcpy(player_start, mthing, sizeof(mapthing_t));
       player_start->type = player + 1;
 
@@ -2352,7 +2353,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   if (!raven && thingtype == 14165 && map_format.hexen)
   {
     // Use the ambient number
-    iden_num = BETWEEN(0, 64, mthing->args[0]); // Mus change
+    iden_num = BETWEEN(0, 64, mthing->special_args[0]); // Mus change
     thingtype = 14164;            // MT_MUSICSOURCE
   }
 
@@ -2468,11 +2469,11 @@ spawnit:
     }
     mobj->tid = mthing->tid;
     mobj->special = mthing->special;
-    mobj->special_args[0] = mthing->args[0];
-    mobj->special_args[1] = mthing->args[1];
-    mobj->special_args[2] = mthing->args[2];
-    mobj->special_args[3] = mthing->args[3];
-    mobj->special_args[4] = mthing->args[4];
+    mobj->special_args[0] = mthing->special_args[0];
+    mobj->special_args[1] = mthing->special_args[1];
+    mobj->special_args[2] = mthing->special_args[2];
+    mobj->special_args[3] = mthing->special_args[3];
+    mobj->special_args[4] = mthing->special_args[4];
   }
 
   if (mobj->flags2 & MF2_FLOATBOB)

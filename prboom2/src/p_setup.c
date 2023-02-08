@@ -1758,11 +1758,11 @@ static void P_LoadThings(int lump)
       mt.type = LittleShort(hmt->type);
       mt.options = LittleShort(hmt->options);
       mt.special = hmt->special;
-      mt.args[0] = hmt->arg1;
-      mt.args[1] = hmt->arg2;
-      mt.args[2] = hmt->arg3;
-      mt.args[3] = hmt->arg4;
-      mt.args[4] = hmt->arg5;
+      mt.special_args[0] = hmt->arg1;
+      mt.special_args[1] = hmt->arg2;
+      mt.special_args[2] = hmt->arg3;
+      mt.special_args[3] = hmt->arg4;
+      mt.special_args[4] = hmt->arg5;
       mt.gravity = FRACUNIT;
       mt.health = FRACUNIT;
     }
@@ -1778,11 +1778,11 @@ static void P_LoadThings(int lump)
       mt.type = LittleShort(dmt->type);
       mt.options = LittleShort(dmt->options);
       mt.special = 0;
-      mt.args[0] = 0;
-      mt.args[1] = 0;
-      mt.args[2] = 0;
-      mt.args[3] = 0;
-      mt.args[4] = 0;
+      mt.special_args[0] = 0;
+      mt.special_args[1] = 0;
+      mt.special_args[2] = 0;
+      mt.special_args[3] = 0;
+      mt.special_args[4] = 0;
       mt.gravity = FRACUNIT;
       mt.health = FRACUNIT;
     }
@@ -1825,11 +1825,11 @@ static void P_LoadUDMFThings(int lump)
     mt.type = dmt->type;
     mt.options = 0;
     mt.special = dmt->special;
-    mt.args[0] = dmt->arg0;
-    mt.args[1] = dmt->arg1;
-    mt.args[2] = dmt->arg2;
-    mt.args[3] = dmt->arg3;
-    mt.args[4] = dmt->arg4;
+    mt.special_args[0] = dmt->arg0;
+    mt.special_args[1] = dmt->arg1;
+    mt.special_args[2] = dmt->arg2;
+    mt.special_args[3] = dmt->arg3;
+    mt.special_args[4] = dmt->arg4;
     mt.gravity = dsda_StringToFixed(dmt->gravity);
     mt.health = dsda_StringToFixed(dmt->health);
 
