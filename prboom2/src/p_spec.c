@@ -5845,12 +5845,12 @@ void P_PlayerInHexenSector(player_t * player, sector_t * sector)
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 
-static dboolean P_ArgToCrushType(byte arg)
+static dboolean P_ArgToCrushType(int arg)
 {
   return arg == 1 ? false : arg == 2 ? true : hexen;
 }
 
-static crushmode_e P_ArgToCrushMode(byte arg, dboolean slowdown)
+static crushmode_e P_ArgToCrushMode(int arg, dboolean slowdown)
 {
   static const crushmode_e map[] = { crushDoom, crushHexen, crushSlowdown };
 
@@ -5859,21 +5859,21 @@ static crushmode_e P_ArgToCrushMode(byte arg, dboolean slowdown)
   return hexen ? crushHexen : slowdown ? crushSlowdown : crushDoom;
 }
 
-static int P_ArgToCrush(byte arg)
+static int P_ArgToCrush(int arg)
 {
   return (arg > 0) ? arg : NO_CRUSH;
 }
 
-static byte P_ArgToChange(byte arg)
+static byte P_ArgToChange(int arg)
 {
   static const byte ChangeMap[8] = { 0, 1, 5, 3, 7, 2, 6, 0 };
 
-  return (arg < 8) ? ChangeMap[arg] : 0;
+  return (arg >= 0 && arg < 8) ? ChangeMap[arg] : 0;
 }
 
-static fixed_t P_ArgToSpeed(byte arg)
+static fixed_t P_ArgToSpeed(fixed_t arg)
 {
-  return (fixed_t) arg * FRACUNIT / 8;
+  return arg * FRACUNIT / 8;
 }
 
 static fixed_t P_ArgsToFixed(fixed_t arg_i, fixed_t arg_f)
@@ -5886,12 +5886,9 @@ static angle_t P_ArgToAngle(angle_t arg)
   return arg * (ANG180 / 128);
 }
 
-dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * line, int side, mobj_t * mo)
+dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo)
 {
-  byte args[5];
   dboolean buttonSuccess = false;
-
-  COLLAPSE_SPECIAL_ARGS(args, special_args);
 
   switch (special)
   {
@@ -5913,7 +5910,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
       break;
     case zl_door_close_wait_open:
       buttonSuccess = EV_DoZDoomDoor(genCdO, line, mo, args[0],
-                                     args[1], (int) args[2] * 35 / 8, 0, args[3], false, 0);
+                                     args[1], args[2] * 35 / 8, 0, args[3], false, 0);
       break;
     case zl_door_wait_raise:
       buttonSuccess = EV_DoZDoomDoor(waitRaiseDoor, line, mo, args[0],
@@ -5963,7 +5960,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
         }
 
         buttonSuccess = EV_DoZDoomDoor(type, line, mo, tag, args[1],
-                                       (int) args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
+                                       args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
       }
       break;
     case zl_pillar_build:
@@ -6008,7 +6005,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
       break;
     case zl_floor_lower_to_highest:
       buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1],
-                                      (int) args[2] - 128, NO_CRUSH, 0, false, args[3] == 1);
+                                      args[2] - 128, NO_CRUSH, 0, false, args[3] == 1);
       break;
     case zl_floor_lower_to_highest_ee:
       buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1], 0,
@@ -6043,19 +6040,19 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
                                       args[2], 0, P_ArgToCrushType(args[3]), false);
       break;
     case zl_floor_raise_by_value_times_8:
-      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], args[2] * 8,
                                       P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
       break;
     case zl_floor_lower_by_value_times_8:
-      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], args[2] * 8,
                                       NO_CRUSH, P_ArgToChange(args[3]), false, false);
       break;
     case zl_floor_lower_instant:
-      buttonSuccess = EV_DoZDoomFloor(floorLowerInstant, line, args[0], 0, (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorLowerInstant, line, args[0], 0, args[2] * 8,
                                       NO_CRUSH, P_ArgToChange(args[3]), false, false);
       break;
     case zl_floor_raise_instant:
-      buttonSuccess = EV_DoZDoomFloor(floorRaiseInstant, line, args[0], 0, (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseInstant, line, args[0], 0, args[2] * 8,
                                       P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
       break;
     case zl_floor_to_ceiling_instant:
@@ -6064,12 +6061,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
       break;
     case zl_floor_move_to_value:
       buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
-                                      (int) args[2] * (args[3] ? -1 : 1),
+                                      args[2] * (args[3] ? -1 : 1),
                                       NO_CRUSH, P_ArgToChange(args[4]), false, false);
       break;
     case zl_floor_move_to_value_times_8:
       buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
-                                      (int) args[2] * 8 * (args[3] ? -1 : 1),
+                                      args[2] * 8 * (args[3] ? -1 : 1),
                                       NO_CRUSH, P_ArgToChange(args[4]), false, false);
       break;
     case zl_floor_raise_to_lowest_ceiling:
@@ -6156,13 +6153,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
     case zl_ceiling_lower_by_value_times_8:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        args[2] * 8, NO_CRUSH, 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_raise_by_value_times_8:
       buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        args[2] * 8, NO_CRUSH, 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_crush_and_raise:
@@ -6192,13 +6189,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
     case zl_ceiling_move_to_value_times_8:
       buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * 8 * (args[3] ? -1 : 1), NO_CRUSH, 0,
+                                        args[2] * 8 * (args[3] ? -1 : 1), NO_CRUSH, 0,
                                         P_ArgToChange(args[4]), false);
       break;
     case zl_ceiling_move_to_value:
       buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * (args[3] ? -1 : 1), NO_CRUSH, 0,
+                                        args[2] * (args[3] ? -1 : 1), NO_CRUSH, 0,
                                         P_ArgToChange(args[4]), false);
       break;
     case zl_ceiling_lower_to_highest_floor:
@@ -6210,13 +6207,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
     case zl_ceiling_lower_instant:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerInstant, line, args[0],
                                         0, 0,
-                                        (int) args[2] * 8, P_ArgToCrush(args[4]), 0,
+                                        args[2] * 8, P_ArgToCrush(args[4]), 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_raise_instant:
       buttonSuccess = EV_DoZDoomCeiling(ceilRaiseInstant, line, args[0],
                                         0, 0,
-                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        args[2] * 8, NO_CRUSH, 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_crush_raise_and_stay_a:
@@ -6499,11 +6496,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
                                      P_ArgToSpeed(args[1]), args[2], args[3], 0);
       break;
     case zl_plat_down_by_value:
-      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownByValue, (int) args[3] * 8,
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownByValue, args[3] * 8,
                                      P_ArgToSpeed(args[1]), args[2], 0, 0);
       break;
     case zl_plat_up_by_value:
-      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValue, (int) args[3] * 8,
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValue, args[3] * 8,
                                      P_ArgToSpeed(args[1]), args[2], 0, 0);
       break;
     case zl_plat_up_wait_down_stay:
@@ -6535,7 +6532,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
       }
       break;
     case zl_plat_up_by_value_stay_tx:
-      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValueStay, (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValueStay, args[2] * 8,
                                      P_ArgToSpeed(args[1]), 0, 0, 2);
       break;
     case zl_plat_toggle_ceiling:
@@ -6564,8 +6561,8 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
             break;
         }
 
-        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, (int) args[4] * 8,
-                                       P_ArgToSpeed(args[1]), (int) args[2] * 35 / 8, 0, 0);
+        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, args[4] * 8,
+                                       P_ArgToSpeed(args[1]), args[2] * 35 / 8, 0, 0);
       }
       break;
     case zl_line_set_blocking:
@@ -6856,34 +6853,40 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * special_args, line_t * lin
       }
       break;
     case zl_polyobj_rotate_left:
-      buttonSuccess = EV_RotatePoly(line, args, 1, false);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], 1, false);
       break;
     case zl_polyobj_or_rotate_left:
-      buttonSuccess = EV_RotatePoly(line, args, 1, true);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], 1, true);
       break;
     case zl_polyobj_rotate_right:
-      buttonSuccess = EV_RotatePoly(line, args, -1, false);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], -1, false);
       break;
     case zl_polyobj_or_rotate_right:
-      buttonSuccess = EV_RotatePoly(line, args, -1, true);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], -1, true);
       break;
     case zl_polyobj_move:
-      buttonSuccess = EV_MovePoly(line, args, false, false);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], false, false);
       break;
     case zl_polyobj_or_move:
-      buttonSuccess = EV_MovePoly(line, args, false, true);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], false, true);
       break;
     case zl_polyobj_move_times_8:
-      buttonSuccess = EV_MovePoly(line, args, true, false);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], true, false);
       break;
     case zl_polyobj_or_move_times_8:
-      buttonSuccess = EV_MovePoly(line, args, true, true);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], true, true);
       break;
     case zl_polyobj_door_swing:
-      buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SWING);
+      buttonSuccess = EV_OpenZDoomPolyDoor(line, args[0], args[1],
+                                           args[2], args[3], PODOOR_SWING);
       break;
     case zl_polyobj_door_slide:
-      buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SLIDE);
+      buttonSuccess = EV_OpenZDoomPolyDoor(line, args[0], args[1],
+                                           args[2], args[3], PODOOR_SLIDE);
       break;
     case zl_polyobj_move_to:
       buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),

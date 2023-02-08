@@ -159,6 +159,21 @@ void T_RotatePoly(polyevent_t * pe)
     }
 }
 
+// TODO: EV_RotateZDoomPoly int range
+dboolean EV_RotateZDoomPoly(line_t * line, int polyobj, int speed,
+                            int angle, int direction, dboolean overRide)
+{
+    byte args[5];
+
+    args[0] = polyobj;
+    args[1] = speed;
+    args[2] = angle;
+    args[3] = 0;
+    args[4] = 0;
+
+    return EV_RotatePoly(line, args, direction, overRide);
+}
+
 dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overRide)
 {
     int mirror;
@@ -338,6 +353,21 @@ dboolean EV_MovePolyTo(line_t * line, int polyNum, fixed_t speed,
     return true;
 }
 
+// TODO: EV_MoveZDoomPoly int range
+dboolean EV_MoveZDoomPoly(line_t * line, int polyobj, int speed,
+                          int angle, int distance, dboolean timesEight, dboolean overRide)
+{
+    byte args[5];
+
+    args[0] = polyobj;
+    args[1] = speed;
+    args[2] = angle;
+    args[3] = distance;
+    args[4] = 0;
+
+    return EV_MovePoly(line, args, timesEight, overRide);
+}
+
 dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean overRide)
 {
     int polyNum;
@@ -495,6 +525,21 @@ void T_PolyDoor(polydoor_t * pd)
         default:
             break;
     }
+}
+
+// TODO: EV_OpenZDoomPolyDoor int range
+dboolean EV_OpenZDoomPolyDoor(line_t * line, int polyobj, int speed,
+                              int angle, int delay, podoortype_t type)
+{
+    byte args[5];
+
+    args[0] = polyobj;
+    args[1] = speed;
+    args[2] = angle;
+    args[3] = delay;
+    args[4] = 0;
+
+    return EV_OpenPolyDoor(line, args, type);
 }
 
 dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
