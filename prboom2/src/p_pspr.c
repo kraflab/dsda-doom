@@ -3550,8 +3550,8 @@ void A_CHolyAttack2(mobj_t * actor)
         mo->angle = actor->angle + (ANG45 + ANG45 / 2) - ANG45 * j;
         P_ThrustMobj(mo, mo->angle, mo->info->speed);
         P_SetTarget(&mo->target, actor->target);
-        mo->args[0] = 10;       // initial turn value
-        mo->args[1] = 0;        // initial look angle
+        mo->special_args[0] = 10;       // initial turn value
+        mo->special_args[1] = 0;        // initial look angle
         if (deathmatch)
         {                       // Ghosts last slightly less longer in DeathMatch
             mo->health = 85;
@@ -3729,11 +3729,11 @@ void A_CHolySeek(mobj_t * actor)
     }
     if (actor->special1.m)
     {
-        CHolySeekerMissile(actor, actor->args[0] * ANG1,
-                           actor->args[0] * ANG1 * 2);
+        CHolySeekerMissile(actor, actor->special_args[0] * ANG1,
+                           actor->special_args[0] * ANG1 * 2);
         if (!((leveltime + 7) & 15))
         {
-            actor->args[0] = 5 + (P_Random(pr_hexen) / 20);
+            actor->special_args[0] = 5 + (P_Random(pr_hexen) / 20);
         }
     }
     CHolyWeave(actor);
@@ -3885,7 +3885,7 @@ void A_FireConePL1(player_t * player, pspdef_t * psp)
                 | SHARDSPAWN_RIGHT;
             mo->special2.i = 3;   // Set sperm count (levels of reproductivity)
             P_SetTarget(&mo->target, pmo);
-            mo->args[0] = 3;    // Mark Initial shard as super damage
+            mo->special_args[0] = 3;    // Mark Initial shard as super damage
         }
     }
 }
@@ -3913,7 +3913,7 @@ void A_ShedShard(mobj_t * actor)
             mo->special2.i = spermcount;
             mo->momz = actor->momz;
             P_SetTarget(&mo->target, actor->target);
-            mo->args[0] = (spermcount == 3) ? 2 : 0;
+            mo->special_args[0] = (spermcount == 3) ? 2 : 0;
         }
     }
     if (spawndir & SHARDSPAWN_RIGHT)
@@ -3927,7 +3927,7 @@ void A_ShedShard(mobj_t * actor)
             mo->special2.i = spermcount;
             mo->momz = actor->momz;
             P_SetTarget(&mo->target, actor->target);
-            mo->args[0] = (spermcount == 3) ? 2 : 0;
+            mo->special_args[0] = (spermcount == 3) ? 2 : 0;
         }
     }
     if (spawndir & SHARDSPAWN_UP)
@@ -3945,7 +3945,7 @@ void A_ShedShard(mobj_t * actor)
                 mo->special1.i = SHARDSPAWN_UP;
             mo->special2.i = spermcount;
             P_SetTarget(&mo->target, actor->target);
-            mo->args[0] = (spermcount == 3) ? 2 : 0;
+            mo->special_args[0] = (spermcount == 3) ? 2 : 0;
         }
     }
     if (spawndir & SHARDSPAWN_DOWN)
@@ -3963,7 +3963,7 @@ void A_ShedShard(mobj_t * actor)
                 mo->special1.i = SHARDSPAWN_DOWN;
             mo->special2.i = spermcount;
             P_SetTarget(&mo->target, actor->target);
-            mo->args[0] = (spermcount == 3) ? 2 : 0;
+            mo->special_args[0] = (spermcount == 3) ? 2 : 0;
         }
     }
 }

@@ -3659,7 +3659,7 @@ dboolean PIT_ThrustStompThing(mobj_t * thing)
         return true;            // don't clip against self
 
     P_DamageMobj(thing, tsthing, tsthing, 10001);
-    tsthing->args[1] = 1;       // Mark thrust thing as bloody
+    tsthing->special_args[1] = 1;       // Mark thrust thing as bloody
 
     return true;
 }
@@ -3898,18 +3898,18 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
         {                       // Don't use back sides
             return false;
         }
-        if (PuzzleItemType != in->d.line->arg1)
+        if (PuzzleItemType != in->d.line->special_args[0])
         {                       // Item type doesn't match
             return false;
         }
 
         // Construct an args[] array that would contain the values from
         // the line that would be passed by Vanilla Hexen.
-        args[0] = in->d.line->arg3;
-        args[1] = in->d.line->arg4;
-        args[2] = in->d.line->arg5;
+        args[0] = in->d.line->special_args[2];
+        args[1] = in->d.line->special_args[3];
+        args[2] = in->d.line->special_args[4];
 
-        P_StartACS(in->d.line->arg2, 0, args, PuzzleItemUser, in->d.line, 0);
+        P_StartACS(in->d.line->special_args[1], 0, args, PuzzleItemUser, in->d.line, 0);
         in->d.line->special = 0;
         PuzzleActivated = true;
         return false;           // Stop searching
@@ -3920,12 +3920,16 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
     {                           // Wrong special
         return true;
     }
-    if (PuzzleItemType != mobj->args[0])
+    if (PuzzleItemType != mobj->special_args[0])
     {                           // Item type doesn't match
         return true;
     }
 
-    P_StartACS(mobj->args[1], 0, &mobj->args[2], PuzzleItemUser, NULL, 0);
+    args[0] = mobj->special_args[2];
+    args[1] = mobj->special_args[3];
+    args[2] = mobj->special_args[4];
+
+    P_StartACS(mobj->special_args[1], 0, args, PuzzleItemUser, NULL, 0);
     mobj->special = 0;
     PuzzleActivated = true;
     return false;               // Stop searching

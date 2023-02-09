@@ -905,7 +905,7 @@ static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int
   return;
 }
 
-int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
+int EV_DoZDoomCeiling(ceiling_e type, line_t *line, int tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode)
 {
   sector_t *sec;

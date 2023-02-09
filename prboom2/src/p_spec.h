@@ -1646,13 +1646,13 @@ void P_AddMobjSecret(mobj_t *mobj);
 void P_PlayerCollectSecret(player_t *player);
 dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy);
 dboolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno);
-int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
-                   zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
-int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, int tag, fixed_t speed, int topwait,
+                   zdoom_lock_t lock, int lightTag, dboolean boomgen, int topcountdown);
+int EV_DoZDoomFloor(floor_e floortype, line_t *line, int tag, fixed_t speed, fixed_t height,
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
 int EV_ZDoomFloorCrushStop(int tag);
 int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespeed);
-int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
+int EV_DoZDoomCeiling(ceiling_e type, line_t *line, int tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
 int EV_ZDoomCeilingCrushStop(int tag, dboolean remove);
 int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
@@ -1669,9 +1669,9 @@ void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);
 void EV_LightSetMaxNeighbor(int tag);
-void EV_StartLightFading(int tag, byte level, byte tics);
-void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics);
-void EV_StartLightFlickering(int tag, byte upper, byte lower);
+void EV_StartLightFading(int tag, short level, short tics);
+void EV_StartLightGlowing(int tag, short upper, short lower, short tics);
+void EV_StartLightFlickering(int tag, short upper, short lower);
 void EV_StartZDoomLightStrobing(int tag, int upper, int lower, int brighttime, int darktime);
 void EV_StartZDoomLightStrobingDoom(int tag, int brighttime, int darktime);
 void EV_StopLightEffect(int tag);

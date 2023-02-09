@@ -339,11 +339,7 @@ typedef struct line_s
   byte player_activations;
 
   // hexen
-  byte arg1;
-  byte arg2;
-  byte arg3;
-  byte arg4;
-  byte arg5;
+  int special_args[5];
 
   // zdoom
   line_activation_t activation;
@@ -356,6 +352,12 @@ typedef struct line_s
 } line_t;
 
 #define LINE_ARG_COUNT 5
+#define SPECIAL_ARGS_SIZE (5 * sizeof(int))
+#define COLLAPSE_SPECIAL_ARGS(dest, source) { dest[0] = source[0]; \
+                                              dest[1] = source[1]; \
+                                              dest[2] = source[2]; \
+                                              dest[3] = source[3]; \
+                                              dest[4] = source[4]; }
 
 // phares 3/14/98
 //

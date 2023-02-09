@@ -1758,11 +1758,11 @@ static void P_LoadThings(int lump)
       mt.type = LittleShort(hmt->type);
       mt.options = LittleShort(hmt->options);
       mt.special = hmt->special;
-      mt.arg1 = hmt->arg1;
-      mt.arg2 = hmt->arg2;
-      mt.arg3 = hmt->arg3;
-      mt.arg4 = hmt->arg4;
-      mt.arg5 = hmt->arg5;
+      mt.special_args[0] = hmt->arg1;
+      mt.special_args[1] = hmt->arg2;
+      mt.special_args[2] = hmt->arg3;
+      mt.special_args[3] = hmt->arg4;
+      mt.special_args[4] = hmt->arg5;
       mt.gravity = FRACUNIT;
       mt.health = FRACUNIT;
     }
@@ -1778,11 +1778,11 @@ static void P_LoadThings(int lump)
       mt.type = LittleShort(dmt->type);
       mt.options = LittleShort(dmt->options);
       mt.special = 0;
-      mt.arg1 = 0;
-      mt.arg2 = 0;
-      mt.arg3 = 0;
-      mt.arg4 = 0;
-      mt.arg5 = 0;
+      mt.special_args[0] = 0;
+      mt.special_args[1] = 0;
+      mt.special_args[2] = 0;
+      mt.special_args[3] = 0;
+      mt.special_args[4] = 0;
       mt.gravity = FRACUNIT;
       mt.health = FRACUNIT;
     }
@@ -1825,11 +1825,11 @@ static void P_LoadUDMFThings(int lump)
     mt.type = dmt->type;
     mt.options = 0;
     mt.special = dmt->special;
-    mt.arg1 = dmt->arg0;
-    mt.arg2 = dmt->arg1;
-    mt.arg3 = dmt->arg2;
-    mt.arg4 = dmt->arg3;
-    mt.arg5 = dmt->arg4;
+    mt.special_args[0] = dmt->arg0;
+    mt.special_args[1] = dmt->arg1;
+    mt.special_args[2] = dmt->arg2;
+    mt.special_args[3] = dmt->arg3;
+    mt.special_args[4] = dmt->arg4;
     mt.gravity = dsda_StringToFixed(dmt->gravity);
     mt.health = dsda_StringToFixed(dmt->health);
 
@@ -1985,21 +1985,21 @@ static void P_SetLineID(line_t *ld)
   switch (ld->special)
   {
     case zl_line_set_identification:
-      ld->tag = (unsigned short) 256 * ld->arg5 + ld->arg1;
+      ld->tag = (unsigned short) 256 * ld->special_args[4] + ld->special_args[0];
       ld->special = 0;
       break;
     case zl_translucent_line:
-      ld->tag = ld->arg1;
+      ld->tag = ld->special_args[0];
       break;
     case zl_teleport_line:
     case zl_scroll_texture_model:
-      ld->tag = ld->arg1;
+      ld->tag = ld->special_args[0];
       break;
     case zl_polyobj_start_line:
-      ld->tag = ld->arg4;
+      ld->tag = ld->special_args[3];
       break;
     case zl_polyobj_explicit_line:
-      ld->tag = ld->arg5;
+      ld->tag = ld->special_args[4];
       break;
   }
 }
@@ -2121,11 +2121,11 @@ static void P_LoadLineDefs (int lump)
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = mld->special; // just a byte in hexen
       ld->tag = 0;
-      ld->arg1 = mld->arg1;
-      ld->arg2 = mld->arg2;
-      ld->arg3 = mld->arg3;
-      ld->arg4 = mld->arg4;
-      ld->arg5 = mld->arg5;
+      ld->special_args[0] = mld->arg1;
+      ld->special_args[1] = mld->arg2;
+      ld->special_args[2] = mld->arg3;
+      ld->special_args[3] = mld->arg4;
+      ld->special_args[4] = mld->arg5;
       ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
       ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
       ld->sidenum[0] = LittleShort(mld->sidenum[0]);
@@ -2139,11 +2139,11 @@ static void P_LoadLineDefs (int lump)
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = LittleShort(mld->special);
       ld->tag = LittleShort(mld->tag);
-      ld->arg1 = 0;
-      ld->arg2 = 0;
-      ld->arg3 = 0;
-      ld->arg4 = 0;
-      ld->arg5 = 0;
+      ld->special_args[0] = 0;
+      ld->special_args[1] = 0;
+      ld->special_args[2] = 0;
+      ld->special_args[3] = 0;
+      ld->special_args[4] = 0;
       ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
       ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
       ld->sidenum[0] = LittleShort(mld->sidenum[0]);
@@ -2178,11 +2178,11 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->flags = (mld->flags & ML_BOOM);
     ld->special = mld->special;
     ld->tag = (mld->id >= 0 ? mld->id : 0);
-    ld->arg1 = mld->arg0;
-    ld->arg2 = mld->arg1;
-    ld->arg3 = mld->arg2;
-    ld->arg4 = mld->arg3;
-    ld->arg5 = mld->arg4;
+    ld->special_args[0] = mld->arg0;
+    ld->special_args[1] = mld->arg1;
+    ld->special_args[2] = mld->arg2;
+    ld->special_args[3] = mld->arg3;
+    ld->special_args[4] = mld->arg4;
     ld->v1 = &vertexes[mld->v1];
     ld->v2 = &vertexes[mld->v2];
     ld->sidenum[0] = mld->sidefront;
@@ -2379,13 +2379,13 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
       else
         tranmap = W_LumpByNum(lump - 1);
 
-      if (!ld->arg1)
+      if (!ld->special_args[0])
       {
         ld->tranmap = tranmap;
         ld->alpha = 0.66f;
       }
       else
-        for (id_p = dsda_FindLinesFromID(ld->arg1); *id_p >= 0; id_p++)
+        for (id_p = dsda_FindLinesFromID(ld->special_args[0]); *id_p >= 0; id_p++)
         {
           lines[*id_p].tranmap = tranmap;
           lines[*id_p].alpha = 0.66f;

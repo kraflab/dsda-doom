@@ -457,10 +457,10 @@ static void StreamIn_mobj_t(mobj_t *str)
     // int special;
     str->special = SV_ReadLong();
 
-    // byte args[5];
+    // int args[5];
     for (i=0; i<5; ++i)
     {
-        str->args[i] = SV_ReadByte();
+        str->special_args[i] = SV_ReadLong();
     }
 
     str->friction = ORIG_FRICTION;
@@ -608,10 +608,10 @@ static void StreamOut_mobj_t(mobj_t *str)
     // int special;
     SV_WriteLong(str->special);
 
-    // byte args[5];
+    // int args[5];
     for (i=0; i<5; ++i)
     {
-        SV_WriteByte(str->args[i]);
+        SV_WriteLong(str->special_args[i]);
     }
 }
 
@@ -1350,12 +1350,13 @@ static void ArchiveWorld(void)
     for (i = 0, li = lines; i < numlines; i++, li++)
     {
         SV_WriteLong(li->flags);
+        // TODO: how does this work? it's a short
         SV_WriteByte(li->special);
-        SV_WriteByte(li->arg1);
-        SV_WriteByte(li->arg2);
-        SV_WriteByte(li->arg3);
-        SV_WriteByte(li->arg4);
-        SV_WriteByte(li->arg5);
+        SV_WriteLong(li->special_args[0]);
+        SV_WriteLong(li->special_args[1]);
+        SV_WriteLong(li->special_args[2]);
+        SV_WriteLong(li->special_args[3]);
+        SV_WriteLong(li->special_args[4]);
         for (j = 0; j < 2; j++)
         {
             if (li->sidenum[j] == NO_INDEX)
@@ -1400,11 +1401,11 @@ static void UnarchiveWorld(void)
     {
         li->flags = SV_ReadLong();
         li->special = SV_ReadByte();
-        li->arg1 = SV_ReadByte();
-        li->arg2 = SV_ReadByte();
-        li->arg3 = SV_ReadByte();
-        li->arg4 = SV_ReadByte();
-        li->arg5 = SV_ReadByte();
+        li->special_args[0] = SV_ReadLong();
+        li->special_args[1] = SV_ReadLong();
+        li->special_args[2] = SV_ReadLong();
+        li->special_args[3] = SV_ReadLong();
+        li->special_args[4] = SV_ReadLong();
         for (j = 0; j < 2; j++)
         {
             if (li->sidenum[j] == NO_INDEX)

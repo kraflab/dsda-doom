@@ -190,7 +190,7 @@ acsstore_t ACSStore[MAX_ACS_STORE + 1]; // +1 for termination marker
 static char EvalContext[64];
 static acs_t *ACScript;
 static unsigned int PCodeOffset;
-static byte SpecArgs[8];
+static int SpecArgs[8];
 static int ACStringCount;
 static const char **ACStrings;
 static char PrintBuffer[PRINT_BUFFER_SIZE];
@@ -1781,11 +1781,11 @@ static int CmdSetLineSpecial(void)
     while ((line = P_FindLine(lineTag, &searcher)) != NULL)
     {
         line->special = special;
-        line->arg1 = arg1;
-        line->arg2 = arg2;
-        line->arg3 = arg3;
-        line->arg4 = arg4;
-        line->arg5 = arg5;
+        line->special_args[0] = arg1;
+        line->special_args[1] = arg2;
+        line->special_args[2] = arg3;
+        line->special_args[3] = arg4;
+        line->special_args[4] = arg5;
     }
     return SCRIPT_CONTINUE;
 }

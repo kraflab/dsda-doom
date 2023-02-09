@@ -186,11 +186,7 @@ void P_ArchiveWorld (void)
     P_SAVE_X(li->special);
     P_SAVE_X(li->tag);
     P_SAVE_BYTE(li->player_activations);
-    P_SAVE_BYTE(li->arg1);
-    P_SAVE_BYTE(li->arg2);
-    P_SAVE_BYTE(li->arg3);
-    P_SAVE_BYTE(li->arg4);
-    P_SAVE_BYTE(li->arg5);
+    P_SAVE_ARRAY(li->special_args);
 
     for (j = 0; j < 2; j++)
       if (li->sidenum[j] != NO_INDEX)
@@ -247,11 +243,7 @@ void P_UnArchiveWorld (void)
     P_LOAD_X(li->special);
     P_LOAD_X(li->tag);
     P_LOAD_BYTE(li->player_activations);
-    P_LOAD_BYTE(li->arg1);
-    P_LOAD_BYTE(li->arg2);
-    P_LOAD_BYTE(li->arg3);
-    P_LOAD_BYTE(li->arg4);
-    P_LOAD_BYTE(li->arg5);
+    P_LOAD_ARRAY(li->special_args);
 
     for (j = 0; j < 2; j++)
       if (li->sidenum[j] != NO_INDEX)

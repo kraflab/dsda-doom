@@ -1405,7 +1405,7 @@ static void P_SpawnZDoomFloor(sector_t *sec, floor_e floortype, line_t *line,
   }
 }
 
-int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
+int EV_DoZDoomFloor(floor_e floortype, line_t *line, int tag, fixed_t speed, fixed_t height,
                     int crush, int change, dboolean hexencrush, dboolean hereticlower)
 {
   sector_t *sec;

@@ -116,14 +116,14 @@ void A_PotteryExplode(mobj_t * actor)
         mo->momy = P_SubRandom() << (FRACBITS - 6);
     }
     S_StartMobjSound(mo, hexen_sfx_pottery_explode);
-    if (actor->args[0])
+    if (actor->special_args[0])
     {                           // Spawn an item
         if (!nomonsters
-            || !(mobjinfo[TranslateThingType[actor->args[0]]].
+            || !(mobjinfo[TranslateThingType[actor->special_args[0]]].
                  flags & MF_COUNTKILL))
         {                       // Only spawn monsters if not -nomonsters
             P_SpawnMobj(actor->x, actor->y, actor->z,
-                        TranslateThingType[actor->args[0]]);
+                        TranslateThingType[actor->special_args[0]]);
         }
     }
     P_RemoveMobj(actor);
@@ -313,9 +313,10 @@ void A_BridgeOrbit(mobj_t * actor)
     {
         P_SetMobjState(actor, HEXEN_S_NULL);
     }
-    actor->args[0] += 3;
-    actor->x = actor->target->x + orbitTableX[actor->args[0]];
-    actor->y = actor->target->y + orbitTableY[actor->args[0]];
+    actor->special_args[0] += 3;
+    actor->special_args[0] &= 0xff;
+    actor->x = actor->target->x + orbitTableX[actor->special_args[0]];
+    actor->y = actor->target->y + orbitTableY[actor->special_args[0]];
     actor->z = actor->target->z;
 }
 
@@ -333,15 +334,15 @@ void A_BridgeInit(mobj_t * actor)
 
     // Spawn triad into world
     ball1 = P_SpawnMobj(cx, cy, cz, HEXEN_MT_BRIDGEBALL);
-    ball1->args[0] = startangle;
+    ball1->special_args[0] = startangle;
     P_SetTarget(&ball1->target, actor);
 
     ball2 = P_SpawnMobj(cx, cy, cz, HEXEN_MT_BRIDGEBALL);
-    ball2->args[0] = (startangle + 85) & 255;
+    ball2->special_args[0] = (startangle + 85) & 255;
     P_SetTarget(&ball2->target, actor);
 
     ball3 = P_SpawnMobj(cx, cy, cz, HEXEN_MT_BRIDGEBALL);
-    ball3->args[0] = (startangle + 170) & 255;
+    ball3->special_args[0] = (startangle + 170) & 255;
     P_SetTarget(&ball3->target, actor);
 
     A_BridgeOrbit(ball1);
@@ -391,12 +392,7 @@ void A_Summon(mobj_t * actor)
             return;
         }
 
-        // Store leveltime into mo->args. This must be stored in little-
-        // endian format for Vanilla savegame compatibility.
-        mo->args[0] = leveltime & 0xff;
-        mo->args[1] = (leveltime >> 8) & 0xff;
-        mo->args[2] = (leveltime >> 16) & 0xff;
-        mo->args[3] = (leveltime >> 24) & 0xff;
+        mo->special_args[0] = leveltime;
         master = actor->special1.m;
         if (master->flags & MF_CORPSE)
         {                       // Master dead
@@ -435,7 +431,7 @@ void A_FogSpawn(mobj_t * actor)
     if (actor->special1.i-- > 0)
         return;
 
-    actor->special1.i = actor->args[2];   // Reset frequency count
+    actor->special1.i = actor->special_args[2];   // Reset frequency count
 
     switch (P_Random(pr_hexen) % 3)
     {
@@ -452,37 +448,37 @@ void A_FogSpawn(mobj_t * actor)
 
     if (mo)
     {
-        delta = actor->args[1];
+        delta = actor->special_args[1];
         if (delta == 0)
             delta = 1;
         mo->angle =
             actor->angle + (((P_Random(pr_hexen) % delta) - (delta >> 1)) << 24);
         P_SetTarget(&mo->target, actor);
-        if (actor->args[0] < 1)
-            actor->args[0] = 1;
-        mo->args[0] = (P_Random(pr_hexen) % (actor->args[0])) + 1;      // Random speed
-        mo->args[3] = actor->args[3];   // Set lifetime
-        mo->args[4] = 1;        // Set to moving
+        if (actor->special_args[0] < 1)
+            actor->special_args[0] = 1;
+        mo->special_args[0] = (P_Random(pr_hexen) % (actor->special_args[0])) + 1;      // Random speed
+        mo->special_args[3] = actor->special_args[3];   // Set lifetime
+        mo->special_args[4] = 1;        // Set to moving
         mo->special2.i = P_Random(pr_hexen) & 63;
     }
 }
 
 void A_FogMove(mobj_t * actor)
 {
-    int speed = actor->args[0] << FRACBITS;
+    int speed = actor->special_args[0] << FRACBITS;
     angle_t angle;
     int weaveindex;
 
-    if (!(actor->args[4]))
+    if (!(actor->special_args[4]))
         return;
 
-    if (actor->args[3]-- <= 0)
+    if (actor->special_args[3]-- <= 0)
     {
         P_SetMobjStateNF(actor, actor->info->deathstate);
         return;
     }
 
-    if ((actor->args[3] % 4) == 0)
+    if ((actor->special_args[3] % 4) == 0)
     {
         weaveindex = actor->special2.i;
         actor->z += FloatBobOffsets[weaveindex] >> 1;
@@ -588,11 +584,11 @@ dboolean A_LocalQuake(byte * args, mobj_t * actor)
                                 target->y, target->z, HEXEN_MT_QUAKE_FOCUS);
             if (focus)
             {
-                focus->args[0] = args[0];
-                focus->args[1] = args[1] >> 1;  // decremented every 2 tics
-                focus->args[2] = args[2];
-                focus->args[3] = args[3];
-                focus->args[4] = args[4];
+                focus->special_args[0] = args[0];
+                focus->special_args[1] = args[1] >> 1;  // decremented every 2 tics
+                focus->special_args[2] = args[2];
+                focus->special_args[3] = args[3];
+                focus->special_args[4] = args[4];
                 success = true;
             }
         }
@@ -609,11 +605,11 @@ void A_Quake(mobj_t * actor)
     angle_t an;
     player_t *player;
     mobj_t *victim;
-    int richters = actor->args[0];
+    int richters = actor->special_args[0];
     int playnum;
     fixed_t dist;
 
-    if (actor->args[1]-- > 0)
+    if (actor->special_args[1]-- > 0)
     {
         for (playnum = 0; playnum < g_maxplayers; playnum++)
         {
@@ -625,12 +621,12 @@ void A_Quake(mobj_t * actor)
             dist = P_AproxDistance(actor->x - victim->x,
                                    actor->y - victim->y) >> (FRACBITS + 6);
             // Tested in tile units (64 pixels)
-            if (dist < actor->args[3])  // In tremor radius
+            if (dist < actor->special_args[3])  // In tremor radius
             {
                 localQuakeHappening[playnum] = richters;
             }
             // Check if in damage radius
-            if ((dist < actor->args[2]) && (victim->z <= victim->floorz))
+            if ((dist < actor->special_args[2]) && (victim->z <= victim->floorz))
             {
                 if (P_Random(pr_hexen) < 50)
                 {
@@ -740,7 +736,7 @@ void A_CheckTeleRing(mobj_t * actor)
 void A_ThrustInitUp(mobj_t * actor)
 {
     actor->special2.i = 5;        // Raise speed
-    actor->args[0] = 1;         // Mark as up
+    actor->special_args[0] = 1;         // Mark as up
     actor->floorclip = 0;
     actor->flags = MF_SOLID;
     actor->flags2 = MF2_NOTELEPORT | MF2_FOOTCLIP;
@@ -751,7 +747,7 @@ void A_ThrustInitDn(mobj_t * actor)
 {
     mobj_t *mo;
     actor->special2.i = 5;        // Raise speed
-    actor->args[0] = 0;         // Mark as down
+    actor->special_args[0] = 0;         // Mark as down
     actor->floorclip = actor->info->height;
     actor->flags = 0;
     actor->flags2 = MF2_NOTELEPORT | MF2_FOOTCLIP | MF2_DONTDRAW;
@@ -764,8 +760,8 @@ void A_ThrustRaise(mobj_t * actor)
 {
     if (A_RaiseMobj(actor))
     {                           // Reached it's target height
-        actor->args[0] = 1;
-        if (actor->args[1])
+        actor->special_args[0] = 1;
+        if (actor->special_args[1])
             P_SetMobjStateNF(actor, HEXEN_S_BTHRUSTINIT2_1);
         else
             P_SetMobjStateNF(actor, HEXEN_S_THRUSTINIT2_1);
@@ -788,8 +784,8 @@ void A_ThrustLower(mobj_t * actor)
 {
     if (A_SinkMobj(actor))
     {
-        actor->args[0] = 0;
-        if (actor->args[1])
+        actor->special_args[0] = 0;
+        if (actor->special_args[1])
             P_SetMobjStateNF(actor, HEXEN_S_BTHRUSTINIT1_1);
         else
             P_SetMobjStateNF(actor, HEXEN_S_THRUSTINIT1_1);
@@ -827,16 +823,17 @@ void A_SoAExplode(mobj_t * actor)
         mo->momx = P_SubRandom() << (FRACBITS - 6);
         mo->momy = P_SubRandom() << (FRACBITS - 6);
     }
-    if (actor->args[0])
+    if (actor->special_args[0])
     {                           // Spawn an item
+        // TODO: should this be on or off?
 #if 0 // Checks are not present in version 1.1
         if (!nomonsters
-            || !(mobjinfo[TranslateThingType[actor->args[0]]].
+            || !(mobjinfo[TranslateThingType[actor->special_args[0]]].
                  flags & MF_COUNTKILL))
 #endif
         {                       // Only spawn monsters if not -nomonsters
             P_SpawnMobj(actor->x, actor->y, actor->z,
-                        TranslateThingType[actor->args[0]]);
+                        TranslateThingType[actor->special_args[0]]);
         }
     }
     S_StartMobjSound(mo, hexen_sfx_suitofarmor_break);
@@ -858,7 +855,7 @@ void A_BellReset2(mobj_t * actor)
 
 void A_FlameCheck(mobj_t * actor)
 {
-    if (!actor->args[0]--)      // Called every 8 tics
+    if (!actor->special_args[0]--)      // Called every 8 tics
     {
         P_SetMobjState(actor, HEXEN_S_NULL);
     }
@@ -893,18 +890,18 @@ void A_BatSpawn(mobj_t * actor)
     // Countdown until next spawn
     if (actor->special1.i-- > 0)
         return;
-    actor->special1.i = actor->args[0];   // Reset frequency count
+    actor->special1.i = actor->special_args[0];   // Reset frequency count
 
-    delta = actor->args[1];
+    delta = actor->special_args[1];
     if (delta == 0)
         delta = 1;
     angle = actor->angle + (((P_Random(pr_hexen) % delta) - (delta >> 1)) << 24);
     mo = P_SpawnMissileAngle(actor, HEXEN_MT_BAT, angle, 0);
     if (mo)
     {
-        mo->args[0] = P_Random(pr_hexen) & 63;  // floatbob index
-        mo->args[4] = actor->args[4];   // turn degrees
-        mo->special2.i = actor->args[3] << 3;     // Set lifetime
+        mo->special_args[0] = P_Random(pr_hexen) & 63;  // floatbob index
+        mo->special_args[4] = actor->special_args[4];   // turn degrees
+        mo->special2.i = actor->special_args[3] << 3;     // Set lifetime
         P_SetTarget(&mo->target, actor);
     }
 }
@@ -922,11 +919,11 @@ void A_BatMove(mobj_t * actor)
 
     if (P_Random(pr_hexen) < 128)
     {
-        newangle = actor->angle + ANG1 * actor->args[4];
+        newangle = actor->angle + ANG1 * actor->special_args[4];
     }
     else
     {
-        newangle = actor->angle - ANG1 * actor->args[4];
+        newangle = actor->angle - ANG1 * actor->special_args[4];
     }
 
     // Adjust momentum vector to new direction
@@ -939,8 +936,8 @@ void A_BatMove(mobj_t * actor)
         S_StartMobjSound(actor, hexen_sfx_bat_scream);
 
     // Handle Z movement
-    actor->z = actor->target->z + 2 * FloatBobOffsets[actor->args[0]];
-    actor->args[0] = (actor->args[0] + 3) & 63;
+    actor->z = actor->target->z + 2 * FloatBobOffsets[actor->special_args[0]];
+    actor->special_args[0] = (actor->special_args[0] + 3) & 63;
 }
 
 void A_TreeDeath(mobj_t * actor)

@@ -219,8 +219,8 @@ extern void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t mo
 extern void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 extern void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 
-extern dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
-extern dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
+extern dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
+extern dboolean P_ExecuteHexenLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
 
 extern void T_VerticalCompatibleDoor(vldoor_t *door);
 extern void T_VerticalHexenDoor(vldoor_t *door);
