@@ -99,7 +99,6 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | blocklandmonsters  | :heavy_check_mark: |
 
 #### Notes
-- `arg*` currently has hexen's limit of 0-255.
 - `wrapmidtex` currently only works in opengl.
 
 ### Sidedefs
@@ -324,6 +323,3 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | scaley        | :x:                |
 | scale         | :x:                |
 | floatbobphase | :x:                |
-
-#### Notes
-- `arg*` currently has hexen's limit of 0-255.
