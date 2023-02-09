@@ -1006,7 +1006,7 @@ void Heretic_EV_VerticalDoor(line_t * line, mobj_t * thing)
 // hexen
 
 static void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t speed,
-                             int topwait, byte lightTag, int topcountdown)
+                             int topwait, int lightTag, int topcountdown)
 {
   vldoor_t *door;
 
@@ -1060,14 +1060,13 @@ static void P_SpawnZDoomDoor(sector_t *sec, vldoor_e type, line_t *line, fixed_t
   }
 }
 
-int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
-                   zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown)
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, int tag, fixed_t speed, int topwait,
+                   zdoom_lock_t lock, int lightTag, dboolean boomgen, int topcountdown)
 {
   sector_t *sec;
   vldoor_t *door;
-  fixed_t speed;
 
-  speed = (fixed_t) speed_byte * FRACUNIT / 8;
+  speed *= FRACUNIT / 8;
 
   if (lock && !P_CheckKeys(mo, lock, true))
     return 0;

@@ -5922,7 +5922,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       break;
     case zl_generic_door:
       {
-        byte tag, lightTag;
+        int tag, lightTag;
         vldoor_e type;
         dboolean boomgen = false;
 
@@ -7388,7 +7388,24 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
     case zl_damage_thing:
       if (mo)
       {
-        P_DamageMobj(mo, NULL, NULL, args[0] ? args[0] : 10000);
+        if (args[0] < 0)
+        {
+          // TODO: negative damage heals
+          // if (it->player)
+          // {
+          //   P_GiveBody (it, -arg0);
+          // }
+          // else
+          // {
+          //   it->health -= arg0;
+          //   if (it->SpawnHealth() < it->health)
+          //     it->health = it->SpawnHealth();
+          // }
+        }
+        else
+        {
+          P_DamageMobj(mo, NULL, NULL, args[0] ? args[0] : 10000);
+        }
         buttonSuccess = 1;
       }
       break;
@@ -7401,7 +7418,28 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           if (target->flags & MF_SHOOTABLE)
-            P_DamageMobj(target, NULL, mo, args[1]);
+          {
+            if (args[1] > 0)
+            {
+              P_DamageMobj(target, NULL, mo, args[1]);
+            }
+            else
+            {
+              // TODO: negative damage heals
+              // if (actor->health < actor->SpawnHealth())
+              // {
+              //   actor->health -= amount;
+              //   if (actor->health > actor->SpawnHealth())
+              //   {
+              //     actor->health = actor->SpawnHealth();
+              //   }
+              //   if (actor->player != NULL)
+              //   {
+              //     actor->player->health = actor->health;
+              //   }
+              // }
+            }
+          }
         }
       }
       buttonSuccess = 1;

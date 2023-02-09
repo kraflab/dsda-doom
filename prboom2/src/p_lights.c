@@ -546,7 +546,7 @@ static void P_SpawnZDoomLightGlow(sector_t *sec, short startlevel, short endleve
   g->oneshot = oneshot;
 }
 
-void EV_StartLightFading(int tag, byte level, byte tics)
+void EV_StartLightFading(int tag, short level, short tics)
 {
   const int *id_p;
 
@@ -568,7 +568,7 @@ void EV_StartLightFading(int tag, byte level, byte tics)
   }
 }
 
-void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
+void EV_StartLightGlowing(int tag, short upper, short lower, short tics)
 {
   const int *id_p;
 
@@ -577,7 +577,7 @@ void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics)
 
   if (upper < lower)
   {
-    byte temp = upper;
+    short temp = upper;
     upper = lower;
     lower = temp;
   }
@@ -628,7 +628,7 @@ static void P_SpawnZDoomLightFlicker(sector_t *sec, short upper, short lower)
   g->count = (P_Random(pr_lights) & 64) + 1;
 }
 
-void EV_StartLightFlickering(int tag, byte upper, byte lower)
+void EV_StartLightFlickering(int tag, short upper, short lower)
 {
   const int *id_p;
 
