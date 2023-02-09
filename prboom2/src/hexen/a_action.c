@@ -392,12 +392,7 @@ void A_Summon(mobj_t * actor)
             return;
         }
 
-        // Store leveltime into mo->special_args. This must be stored in little-
-        // endian format for Vanilla savegame compatibility.
-        mo->special_args[0] = leveltime & 0xff;
-        mo->special_args[1] = (leveltime >> 8) & 0xff;
-        mo->special_args[2] = (leveltime >> 16) & 0xff;
-        mo->special_args[3] = (leveltime >> 24) & 0xff;
+        mo->special_args[0] = leveltime;
         master = actor->special1.m;
         if (master->flags & MF_CORPSE)
         {                       // Master dead

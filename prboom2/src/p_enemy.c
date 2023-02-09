@@ -5428,17 +5428,7 @@ void A_MinotaurLook(mobj_t * actor);
 // have passed. Returns false if killed.
 static dboolean CheckMinotaurAge(mobj_t *mo)
 {
-    byte args[5];
-    unsigned int starttime;
-
-    COLLAPSE_SPECIAL_ARGS(args, mo->special_args);
-
-    // The start time is stored in the mobj_t structure, but it is stored
-    // in little endian format. For Vanilla savegame compatibility we must
-    // swap it to the native endianness.
-    memcpy(&starttime, args, sizeof(unsigned int));
-
-    if (leveltime - LittleLong(starttime) >= MAULATORTICS)
+    if (leveltime - mo->special_args[0] >= MAULATORTICS)
     {
         P_DamageMobj(mo, NULL, NULL, 10000);
         return false;
