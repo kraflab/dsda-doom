@@ -431,8 +431,8 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 276   | Ceiling_Stop                    | :heavy_check_mark: |
 | 277   | Sector_SetFloorGlow             | :x:                |
 | 278   | Sector_SetCeilingGlow           | :x:                |
-| 279   | Floor_MoveToValueAndCrush       | :comet:            |
-| 280   | Ceiling_MoveToValueAndCrush     | :comet:            |
+| 279   | Floor_MoveToValueAndCrush       | :heavy_check_mark: |
+| 280   | Ceiling_MoveToValueAndCrush     | :heavy_check_mark: |
 | 281   | Line_SetAutomapFlags            | :comet:            |
 | 282   | Line_SetAutomapStyle            | :comet:            |
 | 283   | Polyobj_StopSound               | :comet:            |

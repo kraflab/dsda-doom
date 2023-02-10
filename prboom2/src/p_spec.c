@@ -6069,6 +6069,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
                                       args[2] * 8 * (args[3] ? -1 : 1),
                                       NO_CRUSH, P_ArgToChange(args[4]), false, false);
       break;
+    case zl_floor_move_to_value_and_crush:
+      buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
+                                      args[2], P_ArgToCrush(args[3]),
+                                      0, P_ArgToCrushType(args[4]), false);
+      break;
     case zl_floor_raise_to_lowest_ceiling:
       buttonSuccess = EV_DoZDoomFloor(floorRaiseToLowestCeiling, line, args[0], args[1], 0,
                                       P_ArgToCrush(args[3]), P_ArgToChange(args[2]), true, false);
@@ -6200,6 +6205,12 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
                                         P_ArgToSpeed(args[1]), 0,
                                         args[2] * (args[3] ? -1 : 1), NO_CRUSH, 0,
                                         P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_move_to_value_and_crush:
+      buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[2], P_ArgToCrush(args[3]), 0,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8));
       break;
     case zl_ceiling_lower_to_highest_floor:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerToHighestFloor, line, args[0],
