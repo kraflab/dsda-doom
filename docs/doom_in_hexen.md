@@ -429,8 +429,8 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 274   | Door_AnimatedClose              | :x:                |
 | 275   | Floor_Stop                      | :heavy_check_mark: |
 | 276   | Ceiling_Stop                    | :heavy_check_mark: |
-| 277   | Sector_SetFloorGlow             | :comet:            |
-| 278   | Sector_SetCeilingGlow           | :comet:            |
+| 277   | Sector_SetFloorGlow             | :x:                |
+| 278   | Sector_SetCeilingGlow           | :x:                |
 | 279   | Floor_MoveToValueAndCrush       | :comet:            |
 | 280   | Ceiling_MoveToValueAndCrush     | :comet:            |
 | 281   | Line_SetAutomapFlags            | :comet:            |
