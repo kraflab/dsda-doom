@@ -6378,6 +6378,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         buttonSuccess = EV_ZDoomCeilingCrushStop(args[0], remove);
       }
       break;
+    case zl_ceiling_stop:
+      buttonSuccess = EV_ZDoomCeilingStop(args[0], line);
+      break;
     case zl_generic_crusher:
       buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
                                         P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]),

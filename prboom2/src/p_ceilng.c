@@ -567,6 +567,36 @@ int P_ActivateInStasisCeiling(int tag)
   return rtn;
 }
 
+// TODO: without reflection, we don't know if the ceilingdata needs special handling
+int EV_ZDoomCeilingStop(int tag, line_t *line)
+{
+  const int *id_p;
+  ceilinglist_t *cl;
+
+  for (cl = activeceilings; cl; cl = cl->next)
+  {
+    ceiling_t *ceiling = cl->ceiling;
+    if (ceiling->tag == tag)
+    {
+      P_RemoveActiveCeiling(ceiling);
+    }
+  }
+
+  FIND_SECTORS2(id_p, tag, line)
+  {
+    sector_t *sec = &sectors[*id_p];
+    ceiling_t *ceiling = (ceiling_t *) sec->ceilingdata;
+
+    if (ceiling)
+    {
+      sec->ceilingdata = NULL;
+      P_RemoveThinker(&ceiling->thinker);
+    }
+  }
+
+  return true;
+}
+
 int EV_ZDoomCeilingCrushStop(int tag, dboolean remove)
 {
   dboolean rtn = 0;

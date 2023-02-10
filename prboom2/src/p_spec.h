@@ -1656,6 +1656,7 @@ int EV_ZDoomFloorCrushStop(int tag);
 int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespeed);
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, int tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
+int EV_ZDoomCeilingStop(int tag, line_t *line);
 int EV_ZDoomCeilingCrushStop(int tag, dboolean remove);
 int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
                    fixed_t speed, int delay, fixed_t lip, int change);
