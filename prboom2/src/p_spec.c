@@ -6656,6 +6656,19 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         buttonSuccess = 1;
       }
       break;
+    case zl_line_set_automap_style:
+      if (args[1] >= 0 && args[1] <= ams_portal)
+      {
+        const int *id_p;
+
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
+        {
+          lines[*id_p].automap_style = args[1];
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
     case zl_scroll_wall:
       if (args[0])
       {
