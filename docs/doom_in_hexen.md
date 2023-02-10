@@ -439,7 +439,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 
 #### Notes
 
-- Specials above 255 aren't accessible yet (hexen format only supports special < 256).
+- Specials above 255 are not accessible in hexen format.
 - Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
 - Teleporting to a specific map currently...
@@ -448,7 +448,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 - There may be undefined behaviour when combining new exit specials with UMAPINFO
 - Line flags coming from extra arguments are ignored.
 - Line translucency works like boom (fixed alpha).
-- Line_SetBlocking does not support sight, hitscan, or sound (due to hexen format limits).
+- Line_SetBlocking sight, hitscan, and sound are not possible in hexen format.
 - NoiseAlert only works with the default arguments.
 - Thing_Hate only supports 0 for the third argument ("target only").
 - ThrustThing has an implicit speed limit.
