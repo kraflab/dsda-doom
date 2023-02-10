@@ -6439,6 +6439,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
                                           args[2], P_ArgToSpeed(args[1]), 0,
                                           args[3], 0, STAIR_SYNC);
       break;
+    case zl_stairs_build_up_doom_crush:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, STAIR_CRUSH);
+      break;
     case zl_generic_stairs:
       {
         stairs_e type;

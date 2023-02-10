@@ -632,6 +632,7 @@ typedef enum
 
 #define STAIR_USE_SPECIALS 1
 #define STAIR_SYNC         2
+#define STAIR_CRUSH        4
 
 typedef enum
 {

@@ -1755,7 +1755,8 @@ static void P_SpawnZDoomStair(sector_t *sec, stair_e type, fixed_t stairstep,
   floor->type = floorBuildStair;
 
   floor->crush = (
-    !(usespecials & STAIR_USE_SPECIALS) && speed == 4 * FRACUNIT
+    (!(usespecials & STAIR_USE_SPECIALS) && speed == 4 * FRACUNIT) ||
+    usespecials & STAIR_CRUSH
   ) ? DOOM_CRUSH : NO_CRUSH;
   floor->hexencrush = false;
 
