@@ -2261,6 +2261,25 @@ int EV_OpenPillar(line_t * line, byte * args)
     return rtn;
 }
 
+int EV_ZDoomFloorStop(int tag, line_t *line)
+{
+  const int *id_p;
+
+  FIND_SECTORS2(id_p, tag, line)
+  {
+    sector_t *sec = &sectors[*id_p];
+    floormove_t *floor = (floormove_t *) sec->floordata;
+
+    if (floor)
+    {
+      sec->floordata = NULL;
+      P_RemoveThinker(&floor->thinker);
+    }
+  }
+
+  return 1;
+}
+
 int EV_ZDoomFloorCrushStop(int tag)
 {
   const int *id_p;

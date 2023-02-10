@@ -1651,6 +1651,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, int tag, fixed_t spe
                    zdoom_lock_t lock, int lightTag, dboolean boomgen, int topcountdown);
 int EV_DoZDoomFloor(floor_e floortype, line_t *line, int tag, fixed_t speed, fixed_t height,
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
+int EV_ZDoomFloorStop(int tag, line_t *line);
 int EV_ZDoomFloorCrushStop(int tag);
 int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespeed);
 int EV_DoZDoomCeiling(ceiling_e type, line_t *line, int tag, fixed_t speed, fixed_t speed2,
