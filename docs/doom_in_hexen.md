@@ -435,7 +435,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 280   | Ceiling_MoveToValueAndCrush     | :heavy_check_mark: |
 | 281   | Line_SetAutomapFlags            | :comet:            |
 | 282   | Line_SetAutomapStyle            | :comet:            |
-| 283   | Polyobj_StopSound               | :comet:            |
+| 283   | Polyobj_StopSound               | :x:                |
 
 #### Notes
 
