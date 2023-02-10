@@ -6625,6 +6625,37 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         buttonSuccess = 1;
       }
       break;
+    case zl_line_set_automap_flags:
+      if (args[0])
+      {
+        int i;
+        const int *id_p;
+        static const int flags[] =
+        {
+          ML_SECRET,
+          ML_DONTDRAW,
+          ML_MAPPED,
+          ML_REVEALED,
+          -1
+        };
+
+        int setflags = 0;
+        int clearflags = 0;
+
+        for (i = 0; flags[i] != -1; i++, args[1] >>= 1, args[2] >>= 1)
+        {
+          if (args[1] & 1) setflags |= flags[i];
+          if (args[2] & 1) clearflags |= flags[i];
+        }
+
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
+        {
+          lines[*id_p].flags = (lines[*id_p].flags & ~clearflags) | setflags;
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
     case zl_scroll_wall:
       if (args[0])
       {

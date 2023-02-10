@@ -433,7 +433,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 278   | Sector_SetCeilingGlow           | :x:                |
 | 279   | Floor_MoveToValueAndCrush       | :heavy_check_mark: |
 | 280   | Ceiling_MoveToValueAndCrush     | :heavy_check_mark: |
-| 281   | Line_SetAutomapFlags            | :comet:            |
+| 281   | Line_SetAutomapFlags            | :heavy_check_mark: |
 | 282   | Line_SetAutomapStyle            | :comet:            |
 | 283   | Polyobj_StopSound               | :x:                |
 
