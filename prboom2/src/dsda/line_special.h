@@ -285,6 +285,18 @@ typedef enum {
   zl_stairs_build_up_doom_sync      = 271,
   zl_stairs_build_down_doom_sync    = 272,
 
+  zl_stairs_build_up_doom_crush = 273,
+  zl_door_animated_close = 274,
+  zl_floor_stop = 275,
+  zl_ceiling_stop = 276,
+  zl_sector_set_floor_glow = 277,
+  zl_sector_set_ceiling_glow = 278,
+  zl_floor_move_to_value_and_crush = 279,
+  zl_ceiling_move_to_value_and_crush = 280,
+  zl_line_set_automap_flags = 281,
+  zl_line_set_automap_style = 282,
+  zl_polyobj_stop_sound = 283,
+
   zl_linespecial_max
 } zl_linespecial_id_t;
 

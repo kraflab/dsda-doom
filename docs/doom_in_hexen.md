@@ -425,6 +425,17 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 270   | Stairs_BuildDownDoom            | :heavy_check_mark: |
 | 271   | Stairs_BuildUpDoomSync          | :heavy_check_mark: |
 | 272   | Stairs_BuildDownDoomSync        | :heavy_check_mark: |
+| 273   | Stairs_BuildUpDoomCrush         | :comet:            |
+| 274   | Door_AnimatedClose              | :comet:            |
+| 275   | Floor_Stop                      | :comet:            |
+| 276   | Ceiling_Stop                    | :comet:            |
+| 277   | Sector_SetFloorGlow             | :comet:            |
+| 278   | Sector_SetCeilingGlow           | :comet:            |
+| 279   | Floor_MoveToValueAndCrush       | :comet:            |
+| 280   | Ceiling_MoveToValueAndCrush     | :comet:            |
+| 281   | Line_SetAutomapFlags            | :comet:            |
+| 282   | Line_SetAutomapStyle            | :comet:            |
+| 283   | Polyobj_StopSound               | :comet:            |
 
 #### Notes
 
