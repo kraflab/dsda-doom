@@ -103,7 +103,7 @@ extern int playpal_black;
 
 //sprites
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
-const float gl_mask_sprite_threshold_f = 0.5f;
+const float gl_mask_sprite_threshold_f = 0.01f;
 
 int fog_density=200;
 static float extra_red=0.0f;
