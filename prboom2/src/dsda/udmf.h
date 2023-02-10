@@ -219,6 +219,7 @@ typedef struct {
   float scalex;
   float scaley;
   float scale;
+  float alpha;
   int floatbobphase;
   udmf_thing_flags_t flags;
 } udmf_thing_t;

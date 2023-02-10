@@ -682,6 +682,7 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
   thing.gravity = "1.0";
   thing.health = "1.0";
   thing.floatbobphase = -1;
+  thing.alpha = 1.0;
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
@@ -740,6 +741,9 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "scale")) {
       SCAN_FLOAT(thing.scale);
+    }
+    else if (!stricmp(scanner.string, "alpha")) {
+      SCAN_FLOAT(thing.alpha);
     }
     else if (!stricmp(scanner.string, "skill1")) {
       SCAN_FLAG(thing.flags, UDMF_TF_SKILL1);
@@ -807,7 +811,6 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
       // arg0str
       // renderstyle
       // fillcolor
-      // alpha
       // score
       // pitch
       // roll

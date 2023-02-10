@@ -403,6 +403,7 @@ typedef struct mobj_s
 
     // zdoom
     fixed_t gravity;
+    float alpha;
 
     // misc
     byte color;

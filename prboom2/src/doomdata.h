@@ -324,6 +324,7 @@ typedef struct {
   int special_args[5];
   fixed_t gravity;
   fixed_t health;
+  float alpha;
 } mapthing_t;
 
 typedef struct {

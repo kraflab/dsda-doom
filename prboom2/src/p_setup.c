@@ -1765,6 +1765,7 @@ static void P_LoadThings(int lump)
       mt.special_args[4] = hmt->arg5;
       mt.gravity = FRACUNIT;
       mt.health = FRACUNIT;
+      mt.alpha = 1.f;
     }
     else
     {
@@ -1785,6 +1786,7 @@ static void P_LoadThings(int lump)
       mt.special_args[4] = 0;
       mt.gravity = FRACUNIT;
       mt.health = FRACUNIT;
+      mt.alpha = 1.f;
     }
 
     if (mt.options & MTF_EASY)
@@ -1832,6 +1834,7 @@ static void P_LoadUDMFThings(int lump)
     mt.special_args[4] = dmt->arg4;
     mt.gravity = dsda_StringToFixed(dmt->gravity);
     mt.health = dsda_StringToFixed(dmt->health);
+    mt.alpha = dmt->alpha;
 
     if (dmt->flags & UDMF_TF_SKILL1)
       mt.options |= MTF_SKILL1;

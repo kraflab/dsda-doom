@@ -465,6 +465,7 @@ static void StreamIn_mobj_t(mobj_t *str)
 
     str->friction = ORIG_FRICTION;
     str->gravity = GRAVITY;
+    str->alpha = 1.f;
 }
 
 static void StreamOutMobjSpecials(mobj_t *mobj)

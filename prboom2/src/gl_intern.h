@@ -256,6 +256,7 @@ typedef struct
   float x1,y1;
   float x2,y2;
   float light;
+  float alpha;
   float fogdensity;
   fixed_t scale;
   GLTexture *gltexture;

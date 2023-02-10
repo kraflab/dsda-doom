@@ -2445,8 +2445,8 @@ static void gld_DrawSprite(GLSprite *sprite)
     }
     else
     {
-      if(sprite->flags & g_mf_translucent)
-        gld_StaticLightAlpha(sprite->light,(float)tran_filter_pct/100.0f);
+      if (sprite->alpha != 1.f)
+        gld_StaticLightAlpha(sprite->light, sprite->alpha);
       else
         gld_StaticLight(sprite->light);
     }
@@ -2821,14 +2821,25 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.ur = 0.0f;
   }
 
+  if (thing->alpha != 1.f)
+    sprite.alpha = thing->alpha;
+  else if (sprite.flags & g_mf_translucent)
+    sprite.alpha = 0.66f;
+  else
+    sprite.alpha = 1.f;
+
   //e6y: support for transparent sprites
   if (sprite.flags & MF_NO_DEPTH_TEST)
   {
     gld_AddDrawItem(GLDIT_ASPRITE, &sprite);
   }
+  else if (sprite.alpha != 1.f || sprite.flags & (MF_SHADOW | MF_TRANSLUCENT))
+  {
+    gld_AddDrawItem(GLDIT_TSPRITE, &sprite);
+  }
   else
   {
-    gld_AddDrawItem(((sprite.flags & (MF_SHADOW | MF_TRANSLUCENT)) ? GLDIT_TSPRITE : GLDIT_SPRITE), &sprite);
+    gld_AddDrawItem(GLDIT_SPRITE, &sprite);
   }
 
   if (dsda_ShowHealthBars())
