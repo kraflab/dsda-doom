@@ -55,6 +55,8 @@
 
 #include "dsda/map_format.h"
 #include "dsda/msecnode.h"
+#include "dsda/tranmap.h"
+#include "dsda/utility.h"
 
 #define MARKED_FOR_DELETION -2
 
@@ -1338,6 +1340,11 @@ void P_TrueUnArchiveThinkers(void) {
             mobj->thinker.references = 1;
             break;
           }
+
+          if (mobj->alpha < 1.f)
+            mobj->tranmap = dsda_TranMap(dsda_FloatToPercent(mobj->alpha));
+          else
+            mobj->tranmap = NULL;
 
           P_SetThingPosition (mobj);
 

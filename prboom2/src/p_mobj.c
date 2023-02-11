@@ -58,6 +58,8 @@
 #include "dsda/map_format.h"
 #include "dsda/spawn_number.h"
 #include "dsda/thing_id.h"
+#include "dsda/tranmap.h"
+#include "dsda/utility.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -2455,6 +2457,10 @@ spawnit:
   }
 
   mobj->alpha = mthing->alpha;
+  if (mobj->alpha < 1.f)
+    mobj->tranmap = dsda_TranMap(dsda_FloatToPercent(mobj->alpha));
+  else
+    mobj->tranmap = NULL;
 
   mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y

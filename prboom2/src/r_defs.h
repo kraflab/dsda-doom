@@ -519,6 +519,9 @@ typedef struct vissprite_s
   int pclass;                  // player class (used in translation)
   fixed_t floorclip;
 
+  // zdoom
+  const byte* tranmap;
+
   // misc
   int color;
 } vissprite_t;

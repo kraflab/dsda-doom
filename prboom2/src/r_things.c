@@ -128,6 +128,16 @@ void R_InitSpritesRes(void)
   cliptop = clipbot + SCREENWIDTH;
 }
 
+void R_UpdateVisSpriteTranMap(vissprite_t *vis, mobj_t *thing)
+{
+  if (thing && thing->tranmap)
+    vis->tranmap = thing->tranmap;
+  else if (vis->mobjflags & g_mf_translucent)
+    vis->tranmap = main_tranmap;
+  else
+    vis->tranmap = NULL;
+}
+
 //
 // R_InstallSpriteLump
 // Local function for R_InitSprites.
@@ -563,10 +573,10 @@ static void R_DrawVisSprite(vissprite_t *vis)
     dcvars.translation = translationtables - 256 +
       ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
   }
-  else if (vis->mobjflags & g_mf_translucent) // phares
+  else if (vis->tranmap) // phares
   {
     colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, RDRAW_FILTER_POINT);
-    tranmap = main_tranmap;       // killough 4/11/98
+    tranmap = vis->tranmap;
   }
   else
   {
@@ -893,6 +903,8 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
         index = MAXLIGHTSCALE - 1;
       vis->colormap = spritelights[index];
     }
+
+  R_UpdateVisSpriteTranMap(vis, thing);
 }
 
 //
@@ -1183,6 +1195,8 @@ static void R_DrawPSprite (pspdef_t *psp)
   else
     // e6y: original code is restored
     vis->colormap = spritelights[MAXLIGHTSCALE-1];  // local light
+
+  R_UpdateVisSpriteTranMap(vis, NULL);
 
   //e6y: interpolation for weapon bobbing
   if (movement_smooth)
