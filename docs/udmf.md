@@ -315,7 +315,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | health        | :heavy_check_mark: |
 | renderstyle   | :x:                |
 | fillcolor     | :x:                |
-| alpha         | :warning:          |
+| alpha         | :heavy_check_mark: |
 | score         | :x:                |
 | pitch         | :x:                |
 | roll          | :x:                |
@@ -323,6 +323,3 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | scaley        | :x:                |
 | scale         | :x:                |
 | floatbobphase | :x:                |
-
-#### Notes
-- `alpha` currently only works in opengl.
