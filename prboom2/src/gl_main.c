@@ -103,7 +103,6 @@ extern int playpal_black;
 
 //sprites
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
-const float gl_mask_sprite_threshold_f = 0.01f;
 
 int fog_density=200;
 static float extra_red=0.0f;
@@ -328,7 +327,7 @@ void gld_Init(int width, int height)
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
   glDepthFunc(GL_LEQUAL);
   glEnable(GL_ALPHA_TEST);
-  glAlphaFunc(GL_GEQUAL,0.5f);
+  glAlphaFunc(GL_GREATER, 0.0f);
   glDisable(GL_CULL_FACE);
   glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
 
@@ -918,7 +917,6 @@ void gld_StartFuzz(float width, float height)
   if (!glsl_UseFuzzShader())
   {
     glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL, 0.1f);
     glColor4f(0.2f, 0.2f, 0.2f, 0.33f);
     return;
   }
@@ -927,7 +925,6 @@ void gld_StartFuzz(float width, float height)
   glsl_SetFuzzShaderActive();
   glsl_SetFuzzTextureDimensions(width, height);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glAlphaFunc(GL_GEQUAL, 0.1f);
 
   // for non-indexed modes, just use black as the fuzz color.
   if (!V_IsWorldLightmodeIndexed()) {
@@ -998,7 +995,6 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   if(!vis->colormap)
   {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glAlphaFunc(GL_GEQUAL,0.3f);
   }
   glColor3f(1.0f,1.0f,1.0f);
   gld_EndFuzz();
@@ -2510,7 +2506,6 @@ static void gld_DrawSprite(GLSprite *sprite)
   if (restore)
   {
     glBlendFunc(blend_src, blend_dst);
-    glAlphaFunc(GL_GEQUAL, gl_mask_sprite_threshold_f);
     gld_EndFuzz();
   }
 }
@@ -3190,14 +3185,12 @@ void gld_DrawScene(player_t *player)
   }
 
   // opaque sprites
-  glAlphaFunc(GL_GEQUAL, gl_mask_sprite_threshold_f);
   gld_DrawItemsSortSprites(GLDIT_SPRITE);
   for (i = gld_drawinfo.num_items[GLDIT_SPRITE] - 1; i >= 0; i--)
   {
     gld_SetFog(gld_drawinfo.items[GLDIT_SPRITE][i].item.sprite->fogdensity);
     gld_DrawSprite(gld_drawinfo.items[GLDIT_SPRITE][i].item.sprite);
   }
-  glAlphaFunc(GL_GEQUAL, 0.5f);
 
   // mode for viewing all the alive monsters
   if (dsda_ShowAliveMonsters())
@@ -3326,7 +3319,6 @@ void gld_DrawScene(player_t *player)
       if (draw_tsprite)
       {
         /* transparent sprite is farther, draw it */
-        glAlphaFunc(GL_GEQUAL, gl_mask_sprite_threshold_f);
         gld_SetFog(gld_drawinfo.items[GLDIT_TSPRITE][tsprite_idx].item.sprite->fogdensity);
         gld_DrawSprite(gld_drawinfo.items[GLDIT_TSPRITE][tsprite_idx].item.sprite);
         tsprite_idx--;
@@ -3335,14 +3327,12 @@ void gld_DrawScene(player_t *player)
       {
         glDepthMask(GL_FALSE);
         /* transparent wall is farther, draw it */
-        glAlphaFunc(GL_GREATER, 0.0f);
         gld_SetFog(gld_drawinfo.items[GLDIT_TWALL][twall_idx].item.wall->fogdensity);
         gld_ProcessWall(gld_drawinfo.items[GLDIT_TWALL][twall_idx].item.wall);
         glDepthMask(GL_TRUE);
         twall_idx--;
       }
     }
-    glAlphaFunc(GL_GEQUAL, 0.5f);
     glEnable(GL_ALPHA_TEST);
   }
 
