@@ -20,6 +20,7 @@
 #include "g_game.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
+#include "i_main.h"
 #include "i_system.h"
 #include "lprintf.h"
 #include "m_cheat.h"
@@ -536,6 +537,12 @@ static dboolean console_DemoJoin(const char* command, const char* args) {
     return false;
 
   dsda_JoinDemo(NULL);
+
+  return true;
+}
+
+static dboolean console_GameQuit(const char* command, const char* args) {
+  I_SafeExit(0);
 
   return true;
 }
@@ -2158,6 +2165,8 @@ static console_command_entry_t console_commands[] = {
   { "demo.start", console_DemoStart, CF_NEVER },
   { "demo.stop", console_DemoStop, CF_ALWAYS },
   { "demo.join", console_DemoJoin, CF_ALWAYS },
+
+  { "game.quit", console_GameQuit, CF_ALWAYS },
 
   // cheats
   { "idchoppers", console_BasicCheat, CF_DEMO },
