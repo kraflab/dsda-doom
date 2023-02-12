@@ -37,6 +37,8 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - permanently toggles a config value (will be saved to config file)
 - `music.restart`
   - restart the current music track
+- `game.quit`
+  - quit the game immediately (no prompt)
 - `exit`
 - `quit`
 
@@ -143,6 +145,7 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `demo.export <name>`
 - `demo.start <name>`
 - `demo.stop`
+- `demo.join`
 
 #### Build Mode
 See the [build mode guide](./build_mode.md) for more info.
