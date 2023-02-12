@@ -30,4 +30,5 @@ void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour);
 int dsda_PlaybackTics(void);
 void dsda_StorePlaybackPosition(void);
 void dsda_RestorePlaybackPosition(void);
+void dsda_JoinDemo(ticcmd_t* cmd);
 void dsda_TryPlaybackOneTick(ticcmd_t* cmd);

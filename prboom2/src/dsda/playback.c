@@ -183,14 +183,19 @@ static dboolean dsda_EndOfPlaybackStream(void) {
          playback_p + dsda_BytesPerTic() > playback_origin_p + playback_length;
 }
 
-static void dsda_JoinDemo(ticcmd_t* cmd) {
-  int is_signed;
+void dsda_JoinDemo(ticcmd_t* cmd) {
+  if (!demoplayback)
+    return;
 
   if (dsda_SkipMode())
     dsda_ExitSkipMode();
 
   dsda_ClearPlaybackStream();
-  dsda_JoinDemoCmd(cmd);
+
+  if (cmd)
+    dsda_JoinDemoCmd(cmd);
+  else
+    dsda_QueueJoin();
 
   dsda_MergeExDemoFeatures();
 }
