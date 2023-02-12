@@ -69,7 +69,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
     arg_string_array, AT_LEAST_ONE_STRING,
   },
   [dsda_arg_deh] = {
-    "-deh", NULL, NULL,
+    "-deh", "-bex", NULL,
     "loads additional deh files",
     arg_string_array, AT_LEAST_ONE_STRING,
   },
