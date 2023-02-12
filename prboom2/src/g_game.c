@@ -1415,7 +1415,7 @@ void G_Ticker (void)
 
       arg = dsda_Arg(dsda_arg_command);
       if (arg->found)
-        dsda_InterpretConsoleCommands(arg->value.v_string);
+        dsda_InterpretConsoleCommands(arg->value.v_string, false);
     END_ONCE
   }
 

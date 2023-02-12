@@ -29,6 +29,6 @@ dboolean dsda_OpenConsole(void);
 void dsda_UpdateConsoleText(char* text);
 void dsda_UpdateConsole(int action);
 void dsda_ExecuteConsoleScript(int i);
-void dsda_InterpretConsoleCommands(const char* str);
+void dsda_InterpretConsoleCommands(const char* str, dboolean noise);
 
 #endif
