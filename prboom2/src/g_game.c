@@ -90,6 +90,7 @@
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/configuration.h"
+#include "dsda/console.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
@@ -107,6 +108,7 @@
 #include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
+#include "dsda/utility.h"
 
 struct
 {
@@ -1405,6 +1407,17 @@ void G_Ticker (void)
   }
 
   dsda_EvaluateSkipModeGTicker();
+
+  if (!dsda_SkipMode() && gamestate == GS_LEVEL)
+  {
+    DO_ONCE
+      dsda_arg_t *arg;
+
+      arg = dsda_Arg(dsda_arg_command);
+      if (arg->found)
+        dsda_InterpretConsoleCommands(arg->value.v_string);
+    END_ONCE
+  }
 
   if (dsda_BruteForce())
     dsda_EvaluateBruteForce();

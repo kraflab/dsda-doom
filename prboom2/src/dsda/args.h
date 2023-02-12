@@ -54,6 +54,7 @@ typedef enum {
   dsda_arg_tas,
   dsda_arg_build,
   dsda_arg_first_input,
+  dsda_arg_command,
   dsda_arg_skipsec,
   dsda_arg_skiptic,
   dsda_arg_track_pacifist,

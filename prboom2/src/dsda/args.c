@@ -218,6 +218,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "builds the first frame F S T",
     arg_int_array, -128, 127, 3, 3
   },
+  [dsda_arg_command] = {
+    "-command", NULL, NULL,
+    "runs a console command",
+    arg_string
+  },
   [dsda_arg_skipsec] = {
     "-skipsec", NULL, NULL,
     "skip to the given time (mm:ss or ss) - negative times seek from the end",
