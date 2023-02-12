@@ -3423,9 +3423,11 @@ static void Hexen_P_TouchSpecialThing(mobj_t * special, mobj_t * toucher)
 // Search thinker list for minotaur
 static mobj_t *ActiveMinotaur(player_t * master)
 {
+    byte args[5];
     mobj_t *mo;
     player_t *plr;
     thinker_t *think;
+    unsigned int starttime;
 
     for (think = thinkercap.next; think != &thinkercap; think = think->next)
     {
@@ -3440,8 +3442,12 @@ static mobj_t *ActiveMinotaur(player_t * master)
             continue;           // for morphed minotaurs
         if (mo->flags & MF_CORPSE)
             continue;
-        if (leveltime - mo->special_args[0] >= MAULATORTICS)
+
+        COLLAPSE_SPECIAL_ARGS(args, mo->special_args);
+        memcpy(&starttime, args, sizeof(unsigned int));
+        if (leveltime - LittleLong(starttime) >= MAULATORTICS)
             continue;
+
         plr = mo->special1.m->player;
         if (plr == master)
             return (mo);

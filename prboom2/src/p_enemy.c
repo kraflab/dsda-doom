@@ -5428,7 +5428,12 @@ void A_MinotaurLook(mobj_t * actor);
 // have passed. Returns false if killed.
 static dboolean CheckMinotaurAge(mobj_t *mo)
 {
-    if (leveltime - mo->special_args[0] >= MAULATORTICS)
+    byte args[5];
+    unsigned int starttime;
+
+    COLLAPSE_SPECIAL_ARGS(args, mo->special_args);
+    memcpy(&starttime, args, sizeof(unsigned int));
+    if (leveltime - LittleLong(starttime) >= MAULATORTICS)
     {
         P_DamageMobj(mo, NULL, NULL, 10000);
         return false;

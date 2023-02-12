@@ -392,7 +392,11 @@ void A_Summon(mobj_t * actor)
             return;
         }
 
-        mo->special_args[0] = leveltime;
+        // An attempt to just use the int directly failed - it's not clear why
+        mo->special_args[0] = leveltime & 0xff;
+        mo->special_args[1] = (leveltime >> 8) & 0xff;
+        mo->special_args[2] = (leveltime >> 16) & 0xff;
+        mo->special_args[3] = (leveltime >> 24) & 0xff;
         master = actor->special1.m;
         if (master->flags & MF_CORPSE)
         {                       // Master dead
