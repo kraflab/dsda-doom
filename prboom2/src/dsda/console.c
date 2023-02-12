@@ -531,6 +531,15 @@ static dboolean console_DemoStop(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_DemoJoin(const char* command, const char* args) {
+  if (!demoplayback)
+    return false;
+
+  dsda_JoinDemo(NULL);
+
+  return true;
+}
+
 static dboolean console_TrackerAddLine(const char* command, const char* args) {
   int id;
 
@@ -2148,6 +2157,7 @@ static console_command_entry_t console_commands[] = {
   { "demo.export", console_DemoExport, CF_ALWAYS },
   { "demo.start", console_DemoStart, CF_NEVER },
   { "demo.stop", console_DemoStop, CF_ALWAYS },
+  { "demo.join", console_DemoJoin, CF_ALWAYS },
 
   // cheats
   { "idchoppers", console_BasicCheat, CF_DEMO },
