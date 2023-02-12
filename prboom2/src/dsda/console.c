@@ -2332,6 +2332,20 @@ void dsda_UpdateConsoleHistory(void) {
   console_entry = console_history_head;
 }
 
+void dsda_InterpretConsoleCommands(const char* str) {
+  int line;
+  char* entry;
+  char** lines;
+
+  entry = Z_Strdup(str);
+  lines = dsda_SplitString(entry, ";");
+  for (line = 0; lines[line]; ++line)
+    dsda_ExecuteConsole(lines[line]);
+
+  Z_Free(lines);
+  Z_Free(entry);
+}
+
 void dsda_UpdateConsole(int action) {
   if (action == MENU_BACKSPACE && console_entry_index > 0) {
     int shift_i;
@@ -2344,20 +2358,10 @@ void dsda_UpdateConsole(int action) {
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
-    int line;
-    char* entry;
-    char** lines;
-
-    entry = Z_Strdup(console_entry->text);
-    lines = dsda_SplitString(entry, ";");
-    for (line = 0; lines[line]; ++line)
-      dsda_ExecuteConsole(lines[line]);
+    dsda_InterpretConsoleCommands(console_entry->text);
 
     dsda_UpdateConsoleHistory();
     dsda_ResetConsoleEntry();
-
-    Z_Free(entry);
-    Z_Free(lines);
   }
   else if (action == MENU_UP) {
     if (console_entry->prev)
