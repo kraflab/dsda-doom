@@ -1427,6 +1427,12 @@ void G_Ticker (void)
     advance_frame = true;
     pause_mask = dsda_MaskPause();
   }
+  else if (dsda_BuildMode() &&
+           dsda_BruteForceEnded() &&
+           dsda_Flag(dsda_arg_quit_after_brute_force))
+  {
+    I_SafeExit(0);
+  }
 
   if (dsda_PausedOutsideDemo())
     basetic++;  // For revenant tracers and RNG -- we must maintain sync

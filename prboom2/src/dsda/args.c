@@ -213,6 +213,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "starts in build mode",
     arg_null,
   },
+  [dsda_arg_quit_after_brute_force] = {
+    "-quit_after_brute_force", NULL, NULL,
+    "quits the game when brute force ends",
+    arg_null,
+  },
   [dsda_arg_first_input] = {
     "-first_input", NULL, NULL,
     "builds the first frame F S T",

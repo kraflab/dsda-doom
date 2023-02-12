@@ -63,6 +63,7 @@ extern const char* dsda_bf_operator_names[dsda_bf_operator_max];
 extern const char* dsda_bf_limit_names[dsda_bf_limit_max];
 
 dboolean dsda_BruteForce(void);
+dboolean dsda_BruteForceEnded(void);
 void dsda_ResetBruteForceConditions(void);
 void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
                               dsda_bf_limit_t limit, fixed_t value);

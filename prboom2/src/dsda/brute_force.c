@@ -191,9 +191,16 @@ static void dsda_PrintBFProgress(void) {
 #define BF_SUCCESS 1
 
 static const char* bf_result_text[2] = { "FAILURE", "SUCCESS" };
+static dboolean brute_force_ended;
+
+dboolean dsda_BruteForceEnded(void) {
+  return brute_force_ended;
+}
 
 static void dsda_EndBF(int result) {
   int percent;
+
+  brute_force_ended = true;
 
   percent = 100 * bf_volume / bf_volume_max;
 

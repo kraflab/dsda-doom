@@ -53,6 +53,7 @@ typedef enum {
   dsda_arg_turbo,
   dsda_arg_tas,
   dsda_arg_build,
+  dsda_arg_quit_after_brute_force,
   dsda_arg_first_input,
   dsda_arg_command,
   dsda_arg_skipsec,
