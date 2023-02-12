@@ -73,4 +73,7 @@ byte dsda_FloatToPercent(float x);
 int dsda_IntToFixed(int x);
 angle_t dsda_DegreesToAngle(float x);
 
+#define DO_ONCE { static int do_once = true; if (do_once) {
+#define END_ONCE do_once = false; } }
+
 #endif
