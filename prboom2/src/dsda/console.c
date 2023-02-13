@@ -736,6 +736,29 @@ static dboolean console_BuildUA(const char* command, const char* args) {
   return sscanf(args, "%i", &x) && dsda_BuildUA(x);
 }
 
+static dboolean console_BruteForceFrame(const char* command, const char* args) {
+  int frame;
+  int forwardmove_min, forwardmove_max;
+  int sidemove_min, sidemove_max;
+  int angleturn_min, angleturn_max;
+  int arg_count;
+
+  arg_count = sscanf(
+    args, "%i %i:%i %i:%i %i:%i", &frame,
+    &forwardmove_min, &forwardmove_max,
+    &sidemove_min, &sidemove_max,
+    &angleturn_min, &angleturn_max
+  );
+
+  if (arg_count != 7)
+    return false;
+
+  return dsda_AddBruteForceFrame(frame,
+                                 forwardmove_min, forwardmove_max,
+                                 sidemove_min, sidemove_max,
+                                 angleturn_min, angleturn_max);
+}
+
 static dboolean console_BruteForceStart(const char* command, const char* args) {
   int depth;
   int forwardmove_min, forwardmove_max;
@@ -755,6 +778,22 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
   );
 
   if (arg_count == 8) {
+    int i;
+
+    for (i = 0; i < depth; ++i)
+      dsda_AddBruteForceFrame(i,
+                              forwardmove_min, forwardmove_max,
+                              sidemove_min, sidemove_max,
+                              angleturn_min, angleturn_max);
+  }
+  else {
+    arg_count = sscanf(args, "%i %[^;]", &depth, condition_args);
+
+    if (arg_count != 2)
+      return false;
+  }
+
+  {
     int i;
     char** conditions;
 
@@ -838,14 +877,9 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
     }
 
     Z_Free(conditions);
-
-    return dsda_StartBruteForce(depth,
-                                forwardmove_min, forwardmove_max,
-                                sidemove_min, sidemove_max,
-                                angleturn_min, angleturn_max);
   }
 
-  return false;
+  return dsda_StartBruteForce(depth);
 }
 
 static dboolean console_BuildTurbo(const char* command, const char* args) {
@@ -2144,6 +2178,8 @@ static console_command_entry_t console_commands[] = {
   // build mode
   { "brute_force.start", console_BruteForceStart, CF_DEMO },
   { "bf.start", console_BruteForceStart, CF_DEMO },
+  { "brute_force.frame", console_BruteForceFrame, CF_DEMO },
+  { "bf.frame", console_BruteForceFrame, CF_DEMO },
   { "build.turbo", console_BuildTurbo, CF_DEMO },
   { "b.turbo", console_BuildTurbo, CF_DEMO },
   { "mf", console_BuildMF, CF_DEMO },

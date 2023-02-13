@@ -433,10 +433,33 @@ static void dsda_SortIntPair(int* a, int* b) {
   }
 }
 
-dboolean dsda_StartBruteForce(int depth,
-                              int forwardmove_min, int forwardmove_max,
-                              int sidemove_min, int sidemove_max,
-                              int angleturn_min, int angleturn_max) {
+int dsda_AddBruteForceFrame(int i,
+                            int forwardmove_min, int forwardmove_max,
+                            int sidemove_min, int sidemove_max,
+                            int angleturn_min, int angleturn_max) {
+  if (i < 0 || i >= MAX_BF_DEPTH)
+    return false;
+
+  dsda_SortIntPair(&forwardmove_min, &forwardmove_max);
+  dsda_SortIntPair(&sidemove_min, &sidemove_max);
+  dsda_SortIntPair(&angleturn_min, &angleturn_max);
+
+  brute_force[i].forwardmove.min = forwardmove_min;
+  brute_force[i].forwardmove.max = forwardmove_max;
+  brute_force[i].forwardmove.i = forwardmove_min;
+
+  brute_force[i].sidemove.min = sidemove_min;
+  brute_force[i].sidemove.max = sidemove_max;
+  brute_force[i].sidemove.i = sidemove_min;
+
+  brute_force[i].angleturn.min = angleturn_min;
+  brute_force[i].angleturn.max = angleturn_max;
+  brute_force[i].angleturn.i = angleturn_min;
+
+  return true;
+}
+
+dboolean dsda_StartBruteForce(int depth) {
   int i;
 
   if (depth <= 0 || depth > MAX_BF_DEPTH)
@@ -444,42 +467,31 @@ dboolean dsda_StartBruteForce(int depth,
 
   dsda_TrackFeature(uf_bruteforce);
 
-  dsda_SortIntPair(&forwardmove_min, &forwardmove_max);
-  dsda_SortIntPair(&sidemove_min, &sidemove_max);
-  dsda_SortIntPair(&angleturn_min, &angleturn_max);
+  lprintf(LO_INFO, "Brute force starting:\n");
 
   bf_depth = depth;
   bf_logictic = logictic;
   bf_volume = 0;
-  bf_volume_max = pow((forwardmove_max - forwardmove_min + 1) *
-                      (sidemove_max - sidemove_min + 1) *
-                      (angleturn_max - angleturn_min + 1), depth);
+  bf_volume_max = 1;
 
   for (i = 0; i < bf_depth; ++i) {
-    brute_force[i].forwardmove.min = forwardmove_min;
-    brute_force[i].forwardmove.max = forwardmove_max;
-    brute_force[i].forwardmove.i = forwardmove_min;
+    lprintf(LO_INFO, "  %d: F %d:%d S %d:%d T %d:%d\n", i,
+            brute_force[i].forwardmove.min, brute_force[i].forwardmove.max,
+            brute_force[i].sidemove.min, brute_force[i].sidemove.max,
+            brute_force[i].angleturn.min, brute_force[i].angleturn.max);
 
-    brute_force[i].sidemove.min = sidemove_min;
-    brute_force[i].sidemove.max = sidemove_max;
-    brute_force[i].sidemove.i = sidemove_min;
-
-    brute_force[i].angleturn.min = angleturn_min;
-    brute_force[i].angleturn.max = angleturn_max;
-    brute_force[i].angleturn.i = angleturn_min;
+    bf_volume_max *= (brute_force[i].forwardmove.max - brute_force[i].forwardmove.min + 1) *
+                     (brute_force[i].sidemove.max - brute_force[i].sidemove.min + 1) *
+                     (brute_force[i].angleturn.max - brute_force[i].angleturn.min + 1);
   }
 
-  dsda_StartTimer(dsda_timer_brute_force);
-
-  lprintf(LO_INFO, "Brute force starting:\n");
-  lprintf(LO_INFO, "  F %d:%d S %d:%d T %d:%d\n", forwardmove_min, forwardmove_max,
-                                                  sidemove_min, sidemove_max,
-                                                  angleturn_min, angleturn_max);
   lprintf(LO_INFO, "Testing %lld sequences with depth %d\n\n", bf_volume_max, bf_depth);
 
   bf_mode = true;
 
   dsda_EnterSkipMode();
+
+  dsda_StartTimer(dsda_timer_brute_force);
 
   return true;
 }
