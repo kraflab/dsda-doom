@@ -33,7 +33,7 @@
 
 #include "brute_force.h"
 
-#define MAX_BF_DEPTH 5
+#define MAX_BF_DEPTH 35
 #define MAX_BF_CONDITIONS 16
 
 typedef struct {
