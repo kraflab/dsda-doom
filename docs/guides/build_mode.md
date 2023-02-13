@@ -44,11 +44,14 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 
 Brute force is a technique in built tases where you automatically apply different sequences of commands until you reach a desired outcome. A common use case is for performing glides. You can activate brute force from the console.
 
-- `brute_force.start / bf.start depth forward_range strafe_range turn_range conditions`
-  - `depth` is the number of tics you want to brute force (limit 5)
+- `brute_force.frame / bf.frame frame forward_range strafe_range turn_range`
+  - `frame` is the frame number from the start of brute force (0, 1, 2...)
   - `forward_range` is the range of values for forwardmove. Format: `40:50`, `-50:-40`, etc.
   - `strafe_range` is the same as `forward_range`, but for strafe values.
   - `turn_range` is the same as `forward_range`, but for turn values.
+- `brute_force.start / bf.start depth [forward_range strafe_range turn_range] conditions`
+  - Ranges are optional and will override frame-specific instructions
+  - `depth` is the number of tics you want to brute force (limit 35)
   - `conditions` are comma separated. Format: `attribute operator value`.
     - `attribute` has the following options:
       - `x` (player x position)
@@ -78,5 +81,13 @@ Brute force is a technique in built tases where you automatically apply differen
   - There are additional conditions that do not follow the above pattern:
     - `skip X` (skip line X)
     - `act X` (activate line X)
-  - Full example: `bf.start 2 40:50 40:50 -2:2 x < 1056, vx > 5` is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
+  - Basic example: `bf.start 2 40:50 40:50 -2:2 x < 1056, vx > 5`
+    - This is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
+  - Frame-specific example (different ranges on different frames):
+    ```c
+    bf.frame 0 40:50 40:50 -2:2
+    bf.frame 1 50:50 50:50 -10:10
+    bf.frame 2 40:50 40:50 -2:2
+    bf.start 3 x < 1056, vx > 5
+    ```
 - Brute force metadata gets printed to the console (conditions, progress, etc).
