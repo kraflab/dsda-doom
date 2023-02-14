@@ -261,7 +261,6 @@ void HUlib_initSText
 
   s->h = h;
   s->on = on;
-  s->laston = true;
   s->cl = 0;
   for (i=0;i<h;i++)
     HUlib_initTextLine

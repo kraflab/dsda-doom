@@ -98,7 +98,6 @@ typedef struct
 
   // pointer to dboolean stating whether to update window
   dboolean*    on;
-  dboolean   laston;             // last value of *->on.
 
 } hu_stext_t;
 
@@ -115,7 +114,6 @@ typedef struct
 
   // pointer to dboolean stating whether to update window
   dboolean*    on;
-  dboolean   laston;             // last value of *->on.
 
 } hu_mtext_t;
 
@@ -132,7 +130,6 @@ typedef struct
 
   // pointer to dboolean stating whether to update window
   dboolean*    on;
-  dboolean   laston;   // last value of *->on;
 
 } hu_itext_t;
 
