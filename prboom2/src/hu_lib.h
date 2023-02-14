@@ -101,39 +101,6 @@ typedef struct
 
 } hu_stext_t;
 
-// Message refresh window widget
-typedef struct
-{
-  hu_textline_t l[HU_MAXMESSAGES]; // text lines to draw
-  int     nl;                          // height in lines
-  int     nr;                          // total height in rows
-  int     cl;                          // current line number
-
-  int x,y,w,h;                         // window position and size
-  const patchnum_t *bg;                  // patches for background
-
-  // pointer to dboolean stating whether to update window
-  dboolean*    on;
-
-} hu_mtext_t;
-
-
-
-// Input Text Line widget
-//  (child of Text Line widget)
-typedef struct
-{
-  hu_textline_t l;    // text line to input on
-
-  // left margin past which I am not to delete characters
-  int     lm;
-
-  // pointer to dboolean stating whether to update window
-  dboolean*    on;
-
-} hu_itext_t;
-
-
 //
 // Widget creation, access, and update routines
 //
