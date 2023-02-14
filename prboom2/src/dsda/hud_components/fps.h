@@ -21,6 +21,5 @@
 void dsda_InitFPSHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateFPSHC(void);
 void dsda_DrawFPSHC(void);
-void dsda_EraseFPSHC(void);
 
 #endif

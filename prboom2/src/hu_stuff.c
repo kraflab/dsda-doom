@@ -541,7 +541,7 @@ void SetCrosshairTarget(void)
         winy += (float)(viewheight/2 - centery);
       }
 
-      top = SCREENHEIGHT - viewwindowy;
+      top = SCREENHEIGHT;
       h = crosshair.h;
       if (hudadd_crosshair_scale)
       {
@@ -782,10 +782,6 @@ void HU_Drawer(void)
     }
   }
 
-  //jff 3/4/98 display last to give priority
-  HU_Erase(); // jff 4/24/98 Erase current lines before drawing current
-              // needed when screen not fullsize
-
   if (hudadd_crosshair)
     HU_draw_crosshair();
 
@@ -798,28 +794,6 @@ void HU_Drawer(void)
   dsda_DrawExHud();
 
   V_EndUIDraw();
-}
-
-//
-// HU_Erase()
-//
-// Erase hud display lines that can be trashed by small screen display
-//
-// Passed nothing, returns nothing
-//
-void HU_Erase(void)
-{
-  // erase the message display
-  HUlib_eraseSText(&w_message);
-
-  //e6y
-  if (custom_message_p->ticks > 0)
-    HUlib_eraseTextLine(&w_centermsg);
-
-  // erase the automap title
-  HUlib_eraseTextLine(&w_title);
-
-  dsda_EraseExHud();
 }
 
 //

@@ -208,16 +208,3 @@ void dsda_DrawCoordinateDisplayHC(void) {
   dsda_DrawBasicText(&dsda_dx_display);
   dsda_DrawBasicText(&dsda_dy_display);
 }
-
-void dsda_EraseCoordinateDisplayHC(void) {
-  HUlib_eraseTextLine(&dsda_x_display.text);
-  HUlib_eraseTextLine(&dsda_y_display.text);
-  HUlib_eraseTextLine(&dsda_z_display.text);
-  HUlib_eraseTextLine(&dsda_a_display.text);
-  HUlib_eraseTextLine(&dsda_v_display.text);
-  HUlib_eraseTextLine(&dsda_vx_display.text);
-  HUlib_eraseTextLine(&dsda_vy_display.text);
-  HUlib_eraseTextLine(&dsda_d_display.text);
-  HUlib_eraseTextLine(&dsda_dx_display.text);
-  HUlib_eraseTextLine(&dsda_dy_display.text);
-}

@@ -85,7 +85,3 @@ void dsda_UpdateBigHealthHC(void) {
 void dsda_DrawBigHealthHC(void) {
   dsda_DrawComponent();
 }
-
-void dsda_EraseBigHealthHC(void) {
-  return;
-}

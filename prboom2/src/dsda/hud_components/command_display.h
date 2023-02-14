@@ -21,6 +21,5 @@
 void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateCommandDisplayHC(void);
 void dsda_DrawCommandDisplayHC(void);
-void dsda_EraseCommandDisplayHC(void);
 
 #endif

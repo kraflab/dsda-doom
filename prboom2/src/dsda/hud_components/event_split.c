@@ -87,7 +87,3 @@ void dsda_DrawEventSplitHC(void) {
   if (split.ticks > 0)
     dsda_DrawBasicText(&split.component);
 }
-
-void dsda_EraseEventSplitHC(void) {
-  HUlib_eraseTextLine(&split.component.text);
-}

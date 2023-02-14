@@ -21,6 +21,5 @@
 void dsda_InitTrackerHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateTrackerHC(void);
 void dsda_DrawTrackerHC(void);
-void dsda_EraseTrackerHC(void);
 
 #endif

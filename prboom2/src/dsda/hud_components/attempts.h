@@ -21,6 +21,5 @@
 void dsda_InitAttemptsHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateAttemptsHC(void);
 void dsda_DrawAttemptsHC(void);
-void dsda_EraseAttemptsHC(void);
 
 #endif

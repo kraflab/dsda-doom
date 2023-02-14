@@ -21,6 +21,5 @@
 void dsda_InitBigArtifactHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateBigArtifactHC(void);
 void dsda_DrawBigArtifactHC(void);
-void dsda_EraseBigArtifactHC(void);
 
 #endif

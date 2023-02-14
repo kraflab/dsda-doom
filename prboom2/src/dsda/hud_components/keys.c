@@ -131,7 +131,3 @@ void dsda_UpdateKeysHC(void) {
 void dsda_DrawKeysHC(void) {
   dsda_DrawComponent();
 }
-
-void dsda_EraseKeysHC(void) {
-  return;
-}

@@ -45,7 +45,3 @@ void dsda_UpdateFPSHC(void) {
 void dsda_DrawFPSHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseFPSHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}

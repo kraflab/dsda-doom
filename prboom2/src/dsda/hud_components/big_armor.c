@@ -100,7 +100,3 @@ void dsda_UpdateBigArmorHC(void) {
 void dsda_DrawBigArmorHC(void) {
   dsda_DrawComponent();
 }
-
-void dsda_EraseBigArmorHC(void) {
-  return;
-}

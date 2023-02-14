@@ -55,10 +55,3 @@ void dsda_DrawLineDisplayHC(void) {
     dsda_DrawBasicText(&line_display[i]);
   }
 }
-
-void dsda_EraseLineDisplayHC(void) {
-  int i;
-
-  for (i = 0; i < LINE_ACTIVATION_INDEX_MAX; ++i)
-    HUlib_eraseTextLine(&line_display[i].text);
-}

@@ -21,6 +21,5 @@
 void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateSpeedTextHC(void);
 void dsda_DrawSpeedTextHC(void);
-void dsda_EraseSpeedTextHC(void);
 
 #endif

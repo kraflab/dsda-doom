@@ -21,6 +21,5 @@
 void dsda_InitArmorTextHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateArmorTextHC(void);
 void dsda_DrawArmorTextHC(void);
-void dsda_EraseArmorTextHC(void);
 
 #endif

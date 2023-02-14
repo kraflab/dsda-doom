@@ -50,7 +50,3 @@ void dsda_UpdateSpeedTextHC(void) {
 void dsda_DrawSpeedTextHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseSpeedTextHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}

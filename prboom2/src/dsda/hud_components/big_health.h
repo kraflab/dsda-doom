@@ -21,6 +21,5 @@
 void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateBigHealthHC(void);
 void dsda_DrawBigHealthHC(void);
-void dsda_EraseBigHealthHC(void);
 
 #endif

@@ -21,6 +21,5 @@
 void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateBigArmorTextHC(void);
 void dsda_DrawBigArmorTextHC(void);
-void dsda_EraseBigArmorTextHC(void);
 
 #endif

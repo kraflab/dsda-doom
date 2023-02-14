@@ -21,6 +21,5 @@
 void dsda_InitReadyAmmoTextHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateReadyAmmoTextHC(void);
 void dsda_DrawReadyAmmoTextHC(void);
-void dsda_EraseReadyAmmoTextHC(void);
 
 #endif

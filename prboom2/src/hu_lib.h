@@ -80,9 +80,6 @@ typedef struct
   char  l[HU_MAXLINELENGTH*MAXLINES+1]; // line of text
   int   len;                            // current line length
 
-  // whether this line needs to be udpated
-  int   needsupdate;
-
   // e6y: wide-res
   enum patch_translation_e flags;
 
@@ -169,10 +166,6 @@ dboolean HUlib_addCharToTextLine(hu_textline_t *t, char ch);
 void HUlib_drawTextLine(hu_textline_t *l, dboolean drawcursor);
 void HUlib_drawOffsetTextLine(hu_textline_t* l, int offset);
 
-// erases text line
-void HUlib_eraseTextLine(hu_textline_t *l);
-
-
 //
 // Scrolling Text window widget routines
 //
@@ -194,54 +187,6 @@ void HUlib_addMessageToSText(hu_stext_t* s, const char* prefix, const char* msg)
 
 // draws stext
 void HUlib_drawSText(hu_stext_t* s);
-
-// erases all stext lines
-void HUlib_eraseSText(hu_stext_t* s);
-
-//jff 2/26/98 message refresh widget
-// initialize refresh text widget
-void HUlib_initMText(hu_mtext_t *m, int x, int y, int w, int h, const patchnum_t* font,
-         int startchar, int cm, const patchnum_t* bgfont, enum patch_translation_e flags, dboolean *on);
-
-//jff 2/26/98 message refresh widget
-// add a text message to refresh text widget
-void HUlib_addMessageToMText(hu_mtext_t* m, const char* prefix, const char* msg);
-
-//jff 2/26/98 message refresh widget
-// draws mtext
-void HUlib_drawMText(hu_mtext_t* m);
-
-//jff 4/28/98 erases behind message list
-void HUlib_eraseMText(hu_mtext_t* m);
-
-// Input Text Line widget routines
-void HUlib_initIText
-( hu_itext_t* it,
-  int   x,
-  int   y,
-  const patchnum_t* font,
-  int   startchar,
-  int cm,   //jff 2/16/98 add color range parameter
-  enum patch_translation_e flags,
-  dboolean*  on );
-
-// resets line and left margin
-void HUlib_resetIText(hu_itext_t* it);
-
-// left of left-margin
-void HUlib_addPrefixToIText
-( hu_itext_t* it,
-  char*   str );
-
-// whether eaten
-dboolean HUlib_keyInIText
-( hu_itext_t* it,
-  unsigned char ch );
-
-void HUlib_drawIText(hu_itext_t* it);
-
-// erases all itext lines
-void HUlib_eraseIText(hu_itext_t* it);
 
 //e6y
 void HUlib_setTextXCenter(hu_textline_t* t);

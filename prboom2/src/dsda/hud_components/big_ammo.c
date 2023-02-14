@@ -54,7 +54,3 @@ void dsda_UpdateBigAmmoHC(void) {
 void dsda_DrawBigAmmoHC(void) {
   dsda_DrawComponent();
 }
-
-void dsda_EraseBigAmmoHC(void) {
-  return;
-}
