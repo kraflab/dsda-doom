@@ -322,8 +322,8 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | -     | -                               | -                  |
 | 168   | Ceiling_CrushAndRaiseDist       | :heavy_check_mark: |
 | 169   | Generic_Crusher2                | :heavy_check_mark: |
-| 170   | Sector_SetCeilingScale2         | :x:                |
-| 171   | Sector_SetFloorScale2           | :x:                |
+| 170   | Sector_SetCeilingScale2         | :heavy_check_mark: |
+| 171   | Sector_SetFloorScale2           | :heavy_check_mark: |
 | 172   | Plat_UpNearestWaitDownStay      | :heavy_check_mark: |
 | 173   | NoiseAlert                      | :warning:          |
 | 174   | SendToCommunicator              | :x:                |
@@ -337,11 +337,11 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 182   | Line_Mirror                     | :x:                |
 | 183   | Line_AlignCeiling               | :x:                |
 | 184   | Line_AlignFloor                 | :x:                |
-| 185   | Sector_SetRotation              | :x:                |
+| 185   | Sector_SetRotation              | :heavy_check_mark: |
 | 186   | Sector_SetCeilingPanning        | :heavy_check_mark: |
 | 187   | Sector_SetFloorPanning          | :heavy_check_mark: |
-| 188   | Sector_SetCeilingScale          | :x:                |
-| 189   | Sector_SetFloorScale            | :x:                |
+| 188   | Sector_SetCeilingScale          | :heavy_check_mark: |
+| 189   | Sector_SetFloorScale            | :heavy_check_mark: |
 | 190   | Static_Init                     | :warning:          |
 | 191   | SetPlayerProperty               | :x:                |
 | 192   | Ceiling_LowerToHighestFloor     | :heavy_check_mark: |

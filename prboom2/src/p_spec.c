@@ -71,6 +71,7 @@
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/thing_id.h"
+#include "dsda/utility.h"
 
 //
 //      source animation definition
@@ -6820,6 +6821,110 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         {
           sectors[*id_p].ceiling_xoffs = xoffs;
           sectors[*id_p].ceiling_yoffs = yoffs;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_rotation:
+      {
+        const int *id_p;
+        angle_t floor, ceiling;
+
+        floor = dsda_DegreesToAngle(args[1]);
+        ceiling = dsda_DegreesToAngle(args[2]);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].floor_rotation = floor;
+          sectors[*id_p].ceiling_rotation = ceiling;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_floor_scale:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+        yscale = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].floor_xscale = xscale;
+          sectors[*id_p].floor_yscale = yscale;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_floor_scale2:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = args[1];
+        yscale = args[2];
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].floor_xscale = xscale;
+          sectors[*id_p].floor_yscale = yscale;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_ceiling_scale:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+        yscale = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].ceiling_xscale = xscale;
+          sectors[*id_p].ceiling_yscale = yscale;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_ceiling_scale2:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = args[1];
+        yscale = args[2];
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].ceiling_xscale = xscale;
+          sectors[*id_p].ceiling_yscale = yscale;
         }
       }
       buttonSuccess = 1;
