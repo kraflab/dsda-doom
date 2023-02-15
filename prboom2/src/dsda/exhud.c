@@ -38,7 +38,6 @@ typedef struct {
   void (*init)(int x_offset, int y_offset, int vpt_flags);
   void (*update)(void);
   void (*draw)(void);
-  void (*erase)(void);
   const char* name;
   const int default_vpt;
   const dboolean strict;
@@ -83,28 +82,24 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitAmmoTextHC,
     dsda_UpdateAmmoTextHC,
     dsda_DrawAmmoTextHC,
-    dsda_EraseAmmoTextHC,
     "ammo_text",
   },
   [exhud_armor_text] = {
     dsda_InitArmorTextHC,
     dsda_UpdateArmorTextHC,
     dsda_DrawArmorTextHC,
-    dsda_EraseArmorTextHC,
     "armor_text",
   },
   [exhud_big_ammo] = {
     dsda_InitBigAmmoHC,
     dsda_UpdateBigAmmoHC,
     dsda_DrawBigAmmoHC,
-    dsda_EraseBigAmmoHC,
     "big_ammo",
   },
   [exhud_big_armor] = {
     dsda_InitBigArmorHC,
     dsda_UpdateBigArmorHC,
     dsda_DrawBigArmorHC,
-    dsda_EraseBigArmorHC,
     "big_armor",
     VPT_NOOFFSET,
   },
@@ -112,21 +107,18 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitBigArmorTextHC,
     dsda_UpdateBigArmorTextHC,
     dsda_DrawBigArmorTextHC,
-    dsda_EraseBigArmorTextHC,
     "big_armor_text",
   },
   [exhud_big_artifact] = {
     dsda_InitBigArtifactHC,
     dsda_UpdateBigArtifactHC,
     dsda_DrawBigArtifactHC,
-    dsda_EraseBigArtifactHC,
     "big_artifact",
   },
   [exhud_big_health] = {
     dsda_InitBigHealthHC,
     dsda_UpdateBigHealthHC,
     dsda_DrawBigHealthHC,
-    dsda_EraseBigHealthHC,
     "big_health",
     VPT_NOOFFSET,
   },
@@ -134,28 +126,24 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitBigHealthTextHC,
     dsda_UpdateBigHealthTextHC,
     dsda_DrawBigHealthTextHC,
-    dsda_EraseBigHealthTextHC,
     "big_health_text",
   },
   [exhud_composite_time] = {
     dsda_InitCompositeTimeHC,
     dsda_UpdateCompositeTimeHC,
     dsda_DrawCompositeTimeHC,
-    dsda_EraseCompositeTimeHC,
     "composite_time",
   },
   [exhud_health_text] = {
     dsda_InitHealthTextHC,
     dsda_UpdateHealthTextHC,
     dsda_DrawHealthTextHC,
-    dsda_EraseHealthTextHC,
     "health_text",
   },
   [exhud_keys] = {
     dsda_InitKeysHC,
     dsda_UpdateKeysHC,
     dsda_DrawKeysHC,
-    dsda_EraseKeysHC,
     "keys",
     VPT_NOOFFSET,
   },
@@ -163,28 +151,24 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitReadyAmmoTextHC,
     dsda_UpdateReadyAmmoTextHC,
     dsda_DrawReadyAmmoTextHC,
-    dsda_EraseReadyAmmoTextHC,
     "ready_ammo_text",
   },
   [exhud_speed_text] = {
     dsda_InitSpeedTextHC,
     dsda_UpdateSpeedTextHC,
     dsda_DrawSpeedTextHC,
-    dsda_EraseSpeedTextHC,
     "speed_text",
   },
   [exhud_stat_totals] = {
     dsda_InitStatTotalsHC,
     dsda_UpdateStatTotalsHC,
     dsda_DrawStatTotalsHC,
-    dsda_EraseStatTotalsHC,
     "stat_totals",
   },
   [exhud_tracker] = {
     dsda_InitTrackerHC,
     dsda_UpdateTrackerHC,
     dsda_DrawTrackerHC,
-    dsda_EraseTrackerHC,
     "tracker",
     .strict = true,
   },
@@ -192,14 +176,12 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitWeaponTextHC,
     dsda_UpdateWeaponTextHC,
     dsda_DrawWeaponTextHC,
-    dsda_EraseWeaponTextHC,
     "weapon_text",
   },
   [exhud_render_stats] = {
     dsda_InitRenderStatsHC,
     dsda_UpdateRenderStatsHC,
     dsda_DrawRenderStatsHC,
-    dsda_EraseRenderStatsHC,
     "render_stats",
     .strict = true,
     .off_by_default = true,
@@ -208,7 +190,6 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitFPSHC,
     dsda_UpdateFPSHC,
     dsda_DrawFPSHC,
-    dsda_EraseFPSHC,
     "fps",
     .off_by_default = true,
   },
@@ -216,21 +197,18 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitAttemptsHC,
     dsda_UpdateAttemptsHC,
     dsda_DrawAttemptsHC,
-    dsda_EraseAttemptsHC,
     "attempts",
   },
   [exhud_local_time] = {
     dsda_InitLocalTimeHC,
     dsda_UpdateLocalTimeHC,
     dsda_DrawLocalTimeHC,
-    dsda_EraseLocalTimeHC,
     "local_time",
   },
   [exhud_coordinate_display] = {
     dsda_InitCoordinateDisplayHC,
     dsda_UpdateCoordinateDisplayHC,
     dsda_DrawCoordinateDisplayHC,
-    dsda_EraseCoordinateDisplayHC,
     "coordinate_display",
     .strict = true,
     .off_by_default = true,
@@ -239,7 +217,6 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitLineDisplayHC,
     dsda_UpdateLineDisplayHC,
     dsda_DrawLineDisplayHC,
-    dsda_EraseLineDisplayHC,
     "line_display",
     .strict = true,
     .off_by_default = true,
@@ -248,7 +225,6 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitCommandDisplayHC,
     dsda_UpdateCommandDisplayHC,
     dsda_DrawCommandDisplayHC,
-    dsda_EraseCommandDisplayHC,
     "command_display",
     .strict = true,
     .off_by_default = true,
@@ -258,14 +234,12 @@ exhud_component_t components[exhud_component_count] = {
     dsda_InitEventSplitHC,
     dsda_UpdateEventSplitHC,
     dsda_DrawEventSplitHC,
-    dsda_EraseEventSplitHC,
     "event_split",
   },
   [exhud_level_splits] = {
     dsda_InitLevelSplitsHC,
     dsda_UpdateLevelSplitsHC,
     dsda_DrawLevelSplitsHC,
-    dsda_EraseLevelSplitsHC,
     "level_splits",
     .intermission = true,
     .not_level = true,
@@ -464,18 +438,6 @@ void dsda_DrawExHud(void) {
       (!components[i].strict || !dsda_StrictMode())
     )
       components[i].draw();
-}
-
-void dsda_EraseExHud(void) {
-  int i;
-
-  for (i = 0; i < exhud_component_count; ++i)
-    if (
-      components[i].on &&
-      !components[i].not_level &&
-      (!components[i].strict || !dsda_StrictMode())
-    )
-      components[i].erase();
 }
 
 void dsda_DrawExIntermission(void) {

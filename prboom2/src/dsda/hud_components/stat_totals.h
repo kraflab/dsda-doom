@@ -21,6 +21,5 @@
 void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateStatTotalsHC(void);
 void dsda_DrawStatTotalsHC(void);
-void dsda_EraseStatTotalsHC(void);
 
 #endif

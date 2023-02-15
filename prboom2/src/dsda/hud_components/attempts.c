@@ -48,7 +48,3 @@ void dsda_UpdateAttemptsHC(void) {
 void dsda_DrawAttemptsHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseAttemptsHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}

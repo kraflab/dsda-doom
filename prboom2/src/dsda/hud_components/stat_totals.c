@@ -138,7 +138,3 @@ void dsda_UpdateStatTotalsHC(void) {
 void dsda_DrawStatTotalsHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseStatTotalsHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}

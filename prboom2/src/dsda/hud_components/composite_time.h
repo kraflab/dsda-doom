@@ -21,6 +21,5 @@
 void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateCompositeTimeHC(void);
 void dsda_DrawCompositeTimeHC(void);
-void dsda_EraseCompositeTimeHC(void);
 
 #endif

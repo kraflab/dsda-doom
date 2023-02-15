@@ -56,7 +56,3 @@ void dsda_UpdateWeaponTextHC(void) {
 void dsda_DrawWeaponTextHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseWeaponTextHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}

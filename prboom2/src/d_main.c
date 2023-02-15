@@ -316,7 +316,7 @@ static void D_DrawPause(void)
   {
     if (!netgame)
     {
-      V_DrawNamePatch(160, viewwindowy + 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(160, 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
     }
     else
     {
@@ -402,8 +402,6 @@ void D_Display (fixed_t frac)
   }
   else { // In a level
     dboolean redrawborderstuff;
-
-    HU_Erase();
 
     // Work out if the player view is visible, and if there is a border
     viewactive = automap_off && !inhelpscreens;

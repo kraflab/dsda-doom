@@ -21,6 +21,5 @@
 void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateRenderStatsHC(void);
 void dsda_DrawRenderStatsHC(void);
-void dsda_EraseRenderStatsHC(void);
 
 #endif

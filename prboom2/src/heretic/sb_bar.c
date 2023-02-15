@@ -207,8 +207,7 @@ void SB_Start(void)
 
 extern patchnum_t stbarbg;
 extern patchnum_t grnrock;
-extern patchnum_t brdr_t, brdr_b, brdr_l, brdr_r;
-extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
+extern patchnum_t brdr_b;
 
 void SB_Init(void)
 {
@@ -241,14 +240,7 @@ void SB_Init(void)
 
     // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "FLOOR30");
-    R_SetPatchNum(&brdr_t, "bordt");
     R_SetPatchNum(&brdr_b, "bordb");
-    R_SetPatchNum(&brdr_l, "bordl");
-    R_SetPatchNum(&brdr_r, "bordr");
-    R_SetPatchNum(&brdr_tl, "bordtl");
-    R_SetPatchNum(&brdr_tr, "bordtr");
-    R_SetPatchNum(&brdr_bl, "bordbl");
-    R_SetPatchNum(&brdr_br, "bordbr");
     R_SetPatchNum(&stbarbg, "BARBACK");
 
     for (i = 0; i < 11; ++i)
@@ -979,14 +971,7 @@ static void Hexen_SB_Init(void)
 
     // magic globals that ends up in the background
     R_SetFloorNum(&grnrock, "F_022");
-    R_SetPatchNum(&brdr_t, "bordt");
     R_SetPatchNum(&brdr_b, "bordb");
-    R_SetPatchNum(&brdr_l, "bordl");
-    R_SetPatchNum(&brdr_r, "bordr");
-    R_SetPatchNum(&brdr_tl, "bordtl");
-    R_SetPatchNum(&brdr_tr, "bordtr");
-    R_SetPatchNum(&brdr_bl, "bordbl");
-    R_SetPatchNum(&brdr_br, "bordbr");
     R_SetPatchNum(&stbarbg, "H2BAR");
 
     for (i = 0; i < 33; ++i)

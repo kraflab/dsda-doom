@@ -231,13 +231,3 @@ void dsda_DrawCommandDisplayHC(void) {
     command = command->prev;
   }
 }
-
-void dsda_EraseCommandDisplayHC(void) {
-  int i;
-  dsda_command_display_t* command = current_command;
-
-  for (i = 0; i < dsda_command_history_size; ++i) {
-    HUlib_eraseTextLine(&command->component.text);
-    command = command->prev;
-  }
-}

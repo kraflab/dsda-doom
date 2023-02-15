@@ -21,6 +21,5 @@
 void dsda_InitLineDisplayHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateLineDisplayHC(void);
 void dsda_DrawLineDisplayHC(void);
-void dsda_EraseLineDisplayHC(void);
 
 #endif

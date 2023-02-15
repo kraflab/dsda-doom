@@ -21,6 +21,5 @@
 void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateLevelSplitsHC(void);
 void dsda_DrawLevelSplitsHC(void);
-void dsda_EraseLevelSplitsHC(void);
 
 #endif

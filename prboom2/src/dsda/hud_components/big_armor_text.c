@@ -65,7 +65,3 @@ void dsda_UpdateBigArmorTextHC(void) {
 void dsda_DrawBigArmorTextHC(void) {
   dsda_DrawComponent();
 }
-
-void dsda_EraseBigArmorTextHC(void) {
-  return;
-}

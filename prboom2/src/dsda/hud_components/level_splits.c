@@ -143,8 +143,3 @@ void dsda_DrawLevelSplitsHC(void) {
   dsda_DrawBasicText(&time_component);
   dsda_DrawBasicText(&total_component);
 }
-
-void dsda_EraseLevelSplitsHC(void) {
-  HUlib_eraseTextLine(&time_component.text);
-  HUlib_eraseTextLine(&total_component.text);
-}

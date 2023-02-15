@@ -21,6 +21,5 @@
 void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateCoordinateDisplayHC(void);
 void dsda_DrawCoordinateDisplayHC(void);
-void dsda_EraseCoordinateDisplayHC(void);
 
 #endif

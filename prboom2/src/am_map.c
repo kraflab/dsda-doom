@@ -699,24 +699,16 @@ void AM_SetScale(void)
 //
 void AM_SetPosition(void)
 {
+  f_x = f_y = 0;
+  f_w = SCREENWIDTH;
+
   if (automap_overlay)
   {
-    f_x = 0;
-    f_y = 0;
-    f_w = SCREENWIDTH;
-    f_h = SCREENHEIGHT;
-
-    f_x = viewwindowx + f_x * viewwidth / SCREENWIDTH;
-    f_y = viewwindowy + f_y * viewheight / SCREENHEIGHT;
-    f_w = f_w * viewwidth / SCREENWIDTH;
-    f_h = f_h * viewheight / SCREENHEIGHT;
+    f_h = viewheight;
   }
   else
   {
-    //default
-    f_x = f_y = 0;
-    f_w = SCREENWIDTH;           // killough 2/7/98: get rid of finit_ vars
-    f_h = SCREENHEIGHT-ST_SCALED_HEIGHT;// to allow runtime setting of width/height
+    f_h = SCREENHEIGHT - ST_SCALED_HEIGHT;// to allow runtime setting of width/height
   }
 }
 

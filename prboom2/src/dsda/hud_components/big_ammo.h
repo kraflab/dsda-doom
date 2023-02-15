@@ -21,6 +21,5 @@
 void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateBigAmmoHC(void);
 void dsda_DrawBigAmmoHC(void);
-void dsda_EraseBigAmmoHC(void);
 
 #endif

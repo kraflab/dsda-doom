@@ -21,6 +21,5 @@
 void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateLocalTimeHC(void);
 void dsda_DrawLocalTimeHC(void);
-void dsda_EraseLocalTimeHC(void);
 
 #endif

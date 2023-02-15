@@ -65,7 +65,3 @@ void dsda_UpdateCompositeTimeHC(void) {
 void dsda_DrawCompositeTimeHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseCompositeTimeHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}

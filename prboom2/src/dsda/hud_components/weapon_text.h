@@ -21,6 +21,5 @@
 void dsda_InitWeaponTextHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateWeaponTextHC(void);
 void dsda_DrawWeaponTextHC(void);
-void dsda_EraseWeaponTextHC(void);
 
 #endif

@@ -1055,7 +1055,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_screenblocks] = {
     "screenblocks", dsda_config_screenblocks,
-    dsda_config_int, 3, 11, { 10 }, NULL, CONF_FEATURE | NOT_STRICT, R_SetViewSize
+    dsda_config_int, 10, 11, { 10 }, NULL, CONF_FEATURE | NOT_STRICT, R_SetViewSize
   },
   [dsda_config_sdl_video_window_pos] = {
     "sdl_video_window_pos", dsda_config_sdl_video_window_pos,

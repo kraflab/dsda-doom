@@ -89,8 +89,6 @@ typedef struct draw_column_vars_s
 
 void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars);
 
-void R_VideoErase(int x, int y, int count);
-
 typedef struct {
   int                 y;
   int                 x1;

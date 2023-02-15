@@ -89,7 +89,6 @@ extern int st_palette;    // cph 2006/04/06 - make palette visible
 
 // e6y: makes sense for wide resolutions
 extern patchnum_t grnrock;
-extern patchnum_t brdr_t, brdr_b, brdr_l, brdr_r;
-extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
+extern patchnum_t brdr_b;
 
 #endif

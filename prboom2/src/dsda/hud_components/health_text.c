@@ -50,7 +50,3 @@ void dsda_UpdateHealthTextHC(void) {
 void dsda_DrawHealthTextHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseHealthTextHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}

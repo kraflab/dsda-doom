@@ -34,7 +34,3 @@ void dsda_DrawBigArtifactHC(void) {
 
   DrawArtifact(component.x, component.y, component.vpt);
 }
-
-void dsda_EraseBigArtifactHC(void) {
-  return;
-}

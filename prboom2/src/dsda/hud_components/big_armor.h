@@ -21,6 +21,5 @@
 void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateBigArmorHC(void);
 void dsda_DrawBigArmorHC(void);
-void dsda_EraseBigArmorHC(void);
 
 #endif

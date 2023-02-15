@@ -70,10 +70,7 @@ void R_InitSkyMap(void)
     skystretch = false;
     // HERETIC_TODO: this is set to 200, but something else is missing...
     skytexturemid = 100*FRACUNIT;
-    if (viewwidth != 0)
-    {
-      skyiscale = (fixed_t)(((uint64_t)FRACUNIT * SCREENWIDTH * 200) / (viewwidth * SCREENHEIGHT));
-    }
+    skyiscale = (200 << FRACBITS) / SCREENHEIGHT;
   }
   else
   {
@@ -109,14 +106,7 @@ void R_InitSkyMap(void)
       skytexturemid = (200 - skyheight) << FRACBITS;
     }
 
-    if (viewwidth != 0 && viewheight != 0)
-    {
-      //skyiscale = 200 * FRACUNIT / freelookviewheight;
-      skyiscale = (fixed_t)(((uint64_t)FRACUNIT * SCREENWIDTH * 200) / (viewwidth * SCREENHEIGHT));
-      // line below is from zdoom, but it works incorrectly with prboom
-      // with widescreen resolutions (eg 1280x720) by some reasons
-      //skyiscale = (fixed_t)((int64_t)skyiscale * FieldOfView / 2048);
-    }
+    skyiscale = (200 << FRACBITS) / SCREENHEIGHT;
 
     if (skystretch)
     {

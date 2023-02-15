@@ -444,11 +444,6 @@ static void R_InitLightTables (void)
 dboolean setsizeneeded;
 static int setblocks;
 
-int R_ViewSize(void)
-{
-  return setblocks;
-}
-
 void R_SetViewSize(void)
 {
   setsizeneeded = true;
@@ -507,22 +502,10 @@ int R_Project(float objx, float objy, float objz, float *winx, float *winy, floa
 
 void R_SetupViewport(void)
 {
-  int screenblocks;
-  int height;
-
-  screenblocks = R_ViewSize();
-
-  if (screenblocks == 11)
-    height = SCREENHEIGHT;
-  else if (screenblocks == 10)
-    height = SCREENHEIGHT;
-  else
-    height = (screenblocks*SCREENHEIGHT/10) & ~7;
-
-  viewport[0] = viewwindowx;
-  viewport[1] = SCREENHEIGHT-(height+viewwindowy-((height-viewheight)/2));
+  viewport[0] = 0;
+  viewport[1] = (SCREENHEIGHT - viewheight) / 2;
   viewport[2] = viewwidth;
-  viewport[3] = height;
+  viewport[3] = SCREENHEIGHT;
 }
 
 void R_SetupPerspective(float fovy, float aspect, float znear)
@@ -613,27 +596,18 @@ void R_ExecuteSetViewSize (void)
   SetRatio(SCREENWIDTH, SCREENHEIGHT);
 
   if (setblocks == 11)
-    {
-      scaledviewwidth = SCREENWIDTH;
-      viewheight = SCREENHEIGHT;
-      freelookviewheight = viewheight;
-    }
-// proff 09/24/98: Added for high-res
-  else if (setblocks == 10)
-    {
-      scaledviewwidth = SCREENWIDTH;
-      viewheight = SCREENHEIGHT-ST_SCALED_HEIGHT;
-      freelookviewheight = SCREENHEIGHT;
-    }
+  {
+    viewheight = SCREENHEIGHT;
+    freelookviewheight = viewheight;
+  }
+  // proff 09/24/98: Added for high-res
   else
-    {
-// proff 08/17/98: Changed for high-res
-      scaledviewwidth = setblocks*SCREENWIDTH/10;
-      viewheight = (setblocks*(SCREENHEIGHT-ST_SCALED_HEIGHT)/10) & ~7;
-      freelookviewheight = setblocks*SCREENHEIGHT/10;
-    }
+  {
+    viewheight = SCREENHEIGHT - ST_SCALED_HEIGHT;
+    freelookviewheight = SCREENHEIGHT;
+  }
 
-  viewwidth = scaledviewwidth;
+  viewwidth = SCREENWIDTH;
 
   viewheightfrac = viewheight<<FRACBITS;//e6y
 
@@ -664,7 +638,7 @@ void R_ExecuteSetViewSize (void)
 
   dsda_SetupStretchParams();
 
-  R_InitBuffer (scaledviewwidth, viewheight);
+  R_InitBuffer (SCREENWIDTH, viewheight);
 
   R_InitTextureMapping();
 
@@ -673,7 +647,7 @@ void R_ExecuteSetViewSize (void)
   // proff 11/06/98: Added for high-res
   // e6y: wide-res
   pspritexscale = (wide_centerx << FRACBITS) / 160;
-  pspriteyscale = (((cheight*viewwidth)/SCREENWIDTH) << FRACBITS) / 200;
+  pspriteyscale = (cheight << FRACBITS) / 200;
   pspriteiscale = FixedDiv (FRACUNIT, pspritexscale);
   // [FG] make sure that the product of the weapon sprite scale factor
   //      and its reciprocal is always at least FRACUNIT to
@@ -684,9 +658,9 @@ void R_ExecuteSetViewSize (void)
 
   //e6y: added for GL
   pspritexscale_f = (float)wide_centerx/160.0f;
-  pspriteyscale_f = (((float)cheight*viewwidth)/(float)SCREENWIDTH) / 200.0f;
+  pspriteyscale_f = (float)cheight / 200.0f;
 
-  skyiscale = (fixed_t)(((uint64_t)FRACUNIT * SCREENWIDTH * 200) / (viewwidth * SCREENHEIGHT));
+  skyiscale = (200 << FRACBITS) / SCREENHEIGHT;
 
 	// [RH] Sky height fix for screens not 200 (or 240) pixels tall
 	R_InitSkyMap();
@@ -711,7 +685,7 @@ void R_ExecuteSetViewSize (void)
     int j, startmap = ((LIGHTLEVELS-LIGHTBRIGHT-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
     for (j=0 ; j<MAXLIGHTSCALE ; j++)
     {
-      int t, level = startmap - j/**320/viewwidth*//DISTMAP;
+      int t, level = startmap - j/DISTMAP;
 
       if (level < 0)
         level = 0;
@@ -924,7 +898,7 @@ static void R_InitDrawScene(void)
     if (dsda_IntConfig(dsda_config_flashing_hom))
     { // killough 2/10/98: add flashing red HOM indicators
       unsigned char color=(gametic % 20) < 9 ? 0xb0 : 0;
-      V_FillRect(0, viewwindowx, viewwindowy, viewwidth, viewheight, color);
+      V_FillRect(0, 0, 0, viewwidth, viewheight, color);
       R_DrawViewBorder();
     }
 

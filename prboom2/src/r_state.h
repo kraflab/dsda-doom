@@ -52,8 +52,6 @@
 // needed for texture pegging
 extern fixed_t *textureheight;
 
-extern int scaledviewwidth;
-
 extern int firstflat, numflats;
 
 // for global animation

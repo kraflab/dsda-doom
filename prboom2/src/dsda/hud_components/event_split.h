@@ -21,6 +21,5 @@
 void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt_flags);
 void dsda_UpdateEventSplitHC(void);
 void dsda_DrawEventSplitHC(void);
-void dsda_EraseEventSplitHC(void);
 
 #endif

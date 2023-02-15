@@ -45,7 +45,3 @@ void dsda_UpdateLocalTimeHC(void) {
 void dsda_DrawLocalTimeHC(void) {
   dsda_DrawBasicText(&component);
 }
-
-void dsda_EraseLocalTimeHC(void) {
-  HUlib_eraseTextLine(&component.text);
-}
