@@ -99,6 +99,8 @@ void dsda_InitDataDir(void) {
   dsda_base_data_dir = Z_Malloc(length);
   snprintf(dsda_base_data_dir, length, "%s/%s", parent_directory, dsda_data_root);
 
+  dsda_MkDir(dsda_base_data_dir, true);
+
   Z_Free(parent_directory);
 }
 
