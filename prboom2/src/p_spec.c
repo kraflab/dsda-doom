@@ -6626,6 +6626,43 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         buttonSuccess = 1;
       }
       break;
+    case zl_sector_change_flags:
+      if (args[0])
+      {
+        int i;
+        const int *id_p;
+        static const int flags[] =
+        {
+          SECF_SILENT,
+          0,
+          0,
+          0,
+          SECF_FRICTION,
+          SECF_PUSH,
+          0,
+          0,
+          SECF_ENDGODMODE,
+          SECF_ENDLEVEL,
+          SECF_HAZARD,
+          SECF_NOATTACK,
+          -1
+        };
+
+        int setflags = 0;
+        int clearflags = 0;
+
+        for (i = 0; flags[i] != -1; i++, args[1] >>= 1, args[2] >>= 1)
+        {
+          if (args[1] & 1) setflags |= flags[i];
+          if (args[2] & 1) clearflags |= flags[i];
+        }
+
+        FIND_SECTORS(id_p, args[0])
+          sectors[*id_p].flags = (sectors[*id_p].flags & ~clearflags) | setflags;
+
+        buttonSuccess = 1;
+      }
+      break;
     case zl_line_set_automap_flags:
       if (args[0])
       {

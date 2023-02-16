@@ -226,7 +226,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 51    | Sector_SetLink                  | :x:                |
 | 52    | Scroll_Wall                     | :warning:          |
 | 53    | Line_SetTextureOffset           | :warning:          |
-| 54    | Sector_ChangeFlags              | :comet:            |
+| 54    | Sector_ChangeFlags              | :warning:          |
 | 55    | Line_SetBlocking                | :warning:          |
 | 56    | Line_SetTextureScale            | :x:                |
 | 57    | Sector_SetPortal                | :x:                |
@@ -449,6 +449,8 @@ This page tracks support for the "Doom in Hexen" map format and related features
 - Line flags coming from extra arguments are ignored.
 - Line translucency works like boom (fixed alpha).
 - Line_SetBlocking sight, hitscan, and sound are not possible in hexen format.
+- Sector_ChangeFlags only supports silent, friction, and push in hexen format.
+  - UDMF additionally supports endgodmode, endlevel, hazard, and noattack.
 - NoiseAlert only works with the default arguments.
 - Thing_Hate only supports 0 for the third argument ("target only").
 - ThrustThing has an implicit speed limit.
