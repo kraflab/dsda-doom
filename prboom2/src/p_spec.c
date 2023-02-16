@@ -6737,6 +6737,80 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         buttonSuccess = 1;
       }
       break;
+    case zl_line_set_texturescale:
+      if (args[0])
+      {
+        const int *id_p;
+        const int NO_CHANGE = 32767 << FRACBITS;
+        int sidenum = !!args[3];
+
+        if (!args[1])
+          args[1] = FRACUNIT;
+
+        if (!args[2])
+          args[2] = FRACUNIT;
+
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
+        {
+          side_t *side = &sides[lines[*id_p].sidenum[sidenum]];
+
+          if (args[4] & 8)
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scalex_top = FixedMul(side->scalex_top, args[1]);
+
+              if (args[4] & 2)
+                side->scalex_mid = FixedMul(side->scalex_mid, args[1]);
+
+              if (args[4] & 4)
+                side->scalex_bottom = FixedMul(side->scalex_bottom, args[1]);
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scaley_top = FixedMul(side->scaley_top, args[2]);
+
+              if (args[4] & 2)
+                side->scaley_mid = FixedMul(side->scaley_mid, args[2]);
+
+              if (args[4] & 4)
+                side->scaley_bottom = FixedMul(side->scaley_bottom, args[2]);
+            }
+          }
+          else
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scalex_top = args[1];
+
+              if (args[4] & 2)
+                side->scalex_mid = args[1];
+
+              if (args[4] & 4)
+                side->scalex_bottom = args[1];
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scaley_top = args[2];
+
+              if (args[4] & 2)
+                side->scaley_mid = args[2];
+
+              if (args[4] & 4)
+                side->scaley_bottom = args[2];
+            }
+          }
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
     case zl_noise_alert:
       {
         extern void P_NoiseAlert(mobj_t *target, mobj_t *emitter);

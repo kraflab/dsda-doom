@@ -228,7 +228,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 53    | Line_SetTextureOffset           | :warning:          |
 | 54    | Sector_ChangeFlags              | :warning:          |
 | 55    | Line_SetBlocking                | :warning:          |
-| 56    | Line_SetTextureScale            | :x:                |
+| 56    | Line_SetTextureScale            | :heavy_check_mark: |
 | 57    | Sector_SetPortal                | :x:                |
 | 58    | Sector_CopyScroller             | :heavy_check_mark: |
 | 59    | Polyobj_OR_MoveToSpot           | :heavy_check_mark: |
