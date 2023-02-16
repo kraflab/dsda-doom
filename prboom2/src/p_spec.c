@@ -6722,16 +6722,68 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       }
       break;
     case zl_line_set_texture_offset:
-      if (args[0] && args[3] <= 1)
+      if (args[0])
       {
         const int *id_p;
+        const int NO_CHANGE = 32767 << FRACBITS;
         int sidenum = !!args[3];
 
         for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
           side_t *side = &sides[lines[*id_p].sidenum[sidenum]];
-          side->textureoffset = args[1];
-          side->rowoffset = args[2];
+
+          if (args[4] & 8)
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->textureoffset_top += args[1];
+
+              if (args[4] & 2)
+                side->textureoffset_mid += args[1];
+
+              if (args[4] & 4)
+                side->textureoffset_bottom += args[1];
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->rowoffset_top += args[2];
+
+              if (args[4] & 2)
+                side->rowoffset_mid += args[2];
+
+              if (args[4] & 4)
+                side->rowoffset_bottom += args[2];
+            }
+          }
+          else
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->textureoffset_top = args[1];
+
+              if (args[4] & 2)
+                side->textureoffset_mid = args[1];
+
+              if (args[4] & 4)
+                side->textureoffset_bottom = args[1];
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->rowoffset_top = args[2];
+
+              if (args[4] & 2)
+                side->rowoffset_mid = args[2];
+
+              if (args[4] & 4)
+                side->rowoffset_bottom = args[2];
+            }
+          }
         }
 
         buttonSuccess = 1;

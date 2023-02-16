@@ -225,7 +225,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 50    | ExtraFloor_LightOnly            | :x:                |
 | 51    | Sector_SetLink                  | :x:                |
 | 52    | Scroll_Wall                     | :warning:          |
-| 53    | Line_SetTextureOffset           | :warning:          |
+| 53    | Line_SetTextureOffset           | :heavy_check_mark: |
 | 54    | Sector_ChangeFlags              | :warning:          |
 | 55    | Line_SetBlocking                | :warning:          |
 | 56    | Line_SetTextureScale            | :heavy_check_mark: |
