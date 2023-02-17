@@ -4,21 +4,21 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 
 ### Legend
 
-| Symbol             | Meaning                        |
-| ------------------ | ------------------------------ |
-| :heavy_check_mark: | Feature is fully supported     |
-| :warning:          | Feature is partially supported |
-| :x:                | Feature is not planned         |
+| Symbol             | Meaning                      |
+| ------------------ | ---------------------------- |
+| :heavy_check_mark: | Feature is supported         |
+| :ice_cream:        | Feature only works in opengl |
+| :x:                | Feature is not planned       |
 
 ### Namespaces
 
-| Name       | Status    |
-| ---------- | --------- |
-| doom       | :x:       |
-| heretic    | :x:       |
-| hexen      | :x:       |
-| strife     | :x:       |
-| zdoom 1.33 | :warning: |
+| Name       | Status             |
+| ---------- | ------------------ |
+| doom       | :x:                |
+| heretic    | :x:                |
+| hexen      | :x:                |
+| strife     | :x:                |
+| zdoom 1.33 | :heavy_check_mark: |
 
 ### Nodes
 
@@ -58,11 +58,11 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | missilecross       | :heavy_check_mark: |
 | repeatspecial      | :heavy_check_mark: |
 | special            | :heavy_check_mark: |
-| arg0               | :warning:          |
-| arg1               | :warning:          |
-| arg2               | :warning:          |
-| arg3               | :warning:          |
-| arg4               | :warning:          |
+| arg0               | :heavy_check_mark: |
+| arg1               | :heavy_check_mark: |
+| arg2               | :heavy_check_mark: |
+| arg3               | :heavy_check_mark: |
+| arg4               | :heavy_check_mark: |
 | sidefront          | :heavy_check_mark: |
 | sideback           | :heavy_check_mark: |
 | comment            | :x:                |
@@ -76,7 +76,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | firstsideonly      | :heavy_check_mark: |
 | zoneboundary       | :x:                |
 | clipmidtex         | :heavy_check_mark: |
-| wrapmidtex         | :warning:          |
+| wrapmidtex         | :ice_cream:        |
 | midtex3d           | :heavy_check_mark: |
 | midtex3dimpassible | :heavy_check_mark: |
 | checkswitchrange   | :heavy_check_mark: |
@@ -98,9 +98,6 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | deathspecial       | :heavy_check_mark: |
 | blocklandmonsters  | :heavy_check_mark: |
 
-#### Notes
-- `wrapmidtex` currently only works in opengl.
-
 ### Sidedefs
 
 | Field                 | Status             |
@@ -112,12 +109,12 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | texturemiddle         | :heavy_check_mark: |
 | sector                | :heavy_check_mark: |
 | comment               | :x:                |
-| scalex_top            | :warning:          |
-| scaley_top            | :warning:          |
-| scalex_mid            | :warning:          |
-| scaley_mid            | :warning:          |
-| scalex_bottom         | :warning:          |
-| scaley_bottom         | :warning:          |
+| scalex_top            | :ice_cream:        |
+| scaley_top            | :ice_cream:        |
+| scalex_mid            | :ice_cream:        |
+| scaley_mid            | :ice_cream:        |
+| scalex_bottom         | :ice_cream:        |
+| scaley_bottom         | :ice_cream:        |
 | offsetx_top           | :heavy_check_mark: |
 | offsety_top           | :heavy_check_mark: |
 | offsetx_mid           | :heavy_check_mark: |
@@ -136,7 +133,7 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | nofakecontrast        | :heavy_check_mark: |
 | smoothlighting        | :heavy_check_mark: |
 | clipmidtex            | :heavy_check_mark: |
-| wrapmidtex            | :warning:          |
+| wrapmidtex            | :ice_cream:        |
 | nodecals              | :x:                |
 | nogradient_top        | :x:                |
 | flipgradient_top      | :x:                |
@@ -165,9 +162,6 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | colorization_top      | :x:                |
 | colorization_mid      | :x:                |
 | colorization_bottom   | :x:                |
-
-#### Notes
-- `wrapmidtex` and `scale*` currently only work in opengl.
 
 ### Vertices
 
@@ -300,11 +294,11 @@ This page tracks support for the universal doom map format, as seen in ZDoom. It
 | translucent   | :heavy_check_mark: |
 | invisible     | :heavy_check_mark: |
 | special       | :heavy_check_mark: |
-| arg0          | :warning:          |
-| arg1          | :warning:          |
-| arg2          | :warning:          |
-| arg3          | :warning:          |
-| arg4          | :warning:          |
+| arg0          | :heavy_check_mark: |
+| arg1          | :heavy_check_mark: |
+| arg2          | :heavy_check_mark: |
+| arg3          | :heavy_check_mark: |
+| arg4          | :heavy_check_mark: |
 | comment       | :x:                |
 | skill6-16     | :x:                |
 | class4-16     | :x:                |
