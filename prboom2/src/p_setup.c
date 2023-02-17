@@ -2369,30 +2369,29 @@ void P_PostProcessHexenLineSpecial(line_t *ld)
 void P_PostProcessZDoomLineSpecial(line_t *ld)
 {
   switch (ld->special)
-  {                           // killough 4/11/98: handle special types
-    case zl_translucent_line: // killough 4/11/98: translucent 2s textures
+  {
+    case zl_translucent_line:
     {
-      const byte* tranmap;
+      float alpha;
       const int *id_p;
-      int lump;
 
-      lump = sides[*ld->sidenum].special; // translucency from sidedef
-      if (!lump)
-        tranmap = main_tranmap;
-      else
-        tranmap = W_LumpByNum(lump - 1);
+      alpha = (float) ld->special_args[1] / 256.f;
+      alpha = BETWEEN(0.f, 1.f, alpha);
 
       if (!ld->special_args[0])
       {
-        ld->tranmap = tranmap;
-        ld->alpha = 0.66f;
+        ld->tranmap = dsda_TranMap(dsda_FloatToPercent(alpha));
+        ld->alpha = alpha;
       }
       else
+      {
         for (id_p = dsda_FindLinesFromID(ld->special_args[0]); *id_p >= 0; id_p++)
         {
-          lines[*id_p].tranmap = tranmap;
-          lines[*id_p].alpha = 0.66f;
+          lines[*id_p].tranmap = dsda_TranMap(dsda_FloatToPercent(alpha));
+          lines[*id_p].alpha = alpha;
         }
+      }
+
       ld->special = 0;
     }
     break;
@@ -2494,88 +2493,9 @@ void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, secto
 
 void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
 {
-  switch (sd->special)
-  {
-    // case zl_transfer_heights:  // variable colormap via 242 linedef
-    //     // [RH] The colormap num we get here isn't really a colormap,
-    //     //    but a packed ARGB word for blending, so we also allow
-    //     //    the blend to be specified directly by the texture names
-    //     //    instead of figuring something out from the colormap.
-    //   if (sec != NULL)
-    //   {
-    //     SetTexture (sd, side_t::bottom, &sec->bottommap, msd->bottomtexture);
-    //     SetTexture (sd, side_t::mid, &sec->midmap, msd->midtexture);
-    //     SetTexture (sd, side_t::top, &sec->topmap, msd->toptexture);
-    //   }
-    //   break;
-    //
-    // case zl_static_init:
-    //   // [RH] Set sector color and fog
-    //   // upper "texture" is light color
-    //   // lower "texture" is fog color
-    //   {
-    //     DWORD color = MAKERGB(255,255,255), fog = 0;
-    //     bool colorgood, foggood;
-    //
-    //     SetTextureNoErr (sd, side_t::bottom, &fog, msd->bottomtexture, &foggood, true);
-    //     SetTextureNoErr (sd, side_t::top, &color, msd->toptexture, &colorgood, false);
-    //     SetTexture(sd, side_t::mid, msd->midtexture, missingtex);
-    //
-    //     if (colorgood | foggood)
-    //     {
-    //       int s;
-    //       FDynamicColormap *colormap = NULL;
-    //
-    //       for (s = 0; s < numsectors; s++)
-    //       {
-    //         if (tagManager.SectorHasTag(s, tag))
-    //         {
-    //           if (!colorgood) color = sectors[s].ColorMap->Color;
-    //           if (!foggood) fog = sectors[s].ColorMap->Fade;
-    //           if (colormap == NULL ||
-    //             colormap->Color != color ||
-    //             colormap->Fade != fog)
-    //           {
-    //             colormap = GetSpecialLights (color, fog, 0);
-    //           }
-    //           sectors[s].ColorMap = colormap;
-    //         }
-    //       }
-    //     }
-    //   }
-    //   break;
-    //
-    // case zl_sector_set_3d_floor:
-    //   if (msd->toptexture[0]=='#')
-    //   {
-    //     sd->SetTexture(side_t::top, FNullTextureID() +(-strtol(&msd->toptexture[1], NULL, 10)));  // store the alpha as a negative texture index
-    //                           // This will be sorted out by the 3D-floor code later.
-    //   }
-    //   else
-    //   {
-    //     SetTexture(sd, side_t::top, msd->toptexture, missingtex);
-    //   }
-    //
-    //   SetTexture(sd, side_t::mid, msd->midtexture, missingtex);
-    //   SetTexture(sd, side_t::bottom, msd->bottomtexture, missingtex);
-    //   break;
-    //
-    case zl_translucent_line: // killough 4/11/98: apply translucency to 2s normal texture
-      sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
-        (sd->special = W_CheckNumForName(msd->midtexture)) == LUMP_NOT_FOUND ||
-        W_LumpLength(sd->special) != 65536 ?
-        sd->special = 0, R_TextureNumForName(msd->midtexture) :
-          (sd->special++, 0) : (sd->special = 0);
-      sd->toptexture = R_TextureNumForName(msd->toptexture);
-      sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
-      break;
-
-    default:      // normal cases
-      sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-      sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-      sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
-      break;
-  }
+  sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
+  sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
+  sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
 }
 
 // killough 4/4/98: delay using texture names until
@@ -2654,38 +2574,9 @@ static void P_LoadUDMFSideDefs(int lump)
 
     sd->sector = &sectors[msd->sector];
 
-    switch (sd->special)
-    {
-      case zl_translucent_line:
-        if (strncasecmp("TRANMAP", msd->texturemiddle, 8))
-        {
-          sd->special = W_CheckNumForName(msd->texturemiddle);
-          if (sd->special == LUMP_NOT_FOUND || W_LumpLength(sd->special) != 65536)
-          {
-            sd->special = 0;
-            sd->midtexture = R_TextureNumForName(msd->texturemiddle);
-          }
-          else
-          {
-            sd->special++;
-            sd->midtexture = 0;
-          }
-        }
-        else
-        {
-          sd->special = 0;
-          sd->midtexture = 0;
-        }
-        sd->toptexture = R_TextureNumForName(msd->texturetop);
-        sd->bottomtexture = R_TextureNumForName(msd->texturebottom);
-        break;
-
-      default:
-        sd->midtexture = R_SafeTextureNumForName(msd->texturemiddle, i);
-        sd->toptexture = R_SafeTextureNumForName(msd->texturetop, i);
-        sd->bottomtexture = R_SafeTextureNumForName(msd->texturebottom, i);
-        break;
-    }
+    sd->midtexture = R_SafeTextureNumForName(msd->texturemiddle, i);
+    sd->toptexture = R_SafeTextureNumForName(msd->texturetop, i);
+    sd->bottomtexture = R_SafeTextureNumForName(msd->texturebottom, i);
   }
 }
 

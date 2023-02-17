@@ -447,7 +447,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
   - Does not know about clusters (e.g., you can't bring keys through the exit)
 - There may be undefined behaviour when combining new exit specials with UMAPINFO
 - Line flags coming from extra arguments are ignored.
-- Line translucency works like boom (fixed alpha).
+- TranslucentLine does not support additive translucency.
 - Line_SetBlocking sight, hitscan, and sound are not possible in hexen format.
 - Sector_ChangeFlags only supports silent, friction, and push in hexen format.
   - UDMF additionally supports endgodmode, endlevel, hazard, and noattack.
