@@ -159,29 +159,13 @@ void T_RotatePoly(polyevent_t * pe)
     }
 }
 
-// TODO: EV_RotateZDoomPoly int range
-dboolean EV_RotateZDoomPoly(line_t * line, int polyobj, int speed,
+dboolean EV_RotateZDoomPoly(line_t * line, int polyNum, int speed,
                             int angle, int direction, dboolean overRide)
 {
-    byte args[5];
-
-    args[0] = polyobj;
-    args[1] = speed;
-    args[2] = angle;
-    args[3] = 0;
-    args[4] = 0;
-
-    return EV_RotatePoly(line, args, direction, overRide);
-}
-
-dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overRide)
-{
     int mirror;
-    int polyNum;
     polyevent_t *pe;
     polyobj_t *poly;
 
-    polyNum = args[0];
     poly = GetPolyobj(polyNum);
     if (poly != NULL)
     {
@@ -198,25 +182,24 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overR
     P_AddThinker(&pe->thinker);
     pe->thinker.function = T_RotatePoly;
     pe->polyobj = polyNum;
-    if (args[2])
+    if (angle)
     {
-        if (args[2] == 255)
+        if (angle == 255)
         {
             pe->dist = -1;
         }
         else
         {
-            pe->dist = args[2] * (ANG90 / 64);       // Angle
+            pe->dist = angle * (ANG90 / 64);       // Angle
         }
     }
     else
     {
         pe->dist = ANGLE_MAX - 1;
     }
-    pe->speed = (args[1] * direction * (ANG90 / 64)) >> 3;
+    pe->speed = (speed * direction * (ANG90 / 64)) >> 3;
     poly->specialdata = pe;
-    SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                     poly->seqType);
+    SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
 
     while ((mirror = GetPolyobjMirror(polyNum)) != 0)
     {
@@ -230,15 +213,15 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overR
         pe->thinker.function = T_RotatePoly;
         poly->specialdata = pe;
         pe->polyobj = mirror;
-        if (args[2])
+        if (angle)
         {
-            if (args[2] == 255)
+            if (angle == 255)
             {
                 pe->dist = -1;
             }
             else
             {
-                pe->dist = args[2] * (ANG90 / 64);   // Angle
+                pe->dist = angle * (ANG90 / 64);   // Angle
             }
         }
         else
@@ -255,12 +238,16 @@ dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overR
             I_Error("EV_RotatePoly:  Invalid polyobj num: %d\n", polyNum);
         }
         direction = -direction;
-        pe->speed = (args[1] * direction * (ANG90 / 64)) >> 3;
+        pe->speed = (speed * direction * (ANG90 / 64)) >> 3;
         polyNum = mirror;
-        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                         poly->seqType);
+        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
     }
     return true;
+}
+
+dboolean EV_RotatePoly(line_t * line, byte * args, int direction, dboolean overRide)
+{
+    return EV_RotateZDoomPoly(line, args[0], args[1], args[2], direction, overRide);
 }
 
 void T_MovePoly(polyevent_t * pe)
@@ -353,30 +340,11 @@ dboolean EV_MovePolyTo(line_t * line, int polyNum, fixed_t speed,
     return true;
 }
 
-// TODO: EV_MoveZDoomPoly int range
-dboolean EV_MoveZDoomPoly(line_t * line, int polyobj, int speed,
+dboolean EV_MoveZDoomPoly(line_t * line, int polyNum, int speed,
                           int angle, int distance, dboolean timesEight, dboolean overRide)
 {
-    byte args[5];
-
-    args[0] = polyobj;
-    args[1] = speed;
-    args[2] = angle;
-    args[3] = distance;
-    args[4] = 0;
-
-    return EV_MovePoly(line, args, timesEight, overRide);
-}
-
-dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean overRide)
-{
-    int polyNum;
     polyobj_t *poly;
-    angle_t an;
-    fixed_t dist;
-    fixed_t speed;
 
-    polyNum = args[0];
     poly = GetPolyobj(polyNum);
     if (poly != NULL)
     {
@@ -392,19 +360,24 @@ dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean o
 
     if (timesEight)
     {
-        dist = args[3] * 8 * FRACUNIT;
+        distance *= 8 * FRACUNIT;
     }
     else
     {
-        dist = args[3] * FRACUNIT;  // Distance
+        distance *= FRACUNIT;
     }
 
-    speed = args[1] * (FRACUNIT / 8);
-    an = args[2] * (ANG90 / 64);
+    speed *= (FRACUNIT / 8);
+    angle *= (ANG90 / 64);
 
-    EV_SpawnMovePolyEvent(polyNum, poly, speed, dist, an, overRide);
+    EV_SpawnMovePolyEvent(polyNum, poly, speed, distance, angle, overRide);
 
     return true;
+}
+
+dboolean EV_MovePoly(line_t * line, byte * args, dboolean timesEight, dboolean overRide)
+{
+    return EV_MoveZDoomPoly(line, args[0], args[1], args[2], args[3], timesEight, overRide);
 }
 
 void T_PolyDoor(polydoor_t * pd)
@@ -527,30 +500,15 @@ void T_PolyDoor(polydoor_t * pd)
     }
 }
 
-// TODO: EV_OpenZDoomPolyDoor int range
-dboolean EV_OpenZDoomPolyDoor(line_t * line, int polyobj, int speed,
-                              int angle, int delay, podoortype_t type)
-{
-    byte args[5];
-
-    args[0] = polyobj;
-    args[1] = speed;
-    args[2] = angle;
-    args[3] = delay;
-    args[4] = 0;
-
-    return EV_OpenPolyDoor(line, args, type);
-}
-
-dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
+// TODO: Split into 2 functions with accurate variable names
+dboolean EV_OpenZDoomPolyDoor(line_t * line, int polyNum, int speed,
+                              int angle, int distance, int delay, podoortype_t type)
 {
     int mirror;
-    int polyNum;
     polydoor_t *pd;
     polyobj_t *poly;
     angle_t an = 0;
 
-    polyNum = args[0];
     poly = GetPolyobj(polyNum);
     if (poly != NULL)
     {
@@ -571,26 +529,24 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
     pd->polyobj = polyNum;
     if (type == PODOOR_SLIDE)
     {
-        pd->waitTics = args[4];
-        pd->speed = args[1] * (FRACUNIT / 8);
-        pd->totalDist = args[3] * FRACUNIT;     // Distance
+        pd->waitTics = delay;
+        pd->speed = speed * (FRACUNIT / 8);
+        pd->totalDist = distance * FRACUNIT;     // Distance
         pd->dist = pd->totalDist;
-        an = args[2] * (ANG90 / 64);
+        an = angle * (ANG90 / 64);
         pd->direction = an >> ANGLETOFINESHIFT;
         pd->xSpeed = FixedMul(pd->speed, finecosine[pd->direction]);
         pd->ySpeed = FixedMul(pd->speed, finesine[pd->direction]);
-        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                         poly->seqType);
+        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
     }
     else if (type == PODOOR_SWING)
     {
-        pd->waitTics = args[3];
+        pd->waitTics = distance;
         pd->direction = 1;      // ADD:  PODOOR_SWINGL, PODOOR_SWINGR
-        pd->speed = (args[1] * pd->direction * (ANG90 / 64)) >> 3;
-        pd->totalDist = args[2] * (ANG90 / 64);
+        pd->speed = (speed * pd->direction * (ANG90 / 64)) >> 3;
+        pd->totalDist = angle * (ANG90 / 64);
         pd->dist = pd->totalDist;
-        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                         poly->seqType);
+        SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
     }
 
     poly->specialdata = pd;
@@ -611,30 +567,33 @@ dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
         poly->specialdata = pd;
         if (type == PODOOR_SLIDE)
         {
-            pd->waitTics = args[4];
-            pd->speed = args[1] * (FRACUNIT / 8);
-            pd->totalDist = args[3] * FRACUNIT; // Distance
+            pd->waitTics = delay;
+            pd->speed = speed * (FRACUNIT / 8);
+            pd->totalDist = distance * FRACUNIT; // Distance
             pd->dist = pd->totalDist;
             an = an + ANG180;        // reverse the angle
             pd->direction = an >> ANGLETOFINESHIFT;
             pd->xSpeed = FixedMul(pd->speed, finecosine[pd->direction]);
             pd->ySpeed = FixedMul(pd->speed, finesine[pd->direction]);
-            SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                             poly->seqType);
+            SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
         }
         else if (type == PODOOR_SWING)
         {
-            pd->waitTics = args[3];
+            pd->waitTics = distance;
             pd->direction = -1; // ADD:  same as above
-            pd->speed = (args[1] * pd->direction * (ANG90 / 64)) >> 3;
-            pd->totalDist = args[2] * (ANG90 / 64);
+            pd->speed = (speed * pd->direction * (ANG90 / 64)) >> 3;
+            pd->totalDist = angle * (ANG90 / 64);
             pd->dist = pd->totalDist;
-            SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE +
-                             poly->seqType);
+            SN_StartSequence((mobj_t *) & poly->startSpot, SEQ_DOOR_STONE + poly->seqType);
         }
         polyNum = mirror;
     }
     return true;
+}
+
+dboolean EV_OpenPolyDoor(line_t * line, byte * args, podoortype_t type)
+{
+    return EV_OpenZDoomPolyDoor(line, args[0], args[1], args[2], args[3], args[4], type);
 }
 
 static polyobj_t *GetPolyobj(int polyNum)

@@ -7164,11 +7164,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       break;
     case zl_polyobj_door_swing:
       buttonSuccess = EV_OpenZDoomPolyDoor(line, args[0], args[1],
-                                           args[2], args[3], PODOOR_SWING);
+                                           args[2], args[3], args[4], PODOOR_SWING);
       break;
     case zl_polyobj_door_slide:
       buttonSuccess = EV_OpenZDoomPolyDoor(line, args[0], args[1],
-                                           args[2], args[3], PODOOR_SLIDE);
+                                           args[2], args[3], args[4], PODOOR_SLIDE);
       break;
     case zl_polyobj_move_to:
       buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
