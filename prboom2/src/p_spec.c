@@ -7672,17 +7672,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       {
         if (args[0] < 0)
         {
-          // TODO: negative damage heals
-          // if (it->player)
-          // {
-          //   P_GiveBody (it, -arg0);
-          // }
-          // else
-          // {
-          //   it->health -= arg0;
-          //   if (it->SpawnHealth() < it->health)
-          //     it->health = it->SpawnHealth();
-          // }
+          P_HealMobj(mo, -args[0]);
         }
         else
         {
@@ -7707,19 +7697,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
             }
             else
             {
-              // TODO: negative damage heals
-              // if (actor->health < actor->SpawnHealth())
-              // {
-              //   actor->health -= amount;
-              //   if (actor->health > actor->SpawnHealth())
-              //   {
-              //     actor->health = actor->SpawnHealth();
-              //   }
-              //   if (actor->player != NULL)
-              //   {
-              //     actor->player->health = actor->health;
-              //   }
-              // }
+              P_HealMobj(mo, -args[1]);
             }
           }
         }
