@@ -130,6 +130,30 @@ char* dsda_NewDemoName(void) {
   return dsda_GenerateDemoName(&counter, dsda_demo_name_base);
 }
 
+static dboolean dsda_UseFailedDemoName(void) {
+  return dsda_IntConfig(dsda_config_clean_up_failed_demos) &&
+         !dsda_ILComplete() && !dsda_MovieComplete();
+}
+
+char* dsda_FailedDemoName(void) {
+  static unsigned int counter = 0;
+  char* demo_name;
+  size_t demo_name_size;
+
+  if (!dsda_demo_name_base)
+    dsda_SetDemoBaseName("null");
+
+  ++counter;
+  if (counter > dsda_IntConfig(dsda_config_failed_demo_limit))
+    counter = 1;
+
+  demo_name_size = strlen(dsda_demo_name_base) + 16;
+  demo_name = Z_Malloc(demo_name_size);
+  snprintf(demo_name, demo_name_size, "%s-fail-%d.lmp", dsda_demo_name_base, counter);
+
+  return demo_name;
+}
+
 static int dsda_DemoBufferOffset(void) {
   return dsda_demo_write_buffer_p - dsda_demo_write_buffer;
 }
@@ -467,7 +491,9 @@ void dsda_EndDemoRecording(void) {
 
   demorecording = false;
 
-  if (dsda_UseDemoNameWithTime())
+  if (dsda_UseFailedDemoName())
+    demo_name = dsda_FailedDemoName();
+  else if (dsda_UseDemoNameWithTime())
     demo_name = dsda_DemoNameWithTime();
   else
     demo_name = dsda_NewDemoName();

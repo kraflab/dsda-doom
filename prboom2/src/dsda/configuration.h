@@ -61,6 +61,8 @@ typedef enum {
   dsda_config_mute_sfx,
   dsda_config_mute_music,
   dsda_config_cheat_codes,
+  dsda_config_clean_up_failed_demos,
+  dsda_config_failed_demo_limit,
   dsda_config_script_0,
   dsda_config_script_1,
   dsda_config_script_2,

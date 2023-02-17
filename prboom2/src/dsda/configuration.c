@@ -361,6 +361,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_cheat_codes", dsda_config_cheat_codes,
     CONF_BOOL(1)
   },
+  [dsda_config_clean_up_failed_demos] = {
+    "dsda_clean_up_failed_demos", dsda_config_clean_up_failed_demos,
+    CONF_BOOL(0)
+  },
+  [dsda_config_failed_demo_limit] = {
+    "dsda_failed_demo_limit", dsda_config_failed_demo_limit,
+    dsda_config_int, 5, 100, { 10 }
+  },
   [dsda_config_script_0] = {
     "dsda_script_0", dsda_config_script_0,
     CONF_STRING("")
