@@ -3544,53 +3544,6 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         sectors[*id_p].ceilinglightsec = sec;
       break;
 
-    // [Graf Zahl] Add support for setting lighting
-    // per wall independently
-    case zl_transfer_wall_light:
-      // new DWallLightTransfer (lines[i].frontsector, lines[i].special_args[0], lines[i].special_args[1]);
-      break;
-
-    case zl_sector_attach_3d_midtex:
-      // P_Attach3dMidtexLinesToSector(lines[i].frontsector, lines[i].special_args[0], lines[i].special_args[1], !!lines[i].special_args[2]);
-      break;
-
-    case zl_sector_set_link:
-      // if (lines[i].special_args[0] == 0)
-      // {
-      //   P_AddSectorLinks(lines[i].frontsector, lines[i].special_args[1], lines[i].special_args[2], lines[i].special_args[3]);
-      // }
-      break;
-
-    case zl_sector_set_portal:
-      // arg 0 = sector tag
-      // arg 1 = type
-      //  - 0: normal (handled here)
-      //  - 1: copy (handled by the portal they copy)
-      //  - 2: EE-style skybox (handled by the camera object)
-      //  - 3: EE-style flat portal (GZDoom HW renderer only for now)
-      //  - 4: EE-style horizon portal (GZDoom HW renderer only for now)
-      //  - 5: copy portal to line (GZDoom HW renderer only for now)
-      //  - 6: linked portal
-      //  other values reserved for later use
-      // arg 2 = 0:floor, 1:ceiling, 2:both
-      // arg 3 = 0: anchor, 1: reference line
-      // arg 4 = for the anchor only: alpha
-      // if ((lines[i].special_args[1] == 0 || lines[i].special_args[1] == 6) && lines[i].special_args[3] == 0)
-      // {
-      //   P_SpawnPortal(&lines[i], lines[i].special_args[0], lines[i].special_args[2], lines[i].special_args[4], lines[i].special_args[1]);
-      // }
-      // else if (lines[i].special_args[1] == 3 || lines[i].special_args[1] == 4)
-      // {
-      //   line_t *line = &lines[i];
-      //   unsigned pnum = P_GetPortal(line->special_args[1] == 3 ? PORTS_PLANE : PORTS_HORIZON, line->special_args[2], line->frontsector, NULL, { 0,0 });
-      //   CopyPortal(line->special_args[0], line->special_args[2], pnum, 0, true);
-      // }
-      break;
-
-    case zl_line_set_portal:
-      // P_SpawnLinePortal(&lines[i]);
-      break;
-
     // [RH] ZDoom Static_Init settings
     case zl_static_init:
       switch (l->special_args[1])
@@ -3635,11 +3588,6 @@ void P_SpawnZDoomExtra(line_t *l, int i)
           }
         }
         break;
-
-        case zi_init_sector_link:
-          // if (lines[i].special_args[3] == 0)
-          //   P_AddSectorLinksByID(lines[i].frontsector, lines[i].special_args[0], lines[i].special_args[2]);
-          break;
 
         // killough 10/98:
         //
