@@ -591,8 +591,6 @@ static void AM_addMark(void)
 static void AM_findMinMaxBoundaries(void)
 {
   int i;
-  fixed_t a;
-  fixed_t b;
 
   min_x = min_y =  INT_MAX;
   max_x = max_y = -INT_MAX;
@@ -679,21 +677,20 @@ static void AM_changeWindowLoc(void)
 //
 void AM_SetScale(void)
 {
-  static int lastlevel = -1, lastepisode = -1;
-  fixed_t a, b;
+  AM_findMinMaxBoundaries();
 
-  if (lastlevel != gamemap || lastepisode != gameepisode)
   {
-    AM_findMinMaxBoundaries();
-    lastlevel = gamemap;
-    lastepisode = gameepisode;
+    fixed_t a, b;
+    fixed_t scale_w, scale_h;
+
+    scale_w = SCREENWIDTH << FRACBITS;
+    scale_h = (SCREENHEIGHT - ST_SCALED_HEIGHT) << FRACBITS;
+
+    a = FixedDiv(scale_w, max_w);
+    b = FixedDiv(scale_h, max_h);
+    min_scale_mtof = a < b ? a : b;
+    max_scale_mtof = FixedDiv(scale_h, 2 * PLAYERRADIUS);
   }
-
-  a = FixedDiv(f_w<<FRACBITS, max_w);
-  b = FixedDiv(f_h<<FRACBITS, max_h);
-
-  min_scale_mtof = a < b ? a : b;
-  max_scale_mtof = FixedDiv(f_h<<FRACBITS, 2*PLAYERRADIUS);
 
   scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7*FRACUNIT));
   if (scale_mtof > max_scale_mtof)
@@ -827,6 +824,8 @@ void AM_Stop (void)
 //
 void AM_Start(dboolean full_automap)
 {
+  static int lastlevel = -1, lastepisode = -1;
+
   AM_InitParams();
 
   if (!stopped)
@@ -836,7 +835,14 @@ void AM_Start(dboolean full_automap)
   automap_active = full_automap;
 
   AM_SetPosition();
-  AM_SetScale();
+
+  if (lastlevel != gamemap || lastepisode != gameepisode)
+  {
+    AM_SetScale();
+    lastlevel = gamemap;
+    lastepisode = gameepisode;
+  }
+
   AM_initVariables();
 }
 
