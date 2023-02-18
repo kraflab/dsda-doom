@@ -776,22 +776,6 @@ void AM_SetResolution(void)
 }
 
 //
-// AM_loadPics()
-//
-static void AM_loadPics(void)
-{
-  // cph - mark numbers no longer needed cached
-}
-
-//
-// AM_unloadPics()
-//
-static void AM_unloadPics(void)
-{
-  // cph - mark numbers no longer needed cached
-}
-
-//
 // AM_clearMarks()
 //
 // Sets the number of marks to 0, thereby clearing them from the display
@@ -840,7 +824,6 @@ static void AM_LevelInit(void)
 //
 void AM_Stop (void)
 {
-  AM_unloadPics();
   automap_active = false;
   stopped = true;
 }
@@ -872,7 +855,6 @@ void AM_Start(void)
   }
   AM_SetPosition();
   AM_initVariables();
-  AM_loadPics();
 }
 
 //
