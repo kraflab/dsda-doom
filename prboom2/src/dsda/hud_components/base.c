@@ -22,11 +22,9 @@
 static char digit_lump[9];
 static const char* digit_lump_format;
 
-void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
-  int x, y, vpt_align;
-
-  x = 0;
-  y = 0;
+int dsda_HudComponentY(int y_offset, int vpt) {
+  int y = 0;
+  int vpt_align;
 
   vpt_align = vpt & VPT_ALIGN_MASK;
   if (
@@ -41,8 +39,14 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
       y -= g_st_height;
   }
 
-  x += x_offset;
-  y += y_offset;
+  return y + y_offset;
+}
+
+void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
+  int x, y;
+
+  x = x_offset;
+  y = dsda_HudComponentY(y_offset, vpt);
 
   HUlib_initTextLine(
     &component->text,
@@ -57,26 +61,10 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
 }
 
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt) {
-  int x, y, vpt_align;
+  int x, y;
 
-  x = 0;
-  y = 0;
-
-  vpt_align = vpt & VPT_ALIGN_MASK;
-  if (
-    vpt_align == VPT_ALIGN_BOTTOM ||
-    vpt_align == VPT_ALIGN_LEFT_BOTTOM ||
-    vpt_align == VPT_ALIGN_RIGHT_BOTTOM
-  ) {
-    y = 200;
-    y_offset = -y_offset;
-
-    if (R_PartialView())
-      y -= g_st_height;
-  }
-
-  x += x_offset;
-  y += y_offset;
+  x = x_offset;
+  y = dsda_HudComponentY(y_offset, vpt);
 
   component->x = x;
   component->y = y;
