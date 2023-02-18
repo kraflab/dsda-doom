@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "am_map.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "hu_lib.h"

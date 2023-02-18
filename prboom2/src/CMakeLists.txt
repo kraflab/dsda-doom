@@ -98,6 +98,8 @@ set(COMMON_SRC
     dsda/hud_components/line_tracker.h
     dsda/hud_components/local_time.c
     dsda/hud_components/local_time.h
+    dsda/hud_components/minimap.c
+    dsda/hud_components/minimap.h
     dsda/hud_components/mobj_tracker.c
     dsda/hud_components/mobj_tracker.h
     dsda/hud_components/null.c

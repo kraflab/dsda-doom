@@ -74,6 +74,7 @@ typedef enum {
   exhud_command_display,
   exhud_event_split,
   exhud_level_splits,
+  exhud_minimap,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -243,6 +244,12 @@ exhud_component_t components[exhud_component_count] = {
     "level_splits",
     .intermission = true,
     .not_level = true,
+  },
+  [exhud_minimap] = {
+    dsda_InitMinimapHC,
+    dsda_UpdateMinimapHC,
+    dsda_DrawMinimapHC,
+    "minimap",
   },
 };
 
