@@ -55,6 +55,7 @@ typedef enum {
   dsda_config_show_messages,
   dsda_config_command_display,
   dsda_config_coordinate_display,
+  dsda_config_show_minimap,
   dsda_config_show_fps,
   dsda_config_show_level_splits,
   dsda_config_exhud,

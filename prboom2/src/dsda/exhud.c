@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 
+#include "am_map.h"
 #include "doomstat.h"
 #include "hu_stuff.h"
 #include "lprintf.h"
@@ -250,6 +251,7 @@ exhud_component_t components[exhud_component_count] = {
     dsda_UpdateMinimapHC,
     dsda_DrawMinimapHC,
     "minimap",
+    .off_by_default = true,
   },
 };
 
@@ -414,6 +416,7 @@ void dsda_InitExHud(void) {
     dsda_TurnComponentOn(exhud_render_stats);
 
   dsda_RefreshExHudFPS();
+  dsda_RefreshExHudMinimap();
   dsda_RefreshExHudLevelSplits();
   dsda_RefreshExHudCoordinateDisplay();
   dsda_RefreshExHudCommandDisplay();
@@ -477,6 +480,16 @@ void dsda_RefreshExHudFPS(void) {
     dsda_TurnComponentOn(exhud_fps);
   else
     dsda_TurnComponentOff(exhud_fps);
+}
+
+void dsda_RefreshExHudMinimap(void) {
+  if (dsda_ShowMinimap()) {
+    dsda_TurnComponentOn(exhud_minimap);
+    if (in_game && gamestate == GS_LEVEL)
+      AM_Start(false);
+  }
+  else
+    dsda_TurnComponentOff(exhud_minimap);
 }
 
 void dsda_RefreshExHudLevelSplits(void) {

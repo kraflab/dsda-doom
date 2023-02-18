@@ -204,6 +204,10 @@ dboolean dsda_ShowFPS(void) {
   return dsda_IntConfig(dsda_config_show_fps);
 }
 
+dboolean dsda_ShowMinimap(void) {
+  return dsda_IntConfig(dsda_config_show_minimap);
+}
+
 dboolean dsda_ShowLevelSplits(void) {
   return dsda_IntConfig(dsda_config_show_level_splits);
 }

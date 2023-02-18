@@ -891,7 +891,9 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map))
   {
     bigstate = 0;
-    AM_Stop ();
+    AM_Stop();
+    if (dsda_ShowMinimap())
+      AM_Start(false);
 
     return true;
   }

@@ -94,6 +94,7 @@ void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void dsda_RefreshExHudFPS(void);
+void dsda_RefreshExHudMinimap(void);
 void dsda_RefreshExHudLevelSplits(void);
 void dsda_RefreshExHudCoordinateDisplay(void);
 void dsda_RefreshExHudCommandDisplay(void);
@@ -340,6 +341,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_show_fps] = {
     "dsda_show_fps", dsda_config_show_fps,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshExHudFPS
+  },
+  [dsda_config_show_minimap] = {
+    "dsda_show_minimap", dsda_config_show_minimap,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshExHudMinimap
   },
   [dsda_config_show_level_splits] = {
     "dsda_show_level_splits", dsda_config_show_level_splits,
