@@ -703,16 +703,25 @@ void AM_SetScale(void)
 //
 void AM_SetPosition(void)
 {
-  f_x = f_y = 0;
-  f_w = SCREENWIDTH;
+  if (automap_active)
+  {
+    f_x = f_y = 0;
+    f_w = SCREENWIDTH;
 
-  if (automap_overlay)
-  {
-    f_h = viewheight;
+    if (automap_overlay)
+    {
+      f_h = viewheight;
+    }
+    else
+    {
+      f_h = SCREENHEIGHT - ST_SCALED_HEIGHT;
+    }
   }
-  else
+  else if (dsda_ShowMinimap())
   {
-    f_h = SCREENHEIGHT - ST_SCALED_HEIGHT;// to allow runtime setting of width/height
+    void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h);
+
+    dsda_CopyMinimapCoordinates(&f_x, &f_y, &f_w, &f_h);
   }
 }
 
