@@ -466,10 +466,7 @@ void D_Display (fixed_t frac)
     R_RestoreInterpolations();
 
     DSDA_ADD_CONTEXT(sf_status_bar);
-    ST_Drawer(
-        (R_PartialView() || automap_on),
-        redrawborderstuff || BorderNeedRefresh,
-        (menuactive == mnact_full));
+    ST_Drawer(redrawborderstuff || BorderNeedRefresh);
     DSDA_REMOVE_CONTEXT(sf_status_bar);
 
     BorderNeedRefresh = false;

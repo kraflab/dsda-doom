@@ -876,8 +876,11 @@ void ST_SetResolution(void)
   R_FillBackScreen();
 }
 
-void ST_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
+void ST_Drawer(dboolean refresh)
 {
+  dboolean statusbaron = R_StatusBarVisible();
+  dboolean fullmenu = (menuactive == mnact_full);
+
   V_BeginUIDraw();
 
   if (raven)
