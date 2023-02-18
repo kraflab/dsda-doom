@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_LEVEL_SPLITS__
 #define __DSDA_HUD_COMPONENT_LEVEL_SPLITS__
 
-void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt_flags, int* args);
 void dsda_UpdateLevelSplitsHC(void);
 void dsda_DrawLevelSplitsHC(void);
 

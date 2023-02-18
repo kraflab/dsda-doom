@@ -115,7 +115,7 @@ void dsda_InitCommandHistory(void) {
   command_history[MAX_HISTORY - 1].next = &command_history[0];
 }
 
-void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt, int* args) {
   int i;
 
   for (i = 0; i < MAX_HISTORY; ++i) {

@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_EVENT_SPLIT__
 #define __DSDA_HUD_COMPONENT_EVENT_SPLIT__
 
-void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt_flags, int* args);
 void dsda_UpdateEventSplitHC(void);
 void dsda_DrawEventSplitHC(void);
 

@@ -32,7 +32,7 @@ extern dsda_tracker_t dsda_tracker[TRACKER_LIMIT];
 
 dsda_text_t component[TRACKER_LIMIT];
 
-void dsda_InitTrackerHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitTrackerHC(int x_offset, int y_offset, int vpt, int* args) {
   int i;
 
   for (i = 0; i < TRACKER_LIMIT; ++i)

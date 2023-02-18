@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_ARMOR_TEXT__
 #define __DSDA_HUD_COMPONENT_ARMOR_TEXT__
 
-void dsda_InitArmorTextHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_InitArmorTextHC(int x_offset, int y_offset, int vpt_flags, int* args);
 void dsda_UpdateArmorTextHC(void);
 void dsda_DrawArmorTextHC(void);
 

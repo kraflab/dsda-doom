@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_BIG_ARMOR__
 #define __DSDA_HUD_COMPONENT_BIG_ARMOR__
 
-void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt_flags, int* args);
 void dsda_UpdateBigArmorHC(void);
 void dsda_DrawBigArmorHC(void);
 

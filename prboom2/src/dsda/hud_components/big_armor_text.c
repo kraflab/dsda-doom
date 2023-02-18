@@ -47,7 +47,7 @@ static void dsda_DrawComponent(void) {
                      cm, component.vpt, 3, armor);
 }
 
-void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt, int* args) {
   if (heretic)
     patch_delta_x = 10;
   else if (hexen)

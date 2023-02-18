@@ -122,7 +122,7 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
   dsda_RefreshHudText(&total_component);
 }
 
-void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt, int* args) {
   dsda_InitTextHC(&time_component, x_offset, y_offset, vpt);
   dsda_InitTextHC(&total_component, x_offset, y_offset + 8, vpt);
 }

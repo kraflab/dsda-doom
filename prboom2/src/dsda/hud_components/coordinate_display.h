@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_COORDINATE_DISPLAY__
 #define __DSDA_HUD_COMPONENT_COORDINATE_DISPLAY__
 
-void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt_flags, int* args);
 void dsda_UpdateCoordinateDisplayHC(void);
 void dsda_DrawCoordinateDisplayHC(void);
 

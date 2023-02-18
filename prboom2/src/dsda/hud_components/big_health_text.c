@@ -37,7 +37,7 @@ static void dsda_DrawComponent(void) {
                      cm, component.vpt, 3, player->health);
 }
 
-void dsda_InitBigHealthTextHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitBigHealthTextHC(int x_offset, int y_offset, int vpt, int* args) {
   if (heretic)
     patch_delta_x = 10;
   else if (hexen)

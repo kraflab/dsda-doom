@@ -35,7 +35,7 @@
 #include "exhud.h"
 
 typedef struct {
-  void (*init)(int x_offset, int y_offset, int vpt_flags);
+  void (*init)(int x_offset, int y_offset, int vpt_flags, int* args);
   void (*update)(void);
   void (*draw)(void);
   const char* name;
@@ -263,9 +263,9 @@ static void dsda_TurnComponentOff(int id) {
   components[id].on = false;
 }
 
-static void dsda_InitializeComponent(int id, int x, int y, int vpt) {
+static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args) {
   components[id].initialized = true;
-  components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT);
+  components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT, args);
 
   if (components[id].off_by_default)
     dsda_TurnComponentOff(id);
@@ -366,12 +366,14 @@ void dsda_InitExHud(void) {
       for (i = 0; i < exhud_component_count; ++i)
         if (!strncmp(command, components[i].name, sizeof(command))) {
           int x, y, vpt;
+          int component_args[2] = { 0 };
           char alignment[16];
 
           found = true;
 
-          count = sscanf(args, "%d %d %15s", &x, &y, alignment);
-          if (count != 3)
+          count = sscanf(args, "%d %d %15s %d %d", &x, &y, alignment,
+                         &component_args[0], &component_args[1]);
+          if (count < 3)
             I_Error("Invalid hud component args \"%s\"", line);
 
           if (!strncmp(alignment, "bottom_left", sizeof(alignment)))
@@ -393,7 +395,7 @@ void dsda_InitExHud(void) {
           else
             I_Error("Invalid hud component alignment \"%s\"", line);
 
-          dsda_InitializeComponent(i, x, y, vpt);
+          dsda_InitializeComponent(i, x, y, vpt, component_args);
         }
 
       if (!found)

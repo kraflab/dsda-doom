@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_SPEED_TEXT__
 #define __DSDA_HUD_COMPONENT_SPEED_TEXT__
 
-void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt_flags, int* args);
 void dsda_UpdateSpeedTextHC(void);
 void dsda_DrawSpeedTextHC(void);
 

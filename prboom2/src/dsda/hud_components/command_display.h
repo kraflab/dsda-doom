@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_COMMAND_DISPLAY__
 #define __DSDA_HUD_COMPONENT_COMMAND_DISPLAY__
 
-void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt_flags);
+void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt_flags, int* args);
 void dsda_UpdateCommandDisplayHC(void);
 void dsda_DrawCommandDisplayHC(void);
 

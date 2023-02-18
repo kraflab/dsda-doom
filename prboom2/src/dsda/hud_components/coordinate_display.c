@@ -153,7 +153,7 @@ static void dsda_WriteDistance(dsda_text_t* text) {
   dsda_RefreshHudText(text);
 }
 
-void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt, int* args) {
   dsda_coordinate_color = HUlib_Color(CR_GREEN);
 
   dsda_InitTextHC(&dsda_x_display, x_offset, y_offset, vpt);

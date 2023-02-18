@@ -81,7 +81,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   );
 }
 
-void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args) {
   int i;
 
   if (heretic)
