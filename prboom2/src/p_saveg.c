@@ -383,7 +383,7 @@ void P_UnArchiveMap(void)
   P_LOAD_X(automap_active);
 
   if (automap_active)
-    AM_Start();
+    AM_Start(true);
 
   P_LOAD_X(markpointnum);
 

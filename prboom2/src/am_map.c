@@ -743,8 +743,6 @@ static void AM_initVariables(void)
     player_arrow = doom_player_arrow;
   }
 
-  automap_active = true;
-
   m_paninc.x = m_paninc.y = 0;
   ftom_zoommul = FRACUNIT;
   mtof_zoommul = FRACUNIT;
@@ -827,13 +825,16 @@ void AM_Stop (void)
 //
 // Passed nothing, returns nothing
 //
-void AM_Start(void)
+void AM_Start(dboolean full_automap)
 {
   AM_InitParams();
 
   if (!stopped)
     AM_Stop();
   stopped = false;
+
+  automap_active = full_automap;
+
   AM_SetPosition();
   AM_SetScale();
   AM_initVariables();
@@ -883,7 +884,7 @@ dboolean AM_Responder
   {
     if (dsda_InputActivated(dsda_input_map))
     {
-      AM_Start ();
+      AM_Start(true);
       return true;
     }
   }
@@ -2482,9 +2483,9 @@ static void AM_setFrameVariables(void)
 // Passed nothing, returns nothing
 //
 
-void AM_Drawer (void)
+void AM_Drawer (dboolean minimap)
 {
-  if (!automap_active)
+  if (!automap_active && !minimap)
     return;
 
   V_BeginAutomapDraw();

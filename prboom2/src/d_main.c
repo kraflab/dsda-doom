@@ -460,7 +460,7 @@ void D_Display (fixed_t frac)
 
     if (automap_active)
     {
-      AM_Drawer();
+      AM_Drawer(false);
     }
 
     R_RestoreInterpolations();
