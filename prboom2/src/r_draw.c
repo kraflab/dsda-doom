@@ -144,6 +144,11 @@ dboolean R_PartialView(void)
   return viewheight != SCREENHEIGHT;
 }
 
+dboolean R_StatusBarVisible(void)
+{
+  return R_PartialView() || automap_on;
+}
+
 //
 // Error functions that will abort if R_FlushColumns tries to flush
 // columns without a column type.
@@ -563,7 +568,7 @@ void R_DrawViewBorder(void)
   }
 
   // e6y: wide-res
-  if ((ratio_multiplier != ratio_scale || wide_offsety) && (R_PartialView() || automap_on))
+  if ((ratio_multiplier != ratio_scale || wide_offsety) && R_StatusBarVisible())
   {
     for (i = SCREENHEIGHT - ST_SCALED_HEIGHT; i < SCREENHEIGHT; i++)
     {

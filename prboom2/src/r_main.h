@@ -148,6 +148,7 @@ void R_SetViewSize(void);              // Called by M_Responder.
 void R_ExecuteSetViewSize(void);             // cph - called by D_Display to complete a view resize
 dboolean R_FullView(void);
 dboolean R_PartialView(void);
+dboolean R_StatusBarVisible(void);
 
 #define Pi 3.14159265358979323846f
 #define DEG2RAD(a) ((a * Pi) / 180.0f)
