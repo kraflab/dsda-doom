@@ -913,33 +913,6 @@ void DrawArtifact(int x, int y, int vpt)
   }
 }
 
-//--------------------------------------------------------------------------
-//
-// FUNC SB_Responder
-//
-//--------------------------------------------------------------------------
-
-dboolean SB_Responder(event_t * ev)
-{
-  // Note to self: doom logic
-  // // Filter automap on/off.
-  // if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
-  //   {
-  //     switch(ev->data1)
-  //       {
-  //       case AM_MSGENTERED:
-  //         st_gamestate = AutomapState;
-  //         st_firsttime = true;
-  //         break;
-  //
-  //       case AM_MSGEXITED:
-  //         st_gamestate = FirstPersonState;
-  //         break;
-  //       }
-  //   }
-  return M_CheatResponder(ev);
-}
-
 // hexen
 
 static void Hexen_SB_Init(void)

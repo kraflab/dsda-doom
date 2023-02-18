@@ -58,11 +58,6 @@ extern array_t map_lines;
 #define MAPBITS 12
 #define FRACTOMAPBITS (FRACBITS-MAPBITS)
 
-// Used by ST StatusBar stuff.
-#define AM_MSGHEADER (('a'<<24)+('m'<<16))
-#define AM_MSGENTERED (AM_MSGHEADER | ('e'<<8))
-#define AM_MSGEXITED (AM_MSGHEADER | ('x'<<8))
-
 // Called by main loop.
 dboolean AM_Responder (event_t* ev);
 

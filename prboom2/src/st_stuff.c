@@ -270,9 +270,6 @@ static unsigned int st_clock;
 // used for making messages go away
 static int st_msgcounter=0;
 
-// whether in automap or first-person
-static st_stateenum_t st_gamestate;
-
 // whether left-side main status bar is active
 static dboolean st_statusbaron;
 
@@ -432,24 +429,6 @@ static void ST_refreshBackground(void)
 //  intercept cheats.
 dboolean ST_Responder(event_t *ev)
 {
-  if (raven) return SB_Responder(ev);
-
-  // Filter automap on/off.
-  if (ev->type == ev_keyup && (ev->data1.i & 0xffff0000) == AM_MSGHEADER)
-    {
-      switch(ev->data1.i)
-        {
-        case AM_MSGENTERED:
-          st_gamestate = AutomapState;
-          st_firsttime = true;
-          break;
-
-        case AM_MSGEXITED:
-          st_gamestate = FirstPersonState;
-          break;
-        }
-    }
-
   return M_CheatResponder(ev);
 }
 
@@ -876,6 +855,11 @@ void ST_SetResolution(void)
   R_FillBackScreen();
 }
 
+void ST_Refresh(void)
+{
+  st_firsttime = true;
+}
+
 void ST_Drawer(dboolean refresh)
 {
   dboolean statusbaron = R_StatusBarVisible();
@@ -1023,7 +1007,6 @@ static void ST_initData(void)
   plyr = &players[displayplayer];            // killough 3/7/98
 
   st_clock = 0;
-  st_gamestate = FirstPersonState;
 
   st_statusbaron = true;
 

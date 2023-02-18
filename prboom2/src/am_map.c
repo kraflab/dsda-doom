@@ -724,7 +724,6 @@ void AM_SetPosition(void)
 static void AM_initVariables(void)
 {
   int pnum;
-  static event_t st_notify = { ev_keyup, { AM_MSGENTERED } };
 
   if (hexen)
   {
@@ -767,7 +766,7 @@ static void AM_initVariables(void)
   old_m_h = m_h;
 
   // inform the status bar of the change
-  D_PostEvent(&st_notify);
+  ST_Refresh();
 }
 
 void AM_SetResolution(void)
@@ -841,11 +840,8 @@ static void AM_LevelInit(void)
 //
 void AM_Stop (void)
 {
-  static event_t st_notify = { ev_keyup, { AM_MSGEXITED } };
-
   AM_unloadPics();
   automap_active = false;
-  D_PostEvent(&st_notify);
   stopped = true;
 }
 
@@ -1067,7 +1063,6 @@ dboolean AM_Responder
     dsda_ToggleConfig(dsda_config_automap_overlay, true);
     AM_SetPosition();
     AM_activateNewScale();
-    plr->message = automap_overlay ? s_AMSTR_OVERLAYON : s_AMSTR_OVERLAYOFF;
 
     return true;
   }
