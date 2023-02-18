@@ -379,8 +379,6 @@ mline_t thintriangle_guy[] =
 #undef R
 #define NUMTHINTRIANGLEGUYLINES (sizeof(thintriangle_guy)/sizeof(mline_t))
 
-static int leveljuststarted = 1;       // kluge until AM_LevelInit() is called
-
 int automap_active;
 int automap_overlay;
 int automap_rotate;
@@ -614,12 +612,6 @@ static void AM_findMinMaxBoundaries(void)
 
   max_w = (max_x >>= FRACTOMAPBITS) - (min_x >>= FRACTOMAPBITS);//e6y
   max_h = (max_y >>= FRACTOMAPBITS) - (min_y >>= FRACTOMAPBITS);//e6y
-
-  a = FixedDiv(f_w<<FRACBITS, max_w);
-  b = FixedDiv(f_h<<FRACBITS, max_h);
-
-  min_scale_mtof = a < b ? a : b;
-  max_scale_mtof = FixedDiv(f_h<<FRACBITS, 2*PLAYERRADIUS);
 }
 
 void AM_SetMapCenter(fixed_t x, fixed_t y)
@@ -687,7 +679,22 @@ static void AM_changeWindowLoc(void)
 //
 void AM_SetScale(void)
 {
-  AM_findMinMaxBoundaries();
+  static int lastlevel = -1, lastepisode = -1;
+  fixed_t a, b;
+
+  if (lastlevel != gamemap || lastepisode != gameepisode)
+  {
+    AM_findMinMaxBoundaries();
+    lastlevel = gamemap;
+    lastepisode = gameepisode;
+  }
+
+  a = FixedDiv(f_w<<FRACBITS, max_w);
+  b = FixedDiv(f_h<<FRACBITS, max_h);
+
+  min_scale_mtof = a < b ? a : b;
+  max_scale_mtof = FixedDiv(f_h<<FRACBITS, 2*PLAYERRADIUS);
+
   scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7*FRACUNIT));
   if (scale_mtof > max_scale_mtof)
     scale_mtof = min_scale_mtof;
@@ -798,24 +805,6 @@ void AM_InitParams(void)
 }
 
 //
-// AM_LevelInit()
-//
-// Initialize the automap at the start of a new level
-// should be called at the start of every level
-//
-// Passed nothing, returns nothing
-// Affects automap's global variables
-//
-// CPhipps - get status bar height from status bar code
-static void AM_LevelInit(void)
-{
-  leveljuststarted = 0;
-
-  AM_SetPosition();
-  AM_SetScale();
-}
-
-//
 // AM_Stop()
 //
 // Cease automap operations, unload patches, notify status bar
@@ -840,20 +829,13 @@ void AM_Stop (void)
 //
 void AM_Start(void)
 {
-  static int lastlevel = -1, lastepisode = -1;
-
   AM_InitParams();
 
   if (!stopped)
     AM_Stop();
   stopped = false;
-  if (lastlevel != gamemap || lastepisode != gameepisode)
-  {
-    AM_LevelInit();
-    lastlevel = gamemap;
-    lastepisode = gameepisode;
-  }
   AM_SetPosition();
+  AM_SetScale();
   AM_initVariables();
 }
 
