@@ -919,7 +919,7 @@ dboolean AM_Responder
 {
   static int bigstate=0;
 
-  if (!automap_active)
+  if (!automap_input)
   {
     if (dsda_InputActivated(dsda_input_map))
     {

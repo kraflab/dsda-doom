@@ -599,7 +599,7 @@ static void cheat_ddt()
 {
   extern int dsda_reveal_map;
 
-  if (automap_active)
+  if (automap_input)
   {
     dsda_TrackFeature(uf_iddt);
 
@@ -611,7 +611,7 @@ static void cheat_reveal_secret()
 {
   static int last_secret = -1;
 
-  if (automap_active)
+  if (automap_input)
   {
     int i, start_i;
 
@@ -687,7 +687,7 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
 static void cheat_reveal_kill()
 {
-  if (automap_active)
+  if (automap_input)
   {
     static int last_count;
     static mobj_t *last_mobj;
@@ -700,7 +700,7 @@ static void cheat_reveal_kill()
 
 static void cheat_reveal_item()
 {
-  if (automap_active)
+  if (automap_input)
   {
     static int last_count;
     static mobj_t *last_mobj;

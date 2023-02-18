@@ -205,7 +205,9 @@ extern int automap_follow;
 extern int automap_grid;
 
 #define automap_on (automap_active && !automap_overlay)
-#define automap_off (!automap_active || automap_overlay)
+#define automap_off (!automap_on)
+#define automap_input (automap_active)
+#define automap_hud (automap_active && !automap_overlay)
 
 typedef enum {
   mnact_nochange = -1,

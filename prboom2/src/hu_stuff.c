@@ -678,14 +678,10 @@ void HU_Drawer(void)
 
   plr = &players[displayplayer];         // killough 3/7/98
   // draw the automap widgets if automap is displayed
-  if (automap_active)
+  if (automap_hud)
   {
-    // Hide title if automap in overlay mode and adv / ex hud is active
-    if (!automap_overlay)
-    {
-      // map title
-      HUlib_drawTextLine(&w_title, false);
-    }
+    // map title
+    HUlib_drawTextLine(&w_title, false);
 
     //jff 2/16/98 output new coord display
     // x-coord
