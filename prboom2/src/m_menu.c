@@ -2683,11 +2683,12 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   { "Apply multisampling", S_YESNO, m_conf, AU_X, AU_Y + 6 * 8, dsda_config_map_use_multisamling },
   { "Enable textured display", S_YESNO, m_conf, AU_X, AU_Y + 7 * 8, dsda_config_map_textured },
   { "Things appearance", S_CHOICE, m_conf, AU_X, AU_Y + 8 * 8, dsda_config_map_things_appearance, 0, map_things_appearance_list },
+  { "Show Minimap", S_YESNO, m_conf, AU_X, AU_Y + 9 * 8, dsda_config_show_minimap },
 
-  { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X, AU_Y + 10 * 8 },
-  { "Textured automap", S_NUM, m_conf, AU_X, AU_Y + 11 * 8, dsda_config_map_textured_trans },
-  { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 12 * 8, dsda_config_map_textured_overlay_trans },
-  { "Lines in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 13 * 8, dsda_config_map_lines_overlay_trans },
+  { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X, AU_Y + 11 * 8 },
+  { "Textured automap", S_NUM, m_conf, AU_X, AU_Y + 12 * 8, dsda_config_map_textured_trans },
+  { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 13 * 8, dsda_config_map_textured_overlay_trans },
+  { "Lines in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 14 * 8, dsda_config_map_lines_overlay_trans },
 
   NEXT_PAGE(AU_NEXT, AU_Y + 20 * 8, auto_settings2),
   FINAL_ENTRY
