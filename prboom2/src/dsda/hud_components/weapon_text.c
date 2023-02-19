@@ -20,32 +20,58 @@
 #include "weapon_text.h"
 
 static dsda_text_t component;
+static dboolean grid;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player_t* player;
 
   player = &players[displayplayer];
 
-  snprintf(
-    str,
-    max_size,
-    "WPN \x1b%c%c\x1b%c %c %c %c %c %c %c %c %c",
-    player->powers[pw_strength] ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GREEN),
-    player->weaponowned[0] ? '1' : ' ',
-    HUlib_Color(CR_GREEN),
-    player->weaponowned[1] ? '2' : ' ',
-    player->weaponowned[2] ? '3' : ' ',
-    player->weaponowned[3] ? '4' : ' ',
-    player->weaponowned[4] ? '5' : ' ',
-    player->weaponowned[5] ? '6' : ' ',
-    player->weaponowned[6] ? '7' : ' ',
-    player->weaponowned[7] ? '8' : ' ',
-    player->weaponowned[8] ? '9' : ' '
-  );
+  if (grid)
+    snprintf(
+      str,
+      max_size,
+      "W \x1b%c%c\x1b%c %c %c\n"
+      "\x1b%cP\x1b%c %c %c %c\n"
+      "\x1b%cN\x1b%c %c %c %c",
+      player->powers[pw_strength] ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GREEN),
+      player->weaponowned[0] ? '1' : ' ',
+      HUlib_Color(CR_GREEN),
+      player->weaponowned[1] ? '2' : ' ',
+      player->weaponowned[2] ? '3' : ' ',
+      HUlib_Color(CR_WHITE),
+      HUlib_Color(CR_GREEN),
+      player->weaponowned[3] ? '4' : ' ',
+      player->weaponowned[4] ? '5' : ' ',
+      player->weaponowned[5] ? '6' : ' ',
+      HUlib_Color(CR_WHITE),
+      HUlib_Color(CR_GREEN),
+      player->weaponowned[6] ? '7' : ' ',
+      player->weaponowned[7] ? '8' : ' ',
+      player->weaponowned[8] ? '9' : ' '
+    );
+  else
+    snprintf(
+      str,
+      max_size,
+      "WPN \x1b%c%c\x1b%c %c %c %c %c %c %c %c %c",
+      player->powers[pw_strength] ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GREEN),
+      player->weaponowned[0] ? '1' : ' ',
+      HUlib_Color(CR_GREEN),
+      player->weaponowned[1] ? '2' : ' ',
+      player->weaponowned[2] ? '3' : ' ',
+      player->weaponowned[3] ? '4' : ' ',
+      player->weaponowned[4] ? '5' : ' ',
+      player->weaponowned[5] ? '6' : ' ',
+      player->weaponowned[6] ? '7' : ' ',
+      player->weaponowned[7] ? '8' : ' ',
+      player->weaponowned[8] ? '9' : ' '
+    );
 }
 
 void dsda_InitWeaponTextHC(int x_offset, int y_offset, int vpt, int* args) {
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+  grid = args[0];
 }
 
 void dsda_UpdateWeaponTextHC(void) {
