@@ -440,8 +440,6 @@ markpoint_t *markpoints = NULL;    // where the points are
 int markpointnum = 0; // next point to be assigned (also number of points now)
 int markpointnum_max = 0;       // killough 2/22/98
 
-static dboolean stopped = true;
-
 am_frame_t am_frame;
 
 array_t map_lines;
@@ -818,7 +816,6 @@ void AM_InitParams(void)
 void AM_Stop (void)
 {
   automap_active = false;
-  stopped = true;
 }
 
 //
@@ -836,10 +833,6 @@ void AM_Start(dboolean full_automap)
   static int lastlevel = -1, lastepisode = -1;
 
   AM_InitParams();
-
-  if (!stopped)
-    AM_Stop();
-  stopped = false;
 
   automap_active = full_automap;
 

@@ -2056,8 +2056,7 @@ void G_DoCompleted (void)
     if (playeringame[i])
       G_PlayerFinishLevel(i);        // take away cards and stuff
 
-  if (automap_active)
-    AM_Stop();
+  AM_Stop();
 
   e6y_G_DoCompleted();
   dsda_WatchLevelCompletion();
