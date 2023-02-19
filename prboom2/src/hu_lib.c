@@ -157,7 +157,10 @@ void HUlib_drawTextLine
     c = toupper(l->l[i]); //jff insure were not getting a cheap toupper conv.
 
     if (c=='\n')         // killough 1/18/98 -- support multiple lines
-      x=0,y+=8;
+    {
+      x = l->x;
+      y += 8;
+    }
     else if (c=='\t')    // killough 1/23/98 -- support tab stops
       x=x-x%80+80;
     else if (c=='\x1b')  //jff 2/17/98 escape code for color change
