@@ -23,65 +23,25 @@
 
 static dsda_text_t component;
 
+static dboolean include_kills, include_items, include_secrets;
+
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int i;
-  char allkills[STAT_STRING_SIZE], allsecrets[STAT_STRING_SIZE];
-  int playerscount;
+  size_t length;
   int fullkillcount, fullitemcount, fullsecretcount;
   int color, killcolor, itemcolor, secretcolor;
   int kill_percent_count;
-  int allkills_len, allsecrets_len;
   int max_kill_requirement;
 
-  playerscount = 0;
+  length = 0;
   fullkillcount = 0;
   fullitemcount = 0;
   fullsecretcount = 0;
   kill_percent_count = 0;
-  allkills_len = 0;
-  allsecrets_len = 0;
   max_kill_requirement = dsda_MaxKillRequirement();
 
   for (i = 0; i < g_maxplayers; ++i) {
     if (playeringame[i]) {
-      color = (i == displayplayer ? HUlib_Color(CR_GREEN) : HUlib_Color(CR_GRAY));
-
-      if (playerscount == 0) {
-        allkills_len = snprintf(
-                         allkills,
-                         STAT_STRING_SIZE,
-                         "\x1b%c%d",
-                         color,
-                         players[i].killcount - players[i].maxkilldiscount
-                       );
-        allsecrets_len = snprintf(
-                           allsecrets,
-                           STAT_STRING_SIZE,
-                           "\x1b%c%d",
-                           color,
-                           players[i].secretcount
-                         );
-      }
-      else {
-        if (allkills_len >= 0 && allsecrets_len >= 0) {
-          allkills_len += snprintf(
-                            &allkills[allkills_len],
-                            STAT_STRING_SIZE,
-                            "\x1b%c+%d",
-                            color,
-                            players[i].killcount - players[i].maxkilldiscount
-                          );
-          allsecrets_len += snprintf(
-                              &allsecrets[allsecrets_len],
-                              STAT_STRING_SIZE,
-                              "\x1b%c+%d",
-                              color,
-                              players[i].secretcount
-                            );
-        }
-      }
-
-      ++playerscount;
       fullkillcount += players[i].killcount - players[i].maxkilldiscount;
       fullitemcount += players[i].itemcount;
       fullsecretcount += players[i].secretcount;
@@ -98,35 +58,46 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   secretcolor = (fullsecretcount >= totalsecret ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
   itemcolor = (fullitemcount >= totalitems ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
 
-  if (playerscount < 2) {
-    snprintf(
+  if (include_kills) {
+    length += snprintf(
       str,
       max_size,
-      "\x1b%cK \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS \x1b%c%d/%d",
+      "\x1b%cK \x1b%c%d/%d ",
       HUlib_Color(CR_RED),
-      killcolor, fullkillcount, max_kill_requirement,
-      HUlib_Color(CR_RED),
-      itemcolor, players[displayplayer].itemcount, totalitems,
-      HUlib_Color(CR_RED),
-      secretcolor, fullsecretcount, totalsecret
+      killcolor, fullkillcount, max_kill_requirement
     );
   }
-  else {
+
+  if (include_items) {
+    length += snprintf(
+      str + length,
+      max_size - length,
+      "\x1b%cI \x1b%c%d/%d ",
+      HUlib_Color(CR_RED),
+      itemcolor, players[displayplayer].itemcount, totalitems
+    );
+  }
+
+  if (include_secrets) {
     snprintf(
-      str,
-      max_size,
-      "\x1b%cK %s \x1b%c%d/%d \x1b%cI \x1b%c%d/%d \x1b%cS %s \x1b%c%d/%d",
+      str + length,
+      max_size - length,
+      "\x1b%cS \x1b%c%d/%d ",
       HUlib_Color(CR_RED),
-      allkills, killcolor, fullkillcount, max_kill_requirement,
-      HUlib_Color(CR_RED),
-      itemcolor, players[displayplayer].itemcount, totalitems,
-      HUlib_Color(CR_RED),
-      allsecrets, secretcolor, fullsecretcount, totalsecret
+      secretcolor, fullsecretcount, totalsecret
     );
   }
 }
 
 void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args) {
+  include_kills = args[0];
+  include_items = args[1];
+  include_secrets = args[2];
+
+  if (!include_kills && !include_items && !include_secrets) {
+    include_kills = include_items = include_secrets = true;
+  }
+
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
