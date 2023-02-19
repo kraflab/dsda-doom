@@ -144,6 +144,7 @@ const char* g_skyflatname;
 dboolean hexen = false;
 dboolean heretic = false;
 dboolean raven = false;
+dboolean rekkr = false;
 
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern patchnum_t hu_font2[HU_FONTSIZE];
@@ -609,16 +610,42 @@ static void dsda_InitHexen(void) {
   }
 }
 
+static dboolean dsda_WadMatches(const char* value, const char* base)
+{
+  const char* start;
+  const char* dot;
+  const char* fs;
+  const char* bs;
+  size_t len;
+  size_t baselen;
+
+  baselen = strlen(base);
+
+  // Find final path component
+  start = value;
+  fs = strrchr(value, '/');
+  bs = strrchr(value, '\\');
+  if (fs != NULL)
+    start = fs + 1;
+  if (bs != NULL && bs > start)
+    start = bs + 1;
+
+  // Ignore extension
+  dot = strrchr(start, '.');
+  if (dot != NULL)
+    len = dot - start;
+  else
+    len = strlen(start);
+
+  return (len == baselen && !strnicmp(start, base, baselen));
+}
+
 static dboolean dsda_AutoDetectHeretic(void)
 {
   dsda_arg_t* arg;
-  int i, length;
   arg = dsda_Arg(dsda_arg_iwad);
-  if (arg->found) {
-    length = strlen(arg->value.v_string);
-    if (length >= 11 && !strnicmp(arg->value.v_string + length - 11, "heretic.wad", 11))
-      return true;
-  }
+  if (arg->found)
+    return dsda_WadMatches(arg->value.v_string, "heretic");
 
   return false;
 }
@@ -626,14 +653,30 @@ static dboolean dsda_AutoDetectHeretic(void)
 static dboolean dsda_AutoDetectHexen(void)
 {
   dsda_arg_t* arg;
+  arg = dsda_Arg(dsda_arg_iwad);
+  if (arg->found)
+    return dsda_WadMatches(arg->value.v_string, "hexen");
+
+  return false;
+}
+
+static dboolean dsda_AutoDetectRekkr(void)
+{
+  dsda_arg_t* arg;
   int i, length;
+  const char* value;
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found) {
-    length = strlen(arg->value.v_string);
-    if (length >= 9 && !strnicmp(arg->value.v_string + length - 9, "hexen.wad", 9))
+    if (dsda_WadMatches(arg->value.v_string, "rekkrsa"))
       return true;
   }
-
+  arg = dsda_Arg(dsda_arg_file);
+  if (arg->found) {
+    for (i = 0; i < arg->count; ++i) {
+      if (dsda_WadMatches(arg->value.v_string_array[i], "rekkr"))
+        return true;
+    }
+  }
   return false;
 }
 
@@ -643,6 +686,7 @@ void dsda_InitGlobal(void) {
   heretic = dsda_Flag(dsda_arg_heretic) || dsda_AutoDetectHeretic();
   hexen = dsda_Flag(dsda_arg_hexen) || dsda_AutoDetectHexen();
   raven = heretic || hexen;
+  rekkr = dsda_Flag(dsda_arg_rekkr) || dsda_AutoDetectRekkr();
 
   if (hexen)
     dsda_InitHexen();

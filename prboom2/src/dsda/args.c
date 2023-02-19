@@ -158,6 +158,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets the game to hexen",
     arg_null,
   },
+  [dsda_arg_rekkr] = {
+    "-rekkr", NULL, NULL,
+    "sets the game to rekkr",
+    arg_null,
+  },
   [dsda_arg_class] = {
     "-class", NULL, NULL,
     "sets the player class in hexen",

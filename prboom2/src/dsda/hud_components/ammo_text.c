@@ -34,6 +34,13 @@ static const char* doom_ammo_name[4] = {
   "CELL",
 };
 
+static const char* rekkr_ammo_name[4] = {
+  "SOUL",
+  "SHOT",
+  "RUNE",
+  "MANA",
+};
+
 static const int doom_ammo_type[4] = { 0, 1, 3, 2 };
 
 static const char* heretic_ammo_name[6] = {
@@ -55,6 +62,7 @@ static const char* hexen_ammo_name[2] = {
 static const int hexen_ammo_type[2] = { 0, 1 };
 
 static const ammo_component_config_t doom_ammo = { doom_ammo_name, doom_ammo_type, 4 };
+static const ammo_component_config_t rekkr_ammo = { rekkr_ammo_name, doom_ammo_type, 4 };
 static const ammo_component_config_t heretic_ammo = { heretic_ammo_name, heretic_ammo_type, 6 };
 static const ammo_component_config_t hexen_ammo = { hexen_ammo_name, hexen_ammo_type, 2 };
 
@@ -88,6 +96,8 @@ void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args) {
     component_config = &heretic_ammo;
   else if (hexen)
     component_config = &hexen_ammo;
+  else if (rekkr)
+    component_config = &rekkr_ammo;
   else
     component_config = &doom_ammo;
 

@@ -42,6 +42,7 @@ typedef enum {
   dsda_arg_shorttics,
   dsda_arg_heretic,
   dsda_arg_hexen,
+  dsda_arg_rekkr,
   dsda_arg_class,
   dsda_arg_randclass,
   dsda_arg_baddemo,
