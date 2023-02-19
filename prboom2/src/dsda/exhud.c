@@ -338,6 +338,9 @@ void dsda_InitExHud(void) {
     components[i].initialized = false;
   }
 
+  if (nodrawers)
+    return;
+
   if (R_FullView() && !dsda_IntConfig(dsda_config_hud_displayed))
     return;
 
