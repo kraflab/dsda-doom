@@ -177,7 +177,22 @@ void P_ArchiveWorld (void)
     P_SAVE_X(sec->tag);
     P_SAVE_X(sec->seqType);
     P_SAVE_X(sec->flags);
+
+    // zdoom
+    P_SAVE_X(sec->gravity);
     P_SAVE_X(sec->damage);
+    P_SAVE_X(sec->lightlevel_floor);
+    P_SAVE_X(sec->lightlevel_ceiling);
+    P_SAVE_X(sec->floor_rotation);
+    P_SAVE_X(sec->ceiling_rotation);
+    P_SAVE_X(sec->floor_xscale);
+    P_SAVE_X(sec->floor_yscale);
+    P_SAVE_X(sec->ceiling_xscale);
+    P_SAVE_X(sec->ceiling_yscale);
+    P_SAVE_X(sec->floor_xoffs);
+    P_SAVE_X(sec->floor_yoffs);
+    P_SAVE_X(sec->ceiling_xoffs);
+    P_SAVE_X(sec->ceiling_yoffs);
   }
 
   for (i = 0, li = lines; i < numlines; i++, li++)
@@ -190,6 +205,11 @@ void P_ArchiveWorld (void)
     P_SAVE_BYTE(li->player_activations);
     P_SAVE_ARRAY(li->special_args);
 
+    // zdoom
+    P_SAVE_X(li->automap_style);
+    P_SAVE_X(li->health);
+    P_SAVE_X(li->alpha);
+
     for (j = 0; j < 2; j++)
       if (li->sidenum[j] != NO_INDEX)
       {
@@ -200,6 +220,25 @@ void P_ArchiveWorld (void)
         P_SAVE_X(si->toptexture);
         P_SAVE_X(si->bottomtexture);
         P_SAVE_X(si->midtexture);
+
+        // zdoom
+        P_SAVE_X(si->textureoffset_top);
+        P_SAVE_X(si->textureoffset_mid);
+        P_SAVE_X(si->textureoffset_bottom);
+        P_SAVE_X(si->rowoffset_top);
+        P_SAVE_X(si->rowoffset_mid);
+        P_SAVE_X(si->rowoffset_bottom);
+        P_SAVE_X(si->scalex_top);
+        P_SAVE_X(si->scaley_top);
+        P_SAVE_X(si->scalex_mid);
+        P_SAVE_X(si->scaley_mid);
+        P_SAVE_X(si->scalex_bottom);
+        P_SAVE_X(si->scaley_bottom);
+        P_SAVE_X(si->lightlevel);
+        P_SAVE_X(si->lightlevel_top);
+        P_SAVE_X(si->lightlevel_mid);
+        P_SAVE_X(si->lightlevel_bottom);
+        P_SAVE_X(si->flags);
       }
   }
 
@@ -228,7 +267,22 @@ void P_UnArchiveWorld (void)
     P_LOAD_X(sec->tag);
     P_LOAD_X(sec->seqType);
     P_LOAD_X(sec->flags);
+
+    // zdoom
+    P_LOAD_X(sec->gravity);
     P_LOAD_X(sec->damage);
+    P_LOAD_X(sec->lightlevel_floor);
+    P_LOAD_X(sec->lightlevel_ceiling);
+    P_LOAD_X(sec->floor_rotation);
+    P_LOAD_X(sec->ceiling_rotation);
+    P_LOAD_X(sec->floor_xscale);
+    P_LOAD_X(sec->floor_yscale);
+    P_LOAD_X(sec->ceiling_xscale);
+    P_LOAD_X(sec->ceiling_yscale);
+    P_LOAD_X(sec->floor_xoffs);
+    P_LOAD_X(sec->floor_yoffs);
+    P_LOAD_X(sec->ceiling_xoffs);
+    P_LOAD_X(sec->ceiling_yoffs);
 
     sec->ceilingdata = 0; //jff 2/22/98 now three thinker fields, not two
     sec->floordata = 0;
@@ -247,6 +301,14 @@ void P_UnArchiveWorld (void)
     P_LOAD_BYTE(li->player_activations);
     P_LOAD_ARRAY(li->special_args);
 
+    // zdoom
+    P_LOAD_X(li->automap_style);
+    P_LOAD_X(li->health);
+    P_LOAD_X(li->alpha);
+
+    if (li->alpha < 1.f)
+      li->tranmap = dsda_TranMap(dsda_FloatToPercent(li->alpha));
+
     for (j = 0; j < 2; j++)
       if (li->sidenum[j] != NO_INDEX)
       {
@@ -257,6 +319,25 @@ void P_UnArchiveWorld (void)
         P_LOAD_X(si->toptexture);
         P_LOAD_X(si->bottomtexture);
         P_LOAD_X(si->midtexture);
+
+        // zdoom
+        P_LOAD_X(si->textureoffset_top);
+        P_LOAD_X(si->textureoffset_mid);
+        P_LOAD_X(si->textureoffset_bottom);
+        P_LOAD_X(si->rowoffset_top);
+        P_LOAD_X(si->rowoffset_mid);
+        P_LOAD_X(si->rowoffset_bottom);
+        P_LOAD_X(si->scalex_top);
+        P_LOAD_X(si->scaley_top);
+        P_LOAD_X(si->scalex_mid);
+        P_LOAD_X(si->scaley_mid);
+        P_LOAD_X(si->scalex_bottom);
+        P_LOAD_X(si->scaley_bottom);
+        P_LOAD_X(si->lightlevel);
+        P_LOAD_X(si->lightlevel_top);
+        P_LOAD_X(si->lightlevel_mid);
+        P_LOAD_X(si->lightlevel_bottom);
+        P_LOAD_X(si->flags);
       }
   }
 
