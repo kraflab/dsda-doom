@@ -675,8 +675,6 @@ static void AM_changeWindowLoc(void)
 //
 void AM_SetScale(void)
 {
-  AM_findMinMaxBoundaries();
-
   {
     fixed_t a, b;
     fixed_t scale_w, scale_h;
@@ -840,6 +838,7 @@ void AM_Start(dboolean full_automap)
 
   if (lastlevel != gamemap || lastepisode != gameepisode)
   {
+    AM_findMinMaxBoundaries();
     AM_SetScale();
     lastlevel = gamemap;
     lastepisode = gameepisode;
