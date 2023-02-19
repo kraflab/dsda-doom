@@ -375,13 +375,13 @@ void dsda_InitExHud(void) {
       for (i = 0; i < exhud_component_count; ++i)
         if (!strncmp(command, components[i].name, sizeof(command))) {
           int x, y, vpt;
-          int component_args[2] = { 0 };
+          int component_args[3] = { 0 };
           char alignment[16];
 
           found = true;
 
-          count = sscanf(args, "%d %d %15s %d %d", &x, &y, alignment,
-                         &component_args[0], &component_args[1]);
+          count = sscanf(args, "%d %d %15s %d %d %d", &x, &y, alignment,
+                         &component_args[0], &component_args[1], &component_args[2]);
           if (count < 3)
             I_Error("Invalid hud component args \"%s\"", line);
 
