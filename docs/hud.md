@@ -11,7 +11,7 @@ A HUD configuration starts with the environment: `game variant`
   - `off` (with status bar and extended hud off)
   - `full` (without status bar)
 
-The configuration then consists of a series of components to display: `name x y alignment`
+The configuration then consists of a series of components to display: `name x y alignment [args]`
 - The `name` specifies which component to display
 - The `x` and `y` fields set the location of the component
 - The `alignment` controls how the position is translated in different screen sizes
@@ -24,6 +24,7 @@ The configuration then consists of a series of components to display: `name x y 
   - `bottom_right`
   - `left`
   - `right`
+- The `args` are a series of optional parameters (see specific components for more info)
 - For convenience, bottom-aligned `y` values are the distance from the bottom of the screen (`full`) or top of the status bar (`ex` and `off`)
 
 This example configures the extended hud for doom with just the stat totals and time in the bottom left (above the status bar):
@@ -62,3 +63,8 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
 - `line_display`: shows the last lines the player activated
 - `tracker`: shows the active trackers (they stack *vertically*)
 - `local_time`: shows the local time
+- `minimap`: shows the minimap
+  - Supports 3 arguments: `width height scale`
+  - `width`: width of the component
+  - `height`: height of the component
+  - `scale`: width of the component in map units
