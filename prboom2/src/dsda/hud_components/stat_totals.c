@@ -24,6 +24,9 @@
 static dsda_text_t component;
 
 static dboolean include_kills, include_items, include_secrets;
+static const char* kills_format;
+static const char* items_format;
+static const char* secrets_format;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int i;
@@ -62,7 +65,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     length += snprintf(
       str,
       max_size,
-      "\x1b%cK \x1b%c%d/%d ",
+      kills_format,
       HUlib_Color(CR_RED),
       killcolor, fullkillcount, max_kill_requirement
     );
@@ -72,7 +75,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     length += snprintf(
       str + length,
       max_size - length,
-      "\x1b%cI \x1b%c%d/%d ",
+      items_format,
       HUlib_Color(CR_RED),
       itemcolor, players[displayplayer].itemcount, totalitems
     );
@@ -82,7 +85,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str + length,
       max_size - length,
-      "\x1b%cS \x1b%c%d/%d ",
+      secrets_format,
       HUlib_Color(CR_RED),
       secretcolor, fullsecretcount, totalsecret
     );
@@ -93,6 +96,18 @@ void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args) {
   include_kills = args[0];
   include_items = args[1];
   include_secrets = args[2];
+
+  // vertical orientation
+  if (args[3]) {
+    kills_format = "\x1b%cK \x1b%c%d/%d\n";
+    items_format = "\x1b%cI \x1b%c%d/%d\n";
+    secrets_format = "\x1b%cS \x1b%c%d/%d";
+  }
+  else {
+    kills_format = "\x1b%cK \x1b%c%d/%d ";
+    items_format = "\x1b%cI \x1b%c%d/%d ";
+    secrets_format = "\x1b%cS \x1b%c%d/%d";
+  }
 
   if (!include_kills && !include_items && !include_secrets) {
     include_kills = include_items = include_secrets = true;
