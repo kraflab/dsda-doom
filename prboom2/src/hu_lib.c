@@ -71,7 +71,6 @@ char HUlib_Color(int cm)
 //
 void HUlib_clearTextLine(hu_textline_t* t)
 {
-  t->w = 0;
   t->linelen =         // killough 1/23 98: support multiple lines
     t->len = 0;
   t->l[0] = 0;
@@ -149,31 +148,10 @@ void HUlib_drawTextLine
   int oc = l->cm; //jff 2/17/98 remember default color
   int y;          // killough 1/18/98 -- support multiple lines
 
-  // calculate width of widget
-  if (l->w == 0)
-  {
-    for (i = 0; i < l->len; i++)
-    {
-      c = toupper(l->l[i]);
-      if (c == '\n')
-        continue;
-      else if (c == '\x1b')
-      {
-        i++;
-        if (i < l->len && l->l[i] < HU_COLOR)
-          l->w += l->l[i];
-      }
-      else if (c != ' ' && c >= l->sc && c <= 127)
-        l->w += l->f[c - l->sc].width;
-      else
-        l->w += l->space_width;
-    }
-  }
-
   // draw the new stuff
 
-  x = (l->x < 0 ? -l->x - l->w : l->x);
-  y = (l->y < 0 ? -l->y - l->f[toupper(l->l[0]) - l->sc].height : l->y);
+  x = l->x;
+  y = l->y;
   for (i=0;i<l->len;i++)
   {
     c = toupper(l->l[i]); //jff insure were not getting a cheap toupper conv.
