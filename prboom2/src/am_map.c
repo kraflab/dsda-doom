@@ -804,6 +804,36 @@ void AM_InitParams(void)
   map_things_appearance = dsda_IntConfig(dsda_config_map_things_appearance);
 }
 
+void AM_ExchangeScales(int full_automap, int *last_full_automap)
+{
+  static int full_min_scale_mtof;
+  static int full_max_scale_mtof;
+  static int full_scale_mtof;
+  static int full_scale_ftom;
+
+  if (*last_full_automap && !full_automap)
+  {
+    full_min_scale_mtof = min_scale_mtof;
+    full_max_scale_mtof = max_scale_mtof;
+    full_scale_mtof = scale_mtof;
+    full_scale_ftom = scale_ftom;
+
+    min_scale_mtof =
+    max_scale_mtof =
+    scale_mtof = FixedDiv(f_w << FRACBITS, 1024 << MAPBITS);
+    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+  }
+  else if (!*last_full_automap && full_automap)
+  {
+    min_scale_mtof = full_min_scale_mtof;
+    max_scale_mtof = full_max_scale_mtof;
+    scale_mtof = full_scale_mtof;
+    scale_ftom = full_scale_ftom;
+  }
+
+  *last_full_automap = full_automap;
+}
+
 //
 // AM_Stop()
 //
@@ -829,6 +859,7 @@ void AM_Stop (void)
 void AM_Start(dboolean full_automap)
 {
   static int lastlevel = -1, lastepisode = -1;
+  static int last_full_automap;
 
   AM_InitParams();
 
@@ -842,7 +873,10 @@ void AM_Start(dboolean full_automap)
     AM_SetScale();
     lastlevel = gamemap;
     lastepisode = gameepisode;
+    last_full_automap = true;
   }
+
+  AM_ExchangeScales(full_automap, &last_full_automap);
 
   AM_initVariables();
 }
