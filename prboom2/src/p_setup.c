@@ -65,6 +65,7 @@
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/settings.h"
 #include "dsda/skip.h"
 #include "dsda/tranmap.h"
 #include "dsda/udmf.h"
@@ -3977,6 +3978,11 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   if (map_format.sndseq)
   {
     SN_StopAllSequences();
+  }
+
+  if (dsda_ShowMinimap())
+  {
+    AM_Start(false);
   }
 }
 
