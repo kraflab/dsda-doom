@@ -9,6 +9,7 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 heretic ex
 stat_totals 2 8 bottom_left
@@ -21,6 +22,7 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 hexen ex
 stat_totals 2 8 bottom_left
@@ -33,6 +35,7 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 doom off
 tracker 2 32 bottom_left
@@ -43,6 +46,7 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 heretic off
 tracker 2 32 bottom_left
@@ -53,6 +57,7 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 hexen off
 tracker 2 32 bottom_left
@@ -63,6 +68,7 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 doom full
 ready_ammo_text 2 8 bottom_left
@@ -81,6 +87,7 @@ command_display 198 48 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 heretic full
 ready_ammo_text 2 8 bottom_left
@@ -100,6 +107,7 @@ command_display 198 64 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
 
 hexen full
 ready_ammo_text 2 8 bottom_left
@@ -119,3 +127,4 @@ command_display 198 40 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
