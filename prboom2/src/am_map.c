@@ -813,6 +813,8 @@ void AM_ExchangeScales(int full_automap, int *last_full_automap)
 
   if (*last_full_automap && !full_automap)
   {
+    int dsda_MinimapScale(void);
+
     full_min_scale_mtof = min_scale_mtof;
     full_max_scale_mtof = max_scale_mtof;
     full_scale_mtof = scale_mtof;
@@ -820,7 +822,7 @@ void AM_ExchangeScales(int full_automap, int *last_full_automap)
 
     min_scale_mtof =
     max_scale_mtof =
-    scale_mtof = FixedDiv(f_w << FRACBITS, 1024 << MAPBITS);
+    scale_mtof = FixedDiv(f_w << FRACBITS, dsda_MinimapScale() << MAPBITS);
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
   }
   else if (!*last_full_automap && full_automap)

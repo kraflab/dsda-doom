@@ -19,13 +19,14 @@
 
 #include "minimap.h"
 
-static int x, y, width, height;
+static int x, y, width, height, scale;
 
 void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args) {
   x = x_offset;
   y = dsda_HudComponentY(y_offset, vpt);
   width = args[0];
   height = args[1];
+  scale = args[2];
 
   if (x < 0)
     x = 0;
@@ -45,6 +46,9 @@ void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args) {
   if (y + height > 200)
     y = 200 - height;
 
+  if (scale < 64)
+    scale = 1024;
+
   V_GetWideRect(&x, &y, &width, &height, vpt);
 }
 
@@ -61,4 +65,8 @@ void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h) {
   *f_y = y;
   *f_w = width;
   *f_h = height;
+}
+
+int dsda_MinimapScale(void) {
+  return scale;
 }
