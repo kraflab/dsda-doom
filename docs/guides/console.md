@@ -35,6 +35,10 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - temporarily toggles a config value (will not be saved to config file)
 - `toggle_update <attribute>`
   - permanently toggles a config value (will be saved to config file)
+- `config.forget`
+  - do not overwrite the config file on exit
+- `config.remember`
+  - do overwrite the config file on exit
 - `music.restart`
   - restart the current music track
 - `game.quit`

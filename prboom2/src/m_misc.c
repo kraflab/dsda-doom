@@ -638,11 +638,26 @@ static int def_count = sizeof(cfg_defs) / sizeof(cfg_defs[0]);
 
 static char* defaultfile; // CPhipps - static, const
 
+static dboolean forget_config_file;
+
+void M_ForgetCurrentConfig(void)
+{
+  forget_config_file = true;
+}
+
+void M_RememberCurrentConfig(void)
+{
+  forget_config_file = false;
+}
+
 void M_SaveDefaults (void)
 {
   int   i;
   FILE* f;
   int maxlen;
+
+  if (forget_config_file)
+    return;
 
   f = fopen (defaultfile, "w");
   if (!f)

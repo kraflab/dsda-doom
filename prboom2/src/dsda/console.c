@@ -1063,6 +1063,22 @@ static dboolean console_ToggleUpdate(const char* command, const char* args) {
   return console_ToggleConfig(command, args, true);
 }
 
+static dboolean console_ConfigForget(const char* command, const char* args) {
+  void M_ForgetCurrentConfig(void);
+
+  M_ForgetCurrentConfig();
+
+  return true;
+}
+
+static dboolean console_ConfigRemember(const char* command, const char* args) {
+  void M_RememberCurrentConfig(void);
+
+  M_RememberCurrentConfig();
+
+  return true;
+}
+
 static dboolean console_SetMobjState(mobj_t* mobj, statenum_t state) {
   if (!state)
     return false;
@@ -2072,6 +2088,8 @@ static console_command_entry_t console_commands[] = {
   { "update", console_Update, CF_ALWAYS },
   { "toggle_assign", console_ToggleAssign, CF_ALWAYS },
   { "toggle_update", console_ToggleUpdate, CF_ALWAYS },
+  { "config.forget", console_ConfigForget, CF_ALWAYS },
+  { "config.remember", console_ConfigRemember, CF_ALWAYS },
 
   // tracking
   { "tracker.add_line", console_TrackerAddLine, CF_DEMO },
