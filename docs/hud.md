@@ -45,6 +45,8 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
   - `show_secrets`: shows secrets in the component
   - `vertical`: displays the stats vertically rather than horizontally
 - `composite_time`: shows the current level time and the total time
+  - Supports 1 argument: `show_label`
+  - `show_label`: shows the "time" label
 - `keys`: shows the acquired keys
 - `ammo_text`: shows the weapons and ammo as the status bar does
   - Supports 1 argument: `show_names`

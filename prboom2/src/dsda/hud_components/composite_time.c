@@ -21,6 +21,8 @@
 
 static dsda_text_t component;
 
+static char label[8];
+
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int total_time;
 
@@ -32,8 +34,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "\x1b%ctime \x1b%c%d:%02d \x1b%c%d:%05.2f ",
-      HUlib_Color(CR_GRAY),
+      "%s\x1b%c%d:%02d \x1b%c%d:%05.2f ",
+      label,
       HUlib_Color(CR_GOLD),
       total_time / 35 / 60,
       (total_time % (60 * 35)) / 35,
@@ -45,8 +47,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "\x1b%ctime \x1b%c%d:%05.2f ",
-      HUlib_Color(CR_GRAY),
+      "%s\x1b%c%d:%05.2f ",
+      label,
       HUlib_Color(CR_GREEN),
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
@@ -54,6 +56,11 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 }
 
 void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+  if (arg_count < 1 || args[0])
+    snprintf(label, sizeof(label), "\x1b%ctime ", HUlib_Color(CR_GRAY));
+  else
+    label[0] = '\0';
+
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
