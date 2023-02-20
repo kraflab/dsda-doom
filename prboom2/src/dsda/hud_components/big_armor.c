@@ -67,7 +67,7 @@ static void dsda_DrawComponent(void) {
                      cm, component.vpt, 3, armor);
 }
 
-void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   if (heretic) {
     armor_lump_green = R_NumPatchForSpriteIndex(HERETIC_SPR_SHLD);
     armor_lump_blue = R_NumPatchForSpriteIndex(HERETIC_SPR_SHD2);

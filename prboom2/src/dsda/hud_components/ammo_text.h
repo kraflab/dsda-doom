@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_AMMO_TEXT__
 #define __DSDA_HUD_COMPONENT_AMMO_TEXT__
 
-void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt_flags, int* args);
+void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
 void dsda_UpdateAmmoTextHC(void);
 void dsda_DrawAmmoTextHC(void);
 

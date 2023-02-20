@@ -113,7 +113,7 @@ static void dsda_DrawComponent(void) {
   drawKey(player, &x, &y, dsda_Key3Name);
 }
 
-void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   if (hexen) {
     int i;
 

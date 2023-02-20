@@ -63,7 +63,7 @@ static void dsda_UpdateMaxComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   dsda_InitTextHC(&component[0], x_offset, y_offset, vpt);
   dsda_InitTextHC(&component[1], x_offset, y_offset + 8, vpt);
 }

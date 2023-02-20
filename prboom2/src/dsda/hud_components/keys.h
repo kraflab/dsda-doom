@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_KEYS__
 #define __DSDA_HUD_COMPONENT_KEYS__
 
-void dsda_InitKeysHC(int x_offset, int y_offset, int vpt_flags, int* args);
+void dsda_InitKeysHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
 void dsda_UpdateKeysHC(void);
 void dsda_DrawKeysHC(void);
 

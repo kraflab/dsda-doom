@@ -92,7 +92,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   }
 }
 
-void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   include_kills = args[0];
   include_items = args[1];
   include_secrets = args[2];

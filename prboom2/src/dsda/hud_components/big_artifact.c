@@ -21,7 +21,7 @@
 
 static dsda_patch_component_t component;
 
-void dsda_InitBigArtifactHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitBigArtifactHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 

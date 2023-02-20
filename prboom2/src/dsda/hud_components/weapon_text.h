@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_WEAPON_TEXT__
 #define __DSDA_HUD_COMPONENT_WEAPON_TEXT__
 
-void dsda_InitWeaponTextHC(int x_offset, int y_offset, int vpt_flags, int* args);
+void dsda_InitWeaponTextHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
 void dsda_UpdateWeaponTextHC(void);
 void dsda_DrawWeaponTextHC(void);
 

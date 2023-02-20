@@ -36,7 +36,7 @@
 #include "exhud.h"
 
 typedef struct {
-  void (*init)(int x_offset, int y_offset, int vpt_flags, int* args);
+  void (*init)(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
   void (*update)(void);
   void (*draw)(void);
   const char* name;
@@ -272,9 +272,9 @@ static void dsda_TurnComponentOff(int id) {
   components[id].on = false;
 }
 
-static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args) {
+static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args, int arg_count) {
   components[id].initialized = true;
-  components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT, args);
+  components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT, args, arg_count);
 
   if (components[id].off_by_default)
     dsda_TurnComponentOff(id);
@@ -408,7 +408,7 @@ void dsda_InitExHud(void) {
           else
             I_Error("Invalid hud component alignment \"%s\"", line);
 
-          dsda_InitializeComponent(i, x, y, vpt, component_args);
+          dsda_InitializeComponent(i, x, y, vpt, component_args, count - 3);
         }
 
       if (!found)

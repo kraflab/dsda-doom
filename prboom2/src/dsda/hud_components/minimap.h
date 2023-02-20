@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_MINIMAP__
 #define __DSDA_HUD_COMPONENT_MINIMAP__
 
-void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt_flags, int* args);
+void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
 void dsda_UpdateMinimapHC(void);
 void dsda_DrawMinimapHC(void);
 

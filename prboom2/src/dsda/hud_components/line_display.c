@@ -21,7 +21,7 @@
 
 static dsda_text_t line_display[LINE_ACTIVATION_INDEX_MAX];
 
-void dsda_InitLineDisplayHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitLineDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   int i;
 
   for (i = 0; i < LINE_ACTIVATION_INDEX_MAX; ++i)

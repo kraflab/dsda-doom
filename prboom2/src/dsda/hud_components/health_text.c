@@ -38,7 +38,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 

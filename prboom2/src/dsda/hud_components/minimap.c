@@ -21,7 +21,7 @@
 
 static int x, y, width, height, scale;
 
-void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args) {
+void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   x = x_offset;
   y = dsda_HudComponentY(y_offset, vpt);
   width = args[0];

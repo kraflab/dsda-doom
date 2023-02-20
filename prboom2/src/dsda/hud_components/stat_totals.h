@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_STAT_TOTALS__
 #define __DSDA_HUD_COMPONENT_STAT_TOTALS__
 
-void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt_flags, int* args);
+void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
 void dsda_UpdateStatTotalsHC(void);
 void dsda_DrawStatTotalsHC(void);
 

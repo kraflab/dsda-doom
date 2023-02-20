@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_BIG_HEALTH__
 #define __DSDA_HUD_COMPONENT_BIG_HEALTH__
 
-void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt_flags, int* args);
+void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
 void dsda_UpdateBigHealthHC(void);
 void dsda_DrawBigHealthHC(void);
 

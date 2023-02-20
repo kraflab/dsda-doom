@@ -18,7 +18,7 @@
 #ifndef __DSDA_HUD_COMPONENT_HEALTH_TEXT__
 #define __DSDA_HUD_COMPONENT_HEALTH_TEXT__
 
-void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt_flags, int* args);
+void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
 void dsda_UpdateHealthTextHC(void);
 void dsda_DrawHealthTextHC(void);
 
