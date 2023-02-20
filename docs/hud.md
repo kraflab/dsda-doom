@@ -67,6 +67,8 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
 - `attempts`: shows the current and total demo attempts
 - `render_stats`: shows various render stats (`idrate`)
 - `speed_text`: shows the game clock rate
+  - Supports 1 argument: `show_label`
+  - `show_label`: shows the "speed" label
 - `command_display`: shows the history of player commands (demo or otherwise)
 - `coordinate_display`: shows various coordinate and velocity data
 - `event_split`: shows the time of an event tracked by the `-time_*` arguments
