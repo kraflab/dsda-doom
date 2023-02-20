@@ -60,6 +60,8 @@ static const ammo_component_config_t hexen_ammo = { hexen_ammo_name, hexen_ammo_
 
 static const ammo_component_config_t* component_config;
 
+static dboolean show_names;
+
 static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   player_t* player;
   int current_ammo, max_ammo;
@@ -71,18 +73,32 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   current_ammo = player->ammo[i];
   max_ammo = hexen ? MAX_MANA : player->maxammo[i];
 
-  snprintf(
-    str,
-    max_size,
-    "%s %3d\x1b\x01/\x1b\x01%3d",
-    name,
-    current_ammo,
-    max_ammo
-  );
+  if (show_names)
+    snprintf(
+      str,
+      max_size,
+      "%s %3d\x1b\x01/\x1b\x01%3d",
+      name,
+      current_ammo,
+      max_ammo
+    );
+  else
+    snprintf(
+      str,
+      max_size,
+      "%3d\x1b\x01/\x1b\x01%3d",
+      current_ammo,
+      max_ammo
+    );
 }
 
 void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   int i;
+
+  if (arg_count > 0)
+    show_names = args[0];
+  else
+    show_names = true;
 
   if (heretic)
     component_config = &heretic_ammo;

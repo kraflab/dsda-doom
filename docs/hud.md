@@ -47,6 +47,8 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
 - `composite_time`: shows the current level time and the total time
 - `keys`: shows the acquired keys
 - `ammo_text`: shows the weapons and ammo as the status bar does
+  - Supports 1 argument: `show_names`
+  - `show_names`: shows ammo names in the component
 - `weapon_text`: shows the acquired weapons (color-coded for berserk).
   - Supports 1 argument: `grid`
   - `grid`: displays the weapons in a 3x3 grid rather than horizontally
