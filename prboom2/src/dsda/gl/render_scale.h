@@ -36,6 +36,7 @@ void dsda_GLSetRenderViewportParams(void);
 void dsda_GLSetRenderViewport(void);
 void dsda_GLSetRenderViewportScissor(void);
 void dsda_GLSetRenderSceneScissor(void);
+void dsda_GLSetScreenSpaceScissor(int x, int y, int w, int h);
 void dsda_GLUpdateStatusBarVisible(void);
 void dsda_GLLetterboxClear(void);
 void dsda_GLStartMeltRenderTexture(void);

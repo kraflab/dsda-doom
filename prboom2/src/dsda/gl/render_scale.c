@@ -97,6 +97,14 @@ void dsda_GLSetRenderSceneScissor() {
             gl_scene_width, gl_scene_height);
 }
 
+void dsda_GLSetScreenSpaceScissor(int x, int y, int w, int h)
+{
+  glScissor(gl_viewport_x + x * gl_scale_x,
+            gl_viewport_y + (SCREENHEIGHT - (y + h)) * gl_scale_y,
+            w * gl_scale_x,
+            h * gl_scale_y);
+}
+
 void dsda_GLUpdateStatusBarVisible() {
   int saved_visible;
   int current_visible;

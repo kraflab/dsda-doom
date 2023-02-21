@@ -44,6 +44,7 @@
 #include "m_misc.h"
 #include "am_map.h"
 #include "lprintf.h"
+#include "dsda/gl/render_scale.h"
 
 am_icon_t am_icons[am_icon_count + 1] =
 {
@@ -156,7 +157,7 @@ void gld_DrawNiceThings(int fx, int fy, int fw, int fh)
   int i;
   int j;
 
-  glScissor(fx, SCREENHEIGHT - (fy + fh), fw, fh);
+  dsda_GLSetScreenSpaceScissor(fx, fy, fw, fh);
   glEnable(GL_SCISSOR_TEST);
 
   glDisable(GL_ALPHA_TEST);
