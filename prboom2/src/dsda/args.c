@@ -193,6 +193,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "automatically pistol start each map",
     arg_null,
   },
+  [dsda_arg_chain_episodes] = {
+    "-chain_episodes", NULL, NULL,
+    "completing one episode leads to the next without interruption",
+    arg_null,
+  },
   [dsda_arg_stroller] = {
     "-stroller", NULL, NULL,
     "applies stroller category limitations",

@@ -165,6 +165,13 @@ static void DemoEx_GetParams(const wadinfo_t* header) {
         dsda_UpdateFlag(dsda_arg_coop_spawns, true);
     }
 
+    //for recording multiple episodes in one demo
+    if (!dsda_Flag(dsda_arg_chain_episodes)) {
+      p = M_CheckParmEx("-chain_episodes", params, paramscount);
+      if (p >= 0)
+        dsda_UpdateFlag(dsda_arg_chain_episodes, true);
+    }
+
     if (!dsda_Flag(dsda_arg_emulate)) {
       p = M_CheckParmEx("-emulate", params, paramscount);
       if (p >= 0 && p < (int) paramscount - 1)
@@ -318,6 +325,12 @@ static void DemoEx_AddParams(wadtbl_t* wadtbl) {
   // for recording or playback using "coop in single-player" mode
   if (dsda_Flag(dsda_arg_coop_spawns)) {
     sprintf(buf, "-coop_spawns ");
+    dsda_StringCat(&files, buf);
+  }
+
+  // for recording multiple episodes in one demo
+  if (dsda_Flag(dsda_arg_chain_episodes)) {
+    sprintf(buf, "-chain_episodes ");
     dsda_StringCat(&files, buf);
   }
 

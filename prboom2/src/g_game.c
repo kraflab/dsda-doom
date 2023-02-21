@@ -2122,6 +2122,27 @@ void G_WorldDone (void)
 
   if (done_behaviour & WD_VICTORY)
   {
+    if (dsda_Flag(dsda_arg_chain_episodes))
+    {
+      int epi, map;
+
+      dsda_NextMap(&epi, &map);
+
+      if (epi != 1 || map != 1)
+      {
+        int i;
+
+        for (i = 0; i < g_maxplayers; ++i)
+          if (playeringame[i])
+            players[i].playerstate = PST_DEAD;
+
+        wminfo.nextep = epi - 1;
+        wminfo.next = map - 1;
+
+        return;
+      }
+    }
+
     gameaction = ga_victory;
 
     return;
