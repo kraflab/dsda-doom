@@ -620,6 +620,7 @@ void gld_BeginAutomapDraw(void)
   if (V_IsWorldLightmodeIndexed())
   {
     gld_InitColormapTextures(true);
+    glsl_SetActiveShader(NULL);
     gl_automap_lightmode_indexed = true;
   }
 }
