@@ -346,17 +346,17 @@ const char *I_DoomExeDir(void)
 {
   static char *base;
   if (!base)        // cache multiple requests
-    {
-      char *home = getenv("HOME");
-      size_t len = strlen(home);
+  {
+    char *home = getenv("HOME");
+    size_t len = strlen(home);
 
-      base = Z_Malloc(len + strlen(prboom_dir) + 1);
-      strcpy(base, home);
-      // I've had trouble with trailing slashes before...
-      if (base[len-1] == '/') base[len-1] = 0;
-      strcat(base, prboom_dir);
-      mkdir(base, S_IRUSR | S_IWUSR | S_IXUSR); // Make sure it exists
-    }
+    base = Z_Malloc(len + strlen(prboom_dir) + 1);
+    strcpy(base, home);
+    // I've had trouble with trailing slashes before...
+    if (base[len-1] == '/') base[len-1] = 0;
+    strcat(base, prboom_dir);
+    dsda_MkDir(base, true); // Make sure it exists
+  }
   return base;
 }
 
