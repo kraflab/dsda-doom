@@ -162,7 +162,7 @@ cheatseq_t cheat[] = {
   CHEAT("idbeholdl",  "Lite-Amp Goggles", cht_always, cheat_pw, pw_infrared, false),
   CHEAT("idbehold",   "BEHOLD menu",      cht_always, cheat_behold, 0, false),
   CHEAT("idclev",     "Level Warp",       not_demo | not_menu, cheat_clev, -2, false),
-  CHEAT("idmypos",    "Player Position",  cht_always, cheat_mypos, 0, false),
+  CHEAT("idmypos",    NULL,               cht_always, cheat_mypos, 0, false),
   CHEAT("idrate",     "Frame rate",       cht_always, cheat_rate, 0, false),
   // phares
   CHEAT("tntcomp",    NULL,               not_demo, cheat_comp, 0, false),
@@ -507,14 +507,9 @@ static void cheat_clev(char buf[3])
 }
 
 // 'mypos' for player position
-// killough 2/7/98: simplified using dprintf and made output more user-friendly
 static void cheat_mypos()
 {
-  doom_printf("Position (%d,%d,%d)\tAngle %-.0f",
-          players[consoleplayer].mo->x >> FRACBITS,
-          players[consoleplayer].mo->y >> FRACBITS,
-          players[consoleplayer].mo->z >> FRACBITS,
-          players[consoleplayer].mo->angle * (90.0/ANG90));
+  dsda_ToggleConfig(dsda_config_coordinate_display, false);
 }
 
 // cph - cheat to toggle frame rate/rendering stats display
