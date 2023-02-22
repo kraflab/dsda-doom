@@ -2045,6 +2045,8 @@ void G_DoCompleted (void)
   int i;
   int completed_behaviour;
 
+  R_ResetColorMap();
+
   if (hexen)
     totalleveltimes = players[consoleplayer].worldTimer;
   else

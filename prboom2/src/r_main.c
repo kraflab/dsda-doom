@@ -803,6 +803,12 @@ void R_SetupMatrix(void)
   R_BuildModelViewMatrix();
 }
 
+void R_ResetColorMap(void)
+{
+  fullcolormap = colormaps[0];
+  fixedcolormap = 0;
+}
+
 //
 // R_SetupFrame
 //

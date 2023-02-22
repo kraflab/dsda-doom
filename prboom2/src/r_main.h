@@ -142,6 +142,7 @@ extern int r_have_internal_hires;
 // REFRESH - the actual rendering functions.
 //
 
+void R_ResetColorMap(void);
 void R_RenderPlayerView(player_t *player);   // Called by G_Drawer.
 void R_Init(void);                           // Called by startup code.
 void R_SetViewSize(void);              // Called by M_Responder.
