@@ -92,6 +92,7 @@
 
 #include "z_zone.h"
 
+#include "dsda/mkdir.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
 #include "dsda/time.h"
