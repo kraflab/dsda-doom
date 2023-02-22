@@ -141,7 +141,8 @@ static double dsda_PaletteEntryLightness(const char *playpal, int i) {
 // Moved from r_patch.c
 void dsda_InitPlayPal(void) {
   int playpal_i;
-  double lightness, darkest;
+  double lightness;
+  double darkest, lightest;
 
   for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i) {
     int lump;
@@ -180,13 +181,20 @@ void dsda_InitPlayPal(void) {
       }
     }
 
-    // find the darkest color (i.e. black or whatever's closest to it).
-    darkest = 101.0; // brightest possible real value in CIELAB is 100.0
+    // find the brightness extremes (0-100)
+    darkest = 101.0;
+    lightest = -1.0;
     for (i = 0; i < 256; i++) {
       lightness = dsda_PaletteEntryLightness(playpal, i);
+
       if (lightness < darkest) {
         darkest = lightness;
         playpal_data[playpal_i].black = i;
+      }
+
+      if (lightness > lightest) {
+        lightest = lightness;
+        playpal_data[playpal_i].white = i;
       }
     }
   }

@@ -44,6 +44,7 @@ typedef struct playpal_data_s {
   int transparent;
   int duplicate;
   int black;
+  int white;
 
   // Array of SDL_Color structs used for setting the 256-colour palette
   SDL_Color* colours;

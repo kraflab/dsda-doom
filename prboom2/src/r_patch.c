@@ -113,6 +113,7 @@ static int playpal_transparent, playpal_duplicate;
 
 // index of black (or the closest color to it)
 int playpal_black;
+int playpal_white;
 
 //---------------------------------------------------------------------------
 void R_InitPatches(void) {
@@ -140,6 +141,7 @@ void R_UpdatePlayPal(void) {
   playpal_transparent = playpal_data->transparent;
   playpal_duplicate = playpal_data->duplicate;
   playpal_black = playpal_data->black;
+  playpal_white = playpal_data->white;
 }
 
 //---------------------------------------------------------------------------

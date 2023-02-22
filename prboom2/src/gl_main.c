@@ -100,6 +100,7 @@ GLfloat gl_texture_filter_anisotropic;
 
 extern int gld_paletteIndex;
 extern int playpal_black;
+extern int playpal_white;
 
 //sprites
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
@@ -936,7 +937,7 @@ void gld_StartFuzz(float width, float height)
   // for indexed lightmode, the fuzz color needs to take
   // pain/item fades and gamma into account, so do a color
   // lookup based on the closest-to-black color index.
-  color = gld_LookupIndexedColor(playpal_black, true);
+  color = gld_LookupIndexedColor(invul_method ? playpal_white : playpal_black, true);
   glColor3f((float)color.r/255.0f,
             (float)color.g/255.0f,
             (float)color.b/255.0f);
