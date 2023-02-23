@@ -58,6 +58,7 @@ typedef enum {
   dsda_config_show_minimap,
   dsda_config_show_fps,
   dsda_config_show_level_splits,
+  dsda_config_show_map_name,
   dsda_config_exhud,
   dsda_config_mute_sfx,
   dsda_config_mute_music,

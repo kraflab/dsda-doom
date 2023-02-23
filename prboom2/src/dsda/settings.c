@@ -212,6 +212,10 @@ dboolean dsda_ShowLevelSplits(void) {
   return dsda_IntConfig(dsda_config_show_level_splits);
 }
 
+dboolean dsda_ShowMapName(void) {
+  return dsda_IntConfig(dsda_config_show_map_name);
+}
+
 dboolean dsda_ShowDemoAttempts(void) {
   return dsda_IntConfig(dsda_config_show_demo_attempts) && demorecording;
 }

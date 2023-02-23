@@ -75,6 +75,7 @@ typedef enum {
   exhud_command_display,
   exhud_event_split,
   exhud_level_splits,
+  exhud_map_name,
   exhud_minimap,
   exhud_component_count,
 } exhud_component_id_t;
@@ -253,6 +254,13 @@ exhud_component_t components[exhud_component_count] = {
     "minimap",
     .off_by_default = true,
   },
+  [exhud_map_name] = {
+    dsda_InitMapNameHC,
+    dsda_UpdateMapNameHC,
+    dsda_DrawMapNameHC,
+    "map_name",
+    .off_by_default = true,
+  },
 };
 
 int exhud_color_default;
@@ -422,6 +430,7 @@ void dsda_InitExHud(void) {
   dsda_RefreshExHudFPS();
   dsda_RefreshExHudMinimap();
   dsda_RefreshExHudLevelSplits();
+  dsda_RefreshExHudMapName();
   dsda_RefreshExHudCoordinateDisplay();
   dsda_RefreshExHudCommandDisplay();
 }
@@ -501,6 +510,13 @@ void dsda_RefreshExHudLevelSplits(void) {
     dsda_TurnComponentOn(exhud_level_splits);
   else
     dsda_TurnComponentOff(exhud_level_splits);
+}
+
+void dsda_RefreshExHudMapName(void) {
+  if (dsda_ShowMapName())
+    dsda_TurnComponentOn(exhud_map_name);
+  else
+    dsda_TurnComponentOff(exhud_map_name);
 }
 
 void dsda_RefreshExHudCoordinateDisplay(void) {

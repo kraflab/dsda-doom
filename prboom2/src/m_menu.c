@@ -2987,13 +2987,14 @@ setup_menu_t display_settings[] = {
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_weaponbob },
   { "Quake Intensity", S_NUM, m_conf, G_X, G_Y + 10 * 8, dsda_config_quake_intensity },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  { "Show Map Name", S_YESNO,  m_conf, G_X, G_Y + 12 * 8, dsda_config_show_map_name },
 
-  { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_palette_ondamage },
-  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_palette_onbonus },
-  { "Change Palette On Powers", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_palette_onpowers },
+  { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_palette_ondamage },
+  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_palette_onbonus },
+  { "Change Palette On Powers", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_palette_onpowers },
 
-  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 17 * 8, dsda_config_render_stretch_hud, 0, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 18 * 8, dsda_config_menu_background },
+  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 18 * 8, dsda_config_render_stretch_hud, 0, render_stretch_list },
+  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 19 * 8, dsda_config_menu_background },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, misc_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mapping_settings),

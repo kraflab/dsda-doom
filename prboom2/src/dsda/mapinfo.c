@@ -292,11 +292,11 @@ int dsda_BossAction(mobj_t* mo) {
   return false;
 }
 
-void dsda_HUTitle(const char** title) {
+void dsda_HUTitle(hu_textline_t *line, const char** title) {
   if (dsda_HexenHUTitle(title))
     return;
 
-  if (dsda_UHUTitle(title))
+  if (dsda_UHUTitle(line, title))
     return;
 
   dsda_LegacyHUTitle(title);

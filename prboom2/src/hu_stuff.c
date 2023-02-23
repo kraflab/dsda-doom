@@ -167,9 +167,9 @@ static void HU_SetLumpTrans(const char *name)
   }
 }
 
-void HU_AddCharToTitle(char s)
+void HU_AddCharToTitle(hu_textline_t *line, char s)
 {
-  HUlib_addCharToTextLine(&w_title, s);
+  HUlib_addCharToTextLine(line, s);
 }
 
 //
@@ -326,10 +326,10 @@ void HU_Start(void)
     VPT_ALIGN_LEFT_BOTTOM
   );
 
-  dsda_HUTitle(&s);
+  dsda_HUTitle(&w_title, &s);
 
   while (*s)
-    HU_AddCharToTitle(*(s++));
+    HU_AddCharToTitle(&w_title, *(s++));
 
   // create the automaps coordinate widget
   // jff 3/3/98 split coord widget into three lines: x,y,z

@@ -81,3 +81,4 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
   - `width`: width of the component
   - `height`: height of the component
   - `scale`: width of the component in map units
+- `map_name`: shows the map name

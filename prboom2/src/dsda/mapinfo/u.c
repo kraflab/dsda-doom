@@ -343,8 +343,8 @@ int dsda_UBossAction(mobj_t* mo) {
   return true;
 }
 
-int dsda_UHUTitle(const char** title) {
-  void HU_AddCharToTitle(char s);
+int dsda_UHUTitle(hu_textline_t *line, const char** title) {
+  void HU_AddCharToTitle(hu_textline_t *line, char s);
 
   const char* s;
 
@@ -358,10 +358,10 @@ int dsda_UHUTitle(const char** title) {
 
   if (s == gamemapinfo->mapname || strcmp(s, "-") != 0) {
     while (*s)
-      HU_AddCharToTitle(*(s++));
+      HU_AddCharToTitle(line, *(s++));
 
-    HU_AddCharToTitle(':');
-    HU_AddCharToTitle(' ');
+    HU_AddCharToTitle(line, ':');
+    HU_AddCharToTitle(line, ' ');
   }
 
   *title = gamemapinfo->levelname;

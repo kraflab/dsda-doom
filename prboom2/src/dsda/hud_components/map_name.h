@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2022 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,22 +12,14 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA Extended HUD
+//	DSDA Map Name HUD Component
 //
 
-#ifndef __DSDA_EXHUD__
-#define __DSDA_EXHUD__
+#ifndef __DSDA_HUD_COMPONENT_MAP_NAME__
+#define __DSDA_HUD_COMPONENT_MAP_NAME__
 
-void dsda_InitExHud(void);
-void dsda_UpdateExHud(void);
-void dsda_DrawExHud(void);
-void dsda_DrawExIntermission(void);
-void dsda_ToggleRenderStats(void);
-void dsda_RefreshExHudFPS(void);
-void dsda_RefreshExHudMinimap(void);
-void dsda_RefreshExHudLevelSplits(void);
-void dsda_RefreshExHudMapName(void);
-void dsda_RefreshExHudCoordinateDisplay(void);
-void dsda_RefreshExHudCommandDisplay(void);
+void dsda_InitMapNameHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
+void dsda_UpdateMapNameHC(void);
+void dsda_DrawMapNameHC(void);
 
 #endif

@@ -19,6 +19,7 @@
 #define __DSDA_MAPINFO_U__
 
 #include "p_mobj.h"
+#include "hu_lib.h"
 
 int dsda_UFirstMap(int* episode, int* map);
 int dsda_UNewGameMap(int* episode, int* map);
@@ -38,7 +39,7 @@ int dsda_UStartFinale(void);
 int dsda_UFTicker(void);
 void dsda_UFDrawer(void);
 int dsda_UBossAction(mobj_t* mo);
-int dsda_UHUTitle(const char** title);
+int dsda_UHUTitle(hu_textline_t *line, const char** title);
 int dsda_USkyTexture(int* sky);
 int dsda_UPrepareInitNew(void);
 int dsda_UPrepareIntermission(int* result);

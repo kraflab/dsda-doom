@@ -369,6 +369,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_show_fps),
   MIGRATED_SETTING(dsda_config_show_minimap),
   MIGRATED_SETTING(dsda_config_show_level_splits),
+  MIGRATED_SETTING(dsda_config_show_map_name),
   MIGRATED_SETTING(dsda_config_skip_quit_prompt),
   MIGRATED_SETTING(dsda_config_show_split_data),
   MIGRATED_SETTING(dsda_config_player_name),
