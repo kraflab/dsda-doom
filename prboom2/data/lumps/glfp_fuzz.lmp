@@ -1,12 +1,12 @@
 #version 120
 
 uniform sampler2D tex;
-uniform vec2 tex_d; // Texture dimensions 
+uniform vec2 tex_d; // Texture dimensions
 uniform vec2 screen_res;
 uniform int time;
 
-float random(vec2 n) 
-{ 
+float random(vec2 n)
+{
 	return fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 143758.5453);
 }
 
