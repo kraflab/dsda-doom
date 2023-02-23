@@ -62,21 +62,6 @@
 
 #define isExtensionSupported(ext) strstr(extensions, ext)
 
-//e6y: OpenGL version
-typedef enum {
-  OPENGL_VERSION_1_0,
-  OPENGL_VERSION_1_1,
-  OPENGL_VERSION_1_2,
-  OPENGL_VERSION_1_3,
-  OPENGL_VERSION_1_4,
-  OPENGL_VERSION_1_5,
-  OPENGL_VERSION_2_0,
-  OPENGL_VERSION_2_1,
-} glversion_t;
-
-extern int gl_version;
-
-extern int GLEXT_CLAMP_TO_EDGE;
 extern int gl_max_texture_size;
 
 extern SDL_PixelFormat RGBAFormat;

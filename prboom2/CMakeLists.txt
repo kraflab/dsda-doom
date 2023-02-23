@@ -64,7 +64,7 @@ check_include_file("asm/byteorder.h" HAVE_ASM_BYTEORDER_H)
 check_include_file("dirent.h" HAVE_DIRENT_H)
 
 set(OpenGL_GL_PREFERENCE LEGACY)
-find_package(OpenGL REQUIRED)
+find_package(OpenGL 2.0 REQUIRED)
 
 find_package(SDL2 2.0.7 REQUIRED)
 

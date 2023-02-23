@@ -87,7 +87,7 @@ int gl_blend_animations;
 
 float gldepthmin, gldepthmax;
 
-unsigned int invul_method;
+int invul_method;
 float bw_red = 0.3f;
 float bw_green = 0.59f;
 float bw_blue = 0.11f;
@@ -140,7 +140,7 @@ void SetFrameTextureMode(void)
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
   else
-  if (invul_method & INVUL_BW)
+  if (invul_method == INVUL_BW)
   {
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
     glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_DOT3_RGB);
@@ -1295,14 +1295,7 @@ void gld_StartDrawScene(void)
     }
     else
     {
-      if (gl_version >= OPENGL_VERSION_1_3)
-      {
-        invul_method = INVUL_BW;
-      }
-      else
-      {
-        invul_method = INVUL_INV;
-      }
+      invul_method = INVUL_BW;
     }
   }
 
@@ -1357,22 +1350,6 @@ void gld_ProcessExtraAlpha(void)
   }
 }
 
-//e6y
-static void gld_InvertScene(void)
-{
-  glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-  glColor4f(1,1,1,1);
-  gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
-  glBegin(GL_TRIANGLE_STRIP);
-    glVertex2f( 0.0f, 0.0f);
-    glVertex2f( 0.0f, (float)SCREENHEIGHT);
-    glVertex2f( (float)SCREENWIDTH, 0.0f);
-    glVertex2f( (float)SCREENWIDTH, (float)SCREENHEIGHT);
-  glEnd();
-  gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
 void gld_EndDrawScene(void)
 {
   glDisable(GL_POLYGON_SMOOTH);
@@ -1399,7 +1376,7 @@ void gld_EndDrawScene(void)
     glBindTexture(GL_TEXTURE_2D, glSceneImageTextureFBOTexID);
 
     // Setup blender
-    if (invul_method & INVUL_BW)
+    if (invul_method == INVUL_BW)
     {
       glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
       glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_DOT3_RGB);
@@ -1438,11 +1415,7 @@ void gld_EndDrawScene(void)
   }
   else
   {
-    if (invul_method & INVUL_INV)
-    {
-      gld_InvertScene();
-    }
-    if (invul_method & INVUL_BW)
+    if (invul_method == INVUL_BW)
     {
       glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
     }

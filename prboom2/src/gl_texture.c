@@ -1004,7 +1004,7 @@ void gld_SetTexClamp(GLTexture *gltexture, unsigned int flags)
       if (!has_clamp_x)
       {
         *gltexture->texflags_p |= GLTEXTURE_CLAMPX;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GLEXT_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
       }
     }
     else
@@ -1021,7 +1021,7 @@ void gld_SetTexClamp(GLTexture *gltexture, unsigned int flags)
       if (!has_clamp_y)
       {
         *gltexture->texflags_p |= GLTEXTURE_CLAMPY;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GLEXT_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       }
     }
     else

@@ -56,7 +56,7 @@ void gld_InitFBO(void)
 {
   gld_FreeScreenSizeFBO();
 
-  gl_use_FBO = (gl_ext_framebuffer_object) && (gl_version >= OPENGL_VERSION_1_3);
+  gl_use_FBO = gl_ext_framebuffer_object;
 
   if (gl_use_FBO)
   {

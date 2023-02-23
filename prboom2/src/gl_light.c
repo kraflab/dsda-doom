@@ -198,7 +198,7 @@ void gld_StaticLightAlpha(float light, float alpha)
   }
   else
   {
-    if (!(invul_method & INVUL_BW))
+    if (invul_method != INVUL_BW)
     {
       glColor4f(1.0f, 1.0f, 1.0f, alpha);
     }

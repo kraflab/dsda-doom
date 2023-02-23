@@ -45,9 +45,6 @@
 
 #define isExtensionSupported(ext) strstr(extensions, ext)
 
-int gl_version;
-
-int GLEXT_CLAMP_TO_EDGE = GL_CLAMP;
 int gl_max_texture_size = 0;
 
 SDL_PixelFormat RGBAFormat;
@@ -130,27 +127,12 @@ PFNGLGETUNIFORMLOCATIONARBPROC   GLEXT_glGetUniformLocationARB = NULL;
 PFNGLGETACTIVEUNIFORMARBPROC     GLEXT_glGetActiveUniformARB = NULL;
 PFNGLGETUNIFORMFVARBPROC         GLEXT_glGetUniformfvARB = NULL;
 
+int gl_major_version;
+int gl_minor_version;
+
 void gld_InitOpenGLVersion(void)
 {
-  int MajorVersion, MinorVersion;
-  gl_version = OPENGL_VERSION_1_0;
-  if (sscanf((const char*)glGetString(GL_VERSION), "%d.%d", &MajorVersion, &MinorVersion) == 2)
-  {
-    if (MajorVersion > 1)
-    {
-      gl_version = OPENGL_VERSION_2_0;
-      if (MinorVersion > 0) gl_version = OPENGL_VERSION_2_1;
-    }
-    else
-    {
-      gl_version = OPENGL_VERSION_1_0;
-      if (MinorVersion > 0) gl_version = OPENGL_VERSION_1_1;
-      if (MinorVersion > 1) gl_version = OPENGL_VERSION_1_2;
-      if (MinorVersion > 2) gl_version = OPENGL_VERSION_1_3;
-      if (MinorVersion > 3) gl_version = OPENGL_VERSION_1_4;
-      if (MinorVersion > 4) gl_version = OPENGL_VERSION_1_5;
-    }
-  }
+  sscanf((const char*) glGetString(GL_VERSION), "%d.%d", &gl_major_version, &gl_minor_version);
 }
 
 void gld_InitOpenGL(void)
@@ -300,8 +282,7 @@ void gld_InitOpenGL(void)
   //
   // GL_ARB_shader_objects
   //
-  gl_arb_shader_objects = (gl_version >= OPENGL_VERSION_2_0) &&
-                          isExtensionSupported ("GL_ARB_shader_objects") &&
+  gl_arb_shader_objects = isExtensionSupported ("GL_ARB_shader_objects") &&
                           isExtensionSupported ("GL_ARB_vertex_shader") &&
                           isExtensionSupported ("GL_ARB_fragment_shader") &&
                           isExtensionSupported ("GL_ARB_shading_language_100");
@@ -353,35 +334,8 @@ void gld_InitOpenGL(void)
     lprintf(LO_DEBUG, "using GL_ARB_shading_language_100\n");
   }
 
-  // GL_CLAMP_TO_EDGE
-  GLEXT_CLAMP_TO_EDGE = (gl_version >= OPENGL_VERSION_1_2 ? GL_CLAMP_TO_EDGE : GL_CLAMP);
-
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
   lprintf(LO_DEBUG, "GL_MAX_TEXTURE_SIZE=%i\n", gl_max_texture_size);
-
-  // Additional checks
-  if (gl_version < OPENGL_VERSION_1_3)
-  {
-    gl_ext_framebuffer_object = false;
-    gl_ext_blend_color = false;
-  }
-
-  if (gl_version <= OPENGL_VERSION_1_1)
-  {
-    lprintf(LO_DEBUG, "gld_InitOpenGL: Compatibility mode is used.\n");
-    gl_arb_texture_non_power_of_two = false;
-    gl_arb_multitexture = false;
-    gl_arb_texture_compression = false;
-    gl_ext_framebuffer_object = false;
-    gl_ext_packed_depth_stencil = false;
-    gl_ext_blend_color = false;
-    gl_use_stencil = false;
-    gl_ext_arb_vertex_buffer_object = false;
-    gl_arb_pixel_buffer_object = false;
-    gl_arb_shader_objects = false;
-    GLEXT_CLAMP_TO_EDGE = GL_CLAMP;
-    gl_version = OPENGL_VERSION_1_1;
-  }
 
   //init states manager
   gld_EnableMultisample(true);
