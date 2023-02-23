@@ -801,7 +801,7 @@ static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buff
         }
 #endif
         //e6y: Boom's color maps
-        if (gl_boom_colormaps && use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
+        if (gl_boom_colormaps && use_boom_cm && !comp[comp_skymap])
         {
           const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
           buffer[pos+0]=gtable[playpal[colormap[source[j]]*3+0]];
