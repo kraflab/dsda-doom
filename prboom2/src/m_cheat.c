@@ -166,7 +166,7 @@ cheatseq_t cheat[] = {
   CHEAT("idmypos",    NULL,               cht_always, cheat_mypos, 0, false),
   CHEAT("idrate",     "Frame rate",       cht_always, cheat_rate, 0, false),
   // phares
-  CHEAT("tntcomp",    NULL,               not_demo, cheat_comp, 0, false),
+  CHEAT("tntcomp",    NULL,               not_demo, cheat_comp, -2, false),
   // jff 2/01/98 kill all monsters
   CHEAT("tntem",      NULL,               not_demo, cheat_massacre, 0, false),
   // killough 2/07/98: moved from am_map.c
@@ -521,15 +521,21 @@ static void cheat_rate()
 
 // compatibility cheat
 
-static void cheat_comp()
+static void cheat_comp(char buf[3])
 {
-  // CPhipps - modified for new compatibility system
-  compatibility_level++; compatibility_level %= MAX_COMPATIBILITY_LEVEL;
-  // must call G_Compatibility after changing compatibility_level
-  // (fixes sf bug number 1558738)
-  G_Compatibility();
-  doom_printf("New compatibility level:\n%s",
-        comp_lev_str[compatibility_level]);
+  compatibility_level = (buf[0] - '0') * 10 + buf[1] - '0';
+
+  if (compatibility_level < 0 ||
+      compatibility_level >= MAX_COMPATIBILITY_LEVEL ||
+      (compatibility_level > 17 && compatibility_level < 21))
+  {
+    doom_printf("Invalid complevel");
+  }
+  else
+  {
+    G_Compatibility(); // this is missing options checking
+    doom_printf(comp_lev_str[compatibility_level]);
+  }
 }
 
 // variable friction cheat
