@@ -48,6 +48,7 @@
 #include "p_tick.h"
 #include "w_wad.h"
 #include "p_setup.h"
+#include "p_user.h"
 #include "lprintf.h"
 
 #include "heretic/def.h"
@@ -830,18 +831,36 @@ static void cheat_fly()
 {
   if (plyr->mo != NULL)
   {
-    plyr->cheats ^= CF_FLY;
-    if (plyr->cheats & CF_FLY)
+    if (raven)
     {
-      plyr->mo->flags |= MF_NOGRAVITY;
-      plyr->mo->flags |= MF_FLY;
-      plyr->message = "Fly mode ON";
+      if (plyr->powers[pw_flight])
+      {
+        P_PlayerEndFlight(plyr);
+        plyr->powers[pw_flight] = 0;
+        plyr->message = "Fly mode OFF";
+      }
+      else
+      {
+        P_GivePower(plyr, pw_flight);
+        plyr->powers[pw_flight] = -1;
+        plyr->message = "Fly mode ON";
+      }
     }
     else
     {
-      plyr->mo->flags &= ~MF_NOGRAVITY;
-      plyr->mo->flags &= ~MF_FLY;
-      plyr->message = "Fly mode OFF";
+      plyr->cheats ^= CF_FLY;
+      if (plyr->cheats & CF_FLY)
+      {
+        plyr->mo->flags |= MF_NOGRAVITY;
+        plyr->mo->flags |= MF_FLY;
+        plyr->message = "Fly mode ON";
+      }
+      else
+      {
+        plyr->mo->flags &= ~MF_NOGRAVITY;
+        plyr->mo->flags &= ~MF_FLY;
+        plyr->message = "Fly mode OFF";
+      }
     }
   }
 }

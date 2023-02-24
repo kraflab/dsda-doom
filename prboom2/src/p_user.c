@@ -578,6 +578,17 @@ void P_DeathThink (player_t* player)
   R_SmoothPlaying_Reset(player); // e6y
 }
 
+void P_PlayerEndFlight(player_t * player)
+{
+  if (player->mo->z != player->mo->floorz)
+  {
+    player->centering = true;
+  }
+
+  player->mo->flags2 &= ~MF2_FLY;
+  player->mo->flags &= ~MF_NOGRAVITY;
+}
+
 //
 // P_PlayerThink
 //
@@ -979,13 +990,7 @@ void P_PlayerThink (player_t* player)
   {
     if (!--player->powers[pw_flight])
     {
-      if (player->mo->z != player->mo->floorz)
-      {
-          player->centering = true;
-      }
-
-      player->mo->flags2 &= ~MF2_FLY;
-      player->mo->flags &= ~MF_NOGRAVITY;
+      P_PlayerEndFlight(player);
     }
   }
 

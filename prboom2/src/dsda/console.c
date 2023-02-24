@@ -33,6 +33,7 @@
 #include "p_setup.h"
 #include "p_spec.h"
 #include "p_tick.h"
+#include "p_user.h"
 #include "s_sound.h"
 #include "v_video.h"
 
@@ -402,12 +403,7 @@ static dboolean console_PlayerRemovePower(const char* command, const char* args)
     else if (power == pw_invisibility)
       target_player.mo->flags &= ~MF_SHADOW;
     else if (power == pw_flight) {
-      if (target_player.mo->z != target_player.mo->floorz)
-      {
-        target_player.centering = true;
-      }
-      target_player.mo->flags2 &= ~MF2_FLY;
-      target_player.mo->flags &= ~MF_NOGRAVITY;
+      P_PlayerEndFlight(&target_player);
     }
     else if (power == pw_weaponlevel2 && heretic) {
       if ((target_player.readyweapon == wp_phoenixrod)

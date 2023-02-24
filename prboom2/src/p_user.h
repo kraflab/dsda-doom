@@ -65,4 +65,6 @@ void P_TeleportOther(mobj_t * victim);
 dboolean P_UndoPlayerMorph(player_t * player);
 void P_MorphPlayerThink(player_t * player);
 
+void P_PlayerEndFlight(player_t * player);
+
 #endif  /* __P_USER__ */
