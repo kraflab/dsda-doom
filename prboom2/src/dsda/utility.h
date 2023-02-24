@@ -52,6 +52,8 @@ typedef struct {
 void dsda_InitString(dsda_string_t* dest, const char* value);
 void dsda_FreeString(dsda_string_t* dest);
 void dsda_StringCat(dsda_string_t* dest, const char* source);
+void dsda_StringCatF(dsda_string_t* dest, const char* format, ...) __attribute__((format(printf,2,3)));
+void dsda_StringPrintF(dsda_string_t* dest, const char* format, ...) __attribute__((format(printf,2,3)));
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum);
 dboolean dsda_HasFileExt(const char* file, const char* ext);
 char** dsda_SplitString(char* str, const char* delimiter);

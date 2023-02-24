@@ -16,6 +16,7 @@
 //
 
 #include <math.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -39,16 +40,44 @@ void dsda_FreeString(dsda_string_t* dest) {
   dsda_InitString(dest, NULL);
 }
 
-void dsda_StringCat(dsda_string_t* dest, const char* source) {
-  if (!source || (!source[0] && dest->string))
-    return;
-
-  dest->size += strlen(source);
+static void dsda_ExpandString(dsda_string_t* dest, size_t size) {
+  dest->size += size;
   if (dest->string)
     dest->string = Z_Realloc(dest->string, dest->size);
   else
     dest->string = Z_Calloc(dest->size, 1);
+}
+
+void dsda_StringCat(dsda_string_t* dest, const char* source) {
+  if (!source || (!source[0] && dest->string))
+    return;
+
+  dsda_ExpandString(dest, strlen(source));
   strcat(dest->string, source);
+}
+
+void dsda_StringCatF(dsda_string_t* dest, const char* format, ...) {
+  size_t length;
+  va_list v;
+
+  va_start(v, format);
+  length = vsnprintf(NULL, 0, format, v);
+  dsda_ExpandString(dest, length);
+  vsnprintf(dest->string + dest->size - 1 - length, length + 1, format, v);
+  va_end(v);
+}
+
+void dsda_StringPrintF(dsda_string_t* dest, const char* format, ...) {
+  size_t length;
+  va_list v;
+
+  dsda_InitString(dest, NULL);
+
+  va_start(v, format);
+  length = vsnprintf(NULL, 0, format, v);
+  dsda_ExpandString(dest, length);
+  vsnprintf(dest->string + dest->size - 1 - length, length + 1, format, v);
+  va_end(v);
 }
 
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
