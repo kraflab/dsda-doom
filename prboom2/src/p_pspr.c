@@ -1116,12 +1116,17 @@ void A_FireShotgun2(player_t *player, pspdef_t *psp)
 
 void A_FireCGun(player_t *player, pspdef_t *psp)
 {
+  dboolean has_ammo;
+
   CHECK_WEAPON_CODEPOINTER("A_FireCGun", player);
 
-  if (player->ammo[weaponinfo[player->readyweapon].ammo] || comp[comp_sound])
+  has_ammo = player->ammo[weaponinfo[player->readyweapon].ammo] ||
+             player->cheats & CF_INFINITE_AMMO;
+
+  if (has_ammo || comp[comp_sound])
     S_StartMobjSound(player->mo, sfx_pistol);
 
-  if (!player->ammo[weaponinfo[player->readyweapon].ammo])
+  if (!has_ammo)
     return;
 
   P_SetMobjState(player->mo, S_PLAY_ATK2);
