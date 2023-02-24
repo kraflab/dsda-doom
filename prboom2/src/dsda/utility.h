@@ -23,6 +23,10 @@
 #include "d_ticcmd.h"
 #include "tables.h"
 
+#ifndef __GNUC__
+#define __attribute__(x)
+#endif
+
 #define FIXED_STRING_LENGTH 16
 #define COMMAND_MOVEMENT_STRING_LENGTH 18
 
