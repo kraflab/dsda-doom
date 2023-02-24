@@ -842,7 +842,7 @@ static void cheat_fly()
       else
       {
         P_GivePower(plyr, pw_flight);
-        plyr->powers[pw_flight] = -1;
+        plyr->powers[pw_flight] = INT_MAX;
         plyr->message = "Fly mode ON";
       }
     }
