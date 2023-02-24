@@ -30,6 +30,7 @@
 
 #include "dsda/args.h"
 #include "dsda/mkdir.h"
+#include "dsda/utility.h"
 
 #include "data_organizer.h"
 
@@ -91,14 +92,14 @@ char* dsda_DetectDirectory(const char* env_key, int arg_id) {
 }
 
 void dsda_InitDataDir(void) {
-  int length;
   char* parent_directory;
+  dsda_string_t str;
 
   parent_directory = dsda_DetectDirectory("DOOMDATADIR", dsda_arg_data);
-  length = strlen(parent_directory) + strlen(dsda_data_root) + 2; // "/" + "\0"
-  dsda_base_data_dir = Z_Malloc(length);
-  snprintf(dsda_base_data_dir, length, "%s/%s", parent_directory, dsda_data_root);
 
+  dsda_StringPrintF(&str, "%s/%s", parent_directory, dsda_data_root);
+
+  dsda_base_data_dir = str.string;
   dsda_MkDir(dsda_base_data_dir, true);
 
   Z_Free(parent_directory);
@@ -106,14 +107,15 @@ void dsda_InitDataDir(void) {
 
 static void dsda_InitWadDataDir(void) {
   int i;
-  int length = 0;
   const int iwad_index = 0;
   int pwad_index = 1;
   struct stat sbuf;
+  dsda_string_t str;
 
   for (i = 0; i < numwadfiles; ++i) {
     const char* start;
     char* result;
+    int length;
 
     start = PathFindFileName(wadfiles[i].name);
 
@@ -143,24 +145,15 @@ static void dsda_InitWadDataDir(void) {
     }
   }
 
-  length = strlen(dsda_base_data_dir);
-  for (i = 0; i < DATA_DIR_LIMIT; ++i) {
-    if (dsda_data_dir_strings[i])
-      length += strlen(dsda_data_dir_strings[i]) + 1; // "/"
-  }
+  dsda_InitString(&str, dsda_base_data_dir);
 
-  dsda_wad_data_dir = Z_Calloc(length + 1, 1); // "\0"
-
-  strcat(dsda_wad_data_dir, dsda_base_data_dir);
-
-  for (i = 0; i < DATA_DIR_LIMIT; ++i) {
+  for (i = 0; i < DATA_DIR_LIMIT; ++i)
     if (dsda_data_dir_strings[i]) {
-      strcat(dsda_wad_data_dir, "/");
-      strcat(dsda_wad_data_dir, dsda_data_dir_strings[i]);
-
-      dsda_MkDir(dsda_wad_data_dir, true);
+      dsda_StringCatF(&str, "/%s", dsda_data_dir_strings[i]);
+      dsda_MkDir(str.string, true);
     }
-  }
+
+  dsda_wad_data_dir = str.string;
 
   lprintf(LO_INFO, "Using data file directory: %s\n", dsda_wad_data_dir);
 }
