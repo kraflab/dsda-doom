@@ -5046,6 +5046,10 @@ dboolean Raven_P_LookForPlayers(mobj_t * actor, dboolean allaround)
             return false;       // done looking
 
         player = &players[actor->lastlook];
+
+        if (players->cheats & CF_NOTARGET)
+          continue; // no target
+
         if (player->health <= 0)
             continue;           // dead
         if (!P_CheckSight(actor, player->mo))
