@@ -54,6 +54,8 @@
 #include "am_map.h"
 #include "lprintf.h"
 
+#include "dsda/repair.h"
+
 static FILE *levelinfo;
 
 static int gld_max_vertexes = 0;
@@ -453,7 +455,12 @@ static void CALLBACK ntessEnd( void )
 // There is no more HOM at the starting area on MAP16 @ Eternal.wad
 // I hope nothing was broken
 
-static void gld_PrecalculateSector(int num)
+static inline dboolean line_is_forward(uint32_t meta)
+{
+  return (meta & REPAIR_BACKWARD) == 0;
+}
+
+static void gld_PrecalculateSector(int num, struct idset* ls)
 {
   int i;
   dboolean *lineadded=NULL;
@@ -474,12 +481,13 @@ static void gld_PrecalculateSector(int num)
   int vertexnum;
 
   currentsector=num;
-  lineadded=Z_Malloc(sectors[num].linecount*sizeof(dboolean));
+  lineadded=Z_Malloc(ls->count*sizeof(dboolean));
   if (!lineadded)
   {
     if (levelinfo) fclose(levelinfo);
     return;
   }
+  memset(lineadded, 0, ls->count * sizeof(*lineadded));
   // init tesselator
   tess=gluNewTess();
   if (!tess)
@@ -495,44 +503,12 @@ static void gld_PrecalculateSector(int num)
   gluTessCallback(tess, GLU_TESS_COMBINE, ntessCombine);
   gluTessCallback(tess, GLU_TESS_END, ntessEnd);
   if (levelinfo) fprintf(levelinfo, "sector %i, %i lines in sector\n", num, sectors[num].linecount);
-  // remove any line which has both sides in the same sector (i.e. Doom2 Map01 Sector 1)
-  for (i=0; i<sectors[num].linecount; i++)
-  {
-    lineadded[i]=false;
-    if (sectors[num].lines[i]->sidenum[0]!=NO_INDEX)
-      if (sectors[num].lines[i]->sidenum[1]!=NO_INDEX)
-        if (sides[sectors[num].lines[i]->sidenum[0]].sector
-          ==sides[sectors[num].lines[i]->sidenum[1]].sector)
-        {
-          lineadded[i]=true;
-          if (levelinfo) fprintf(levelinfo, "line %4i (iLineID %4i) has both sides in same sector (removed)\n", i, sectors[num].lines[i]->iLineID);
-        }
-  }
-  // e6y
-  // Remove any line which has a clone with the same vertexes and orientation
-  // (i.e. MM.WAD Map22 lines 1298 and 2397)
-  // There is no more HOM on Memento Mori MAP22 sector 299
-  for (i = 0; i < sectors[num].linecount - 1; i++)
-  {
-    int j;
-    for (j = i + 1; j < sectors[num].linecount; j++)
-    {
-      if (sectors[num].lines[i]->v1 == sectors[num].lines[j]->v1 &&
-          sectors[num].lines[i]->v2 == sectors[num].lines[j]->v2 &&
-          sectors[num].lines[i]->frontsector == sectors[num].lines[j]->frontsector &&
-          sectors[num].lines[i]->backsector == sectors[num].lines[j]->backsector &&
-          lineadded[i] == false && lineadded[j] == false)
-      {
-        lineadded[i] = true;
-      }
-    }
-  }
 
   // initialize variables
-  linecount=sectors[num].linecount;
+  linecount=ls->count;
   oldline=0;
   currentline=0;
-  startvertex=sectors[num].lines[currentline]->v2;
+  startvertex=lines[ls->entries[0].id].v2;
   currentloop=0;
   vertexnum=0;
   maxvertexnum=0;
@@ -543,19 +519,23 @@ static void gld_PrecalculateSector(int num)
   gluTessBeginContour(tess);
   while (linecount)
   {
+    line_t *l;
+    uint32_t m;
     // if there is no connected line, then start new loop
     if ((oldline==currentline) || (startvertex==currentvertex))
     {
       currentline=-1;
-      for (i=0; i<sectors[num].linecount; i++)
+      for (i=0; i<ls->count; i++)
         if (!lineadded[i])
         {
+          l = &lines[ls->entries[i].id];
+          m = ls->entries[i].meta;
           currentline=i;
           currentloop++;
-          if ((sectors[num].lines[currentline]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[currentline]->sidenum[0]].sector==&sectors[num]) : false)
-            startvertex=sectors[num].lines[currentline]->v1;
+          if (line_is_forward(m))
+            startvertex=l->v1;
           else
-            startvertex=sectors[num].lines[currentline]->v2;
+            startvertex=l->v2;
           if (levelinfo) fprintf(levelinfo, "\tNew Loop %3i\n", currentloop);
           if (oldline!=0)
           {
@@ -573,34 +553,37 @@ static void gld_PrecalculateSector(int num)
       break;
     // add current line
     lineadded[currentline]=true;
+    l = &lines[ls->entries[currentline].id];
+    m = ls->entries[currentline].meta;
     // check if currentsector is on the front side of the line ...
-    if ((sectors[num].lines[currentline]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[currentline]->sidenum[0]].sector==&sectors[num]) : false)
+    if (line_is_forward(m))
     {
       // v2 is ending vertex
-      currentvertex=sectors[num].lines[currentline]->v2;
+      currentvertex=l->v2;
       // calculate the angle of this line for use below
-      lineangle = R_PointToAngle2(sectors[num].lines[currentline]->v1->x,sectors[num].lines[currentline]->v1->y,sectors[num].lines[currentline]->v2->x,sectors[num].lines[currentline]->v2->y);
+      lineangle = R_PointToAngle2(l->v1->x,l->v1->y,l->v2->x,l->v2->y);
+
       lineangle=(lineangle>>ANGLETOFINESHIFT)*360/8192;
 
       //e6y: direction of a line shouldn't be changed
       //if (lineangle>=180)
       //  lineangle=lineangle-360;
 
-      if (levelinfo) fprintf(levelinfo, "\t\tAdded Line %4i to Loop, iLineID %5i, Angle: %4i, flipped false\n", currentline, sectors[num].lines[currentline]->iLineID, lineangle);
+      if (levelinfo) fprintf(levelinfo, "\t\tAdded Line %4i to Loop, iLineID %5i, Angle: %4i, flipped false\n", currentline, (int)(l - lines), lineangle);
     }
     else // ... or on the back side
     {
       // v1 is ending vertex
-      currentvertex=sectors[num].lines[currentline]->v1;
+      currentvertex=l->v1;
       // calculate the angle of this line for use below
-      lineangle = R_PointToAngle2(sectors[num].lines[currentline]->v2->x,sectors[num].lines[currentline]->v2->y,sectors[num].lines[currentline]->v1->x,sectors[num].lines[currentline]->v1->y);
+      lineangle = R_PointToAngle2(l->v2->x,l->v2->y,l->v1->x,l->v1->y);
       lineangle=(lineangle>>ANGLETOFINESHIFT)*360/8192;
 
       //e6y: direction of a line shouldn't be changed
       //if (lineangle>=180)
       //  lineangle=lineangle-360;
 
-      if (levelinfo) fprintf(levelinfo, "\t\tAdded Line %4i to Loop, iLineID %5i, Angle: %4i, flipped true\n", currentline, sectors[num].lines[currentline]->iLineID, lineangle);
+      if (levelinfo) fprintf(levelinfo, "\t\tAdded Line %4i to Loop, iLineID %5i, Angle: %4i, flipped true\n", currentline, (int)(l - lines), lineangle);
     }
     if (vertexnum>=maxvertexnum)
     {
@@ -629,16 +612,18 @@ static void gld_PrecalculateSector(int num)
     else
       backsector=NULL;*/
     // search through all lines of the current sector
-    for (i=0; i<sectors[num].linecount; i++)
-      if (!lineadded[i]) // if the line isn't already added ...
+    for (i=0; i<ls->count; i++)
+      if (!lineadded[i]) { // if the line isn't already added ...
+        l = &lines[ls->entries[i].id];
+        m = ls->entries[i].meta;
         // check if one of the vertexes is the same as the current vertex
-        if ((sectors[num].lines[i]->v1==currentvertex) || (sectors[num].lines[i]->v2==currentvertex))
+        if ((l->v1==currentvertex) || (l->v2==currentvertex))
         {
           // calculate the angle of this best line candidate
-          if ((sectors[num].lines[i]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[i]->sidenum[0]].sector==&sectors[num]) : false)
-            angle = R_PointToAngle2(sectors[num].lines[i]->v1->x,sectors[num].lines[i]->v1->y,sectors[num].lines[i]->v2->x,sectors[num].lines[i]->v2->y);
+          if (line_is_forward(m))
+            angle = R_PointToAngle2(l->v1->x,l->v1->y,l->v2->x,l->v2->y);
           else
-            angle = R_PointToAngle2(sectors[num].lines[i]->v2->x,sectors[num].lines[i]->v2->y,sectors[num].lines[i]->v1->x,sectors[num].lines[i]->v1->y);
+            angle = R_PointToAngle2(l->v2->x,l->v2->y,l->v1->x,l->v1->y);
           angle=(angle>>ANGLETOFINESHIFT)*360/8192;
 
           //e6y: direction of a line shouldn't be changed
@@ -646,16 +631,16 @@ static void gld_PrecalculateSector(int num)
           //  angle=angle-360;
 
           // check if line is flipped ...
-          if ((sectors[num].lines[i]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[i]->sidenum[0]].sector==&sectors[num]) : false)
+          if (line_is_forward(m))
           {
             // when the line is not flipped and startvertex is not the currentvertex then skip this line
-            if (sectors[num].lines[i]->v1!=currentvertex)
+            if (l->v1!=currentvertex)
               continue;
           }
           else
           {
             // when the line is flipped and endvertex is not the currentvertex then skip this line
-            if (sectors[num].lines[i]->v2!=currentvertex)
+            if (l->v2!=currentvertex)
               continue;
           }
           // set new best line candidate
@@ -677,6 +662,7 @@ static void gld_PrecalculateSector(int num)
               bestlinecount++;
             }
         }
+      }
     if (bestline!=-1) // if a line is found, make it the current line
     {
       currentline=bestline;
@@ -689,6 +675,7 @@ static void gld_PrecalculateSector(int num)
   gluTessEndContour(tess);
   if (levelinfo) fprintf(levelinfo, "gluTessEndPolygon\n");
   gluTessEndPolygon(tess);
+  sectors[num].flags |= SECTOR_IS_TESSELLATED;
   // clean memory
   gluDeleteTess(tess);
   Z_Free(v);
@@ -714,7 +701,7 @@ static void gld_GetSubSectorVertices(void)
   {
     ssector = &subsectors[i];
 
-    if ((ssector->sector->flags & SECTOR_IS_CLOSED) && !triangulate_subsectors)
+    if ((ssector->sector->flags & SECTOR_IS_TESSELLATED) && !triangulate_subsectors)
       continue;
 
     numedgepoints  = ssector->numlines;
@@ -845,12 +832,12 @@ static void gld_MarkSectorsForClamp(void)
 
 static void gld_PreprocessSectors(void)
 {
-  char *vertexcheck = NULL;
-  char *vertexcheck2 = NULL;
-  int v1num;
-  int v2num;
   int i;
-  int j;
+  struct idset lineset;
+
+  ids_init(&lineset);
+
+  repair_setup();
 
 #ifdef PRBOOM_DEBUG
   levelinfo=fopen("levelinfo.txt","a");
@@ -899,88 +886,21 @@ static void gld_PreprocessSectors(void)
     gld_AddGlobalVertexes(numvertexes*2);
   }
 
-  if (numvertexes)
-  {
-    vertexcheck=Z_Malloc(numvertexes*sizeof(vertexcheck[0]));
-    vertexcheck2=Z_Malloc(numvertexes*sizeof(vertexcheck2[0]));
-    if (!vertexcheck || !vertexcheck2)
-    {
-      if (levelinfo) fclose(levelinfo);
-      I_Error("gld_PreprocessSectors: Not enough memory for array vertexcheck");
-      return;
-    }
-  }
-
   for (i=0; i<numsectors; i++)
   {
-    memset(vertexcheck,0,numvertexes*sizeof(vertexcheck[0]));
-    memset(vertexcheck2,0,numvertexes*sizeof(vertexcheck2[0]));
-    for (j=0; j<sectors[i].linecount; j++)
-    {
-      v1num=((intptr_t)sectors[i].lines[j]->v1-(intptr_t)vertexes)/sizeof(vertex_t);
-      v2num=((intptr_t)sectors[i].lines[j]->v2-(intptr_t)vertexes)/sizeof(vertex_t);
-      if ((v1num>=numvertexes) || (v2num>=numvertexes))
-        continue;
+    repair_sector_prepare(i, &lineset);
 
-      // e6y: for correct handling of missing textures.
-      // We do not need to apply some algos for isolated lines.
-      vertexcheck2[v1num]++;
-      vertexcheck2[v2num]++;
-
-      if (sectors[i].lines[j]->sidenum[0]!=NO_INDEX)
-        if (sides[sectors[i].lines[j]->sidenum[0]].sector==&sectors[i])
-        {
-          vertexcheck[v1num]|=1;
-          vertexcheck[v2num]|=2;
-        }
-      if (sectors[i].lines[j]->sidenum[1]!=NO_INDEX)
-        if (sides[sectors[i].lines[j]->sidenum[1]].sector==&sectors[i])
-        {
-          vertexcheck[v1num]|=2;
-          vertexcheck[v2num]|=1;
-        }
-    }
-    if (sectors[i].linecount<3)
-    {
 #ifdef PRBOOM_DEBUG
+    if (sectors[i].flags & SECTOR_IS_CLOSED == 0) {
       lprintf(LO_ERROR, "sector %i is not closed! %i lines in sector\n", i, sectors[i].linecount);
-#endif
       if (levelinfo) fprintf(levelinfo, "sector %i is not closed! %i lines in sector\n", i, sectors[i].linecount);
-      sectors[i].flags &= ~SECTOR_IS_CLOSED;
     }
-    else
-    {
-      sectors[i].flags |= SECTOR_IS_CLOSED;
-      for (j=0; j<numvertexes; j++)
-      {
-        if ((vertexcheck[j]==1) || (vertexcheck[j]==2))
-        {
-#ifdef PRBOOM_DEBUG
-          lprintf(LO_ERROR, "sector %i is not closed at vertex %i ! %i lines in sector\n", i, j, sectors[i].linecount);
 #endif
-          if (levelinfo) fprintf(levelinfo, "sector %i is not closed at vertex %i ! %i lines in sector\n", i, j, sectors[i].linecount);
-          sectors[i].flags &= ~SECTOR_IS_CLOSED;
-        }
-      }
-    }
-
-    // e6y: marking all the isolated lines
-    for (j=0; j<sectors[i].linecount; j++)
-    {
-      v1num=((intptr_t)sectors[i].lines[j]->v1-(intptr_t)vertexes)/sizeof(vertex_t);
-      v2num=((intptr_t)sectors[i].lines[j]->v2-(intptr_t)vertexes)/sizeof(vertex_t);
-      if (vertexcheck2[v1num] < 2 && vertexcheck2[v2num] < 2)
-      {
-        sectors[i].lines[j]->r_flags |= RF_ISOLATED;
-      }
-    }
-
-    // figgi -- adapted for glnodes
-    if (sectors[i].flags & SECTOR_IS_CLOSED)
-      gld_PrecalculateSector(i);
+    if (sectors[i].flags & SECTOR_IS_CLOSED ||
+        (lineset.count >= 3 && repair_sector(&lineset)))
+      // figgi -- adapted for glnodes
+      gld_PrecalculateSector(i, &lineset);
   }
-  Z_Free(vertexcheck);
-  Z_Free(vertexcheck2);
 
   // figgi -- adapted for glnodes
   if (numnodes)
@@ -997,6 +917,9 @@ static void gld_PreprocessSectors(void)
 
   //e6y: for seamless rendering
   gld_MarkSectorsForClamp();
+
+  repair_teardown();
+  ids_destroy(&lineset);
 }
 
 static void gld_PreprocessSegs(void)

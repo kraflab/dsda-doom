@@ -149,8 +149,8 @@ void as_edge(struct astar* as, struct as_node* node, unsigned long cost,
   unsigned long total;
   struct as_node* cur = as->cur;
 
-  if (node->prev != NULL && node->cost < cost + cur->cost)
-    // More expensive path to existing node, ignore it
+  if (node->prev != NULL && node->cost <= cost + cur->cost)
+    // Equal or more expensive path to existing node, ignore it
     return;
 
   node->prev = cur;

@@ -206,17 +206,19 @@ static struct rnode* rnode_derive(struct rctx* ctx, struct rnode* rn,
 
   // Temporarily add line for comparison purposes below
   ids_add(&rn->lines, lid, 0);
- 
+
   // FIXME: use a hash table
   for (pn = ctx->nodes; pn && !match; pn = pn->next) {
-    if (pn->lines.count != rn->lines.count) {
-      match = true;
-      // FIXME: use a sorted list or something to avoid N^2 behavior
-      for (i = 0; i < rn->lines.count; ++i) {
-        if (!ids_find(&pn->lines, rn->lines.entries[i].id)) {
-          match = false;
-          break;
-        }
+    if (pn == rn)
+      continue;
+    if (pn->lines.count != rn->lines.count)
+      continue;
+    match = true;
+    // FIXME: use a sorted list or something to avoid N^2 behavior
+    for (i = 0; i < rn->lines.count; ++i) {
+      if (!ids_find(&pn->lines, rn->lines.entries[i].id)) {
+        match = false;
+        break;
       }
     }
   }
