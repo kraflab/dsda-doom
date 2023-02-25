@@ -197,6 +197,8 @@ set(COMMON_SRC
     dsda/udmf.h
     dsda/utility.c
     dsda/utility.h
+    dsda/astar.h
+    dsda/astar.c
     dstrings.c
     dstrings.h
     d_deh.c
