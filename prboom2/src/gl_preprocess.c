@@ -41,6 +41,7 @@
 #define CALLBACK
 #endif
 
+#include <assert.h>
 #include <math.h>
 
 #include "gl_opengl.h"
@@ -243,6 +244,7 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
       if (flats_vbo)
       {
         int currentsector=ssec->sector->iSectorID;
+        sector_t* container = ssec->sector->gl_pp;
         GLLoopDef **loop;
         int *loopcount;
 
@@ -250,6 +252,12 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
         {
           loop = &subsectorloops[ ssidx ].loops;
           loopcount = &subsectorloops[ ssidx ].loopcount;
+        }
+        else if (container != NULL)
+        {
+          // Give triangles to ultimate container of self-referencing sector
+          loop = &sectorloops[container - sectors].loops;
+          loopcount = &sectorloops[container - sectors].loopcount;
         }
         else
         {
@@ -295,8 +303,13 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
     // the partition lines that carve out the subsector.
     // special case for trivial maps (no nodes, single subsector)
     int ssidx = (numnodes != 0) ? bspnode & (~NF_SUBSECTOR) : 0;
+    subsector_t* ssec = &subsectors[ssidx];
+    sector_t* sec = ssec->sector;
+    sector_t* cont = sec->gl_pp;
 
-    if (!(subsectors[ssidx].sector->flags & SECTOR_IS_CLOSED) || triangulate_subsectors)
+    if (!(sec->flags & SECTOR_IS_CLOSED) ||
+        (cont != NULL && !(cont->flags & SECTOR_IS_CLOSED)) ||
+        triangulate_subsectors)
       gld_FlatConvexCarver(ssidx, numdivlines, divlines);
     return;
   }
@@ -695,6 +708,175 @@ static void gld_PrecalculateSector(int num)
   Z_Free(lineadded);
 }
 
+static dboolean gld_IsRealLine(sector_t* sector, line_t* line)
+{
+  int i;
+  int v1c;
+  int v2c;
+
+  // Obvious case -- at least one side isn't sector itself
+  if (line->frontsector != sector || line->backsector != sector)
+    return true;
+
+  // Distinguish a normal mid-sector linedef from a mapping trick by
+  // checking connectedness of vertices
+  v1c = v2c = 0;
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    if (sector->lines[i] == line)
+      continue;
+    if (sector->lines[i]->v1 == line->v1 || sector->lines[i]->v2 == line->v1)
+      v1c++;
+    if (sector->lines[i]->v2 == line->v2 || sector->lines[i]->v2 == line->v2)
+      v2c++;
+  }
+
+  // If the line is part of the sector contour (i.e. each vertex has
+  // 1 neighbor), it's a legitimate self-referencing line.  Otherwise it's real.
+  return v1c != 1 && v2c != 1;
+}
+
+static inline dboolean gld_SeesRealSector(sector_t* sector, sector_t* other)
+{
+  return other != NULL && other != sector && (other->flags & SECTOR_IS_REAL);
+}
+
+static sector_t* gld_RealSectorAcrossLine(sector_t* sector, line_t* line)
+{
+  if (gld_SeesRealSector(sector, line->frontsector))
+    return line->frontsector;
+  if (gld_SeesRealSector(sector, line->backsector))
+    return line->backsector;
+  return NULL;
+}
+
+static void gld_MarkRealSectors(void)
+{
+  // Mark all sectors that are "real", i.e. that don't use self-referencing
+  // linedefs, or are transitively reachable from such a sector via sidedefs.
+  // This should be the vast majority of the map.
+  int i, j;
+  dboolean real;
+  dboolean changing;
+  sector_t* queue = NULL;
+  sector_t* cur;
+
+  // First, mark all sectors that are directly real (base case)
+  for (i = 0; i < numsectors; i++) {
+    real = true;
+    for (j = 0; j < sectors[i].linecount; j++) {
+      if (!gld_IsRealLine(&sectors[i], sectors[i].lines[j])) {
+        real = false;
+        break;
+      }
+    }
+    if (real) {
+      sectors[i].flags |= SECTOR_IS_REAL;
+      // Enqueue sector for visting neighbors
+      sectors[i].gl_pp = queue;
+      queue = &sectors[i];
+    }
+  }
+
+  // Now mark all transitively real sectors
+  while (queue != NULL)
+  {
+    cur = queue;
+    queue = queue->gl_pp;
+    cur->gl_pp = NULL;
+
+    for (i = 0; i < cur->linecount; i++)
+    {
+      line_t* l = cur->lines[i];
+      if (l->frontsector != NULL && !(l->frontsector->flags & SECTOR_IS_REAL))
+      {
+        l->frontsector->flags |= SECTOR_IS_REAL;
+        // Enqueue sector for visting neighbors
+        l->frontsector->gl_pp = queue;
+        queue = l->frontsector;
+      }
+      if (l->backsector != NULL && !(l->backsector->flags & SECTOR_IS_REAL))
+      {
+        l->backsector->flags |= SECTOR_IS_REAL;
+        // Enqueue sector for visting neighbors
+        l->backsector->gl_pp = queue;
+        queue = l->backsector;
+      }
+    }
+  }
+}
+
+static sector_t* gld_ResolveContainer(sector_t* sector, sector_t* container)
+{
+  if (container == NULL)
+    return NULL;
+  // Chase down target recursively
+  while (container->gl_pp != NULL)
+    container = container->gl_pp;
+  // Avoid cycle creation
+  return container == sector ? NULL : container;
+}
+
+static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
+{
+  int i;
+  sector_t* cont;
+
+  // Real sectors are the opposite of self-referencing
+  if (sector->flags & SECTOR_IS_REAL)
+    return NULL;
+
+  // Invariant: sector hasn't had container assigned yet
+  assert(sector->selfref_container == NULL);
+
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    line_t* l = sector->lines[i];
+    if (!gld_IsRealLine(sector, l))
+    {
+      // Self-referencing line, look for a sector by projecting
+      // fraction of a unit orthogonally from the midpoint
+      angle_t ang = R_PointToAngle2(l->v1->x, l->v1->y, l->v2->x, l->v2->y) + ANG90;
+      fixed_t offsx = finecosine[ang >> ANGLETOFINESHIFT] >> 5;
+      fixed_t offsy = finesine[ang >> ANGLETOFINESHIFT] >> 5;
+      fixed_t xmid = (l->v1->x + l->v2->x) >> 1;
+      fixed_t ymid = (l->v1->y + l->v2->y) >> 1;
+      fixed_t xp1 = xmid + offsx;
+      fixed_t yp1 = ymid + offsy;
+      fixed_t xp2 = xmid - offsx;
+      fixed_t yp2 = ymid - offsy;
+
+      if ((cont = gld_ResolveContainer(sector, R_PointInSubsector(xp1, yp1)->sector)))
+        return cont;
+      if ((cont = gld_ResolveContainer(sector, R_PointInSubsector(xp2, yp2)->sector)))
+        return cont;
+    }
+    else
+    {
+      // Normal line, crib container from neighbor if possible
+      if ((cont = gld_ResolveContainer(sector, l->frontsector)))
+        return cont;
+      if ((cont = gld_ResolveContainer(sector, l->backsector)))
+        return cont;
+    }
+  }
+
+  return NULL;
+}
+
+static void gld_ResolveContainers(void)
+{
+  // Perform final resolution of containers for sectors that have them
+  int i;
+
+  for (i = 0; i < numsectors; i++)
+  {
+    if (sectors[i].gl_pp != NULL)
+      sectors[i].gl_pp =
+          gld_ResolveContainer(&sectors[i], sectors[i].gl_pp);
+  }
+}
+
 /********************************************
  * Name     : gld_GetSubSectorVertices      *
  * created  : 08/13/00                      *
@@ -708,13 +890,16 @@ static void gld_GetSubSectorVertices(void)
 {
   int      i, j;
   int      numedgepoints;
-  subsector_t* ssector;
 
   for(i = 0; i < numsubsectors; i++)
   {
-    ssector = &subsectors[i];
+    subsector_t* ssector = &subsectors[i];
+    sector_t* sec = ssector->sector;
+    sector_t* cont = sec->gl_pp;
 
-    if ((ssector->sector->flags & SECTOR_IS_CLOSED) && !triangulate_subsectors)
+    if (!(sec->flags & SECTOR_IS_CLOSED) ||
+        (cont != NULL && !(cont->flags & SECTOR_IS_CLOSED)) ||
+        triangulate_subsectors)
       continue;
 
     numedgepoints  = ssector->numlines;
@@ -724,6 +909,7 @@ static void gld_GetSubSectorVertices(void)
     if (flats_vbo)
     {
       int currentsector = ssector->sector->iSectorID;
+      sector_t* container = ssector->sector->gl_pp;
       GLLoopDef **loop;
       int *loopcount;
 
@@ -731,6 +917,12 @@ static void gld_GetSubSectorVertices(void)
       {
         loop = &subsectorloops[ i ].loops;
         loopcount = &subsectorloops[ i ].loopcount;
+      }
+      else if (container != NULL)
+      {
+        // Give triangles to ultimate container of self-referencing sector
+        loop = &sectorloops[container - sectors].loops;
+        loopcount = &sectorloops[container - sectors].loopcount;
       }
       else
       {
@@ -860,6 +1052,9 @@ static void gld_PreprocessSectors(void)
   }
 #endif
 
+  // Mark real sectors for later
+  gld_MarkRealSectors();
+
   if (numsectors)
   {
     sectorloops=Z_Malloc(sizeof(GLSector)*numsectors);
@@ -978,9 +1173,13 @@ static void gld_PreprocessSectors(void)
     // figgi -- adapted for glnodes
     if (sectors[i].flags & SECTOR_IS_CLOSED)
       gld_PrecalculateSector(i);
+
+    sectors[i].gl_pp = gld_SelfReferencingSectorContainer(&sectors[i]);
   }
   Z_Free(vertexcheck);
   Z_Free(vertexcheck2);
+
+  gld_ResolveContainers();
 
   // figgi -- adapted for glnodes
   if (numnodes)

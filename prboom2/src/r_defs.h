@@ -117,6 +117,7 @@ typedef struct
 #define SECF_LIGHTCEILINGABSOLUTE  0x00080000
 #define SECF_DAMAGEFLAGS (SECF_ENDGODMODE|SECF_ENDLEVEL|SECF_DMGTERRAINFX|SECF_HAZARD|SECF_DMGUNBLOCKABLE)
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET|SECF_DAMAGEFLAGS|SECF_FRICTION|SECF_PUSH)
+#define SECTOR_IS_REAL             0x00200000
 
 typedef struct
 {
@@ -125,7 +126,7 @@ typedef struct
   byte interval;
 } damage_t;
 
-typedef struct
+typedef struct sector_s
 {
   int iSectorID; // proff 04/05/2000: needed for OpenGL and used in debugmode by the HUD to draw sectornum
   unsigned int flags;    //e6y: instead of .no_toptextures and .no_bottomtextures
@@ -166,6 +167,9 @@ typedef struct
 
   int linecount;
   struct line_s **lines;
+
+  // For gl_preprocess
+  struct sector_s* gl_pp;
 
   // killough 10/98: support skies coming from sidedefs. Allows scrolling
   // skies and other effects. No "level info" kind of lump is needed,
