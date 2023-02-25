@@ -42,6 +42,15 @@
 #include "v_video.h"
 #include "lprintf.h"
 
+// Threshold below player view of sector floor at which it becomes
+// subject to flat bleeding, in addition to the case of it being
+// above the player view.
+// FIXME: the number probably needs tweaking, and is
+// an approximation of software rendering behavior.  Presumably
+// bleedthrough normally occurs when the sector's floor is so
+// low that it is completely occluded from the current view.
+#define FLOOR_BLEED_THRESHOLD 500
+
 int currentsubsectornum;
 
 seg_t     *curline;
@@ -699,10 +708,10 @@ static void R_Subsector(int num)
         }
 
         /*
-         * Floors higher than the player's viewheight, or ceilings lower
-         * than the player's viewheight with no textures will bleed the
-         * sector behind them through in the software renderer. This is
-         * occasionally used to create an "invisible wall" effect to hide
+         * Floors higher than the player's viewheight (or much lower) or
+         * ceilings lower than the player's viewheight with no textures will
+         * bleed the sector behind them through in the software renderer. This
+         * is occasionally used to create an "invisible wall" effect to hide
          * monsters, but in the GL renderer would leave an untextured space
          * beneath or above unless otherwise patched.
          *
@@ -717,8 +726,9 @@ static void R_Subsector(int num)
          * a future patch by refactoring this into the renderer and tagging
          * visible candidate sectors during drawing.
          */
-        if (frontsector->floorheight >= viewz && (frontsector->flags & MISSING_BOTTOMTEXTURES))
-        {
+        if ((frontsector->floorheight >= viewz ||
+             viewz - frontsector->floorheight >= (FLOOR_BLEED_THRESHOLD << FRACBITS)) &&
+            (frontsector->flags & MISSING_BOTTOMTEXTURES)) {
           tmpsec = GetBestBleedSector(frontsector, 0);
 
           if (tmpsec)
