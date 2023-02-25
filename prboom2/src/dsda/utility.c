@@ -62,7 +62,11 @@ void dsda_StringCatF(dsda_string_t* dest, const char* format, ...) {
 
   va_start(v, format);
   length = vsnprintf(NULL, 0, format, v);
+  va_end(v);
+
   dsda_ExpandString(dest, length);
+
+  va_start(v, format);
   vsnprintf(dest->string + dest->size - 1 - length, length + 1, format, v);
   va_end(v);
 }
@@ -75,7 +79,11 @@ void dsda_StringPrintF(dsda_string_t* dest, const char* format, ...) {
 
   va_start(v, format);
   length = vsnprintf(NULL, 0, format, v);
+  va_end(v);
+
   dsda_ExpandString(dest, length);
+
+  va_start(v, format);
   vsnprintf(dest->string + dest->size - 1 - length, length + 1, format, v);
   va_end(v);
 }
