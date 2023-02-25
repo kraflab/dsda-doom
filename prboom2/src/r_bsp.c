@@ -727,6 +727,12 @@ static void R_Subsector(int num)
             dummyfloorplane.lightlevel = tmpsec->lightlevel;
             dummyfloorplane.picnum = tmpsec->floorpic;
             dummyfloorplane.special = tmpsec->special;
+            dummyfloorplane.rotation = tmpsec->floor_rotation;
+            dummyfloorplane.xoffs = tmpsec->floor_xoffs;
+            dummyfloorplane.yoffs = tmpsec->floor_yoffs;
+            dummyfloorplane.xscale = tmpsec->floor_xscale;
+            dummyfloorplane.yscale = tmpsec->floor_yscale;
+
             floorplane = &dummyfloorplane;
           }
         }
@@ -741,6 +747,11 @@ static void R_Subsector(int num)
             dummyceilingplane.lightlevel = tmpsec->lightlevel;
             dummyceilingplane.picnum = tmpsec->ceilingpic;
             dummyceilingplane.special = 0;
+            dummyceilingplane.rotation = tmpsec->ceiling_rotation;
+            dummyceilingplane.xoffs = tmpsec->ceiling_xoffs;
+            dummyceilingplane.yoffs = tmpsec->ceiling_yoffs;
+            dummyceilingplane.xscale = tmpsec->ceiling_xscale;
+            dummyceilingplane.yscale = tmpsec->ceiling_yscale;
             ceilingplane = &dummyceilingplane;
           }
         }
