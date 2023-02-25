@@ -62,7 +62,7 @@ GLuint CaptureScreenAsTexID(void)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-  glTexImage2D(GL_TEXTURE_2D, 0, 3,
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
     gld_GetTexDimension(gl_viewport_width), gld_GetTexDimension(gl_viewport_height),
     0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
