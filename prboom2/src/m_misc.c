@@ -83,6 +83,22 @@ typedef struct
 #define INPUT_SETTING(str, id, k, m, j) { str, id, { k, m, j } }
 #define MIGRATED_SETTING(id) { NULL, id }
 
+dboolean M_FileExists(const char *name)
+{
+  FILE* fp;
+
+  fp = fopen(name, "rb");
+
+  if (fp)
+  {
+    fclose(fp);
+
+    return true;
+  }
+
+  return false;
+}
+
 /*
  * M_WriteFile
  *

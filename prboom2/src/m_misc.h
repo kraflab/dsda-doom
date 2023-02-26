@@ -40,6 +40,8 @@
 #include "dsda/configuration.h"
 #include "dsda/input.h"
 
+dboolean M_FileExists(const char *name);
+
 dboolean M_WriteFile (char const* name, const void* source, size_t length);
 
 int M_ReadFile (char const* name,byte** buffer);
