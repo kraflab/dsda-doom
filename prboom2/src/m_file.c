@@ -62,10 +62,9 @@
 #define MKDIR_NO_ERROR 0
 
 int M_MakeDir(const char *path, int require) {
-  int error = 0;
-  struct stat sbuf;
+  int error;
 
-  if (!stat(path, &sbuf) && S_ISDIR(sbuf.st_mode))
+  if (M_IsDir(path))
     return MKDIR_NO_ERROR;
 
   error =
