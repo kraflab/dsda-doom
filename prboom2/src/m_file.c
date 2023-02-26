@@ -31,6 +31,10 @@
  *
  *-----------------------------------------------------------------------------*/
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -50,6 +54,9 @@
 
 #ifdef _MSC_VER
 #define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
+#define F_OK 0
+#define W_OK 2
+#define R_OK 4
 #endif
 
 #define MKDIR_NO_ERROR 0
