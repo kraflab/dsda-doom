@@ -67,7 +67,7 @@ typedef struct
 {
   sector_t *source; // The sector to receive a fake bleed-through flat
   sector_t *target; // The floor sector whose properties should be copied
-  int ceiling;      // Ceiling or floor
+  dboolean ceiling; // Ceiling or floor
 } bleedthrough_t;
 
 static int numfakeplanes = 0;
@@ -78,7 +78,7 @@ static int numbleedsectors = 0;
 
 static void gld_PrepareSectorSpecialEffects(void);
 static void gld_PreprocessFakeSector(int ceiling, sector_t *sector, int groupid);
-static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, int ceiling);
+static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, dboolean ceiling);
 
 static void gld_PrepareSectorSpecialEffects(void)
 {
@@ -101,62 +101,60 @@ static void gld_PrepareSectorSpecialEffects(void)
     {
       unsigned short sidenum0 = sectors[num].lines[i]->sidenum[0];
       unsigned short sidenum1 = sectors[num].lines[i]->sidenum[1];
-
       side_t *side0 = (sidenum0 == NO_INDEX ? NULL : &sides[sidenum0]);
       side_t *side1 = (sidenum1 == NO_INDEX ? NULL : &sides[sidenum1]);
+      side_t *front;
+      side_t *back;
+      dboolean needs_front_lower, needs_front_upper;
 
-      if (side0 && side1)
-      {
-        if (side0->toptexture != NO_TEXTURE)
-          sectors[num].flags &= ~NO_TOPTEXTURES;
-        if (side0->bottomtexture != NO_TEXTURE)
-          sectors[num].flags &= ~NO_BOTTOMTEXTURES;
-        if (side1->toptexture != NO_TEXTURE)
-          sectors[num].flags &= ~NO_TOPTEXTURES;
-        if (side1->bottomtexture != NO_TEXTURE)
-          sectors[num].flags &= ~NO_BOTTOMTEXTURES;
-
-        /* sides should not have null sectors, but we check anyway */
-        if (side0->sector && side1->sector)
-        {
-          dboolean front_floor_is_sky = (side0->sector->floorpic == skyflatnum);
-          dboolean front_ceil_is_sky = (side0->sector->ceilingpic == skyflatnum);
-
-          dboolean back_floor_is_sky = (side1->sector->floorpic == skyflatnum);
-          dboolean back_ceil_is_sky = (side1->sector->ceilingpic == skyflatnum);
-
-          dboolean needs_back_lower = !(front_floor_is_sky) && (side0->sector->floorheight > side1->sector->floorheight);
-          dboolean needs_front_lower = !(back_floor_is_sky) && (side0->sector->floorheight < side1->sector->floorheight);
-
-          dboolean needs_front_upper = !(back_ceil_is_sky) && (side0->sector->ceilingheight > side1->sector->ceilingheight);
-          dboolean needs_back_upper = !(front_ceil_is_sky) && (side0->sector->ceilingheight < side1->sector->ceilingheight);
-
-          /* now mark the sectors that may require HOM bleed-through */
-          if (needs_front_upper && side0->toptexture == NO_TEXTURE) {
-            side0->sector->flags |= MISSING_TOPTEXTURES;
-            gld_RegisterBleedthroughSector(side1->sector,side0->sector,1);
-          }
-
-          if (needs_back_upper && side1->toptexture == NO_TEXTURE) {
-            side1->sector->flags |= MISSING_TOPTEXTURES;
-            gld_RegisterBleedthroughSector(side0->sector,side1->sector,1);
-          }
-
-          if (needs_back_lower && side1->bottomtexture == NO_TEXTURE) {
-            side1->sector->flags |= MISSING_BOTTOMTEXTURES;
-            gld_RegisterBleedthroughSector(side0->sector,side1->sector,0);
-          }
-
-          if (needs_front_lower && side0->bottomtexture == NO_TEXTURE) {
-            side0->sector->flags |= MISSING_BOTTOMTEXTURES;
-            gld_RegisterBleedthroughSector(side1->sector,side0->sector,0);
-          }
-        }
-      }
-      else
+      if (!side0 || !side1 || side0->sector == side1->sector)
       {
         sectors[num].flags &= ~NO_TOPTEXTURES;
         sectors[num].flags &= ~NO_BOTTOMTEXTURES;
+        continue;
+      }
+
+      if (side0->sector == &sectors[num])
+      {
+        front = side0;
+        back = side1;
+      }
+      else
+      {
+        front = side1;
+        back = side0;
+      }
+
+      if (front->toptexture != NO_TEXTURE)
+        sectors[num].flags &= ~NO_TOPTEXTURES;
+      if (front->bottomtexture != NO_TEXTURE)
+        sectors[num].flags &= ~NO_BOTTOMTEXTURES;
+      if (back->toptexture != NO_TEXTURE)
+        sectors[num].flags &= ~NO_TOPTEXTURES;
+      if (back->bottomtexture != NO_TEXTURE)
+        sectors[num].flags &= ~NO_BOTTOMTEXTURES;
+
+      needs_front_lower =
+          back->sector->floorpic != skyflatnum &&
+          front->sector->floorheight < back->sector->floorheight;
+      needs_front_upper =
+          back->sector->ceilingpic != skyflatnum &&
+          front->sector->ceilingheight > back->sector->ceilingheight;
+
+      /* now mark the sectors if they require flat bleed-through */
+      if (needs_front_upper && front->toptexture == NO_TEXTURE)
+      {
+        back->sector->flags |= MISSING_TOPTEXTURES;
+        gld_RegisterBleedthroughSector(front->sector, back->sector, true);
+        front->sector->flags |= MISSING_TOPTEXTURES;
+        gld_RegisterBleedthroughSector(back->sector, front->sector, true);
+      }
+      if (needs_front_lower && front->bottomtexture == NO_TEXTURE)
+      {
+        back->sector->flags |= MISSING_BOTTOMTEXTURES;
+        gld_RegisterBleedthroughSector(front->sector, back->sector, false);
+        front->sector->flags |= MISSING_BOTTOMTEXTURES;
+        gld_RegisterBleedthroughSector(back->sector, front->sector, false);
       }
     }
 #ifdef PRBOOM_DEBUG
@@ -168,7 +166,7 @@ static void gld_PrepareSectorSpecialEffects(void)
   }
 }
 
-static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, int ceiling)
+static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, dboolean ceiling)
 {
   int i;
   int idx = -1;
