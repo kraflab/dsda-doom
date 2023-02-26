@@ -58,6 +58,12 @@ typedef enum
   gl_lightmode_last
 } gl_lightmode_t;
 
+enum bleedtype {
+  BLEED_NONE = 0x0,
+  BLEED_CEILING = 0x1,
+  BLEED_OCCLUDE = 0x2
+};
+
 extern int gl_drawskys;
 extern int gl_hardware_gamma;
 extern gl_lightmode_t gl_lightmode;
@@ -143,7 +149,7 @@ dboolean gld_SphereInFrustum(float x, float y, float z, float radius);
 //missing flats (fake floors and ceilings)
 extern dboolean gl_use_stencil;
 sector_t* GetBestFake(sector_t *sector, int ceiling, int validcount);
-sector_t* GetBestBleedSector(sector_t* source, int ceiling);
+sector_t* GetBestBleedSector(sector_t* source, enum bleedtype type);
 
 void gld_DrawMapLines(void);
 

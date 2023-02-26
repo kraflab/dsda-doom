@@ -726,10 +726,14 @@ static void R_Subsector(int num)
          * a future patch by refactoring this into the renderer and tagging
          * visible candidate sectors during drawing.
          */
-        if ((frontsector->floorheight >= viewz ||
-             viewz - frontsector->floorheight >= (FLOOR_BLEED_THRESHOLD << FRACBITS)) &&
-            (frontsector->flags & MISSING_BOTTOMTEXTURES)) {
-          tmpsec = GetBestBleedSector(frontsector, 0);
+        if (frontsector->flags & MISSING_BOTTOMTEXTURES)
+        {
+          tmpsec = NULL;
+          if (frontsector->floorheight >= viewz)
+            tmpsec = GetBestBleedSector(frontsector, BLEED_NONE);
+          if (tmpsec == NULL &&
+              viewz - frontsector->floorheight >= (FLOOR_BLEED_THRESHOLD << FRACBITS))
+            tmpsec = GetBestBleedSector(frontsector, BLEED_OCCLUDE);
 
           if (tmpsec)
           {
