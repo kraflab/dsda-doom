@@ -2193,10 +2193,11 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
 
   indexed = V_IsWorldLightmodeIndexed();
 
+  if (plane->picnum & PL_SKYFLAT || plane->picnum == skyflatnum) // don't draw if sky
+    return;
+
   if (!ceiling) // if it is a floor ...
   {
-    if (sector->floorpic == skyflatnum) // don't draw if sky
-      return;
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
     flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
@@ -2301,8 +2302,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   }
   else // if it is a ceiling ...
   {
-    if (sector->ceilingpic == skyflatnum) // don't draw if sky
-      return;
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
     flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);

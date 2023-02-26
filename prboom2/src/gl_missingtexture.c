@@ -133,22 +133,22 @@ static void gld_PrepareSectorSpecialEffects(void)
 
           /* now mark the sectors that may require HOM bleed-through */
           if (needs_front_upper && side0->toptexture == NO_TEXTURE) {
-            side1->sector->flags |= MISSING_TOPTEXTURES;
+            side0->sector->flags |= MISSING_TOPTEXTURES;
             gld_RegisterBleedthroughSector(side1->sector,side0->sector,1);
           }
 
           if (needs_back_upper && side1->toptexture == NO_TEXTURE) {
-            side0->sector->flags |= MISSING_TOPTEXTURES;
+            side1->sector->flags |= MISSING_TOPTEXTURES;
             gld_RegisterBleedthroughSector(side0->sector,side1->sector,1);
           }
 
           if (needs_back_lower && side1->bottomtexture == NO_TEXTURE) {
-            side0->sector->flags |= MISSING_BOTTOMTEXTURES;
+            side1->sector->flags |= MISSING_BOTTOMTEXTURES;
             gld_RegisterBleedthroughSector(side0->sector,side1->sector,0);
           }
 
           if (needs_front_lower && side0->bottomtexture == NO_TEXTURE) {
-            side1->sector->flags |= MISSING_BOTTOMTEXTURES;
+            side0->sector->flags |= MISSING_BOTTOMTEXTURES;
             gld_RegisterBleedthroughSector(side1->sector,side0->sector,0);
           }
         }
@@ -171,16 +171,17 @@ static void gld_PrepareSectorSpecialEffects(void)
 static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, int ceiling)
 {
   int i;
-  int source_idx = -1;
+  int idx = -1;
   assert(source);
   assert(target);
 
-  /* check whether the sector is processed already */
-  for (i = 0; i < numbleedsectors && source_idx == -1; i++)
-    if (bleedsectors[i].source == source && bleedsectors[i].ceiling == ceiling)
-      source_idx = i;
+  /* check whether the target sector is processed already */
+  for (i = 0; i < numbleedsectors && idx == -1; i++)
+    if (bleedsectors[i].target == target &&
+        bleedsectors[i].ceiling == ceiling)
+      idx = i;
 
-  if (source_idx == -1)
+  if (idx == -1)
   {
     /* allocate memory for new sector */
     bleedsectors = (bleedthrough_t*) Z_Realloc(bleedsectors, (numbleedsectors + 1) * sizeof(bleedthrough_t));
@@ -188,36 +189,27 @@ static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, i
     memset(&bleedsectors[numbleedsectors], 0, sizeof(bleedthrough_t));
     numbleedsectors++;
 
-    source_idx = numbleedsectors - 1;
+    idx = numbleedsectors - 1;
   }
 
-  bleedsectors[source_idx].source = source;
-  bleedsectors[source_idx].ceiling = ceiling;
+  bleedsectors[idx].ceiling = ceiling;
+  bleedsectors[idx].target = target;
 
-  /* either register the proposed target since it is first,
-   * or check if the new proposed target is a better option
+  /* either register the proposed source since it is first,
+   * or check if the new proposed source is a better option
    * and register it instead */
-  if (
-    bleedsectors[source_idx].target == NULL ||
-    (
-      bleedsectors[source_idx].target &&
-      (
-        (ceiling && bleedsectors[source_idx].target->ceilingheight > target->ceilingheight) ||
-        bleedsectors[source_idx].target->floorheight < target->floorheight
-      )
-    )
-  )
-  {
-    bleedsectors[source_idx].target = target;
-  }
+  if (bleedsectors[idx].source == NULL ||
+      (ceiling && bleedsectors[idx].source->ceilingheight > source->ceilingheight) ||
+      (!ceiling && bleedsectors[idx].source->floorheight < source->floorheight))
+    bleedsectors[idx].source = source;
 }
 
-sector_t* GetBestBleedSector(sector_t* source, int ceiling)
+sector_t* GetBestBleedSector(sector_t* target, int ceiling)
 {
   int i;
   for (i = 0; i < numbleedsectors; i++)
-    if (bleedsectors[i].source == source && bleedsectors[i].ceiling == ceiling)
-      return bleedsectors[i].target;
+    if (bleedsectors[i].target == target && bleedsectors[i].ceiling == ceiling)
+      return bleedsectors[i].source;
   return NULL;
 }
 
