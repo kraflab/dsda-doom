@@ -107,15 +107,15 @@ void get_indexed_shader_bindings()
     int idx;
 
     indexed_unifs.lightlevel_index = GLEXT_glGetUniformLocationARB(sh_indexed->hShader, "lightlevel");
-  
+
     GLEXT_glUseProgramObjectARB(sh_indexed->hShader);
-  
+
     idx = GLEXT_glGetUniformLocationARB(sh_indexed->hShader, "tex");
     GLEXT_glUniform1iARB(idx, 0);
 
     idx = GLEXT_glGetUniformLocationARB(sh_indexed->hShader, "colormap");
     GLEXT_glUniform1iARB(idx, 2);
-  
+
     GLEXT_glUseProgramObjectARB(0);
   }
 }
