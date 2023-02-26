@@ -1125,19 +1125,6 @@ static void IdentifyVersion (void)
 
   iwad = FindIWADFile();
 
-#if defined(PRBOOM_DEBUG)
-  // proff 11/99: used for debugging
-  {
-    FILE *f;
-    f=fopen("levelinfo.txt","w");
-    if (f)
-    {
-      fprintf(f,"%s\n",iwad);
-      fclose(f);
-    }
-  }
-#endif
-
   if (iwad && *iwad)
   {
     AddIWAD(iwad);

@@ -1040,14 +1040,6 @@ static void gld_PreprocessSectors(void)
   int i;
   int j;
 
-#ifdef PRBOOM_DEBUG
-  levelinfo=fopen("levelinfo.txt","a");
-  if (levelinfo)
-  {
-    fprintf(levelinfo, MAPNAME(gameepisode, gamemap));
-  }
-#endif
-
   // Mark real sectors for later
   gld_MarkRealSectors();
 
