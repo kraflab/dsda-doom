@@ -21,7 +21,7 @@
 #include "doomstat.h"
 #include "hu_stuff.h"
 #include "lprintf.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "r_main.h"
 #include "v_video.h"
 #include "w_wad.h"

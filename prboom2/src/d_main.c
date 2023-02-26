@@ -63,6 +63,7 @@
 #include "v_video.h"
 #include "f_finale.h"
 #include "f_wipe.h"
+#include "m_file.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "i_main.h"
@@ -865,7 +866,7 @@ const char *D_dehout(void)
 //e6y static
 void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
 {
-  if ( !access (iwadname,R_OK) )
+  if (M_ReadAccess(iwadname))
   {
     int ud=0,rg=0,sw=0,cm=0,sc=0,hx=0;
     FILE* fp;

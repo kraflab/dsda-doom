@@ -64,6 +64,7 @@
 #include "sounds.h"
 #include "m_menu.h"
 #include "d_deh.h"
+#include "m_file.h"
 #include "m_misc.h"
 #include "lprintf.h"
 #include "am_map.h"
@@ -1340,7 +1341,7 @@ void M_QuickLoad(void)
 
   name = dsda_SaveGameName(QUICKSAVESLOT, false);
 
-  if (!access(name, F_OK))
+  if (M_FileExists(name))
   {
     G_LoadGame(QUICKSAVESLOT);
     doom_printf("quickload");

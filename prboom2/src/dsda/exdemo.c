@@ -23,7 +23,7 @@
 #include "i_system.h"
 #include "lprintf.h"
 #include "m_argv.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "wadtbl.h"
 #include "z_zone.h"
 #include "e6y.h"

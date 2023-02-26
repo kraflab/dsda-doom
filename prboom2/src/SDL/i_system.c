@@ -73,7 +73,7 @@
 #include <errno.h>
 
 #include "lprintf.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "doomtype.h"
 #include "doomdef.h"
 #include "d_player.h"
@@ -256,11 +256,11 @@ const char *I_DoomExeDir(void)
         *p--=0;
       if (*p=='/' || *p=='\\')
         *p--=0;
-      if (strlen(base)<2 || access(base, W_OK) != 0)
+      if (strlen(base) < 2 || !M_WriteAccess(base))
       {
         Z_Free(base);
         base = (char*)Z_Malloc(1024);
-        if (!getcwd(base,1024) || access(base, W_OK) != 0)
+        if (!getcwd(base, 1024) || !M_WriteAccess(base))
           strcpy(base, current_dir_dummy);
       }
     }
@@ -460,9 +460,9 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
                              s ? s : "", (s && !HasTrailingSlash(s)) ? "/" : "",
                              wfname);
 
-    if (ext && access(p,F_OK))
+    if (ext && !M_FileExists(p))
       strcat(p, ext);
-    if (!access(p,F_OK)) {
+    if (M_FileExists(p)) {
       if (!isStatic)
         lprintf(LO_DEBUG, " found %s\n", p);
       return p;

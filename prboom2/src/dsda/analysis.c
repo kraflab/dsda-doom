@@ -16,7 +16,7 @@
 //
 
 #include "doomstat.h"
-#include "m_misc.h"
+#include "m_file.h"
 
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"

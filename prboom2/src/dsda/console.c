@@ -24,6 +24,7 @@
 #include "i_system.h"
 #include "lprintf.h"
 #include "m_cheat.h"
+#include "m_file.h"
 #include "m_menu.h"
 #include "m_misc.h"
 #include "p_inter.h"

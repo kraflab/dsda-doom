@@ -21,7 +21,7 @@
 #include "doomtype.h"
 #include "doomstat.h"
 #include "info.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "p_maputl.h"
 #include "p_tick.h"
 #include "sounds.h"

@@ -19,7 +19,7 @@
 
 #include "md5.h"
 #include "lprintf.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "w_wad.h"
 #include "z_zone.h"
 

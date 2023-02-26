@@ -281,6 +281,8 @@ set(COMMON_SRC
     m_bbox.h
     m_cheat.c
     m_cheat.h
+    m_file.c
+    m_file.h
     m_fixed.h
     m_menu.c
     m_menu.h

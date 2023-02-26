@@ -23,7 +23,7 @@
 
 #include "doomtype.h"
 #include "lprintf.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "w_wad.h"
 #include "i_system.h"
 #include "z_zone.h"

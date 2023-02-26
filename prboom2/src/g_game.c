@@ -52,6 +52,7 @@
 #include "doomstat.h"
 #include "d_net.h"
 #include "f_finale.h"
+#include "m_file.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "m_cheat.h"

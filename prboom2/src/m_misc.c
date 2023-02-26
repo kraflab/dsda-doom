@@ -38,16 +38,6 @@
 #endif
 
 #include <stdio.h>
-#include <errno.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef _MSC_VER
-#include <io.h>
-#endif
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <errno.h>
 
 #include "doomstat.h"
 #include "g_game.h"
@@ -56,6 +46,7 @@
 #include "i_video.h"
 #include "s_sound.h"
 #include "lprintf.h"
+#include "m_file.h"
 #include "d_main.h"
 
 #include "m_misc.h"
@@ -83,136 +74,6 @@ typedef struct
 #define SETTING_HEADING(str) { str, 0 }
 #define INPUT_SETTING(str, id, k, m, j) { str, id, { k, m, j } }
 #define MIGRATED_SETTING(id) { NULL, id }
-
-#define MKDIR_NO_ERROR 0
-
-int M_MakeDir(const char *path, int require) {
-  int error = 0;
-  struct stat sbuf;
-
-  if (!stat(path, &sbuf) && S_ISDIR(sbuf.st_mode))
-    return MKDIR_NO_ERROR;
-
-  error =
-#if defined(_MSC_VER)
-    _mkdir(path);
-#else
-  #if defined(_WIN32)
-    mkdir(path);
-  #else
-    mkdir(path, 0755);
-  #endif
-#endif
-
-  if (require && error)
-    I_Error("Unable to create directory %s (%d)", path, errno);
-
-  return error;
-}
-
-FILE* M_OpenFile(const char *name, const char *mode)
-{
-  return fopen(name, mode);
-}
-
-dboolean M_FileExists(const char *name)
-{
-  FILE* fp;
-
-  fp = M_OpenFile(name, "rb");
-
-  if (fp)
-  {
-    fclose(fp);
-
-    return true;
-  }
-
-  return false;
-}
-
-/*
- * M_WriteFile
- *
- * killough 9/98: rewritten to use stdio and to flash disk icon
- */
-
-dboolean M_WriteFile(char const *name, const void *source, size_t length)
-{
-  FILE *fp;
-
-  errno = 0;
-
-  if (!(fp = M_OpenFile(name, "wb")))  // Try opening file
-    return 0;                          // Could not open file for writing
-
-  length = fwrite(source, 1, length, fp) == (size_t)length;   // Write data
-  fclose(fp);
-
-  if (!length)                         // Remove partially written file
-    remove(name);
-
-  return length;
-}
-
-/*
- * M_ReadFile
- *
- * killough 9/98: rewritten to use stdio and to flash disk icon
- */
-
-int M_ReadFile(char const *name, byte **buffer)
-{
-  FILE *fp;
-
-  if ((fp = M_OpenFile(name, "rb")))
-    {
-      size_t length;
-
-      fseek(fp, 0, SEEK_END);
-      length = ftell(fp);
-      fseek(fp, 0, SEEK_SET);
-      *buffer = Z_Malloc(length);
-      if (fread(*buffer, 1, length, fp) == length)
-        {
-          fclose(fp);
-          return length;
-        }
-      fclose(fp);
-    }
-
-  /* cph 2002/08/10 - this used to return 0 on error, but that's ambiguous,
-   * because we could have a legit 0-length file. So make it -1. */
-  return -1;
-}
-
-// Same as above, but add null terminator
-int M_ReadFileToString(char const *name, char **buffer) {
-  FILE *fp;
-
-  if ((fp = M_OpenFile(name, "rb")))
-  {
-    size_t length;
-
-    fseek(fp, 0, SEEK_END);
-    length = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    *buffer = Z_Malloc(length + 1);
-    if (fread(*buffer, 1, length, fp) == length)
-    {
-      fclose(fp);
-      (*buffer)[length] = '\0';
-      return length;
-    }
-    Z_Free(*buffer);
-    *buffer = NULL;
-    fclose(fp);
-  }
-
-  /* cph 2002/08/10 - this used to return 0 on error, but that's ambiguous,
-   * because we could have a legit 0-length file. So make it -1. */
-  return -1;
-}
 
 cfg_def_t cfg_defs[] =
 {
@@ -989,7 +850,8 @@ const char* M_CheckWritableDir(const char *dir)
 
     if (base[len - 1] != '\\' && base[len - 1] != '/')
       strcat(base, "/");
-    if (!access(base, O_RDWR))
+
+    if (M_ReadWriteAccess(base))
     {
       base[strlen(base) - 1] = 0;
       result = base;
@@ -1017,7 +879,7 @@ void M_ScreenShot(void)
 #ifdef _WIN32
     shot_dir = M_CheckWritableDir(I_DoomExeDir());
 #else
-    shot_dir = (!access(SCREENSHOT_DIR, 2) ? SCREENSHOT_DIR : NULL);
+    shot_dir = (M_WriteAccess(SCREENSHOT_DIR) ? SCREENSHOT_DIR : NULL);
 #endif
 
   if (shot_dir)
@@ -1029,9 +891,9 @@ void M_ScreenShot(void)
       lbmname = Z_Realloc(lbmname, size+1);
       snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
-    } while (!access(lbmname,0) && (shot != startshot) && (shot < 10000));
+    } while (M_FileExists(lbmname) && (shot != startshot) && (shot < 10000));
 
-    if (access(lbmname,0))
+    if (!M_FileExists(lbmname))
     {
       S_StartVoidSound(gamemode==commercial ? sfx_radio : sfx_tink);
       M_DoScreenShot(lbmname); // cph

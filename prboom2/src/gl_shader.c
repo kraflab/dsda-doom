@@ -48,7 +48,7 @@
 #include "i_system.h"
 #include "r_bsp.h"
 #include "lprintf.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "e6y.h"
 #include "r_things.h"
 #include "doomdef.h"

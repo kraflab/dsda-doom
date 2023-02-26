@@ -36,7 +36,7 @@
 #include "i_sound.h"
 #include "i_video.h"
 #include "lprintf.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "i_system.h"
 #include "i_capture.h"
 
