@@ -43,12 +43,12 @@
 #include <stddef.h>
 #include <io.h>
 #endif
-#include <fcntl.h>
 
 #include "doomstat.h"
 #include "d_net.h"
 #include "doomtype.h"
 #include "i_system.h"
+#include "m_file.h"
 #include "r_main.h"
 
 #ifdef __GNUG__
@@ -153,7 +153,7 @@ static void W_AddFile(wadfile_info_t *wadfile)
 
   // open the file and add to directory
 
-  wadfile->handle = open(wadfile->name,O_RDONLY | O_BINARY);
+  wadfile->handle = M_OpenRB(wadfile->name);
   if (wadfile->handle == -1)
     {
       if (  strlen(wadfile->name)<=4 ||      // add error check -- killough

@@ -44,6 +44,7 @@ dboolean M_WriteAccess(const char *name);
 int M_MakeDir(const char *path, int require);
 dboolean M_IsDir(const char *name);
 FILE* M_OpenFile(const char *name, const char *mode);
+int M_OpenRB(const char *name);
 dboolean M_FileExists(const char *name);
 dboolean M_WriteFile (char const* name, const void* source, size_t length);
 int M_ReadFile (char const* name,byte** buffer);

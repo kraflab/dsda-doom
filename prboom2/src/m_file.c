@@ -111,6 +111,11 @@ FILE* M_OpenFile(const char *name, const char *mode)
   return fopen(name, mode);
 }
 
+int M_OpenRB(const char *name)
+{
+  return open(name, O_RDONLY | O_BINARY);
+}
+
 dboolean M_FileExists(const char *name)
 {
   FILE* fp;
