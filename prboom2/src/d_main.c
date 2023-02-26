@@ -48,7 +48,6 @@
 #include <unistd.h>
 #endif
 #include <sys/types.h>
-#include <fcntl.h>
 
 #include "doomdef.h"
 #include "doomtype.h"

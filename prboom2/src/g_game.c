@@ -43,7 +43,6 @@
 #else
 #include <unistd.h>
 #endif
-#include <fcntl.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
