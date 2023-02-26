@@ -59,6 +59,10 @@
 #define R_OK 4
 #endif
 
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+
 #define MKDIR_NO_ERROR 0
 
 int M_MakeDir(const char *path, int require) {
