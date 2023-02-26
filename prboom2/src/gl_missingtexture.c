@@ -67,7 +67,7 @@ typedef struct
 {
   sector_t *source; // The sector to receive a fake bleed-through flat
   sector_t *target; // The floor sector whose properties should be copied
-  dboolean ceiling; // Ceiling or floor
+  enum bleedtype type; // Ceiling or floor, occlusion-based or not
 } bleedthrough_t;
 
 static int numfakeplanes = 0;
@@ -78,7 +78,7 @@ static int numbleedsectors = 0;
 
 static void gld_PrepareSectorSpecialEffects(void);
 static void gld_PreprocessFakeSector(int ceiling, sector_t *sector, int groupid);
-static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, dboolean ceiling);
+static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, enum bleedtype type);
 
 static void gld_PrepareSectorSpecialEffects(void)
 {
@@ -145,16 +145,16 @@ static void gld_PrepareSectorSpecialEffects(void)
       if (needs_front_upper && front->toptexture == NO_TEXTURE)
       {
         back->sector->flags |= MISSING_TOPTEXTURES;
-        gld_RegisterBleedthroughSector(front->sector, back->sector, true);
+        gld_RegisterBleedthroughSector(front->sector, back->sector, BLEED_CEILING);
         front->sector->flags |= MISSING_TOPTEXTURES;
-        gld_RegisterBleedthroughSector(back->sector, front->sector, true);
+        gld_RegisterBleedthroughSector(back->sector, front->sector, BLEED_CEILING | BLEED_OCCLUDE);
       }
       if (needs_front_lower && front->bottomtexture == NO_TEXTURE)
       {
         back->sector->flags |= MISSING_BOTTOMTEXTURES;
-        gld_RegisterBleedthroughSector(front->sector, back->sector, false);
+        gld_RegisterBleedthroughSector(front->sector, back->sector, BLEED_NONE);
         front->sector->flags |= MISSING_BOTTOMTEXTURES;
-        gld_RegisterBleedthroughSector(back->sector, front->sector, false);
+        gld_RegisterBleedthroughSector(back->sector, front->sector, BLEED_OCCLUDE);
       }
     }
 #ifdef PRBOOM_DEBUG
@@ -166,7 +166,7 @@ static void gld_PrepareSectorSpecialEffects(void)
   }
 }
 
-static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, dboolean ceiling)
+static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, enum bleedtype type)
 {
   int i;
   int idx = -1;
@@ -175,8 +175,7 @@ static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, d
 
   /* check whether the target sector is processed already */
   for (i = 0; i < numbleedsectors && idx == -1; i++)
-    if (bleedsectors[i].target == target &&
-        bleedsectors[i].ceiling == ceiling)
+    if (bleedsectors[i].target == target && bleedsectors[i].type == type)
       idx = i;
 
   if (idx == -1)
@@ -190,23 +189,23 @@ static void gld_RegisterBleedthroughSector(sector_t* source, sector_t* target, d
     idx = numbleedsectors - 1;
   }
 
-  bleedsectors[idx].ceiling = ceiling;
+  bleedsectors[idx].type = type;
   bleedsectors[idx].target = target;
 
   /* either register the proposed source since it is first,
    * or check if the new proposed source is a better option
    * and register it instead */
   if (bleedsectors[idx].source == NULL ||
-      (ceiling && bleedsectors[idx].source->ceilingheight > source->ceilingheight) ||
-      (!ceiling && bleedsectors[idx].source->floorheight < source->floorheight))
+      ((type & BLEED_CEILING) && bleedsectors[idx].source->ceilingheight > source->ceilingheight) ||
+      (!(type & BLEED_CEILING) && bleedsectors[idx].source->floorheight < source->floorheight))
     bleedsectors[idx].source = source;
 }
 
-sector_t* GetBestBleedSector(sector_t* target, int ceiling)
+sector_t* GetBestBleedSector(sector_t* target, enum bleedtype type)
 {
   int i;
   for (i = 0; i < numbleedsectors; i++)
-    if (bleedsectors[i].target == target && bleedsectors[i].ceiling == ceiling)
+    if (bleedsectors[i].target == target && bleedsectors[i].type == type)
       return bleedsectors[i].source;
   return NULL;
 }
