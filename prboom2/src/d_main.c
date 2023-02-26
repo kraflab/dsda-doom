@@ -872,7 +872,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
     FILE* fp;
 
     // Identify IWAD correctly
-    if ((fp = fopen(iwadname, "rb")))
+    if ((fp = M_OpenFile(iwadname, "rb")))
     {
       wadinfo_t header;
 

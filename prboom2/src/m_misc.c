@@ -83,11 +83,16 @@ typedef struct
 #define INPUT_SETTING(str, id, k, m, j) { str, id, { k, m, j } }
 #define MIGRATED_SETTING(id) { NULL, id }
 
+FILE* M_OpenFile(const char *name, const char *mode)
+{
+  return fopen(name, mode);
+}
+
 dboolean M_FileExists(const char *name)
 {
   FILE* fp;
 
-  fp = fopen(name, "rb");
+  fp = M_OpenFile(name, "rb");
 
   if (fp)
   {
@@ -111,7 +116,7 @@ dboolean M_WriteFile(char const *name, const void *source, size_t length)
 
   errno = 0;
 
-  if (!(fp = fopen(name, "wb")))       // Try opening file
+  if (!(fp = M_OpenFile(name, "wb")))  // Try opening file
     return 0;                          // Could not open file for writing
 
   length = fwrite(source, 1, length, fp) == (size_t)length;   // Write data
@@ -133,7 +138,7 @@ int M_ReadFile(char const *name, byte **buffer)
 {
   FILE *fp;
 
-  if ((fp = fopen(name, "rb")))
+  if ((fp = M_OpenFile(name, "rb")))
     {
       size_t length;
 
@@ -158,7 +163,7 @@ int M_ReadFile(char const *name, byte **buffer)
 int M_ReadFileToString(char const *name, char **buffer) {
   FILE *fp;
 
-  if ((fp = fopen(name, "rb")))
+  if ((fp = M_OpenFile(name, "rb")))
   {
     size_t length;
 
@@ -675,7 +680,7 @@ void M_SaveDefaults (void)
   if (forget_config_file)
     return;
 
-  f = fopen (defaultfile, "w");
+  f = M_OpenFile(defaultfile, "w");
   if (!f)
     return; // can't write the file, but don't complain
 
@@ -800,7 +805,7 @@ void M_LoadDefaults (void)
 
   // read the file in, overriding any set defaults
 
-  f = fopen (defaultfile, "r");
+  f = M_OpenFile(defaultfile, "r");
   if (f)
   {
     while (!feof(f))

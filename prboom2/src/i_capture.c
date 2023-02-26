@@ -36,6 +36,7 @@
 #include "i_sound.h"
 #include "i_video.h"
 #include "lprintf.h"
+#include "m_misc.h"
 #include "i_system.h"
 #include "i_capture.h"
 
@@ -453,7 +454,7 @@ static int threadstdoutproc (void *data)
 
   pipeinfo_t *p = (pipeinfo_t *) data;
 
-  FILE *f = fopen (p->stdoutdumpname, "w");
+  FILE *f = M_OpenFile(p->stdoutdumpname, "w");
 
   if (!f || !p->f_stdout)
     return 0;
@@ -473,7 +474,7 @@ static int threadstderrproc (void *data)
 
   pipeinfo_t *p = (pipeinfo_t *) data;
 
-  FILE *f = fopen (p->stderrdumpname, "w");
+  FILE *f = M_OpenFile(p->stderrdumpname, "w");
 
   if (!f || !p->f_stderr)
     return 0;

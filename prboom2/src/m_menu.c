@@ -986,7 +986,7 @@ void M_ReadSaveStrings(void)
 
     // killough 3/22/98
     name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
-    fp = fopen(name,"rb");
+    fp = M_OpenFile(name,"rb");
     Z_Free(name);
     if (!fp) {   // Ty 03/27/98 - externalized:
       strcpy(&savegamestrings[i][0],s_EMPTYSTRING);

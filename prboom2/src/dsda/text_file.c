@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 #include "lprintf.h"
+#include "m_misc.h"
 #include "e6y.h"
 
 #include "dsda.h"
@@ -135,7 +136,7 @@ void dsda_ExportTextFile(void) {
   if (!name)
     return;
 
-  file = fopen(name, "wb");
+  file = M_OpenFile(name, "wb");
   Z_Free(name);
 
   if (!file)

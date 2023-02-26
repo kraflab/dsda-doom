@@ -21,6 +21,7 @@
 #include "doomtype.h"
 #include "doomstat.h"
 #include "info.h"
+#include "m_misc.h"
 #include "p_maputl.h"
 #include "p_tick.h"
 #include "sounds.h"
@@ -100,7 +101,7 @@ void dsda_InitGhostExport(const char* name) {
   filename = Z_Malloc(strlen(name) + 4 + 1);
   AddDefaultExtension(strcpy(filename, name), ".gst");
 
-  dsda_ghost_export = fopen(filename, "wb");
+  dsda_ghost_export = M_OpenFile(filename, "wb");
 
   if (dsda_ghost_export == NULL)
     I_Error("dsda_InitGhostExport: failed to open %s", name);
@@ -119,7 +120,7 @@ static void dsda_OpenGhostFile(const char* ghost_name, dsda_ghost_file_t* ghost_
   filename = Z_Malloc(strlen(ghost_name) + 4 + 1);
   AddDefaultExtension(strcpy(filename, ghost_name), ".gst");
 
-  ghost_file->fstream = fopen(filename, "rb");
+  ghost_file->fstream = M_OpenFile(filename, "rb");
 
   if (ghost_file->fstream == NULL)
     I_Error("dsda_OpenGhostImport: failed to open %s", ghost_name);

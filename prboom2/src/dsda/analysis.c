@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "m_misc.h"
 
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
@@ -78,7 +79,7 @@ void dsda_WriteAnalysis(void) {
 
   if (!dsda_analysis) return;
 
-  fstream = fopen("analysis.txt", "w");
+  fstream = M_OpenFile("analysis.txt", "w");
 
   if (fstream == NULL) {
     fprintf(stderr, "Unable to open analysis.txt for writing!\n");

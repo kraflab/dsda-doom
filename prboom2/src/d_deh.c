@@ -1620,7 +1620,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
     static dboolean firstfile = true; // to allow append to output log
     if (!strcmp(outfilename, "-"))
       deh_log_file = stdout;
-    else if (!(deh_log_file = fopen(outfilename, firstfile ? "wt" : "at")))
+    else if (!(deh_log_file = M_OpenFile(outfilename, firstfile ? "wt" : "at")))
     {
       lprintf(LO_WARN, "Could not open -dehout file %s\n... using stdout.\n", outfilename);
       deh_log_file = stdout;
@@ -1632,7 +1632,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
 
   if (filename)
   {
-    if (!(infile.f = fopen(filename, "rt")))
+    if (!(infile.f = M_OpenFile(filename, "rt")))
     {
       lprintf(LO_WARN, "-deh file %s not found\n", filename);
       return;  // should be checked up front anyway

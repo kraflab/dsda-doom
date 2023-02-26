@@ -563,7 +563,7 @@ void e6y_WriteStats(void)
   tmpdata_t *all;
   size_t allkills_len=0, allitems_len=0, allsecrets_len=0;
 
-  f = fopen("levelstat.txt", "wb");
+  f = M_OpenFile("levelstat.txt", "wb");
 
   if (f == NULL)
   {
