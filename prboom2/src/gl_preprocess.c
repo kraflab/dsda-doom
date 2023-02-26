@@ -844,6 +844,7 @@ static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
 {
   int i;
   sector_t* cont;
+  line_t* l;
 
   // Real sectors are the opposite of self-referencing
   if (sector->flags & SECTOR_IS_REAL)
@@ -852,13 +853,12 @@ static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
   // Invariant: sector hasn't had container assigned yet
   assert(sector->selfref_container == NULL);
 
+  // Prefer to find a container across a self-referencing linedef
   for (i = 0; i < sector->linecount; ++i)
   {
-    line_t* l = sector->lines[i];
+    l = sector->lines[i];
     if (!gld_IsRealLine(sector, l))
     {
-      // Self-referencing line, look for a sector by projecting
-      // fraction of a unit orthogonally from the midpoint
       angle_t ang = R_PointToAngle2(l->v1->x, l->v1->y, l->v2->x, l->v2->y) + ANG90;
       fixed_t offsx = finecosine[ang >> ANGLETOFINESHIFT] >> 5;
       fixed_t offsy = finesine[ang >> ANGLETOFINESHIFT] >> 5;
@@ -874,9 +874,14 @@ static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
       if ((cont = gld_ResolveContainer(sector, R_PointInSubsector(xp2, yp2)->sector)))
         return cont;
     }
-    else
+  }
+
+  // Failing that, crib container from a neighbor (across a normal linedef)
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    l = sector->lines[i];
+    if (gld_IsRealLine(sector, l))
     {
-      // Normal line, crib container from neighbor if possible
       if ((cont = gld_ResolveContainer(sector, l->frontsector)))
         return cont;
       if ((cont = gld_ResolveContainer(sector, l->backsector)))
@@ -895,8 +900,7 @@ static void gld_ResolveContainers(void)
   for (i = 0; i < numsectors; i++)
   {
     if (sectors[i].gl_pp != NULL)
-      sectors[i].gl_pp =
-          gld_ResolveContainer(&sectors[i], sectors[i].gl_pp);
+      sectors[i].gl_pp = gld_ResolveContainer(&sectors[i], sectors[i].gl_pp);
   }
 }
 
