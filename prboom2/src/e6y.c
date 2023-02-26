@@ -151,18 +151,6 @@ const char* WINError(void)
 
 //--------------------------------------------------
 
-void e6y_assert(const char *format, ...)
-{
-  static FILE *f = NULL;
-  va_list argptr;
-  va_start(argptr,format);
-  //if (!f)
-    f = fopen("d:\\a.txt", "ab+");
-  vfprintf(f, format, argptr);
-  fclose(f);
-  va_end(argptr);
-}
-
 /* ParamsMatchingCheck
  * Conflicting command-line parameters could cause the engine to be confused
  * in some cases. Added checks to prevent this.
