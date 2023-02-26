@@ -54,6 +54,14 @@
 #include "config.h"
 #endif
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef _MSC_VER
+#include <io.h>
+#endif
+
 #include "lprintf.h"
 #include "m_file.h"
 #include "doomtype.h"
