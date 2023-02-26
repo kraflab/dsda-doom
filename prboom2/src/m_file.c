@@ -39,6 +39,7 @@
 #include <io.h>
 #endif
 
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
 
