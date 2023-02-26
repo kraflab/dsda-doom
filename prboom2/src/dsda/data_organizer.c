@@ -15,7 +15,6 @@
 //	DSDA Data Organizer
 //
 
-#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,7 +62,6 @@ static void dsda_NormalizeSlashes(char *str)
 
 char* dsda_DetectDirectory(const char* env_key, int arg_id) {
   dsda_arg_t* arg;
-  struct stat sbuf;
   char* result = NULL;
   const char* default_directory;
 
@@ -74,7 +72,7 @@ char* dsda_DetectDirectory(const char* env_key, int arg_id) {
 
   arg = dsda_Arg(arg_id);
   if (arg->found) {
-    if (!stat(arg->value.v_string, &sbuf) && S_ISDIR(sbuf.st_mode)) {
+    if (M_IsDir(arg->value.v_string)) {
       if (result) Z_Free(result);
       result = Z_Strdup(arg->value.v_string);
     }
@@ -109,7 +107,6 @@ static void dsda_InitWadDataDir(void) {
   int i;
   const int iwad_index = 0;
   int pwad_index = 1;
-  struct stat sbuf;
   dsda_string_t str;
 
   for (i = 0; i < numwadfiles; ++i) {

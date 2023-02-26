@@ -43,7 +43,6 @@
 #else
 #include <unistd.h>
 #endif
-#include <sys/stat.h>
 #include <SDL.h>
 #ifdef HAVE_LIBSDL2_IMAGE
 #include <SDL_image.h>

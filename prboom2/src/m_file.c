@@ -47,6 +47,10 @@
 
 #include "m_file.h"
 
+#ifdef _MSC_VER
+#define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
+#endif
+
 #define MKDIR_NO_ERROR 0
 
 int M_MakeDir(const char *path, int require) {
@@ -71,6 +75,13 @@ int M_MakeDir(const char *path, int require) {
     I_Error("Unable to create directory %s (%d)", path, errno);
 
   return error;
+}
+
+dboolean M_IsDir(const char *name)
+{
+  struct stat sbuf;
+
+  return !stat(name, &sbuf) && S_ISDIR(sbuf.st_mode);
 }
 
 dboolean M_ReadWriteAccess(const char *name)

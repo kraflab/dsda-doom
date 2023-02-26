@@ -39,38 +39,20 @@
 #endif
 
 #include <stdio.h>
-
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
 #include <signal.h>
 #include <string.h>
-#ifdef _MSC_VER
-#define    F_OK    0    /* Check for file existence */
-#define    W_OK    2    /* Check for write permission */
-#define    R_OK    4    /* Check for read permission */
-#include <io.h>
-#include <direct.h>
-#else
-#include <unistd.h>
-#endif
 #include <sys/stat.h>
+#include <errno.h>
 
 #include "SDL.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef _MSC_VER
-#include <io.h>
-#endif
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <errno.h>
 
 #include "lprintf.h"
 #include "m_file.h"

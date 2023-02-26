@@ -67,7 +67,6 @@ typedef unsigned char byte;
 #ifdef _MSC_VER
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
-#define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
 #endif
 
 #ifndef PATH_MAX
