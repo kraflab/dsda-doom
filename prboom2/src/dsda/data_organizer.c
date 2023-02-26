@@ -23,13 +23,13 @@
 
 #include "doomtype.h"
 #include "lprintf.h"
+#include "m_misc.h"
 #include "w_wad.h"
 #include "i_system.h"
 #include "z_zone.h"
 #include "e6y.h"
 
 #include "dsda/args.h"
-#include "dsda/mkdir.h"
 #include "dsda/utility.h"
 
 #include "data_organizer.h"
@@ -100,7 +100,7 @@ void dsda_InitDataDir(void) {
   dsda_StringPrintF(&str, "%s/%s", parent_directory, dsda_data_root);
 
   dsda_base_data_dir = str.string;
-  dsda_MkDir(dsda_base_data_dir, true);
+  M_MakeDir(dsda_base_data_dir, true);
 
   Z_Free(parent_directory);
 }
@@ -150,7 +150,7 @@ static void dsda_InitWadDataDir(void) {
   for (i = 0; i < DATA_DIR_LIMIT; ++i)
     if (dsda_data_dir_strings[i]) {
       dsda_StringCatF(&str, "/%s", dsda_data_dir_strings[i]);
-      dsda_MkDir(str.string, true);
+      M_MakeDir(str.string, true);
     }
 
   dsda_wad_data_dir = str.string;

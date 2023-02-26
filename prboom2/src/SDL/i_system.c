@@ -73,6 +73,7 @@
 #include <errno.h>
 
 #include "lprintf.h"
+#include "m_misc.h"
 #include "doomtype.h"
 #include "doomdef.h"
 #include "d_player.h"
@@ -92,7 +93,6 @@
 
 #include "z_zone.h"
 
-#include "dsda/mkdir.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
 #include "dsda/time.h"
@@ -310,7 +310,7 @@ const char *I_DoomExeDir(void)
     // I've had trouble with trailing slashes before...
     if (base[len-1] == '/') base[len-1] = 0;
     strcat(base, prboom_dir);
-    dsda_MkDir(base, true); // Make sure it exists
+    M_MakeDir(base, true); // Make sure it exists
   }
   return base;
 }

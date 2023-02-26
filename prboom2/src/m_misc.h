@@ -40,6 +40,7 @@
 #include "dsda/configuration.h"
 #include "dsda/input.h"
 
+int M_MakeDir(const char *path, int require);
 FILE* M_OpenFile(const char *name, const char *mode);
 dboolean M_FileExists(const char *name);
 

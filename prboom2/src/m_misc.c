@@ -47,6 +47,7 @@
 #endif
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 #include "doomstat.h"
 #include "g_game.h"
@@ -82,6 +83,32 @@ typedef struct
 #define SETTING_HEADING(str) { str, 0 }
 #define INPUT_SETTING(str, id, k, m, j) { str, id, { k, m, j } }
 #define MIGRATED_SETTING(id) { NULL, id }
+
+#define MKDIR_NO_ERROR 0
+
+int M_MakeDir(const char *path, int require) {
+  int error = 0;
+  struct stat sbuf;
+
+  if (!stat(path, &sbuf) && S_ISDIR(sbuf.st_mode))
+    return MKDIR_NO_ERROR;
+
+  error =
+#if defined(_MSC_VER)
+    _mkdir(path);
+#else
+  #if defined(_WIN32)
+    mkdir(path);
+  #else
+    mkdir(path, 0755);
+  #endif
+#endif
+
+  if (require && error)
+    I_Error("Unable to create directory %s (%d)", path, errno);
+
+  return error;
+}
 
 FILE* M_OpenFile(const char *name, const char *mode)
 {

@@ -24,7 +24,6 @@
 #include "z_zone.h"
 
 #include "dsda/data_organizer.h"
-#include "dsda/mkdir.h"
 #include "dsda/utility.h"
 
 #include "tranmap.h"
@@ -58,7 +57,7 @@ static void dsda_InitTranMapBaseDir(void) {
   tranmap_base_dir = Z_Malloc(length);
   snprintf(tranmap_base_dir, length, "%s/tranmaps", data_root);
 
-  dsda_MkDir(tranmap_base_dir, true);
+  M_MakeDir(tranmap_base_dir, true);
 }
 
 static void dsda_InitTranMapPaletteDir(void) {
@@ -74,7 +73,7 @@ static void dsda_InitTranMapPaletteDir(void) {
   tranmap_palette_dir = Z_Malloc(length);
   snprintf(tranmap_palette_dir, length, "%s/%s", tranmap_base_dir, playpal_cksum.string);
 
-  dsda_MkDir(tranmap_palette_dir, true);
+  M_MakeDir(tranmap_palette_dir, true);
 }
 
 //
