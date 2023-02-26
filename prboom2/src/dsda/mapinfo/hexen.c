@@ -247,6 +247,17 @@ int dsda_HexenMusicIndexToLumpNum(int* lump, int music_index) {
     return false;
 
   lump_name = dsda_SndInfoMapSongLumpName(music_index);
+  if (!*lump_name)
+    switch (music_index)
+    {
+    case hexen_mus_hexen:
+    case hexen_mus_hub:
+    case hexen_mus_hall:
+    case hexen_mus_orb:
+    case hexen_mus_chess:
+      lump_name = S_music[music_index].name;
+      break;
+    }
 
   if (!*lump_name)
     *lump = 0;
