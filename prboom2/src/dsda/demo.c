@@ -121,6 +121,14 @@ char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
   return demo_name;
 }
 
+char* dsda_FallbackDemoName(void) {
+  static unsigned int counter = 2;
+
+  dsda_SetDemoBaseName("fallback");
+
+  return dsda_GenerateDemoName(&counter, dsda_demo_name_base);
+}
+
 char* dsda_NewDemoName(void) {
   static unsigned int counter = 2;
 
@@ -424,8 +432,18 @@ static int dsda_ExportDemoToFile(const char* demo_name) {
 
   length = dsda_DemoBufferOffset();
 
-  if (!M_WriteFile(demo_name, dsda_demo_write_buffer, length))
-    I_Error("dsda_WriteDemoToFile: Failed to write demo file.");
+  if (!M_WriteFile(demo_name, dsda_demo_write_buffer, length)) {
+    char* fallback_file;
+
+    fallback_file = dsda_FallbackDemoName();
+
+    if (!M_WriteFile(fallback_file, dsda_demo_write_buffer, length))
+      I_Error("dsda_WriteDemoToFile: Failed to write demo file.");
+    else
+      I_Error("Bad demo file location: wrote to %s instead!", fallback_file);
+
+    Z_Free(fallback_file);
+  }
 
   return end_marker_location;
 }
