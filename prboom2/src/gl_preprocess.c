@@ -78,6 +78,59 @@ static void gld_AddGlobalVertexes(int count)
   }
 }
 
+static void gld_TurnOnSubsectorTriangulation(void)
+{
+  triangulate_subsectors = 1;
+}
+
+static void gld_TurnOffSubsectorTriangulation(void)
+{
+  triangulate_subsectors = 0;
+}
+
+static dboolean gld_TriangulateSubsector(subsector_t *ssec)
+{
+  sector_t *container = ssec->sector->gl_pp;
+  return !(ssec->sector->flags & SECTOR_IS_CLOSED) ||
+         (container && !(container->flags & SECTOR_IS_CLOSED)) ||
+         triangulate_subsectors;
+}
+
+static int gld_SubsectorLoopIndex(subsector_t *ssec)
+{
+  // Give triangles to ultimate container of self-referencing sector
+  if (ssec->sector->gl_pp)
+    return ssec->sector->gl_pp->iSectorID;
+
+  return ssec->sector->iSectorID;
+}
+
+static void gld_SetupSubsectorLoop(subsector_t *ssec, int iSubsectorID, int numedgepoints)
+{
+  GLLoopDef **loop;
+  int *loopcount;
+
+  if (triangulate_subsectors)
+  {
+    loop = &subsectorloops[ iSubsectorID ].loops;
+    loopcount = &subsectorloops[ iSubsectorID ].loopcount;
+  }
+  else
+  {
+    int loop_index = gld_SubsectorLoopIndex(ssec);
+
+    loop = &sectorloops[ loop_index ].loops;
+    loopcount = &sectorloops[ loop_index ].loopcount;
+  }
+
+  (*loopcount)++;
+  (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
+  ((*loop)[(*loopcount) - 1]).index = iSubsectorID;
+  ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
+  ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
+  ((*loop)[(*loopcount) - 1]).vertexindex = gld_num_vertexes;
+}
+
 /*****************************
  *
  * FLATS
@@ -238,39 +291,13 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
   }
   else
   {
-    if(numedgepoints >= 3)
+    if (numedgepoints >= 3)
     {
       gld_AddGlobalVertexes(numedgepoints);
+
       if (flats_vbo)
       {
-        int currentsector=ssec->sector->iSectorID;
-        sector_t* container = ssec->sector->gl_pp;
-        GLLoopDef **loop;
-        int *loopcount;
-
-        if (triangulate_subsectors)
-        {
-          loop = &subsectorloops[ ssidx ].loops;
-          loopcount = &subsectorloops[ ssidx ].loopcount;
-        }
-        else if (container != NULL)
-        {
-          // Give triangles to ultimate container of self-referencing sector
-          loop = &sectorloops[container - sectors].loops;
-          loopcount = &sectorloops[container - sectors].loopcount;
-        }
-        else
-        {
-          loop = &sectorloops[ currentsector ].loops;
-          loopcount = &sectorloops[ currentsector ].loopcount;
-        }
-
-        (*loopcount)++;
-        (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
-        ((*loop)[(*loopcount) - 1]).index = ssidx;
-        ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
-        ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
-        ((*loop)[(*loopcount) - 1]).vertexindex = gld_num_vertexes;
+        gld_SetupSubsectorLoop(ssec, ssidx, numedgepoints);
 
         for(i = 0;  i < numedgepoints; i++)
         {
@@ -297,20 +324,16 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
 
   // If this is a subsector we are dealing with, begin carving with the
   // given list.
-  if(bspnode & NF_SUBSECTOR)
+  if (bspnode & NF_SUBSECTOR)
   {
     // We have arrived at a subsector. The divline list contains all
     // the partition lines that carve out the subsector.
     // special case for trivial maps (no nodes, single subsector)
     int ssidx = (numnodes != 0) ? bspnode & (~NF_SUBSECTOR) : 0;
-    subsector_t* ssec = &subsectors[ssidx];
-    sector_t* sec = ssec->sector;
-    sector_t* cont = sec->gl_pp;
 
-    if (!(sec->flags & SECTOR_IS_CLOSED) ||
-        (cont != NULL && !(cont->flags & SECTOR_IS_CLOSED)) ||
-        triangulate_subsectors)
+    if (gld_TriangulateSubsector(&subsectors[ssidx]))
       gld_FlatConvexCarver(ssidx, numdivlines, divlines);
+
     return;
   }
 
@@ -894,12 +917,8 @@ static void gld_GetSubSectorVertices(void)
   for(i = 0; i < numsubsectors; i++)
   {
     subsector_t* ssector = &subsectors[i];
-    sector_t* sec = ssector->sector;
-    sector_t* cont = sec->gl_pp;
 
-    if (!(sec->flags & SECTOR_IS_CLOSED) ||
-        (cont != NULL && !(cont->flags & SECTOR_IS_CLOSED)) ||
-        triangulate_subsectors)
+    if (gld_TriangulateSubsector(ssector))
       continue;
 
     numedgepoints  = ssector->numlines;
@@ -908,36 +927,9 @@ static void gld_GetSubSectorVertices(void)
 
     if (flats_vbo)
     {
-      int currentsector = ssector->sector->iSectorID;
-      sector_t* container = ssector->sector->gl_pp;
-      GLLoopDef **loop;
-      int *loopcount;
+      gld_SetupSubsectorLoop(ssector, i, numedgepoints);
 
-      if (triangulate_subsectors)
-      {
-        loop = &subsectorloops[ i ].loops;
-        loopcount = &subsectorloops[ i ].loopcount;
-      }
-      else if (container != NULL)
-      {
-        // Give triangles to ultimate container of self-referencing sector
-        loop = &sectorloops[container - sectors].loops;
-        loopcount = &sectorloops[container - sectors].loopcount;
-      }
-      else
-      {
-        loop = &sectorloops[ currentsector ].loops;
-        loopcount = &sectorloops[ currentsector ].loopcount;
-      }
-
-      (*loopcount)++;
-      (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
-      ((*loop)[(*loopcount) - 1]).index = i;
-      ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
-      ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
-      ((*loop)[(*loopcount) - 1]).vertexindex = gld_num_vertexes;
-
-      for(j = 0;  j < numedgepoints; j++)
+      for (j = 0; j < numedgepoints; j++)
       {
         flats_vbo[gld_num_vertexes].u =( (float)(segs[ssector->firstline + j].v1->x)/FRACUNIT)/64.0f;
         flats_vbo[gld_num_vertexes].v =(-(float)(segs[ssector->firstline + j].v1->y)/FRACUNIT)/64.0f;
@@ -1321,11 +1313,13 @@ void gld_ProcessTexturedMap(void)
 
   if (map_textured && subsectorloops && subsectorloops[0].loops == NULL)
   {
-    triangulate_subsectors = 1;
+    gld_TurnOnSubsectorTriangulation();
+
     if (!use_gl_nodes)
       gld_CarveFlats(numnodes-1, 0, 0);
     else
       gld_GetSubSectorVertices();
-    triangulate_subsectors = 0;
+
+    gld_TurnOffSubsectorTriangulation();
   }
 }
