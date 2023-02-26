@@ -851,7 +851,7 @@ static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
     return NULL;
 
   // Invariant: sector hasn't had container assigned yet
-  assert(sector->selfref_container == NULL);
+  assert(sector->gl_pp == NULL);
 
   // Prefer to find a container across a self-referencing linedef
   for (i = 0; i < sector->linecount; ++i)
