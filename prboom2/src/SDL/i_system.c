@@ -183,52 +183,6 @@ const char* I_SigString(char* buf, size_t sz, int signum)
   return buf;
 }
 
-dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
-{
-  FILE *hfile;
-
-  dboolean result = false;
-  byte *buffer = NULL;
-  size_t filesize = 0;
-
-  hfile = fopen(filename, "rb");
-  if (hfile)
-  {
-    fseek(hfile, 0, SEEK_END);
-    filesize = ftell(hfile);
-    fseek(hfile, 0, SEEK_SET);
-
-    buffer = (byte*)Z_Malloc(filesize);
-    if (buffer)
-    {
-      if (fread(buffer, filesize, 1, hfile) == 1)
-      {
-        result = true;
-
-        if (data)
-        {
-          *data = buffer;
-        }
-
-        if (size)
-        {
-          *size = filesize;
-        }
-      }
-    }
-
-    fclose(hfile);
-  }
-
-  if (!result)
-  {
-    Z_Free(buffer);
-    buffer = NULL;
-  }
-
-  return result;
-}
-
 /*
  * I_Read
  *
