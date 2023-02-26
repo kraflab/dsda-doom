@@ -48,6 +48,7 @@
 #include "i_system.h"
 #include "r_bsp.h"
 #include "lprintf.h"
+#include "m_misc.h"
 #include "e6y.h"
 #include "r_things.h"
 #include "doomdef.h"
@@ -167,29 +168,16 @@ int glsl_Init(void)
   return (sh_main != NULL) && (sh_indexed != NULL) && (sh_fuzz != NULL);
 }
 
-static int ReadLump(const char *filename, const char *lumpname, unsigned char **buffer)
+static int ReadLump(const char *filename, const char *lumpname, char **buffer)
 {
-  FILE *file = NULL;
-  int size = 0;
-  const unsigned char *data;
-  int lump;
+  int size;
 
-  file = fopen(filename, "r");
-  if (file)
+  size = M_ReadFileToString(filename, buffer);
+
+  if (size < 0)
   {
-    fseek(file, 0, SEEK_END);
-    size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-    *buffer = Z_Malloc(size + 1);
-    size = fread(*buffer, 1, size, file);
-    if (size > 0)
-    {
-      (*buffer)[size] = 0;
-    }
-    fclose(file);
-  }
-  else
-  {
+    const unsigned char *data;
+    int lump;
     char name[9];
     char* p;
 
@@ -231,10 +219,10 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
   filename = Z_Malloc(MAX(vp_fnlen, fp_fnlen) + 1);
 
   sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
-  vp_size = ReadLump(filename, vpname, (unsigned char**) &vp_data);
+  vp_size = ReadLump(filename, vpname, &vp_data);
 
   sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
-  fp_size = ReadLump(filename, fpname, (unsigned char**) &fp_data);
+  fp_size = ReadLump(filename, fpname, &fp_data);
 
   if (vp_data && fp_data)
   {
