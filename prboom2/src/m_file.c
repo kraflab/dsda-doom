@@ -246,28 +246,7 @@ static int M_mkdir(const char *path) {
 #endif
 }
 
-int M_remove(const char *path)
-{
-#ifdef _WIN32
-  wchar_t *wpath;
-  int ret;
-
-  wpath = ConvertUtf8ToWide(path);
-
-  if (!wpath)
-    return 0;
-
-  ret = _wremove(wpath);
-
-  free(wpath);
-
-  return ret;
-#else
-  return remove(path);
-#endif
-}
-
-int M_stat(const char *path, struct stat *buf)
+static int M_stat(const char *path, struct stat *buf)
 {
 #ifdef _WIN32
   wchar_t *wpath;
@@ -292,6 +271,27 @@ int M_stat(const char *path, struct stat *buf)
   return ret;
 #else
   return stat(path, buf);
+#endif
+}
+
+int M_remove(const char *path)
+{
+#ifdef _WIN32
+  wchar_t *wpath;
+  int ret;
+
+  wpath = ConvertUtf8ToWide(path);
+
+  if (!wpath)
+    return 0;
+
+  ret = _wremove(wpath);
+
+  free(wpath);
+
+  return ret;
+#else
+  return remove(path);
 #endif
 }
 

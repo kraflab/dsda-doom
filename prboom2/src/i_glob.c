@@ -35,8 +35,6 @@
 #include "win_opendir.h"
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
-#include <sys/stat.h>
-#define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
 #elif defined(HAVE_DIRENT_H)
 #include <dirent.h>
 #include <sys/stat.h>
@@ -64,21 +62,15 @@ static dboolean IsDirectory(char *dir, struct dirent *de)
 #endif
     {
         char *filename;
-        struct stat sb;
-        int result;
+        dboolean result;
 
         int len = snprintf(NULL, 0, "%s/%s", dir, de->d_name);
         filename = malloc(len+1);
         snprintf(filename, len+1, "%s/%s", dir, de->d_name);
-        result = M_stat(filename, &sb);
+        result = M_IsDir(filename);
         free(filename);
 
-        if (result != 0)
-        {
-            return false;
-        }
-
-        return S_ISDIR(sb.st_mode);
+        return result;
     }
 }
 

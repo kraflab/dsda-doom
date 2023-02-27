@@ -35,7 +35,6 @@
 #define __M_FILE__
 
 #include <stdio.h>
-#include <sys/stat.h>
 
 #include "doomtype.h"
 
@@ -52,7 +51,6 @@ int M_ReadFile (char const* name,byte** buffer);
 int M_ReadFileToString(char const *name, char **buffer);
 
 int M_remove(const char *path);
-int M_stat(const char *path, struct stat *buf);
 char *M_getcwd(char *buffer, int len);
 char *M_getenv(const char *name);
 
