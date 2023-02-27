@@ -143,8 +143,10 @@ static wchar_t *ConvertSysNativeMBToWide(const char *str) {
 static char *ConvertWideToSysNativeMB(const wchar_t *wstr) {
   return ConvertWideToMultiByte(wstr, CP_ACP);
 }
+#endif
 
 char *ConvertSysNativeMBToUtf8(const char *str) {
+#ifdef _WIN32
   char *ret = NULL;
   wchar_t *wstr = NULL;
 
@@ -158,9 +160,13 @@ char *ConvertSysNativeMBToUtf8(const char *str) {
   free(wstr);
 
   return ret;
+#else
+  return strdup(str);
+#endif
 }
 
 char *ConvertUtf8ToSysNativeMB(const char *str) {
+#ifdef _WIN32
   char *ret = NULL;
   wchar_t *wstr = NULL;
 
@@ -174,8 +180,10 @@ char *ConvertUtf8ToSysNativeMB(const char *str) {
   free(wstr);
 
   return ret;
-}
+#else
+  return strdup(str);
 #endif
+}
 
 static int M_open(const char *filename, int oflag) {
 #ifdef _WIN32
