@@ -750,7 +750,7 @@ static dboolean gld_IsRealLine(sector_t* sector, line_t* line)
       continue;
     if (sector->lines[i]->v1 == line->v1 || sector->lines[i]->v2 == line->v1)
       v1c++;
-    if (sector->lines[i]->v2 == line->v2 || sector->lines[i]->v2 == line->v2)
+    if (sector->lines[i]->v1 == line->v2 || sector->lines[i]->v2 == line->v2)
       v2c++;
   }
 
@@ -922,7 +922,7 @@ static void gld_GetSubSectorVertices(void)
   {
     subsector_t* ssector = &subsectors[i];
 
-    if (gld_TriangulateSubsector(ssector))
+    if (!gld_TriangulateSubsector(ssector))
       continue;
 
     numedgepoints  = ssector->numlines;
