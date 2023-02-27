@@ -50,6 +50,8 @@
 // bleedthrough normally occurs when the sector's floor is so
 // low that it is completely occluded from the current view.
 #define FLOOR_BLEED_THRESHOLD 500
+// Same, but for ceiling
+#define CEILING_BLEED_THRESHOLD 500
 
 int currentsubsectornum;
 
@@ -751,9 +753,14 @@ static void R_Subsector(int num)
           }
         }
 
-        if (frontsector->ceilingheight <= viewz && (frontsector->flags & MISSING_TOPTEXTURES))
+        if (frontsector->flags & MISSING_TOPTEXTURES)
         {
-          tmpsec = GetBestBleedSector(frontsector, 1);
+          tmpsec = NULL;
+          if (frontsector->ceilingheight <= viewz)
+            tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING);
+          if (tmpsec == NULL &&
+              frontsector->ceilingheight - viewz >= (CEILING_BLEED_THRESHOLD << FRACBITS))
+            tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING | BLEED_OCCLUDE);
 
           if (tmpsec)
           {
