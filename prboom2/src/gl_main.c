@@ -2062,6 +2062,13 @@ bottomtexture:
         if (seg->linedef->flags & ML_DONTPEGBOTTOM)
           specific_rowoffset += frontsector->ceilingheight - floor_height;
 
+        if (ceiling_height > backsector->ceilingheight)
+        {
+          if (!(seg->linedef->flags & ML_DONTPEGBOTTOM))
+            specific_rowoffset -= backsector->ceilingheight - ceiling_height;
+          ceiling_height = backsector->ceilingheight;
+        }
+
         gld_CalculateWallY(&wall, &lineheight, floor_height, ceiling_height);
         gld_CalculateWallU(&wall, seg, backseg, linelength, seg->sidedef->textureoffset_bottom);
         gld_CalculateWallV(&wall, seg, seg->linedef->flags & ML_DONTPEGBOTTOM, lineheight,
