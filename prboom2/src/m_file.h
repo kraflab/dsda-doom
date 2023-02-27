@@ -35,6 +35,7 @@
 #define __M_FILE__
 
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "doomtype.h"
 

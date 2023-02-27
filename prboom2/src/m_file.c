@@ -328,7 +328,7 @@ FILE* M_OpenFile(const char *name, const char *mode)
   FILE *file;
   wchar_t *wname, *wmode;
 
-  wname = ConvertUtf8ToWide(filename);
+  wname = ConvertUtf8ToWide(name);
 
   if (!wname)
     return NULL;
@@ -348,7 +348,7 @@ FILE* M_OpenFile(const char *name, const char *mode)
 
   return file;
 #else
-  return fopen(filename, mode);
+  return fopen(name, mode);
 #endif
 }
 
