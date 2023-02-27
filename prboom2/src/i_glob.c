@@ -24,6 +24,7 @@
 
 #include "i_glob.h"
 #include "m_misc.h"
+#include "m_file.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -69,7 +70,7 @@ static dboolean IsDirectory(char *dir, struct dirent *de)
         int len = snprintf(NULL, 0, "%s/%s", dir, de->d_name);
         filename = malloc(len+1);
         snprintf(filename, len+1, "%s/%s", dir, de->d_name);
-        result = stat(filename, &sb);
+        result = M_stat(filename, &sb);
         free(filename);
 
         if (result != 0)
@@ -112,6 +113,7 @@ glob_t *I_StartMultiGlob(const char *directory, int flags,
     int num_globs;
     glob_t *result;
     va_list args;
+    char *directory_native;
 
     globs = malloc(sizeof(char *));
     if (globs == NULL)
@@ -150,15 +152,18 @@ glob_t *I_StartMultiGlob(const char *directory, int flags,
         return NULL;
     }
 
-    result->dir = opendir(directory);
+    directory_native = ConvertUtf8ToSysNativeMB(directory);
+
+    result->dir = opendir(directory_native);
     if (result->dir == NULL)
     {
         FreeStringList(globs, num_globs);
         free(result);
+        free(directory_native);
         return NULL;
     }
 
-    result->directory = strdup(directory);
+    result->directory = directory_native;
     result->globs = globs;
     result->num_globs = num_globs;
     result->flags = flags;
@@ -253,7 +258,7 @@ static char *NextGlob(glob_t *glob)
 {
     struct dirent *de;
     int len;
-    char *ret;
+    char *temp, *ret;
 
     do
     {
@@ -267,8 +272,9 @@ static char *NextGlob(glob_t *glob)
 
     // Return the fully-qualified path, not just the bare filename.
     len = snprintf(NULL, 0, "%s/%s", glob->directory, de->d_name);
-    ret = malloc(len+1);
-    snprintf(ret, len+1, "%s/%s", glob->directory, de->d_name);
+    temp = malloc(len+1);
+    snprintf(temp, len+1, "%s/%s", glob->directory, de->d_name);
+    ret = ConvertSysNativeMBToUtf8(temp);
     return ret;
 }
 

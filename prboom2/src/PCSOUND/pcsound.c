@@ -33,6 +33,7 @@
 //e6y
 #include "doomtype.h"
 #include "lprintf.h"
+#include "m_file.h"
 
 #ifdef USE_WIN32_PCSOUND_DRIVER
 extern pcsound_driver_t pcsound_win32_driver;
@@ -70,7 +71,7 @@ int PCSound_Init(pcsound_callback_func callback_func)
 
     // Check if the environment variable is set
 
-    driver_name = getenv("PCSOUND_DRIVER");
+    driver_name = M_getenv("PCSOUND_DRIVER");
 
     if (driver_name != NULL)
     {
