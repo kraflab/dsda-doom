@@ -750,7 +750,7 @@ static dboolean gld_IsRealLine(sector_t* sector, line_t* line)
       continue;
     if (sector->lines[i]->v1 == line->v1 || sector->lines[i]->v2 == line->v1)
       v1c++;
-    if (sector->lines[i]->v2 == line->v2 || sector->lines[i]->v2 == line->v2)
+    if (sector->lines[i]->v1 == line->v2 || sector->lines[i]->v2 == line->v2)
       v2c++;
   }
 
@@ -1101,28 +1101,25 @@ static void gld_PreprocessSectors(void)
     memset(vertexcheck2,0,numvertexes*sizeof(vertexcheck2[0]));
     for (j=0; j<sectors[i].linecount; j++)
     {
-      v1num=((intptr_t)sectors[i].lines[j]->v1-(intptr_t)vertexes)/sizeof(vertex_t);
-      v2num=((intptr_t)sectors[i].lines[j]->v2-(intptr_t)vertexes)/sizeof(vertex_t);
-      if ((v1num>=numvertexes) || (v2num>=numvertexes))
-        continue;
+      line_t *l = sectors[i].lines[j];
+      v1num = l->v1 - vertexes;
+      v2num = l->v2 - vertexes;
 
       // e6y: for correct handling of missing textures.
       // We do not need to apply some algos for isolated lines.
       vertexcheck2[v1num]++;
       vertexcheck2[v2num]++;
 
-      if (sectors[i].lines[j]->sidenum[0]!=NO_INDEX)
-        if (sides[sectors[i].lines[j]->sidenum[0]].sector==&sectors[i])
-        {
+      if (l->frontsector == &sectors[i])
+      {
           vertexcheck[v1num]|=1;
           vertexcheck[v2num]|=2;
-        }
-      if (sectors[i].lines[j]->sidenum[1]!=NO_INDEX)
-        if (sides[sectors[i].lines[j]->sidenum[1]].sector==&sectors[i])
-        {
-          vertexcheck[v1num]|=2;
-          vertexcheck[v2num]|=1;
-        }
+      }
+      else
+      {
+        vertexcheck[v1num]|=2;
+        vertexcheck[v2num]|=1;
+      }
     }
     if (sectors[i].linecount<3)
     {
