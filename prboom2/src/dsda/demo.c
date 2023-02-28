@@ -298,6 +298,16 @@ void dsda_WriteToDemo(const void* buffer, size_t length) {
   dsda_demo_write_buffer_p += length;
 }
 
+void dsda_WriteQueueToDemo(const void* buffer, size_t length) {
+  int old_offset;
+
+  old_offset = dsda_DemoBufferOffset();
+
+  dsda_WriteToDemo(buffer, length);
+
+  dsda_SetDemoBufferOffset(old_offset);
+}
+
 void dsda_WriteTicToDemo(const void* buffer, size_t length) {
   dsda_WriteToDemo(buffer, length);
   ++demo_tics;

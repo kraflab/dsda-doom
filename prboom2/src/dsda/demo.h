@@ -33,6 +33,7 @@ void dsda_EvaluateBytesPerTic(void);
 void dsda_RestoreCommandHistory(void);
 void dsda_InitDemoRecording(void);
 void dsda_WriteToDemo(const void* buffer, size_t length);
+void dsda_WriteQueueToDemo(const void* buffer, size_t length);
 void dsda_WriteTicToDemo(const void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
 void dsda_CopyPendingCmd(ticcmd_t* cmd);

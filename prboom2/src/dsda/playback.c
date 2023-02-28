@@ -190,6 +190,9 @@ void dsda_JoinDemo(ticcmd_t* cmd) {
   if (dsda_SkipMode())
     dsda_ExitSkipMode();
 
+  if (demorecording)
+    dsda_WriteQueueToDemo(playback_p, playback_length - (playback_p - playback_origin_p));
+
   dsda_ClearPlaybackStream();
 
   if (cmd)
