@@ -54,6 +54,7 @@
 #include "z_zone.h"
 #include "lprintf.h"
 #include "i_system.h"
+#include "m_file.h"
 
 #include "e6y.h"//e6y
 
@@ -128,9 +129,11 @@ void W_InitCache(void)
 #endif
       if (!mapped_wad[wad_index].data)
       {
-        mapped_wad[wad_index].hnd = CreateFile(wadfiles[wad_index].name,
+        wchar_t *wname = ConvertUtf8ToWide(wadfiles[wad_index].name);
+        mapped_wad[wad_index].hnd = CreateFileW(wname,
           GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
           NULL, OPEN_EXISTING, 0, NULL);
+        Z_Free(wname);
         if (mapped_wad[wad_index].hnd==INVALID_HANDLE_VALUE)
           I_Error("W_InitCache: CreateFile for memory mapping failed (LastError %li)",GetLastError());
         mapped_wad[wad_index].hnd_map =

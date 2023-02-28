@@ -250,7 +250,7 @@ const char *I_DoomExeDir(void)
       {
         Z_Free(base);
         base = (char*)Z_Malloc(1024);
-        if (!getcwd(base, 1024) || !M_WriteAccess(base))
+        if (!M_getcwd(base, 1024) || !M_WriteAccess(base))
           strcpy(base, current_dir_dummy);
       }
     }
@@ -292,7 +292,7 @@ const char *I_DoomExeDir(void)
   static char *base;
   if (!base)        // cache multiple requests
   {
-    char *home = getenv("HOME");
+    char *home = M_getenv("HOME");
     size_t len = strlen(home);
 
     base = Z_Malloc(len + strlen(prboom_dir) + 1);
@@ -390,7 +390,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     memcpy(search, search0, num_search * sizeof(*search));
 
     // add each directory from the $DOOMWADPATH environment variable
-    if ((dwp = getenv("DOOMWADPATH")))
+    if ((dwp = M_getenv("DOOMWADPATH")))
     {
       char *left, *ptr, *dup_dwp;
 
@@ -436,7 +436,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
      * and optionally s to a subdirectory of d */
     // switch replaced with lookup table
     if (search[i].env) {
-      if (!(d = getenv(search[i].env)))
+      if (!(d = M_getenv(search[i].env)))
         continue;
     } else if (search[i].func)
       d = search[i].func();

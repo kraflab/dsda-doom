@@ -647,7 +647,7 @@ void I_CaptureFinish (void)
     cap_tempfile1 = dsda_StringConfig(dsda_config_cap_tempfile1);
     cap_tempfile2 = dsda_StringConfig(dsda_config_cap_tempfile2);
 
-    remove (cap_tempfile1);
-    remove (cap_tempfile2);
+    M_remove (cap_tempfile1);
+    M_remove (cap_tempfile2);
   }
 }

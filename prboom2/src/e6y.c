@@ -82,6 +82,7 @@
 #include "g_game.h"
 #include "d_deh.h"
 #include "e6y.h"
+#include "m_file.h"
 
 #include "dsda/args.h"
 #include "dsda/map_format.h"
@@ -910,12 +911,12 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
     switch(i)
     {
     case 0:
-      getcwd(dir, sizeof(dir));
+      M_getcwd(dir, sizeof(dir));
       break;
     case 1:
-      if (!getenv("DOOMWADDIR"))
+      if (!M_getenv("DOOMWADDIR"))
         continue;
-      strcpy(dir, getenv("DOOMWADDIR"));
+      strcpy(dir, M_getenv("DOOMWADDIR"));
       break;
     case 2:
       strcpy(dir, I_DoomExeDir());

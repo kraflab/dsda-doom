@@ -50,4 +50,14 @@ dboolean M_WriteFile (char const* name, const void* source, size_t length);
 int M_ReadFile (char const* name,byte** buffer);
 int M_ReadFileToString(char const *name, char **buffer);
 
+int M_remove(const char *path);
+char *M_getcwd(char *buffer, int len);
+char *M_getenv(const char *name);
+
+#ifdef _WIN32
+wchar_t *ConvertUtf8ToWide(const char *str);
+#endif
+char *ConvertSysNativeMBToUtf8(const char *str);
+char *ConvertUtf8ToSysNativeMB(const char *str);
+
 #endif
