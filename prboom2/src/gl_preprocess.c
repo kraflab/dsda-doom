@@ -731,103 +731,131 @@ static void gld_PrecalculateSector(int num)
   Z_Free(lineadded);
 }
 
-static dboolean gld_IsRealLine(sector_t* sector, line_t* line)
+static vertex_t* gld_FollowEdge(sector_t* sector, vertex_t* v, line_t* line)
+{
+  if (line->v1 == v && line->frontsector == sector)
+    return line->v2;
+  if (line->v2 == v && line->backsector == sector)
+    return line->v1;
+  return NULL;
+}
+
+struct linepath
+{
+  vertex_t* v;
+  line_t* line;
+  struct linepath* prev;
+};
+
+static void gld_MarkElementaryCycles(sector_t* sector, struct linepath* path)
+{
+  int i = 0;
+  struct linepath next;
+  struct linepath* cur;
+  struct linepath* last;
+  struct linepath* cycle;
+  unsigned int count;
+
+  next.prev = path;
+
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    line_t* l = sector->lines[i];
+
+    if (path != NULL)
+    {
+      next.v = gld_FollowEdge(sector, path->v, l);
+      if (next.v == NULL)
+        continue;
+
+      cycle = NULL;
+      for (cur = path, last = NULL, count = 0; cur != NULL;
+           last = cur, cur = cur->prev, ++count)
+      {
+        if (cur->v == next.v)
+        {
+          cycle = last;
+          break;
+        }
+      }
+
+      if (cycle)
+      {
+        // Found a cycle, update lines along it
+        for (cur = path; cur != cycle; cur = cur->prev)
+        {
+          // Arbitrarily pick the earliest line as the canonical subgraph element
+          if (cur->line->subgraph == NULL || cycle->line < cur->line->subgraph)
+            cur->line->subgraph = cycle->line;
+          // Record largest cycle so far involving this line
+          if (count > cur->line->max_cycle)
+            cur->line->max_cycle = count;
+        }
+        continue;
+      }
+
+      next.line = l;
+      gld_MarkElementaryCycles(sector, &next);
+    }
+    else if (l->subgraph == NULL)
+    {
+      // Start new traversal from the first logical vertex of this line
+      next.v = l->frontsector == sector ? l->v1 : l->v2;
+      next.line = NULL;
+      gld_MarkElementaryCycles(sector, &next);
+    }
+  }
+}
+
+static void gld_ClassifySector(sector_t* sector)
 {
   int i;
   int v1c;
   int v2c;
 
-  // Obvious case -- at least one side isn't sector itself
-  if (line->frontsector != sector || line->backsector != sector)
-    return true;
-
-  // Distinguish a normal mid-sector linedef from a mapping trick by
-  // checking connectedness of vertices
-  v1c = v2c = 0;
+  // Initialize cycle detection
   for (i = 0; i < sector->linecount; ++i)
   {
-    if (sector->lines[i] == line)
-      continue;
-    if (sector->lines[i]->v1 == line->v1 || sector->lines[i]->v2 == line->v1)
-      v1c++;
-    if (sector->lines[i]->v1 == line->v2 || sector->lines[i]->v2 == line->v2)
-      v2c++;
+    sector->lines[i]->max_cycle = 0;
+    sector->lines[i]->subgraph = NULL;
   }
 
-  // If the line is part of the sector contour (i.e. each vertex has
-  // 1 neighbor), it's a legitimate self-referencing line.  Otherwise it's real.
-  return v1c != 1 && v2c != 1;
-}
+  // Detect elementary cycles and mark lines with the length of the maximum
+  // elementary cycle they are part of, as well as the canonical element
+  // of their connected subgraph within the subgraph of all cycles
+  gld_MarkElementaryCycles(sector, NULL);
 
-static inline dboolean gld_SeesRealSector(sector_t* sector, sector_t* other)
-{
-  return other != NULL && other != sector && (other->flags & SECTOR_IS_REAL);
-}
-
-static sector_t* gld_RealSectorAcrossLine(sector_t* sector, line_t* line)
-{
-  if (gld_SeesRealSector(sector, line->frontsector))
-    return line->frontsector;
-  if (gld_SeesRealSector(sector, line->backsector))
-    return line->backsector;
-  return NULL;
-}
-
-static void gld_MarkRealSectors(void)
-{
-  // Mark all sectors that are "real", i.e. that don't use self-referencing
-  // linedefs, or are transitively reachable from such a sector via sidedefs.
-  // This should be the vast majority of the map.
-  int i, j;
-  dboolean real;
-  dboolean changing;
-  sector_t* queue = NULL;
-  sector_t* cur;
-
-  // First, mark all sectors that are directly real (base case)
-  for (i = 0; i < numsectors; i++) {
-    real = true;
-    for (j = 0; j < sectors[i].linecount; j++) {
-      if (gld_IsRealLine(&sectors[i], sectors[i].lines[j]))
-        // While we're at it, mark lines that are real
-        sectors[i].lines[j]->flags |= RF_REAL;
-      else
-        real = false;
-    }
-    if (real) {
-      sectors[i].flags |= SECTOR_IS_REAL;
-      // Enqueue sector for visting neighbors
-      sectors[i].gl_pp = queue;
-      queue = &sectors[i];
-    }
-  }
-
-  // Now mark all transitively real sectors
-  while (queue != NULL)
+  // Mark all real (not perfidious mapper trick) lines.
+  //
+  // The sector is real if all its lines that participate in cycles are real
+  // This means sectors that are so broken they don't have cycles are
+  // vacuously real, which is a conservative assumption since many maps
+  // have extremely broken sectors.
+  sector->flags |= SECTOR_IS_REAL;
+  for (i = 0; i < sector->linecount; ++i)
   {
-    cur = queue;
-    queue = queue->gl_pp;
-    cur->gl_pp = NULL;
+    line_t* l = sector->lines[i];
+    // Skip lines that were not in a cycle
+    if (l->subgraph == NULL)
+      continue;
 
-    for (i = 0; i < cur->linecount; i++)
-    {
-      line_t* l = cur->lines[i];
-      if (l->frontsector != NULL && !(l->frontsector->flags & SECTOR_IS_REAL))
-      {
-        l->frontsector->flags |= SECTOR_IS_REAL;
-        // Enqueue sector for visting neighbors
-        l->frontsector->gl_pp = queue;
-        queue = l->frontsector;
-      }
-      if (l->backsector != NULL && !(l->backsector->flags & SECTOR_IS_REAL))
-      {
-        l->backsector->flags |= SECTOR_IS_REAL;
-        // Enqueue sector for visting neighbors
-        l->backsector->gl_pp = queue;
-        queue = l->backsector;
-      }
-    }
+    // A line is real if it isn't self-referencing or it's an interior line
+    // (does not participate in the longest cycle of its connected subgraph
+    // of the subgraph of cycles)
+    if (l->frontsector != l->backsector || l->max_cycle != l->subgraph->max_cycle)
+      l->flags |= RF_REAL;
+    else
+      sector->flags &= ~SECTOR_IS_REAL;
   }
+}
+
+// Classify all sectors and their lines as dangling/interior/real
+static void gld_ClassifySectors(void)
+{
+  int i;
+
+  for (i = 0; i < numsectors; i++)
+    gld_ClassifySector(&sectors[i]);
 }
 
 static sector_t* gld_ResolveContainer(sector_t* sector, sector_t* container)
@@ -1042,7 +1070,7 @@ static void gld_PreprocessSectors(void)
   int j;
 
   // Mark real sectors for later
-  gld_MarkRealSectors();
+  gld_ClassifySectors();
 
   if (numsectors)
   {

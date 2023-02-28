@@ -354,6 +354,10 @@ typedef struct line_s
   int healthgroup;
   const byte* tranmap;
   float alpha;
+
+  // gl_preprocess
+  unsigned int max_cycle;
+  struct line_s* subgraph;
 } line_t;
 
 #define LINE_ARG_COUNT 5
