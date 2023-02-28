@@ -788,10 +788,11 @@ static void gld_MarkRealSectors(void)
   for (i = 0; i < numsectors; i++) {
     real = true;
     for (j = 0; j < sectors[i].linecount; j++) {
-      if (!gld_IsRealLine(&sectors[i], sectors[i].lines[j])) {
+      if (gld_IsRealLine(&sectors[i], sectors[i].lines[j]))
+        // While we're at it, mark lines that are real
+        sectors[i].lines[j]->flags |= RF_REAL;
+      else
         real = false;
-        break;
-      }
     }
     if (real) {
       sectors[i].flags |= SECTOR_IS_REAL;
@@ -857,7 +858,7 @@ static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
   for (i = 0; i < sector->linecount; ++i)
   {
     l = sector->lines[i];
-    if (!gld_IsRealLine(sector, l))
+    if (!(l->flags & RF_REAL))
     {
       angle_t ang = R_PointToAngle2(l->v1->x, l->v1->y, l->v2->x, l->v2->y) + ANG90;
       fixed_t offsx = finecosine[ang >> ANGLETOFINESHIFT] >> 5;
@@ -880,7 +881,7 @@ static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
   for (i = 0; i < sector->linecount; ++i)
   {
     l = sector->lines[i];
-    if (gld_IsRealLine(sector, l))
+    if (l->flags & RF_REAL)
     {
       if ((cont = gld_ResolveContainer(sector, l->frontsector)))
         return cont;

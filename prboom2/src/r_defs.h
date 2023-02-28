@@ -292,6 +292,7 @@ typedef byte r_flags_t;
 #define RF_IGNORE   0x08 // Renderer can skip this line
 #define RF_CLOSED   0x10 // Line blocks view
 #define RF_ISOLATED 0x20 // Isolated line
+#define RF_REAL     0x40 // Real (not self-referencing trick) line
 
 typedef enum
 {
