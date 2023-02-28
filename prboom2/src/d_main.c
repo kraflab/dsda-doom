@@ -1233,20 +1233,6 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
     return result;
 }
 
-static const char *BaseName(const char *filename)
-{
-  const char *basename;
-
-  basename = filename + strlen(filename) - 1;
-
-  while (basename > filename && *basename != '/' && *basename != '\\')
-    basename--;
-  if (*basename == '/' || *basename == '\\')
-    basename++;
-
-  return basename;
-}
-
 const char *IWADBaseName(void)
 {
   int i;
@@ -1260,7 +1246,7 @@ const char *IWADBaseName(void)
   if (i == numwadfiles)
     I_Error("IWADBaseName: IWAD not found\n");
 
-  return BaseName(wadfiles[i].name);
+  return dsda_BaseName(wadfiles[i].name);
 }
 
 // Load all WAD files from the given directory.
@@ -1323,7 +1309,7 @@ static void D_AutoloadPWadDir()
     if (wadfiles[i].src == source_pwad)
     {
       char *autoload_dir;
-      autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
+      autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
       AutoLoadWADs(autoload_dir);
       Z_Free(autoload_dir);
     }
@@ -1380,7 +1366,7 @@ static void D_AutoloadDehPWadDir()
     if (wadfiles[i].src == source_pwad)
     {
       char *autoload_dir;
-      autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
+      autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
       AutoLoadPatches(autoload_dir);
       Z_Free(autoload_dir);
     }
