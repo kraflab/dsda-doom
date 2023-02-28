@@ -291,14 +291,14 @@ static void dsda_SetDemoBufferOffset(int offset) {
   dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
 }
 
-void dsda_WriteToDemo(void* buffer, size_t length) {
+void dsda_WriteToDemo(const void* buffer, size_t length) {
   dsda_EnsureDemoBufferSpace(length);
 
   memcpy(dsda_demo_write_buffer_p, buffer, length);
   dsda_demo_write_buffer_p += length;
 }
 
-void dsda_WriteTicToDemo(void* buffer, size_t length) {
+void dsda_WriteTicToDemo(const void* buffer, size_t length) {
   dsda_WriteToDemo(buffer, length);
   ++demo_tics;
 }
