@@ -83,7 +83,7 @@ static wchar_t *ConvertMultiByteToWide(const char *str, UINT code_page) {
     return NULL;
   }
 
-  wstr = malloc(sizeof(wchar_t) * wlen);
+  wstr = Z_Malloc(sizeof(wchar_t) * wlen);
 
   if (!wstr) {
     lprintf(LO_INFO, "ConvertMultiByteToWide: Failed to allocate new string\n");
@@ -93,7 +93,7 @@ static wchar_t *ConvertMultiByteToWide(const char *str, UINT code_page) {
   if (MultiByteToWideChar(code_page, 0, str, -1, wstr, wlen) == 0) {
     errno = EINVAL;
     lprintf(LO_INFO, "Warning: Failed to convert path to wide encoding\n");
-    free(wstr);
+    Z_Free(wstr);
     return NULL;
   }
 
@@ -112,7 +112,7 @@ static char *ConvertWideToMultiByte(const wchar_t *wstr, UINT code_page) {
     return NULL;
   }
 
-  str = malloc(sizeof(char) * len);
+  str = Z_Malloc(sizeof(char) * len);
 
   if (!str) {
     lprintf(LO_INFO, "ConvertWideToMultiByte: Failed to allocate new string\n");
@@ -122,7 +122,7 @@ static char *ConvertWideToMultiByte(const wchar_t *wstr, UINT code_page) {
   if (WideCharToMultiByte(code_page, 0, wstr, -1, str, len, NULL, NULL) == 0) {
     errno = EINVAL;
     lprintf(LO_INFO, "Warning: Failed to convert path to multi byte encoding\n");
-    free(str);
+    Z_Free(str);
     return NULL;
   }
 
@@ -158,11 +158,11 @@ char *ConvertSysNativeMBToUtf8(const char *str) {
 
   ret = ConvertWideToUtf8(wstr);
 
-  free(wstr);
+  Z_Free(wstr);
 
   return ret;
 #else
-  return strdup(str);
+  return Z_Strdup(str);
 #endif
 }
 
@@ -178,11 +178,11 @@ char *ConvertUtf8ToSysNativeMB(const char *str) {
 
   ret = ConvertWideToSysNativeMB(wstr);
 
-  free(wstr);
+  Z_Free(wstr);
 
   return ret;
 #else
-  return strdup(str);
+  return Z_Strdup(str);
 #endif
 }
 
@@ -198,7 +198,7 @@ static int M_open(const char *filename, int oflag) {
 
   ret = _wopen(wname, oflag);
 
-  free(wname);
+  Z_Free(wname);
 
   return ret;
 #else
@@ -218,7 +218,7 @@ static int M_access(const char *path, int mode) {
 
   ret = _waccess(wpath, mode);
 
-  free(wpath);
+  Z_Free(wpath);
 
   return ret;
 #else
@@ -238,7 +238,7 @@ static int M_mkdir(const char *path) {
 
   ret = _wmkdir(wdir);
 
-  free(wdir);
+  Z_Free(wdir);
 
   return ret;
 #else
@@ -266,7 +266,7 @@ static int M_stat(const char *path, struct stat *buf)
   buf->st_mode = wbuf.st_mode;
   buf->st_mtime = wbuf.st_mtime;
 
-  free(wpath);
+  Z_Free(wpath);
 
   return ret;
 #else
@@ -287,7 +287,7 @@ int M_remove(const char *path)
 
   ret = _wremove(wpath);
 
-  free(wpath);
+  Z_Free(wpath);
 
   return ret;
 #else
@@ -346,14 +346,14 @@ FILE* M_OpenFile(const char *name, const char *mode)
 
   if (!wmode)
   {
-    free(wname);
+    Z_Free(wname);
     return NULL;
   }
 
   file = _wfopen(wname, wmode);
 
-  free(wname);
-  free(wmode);
+  Z_Free(wname);
+  Z_Free(wmode);
 
   return file;
 #else
@@ -487,12 +487,12 @@ char *M_getcwd(char *buffer, int len)
     return ret;
 
   if (strlen(ret) >= len) {
-    free(ret);
+    Z_Free(ret);
     return NULL;
   }
 
   strcpy(buffer, ret);
-  free(ret);
+  Z_Free(ret);
 
   return buffer;
 #else
@@ -528,16 +528,16 @@ char *M_getenv(const char *name) {
 
   wenv = _wgetenv(wname);
 
-  free(wname);
+  Z_Free(wname);
 
   if (wenv)
     env = ConvertWideToUtf8(wenv);
   else
     env = NULL;
 
-  env_vars = realloc(env_vars, (num_vars + 1) * sizeof(*env_vars));
+  env_vars = Z_Realloc(env_vars, (num_vars + 1) * sizeof(*env_vars));
   env_vars[num_vars].var = env;
-  env_vars[num_vars].name = strdup(name);
+  env_vars[num_vars].name = Z_Strdup(name);
   num_vars++;
 
   return env;
