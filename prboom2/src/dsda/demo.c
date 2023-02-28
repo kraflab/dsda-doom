@@ -453,6 +453,8 @@ static int dsda_ExportDemoToFile(const char* demo_name) {
     Z_Free(fallback_file);
   }
 
+  lprintf(LO_INFO, "Wrote demo: %s\n", demo_name);
+
   return end_marker_location;
 }
 
@@ -529,8 +531,6 @@ void dsda_EndDemoRecording(void) {
   dsda_FreeDemoBuffer();
 
   Z_Free(demo_name);
-
-  lprintf(LO_INFO, "Demo finished recording\n");
 }
 
 void dsda_ExportDemo(const char* name) {
