@@ -293,8 +293,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_viewbob),
   MIGRATED_SETTING(dsda_config_weaponbob),
   MIGRATED_SETTING(dsda_config_quake_intensity),
-  MIGRATED_SETTING(dsda_config_clean_up_failed_demos),
-  MIGRATED_SETTING(dsda_config_failed_demo_limit),
+  MIGRATED_SETTING(dsda_config_organize_failed_demos),
 
   SETTING_HEADING("Scripts"),
   MIGRATED_SETTING(dsda_config_script_0),

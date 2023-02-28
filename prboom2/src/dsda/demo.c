@@ -31,6 +31,7 @@
 #include "dsda.h"
 #include "dsda/args.h"
 #include "dsda/configuration.h"
+#include "dsda/data_organizer.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
 #include "dsda/features.h"
@@ -137,27 +138,28 @@ char* dsda_NewDemoName(void) {
 }
 
 static dboolean dsda_UseFailedDemoName(void) {
-  return dsda_IntConfig(dsda_config_clean_up_failed_demos) &&
+  return dsda_IntConfig(dsda_config_organize_failed_demos) &&
          !dsda_ILComplete() && !dsda_MovieComplete();
 }
 
 char* dsda_FailedDemoName(void) {
-  static unsigned int counter = 0;
-  char* demo_name;
-  size_t demo_name_size;
+  static unsigned int counter = 2;
+  static char* dsda_failed_demo_name_base;
 
   if (!dsda_demo_name_base)
     dsda_SetDemoBaseName("null");
 
-  ++counter;
-  if (counter > dsda_IntConfig(dsda_config_failed_demo_limit))
-    counter = 1;
+  if (!dsda_failed_demo_name_base) {
+    dsda_string_t str;
 
-  demo_name_size = strlen(dsda_demo_name_base) + 16;
-  demo_name = Z_Malloc(demo_name_size);
-  snprintf(demo_name, demo_name_size, "%s-fail-%d.lmp", dsda_demo_name_base, counter);
+    dsda_StringPrintF(&str, "%s/failed_demos", dsda_DataDir());
+    M_MakeDir(str.string, false); // false: it's ok to fail here
+    dsda_StringCatF(&str, "/%s", dsda_demo_name_base);
 
-  return demo_name;
+    dsda_failed_demo_name_base = str.string;
+  }
+
+  return dsda_GenerateDemoName(&counter, dsda_failed_demo_name_base);
 }
 
 static int dsda_DemoBufferOffset(void) {

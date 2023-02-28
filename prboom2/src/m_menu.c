@@ -3034,12 +3034,11 @@ setup_menu_t demo_settings[] = {
   { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_demo_smoothturnsfactor },
   { "Show Precise Intermission Time", S_YESNO,  m_conf, G_X, G_Y + 10 * 8, dsda_config_show_level_splits },
 
-  { "Clean Up Failed Demos", S_YESNO,  m_conf, G_X, G_Y + 12 * 8, dsda_config_clean_up_failed_demos },
-  { "Failed Demo Limit", S_NUM,  m_conf, G_X, G_Y + 13 * 8, dsda_config_failed_demo_limit },
+  { "Organize Failed Demos", S_YESNO,  m_conf, G_X, G_Y + 12 * 8, dsda_config_organize_failed_demos },
 
-  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 15 * 8 },
-  { "Allow Jumping", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_allow_jumping },
-  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, G_Y + 17 * 8, dsda_config_gl_health_bar },
+  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 14 * 8 },
+  { "Allow Jumping", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_allow_jumping },
+  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_gl_health_bar },
 
   PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mapping_settings),
   NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, tas_settings),
