@@ -116,10 +116,10 @@ GLfloat gl_whitecolor[4]={1.0f,1.0f,1.0f,1.0f};
 GLfloat cm2RGB[CR_LIMIT + 1][4] =
 {
   {0.50f ,0.00f, 0.00f, 1.00f}, //CR_BRICK
-  {1.00f ,1.00f, 1.00f, 1.00f}, //CR_TAN
+  {1.00f ,0.90f, 0.90f, 1.00f}, //CR_TAN
   {1.00f ,1.00f, 1.00f, 1.00f}, //CR_GRAY
   {0.00f ,1.00f, 0.00f, 1.00f}, //CR_GREEN
-  {0.50f ,0.20f, 1.00f, 1.00f}, //CR_BROWN
+  {0.75f ,0.65f, 0.55f, 1.00f}, //CR_BROWN
   {1.00f ,1.00f, 0.00f, 1.00f}, //CR_GOLD
   {1.00f ,0.00f, 0.00f, 1.00f}, //CR_DEFAULT
   {0.80f ,0.80f, 1.00f, 1.00f}, //CR_BLUE
