@@ -199,110 +199,91 @@ void V_InitFlexTranTable(void)
   }
 }
 
-// killough 5/2/98: tiny engine driven by table above
+typedef struct {
+  int r1, g1, b1;
+  int r2, g2, b2;
+} cr_range_t;
+
+cr_range_t cr_range[CR_LIMIT] = {
+  [CR_BRICK]   = { 0x47, 0x00, 0x00, 0xFF, 0xB8, 0xB8 },
+  [CR_TAN]     = { 0x33, 0x2B, 0x13, 0xFF, 0xEB, 0xDF },
+  [CR_GRAY]    = { 0x27, 0x27, 0x27, 0xEF, 0xEF, 0xEF },
+  [CR_GREEN]   = { 0x0B, 0x17, 0x07, 0x77, 0xFF, 0x6F },
+  [CR_BROWN]   = { 0x53, 0x3F, 0x2F, 0xBF, 0xA7, 0x8F },
+  [CR_GOLD]    = { 0x73, 0x2B, 0x00, 0xFF, 0xFF, 0x73 },
+  [CR_DEFAULT] = { 0x3F, 0x00, 0x00, 0xFF, 0x00, 0x00 },
+  [CR_BLUE]    = { 0x00, 0x00, 0x27, 0x00, 0x00, 0xFF },
+  [CR_ORANGE]  = { 0x20, 0x00, 0x00, 0xFF, 0x80, 0x00 },
+  [CR_YELLOW]  = { 0x77, 0x77, 0x00, 0xFF, 0xFF, 0x00 },
+  [CR_BLUE2]   = { 0x00, 0x00, 0x73, 0xB4, 0xB4, 0xFF },
+  [CR_BLACK]   = { 0x13, 0x13, 0x13, 0x50, 0x50, 0x50 },
+  [CR_PURPLE]  = { 0x23, 0x00, 0x23, 0xCF, 0x00, 0xCF },
+  [CR_WHITE]   = { 0x24, 0x24, 0x24, 0xFF, 0xFF, 0xFF },
+  [CR_RED]     = { 0x3F, 0x00, 0x00, 0xFF, 0x00, 0x00 },
+};
+
+static byte* dsda_GenerateCRTable(void) {
+  int cr_i;
+  int orig_i;
+  int check_i;
+  byte* buffer;
+  const byte* playpal;
+
+  playpal = W_LumpByName("PLAYPAL");
+
+  buffer = Z_Malloc(256 * CR_LIMIT);
+
+  for (orig_i = 0; orig_i < 768; orig_i += 3) {
+    double orig_r, orig_g, orig_b;
+    double length;
+
+    orig_r = (double) playpal[orig_i + 0] / 255;
+    orig_g = (double) playpal[orig_i + 1] / 255;
+    orig_b = (double) playpal[orig_i + 2] / 255;
+
+    length = sqrt(orig_r * orig_r + orig_g * orig_g + orig_b * orig_b);
+
+    for (cr_i = 0; cr_i < CR_LIMIT; ++cr_i) {
+      int target_r, target_g, target_b;
+      int best_i = 0;
+      int best_dist = INT_MAX;
+
+      target_r = cr_range[cr_i].r1 +
+                 (int) (length * (cr_range[cr_i].r2 - cr_range[cr_i].r1));
+      target_g = cr_range[cr_i].g1 +
+                 (int) (length * (cr_range[cr_i].g2 - cr_range[cr_i].g1));
+      target_b = cr_range[cr_i].b1 +
+                 (int) (length * (cr_range[cr_i].b2 - cr_range[cr_i].b1));
+
+      for (check_i = 0; check_i < 768; check_i += 3) {
+        int dist;
+
+        dist = (target_r - playpal[check_i + 0]) * (target_r - playpal[check_i + 0]) +
+               (target_g - playpal[check_i + 1]) * (target_g - playpal[check_i + 1]) +
+               (target_b - playpal[check_i + 2]) * (target_b - playpal[check_i + 2]);
+
+        if (dist < best_dist) {
+          best_dist = dist;
+          best_i = check_i / 3;
+        }
+      }
+
+      buffer[cr_i * 256 + orig_i / 3] = best_i;
+    }
+  }
+
+  return buffer;
+}
+
 void V_InitColorTranslation(void)
 {
-  register const crdef_t *p;
+  int i;
+  byte* full_table;
 
-  // {
-  //   //             DO  HR  HX
-  //   // CR_BRICK:   16 166 185
-  //   // CR_TAN:     48  94 121
-  //   // CR_GRAY:    80  34  32
-  //   // CR_GREEN:  112 224 216
-  //   // CR_BROWN:  128 110  96
-  //   // CR_GOLD:   160 144 230
-  //   // CR_RED:    176 160 181
-  //   // CR_BLUE:   196 202 162
-  //   // CR_ORANGE: 208 243 228
-  //   // CR_YELLOW: 224 144 230
-  //   // CR_BLUE2:  200 196 217
-  //   // CR_BLACK:  104   0   0
-  //   // CR_PURPLE: 251 175 237
-  //   // CR_WHITE:   80  35 255
-  //   int i, j;
-  //   byte* buffer = Z_Malloc(CR_LIMIT * 256);
-  //   for (i = 0; i < CR_LIMIT; ++i)
-  //     for (j = 0; j < 256; ++j)
-  //       buffer[i * 256 + j] = j;
-  //
-  //   buffer[CR_BRICK * 256 + 176] = 166;
-  //   buffer[CR_TAN * 256 + 176] = 94;
-  //   buffer[CR_GRAY * 256 + 176] = 34;
-  //   buffer[CR_GREEN * 256 + 176] = 224;
-  //   buffer[CR_BROWN * 256 + 176] = 110;
-  //   buffer[CR_GOLD * 256 + 176] = 144;
-  //   buffer[CR_RED * 256 + 176] = 160;
-  //   buffer[CR_BLUE * 256 + 176] = 202;
-  //   buffer[CR_ORANGE * 256 + 176] = 243;
-  //   buffer[CR_YELLOW * 256 + 176] = 144;
-  //   buffer[CR_BLUE2 * 256 + 176] = 196;
-  //   buffer[CR_BLACK * 256 + 176] = 0;
-  //   buffer[CR_PURPLE * 256 + 176] = 175;
-  //   buffer[CR_WHITE * 256 + 176] = 35;
-  //
-  //   M_WriteFile("crheresy.lmp", buffer, CR_LIMIT * 256);
-  //
-  //   buffer[CR_BRICK * 256 + 176] = 185;
-  //   buffer[CR_TAN * 256 + 176] = 121;
-  //   buffer[CR_GRAY * 256 + 176] = 32;
-  //   buffer[CR_GREEN * 256 + 176] = 216;
-  //   buffer[CR_BROWN * 256 + 176] = 96;
-  //   buffer[CR_GOLD * 256 + 176] = 230;
-  //   buffer[CR_RED * 256 + 176] = 181;
-  //   buffer[CR_BLUE * 256 + 176] = 162;
-  //   buffer[CR_ORANGE * 256 + 176] = 228;
-  //   buffer[CR_YELLOW * 256 + 176] = 230;
-  //   buffer[CR_BLUE2 * 256 + 176] = 217;
-  //   buffer[CR_BLACK * 256 + 176] = 0;
-  //   buffer[CR_PURPLE * 256 + 176] = 237;
-  //   buffer[CR_WHITE * 256 + 176] = 255;
-  //
-  //   M_WriteFile("crhexen.lmp", buffer, CR_LIMIT * 256);
-  // }
+  full_table = dsda_GenerateCRTable();
 
-  if (heretic)
-  {
-    const byte* source = W_LumpByName("CRHERESY");
-
-    for (p = crdefs; p->name; ++p)
-    {
-      *p->map = source;
-      source += 256;
-    }
-
-    return;
-  }
-
-  if (hexen)
-  {
-    const byte* source = W_LumpByName("CRHEXEN");
-
-    for (p = crdefs; p->name; ++p)
-    {
-      *p->map = source;
-      source += 256;
-    }
-
-    return;
-  }
-
-  for (p=crdefs; p->name; p++)
-  {
-    *p->map = W_LumpByName(p->name);
-    if (p - crdefs == CR_DEFAULT)
-      continue;
-    if (gamemission == chex || gamemission == hacx)
-    {
-      byte *temp = Z_Malloc(256);
-      memcpy (temp, *p->map, 256);
-      if (gamemission == chex)
-        memcpy (temp+112, *p->map+176, 16); // green range
-      else if (gamemission == hacx)
-        memcpy (temp+192, *p->map+176, 16); // blue range
-      *p->map = temp;
-    }
-  }
+  for (i = 0; crdefs[i].name; ++i)
+    *crdefs[i].map = full_table + 256 * i;
 }
 
 //
