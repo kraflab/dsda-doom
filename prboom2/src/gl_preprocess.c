@@ -927,12 +927,15 @@ static void gld_PreprocessSectors(void)
       vertexcheck2[v1num]++;
       vertexcheck2[v2num]++;
 
+      if (l->frontsector == l->backsector)
+        continue;
+
       if (l->frontsector == &sectors[i])
       {
         vertexcheck[v1num]|=1;
         vertexcheck[v2num]|=2;
       }
-      if (l->backsector == &sectors[i])
+      else
       {
         vertexcheck[v1num]|=2;
         vertexcheck[v2num]|=1;

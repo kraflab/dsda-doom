@@ -137,6 +137,8 @@ typedef struct sector_s
   int bbox[4];           // bounding box in map units
   degenmobj_t soundorg;  // origin for any sounds played by the sector
   int validcount;        // if == validcount, already checked
+  // Needed by GL path to register flats in sector for rendering only once
+  int gl_validcount;
   mobj_t *thinglist;     // list of mobjs in sector
 
   /* killough 8/28/98: friction is a sector property, not an mobj property.
