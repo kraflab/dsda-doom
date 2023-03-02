@@ -90,12 +90,18 @@ static void gld_TurnOffSubsectorTriangulation(void)
 
 static dboolean gld_TriangulateSubsector(subsector_t *ssec)
 {
+  sector_t *container = ssec->sector->gl_pp;
   return !(ssec->sector->flags & SECTOR_IS_CLOSED) ||
+         (container && !(container->flags & SECTOR_IS_CLOSED)) ||
          triangulate_subsectors;
 }
 
 static int gld_SubsectorLoopIndex(subsector_t *ssec)
 {
+  // Give triangles to ultimate container of self-referencing sector
+  if (ssec->sector->gl_pp)
+    return ssec->sector->gl_pp->iSectorID;
+
   return ssec->sector->iSectorID;
 }
 
@@ -725,6 +731,284 @@ static void gld_PrecalculateSector(int num)
   Z_Free(lineadded);
 }
 
+static vertex_t* gld_FollowEdge(sector_t* sector, vertex_t* v, line_t* line)
+{
+  if (line->v1 == v && line->frontsector == sector)
+    return line->v2;
+  if (line->v2 == v && line->backsector == sector)
+    return line->v1;
+  return NULL;
+}
+
+// Path in sector graph
+struct linepath
+{
+  // Current vertex on path
+  vertex_t* v;
+  // Line followed to reach this vertex
+  line_t* line;
+  // Previous vertices on path
+  struct linepath* prev;
+};
+
+/*
+// Detect elementary cycles in a sector and mark lines with the length of
+// the maximum elementary cycle they are part of, the subgraph of cyclic lines
+// they are part of, and the maximum elementary cycle length within each subgraph.
+//
+// The sector is treated as the directed graph of its sidedefs.  This means
+// most lines can only be traversed one direction.  Lines tagged with the sector
+// on both sides can be traversed in either direction, but trivial cycles from
+// doubling back on such a line are not counted.  Cycles can't repeat vertices.
+//
+// For example, consider the following sector.  Vertices are marked by +; lines
+// by |, \, and -; direction by <, >, v, ^, and * (bi-directional).
+//
+//             B
+//   +-<-+-<-+-*-+
+//   |   |   |   |\
+//   v  A*   ^   v ^
+//   |   |   |   |  \
+//   +->-+->-+   +->-+
+//
+// Line B will be marked as not part of any cycle or subgraph, since it is
+// not part of a closed loop.
+//
+// All other lines are part of at least one cycle.  There are two subgraphs
+// in this subset of cyclic lines: the rectangle to the left of B and the
+// triangle to the right.  Note that subgraphs do not necessarily correspond
+// to subsectors.
+//
+// The triangle on the right has a single cycle of length 3.
+//
+// The rectangle on the left has 3 cycles, two containing 4 lines (the
+// smaller rectangles) and 1 containing 6 lines (the overall rectangle).
+// Line A will be marked with a maximum cycle length of 4, and all other lines
+// will be marked with a length of 6, which is also the maximum length for
+// the subgraph.  This identifies line A as an interior line.
+//
+// The algorithm proceeds by depth-first search.  Cycles are detected by
+// recording the current path and checking for a duplicate vertex.
+//
+// Subgraphs are represented by a canonical element of that subgraph and
+// are recored in each line in a cycle whenever a cycle is found.  The
+// element chosen is the first in the cycle.  When a line is part of
+// multiple cycles, the earliest element (in the global lines[] array)
+// wins. This eventually converges to a correct partition of the graph.
+//
+// FIXME: Implement Johnson cycle search for better time complexity.
+// This doesn't seem to be necessary in practice so far based on testing
+// maps with large/complex sectors.
+*/
+static void gld_MarkElementaryCycles(sector_t* sector, struct linepath* path)
+{
+  int i = 0;
+  struct linepath next;
+  struct linepath* cur;
+  struct linepath* last;
+  struct linepath* cycle;
+  unsigned int count;
+
+  next.prev = path;
+
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    line_t* l = sector->lines[i];
+
+    if (path != NULL)
+    {
+      next.v = gld_FollowEdge(sector, path->v, l);
+      if (next.v == NULL)
+        continue;
+
+      cycle = NULL;
+      for (cur = path, last = NULL, count = 1; cur != NULL;
+           last = cur, cur = cur->prev, ++count)
+      {
+        if (cur->v == next.v)
+        {
+          cycle = last;
+          break;
+        }
+      }
+
+      if (cycle == path)
+      {
+        // Don't allow trivial cycles caused by lines with the same sector
+        // on both sides
+        continue;
+      }
+
+      if (cycle)
+      {
+        // Found a cycle, update lines along it
+        for (cur = path; cur != cycle->prev; cur = cur->prev)
+        {
+          if (cur->line->subgraph == NULL)
+            // No canonical subgraph element assigned yet
+            cur->line->subgraph = cycle->line;
+          else if (cycle->line < cur->line->subgraph)
+          {
+            // Arbitrarily pick the earlier line as the canonical subgraph element.
+            // Carry forward max_subgraph_cycle in the process
+            if (cur->line->subgraph->max_subgraph_cycle > cycle->line->max_subgraph_cycle)
+              cycle->line->max_subgraph_cycle = cur->line->subgraph->max_subgraph_cycle;
+            cur->line->subgraph = cycle->line;
+          }
+          // Record largest cycle so far involving this line
+          if (count > cur->line->max_cycle)
+            cur->line->max_cycle = count;
+          // Record largest cycle so far in this subgraph
+          if (count > cur->line->subgraph->max_subgraph_cycle)
+            cur->line->subgraph->max_subgraph_cycle = count;
+        }
+        // Terminate this search branch
+        continue;
+      }
+
+      // Recursively deepen search
+      next.line = l;
+      gld_MarkElementaryCycles(sector, &next);
+    }
+    else if (l->subgraph == NULL)
+    {
+      // Start new traversal from the first logical vertex of this line
+      next.v = l->frontsector == sector ? l->v1 : l->v2;
+      next.line = NULL;
+      gld_MarkElementaryCycles(sector, &next);
+    }
+  }
+}
+
+static void gld_ClassifySector(sector_t* sector)
+{
+  int i;
+
+  // Initialize cycle detection
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    sector->lines[i]->max_cycle = 0;
+    sector->lines[i]->max_subgraph_cycle = 0;
+    sector->lines[i]->subgraph = NULL;
+  }
+
+  gld_MarkElementaryCycles(sector, NULL);
+
+  // Mark all real (not perfidious mapper trick) lines.
+  //
+  // The sector is real if all its lines that participate in cycles are real
+  // This means sectors that are so broken they don't have cycles are
+  // vacuously real, which is a conservative assumption since many maps
+  // have extremely broken sectors.
+  sector->flags |= SECTOR_IS_REAL;
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    line_t* l = sector->lines[i];
+    // Skip lines that were not in a cycle
+    if (l->subgraph == NULL)
+      continue;
+
+    assert(l->max_cycle <= l->subgraph->max_subgraph_cycle);
+
+    // A line is real if it isn't self-referencing or it's an interior line
+    // (does not participate in the longest cycle of its subgraph)
+    if (l->frontsector != l->backsector || l->max_cycle != l->subgraph->max_subgraph_cycle)
+      l->r_flags |= RF_REAL;
+    else
+      sector->flags &= ~SECTOR_IS_REAL;
+  }
+}
+
+// Classify all sectors and their lines as dangling/interior/real
+static void gld_ClassifySectors(void)
+{
+  int i;
+
+  for (i = 0; i < numsectors; i++)
+    gld_ClassifySector(&sectors[i]);
+}
+
+static sector_t* gld_ResolveContainer(sector_t* sector, sector_t* container)
+{
+  if (container == NULL)
+    return NULL;
+  // Chase down target recursively
+  while (container->gl_pp != NULL)
+    container = container->gl_pp;
+  // Avoid cycle creation
+  return container == sector ? NULL : container;
+}
+
+static sector_t* gld_SelfReferencingSectorContainer(sector_t* sector)
+{
+  int i;
+  sector_t* cont;
+  line_t* l;
+
+  // Real sectors are the opposite of self-referencing
+  if (sector->flags & SECTOR_IS_REAL)
+    return NULL;
+
+  // Invariant: sector hasn't had container assigned yet
+  assert(sector->gl_pp == NULL);
+
+  // Prefer to find a real container across a self-referencing linedef
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    l = sector->lines[i];
+    if (!(l->r_flags & RF_REAL))
+    {
+      angle_t ang = R_PointToAngle2(l->v1->x, l->v1->y, l->v2->x, l->v2->y) + ANG90;
+      fixed_t offsx = finecosine[ang >> ANGLETOFINESHIFT] >> 5;
+      fixed_t offsy = finesine[ang >> ANGLETOFINESHIFT] >> 5;
+      fixed_t xmid = (l->v1->x + l->v2->x) >> 1;
+      fixed_t ymid = (l->v1->y + l->v2->y) >> 1;
+      fixed_t xp1 = xmid + offsx;
+      fixed_t yp1 = ymid + offsy;
+      fixed_t xp2 = xmid - offsx;
+      fixed_t yp2 = ymid - offsy;
+
+      if ((cont = gld_ResolveContainer(sector, R_PointInSubsector(xp1, yp1)->sector)) &&
+          cont->flags & SECTOR_IS_REAL)
+        return cont;
+      if ((cont = gld_ResolveContainer(sector, R_PointInSubsector(xp2, yp2)->sector)) &&
+          cont->flags & SECTOR_IS_REAL)
+        return cont;
+    }
+  }
+
+  // Failing that, crib container from a fake neighbor (across a normal linedef),
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    l = sector->lines[i];
+    if (l->r_flags & RF_REAL)
+    {
+      if (l->frontsector &&
+          !(l->frontsector->flags & SECTOR_IS_REAL) &&
+          (cont = gld_ResolveContainer(sector, l->frontsector)))
+        return cont;
+      if (l->backsector &&
+          !(l->backsector->flags & SECTOR_IS_REAL) &&
+          (cont = gld_ResolveContainer(sector, l->backsector)))
+        return cont;
+    }
+  }
+
+  return NULL;
+}
+
+static void gld_ResolveContainers(void)
+{
+  // Perform final resolution of containers for sectors that have them
+  int i;
+
+  for (i = 0; i < numsectors; i++)
+  {
+    if (sectors[i].gl_pp != NULL)
+      sectors[i].gl_pp = gld_ResolveContainer(&sectors[i], sectors[i].gl_pp);
+  }
+}
+
 /********************************************
  * Name     : gld_GetSubSectorVertices      *
  * created  : 08/13/00                      *
@@ -861,6 +1145,9 @@ static void gld_PreprocessSectors(void)
   int i;
   int j;
 
+  // Mark real sectors for later
+  gld_ClassifySectors();
+
   if (numsectors)
   {
     sectorloops=Z_Malloc(sizeof(GLSector)*numsectors);
@@ -976,9 +1263,13 @@ static void gld_PreprocessSectors(void)
     // figgi -- adapted for glnodes
     if (sectors[i].flags & SECTOR_IS_CLOSED)
       gld_PrecalculateSector(i);
+
+    sectors[i].gl_pp = gld_SelfReferencingSectorContainer(&sectors[i]);
   }
   Z_Free(vertexcheck);
   Z_Free(vertexcheck2);
+
+  gld_ResolveContainers();
 
   // figgi -- adapted for glnodes
   if (numnodes)
