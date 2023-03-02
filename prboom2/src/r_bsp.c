@@ -49,9 +49,9 @@
 // an approximation of software rendering behavior.  Presumably
 // bleedthrough normally occurs when the sector's floor is so
 // low that it is completely occluded from the current view.
-#define FLOOR_BLEED_THRESHOLD 500
+#define FLOOR_BLEED_THRESHOLD 400
 // Same, but for ceiling
-#define CEILING_BLEED_THRESHOLD 500
+#define CEILING_BLEED_THRESHOLD 400
 
 int currentsubsectornum;
 
