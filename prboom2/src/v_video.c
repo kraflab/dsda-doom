@@ -222,7 +222,75 @@ cr_range_t cr_range[CR_LIMIT] = {
   [CR_RED]     = { 0x3F, 0x00, 0x00, 0xFF, 0x00, 0x00 },
 };
 
+typedef struct {
+  double light_lower_bound;
+  double light_upper_bound;
+  double multiplier;
+} cr_font_t;
+
+static cr_font_t cr_font = {
+  .light_lower_bound = 1.0,
+  .light_upper_bound = 0.0,
+  .multiplier = 1.0,
+};
+
+static void dsda_RegisterFontLightness(double lightness) {
+  if (cr_font.light_lower_bound > lightness)
+    cr_font.light_lower_bound = lightness;
+
+  if (cr_font.light_upper_bound < lightness)
+    cr_font.light_upper_bound = lightness;
+}
+
+static void dsda_CalculateFontBounds(const char *playpal) {
+  double dsda_PaletteEntryLightness(const char *playpal, int i);
+
+  int i, j;
+  const byte* lump;
+  const byte* p;
+  short width;
+  byte length;
+  byte entry;
+  double lightness;
+
+  if (raven)
+    return;
+
+  lump = W_LumpByName("STCFN065");
+
+  width = *((const int16_t *) lump);
+  width = LittleShort(width);
+
+  for (i = 0; i < width; ++i) {
+    int32_t offset;
+    p = lump + 8 + 4 * i;
+    offset = *((const int32_t *) p);
+    p = lump + LittleLong(offset);
+
+    while (*p != 0xff) {
+      p++;
+      length = *p++;
+      p++;
+
+      for (j = 0; j < length; ++j) {
+        entry = *p++;
+        lightness = dsda_PaletteEntryLightness(playpal, entry) / 100.0;
+        dsda_RegisterFontLightness(lightness);
+      }
+
+      p++;
+    }
+  }
+
+  cr_font.multiplier = 1.0 / (cr_font.light_upper_bound - cr_font.light_lower_bound);
+
+  lprintf(LO_DEBUG, "Font Bounds: %lf:%lf x%lf\n",
+          cr_font.light_lower_bound, cr_font.light_upper_bound, cr_font.multiplier);
+}
+
 static byte* dsda_GenerateCRTable(void) {
+  double dsda_PaletteEntryLightness(const char *playpal, int i);
+
   int cr_i;
   int orig_i;
   int check_i;
@@ -233,15 +301,22 @@ static byte* dsda_GenerateCRTable(void) {
 
   buffer = Z_Malloc(256 * CR_LIMIT);
 
+  dsda_CalculateFontBounds(playpal);
+
   for (orig_i = 0; orig_i < 768; orig_i += 3) {
-    double orig_r, orig_g, orig_b;
     double length;
 
-    orig_r = (double) playpal[orig_i + 0] / 255;
-    orig_g = (double) playpal[orig_i + 1] / 255;
-    orig_b = (double) playpal[orig_i + 2] / 255;
+    length = dsda_PaletteEntryLightness(playpal, orig_i / 3) / 100.0;
+    length -= cr_font.light_lower_bound;
+    length *= cr_font.multiplier;
+    if (length < 0)
+      length = 0;
+    if (length > 1)
+      length = 1;
 
-    length = sqrt(orig_r * orig_r + orig_g * orig_g + orig_b * orig_b);
+    // This is the exhud font bright value
+    if (orig_i / 3 == 176)
+      length = 1;
 
     for (cr_i = 0; cr_i < CR_LIMIT; ++cr_i) {
       int target_r, target_g, target_b;

@@ -97,7 +97,7 @@ static dboolean dsda_DuplicatePaletteEntry(const char *playpal, int i, int j) {
   return true;
 }
 
-static double dsda_PaletteEntryLightness(const char *playpal, int i) {
+double dsda_PaletteEntryLightness(const char *playpal, int i) {
   double L;
   byte pal_r, pal_g, pal_b;
   double r, g, b;
