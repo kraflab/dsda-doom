@@ -55,6 +55,7 @@ extern int exhud_color_default;
 extern int exhud_color_warning;
 extern int exhud_color_alert;
 
+extern patchnum_t hu_font[HU_FONTSIZE];
 extern patchnum_t hu_font2[HU_FONTSIZE];
 
 typedef struct {
@@ -65,6 +66,7 @@ typedef struct {
 
 int dsda_HudComponentY(int y_offset, int vpt);
 void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt);
+void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int vpt);
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt);
 fixed_t dsda_HexenArmor(player_t* player);
 void dsda_DrawBigNumber(int x, int y, int delta_x, int delta_y, int cm, int vpt, int count, int n);
