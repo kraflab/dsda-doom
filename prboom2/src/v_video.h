@@ -67,22 +67,22 @@ extern const byte *colrngs[];
 // symbolic indices into color translation table pointer array
 typedef enum
 {
-  CR_BRICK,   //0
-  CR_TAN,     //1
-  CR_GRAY,    //2
-  CR_GREEN,   //3
-  CR_BROWN,   //4
-  CR_GOLD,    //5
-  CR_DEFAULT, //6
-  CR_BLUE,    //7
-  CR_ORANGE,  //8
-  CR_YELLOW,  //9
-  CR_BLUE2,   //10 // proff
-  CR_BLACK,   //11
-  CR_PURPLE,  //12
-  CR_WHITE,   //13
-  CR_RED,     //14
-  CR_LIMIT    //15 //jff 2/27/98 added for range check
+  CR_DEFAULT,
+  CR_BRICK,
+  CR_TAN,
+  CR_GRAY,
+  CR_GREEN,
+  CR_BROWN,
+  CR_GOLD,
+  CR_RED,
+  CR_BLUE,
+  CR_ORANGE,
+  CR_YELLOW,
+  CR_BLUE2,
+  CR_BLACK,
+  CR_PURPLE,
+  CR_WHITE,
+  CR_LIMIT,
 } crange_idx_e;
 //jff 1/16/98 end palette color range additions
 
