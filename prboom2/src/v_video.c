@@ -79,46 +79,6 @@ const byte *colrngs[CR_LIMIT];
 
 int usegamma;
 
-/*
- * V_InitColorTranslation
- *
- * Loads the color translation tables from predefined lumps at game start
- * No return
- *
- * Used for translating text colors from the red palette range
- * to other colors. The first nine entries can be used to dynamically
- * switch the output of text color thru the HUlib_drawText routine
- * by embedding ESCn in the text to obtain color n. Symbols for n are
- * provided in v_video.h.
- *
- * cphipps - constness of crdef_t stuff fixed
- */
-
-typedef struct {
-  const char *name;
-  const byte **map;
-} crdef_t;
-
-// killough 5/2/98: table-driven approach
-static const crdef_t crdefs[] = {
-  {"CRBRICK",  &colrngs[CR_BRICK  ]},
-  {"CRTAN",    &colrngs[CR_TAN    ]},
-  {"CRGRAY",   &colrngs[CR_GRAY   ]},
-  {"CRGREEN",  &colrngs[CR_GREEN  ]},
-  {"CRBROWN",  &colrngs[CR_BROWN  ]},
-  {"CRGOLD",   &colrngs[CR_GOLD   ]},
-  {"CRRED",    &colrngs[CR_DEFAULT]},
-  {"CRBLUE",   &colrngs[CR_BLUE   ]},
-  {"CRORANGE", &colrngs[CR_ORANGE ]},
-  {"CRYELLOW", &colrngs[CR_YELLOW ]},
-  {"CRBLUE2",  &colrngs[CR_BLUE2  ]},
-  {"CRBLACK",  &colrngs[CR_BLACK  ]},
-  {"CRPURPLE", &colrngs[CR_PURPLE ]},
-  {"CRWHITE",  &colrngs[CR_WHITE  ]},
-  {"CRRED",    &colrngs[CR_RED    ]},
-  {NULL}
-};
-
 // [FG] translate between blood color value as per EE spec
 //      and actual color translation table index
 
@@ -207,8 +167,8 @@ void V_InitColorTranslation(void)
 
   full_table = dsda_GenerateCRTable();
 
-  for (i = 0; crdefs[i].name; ++i)
-    *crdefs[i].map = full_table + 256 * i;
+  for (i = 0; i < CR_LIMIT; ++i)
+    colrngs[i] = full_table + 256 * i;
 }
 
 //
