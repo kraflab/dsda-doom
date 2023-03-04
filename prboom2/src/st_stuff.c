@@ -801,7 +801,7 @@ static void ST_drawWidgets(dboolean refresh)
 
   //jff 2/16/98 make color of ammo depend on amount
   if (*w_ready.num == plyr->maxammo[weaponinfo[w_ready.data].ammo])
-    STlib_updateNum(&w_ready, CR_BLUE2, refresh);
+    STlib_updateNum(&w_ready, CR_LIGHTBLUE, refresh);
   else {
     if (plyr->maxammo[weaponinfo[w_ready.data].ammo])
       ammopct = (*w_ready.num*100)/plyr->maxammo[weaponinfo[w_ready.data].ammo];
@@ -827,11 +827,11 @@ static void ST_drawWidgets(dboolean refresh)
   else if (*w_health.n.num <= hud_health_green)
     STlib_updatePercent(&w_health, CR_GREEN, refresh);
   else
-    STlib_updatePercent(&w_health, CR_BLUE2, refresh); //killough 2/28/98
+    STlib_updatePercent(&w_health, CR_LIGHTBLUE, refresh); //killough 2/28/98
 
   // armor color dictated by type (Status Bar)
   if (plyr->armortype >= 2)
-    STlib_updatePercent(&w_armor, CR_BLUE2, refresh);
+    STlib_updatePercent(&w_armor, CR_LIGHTBLUE, refresh);
   else if (plyr->armortype == 1)
     STlib_updatePercent(&w_armor, CR_GREEN, refresh);
   else if (plyr->armortype == 0)

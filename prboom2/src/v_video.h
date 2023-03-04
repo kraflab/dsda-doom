@@ -78,7 +78,7 @@ typedef enum
   CR_BLUE,
   CR_ORANGE,
   CR_YELLOW,
-  CR_BLUE2,
+  CR_LIGHTBLUE,
   CR_BLACK,
   CR_PURPLE,
   CR_WHITE,

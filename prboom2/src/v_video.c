@@ -86,7 +86,7 @@ static const int bloodcolor[] = {
   0,         // 0 - Red (normal)
   CR_GRAY,   // 1 - Grey
   CR_GREEN,  // 2 - Green
-  CR_BLUE2,  // 3 - Blue
+  CR_BLUE,   // 3 - Blue
   CR_YELLOW, // 4 - Yellow
   CR_BLACK,  // 5 - Black
   CR_PURPLE, // 6 - Purple

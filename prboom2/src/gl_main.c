@@ -115,22 +115,22 @@ GLfloat gl_whitecolor[4]={1.0f,1.0f,1.0f,1.0f};
 
 GLfloat cm2RGB[CR_LIMIT + 1][4] =
 {
-  [CR_DEFAULT] = { 1.00f, 1.00f, 1.00f, 1.00f },
-  [CR_BRICK] =   { 0.50f, 0.00f, 0.00f, 1.00f },
-  [CR_TAN] =     { 1.00f, 0.90f, 0.90f, 1.00f },
-  [CR_GRAY] =    { 1.00f, 1.00f, 1.00f, 1.00f },
-  [CR_GREEN] =   { 0.00f, 1.00f, 0.00f, 1.00f },
-  [CR_BROWN] =   { 0.75f, 0.65f, 0.55f, 1.00f },
-  [CR_GOLD] =    { 1.00f, 1.00f, 0.00f, 1.00f },
-  [CR_RED] =     { 1.00f, 0.00f, 0.00f, 1.00f },
-  [CR_BLUE] =    { 0.80f, 0.80f, 1.00f, 1.00f },
-  [CR_ORANGE] =  { 1.00f, 0.50f, 0.25f, 1.00f },
-  [CR_YELLOW] =  { 1.00f, 1.00f, 0.00f, 1.00f },
-  [CR_BLUE2] =   { 0.50f, 0.50f, 1.00f, 1.00f },
-  [CR_BLACK] =   { 0.00f, 0.00f, 0.00f, 1.00f },
-  [CR_PURPLE] =  { 0.50f, 0.00f, 0.50f, 1.00f },
-  [CR_WHITE] =   { 1.00f, 1.00f, 1.00f, 1.00f },
-  [CR_LIMIT] =   { 1.00f, 1.00f, 1.00f, 1.00f },
+  [CR_DEFAULT] =   { 1.00f, 1.00f, 1.00f, 1.00f },
+  [CR_BRICK] =     { 0.50f, 0.00f, 0.00f, 1.00f },
+  [CR_TAN] =       { 1.00f, 0.90f, 0.90f, 1.00f },
+  [CR_GRAY] =      { 1.00f, 1.00f, 1.00f, 1.00f },
+  [CR_GREEN] =     { 0.00f, 1.00f, 0.00f, 1.00f },
+  [CR_BROWN] =     { 0.75f, 0.65f, 0.55f, 1.00f },
+  [CR_GOLD] =      { 1.00f, 1.00f, 0.00f, 1.00f },
+  [CR_RED] =       { 1.00f, 0.00f, 0.00f, 1.00f },
+  [CR_BLUE] =      { 0.50f, 0.50f, 1.00f, 1.00f },
+  [CR_ORANGE] =    { 1.00f, 0.50f, 0.25f, 1.00f },
+  [CR_YELLOW] =    { 1.00f, 1.00f, 0.00f, 1.00f },
+  [CR_LIGHTBLUE] = { 0.80f, 0.80f, 1.00f, 1.00f },
+  [CR_BLACK] =     { 0.00f, 0.00f, 0.00f, 1.00f },
+  [CR_PURPLE] =    { 0.50f, 0.00f, 0.50f, 1.00f },
+  [CR_WHITE] =     { 1.00f, 1.00f, 1.00f, 1.00f },
+  [CR_LIMIT] =     { 1.00f, 1.00f, 1.00f, 1.00f },
 };
 
 void SetFrameTextureMode(void)

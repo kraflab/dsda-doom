@@ -602,7 +602,7 @@ void HU_draw_crosshair(void)
   }
 
   if (hudadd_crosshair_health)
-    cm = HU_GetHealthColor(plr->health, CR_BLUE2);
+    cm = HU_GetHealthColor(plr->health, CR_LIGHTBLUE);
   else
     cm = dsda_IntConfig(dsda_config_hudadd_crosshair_color);
 

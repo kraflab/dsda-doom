@@ -40,7 +40,7 @@ static void dsda_DrawComponent(void) {
     else if (player->armortype < 2)
       cm = CR_GREEN;
     else
-      cm = CR_BLUE2;
+      cm = CR_LIGHTBLUE;
   }
 
   dsda_DrawBigNumber(component.x, component.y, patch_delta_x, 0,

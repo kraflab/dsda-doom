@@ -53,7 +53,7 @@ static void dsda_DrawComponent(void) {
       lump = armor_lump_green;
     }
     else {
-      cm = CR_BLUE2;
+      cm = CR_LIGHTBLUE;
       lump = armor_lump_blue;
     }
   }
