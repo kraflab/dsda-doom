@@ -81,6 +81,9 @@ typedef struct
   // they are *only* used in rendering
   fixed_t px;
   fixed_t py;
+  // dsda/traverse.c
+  uint16_t id:15;
+  dboolean visited:1;
 } vertex_t;
 
 // Each sector has a degenmobj_t in its center for sound origin purposes.
@@ -117,6 +120,7 @@ typedef struct
 #define SECF_LIGHTCEILINGABSOLUTE  0x00080000
 #define SECF_DAMAGEFLAGS (SECF_ENDGODMODE|SECF_ENDLEVEL|SECF_DMGTERRAINFX|SECF_HAZARD|SECF_DMGUNBLOCKABLE)
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET|SECF_DAMAGEFLAGS|SECF_FRICTION|SECF_PUSH)
+#define SECTOR_IS_REAL             0x00200000
 
 typedef struct
 {
@@ -290,6 +294,7 @@ typedef byte r_flags_t;
 #define RF_IGNORE   0x08 // Renderer can skip this line
 #define RF_CLOSED   0x10 // Line blocks view
 #define RF_ISOLATED 0x20 // Isolated line
+#define RF_REAL     0x40 // Real (not self-referencing trick) line
 
 typedef enum
 {
@@ -351,6 +356,11 @@ typedef struct line_s
   int healthgroup;
   const byte* tranmap;
   float alpha;
+
+  // gl_preprocess
+  dboolean cycle_fw:1; // part of a forward cycle
+  dboolean cycle_bw:1; // part of a backward cycle (same sector on both sides only)
+  dboolean cycle_amb:1; // part of an ambiguous cycle (same sector on both sides only)
 } line_t;
 
 #define LINE_ARG_COUNT 5
@@ -432,6 +442,16 @@ typedef struct ssline_s
 
 struct polyobj_s;
 
+// Container of a subsector of a self-referencing sector.
+// If `CONTAINER_SUBSECTOR` flag is set, the pointer is
+// another subsector to inherit from rather than a sector.
+union container_u {
+  struct sector_s* sector;
+  uintptr_t subsector;
+};
+
+#define CONTAINER_SUBSECTOR 0x1
+
 typedef struct subsector_s
 {
   sector_t *sector;
@@ -441,6 +461,9 @@ typedef struct subsector_s
 
   // hexen
   struct polyobj_s *poly;
+
+  // For gl_preprocess
+  union container_u gl_pp;
 } subsector_t;
 
 

@@ -54,6 +54,7 @@
 #include "r_main.h"
 #include "am_map.h"
 #include "lprintf.h"
+#include "dsda/traverse.h"
 
 static FILE *levelinfo;
 
@@ -90,12 +91,18 @@ static void gld_TurnOffSubsectorTriangulation(void)
 
 static dboolean gld_TriangulateSubsector(subsector_t *ssec)
 {
+  sector_t *container = ssec->gl_pp.sector;
   return !(ssec->sector->flags & SECTOR_IS_CLOSED) ||
+         (container && !(container->flags & SECTOR_IS_CLOSED)) ||
          triangulate_subsectors;
 }
 
 static int gld_SubsectorLoopIndex(subsector_t *ssec)
 {
+  // Give triangles to ultimate container of self-referencing sector
+  if (ssec->gl_pp.sector)
+    return ssec->gl_pp.sector->iSectorID;
+
   return ssec->sector->iSectorID;
 }
 
@@ -725,6 +732,338 @@ static void gld_PrecalculateSector(int num)
   Z_Free(lineadded);
 }
 
+static void gld_CycleCallback(sector_t* sector, struct tpath* cycle, void* data)
+{
+  struct tpath* cur;
+  dboolean ambig = true;
+
+  for (cur = cycle; cur; cur = cur->next)
+  {
+    if (cur->line->frontsector != cur->line->backsector)
+    {
+      ambig = false;
+      break;
+    }
+  }
+
+  for (cur = cycle; cur; cur = cur->next)
+  {
+    // Mark which direction we traversed the line.
+    if (cur->line->frontsector == cur->line->backsector)
+    {
+      // Bi-directional line, detect direction
+      if (ambig)
+        // Without at least one single-directional line in the cycle,
+        // the cycle direction is ambiguous
+        cur->line->cycle_amb = true;
+      else if (cur->v == cur->line->v2)
+        cur->line->cycle_fw = true;
+      else
+        cur->line->cycle_bw = true;
+    }
+    else
+      // Single-direction lines are always traversed forwards
+      cur->line->cycle_fw = true;
+  }
+}
+
+/*
+// Detect elementary cycles in a sector and mark lines which participate in them.
+// This is an aid to detecting self-referencing sectors.
+//
+// The sector is treated as the directed graph of its sidedefs.  This means
+// most lines can only be traversed one direction.  Lines tagged with the sector
+// on both sides can be traversed backwards, which is marked separately.
+// Trivial cycles from doubling back on such a line are not counted.
+// Cycles can't repeat vertices.
+//
+// For example, consider the following sector.  Vertices are marked by +; lines
+// by |, \, and -; direction by <, >, v, ^, and * (bi-directional).
+//
+//             B
+//   +-<-+-<-+-*-+
+//   |   |   |   |\
+//   v  A*   ^   v ^
+//   |   |   |   |  \
+//   +->-+->-+   +->-+
+//
+// Line B will be marked as not part of any cycle, since it is not part of
+// a closed loop.
+//
+// Line A is part of two cycles with opposite directions, so it will be marked
+// as part of both a forward and backward cycle.  This indicates that it is
+// an interior line (and therefore not a self-referencing trick).
+//
+// Cycles involving only bi-directional lines require some care.  They could
+// be interior lines, but they could also be the perimeter of a self-referencing
+// sector.  These cycles are marked as ambiguous and distinguised geometrically
+// with a BSP query later on.  Unfortunately, this geometric check is also not
+// reliable, which is why we need to do cycle analysis in the first place.
+// Both checks together are more accurate than either alone.
+//
+// The algorithm proceeds by depth-first search.  Cycles are detected by
+// recording the current path and checking for a duplicate vertex.
+//
+// RF_LINKED is calculated here as well since we're already doing traversals.
+//
+// FIXME: Implement Johnson cycle search for better time complexity.
+// This doesn't seem to be necessary in practice so far based on testing
+// maps with large/complex sectors.
+*/
+static void gld_TraverseSector(sector_t* sector)
+{
+  struct traverse_ctx ctx;
+  int i = 0;
+
+  ctx.sector = sector;
+  ctx.ccb = gld_CycleCallback;
+  ctx.pcb = NULL;
+  ctx.data = NULL;
+
+  dsda_TraverseSectorGraph(&ctx);
+}
+
+// Detect sectors on each side of line according to BSP tree.
+// This projects a fraction of a unit orthogonally from the line
+// midpoint and does a point-in-sector test.  It is often inaccurate,
+// so don't depend on it alone for anything critical.
+static void gld_BSPLineSides(line_t* line, subsector_t** s1, subsector_t** s2)
+{
+  angle_t ang = R_PointToAngle2(line->v1->x, line->v1->y, line->v2->x, line->v2->y) + ANG90;
+  fixed_t offsx = finecosine[ang >> ANGLETOFINESHIFT] >> 5;
+  fixed_t offsy = finesine[ang >> ANGLETOFINESHIFT] >> 5;
+  fixed_t xmid = (line->v1->x + line->v2->x) >> 1;
+  fixed_t ymid = (line->v1->y + line->v2->y) >> 1;
+  fixed_t xp1 = xmid + offsx;
+  fixed_t yp1 = ymid + offsy;
+  fixed_t xp2 = xmid - offsx;
+  fixed_t yp2 = ymid - offsy;
+
+  *s1 = R_PointInSubsector(xp1, yp1);
+  *s2 = R_PointInSubsector(xp2, yp2);
+}
+
+// Disambiguate interior lines and self-referencing lines
+// using BSP tree.  This is not completely accurate, so
+// it's only used when graph cycle tests are inconclusive.
+static dboolean gld_BSPLineIsInterior(sector_t* sector, line_t* line)
+{
+  subsector_t* s1;
+  subsector_t* s2;
+
+  gld_BSPLineSides(line, &s1, &s2);
+  return s1->sector == sector && s2->sector == sector;
+}
+
+// Try to figure out if a sector is "real" or if it uses
+// self-reference tricks to create bridges, deep
+// water, etc.  Does line classification in the process.
+static void gld_ClassifySector(sector_t* sector)
+{
+  int i;
+
+  // Initialize cycle detection
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    sector->lines[i]->cycle_fw = false;
+    sector->lines[i]->cycle_bw = false;
+    sector->lines[i]->cycle_amb = false;
+  }
+
+  gld_TraverseSector(sector);
+
+  // Mark all real (not perfidious mapper trick) lines.
+  //
+  // The sector is real if all its lines that participate in cycles are real
+  // This means sectors that are so broken they don't have cycles are
+  // vacuously real, which is a conservative assumption since many maps
+  // have extremely broken sectors.
+  sector->flags |= SECTOR_IS_REAL;
+  for (i = 0; i < sector->linecount; ++i)
+  {
+    line_t* l = sector->lines[i];
+    // Skip lines that were not in a cycle
+    if (!l->cycle_fw && !l->cycle_bw && !l->cycle_amb)
+      continue;
+
+    // A line is real if it isn't self-referencing or it's interior
+    // to the sector.
+    // A line is interior if it was traversed in both directions
+    // by different cycles, or its cycle direction was ambiguous
+    // and the BSP tree indicates the same sector lies
+    // on both sides of it.
+    if (l->frontsector != l->backsector ||
+        (l->cycle_fw && l->cycle_bw) ||
+        (l->cycle_amb && gld_BSPLineIsInterior(sector, l)))
+      l->r_flags |= RF_REAL;
+    else
+      sector->flags &= ~SECTOR_IS_REAL;
+  }
+}
+
+// Classify all sectors and their lines as dangling/interior/real
+static void gld_ClassifySectors(void)
+{
+  int i;
+
+  for (i = 0; i < numsectors; i++)
+    gld_ClassifySector(&sectors[i]);
+}
+
+// Find subsector at end of container chain, but return `NULL` upon encountering
+// `subsector` to avoid creating a cycle.  If `strict`, also return `NULL` upon
+// encountering the same sector.
+static subsector_t* gld_ChaseContainer(subsector_t* subsector,
+                                       subsector_t* container, dboolean strict)
+{
+  if (container == NULL || container == subsector ||
+      (strict && container->sector == subsector->sector))
+    return NULL;
+  // Chase down target recursively
+  while (container->gl_pp.subsector & CONTAINER_SUBSECTOR)
+  {
+    container = (subsector_t*) (container->gl_pp.subsector & ~CONTAINER_SUBSECTOR);
+    // Avoid cycle creation
+    if (container == NULL || container == subsector ||
+        (strict && container->sector == subsector->sector))
+      return NULL;
+  }
+  return container;
+}
+
+static void gld_ResolveContainer(subsector_t* subsector)
+{
+  // Try to find sector link at the end of the chain if
+  // we link to another subsector
+  if (subsector->gl_pp.subsector & CONTAINER_SUBSECTOR)
+  {
+    subsector_t* chase = gld_ChaseContainer(NULL, subsector, false);
+    if (chase)
+      subsector->gl_pp = chase->gl_pp;
+    else
+      subsector->gl_pp.sector = NULL;
+  }
+  // Container better be fully resolved now (either NULL, or a sector)
+  assert(subsector->gl_pp.sector == NULL ||
+         !(subsector->gl_pp.subsector & CONTAINER_SUBSECTOR));
+}
+
+// Try to find a real, non-closed container directly across
+// a fake line.  It doesn't make sense to give triangles to
+// fake sectors (their flats should be invisible), and we
+// don't bother with closed containers because GLU tessellation
+// should have succeeded and obviated the need to piece together
+// triangles from subsectors.
+static sector_t* gld_FindContainer(subsector_t* subsector)
+{
+  int i;
+
+  for (i = 0; i < subsector->numlines; ++i)
+  {
+    seg_t* s = &segs[subsector->firstline + i];
+    line_t* l = s->linedef;
+    subsector_t* s1;
+    subsector_t* s2;
+
+    // Only consider fake lines
+    if (l->r_flags & RF_REAL)
+      continue;
+
+    // Look for container by doing a point lookup to the sides of the line in
+    // the BSP tree.  Note that this isn't always accurate, presumably due to
+    // vagaries in the node building process, fixed point precision, etc.  This
+    // can be seen with sector 34 in AV MAP01, where we fail to find the tiny
+    // sectors above and below its self-referencing lines.
+    gld_BSPLineSides(l, &s1, &s2);
+
+    if (s1->sector != subsector->sector && s1->sector->flags & SECTOR_IS_REAL &&
+        !(s1->sector->flags & SECTOR_IS_CLOSED))
+      return s1->sector;
+    if (s2->sector != subsector->sector && s2->sector->flags & SECTOR_IS_REAL &&
+        !(s2->sector->flags & SECTOR_IS_CLOSED))
+      return s2->sector;
+  }
+
+  return NULL;
+}
+
+// Try to find a neighboring subsector so we can inherit its container.
+// If `strict`, only find subsectors in a different sector.
+static subsector_t* gld_InheritContainer(subsector_t* subsector, dboolean strict)
+{
+  int i;
+
+  for (i = 0; i < subsector->numlines; ++i)
+  {
+    seg_t* s = &segs[subsector->firstline + i];
+    line_t* l = s->linedef;
+    subsector_t* s1;
+    subsector_t* s2;
+
+    gld_BSPLineSides(l, &s1, &s2);
+
+    if ((s1 = gld_ChaseContainer(subsector, s1, strict)))
+      return s1;
+    if ((s2 = gld_ChaseContainer(subsector, s2, strict)))
+      return s2;
+  }
+
+  return NULL;
+}
+
+// Find container of a subsector of a self-referencing sector, if applicable.
+// We try to find a neighboring real sector across a seg, then fall back
+// on inheriting from a neighboring fake subsector (first in a different
+// sector, and finally in the same sector).  This ensures that the
+// inheritance tree we build always terminates in a valid containing
+// sector when possible.  The inheritance tree gets collapsed later
+// in `gld_ResolveContainer`.
+static union container_u gld_SubsectorContainer(subsector_t* subsector)
+{
+  union container_u result;
+  subsector_t* inherit;
+
+  // Invariant: subsector hasn't had container assigned yet
+  assert(subsector->gl_pp.sector == NULL);
+
+  result.sector = NULL;
+
+  // Real sectors are the opposite of self-referencing
+  if (subsector->sector->flags & SECTOR_IS_REAL)
+    return result;
+
+  // Prefer to find a real container across a self-referencing linedef
+  if ((result.sector = gld_FindContainer(subsector)))
+    return result;
+
+  // Failing that, inherit container from a fake neighbor from a different sector
+  if ((inherit = gld_InheritContainer(subsector, true)))
+  {
+      result.subsector = (uintptr_t) inherit | CONTAINER_SUBSECTOR;
+      return result;
+  }
+
+  // Failing that, inherit container from a fake neighbor, even from
+  // the same sector
+  if ((inherit = gld_InheritContainer(subsector, false)))
+  {
+      result.subsector = (uintptr_t) inherit | CONTAINER_SUBSECTOR;
+      return result;
+  }
+
+  // No luck
+  return result;
+}
+
+static void gld_ResolveContainers(void)
+{
+  // Perform final resolution of containers for subsectors that have them
+  int i;
+
+  for (i = 0; i < numsubsectors; i++)
+    gld_ResolveContainer(&subsectors[i]);
+}
+
 /********************************************
  * Name     : gld_GetSubSectorVertices      *
  * created  : 08/13/00                      *
@@ -861,6 +1200,9 @@ static void gld_PreprocessSectors(void)
   int i;
   int j;
 
+  // Mark real sectors for later
+  gld_ClassifySectors();
+
   if (numsectors)
   {
     sectorloops=Z_Malloc(sizeof(GLSector)*numsectors);
@@ -982,6 +1324,11 @@ static void gld_PreprocessSectors(void)
   }
   Z_Free(vertexcheck);
   Z_Free(vertexcheck2);
+
+  for (i = 0; i < numsubsectors; ++i)
+    subsectors[i].gl_pp = gld_SubsectorContainer(&subsectors[i]);
+
+  gld_ResolveContainers();
 
   // figgi -- adapted for glnodes
   if (numnodes)

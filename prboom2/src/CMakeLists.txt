@@ -191,6 +191,8 @@ set(COMMON_SRC
     dsda/tracker.h
     dsda/tranmap.c
     dsda/tranmap.h
+    dsda/traverse.c
+    dsda/traverse.h
     dsda/udmf.cpp
     dsda/udmf.h
     dsda/utility.c
