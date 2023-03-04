@@ -24,6 +24,7 @@
 #include "hud_components/big_artifact.h"
 #include "hud_components/big_health.h"
 #include "hud_components/big_health_text.h"
+#include "hud_components/color_test.h"
 #include "hud_components/command_display.h"
 #include "hud_components/composite_time.h"
 #include "hud_components/coordinate_display.h"
