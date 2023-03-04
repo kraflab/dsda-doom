@@ -71,7 +71,7 @@
 // Note: transformed values not buffered locally,
 // like some DOOM-alikes ("wt", "WebView") do.
 //
-typedef struct
+typedef struct vertex_s
 {
   fixed_t x, y;
   // [crispy] remove slime trails
@@ -81,6 +81,11 @@ typedef struct
   // they are *only* used in rendering
   fixed_t px;
   fixed_t py;
+  // dsda/traverse.c
+  struct vertex_s* prev;
+  struct vertex_s* root;
+  unsigned short id;
+  dboolean visited;
 } vertex_t;
 
 // Each sector has a degenmobj_t in its center for sound origin purposes.
@@ -117,6 +122,7 @@ typedef struct
 #define SECF_LIGHTCEILINGABSOLUTE  0x00080000
 #define SECF_DAMAGEFLAGS (SECF_ENDGODMODE|SECF_ENDLEVEL|SECF_DMGTERRAINFX|SECF_HAZARD|SECF_DMGUNBLOCKABLE)
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET|SECF_DAMAGEFLAGS|SECF_FRICTION|SECF_PUSH)
+#define SECTOR_IS_REAL             0x00200000
 
 typedef struct
 {
@@ -283,13 +289,20 @@ typedef enum
   ST_NEGATIVE
 } slopetype_t;
 
-typedef byte r_flags_t;
-#define RF_TOP_TILE 0x01 // Upper texture needs tiling
-#define RF_MID_TILE 0x02 // Mid texture needs tiling
-#define RF_BOT_TILE 0x04 // Lower texture needs tiling
-#define RF_IGNORE   0x08 // Renderer can skip this line
-#define RF_CLOSED   0x10 // Line blocks view
-#define RF_ISOLATED 0x20 // Isolated line
+typedef unsigned short r_flags_t;
+#define RF_TOP_TILE 0x0001 // Upper texture needs tiling
+#define RF_MID_TILE 0x0002 // Mid texture needs tiling
+#define RF_BOT_TILE 0x0004 // Lower texture needs tiling
+#define RF_IGNORE   0x0008 // Renderer can skip this line
+#define RF_CLOSED   0x0010 // Line blocks view
+#define RF_ISOLATED 0x0020 // Isolated line
+#define RF_FW_CYCLE 0x0020 // Part of a forward cycle
+#define RF_BW_CYCLE 0x0040 // Part of a backward cycle
+#define RF_AM_CYCLE 0x0080 // Part of an ambiguous cycle
+#define RF_REAL     0x0100 // Real (not self-referencing trick) line
+
+#define RF_DIR_CYCLE (RF_FW_CYCLE | RF_BW_CYCLE)
+#define RF_ANY_CYCLE (RF_FW_CYCLE | RF_BW_CYCLE | RF_AM_CYCLE)
 
 typedef enum
 {
@@ -432,6 +445,16 @@ typedef struct ssline_s
 
 struct polyobj_s;
 
+// Container of a subsector of a self-referencing sector.
+// If `CONTAINER_SUBSECTOR` flag is set, the pointer is
+// another subsector to inherit from rather than a sector.
+union container_u {
+  struct sector_s* sector;
+  uintptr_t subsector;
+};
+
+#define CONTAINER_SUBSECTOR 0x1
+
 typedef struct subsector_s
 {
   sector_t *sector;
@@ -441,6 +464,9 @@ typedef struct subsector_s
 
   // hexen
   struct polyobj_s *poly;
+
+  // For gl_preprocess
+  union container_u gl_pp;
 } subsector_t;
 
 
