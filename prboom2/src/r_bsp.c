@@ -49,9 +49,9 @@
 // an approximation of software rendering behavior.  Presumably
 // bleedthrough normally occurs when the sector's floor is so
 // low that it is completely occluded from the current view.
-#define FLOOR_BLEED_THRESHOLD 500
+#define FLOOR_BLEED_THRESHOLD 400
 // Same, but for ceiling
-#define CEILING_BLEED_THRESHOLD 500
+#define CEILING_BLEED_THRESHOLD 400
 
 int currentsubsectornum;
 
@@ -375,6 +375,18 @@ static void R_AddLine (seg_t *line)
 
   if (V_IsOpenGLMode())
   {
+    line_t* l = line->linedef;
+    sector_t* sec = subsectors[currentsubsectornum].sector;
+
+    // Don't add plane to drawing list until we encounter a
+    // non-self-referencing linedef in the subsector.
+    if (sec->gl_validcount != validcount && (l == NULL || l->frontsector != l->backsector))
+    {
+      sec->gl_validcount = validcount;
+
+      gld_AddPlane(currentsubsectornum, floorplane, ceilingplane);
+    }
+
     angle1 = R_PointToPseudoAngle(line->v1->x, line->v1->y);
     angle2 = R_PointToPseudoAngle(line->v2->x, line->v2->y);
 
@@ -782,7 +794,7 @@ static void R_Subsector(int num)
   sub = &subsectors[num];
   currentsubsectornum = num;
 
-  if (V_IsSoftwareMode() || !gl_use_stencil || sub->sector->validcount != validcount)
+  if (V_IsSoftwareMode() || sub->sector->gl_validcount != validcount)
   {
     R_UpdateGlobalPlanes(sub->sector, &floorlightlevel, &ceilinglightlevel);
 
@@ -804,9 +816,6 @@ static void R_Subsector(int num)
       sub->sector->validcount = validcount;
 
       R_AddSprites(sub, (floorlightlevel+ceilinglightlevel)/2);
-
-      if (V_IsOpenGLMode())
-        gld_AddPlane(num, floorplane, ceilingplane);
     }
   }
 
