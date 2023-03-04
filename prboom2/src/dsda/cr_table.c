@@ -77,9 +77,9 @@ static void dsda_CalculateFontBounds(const char *playpal) {
   double lightness;
 
   if (raven)
-    return;
-
-  lump = W_LumpByName("STCFN065");
+    lump = W_LumpByName("FONTA33");
+  else
+    lump = W_LumpByName("STCFN065");
 
   width = *((const int16_t *) lump);
   width = LittleShort(width);
