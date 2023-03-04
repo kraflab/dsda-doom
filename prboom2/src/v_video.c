@@ -378,10 +378,12 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
   stretch_param_t *params;
 
-  if (cm<CR_LIMIT)
-    trans=colrngs[cm];
+  if (cm == CR_DEFAULT)
+    trans = NULL;
+  else if (cm < CR_LIMIT)
+    trans = colrngs[cm];
   else
-    trans=translationtables + 256*((cm-CR_LIMIT)-1);
+    trans = translationtables + 256*((cm - CR_LIMIT) - 1);
 
   if (!(flags & VPT_NOOFFSET))
   {
