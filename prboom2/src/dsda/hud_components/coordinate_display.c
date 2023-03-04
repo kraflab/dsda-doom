@@ -118,7 +118,7 @@ static void dsda_WriteVelocity(dsda_text_t* text) {
     v >= THRESHOLD_3V ?
       HUlib_Color(CR_RED)   :
     v >= THRESHOLD_2V ?
-      HUlib_Color(CR_BLUE)  :
+      HUlib_Color(CR_LIGHTBLUE)  :
     v >= THRESHOLD_1V ?
       HUlib_Color(CR_GREEN) :
     HUlib_Color(CR_GRAY);
@@ -140,7 +140,7 @@ static void dsda_WriteDistance(dsda_text_t* text) {
     v >= THRESHOLD_3D ?
       HUlib_Color(CR_RED)   :
     v >= THRESHOLD_2D ?
-      HUlib_Color(CR_BLUE)  :
+      HUlib_Color(CR_LIGHTBLUE)  :
     v >= THRESHOLD_1D ?
       HUlib_Color(CR_GREEN) :
     HUlib_Color(CR_GRAY);
