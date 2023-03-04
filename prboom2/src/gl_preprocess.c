@@ -365,14 +365,21 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
   Z_Free(childlist);
 }
 
-static int currentsector; // the sector which is currently tesselated
+struct tctx
+{
+  struct traverse_ctx ctx;
+  GLUtesselator *tess;
+};
 
 // ntessBegin
 //
 // called when the tesselation of a new loop starts
 
-static void CALLBACK ntessBegin( GLenum type )
+static void CALLBACK ntessBegin(GLenum type, void* data)
 {
+  struct tctx* ctx = (struct tctx*) data;
+  int secnum = ctx->ctx.sector - sectors;
+
 #ifdef PRBOOM_DEBUG
   if (levelinfo)
   {
@@ -389,22 +396,25 @@ static void CALLBACK ntessBegin( GLenum type )
   }
 #endif
   // increase loopcount for currentsector
-  sectorloops[ currentsector ].loopcount++;
+  sectorloops[secnum].loopcount++;
   // reallocate to get space for another loop
-  sectorloops[ currentsector ].loops=Z_Realloc(sectorloops[currentsector].loops,sizeof(GLLoopDef)*sectorloops[currentsector].loopcount);
+  sectorloops[secnum].loops =
+      Z_Realloc(sectorloops[secnum].loops,
+                sizeof(GLLoopDef) * sectorloops[secnum].loopcount);
   // set initial values for current loop
-  // currentloop is -> sectorloops[currentsector].loopcount-1
-  sectorloops[ currentsector ].loops[ sectorloops[currentsector].loopcount-1 ].index=-1;
-  sectorloops[ currentsector ].loops[ sectorloops[currentsector].loopcount-1 ].mode=type;
-  sectorloops[ currentsector ].loops[ sectorloops[currentsector].loopcount-1 ].vertexcount=0;
-  sectorloops[ currentsector ].loops[ sectorloops[currentsector].loopcount-1 ].vertexindex=gld_num_vertexes;
+  // currentloop is -> sectorloops[secnum].loopcount-1
+  sectorloops[secnum].loops[sectorloops[secnum].loopcount - 1].index = -1;
+  sectorloops[secnum].loops[sectorloops[secnum].loopcount - 1].mode = type;
+  sectorloops[secnum].loops[sectorloops[secnum].loopcount - 1].vertexcount = 0;
+  sectorloops[secnum].loops[sectorloops[secnum].loopcount - 1].vertexindex =
+      gld_num_vertexes;
 }
 
 // ntessError
 //
 // called when the tesselation failes (DEBUG only)
 
-static void CALLBACK ntessError(GLenum error)
+static void CALLBACK ntessError(GLenum error, void* data)
 {
 #ifdef PRBOOM_DEBUG
   const GLubyte *estring;
@@ -417,16 +427,27 @@ static void CALLBACK ntessError(GLenum error)
 //
 // called when the two or more vertexes are on the same coordinate
 
-static void CALLBACK ntessCombine( GLdouble coords[3], vertex_t *vert[4], GLfloat w[4], void **dataOut )
+static void CALLBACK ntessCombine(GLdouble coords[3], vertex_t* vert[4],
+                                  GLfloat w[4], void** dataOut, void* data)
 {
 #ifdef PRBOOM_DEBUG
   if (levelinfo)
   {
-    fprintf(levelinfo, "\t\tVertexCombine Coords: x %10.5f, y %10.5f z %10.5f\n", coords[0], coords[1], coords[2]);
-    if (vert[0]) fprintf(levelinfo, "\t\tVertexCombine Vert1 : x %10i, y %10i p %p\n", vert[0]->x>>FRACBITS, vert[0]->y>>FRACBITS, vert[0]);
-    if (vert[1]) fprintf(levelinfo, "\t\tVertexCombine Vert2 : x %10i, y %10i p %p\n", vert[1]->x>>FRACBITS, vert[1]->y>>FRACBITS, vert[1]);
-    if (vert[2]) fprintf(levelinfo, "\t\tVertexCombine Vert3 : x %10i, y %10i p %p\n", vert[2]->x>>FRACBITS, vert[2]->y>>FRACBITS, vert[2]);
-    if (vert[3]) fprintf(levelinfo, "\t\tVertexCombine Vert4 : x %10i, y %10i p %p\n", vert[3]->x>>FRACBITS, vert[3]->y>>FRACBITS, vert[3]);
+    fprintf(levelinfo,
+            "\t\tVertexCombine Coords: x %10.5f, y %10.5f z %10.5f\n",
+            coords[0], coords[1], coords[2]);
+    if (vert[0])
+      fprintf(levelinfo, "\t\tVertexCombine Vert1 : x %10i, y %10i p %p\n",
+              vert[0]->x >> FRACBITS, vert[0]->y >> FRACBITS, vert[0]);
+    if (vert[1])
+      fprintf(levelinfo, "\t\tVertexCombine Vert2 : x %10i, y %10i p %p\n",
+              vert[1]->x >> FRACBITS, vert[1]->y >> FRACBITS, vert[1]);
+    if (vert[2])
+      fprintf(levelinfo, "\t\tVertexCombine Vert3 : x %10i, y %10i p %p\n",
+              vert[2]->x >> FRACBITS, vert[2]->y >> FRACBITS, vert[2]);
+    if (vert[3])
+      fprintf(levelinfo, "\t\tVertexCombine Vert4 : x %10i, y %10i p %p\n",
+              vert[3]->x >> FRACBITS, vert[3]->y >> FRACBITS, vert[3]);
   }
 #endif
   // just return the first vertex, because all vertexes are on the same coordinate
@@ -437,14 +458,17 @@ static void CALLBACK ntessCombine( GLdouble coords[3], vertex_t *vert[4], GLfloa
 //
 // called when a vertex is found
 
-static void CALLBACK ntessVertex( vertex_t *vert )
+static void CALLBACK ntessVertex( vertex_t *vert, void* data)
 {
+  struct tctx* ctx = (struct tctx*) data;
+  int secnum = ctx->ctx.sector - sectors;
 #ifdef PRBOOM_DEBUG
   if (levelinfo)
-    fprintf(levelinfo, "\t\tVertex : x %10i, y %10i\n", vert->x>>FRACBITS, vert->y>>FRACBITS);
+    fprintf(levelinfo, "\t\tVertex : x %10i, y %10i\n", vert->x >> FRACBITS,
+            vert->y >> FRACBITS);
 #endif
   // increase vertex count
-  sectorloops[ currentsector ].loops[ sectorloops[currentsector].loopcount-1 ].vertexcount++;
+  sectorloops[secnum].loops[sectorloops[secnum].loopcount - 1].vertexcount++;
 
   // increase vertex count
   gld_AddGlobalVertexes(1);
@@ -461,279 +485,31 @@ static void CALLBACK ntessVertex( vertex_t *vert )
 //
 // called when the tesselation of a the current loop ends (DEBUG only)
 
-static void CALLBACK ntessEnd( void )
+static void CALLBACK ntessEnd(void* data)
 {
 #ifdef PRBOOM_DEBUG
   if (levelinfo)
-    fprintf(levelinfo, "\t\tEnd loopcount %i vertexcount %i\n", sectorloops[currentsector].loopcount, sectorloops[ currentsector ].loops[ sectorloops[currentsector].loopcount-1 ].vertexcount);
+    fprintf(levelinfo, "\t\tEnd loopcount %i vertexcount %i\n",
+            sectorloops[currentsector].loopcount,
+            sectorloops[currentsector]
+                .loops[sectorloops[currentsector].loopcount - 1]
+                .vertexcount);
 #endif
 }
 
-// gld_PrecalculateSector
-//
-// this calculates the loops for the sector "num"
-//
-// how does it work?
-// first I have to credit Michael 'Kodak' Ryssen for the usage of the
-// glu tesselation functions. the rest of this stuff is entirely done by me (proff).
-// if there are any similarities, then they are implications of the algorithm.
-//
-// I'm starting with the first line of the current sector. I take it's ending vertex and
-// add it to the tesselator. the current line is marked as used. then I'm searching for
-// the next line which connects to the current line. if there is more than one line, I
-// choose the one with the smallest angle to the current. if there is no next line, I
-// start a new loop and take the first unused line in the sector. after all lines are
-// processed, the polygon is tesselated.
-//
-// e6y
-// The bug in algorithm of splitting of a sector into the closed contours was fixed.
-// There is no more HOM at the starting area on MAP16 @ Eternal.wad
-// I hope nothing was broken
-
-static void gld_PrecalculateSector(int num)
+static void gld_PathCallback(sector_t* sector, struct tpath* path, void* data)
 {
-  int i;
-  dboolean *lineadded=NULL;
-  int linecount;
-  int currentline;
-  int oldline;
-  int currentloop;
-  int bestline;
-  int bestlinecount;
-  vertex_t *startvertex;
-  vertex_t *currentvertex = NULL; //e6y: fix use of uninitialized local variable below
-  angle_t lineangle;
-  angle_t angle;
-  angle_t bestangle;
-  GLUtesselator *tess;
-  double *v=NULL;
-  int maxvertexnum;
-  int vertexnum;
-
-  currentsector=num;
-  lineadded=Z_Malloc(sectors[num].linecount*sizeof(dboolean));
-  if (!lineadded)
+  // Indicate that these lines have neighbors (are not isolated)
+  if (path->prev->line)
   {
-    if (levelinfo) fclose(levelinfo);
-    return;
+    path->line->r_flags |= RF_LINKED;
+    path->prev->line->r_flags |= RF_LINKED;
   }
-  // init tesselator
-  tess=gluNewTess();
-  if (!tess)
-  {
-    if (levelinfo) fclose(levelinfo);
-    Z_Free(lineadded);
-    return;
-  }
-  // set callbacks
-  gluTessCallback(tess, GLU_TESS_BEGIN, ntessBegin);
-  gluTessCallback(tess, GLU_TESS_VERTEX, ntessVertex);
-  gluTessCallback(tess, GLU_TESS_ERROR, ntessError);
-  gluTessCallback(tess, GLU_TESS_COMBINE, ntessCombine);
-  gluTessCallback(tess, GLU_TESS_END, ntessEnd);
-  if (levelinfo) fprintf(levelinfo, "sector %i, %i lines in sector\n", num, sectors[num].linecount);
-  // remove any line which has both sides in the same sector (i.e. Doom2 Map01 Sector 1)
-  for (i=0; i<sectors[num].linecount; i++)
-  {
-    lineadded[i]=false;
-    if (sectors[num].lines[i]->sidenum[0]!=NO_INDEX)
-      if (sectors[num].lines[i]->sidenum[1]!=NO_INDEX)
-        if (sides[sectors[num].lines[i]->sidenum[0]].sector
-          ==sides[sectors[num].lines[i]->sidenum[1]].sector)
-        {
-          lineadded[i]=true;
-          if (levelinfo) fprintf(levelinfo, "line %4i (iLineID %4i) has both sides in same sector (removed)\n", i, sectors[num].lines[i]->iLineID);
-        }
-  }
-  // e6y
-  // Remove any line which has a clone with the same vertexes and orientation
-  // (i.e. MM.WAD Map22 lines 1298 and 2397)
-  // There is no more HOM on Memento Mori MAP22 sector 299
-  for (i = 0; i < sectors[num].linecount - 1; i++)
-  {
-    int j;
-    for (j = i + 1; j < sectors[num].linecount; j++)
-    {
-      if (sectors[num].lines[i]->v1 == sectors[num].lines[j]->v1 &&
-          sectors[num].lines[i]->v2 == sectors[num].lines[j]->v2 &&
-          sectors[num].lines[i]->frontsector == sectors[num].lines[j]->frontsector &&
-          sectors[num].lines[i]->backsector == sectors[num].lines[j]->backsector &&
-          lineadded[i] == false && lineadded[j] == false)
-      {
-        lineadded[i] = true;
-      }
-    }
-  }
-
-  // initialize variables
-  linecount=sectors[num].linecount;
-  oldline=0;
-  currentline=0;
-  startvertex=sectors[num].lines[currentline]->v2;
-  currentloop=0;
-  vertexnum=0;
-  maxvertexnum=0;
-  // start tesselator
-  if (levelinfo) fprintf(levelinfo, "gluTessBeginPolygon\n");
-  gluTessBeginPolygon(tess, NULL);
-  if (levelinfo) fprintf(levelinfo, "\tgluTessBeginContour\n");
-  gluTessBeginContour(tess);
-  while (linecount)
-  {
-    // if there is no connected line, then start new loop
-    if ((oldline==currentline) || (startvertex==currentvertex))
-    {
-      currentline=-1;
-      for (i=0; i<sectors[num].linecount; i++)
-        if (!lineadded[i])
-        {
-          currentline=i;
-          currentloop++;
-          if ((sectors[num].lines[currentline]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[currentline]->sidenum[0]].sector==&sectors[num]) : false)
-            startvertex=sectors[num].lines[currentline]->v1;
-          else
-            startvertex=sectors[num].lines[currentline]->v2;
-          if (levelinfo) fprintf(levelinfo, "\tNew Loop %3i\n", currentloop);
-          if (oldline!=0)
-          {
-            if (levelinfo) fprintf(levelinfo, "\tgluTessEndContour\n");
-            gluTessEndContour(tess);
-//            if (levelinfo) fprintf(levelinfo, "\tgluNextContour\n");
-//            gluNextContour(tess, GLU_CW);
-            if (levelinfo) fprintf(levelinfo, "\tgluTessBeginContour\n");
-            gluTessBeginContour(tess);
-          }
-          break;
-        }
-    }
-    if (currentline==-1)
-      break;
-    // add current line
-    lineadded[currentline]=true;
-    // check if currentsector is on the front side of the line ...
-    if ((sectors[num].lines[currentline]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[currentline]->sidenum[0]].sector==&sectors[num]) : false)
-    {
-      // v2 is ending vertex
-      currentvertex=sectors[num].lines[currentline]->v2;
-      // calculate the angle of this line for use below
-      lineangle = R_PointToAngle2(sectors[num].lines[currentline]->v1->x,sectors[num].lines[currentline]->v1->y,sectors[num].lines[currentline]->v2->x,sectors[num].lines[currentline]->v2->y);
-      lineangle=(lineangle>>ANGLETOFINESHIFT)*360/8192;
-
-      //e6y: direction of a line shouldn't be changed
-      //if (lineangle>=180)
-      //  lineangle=lineangle-360;
-
-      if (levelinfo) fprintf(levelinfo, "\t\tAdded Line %4i to Loop, iLineID %5i, Angle: %4i, flipped false\n", currentline, sectors[num].lines[currentline]->iLineID, lineangle);
-    }
-    else // ... or on the back side
-    {
-      // v1 is ending vertex
-      currentvertex=sectors[num].lines[currentline]->v1;
-      // calculate the angle of this line for use below
-      lineangle = R_PointToAngle2(sectors[num].lines[currentline]->v2->x,sectors[num].lines[currentline]->v2->y,sectors[num].lines[currentline]->v1->x,sectors[num].lines[currentline]->v1->y);
-      lineangle=(lineangle>>ANGLETOFINESHIFT)*360/8192;
-
-      //e6y: direction of a line shouldn't be changed
-      //if (lineangle>=180)
-      //  lineangle=lineangle-360;
-
-      if (levelinfo) fprintf(levelinfo, "\t\tAdded Line %4i to Loop, iLineID %5i, Angle: %4i, flipped true\n", currentline, sectors[num].lines[currentline]->iLineID, lineangle);
-    }
-    if (vertexnum>=maxvertexnum)
-    {
-      maxvertexnum+=512;
-      v=Z_Realloc(v,maxvertexnum*3*sizeof(double));
-    }
-    // calculate coordinates for the glu tesselation functions
-    v[vertexnum*3+0]=-(double)currentvertex->x/(double)MAP_SCALE;
-    v[vertexnum*3+1]=0.0;
-    v[vertexnum*3+2]= (double)currentvertex->y/(double)MAP_SCALE;
-    // add the vertex to the tesselator, currentvertex is the pointer to the vertexlist of doom
-    // v[vertexnum] is the GLdouble array of the current vertex
-    if (levelinfo) fprintf(levelinfo, "\t\tgluTessVertex(%i, %i)\n",currentvertex->x>>FRACBITS,currentvertex->y>>FRACBITS);
-    gluTessVertex(tess, &v[vertexnum*3], currentvertex);
-    // increase vertexindex
-    vertexnum++;
-    // decrease linecount of current sector
-    linecount--;
-    // find the next line
-    oldline=currentline; // if this isn't changed at the end of the search, a new loop will start
-    bestline=-1; // set to start values
-    bestlinecount=0;
-    // set backsector if there is one
-    /*if (sectors[num].lines[currentline]->sidenum[1]!=NO_INDEX)
-      backsector=sides[sectors[num].lines[currentline]->sidenum[1]].sector;
-    else
-      backsector=NULL;*/
-    // search through all lines of the current sector
-    for (i=0; i<sectors[num].linecount; i++)
-      if (!lineadded[i]) // if the line isn't already added ...
-        // check if one of the vertexes is the same as the current vertex
-        if ((sectors[num].lines[i]->v1==currentvertex) || (sectors[num].lines[i]->v2==currentvertex))
-        {
-          // calculate the angle of this best line candidate
-          if ((sectors[num].lines[i]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[i]->sidenum[0]].sector==&sectors[num]) : false)
-            angle = R_PointToAngle2(sectors[num].lines[i]->v1->x,sectors[num].lines[i]->v1->y,sectors[num].lines[i]->v2->x,sectors[num].lines[i]->v2->y);
-          else
-            angle = R_PointToAngle2(sectors[num].lines[i]->v2->x,sectors[num].lines[i]->v2->y,sectors[num].lines[i]->v1->x,sectors[num].lines[i]->v1->y);
-          angle=(angle>>ANGLETOFINESHIFT)*360/8192;
-
-          //e6y: direction of a line shouldn't be changed
-          //if (angle>=180)
-          //  angle=angle-360;
-
-          // check if line is flipped ...
-          if ((sectors[num].lines[i]->sidenum[0]!=NO_INDEX) ? (sides[sectors[num].lines[i]->sidenum[0]].sector==&sectors[num]) : false)
-          {
-            // when the line is not flipped and startvertex is not the currentvertex then skip this line
-            if (sectors[num].lines[i]->v1!=currentvertex)
-              continue;
-          }
-          else
-          {
-            // when the line is flipped and endvertex is not the currentvertex then skip this line
-            if (sectors[num].lines[i]->v2!=currentvertex)
-              continue;
-          }
-          // set new best line candidate
-          if (bestline==-1) // if this is the first one ...
-          {
-            bestline=i;
-            bestangle=lineangle-angle;
-            bestlinecount++;
-          }
-          else
-            // check if the angle between the current line and this best line candidate is smaller then
-            // the angle of the last candidate
-            // e6y: for finding an angle between AB and BC vectors we should subtract
-            // (BC - BA) == (BC - (180 - AB)) == (angle-(180-lineangle))
-            if (D_abs((int) angle - (180 - (int) lineangle))<D_abs((int) bestangle))
-            {
-              bestline=i;
-              bestangle=angle-(180-lineangle);
-              bestlinecount++;
-            }
-        }
-    if (bestline!=-1) // if a line is found, make it the current line
-    {
-      currentline=bestline;
-      if (bestlinecount>1)
-        if (levelinfo) fprintf(levelinfo, "\t\tBestlinecount: %4i\n", bestlinecount);
-    }
-  }
-  // let the tesselator calculate the loops
-  if (levelinfo) fprintf(levelinfo, "\tgluTessEndContour\n");
-  gluTessEndContour(tess);
-  if (levelinfo) fprintf(levelinfo, "gluTessEndPolygon\n");
-  gluTessEndPolygon(tess);
-  // clean memory
-  gluDeleteTess(tess);
-  Z_Free(v);
-  Z_Free(lineadded);
 }
 
 static void gld_CycleCallback(sector_t* sector, struct tpath* cycle, void* data)
 {
+  struct tctx* ctx = (struct tctx*) data;
   struct tpath* cur;
   dboolean ambig = true;
 
@@ -767,60 +543,30 @@ static void gld_CycleCallback(sector_t* sector, struct tpath* cycle, void* data)
   }
 }
 
-/*
-// Detect elementary cycles in a sector and mark lines which participate in them.
-// This is an aid to detecting self-referencing sectors.
-//
-// The sector is treated as the directed graph of its sidedefs.  This means
-// most lines can only be traversed one direction.  Lines tagged with the sector
-// on both sides can be traversed backwards, which is marked separately.
-// Trivial cycles from doubling back on such a line are not counted.
-// Cycles can't repeat vertices.
-//
-// For example, consider the following sector.  Vertices are marked by +; lines
-// by |, \, and -; direction by <, >, v, ^, and * (bi-directional).
-//
-//             B
-//   +-<-+-<-+-*-+
-//   |   |   |   |\
-//   v  A*   ^   v ^
-//   |   |   |   |  \
-//   +->-+->-+   +->-+
-//
-// Line B will be marked as not part of any cycle, since it is not part of
-// a closed loop.
-//
-// Line A is part of two cycles with opposite directions, so it will be marked
-// as part of both a forward and backward cycle.  This indicates that it is
-// an interior line (and therefore not a self-referencing trick).
-//
-// Cycles involving only bi-directional lines require some care.  They could
-// be interior lines, but they could also be the perimeter of a self-referencing
-// sector.  These cycles are marked as ambiguous and distinguised geometrically
-// with a BSP query later on.  Unfortunately, this geometric check is also not
-// reliable, which is why we need to do cycle analysis in the first place.
-// Both checks together are more accurate than either alone.
-//
-// The algorithm proceeds by depth-first search.  Cycles are detected by
-// recording the current path and checking for a duplicate vertex.
-//
-// RF_LINKED is calculated here as well since we're already doing traversals.
-//
-// FIXME: Implement Johnson cycle search for better time complexity.
-// This doesn't seem to be necessary in practice so far based on testing
-// maps with large/complex sectors.
-*/
-static void gld_TraverseSector(sector_t* sector)
+static void gld_TessCallback(sector_t* sector, struct tpath* cycle, void* data)
 {
-  struct traverse_ctx ctx;
-  int i = 0;
+  struct tctx* ctx = (struct tctx*) data;
+  struct tpath* cur;
+  double v[3];
 
-  ctx.sector = sector;
-  ctx.ccb = gld_CycleCallback;
-  ctx.pcb = NULL;
-  ctx.data = NULL;
+  for (cur = cycle; cur; cur = cur->next)
+  {
+    // Don't tesselate already-tesselated cycles (we can visit
+    // cycles multiple times currently) or cycles with bi-directional
+    // lines in them
+    if (cur->line->frontsector == cur->line->backsector)
+      return;
+  }
 
-  dsda_TraverseSectorGraph(&ctx);
+  gluTessBeginContour(ctx->tess);
+  for (cur = cycle; cur; cur = cur->next)
+  {
+    v[0] = -(double)cur->v->x / (double)MAP_SCALE;
+    v[1] = 0.0;
+    v[2] = (double)cur->v->y / (double)MAP_SCALE;
+    gluTessVertex(ctx->tess, v, cur->v);
+  }
+  gluTessEndContour(ctx->tess);
 }
 
 // Detect sectors on each side of line according to BSP tree.
@@ -855,14 +601,53 @@ static dboolean gld_BSPLineIsInterior(sector_t* sector, line_t* line)
   return s1->sector == sector && s2->sector == sector;
 }
 
-// Try to figure out if a sector is "real" or if it uses
-// self-reference tricks to create bridges, deep
-// water, etc.  Does line classification in the process.
-static void gld_ClassifySector(sector_t* sector)
+/*
+// Traverse sector, detecting and marking elementary cycles and tessellating
+// them into triangles.  Also mark lines with at least one neighbor (RF_LINKED).
+//
+// The sector is treated as the directed graph of its sidedefs.  This means
+// most lines can only be traversed one direction.  Lines tagged with the sector
+// on both sides can be traversed backwards, which is marked separately.
+// Trivial cycles from doubling back on such a line are not counted.
+// Cycles can't repeat vertices.
+//
+// For example, consider the following sector.  Vertices are marked by +; lines
+// by |, \, and -; direction by <, >, v, ^, and * (bi-directional).
+//
+//             B
+//   +-<-+-<-+-*-+
+//   |   |   |   |\
+//   v  A*   ^   v ^
+//   |   |   |   |  \
+//   +->-+->-+   +->-+
+//
+// Line B will be marked as not part of any cycle, since it is not part of
+// a closed loop.
+//
+// Line A is part of two cycles with opposite directions, so it will be marked
+// as part of both a forward and backward cycle.  This indicates that it is
+// an interior line (and therefore not a self-referencing trick).
+//
+// Cycles involving only bi-directional lines require some care.  They could
+// be interior lines, but they could also be the perimeter of a self-referencing
+// sector.  These cycles are marked as ambiguous and distinguised geometrically
+// with a BSP query later on.  Unfortunately, this geometric check is also not
+// reliable, which is why we need to do cycle analysis in the first place.
+// Both checks together are more accurate than either alone.
+//
+// The algorithm proceeds by depth-first search.  Cycles are detected by
+// recording the current path and checking for a duplicate vertex.
+//
+// FIXME: Implement Johnson cycle search for better time complexity.
+// This doesn't seem to be necessary in practice so far based on testing
+// maps with large/complex sectors.
+*/
+static void gld_TraverseSector(sector_t* sector)
 {
+  struct tctx ctx;
   int i;
 
-  // Initialize cycle detection
+  // Initialize traversal
   for (i = 0; i < sector->linecount; ++i)
   {
     sector->lines[i]->cycle_fw = false;
@@ -870,7 +655,13 @@ static void gld_ClassifySector(sector_t* sector)
     sector->lines[i]->cycle_amb = false;
   }
 
-  gld_TraverseSector(sector);
+  // Pass 1 -- detect cycles and classify lines/sector
+  ctx.ctx.sector = sector;
+  ctx.ctx.ccb = gld_CycleCallback;
+  ctx.ctx.pcb = gld_PathCallback;
+  ctx.ctx.data = &ctx;
+
+  dsda_TraverseSectorGraph(&ctx.ctx);
 
   // Mark all real (not perfidious mapper trick) lines.
   //
@@ -878,13 +669,24 @@ static void gld_ClassifySector(sector_t* sector)
   // This means sectors that are so broken they don't have cycles are
   // vacuously real, which is a conservative assumption since many maps
   // have extremely broken sectors.
+  //
+  // We also check for closedness here.
   sector->flags |= SECTOR_IS_REAL;
+  sector->flags |= SECTOR_IS_CLOSED;
   for (i = 0; i < sector->linecount; ++i)
   {
     line_t* l = sector->lines[i];
     // Skip lines that were not in a cycle
     if (!l->cycle_fw && !l->cycle_bw && !l->cycle_amb)
+    {
+      // If there is a line that could otherwise be tessellated
+      // that was not part of a cycle, we can't depend on
+      // tessellation and need to fall back on subsector
+      // triangulation
+      if (l->frontsector != l->backsector)
+        sector->flags &= ~SECTOR_IS_CLOSED;
       continue;
+    }
 
     // A line is real if it isn't self-referencing or it's interior
     // to the sector.
@@ -899,15 +701,39 @@ static void gld_ClassifySector(sector_t* sector)
     else
       sector->flags &= ~SECTOR_IS_REAL;
   }
+
+  // Pass 2 - tesselate sector
+
+  // Don't try to tesselate unclosed sectors
+  if (!(sector->flags & SECTOR_IS_CLOSED))
+    return;
+
+  ctx.tess = gluNewTess();
+  if (!ctx.tess)
+    I_Error("gld_PreprocessSectors: Not enough memory for GLU tessellator");
+  gluTessCallback(ctx.tess, GLU_TESS_BEGIN_DATA, (void (*)())ntessBegin);
+  gluTessCallback(ctx.tess, GLU_TESS_VERTEX_DATA, (void (*)())ntessVertex);
+  gluTessCallback(ctx.tess, GLU_TESS_ERROR_DATA, (void (*)())ntessError);
+  gluTessCallback(ctx.tess, GLU_TESS_COMBINE_DATA, (void (*)())ntessCombine);
+  gluTessCallback(ctx.tess, GLU_TESS_END_DATA, (void (*)())ntessEnd);
+
+  ctx.ctx.ccb = gld_TessCallback;
+  ctx.ctx.pcb = NULL;
+
+  gluTessBeginPolygon(ctx.tess, &ctx);
+  dsda_TraverseSectorGraph(&ctx.ctx);
+  gluTessEndPolygon(ctx.tess);
+
+  gluDeleteTess(ctx.tess);
 }
 
 // Classify all sectors and their lines as dangling/interior/real
-static void gld_ClassifySectors(void)
+static void gld_TraverseSectors(void)
 {
   int i;
 
   for (i = 0; i < numsectors; i++)
-    gld_ClassifySector(&sectors[i]);
+    gld_TraverseSector(&sectors[i]);
 }
 
 // Find subsector at end of container chain, but return `NULL` upon encountering
@@ -1193,15 +1019,10 @@ static void gld_MarkSectorsForClamp(void)
 
 static void gld_PreprocessSectors(void)
 {
-  char *vertexcheck = NULL;
-  char *vertexcheck2 = NULL;
   int v1num;
   int v2num;
   int i;
   int j;
-
-  // Mark real sectors for later
-  gld_ClassifySectors();
 
   if (numsectors)
   {
@@ -1237,93 +1058,13 @@ static void gld_PreprocessSectors(void)
   flats_vbo = NULL;
   gld_max_vertexes=0;
   gld_num_vertexes=0;
+
   if (numvertexes)
   {
     gld_AddGlobalVertexes(numvertexes*2);
   }
 
-  if (numvertexes)
-  {
-    vertexcheck=Z_Malloc(numvertexes*sizeof(vertexcheck[0]));
-    vertexcheck2=Z_Malloc(numvertexes*sizeof(vertexcheck2[0]));
-    if (!vertexcheck || !vertexcheck2)
-    {
-      if (levelinfo) fclose(levelinfo);
-      I_Error("gld_PreprocessSectors: Not enough memory for array vertexcheck");
-      return;
-    }
-  }
-
-  for (i=0; i<numsectors; i++)
-  {
-    memset(vertexcheck,0,numvertexes*sizeof(vertexcheck[0]));
-    memset(vertexcheck2,0,numvertexes*sizeof(vertexcheck2[0]));
-    for (j=0; j<sectors[i].linecount; j++)
-    {
-      line_t *l = sectors[i].lines[j];
-      v1num = l->v1 - vertexes;
-      v2num = l->v2 - vertexes;
-
-      // e6y: for correct handling of missing textures.
-      // We do not need to apply some algos for isolated lines.
-      vertexcheck2[v1num]++;
-      vertexcheck2[v2num]++;
-
-      if (l->frontsector == l->backsector)
-        continue;
-
-      if (l->frontsector == &sectors[i])
-      {
-        vertexcheck[v1num]|=1;
-        vertexcheck[v2num]|=2;
-      }
-      else
-      {
-        vertexcheck[v1num]|=2;
-        vertexcheck[v2num]|=1;
-      }
-    }
-    if (sectors[i].linecount<3)
-    {
-#ifdef PRBOOM_DEBUG
-      lprintf(LO_ERROR, "sector %i is not closed! %i lines in sector\n", i, sectors[i].linecount);
-#endif
-      if (levelinfo) fprintf(levelinfo, "sector %i is not closed! %i lines in sector\n", i, sectors[i].linecount);
-      sectors[i].flags &= ~SECTOR_IS_CLOSED;
-    }
-    else
-    {
-      sectors[i].flags |= SECTOR_IS_CLOSED;
-      for (j=0; j<numvertexes; j++)
-      {
-        if ((vertexcheck[j]==1) || (vertexcheck[j]==2))
-        {
-#ifdef PRBOOM_DEBUG
-          lprintf(LO_ERROR, "sector %i is not closed at vertex %i ! %i lines in sector\n", i, j, sectors[i].linecount);
-#endif
-          if (levelinfo) fprintf(levelinfo, "sector %i is not closed at vertex %i ! %i lines in sector\n", i, j, sectors[i].linecount);
-          sectors[i].flags &= ~SECTOR_IS_CLOSED;
-        }
-      }
-    }
-
-    // e6y: marking all the isolated lines
-    for (j=0; j<sectors[i].linecount; j++)
-    {
-      v1num=((intptr_t)sectors[i].lines[j]->v1-(intptr_t)vertexes)/sizeof(vertex_t);
-      v2num=((intptr_t)sectors[i].lines[j]->v2-(intptr_t)vertexes)/sizeof(vertex_t);
-      if (vertexcheck2[v1num] < 2 && vertexcheck2[v2num] < 2)
-      {
-        sectors[i].lines[j]->r_flags |= RF_ISOLATED;
-      }
-    }
-
-    // figgi -- adapted for glnodes
-    if (sectors[i].flags & SECTOR_IS_CLOSED)
-      gld_PrecalculateSector(i);
-  }
-  Z_Free(vertexcheck);
-  Z_Free(vertexcheck2);
+  gld_TraverseSectors();
 
   for (i = 0; i < numsubsectors; ++i)
     subsectors[i].gl_pp = gld_SubsectorContainer(&subsectors[i]);

@@ -293,7 +293,7 @@ typedef byte r_flags_t;
 #define RF_BOT_TILE 0x04 // Lower texture needs tiling
 #define RF_IGNORE   0x08 // Renderer can skip this line
 #define RF_CLOSED   0x10 // Line blocks view
-#define RF_ISOLATED 0x20 // Isolated line
+#define RF_LINKED   0x20 // Linked to at least one other line by a vertex
 #define RF_REAL     0x40 // Real (not self-referencing trick) line
 
 typedef enum

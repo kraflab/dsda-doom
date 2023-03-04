@@ -1823,7 +1823,7 @@ void gld_AddWall(seg_t *seg)
       {
         temptex=gld_RegisterTexture(toptexture, true, false, indexed);
         if (!temptex && gl_use_stencil && backsector &&
-          !(seg->linedef->r_flags & RF_ISOLATED) &&
+          seg->linedef->r_flags & RF_LINKED &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
           !(backsector->flags & NULL_SECTOR))
         {
@@ -2028,7 +2028,7 @@ bottomtexture:
     {
       temptex=gld_RegisterTexture(bottomtexture, true, false, indexed);
       if (!temptex && gl_use_stencil && backsector &&
-        !(seg->linedef->r_flags & RF_ISOLATED) &&
+        seg->linedef->r_flags & RF_LINKED &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
         !(backsector->flags & NULL_SECTOR))
       {
