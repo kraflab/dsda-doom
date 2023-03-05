@@ -25,6 +25,8 @@ set(COMMON_SRC
     dsda/configuration.h
     dsda/console.c
     dsda/console.h
+    dsda/cr_table.c
+    dsda/cr_table.h
     dsda/data_organizer.c
     dsda/data_organizer.h
     dsda/death.c
@@ -74,6 +76,8 @@ set(COMMON_SRC
     dsda/hud_components/big_health.h
     dsda/hud_components/big_health_text.c
     dsda/hud_components/big_health_text.h
+    dsda/hud_components/color_test.c
+    dsda/hud_components/color_test.h
     dsda/hud_components/command_display.c
     dsda/hud_components/command_display.h
     dsda/hud_components/composite_time.c

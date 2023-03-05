@@ -33,7 +33,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     player->health <= hud_health_red ? HUlib_Color(CR_RED) :
       player->health <= hud_health_yellow ? HUlib_Color(CR_GOLD) :
       player->health <= hud_health_green ? HUlib_Color(CR_GREEN) :
-      HUlib_Color(CR_BLUE),
+      HUlib_Color(CR_LIGHTBLUE),
     player->health
   );
 }

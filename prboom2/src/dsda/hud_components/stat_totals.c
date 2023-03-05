@@ -57,9 +57,9 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     max_kill_requirement = totalkills;
   }
 
-  killcolor = (fullkillcount >= max_kill_requirement ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
-  secretcolor = (fullsecretcount >= totalsecret ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
-  itemcolor = (fullitemcount >= totalitems ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GOLD));
+  killcolor = (fullkillcount >= max_kill_requirement ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GOLD));
+  secretcolor = (fullsecretcount >= totalsecret ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GOLD));
+  itemcolor = (fullitemcount >= totalitems ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GOLD));
 
   if (include_kills) {
     length += snprintf(

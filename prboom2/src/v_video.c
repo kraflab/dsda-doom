@@ -56,6 +56,7 @@
 #include "e6y.h"
 
 #include "dsda/configuration.h"
+#include "dsda/cr_table.h"
 #include "dsda/global.h"
 #include "dsda/palette.h"
 #include "dsda/stretch.h"
@@ -78,46 +79,6 @@ const byte *colrngs[CR_LIMIT];
 
 int usegamma;
 
-/*
- * V_InitColorTranslation
- *
- * Loads the color translation tables from predefined lumps at game start
- * No return
- *
- * Used for translating text colors from the red palette range
- * to other colors. The first nine entries can be used to dynamically
- * switch the output of text color thru the HUlib_drawText routine
- * by embedding ESCn in the text to obtain color n. Symbols for n are
- * provided in v_video.h.
- *
- * cphipps - constness of crdef_t stuff fixed
- */
-
-typedef struct {
-  const char *name;
-  const byte **map;
-} crdef_t;
-
-// killough 5/2/98: table-driven approach
-static const crdef_t crdefs[] = {
-  {"CRBRICK",  &colrngs[CR_BRICK  ]},
-  {"CRTAN",    &colrngs[CR_TAN    ]},
-  {"CRGRAY",   &colrngs[CR_GRAY   ]},
-  {"CRGREEN",  &colrngs[CR_GREEN  ]},
-  {"CRBROWN",  &colrngs[CR_BROWN  ]},
-  {"CRGOLD",   &colrngs[CR_GOLD   ]},
-  {"CRRED",    &colrngs[CR_DEFAULT]},
-  {"CRBLUE",   &colrngs[CR_BLUE   ]},
-  {"CRORANGE", &colrngs[CR_ORANGE ]},
-  {"CRYELLOW", &colrngs[CR_YELLOW ]},
-  {"CRBLUE2",  &colrngs[CR_BLUE2  ]},
-  {"CRBLACK",  &colrngs[CR_BLACK  ]},
-  {"CRPURPLE", &colrngs[CR_PURPLE ]},
-  {"CRWHITE",  &colrngs[CR_WHITE  ]},
-  {"CRRED",    &colrngs[CR_RED    ]},
-  {NULL}
-};
-
 // [FG] translate between blood color value as per EE spec
 //      and actual color translation table index
 
@@ -125,7 +86,7 @@ static const int bloodcolor[] = {
   0,         // 0 - Red (normal)
   CR_GRAY,   // 1 - Grey
   CR_GREEN,  // 2 - Green
-  CR_BLUE2,  // 3 - Blue
+  CR_BLUE,   // 3 - Blue
   CR_YELLOW, // 4 - Yellow
   CR_BLACK,  // 5 - Black
   CR_PURPLE, // 6 - Purple
@@ -199,110 +160,15 @@ void V_InitFlexTranTable(void)
   }
 }
 
-// killough 5/2/98: tiny engine driven by table above
 void V_InitColorTranslation(void)
 {
-  register const crdef_t *p;
+  int i;
+  byte* full_table;
 
-  // {
-  //   //             DO  HR  HX
-  //   // CR_BRICK:   16 166 185
-  //   // CR_TAN:     48  94 121
-  //   // CR_GRAY:    80  34  32
-  //   // CR_GREEN:  112 224 216
-  //   // CR_BROWN:  128 110  96
-  //   // CR_GOLD:   160 144 230
-  //   // CR_RED:    176 160 181
-  //   // CR_BLUE:   196 202 162
-  //   // CR_ORANGE: 208 243 228
-  //   // CR_YELLOW: 224 144 230
-  //   // CR_BLUE2:  200 196 217
-  //   // CR_BLACK:  104   0   0
-  //   // CR_PURPLE: 251 175 237
-  //   // CR_WHITE:   80  35 255
-  //   int i, j;
-  //   byte* buffer = Z_Malloc(CR_LIMIT * 256);
-  //   for (i = 0; i < CR_LIMIT; ++i)
-  //     for (j = 0; j < 256; ++j)
-  //       buffer[i * 256 + j] = j;
-  //
-  //   buffer[CR_BRICK * 256 + 176] = 166;
-  //   buffer[CR_TAN * 256 + 176] = 94;
-  //   buffer[CR_GRAY * 256 + 176] = 34;
-  //   buffer[CR_GREEN * 256 + 176] = 224;
-  //   buffer[CR_BROWN * 256 + 176] = 110;
-  //   buffer[CR_GOLD * 256 + 176] = 144;
-  //   buffer[CR_RED * 256 + 176] = 160;
-  //   buffer[CR_BLUE * 256 + 176] = 202;
-  //   buffer[CR_ORANGE * 256 + 176] = 243;
-  //   buffer[CR_YELLOW * 256 + 176] = 144;
-  //   buffer[CR_BLUE2 * 256 + 176] = 196;
-  //   buffer[CR_BLACK * 256 + 176] = 0;
-  //   buffer[CR_PURPLE * 256 + 176] = 175;
-  //   buffer[CR_WHITE * 256 + 176] = 35;
-  //
-  //   M_WriteFile("crheresy.lmp", buffer, CR_LIMIT * 256);
-  //
-  //   buffer[CR_BRICK * 256 + 176] = 185;
-  //   buffer[CR_TAN * 256 + 176] = 121;
-  //   buffer[CR_GRAY * 256 + 176] = 32;
-  //   buffer[CR_GREEN * 256 + 176] = 216;
-  //   buffer[CR_BROWN * 256 + 176] = 96;
-  //   buffer[CR_GOLD * 256 + 176] = 230;
-  //   buffer[CR_RED * 256 + 176] = 181;
-  //   buffer[CR_BLUE * 256 + 176] = 162;
-  //   buffer[CR_ORANGE * 256 + 176] = 228;
-  //   buffer[CR_YELLOW * 256 + 176] = 230;
-  //   buffer[CR_BLUE2 * 256 + 176] = 217;
-  //   buffer[CR_BLACK * 256 + 176] = 0;
-  //   buffer[CR_PURPLE * 256 + 176] = 237;
-  //   buffer[CR_WHITE * 256 + 176] = 255;
-  //
-  //   M_WriteFile("crhexen.lmp", buffer, CR_LIMIT * 256);
-  // }
+  full_table = dsda_GenerateCRTable();
 
-  if (heretic)
-  {
-    const byte* source = W_LumpByName("CRHERESY");
-
-    for (p = crdefs; p->name; ++p)
-    {
-      *p->map = source;
-      source += 256;
-    }
-
-    return;
-  }
-
-  if (hexen)
-  {
-    const byte* source = W_LumpByName("CRHEXEN");
-
-    for (p = crdefs; p->name; ++p)
-    {
-      *p->map = source;
-      source += 256;
-    }
-
-    return;
-  }
-
-  for (p=crdefs; p->name; p++)
-  {
-    *p->map = W_LumpByName(p->name);
-    if (p - crdefs == CR_DEFAULT)
-      continue;
-    if (gamemission == chex || gamemission == hacx)
-    {
-      byte *temp = Z_Malloc(256);
-      memcpy (temp, *p->map, 256);
-      if (gamemission == chex)
-        memcpy (temp+112, *p->map+176, 16); // green range
-      else if (gamemission == hacx)
-        memcpy (temp+192, *p->map+176, 16); // blue range
-      *p->map = temp;
-    }
-  }
+  for (i = 0; i < CR_LIMIT; ++i)
+    colrngs[i] = full_table + 256 * i;
 }
 
 //
@@ -512,10 +378,12 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
   stretch_param_t *params;
 
-  if (cm<CR_LIMIT)
-    trans=colrngs[cm];
+  if (cm == CR_DEFAULT)
+    trans = NULL;
+  else if (cm < CR_LIMIT)
+    trans = colrngs[cm];
   else
-    trans=translationtables + 256*((cm-CR_LIMIT)-1);
+    trans = translationtables + 256*((cm - CR_LIMIT) - 1);
 
   if (!(flags & VPT_NOOFFSET))
   {

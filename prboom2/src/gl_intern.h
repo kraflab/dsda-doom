@@ -226,9 +226,16 @@ typedef struct
   float light;
 } GLShadow;
 
+typedef enum
+{
+  health_bar_null,
+  health_bar_red,
+  health_bar_yellow,
+} health_bar_color_t;
+
 typedef struct
 {
-  int cm;
+  health_bar_color_t color;
 
   float x1, x2, x3;
   float z1, z2, z3;

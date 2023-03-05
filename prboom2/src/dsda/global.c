@@ -132,12 +132,12 @@ const char* g_menu_flat;
 patchnum_t* g_menu_font;
 int g_menu_save_page_size;
 int g_menu_font_spacing;
-int g_menu_cr_title;
-int g_menu_cr_set;
-int g_menu_cr_item;
-int g_menu_cr_hilite;
-int g_menu_cr_select;
-int g_menu_cr_disable;
+int g_menu_cr_title = CR_GOLD;
+int g_menu_cr_set = CR_GREEN;
+int g_menu_cr_item = CR_RED;
+int g_menu_cr_hilite = CR_LIGHTBLUE;
+int g_menu_cr_select = CR_GRAY;
+int g_menu_cr_disable = CR_GRAY;
 
 const char* g_skyflatname;
 
@@ -213,12 +213,6 @@ static void dsda_InitDoom(void) {
   g_menu_font = hu_font;
   g_menu_save_page_size = 7;
   g_menu_font_spacing = -1;
-  g_menu_cr_title = CR_GOLD;
-  g_menu_cr_set = CR_GREEN;
-  g_menu_cr_item = CR_RED;
-  g_menu_cr_hilite = CR_ORANGE;
-  g_menu_cr_select = CR_GRAY;
-  g_menu_cr_disable = CR_GRAY;
 
   g_skyflatname = "F_SKY1";
 
@@ -392,12 +386,6 @@ static void dsda_InitHeretic(void) {
   g_menu_font = hu_font2;
   g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
-  g_menu_cr_title = CR_GOLD;
-  g_menu_cr_set = CR_GREEN;
-  g_menu_cr_item = CR_RED;
-  g_menu_cr_hilite = CR_ORANGE;
-  g_menu_cr_select = CR_GRAY;
-  g_menu_cr_disable = CR_GRAY;
 
   g_skyflatname = "F_SKY1";
 
@@ -548,12 +536,6 @@ static void dsda_InitHexen(void) {
   g_menu_font = hu_font2;
   g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
-  g_menu_cr_title = CR_GOLD;
-  g_menu_cr_set = CR_GREEN;
-  g_menu_cr_item = CR_RED;
-  g_menu_cr_hilite = CR_ORANGE;
-  g_menu_cr_select = CR_GRAY;
-  g_menu_cr_disable = CR_GRAY;
 
   g_skyflatname = "F_SKY";
 

@@ -28,7 +28,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 
   if (hexen) {
     snprintf(str, max_size, "AMM \x1b%c%3d \x1b%c%3d",
-            HUlib_Color(CR_BLUE), player->ammo[0],
+            HUlib_Color(CR_LIGHTBLUE), player->ammo[0],
             HUlib_Color(CR_GREEN), player->ammo[1]);
   }
   else {

@@ -35,7 +35,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     label,
     speed < 100 ? HUlib_Color(CR_GOLD)
                 : speed == 100 ? HUlib_Color(CR_GREEN)
-                               : HUlib_Color(CR_BLUE),
+                               : HUlib_Color(CR_LIGHTBLUE),
     speed
   );
 }

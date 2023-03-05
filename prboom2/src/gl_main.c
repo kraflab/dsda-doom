@@ -113,26 +113,6 @@ static float extra_alpha=0.0f;
 
 GLfloat gl_whitecolor[4]={1.0f,1.0f,1.0f,1.0f};
 
-GLfloat cm2RGB[CR_LIMIT + 1][4] =
-{
-  {0.50f ,0.00f, 0.00f, 1.00f}, //CR_BRICK
-  {1.00f ,0.90f, 0.90f, 1.00f}, //CR_TAN
-  {1.00f ,1.00f, 1.00f, 1.00f}, //CR_GRAY
-  {0.00f ,1.00f, 0.00f, 1.00f}, //CR_GREEN
-  {0.75f ,0.65f, 0.55f, 1.00f}, //CR_BROWN
-  {1.00f ,1.00f, 0.00f, 1.00f}, //CR_GOLD
-  {1.00f ,0.00f, 0.00f, 1.00f}, //CR_DEFAULT
-  {0.80f ,0.80f, 1.00f, 1.00f}, //CR_BLUE
-  {1.00f ,0.50f, 0.25f, 1.00f}, //CR_ORANGE
-  {1.00f ,1.00f, 0.00f, 1.00f}, //CR_YELLOW
-  {0.50f ,0.50f, 1.00f, 1.00f}, //CR_BLUE2
-  {0.00f ,0.00f, 0.00f, 1.00f}, //CR_BLACK
-  {0.50f ,0.00f, 0.50f, 1.00f}, //CR_PURPLE
-  {1.00f ,1.00f, 1.00f, 1.00f}, //CR_WHITE
-  {1.00f ,0.00f, 0.00f, 1.00f}, //CR_RED
-  {1.00f ,1.00f, 1.00f, 1.00f}, //CR_LIMIT
-};
-
 void SetFrameTextureMode(void)
 {
   if (SceneInTexture)
@@ -644,9 +624,6 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
   int cmap;
   int leftoffset, topoffset;
 
-  //e6y
-  dboolean bFakeColormap;
-
   cmap = ((flags & VPT_TRANS) ? cm : CR_DEFAULT);
   gltexture=gld_RegisterPatch(lump, cmap, false, V_IsUILightmodeIndexed());
   gld_BindPatch(gltexture, cmap);
@@ -698,24 +675,10 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
     height = (float)(gltexture->realtexheight);
   }
 
-  bFakeColormap =
-    (gltexture->flags & GLTEXTURE_HIRES) &&
-    (lumpinfo[lump].flags & LUMP_CM2RGB);
-  if (bFakeColormap)
-  {
-    if (!(flags & VPT_TRANS) && (cm != CR_GRAY))
-    {
-      cm = CR_RED;
-    }
-    glColor3f(cm2RGB[cm][0], cm2RGB[cm][1], cm2RGB[cm][2]);//, cm2RGB[cm][3]);
-  }
-  else
-  {
-    // e6y
-    // This is a workaround for some on-board Intel video cards.
-    // Do you know more elegant solution?
-    glColor3f(1.0f, 1.0f, 1.0f);
-  }
+  // e6y
+  // This is a workaround for some on-board Intel video cards.
+  // Do you know more elegant solution?
+  glColor3f(1.0f, 1.0f, 1.0f);
 
   glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(fU1, fV1); glVertex2f((xpos),(ypos));
@@ -723,11 +686,6 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
     glTexCoord2f(fU2, fV1); glVertex2f((xpos+width),(ypos));
     glTexCoord2f(fU2, fV2); glVertex2f((xpos+width),(ypos+height));
   glEnd();
-
-  if (bFakeColormap)
-  {
-    glColor3f(1.0f,1.0f,1.0f);
-  }
 }
 
 void gld_DrawNumPatch(int x, int y, int lump, int cm, enum patch_translation_e flags)
@@ -2498,15 +2456,13 @@ static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
     GLHealthBar hbar;
     int health_percent = thing->health * 100 / thing->info->spawnhealth;
 
-    hbar.cm = -1;
+    hbar.color = health_bar_null;
     if (health_percent <= 50)
-      hbar.cm = CR_RED;
+      hbar.color = health_bar_red;
     else if (health_percent <= 99)
-      hbar.cm = CR_YELLOW;
-    else if (health_percent <= 0)
-      hbar.cm = CR_GREEN;
+      hbar.color = health_bar_yellow;
 
-    if (hbar.cm >= 0)
+    if (hbar.color != health_bar_null)
     {
       float sx2 = (float)thing->radius / 2.0f / MAP_SCALE;
       float sx1 = sx2 - (float)health_percent * (float)thing->radius / 100.0f / MAP_SCALE;
@@ -2527,10 +2483,16 @@ static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
   }
 }
 
+static GLfloat health_bar_rgb[3][3] = {
+  [health_bar_null]   = { 0.0f, 0.0f, 0.0f },
+  [health_bar_red]    = { 1.0f, 0.0f, 0.0f },
+  [health_bar_yellow] = { 1.0f, 1.0f, 0.0f },
+};
+
 static void gld_DrawHealthBars(void)
 {
   int i, count;
-  int cm = -1;
+  int color = health_bar_null;
 
   count = gld_drawinfo.num_items[GLDIT_HBAR];
   if (count > 0)
@@ -2541,10 +2503,12 @@ static void gld_DrawHealthBars(void)
     for (i = count - 1; i >= 0; i--)
     {
       GLHealthBar *hbar = gld_drawinfo.items[GLDIT_HBAR][i].item.hbar;
-      if (hbar->cm != cm)
+      if (hbar->color != color)
       {
-        cm = hbar->cm;
-        glColor4f(cm2RGB[cm][0], cm2RGB[cm][1], cm2RGB[cm][2], 1.0f);
+        color = hbar->color;
+        glColor4f(health_bar_rgb[color][0],
+                  health_bar_rgb[color][1],
+                  health_bar_rgb[color][2], 1.0f);
       }
 
       glVertex3f(hbar->x1, hbar->y, hbar->z1);

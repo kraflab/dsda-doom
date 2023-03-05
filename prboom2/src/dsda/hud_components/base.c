@@ -60,6 +60,24 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
   component->text.space_width = 5;
 }
 
+void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
+  int x, y;
+
+  x = x_offset;
+  y = dsda_HudComponentY(y_offset, vpt);
+
+  HUlib_initTextLine(
+    &component->text,
+    x, y,
+    hu_font,
+    HU_FONTSTART,
+    CR_GRAY,
+    vpt
+  );
+
+  component->text.space_width = 5;
+}
+
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt) {
   int x, y;
 

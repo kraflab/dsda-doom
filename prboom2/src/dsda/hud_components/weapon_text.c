@@ -34,7 +34,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       "W \x1b%c%c\x1b%c %c %c\n"
       "\x1b%cP\x1b%c %c %c %c\n"
       "\x1b%cN\x1b%c %c %c %c",
-      player->powers[pw_strength] ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GREEN),
+      player->powers[pw_strength] ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GREEN),
       player->weaponowned[0] ? '1' : ' ',
       HUlib_Color(CR_GREEN),
       player->weaponowned[1] ? '2' : ' ',
@@ -55,7 +55,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str,
       max_size,
       "WPN \x1b%c%c\x1b%c %c %c %c %c %c %c %c %c",
-      player->powers[pw_strength] ? HUlib_Color(CR_BLUE) : HUlib_Color(CR_GREEN),
+      player->powers[pw_strength] ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GREEN),
       player->weaponowned[0] ? '1' : ' ',
       HUlib_Color(CR_GREEN),
       player->weaponowned[1] ? '2' : ' ',

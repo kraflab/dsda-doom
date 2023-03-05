@@ -28,24 +28,9 @@ set(PALETTE
 set(LUMPS
     lumps/switches.lmp
     lumps/animated.lmp
-    lumps/crbrick.lmp
-    lumps/crtan.lmp
-    lumps/crgray.lmp
-    lumps/crgreen.lmp
-    lumps/crbrown.lmp
-    lumps/crgold.lmp
-    lumps/crred.lmp
-    lumps/crblue.lmp
-    lumps/crblue2.lmp
-    lumps/crorange.lmp
-    lumps/cryellow.lmp
-    lumps/crblack.lmp
-    lumps/crpurple.lmp
-    lumps/crwhite.lmp
-    lumps/crheresy.lmp
-    lumps/crhexen.lmp
     lumps/sndcurve.lmp
     lumps/soundfont/sndfont.lmp
+    lumps/dsdacr.lmp
     lumps/dsdahud.lmp
 )
 

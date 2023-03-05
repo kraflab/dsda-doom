@@ -76,6 +76,7 @@ typedef enum {
   exhud_event_split,
   exhud_level_splits,
   exhud_minimap,
+  exhud_color_test,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -252,6 +253,12 @@ exhud_component_t components[exhud_component_count] = {
     dsda_DrawMinimapHC,
     "minimap",
     .off_by_default = true,
+  },
+  [exhud_color_test] = {
+    dsda_InitColorTestHC,
+    dsda_UpdateColorTestHC,
+    dsda_DrawColorTestHC,
+    "color_test",
   },
 };
 

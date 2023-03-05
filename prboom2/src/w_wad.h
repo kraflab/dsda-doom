@@ -132,8 +132,7 @@ typedef struct
 
 // e6y: lump flags
 #define LUMP_STATIC 0x00000001 /* assigned gltexture should be static */
-#define LUMP_CM2RGB 0x00000002 /* for fake colormap for hires patches */
-#define LUMP_PRBOOM 0x00000004 /* from internal resource */
+#define LUMP_PRBOOM 0x00000002 /* from internal resource */
 
 extern lumpinfo_t *lumpinfo;
 extern int        numlumps;

@@ -31,7 +31,7 @@ static void dsda_DrawComponent(void) {
   cm = player->health <= hud_health_red ? CR_RED :
        player->health <= hud_health_yellow ? CR_GOLD :
        player->health <= hud_health_green ? CR_GREEN :
-       CR_BLUE2;
+       CR_LIGHTBLUE;
 
   dsda_DrawBigNumber(component.x, component.y, patch_delta_x, 0,
                      cm, component.vpt, 3, player->health);
