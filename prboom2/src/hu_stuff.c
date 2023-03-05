@@ -158,15 +158,6 @@ static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
 void HU_init_crosshair(void);
 
-static void HU_SetLumpTrans(const char *name)
-{
-  int lump = W_CheckNumForName(name);
-  if (lump != LUMP_NOT_FOUND)
-  {
-    lumpinfo[lump].flags |= LUMP_CM2RGB;
-  }
-}
-
 void HU_AddCharToTitle(char s)
 {
   HUlib_addCharToTextLine(&w_title, s);
@@ -229,23 +220,6 @@ void HU_Init(void)
     {
       hu_font[i] = hu_font[0]; //jff 2/16/98 account for gap
     }
-  }
-
-  if (!raven)
-  {
-    // these patches require cm to rgb translation
-    for (i = 33; i < 96; i++)
-    {
-      sprintf(buffer, "STCFN%.3d", i);
-      HU_SetLumpTrans(buffer);
-    }
-    for (i = 0; i < 10; i++)
-    {
-      sprintf(buffer, "STTNUM%d", i);
-      HU_SetLumpTrans(buffer);
-    }
-    HU_SetLumpTrans("STTPRCNT");
-    HU_SetLumpTrans("STTMINUS");
   }
 
   // CPhipps - load patches for message background
