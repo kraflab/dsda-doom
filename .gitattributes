@@ -156,6 +156,7 @@ prboom2/data/lumps/bfgbex.lmp -text
 prboom2/data/lumps/c_end.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/c_start.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/chexdeh.lmp -text
+prboom2/data/lumps/dsdacr.lmp -text
 prboom2/data/lumps/dsdahud.lmp -text
 prboom2/data/lumps/gammatbl.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/glfp.lmp -text

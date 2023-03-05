@@ -21,6 +21,7 @@
 #include "v_video.h"
 
 #include "dsda/palette.h"
+#include "dsda/utility.h"
 
 #include "cr_table.h"
 
@@ -29,6 +30,7 @@ typedef struct {
   int r2, g2, b2;
 } cr_range_t;
 
+// Default values - overridden by DSDACR lump
 cr_range_t cr_range[CR_LIMIT] = {
   [CR_DEFAULT]   = { 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF },
   [CR_BRICK]     = { 0x47, 0x00, 0x00, 0xFF, 0xB8, 0xB8 },
@@ -111,12 +113,50 @@ static void dsda_CalculateFontBounds(const char *playpal) {
           cr_font.light_lower_bound, cr_font.light_upper_bound, cr_font.multiplier);
 }
 
+static void dsda_LoadCRLump(void) {
+  char* lump;
+  char** lines;
+  const char* line;
+  int line_i;
+  int i, r1, g1, b1, r2, g2, b2;
+
+  lump = W_ReadLumpToString(W_GetNumForName("DSDACR"));
+
+  lines = dsda_SplitString(lump, "\n");
+
+  for (line_i = 0; lines[line_i]; ++line_i) {
+    line = lines[line_i];
+
+    if (sscanf(line, "%d %i %i %i %i %i %i", &i, &r1, &g1, &b1, &r2, &g2, &b2) != 7)
+      I_Error("DSDACR lump has unknown format!");
+
+    if (i < 1 || i >= CR_LIMIT)
+      I_Error("DSDACR index %d is out of bounds!", i);
+
+    if (r1 < 0 || g1 < 0 || b1 < 0 || r2 < 0 || g2 < 0 || b2 < 0 ||
+        r1 > 255 || g1 > 255 || b1 > 255 || r2 > 255 || g2 > 255 || b2 > 255)
+      I_Error("DSDACR index %d has color out of range (0-255)", i);
+
+    cr_range[i].r1 = r1;
+    cr_range[i].g1 = g1;
+    cr_range[i].b1 = b1;
+    cr_range[i].r2 = r2;
+    cr_range[i].g2 = g2;
+    cr_range[i].b2 = b2;
+  }
+
+  Z_Free(lines);
+  Z_Free(lump);
+}
+
 byte* dsda_GenerateCRTable(void) {
   int cr_i;
   int orig_i;
   int check_i;
   byte* buffer;
   const byte* playpal;
+
+  dsda_LoadCRLump();
 
   playpal = W_LumpByName("PLAYPAL");
 
