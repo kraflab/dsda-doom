@@ -4,6 +4,12 @@ Color Range configurations are stored in the DSDACR lump. These defaults can be 
 
 ### Specification
 
+The first line of the DSDACR lump specifies reference lumps to use for the dynamic range calculation:
+
+`doom_reference heretic_reference hexen_reference`
+
+By default, these are set to the "A" character of the message font. You may want to change this if you have a lot of variance in the color range of different font characters. The reference lump is scanned to get an idea of the level of contrast in the font.
+
 Each line of the DSDACR lump is plain text in the following format:
 
 `color_range_index r1 g1 b1 r2 g2 b2 comment`

@@ -49,6 +49,10 @@ cr_range_t cr_range[CR_LIMIT] = {
   [CR_WHITE]     = { 0x24, 0x24, 0x24, 0xFF, 0xFF, 0xFF },
 };
 
+static char ref_lump_doom[9] = "STCFN065";
+static char ref_lump_heretic[9] = "FONTA33";
+static char ref_lump_hexen[9] = "FONTA33";
+
 typedef struct {
   double light_lower_bound;
   double light_upper_bound;
@@ -78,10 +82,12 @@ static void dsda_CalculateFontBounds(const char *playpal) {
   byte entry;
   double lightness;
 
-  if (raven)
-    lump = W_LumpByName("FONTA33");
+  if (heretic)
+    lump = W_LumpByName(ref_lump_heretic);
+  else if (hexen)
+    lump = W_LumpByName(ref_lump_hexen);
   else
-    lump = W_LumpByName("STCFN065");
+    lump = W_LumpByName(ref_lump_doom);
 
   width = *((const int16_t *) lump);
   width = LittleShort(width);
@@ -124,7 +130,10 @@ static void dsda_LoadCRLump(void) {
 
   lines = dsda_SplitString(lump, "\n");
 
-  for (line_i = 0; lines[line_i]; ++line_i) {
+  if (lines[0])
+    sscanf(lines[0], "%8s %8s %8s", ref_lump_doom, ref_lump_heretic, ref_lump_hexen);
+
+  for (line_i = 1; lines[line_i]; ++line_i) {
     line = lines[line_i];
 
     if (sscanf(line, "%d %i %i %i %i %i %i", &i, &r1, &g1, &b1, &r2, &g2, &b2) != 7)
