@@ -1071,6 +1071,7 @@ void gld_PreprocessLevel(void)
     memset(linerendered[1], 0, numlines*sizeof(linerendered[1][0]));
   }
 
+  gld_ResetLastTexture();
   gld_ResetTexturedAutomap();
 
   gld_FreeDrawInfo();
