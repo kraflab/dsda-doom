@@ -29,11 +29,11 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "\x1b%cHEL %3d%%",
-    player->health <= hud_health_red ? HUlib_Color(CR_RED) :
-      player->health <= hud_health_yellow ? HUlib_Color(CR_GOLD) :
-      player->health <= hud_health_green ? HUlib_Color(CR_GREEN) :
-      HUlib_Color(CR_LIGHTBLUE),
+    "%sHEL %3d%%",
+    player->health <= hud_health_red ? dsda_TextColor(dsda_tc_exhud_health_bad) :
+      player->health <= hud_health_yellow ? dsda_TextColor(dsda_tc_exhud_health_warning) :
+      player->health <= hud_health_green ? dsda_TextColor(dsda_tc_exhud_health_ok) :
+      dsda_TextColor(dsda_tc_exhud_health_super),
     player->health
   );
 }

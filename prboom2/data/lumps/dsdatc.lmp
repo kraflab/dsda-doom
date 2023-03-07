@@ -27,3 +27,9 @@ exhud_coords_mf50 3
 exhud_coords_sr40 4
 exhud_coords_sr50 11
 exhud_coords_fast 7
+exhud_fps_bad 7
+exhud_fps_fine 3
+exhud_health_bad 7
+exhud_health_warning 6
+exhud_health_ok 4
+exhud_health_super 11

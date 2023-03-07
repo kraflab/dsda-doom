@@ -27,8 +27,9 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "\x1b%c%4d",
-    dsda_render_stats_fps < 35 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GRAY),
+    "%s%4d",
+    dsda_render_stats_fps < 35 ? dsda_TextColor(dsda_tc_exhud_fps_bad) :
+                                 dsda_TextColor(dsda_tc_exhud_fps_fine),
     dsda_render_stats_fps
   );
 }

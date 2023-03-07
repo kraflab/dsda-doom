@@ -32,6 +32,12 @@ typedef enum {
   dsda_tc_exhud_coords_sr40,
   dsda_tc_exhud_coords_sr50,
   dsda_tc_exhud_coords_fast,
+  dsda_tc_exhud_fps_bad,
+  dsda_tc_exhud_fps_fine,
+  dsda_tc_exhud_health_bad,
+  dsda_tc_exhud_health_warning,
+  dsda_tc_exhud_health_ok,
+  dsda_tc_exhud_health_super,
 } dsda_text_color_index_t;
 
 void dsda_LoadTextColor(void);

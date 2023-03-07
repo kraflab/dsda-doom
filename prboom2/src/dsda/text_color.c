@@ -45,6 +45,12 @@ dsda_text_color_t dsda_text_colors[] = {
   [dsda_tc_exhud_coords_sr40] = { "exhud_coords_sr40", CR_GREEN },
   [dsda_tc_exhud_coords_sr50] = { "exhud_coords_sr50", CR_LIGHTBLUE },
   [dsda_tc_exhud_coords_fast] = { "exhud_coords_fast", CR_RED },
+  [dsda_tc_exhud_fps_bad] = { "exhud_fps_bad", CR_RED },
+  [dsda_tc_exhud_fps_fine] = { "exhud_fps_fine", CR_GRAY },
+  [dsda_tc_exhud_health_bad] = { "exhud_health_bad", CR_RED },
+  [dsda_tc_exhud_health_warning] = { "exhud_health_warning", CR_GOLD },
+  [dsda_tc_exhud_health_ok] = { "exhud_health_ok", CR_GREEN },
+  [dsda_tc_exhud_health_super] = { "exhud_health_super", CR_LIGHTBLUE },
   { NULL },
 };
 
