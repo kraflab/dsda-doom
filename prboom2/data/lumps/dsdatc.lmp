@@ -1,0 +1,29 @@
+// default = 0
+// brick = 1
+// tan = 2
+// gray = 3
+// green = 4
+// brown = 5
+// gold = 6
+// red = 7
+// blue = 8
+// orange = 9
+// yellow = 10
+// light blue = 11
+// black = 12
+// purple = 13
+// white = 14
+
+exhud_time_label 3
+exhud_level_time 4
+exhud_total_time 6
+exhud_armor_zero 3
+exhud_armor_one 4
+exhud_armor_two 11
+exhud_command_entry 3
+exhud_command_queue 6
+exhud_coords_base 4
+exhud_coords_mf50 3
+exhud_coords_sr40 4
+exhud_coords_sr50 11
+exhud_coords_fast 7

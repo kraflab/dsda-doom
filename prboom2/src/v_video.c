@@ -60,6 +60,7 @@
 #include "dsda/global.h"
 #include "dsda/palette.h"
 #include "dsda/stretch.h"
+#include "dsda/text_color.h"
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
@@ -169,6 +170,8 @@ void V_InitColorTranslation(void)
 
   for (i = 0; i < CR_LIMIT; ++i)
     colrngs[i] = full_table + 256 * i;
+
+  dsda_LoadTextColor();
 }
 
 //

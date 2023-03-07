@@ -38,7 +38,7 @@ typedef struct dsda_command_display_s {
   dsda_command_t command;
   int repeat;
   dsda_text_t component;
-  char color;
+  const char* color;
   struct dsda_command_display_s* next;
   struct dsda_command_display_s* prev;
 } dsda_command_display_t;
@@ -119,11 +119,11 @@ void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt, int* args, i
   int i;
 
   for (i = 0; i < MAX_HISTORY; ++i) {
-    command_history[i].color = HUlib_Color(CR_GRAY);
+    command_history[i].color = dsda_TextColor(dsda_tc_exhud_command_entry);
     dsda_InitTextHC(&command_history[i].component, x_offset, y_offset + i * 8, vpt);
   }
 
-  next_command_display.color = HUlib_Color(CR_GOLD);
+  next_command_display.color = dsda_TextColor(dsda_tc_exhud_command_queue);
   dsda_InitTextHC(&next_command_display.component, x_offset, y_offset, vpt);
 
   base_y = next_command_display.component.text.y;
@@ -133,7 +133,7 @@ static void dsda_UpdateCommandText(dsda_command_t* command,
                                    dsda_command_display_t* display_command, dboolean playback) {
   int length;
 
-  length = sprintf(display_command->component.msg, "\x1b%c", display_command->color);
+  length = sprintf(display_command->component.msg, "%s", display_command->color);
 
   if (playback)
     length += sprintf(display_command->component.msg + length, " PL  ");

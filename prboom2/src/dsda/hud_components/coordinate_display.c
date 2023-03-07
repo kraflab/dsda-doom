@@ -37,9 +37,9 @@ static dsda_text_t dsda_vy_display;
 static dsda_text_t dsda_d_display;
 static dsda_text_t dsda_dx_display;
 static dsda_text_t dsda_dy_display;
-static char dsda_coordinate_color;
-static char dsda_velocity_color;
-static char dsda_distance_color;
+static const char* dsda_coordinate_color;
+static const char* dsda_velocity_color;
+static const char* dsda_distance_color;
 
 static double dsda_CalculateVelocity(void) {
   double vx, vy;
@@ -68,7 +68,7 @@ static void dsda_WriteCoordinate(dsda_text_t* text, fixed_t x, const char* ch) {
 
   dsda_FixedToString(str, x);
 
-  snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %s", dsda_coordinate_color, ch, str);
+  snprintf(text->msg, sizeof(text->msg), "%s%s: %s", dsda_coordinate_color, ch, str);
 
   dsda_RefreshHudText(text);
 }
@@ -80,16 +80,16 @@ static void dsda_WriteAngle(dsda_text_t* text, angle_t x, const char* ch) {
   value = dsda_SplitAngle(x);
 
   if (value.frac)
-    snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i.%03i",
+    snprintf(text->msg, sizeof(text->msg), "%s%s: %i.%03i",
              dsda_coordinate_color, ch, value.base, value.frac);
   else
-    snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i",
+    snprintf(text->msg, sizeof(text->msg), "%s%s: %i",
              dsda_coordinate_color, ch, value.base);
 
   dsda_RefreshHudText(text);
 }
 
-static void dsda_WriteCoordinateSimple(dsda_text_t* text, fixed_t x, const char* ch, char color) {
+static void dsda_WriteCoordinateSimple(dsda_text_t* text, fixed_t x, const char* ch, const char* color) {
   dsda_fixed_t value;
   const char* format;
 
@@ -97,14 +97,14 @@ static void dsda_WriteCoordinateSimple(dsda_text_t* text, fixed_t x, const char*
 
   if (value.frac) {
     if (value.negative && !value.base)
-      snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: -%i.%03i",
+      snprintf(text->msg, sizeof(text->msg), "%s%s: -%i.%03i",
                color, ch, value.base, 1000 * value.frac / 0xffff);
     else
-      snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i.%03i",
+      snprintf(text->msg, sizeof(text->msg), "%s%s: %i.%03i",
                color, ch, value.base, 1000 * value.frac / 0xffff);
   }
   else
-    snprintf(text->msg, sizeof(text->msg), "\x1b%c%s: %i", color, ch, value.base);
+    snprintf(text->msg, sizeof(text->msg), "%s%s: %i", color, ch, value.base);
 
   dsda_RefreshHudText(text);
 }
@@ -116,17 +116,17 @@ static void dsda_WriteVelocity(dsda_text_t* text) {
 
   dsda_velocity_color =
     v >= THRESHOLD_3V ?
-      HUlib_Color(CR_RED)   :
+      dsda_TextColor(dsda_tc_exhud_coords_fast)   :
     v >= THRESHOLD_2V ?
-      HUlib_Color(CR_LIGHTBLUE)  :
+      dsda_TextColor(dsda_tc_exhud_coords_sr50)  :
     v >= THRESHOLD_1V ?
-      HUlib_Color(CR_GREEN) :
-    HUlib_Color(CR_GRAY);
+      dsda_TextColor(dsda_tc_exhud_coords_sr40) :
+    dsda_TextColor(dsda_tc_exhud_coords_mf50);
 
   if (v)
-    snprintf(text->msg, sizeof(text->msg), "\x1b%cV: %.3f", dsda_velocity_color, v);
+    snprintf(text->msg, sizeof(text->msg), "%sV: %.3f", dsda_velocity_color, v);
   else
-    snprintf(text->msg, sizeof(text->msg), "\x1b%cV: 0", dsda_velocity_color);
+    snprintf(text->msg, sizeof(text->msg), "%sV: 0", dsda_velocity_color);
 
   dsda_RefreshHudText(text);
 }
@@ -138,23 +138,23 @@ static void dsda_WriteDistance(dsda_text_t* text) {
 
   dsda_distance_color =
     v >= THRESHOLD_3D ?
-      HUlib_Color(CR_RED)   :
+      dsda_TextColor(dsda_tc_exhud_coords_fast)   :
     v >= THRESHOLD_2D ?
-      HUlib_Color(CR_LIGHTBLUE)  :
+      dsda_TextColor(dsda_tc_exhud_coords_sr50)  :
     v >= THRESHOLD_1D ?
-      HUlib_Color(CR_GREEN) :
-    HUlib_Color(CR_GRAY);
+      dsda_TextColor(dsda_tc_exhud_coords_sr40) :
+    dsda_TextColor(dsda_tc_exhud_coords_mf50);
 
   if (v)
-    snprintf(text->msg, sizeof(text->msg), "\x1b%cD: %.3f", dsda_distance_color, v);
+    snprintf(text->msg, sizeof(text->msg), "%sD: %.3f", dsda_distance_color, v);
   else
-    snprintf(text->msg, sizeof(text->msg), "\x1b%cD: 0", dsda_distance_color);
+    snprintf(text->msg, sizeof(text->msg), "%sD: 0", dsda_distance_color);
 
   dsda_RefreshHudText(text);
 }
 
 void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
-  dsda_coordinate_color = HUlib_Color(CR_GREEN);
+  dsda_coordinate_color = dsda_TextColor(dsda_tc_exhud_coords_base);
 
   dsda_InitTextHC(&dsda_x_display, x_offset, y_offset, vpt);
   dsda_InitTextHC(&dsda_y_display, x_offset, y_offset + 8, vpt);

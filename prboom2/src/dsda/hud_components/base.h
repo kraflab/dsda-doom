@@ -40,6 +40,7 @@
 #include "dsda/exhud.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
+#include "dsda/text_color.h"
 #include "dsda/utility.h"
 
 #define DSDA_TEXT_SIZE 200
