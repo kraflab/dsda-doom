@@ -128,7 +128,7 @@ static void dsda_LoadCRLump(void) {
 
   lump = W_ReadLumpToString(W_GetNumForName("DSDACR"));
 
-  lines = dsda_SplitString(lump, "\n");
+  lines = dsda_SplitString(lump, "\n\r");
 
   if (lines[0])
     sscanf(lines[0], "%8s %8s %8s", ref_lump_doom, ref_lump_heretic, ref_lump_hexen);
