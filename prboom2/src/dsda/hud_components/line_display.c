@@ -35,7 +35,8 @@ void dsda_UpdateLineDisplayHC(void) {
   line_ids = dsda_PlayerActivatedLines();
 
   for (i = 0; line_ids[i] != -1; ++i) {
-    snprintf(line_display[i].msg, sizeof(line_display[i].msg), "%d", line_ids[i]);
+    snprintf(line_display[i].msg, sizeof(line_display[i].msg), "%s%d",
+             dsda_TextColor(dsda_tc_exhud_line_activation), line_ids[i]);
     dsda_RefreshHudText(&line_display[i]);
   }
 

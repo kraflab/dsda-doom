@@ -841,10 +841,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "hudadd_crosshair", dsda_config_hudadd_crosshair,
     dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, CONF_FEATURE | NOT_STRICT, HU_init_crosshair
   },
-  [dsda_config_hud_armor_color_by_class] = {
-    "hud_armor_color_by_class", dsda_config_hud_armor_color_by_class,
-    dsda_config_int, 0, 1, { 1 }, NULL, NOT_STRICT, HU_InitThresholds
-  },
   [dsda_config_hud_health_red] = {
     "hud_health_red", dsda_config_hud_health_red,
     dsda_config_int, 0, 200, { 25 }, NULL, NOT_STRICT, HU_InitThresholds

@@ -34,10 +34,10 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "\x1b%cARM %3d%%",
-      armor_percent == 0 ? HUlib_Color(CR_GRAY) :
-        armor_percent <= 50 ? HUlib_Color(CR_GREEN) :
-        HUlib_Color(CR_LIGHTBLUE),
+      "%sARM %3d%%",
+      armor_percent == 0 ? dsda_TextColor(dsda_tc_exhud_armor_zero) :
+        armor_percent <= 50 ? dsda_TextColor(dsda_tc_exhud_armor_one) :
+        dsda_TextColor(dsda_tc_exhud_armor_two),
       armor_percent
     );
   }
@@ -45,10 +45,10 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "\x1b%cARM %3d%%",
-      (!hud_armor_color_by_class || player->armorpoints[ARMOR_ARMOR] <= 0) ? HUlib_Color(CR_GRAY) :
-        player->armortype == 1 ? HUlib_Color(CR_GREEN) :
-        HUlib_Color(CR_LIGHTBLUE),
+      "%sARM %3d%%",
+      player->armorpoints[ARMOR_ARMOR] <= 0 ? dsda_TextColor(dsda_tc_exhud_armor_zero) :
+        player->armortype == 1 ? dsda_TextColor(dsda_tc_exhud_armor_one) :
+        dsda_TextColor(dsda_tc_exhud_armor_two),
       player->armorpoints[ARMOR_ARMOR]
     );
   }

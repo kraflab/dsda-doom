@@ -31,21 +31,23 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "W \x1b%c%c\x1b%c %c %c\n"
-      "\x1b%cP\x1b%c %c %c %c\n"
-      "\x1b%cN\x1b%c %c %c %c",
-      player->powers[pw_strength] ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GREEN),
+      "%sW %s%c %s%c %c\n"
+      "%sP %s%c %c %c\n"
+      "%sN %s%c %c %c",
+      dsda_TextColor(dsda_tc_exhud_weapon_label),
+      player->powers[pw_strength] ? dsda_TextColor(dsda_tc_exhud_weapon_berserk) :
+                                    dsda_TextColor(dsda_tc_exhud_weapon_owned),
       player->weaponowned[0] ? '1' : ' ',
-      HUlib_Color(CR_GREEN),
+      dsda_TextColor(dsda_tc_exhud_weapon_owned),
       player->weaponowned[1] ? '2' : ' ',
       player->weaponowned[2] ? '3' : ' ',
-      HUlib_Color(CR_WHITE),
-      HUlib_Color(CR_GREEN),
+      dsda_TextColor(dsda_tc_exhud_weapon_label),
+      dsda_TextColor(dsda_tc_exhud_weapon_owned),
       player->weaponowned[3] ? '4' : ' ',
       player->weaponowned[4] ? '5' : ' ',
       player->weaponowned[5] ? '6' : ' ',
-      HUlib_Color(CR_WHITE),
-      HUlib_Color(CR_GREEN),
+      dsda_TextColor(dsda_tc_exhud_weapon_label),
+      dsda_TextColor(dsda_tc_exhud_weapon_owned),
       player->weaponowned[6] ? '7' : ' ',
       player->weaponowned[7] ? '8' : ' ',
       player->weaponowned[8] ? '9' : ' '
@@ -54,10 +56,12 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "WPN \x1b%c%c\x1b%c %c %c %c %c %c %c %c %c",
-      player->powers[pw_strength] ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GREEN),
+      "%sWPN %s%c %s%c %c %c %c %c %c %c %c",
+      dsda_TextColor(dsda_tc_exhud_weapon_label),
+      player->powers[pw_strength] ? dsda_TextColor(dsda_tc_exhud_weapon_berserk) :
+                                    dsda_TextColor(dsda_tc_exhud_weapon_owned),
       player->weaponowned[0] ? '1' : ' ',
-      HUlib_Color(CR_GREEN),
+      dsda_TextColor(dsda_tc_exhud_weapon_owned),
       player->weaponowned[1] ? '2' : ' ',
       player->weaponowned[2] ? '3' : ' ',
       player->weaponowned[3] ? '4' : ' ',

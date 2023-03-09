@@ -44,7 +44,7 @@ static void dsda_DrawComponent(void) {
   }
   else {
     armor = player->armorpoints[ARMOR_ARMOR];
-    if (!hud_armor_color_by_class || armor <= 0) {
+    if (armor <= 0) {
       cm = CR_RED;
       lump = armor_lump_green;
     }

@@ -32,6 +32,7 @@ set(LUMPS
     lumps/soundfont/sndfont.lmp
     lumps/dsdacr.lmp
     lumps/dsdahud.lmp
+    lumps/dsdatc.lmp
 )
 
 set(COLORMAPS

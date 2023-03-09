@@ -31,18 +31,18 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "%s\x1b%c%d%%",
+    "%s%s%d%%",
     label,
-    speed < 100 ? HUlib_Color(CR_GOLD)
-                : speed == 100 ? HUlib_Color(CR_GREEN)
-                               : HUlib_Color(CR_LIGHTBLUE),
+    speed < 100 ? dsda_TextColor(dsda_tc_exhud_speed_slow)
+                : speed == 100 ? dsda_TextColor(dsda_tc_exhud_speed_normal)
+                               : dsda_TextColor(dsda_tc_exhud_speed_fast),
     speed
   );
 }
 
 void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
   if (arg_count < 1 || args[0])
-    snprintf(label, sizeof(label), "\x1b%cSPEED ", HUlib_Color(CR_GRAY));
+    snprintf(label, sizeof(label), "%sSPEED ", dsda_TextColor(dsda_tc_exhud_speed_label));
   else
     label[0] = '\0';
 

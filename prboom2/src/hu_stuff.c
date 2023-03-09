@@ -235,7 +235,6 @@ int hud_ammo_yellow;   // ammo percent less is yellow more green
 int hud_health_red;    // health amount less than which status is red
 int hud_health_yellow; // health amount less than which status is yellow
 int hud_health_green;  // health amount above is blue, below is green
-int hud_armor_color_by_class;
 
 void HU_InitThresholds(void)
 {
@@ -244,7 +243,6 @@ void HU_InitThresholds(void)
   hud_health_green = dsda_IntConfig(dsda_config_hud_health_green);
   hud_ammo_red = dsda_IntConfig(dsda_config_hud_ammo_red);
   hud_ammo_yellow = dsda_IntConfig(dsda_config_hud_ammo_yellow);
-  hud_armor_color_by_class = dsda_IntConfig(dsda_config_hud_armor_color_by_class);
 }
 
 //

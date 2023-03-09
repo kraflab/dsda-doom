@@ -77,8 +77,10 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
     snprintf(
       str,
       max_size,
-      "%s %3d\x1b\x01/\x1b\x01%3d",
+      "%s%s %s%3d\x1b\x01/\x1b\x01%3d",
+      dsda_TextColor(dsda_tc_exhud_ammo_label),
       name,
+      dsda_TextColor(dsda_tc_exhud_ammo_value),
       current_ammo,
       max_ammo
     );
@@ -86,7 +88,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
     snprintf(
       str,
       max_size,
-      "%3d\x1b\x01/\x1b\x01%3d",
+      "%s%3d\x1b\x01/\x1b\x01%3d",
+      dsda_TextColor(dsda_tc_exhud_ammo_value),
       current_ammo,
       max_ammo
     );

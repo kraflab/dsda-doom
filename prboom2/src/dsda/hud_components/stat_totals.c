@@ -32,7 +32,9 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int i;
   size_t length;
   int fullkillcount, fullitemcount, fullsecretcount;
-  int color, killcolor, itemcolor, secretcolor;
+  const char* killcolor;
+  const char* itemcolor;
+  const char* secretcolor;
   int kill_percent_count;
   int max_kill_requirement;
 
@@ -57,16 +59,19 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     max_kill_requirement = totalkills;
   }
 
-  killcolor = (fullkillcount >= max_kill_requirement ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GOLD));
-  secretcolor = (fullsecretcount >= totalsecret ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GOLD));
-  itemcolor = (fullitemcount >= totalitems ? HUlib_Color(CR_LIGHTBLUE) : HUlib_Color(CR_GOLD));
+  killcolor = (fullkillcount >= max_kill_requirement ? dsda_TextColor(dsda_tc_exhud_totals_max) :
+                                                       dsda_TextColor(dsda_tc_exhud_totals_value));
+  secretcolor = (fullsecretcount >= totalsecret ? dsda_TextColor(dsda_tc_exhud_totals_max) :
+                                                  dsda_TextColor(dsda_tc_exhud_totals_value));
+  itemcolor = (fullitemcount >= totalitems ? dsda_TextColor(dsda_tc_exhud_totals_max) :
+                                             dsda_TextColor(dsda_tc_exhud_totals_value));
 
   if (include_kills) {
     length += snprintf(
       str,
       max_size,
       kills_format,
-      HUlib_Color(CR_RED),
+      dsda_TextColor(dsda_tc_exhud_totals_label),
       killcolor, fullkillcount, max_kill_requirement
     );
   }
@@ -76,7 +81,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str + length,
       max_size - length,
       items_format,
-      HUlib_Color(CR_RED),
+      dsda_TextColor(dsda_tc_exhud_totals_label),
       itemcolor, players[displayplayer].itemcount, totalitems
     );
   }
@@ -86,7 +91,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str + length,
       max_size - length,
       secrets_format,
-      HUlib_Color(CR_RED),
+      dsda_TextColor(dsda_tc_exhud_totals_label),
       secretcolor, fullsecretcount, totalsecret
     );
   }
@@ -99,14 +104,14 @@ void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int a
 
   // vertical orientation
   if (args[3]) {
-    kills_format = "\x1b%cK \x1b%c%d/%d\n";
-    items_format = "\x1b%cI \x1b%c%d/%d\n";
-    secrets_format = "\x1b%cS \x1b%c%d/%d";
+    kills_format = "%sK %s%d/%d\n";
+    items_format = "%sI %s%d/%d\n";
+    secrets_format = "%sS %s%d/%d";
   }
   else {
-    kills_format = "\x1b%cK \x1b%c%d/%d ";
-    items_format = "\x1b%cI \x1b%c%d/%d ";
-    secrets_format = "\x1b%cS \x1b%c%d/%d";
+    kills_format = "%sK %s%d/%d ";
+    items_format = "%sI %s%d/%d ";
+    secrets_format = "%sS %s%d/%d";
   }
 
   if (!include_kills && !include_items && !include_secrets) {

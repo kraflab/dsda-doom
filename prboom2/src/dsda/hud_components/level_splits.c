@@ -33,10 +33,10 @@ static int dsda_SplitComparisonDelta(dsda_split_time_t* split_time) {
 static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   char* s;
   char delta[16];
-  char color;
+  const char* color;
 
   delta[0] = '\0';
-  color = HUlib_Color(CR_GRAY);
+  color = dsda_TextColor(dsda_tc_inter_split_normal);
 
   if (split && !split->first_time) {
     const char* sign;
@@ -44,7 +44,8 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
 
     diff = dsda_SplitComparisonDelta(&split->leveltime);
     sign = diff >= 0 ? "+" : "-";
-    color = diff >= 0 ? HUlib_Color(CR_GRAY) : HUlib_Color(CR_GREEN);
+    color = diff >= 0 ? dsda_TextColor(dsda_tc_inter_split_normal) :
+                        dsda_TextColor(dsda_tc_inter_split_good);
     diff = abs(diff);
 
     if (diff >= 2100) {
@@ -66,7 +67,7 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   snprintf(
     time_component.msg,
     sizeof(time_component.msg),
-    "\x1b%c%d:%05.2f",
+    "%s%d:%05.2f",
     color, leveltime / 35 / 60,
     (float)(leveltime % (60 * 35)) / 35
   );
@@ -79,10 +80,10 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
 static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
   char* s;
   char delta[16];
-  char color;
+  const char* color;
 
   delta[0] = '\0';
-  color = HUlib_Color(CR_GRAY);
+  color = dsda_TextColor(dsda_tc_inter_split_normal);
 
   if (split && !split->first_time) {
     const char* sign;
@@ -90,7 +91,8 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
 
     diff = dsda_SplitComparisonDelta(&split->totalleveltimes) / 35;
     sign = diff >= 0 ? "+" : "-";
-    color = diff >= 0 ? HUlib_Color(CR_GRAY) : HUlib_Color(CR_GREEN);
+    color = diff >= 0 ? dsda_TextColor(dsda_tc_inter_split_normal) :
+                        dsda_TextColor(dsda_tc_inter_split_good);
     diff = abs(diff);
 
     if (diff >= 60) {
@@ -112,7 +114,7 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
   snprintf(
     total_component.msg,
     sizeof(total_component.msg),
-    "\x1b%c%d:%02d",
+    "%s%d:%02d",
     color, totalleveltimes / 35 / 60,
     (totalleveltimes / 35) % 60
   );

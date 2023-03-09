@@ -1,0 +1,69 @@
+// default = 0
+// brick = 1
+// tan = 2
+// gray = 3
+// green = 4
+// brown = 5
+// gold = 6
+// red = 7
+// blue = 8
+// orange = 9
+// yellow = 10
+// light blue = 11
+// black = 12
+// purple = 13
+// white = 14
+
+exhud_time_label 3
+exhud_level_time 4
+exhud_total_time 6
+exhud_armor_zero 3
+exhud_armor_one 4
+exhud_armor_two 11
+exhud_command_entry 3
+exhud_command_queue 6
+exhud_coords_base 4
+exhud_coords_mf50 3
+exhud_coords_sr40 4
+exhud_coords_sr50 11
+exhud_coords_fast 7
+exhud_fps_bad 7
+exhud_fps_fine 3
+exhud_health_bad 7
+exhud_health_warning 6
+exhud_health_ok 4
+exhud_health_super 11
+exhud_line_close 4
+exhud_line_far 3
+exhud_line_special 4
+exhud_line_normal 3
+exhud_mobj_alive 4
+exhud_mobj_dead 3
+exhud_player_damage 4
+exhud_player_neutral 3
+exhud_ammo_label 3
+exhud_ammo_mana1 11
+exhud_ammo_mana2 4
+exhud_ammo_value 3
+exhud_render_label 3
+exhud_render_good 6
+exhud_render_bad 7
+exhud_sector_active 7
+exhud_sector_special 4
+exhud_sector_normal 3
+exhud_speed_label 3
+exhud_speed_slow 6
+exhud_speed_normal 4
+exhud_speed_fast 11
+exhud_totals_label 7
+exhud_totals_value 6
+exhud_totals_max 11
+exhud_weapon_label 3
+exhud_weapon_owned 4
+exhud_weapon_berserk 11
+exhud_attempts 3
+exhud_event_split 3
+exhud_line_activation 3
+exhud_local_time 3
+inter_split_normal 3
+inter_split_good 4

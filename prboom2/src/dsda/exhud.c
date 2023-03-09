@@ -262,10 +262,6 @@ exhud_component_t components[exhud_component_count] = {
   },
 };
 
-int exhud_color_default;
-int exhud_color_warning;
-int exhud_color_alert;
-
 int dsda_show_render_stats;
 
 static void dsda_TurnComponentOn(int id) {
@@ -335,10 +331,6 @@ void dsda_InitExHud(void) {
   char command[64];
   char args[64];
   int count;
-
-  exhud_color_default = CR_GRAY;
-  exhud_color_warning = CR_GREEN;
-  exhud_color_alert = CR_RED;
 
   for (i = 0; i < exhud_component_count; ++i) {
     components[i].on = false;

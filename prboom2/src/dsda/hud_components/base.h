@@ -40,6 +40,7 @@
 #include "dsda/exhud.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
+#include "dsda/text_color.h"
 #include "dsda/utility.h"
 
 #define DSDA_TEXT_SIZE 200
@@ -50,10 +51,6 @@ typedef struct {
   hu_textline_t text;
   char msg[DSDA_TEXT_SIZE];
 } dsda_text_t;
-
-extern int exhud_color_default;
-extern int exhud_color_warning;
-extern int exhud_color_alert;
 
 extern patchnum_t hu_font[HU_FONTSIZE];
 extern patchnum_t hu_font2[HU_FONTSIZE];
