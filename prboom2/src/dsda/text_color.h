@@ -72,5 +72,6 @@ typedef enum {
 
 void dsda_LoadTextColor(void);
 const char* dsda_TextColor(dsda_text_color_index_t i);
+int dsda_TextCR(dsda_text_color_index_t i);
 
 #endif

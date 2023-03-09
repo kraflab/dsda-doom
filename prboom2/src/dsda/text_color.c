@@ -88,6 +88,10 @@ const char* dsda_TextColor(dsda_text_color_index_t i) {
   return dsda_text_colors[i].color_str;
 }
 
+int dsda_TextCR(dsda_text_color_index_t i) {
+  return dsda_text_colors[i].color_range;
+}
+
 void dsda_LoadTextColor(void) {
   char* lump;
   char** lines;
