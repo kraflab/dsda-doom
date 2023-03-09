@@ -27,9 +27,10 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player = &players[displayplayer];
 
   if (hexen) {
-    snprintf(str, max_size, "AMM \x1b%c%3d \x1b%c%3d",
-            HUlib_Color(CR_LIGHTBLUE), player->ammo[0],
-            HUlib_Color(CR_GREEN), player->ammo[1]);
+    snprintf(str, max_size, "%sAMM %s%3d %s%3d",
+             dsda_TextColor(dsda_tc_exhud_ammo_label),
+             dsda_TextColor(dsda_tc_exhud_ammo_mana1), player->ammo[0],
+             dsda_TextColor(dsda_tc_exhud_ammo_mana2), player->ammo[1]);
   }
   else {
     ammotype_t ammo_type;
@@ -37,9 +38,13 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     ammo_type = weaponinfo[player->readyweapon].ammo;
 
     if (ammo_type == am_noammo || !player->maxammo[ammo_type])
-      snprintf(str, max_size, "AMM N/A");
+      snprintf(str, max_size, "%sAMM %sN/A",
+               dsda_TextColor(dsda_tc_exhud_ammo_label),
+               dsda_TextColor(dsda_tc_exhud_ammo_value));
     else
-      snprintf(str, max_size, "AMM %3d", player->ammo[ammo_type]);
+      snprintf(str, max_size, "%sAMM %s%3d",
+               dsda_TextColor(dsda_tc_exhud_ammo_label),
+               dsda_TextColor(dsda_tc_exhud_ammo_value), player->ammo[ammo_type]);
   }
 }
 

@@ -38,6 +38,20 @@ typedef enum {
   dsda_tc_exhud_health_warning,
   dsda_tc_exhud_health_ok,
   dsda_tc_exhud_health_super,
+  dsda_tc_exhud_line_close,
+  dsda_tc_exhud_line_far,
+  dsda_tc_exhud_line_special,
+  dsda_tc_exhud_line_normal,
+  dsda_tc_exhud_mobj_alive,
+  dsda_tc_exhud_mobj_dead,
+  dsda_tc_exhud_player_damage,
+  dsda_tc_exhud_player_neutral,
+  dsda_tc_exhud_ammo_label,
+  dsda_tc_exhud_ammo_mana1,
+  dsda_tc_exhud_ammo_mana2,
+  dsda_tc_exhud_ammo_value,
+  dsda_tc_inter_split_normal,
+  dsda_tc_inter_split_good,
 } dsda_text_color_index_t;
 
 void dsda_LoadTextColor(void);

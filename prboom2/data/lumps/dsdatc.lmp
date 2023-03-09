@@ -33,3 +33,17 @@ exhud_health_bad 7
 exhud_health_warning 6
 exhud_health_ok 4
 exhud_health_super 11
+exhud_line_close 4
+exhud_line_far 3
+exhud_line_special 4
+exhud_line_normal 3
+exhud_mobj_alive 4
+exhud_mobj_dead 3
+exhud_player_damage 4
+exhud_player_neutral 3
+exhud_ammo_label 3
+exhud_ammo_mana1 11
+exhud_ammo_mana2 4
+exhud_ammo_value 3
+inter_split_normal 3
+inter_split_good 4
