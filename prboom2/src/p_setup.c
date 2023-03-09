@@ -1655,7 +1655,7 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
  * changes like byte order reversals. Take a copy to edit.
  */
 
-static void P_PostProcessThings(int *mobjcount, mobj_t ***mobjlist)
+static void P_PostProcessThings(int mobjcount, mobj_t **mobjlist)
 {
   int i;
 
@@ -1672,24 +1672,24 @@ static void P_PostProcessThings(int *mobjcount, mobj_t ***mobjlist)
   if (V_IsOpenGLMode())
   {
     no_overlapped_sprites = true;
-    qsort(*mobjlist, *mobjcount, sizeof(*mobjlist[0]), dicmp_sprite_by_pos);
+    qsort(mobjlist, mobjcount, sizeof(mobjlist[0]), dicmp_sprite_by_pos);
     if (!no_overlapped_sprites)
     {
       i = 1;
-      while (i < *mobjcount)
+      while (i < mobjcount)
       {
-        mobj_t *m1 = *mobjlist[i - 1];
-        mobj_t *m2 = *mobjlist[i - 0];
+        mobj_t *m1 = mobjlist[i - 1];
+        mobj_t *m2 = mobjlist[i - 0];
 
         if (GETXY(m1) == GETXY(m2))
         {
           mobj_t *mo = (m1->index < m2->index ? m1 : m2);
           i++;
-          while (i < *mobjcount && GETXY(*mobjlist[i]) == GETXY(m1))
+          while (i < mobjcount && GETXY(mobjlist[i]) == GETXY(m1))
           {
-            if ((*mobjlist[i])->index < mo->index)
+            if (mobjlist[i]->index < mo->index)
             {
-              mo = *mobjlist[i];
+              mo = mobjlist[i];
             }
             i++;
           }
@@ -1702,10 +1702,10 @@ static void P_PostProcessThings(int *mobjcount, mobj_t ***mobjlist)
     }
   }
 
-  Z_Free(*mobjlist);
+  Z_Free(mobjlist);
 }
 
-static void P_PostProcessMapThing(mapthing_t *mt, int *mobjcount, mobj_t ***mobjlist)
+static void P_PostProcessMapThing(mapthing_t *mt, int i, int *mobjcount, mobj_t **mobjlist)
 {
   mobj_t *mobj;
 
@@ -1719,9 +1719,11 @@ static void P_PostProcessMapThing(mapthing_t *mt, int *mobjcount, mobj_t ***mobj
     mt->type = 3004;
 
   // Do spawn all other stuff.
-  mobj = P_SpawnMapThing(mt, *mobjcount);
-  if (mobj && mobj->info->speed == 0)
-    *mobjlist[*mobjcount++] = mobj;
+  mobj = P_SpawnMapThing(mt, i);
+  if (mobj && mobj->info->speed == 0) {
+    mobjlist[*mobjcount] = mobj;
+    *mobjcount += 1;
+  }
 }
 
 static void P_LoadThings(int lump)
@@ -1799,10 +1801,10 @@ static void P_LoadThings(int lump)
     if (mt.options & MTF_HARD)
       mt.options |= MTF_SKILL4 | MTF_SKILL5;
 
-    P_PostProcessMapThing(&mt, &mobjcount, &mobjlist);
+    P_PostProcessMapThing(&mt, i, &mobjcount, mobjlist);
   }
 
-  P_PostProcessThings(&mobjcount, &mobjlist);
+  P_PostProcessThings(mobjcount, mobjlist);
 }
 
 static void P_LoadUDMFThings(int lump)
@@ -1888,10 +1890,10 @@ static void P_LoadUDMFThings(int lump)
     if (dmt->flags & UDMF_TF_COUNTSECRET)
       mt.options |= MTF_COUNTSECRET;
 
-    P_PostProcessMapThing(&mt, &mobjcount, &mobjlist);
+    P_PostProcessMapThing(&mt, i, &mobjcount, mobjlist);
   }
 
-  P_PostProcessThings(&mobjcount, &mobjlist);
+  P_PostProcessThings(mobjcount, mobjlist);
 }
 
 //
