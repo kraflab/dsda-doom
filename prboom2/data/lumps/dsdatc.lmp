@@ -61,5 +61,9 @@ exhud_totals_max 11
 exhud_weapon_label 3
 exhud_weapon_owned 4
 exhud_weapon_berserk 11
+exhud_attempts 3
+exhud_event_split 3
+exhud_line_activation 3
+exhud_local_time 3
 inter_split_normal 3
 inter_split_good 4

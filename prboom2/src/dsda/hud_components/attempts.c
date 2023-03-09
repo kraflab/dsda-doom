@@ -30,7 +30,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "%d/%d",
+    "%s%d/%d",
+    dsda_TextColor(dsda_tc_exhud_attempts),
     dsda_SessionAttempts(),
     dsda_DemoAttempts()
   );

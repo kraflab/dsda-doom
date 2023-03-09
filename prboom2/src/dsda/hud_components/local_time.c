@@ -24,13 +24,16 @@
 static dsda_text_t component;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
+  size_t length;
   time_t now;
   struct tm* local;
+
+  length = snprintf(str, max_size, "%s", dsda_TextColor(dsda_tc_exhud_local_time));
 
   now = time(NULL);
   local = localtime(&now);
 
-  strftime(str, max_size, "%H:%M:%S", local);
+  strftime(str + length, max_size - length, "%H:%M:%S", local);
 }
 
 void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {

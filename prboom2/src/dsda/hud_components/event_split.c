@@ -65,7 +65,8 @@ void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
   minutes = (leveltime + 1) / 35 / 60;
   seconds = (float)((leveltime + 1) % (60 * 35)) / 35;
   snprintf(
-    split.component.msg, sizeof(split.component.msg), "%d:%05.2f - %s",
+    split.component.msg, sizeof(split.component.msg), "%s%d:%05.2f - %s",
+    dsda_TextColor(dsda_tc_exhud_event_split),
     minutes, seconds, split_state->msg
   );
 
