@@ -23,6 +23,8 @@ static char digit_lump[9];
 static const char* digit_lump_format;
 
 int dsda_HudComponentY(int y_offset, int vpt) {
+  int dsda_ExHudVerticalOffset(void);
+
   int y = 0;
   int vpt_align;
 
@@ -35,8 +37,7 @@ int dsda_HudComponentY(int y_offset, int vpt) {
     y = 200;
     y_offset = -y_offset;
 
-    if (R_PartialView())
-      y -= g_st_height;
+    y -= dsda_ExHudVerticalOffset();
   }
 
   return y + y_offset;

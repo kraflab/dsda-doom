@@ -262,7 +262,36 @@ exhud_component_t components[exhud_component_count] = {
   },
 };
 
+typedef struct {
+  const char* name;
+  dboolean status_bar;
+  dboolean loaded;
+} dsda_hud_container_t;
+
+typedef enum {
+  hud_ex,
+  hud_off,
+  hud_full,
+  hud_null,
+} dsda_hud_variant_t;
+
+static dsda_hud_container_t containers[] = {
+  [hud_ex]   = { "ex", true },
+  [hud_off]  = { "off", true },
+  [hud_full] = { "full", false },
+  [hud_null] = { NULL }
+};
+
+static dsda_hud_container_t* container;
+
 int dsda_show_render_stats;
+
+int dsda_ExHudVerticalOffset(void) {
+  if (container && container->status_bar)
+    return g_st_height;
+
+  return 0;
+}
 
 static void dsda_TurnComponentOn(int id) {
   if (!components[id].initialized)
@@ -415,9 +444,13 @@ void dsda_InitExHud(void) {
   if (!hud_config)
     return;
 
+  container = R_FullView() ? &containers[hud_full] :
+              dsda_IntConfig(dsda_config_exhud) ? &containers[hud_ex] :
+              &containers[hud_off];
+
   snprintf(target, sizeof(target), "%s %s",
            hexen ? "hexen" : heretic ? "heretic" : "doom",
-           R_FullView() ? "full" : dsda_IntConfig(dsda_config_exhud) ? "ex" : "off");
+           container->name);
 
   for (line_i = 0; hud_config[line_i]; ++line_i) {
     line = hud_config[line_i];
