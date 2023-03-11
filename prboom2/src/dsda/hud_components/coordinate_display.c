@@ -27,16 +27,21 @@
 #define THRESHOLD_2D 21.35
 #define THRESHOLD_3D 23.58
 
-static dsda_text_t dsda_x_display;
-static dsda_text_t dsda_y_display;
-static dsda_text_t dsda_z_display;
-static dsda_text_t dsda_a_display;
-static dsda_text_t dsda_v_display;
-static dsda_text_t dsda_vx_display;
-static dsda_text_t dsda_vy_display;
-static dsda_text_t dsda_d_display;
-static dsda_text_t dsda_dx_display;
-static dsda_text_t dsda_dy_display;
+typedef struct {
+  dsda_text_t dsda_x_display;
+  dsda_text_t dsda_y_display;
+  dsda_text_t dsda_z_display;
+  dsda_text_t dsda_a_display;
+  dsda_text_t dsda_v_display;
+  dsda_text_t dsda_vx_display;
+  dsda_text_t dsda_vy_display;
+  dsda_text_t dsda_d_display;
+  dsda_text_t dsda_dx_display;
+  dsda_text_t dsda_dy_display;
+} local_component_t;
+
+static local_component_t* local;
+
 static const char* dsda_coordinate_color;
 static const char* dsda_velocity_color;
 static const char* dsda_distance_color;
@@ -154,57 +159,64 @@ static void dsda_WriteDistance(dsda_text_t* text) {
 }
 
 void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   dsda_coordinate_color = dsda_TextColor(dsda_tc_exhud_coords_base);
 
-  dsda_InitTextHC(&dsda_x_display, x_offset, y_offset, vpt);
-  dsda_InitTextHC(&dsda_y_display, x_offset, y_offset + 8, vpt);
-  dsda_InitTextHC(&dsda_z_display, x_offset, y_offset + 16, vpt);
-  dsda_InitTextHC(&dsda_a_display, x_offset, y_offset + 24, vpt);
-  dsda_InitTextHC(&dsda_v_display, x_offset, y_offset + 40, vpt);
-  dsda_InitTextHC(&dsda_vx_display, x_offset, y_offset + 48, vpt);
-  dsda_InitTextHC(&dsda_vy_display, x_offset, y_offset + 56, vpt);
-  dsda_InitTextHC(&dsda_d_display, x_offset, y_offset + 72, vpt);
-  dsda_InitTextHC(&dsda_dx_display, x_offset, y_offset + 80, vpt);
-  dsda_InitTextHC(&dsda_dy_display, x_offset, y_offset + 88, vpt);
+  dsda_InitTextHC(&local->dsda_x_display, x_offset, y_offset, vpt);
+  dsda_InitTextHC(&local->dsda_y_display, x_offset, y_offset + 8, vpt);
+  dsda_InitTextHC(&local->dsda_z_display, x_offset, y_offset + 16, vpt);
+  dsda_InitTextHC(&local->dsda_a_display, x_offset, y_offset + 24, vpt);
+  dsda_InitTextHC(&local->dsda_v_display, x_offset, y_offset + 40, vpt);
+  dsda_InitTextHC(&local->dsda_vx_display, x_offset, y_offset + 48, vpt);
+  dsda_InitTextHC(&local->dsda_vy_display, x_offset, y_offset + 56, vpt);
+  dsda_InitTextHC(&local->dsda_d_display, x_offset, y_offset + 72, vpt);
+  dsda_InitTextHC(&local->dsda_dx_display, x_offset, y_offset + 80, vpt);
+  dsda_InitTextHC(&local->dsda_dy_display, x_offset, y_offset + 88, vpt);
 }
 
 void dsda_UpdateCoordinateDisplayHC(void* data) {
   mobj_t* mo;
 
+  local = data;
+
   mo = players[displayplayer].mo;
 
-  dsda_WriteCoordinate(&dsda_x_display, mo->x, "X");
-  dsda_WriteCoordinate(&dsda_y_display, mo->y, "Y");
-  dsda_WriteCoordinate(&dsda_z_display, mo->z, "Z");
-  dsda_WriteAngle(&dsda_a_display, mo->angle, "A");
-  dsda_WriteVelocity(&dsda_v_display);
-  dsda_WriteCoordinateSimple(&dsda_vx_display, mo->momx, "X", dsda_velocity_color);
-  dsda_WriteCoordinateSimple(&dsda_vy_display, mo->momy, "Y", dsda_velocity_color);
-  dsda_WriteDistance(&dsda_d_display);
-  dsda_WriteCoordinateSimple(&dsda_dx_display, mo->x - mo->PrevX, "X", dsda_distance_color);
-  dsda_WriteCoordinateSimple(&dsda_dy_display, mo->y - mo->PrevY, "Y", dsda_distance_color);
+  dsda_WriteCoordinate(&local->dsda_x_display, mo->x, "X");
+  dsda_WriteCoordinate(&local->dsda_y_display, mo->y, "Y");
+  dsda_WriteCoordinate(&local->dsda_z_display, mo->z, "Z");
+  dsda_WriteAngle(&local->dsda_a_display, mo->angle, "A");
+  dsda_WriteVelocity(&local->dsda_v_display);
+  dsda_WriteCoordinateSimple(&local->dsda_vx_display, mo->momx, "X", dsda_velocity_color);
+  dsda_WriteCoordinateSimple(&local->dsda_vy_display, mo->momy, "Y", dsda_velocity_color);
+  dsda_WriteDistance(&local->dsda_d_display);
+  dsda_WriteCoordinateSimple(&local->dsda_dx_display, mo->x - mo->PrevX, "X", dsda_distance_color);
+  dsda_WriteCoordinateSimple(&local->dsda_dy_display, mo->y - mo->PrevY, "Y", dsda_distance_color);
 
-  dsda_RefreshHudText(&dsda_x_display);
-  dsda_RefreshHudText(&dsda_y_display);
-  dsda_RefreshHudText(&dsda_z_display);
-  dsda_RefreshHudText(&dsda_a_display);
-  dsda_RefreshHudText(&dsda_v_display);
-  dsda_RefreshHudText(&dsda_vx_display);
-  dsda_RefreshHudText(&dsda_vy_display);
-  dsda_RefreshHudText(&dsda_d_display);
-  dsda_RefreshHudText(&dsda_dx_display);
-  dsda_RefreshHudText(&dsda_dy_display);
+  dsda_RefreshHudText(&local->dsda_x_display);
+  dsda_RefreshHudText(&local->dsda_y_display);
+  dsda_RefreshHudText(&local->dsda_z_display);
+  dsda_RefreshHudText(&local->dsda_a_display);
+  dsda_RefreshHudText(&local->dsda_v_display);
+  dsda_RefreshHudText(&local->dsda_vx_display);
+  dsda_RefreshHudText(&local->dsda_vy_display);
+  dsda_RefreshHudText(&local->dsda_d_display);
+  dsda_RefreshHudText(&local->dsda_dx_display);
+  dsda_RefreshHudText(&local->dsda_dy_display);
 }
 
 void dsda_DrawCoordinateDisplayHC(void* data) {
-  dsda_DrawBasicText(&dsda_x_display);
-  dsda_DrawBasicText(&dsda_y_display);
-  dsda_DrawBasicText(&dsda_z_display);
-  dsda_DrawBasicText(&dsda_a_display);
-  dsda_DrawBasicText(&dsda_v_display);
-  dsda_DrawBasicText(&dsda_vx_display);
-  dsda_DrawBasicText(&dsda_vy_display);
-  dsda_DrawBasicText(&dsda_d_display);
-  dsda_DrawBasicText(&dsda_dx_display);
-  dsda_DrawBasicText(&dsda_dy_display);
+  local = data;
+
+  dsda_DrawBasicText(&local->dsda_x_display);
+  dsda_DrawBasicText(&local->dsda_y_display);
+  dsda_DrawBasicText(&local->dsda_z_display);
+  dsda_DrawBasicText(&local->dsda_a_display);
+  dsda_DrawBasicText(&local->dsda_v_display);
+  dsda_DrawBasicText(&local->dsda_vx_display);
+  dsda_DrawBasicText(&local->dsda_vy_display);
+  dsda_DrawBasicText(&local->dsda_d_display);
+  dsda_DrawBasicText(&local->dsda_dx_display);
+  dsda_DrawBasicText(&local->dsda_dy_display);
 }

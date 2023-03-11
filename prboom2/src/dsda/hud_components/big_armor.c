@@ -19,7 +19,12 @@
 
 #include "big_armor.h"
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
+
 static int armor_lump_green;
 static int armor_lump_blue;
 static int patch_delta_x;
@@ -34,8 +39,8 @@ static void dsda_DrawComponent(void) {
   int armor;
 
   player = &players[displayplayer];
-  x = component.x;
-  y = component.y;
+  x = local->component.x;
+  y = local->component.y;
 
   if (hexen) {
     armor = dsda_HexenArmor(player);
@@ -58,16 +63,19 @@ static void dsda_DrawComponent(void) {
     }
   }
 
-  V_DrawNumPatch(x, y, FG, lump, CR_DEFAULT, component.vpt);
+  V_DrawNumPatch(x, y, FG, lump, CR_DEFAULT, local->component.vpt);
 
   x += patch_spacing;
   y += patch_vertical_spacing;
 
   dsda_DrawBigNumber(x, y, patch_delta_x, 0,
-                     cm, component.vpt, 3, armor);
+                     cm, local->component.vpt, 3, armor);
 }
 
 void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   if (heretic) {
     armor_lump_green = R_NumPatchForSpriteIndex(HERETIC_SPR_SHLD);
     armor_lump_blue = R_NumPatchForSpriteIndex(HERETIC_SPR_SHD2);
@@ -90,13 +98,15 @@ void dsda_InitBigArmorHC(int x_offset, int y_offset, int vpt, int* args, int arg
     patch_spacing = 2;
   }
   patch_spacing += MAX(R_NumPatchWidth(armor_lump_green), R_NumPatchWidth(armor_lump_blue));
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
 void dsda_UpdateBigArmorHC(void* data) {
-  return;
+  local = data;
 }
 
 void dsda_DrawBigArmorHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
 }

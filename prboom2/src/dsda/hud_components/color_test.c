@@ -19,8 +19,12 @@
 
 #include "color_test.h"
 
-static dsda_text_t component;
-static dsda_text_t component_blocky;
+typedef struct {
+  dsda_text_t component;
+  dsda_text_t component_blocky;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
@@ -60,14 +64,17 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 }
 
 void dsda_InitColorTestHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
-  dsda_InitBlockyHC(&component_blocky, x_offset + 64, y_offset, vpt);
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
 
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
+  dsda_InitBlockyHC(&local->component_blocky, x_offset + 64, y_offset, vpt);
 
-  dsda_UpdateComponentText(component_blocky.msg, sizeof(component_blocky.msg));
-  dsda_RefreshHudText(&component_blocky);
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
+
+  dsda_UpdateComponentText(local->component_blocky.msg, sizeof(local->component_blocky.msg));
+  dsda_RefreshHudText(&local->component_blocky);
 }
 
 void dsda_UpdateColorTestHC(void* data) {
@@ -75,6 +82,8 @@ void dsda_UpdateColorTestHC(void* data) {
 }
 
 void dsda_DrawColorTestHC(void* data) {
-  dsda_DrawBasicText(&component);
-  dsda_DrawBasicText(&component_blocky);
+  local = data;
+
+  dsda_DrawBasicText(&local->component);
+  dsda_DrawBasicText(&local->component_blocky);
 }

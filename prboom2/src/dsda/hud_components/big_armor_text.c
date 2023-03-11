@@ -19,7 +19,12 @@
 
 #include "big_armor_text.h"
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
+
 static int patch_delta_x;
 
 static void dsda_DrawComponent(void) {
@@ -43,11 +48,14 @@ static void dsda_DrawComponent(void) {
       cm = CR_LIGHTBLUE;
   }
 
-  dsda_DrawBigNumber(component.x, component.y, patch_delta_x, 0,
-                     cm, component.vpt, 3, armor);
+  dsda_DrawBigNumber(local->component.x, local->component.y, patch_delta_x, 0,
+                     cm, local->component.vpt, 3, armor);
 }
 
 void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   if (heretic)
     patch_delta_x = 10;
   else if (hexen)
@@ -55,13 +63,15 @@ void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt, int* args, int
   else
     patch_delta_x = 14;
 
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
 void dsda_UpdateBigArmorTextHC(void* data) {
-  return;
+  local = data;
 }
 
 void dsda_DrawBigArmorTextHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
 }

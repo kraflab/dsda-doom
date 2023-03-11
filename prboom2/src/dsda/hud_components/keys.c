@@ -21,7 +21,11 @@
 
 #define PATCH_DELTA_Y 10
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static int key_patch_num[NUMCARDS];
 
@@ -82,7 +86,7 @@ void drawKey(player_t* player, int* x, int* y, const char* (*key)(player_t*)) {
   name = key(player);
 
   if (name)
-    V_DrawNamePatch(*x, *y, FG, name, CR_DEFAULT, component.vpt);
+    V_DrawNamePatch(*x, *y, FG, name, CR_DEFAULT, local->component.vpt);
 
   *y += PATCH_DELTA_Y;
 }
@@ -93,15 +97,15 @@ static void dsda_DrawComponent(void) {
 
   player = &players[displayplayer];
 
-  x = component.x;
-  y = component.y;
+  x = local->component.x;
+  y = local->component.y;
 
   if (hexen) {
     int i;
 
     for (i = 0; i < NUMCARDS; ++i)
       if (player->cards[i]) {
-        V_DrawNumPatch(x, y, 0, key_patch_num[i], CR_DEFAULT, component.vpt);
+        V_DrawNumPatch(x, y, 0, key_patch_num[i], CR_DEFAULT, local->component.vpt);
         x += R_NumPatchWidth(key_patch_num[i]) + 4;
       }
 
@@ -114,6 +118,9 @@ static void dsda_DrawComponent(void) {
 }
 
 void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   if (hexen) {
     int i;
 
@@ -121,13 +128,15 @@ void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args, int arg_cou
       key_patch_num[i] = R_NumPatchForSpriteIndex(HEXEN_SPR_KEY1 + i);
   }
 
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
 void dsda_UpdateKeysHC(void* data) {
-  return;
+  local = data;
 }
 
 void dsda_DrawKeysHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
 }

@@ -21,8 +21,12 @@
 
 #include "level_splits.h"
 
-static dsda_text_t time_component;
-static dsda_text_t total_component;
+typedef struct {
+  dsda_text_t time_component;
+  dsda_text_t total_component;
+} local_component_t;
+
+static local_component_t* local;
 
 extern int leveltime, totalleveltimes;
 
@@ -65,16 +69,16 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   }
 
   snprintf(
-    time_component.msg,
-    sizeof(time_component.msg),
+    local->time_component.msg,
+    sizeof(local->time_component.msg),
     "%s%d:%05.2f",
     color, leveltime / 35 / 60,
     (float)(leveltime % (60 * 35)) / 35
   );
 
-  strcat(time_component.msg, delta);
+  strcat(local->time_component.msg, delta);
 
-  dsda_RefreshHudText(&time_component);
+  dsda_RefreshHudText(&local->time_component);
 }
 
 static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
@@ -112,36 +116,41 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
   }
 
   snprintf(
-    total_component.msg,
-    sizeof(total_component.msg),
+    local->total_component.msg,
+    sizeof(local->total_component.msg),
     "%s%d:%02d",
     color, totalleveltimes / 35 / 60,
     (totalleveltimes / 35) % 60
   );
 
-  strcat(total_component.msg, delta);
+  strcat(local->total_component.msg, delta);
 
-  dsda_RefreshHudText(&total_component);
+  dsda_RefreshHudText(&local->total_component);
 }
 
 void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
-  dsda_InitTextHC(&time_component, x_offset, y_offset, vpt);
-  dsda_InitTextHC(&total_component, x_offset, y_offset + 8, vpt);
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->time_component, x_offset, y_offset, vpt);
+  dsda_InitTextHC(&local->total_component, x_offset, y_offset + 8, vpt);
 }
 
 void dsda_UpdateLevelSplitsHC(void* data) {
-  // nothing to do
+  local = data;
 }
 
 void dsda_DrawLevelSplitsHC(void* data) {
   char* s;
   dsda_split_t* split;
 
+  local = data;
+
   split = dsda_CurrentSplit();
 
   dsda_UpdateIntermissionTime(split);
   dsda_UpdateIntermissionTotal(split);
 
-  dsda_DrawBasicText(&time_component);
-  dsda_DrawBasicText(&total_component);
+  dsda_DrawBasicText(&local->time_component);
+  dsda_DrawBasicText(&local->total_component);
 }

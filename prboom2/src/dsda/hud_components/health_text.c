@@ -19,7 +19,11 @@
 
 #include "health_text.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player_t* player;
@@ -39,14 +43,21 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 }
 
 void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
 void dsda_UpdateHealthTextHC(void* data) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
 void dsda_DrawHealthTextHC(void* data) {
-  dsda_DrawBasicText(&component);
+  local = data;
+
+  dsda_DrawBasicText(&local->component);
 }
