@@ -59,6 +59,7 @@
 
 #include "dsda.h"
 #include "dsda/args.h"
+#include "dsda/bsp.h"
 #include "dsda/compatibility.h"
 #include "dsda/destructible.h"
 #include "dsda/id_list.h"
@@ -3771,6 +3772,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     Z_Free(sides);
     Z_Free(sectors);
     Z_Free(vertexes);
+
+    dsda_ClearBSP();
   }
 
   dsda_ResetHealthGroups();

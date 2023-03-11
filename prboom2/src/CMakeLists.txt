@@ -17,6 +17,8 @@ set(COMMON_SRC
     dsda/args.h
     dsda/brute_force.c
     dsda/brute_force.h
+    dsda/bsp.c
+    dsda/bsp.h
     dsda/build.c
     dsda/build.h
     dsda/compatibility.c
