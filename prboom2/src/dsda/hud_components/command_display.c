@@ -130,55 +130,56 @@ void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt, int* args, i
 }
 
 static void dsda_UpdateCommandText(dsda_command_t* command,
-                                   dsda_command_display_t* display_command, dboolean playback) {
+                                   dsda_command_display_t* display_command,
+                                   dsda_text_t* component, dboolean playback) {
   int length;
 
-  length = sprintf(display_command->component.msg, "%s", display_command->color);
+  length = sprintf(component->msg, "%s", display_command->color);
 
   if (playback)
-    length += sprintf(display_command->component.msg + length, " PL  ");
+    length += sprintf(component->msg + length, " PL  ");
   else if (display_command->repeat)
-    length += sprintf(display_command->component.msg + length, "x%-3d ", display_command->repeat + 1);
+    length += sprintf(component->msg + length, "x%-3d ", display_command->repeat + 1);
   else
-    length += sprintf(display_command->component.msg + length, "     ");
+    length += sprintf(component->msg + length, "     ");
 
   if (command->forwardmove > 0)
-    length += sprintf(display_command->component.msg + length, "MF%2d ", command->forwardmove);
+    length += sprintf(component->msg + length, "MF%2d ", command->forwardmove);
   else if (command->forwardmove < 0)
-    length += sprintf(display_command->component.msg + length, "MB%2d ", -command->forwardmove);
+    length += sprintf(component->msg + length, "MB%2d ", -command->forwardmove);
   else
-    length += sprintf(display_command->component.msg + length, "     ");
+    length += sprintf(component->msg + length, "     ");
 
   if (command->sidemove > 0)
-    length += sprintf(display_command->component.msg + length, "SR%2d ", command->sidemove);
+    length += sprintf(component->msg + length, "SR%2d ", command->sidemove);
   else if (command->sidemove < 0)
-    length += sprintf(display_command->component.msg + length, "SL%2d ", -command->sidemove);
+    length += sprintf(component->msg + length, "SL%2d ", -command->sidemove);
   else
-    length += sprintf(display_command->component.msg + length, "     ");
+    length += sprintf(component->msg + length, "     ");
 
   if (command->angleturn > 0)
-    length += sprintf(display_command->component.msg + length, "TL%2d ", command->angleturn);
+    length += sprintf(component->msg + length, "TL%2d ", command->angleturn);
   else if (command->angleturn < 0)
-    length += sprintf(display_command->component.msg + length, "TR%2d ", -command->angleturn);
+    length += sprintf(component->msg + length, "TR%2d ", -command->angleturn);
   else
-    length += sprintf(display_command->component.msg + length, "     ");
+    length += sprintf(component->msg + length, "     ");
 
   if (command->attack)
-    length += sprintf(display_command->component.msg + length, "A");
+    length += sprintf(component->msg + length, "A");
   else
-    length += sprintf(display_command->component.msg + length, " ");
+    length += sprintf(component->msg + length, " ");
 
   if (command->use)
-    length += sprintf(display_command->component.msg + length, "U");
+    length += sprintf(component->msg + length, "U");
   else
-    length += sprintf(display_command->component.msg + length, " ");
+    length += sprintf(component->msg + length, " ");
 
   if (command->change)
-    length += sprintf(display_command->component.msg + length, "C%d", command->change);
+    length += sprintf(component->msg + length, "C%d", command->change);
   else
-    length += sprintf(display_command->component.msg + length, "  ");
+    length += sprintf(component->msg + length, "  ");
 
-  dsda_RefreshHudText(&display_command->component);
+  dsda_RefreshHudText(component);
 }
 
 void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
@@ -197,16 +198,16 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
     current_command->command = command;
   }
 
-  dsda_UpdateCommandText(&command, current_command, false);
+  dsda_UpdateCommandText(&command, current_command, &current_command->component, false);
 }
 
 void dsda_UpdateCommandDisplayHC(void* data) {
   // nothing to do
 }
 
-static void dsda_DrawCommandDisplayLine(dsda_command_display_t* command, int offset) {
-  command->component.text.y = base_y - 8 * offset;
-  dsda_DrawBasicText(&command->component);
+static void dsda_DrawCommandDisplayLine(dsda_text_t* component, int offset) {
+  component->text.y = base_y - 8 * offset;
+  dsda_DrawBasicText(component);
 }
 
 void dsda_DrawCommandDisplayHC(void* data) {
@@ -220,14 +221,15 @@ void dsda_DrawCommandDisplayHC(void* data) {
 
     dsda_CopyBuildCmd(&next_cmd);
     dsda_TicCmdToCommand(&next_command, &next_cmd);
-    dsda_UpdateCommandText(&next_command, &next_command_display, dsda_BuildPlayback());
-    dsda_DrawCommandDisplayLine(&next_command_display, offset);
+    dsda_UpdateCommandText(&next_command, &next_command_display,
+                           &next_command_display.component, dsda_BuildPlayback());
+    dsda_DrawCommandDisplayLine(&next_command_display.component, offset);
 
     ++offset;
   }
 
   for (i = 0; i < dsda_command_history_size; ++i) {
-    dsda_DrawCommandDisplayLine(command, i + offset);
+    dsda_DrawCommandDisplayLine(&command->component, i + offset);
     command = command->prev;
   }
 }
