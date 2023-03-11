@@ -43,14 +43,14 @@ static void dsda_DrawComponent(void) {
                      CR_DEFAULT, component.vpt, 3, ammo);
 }
 
-void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigAmmoHC(void) {
+void dsda_UpdateBigAmmoHC(void* data) {
   return;
 }
 
-void dsda_DrawBigAmmoHC(void) {
+void dsda_DrawBigAmmoHC(void* data) {
   dsda_DrawComponent();
 }

@@ -36,15 +36,15 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   strftime(str + length, max_size - length, "%H:%M:%S", local);
 }
 
-void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateLocalTimeHC(void) {
+void dsda_UpdateLocalTimeHC(void* data) {
   dsda_UpdateComponentText(component.msg, sizeof(component.msg));
   dsda_RefreshHudText(&component);
 }
 
-void dsda_DrawLocalTimeHC(void) {
+void dsda_DrawLocalTimeHC(void* data) {
   dsda_DrawBasicText(&component);
 }

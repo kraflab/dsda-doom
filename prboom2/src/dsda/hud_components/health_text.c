@@ -38,15 +38,15 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateHealthTextHC(void) {
+void dsda_UpdateHealthTextHC(void* data) {
   dsda_UpdateComponentText(component.msg, sizeof(component.msg));
   dsda_RefreshHudText(&component);
 }
 
-void dsda_DrawHealthTextHC(void) {
+void dsda_DrawHealthTextHC(void* data) {
   dsda_DrawBasicText(&component);
 }

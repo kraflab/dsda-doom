@@ -18,8 +18,8 @@
 #ifndef __DSDA_HUD_COMPONENT_ATTEMPTS__
 #define __DSDA_HUD_COMPONENT_ATTEMPTS__
 
-void dsda_InitAttemptsHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
-void dsda_UpdateAttemptsHC(void);
-void dsda_DrawAttemptsHC(void);
+void dsda_InitAttemptsHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count, void** data);
+void dsda_UpdateAttemptsHC(void* data);
+void dsda_DrawAttemptsHC(void* data);
 
 #endif

@@ -97,7 +97,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   }
 }
 
-void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   include_kills = args[0];
   include_items = args[1];
   include_secrets = args[2];
@@ -121,11 +121,11 @@ void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int a
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateStatTotalsHC(void) {
+void dsda_UpdateStatTotalsHC(void* data) {
   dsda_UpdateComponentText(component.msg, sizeof(component.msg));
   dsda_RefreshHudText(&component);
 }
 
-void dsda_DrawStatTotalsHC(void) {
+void dsda_DrawStatTotalsHC(void* data) {
   dsda_DrawBasicText(&component);
 }

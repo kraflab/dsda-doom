@@ -153,7 +153,7 @@ static void dsda_WriteDistance(dsda_text_t* text) {
   dsda_RefreshHudText(text);
 }
 
-void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_coordinate_color = dsda_TextColor(dsda_tc_exhud_coords_base);
 
   dsda_InitTextHC(&dsda_x_display, x_offset, y_offset, vpt);
@@ -168,7 +168,7 @@ void dsda_InitCoordinateDisplayHC(int x_offset, int y_offset, int vpt, int* args
   dsda_InitTextHC(&dsda_dy_display, x_offset, y_offset + 88, vpt);
 }
 
-void dsda_UpdateCoordinateDisplayHC(void) {
+void dsda_UpdateCoordinateDisplayHC(void* data) {
   mobj_t* mo;
 
   mo = players[displayplayer].mo;
@@ -196,7 +196,7 @@ void dsda_UpdateCoordinateDisplayHC(void) {
   dsda_RefreshHudText(&dsda_dy_display);
 }
 
-void dsda_DrawCoordinateDisplayHC(void) {
+void dsda_DrawCoordinateDisplayHC(void* data) {
   dsda_DrawBasicText(&dsda_x_display);
   dsda_DrawBasicText(&dsda_y_display);
   dsda_DrawBasicText(&dsda_z_display);

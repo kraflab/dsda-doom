@@ -55,7 +55,7 @@ static void dsda_DrawComponent(void) {
                      cm, component.vpt, 3, player->health);
 }
 
-void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   if (heretic) {
     health_lump = R_NumPatchForSpriteIndex(HERETIC_SPR_PTN2);
     patch_delta_x = 10;
@@ -78,10 +78,10 @@ void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int ar
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigHealthHC(void) {
+void dsda_UpdateBigHealthHC(void* data) {
   return;
 }
 
-void dsda_DrawBigHealthHC(void) {
+void dsda_DrawBigHealthHC(void* data) {
   dsda_DrawComponent();
 }

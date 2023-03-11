@@ -21,7 +21,7 @@
 
 static int x, y, width, height, scale;
 
-void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   x = x_offset;
   y = dsda_HudComponentY(y_offset, vpt);
   width = args[0];
@@ -52,11 +52,11 @@ void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_
   V_GetWideRect(&x, &y, &width, &height, vpt);
 }
 
-void dsda_UpdateMinimapHC(void) {
+void dsda_UpdateMinimapHC(void* data) {
   // nothing to do
 }
 
-void dsda_DrawMinimapHC(void) {
+void dsda_DrawMinimapHC(void* data) {
   AM_Drawer(true);
 }
 

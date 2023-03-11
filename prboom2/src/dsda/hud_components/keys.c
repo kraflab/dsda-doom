@@ -113,7 +113,7 @@ static void dsda_DrawComponent(void) {
   drawKey(player, &x, &y, dsda_Key3Name);
 }
 
-void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   if (hexen) {
     int i;
 
@@ -124,10 +124,10 @@ void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args, int arg_cou
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateKeysHC(void) {
+void dsda_UpdateKeysHC(void* data) {
   return;
 }
 
-void dsda_DrawKeysHC(void) {
+void dsda_DrawKeysHC(void* data) {
   dsda_DrawComponent();
 }

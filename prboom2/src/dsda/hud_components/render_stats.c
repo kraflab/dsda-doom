@@ -70,19 +70,19 @@ static void dsda_UpdateMaxComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_InitTextHC(&component[0], x_offset, y_offset, vpt);
   dsda_InitTextHC(&component[1], x_offset, y_offset + 8, vpt);
 }
 
-void dsda_UpdateRenderStatsHC(void) {
+void dsda_UpdateRenderStatsHC(void* data) {
   dsda_UpdateCurrentComponentText(component[0].msg, sizeof(component[0].msg));
   dsda_UpdateMaxComponentText(component[1].msg, sizeof(component[1].msg));
   dsda_RefreshHudText(&component[0]);
   dsda_RefreshHudText(&component[1]);
 }
 
-void dsda_DrawRenderStatsHC(void) {
+void dsda_DrawRenderStatsHC(void* data) {
   dsda_DrawBasicText(&component[0]);
   dsda_DrawBasicText(&component[1]);
 }

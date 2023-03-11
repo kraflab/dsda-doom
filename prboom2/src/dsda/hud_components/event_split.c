@@ -40,7 +40,7 @@ static dsda_split_state_t dsda_split_state[DSDA_SPLIT_CLASS_COUNT] = {
 
 static dsda_split_text_t split;
 
-void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_InitTextHC(&split.component, x_offset, y_offset, vpt);
 }
 
@@ -73,7 +73,7 @@ void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
   dsda_RefreshHudText(&split.component);
 }
 
-void dsda_UpdateEventSplitHC(void) {
+void dsda_UpdateEventSplitHC(void* data) {
   int i;
 
   if (split.ticks > 0)
@@ -84,7 +84,7 @@ void dsda_UpdateEventSplitHC(void) {
       --dsda_split_state[i].delay;
 }
 
-void dsda_DrawEventSplitHC(void) {
+void dsda_DrawEventSplitHC(void* data) {
   if (split.ticks > 0)
     dsda_DrawBasicText(&split.component);
 }

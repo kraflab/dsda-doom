@@ -18,8 +18,8 @@
 #ifndef __DSDA_HUD_COMPONENT_BIG_ARTIFACT__
 #define __DSDA_HUD_COMPONENT_BIG_ARTIFACT__
 
-void dsda_InitBigArtifactHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
-void dsda_UpdateBigArtifactHC(void);
-void dsda_DrawBigArtifactHC(void);
+void dsda_InitBigArtifactHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count, void** data);
+void dsda_UpdateBigArtifactHC(void* data);
+void dsda_DrawBigArtifactHC(void* data);
 
 #endif

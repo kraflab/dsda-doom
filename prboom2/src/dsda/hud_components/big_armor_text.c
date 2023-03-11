@@ -47,7 +47,7 @@ static void dsda_DrawComponent(void) {
                      cm, component.vpt, 3, armor);
 }
 
-void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   if (heretic)
     patch_delta_x = 10;
   else if (hexen)
@@ -58,10 +58,10 @@ void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt, int* args, int
   dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigArmorTextHC(void) {
+void dsda_UpdateBigArmorTextHC(void* data) {
   return;
 }
 
-void dsda_DrawBigArmorTextHC(void) {
+void dsda_DrawBigArmorTextHC(void* data) {
   dsda_DrawComponent();
 }

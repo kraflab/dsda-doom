@@ -34,15 +34,15 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitFPSHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitFPSHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateFPSHC(void) {
+void dsda_UpdateFPSHC(void* data) {
   dsda_UpdateComponentText(component.msg, sizeof(component.msg));
   dsda_RefreshHudText(&component);
 }
 
-void dsda_DrawFPSHC(void) {
+void dsda_DrawFPSHC(void* data) {
   dsda_DrawBasicText(&component);
 }

@@ -95,7 +95,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
     );
 }
 
-void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   int i;
 
   if (arg_count > 0)
@@ -114,7 +114,7 @@ void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args, int arg
     dsda_InitTextHC(&component[i], x_offset, y_offset - i * 8, vpt);
 }
 
-void dsda_UpdateAmmoTextHC(void) {
+void dsda_UpdateAmmoTextHC(void* data) {
   int i;
 
   for (i = 0; i < component_config->count; ++i) {
@@ -123,7 +123,7 @@ void dsda_UpdateAmmoTextHC(void) {
   }
 }
 
-void dsda_DrawAmmoTextHC(void) {
+void dsda_DrawAmmoTextHC(void* data) {
   int i;
 
   for (i = 0; i < component_config->count; ++i)

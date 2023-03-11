@@ -55,7 +55,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     );
 }
 
-void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   if (arg_count < 1 || args[0])
     snprintf(label, sizeof(label), "%stime ", dsda_TextColor(dsda_tc_exhud_time_label));
   else
@@ -64,11 +64,11 @@ void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt, int* args, in
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateCompositeTimeHC(void) {
+void dsda_UpdateCompositeTimeHC(void* data) {
   dsda_UpdateComponentText(component.msg, sizeof(component.msg));
   dsda_RefreshHudText(&component);
 }
 
-void dsda_DrawCompositeTimeHC(void) {
+void dsda_DrawCompositeTimeHC(void* data) {
   dsda_DrawBasicText(&component);
 }

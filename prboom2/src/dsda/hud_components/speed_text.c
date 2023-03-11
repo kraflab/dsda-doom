@@ -40,7 +40,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   if (arg_count < 1 || args[0])
     snprintf(label, sizeof(label), "%sSPEED ", dsda_TextColor(dsda_tc_exhud_speed_label));
   else
@@ -49,11 +49,11 @@ void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt, int* args, int ar
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateSpeedTextHC(void) {
+void dsda_UpdateSpeedTextHC(void* data) {
   dsda_UpdateComponentText(component.msg, sizeof(component.msg));
   dsda_RefreshHudText(&component);
 }
 
-void dsda_DrawSpeedTextHC(void) {
+void dsda_DrawSpeedTextHC(void* data) {
   dsda_DrawBasicText(&component);
 }

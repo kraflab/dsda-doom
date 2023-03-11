@@ -59,7 +59,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitColorTestHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitColorTestHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   dsda_InitTextHC(&component, x_offset, y_offset, vpt);
   dsda_InitBlockyHC(&component_blocky, x_offset + 64, y_offset, vpt);
 
@@ -70,11 +70,11 @@ void dsda_InitColorTestHC(int x_offset, int y_offset, int vpt, int* args, int ar
   dsda_RefreshHudText(&component_blocky);
 }
 
-void dsda_UpdateColorTestHC(void) {
+void dsda_UpdateColorTestHC(void* data) {
   // nothing to do
 }
 
-void dsda_DrawColorTestHC(void) {
+void dsda_DrawColorTestHC(void* data) {
   dsda_DrawBasicText(&component);
   dsda_DrawBasicText(&component_blocky);
 }

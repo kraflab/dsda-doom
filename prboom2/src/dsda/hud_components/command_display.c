@@ -115,7 +115,7 @@ void dsda_InitCommandHistory(void) {
   command_history[MAX_HISTORY - 1].next = &command_history[0];
 }
 
-void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   int i;
 
   for (i = 0; i < MAX_HISTORY; ++i) {
@@ -200,7 +200,7 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
   dsda_UpdateCommandText(&command, current_command, false);
 }
 
-void dsda_UpdateCommandDisplayHC(void) {
+void dsda_UpdateCommandDisplayHC(void* data) {
   // nothing to do
 }
 
@@ -209,7 +209,7 @@ static void dsda_DrawCommandDisplayLine(dsda_command_display_t* command, int off
   dsda_DrawBasicText(&command->component);
 }
 
-void dsda_DrawCommandDisplayHC(void) {
+void dsda_DrawCommandDisplayHC(void* data) {
   int i;
   int offset = 0;
   dsda_command_display_t* command = current_command;

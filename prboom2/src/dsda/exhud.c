@@ -36,9 +36,9 @@
 #include "exhud.h"
 
 typedef struct {
-  void (*init)(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
-  void (*update)(void);
-  void (*draw)(void);
+  void (*init)(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count, void** data);
+  void (*update)(void* data);
+  void (*draw)(void* data);
   const char* name;
   const int default_vpt;
   const dboolean strict;
@@ -47,6 +47,7 @@ typedef struct {
   const dboolean not_level;
   dboolean on;
   dboolean initialized;
+  void* data;
 } exhud_component_t;
 
 typedef enum {
@@ -308,7 +309,8 @@ static void dsda_TurnComponentOff(int id) {
 
 static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args, int arg_count) {
   components[id].initialized = true;
-  components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT, args, arg_count);
+  components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT,
+                 args, arg_count, &components[id].data);
 
   if (components[id].off_by_default)
     dsda_TurnComponentOff(id);
@@ -517,7 +519,7 @@ void dsda_UpdateExHud(void) {
       !components[i].not_level &&
       (!components[i].strict || !dsda_StrictMode())
     )
-      components[i].update();
+      components[i].update(components[i].data);
 }
 
 void dsda_DrawExHud(void) {
@@ -535,7 +537,7 @@ void dsda_DrawExHud(void) {
       !components[i].not_level &&
       (!components[i].strict || !dsda_StrictMode())
     )
-      components[i].draw();
+      components[i].draw(components[i].data);
 }
 
 void dsda_DrawExIntermission(void) {
@@ -550,7 +552,7 @@ void dsda_DrawExIntermission(void) {
       components[i].intermission &&
       (!components[i].strict || !dsda_StrictMode())
     )
-      components[i].draw();
+      components[i].draw(components[i].data);
 }
 
 void dsda_ToggleRenderStats(void) {
