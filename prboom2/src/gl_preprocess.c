@@ -55,6 +55,8 @@
 #include "am_map.h"
 #include "lprintf.h"
 
+#include "dsda/bsp.h"
+
 static FILE *levelinfo;
 
 static int gld_max_vertexes = 0;
@@ -90,12 +92,16 @@ static void gld_TurnOffSubsectorTriangulation(void)
 
 static dboolean gld_TriangulateSubsector(subsector_t *ssec)
 {
-  return !(ssec->sector->flags & SECTOR_IS_CLOSED) ||
+  return !(ssec->sector->flags & SECTOR_IS_CLOSED) || ssec->gl_pp.sector ||
          triangulate_subsectors;
 }
 
 static int gld_SubsectorLoopIndex(subsector_t *ssec)
 {
+  // Give triangles to ultimate container of self-referencing sector
+  if (ssec->gl_pp.sector)
+    return ssec->gl_pp.sector->iSectorID;
+
   return ssec->sector->iSectorID;
 }
 
@@ -725,6 +731,171 @@ static void gld_PrecalculateSector(int num)
   Z_Free(lineadded);
 }
 
+// Find subsector at end of container chain, but return `NULL` upon encountering
+// `subsector` to avoid creating a cycle.  If `strict`, also return `NULL` upon
+// encountering the same sector.
+static subsector_t* gld_ChaseContainer(subsector_t* subsector,
+                                       subsector_t* container, dboolean strict)
+{
+  if (container == NULL || container == subsector ||
+      (strict && container->sector == subsector->sector))
+    return NULL;
+  // Chase down target recursively
+  while (container->gl_pp.subsector & CONTAINER_SUBSECTOR)
+  {
+    container = (subsector_t*) (container->gl_pp.subsector & ~CONTAINER_SUBSECTOR);
+    // Avoid cycle creation
+    if (container == NULL || container == subsector ||
+        (strict && container->sector == subsector->sector))
+      return NULL;
+  }
+  return container;
+}
+
+static void gld_ResolveContainer(subsector_t* subsector)
+{
+  // Try to find sector link at the end of the chain if
+  // we link to another subsector
+  if (subsector->gl_pp.subsector & CONTAINER_SUBSECTOR)
+  {
+    subsector_t* chase = gld_ChaseContainer(NULL, subsector, false);
+    if (chase)
+      subsector->gl_pp = chase->gl_pp;
+    else
+      subsector->gl_pp.sector = NULL;
+  }
+  // Container better be fully resolved now (either NULL, or a sector)
+  assert(subsector->gl_pp.sector == NULL ||
+         !(subsector->gl_pp.subsector & CONTAINER_SUBSECTOR));
+}
+
+// Try to find a real, non-closed container directly across
+// a fake line.  It doesn't make sense to give triangles to
+// fake sectors (their flats should be invisible), and we
+// don't bother with closed containers because GLU tessellation
+// should have succeeded and obviated the need to piece together
+// triangles from subsectors.
+static sector_t* gld_FindContainer(subsector_t* subsector)
+{
+  int i, j;
+  seg_t* s;
+  subsector_t* opp;
+
+  for (i = 0; i < subsector->numlines; ++i)
+  {
+    s = &segs[subsector->firstline + i];
+
+    // Only consider fake lines
+    if (!(s->flags & SEGF_FAKE))
+      continue;
+
+    for (j = 0; j < s->numadjacent; ++j)
+    {
+      subsector_t* adj = &subsectors[adjacency[s->firstadjacent + j]];
+
+      if (adj->sector != subsector->sector &&
+          !(adj->flags & SUBF_FAKE) &&
+          !(adj->sector->flags & SECTOR_IS_CLOSED))
+        return adj->sector;
+    }
+  }
+
+  return NULL;
+}
+
+// Try to find a neighboring subsector so we can inherit its container.
+// If `strict`, only find subsectors in a different sector.
+static subsector_t* gld_InheritContainer(subsector_t* subsector, dboolean strict)
+{
+  int i, j;
+  subsector_t* opp;
+
+  for (i = 0; i < subsector->numlines; ++i)
+  {
+    seg_t* s = &segs[subsector->firstline + i];
+    for (j = 0; j < s->numadjacent; ++j)
+    {
+      subsector_t* adj = &subsectors[adjacency[s->firstadjacent + j]];
+
+      if (adj->flags & SUBF_DEGENERATE)
+        // Easy to get stuck in a dead end, avoid
+        continue;
+
+      if ((opp = gld_ChaseContainer(subsector, adj, strict)))
+        return opp;
+    }
+  }
+
+  for (i = 0; i < subsector->numisegs; ++i)
+  {
+    iseg_t* s = &isegs[subsector->firstiseg + i];
+    for (j = 0; j < s->numadjacent; ++j)
+    {
+      subsector_t* adj = &subsectors[adjacency[s->firstadjacent + j]];
+
+      if (adj->flags & SUBF_DEGENERATE)
+        continue;
+
+      if ((opp = gld_ChaseContainer(subsector, adj, strict)))
+        return opp;
+    }
+  }
+
+  return NULL;
+}
+
+// Find container of a subsector of a self-referencing sector, if applicable.
+// We try to find a neighboring real sector across a seg, then fall back
+// on inheriting from a neighboring fake subsector (first in a different
+// sector, and finally in the same sector).  This ensures that the
+// inheritance tree we build always terminates in a valid containing
+// sector when possible.  The inheritance tree gets collapsed later
+// in `gld_ResolveContainer`.
+static container_t gld_SubsectorContainer(subsector_t* subsector)
+{
+  container_t result;
+  subsector_t* inherit;
+
+  // Invariant: subsector hasn't had container assigned yet
+  assert(subsector->gl_pp.sector == NULL);
+
+  result.sector = NULL;
+
+  if (!(subsector->flags & SUBF_FAKE))
+    return result;
+
+  // Prefer to find a real container across a self-referencing linedef
+  if ((result.sector = gld_FindContainer(subsector)))
+    return result;
+
+  // Failing that, inherit container from a fake neighbor from a different sector
+  if ((inherit = gld_InheritContainer(subsector, true)))
+  {
+      result.subsector = (uintptr_t) inherit | CONTAINER_SUBSECTOR;
+      return result;
+  }
+
+  // Failing that, inherit container from a fake neighbor, even from
+  // the same sector
+  if ((inherit = gld_InheritContainer(subsector, false)))
+  {
+      result.subsector = (uintptr_t) inherit | CONTAINER_SUBSECTOR;
+      return result;
+  }
+
+  // No luck
+  return result;
+}
+
+static void gld_ResolveContainers(void)
+{
+  // Perform final resolution of containers for subsectors that have them
+  int i;
+
+  for (i = 0; i < numsubsectors; i++)
+    gld_ResolveContainer(&subsectors[i]);
+}
+
 /********************************************
  * Name     : gld_GetSubSectorVertices      *
  * created  : 08/13/00                      *
@@ -983,6 +1154,11 @@ static void gld_PreprocessSectors(void)
   Z_Free(vertexcheck);
   Z_Free(vertexcheck2);
 
+  for (i = 0; i < numsubsectors; ++i)
+    subsectors[i].gl_pp = gld_SubsectorContainer(&subsectors[i]);
+
+  gld_ResolveContainers();
+
   // figgi -- adapted for glnodes
   if (numnodes)
   {
@@ -1053,6 +1229,8 @@ void gld_PreprocessLevel(void)
       Z_Free(subsectorloops[i].loops);
     }
     Z_Free(subsectorloops);
+
+    dsda_AnnotateBSP();
 
     gld_Precache();
     gld_PreprocessSectors();
