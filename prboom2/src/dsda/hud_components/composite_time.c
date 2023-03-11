@@ -19,9 +19,12 @@
 
 #include "composite_time.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+  char label[8];
+} local_component_t;
 
-static char label[8];
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int total_time;
@@ -35,7 +38,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str,
       max_size,
       "%s%s%d:%02d %s%d:%05.2f ",
-      label,
+      local->label,
       dsda_TextColor(dsda_tc_exhud_total_time),
       total_time / 35 / 60,
       (total_time % (60 * 35)) / 35,
@@ -48,7 +51,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       str,
       max_size,
       "%s%s%d:%05.2f ",
-      label,
+      local->label,
       dsda_TextColor(dsda_tc_exhud_level_time),
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
@@ -56,19 +59,26 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 }
 
 void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
-  if (arg_count < 1 || args[0])
-    snprintf(label, sizeof(label), "%stime ", dsda_TextColor(dsda_tc_exhud_time_label));
-  else
-    label[0] = '\0';
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
 
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+  if (arg_count < 1 || args[0])
+    snprintf(local->label, sizeof(local->label), "%stime ", dsda_TextColor(dsda_tc_exhud_time_label));
+  else
+    local->label[0] = '\0';
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
 void dsda_UpdateCompositeTimeHC(void* data) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
 void dsda_DrawCompositeTimeHC(void* data) {
-  dsda_DrawBasicText(&component);
+  local = data;
+
+  dsda_DrawBasicText(&local->component);
 }

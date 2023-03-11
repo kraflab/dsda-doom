@@ -21,12 +21,15 @@
 
 #define STAT_STRING_SIZE 200
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+  dboolean include_kills, include_items, include_secrets;
+  const char* kills_format;
+  const char* items_format;
+  const char* secrets_format;
+} local_component_t;
 
-static dboolean include_kills, include_items, include_secrets;
-static const char* kills_format;
-static const char* items_format;
-static const char* secrets_format;
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int i;
@@ -66,31 +69,31 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   itemcolor = (fullitemcount >= totalitems ? dsda_TextColor(dsda_tc_exhud_totals_max) :
                                              dsda_TextColor(dsda_tc_exhud_totals_value));
 
-  if (include_kills) {
+  if (local->include_kills) {
     length += snprintf(
       str,
       max_size,
-      kills_format,
+      local->kills_format,
       dsda_TextColor(dsda_tc_exhud_totals_label),
       killcolor, fullkillcount, max_kill_requirement
     );
   }
 
-  if (include_items) {
+  if (local->include_items) {
     length += snprintf(
       str + length,
       max_size - length,
-      items_format,
+      local->items_format,
       dsda_TextColor(dsda_tc_exhud_totals_label),
       itemcolor, players[displayplayer].itemcount, totalitems
     );
   }
 
-  if (include_secrets) {
+  if (local->include_secrets) {
     snprintf(
       str + length,
       max_size - length,
-      secrets_format,
+      local->secrets_format,
       dsda_TextColor(dsda_tc_exhud_totals_label),
       secretcolor, fullsecretcount, totalsecret
     );
@@ -98,34 +101,41 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 }
 
 void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
-  include_kills = args[0];
-  include_items = args[1];
-  include_secrets = args[2];
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  local->include_kills = args[0];
+  local->include_items = args[1];
+  local->include_secrets = args[2];
 
   // vertical orientation
   if (args[3]) {
-    kills_format = "%sK %s%d/%d\n";
-    items_format = "%sI %s%d/%d\n";
-    secrets_format = "%sS %s%d/%d";
+    local->kills_format = "%sK %s%d/%d\n";
+    local->items_format = "%sI %s%d/%d\n";
+    local->secrets_format = "%sS %s%d/%d";
   }
   else {
-    kills_format = "%sK %s%d/%d ";
-    items_format = "%sI %s%d/%d ";
-    secrets_format = "%sS %s%d/%d";
+    local->kills_format = "%sK %s%d/%d ";
+    local->items_format = "%sI %s%d/%d ";
+    local->secrets_format = "%sS %s%d/%d";
   }
 
-  if (!include_kills && !include_items && !include_secrets) {
-    include_kills = include_items = include_secrets = true;
+  if (!local->include_kills && !local->include_items && !local->include_secrets) {
+    local->include_kills = local->include_items = local->include_secrets = true;
   }
 
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
 void dsda_UpdateStatTotalsHC(void* data) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
 void dsda_DrawStatTotalsHC(void* data) {
-  dsda_DrawBasicText(&component);
+  local = data;
+
+  dsda_DrawBasicText(&local->component);
 }
