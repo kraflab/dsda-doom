@@ -80,7 +80,7 @@ typedef enum {
   exhud_component_count,
 } exhud_component_id_t;
 
-exhud_component_t components[exhud_component_count] = {
+exhud_component_t components_template[exhud_component_count] = {
   [exhud_ammo_text] = {
     dsda_InitAmmoTextHC,
     dsda_UpdateAmmoTextHC,
@@ -266,6 +266,7 @@ typedef struct {
   const char* name;
   dboolean status_bar;
   dboolean loaded;
+  exhud_component_t components[exhud_component_count];
 } dsda_hud_container_t;
 
 typedef enum {
@@ -283,6 +284,7 @@ static dsda_hud_container_t containers[] = {
 };
 
 static dsda_hud_container_t* container;
+static exhud_component_t* components;
 
 int dsda_show_render_stats;
 
@@ -385,12 +387,36 @@ static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
   return line_i - 1;
 }
 
-static char** dsda_HUDConfig(void) {
-  static dboolean loaded;
-  static char* hud_config;
-  static char** lines;
+static void dsda_ParseHUDConfigs(char** hud_config) {
+  const char* line;
+  int line_i;
+  const char* target_format;
+  char hud_variant[5];
 
-  if (!loaded) {
+  target_format = hexen ? "hexen %s" : heretic ? "heretic %s" : "doom %s";
+
+  for (line_i = 0; hud_config[line_i]; ++line_i) {
+    line = hud_config[line_i];
+
+    if (sscanf(line, target_format, hud_variant)) {
+      for (container = containers; container->name; container++)
+        if (!strncmp(container->name, hud_variant, sizeof(hud_variant))) {
+          container->loaded = true;
+          components = container->components;
+          memcpy(components, components_template, sizeof(components_template));
+
+          line_i = dsda_ParseHUDConfig(hud_config, line_i);
+
+          break;
+        }
+    }
+  }
+}
+
+static void dsda_LoadHUDConfig(void) {
+  DO_ONCE
+    char* hud_config = NULL;
+    char** lines;
     dsda_arg_t* arg;
     int lump;
     int length = 0;
@@ -412,52 +438,48 @@ static char** dsda_HUDConfig(void) {
       }
     }
 
-    if (hud_config)
+    if (hud_config) {
       lines = dsda_SplitString(hud_config, "\n\r");
 
-    loaded = true;
-  }
+      if (lines) {
+        dsda_ParseHUDConfigs(lines);
 
-  return lines;
+        Z_Free(lines);
+      }
+
+      Z_Free(hud_config);
+    }
+  END_ONCE
 }
 
-void dsda_InitExHud(void) {
-  int i;
-  char** hud_config;
-  const char* line;
-  int line_i;
-  char target[16];
+static dboolean dsda_HideHUD(void) {
+  return dsda_Flag(dsda_arg_nodraw) ||
+         (R_FullView() && !dsda_IntConfig(dsda_config_hud_displayed));
+}
 
-  for (i = 0; i < exhud_component_count; ++i) {
-    components[i].on = false;
-    components[i].initialized = false;
-  }
+static dboolean dsda_HUDActive(void) {
+  return container && container->loaded;
+}
 
-  if (dsda_Flag(dsda_arg_nodraw))
-    return;
+static void dsda_ResetActiveHUD(void) {
+  container = NULL;
+  components = NULL;
+}
 
-  if (R_FullView() && !dsda_IntConfig(dsda_config_hud_displayed))
-    return;
-
-  hud_config = dsda_HUDConfig();
-
-  if (!hud_config)
-    return;
-
+static void dsda_UpdateActiveHUD(void) {
   container = R_FullView() ? &containers[hud_full] :
               dsda_IntConfig(dsda_config_exhud) ? &containers[hud_ex] :
               &containers[hud_off];
 
-  snprintf(target, sizeof(target), "%s %s",
-           hexen ? "hexen" : heretic ? "heretic" : "doom",
-           container->name);
+  if (container->loaded)
+    components = container->components;
+  else
+    dsda_ResetActiveHUD();
+}
 
-  for (line_i = 0; hud_config[line_i]; ++line_i) {
-    line = hud_config[line_i];
-
-    if (!strncmp(target, line, sizeof(target)))
-      line_i = dsda_ParseHUDConfig(hud_config, line_i);
-  }
+static void dsda_RefreshHUDComponentStatus(void) {
+  if (!dsda_HUDActive())
+    return;
 
   if (dsda_show_render_stats)
     dsda_TurnComponentOn(exhud_render_stats);
@@ -469,8 +491,22 @@ void dsda_InitExHud(void) {
   dsda_RefreshExHudCommandDisplay();
 }
 
+void dsda_InitExHud(void) {
+  dsda_ResetActiveHUD();
+
+  if (dsda_HideHUD())
+    return;
+
+  dsda_LoadHUDConfig();
+  dsda_UpdateActiveHUD();
+  dsda_RefreshHUDComponentStatus();
+}
+
 void dsda_UpdateExHud(void) {
   int i;
+
+  if (!dsda_HUDActive())
+    return;
 
   if (automap_on)
     return;
@@ -487,6 +523,9 @@ void dsda_UpdateExHud(void) {
 void dsda_DrawExHud(void) {
   int i;
 
+  if (!dsda_HUDActive())
+    return;
+
   if (automap_on)
     return;
 
@@ -502,6 +541,9 @@ void dsda_DrawExHud(void) {
 void dsda_DrawExIntermission(void) {
   int i;
 
+  if (!dsda_HUDActive())
+    return;
+
   for (i = 0; i < exhud_component_count; ++i)
     if (
       components[i].on &&
@@ -514,6 +556,9 @@ void dsda_DrawExIntermission(void) {
 void dsda_ToggleRenderStats(void) {
   dsda_show_render_stats = !dsda_show_render_stats;
 
+  if (!dsda_HUDActive())
+    return;
+
   if (components[exhud_render_stats].on && !dsda_show_render_stats)
     dsda_TurnComponentOff(exhud_render_stats);
   else if (!components[exhud_render_stats].on && dsda_show_render_stats) {
@@ -523,6 +568,9 @@ void dsda_ToggleRenderStats(void) {
 }
 
 void dsda_RefreshExHudFPS(void) {
+  if (!dsda_HUDActive())
+    return;
+
   if (dsda_ShowFPS())
     dsda_TurnComponentOn(exhud_fps);
   else
@@ -530,6 +578,9 @@ void dsda_RefreshExHudFPS(void) {
 }
 
 void dsda_RefreshExHudMinimap(void) {
+  if (!dsda_HUDActive())
+    return;
+
   if (dsda_ShowMinimap()) {
     dsda_TurnComponentOn(exhud_minimap);
     if (in_game && gamestate == GS_LEVEL)
@@ -540,6 +591,9 @@ void dsda_RefreshExHudMinimap(void) {
 }
 
 void dsda_RefreshExHudLevelSplits(void) {
+  if (!dsda_HUDActive())
+    return;
+
   if (dsda_ShowLevelSplits())
     dsda_TurnComponentOn(exhud_level_splits);
   else
@@ -547,6 +601,9 @@ void dsda_RefreshExHudLevelSplits(void) {
 }
 
 void dsda_RefreshExHudCoordinateDisplay(void) {
+  if (!dsda_HUDActive())
+    return;
+
   if (dsda_CoordinateDisplay()) {
     dsda_TurnComponentOn(exhud_coordinate_display);
     dsda_TurnComponentOn(exhud_line_display);
@@ -558,6 +615,9 @@ void dsda_RefreshExHudCoordinateDisplay(void) {
 }
 
 void dsda_RefreshExHudCommandDisplay(void) {
+  if (!dsda_HUDActive())
+    return;
+
   if (dsda_CommandDisplay())
     dsda_TurnComponentOn(exhud_command_display);
   else
