@@ -285,6 +285,77 @@ static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args, i
     dsda_TurnComponentOn(id);
 }
 
+static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
+  int i;
+  int count;
+  dboolean found;
+  const char* line;
+  char command[64];
+  char args[64];
+
+  for (++line_i; hud_config[line_i]; ++line_i) {
+    line = hud_config[line_i];
+
+    if (line[0] == '#' || line[0] == '/' || line[0] == '!' || !line[0])
+      continue;
+
+    count = sscanf(line, "%63s %63[^\n\r]", command, args);
+    if (count != 2)
+      I_Error("Invalid hud definition \"%s\"", line);
+
+    // The start of another definition
+    if (!strncmp(command, "doom", sizeof(command)) ||
+        !strncmp(command, "heretic", sizeof(command)) ||
+        !strncmp(command, "hexen", sizeof(command)))
+      break;
+
+    found = false;
+
+    for (i = 0; i < exhud_component_count; ++i)
+      if (!strncmp(command, components[i].name, sizeof(command))) {
+        int x, y;
+        int vpt = 0;
+        int component_args[4] = { 0 };
+        char alignment[16];
+
+        found = true;
+
+        count = sscanf(args, "%d %d %15s %d %d %d %d", &x, &y, alignment,
+                        &component_args[0], &component_args[1],
+                        &component_args[2], &component_args[3]);
+        if (count < 3)
+          I_Error("Invalid hud component args \"%s\"", line);
+
+        if (!strncmp(alignment, "bottom_left", sizeof(alignment)))
+          vpt = VPT_ALIGN_LEFT_BOTTOM;
+        else if (!strncmp(alignment, "bottom_right", sizeof(alignment)))
+          vpt = VPT_ALIGN_RIGHT_BOTTOM;
+        else if (!strncmp(alignment, "top_left", sizeof(alignment)))
+          vpt = VPT_ALIGN_LEFT_TOP;
+        else if (!strncmp(alignment, "top_right", sizeof(alignment)))
+          vpt = VPT_ALIGN_RIGHT_TOP;
+        else if (!strncmp(alignment, "top", sizeof(alignment)))
+          vpt = VPT_ALIGN_TOP;
+        else if (!strncmp(alignment, "bottom", sizeof(alignment)))
+          vpt = VPT_ALIGN_BOTTOM;
+        else if (!strncmp(alignment, "left", sizeof(alignment)))
+          vpt = VPT_ALIGN_LEFT;
+        else if (!strncmp(alignment, "right", sizeof(alignment)))
+          vpt = VPT_ALIGN_RIGHT;
+        else
+          I_Error("Invalid hud component alignment \"%s\"", line);
+
+        dsda_InitializeComponent(i, x, y, vpt, component_args, count - 3);
+      }
+
+    if (!found)
+      I_Error("Invalid hud component \"%s\"", line);
+  }
+
+  // roll back the line that wasn't part of this config
+  return line_i - 1;
+}
+
 static char** dsda_HUDConfig(void) {
   static dboolean loaded;
   static char* hud_config;
@@ -327,10 +398,6 @@ void dsda_InitExHud(void) {
   const char* line;
   int line_i;
   char target[16];
-  dboolean reading = false;
-  char command[64];
-  char args[64];
-  int count;
 
   for (i = 0; i < exhud_component_count; ++i) {
     components[i].on = false;
@@ -355,64 +422,8 @@ void dsda_InitExHud(void) {
   for (line_i = 0; hud_config[line_i]; ++line_i) {
     line = hud_config[line_i];
 
-    if (!reading && !strncmp(target, line, sizeof(target)))
-      reading = true;
-    else if (reading) {
-      int count;
-      dboolean found = false;
-
-      if (line[0] == '#' || line[0] == '/' || line[0] == '!' || !line[0])
-        continue;
-
-      count = sscanf(line, "%63s %63[^\n\r]", command, args);
-      if (count != 2)
-        I_Error("Invalid hud definition \"%s\"", line);
-
-      // The start of another definition
-      if (!strncmp(command, "doom", sizeof(command)) ||
-          !strncmp(command, "heretic", sizeof(command)) ||
-          !strncmp(command, "hexen", sizeof(command)))
-        break;
-
-      for (i = 0; i < exhud_component_count; ++i)
-        if (!strncmp(command, components[i].name, sizeof(command))) {
-          int x, y, vpt;
-          int component_args[4] = { 0 };
-          char alignment[16];
-
-          found = true;
-
-          count = sscanf(args, "%d %d %15s %d %d %d %d", &x, &y, alignment,
-                         &component_args[0], &component_args[1],
-                         &component_args[2], &component_args[3]);
-          if (count < 3)
-            I_Error("Invalid hud component args \"%s\"", line);
-
-          if (!strncmp(alignment, "bottom_left", sizeof(alignment)))
-            vpt = VPT_ALIGN_LEFT_BOTTOM;
-          else if (!strncmp(alignment, "bottom_right", sizeof(alignment)))
-            vpt = VPT_ALIGN_RIGHT_BOTTOM;
-          else if (!strncmp(alignment, "top_left", sizeof(alignment)))
-            vpt = VPT_ALIGN_LEFT_TOP;
-          else if (!strncmp(alignment, "top_right", sizeof(alignment)))
-            vpt = VPT_ALIGN_RIGHT_TOP;
-          else if (!strncmp(alignment, "top", sizeof(alignment)))
-            vpt = VPT_ALIGN_TOP;
-          else if (!strncmp(alignment, "bottom", sizeof(alignment)))
-            vpt = VPT_ALIGN_BOTTOM;
-          else if (!strncmp(alignment, "left", sizeof(alignment)))
-            vpt = VPT_ALIGN_LEFT;
-          else if (!strncmp(alignment, "right", sizeof(alignment)))
-            vpt = VPT_ALIGN_RIGHT;
-          else
-            I_Error("Invalid hud component alignment \"%s\"", line);
-
-          dsda_InitializeComponent(i, x, y, vpt, component_args, count - 3);
-        }
-
-      if (!found)
-        I_Error("Invalid hud component \"%s\"", line);
-    }
+    if (!strncmp(target, line, sizeof(target)))
+      line_i = dsda_ParseHUDConfig(hud_config, line_i);
   }
 
   if (dsda_show_render_stats)
