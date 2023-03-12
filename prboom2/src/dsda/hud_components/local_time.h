@@ -18,8 +18,8 @@
 #ifndef __DSDA_HUD_COMPONENT_LOCAL_TIME__
 #define __DSDA_HUD_COMPONENT_LOCAL_TIME__
 
-void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
-void dsda_UpdateLocalTimeHC(void);
-void dsda_DrawLocalTimeHC(void);
+void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count, void** data);
+void dsda_UpdateLocalTimeHC(void* data);
+void dsda_DrawLocalTimeHC(void* data);
 
 #endif

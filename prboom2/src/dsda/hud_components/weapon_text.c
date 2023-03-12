@@ -19,15 +19,19 @@
 
 #include "weapon_text.h"
 
-static dsda_text_t component;
-static dboolean grid;
+typedef struct {
+  dsda_text_t component;
+  dboolean grid;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player_t* player;
 
   player = &players[displayplayer];
 
-  if (grid)
+  if (local->grid)
     snprintf(
       str,
       max_size,
@@ -73,16 +77,23 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     );
 }
 
-void dsda_InitWeaponTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
-  grid = args[0];
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitWeaponTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  local->grid = args[0];
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateWeaponTextHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateWeaponTextHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawWeaponTextHC(void) {
-  dsda_DrawBasicText(&component);
+void dsda_DrawWeaponTextHC(void* data) {
+  local = data;
+
+  dsda_DrawBasicText(&local->component);
 }

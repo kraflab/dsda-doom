@@ -21,7 +21,11 @@
 
 #include "render_stats.h"
 
-static dsda_text_t component[2];
+typedef struct {
+  dsda_text_t component[2];
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateCurrentComponentText(char* str, size_t max_size) {
   extern dsda_render_stats_t dsda_render_stats;
@@ -70,19 +74,26 @@ static void dsda_UpdateMaxComponentText(char* str, size_t max_size) {
   );
 }
 
-void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
-  dsda_InitTextHC(&component[0], x_offset, y_offset, vpt);
-  dsda_InitTextHC(&component[1], x_offset, y_offset + 8, vpt);
+void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component[0], x_offset, y_offset, vpt);
+  dsda_InitTextHC(&local->component[1], x_offset, y_offset + 8, vpt);
 }
 
-void dsda_UpdateRenderStatsHC(void) {
-  dsda_UpdateCurrentComponentText(component[0].msg, sizeof(component[0].msg));
-  dsda_UpdateMaxComponentText(component[1].msg, sizeof(component[1].msg));
-  dsda_RefreshHudText(&component[0]);
-  dsda_RefreshHudText(&component[1]);
+void dsda_UpdateRenderStatsHC(void* data) {
+  local = data;
+
+  dsda_UpdateCurrentComponentText(local->component[0].msg, sizeof(local->component[0].msg));
+  dsda_UpdateMaxComponentText(local->component[1].msg, sizeof(local->component[1].msg));
+  dsda_RefreshHudText(&local->component[0]);
+  dsda_RefreshHudText(&local->component[1]);
 }
 
-void dsda_DrawRenderStatsHC(void) {
-  dsda_DrawBasicText(&component[0]);
-  dsda_DrawBasicText(&component[1]);
+void dsda_DrawRenderStatsHC(void* data) {
+  local = data;
+
+  dsda_DrawBasicText(&local->component[0]);
+  dsda_DrawBasicText(&local->component[1]);
 }

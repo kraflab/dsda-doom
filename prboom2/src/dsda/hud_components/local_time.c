@@ -21,30 +21,41 @@
 
 #include "local_time.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   size_t length;
   time_t now;
-  struct tm* local;
+  struct tm* local_tm;
 
   length = snprintf(str, max_size, "%s", dsda_TextColor(dsda_tc_exhud_local_time));
 
   now = time(NULL);
-  local = localtime(&now);
+  local_tm = localtime(&now);
 
-  strftime(str + length, max_size - length, "%H:%M:%S", local);
+  strftime(str + length, max_size - length, "%H:%M:%S", local_tm);
 }
 
-void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitLocalTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateLocalTimeHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateLocalTimeHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawLocalTimeHC(void) {
-  dsda_DrawBasicText(&component);
+void dsda_DrawLocalTimeHC(void* data) {
+  local = data;
+
+  dsda_DrawBasicText(&local->component);
 }

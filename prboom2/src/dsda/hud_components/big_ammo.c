@@ -21,7 +21,11 @@
 
 #define PATCH_DELTA_X 14
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_DrawComponent(void) {
   player_t* player;
@@ -39,18 +43,23 @@ static void dsda_DrawComponent(void) {
 
   ammo = player->ammo[ammo_type];
 
-  dsda_DrawBigNumber(component.x, component.y, PATCH_DELTA_X, 0,
-                     CR_DEFAULT, component.vpt, 3, ammo);
+  dsda_DrawBigNumber(local->component.x, local->component.y, PATCH_DELTA_X, 0,
+                     CR_DEFAULT, local->component.vpt, 3, ammo);
 }
 
-void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigAmmoHC(void) {
-  return;
+void dsda_UpdateBigAmmoHC(void* data) {
+  local = data;
 }
 
-void dsda_DrawBigAmmoHC(void) {
+void dsda_DrawBigAmmoHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
 }

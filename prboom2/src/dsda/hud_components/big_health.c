@@ -23,7 +23,12 @@
 #define PATCH_SPACING 2
 #define PATCH_VERTICAL_SPACING 2
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
+
 static int health_lump;
 static int patch_delta_x;
 static int patch_vertical_spacing;
@@ -36,15 +41,15 @@ static void dsda_DrawComponent(void) {
   int cm;
 
   player = &players[displayplayer];
-  x = component.x;
-  y = component.y;
+  x = local->component.x;
+  y = local->component.y;
 
   cm = player->health <= hud_health_red ? CR_RED :
        player->health <= hud_health_yellow ? CR_GOLD :
        player->health <= hud_health_green ? CR_GREEN :
        CR_LIGHTBLUE;
 
-  V_DrawNumPatch(x, y, FG, health_lump, CR_DEFAULT, component.vpt);
+  V_DrawNumPatch(x, y, FG, health_lump, CR_DEFAULT, local->component.vpt);
 
   x += patch_spacing;
   y += patch_vertical_spacing;
@@ -52,10 +57,13 @@ static void dsda_DrawComponent(void) {
   health = player->health < 0 ? 0 : player->health;
 
   dsda_DrawBigNumber(x, y, patch_delta_x, 0,
-                     cm, component.vpt, 3, player->health);
+                     cm, local->component.vpt, 3, player->health);
 }
 
-void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
+void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   if (heretic) {
     health_lump = R_NumPatchForSpriteIndex(HERETIC_SPR_PTN2);
     patch_delta_x = 10;
@@ -75,13 +83,15 @@ void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int ar
     patch_spacing = 2;
   }
   patch_spacing += R_NumPatchWidth(health_lump);
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigHealthHC(void) {
-  return;
+void dsda_UpdateBigHealthHC(void* data) {
+  local = data;
 }
 
-void dsda_DrawBigHealthHC(void) {
+void dsda_DrawBigHealthHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
 }

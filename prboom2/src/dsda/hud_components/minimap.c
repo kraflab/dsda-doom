@@ -19,54 +19,69 @@
 
 #include "minimap.h"
 
-static int x, y, width, height, scale;
+typedef struct {
+  int x, y, width, height, scale;
+} local_component_t;
 
-void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count) {
-  x = x_offset;
-  y = dsda_HudComponentY(y_offset, vpt);
-  width = args[0];
-  height = args[1];
-  scale = args[2];
+static local_component_t* local;
 
-  if (x < 0)
-    x = 0;
+void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
 
-  if (width <= 0 || width > 320)
-    width = 48;
+  local->x = x_offset;
+  local->y = dsda_HudComponentY(y_offset, vpt);
+  local->width = args[0];
+  local->height = args[1];
+  local->scale = args[2];
 
-  if (x + width > 320)
-    x = 320 - width;
+  if (local->x < 0)
+    local->x = 0;
 
-  if (y < 0)
-    y = 0;
+  if (local->width <= 0 || local->width > 320)
+    local->width = 48;
 
-  if (height <= 0 || height > 200)
-    height = 48;
+  if (local->x + local->width > 320)
+    local->x = 320 - local->width;
 
-  if (y + height > 200)
-    y = 200 - height;
+  if (local->y < 0)
+    local->y = 0;
 
-  if (scale < 64)
-    scale = 1024;
+  if (local->height <= 0 || local->height > 200)
+    local->height = 48;
 
-  V_GetWideRect(&x, &y, &width, &height, vpt);
+  if (local->y + local->height > 200)
+    local->y = 200 - local->height;
+
+  if (local->scale < 64)
+    local->scale = 1024;
+
+  V_GetWideRect(&local->x, &local->y, &local->width, &local->height, vpt);
 }
 
-void dsda_UpdateMinimapHC(void) {
-  // nothing to do
+void dsda_UpdateMinimapHC(void* data) {
+  local = data;
 }
 
-void dsda_DrawMinimapHC(void) {
+void dsda_DrawMinimapHC(void* data) {
+  local = data;
+
   AM_Drawer(true);
 }
 
 void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h) {
-  *f_x = x;
-  *f_y = y;
-  *f_w = width;
-  *f_h = height;
+  if (!local)
+    return;
+
+  *f_x = local->x;
+  *f_y = local->y;
+  *f_w = local->width;
+  *f_h = local->height;
 }
 
 int dsda_MinimapScale(void) {
-  return scale;
+  if (!local)
+    return 1024;
+
+  return local->scale;
 }

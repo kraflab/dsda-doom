@@ -18,8 +18,8 @@
 #ifndef __DSDA_HUD_COMPONENT_LINE_DISPLAY__
 #define __DSDA_HUD_COMPONENT_LINE_DISPLAY__
 
-void dsda_InitLineDisplayHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count);
-void dsda_UpdateLineDisplayHC(void);
-void dsda_DrawLineDisplayHC(void);
+void dsda_InitLineDisplayHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count, void** data);
+void dsda_UpdateLineDisplayHC(void* data);
+void dsda_DrawLineDisplayHC(void* data);
 
 #endif

@@ -2056,12 +2056,6 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else if (p == &players[consoleplayer])
     playerkeys = 0;
 
-  if (mthing->type - 1 == consoleplayer)
-  {
-    ST_Start(); // wake up the status bar
-    HU_Start(); // wake up the heads up text
-  }
-
   R_SmoothPlaying_Reset(p); // e6y
 }
 
