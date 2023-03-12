@@ -479,7 +479,7 @@ static void dsda_UpdateActiveHUD(void) {
     dsda_ResetActiveHUD();
 }
 
-static void dsda_RefreshHUDComponentStatus(void) {
+static void dsda_RefreshHUD(void) {
   if (!dsda_HUDActive())
     return;
 
@@ -491,6 +491,9 @@ static void dsda_RefreshHUDComponentStatus(void) {
   dsda_RefreshExHudLevelSplits();
   dsda_RefreshExHudCoordinateDisplay();
   dsda_RefreshExHudCommandDisplay();
+
+  if (in_game && gamestate == GS_LEVEL)
+    dsda_UpdateExHud();
 }
 
 void dsda_InitExHud(void) {
@@ -501,7 +504,7 @@ void dsda_InitExHud(void) {
 
   dsda_LoadHUDConfig();
   dsda_UpdateActiveHUD();
-  dsda_RefreshHUDComponentStatus();
+  dsda_RefreshHUD();
 }
 
 void dsda_UpdateExHud(void) {
