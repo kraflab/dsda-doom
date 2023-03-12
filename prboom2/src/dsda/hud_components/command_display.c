@@ -37,7 +37,7 @@ typedef struct {
 typedef struct dsda_command_display_s {
   dsda_command_t command;
   int repeat;
-  dsda_text_t component;
+  dsda_text_t* component;
   const char* color;
   struct dsda_command_display_s* next;
   struct dsda_command_display_s* prev;
@@ -46,11 +46,17 @@ typedef struct dsda_command_display_s {
 int dsda_command_history_size;
 int dsda_hide_empty_commands;
 
+typedef struct {
+  dsda_text_t component[MAX_HISTORY];
+  dsda_text_t next_command_component;
+  int base_y;
+} local_component_t;
+
+static local_component_t* local;
+
 static dsda_command_display_t command_history[MAX_HISTORY];
 static dsda_command_display_t* current_command = command_history;
 static dsda_command_display_t next_command_display;
-
-static int base_y;
 
 static void dsda_TicCmdToCommand(dsda_command_t* command, ticcmd_t* cmd) {
   command->forwardmove = cmd->forwardmove;
@@ -95,8 +101,11 @@ void dsda_ResetCommandHistory(void) {
   for (i = 0; i < MAX_HISTORY; ++i) {
     memset(&command_history[i].command, 0, sizeof(command_history[i].command));
     command_history[i].repeat = 0;
-    command_history[i].component.msg[0] = '\0';
-    dsda_RefreshHudText(&command_history[i].component);
+
+    if (command_history[i].component) {
+      command_history[i].component->msg[0] = '\0';
+      dsda_RefreshHudText(command_history[i].component);
+    }
   }
 }
 
@@ -118,15 +127,20 @@ void dsda_InitCommandHistory(void) {
 void dsda_InitCommandDisplayHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   int i;
 
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   for (i = 0; i < MAX_HISTORY; ++i) {
     command_history[i].color = dsda_TextColor(dsda_tc_exhud_command_entry);
-    dsda_InitTextHC(&command_history[i].component, x_offset, y_offset + i * 8, vpt);
+    command_history[i].component = &local->component[i];
+    dsda_InitTextHC(command_history[i].component, x_offset, y_offset + i * 8, vpt);
   }
 
   next_command_display.color = dsda_TextColor(dsda_tc_exhud_command_queue);
-  dsda_InitTextHC(&next_command_display.component, x_offset, y_offset, vpt);
+  next_command_display.component = &local->next_command_component;
+  dsda_InitTextHC(next_command_display.component, x_offset, y_offset, vpt);
 
-  base_y = next_command_display.component.text.y;
+  local->base_y = next_command_display.component->text.y;
 }
 
 static void dsda_UpdateCommandText(dsda_command_t* command,
@@ -198,15 +212,31 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
     current_command->command = command;
   }
 
-  dsda_UpdateCommandText(&command, current_command, &current_command->component, false);
+  dsda_UpdateCommandText(&command, current_command, current_command->component, false);
+}
+
+static void dsda_UpdateLocal(void* data) {
+  int i;
+
+  if (local != data) {
+    local = data;
+
+    for (i = 0; i < MAX_HISTORY; ++i) {
+      command_history[i].component = &local->component[i];
+      dsda_UpdateCommandText(&command_history[i].command,
+                             &command_history[i], command_history[i].component, false);
+    }
+
+    next_command_display.component = &local->next_command_component;
+  }
 }
 
 void dsda_UpdateCommandDisplayHC(void* data) {
-  // nothing to do
+  dsda_UpdateLocal(data);
 }
 
 static void dsda_DrawCommandDisplayLine(dsda_text_t* component, int offset) {
-  component->text.y = base_y - 8 * offset;
+  component->text.y = local->base_y - 8 * offset;
   dsda_DrawBasicText(component);
 }
 
@@ -215,6 +245,8 @@ void dsda_DrawCommandDisplayHC(void* data) {
   int offset = 0;
   dsda_command_display_t* command = current_command;
 
+  dsda_UpdateLocal(data);
+
   if (dsda_BuildMode()) {
     ticcmd_t next_cmd;
     dsda_command_t next_command;
@@ -222,14 +254,14 @@ void dsda_DrawCommandDisplayHC(void* data) {
     dsda_CopyBuildCmd(&next_cmd);
     dsda_TicCmdToCommand(&next_command, &next_cmd);
     dsda_UpdateCommandText(&next_command, &next_command_display,
-                           &next_command_display.component, dsda_BuildPlayback());
-    dsda_DrawCommandDisplayLine(&next_command_display.component, offset);
+                           next_command_display.component, dsda_BuildPlayback());
+    dsda_DrawCommandDisplayLine(next_command_display.component, offset);
 
     ++offset;
   }
 
   for (i = 0; i < dsda_command_history_size; ++i) {
-    dsda_DrawCommandDisplayLine(&command->component, i + offset);
+    dsda_DrawCommandDisplayLine(command->component, i + offset);
     command = command->prev;
   }
 }
