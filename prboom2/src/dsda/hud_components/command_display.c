@@ -212,7 +212,8 @@ void dsda_AddCommandToCommandDisplay(ticcmd_t* cmd) {
     current_command->command = command;
   }
 
-  dsda_UpdateCommandText(&command, current_command, current_command->component, false);
+  if (current_command->component)
+    dsda_UpdateCommandText(&command, current_command, current_command->component, false);
 }
 
 static void dsda_UpdateLocal(void* data) {
