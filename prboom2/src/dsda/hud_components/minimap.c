@@ -70,6 +70,9 @@ void dsda_DrawMinimapHC(void* data) {
 }
 
 void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h) {
+  if (!local)
+    return;
+
   *f_x = local->x;
   *f_y = local->y;
   *f_w = local->width;
@@ -77,5 +80,8 @@ void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h) {
 }
 
 int dsda_MinimapScale(void) {
+  if (!local)
+    return 1024;
+
   return local->scale;
 }
