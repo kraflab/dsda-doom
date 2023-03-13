@@ -19,8 +19,6 @@
 
 #include "stat_totals.h"
 
-#define STAT_STRING_SIZE 200
-
 typedef struct {
   dsda_text_t component;
   dboolean include_kills, include_items, include_secrets;
