@@ -65,6 +65,7 @@ exhud_attempts 3
 exhud_event_split 3
 exhud_line_activation 3
 exhud_local_time 3
+map_coords 4
 map_time_level 3
 map_time_total 3
 map_totals_label 7

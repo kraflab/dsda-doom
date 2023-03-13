@@ -78,6 +78,7 @@ typedef enum {
   exhud_level_splits,
   exhud_minimap,
   exhud_color_test,
+  exhud_map_coordinates,
   exhud_map_time,
   exhud_map_totals,
   exhud_component_count,
@@ -262,6 +263,13 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateColorTestHC,
     dsda_DrawColorTestHC,
     "color_test",
+  },
+  [exhud_map_coordinates] = {
+    dsda_InitMapCoordinatesHC,
+    dsda_UpdateMapCoordinatesHC,
+    dsda_DrawMapCoordinatesHC,
+    "map_coordinates",
+    .strict = true,
   },
   [exhud_map_time] = {
     dsda_InitMapTimeHC,
