@@ -403,6 +403,9 @@ static void dsda_ParseHUDConfigs(char** hud_config) {
     if (sscanf(line, target_format, hud_variant)) {
       for (container = containers; container->name; container++)
         if (!strncmp(container->name, hud_variant, sizeof(hud_variant))) {
+          if (container->loaded)
+            break;
+
           container->loaded = true;
           components = container->components;
           memcpy(components, components_template, sizeof(components_template));
