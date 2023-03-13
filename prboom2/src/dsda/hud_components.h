@@ -35,6 +35,7 @@
 #include "hud_components/level_splits.h"
 #include "hud_components/line_display.h"
 #include "hud_components/local_time.h"
+#include "hud_components/map_time.h"
 #include "hud_components/map_totals.h"
 #include "hud_components/minimap.h"
 #include "hud_components/ready_ammo_text.h"
