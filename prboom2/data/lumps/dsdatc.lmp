@@ -65,5 +65,8 @@ exhud_attempts 3
 exhud_event_split 3
 exhud_line_activation 3
 exhud_local_time 3
+map_totals_label 7
+map_totals_value 3
+map_totals_max 11
 inter_split_normal 3
 inter_split_good 4

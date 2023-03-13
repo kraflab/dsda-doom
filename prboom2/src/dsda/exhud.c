@@ -78,6 +78,7 @@ typedef enum {
   exhud_level_splits,
   exhud_minimap,
   exhud_color_test,
+  exhud_map_totals,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -260,6 +261,12 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateColorTestHC,
     dsda_DrawColorTestHC,
     "color_test",
+  },
+  [exhud_map_totals] = {
+    dsda_InitMapTotalsHC,
+    dsda_UpdateMapTotalsHC,
+    dsda_DrawMapTotalsHC,
+    "map_totals",
   },
 };
 
