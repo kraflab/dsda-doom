@@ -106,6 +106,8 @@ set(COMMON_SRC
     dsda/hud_components/map_coordinates.h
     dsda/hud_components/map_time.c
     dsda/hud_components/map_time.h
+    dsda/hud_components/map_title.c
+    dsda/hud_components/map_title.h
     dsda/hud_components/map_totals.c
     dsda/hud_components/map_totals.h
     dsda/hud_components/minimap.c

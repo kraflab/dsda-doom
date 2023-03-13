@@ -73,6 +73,7 @@ typedef enum {
   dsda_tc_map_coords,
   dsda_tc_map_time_level,
   dsda_tc_map_time_total,
+  dsda_tc_map_title,
   dsda_tc_map_totals_label,
   dsda_tc_map_totals_value,
   dsda_tc_map_totals_max,

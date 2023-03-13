@@ -37,6 +37,7 @@
 #include "hud_components/local_time.h"
 #include "hud_components/map_coordinates.h"
 #include "hud_components/map_time.h"
+#include "hud_components/map_title.h"
 #include "hud_components/map_totals.h"
 #include "hud_components/minimap.h"
 #include "hud_components/ready_ammo_text.h"

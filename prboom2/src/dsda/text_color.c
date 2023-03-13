@@ -86,6 +86,7 @@ dsda_text_color_t dsda_text_colors[] = {
   [dsda_tc_map_coords] = { "map_coords", CR_GREEN },
   [dsda_tc_map_time_level] = { "map_time_level", CR_GRAY },
   [dsda_tc_map_time_total] = { "map_time_total", CR_GRAY },
+  [dsda_tc_map_title] = { "map_title", CR_GOLD },
   [dsda_tc_map_totals_label] = { "map_totals_label", CR_RED },
   [dsda_tc_map_totals_value] = { "map_totals_value", CR_GRAY },
   [dsda_tc_map_totals_max] = { "map_totals_max", CR_LIGHTBLUE },

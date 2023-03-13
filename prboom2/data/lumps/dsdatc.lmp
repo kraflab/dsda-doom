@@ -68,6 +68,7 @@ exhud_local_time 3
 map_coords 4
 map_time_level 3
 map_time_total 3
+map_title 6
 map_totals_label 7
 map_totals_value 3
 map_totals_max 11

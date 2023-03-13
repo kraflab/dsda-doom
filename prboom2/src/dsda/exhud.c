@@ -80,6 +80,7 @@ typedef enum {
   exhud_color_test,
   exhud_map_coordinates,
   exhud_map_time,
+  exhud_map_title,
   exhud_map_totals,
   exhud_component_count,
 } exhud_component_id_t;
@@ -276,6 +277,12 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateMapTimeHC,
     dsda_DrawMapTimeHC,
     "map_time",
+  },
+  [exhud_map_title] = {
+    dsda_InitMapTitleHC,
+    dsda_UpdateMapTitleHC,
+    dsda_DrawMapTitleHC,
+    "map_title",
   },
   [exhud_map_totals] = {
     dsda_InitMapTotalsHC,
