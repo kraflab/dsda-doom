@@ -25,14 +25,15 @@ typedef struct {
 
 static local_component_t* local;
 
-// TODO: need to reorganize where and how map title is constructed
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
+  extern dsda_string_t hud_title;
+
   snprintf(
     str,
     max_size,
     "%s%s",
     dsda_TextColor(dsda_tc_map_title),
-    MAPNAME(gameepisode, gamemap)
+    hud_title.string
   );
 }
 

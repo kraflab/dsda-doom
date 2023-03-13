@@ -300,17 +300,17 @@ int dsda_HexenBossAction(mobj_t* mo) {
   return false; // TODO
 }
 
-int dsda_HexenHUTitle(const char** title) {
+int dsda_HexenHUTitle(dsda_string_t* str) {
   if (!map_format.mapinfo)
     return false;
 
-  *title = NULL;
+  dsda_InitString(str, NULL);
 
   if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0)
-    *title = CurrentMap->name;
+    dsda_StringCat(str, CurrentMap->name);
 
-  if (*title == NULL)
-    *title = MAPNAME(gameepisode, gamemap);
+  if (!str->string)
+    dsda_StringCat(str, MAPNAME(gameepisode, gamemap));
 
   return true;
 }

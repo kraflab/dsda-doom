@@ -20,6 +20,8 @@
 
 #include "p_mobj.h"
 
+#include "dsda/utility.h"
+
 int dsda_UFirstMap(int* episode, int* map);
 int dsda_UNewGameMap(int* episode, int* map);
 int dsda_UResolveWarp(int* args, int arg_count, int* episode, int* map);
@@ -38,7 +40,7 @@ int dsda_UStartFinale(void);
 int dsda_UFTicker(void);
 void dsda_UFDrawer(void);
 int dsda_UBossAction(mobj_t* mo);
-int dsda_UHUTitle(const char** title);
+int dsda_UHUTitle(dsda_string_t* str);
 int dsda_USkyTexture(int* sky);
 int dsda_UPrepareInitNew(void);
 int dsda_UPrepareIntermission(int* result);

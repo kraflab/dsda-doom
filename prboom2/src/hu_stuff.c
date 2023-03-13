@@ -138,6 +138,8 @@ static char hud_keysstr[80];
 static char hud_gkeysstr[80]; //jff 3/7/98 add support for graphic key display
 static char hud_monsecstr[80];
 
+dsda_string_t hud_title;
+
 typedef struct custom_message_s
 {
   int ticks;
@@ -245,6 +247,20 @@ void HU_InitThresholds(void)
   hud_ammo_yellow = dsda_IntConfig(dsda_config_hud_ammo_yellow);
 }
 
+static void HU_FetchTitle(void)
+{
+  const char *s;
+
+  if (hud_title.string)
+    dsda_FreeString(&hud_title);
+
+  dsda_HUTitle(&hud_title);
+
+  s = hud_title.string;
+  while (*s)
+    HU_AddCharToTitle(*(s++));
+}
+
 //
 // HU_Start(void)
 //
@@ -298,10 +314,7 @@ void HU_Start(void)
     VPT_ALIGN_LEFT_BOTTOM
   );
 
-  dsda_HUTitle(&s);
-
-  while (*s)
-    HU_AddCharToTitle(*(s++));
+  HU_FetchTitle();
 
   // create the automaps coordinate widget
   // jff 3/3/98 split coord widget into three lines: x,y,z
