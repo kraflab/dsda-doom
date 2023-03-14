@@ -295,6 +295,7 @@ exhud_component_t components_template[exhud_component_count] = {
 typedef struct {
   const char* name;
   dboolean status_bar;
+  int default_vpt;
   dboolean loaded;
   exhud_component_t components[exhud_component_count];
 } dsda_hud_container_t;
@@ -303,13 +304,15 @@ typedef enum {
   hud_ex,
   hud_off,
   hud_full,
+  hud_map,
   hud_null,
 } dsda_hud_variant_t;
 
 static dsda_hud_container_t containers[] = {
-  [hud_ex]   = { "ex", true },
-  [hud_off]  = { "off", true },
-  [hud_full] = { "full", false },
+  [hud_ex]   = { "ex", true, VPT_EX_TEXT },
+  [hud_off]  = { "off", true, VPT_EX_TEXT },
+  [hud_full] = { "full", false, VPT_EX_TEXT },
+  [hud_map] = { "map", true },
   [hud_null] = { NULL }
 };
 
@@ -338,7 +341,7 @@ static void dsda_TurnComponentOff(int id) {
 
 static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args, int arg_count) {
   components[id].initialized = true;
-  components[id].init(x, y, vpt | components[id].default_vpt | VPT_EX_TEXT,
+  components[id].init(x, y, vpt | components[id].default_vpt | container->default_vpt,
                  args, arg_count, &components[id].data);
 
   if (components[id].off_by_default)
@@ -539,40 +542,56 @@ void dsda_InitExHud(void) {
   dsda_RefreshHUD();
 }
 
-void dsda_UpdateExHud(void) {
+static void dsda_UpdateComponents(exhud_component_t* update_components) {
   int i;
+
+  for (i = 0; i < exhud_component_count; ++i)
+    if (
+      update_components[i].on &&
+      !update_components[i].not_level &&
+      (!update_components[i].strict || !dsda_StrictMode())
+    )
+      update_components[i].update(update_components[i].data);
+}
+
+void dsda_UpdateExHud(void) {
+  if (automap_on) {
+    if (containers[hud_map].loaded)
+      dsda_UpdateComponents(containers[hud_map].components);
+
+    return;
+  }
 
   if (!dsda_HUDActive())
     return;
 
-  if (automap_on)
-    return;
+  dsda_UpdateComponents(components);
+}
+
+static void dsda_DrawComponents(exhud_component_t* draw_components) {
+  int i;
 
   for (i = 0; i < exhud_component_count; ++i)
     if (
-      components[i].on &&
-      !components[i].not_level &&
-      (!components[i].strict || !dsda_StrictMode())
+      draw_components[i].on &&
+      !draw_components[i].not_level &&
+      (!draw_components[i].strict || !dsda_StrictMode())
     )
-      components[i].update(components[i].data);
+      draw_components[i].draw(draw_components[i].data);
 }
 
 void dsda_DrawExHud(void) {
-  int i;
+  if (automap_on) {
+    if (containers[hud_map].loaded)
+      dsda_DrawComponents(containers[hud_map].components);
+
+    return;
+  }
 
   if (!dsda_HUDActive())
     return;
 
-  if (automap_on)
-    return;
-
-  for (i = 0; i < exhud_component_count; ++i)
-    if (
-      components[i].on &&
-      !components[i].not_level &&
-      (!components[i].strict || !dsda_StrictMode())
-    )
-      components[i].draw(components[i].data);
+  dsda_DrawComponents(components);
 }
 
 void dsda_DrawExIntermission(void) {

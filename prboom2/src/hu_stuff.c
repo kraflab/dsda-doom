@@ -63,31 +63,6 @@
 #include "dsda/stretch.h"
 #include "g_overflow.h"
 
-//
-// Locally used constants, shortcuts.
-//
-#define HU_TITLEX 0
-//jff 2/16/98 change 167 to ST_Y-1
-// CPhipps - changed to ST_TY
-// proff - changed to 200-ST_HEIGHT for stretching
-#define HU_TITLEY ((200-ST_HEIGHT) - 1 - hu_font[0].height)
-
-//jff 2/16/98 add coord text widget coordinates
-// proff - changed to SCREENWIDTH to 320 for stretching
-#define HU_COORDX (320 - 13*hu_font2['A'-HU_FONTSTART].width)
-//jff 3/3/98 split coord widget into three lines in upper right of screen
-#define HU_COORDXYZ_Y (1 * hu_font['A'-HU_FONTSTART].height + 1)
-#define HU_COORDX_Y (0 + 0*hu_font['A'-HU_FONTSTART].height + HU_COORDXYZ_Y)
-#define HU_COORDY_Y (1 + 1*hu_font['A'-HU_FONTSTART].height + HU_COORDXYZ_Y)
-#define HU_COORDZ_Y (2 + 2*hu_font['A'-HU_FONTSTART].height + HU_COORDXYZ_Y)
-
-#define HU_MAP_STAT_X (0)
-#define HU_MAP_STAT_Y (1 * hu_font['A'-HU_FONTSTART].height + 1)
-#define HU_MAP_MONSTERS_Y  (0 + 0*hu_font['A'-HU_FONTSTART].height + HU_MAP_STAT_Y)
-#define HU_MAP_SECRETS_Y   (1 + 1*hu_font['A'-HU_FONTSTART].height + HU_MAP_STAT_Y)
-#define HU_MAP_ITEMS_Y     (2 + 2*hu_font['A'-HU_FONTSTART].height + HU_MAP_STAT_Y)
-#define HU_MAP_TIME_Y      (4 + 4*hu_font['A'-HU_FONTSTART].height + HU_MAP_STAT_Y)
-#define HU_MAP_TOTALTIME_Y (5 + 5*hu_font['A'-HU_FONTSTART].height + HU_MAP_STAT_Y)
 
 static player_t*  plr;
 
@@ -97,17 +72,7 @@ patchnum_t hu_font2[HU_FONTSIZE];
 patchnum_t hu_msgbg[9];          //jff 2/26/98 add patches for message background
 
 // widgets
-static hu_textline_t  w_title;
 static hu_stext_t     w_message;
-static hu_textline_t  w_coordx; //jff 2/16/98 new coord widget for automap
-static hu_textline_t  w_coordy; //jff 3/3/98 split coord widgets automap
-static hu_textline_t  w_coordz; //jff 3/3/98 split coord widgets automap
-
-static hu_textline_t  w_map_monsters;  //e6y monsters widget for automap
-static hu_textline_t  w_map_secrets;   //e6y secrets widgets automap
-static hu_textline_t  w_map_items;     //e6y items widgets automap
-static hu_textline_t  w_map_time;      //e6y level time widgets automap
-static hu_textline_t  w_map_totaltime; //e6y total time widgets automap
 
 static dboolean    always_off = false;
 static dboolean    message_on;
@@ -118,25 +83,9 @@ static int         message_counter;
 static int         yellow_message;
 
 //jff 2/16/98 hud supported automap colors added
-const int hudcolor_titl = CR_GOLD;  // color range of automap level title
-const int hudcolor_xyco = CR_GREEN;  // color range of new coords on automap
-const int hudcolor_mapstat_title = CR_DEFAULT;
-const int hudcolor_mapstat_value = CR_GRAY;
-const int hudcolor_mapstat_time = CR_GRAY;
+const int hudcolor_cmsg = CR_GOLD;  // color of center message
 const int hudcolor_mesg = CR_DEFAULT;  // color range of scrolling messages
 const int hudcolor_list = CR_GOLD;  // list of messages color
-
-//jff 2/16/98 initialization strings for ammo, health, armor widgets
-static char hud_coordstrx[32];
-static char hud_coordstry[32];
-static char hud_coordstrz[32];
-static char hud_ammostr[80];
-static char hud_healthstr[80];
-static char hud_armorstr[80];
-static char hud_weapstr[80];
-static char hud_keysstr[80];
-static char hud_gkeysstr[80]; //jff 3/7/98 add support for graphic key display
-static char hud_monsecstr[80];
 
 dsda_string_t hud_title;
 
@@ -159,11 +108,6 @@ typedef struct message_thinker_s
 static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
 void HU_init_crosshair(void);
-
-void HU_AddCharToTitle(char s)
-{
-  HUlib_addCharToTextLine(&w_title, s);
-}
 
 //
 // HU_Init()
@@ -249,16 +193,10 @@ void HU_InitThresholds(void)
 
 static void HU_FetchTitle(void)
 {
-  const char *s;
-
   if (hud_title.string)
     dsda_FreeString(&hud_title);
 
   dsda_HUTitle(&hud_title);
-
-  s = hud_title.string;
-  while (*s)
-    HU_AddCharToTitle(*(s++));
 }
 
 //
@@ -301,114 +239,8 @@ void HU_Start(void)
     &message_on
   );
 
-  //jff 2/16/98 added some HUD widgets
-  // create the map title widget - map title display in lower left of automap
-  HUlib_initTextLine
-  (
-    &w_title,
-    raven ? 20 : HU_TITLEX,
-    raven ? heretic ? 145 : 144 : HU_TITLEY,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_titl,
-    VPT_ALIGN_LEFT_BOTTOM
-  );
-
   HU_FetchTitle();
 
-  // create the automaps coordinate widget
-  // jff 3/3/98 split coord widget into three lines: x,y,z
-  // jff 2/16/98 added
-  HUlib_initTextLine
-  (
-    &w_coordx,
-    HU_COORDX,
-    HU_COORDX_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_xyco,
-    VPT_ALIGN_RIGHT_TOP
-  );
-  HUlib_initTextLine
-  (
-    &w_coordy,
-    HU_COORDX,
-    HU_COORDY_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_xyco,
-    VPT_ALIGN_RIGHT_TOP
-  );
-  HUlib_initTextLine
-  (
-    &w_coordz,
-    HU_COORDX,
-    HU_COORDZ_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_xyco,
-    VPT_ALIGN_RIGHT_TOP
-  );
-//e6y
-  HUlib_initTextLine
-  (
-    &w_map_monsters,
-    HU_MAP_STAT_X,
-    HU_MAP_MONSTERS_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_mapstat_title,
-    VPT_ALIGN_LEFT_TOP
-  );
-  HUlib_initTextLine
-  (
-    &w_map_secrets,
-    HU_MAP_STAT_X,
-    HU_MAP_SECRETS_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_mapstat_title,
-    VPT_ALIGN_LEFT_TOP
-  );
-  HUlib_initTextLine
-  (
-    &w_map_items,
-    HU_MAP_STAT_X,
-    HU_MAP_ITEMS_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_mapstat_title,
-    VPT_ALIGN_LEFT_TOP
-  );
-  HUlib_initTextLine
-  (
-    &w_map_time,
-    HU_MAP_STAT_X,
-    HU_MAP_TIME_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_mapstat_time,
-    VPT_ALIGN_LEFT_TOP
-  );
-  HUlib_initTextLine
-  (
-    &w_map_totaltime,
-    HU_MAP_STAT_X,
-    HU_MAP_TOTALTIME_Y,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_mapstat_time,
-    VPT_ALIGN_LEFT_TOP
-  );
-  HUlib_initTextLine
-  (
-    &w_hudadd,
-    0, 0,
-    hu_font2,
-    HU_FONTSTART,
-    CR_GRAY,
-    VPT_NONE
-  );
   HUlib_initTextLine
   (
     &w_centermsg,
@@ -416,7 +248,7 @@ void HU_Start(void)
     HU_CENTERMSGY,
     hu_font,
     HU_FONTSTART,
-    hudcolor_titl,
+    hudcolor_cmsg,
     VPT_STRETCH
   );
   HUlib_initTextLine
@@ -429,10 +261,6 @@ void HU_Start(void)
     CR_RED,
     VPT_ALIGN_LEFT_BOTTOM
   );
-  strcpy(hud_add,"");
-  s = hud_add;
-  while (*s)
-    HUlib_addCharToTextLine(&w_hudadd, *(s++));
 
   HU_init_crosshair();
 
@@ -662,106 +490,6 @@ void HU_Drawer(void)
     return;
 
   plr = &players[displayplayer];         // killough 3/7/98
-  // draw the automap widgets if automap is displayed
-  if (automap_hud)
-  {
-    // map title
-    HUlib_drawTextLine(&w_title, false);
-
-    //jff 2/16/98 output new coord display
-    // x-coord
-    if (dsda_MapPointCoordinates())
-    {
-
-      //e6y: speedup
-      if (!realframe)
-      {
-        HUlib_drawTextLine(&w_coordx, false);
-        HUlib_drawTextLine(&w_coordy, false);
-        HUlib_drawTextLine(&w_coordz, false);
-      }
-      else
-      {
-        sprintf(hud_coordstrx,"X: %-5d", (plr->mo->x)>>FRACBITS);
-        HUlib_clearTextLine(&w_coordx);
-        s = hud_coordstrx;
-        while (*s)
-          HUlib_addCharToTextLine(&w_coordx, *(s++));
-        HUlib_drawTextLine(&w_coordx, false);
-
-        //jff 3/3/98 split coord display into x,y,z lines
-        // y-coord
-        sprintf(hud_coordstry,"Y: %-5d", (plr->mo->y)>>FRACBITS);
-        HUlib_clearTextLine(&w_coordy);
-        s = hud_coordstry;
-        while (*s)
-          HUlib_addCharToTextLine(&w_coordy, *(s++));
-        HUlib_drawTextLine(&w_coordy, false);
-
-        //jff 3/3/98 split coord display into x,y,z lines
-        //jff 2/22/98 added z
-        // z-coord
-        sprintf(hud_coordstrz,"Z: %-5d", (plr->mo->z)>>FRACBITS);
-        HUlib_clearTextLine(&w_coordz);
-        s = hud_coordstrz;
-        while (*s)
-          HUlib_addCharToTextLine(&w_coordz, *(s++));
-        HUlib_drawTextLine(&w_coordz, false);
-      }
-    }
-
-    if (dsda_IntConfig(dsda_config_map_level_stat))
-    {
-      static char str[32];
-      int time = leveltime / TICRATE;
-      int ttime = (totalleveltimes + leveltime) / TICRATE;
-
-      if (hexen)
-        ttime = players[consoleplayer].worldTimer / TICRATE;
-
-      sprintf(str, "Monsters: \x1b%c%d/%d", HUlib_Color(hudcolor_mapstat_value),
-        players[consoleplayer].killcount - players[consoleplayer].maxkilldiscount,
-        totalkills);
-      HUlib_clearTextLine(&w_map_monsters);
-      s = str;
-      while (*s)
-        HUlib_addCharToTextLine(&w_map_monsters, *(s++));
-      HUlib_drawTextLine(&w_map_monsters, false);
-
-      sprintf(str, "Secrets: \x1b%c%d/%d", HUlib_Color(hudcolor_mapstat_value),
-        players[consoleplayer].secretcount, totalsecret);
-      HUlib_clearTextLine(&w_map_secrets);
-      s = str;
-      while (*s)
-        HUlib_addCharToTextLine(&w_map_secrets, *(s++));
-      HUlib_drawTextLine(&w_map_secrets, false);
-
-      sprintf(str, "Items: \x1b%c%d/%d", HUlib_Color(hudcolor_mapstat_value),
-        players[consoleplayer].itemcount, totalitems);
-      HUlib_clearTextLine(&w_map_items);
-      s = str;
-      while (*s)
-        HUlib_addCharToTextLine(&w_map_items, *(s++));
-      HUlib_drawTextLine(&w_map_items, false);
-
-      sprintf(str, "%02d:%02d:%02d", time/3600, (time%3600)/60, time%60);
-      HUlib_clearTextLine(&w_map_time);
-      s = str;
-      while (*s)
-        HUlib_addCharToTextLine(&w_map_time, *(s++));
-      HUlib_drawTextLine(&w_map_time, false);
-
-      if (hexen || totalleveltimes > 0)
-      {
-        sprintf(str, "%02d:%02d:%02d", ttime/3600, (ttime%3600)/60, ttime%60);
-        HUlib_clearTextLine(&w_map_totaltime);
-        s = str;
-        while (*s)
-          HUlib_addCharToTextLine(&w_map_totaltime, *(s++));
-        HUlib_drawTextLine(&w_map_totaltime, false);
-      }
-    }
-  }
 
   if (hudadd_crosshair)
     HU_draw_crosshair();
