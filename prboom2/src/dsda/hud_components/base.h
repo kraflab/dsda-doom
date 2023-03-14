@@ -61,7 +61,7 @@ typedef struct {
   int vpt;
 } dsda_patch_component_t;
 
-int dsda_HudComponentY(int y_offset, int vpt);
+int dsda_HudComponentY(int y_offset, int vpt, double ratio);
 void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt);
 void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int vpt);
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt);
