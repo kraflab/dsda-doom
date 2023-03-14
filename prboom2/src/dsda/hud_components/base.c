@@ -22,11 +22,14 @@
 static char digit_lump[9];
 static const char* digit_lump_format;
 
-int dsda_HudComponentY(int y_offset, int vpt) {
+int dsda_HudComponentY(int y_offset, int vpt, double ratio) {
   int dsda_ExHudVerticalOffset(void);
 
   int y = 0;
   int vpt_align;
+
+  if (ratio)
+    y_offset *= ratio;
 
   vpt_align = vpt & VPT_ALIGN_MASK;
   if (
@@ -44,10 +47,16 @@ int dsda_HudComponentY(int y_offset, int vpt) {
 }
 
 void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
+  static double ratio;
   int x, y;
 
+  DO_ONCE
+    if (hu_font2['A' - HU_FONTSTART].height != 7)
+      ratio = (double) (hu_font2['A' - HU_FONTSTART].height + 1) / 8.0;
+  END_ONCE
+
   x = x_offset;
-  y = dsda_HudComponentY(y_offset, vpt);
+  y = dsda_HudComponentY(y_offset, vpt, ratio);
 
   HUlib_initTextLine(
     &component->text,
@@ -62,10 +71,16 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
 }
 
 void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
+  static double ratio;
   int x, y;
 
+  DO_ONCE
+    if (hu_font['A' - HU_FONTSTART].height != 7)
+      ratio = (double) (hu_font['A' - HU_FONTSTART].height + 1) / 8.0;
+  END_ONCE
+
   x = x_offset;
-  y = dsda_HudComponentY(y_offset, vpt);
+  y = dsda_HudComponentY(y_offset, vpt, ratio);
 
   HUlib_initTextLine(
     &component->text,
@@ -83,7 +98,7 @@ void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_off
   int x, y;
 
   x = x_offset;
-  y = dsda_HudComponentY(y_offset, vpt);
+  y = dsda_HudComponentY(y_offset, vpt, 0);
 
   component->x = x;
   component->y = y;

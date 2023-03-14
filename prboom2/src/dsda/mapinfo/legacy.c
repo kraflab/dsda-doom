@@ -325,19 +325,19 @@ int dsda_LegacyBossAction(mobj_t* mo) {
   return false;
 }
 
-int dsda_LegacyHUTitle(const char** title) {
+int dsda_LegacyHUTitle(dsda_string_t* str) {
   extern char** mapnames[];
   extern char** mapnames2[];
   extern char** mapnamesp[];
   extern char** mapnamest[];
   extern const char* LevelNames[];
 
-  *title = NULL;
+  dsda_InitString(str, NULL);
 
   if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0) {
     if (heretic) {
       if (gameepisode < 6 && gamemap < 10)
-        *title = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
+        dsda_StringCat(str, LevelNames[(gameepisode - 1) * 9 + gamemap - 1]);
     }
     else {
       switch (gamemode) {
@@ -347,25 +347,25 @@ int dsda_LegacyHUTitle(const char** title) {
           // Chex.exe always uses the episode 1 level title
           // eg. E2M1 gives the title for E1M1
           if (gamemission == chex && gamemap < 10)
-            *title = *mapnames[gamemap - 1];
+            dsda_StringCat(str, *mapnames[gamemap - 1]);
           else if (gameepisode < 6 && gamemap < 10)
-            *title = *mapnames[(gameepisode - 1) * 9 + gamemap - 1];
+            dsda_StringCat(str, *mapnames[(gameepisode - 1) * 9 + gamemap - 1]);
           break;
 
         default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
           if (gamemission == pack_tnt && gamemap < 33)
-            *title = *mapnamest[gamemap - 1];
+            dsda_StringCat(str, *mapnamest[gamemap - 1]);
           else if (gamemission == pack_plut && gamemap < 33)
-            *title = *mapnamesp[gamemap - 1];
+            dsda_StringCat(str, *mapnamesp[gamemap - 1]);
           else if (gamemap < 34)
-            *title = *mapnames2[gamemap - 1];
+            dsda_StringCat(str, *mapnames2[gamemap - 1]);
           break;
       }
     }
   }
 
-  if (*title == NULL)
-    *title = MAPNAME(gameepisode, gamemap);
+  if (!str->string)
+    dsda_StringCat(str, MAPNAME(gameepisode, gamemap));
 
   return true;
 }

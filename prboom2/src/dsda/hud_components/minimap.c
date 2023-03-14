@@ -30,7 +30,7 @@ void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_
   local = *data;
 
   local->x = x_offset;
-  local->y = dsda_HudComponentY(y_offset, vpt);
+  local->y = dsda_HudComponentY(y_offset, vpt, 0);
   local->width = args[0];
   local->height = args[1];
   local->scale = args[2];

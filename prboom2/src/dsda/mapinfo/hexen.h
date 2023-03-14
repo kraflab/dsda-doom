@@ -20,6 +20,8 @@
 
 #include "p_mobj.h"
 
+#include "dsda/utility.h"
+
 int dsda_HexenFirstMap(int* episode, int* map);
 int dsda_HexenNewGameMap(int* episode, int* map);
 int dsda_HexenResolveWarp(int* args, int arg_count, int* episode, int* map);
@@ -38,7 +40,7 @@ int dsda_HexenStartFinale(void);
 int dsda_HexenFTicker(void);
 void dsda_HexenFDrawer(void);
 int dsda_HexenBossAction(mobj_t* mo);
-int dsda_HexenHUTitle(const char** title);
+int dsda_HexenHUTitle(dsda_string_t* str);
 int dsda_HexenSkyTexture(int* sky);
 int dsda_HexenPrepareInitNew(void);
 int dsda_HexenPrepareIntermission(int* result);

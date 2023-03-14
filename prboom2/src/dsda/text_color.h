@@ -70,6 +70,13 @@ typedef enum {
   dsda_tc_exhud_event_split,
   dsda_tc_exhud_line_activation,
   dsda_tc_exhud_local_time,
+  dsda_tc_map_coords,
+  dsda_tc_map_time_level,
+  dsda_tc_map_time_total,
+  dsda_tc_map_title,
+  dsda_tc_map_totals_label,
+  dsda_tc_map_totals_value,
+  dsda_tc_map_totals_max,
   dsda_tc_inter_split_normal,
   dsda_tc_inter_split_good,
 } dsda_text_color_index_t;

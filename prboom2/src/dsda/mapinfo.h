@@ -20,6 +20,8 @@
 
 #include "p_mobj.h"
 
+#include "dsda/utility.h"
+
 #define WI_SHOW_NEXT_LOC      0x01
 #define WI_SHOW_NEXT_DONE     0x02
 #define WI_SHOW_NEXT_EPISODAL 0x04
@@ -51,7 +53,7 @@ void dsda_StartFinale(void);
 int dsda_FTicker(void);
 int dsda_FDrawer(void);
 int dsda_BossAction(mobj_t* mo);
-void dsda_HUTitle(const char** title);
+void dsda_HUTitle(dsda_string_t* str);
 int dsda_SkyTexture(void);
 void dsda_PrepareInitNew(void);
 void dsda_PrepareIntermission(int* behaviour);

@@ -292,14 +292,14 @@ int dsda_BossAction(mobj_t* mo) {
   return false;
 }
 
-void dsda_HUTitle(const char** title) {
-  if (dsda_HexenHUTitle(title))
+void dsda_HUTitle(dsda_string_t* str) {
+  if (dsda_HexenHUTitle(str))
     return;
 
-  if (dsda_UHUTitle(title))
+  if (dsda_UHUTitle(str))
     return;
 
-  dsda_LegacyHUTitle(title);
+  dsda_LegacyHUTitle(str);
 }
 
 int dsda_SkyTexture(void) {
