@@ -96,3 +96,11 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
   - Uses the message font
 - `map_title`: shows the current map's title
   - Uses the message font
+- `message`: shows the current player message
+  - Uses the message font
+  - Supports 1 argument: `center`
+  - `center`: centers the component horizontally
+- `secret_message`: shows the secret revealed message
+  - Uses the message font
+  - Supports 1 argument: `center`
+  - `center`: centers the component horizontally
