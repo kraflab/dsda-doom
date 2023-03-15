@@ -444,6 +444,8 @@ static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
           vpt = VPT_ALIGN_LEFT;
         else if (!strncmp(alignment, "right", sizeof(alignment)))
           vpt = VPT_ALIGN_RIGHT;
+        else if (!strncmp(alignment, "none", sizeof(alignment)))
+          vpt = VPT_STRETCH;
         else
           I_Error("Invalid hud component alignment \"%s\"", line);
 
