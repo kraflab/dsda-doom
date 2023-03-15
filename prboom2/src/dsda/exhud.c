@@ -91,93 +91,105 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateAmmoTextHC,
     dsda_DrawAmmoTextHC,
     "ammo_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_armor_text] = {
     dsda_InitArmorTextHC,
     dsda_UpdateArmorTextHC,
     dsda_DrawArmorTextHC,
     "armor_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_big_ammo] = {
     dsda_InitBigAmmoHC,
     dsda_UpdateBigAmmoHC,
     dsda_DrawBigAmmoHC,
     "big_ammo",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_big_armor] = {
     dsda_InitBigArmorHC,
     dsda_UpdateBigArmorHC,
     dsda_DrawBigArmorHC,
     "big_armor",
-    VPT_NOOFFSET,
+    .default_vpt = VPT_EX_TEXT | VPT_NOOFFSET,
   },
   [exhud_big_armor_text] = {
     dsda_InitBigArmorTextHC,
     dsda_UpdateBigArmorTextHC,
     dsda_DrawBigArmorTextHC,
     "big_armor_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_big_artifact] = {
     dsda_InitBigArtifactHC,
     dsda_UpdateBigArtifactHC,
     dsda_DrawBigArtifactHC,
     "big_artifact",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_big_health] = {
     dsda_InitBigHealthHC,
     dsda_UpdateBigHealthHC,
     dsda_DrawBigHealthHC,
     "big_health",
-    VPT_NOOFFSET,
+    .default_vpt = VPT_EX_TEXT | VPT_NOOFFSET,
   },
   [exhud_big_health_text] = {
     dsda_InitBigHealthTextHC,
     dsda_UpdateBigHealthTextHC,
     dsda_DrawBigHealthTextHC,
     "big_health_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_composite_time] = {
     dsda_InitCompositeTimeHC,
     dsda_UpdateCompositeTimeHC,
     dsda_DrawCompositeTimeHC,
     "composite_time",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_health_text] = {
     dsda_InitHealthTextHC,
     dsda_UpdateHealthTextHC,
     dsda_DrawHealthTextHC,
     "health_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_keys] = {
     dsda_InitKeysHC,
     dsda_UpdateKeysHC,
     dsda_DrawKeysHC,
     "keys",
-    VPT_NOOFFSET,
+    .default_vpt = VPT_EX_TEXT | VPT_NOOFFSET,
   },
   [exhud_ready_ammo_text] = {
     dsda_InitReadyAmmoTextHC,
     dsda_UpdateReadyAmmoTextHC,
     dsda_DrawReadyAmmoTextHC,
     "ready_ammo_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_speed_text] = {
     dsda_InitSpeedTextHC,
     dsda_UpdateSpeedTextHC,
     dsda_DrawSpeedTextHC,
     "speed_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_stat_totals] = {
     dsda_InitStatTotalsHC,
     dsda_UpdateStatTotalsHC,
     dsda_DrawStatTotalsHC,
     "stat_totals",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_tracker] = {
     dsda_InitTrackerHC,
     dsda_UpdateTrackerHC,
     dsda_DrawTrackerHC,
     "tracker",
+    .default_vpt = VPT_EX_TEXT,
     .strict = true,
   },
   [exhud_weapon_text] = {
@@ -185,12 +197,14 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateWeaponTextHC,
     dsda_DrawWeaponTextHC,
     "weapon_text",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_render_stats] = {
     dsda_InitRenderStatsHC,
     dsda_UpdateRenderStatsHC,
     dsda_DrawRenderStatsHC,
     "render_stats",
+    .default_vpt = VPT_EX_TEXT,
     .strict = true,
     .off_by_default = true,
   },
@@ -199,6 +213,7 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateFPSHC,
     dsda_DrawFPSHC,
     "fps",
+    .default_vpt = VPT_EX_TEXT,
     .off_by_default = true,
   },
   [exhud_attempts] = {
@@ -206,18 +221,21 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateAttemptsHC,
     dsda_DrawAttemptsHC,
     "attempts",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_local_time] = {
     dsda_InitLocalTimeHC,
     dsda_UpdateLocalTimeHC,
     dsda_DrawLocalTimeHC,
     "local_time",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_coordinate_display] = {
     dsda_InitCoordinateDisplayHC,
     dsda_UpdateCoordinateDisplayHC,
     dsda_DrawCoordinateDisplayHC,
     "coordinate_display",
+    .default_vpt = VPT_EX_TEXT,
     .strict = true,
     .off_by_default = true,
   },
@@ -226,6 +244,7 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateLineDisplayHC,
     dsda_DrawLineDisplayHC,
     "line_display",
+    .default_vpt = VPT_EX_TEXT,
     .strict = true,
     .off_by_default = true,
   },
@@ -234,6 +253,7 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateCommandDisplayHC,
     dsda_DrawCommandDisplayHC,
     "command_display",
+    .default_vpt = VPT_EX_TEXT,
     .strict = true,
     .off_by_default = true,
     .intermission = true,
@@ -243,12 +263,14 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateEventSplitHC,
     dsda_DrawEventSplitHC,
     "event_split",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_level_splits] = {
     dsda_InitLevelSplitsHC,
     dsda_UpdateLevelSplitsHC,
     dsda_DrawLevelSplitsHC,
     "level_splits",
+    .default_vpt = VPT_EX_TEXT,
     .intermission = true,
     .not_level = true,
   },
@@ -257,6 +279,7 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateMinimapHC,
     dsda_DrawMinimapHC,
     "minimap",
+    .default_vpt = VPT_EX_TEXT,
     .off_by_default = true,
   },
   [exhud_color_test] = {
@@ -264,6 +287,7 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateColorTestHC,
     dsda_DrawColorTestHC,
     "color_test",
+    .default_vpt = VPT_EX_TEXT,
   },
   [exhud_map_coordinates] = {
     dsda_InitMapCoordinatesHC,
@@ -295,7 +319,6 @@ exhud_component_t components_template[exhud_component_count] = {
 typedef struct {
   const char* name;
   dboolean status_bar;
-  int default_vpt;
   dboolean loaded;
   exhud_component_t components[exhud_component_count];
 } dsda_hud_container_t;
@@ -309,9 +332,9 @@ typedef enum {
 } dsda_hud_variant_t;
 
 static dsda_hud_container_t containers[] = {
-  [hud_ex]   = { "ex", true, VPT_EX_TEXT },
-  [hud_off]  = { "off", true, VPT_EX_TEXT },
-  [hud_full] = { "full", false, VPT_EX_TEXT },
+  [hud_ex]   = { "ex", true },
+  [hud_off]  = { "off", true },
+  [hud_full] = { "full", false },
   [hud_map] = { "map", true },
   [hud_null] = { NULL }
 };
@@ -341,8 +364,8 @@ static void dsda_TurnComponentOff(int id) {
 
 static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args, int arg_count) {
   components[id].initialized = true;
-  components[id].init(x, y, vpt | components[id].default_vpt | container->default_vpt,
-                 args, arg_count, &components[id].data);
+  components[id].init(x, y, vpt | components[id].default_vpt,
+                      args, arg_count, &components[id].data);
 
   if (components[id].off_by_default)
     dsda_TurnComponentOff(id);
