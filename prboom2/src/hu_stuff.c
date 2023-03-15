@@ -69,10 +69,6 @@ static player_t*  plr;
 // font sets
 patchnum_t hu_font[HU_FONTSIZE];
 patchnum_t hu_font2[HU_FONTSIZE];
-patchnum_t hu_msgbg[9];          //jff 2/26/98 add patches for message background
-
-// widgets
-static hu_stext_t     w_message;
 
 static dboolean    always_off = false;
 static dboolean    message_on;
@@ -81,13 +77,6 @@ dboolean           message_dontfuckwithme;
 static dboolean    message_nottobefuckedwith;
 static int         message_counter;
 static int         yellow_message;
-
-//jff 2/16/98 hud supported automap colors added
-const int hudcolor_cmsg = CR_GOLD;  // color of center message
-const int hudcolor_mesg = CR_DEFAULT;  // color range of scrolling messages
-const int hudcolor_list = CR_GOLD;  // list of messages color
-
-dsda_string_t hud_title;
 
 typedef struct custom_message_s
 {
@@ -167,12 +156,6 @@ void HU_Init(void)
       hu_font[i] = hu_font[0]; //jff 2/16/98 account for gap
     }
   }
-
-  // CPhipps - load patches for message background
-  for (i=0; i<9; i++) {
-    sprintf(buffer, "BOX%c%c", "UCL"[i/3], "LCR"[i%3]);
-    R_SetPatchNum(&hu_msgbg[i], buffer);
-  }
 }
 
 //jff 2/16/98 status color change levels
@@ -190,6 +173,8 @@ void HU_InitThresholds(void)
   hud_ammo_red = dsda_IntConfig(dsda_config_hud_ammo_red);
   hud_ammo_yellow = dsda_IntConfig(dsda_config_hud_ammo_yellow);
 }
+
+dsda_string_t hud_title;
 
 static void HU_FetchTitle(void)
 {
@@ -224,33 +209,8 @@ void HU_Start(void)
   message_nottobefuckedwith = false;
   yellow_message = false;
 
-  // create the message widget
-  // messages to player in upper-left of screen
-  HUlib_initSText
-  (
-    &w_message,
-    HU_MSGX,
-    HU_MSGY,
-    HU_MSGHEIGHT,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_mesg,
-    VPT_ALIGN_LEFT_TOP,
-    &message_on
-  );
-
   HU_FetchTitle();
 
-  HUlib_initTextLine
-  (
-    &w_centermsg,
-    HU_CENTERMSGX,
-    HU_CENTERMSGY,
-    hu_font,
-    HU_FONTSTART,
-    hudcolor_cmsg,
-    VPT_STRETCH
-  );
   HUlib_initTextLine
   (
     &w_precache,
@@ -494,15 +454,36 @@ void HU_Drawer(void)
   if (hudadd_crosshair)
     HU_draw_crosshair();
 
-  HUlib_drawSText(&w_message);
-
-  //e6y
-  if (custom_message_p->ticks > 0)
-    HUlib_drawTextLine(&w_centermsg, false);
-
   dsda_DrawExHud();
 
   V_EndUIDraw();
+}
+
+char* player_message;
+char* secret_message;
+
+static void HU_UpdateMessage(const char* message)
+{
+  if (player_message)
+    Z_Free(player_message);
+
+  player_message = Z_Strdup(message);
+}
+
+char* HU_PlayerMessage(void) {
+  return message_on ? player_message : NULL;
+}
+
+static void HU_UpdateSecretMessage(const char* message)
+{
+  if (secret_message)
+    Z_Free(secret_message);
+
+  secret_message = Z_Strdup(message);
+}
+
+char* HU_SecretMessage(void) {
+  return custom_message_p->ticks > 0 ? secret_message : NULL;
 }
 
 //
@@ -514,8 +495,7 @@ void HU_Drawer(void)
 //
 void HU_Ticker(void)
 {
-  int i, rc;
-  char c;
+  int i;
 
   // tick down message counter if message is up
   if (message_counter && !--message_counter)
@@ -533,8 +513,8 @@ void HU_Ticker(void)
     if ((plr->message && !message_nottobefuckedwith)
         || (plr->message && message_dontfuckwithme))
     {
-      //post the message to the message widget
-      HUlib_addMessageToSText(&w_message, 0, plr->message);
+      // update the active message
+      HU_UpdateMessage(plr->message);
 
       // clear the message to avoid posting multiple times
       plr->message = 0;
@@ -558,16 +538,11 @@ void HU_Ticker(void)
     if (custom_message[i].ticks > 0)
       custom_message[i].ticks--;
   }
+
   if (custom_message_p->msg)
   {
-    const char *s = custom_message_p->msg;
-    HUlib_clearTextLine(&w_centermsg);
-    while (*s)
-    {
-      HUlib_addCharToTextLine(&w_centermsg, *(s++));
-    }
-    HUlib_setTextXCenter(&w_centermsg);
-    w_centermsg.cm = custom_message_p->cm;
+    HU_UpdateSecretMessage(custom_message_p->msg);
+
     custom_message_p->msg = NULL;
 
     if (custom_message_p->sfx > 0 && custom_message_p->sfx < num_sfx)

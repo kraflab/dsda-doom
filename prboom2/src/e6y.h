@@ -38,14 +38,6 @@
 
 #include "hu_lib.h"
 
-#define HU_HUDADDX (HU_HUDX)
-#define HU_HUDADDY (HU_HUDY+(-1)*HU_GAPY)
-#define HU_CENTERMSGX (320/2)
-#define HU_CENTERMSGY ((200-ST_HEIGHT)/2 - 1 - LittleShort(hu_font[0].height))
-
-#define HU_HUDADDX_D (HU_HUDX_LL)
-#define HU_HUDADDY_D (HU_HUDY_LL+(-1)*HU_GAPY)
-
 #define STSTR_SECRETFOUND   "A secret is revealed!"
 
 #define GL_COMBINE_ARB                    0x8570

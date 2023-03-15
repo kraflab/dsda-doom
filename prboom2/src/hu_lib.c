@@ -41,14 +41,6 @@
 
 #include "dsda/stretch.h"
 
-//
-// not used currently
-// code to initialize HUlib would go here if needed
-//
-static void HUlib_init(void)
-{
-}
-
 #define HU_COLOR 0x30
 
 char HUlib_Color(int cm)
@@ -211,119 +203,6 @@ void HUlib_drawOffsetTextLine(hu_textline_t* l, int offset)
   l->y = old_y;
 }
 
-////////////////////////////////////////////////////////
-//
-// Player message widget (up to 4 lines of text)
-//
-////////////////////////////////////////////////////////
-
-//
-// HUlib_initSText()
-//
-// Initialize a hu_stext_t widget. Set the position, number of lines, font,
-// start char of the font, and color range to be used, and whether enabled.
-//
-// Passed a hu_stext_t, and the values used to initialize
-// Returns nothing
-//
-void HUlib_initSText
-( hu_stext_t* s,
-  int   x,
-  int   y,
-  int   h,
-  const patchnum_t* font,
-  int   startchar,
-  int cm,       //jff 2/16/98 add color range parameter
-  enum patch_translation_e flags,
-  dboolean*  on )
-{
-
-  int i;
-
-  s->h = h;
-  s->on = on;
-  s->cl = 0;
-  for (i=0;i<h;i++)
-    HUlib_initTextLine
-    (
-      &s->l[i],
-      x,
-      y - i*(font[0].height+1),
-      font,
-      startchar,
-      cm,
-      flags
-    );
-}
-
-//
-// HUlib_addLineToSText()
-//
-// Adds a blank line to a hu_stext_t widget
-//
-// Passed a hu_stext_t
-// Returns nothing
-//
-static void HUlib_addLineToSText(hu_stext_t* s)
-{
-
-  int i;
-
-  // add a clear line
-  if (++s->cl == s->h)
-    s->cl = 0;
-  HUlib_clearTextLine(&s->l[s->cl]);
-}
-
-//
-// HUlib_addMessageToSText()
-//
-// Adds a message line with prefix to a hu_stext_t widget
-//
-// Passed a hu_stext_t, the prefix string, and a message string
-// Returns nothing
-//
-void HUlib_addMessageToSText(hu_stext_t* s, const char* prefix, const char* msg)
-{
-  HUlib_addLineToSText(s);
-    if (prefix)
-      while (*prefix)
-        HUlib_addCharToTextLine(&s->l[s->cl], *(prefix++));
-
-  while (*msg)
-    HUlib_addCharToTextLine(&s->l[s->cl], *(msg++));
-}
-
-//
-// HUlib_drawSText()
-//
-// Displays a hu_stext_t widget
-//
-// Passed a hu_stext_t
-// Returns nothing
-//
-void HUlib_drawSText(hu_stext_t* s)
-{
-  int i, idx;
-  hu_textline_t *l;
-
-  if (!*s->on)
-    return; // if not on, don't draw
-
-  // draw everything
-  for (i=0 ; i<s->h ; i++)
-  {
-    idx = s->cl - i;
-    if (idx < 0)
-      idx += s->h; // handle queue of lines
-
-    l = &s->l[idx];
-
-    // need a decision made here on whether to skip the draw
-    HUlib_drawTextLine(l, false); // no cursor, please
-  }
-}
-
 //
 // HUlib_setTextXCenter()
 //
@@ -339,7 +218,7 @@ void HUlib_setTextXCenter(hu_textline_t* t)
   while (*s)
   {
     int c = toupper(*(s++)) - HU_FONTSTART;
-    t->x -= (c < 0 || c > HU_FONTSIZE ? 4 : t->f[c].width);
+    t->x -= (c < 0 || c > HU_FONTSIZE ? t->space_width : t->f[c].width);
   }
   if (t->x < 0)
     t->x = 0;

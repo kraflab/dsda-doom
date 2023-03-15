@@ -110,6 +110,8 @@ set(COMMON_SRC
     dsda/hud_components/map_title.h
     dsda/hud_components/map_totals.c
     dsda/hud_components/map_totals.h
+    dsda/hud_components/message.c
+    dsda/hud_components/message.h
     dsda/hud_components/minimap.c
     dsda/hud_components/minimap.h
     dsda/hud_components/mobj_tracker.c
@@ -122,6 +124,8 @@ set(COMMON_SRC
     dsda/hud_components/ready_ammo_text.h
     dsda/hud_components/render_stats.c
     dsda/hud_components/render_stats.h
+    dsda/hud_components/secret_message.c
+    dsda/hud_components/secret_message.h
     dsda/hud_components/sector_tracker.c
     dsda/hud_components/sector_tracker.h
     dsda/hud_components/speed_text.c

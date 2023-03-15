@@ -37,28 +37,14 @@
 #include "r_defs.h"
 #include "v_video.h"  //jff 2/16/52 include color range defs
 
-
 /* background and foreground screen numbers
  * different from other modules. */
 //e6y #define BG      1
 #define FG      0
 
-/* font stuff
- * #define HU_CHARERASE    KEYD_BACKSPACE / not used               / phares
- */
-
-#define HU_MAXLINES   4
 #define HU_MAXLINELENGTH  80
-#define HU_REFRESHSPACING 8 /*jff 2/26/98 space lines in text refresh widget*/
-/*jff 2/26/98 maximum number of messages allowed in refresh list */
-#define HU_MAXMESSAGES 16
 
-/*
- * Typedefs of widgets
- */
-
-/* Text Line widget
- *  (parent of Scrolling Text and Input Text widgets) */
+// Text Line widget
 typedef struct
 {
   // left-justified position of scrolling text window
@@ -85,25 +71,6 @@ typedef struct
   int space_width;
 } hu_textline_t;
 
-
-
-// Scrolling Text window widget
-//  (child of Text Line widget)
-typedef struct
-{
-  hu_textline_t l[HU_MAXLINES]; // text lines to draw
-  int     h;                    // height in lines
-  int     cl;                   // current line number
-
-  // pointer to dboolean stating whether to update window
-  dboolean*    on;
-
-} hu_stext_t;
-
-//
-// Widget creation, access, and update routines
-//
-
 //
 // textline code
 //
@@ -128,28 +95,6 @@ dboolean HUlib_addCharToTextLine(hu_textline_t *t, char ch);
 // draws tline
 void HUlib_drawTextLine(hu_textline_t *l, dboolean drawcursor);
 void HUlib_drawOffsetTextLine(hu_textline_t* l, int offset);
-
-//
-// Scrolling Text window widget routines
-//
-
-// initialize an stext widget
-void HUlib_initSText
-( hu_stext_t* s,
-  int   x,
-  int   y,
-  int   h,
-  const patchnum_t* font,
-  int   startchar,
-  int cm,   //jff 2/16/98 add color range parameter
-  enum patch_translation_e flags,
-  dboolean*  on );
-
-// add a text message to an stext widget
-void HUlib_addMessageToSText(hu_stext_t* s, const char* prefix, const char* msg);
-
-// draws stext
-void HUlib_drawSText(hu_stext_t* s);
 
 //e6y
 void HUlib_setTextXCenter(hu_textline_t* t);
