@@ -10,10 +10,12 @@ A HUD configuration starts with the environment: `game variant`
   - `ex` (with status bar and extended hud on)
   - `off` (with status bar and extended hud off)
   - `full` (without status bar)
+  - `map` (on top of the automap)
 
 The configuration then consists of a series of components to display: `name x y alignment [args]`
 - The `name` specifies which component to display
 - The `x` and `y` fields set the location of the component
+  - `y` values are automatically adjusted for different font heights
 - The `alignment` controls how the position is translated in different screen sizes
   - `top`
   - `top_left`
@@ -82,3 +84,15 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
   - `height`: height of the component
   - `scale`: width of the component in map units
 - `color_test`: shows the hud fonts in different color modes
+- `map_totals`: shows the kills / secrets / items on the current map
+  - Uses the message font with word labels
+  - Supports 3 arguments: `show_kills show_items show_secrets`
+  - `show_kills`: shows kills in the component
+  - `show_items`: shows items in the component
+  - `show_secrets`: shows secrets in the component
+- `map_time`: shows the level / total time
+  - Uses the message font
+- `map_coordinates`: shows the player's position
+  - Uses the message font
+- `map_title`: shows the current map's title
+  - Uses the message font
