@@ -21,6 +21,7 @@
 
 typedef struct {
   dsda_text_t component;
+  dboolean center;
 } local_component_t;
 
 static local_component_t* local;
@@ -48,6 +49,8 @@ void dsda_InitMessageHC(int x_offset, int y_offset, int vpt, int* args, int arg_
   *data = Z_Calloc(1, sizeof(local_component_t));
   local = *data;
 
+  local->center = arg_count > 0 ? !!args[0] : false;
+
   dsda_InitBlockyHC(&local->component, x_offset, y_offset, vpt);
 }
 
@@ -56,6 +59,9 @@ void dsda_UpdateMessageHC(void* data) {
 
   dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
   dsda_RefreshHudText(&local->component);
+
+  if (local->center)
+    HUlib_setTextXCenter(&local->component.text);
 }
 
 void dsda_DrawMessageHC(void* data) {
