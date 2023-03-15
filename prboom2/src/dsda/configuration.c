@@ -1195,8 +1195,12 @@ static void dsda_PersistStringConfig(dsda_config_t* conf) {
 static void dsda_ConstrainIntConfig(dsda_config_t* conf) {
   if (conf->transient_value.v_int > conf->upper_limit)
     conf->transient_value.v_int = conf->upper_limit;
-  else if (conf->transient_value.v_int < conf->lower_limit)
-    conf->transient_value.v_int = conf->lower_limit;
+  else if (conf->transient_value.v_int < conf->lower_limit) {
+    if (conf->transient_value.v_int == -1)
+      conf->transient_value.v_int = conf->default_value.v_int;
+    else
+      conf->transient_value.v_int = conf->lower_limit;
+  }
 
   if (conf->flags & CONF_EVEN && (conf->transient_value.v_int % 2))
     conf->transient_value.v_int = conf->default_value.v_int;
