@@ -31,6 +31,7 @@
 #include "z_zone.h"
 
 #include "dsda/args.h"
+#include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/stretch.h"
@@ -93,11 +94,6 @@ void M_ChangeSkyMode(void);
 void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
-void dsda_RefreshExHudFPS(void);
-void dsda_RefreshExHudMinimap(void);
-void dsda_RefreshExHudLevelSplits(void);
-void dsda_RefreshExHudCoordinateDisplay(void);
-void dsda_RefreshExHudCommandDisplay(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
@@ -165,7 +161,7 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_realtic_clock_rate) < 100)
     dsda_TrackFeature(uf_slowdown);
 
-  if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_point_coord))
+  if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_coordinates))
     dsda_TrackFeature(uf_coordinates);
 
   if (dsda_IntConfig(dsda_config_freelook))
@@ -961,13 +957,21 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "map_secret_after", dsda_config_map_secret_after,
     CONF_BOOL(0), NULL, NOT_STRICT, AM_InitParams
   },
-  [dsda_config_map_point_coord] = {
-    "map_point_coord", dsda_config_map_point_coord,
-    CONF_BOOL(0), NULL, STRICT_INT(0)
+  [dsda_config_map_coordinates] = {
+    "map_coordinates", dsda_config_map_coordinates,
+    CONF_BOOL(1), NULL, STRICT_INT(0), dsda_RefreshMapCoordinates
   },
-  [dsda_config_map_level_stat] = {
-    "map_level_stat", dsda_config_map_level_stat,
-    CONF_BOOL(1)
+  [dsda_config_map_totals] = {
+    "map_totals", dsda_config_map_totals,
+    CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTotals
+  },
+  [dsda_config_map_time] = {
+    "map_time", dsda_config_map_time,
+    CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTime
+  },
+  [dsda_config_map_title] = {
+    "map_title", dsda_config_map_title,
+    CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTitle
   },
   [dsda_config_automap_overlay] = {
     "automap_overlay", dsda_config_automap_overlay,

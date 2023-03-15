@@ -28,5 +28,9 @@ void dsda_RefreshExHudMinimap(void);
 void dsda_RefreshExHudLevelSplits(void);
 void dsda_RefreshExHudCoordinateDisplay(void);
 void dsda_RefreshExHudCommandDisplay(void);
+void dsda_RefreshMapCoordinates(void);
+void dsda_RefreshMapTotals(void);
+void dsda_RefreshMapTime(void);
+void dsda_RefreshMapTitle(void);
 
 #endif

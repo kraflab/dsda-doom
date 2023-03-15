@@ -216,8 +216,20 @@ dboolean dsda_ShowDemoAttempts(void) {
   return dsda_IntConfig(dsda_config_show_demo_attempts) && demorecording;
 }
 
-dboolean dsda_MapPointCoordinates(void) {
-  return dsda_IntConfig(dsda_config_map_point_coord);
+dboolean dsda_MapCoordinates(void) {
+  return dsda_IntConfig(dsda_config_map_coordinates);
+}
+
+dboolean dsda_MapTotals(void) {
+  return dsda_IntConfig(dsda_config_map_totals);
+}
+
+dboolean dsda_MapTime(void) {
+  return dsda_IntConfig(dsda_config_map_time);
+}
+
+dboolean dsda_MapTitle(void) {
+  return dsda_IntConfig(dsda_config_map_title);
 }
 
 dboolean dsda_PainPalette(void) {
