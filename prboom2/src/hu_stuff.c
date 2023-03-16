@@ -53,6 +53,7 @@
 #include "p_setup.h"
 #include "w_wad.h"
 #include "e6y.h" //e6y
+#include "g_overflow.h"
 
 #include "dsda.h"
 #include "dsda/exhud.h"
@@ -61,7 +62,6 @@
 #include "dsda/pause.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
-#include "g_overflow.h"
 
 
 static player_t*  plr;
@@ -96,7 +96,6 @@ typedef struct message_thinker_s
 
 static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
-void HU_init_crosshair(void);
 
 //
 // HU_Init()
@@ -184,36 +183,19 @@ static void HU_FetchTitle(void)
   dsda_HUTitle(&hud_title);
 }
 
-//
-// HU_Start(void)
-//
-// Create and initialize the heads-up widgets, software machines to
-// maintain, update, and display information over the primary display
-//
-// This routine must be called after any change to the heads up configuration
-// in order for the changes to take effect in the actual displays
-//
-// Passed nothing, returns nothing
-//
-void HU_Start(void)
+static void HU_InitMessages(void)
 {
-  int   i;
-  const char* s; /* cph - const */
-
-  HU_InitThresholds();
-
-  plr = &players[displayplayer];        // killough 3/7/98
   custom_message_p = &custom_message[displayplayer];
   message_on = false;
   message_dontfuckwithme = false;
   message_nottobefuckedwith = false;
   yellow_message = false;
+}
 
-  HU_FetchTitle();
-
-  HU_init_crosshair();
-
-  dsda_InitExHud();
+static void HU_InitPlayer(void)
+{
+  // killough 3/7/98
+  plr = &players[displayplayer];
 }
 
 int HU_GetHealthColor(int health, int def)
@@ -251,7 +233,7 @@ static int hudadd_crosshair_health;
 static int hudadd_crosshair_target;
 static int hudadd_crosshair_lock_target;
 
-void HU_init_crosshair(void)
+void HU_InitCrosshair(void)
 {
   hudadd_crosshair_scale = dsda_IntConfig(dsda_config_hudadd_crosshair_scale);
   hudadd_crosshair_health = dsda_IntConfig(dsda_config_hudadd_crosshair_health);
@@ -346,9 +328,12 @@ mobj_t *HU_Target(void)
   return linetarget;
 }
 
-void HU_draw_crosshair(void)
+void HU_DrawCrosshair(void)
 {
   int cm;
+
+  if (!hudadd_crosshair)
+    return;
 
   crosshair.target_sprite = -1;
 
@@ -417,6 +402,27 @@ void HU_draw_crosshair(void)
 }
 
 //
+// HU_Start(void)
+//
+// Create and initialize the heads-up display
+//
+// This routine must be called after any change to the heads up configuration
+// in order for the changes to take effect in the actual displays
+//
+// Passed nothing, returns nothing
+//
+void HU_Start(void)
+{
+  HU_InitThresholds();
+  HU_InitPlayer();
+  HU_InitMessages();
+  HU_FetchTitle();
+  HU_InitCrosshair();
+
+  dsda_InitExHud();
+}
+
+//
 // HU_Drawer()
 //
 // Draw all the pieces of the heads-up display
@@ -425,23 +431,13 @@ void HU_draw_crosshair(void)
 //
 void HU_Drawer(void)
 {
-  char *s;
-  player_t *plr;
-  //jff 3/4/98 speed update up for slow systems
-  //e6y: speed update for uncapped framerate
-  static dboolean needupdate = false;
-  if (realframe) needupdate = !needupdate;
-
-  V_BeginUIDraw();
-
   // don't draw anything if there's a fullscreen menu up
   if (menuactive == mnact_full)
     return;
 
-  plr = &players[displayplayer];         // killough 3/7/98
+  V_BeginUIDraw();
 
-  if (hudadd_crosshair)
-    HU_draw_crosshair();
+  HU_DrawCrosshair();
 
   dsda_DrawExHud();
 

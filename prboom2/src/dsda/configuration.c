@@ -109,7 +109,7 @@ void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
 void S_Init(void);
 void M_ChangeMIDIPlayer(void);
-void HU_init_crosshair(void);
+void HU_InitCrosshair(void);
 void HU_InitThresholds(void);
 void dsda_InitKeyFrame(void);
 void dsda_SetupStretchParams(void);
@@ -139,7 +139,7 @@ void dsda_UpdateStrictMode(void) {
   M_ChangeSpeed(); // side effect of always sr50
   dsda_InitKeyFrame();
   M_ChangeSkyMode(); // affected by mouselook setting
-  HU_init_crosshair();
+  HU_InitCrosshair();
   M_ChangeApplyPalette();
   dsda_RefreshExHudCoordinateDisplay();
   dsda_RefreshExHudCommandDisplay();
@@ -819,23 +819,23 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_hudadd_crosshair_scale] = {
     "hudadd_crosshair_scale", dsda_config_hudadd_crosshair_scale,
-    CONF_BOOL(0), NULL, NOT_STRICT, HU_init_crosshair
+    CONF_BOOL(0), NULL, NOT_STRICT, HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair_health] = {
     "hudadd_crosshair_health", dsda_config_hudadd_crosshair_health,
-    CONF_BOOL(0), NULL, NOT_STRICT, HU_init_crosshair
+    CONF_BOOL(0), NULL, NOT_STRICT, HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair_target] = {
     "hudadd_crosshair_target", dsda_config_hudadd_crosshair_target,
-    CONF_BOOL(0), NULL, STRICT_INT(0), HU_init_crosshair
+    CONF_BOOL(0), NULL, STRICT_INT(0), HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair_lock_target] = {
     "hudadd_crosshair_lock_target", dsda_config_hudadd_crosshair_lock_target,
-    CONF_BOOL(0), NULL, STRICT_INT(0), HU_init_crosshair
+    CONF_BOOL(0), NULL, STRICT_INT(0), HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair] = {
     "hudadd_crosshair", dsda_config_hudadd_crosshair,
-    dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, CONF_FEATURE | NOT_STRICT, HU_init_crosshair
+    dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, CONF_FEATURE | NOT_STRICT, HU_InitCrosshair
   },
   [dsda_config_hud_health_red] = {
     "hud_health_red", dsda_config_hud_health_red,
