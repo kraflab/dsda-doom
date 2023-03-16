@@ -104,7 +104,6 @@ int gl_render_fov = 90;
 camera_t walkcamera;
 
 hu_textline_t  w_centermsg;
-hu_textline_t  w_precache;
 char hud_centermsg[80];
 
 angle_t viewpitch;

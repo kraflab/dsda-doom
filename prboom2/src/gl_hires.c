@@ -61,6 +61,8 @@
 #include "m_misc.h"
 #include "e6y.h"
 
+#include "dsda/utility.h"
+
 unsigned int gl_has_hires = 0;
 
 static GLuint progress_texid = 0;
@@ -128,6 +130,23 @@ int gld_ProgressEnd(void)
   return false;
 }
 
+extern patchnum_t hu_font[HU_FONTSIZE];
+static hu_textline_t w_precache;
+
+static void gld_InitProgressUpdate(void)
+{
+  HUlib_initTextLine
+  (
+    &w_precache,
+    16,
+    186,
+    hu_font,
+    HU_FONTSTART,
+    CR_RED,
+    VPT_ALIGN_LEFT_BOTTOM
+  );
+}
+
 void gld_ProgressUpdate(const char * text, int progress, int total)
 {
   int len;
@@ -143,13 +162,14 @@ void gld_ProgressUpdate(const char * text, int progress, int total)
     return;
   lastupdate = tic;
 
-  if ((text) && (strlen(text) > 0) && strcmp((last_text[0] ? last_text : ""), text))
+  DO_ONCE
+    gld_InitProgressUpdate();
+  END_ONCE
+
+  if (text && *text && strcmp(last_text, text))
   {
     const char *s;
     strcpy(last_text, text);
-
-    if (!w_precache.f)
-      HU_Start();
 
     HUlib_clearTextLine(&w_precache);
     s = text;

@@ -93,7 +93,6 @@ extern float skyYShift;
 extern dboolean mlook_or_fov;
 
 extern hu_textline_t  w_centermsg;
-extern hu_textline_t  w_precache;
 extern char hud_centermsg[80];
 
 void ParamsMatchingCheck();

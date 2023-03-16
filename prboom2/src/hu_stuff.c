@@ -211,17 +211,6 @@ void HU_Start(void)
 
   HU_FetchTitle();
 
-  HUlib_initTextLine
-  (
-    &w_precache,
-    16,
-    186,
-    hu_font,
-    HU_FONTSTART,
-    CR_RED,
-    VPT_ALIGN_LEFT_BOTTOM
-  );
-
   HU_init_crosshair();
 
   dsda_InitExHud();
