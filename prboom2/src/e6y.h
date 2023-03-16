@@ -92,9 +92,6 @@ extern float skyXShift;
 extern float skyYShift;
 extern dboolean mlook_or_fov;
 
-extern hu_textline_t  w_centermsg;
-extern char hud_centermsg[80];
-
 void ParamsMatchingCheck();
 void e6y_HandleSkip(void);
 void e6y_InitCommandLine(void);

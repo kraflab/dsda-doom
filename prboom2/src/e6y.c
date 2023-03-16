@@ -103,9 +103,6 @@ int gl_render_fov = 90;
 
 camera_t walkcamera;
 
-hu_textline_t  w_centermsg;
-char hud_centermsg[80];
-
 angle_t viewpitch;
 float skyscale;
 float screen_skybox_zplane;
