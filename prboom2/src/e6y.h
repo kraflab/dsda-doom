@@ -38,8 +38,6 @@
 
 #include "hu_lib.h"
 
-#define STSTR_SECRETFOUND   "A secret is revealed!"
-
 #define GL_COMBINE_ARB                    0x8570
 #define GL_RGB_SCALE_ARB                  0x8573
 
