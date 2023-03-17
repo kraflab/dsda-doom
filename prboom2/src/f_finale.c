@@ -370,6 +370,7 @@ void F_TextWrite (void)
   }
   else
     V_DrawBackground(finaleflat, 0);
+
   { // draw some of the text onto the screen
     int         cx = 10;
     int         cy = 10;
@@ -384,22 +385,24 @@ void F_TextWrite (void)
       int       c = *ch++;
 
       if (!c)
-  break;
+        break;
+
       if (c == '\n') {
-  cx = 10;
-  cy += 11;
-  continue;
+        cx = 10;
+        cy += 11;
+        continue;
       }
 
       c = toupper(c) - HU_FONTSTART;
       if (c < 0 || c> HU_FONTSIZE) {
-  cx += 4;
-  continue;
+        cx += 4;
+        continue;
       }
 
       w = hu_font[c].width;
       if (cx+w > SCREENWIDTH)
-  break;
+        break;
+
       // CPhipps - patch drawing updated
       V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
       cx+=w;
