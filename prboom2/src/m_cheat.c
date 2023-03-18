@@ -534,7 +534,7 @@ static void cheat_comp(char buf[3])
   else
   {
     G_Compatibility(); // this is missing options checking
-    doom_printf(comp_lev_str[compatibility_level]);
+    doom_printf("%s", comp_lev_str[compatibility_level]);
   }
 }
 
