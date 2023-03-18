@@ -791,8 +791,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
-  if (dsda_InputActive(dsda_input_use) ||
-      (!strict_input && dsda_InputTickActivated(dsda_input_use)))
+  if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
   {
     cmd->buttons |= BT_USE;
     // clear double clicks if hit use button
