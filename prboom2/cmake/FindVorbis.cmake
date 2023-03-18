@@ -1,76 +1,164 @@
-# - Find vorbis library
-# Find the native Vorbis headers and libraries.Vorbis depends on Ogg and will
-# provide Ogg headers/libraries as well.
-#
-#  VORBIS_INCLUDE_DIRS   - where to find vorbis/vorbis.h, ogg/ogg.h, etc
-#  VORBIS_LIBRARIES      - List of libraries when using libvorbis
-#  VORBIS_FOUND          - True if vorbis is found.
+#[=======================================================================[.rst:
+FindVorbis
+-------
 
+Finds the Vorbis libraries.
 
-#=============================================================================
-#Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
-#All rights reserved.
-#
-#Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-#* Redistributions of source code must retain the above copyright notice, 
-#this list of conditions and the following disclaimer.
-#
-#* Redistributions in binary form must reproduce the above copyright notice, 
-#this list of conditions and the following disclaimer in the documentation 
-#and/or other materials provided with the distribution.
-#
-#* Neither the names of Kitware, Inc., the Insight Software Consortium, nor 
-#the names of their contributors may be used to endorse or promote products 
-#derived from this software without specific prior written  permission.
-#
-#THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-#AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-#IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-#ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-#LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-#CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-#SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-#INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-#CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-#ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-#POSSIBILITY OF SUCH DAMAGE.
-#=============================================================================
+Imported Targets
+^^^^^^^^^^^^^^^^
 
-# Find Ogg
-if( Vorbis_FIND_REQUIRED )
-  set( OGG_ARG "REQUIRED" )
-elseif( Vorbis_FIND_QUIETLY )
-  set( OGG_ARG "QUIETLY" )
+This module provides the following imported targets, if found:
+
+``Vorbis::vorbis``
+  The base encoder and decoder library
+``Vorbis::vorbisenc``
+  The high-level encoder library
+``Vorbis::vorbisfile``
+  The high-level decoder library
+
+Result Variables
+^^^^^^^^^^^^^^^^
+
+This will define the following variables:
+
+``Vorbis_FOUND``
+  True if the system has all the requested components.
+``Vorbis_Vorbis_FOUND``
+  True if vorbis is found
+``Vorbis_Enc_FOUND``
+  True if vorbisenc is found
+``Vorbis_File_FOUND``
+  True if vorbisfile is found
+
+Cache Variables
+^^^^^^^^^^^^^^^
+
+The following cache variables may also be set:
+
+``Vorbis_INCLUDE_DIR``
+  The directory containing ``vorbis/vorbis.h``.
+``Vorbis_Vorbis_LIBRARY``
+  The path to the vorbis library.
+``Vorbis_Enc_LIBRARY``
+  The path to the vorbisenc library.
+``Vorbis_File_LIBRARY``
+  The path to the vorbisfile library.
+
+#]=======================================================================]
+
+if(Vorbis_FIND_REQUIRED)
+  set(_find_package_search_type "REQUIRED")
+elseif(Vorbis_FIND_QUIETLY)
+  set(_find_package_search_type "QUIET")
 endif()
 
-find_package( Ogg ${OGG_ARG} )
+find_package(PkgConfig QUIET)
+pkg_check_modules(PC_VORBIS QUIET vorbis)
+pkg_check_modules(PC_VORBISENC QUIET vorbisenc)
+pkg_check_modules(PC_VORBISFILE QUIET vorbisfile)
 
-# Look for the vorbisfile header file.
-find_path( VORBIS_INCLUDE_DIR
-  NAMES vorbis/vorbisfile.h
-  DOC "Vorbis include directory" )
-mark_as_advanced( VORBIS_INCLUDE_DIR )
+find_path(
+  Vorbis_INCLUDE_DIR
+  NAMES vorbis/codec.h
+  HINTS ${PC_VORBIS_INCLUDEDIR})
 
-# Look for the vorbisfile library.
-find_library( VORBISFILE_LIBRARY
-  NAMES vorbisfile
-  DOC "Path to VorbisFile library" )
-mark_as_advanced( VORBISFILE_LIBRARY )
-
-# Look for the vorbis library.
-find_library( VORBIS_LIBRARY
+find_library(
+  Vorbis_Vorbis_LIBRARY
   NAMES vorbis
-  DOC "Path to Vorbis library" )
-mark_as_advanced( VORBIS_LIBRARY )
+  HINTS ${PC_VORBIS_LIBDIR})
 
+find_library(
+  Vorbis_Enc_LIBRARY
+  NAMES vorbisenc
+  HINTS ${PC_VORBISENC_LIBDIR})
 
+find_library(
+  Vorbis_File_LIBRARY
+  NAMES vorbisfile
+  HINTS ${PC_VORBISFILE_LIBDIR})
 
-# handle the QUIETLY and REQUIRED arguments and set VORBISFILE_FOUND to TRUE if 
-# all listed variables are TRUE
-include( ${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake )
-FIND_PACKAGE_HANDLE_STANDARD_ARGS( Vorbis DEFAULT_MSG VORBIS_LIBRARY VORBIS_INCLUDE_DIR )
+if(PC_VORBIS_FOUND)
+  get_flags_from_pkg_config("${Vorbis_Vorbis_LIBRARY}" "PC_VORBIS" "_vorbis")
+endif()
 
-set( VORBIS_LIBRARIES ${VORBISFILE_LIBRARY} ${VORBIS_LIBRARY} ${OGG_LIBRARIES} )
-set( VORBIS_INCLUDE_DIRS ${VORBIS_INCLUDE_DIR} ${OGG_INCLUDE_DIRS} )
+if(PC_VORBISENC_FOUND)
+  get_flags_from_pkg_config("${Vorbis_Enc_LIBRARY}" "PC_VORBISENC" "_vorbisenc")
+endif()
+
+if(PC_VORBISFILE_FOUND)
+  get_flags_from_pkg_config("${Vorbis_File_LIBRARY}" "PC_VORBISFILE"
+                            "_vorbisfile")
+endif()
+
+find_library(_has_math_lib NAMES m)
+if(_has_math_lib)
+  list(APPEND _vorbis_link_libraries m)
+endif()
+find_package(Ogg ${_find_package_search_type})
+list(APPEND _vorbis_link_libraries Ogg::ogg)
+set(_vorbisenc_link_libraries Vorbis::vorbis)
+set(_vorbisfile_link_libraries Vorbis::vorbis)
+
+if(Vorbis_Vorbis_LIBRARY)
+  set(Vorbis_Vorbis_FOUND "TRUE")
+else()
+  set(Vorbis_Vorbis_FOUND "FALSE")
+endif()
+
+if(Vorbis_Enc_LIBRARY)
+  set(Vorbis_Enc_FOUND "TRUE")
+else()
+  set(Vorbis_Enc_FOUND "FALSE")
+endif()
+
+if(Vorbis_File_LIBRARY)
+  set(Vorbis_File_FOUND "TRUE")
+else()
+  set(Vorbis_File_FOUND "FALSE")
+endif()
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
+  Vorbis
+  REQUIRED_VARS "Vorbis_File_LIBRARY" "Vorbis_Vorbis_LIBRARY"
+                "Vorbis_INCLUDE_DIR"
+  HANDLE_COMPONENTS)
+
+if(Vorbis_Vorbis_FOUND AND NOT TARGET Vorbis::vorbis)
+  add_library(Vorbis::vorbis UNKNOWN IMPORTED)
+  set_target_properties(
+    Vorbis::vorbis
+    PROPERTIES IMPORTED_LOCATION "${Vorbis_Vorbis_LIBRARY}"
+               INTERFACE_INCLUDE_DIRECTORIES "${Vorbis_INCLUDE_DIR}"
+               INTERFACE_COMPILE_OPTIONS "${_vorbis_compile_options}"
+               INTERFACE_LINK_LIBRARIES "${_vorbis_link_libraries}"
+               INTERFACE_LINK_DIRECTORIES "${_vorbis_link_directories}"
+               INTERFACE_LINK_OPTIONS "${_vorbis_link_options}")
+endif()
+
+if(Vorbis_Enc_FOUND AND NOT TARGET Vorbis::vorbisenc)
+  add_library(Vorbis::vorbisenc UNKNOWN IMPORTED)
+  set_target_properties(
+    Vorbis::vorbisenc
+    PROPERTIES IMPORTED_LOCATION "${Vorbis_Enc_LIBRARY}"
+               INTERFACE_INCLUDE_DIRECTORIES "${Vorbis_INCLUDE_DIR}"
+               INTERFACE_COMPILE_OPTIONS "${_vorbisenc_compile_options}"
+               INTERFACE_LINK_LIBRARIES "${_vorbisenc_link_libraries}"
+               INTERFACE_LINK_DIRECTORIES "${_vorbisenc_link_directories}"
+               INTERFACE_LINK_OPTIONS "${_vorbisenc_link_options}")
+endif()
+
+if(Vorbis_File_FOUND AND NOT TARGET Vorbis::vorbisfile)
+  add_library(Vorbis::vorbisfile UNKNOWN IMPORTED)
+  set_target_properties(
+    Vorbis::vorbisfile
+    PROPERTIES IMPORTED_LOCATION "${Vorbis_File_LIBRARY}"
+               INTERFACE_INCLUDE_DIRECTORIES "${Vorbis_INCLUDE_DIR}"
+               INTERFACE_COMPILE_OPTIONS "${_vorbisfile_compile_options}"
+               INTERFACE_LINK_LIBRARIES "${_vorbisfile_link_libraries}"
+               INTERFACE_LINK_DIRECTORIES "${_vorbisfile_link_directories}"
+               INTERFACE_LINK_OPTIONS "${_vorbisfile_link_options}")
+endif()
+
+mark_as_advanced(Vorbis_INCLUDE_DIR Vorbis_Vorbis_LIBRARY Vorbis_Enc_LIBRARY
+                 Vorbis_File_LIBRARY)

@@ -1,45 +1,60 @@
-#-------------------------------------------------------------------------------
-#
-# Copyright 2013-2018 BBC Research and Development
-#
-# This file is part of Audio Waveform Image Generator.
-#
-# Author: Chris Needham
-#
-# Audio Waveform Image Generator is free software: you can redistribute it
-# and/or modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 3 of the License,
-# or (at your option) any later version.
-#
-# Audio Waveform Image Generator is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
-# Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along with
-# Audio Waveform Image Generator.  If not, see <http://www.gnu.org/licenses/>.
-#
-#-------------------------------------------------------------------------------
-#
-# Finds libmad include file and library. This module sets the following
-# variables:
-#
-#  LIBMAD_FOUND        - Flag if libmad was found
-#  LIBMAD_INCLUDE_DIRS - libmad include directories
-#  LIBMAD_LIBRARIES    - libmad library paths
-#
-#-------------------------------------------------------------------------------
+#[=======================================================================[.rst:
+FindLibMad
+-------
+
+Finds the LibMad library.
+
+Imported Targets
+^^^^^^^^^^^^^^^^
+
+This module provides the following imported targets, if found:
+
+``LibMad::libmad``
+  The LibMad library
+
+Result Variables
+^^^^^^^^^^^^^^^^
+
+This will define the following variables:
+
+``LibMad_FOUND``
+  True if the system has the LibMad library.
+``LibMad_INCLUDE_DIRS``
+  Include directories needed to use LibMad.
+``LibMad_LIBRARIES``
+  Libraries needed to link to LibMad.
+
+Cache Variables
+^^^^^^^^^^^^^^^
+
+The following cache variables may also be set:
+
+``LibMad_INCLUDE_DIR``
+  The directory containing ``LibMad.h``.
+``LibMad_LIBRARY``
+  The path to the LibMad library.
+
+#]=======================================================================]
+
+find_path(LibMad_INCLUDE_DIR NAMES mad.h)
+
+find_library(LibMad_LIBRARY NAMES mad)
 
 include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(LibMad REQUIRED_VARS "LibMad_LIBRARY"
+                                                       "LibMad_INCLUDE_DIR")
 
-find_path(LIBMAD_INCLUDE_DIRS mad.h)
-find_library(LIBMAD_LIBRARIES mad)
+if(LibMad_FOUND)
+  if(NOT TARGET LibMad::libmad)
+    add_library(LibMad::libmad UNKNOWN IMPORTED)
+    set_target_properties(
+      LibMad::libmad
+      PROPERTIES IMPORTED_LOCATION "${LibMad_LIBRARY}"
+                 INTERFACE_INCLUDE_DIRECTORIES "${LibMad_INCLUDE_DIR}")
+  endif()
 
-find_package_handle_standard_args(
-    LibMad
-    DEFAULT_MSG
-    LIBMAD_LIBRARIES
-    LIBMAD_INCLUDE_DIRS
-)
+  set(LibMad_LIBRARIES LibMad::libmad)
+  set(LibMad_INCLUDE_DIRS LibMad::libmad)
+endif()
 
-#-------------------------------------------------------------------------------
+mark_as_advanced(LibMad_INCLUDE_DIR LibMad_LIBRARY)

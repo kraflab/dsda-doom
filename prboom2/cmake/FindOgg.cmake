@@ -1,53 +1,87 @@
-# - Find ogg library
-# Find the native Ogg headers and libraries.
-#
-#  OGG_INCLUDE_DIRS - where to find ogg/ogg.h, etc.
-#  OGG_LIBRARIES    - List of libraries when using ogg.
-#  OGG_FOUND        - True if ogg is found.
+#[=======================================================================[.rst:
+FindOgg
+-------
 
-#=============================================================================
-#Copyright 2000-2009 Kitware, Inc., Insight Software Consortium
-#All rights reserved.
-#
-#Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-#* Redistributions of source code must retain the above copyright notice, 
-#this list of conditions and the following disclaimer.
-#
-#* Redistributions in binary form must reproduce the above copyright notice, 
-#this list of conditions and the following disclaimer in the documentation 
-#and/or other materials provided with the distribution.
-#
-#* Neither the names of Kitware, Inc., the Insight Software Consortium, nor 
-#the names of their contributors may be used to endorse or promote products 
-#derived from this software without specific prior written  permission.
-#
-#THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-#AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-#IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-#ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-#LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-#CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-#SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-#INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-#CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-#ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-#POSSIBILITY OF SUCH DAMAGE.
-#=============================================================================
+Finds the Ogg library.
 
-# Look for the header file.
-FIND_PATH(OGG_INCLUDE_DIR NAMES ogg/ogg.h)
-MARK_AS_ADVANCED(OGG_INCLUDE_DIR)
+Imported Targets
+^^^^^^^^^^^^^^^^
 
-# Look for the library.
-FIND_LIBRARY(OGG_LIBRARY NAMES ogg)
-MARK_AS_ADVANCED(OGG_LIBRARY)
+This module provides the following imported targets, if found:
 
-# handle the QUIETLY and REQUIRED arguments and set OGG_FOUND to TRUE if 
-# all listed variables are TRUE
-INCLUDE(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(Ogg DEFAULT_MSG OGG_LIBRARY OGG_INCLUDE_DIR)
+``Ogg::ogg``
+  The Ogg library
 
-SET(OGG_LIBRARIES ${OGG_LIBRARY})
-SET(OGG_INCLUDE_DIRS ${OGG_INCLUDE_DIR})
+Result Variables
+^^^^^^^^^^^^^^^^
+
+This will define the following variables:
+
+``Ogg_FOUND``
+  True if the system has the Ogg library.
+``Ogg_INCLUDE_DIRS``
+  Include directories needed to use Ogg.
+``Ogg_LIBRARIES``
+  Libraries needed to link to Ogg.
+
+The following variables are also set for compatibility with upstream:
+``OGG_INCLUDE_DIR``
+``OGG_INCLUDE_DIRS``
+``OGG_LIBRARY``
+``OGG_LIBRARIES``
+
+Cache Variables
+^^^^^^^^^^^^^^^
+
+The following cache variables may also be set:
+
+``Ogg_INCLUDE_DIR``
+  The directory containing ``ogg/ogg.h``.
+``Ogg_LIBRARY``
+  The path to the Ogg library.
+
+#]=======================================================================]
+
+find_package(PkgConfig QUIET)
+pkg_check_modules(PC_OGG QUIET ogg)
+
+find_path(
+  Ogg_INCLUDE_DIR
+  NAMES ogg/ogg.h
+  HINTS ${PC_OGG_INCLUDEDIR})
+
+find_library(
+  Ogg_LIBRARY
+  NAMES ogg
+  HINTS ${PC_OGG_LIBDIR})
+
+if(PC_OGG_FOUND)
+  get_flags_from_pkg_config("${Ogg_LIBRARY}" "PC_OGG" "_ogg")
+endif()
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Ogg REQUIRED_VARS "Ogg_LIBRARY"
+                                                    "Ogg_INCLUDE_DIR")
+
+if(Ogg_FOUND)
+  if(NOT TARGET Ogg::ogg)
+    add_library(Ogg::ogg UNKNOWN IMPORTED)
+    set_target_properties(
+      Ogg::ogg
+      PROPERTIES IMPORTED_LOCATION "${Ogg_LIBRARY}"
+                 INTERFACE_INCLUDE_DIRECTORIES "${Ogg_INCLUDE_DIR}"
+                 INTERFACE_COMPILE_OPTIONS "${_ogg_compile_options}"
+                 INTERFACE_LINK_LIBRARIES "${_ogg_link_libraries}"
+                 INTERFACE_LINK_DIRECTORIES "${_ogg_link_directories}"
+                 INTERFACE_LINK_OPTIONS "${_ogg_link_options}")
+  endif()
+
+  set(Ogg_LIBRARIES Ogg::ogg)
+  set(Ogg_INCLUDE_DIRS Ogg::ogg)
+  set(OGG_LIBRARY Ogg::ogg)
+  set(OGG_LIBRARIES Ogg::ogg)
+  set(OGG_INCLUDE_DIR Ogg::ogg)
+  set(OGG_INCLUDE_DIRS Ogg::ogg)
+endif()
+
+mark_as_advanced(Ogg_INCLUDE_DIR Ogg_LIBRARY)
