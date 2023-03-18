@@ -722,7 +722,8 @@ static void R_HandleGLFakeFlats(sector_t *sector)
 
 static void R_UpdateGlobalPlanes(sector_t *sector, int *floorlightlevel, int *ceilinglightlevel)
 {
-  sector_t    tempsec;              // killough 3/7/98: deep water hack
+  // TODO: this data must persist, but the reason is to be investigated
+  static sector_t tempsec;
 
   // killough 3/8/98, 4/4/98: Deep water / fake ceiling effect
   frontsector = // killough 4/11/98
