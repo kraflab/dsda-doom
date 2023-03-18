@@ -498,8 +498,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   int forward;
   int side;
   int newweapon;                                          // phares
+  dboolean strict_input;
 
   dsda_pclass_t *player_class = &pclass[players[consoleplayer].pclass];
+
+  strict_input = dsda_StrictMode();
 
   G_SetSpeed(false);
   dsda_EvaluateSkipModeBuildTiccmd();
@@ -529,13 +532,16 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   else
     tspeed = speed;
 
-  // turn 180 degrees in one keystroke?                           // phares
-                                                                  //    |
-  if (dsda_InputTickActivated(dsda_input_reverse))                    //    V
-    {
-      if (!strafe)
-        cmd->angleturn += QUICKREVERSE;                           //    ^
-    }                                                             // phares
+  // turn 180 degrees in one keystroke?
+  if (dsda_InputTickActivated(dsda_input_reverse))
+  {
+    if (!strafe) {
+      if (strict_input)
+        doom_printf("180 key disabled by strict mode");
+      else
+        cmd->angleturn += QUICKREVERSE;
+    }
+  }
 
   // let movement keys cancel each other out
 
@@ -785,7 +791,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
-  if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
+  if (dsda_InputActive(dsda_input_use) ||
+      (!strict_input && dsda_InputTickActivated(dsda_input_use)))
   {
     cmd->buttons |= BT_USE;
     // clear double clicks if hit use button
