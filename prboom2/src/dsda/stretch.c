@@ -17,6 +17,7 @@
 
 #include "doomdef.h"
 #include "doomtype.h"
+#include "hu_stuff.h"
 #include "r_main.h"
 #include "st_stuff.h"
 #include "v_video.h"
@@ -46,7 +47,9 @@ static stretch_param_t stretch_params_table[patch_stretch_max][VPT_ALIGN_MAX];
 static int ex_text_screenwidth;
 static int ex_text_screenheight;
 static int ex_text_st_scaled_height;
-static int ex_text_top_displacement;
+static double ex_text_scale_x;
+static double ex_text_scale_y;
+
 
 static void GenLookup(short* lookup1, short* lookup2, int size, int max, int step) {
   int i;
@@ -81,8 +84,6 @@ static void GenLookup(short* lookup1, short* lookup2, int size, int max, int ste
 }
 
 static void EvaluateExTextScale(void) {
-  double ex_text_scale_x, ex_text_scale_y;
-
   ex_text_scale_x = dsda_IntConfig(dsda_config_ex_text_scale_x) / 100.0;
   ex_text_scale_y = dsda_IntConfig(dsda_config_ex_text_scale_y) / 100.0;
 
@@ -94,10 +95,6 @@ static void EvaluateExTextScale(void) {
   ex_text_screenwidth = 320 * ex_text_scale_x;
   ex_text_screenheight = 200 * ex_text_scale_y;
   ex_text_st_scaled_height = g_st_height * ex_text_scale_y;
-
-  // Difference between expected scale and actual scale of message text at top
-  ex_text_top_displacement =
-    (ST_SCALED_HEIGHT - ex_text_st_scaled_height) * 8 / g_st_height;
 }
 
 stretch_param_t* dsda_StretchParams(int flags) {
@@ -131,9 +128,19 @@ static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e f
 
   if (flags == VPT_ALIGN_BOTTOM || flags == VPT_ALIGN_LEFT_BOTTOM || flags == VPT_ALIGN_RIGHT_BOTTOM)
     offsets->deltay1 = offset2y;
+}
 
-  if (flags == VPT_ALIGN_LEFT_TOP)
-    offsets->deltay1 = ex_text_top_displacement;
+void dsda_UpdateExTextOffset(enum patch_translation_e flags, int offset) {
+  stretch_params_table[patch_stretch_ex_text][flags].deltay1 +=
+    (ST_SCALED_HEIGHT - ex_text_st_scaled_height) * offset * HU_LINEHEIGHT / g_st_height +
+    (HU_LINEHEIGHT - HU_LINE2HEIGHT) * ex_text_scale_y * (offset > 0 ? 1 : -1);
+}
+
+void dsda_ResetExTextOffsets(void) {
+  int k;
+
+  for (k = 0; k < VPT_ALIGN_MAX; k++)
+    InitExTextParam(&stretch_params_table[patch_stretch_ex_text][k], k);
 }
 
 static void InitStretchParam(stretch_param_t* offsets, int stretch, enum patch_translation_e flags) {
@@ -191,12 +198,11 @@ void dsda_SetupStretchParams(void) {
 
   EvaluateExTextScale();
 
-  for (k = 0; k < VPT_ALIGN_MAX; k++) {
+  for (k = 0; k < VPT_ALIGN_MAX; k++)
     for (i = 0; i < patch_stretch_max_config; i++)
       InitStretchParam(&stretch_params_table[i][k], i, k);
 
-    InitExTextParam(&stretch_params_table[patch_stretch_ex_text][k], k);
-  }
+  dsda_ResetExTextOffsets();
 
   stretch_params = stretch_params_table[render_stretch_hud];
 

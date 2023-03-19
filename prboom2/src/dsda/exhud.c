@@ -333,8 +333,10 @@ exhud_component_t components_template[exhud_component_count] = {
 typedef struct {
   const char* name;
   dboolean status_bar;
+  dboolean allow_offset;
   dboolean loaded;
   exhud_component_t components[exhud_component_count];
+  int y_offset[VPT_ALIGN_MAX];
 } dsda_hud_container_t;
 
 typedef enum {
@@ -346,10 +348,10 @@ typedef enum {
 } dsda_hud_variant_t;
 
 static dsda_hud_container_t containers[] = {
-  [hud_ex]   = { "ex", true },
-  [hud_off]  = { "off", true },
-  [hud_full] = { "full", false },
-  [hud_map] = { "map", true },
+  [hud_ex]   = { "ex", true, true },
+  [hud_off]  = { "off", true, true },
+  [hud_full] = { "full", false, true },
+  [hud_map] = { "map", true, false },
   [hud_null] = { NULL }
 };
 
@@ -387,6 +389,29 @@ static void dsda_InitializeComponent(int id, int x, int y, int vpt, int* args, i
     dsda_TurnComponentOn(id);
 }
 
+static int dsda_AlignmentToVPT(const char* alignment) {
+  if (!strcmp(alignment, "bottom_left"))
+    return VPT_ALIGN_LEFT_BOTTOM;
+  else if (!strcmp(alignment, "bottom_right"))
+    return VPT_ALIGN_RIGHT_BOTTOM;
+  else if (!strcmp(alignment, "top_left"))
+    return VPT_ALIGN_LEFT_TOP;
+  else if (!strcmp(alignment, "top_right"))
+    return VPT_ALIGN_RIGHT_TOP;
+  else if (!strcmp(alignment, "top"))
+    return VPT_ALIGN_TOP;
+  else if (!strcmp(alignment, "bottom"))
+    return VPT_ALIGN_BOTTOM;
+  else if (!strcmp(alignment, "left"))
+    return VPT_ALIGN_LEFT;
+  else if (!strcmp(alignment, "right"))
+    return VPT_ALIGN_RIGHT;
+  else if (!strcmp(alignment, "none"))
+    return VPT_STRETCH;
+  else
+    return -1;
+}
+
 static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
   int i;
   int count;
@@ -416,7 +441,7 @@ static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
     for (i = 0; i < exhud_component_count; ++i)
       if (!strncmp(command, components[i].name, sizeof(command))) {
         int x, y;
-        int vpt = 0;
+        int vpt;
         int component_args[4] = { 0 };
         char alignment[16];
 
@@ -428,29 +453,36 @@ static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
         if (count < 3)
           I_Error("Invalid hud component args \"%s\"", line);
 
-        if (!strncmp(alignment, "bottom_left", sizeof(alignment)))
-          vpt = VPT_ALIGN_LEFT_BOTTOM;
-        else if (!strncmp(alignment, "bottom_right", sizeof(alignment)))
-          vpt = VPT_ALIGN_RIGHT_BOTTOM;
-        else if (!strncmp(alignment, "top_left", sizeof(alignment)))
-          vpt = VPT_ALIGN_LEFT_TOP;
-        else if (!strncmp(alignment, "top_right", sizeof(alignment)))
-          vpt = VPT_ALIGN_RIGHT_TOP;
-        else if (!strncmp(alignment, "top", sizeof(alignment)))
-          vpt = VPT_ALIGN_TOP;
-        else if (!strncmp(alignment, "bottom", sizeof(alignment)))
-          vpt = VPT_ALIGN_BOTTOM;
-        else if (!strncmp(alignment, "left", sizeof(alignment)))
-          vpt = VPT_ALIGN_LEFT;
-        else if (!strncmp(alignment, "right", sizeof(alignment)))
-          vpt = VPT_ALIGN_RIGHT;
-        else if (!strncmp(alignment, "none", sizeof(alignment)))
-          vpt = VPT_STRETCH;
-        else
+        vpt = dsda_AlignmentToVPT(alignment);
+        if (vpt < 0)
           I_Error("Invalid hud component alignment \"%s\"", line);
 
         dsda_InitializeComponent(i, x, y, vpt, component_args, count - 3);
       }
+
+    if (!strncmp(command, "add_offset", sizeof(command))) {
+      int offset;
+      int vpt;
+      char alignment[16];
+
+      found = true;
+
+      if (!container->allow_offset)
+        I_Error("The %s config does not support add_offset", container->name);
+
+      count = sscanf(args, "%d %15s", &offset, alignment);
+      if (count != 2)
+        I_Error("Invalid hud offset \"%s\"", line);
+
+      vpt = dsda_AlignmentToVPT(alignment);
+      if (vpt < 0)
+        I_Error("Invalid hud offset alignment \"%s\"", line);
+
+      container->y_offset[vpt] = offset;
+
+      if (BOTTOM_ALIGNMENT(vpt))
+        container->y_offset[vpt] = -container->y_offset[vpt];
+    }
 
     if (!found)
       I_Error("Invalid hud component \"%s\"", line);
@@ -553,9 +585,24 @@ static void dsda_UpdateActiveHUD(void) {
     dsda_ResetActiveHUD();
 }
 
+static void dsda_ResetOffsets(void) {
+  void dsda_UpdateExTextOffset(enum patch_translation_e flags, int offset);
+  void dsda_ResetExTextOffsets(void);
+
+  int i;
+
+  dsda_ResetExTextOffsets();
+
+  for (i = 0; i < VPT_ALIGN_MAX; ++i)
+    if (container->y_offset[i])
+      dsda_UpdateExTextOffset(i, container->y_offset[i]);
+}
+
 static void dsda_RefreshHUD(void) {
   if (!dsda_HUDActive())
     return;
+
+  dsda_ResetOffsets();
 
   if (dsda_show_render_stats)
     dsda_TurnComponentOn(exhud_render_stats);

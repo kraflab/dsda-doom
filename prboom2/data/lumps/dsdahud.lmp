@@ -12,6 +12,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 heretic ex
 stat_totals 2 8 bottom_left
@@ -27,6 +28,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 hexen ex
 stat_totals 2 8 bottom_left
@@ -42,6 +44,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 doom off
 tracker 2 32 bottom_left
@@ -55,6 +58,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 heretic off
 tracker 2 32 bottom_left
@@ -68,6 +72,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 hexen off
 tracker 2 32 bottom_left
@@ -81,6 +86,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 doom full
 ready_ammo_text 2 8 bottom_left
@@ -102,6 +108,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 heretic full
 ready_ammo_text 2 8 bottom_left
@@ -124,6 +131,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 hexen full
 ready_ammo_text 2 8 bottom_left
@@ -146,6 +154,7 @@ fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
 message 0 0 top_left
 secret_message 0 76 none
+add_offset 1 top_left
 
 doom map
 map_totals 2 8 top_left
