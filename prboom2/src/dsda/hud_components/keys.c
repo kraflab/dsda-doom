@@ -19,10 +19,11 @@
 
 #include "keys.h"
 
-#define PATCH_DELTA_Y 10
+#define PATCH_DELTA 10
 
 typedef struct {
   dsda_patch_component_t component;
+  dboolean horizontal;
 } local_component_t;
 
 static local_component_t* local;
@@ -88,7 +89,10 @@ void drawKey(player_t* player, int* x, int* y, const char* (*key)(player_t*)) {
   if (name)
     V_DrawNamePatch(*x, *y, FG, name, CR_DEFAULT, local->component.vpt);
 
-  *y += PATCH_DELTA_Y;
+  if (local->horizontal)
+    *x += PATCH_DELTA;
+  else
+    *y += PATCH_DELTA;
 }
 
 static void dsda_DrawComponent(void) {
@@ -120,6 +124,8 @@ static void dsda_DrawComponent(void) {
 void dsda_InitKeysHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   *data = Z_Calloc(1, sizeof(local_component_t));
   local = *data;
+
+  local->horizontal = arg_count > 0 ? !!args[0] : false;
 
   if (hexen) {
     int i;

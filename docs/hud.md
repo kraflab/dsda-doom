@@ -55,6 +55,8 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
   - Supports 1 argument: `show_label`
   - `show_label`: shows the "time" label
 - `keys`: shows the acquired keys
+  - Supports 1 argument: `horizontal`
+  - `horizontal`: displays the component horizontally rather than vertically
 - `ammo_text`: shows the weapons and ammo as the status bar does
   - Supports 1 argument: `show_names`
   - `show_names`: shows ammo names in the component
