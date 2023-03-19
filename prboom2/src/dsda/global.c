@@ -135,7 +135,7 @@ int g_menu_font_spacing;
 int g_menu_cr_title = CR_GOLD;
 int g_menu_cr_set = CR_GREEN;
 int g_menu_cr_item = CR_RED;
-int g_menu_cr_hilite = CR_LIGHTBLUE;
+int g_menu_cr_hilite = CR_BRICK;
 int g_menu_cr_select = CR_GRAY;
 int g_menu_cr_disable = CR_GRAY;
 
