@@ -42,6 +42,9 @@
 #include "v_video.h"
 #include "lprintf.h"
 
+// Turned off because it causes regressions on some maps (issue #256).  Fixing
+// this requires doing bleed with subsector granularity.
+#define EXPERIMENTAL_BLEED 0
 // Threshold below player view of sector floor at which it becomes
 // subject to flat bleeding, in addition to the case of it being
 // above the player view.
@@ -672,9 +675,11 @@ static void R_HandleGLFakeFlats(sector_t *sector)
       if (frontsector->floorheight >= viewz)
         tmpsec = GetBestBleedSector(frontsector, BLEED_NONE);
 
+#if EXPERIMENTAL_BLEED
       if (tmpsec == NULL &&
           viewz - frontsector->floorheight >= (FLOOR_BLEED_THRESHOLD << FRACBITS))
         tmpsec = GetBestBleedSector(frontsector, BLEED_OCCLUDE);
+#endif
 
       if (tmpsec)
       {
@@ -699,9 +704,11 @@ static void R_HandleGLFakeFlats(sector_t *sector)
       if (frontsector->ceilingheight <= viewz)
         tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING);
 
+#if EXPERIMENTAL_BLEED
       if (tmpsec == NULL &&
           frontsector->ceilingheight - viewz >= (CEILING_BLEED_THRESHOLD << FRACBITS))
         tmpsec = GetBestBleedSector(frontsector, BLEED_CEILING | BLEED_OCCLUDE);
+#endif
 
       if (tmpsec)
       {
