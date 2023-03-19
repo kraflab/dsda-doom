@@ -450,7 +450,6 @@ dboolean WI_Responder(event_t* ev)
 }
 
 #define SPACEWIDTH 4
-extern patchnum_t hu_font[HU_FONTSIZE];
 
 static void WI_DrawString(int cx, int cy, const char* ch)
 {
@@ -511,7 +510,7 @@ void WI_drawLF(void)
   {
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, lf_levelname);
-    y += (5 * hu_font['A' - HU_FONTSTART].height / 4);
+    y += (5 * HU_FONTHEIGHT / 4);
   }
   else
   {

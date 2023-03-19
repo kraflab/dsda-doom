@@ -56,8 +56,6 @@
 
 #include "console.h"
 
-extern patchnum_t hu_font2[HU_FONTSIZE];
-
 #define target_player players[consoleplayer]
 
 #define CONSOLE_TEXT_FLAGS (VPT_ALIGN_TOP | VPT_EX_TEXT)

@@ -47,8 +47,8 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
   int x, y;
 
   DO_ONCE
-    if (hu_font2['A' - HU_FONTSTART].height != 7)
-      ratio = (double) (hu_font2['A' - HU_FONTSTART].height + 1) / 8.0;
+    if (HU_LINE2HEIGHT != 8)
+      ratio = (double) HU_LINE2HEIGHT / 8.0;
   END_ONCE
 
   x = x_offset;
@@ -71,8 +71,8 @@ void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int v
   int x, y;
 
   DO_ONCE
-    if (hu_font['A' - HU_FONTSTART].height != 7)
-      ratio = (double) (hu_font['A' - HU_FONTSTART].height + 1) / 8.0;
+    if (HU_LINEHEIGHT != 8)
+      ratio = (double) HU_LINEHEIGHT / 8.0;
   END_ONCE
 
   x = x_offset;

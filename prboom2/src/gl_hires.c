@@ -130,7 +130,6 @@ int gld_ProgressEnd(void)
   return false;
 }
 
-extern patchnum_t hu_font[HU_FONTSIZE];
 static hu_textline_t w_precache;
 
 static void gld_InitProgressUpdate(void)

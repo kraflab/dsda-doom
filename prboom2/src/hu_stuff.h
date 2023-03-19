@@ -36,6 +36,7 @@
 #include "d_event.h"
 #include "d_think.h"
 #include "p_mobj.h"
+#include "r_defs.h"
 
 /*
  * Globally visible constants.
@@ -57,6 +58,14 @@
 #define HU_MSGTIMEOUT   (4*TICRATE)
 
 #define HU_CROSSHAIRS	8
+
+extern patchnum_t hu_font[HU_FONTSIZE];
+extern patchnum_t hu_font2[HU_FONTSIZE];
+
+#define HU_FONTHEIGHT (hu_font['A' - HU_FONTSTART].height)
+#define HU_FONT2HEIGHT (hu_font2['A' - HU_FONTSTART].height)
+#define HU_LINEHEIGHT (HU_FONTHEIGHT + 1)
+#define HU_LINE2HEIGHT (HU_FONT2HEIGHT + 1)
 
 /*
  * Heads up text

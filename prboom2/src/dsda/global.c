@@ -145,9 +145,6 @@ dboolean hexen = false;
 dboolean heretic = false;
 dboolean raven = false;
 
-extern patchnum_t hu_font[HU_FONTSIZE];
-extern patchnum_t hu_font2[HU_FONTSIZE];
-
 static void dsda_InitDoom(void) {
   int i;
   doom_mobjinfo_t* mobjinfo_p;

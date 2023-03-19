@@ -52,9 +52,6 @@ typedef struct {
   char msg[DSDA_TEXT_SIZE];
 } dsda_text_t;
 
-extern patchnum_t hu_font[HU_FONTSIZE];
-extern patchnum_t hu_font2[HU_FONTSIZE];
-
 typedef struct {
   int x;
   int y;

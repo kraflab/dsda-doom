@@ -358,8 +358,6 @@ void F_Ticker(void)
 // CPhipps - reformatted
 
 #include "hu_stuff.h"
-extern patchnum_t hu_font[HU_FONTSIZE];
-
 
 void F_TextWrite (void)
 {
