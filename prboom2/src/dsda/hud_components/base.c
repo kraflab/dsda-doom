@@ -47,23 +47,14 @@ void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt
   int x, y;
 
   DO_ONCE
-    if (HU_LINE2HEIGHT != 8)
-      ratio = (double) HU_LINE2HEIGHT / 8.0;
+    if (exhud_font.line_height != 8)
+      ratio = (double) exhud_font.line_height / 8.0;
   END_ONCE
 
   x = x_offset;
   y = dsda_HudComponentY(y_offset, vpt, ratio);
 
-  HUlib_initTextLine(
-    &component->text,
-    x, y,
-    hu_font2,
-    HU_FONTSTART,
-    CR_GRAY,
-    vpt
-  );
-
-  component->text.space_width = 5;
+  HUlib_initTextLine(&component->text, x, y, &exhud_font, CR_GRAY, vpt);
 }
 
 void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
@@ -71,23 +62,14 @@ void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int v
   int x, y;
 
   DO_ONCE
-    if (HU_LINEHEIGHT != 8)
-      ratio = (double) HU_LINEHEIGHT / 8.0;
+    if (hud_font.line_height != 8)
+      ratio = (double) hud_font.line_height / 8.0;
   END_ONCE
 
   x = x_offset;
   y = dsda_HudComponentY(y_offset, vpt, ratio);
 
-  HUlib_initTextLine(
-    &component->text,
-    x, y,
-    hu_font,
-    HU_FONTSTART,
-    CR_GRAY,
-    vpt
-  );
-
-  component->text.space_width = 5;
+  HUlib_initTextLine(&component->text, x, y, &hud_font, CR_GRAY, vpt);
 }
 
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt) {

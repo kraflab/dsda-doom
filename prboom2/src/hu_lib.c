@@ -78,17 +78,17 @@ void HUlib_clearTextLine(hu_textline_t* t)
 // Returns nothing
 //
 void HUlib_initTextLine(hu_textline_t* t, int x, int y,
-      const patchnum_t* f, int sc, int cm, enum patch_translation_e flags )
+      const dsda_font_t* f, int cm, enum patch_translation_e flags )
   //jff 2/16/98 add color range parameter
 {
   t->x = x;
   t->y = y;
-  t->val = -1;
-  t->f = f;
-  t->sc = sc;
+  t->f = f->font;
+  t->sc = f->start;
   t->cm = cm;
   t->flags = flags;
-  t->space_width = 4;
+  t->line_height = f->line_height;
+  t->space_width = f->space_width;
   HUlib_clearTextLine(t);
 }
 
@@ -151,7 +151,7 @@ void HUlib_drawTextLine
     if (c=='\n')         // killough 1/18/98 -- support multiple lines
     {
       x = l->x;
-      y += 8;
+      y += l->line_height;
     }
     else if (c=='\t')    // killough 1/23/98 -- support tab stops
       x=x-x%80+80;

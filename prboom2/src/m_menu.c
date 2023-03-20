@@ -79,6 +79,7 @@
 
 #include "dsda/exhud.h"
 #include "dsda/features.h"
+#include "dsda/font.h"
 #include "dsda/game_controller.h"
 #include "dsda/global.h"
 #include "dsda/settings.h"
@@ -145,7 +146,6 @@
 extern dboolean  message_dontfuckwithme;
 
 extern const char* g_menu_flat;
-extern patchnum_t* g_menu_font;
 extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
 
@@ -367,6 +367,13 @@ static void M_LoadTextColors(void)
   cr_info_highlight = dsda_TextCR(dsda_tc_menu_info_highlight);
   cr_info_edit = dsda_TextCR(dsda_tc_menu_info_edit);
   cr_warning = dsda_TextCR(dsda_tc_menu_warning);
+}
+
+static const dsda_font_t *menu_font;
+
+static void M_LoadMenuFont(void)
+{
+  menu_font = raven ? &exhud_font : &hud_font;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -3469,8 +3476,6 @@ setup_menu_t helpstrings[] =  // HELP screen strings
   FINAL_ENTRY
 };
 
-#define SPACEWIDTH 4
-
 /* cph 2006/08/06
  * M_DrawString() is the old M_DrawMenuString, except that it is not tied to
  * menu_buffer - no reason to force all the callers to write into one array! */
@@ -3485,10 +3490,10 @@ static void M_DrawString(int cx, int cy, int color, const char* ch)
     c = toupper(c) - HU_FONTSTART;
     if (c < 0 || c> HU_FONTSIZE)
       {
-      cx += SPACEWIDTH;    // space
+      cx += menu_font->space_width;
       continue;
       }
-    w = g_menu_font[c].width;
+    w = menu_font->font[c].width;
     if (cx + w > 320)
       break;
 
@@ -3496,7 +3501,7 @@ static void M_DrawString(int cx, int cy, int color, const char* ch)
     // desired color, colrngs[color]
 
     // CPhipps - patch drawing updated
-    V_DrawNumPatch(cx, cy, 0, g_menu_font[c].lumpnum, color, VPT_STRETCH | VPT_TRANS);
+    V_DrawNumPatch(cx, cy, 0, menu_font->font[c].lumpnum, color, VPT_STRETCH | VPT_TRANS);
     // The screen is cramped, so trim one unit from each
     // character so they butt up against each other.
     cx += w + g_menu_font_spacing;
@@ -3523,10 +3528,10 @@ static int M_GetPixelWidth(const char* ch)
     c = toupper(c) - HU_FONTSTART;
     if (c < 0 || c > HU_FONTSIZE)
       {
-      len += SPACEWIDTH;   // space
+      len += menu_font->space_width;
       continue;
       }
-    len += g_menu_font[c].width;
+    len += menu_font->font[c].width;
     len += g_menu_font_spacing;
   }
   len -= g_menu_font_spacing; // replace what you took away on the last char only
@@ -5018,7 +5023,7 @@ void M_Drawer (void)
         p++;
       *p = 0;
       M_WriteText(160 - M_StringWidth(string)/2, y, string, CR_DEFAULT);
-      y += g_menu_font[0].height;
+      y += menu_font->line_height;
       if ((*p = c))
         p++;
     }
@@ -5246,7 +5251,7 @@ void M_DrawSelCell (menu_t* menu,int item)
 //
 
 //
-// Find string width from g_menu_font chars
+// Find string width from menu_font chars
 //
 
 int M_StringWidth(const char* string)
@@ -5254,25 +5259,25 @@ int M_StringWidth(const char* string)
   int i, c, w = 0;
   for (i = 0;(size_t)i < strlen(string);i++)
     w += (c = toupper(string[i]) - HU_FONTSTART) < 0 || c >= HU_FONTSIZE ?
-      4 : g_menu_font[c].width;
+      menu_font->space_width : menu_font->font[c].width;
   return w;
 }
 
 //
-//    Find string height from g_menu_font chars
+//    Find string height from menu_font chars
 //
 
 int M_StringHeight(const char* string)
 {
-  int i, h, height = h = g_menu_font[0].height;
+  int i, h = menu_font->height;
   for (i = 0;string[i];i++)            // killough 1/31/98
     if (string[i] == '\n')
-      h += height;
+      h += menu_font->line_height;
   return h;
 }
 
 //
-//    Write a string using the g_menu_font
+//    Write a string using the menu_font
 //
 void M_WriteText (int x,int y, const char* string, int cm)
 {
@@ -5307,12 +5312,12 @@ void M_WriteText (int x,int y, const char* string, int cm)
       continue;
     }
 
-    w = g_menu_font[c].width;
+    w = menu_font->font[c].width;
     if (cx+w > BASE_WIDTH)
       break;
     // proff/nicolas 09/20/98 -- changed for hi-res
     // CPhipps - patch drawing updated
-    V_DrawNumPatch(cx, cy, 0, g_menu_font[c].lumpnum, cm, flags);
+    V_DrawNumPatch(cx, cy, 0, menu_font->font[c].lumpnum, cm, flags);
     cx+=w;
   }
 }
@@ -5372,6 +5377,7 @@ void M_Init(void)
   if (raven) MN_Init();
 
   M_LoadTextColors();
+  M_LoadMenuFont();
 
   M_ChangeMenu(&MainDef, mnact_inactive);
   itemOn = currentMenu->lastOn;

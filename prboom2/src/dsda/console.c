@@ -45,6 +45,7 @@
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
+#include "dsda/font.h"
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mobjinfo.h"
@@ -135,8 +136,7 @@ dboolean dsda_OpenConsole(void) {
       &hu_console_prompt,
       0,
       8,
-      hu_font2,
-      HU_FONTSTART,
+      &exhud_font,
       CR_GRAY,
       CONSOLE_TEXT_FLAGS
     );
@@ -145,8 +145,7 @@ dboolean dsda_OpenConsole(void) {
       &hu_console_message,
       0,
       0,
-      hu_font2,
-      HU_FONTSTART,
+      &exhud_font,
       CR_GRAY,
       CONSOLE_TEXT_FLAGS
     );

@@ -1820,8 +1820,8 @@ static void D_DoomMainSetup(void)
   S_Init();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_DEBUG, "HU_Init: Setting up heads up display.\n");
-  HU_Init();
+  lprintf(LO_DEBUG, "dsda_InitFont: Loading the hud fonts.\n");
+  dsda_InitFont();
 
   if (!(dsda_Flag(dsda_arg_nodraw) && dsda_Flag(dsda_arg_nosound)))
     I_InitGraphics();

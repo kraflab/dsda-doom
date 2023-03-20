@@ -47,6 +47,8 @@ set(COMMON_SRC
     dsda/exhud.h
     dsda/features.c
     dsda/features.h
+    dsda/font.c
+    dsda/font.h
     dsda/game_controller.c
     dsda/game_controller.h
     dsda/ghost.c

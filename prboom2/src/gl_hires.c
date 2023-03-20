@@ -61,6 +61,7 @@
 #include "m_misc.h"
 #include "e6y.h"
 
+#include "dsda/font.h"
 #include "dsda/utility.h"
 
 unsigned int gl_has_hires = 0;
@@ -139,8 +140,7 @@ static void gld_InitProgressUpdate(void)
     &w_precache,
     16,
     186,
-    hu_font,
-    HU_FONTSTART,
+    &hud_font,
     CR_RED,
     VPT_ALIGN_LEFT_BOTTOM
   );

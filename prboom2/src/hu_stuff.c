@@ -63,12 +63,7 @@
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 
-
 static player_t*  plr;
-
-// font sets
-patchnum_t hu_font[HU_FONTSIZE];
-patchnum_t hu_font2[HU_FONTSIZE];
 
 static dboolean    always_off = false;
 static dboolean    message_on;
@@ -96,66 +91,6 @@ typedef struct message_thinker_s
 
 static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
-
-//
-// HU_Init()
-//
-// Initialize the heads-up display, text that overwrites the primary display
-//
-// Passed nothing, returns nothing
-//
-void HU_Init(void)
-{
-
-  int   i;
-  int   j;
-  char  buffer[9];
-
-  // load the heads-up font
-  j = HU_FONTSTART;
-  for (i = 0; i < HU_FONTSIZE - 1; i++, j++)
-  {
-    sprintf(buffer, "DIG%.3d", j);
-    R_SetPatchNum(&hu_font2[i], buffer);
-  }
-
-  j = HU_FONTSTART;
-  for (i=0;i<HU_FONTSIZE;i++,j++)
-  {
-    if ('0'<=j && j<='9')
-    {
-      if (raven)
-        sprintf(buffer, "FONTA%.2d",j - 32);
-      else
-        sprintf(buffer, "STCFN%.3d",j);
-      R_SetPatchNum(&hu_font[i], buffer);
-    }
-    else if ('A'<=j && j<='Z')
-    {
-      if (raven)
-        sprintf(buffer, "FONTA%.2d",j - 32);
-      else
-        sprintf(buffer, "STCFN%.3d",j);
-      R_SetPatchNum(&hu_font[i], buffer);
-    }
-    else if (!raven && j < 97)
-    {
-      sprintf(buffer, "STCFN%.3d",j);
-      R_SetPatchNum(&hu_font[i], buffer);
-      //jff 2/23/98 make all font chars defined, useful or not
-    }
-    else if (raven && j < 91)
-    {
-      sprintf(buffer, "FONTA%.2d", j - 32);
-      R_SetPatchNum(&hu_font[i], buffer);
-      //jff 2/23/98 make all font chars defined, useful or not
-    }
-    else
-    {
-      hu_font[i] = hu_font[0]; //jff 2/16/98 account for gap
-    }
-  }
-}
 
 //jff 2/16/98 status color change levels
 int hud_ammo_red;      // ammo percent less than which status is red

@@ -129,7 +129,6 @@ int g_mf_translucent;
 int g_mf_shadow;
 
 const char* g_menu_flat;
-patchnum_t* g_menu_font;
 int g_menu_save_page_size;
 int g_menu_font_spacing;
 
@@ -201,7 +200,6 @@ static void dsda_InitDoom(void) {
   g_mf_shadow = MF_SHADOW;
 
   g_menu_flat = "FLOOR4_6";
-  g_menu_font = hu_font;
   g_menu_save_page_size = 7;
   g_menu_font_spacing = -1;
 
@@ -374,7 +372,6 @@ static void dsda_InitHeretic(void) {
   g_mf_shadow = 0; // doesn't exist in heretic
 
   g_menu_flat = "FLOOR30";
-  g_menu_font = hu_font2;
   g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
 
@@ -524,7 +521,6 @@ static void dsda_InitHexen(void) {
   g_mf_shadow = 0; // doesn't exist in hexen
 
   g_menu_flat = "F_032";
-  g_menu_font = hu_font2;
   g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
 

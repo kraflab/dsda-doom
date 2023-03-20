@@ -46,6 +46,7 @@
 #include "hu_stuff.h"
 
 #include "dsda/exhud.h"
+#include "dsda/font.h"
 #include "dsda/mapinfo.h"
 
 #include "heretic/in_lude.h"
@@ -467,7 +468,7 @@ static void WI_DrawString(int cx, int cy, const char* ch)
       width += SPACEWIDTH;    // space
       continue;
     }
-    width += hu_font[c].width;
+    width += hud_font.font[c].width;
   }
   cx -= width / 2;
   if (cx < 0) cx = 0;
@@ -481,11 +482,11 @@ static void WI_DrawString(int cx, int cy, const char* ch)
       cx += SPACEWIDTH;    // space
       continue;
     }
-    w = hu_font[c].width;
+    w = hud_font.font[c].width;
     if (cx + w > 320)
       break;
 
-    V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_GRAY, VPT_STRETCH | VPT_TRANS);
+    V_DrawNumPatch(cx, cy, 0, hud_font.font[c].lumpnum, CR_GRAY, VPT_STRETCH | VPT_TRANS);
     cx += w;
   }
 }
@@ -510,7 +511,7 @@ void WI_drawLF(void)
   {
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, lf_levelname);
-    y += (5 * HU_FONTHEIGHT / 4);
+    y += (5 * hud_font.height / 4);
   }
   else
   {

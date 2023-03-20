@@ -38,39 +38,10 @@
 #include "p_mobj.h"
 #include "r_defs.h"
 
-/*
- * Globally visible constants.
- */
-#define HU_FONTSTART    '!'     /* the first font characters */
-#define HU_FONTEND      (0x7f) /*jff 2/16/98 '_' the last font characters */
-
-/* Calculate # of glyphs in font. */
-#define HU_FONTSIZE     (HU_FONTEND - HU_FONTSTART + 1)
-
-#define HU_BROADCAST    5
-
-/*#define HU_MSGREFRESH   KEYD_ENTER                                phares */
-#define HU_MSGX         0
-#define HU_MSGY         0
-#define HU_MSGWIDTH     64      /* in characters */
-#define HU_MSGHEIGHT    1       /* in lines */
-
 #define HU_MSGTIMEOUT   (4*TICRATE)
 
 #define HU_CROSSHAIRS	8
 
-extern patchnum_t hu_font[HU_FONTSIZE];
-extern patchnum_t hu_font2[HU_FONTSIZE];
-
-#define HU_FONTHEIGHT (hu_font['A' - HU_FONTSTART].height)
-#define HU_FONT2HEIGHT (hu_font2['A' - HU_FONTSTART].height)
-#define HU_LINEHEIGHT (HU_FONTHEIGHT + 1)
-#define HU_LINE2HEIGHT (HU_FONT2HEIGHT + 1)
-
-/*
- * Heads up text
- */
-void HU_Init(void);
 void HU_Start(void);
 
 dboolean HU_Responder(event_t* ev);

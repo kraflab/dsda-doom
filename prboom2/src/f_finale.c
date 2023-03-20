@@ -44,6 +44,7 @@
 #include "heretic/f_finale.h"
 #include "hexen/f_finale.h"
 
+#include "dsda/font.h"
 #include "dsda/mapinfo.h"
 
 #include "f_finale.h" // CPhipps - hmm...
@@ -397,12 +398,12 @@ void F_TextWrite (void)
         continue;
       }
 
-      w = hu_font[c].width;
+      w = hud_font.font[c].width;
       if (cx+w > SCREENWIDTH)
         break;
 
       // CPhipps - patch drawing updated
-      V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNumPatch(cx, cy, 0, hud_font.font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
       cx+=w;
     }
   }
@@ -623,7 +624,7 @@ static void F_CastPrint (const char* text) // CPhipps - static, const char*
       continue;
     }
 
-    w = hu_font[c].width;
+    w = hud_font.font[c].width;
     width += w;
   }
 
@@ -642,9 +643,9 @@ static void F_CastPrint (const char* text) // CPhipps - static, const char*
       continue;
     }
 
-    w = hu_font[c].width;
+    w = hud_font.font[c].width;
     // CPhipps - patch drawing updated
-    V_DrawNumPatch(cx, 180, 0, hu_font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNumPatch(cx, 180, 0, hud_font.font[c].lumpnum, CR_DEFAULT, VPT_STRETCH);
     cx+=w;
   }
 }

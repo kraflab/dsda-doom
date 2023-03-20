@@ -33,9 +33,9 @@
 #ifndef __HULIB__
 #define __HULIB__
 
-// We are referring to patches.
-#include "r_defs.h"
 #include "v_video.h"  //jff 2/16/52 include color range defs
+
+#include "dsda/font.h"
 
 /* background and foreground screen numbers
  * different from other modules. */
@@ -50,7 +50,6 @@ typedef struct
   // left-justified position of scrolling text window
   int   x;
   int   y;
-  int   val;
 
   const patchnum_t* f;                    // font
   int   sc;                             // start character
@@ -68,6 +67,7 @@ typedef struct
   // e6y: wide-res
   enum patch_translation_e flags;
 
+  int line_height;
   int space_width;
 } hu_textline_t;
 
@@ -83,8 +83,7 @@ void HUlib_initTextLine
   hu_textline_t *t,
   int x,
   int y,
-  const patchnum_t *f,
-  int sc,
+  const dsda_font_t *f,
   int cm,    //jff 2/16/98 add color range parameter
   enum patch_translation_e flags
 );
