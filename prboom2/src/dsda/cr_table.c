@@ -202,10 +202,27 @@ byte* dsda_GenerateCRTable(void) {
 
       for (check_i = 0; check_i < 768; check_i += 3) {
         int dist;
+        int dist_r, dist_g, dist_b;
+        int avg_r;
 
-        dist = (target_r - playpal[check_i + 0]) * (target_r - playpal[check_i + 0]) +
-               (target_g - playpal[check_i + 1]) * (target_g - playpal[check_i + 1]) +
-               (target_b - playpal[check_i + 2]) * (target_b - playpal[check_i + 2]);
+        avg_r = (target_r + playpal[check_i + 0]) / 2;
+        dist_r = target_r - playpal[check_i + 0];
+        dist_g = target_g - playpal[check_i + 1];
+        dist_b = target_b - playpal[check_i + 2];
+
+        // This equation seems to fix issues with red-dominant translation,
+        // e.g., aaliens CR_BRICK, which has artifacts in the second equation.
+        //
+        // I experimented with more "sophisticated" approaches,
+        // but they don't seem to do well with common palettes.
+        if (target_r > target_g && target_r > target_b)
+          dist = (((512 + avg_r) * dist_r * dist_r) >> 8) +
+                 4 * dist_g * dist_g +
+                 (((767 - avg_r) * dist_b * dist_b) >> 8);
+        else
+          dist = dist_r * dist_r +
+                 dist_g * dist_g +
+                 dist_b * dist_b;
 
         if (dist < best_dist) {
           best_dist = dist;
