@@ -90,6 +90,7 @@
 #include "dsda/time.h"
 #include "dsda/console.h"
 #include "dsda/stretch.h"
+#include "dsda/text_color.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -147,11 +148,6 @@ extern const char* g_menu_flat;
 extern patchnum_t* g_menu_font;
 extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
-extern int g_menu_cr_title;
-extern int g_menu_cr_set;
-extern int g_menu_cr_item;
-extern int g_menu_cr_hilite;
-extern int g_menu_cr_select;
 
 //
 // defaulted values
@@ -347,6 +343,31 @@ const char shiftxform[] =
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
   '{', '|', '}', '~', 127
 };
+
+static int cr_title;
+static int cr_label;
+static int cr_label_highlight;
+static int cr_label_edit;
+static int cr_value;
+static int cr_value_highlight;
+static int cr_value_edit;
+static int cr_info_highlight;
+static int cr_info_edit;
+static int cr_warning;
+
+static void M_LoadTextColors(void)
+{
+  cr_title = dsda_TextCR(dsda_tc_menu_title);
+  cr_label = dsda_TextCR(dsda_tc_menu_label);
+  cr_label_highlight = dsda_TextCR(dsda_tc_menu_label_highlight);
+  cr_label_edit = dsda_TextCR(dsda_tc_menu_label_edit);
+  cr_value = dsda_TextCR(dsda_tc_menu_value);
+  cr_value_highlight = dsda_TextCR(dsda_tc_menu_value_highlight);
+  cr_value_edit = dsda_TextCR(dsda_tc_menu_value_edit);
+  cr_info_highlight = dsda_TextCR(dsda_tc_menu_info_highlight);
+  cr_info_edit = dsda_TextCR(dsda_tc_menu_info_edit);
+  cr_warning = dsda_TextCR(dsda_tc_menu_warning);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1625,10 +1646,10 @@ static void M_DrawItem(const setup_menu_t* s)
   char *p, *t;
   int w = 0;
   int color =
-    flags & S_SELECT ? g_menu_cr_select :
-    flags & S_HILITE ? g_menu_cr_hilite :
-    flags & (S_TITLE|S_NEXT|S_PREV) ? g_menu_cr_title :
-    g_menu_cr_item; // killough 10/98
+    flags & S_SELECT ? cr_label_edit :
+    flags & S_HILITE ? cr_label_highlight :
+    flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
+    cr_label; // killough 10/98
 
   /* killough 10/98:
    * Enhance to support multiline text separated by newlines.
@@ -1675,9 +1696,9 @@ static void M_DrawSetting(const setup_menu_t* s)
   // depending on whether the item is a text string or not.
 
   color =
-    flags & S_SELECT ? g_menu_cr_select :
-    flags & S_HILITE ? g_menu_cr_hilite :
-    g_menu_cr_set;
+    flags & S_SELECT ? cr_value_edit :
+    flags & S_HILITE ? cr_value_highlight :
+    cr_value;
 
   // Is the item a YES/NO item?
 
@@ -1903,22 +1924,22 @@ static void M_DrawScreenItems(const setup_menu_t* src)
   if (print_warning_about_changes > 0) { /* killough 8/15/98: print warning */
     if (warning_about_changes & S_EVEN) {
       strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
-      M_DrawMenuString(30,176,CR_RED);
+      M_DrawMenuString(30, 176, cr_warning);
     }
     else if (warning_about_changes & S_BADVAL) {
       strcpy(menu_buffer, "Value out of Range");
-      M_DrawMenuString(100,176,CR_RED);
+      M_DrawMenuString(100, 176, cr_warning);
     }
     else if (warning_about_changes & S_PRGWARN) {
       strcpy(menu_buffer, "Warning: Program must be restarted to see changes");
-      M_DrawMenuString(3, 176, CR_RED);
+      M_DrawMenuString(3, 176, cr_warning);
     }
     else if (warning_about_changes & S_BADVID) {
       strcpy(menu_buffer, "Video mode not supported");
-      M_DrawMenuString(80,176,CR_RED);
+      M_DrawMenuString(80, 176, cr_warning);
     } else {
       strcpy(menu_buffer, "Warning: Changes are pending until next game");
-      M_DrawMenuString(18,184,CR_RED);
+      M_DrawMenuString(18, 184, cr_warning);
     }
   }
 
@@ -1955,7 +1976,7 @@ void M_DrawDelVerify(void)
 
   if (whichSkull) {
     strcpy(menu_buffer,"Delete savegame? (Y or N)");
-    M_DrawMenuString(VERIFYBOXXORG+8,VERIFYBOXYORG+8,CR_RED);
+    M_DrawMenuString(VERIFYBOXXORG + 8, VERIFYBOXYORG + 8, cr_warning);
   }
 }
 
@@ -1977,32 +1998,32 @@ static void M_DrawInstructions(void)
   if (setup_select) {
     switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_FILE | S_CHOICE | S_NAME)) {
       case S_INPUT:
-        M_DrawStringCentered(160, 20, g_menu_cr_select, "Press key or button for this action");
+        M_DrawStringCentered(160, 20, cr_info_edit, "Press key or button for this action");
         break;
 
     case S_YESNO:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Press ENTER key to toggle");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Press ENTER key to toggle");
       break;
     case S_WEAP:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Enter weapon number");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Enter weapon number");
       break;
     case S_NUM:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Enter value. Press ENTER when finished.");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Enter value. Press ENTER when finished.");
       break;
     case S_COLOR:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Select color and press enter");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Select color and press enter");
       break;
     case S_CRITEM:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Enter value");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Enter value");
       break;
     case S_FILE:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Type/edit filename and Press ENTER");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Type/edit filename and Press ENTER");
       break;
     case S_CHOICE:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Press left or right to choose");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Press left or right to choose");
       break;
     case S_NAME:
-      M_DrawStringCentered(160, 20, g_menu_cr_select, "Type / edit author and Press ENTER");
+      M_DrawStringCentered(160, 20, cr_info_edit, "Type / edit author and Press ENTER");
       break;
 #ifdef SIMPLECHECKS
     default:
@@ -2011,9 +2032,9 @@ static void M_DrawInstructions(void)
     }
   } else {
     if (flags & S_INPUT)
-      M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change, Del to Clear");
+      M_DrawStringCentered(160, 20, cr_info_highlight, "Press Enter to Change, Del to Clear");
     else
-      M_DrawStringCentered(160, 20, g_menu_cr_hilite, "Press Enter to Change");
+      M_DrawStringCentered(160, 20, cr_info_highlight, "Press Enter to Change");
   }
 }
 
@@ -2455,7 +2476,7 @@ void M_DrawKeybnd(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", CR_GOLD);
+  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", cr_title);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 }
@@ -2532,7 +2553,7 @@ void M_DrawWeapons(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", CR_GOLD);
+  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", cr_title);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 }
@@ -2633,7 +2654,7 @@ void M_DrawStatusHUD(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", CR_GOLD);
+  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", cr_title);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 }
@@ -2801,7 +2822,7 @@ void M_DrawAutoMap(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", CR_GOLD);
+  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", cr_title);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 
@@ -3127,7 +3148,7 @@ void M_DrawGeneral(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", CR_GOLD);
+  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", cr_title);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu);
 }
@@ -3605,7 +3626,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   {
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(81, 9, "PRBOOM", CR_GOLD, PACKAGE_NAME " v" PACKAGE_VERSION, CR_GOLD);
+    M_DrawTitle(81, 9, "PRBOOM", cr_title, PACKAGE_NAME " v" PACKAGE_VERSION, cr_title);
     M_DrawScreenItems(cred_settings);
   }
 }
@@ -5186,7 +5207,7 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
   // [crispy] print the value
   snprintf(num, sizeof(num), "%3d", thermDot);
   strcpy(menu_buffer, num);
-  M_DrawMenuString(xx + 12, y + 3, g_menu_cr_select);
+  M_DrawMenuString(xx + 12, y + 3, cr_value_edit);
 
   // [crispy]
   if (thermDot >= thermWidth)
@@ -5349,6 +5370,8 @@ void M_InitHelpScreen(void)
 void M_Init(void)
 {
   if (raven) MN_Init();
+
+  M_LoadTextColors();
 
   M_ChangeMenu(&MainDef, mnact_inactive);
   itemOn = currentMenu->lastOn;

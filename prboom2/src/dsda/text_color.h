@@ -81,6 +81,16 @@ typedef enum {
   dsda_tc_map_totals_max,
   dsda_tc_inter_split_normal,
   dsda_tc_inter_split_good,
+  dsda_tc_menu_title,
+  dsda_tc_menu_label,
+  dsda_tc_menu_label_highlight,
+  dsda_tc_menu_label_edit,
+  dsda_tc_menu_value,
+  dsda_tc_menu_value_highlight,
+  dsda_tc_menu_value_edit,
+  dsda_tc_menu_info_highlight,
+  dsda_tc_menu_info_edit,
+  dsda_tc_menu_warning,
 } dsda_text_color_index_t;
 
 void dsda_LoadTextColor(void);

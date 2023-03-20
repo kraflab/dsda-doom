@@ -76,3 +76,13 @@ map_totals_value 3
 map_totals_max 11
 inter_split_normal 3
 inter_split_good 4
+menu_title 6
+menu_label 7
+menu_label_highlight 1
+menu_label_edit 3
+menu_value 4
+menu_value_highlight 1
+menu_value_edit 3
+menu_info_highlight 1
+menu_info_edit 3
+menu_warning 7

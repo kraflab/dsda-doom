@@ -132,11 +132,6 @@ const char* g_menu_flat;
 patchnum_t* g_menu_font;
 int g_menu_save_page_size;
 int g_menu_font_spacing;
-int g_menu_cr_title = CR_GOLD;
-int g_menu_cr_set = CR_GREEN;
-int g_menu_cr_item = CR_RED;
-int g_menu_cr_hilite = CR_BRICK;
-int g_menu_cr_select = CR_GRAY;
 
 const char* g_skyflatname;
 
