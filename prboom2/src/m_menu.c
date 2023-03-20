@@ -3001,8 +3001,8 @@ setup_menu_t misc_settings[] = {
 setup_menu_t display_settings[] = {
   { "Display Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
   { "Use Extended Hud", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_exhud },
-  { "Ex Hud X Scale %", S_NUM, m_conf, G_X, G_Y + 3 * 8, dsda_config_ex_text_scale_x },
-  { "Ex Hud Y Scale %", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_ex_text_scale_y },
+  { "Ex Hud Scale %", S_NUM, m_conf, G_X, G_Y + 3 * 8, dsda_config_ex_text_scale_x },
+  { "Ex Hud Ratio %", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_ex_text_ratio_y },
   { "Hide Status Bar Horns", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_hide_horns },
   { "Hide Weapon", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_hide_weapon },
   { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, G_Y + 7 * 8, dsda_config_render_wipescreen },

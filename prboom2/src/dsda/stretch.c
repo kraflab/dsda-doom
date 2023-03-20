@@ -85,12 +85,15 @@ static void GenLookup(short* lookup1, short* lookup2, int size, int max, int ste
 
 static void EvaluateExTextScale(void) {
   ex_text_scale_x = dsda_IntConfig(dsda_config_ex_text_scale_x) / 100.0;
-  ex_text_scale_y = dsda_IntConfig(dsda_config_ex_text_scale_y) / 100.0;
+  ex_text_scale_y = dsda_IntConfig(dsda_config_ex_text_ratio_y) / 100.0;
 
-  if (ex_text_scale_x < 1.0 || ex_text_scale_y < 1.0) {
+  if (!ex_text_scale_x)
     ex_text_scale_x = (double) WIDE_SCREENWIDTH / 320;
-    ex_text_scale_y = (double) WIDE_SCREENHEIGHT / 200;
-  }
+
+  if (!ex_text_scale_y)
+    ex_text_scale_y = 1.0;
+
+  ex_text_scale_y *= ex_text_scale_x;
 
   ex_text_screenwidth = 320 * ex_text_scale_x;
   ex_text_screenheight = 200 * ex_text_scale_y;

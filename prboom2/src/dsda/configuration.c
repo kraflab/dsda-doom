@@ -877,9 +877,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "ex_text_scale_x", dsda_config_ex_text_scale_x,
     dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
   },
-  [dsda_config_ex_text_scale_y] = {
-    "ex_text_scale_y", dsda_config_ex_text_scale_y,
-    dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
+  [dsda_config_ex_text_ratio_y] = {
+    "ex_text_ratio_y", dsda_config_ex_text_ratio_y,
+    dsda_config_int, 0, 200, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
   },
   [dsda_config_wipe_at_full_speed] = {
     "dsda_wipe_at_full_speed", dsda_config_wipe_at_full_speed,
