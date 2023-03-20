@@ -38,6 +38,6 @@
 
 void I_Init(void);
 void I_Init2(void);
-NORETURNC11 void I_SafeExit(int rc) NORETURN;
+void I_SafeExit(int rc);
 
 #endif
