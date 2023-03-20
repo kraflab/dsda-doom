@@ -36,16 +36,8 @@
 #ifndef __I_MAIN__
 #define __I_MAIN__
 
-#ifndef noreturnC11
-  #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
-    #define noreturnC11 _Noreturn
-  #else
-    #define noreturnC11
-  #endif
-#endif
-
 void I_Init(void);
 void I_Init2(void);
-noreturnC11 void I_SafeExit(int rc) NORETURN;
+NORETURNC11 void I_SafeExit(int rc) NORETURN;
 
 #endif

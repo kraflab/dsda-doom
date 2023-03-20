@@ -87,6 +87,12 @@ typedef unsigned char byte;
 #define NORETURN
 #endif
 
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+  #define NORETURNC11 _Noreturn
+#else
+  #define NORETURNC11
+#endif
+
 // Definition of PACKEDATTR from Chocolate Doom
 #ifdef __GNUC__
   #if defined(_WIN32) && !defined(__clang__)

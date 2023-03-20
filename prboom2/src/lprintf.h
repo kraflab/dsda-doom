@@ -36,6 +36,7 @@
 
 #include <stdarg.h>
 #include <stddef.h>
+#include "doomtype.h"
 
 typedef enum
 {
@@ -47,14 +48,6 @@ typedef enum
 
 #ifndef __GNUC__
 #define __attribute__(x)
-#endif
-
-#ifndef noreturnC11
-  #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
-    #define noreturnC11 _Noreturn
-  #else
-    #define noreturnC11
-  #endif
 #endif
 
 #ifdef WIN32
@@ -84,7 +77,7 @@ void I_DisableMessageBoxes(void);
 /* killough 3/20/98: add const
  * killough 4/25/98: add gcc attributes
  * cphipps 01/11- moved from i_system.h */
-noreturnC11 void I_Error(const char *error, ...) __attribute__((format(printf,1,2)));
+NORETURNC11 void I_Error(const char *error, ...) __attribute__((format(printf,1,2))) NORETURN;
 void I_Warn(const char *error, ...) __attribute__((format(printf,1,2)));
 
 #endif
