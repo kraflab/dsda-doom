@@ -217,7 +217,7 @@ static uint64_t SV_ReadFlags(void)
 
 static void *SV_ReadPtr(void)
 {
-    return (void *) (intptr_t) SV_ReadLong();
+    return (void *) (uintptr_t) SV_ReadLong();
 }
 
 static void SV_Write(const void *buffer, size_t size)

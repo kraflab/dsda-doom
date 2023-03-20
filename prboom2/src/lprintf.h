@@ -49,6 +49,32 @@ typedef enum
 #define __attribute__(x)
 #endif
 
+#ifndef noreturnC11
+  #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+    #define noreturnC11 _Noreturn
+  #else
+    #define noreturnC11
+  #endif
+#endif
+
+#ifdef WIN32
+  #ifdef _USE_64BIT_TIME_T
+   #define PRITIMET "lld"
+  #else
+   #define PRITIMET "ld"
+  #endif
+#else
+  #define PRITIMET "lld"
+#endif
+
+#ifdef WIN64
+  #define PRISIZET "llu"
+#elif defined(WIN32)
+  #define PRISIZET "u"
+#else 
+  #define PRISIZET "I64i"
+#endif
+
 extern int lprintf(OutputLevels pri, const char *fmt, ...) __attribute__((format(printf,2,3)));
 
 void I_EnableVerboseLogging(void);
@@ -58,7 +84,7 @@ void I_DisableMessageBoxes(void);
 /* killough 3/20/98: add const
  * killough 4/25/98: add gcc attributes
  * cphipps 01/11- moved from i_system.h */
-void I_Error(const char *error, ...) __attribute__((format(printf,1,2)));
+noreturnC11 void I_Error(const char *error, ...) __attribute__((format(printf,1,2)));
 void I_Warn(const char *error, ...) __attribute__((format(printf,1,2)));
 
 #endif
