@@ -137,7 +137,6 @@ int g_menu_cr_set = CR_GREEN;
 int g_menu_cr_item = CR_RED;
 int g_menu_cr_hilite = CR_BRICK;
 int g_menu_cr_select = CR_GRAY;
-int g_menu_cr_disable = CR_GRAY;
 
 const char* g_skyflatname;
 

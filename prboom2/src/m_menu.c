@@ -122,7 +122,6 @@
 #define S_CREDIT  0x200000  // killough 10/98: credit
 #define S_BADVID  0x400000  // killough 12/98: video mode change error
 #define S_CHOICE  0x800000  // this item has several values
-#define S_DISABLE  0x1000000 // e6y
 #define S_NAME  0x2000000
 #define S_EVEN 0x20000000
 #define S_STR  0x40000000 // need to refactor things...
@@ -153,7 +152,6 @@ extern int g_menu_cr_set;
 extern int g_menu_cr_item;
 extern int g_menu_cr_hilite;
 extern int g_menu_cr_select;
-extern int g_menu_cr_disable;
 
 //
 // defaulted values
@@ -1627,10 +1625,10 @@ static void M_DrawItem(const setup_menu_t* s)
   char *p, *t;
   int w = 0;
   int color =
-    flags & S_DISABLE ? g_menu_cr_disable : //e6y
     flags & S_SELECT ? g_menu_cr_select :
     flags & S_HILITE ? g_menu_cr_hilite :
-    flags & (S_TITLE|S_NEXT|S_PREV) ? g_menu_cr_title : g_menu_cr_item; // killough 10/98
+    flags & (S_TITLE|S_NEXT|S_PREV) ? g_menu_cr_title :
+    g_menu_cr_item; // killough 10/98
 
   /* killough 10/98:
    * Enhance to support multiline text separated by newlines.
@@ -1677,8 +1675,9 @@ static void M_DrawSetting(const setup_menu_t* s)
   // depending on whether the item is a text string or not.
 
   color =
-    flags & S_DISABLE ? g_menu_cr_disable : //e6y
-    flags & S_SELECT ? g_menu_cr_select : flags & S_HILITE ? g_menu_cr_hilite : g_menu_cr_set;
+    flags & S_SELECT ? g_menu_cr_select :
+    flags & S_HILITE ? g_menu_cr_hilite :
+    g_menu_cr_set;
 
   // Is the item a YES/NO item?
 
