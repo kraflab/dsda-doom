@@ -76,7 +76,6 @@ typedef enum {
   exhud_command_display,
   exhud_event_split,
   exhud_level_splits,
-  exhud_minimap,
   exhud_color_test,
   exhud_message,
   exhud_secret_message,
@@ -84,6 +83,7 @@ typedef enum {
   exhud_map_time,
   exhud_map_title,
   exhud_map_totals,
+  exhud_minimap,
   exhud_component_count,
 } exhud_component_id_t;
 
@@ -276,14 +276,6 @@ exhud_component_t components_template[exhud_component_count] = {
     .intermission = true,
     .not_level = true,
   },
-  [exhud_minimap] = {
-    dsda_InitMinimapHC,
-    dsda_UpdateMinimapHC,
-    dsda_DrawMinimapHC,
-    "minimap",
-    .default_vpt = VPT_EX_TEXT,
-    .off_by_default = true,
-  },
   [exhud_color_test] = {
     dsda_InitColorTestHC,
     dsda_UpdateColorTestHC,
@@ -327,6 +319,14 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateMapTotalsHC,
     dsda_DrawMapTotalsHC,
     "map_totals",
+  },
+  [exhud_minimap] = {
+    dsda_InitMinimapHC,
+    dsda_UpdateMinimapHC,
+    dsda_DrawMinimapHC,
+    "minimap",
+    .default_vpt = VPT_EX_TEXT,
+    .off_by_default = true,
   },
 };
 
