@@ -475,8 +475,10 @@ static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
         I_Error("Invalid hud offset \"%s\"", line);
 
       vpt = dsda_AlignmentToVPT(alignment);
-      if (vpt < 0)
+      if (vpt < 0) {
         I_Error("Invalid hud offset alignment \"%s\"", line);
+        vpt = 0; // TODO: remove after I_Error marked noreturn
+      }
 
       container->y_offset[vpt] = offset;
 
