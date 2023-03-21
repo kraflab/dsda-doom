@@ -519,50 +519,48 @@ function(AddGameExecutable TARGET SOURCES)
         ${CMAKE_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
     )
+
     target_link_libraries(${TARGET} PRIVATE
         ${SDL2_LIBRARIES}
+        SDL2_mixer::SDL2_mixer
+        ZLIB::ZLIB
     )
+
     if(WIN32)
         target_link_libraries(${TARGET} PRIVATE
             winmm
             comctl32
         )
     endif()
+
     set_target_properties(${TARGET} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
     )
-    if(SDL2_IMAGE_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${SDL2_IMAGE_LIBRARIES})
+
+    if(HAVE_LIBSDL2_IMAGE)
+        target_link_libraries(${TARGET} PRIVATE SDL2_image::SDL2_image)
     endif()
 
-    target_include_directories(${TARGET} PRIVATE ${SDL2_MIXER_INCLUDE_DIRS})
-    target_link_libraries(${TARGET} PRIVATE ${SDL2_MIXER_LIBRARIES})
+    if(HAVE_LIBMAD)
+        target_link_libraries(${TARGET} PRIVATE LibMad::libmad)
+    endif()
 
-    if(ZLIB_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${ZLIB_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${ZLIB_LIBRARIES})
+    if(HAVE_LIBFLUIDSYNTH)
+        target_link_libraries(${TARGET} PRIVATE FluidSynth::libfluidsynth)
     endif()
-    if(LIBMAD_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${LIBMAD_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${LIBMAD_LIBRARIES})
+
+    if(HAVE_LIBDUMB)
+        target_link_libraries(${TARGET} PRIVATE DUMB::DUMB)
     endif()
-    if(FLUIDSYNTH_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${FLUIDSYNTH_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${FLUIDSYNTH_LIBRARIES})
+
+    if(HAVE_LIBVORBISFILE)
+        target_link_libraries(${TARGET} PRIVATE Vorbis::vorbisfile)
     endif()
-    if(DUMB_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${DUMB_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${DUMB_LIBRARY})
+
+    if(HAVE_LIBPORTMIDI)
+        target_link_libraries(${TARGET} PRIVATE PortMidi::portmidi)
     endif()
-    if(VORBIS_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${VORBIS_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${VORBISFILE_LIBRARY})
-    endif()
-    if(PortMidi_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${PORTMIDI_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${PORTMIDI_LIBRARIES})
-    endif()
+
     add_dependencies(${TARGET} dsda-doom-wad)
 
     if(MSVC)
