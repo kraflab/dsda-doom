@@ -66,28 +66,26 @@ find_library(
 find_library(
   SDL2_SDL2main_LIBRARY_RELEASE
   NAMES SDL2main
-  HINTS ${PC_SDL2_LIBDIR} ${PC_SDL2_LIBDIR}/manual-link)
+  PATH_SUFFIXES manual-link
+  HINTS ${PC_SDL2_LIBDIR})
 
 find_library(
   SDL2_SDL2main_LIBRARY_DEBUG
   NAMES SDL2maind
-  HINTS ${PC_SDL2_LIBDIR} ${PC_SDL2_LIBDIR}/manual-link)
+  PATH_SUFFIXES manual-link
+  HINTS ${PC_SDL2_LIBDIR})
 
 include(SelectLibraryConfigurations)
 select_library_configurations(SDL2_SDL2)
 select_library_configurations(SDL2_SDL2main)
 
-if(SDL2_SDL2_LIBRARY)
-  set(SDL2_SDL2_FOUND "TRUE")
-else()
-  set(SDL2_SDL2_FOUND "FALSE")
-endif()
-
-if(SDL2_SDL2main_LIBRARY)
-  set(SDL2_SDL2_FOUND "TRUE")
-else()
-  set(SDL2_SDL2_FOUND "FALSE")
-endif()
+foreach(_component SDL2 SDL2main)
+  if(SDL2_${_component}_LIBRARY)
+    set(SDL2_${_component}_FOUND "TRUE")
+  else()
+    set(SDL2_${_component}_FOUND "FALSE")
+  endif()
+endforeach()
 
 if(PC_SDL2_FOUND)
   get_flags_from_pkg_config("${SDL2_LIBRARY}" "PC_SDL2" "_sdl2")
