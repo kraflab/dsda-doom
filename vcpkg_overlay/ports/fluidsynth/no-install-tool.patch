@@ -1,0 +1,13 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 1da310b5..a61429e8 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -496,7 +496,7 @@ if ( MACOSX_FRAMEWORK )
+     ARCHIVE DESTINATION "${FRAMEWORK_INSTALL_PREFIX}/${FRAMEWORK_INSTALL_DIR}"
+ )
+ else ( MACOSX_FRAMEWORK )
+-  install ( TARGETS fluidsynth libfluidsynth
++  install ( TARGETS libfluidsynth
+     EXPORT FluidSynthTargets
+     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

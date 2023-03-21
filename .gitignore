@@ -12,3 +12,6 @@ levelstat.txt
 
 # macOS
 .DS_Store
+
+# vcpkg
+vcpkg_installed

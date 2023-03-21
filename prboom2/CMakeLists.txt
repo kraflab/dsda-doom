@@ -1,5 +1,35 @@
 cmake_minimum_required(VERSION 3.0)
 
+option(WITH_DUMB "Use DUMB if available" ON)
+if(WITH_DUMB)
+    list(APPEND VCPKG_MANIFEST_FEATURES "dumb")
+endif()
+
+option(WITH_FLUIDSYNTH "Use FluidSynth if available" ON)
+if(WITH_FLUIDSYNTH)
+    list(APPEND VCPKG_MANIFEST_FEATURES "fluidsynth")
+endif()
+
+option(WITH_IMAGE "Use SDL2_image if available" ON)
+if(WITH_IMAGE)
+    list(APPEND VCPKG_MANIFEST_FEATURES "sdl2-image")
+endif()
+
+option(WITH_MAD "Use libmad if available" ON)
+if(WITH_MAD)
+    list(APPEND VCPKG_MANIFEST_FEATURES "libmad")
+endif()
+
+option(WITH_PORTMIDI "Use PortMidi if available" ON)
+if(WITH_PORTMIDI)
+    list(APPEND VCPKG_MANIFEST_FEATURES "portmidi")
+endif()
+
+option(WITH_VORBISFILE "Use vorbisfile if available" ON)
+if(WITH_VORBISFILE)
+    list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
+endif()
+
 project("dsda-doom" VERSION 0.25.6)
 
 # Set a default build type if none was specified
@@ -26,6 +56,12 @@ if(POLICY CMP0099)
   cmake_policy(SET CMP0099 NEW)
 else()
   message(WARNING "Your version of CMake is very old. This may cause linking issues if your dependencies are not in your compiler's default search paths.")
+endif()
+
+option(CMAKE_FIND_PACKAGE_PREFER_CONFIG "Search for package config before using Find modules" ON)
+
+if(VCPKG_TOOLCHAIN)
+    set(ENV{PKG_CONFIG_PATH} "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/pkgconfig")
 endif()
 
 # Automated dependencies discovery, mostly needed for MSVC
@@ -81,7 +117,6 @@ if(NOT TARGET SDL2_mixer::SDL2_mixer)
     add_library(SDL2_mixer::SDL2_mixer ALIAS SDL2_mixer::SDL2_mixer-static)
 endif()
 
-option(WITH_IMAGE "Use SDL2_image if available" ON)
 if(WITH_IMAGE)
     find_package(SDL2_image)
     if(SDL2_image_FOUND)
@@ -92,7 +127,6 @@ if(WITH_IMAGE)
     endif()
 endif()
 
-option(WITH_MAD "Use libmad if available" ON)
 if(WITH_MAD)
     find_package(LibMad)
     if(LibMad_FOUND)
@@ -100,7 +134,6 @@ if(WITH_MAD)
     endif()
 endif()
 
-option(WITH_FLUIDSYNTH "Use FluidSynth if available" ON)
 if(WITH_FLUIDSYNTH)
     find_package(FluidSynth)
     if(FluidSynth_FOUND)
@@ -108,7 +141,6 @@ if(WITH_FLUIDSYNTH)
     endif()
 endif()
 
-option(WITH_DUMB "Use DUMB if available" ON)
 if(WITH_DUMB)
     find_package(DUMB)
     if(DUMB_FOUND)
@@ -116,7 +148,6 @@ if(WITH_DUMB)
     endif()
 endif()
 
-option(WITH_VORBISFILE "Use vorbisfile if available" ON)
 if(WITH_VORBISFILE)
     find_package(Vorbis COMPONENTS File)
     if(Vorbis_File_FOUND)
@@ -124,7 +155,6 @@ if(WITH_VORBISFILE)
     endif()
 endif()
 
-option(WITH_PORTMIDI "Use PortMidi if available" ON)
 if(WITH_PORTMIDI)
     find_package(PortMidi)
     if(PortMidi_FOUND)

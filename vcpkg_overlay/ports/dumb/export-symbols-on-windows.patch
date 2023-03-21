@@ -1,0 +1,18 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a793bba..891b224 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-cmake_minimum_required(VERSION 3.1)
++cmake_minimum_required(VERSION 3.4)
+ project(libdumb C)
+ include(GNUInstallDirs)
+ include(CheckCCompilerFlag)
+@@ -9,6 +9,7 @@ set(DUMB_VERSION_MINOR 0)
+ set(DUMB_VERSION ${DUMB_VERSION_MAJOR}.${DUMB_VERSION_MINOR})
+ 
+ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-scripts)
++set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+ 
+ option(BUILD_EXAMPLES "Build example binaries" ON)
+ option(BUILD_ALLEGRO4 "Build Allegro4 support" ON)
