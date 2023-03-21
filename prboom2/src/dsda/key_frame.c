@@ -206,7 +206,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
   snprintf(name, sizeof(name), "backup-%010d.kf", timestamp);
 
   if (M_FileExists(name))
-    snprintf(name, sizeof(name), "backup-%010d-%lld.kf", timestamp, time(NULL));
+    snprintf(name, sizeof(name), "backup-%010d-%lld.kf", timestamp, (long long)time(NULL));
 
   if (!M_WriteFile(name, buffer, length))
     I_Error("dsda_ExportKeyFrame: Failed to write key frame.");
