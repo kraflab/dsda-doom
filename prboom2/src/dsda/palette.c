@@ -15,10 +15,11 @@
 //	DSDA Palette Management
 //
 
+#include <math.h>
+
 #include "r_main.h"
 #include "w_wad.h"
 #include "v_video.h"
-#include <math.h>
 
 #include "palette.h"
 
