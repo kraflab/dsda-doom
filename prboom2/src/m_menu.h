@@ -121,7 +121,6 @@ typedef struct setup_menu_s
   int         m_flags;  /* phares 4/17/98: flag bits S_* (defined above) */
   setup_group m_group;  /* Group */
   short       m_x;      /* screen x position (left is 0) */
-  short       m_y;      /* screen y position (top is 0) */
   dsda_config_identifier_t config_id;
   int input; // composite input identifier
   const char **selectstrings; /* list of strings for choice value */

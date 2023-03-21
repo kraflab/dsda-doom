@@ -125,6 +125,7 @@
 #define S_BADVID   0x00400000  // killough 12/98: video mode change error
 #define S_CHOICE   0x00800000  // this item has several values
 #define S_NAME     0x02000000
+#define S_RESET_Y  0x04000000
 #define S_EVEN     0x20000000
 #define S_STR      0x40000000 // need to refactor things...
 #define S_NOCLEAR  0x80000000
@@ -1528,6 +1529,14 @@ static void M_SetSetupMenuItemOn (const int x)
   }
 }
 
+static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
+{
+  current_setup_menu = new_setup_menu;
+  set_menu_itemon = M_GetSetupMenuItemOn();
+  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
+  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
+}
+
 /////////////////////////////
 //
 // The menu_buffer is used to construct strings for display on the screen.
@@ -1645,10 +1654,9 @@ static int choice_value;
 // item is selected or not, or whether it's about to change.
 
 // CPhipps - static, hanging else removed, const parameter
-static void M_DrawItem(const setup_menu_t* s)
+static void M_DrawItem(const setup_menu_t* s, int y)
 {
   int x = s->m_x;
-  int y = s->m_y;
   int flags = s->m_flags;
   char *p, *t;
   int w = 0;
@@ -1695,9 +1703,9 @@ char gather_buffer[MAXGATHER+1];  // killough 10/98: make input character-based
 // displays the appropriate setting value: yes/no, a key binding, a number,
 // a paint chip, etc.
 
-static void M_DrawSetting(const setup_menu_t* s)
+static void M_DrawSetting(const setup_menu_t* s, int y)
 {
-  int x = s->m_x, y = s->m_y, flags = s->m_flags, color;
+  int x = s->m_x, flags = s->m_flags, color;
 
   // Determine color of the text. This may or may not be used later,
   // depending on whether the item is a text string or not.
@@ -1925,10 +1933,10 @@ static void M_DrawSetting(const setup_menu_t* s)
 // M_DrawScreenItems takes the data for each menu item and gives it to
 // the drawing routines above.
 
-// CPhipps - static, const parameter, formatting
-static void M_DrawScreenItems(const setup_menu_t* src)
+static void M_DrawScreenItemWarnings(void)
 {
-  if (print_warning_about_changes > 0) { /* killough 8/15/98: print warning */
+  /* killough 8/15/98: print warning */
+  if (print_warning_about_changes > 0) {
     if (warning_about_changes & S_EVEN) {
       strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
       M_DrawMenuString(30, 176, cr_warning);
@@ -1949,19 +1957,84 @@ static void M_DrawScreenItems(const setup_menu_t* src)
       M_DrawMenuString(18, 184, cr_warning);
     }
   }
+}
 
-  while (!(src->m_flags & S_END)) {
+// CPhipps - static, const parameter, formatting
+static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
+{
+  int i = 0;
+  int end_y;
+  int scroll_i = 0;
+  int current_i = 0;
+  int max_i = 0;
+  int excess_i = 0;
+  int limit_i = 0;
+  int buffer_i = 0;
+  const setup_menu_t* src;
+
+  M_DrawScreenItemWarnings();
+
+  i = 0;
+  for (src = base_src; !(src->m_flags & S_END); src++) {
+    if (src == &current_setup_menu[set_menu_itemon])
+      current_i = i;
+
+    if (src->m_flags & (S_NEXT | S_PREV)) {
+      // nothing
+    }
+    else if (src->m_flags & S_RESET_Y) {
+      i = 0;
+    }
+    else {
+      if (i > max_i)
+        max_i = i;
+
+      ++i;
+    }
+  }
+
+  end_y = base_y + (max_i + 1) * menu_font->line_height;
+  if (end_y > 200)
+    excess_i = (end_y - 200 + menu_font->line_height - 1) / menu_font->line_height;
+
+  limit_i = max_i - excess_i;
+  buffer_i = (max_i - current_i > 3 ? 3 : max_i - current_i);
+
+  if (excess_i)
+    while (current_i - scroll_i > limit_i - buffer_i)
+      ++scroll_i;
+
+  i = 0;
+  for (src = base_src; !(src->m_flags & S_END); src++) {
+    int y;
+    dboolean skip_entry = false;
+
+    if (src->m_flags & (S_NEXT | S_PREV)) {
+      y = 200 - menu_font->line_height - 2;
+    }
+    else if (src->m_flags & S_RESET_Y) {
+      skip_entry = true;
+      i = 0;
+    }
+    else {
+      y = base_y + (i - scroll_i) * menu_font->line_height;
+
+      if (i - scroll_i < 0 || i - scroll_i > limit_i)
+        skip_entry = true;
+
+      ++i;
+    }
+
+    if (skip_entry)
+      continue;
 
     // See if we're to draw the item description (left-hand part)
-
     if (src->m_flags & S_SHOWDESC)
-      M_DrawItem(src);
+      M_DrawItem(src, y);
 
     // See if we're to draw the setting (right-hand part)
-
     if (src->m_flags & S_SHOWSET)
-      M_DrawSetting(src);
-    src++;
+      M_DrawSetting(src, y);
   }
 }
 
@@ -1995,6 +2068,13 @@ void M_DrawDelVerify(void)
 // cph 2006/08/06 - go back to the Boom version, and then clean up by using
 // M_DrawStringCentered (much better than all those magic 'x' valies!)
 
+#define INSTRUCTION_Y 20
+
+static void M_DrawInstructionString(int cr, const char *str)
+{
+  M_DrawStringCentered(160, INSTRUCTION_Y, cr, "Press key or button for this action");
+}
+
 static void M_DrawInstructions(void)
 {
   int flags = current_setup_menu[set_menu_itemon].m_flags;
@@ -2005,65 +2085,57 @@ static void M_DrawInstructions(void)
   if (setup_select) {
     switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_FILE | S_CHOICE | S_NAME)) {
       case S_INPUT:
-        M_DrawStringCentered(160, 20, cr_info_edit, "Press key or button for this action");
+        M_DrawInstructionString(cr_info_edit, "Press key or button for this action");
         break;
-
-    case S_YESNO:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Press ENTER key to toggle");
-      break;
-    case S_WEAP:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Enter weapon number");
-      break;
-    case S_NUM:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Enter value. Press ENTER when finished.");
-      break;
-    case S_COLOR:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Select color and press enter");
-      break;
-    case S_CRITEM:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Enter value");
-      break;
-    case S_FILE:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Type/edit filename and Press ENTER");
-      break;
-    case S_CHOICE:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Press left or right to choose");
-      break;
-    case S_NAME:
-      M_DrawStringCentered(160, 20, cr_info_edit, "Type / edit author and Press ENTER");
-      break;
-#ifdef SIMPLECHECKS
-    default:
-      lprintf(LO_WARN,"Unrecognised menu item type %d", flags);
-#endif
+      case S_YESNO:
+        M_DrawInstructionString(cr_info_edit, "Press ENTER key to toggle");
+        break;
+      case S_WEAP:
+        M_DrawInstructionString(cr_info_edit, "Enter weapon number");
+        break;
+      case S_NUM:
+        M_DrawInstructionString(cr_info_edit, "Enter value. Press ENTER when finished.");
+        break;
+      case S_COLOR:
+        M_DrawInstructionString(cr_info_edit, "Select color and press enter");
+        break;
+      case S_CRITEM:
+        M_DrawInstructionString(cr_info_edit, "Enter value");
+        break;
+      case S_FILE:
+        M_DrawInstructionString(cr_info_edit, "Type/edit filename and Press ENTER");
+        break;
+      case S_CHOICE:
+        M_DrawInstructionString(cr_info_edit, "Press left or right to choose");
+        break;
+      case S_NAME:
+        M_DrawInstructionString(cr_info_edit, "Type / edit author and Press ENTER");
+        break;
+      default:
+        break;
     }
-  } else {
+  }
+  else {
     if (flags & S_INPUT)
-      M_DrawStringCentered(160, 20, cr_info_highlight, "Press Enter to Change, Del to Clear");
+      M_DrawInstructionString(cr_info_highlight, "Press Enter to Change, Del to Clear");
     else
-      M_DrawStringCentered(160, 20, cr_info_highlight, "Press Enter to Change");
+      M_DrawInstructionString(cr_info_highlight, "Press Enter to Change");
   }
 }
 
-#define NEXT_PAGE(x, y, page) { "->", S_SKIP | S_NEXT, m_null, x, y, .menu = page }
-#define PREV_PAGE(x, y, page) { "<-", S_SKIP | S_PREV, m_null, x, y, .menu = page }
+#define NEXT_PAGE(page) { "->", S_SKIP | S_NEXT, m_null, 318, .menu = page }
+#define PREV_PAGE(page) { "<-", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
+#define EMPTY_LINE { 0, S_SKIP, m_null }
+#define NEW_COLUMN { 0, S_RESET_Y, m_null }
+
+#define DEFAULT_LIST_Y (INSTRUCTION_Y + 1.5 * menu_font->line_height)
 
 /////////////////////////////
 //
 // The Key Binding Screen tables.
 
 #define KB_X  160
-#define KB_PREV  27
-#define KB_NEXT 310
-#define KB_Y   31
-
-// phares 4/16/98:
-// X,Y position of reset button. This is the same for every screen, and is
-// only defined once here.
-
-#define X_BUTTON 301
-#define Y_BUTTON   3
 
 // Definitions of the (in this case) four key binding screens.
 
@@ -2123,31 +2195,32 @@ int mult_screens_index; // the index of the current screen in a set
 
 setup_menu_t keys_settings1[] =  // Key Binding screen strings
 {
-  { "INPUT PROFILE", S_NUM, m_conf, KB_X, KB_Y, dsda_config_input_profile },
-  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+2*8},
-  {"FORWARD"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+3*8,0,dsda_input_forward},
-  {"BACKWARD"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+4*8,0,dsda_input_backward},
-  {"TURN LEFT"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+5*8,0,dsda_input_turnleft},
-  {"TURN RIGHT"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+6*8,0,dsda_input_turnright},
-  {"RUN"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+7*8,0,dsda_input_speed},
-  {"STRAFE LEFT" ,S_INPUT     ,m_scrn,KB_X,KB_Y+8*8,0,dsda_input_strafeleft},
-  {"STRAFE RIGHT",S_INPUT     ,m_scrn,KB_X,KB_Y+9*8,0,dsda_input_straferight},
-  {"STRAFE"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,0,dsda_input_strafe},
-  {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,0,dsda_input_reverse},
-  {"USE"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+12*8,0,dsda_input_use},
+  { "INPUT PROFILE", S_NUM, m_conf, KB_X, dsda_config_input_profile },
+  EMPTY_LINE,
+  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"FORWARD"     ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_forward},
+  {"BACKWARD"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_backward},
+  {"TURN LEFT"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_turnleft},
+  {"TURN RIGHT"  ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_turnright},
+  {"RUN"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_speed},
+  {"STRAFE LEFT" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_strafeleft},
+  {"STRAFE RIGHT",S_INPUT     ,m_scrn,KB_X,0,dsda_input_straferight},
+  {"STRAFE"      ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_strafe},
+  {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_reverse},
+  {"USE"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_use},
+  EMPTY_LINE,
+  {"TOGGLES"  ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"AUTORUN"  ,S_INPUT,m_scrn,KB_X,0,dsda_input_autorun},
+  {"FREE LOOK",S_INPUT,m_scrn,KB_X,0,dsda_input_mlook},
+  {"VERTMOUSE",S_INPUT,m_scrn,KB_X,0,dsda_input_novert},
 
-  {"TOGGLES"  ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+14*8},
-  {"AUTORUN"  ,S_INPUT,m_scrn,KB_X,KB_Y+15*8,0,dsda_input_autorun},
-  {"FREE LOOK",S_INPUT,m_scrn,KB_X,KB_Y+16*8,0,dsda_input_mlook},
-  {"VERTMOUSE",S_INPUT,m_scrn,KB_X,KB_Y+17*8,0,dsda_input_novert},
-
-  NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings2),
+  NEXT_PAGE(keys_settings2),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings2[] =  // Key Binding screen strings
 {
-  {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
+  {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KB_X},
 
   // phares 4/13/98:
   // key_help and key_escape can no longer be rebound. This keeps the
@@ -2159,296 +2232,297 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   // functions. Introduce an S_KEEP flag to show that you cannot swap this
   // key with other keys in the same 'group'. (m_scrn, etc.)
 
-  {"HELP"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,0,dsda_input_help},
-  {"MENU"        ,S_SKIP|S_KEEP ,m_scrn,0   ,0    ,0,dsda_input_escape},
-  {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 1*8,0,dsda_input_pause},
-  {"AUTOMAP"     ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 2*8,0,dsda_input_map},
-  {"VOLUME"      ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 3*8,0,dsda_input_soundvolume},
-  {"HUD"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 4*8,0,dsda_input_hud},
-  {"MESSAGES"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 5*8,0,dsda_input_messages},
-  {"GAMMA FIX"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 6*8,0,dsda_input_gamma},
-  {"SPY"         ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 7*8,0,dsda_input_spy},
-  {"LARGER VIEW" ,S_INPUT     ,m_scrn,KB_X,KB_Y+ 8*8,0,dsda_input_zoomin},
-  {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,KB_Y+ 9*8,0,dsda_input_zoomout},
-  {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,KB_Y+10*8,0,dsda_input_screenshot},
+  // {"HELP"        ,S_SKIP|S_KEEP|S_INPUT ,m_scrn,0   ,0,dsda_input_help},
+  // {"MENU"        ,S_SKIP|S_KEEP|S_INPUT ,m_scrn,0   ,0,dsda_input_escape},
+  {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_pause},
+  {"AUTOMAP"     ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_map},
+  {"VOLUME"      ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_soundvolume},
+  {"HUD"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_hud},
+  {"MESSAGES"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_messages},
+  {"GAMMA FIX"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_gamma},
+  {"SPY"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_spy},
+  {"LARGER VIEW" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomin},
+  {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomout},
+  {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_screenshot},
+  EMPTY_LINE,
+  {"GAME"        ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_savegame},
+  {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_loadgame},
+  {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quicksave},
+  {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quickload},
+  {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_endgame},
+  {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quit},
 
-  {"GAME"        ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+12*8},
-  {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+13*8,0,dsda_input_savegame},
-  {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+14*8,0,dsda_input_loadgame},
-  {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+15*8,0,dsda_input_quicksave},
-  {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,KB_Y+16*8,0,dsda_input_quickload},
-  {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,KB_Y+17*8,0,dsda_input_endgame},
-  {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,KB_Y+18*8,0,dsda_input_quit},
-
-  PREV_PAGE(KB_PREV, KB_Y+20*8, keys_settings1),
-  NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings3),
+  PREV_PAGE(keys_settings1),
+  NEXT_PAGE(keys_settings3),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings3[] =  // Key Binding screen strings
 {
-  {"WEAPONS" ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
-  {"FIST"    ,S_INPUT       ,m_scrn,KB_X,KB_Y+ 1*8,0,dsda_input_weapon1},
-  {"PISTOL"  ,S_INPUT       ,m_scrn,KB_X,KB_Y+ 2*8,0,dsda_input_weapon2},
-  {"SHOTGUN" ,S_INPUT       ,m_scrn,KB_X,KB_Y+ 3*8,0,dsda_input_weapon3},
-  {"CHAINGUN",S_INPUT       ,m_scrn,KB_X,KB_Y+ 4*8,0,dsda_input_weapon4},
-  {"ROCKET"  ,S_INPUT       ,m_scrn,KB_X,KB_Y+ 5*8,0,dsda_input_weapon5},
-  {"PLASMA"  ,S_INPUT       ,m_scrn,KB_X,KB_Y+ 6*8,0,dsda_input_weapon6},
-  {"BFG",     S_INPUT       ,m_scrn,KB_X,KB_Y+ 7*8,0,dsda_input_weapon7},
-  {"CHAINSAW",S_INPUT       ,m_scrn,KB_X,KB_Y+ 8*8,0,dsda_input_weapon8},
-  {"SSG"     ,S_INPUT       ,m_scrn,KB_X,KB_Y+ 9*8,0,dsda_input_weapon9},
-  {"NEXT"    ,S_INPUT       ,m_scrn,KB_X,KB_Y+11*8,0,dsda_input_nextweapon},
-  {"PREVIOUS",S_INPUT       ,m_scrn,KB_X,KB_Y+12*8,0,dsda_input_prevweapon},
-  {"BEST"    ,S_INPUT       ,m_scrn,KB_X,KB_Y+13*8,0,dsda_input_toggleweapon},
-  {"FIRE"    ,S_INPUT       ,m_scrn,KB_X,KB_Y+15*8,0,dsda_input_fire},
+  {"WEAPONS" ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"FIST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon1},
+  {"PISTOL"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon2},
+  {"SHOTGUN" ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon3},
+  {"CHAINGUN",S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon4},
+  {"ROCKET"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon5},
+  {"PLASMA"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon6},
+  {"BFG",     S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon7},
+  {"CHAINSAW",S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon8},
+  {"SSG"     ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon9},
+  EMPTY_LINE,
+  {"NEXT"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_nextweapon},
+  {"PREVIOUS",S_INPUT       ,m_scrn,KB_X,0,dsda_input_prevweapon},
+  {"BEST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_toggleweapon},
+  {"FIRE"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_fire},
 
-  PREV_PAGE(KB_PREV, KB_Y+20*8, keys_settings2),
-  NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings4),
+  PREV_PAGE(keys_settings2),
+  NEXT_PAGE(keys_settings4),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings4[] =  // Key Binding screen strings
 {
-  {"AUTOMAP"    ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
-  {"FOLLOW"     ,S_INPUT     ,m_map ,KB_X,KB_Y+ 1*8,0,dsda_input_map_follow},
-  {"ZOOM IN"    ,S_INPUT     ,m_map ,KB_X,KB_Y+ 2*8,0,dsda_input_map_zoomin},
-  {"ZOOM OUT"   ,S_INPUT     ,m_map ,KB_X,KB_Y+ 3*8,0,dsda_input_map_zoomout},
-  {"SHIFT UP"   ,S_INPUT     ,m_map ,KB_X,KB_Y+ 4*8,0,dsda_input_map_up},
-  {"SHIFT DOWN" ,S_INPUT     ,m_map ,KB_X,KB_Y+ 5*8,0,dsda_input_map_down},
-  {"SHIFT LEFT" ,S_INPUT     ,m_map ,KB_X,KB_Y+ 6*8,0,dsda_input_map_left},
-  {"SHIFT RIGHT",S_INPUT     ,m_map ,KB_X,KB_Y+ 7*8,0,dsda_input_map_right},
-  {"MARK PLACE" ,S_INPUT     ,m_map ,KB_X,KB_Y+ 8*8,0,dsda_input_map_mark},
-  {"CLEAR MARKS",S_INPUT     ,m_map ,KB_X,KB_Y+ 9*8,0,dsda_input_map_clear},
-  {"FULL/ZOOM"  ,S_INPUT     ,m_map ,KB_X,KB_Y+10*8,0,dsda_input_map_gobig},
-  {"GRID"       ,S_INPUT     ,m_map ,KB_X,KB_Y+11*8,0,dsda_input_map_grid},
-  {"ROTATE"     ,S_INPUT     ,m_map ,KB_X,KB_Y+12*8,0,dsda_input_map_rotate},
-  {"OVERLAY"    ,S_INPUT     ,m_map ,KB_X,KB_Y+13*8,0,dsda_input_map_overlay},
-  {"TEXTURED"   ,S_INPUT     ,m_map ,KB_X,KB_Y+14*8,0,dsda_input_map_textured},
+  {"AUTOMAP"    ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"FOLLOW"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_follow},
+  {"ZOOM IN"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomin},
+  {"ZOOM OUT"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomout},
+  {"SHIFT UP"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_up},
+  {"SHIFT DOWN" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_down},
+  {"SHIFT LEFT" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_left},
+  {"SHIFT RIGHT",S_INPUT     ,m_map ,KB_X,0,dsda_input_map_right},
+  {"MARK PLACE" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_mark},
+  {"CLEAR MARKS",S_INPUT     ,m_map ,KB_X,0,dsda_input_map_clear},
+  {"FULL/ZOOM"  ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_gobig},
+  {"GRID"       ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_grid},
+  {"ROTATE"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_rotate},
+  {"OVERLAY"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_overlay},
+  {"TEXTURED"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_textured},
 
-  PREV_PAGE(KB_PREV, KB_Y+20*8, keys_settings3),
-  NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings5),
+  PREV_PAGE(keys_settings3),
+  NEXT_PAGE(keys_settings5),
   FINAL_ENTRY
 };
 
 //e6y
 setup_menu_t keys_settings5[] =  // Key Binding screen strings
 {
-  {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y},
-  {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 1*8,0,dsda_input_speed_up},
-  {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 2*8,0,dsda_input_speed_down},
-  {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 3*8,0,dsda_input_speed_default},
+  {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_up},
+  {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_down},
+  {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_default},
+  EMPTY_LINE,
+  {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_skip},
+  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_endlevel},
+  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_walkcamera},
+  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_join_demo},
+  {"RESTART DEMO ATTEMPT" ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
+  EMPTY_LINE,
+  {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
+  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_nextlevel},
+  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_showalive},
 
-  {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+5*8},
-  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 6*8,0,dsda_input_demo_skip},
-  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 7*8,0,dsda_input_demo_endlevel},
-  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 8*8,0,dsda_input_walkcamera},
-  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,KB_Y+ 9*8,0,dsda_input_join_demo},
-  {"RESTART DEMO ATTEMPT" ,S_INPUT   ,m_scrn,KB_X,KB_Y+10*8,0,dsda_input_restart},
-
-  {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+12*8},
-  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+13*8,0,dsda_input_restart},
-  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,KB_Y+14*8,0,dsda_input_nextlevel},
-  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,KB_Y+15*8,0,dsda_input_showalive},
-
-  PREV_PAGE(KB_PREV, KB_Y+20*8, keys_settings4),
-  NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings6),
+  PREV_PAGE(keys_settings4),
+  NEXT_PAGE(keys_settings6),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings6[] =
 {
-  {"MENUS"       ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+0*8},
-  {"NEXT ITEM"   ,S_INPUT     ,m_menu,KB_X,KB_Y+1*8,0,dsda_input_menu_down},
-  {"PREV ITEM"   ,S_INPUT     ,m_menu,KB_X,KB_Y+2*8,0,dsda_input_menu_up},
-  {"LEFT"        ,S_INPUT     ,m_menu,KB_X,KB_Y+3*8,0,dsda_input_menu_left},
-  {"RIGHT"       ,S_INPUT     ,m_menu,KB_X,KB_Y+4*8,0,dsda_input_menu_right},
-  {"BACKSPACE"   ,S_INPUT     ,m_menu,KB_X,KB_Y+5*8,0,dsda_input_menu_backspace},
-  { "SELECT ITEM", S_INPUT | S_NOCLEAR, m_menu, KB_X, KB_Y + 6 * 8, 0, dsda_input_menu_enter },
-  {"EXIT"        ,S_INPUT     ,m_menu,KB_X,KB_Y+7*8,0,dsda_input_menu_escape},
-  {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,KB_Y+8*8,0,dsda_input_menu_clear},
+  {"MENUS"       ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"NEXT ITEM"   ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_down},
+  {"PREV ITEM"   ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_up},
+  {"LEFT"        ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_left},
+  {"RIGHT"       ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_right},
+  {"BACKSPACE"   ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_backspace},
+  { "SELECT ITEM", S_INPUT | S_NOCLEAR, m_menu, KB_X, 0, dsda_input_menu_enter },
+  {"EXIT"        ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_escape},
+  {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_clear},
+  EMPTY_LINE,
+  {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_repeat_message},
 
-  {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X,KB_Y+10*8},
-  {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,KB_Y+11*8,0,dsda_input_repeat_message},
-
-  PREV_PAGE(KB_PREV, KB_Y+20*8, keys_settings5),
-  NEXT_PAGE(KB_NEXT, KB_Y+20*8, keys_settings7),
+  PREV_PAGE(keys_settings5),
+  NEXT_PAGE(keys_settings7),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings7[] =
 {
-  { "CHEATS", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
-  { "God Mode", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, 0, dsda_input_iddqd },
-  { "Ammo & Keys", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, 0, dsda_input_idkfa },
-  { "Ammo", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, 0, dsda_input_idfa },
-  { "No Clipping", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, 0, dsda_input_idclip },
-  { "Health", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, 0, dsda_input_idbeholdh },
-  { "Armor", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, 0, dsda_input_idbeholdm },
-  { "Invulnerability", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, 0, dsda_input_idbeholdv },
-  { "Berserk", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, 0, dsda_input_idbeholds },
-  { "Partial Invisibility", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, 0, dsda_input_idbeholdi },
-  { "Radiation Suit", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, 0, dsda_input_idbeholdr },
-  { "Computer Area Map", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, 0, dsda_input_idbeholda },
-  { "Light Amplification", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, 0, dsda_input_idbeholdl },
-  { "Show Position", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, 0, dsda_input_idmypos },
-  { "Reveal Map", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, 0, dsda_input_iddt },
-  { "Reset Health", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, 0, dsda_input_ponce },
-  { "Tome of Power", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, 0, dsda_input_shazam },
-  { "Chicken", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, 0, dsda_input_chicken },
-  { "No Target", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, 0, dsda_input_notarget },
-  { "Freeze", S_INPUT, m_scrn, KB_X, KB_Y + 19 * 8, 0, dsda_input_freeze },
+  { "CHEATS", S_SKIP | S_TITLE, m_null, KB_X},
+  { "God Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_iddqd },
+  { "Ammo & Keys", S_INPUT, m_scrn, KB_X, 0, dsda_input_idkfa },
+  { "Ammo", S_INPUT, m_scrn, KB_X, 0, dsda_input_idfa },
+  { "No Clipping", S_INPUT, m_scrn, KB_X, 0, dsda_input_idclip },
+  { "Health", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdh },
+  { "Armor", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdm },
+  { "Invulnerability", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdv },
+  { "Berserk", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholds },
+  { "Partial Invisibility", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdi },
+  { "Radiation Suit", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdr },
+  { "Computer Area Map", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholda },
+  { "Light Amplification", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdl },
+  { "Show Position", S_INPUT, m_scrn, KB_X, 0, dsda_input_idmypos },
+  { "Reveal Map", S_INPUT, m_scrn, KB_X, 0, dsda_input_iddt },
+  { "Reset Health", S_INPUT, m_scrn, KB_X, 0, dsda_input_ponce },
+  { "Tome of Power", S_INPUT, m_scrn, KB_X, 0, dsda_input_shazam },
+  { "Chicken", S_INPUT, m_scrn, KB_X, 0, dsda_input_chicken },
+  { "No Target", S_INPUT, m_scrn, KB_X, 0, dsda_input_notarget },
+  { "Freeze", S_INPUT, m_scrn, KB_X, 0, dsda_input_freeze },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, keys_settings6),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, raven_keys_settings),
+  PREV_PAGE(keys_settings6),
+  NEXT_PAGE(raven_keys_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t raven_keys_settings[] = {
-  { "RAVEN MOVEMENT", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
-  { "LOOK UP", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, 0, dsda_input_lookup },
-  { "LOOK DOWN", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, 0, dsda_input_lookdown },
-  { "LOOK CENTER", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, 0, dsda_input_lookcenter },
-  { "FLY UP", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, 0, dsda_input_flyup },
-  { "FLY DOWN", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, 0, dsda_input_flydown },
-  { "FLY CENTER", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, 0, dsda_input_flycenter },
-  { "JUMP", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, 0, dsda_input_jump },
+  { "RAVEN MOVEMENT", S_SKIP | S_TITLE, m_null, KB_X},
+  { "LOOK UP", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookup },
+  { "LOOK DOWN", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookdown },
+  { "LOOK CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookcenter },
+  { "FLY UP", S_INPUT, m_scrn, KB_X, 0, dsda_input_flyup },
+  { "FLY DOWN", S_INPUT, m_scrn, KB_X, 0, dsda_input_flydown },
+  { "FLY CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_flycenter },
+  { "JUMP", S_INPUT, m_scrn, KB_X, 0, dsda_input_jump },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, keys_settings7),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, heretic_keys_settings),
+  PREV_PAGE(keys_settings7),
+  NEXT_PAGE(heretic_keys_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t heretic_keys_settings[] = {
-  { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
-  { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, 0, dsda_input_use_artifact },
-  { "USE TOME OF POWER", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, 0, dsda_input_arti_tome },
-  { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, 0, dsda_input_arti_quartz },
-  { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, 0, dsda_input_arti_urn },
-  { "USE TIMEBOMB", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, 0, dsda_input_arti_bomb },
-  { "USE RING OF INVINCIBILITY", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, 0, dsda_input_arti_ring },
-  { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, 0, dsda_input_arti_chaosdevice },
-  { "USE SHADOWSPHERE", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, 0, dsda_input_arti_shadowsphere },
-  { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, 0, dsda_input_arti_wings },
-  { "USE TORCH", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, 0, dsda_input_arti_torch },
-  { "USE MORPH OVUM", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, 0, dsda_input_arti_morph },
-  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, 0, dsda_input_invleft },
-  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, 0, dsda_input_invright },
+  { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, KB_X},
+  { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, 0, dsda_input_use_artifact },
+  { "USE TOME OF POWER", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_tome },
+  { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_quartz },
+  { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_urn },
+  { "USE TIMEBOMB", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_bomb },
+  { "USE RING OF INVINCIBILITY", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_ring },
+  { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_chaosdevice },
+  { "USE SHADOWSPHERE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_shadowsphere },
+  { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_wings },
+  { "USE TORCH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_torch },
+  { "USE MORPH OVUM", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_morph },
+  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invleft },
+  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invright },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, raven_keys_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, hexen_keys_settings),
+  PREV_PAGE(raven_keys_settings),
+  NEXT_PAGE(hexen_keys_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t hexen_keys_settings[] = {
-  { "HEXEN INVENTORY", S_SKIP | S_TITLE, m_null, KB_X, KB_Y },
-  { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, 0, dsda_input_use_artifact },
-  { "USE ICON OF THE DEFENDER", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, 0, dsda_input_arti_ring },
-  { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, 0, dsda_input_arti_quartz },
-  { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, 0, dsda_input_arti_urn },
-  { "USE MYSTIC AMBIT INCANT", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, 0, dsda_input_hexen_arti_incant },
-  { "USE DARK SERVANT", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, 0, dsda_input_hexen_arti_summon },
-  { "USE TORCH", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, 0, dsda_input_arti_torch },
-  { "USE PORKALATOR", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, 0, dsda_input_arti_morph },
-  { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, 0, dsda_input_arti_wings },
-  { "USE DISC OF REPULSION", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, 0, dsda_input_hexen_arti_disk },
-  { "USE FLECHETTE", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, 0, dsda_input_hexen_arti_flechette },
-  { "USE BANISHMENT DEVICE", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, 0, dsda_input_hexen_arti_banishment },
-  { "USE BOOTS OF SPEED", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, 0, dsda_input_hexen_arti_boots },
-  { "USE KRATER OF MIGHT", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, 0, dsda_input_hexen_arti_krater },
-  { "USE DRAGONSKIN BRACERS", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, 0, dsda_input_hexen_arti_bracers },
-  { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, 0, dsda_input_arti_chaosdevice },
-  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, 0, dsda_input_invleft },
-  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, 0, dsda_input_invright },
+  { "HEXEN INVENTORY", S_SKIP | S_TITLE, m_null, KB_X},
+  { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, 0, dsda_input_use_artifact },
+  { "USE ICON OF THE DEFENDER", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_ring },
+  { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_quartz },
+  { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_urn },
+  { "USE MYSTIC AMBIT INCANT", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_incant },
+  { "USE DARK SERVANT", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_summon },
+  { "USE TORCH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_torch },
+  { "USE PORKALATOR", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_morph },
+  { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_wings },
+  { "USE DISC OF REPULSION", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_disk },
+  { "USE FLECHETTE", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_flechette },
+  { "USE BANISHMENT DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_banishment },
+  { "USE BOOTS OF SPEED", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_boots },
+  { "USE KRATER OF MIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_krater },
+  { "USE DRAGONSKIN BRACERS", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_bracers },
+  { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_chaosdevice },
+  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invleft },
+  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invright },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, heretic_keys_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, dsda_keys_settings),
+  PREV_PAGE(heretic_keys_settings),
+  NEXT_PAGE(dsda_keys_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t dsda_keys_settings[] = {
-  { "DSDA-Doom Keys", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
-  { "Store Quick Key Frame", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, 0, dsda_input_store_quick_key_frame },
-  { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, 0, dsda_input_restore_quick_key_frame },
-  { "Rewind", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, 0, dsda_input_rewind },
-  { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, 0, dsda_input_cycle_profile },
-  { "Cycle Palette", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, 0, dsda_input_cycle_palette },
-  { "Open Console", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, 0, dsda_input_console },
-  { "Fake Archvile Jump", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, 0, dsda_input_avj },
+  { "DSDA-Doom Keys", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Store Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_store_quick_key_frame },
+  { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_restore_quick_key_frame },
+  { "Rewind", S_INPUT, m_scrn, KB_X, 0, dsda_input_rewind },
+  { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, 0, dsda_input_cycle_profile },
+  { "Cycle Palette", S_INPUT, m_scrn, KB_X, 0, dsda_input_cycle_palette },
+  { "Open Console", S_INPUT, m_scrn, KB_X, 0, dsda_input_console },
+  { "Fake Archvile Jump", S_INPUT, m_scrn, KB_X, 0, dsda_input_avj },
+  EMPTY_LINE,
+  { "Toggles", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Command Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_command_display },
+  { "Strict Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_strict_mode },
+  { "Coordinate Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_coordinate_display },
+  { "Extended HUD", S_INPUT, m_scrn, KB_X, 0, dsda_input_exhud },
+  { "SFX", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_sfx },
+  { "Music", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_music },
+  { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, 0, dsda_input_cheat_codes },
+  { "Render Stats", S_INPUT, m_scrn, KB_X, 0, dsda_input_idrate },
+  { "FPS", S_INPUT, m_scrn, KB_X, 0, dsda_input_fps },
 
-  { "Toggles", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 9 * 8 },
-  { "Command Display", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, 0, dsda_input_command_display },
-  { "Strict Mode", S_INPUT, m_scrn, KB_X, KB_Y + 11 * 8, 0, dsda_input_strict_mode },
-  { "Coordinate Display", S_INPUT, m_scrn, KB_X, KB_Y + 12 * 8, 0, dsda_input_coordinate_display },
-  { "Extended HUD", S_INPUT, m_scrn, KB_X, KB_Y + 13 * 8, 0, dsda_input_exhud },
-  { "SFX", S_INPUT, m_scrn, KB_X, KB_Y + 14 * 8, 0, dsda_input_mute_sfx },
-  { "Music", S_INPUT, m_scrn, KB_X, KB_Y + 15 * 8, 0, dsda_input_mute_music },
-  { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, KB_Y + 16 * 8, 0, dsda_input_cheat_codes },
-  { "Render Stats", S_INPUT, m_scrn, KB_X, KB_Y + 17 * 8, 0, dsda_input_idrate },
-  { "FPS", S_INPUT, m_scrn, KB_X, KB_Y + 18 * 8, 0, dsda_input_fps },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, hexen_keys_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, script_keys_settings),
+  PREV_PAGE(hexen_keys_settings),
+  NEXT_PAGE(script_keys_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t script_keys_settings[] = {
-  { "Script Keys", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
-  { "Script 0", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, 0, dsda_input_script_0 },
-  { "Script 1", S_INPUT, m_scrn, KB_X, KB_Y + 2 * 8, 0, dsda_input_script_1 },
-  { "Script 2", S_INPUT, m_scrn, KB_X, KB_Y + 3 * 8, 0, dsda_input_script_2 },
-  { "Script 3", S_INPUT, m_scrn, KB_X, KB_Y + 4 * 8, 0, dsda_input_script_3 },
-  { "Script 4", S_INPUT, m_scrn, KB_X, KB_Y + 5 * 8, 0, dsda_input_script_4 },
-  { "Script 5", S_INPUT, m_scrn, KB_X, KB_Y + 6 * 8, 0, dsda_input_script_5 },
-  { "Script 6", S_INPUT, m_scrn, KB_X, KB_Y + 7 * 8, 0, dsda_input_script_6 },
-  { "Script 7", S_INPUT, m_scrn, KB_X, KB_Y + 8 * 8, 0, dsda_input_script_7 },
-  { "Script 8", S_INPUT, m_scrn, KB_X, KB_Y + 9 * 8, 0, dsda_input_script_8 },
-  { "Script 9", S_INPUT, m_scrn, KB_X, KB_Y + 10 * 8, 0, dsda_input_script_9 },
+  { "Script Keys", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Script 0", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_0 },
+  { "Script 1", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_1 },
+  { "Script 2", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_2 },
+  { "Script 3", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_3 },
+  { "Script 4", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_4 },
+  { "Script 5", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_5 },
+  { "Script 6", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_6 },
+  { "Script 7", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_7 },
+  { "Script 8", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_8 },
+  { "Script 9", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_9 },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, dsda_keys_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, build_keys_settings1),
+  PREV_PAGE(dsda_keys_settings),
+  NEXT_PAGE(build_keys_settings1),
   FINAL_ENTRY
 };
 
 setup_menu_t build_keys_settings1[] = {
-  { "Build Mode (1)", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
-  { "Toggle Build Mode", S_INPUT, m_scrn, KB_X, KB_Y + 1 * 8, 0, dsda_input_build },
-  { "Advance Frame", S_INPUT, m_build, KB_X, KB_Y + 2 * 8, 0, dsda_input_build_advance_frame },
-  { "Reverse Frame", S_INPUT, m_build, KB_X, KB_Y + 3 * 8, 0, dsda_input_build_reverse_frame },
-  { "Reset Command", S_INPUT, m_build, KB_X, KB_Y + 4 * 8, 0, dsda_input_build_reset_command },
-  { "Toggle Source", S_INPUT, m_build, KB_X, KB_Y + 5 * 8, 0, dsda_input_build_source },
+  { "Build Mode (1)", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Toggle Build Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_build },
+  { "Advance Frame", S_INPUT, m_build, KB_X, 0, dsda_input_build_advance_frame },
+  { "Reverse Frame", S_INPUT, m_build, KB_X, 0, dsda_input_build_reverse_frame },
+  { "Reset Command", S_INPUT, m_build, KB_X, 0, dsda_input_build_reset_command },
+  { "Toggle Source", S_INPUT, m_build, KB_X, 0, dsda_input_build_source },
+  EMPTY_LINE,
+  { "Controls", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Forward", S_INPUT, m_build, KB_X, 0, dsda_input_build_forward },
+  { "Backward", S_INPUT, m_build, KB_X, 0, dsda_input_build_backward },
+  { "Fine Forward", S_INPUT, m_build, KB_X, 0, dsda_input_build_fine_forward },
+  { "Fine Backward", S_INPUT, m_build, KB_X, 0, dsda_input_build_fine_backward },
+  { "Turn Left", S_INPUT, m_build, KB_X, 0, dsda_input_build_turn_left },
+  { "Turn Right", S_INPUT, m_build, KB_X, 0, dsda_input_build_turn_right },
+  { "Strafe Left", S_INPUT, m_build, KB_X, 0, dsda_input_build_strafe_left },
+  { "Strafe Right", S_INPUT, m_build, KB_X, 0, dsda_input_build_strafe_right },
+  { "Fine Strafe Left", S_INPUT, m_build, KB_X, 0, dsda_input_build_fine_strafe_left },
+  { "Fine Strafe Right", S_INPUT, m_build, KB_X, 0, dsda_input_build_fine_strafe_right },
+  { "Use", S_INPUT, m_build, KB_X, 0, dsda_input_build_use },
 
-  { "Controls", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 7 * 8 },
-  { "Forward", S_INPUT, m_build, KB_X, KB_Y + 8 * 8, 0, dsda_input_build_forward },
-  { "Backward", S_INPUT, m_build, KB_X, KB_Y + 9 * 8, 0, dsda_input_build_backward },
-  { "Fine Forward", S_INPUT, m_build, KB_X, KB_Y + 10 * 8, 0, dsda_input_build_fine_forward },
-  { "Fine Backward", S_INPUT, m_build, KB_X, KB_Y + 11 * 8, 0, dsda_input_build_fine_backward },
-  { "Turn Left", S_INPUT, m_build, KB_X, KB_Y + 12 * 8, 0, dsda_input_build_turn_left },
-  { "Turn Right", S_INPUT, m_build, KB_X, KB_Y + 13 * 8, 0, dsda_input_build_turn_right },
-  { "Strafe Left", S_INPUT, m_build, KB_X, KB_Y + 14 * 8, 0, dsda_input_build_strafe_left },
-  { "Strafe Right", S_INPUT, m_build, KB_X, KB_Y + 15 * 8, 0, dsda_input_build_strafe_right },
-  { "Fine Strafe Left", S_INPUT, m_build, KB_X, KB_Y + 16 * 8, 0, dsda_input_build_fine_strafe_left },
-  { "Fine Strafe Right", S_INPUT, m_build, KB_X, KB_Y + 17 * 8, 0, dsda_input_build_fine_strafe_right },
-  { "Use", S_INPUT, m_build, KB_X, KB_Y + 18 * 8, 0, dsda_input_build_use },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, script_keys_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, build_keys_settings2),
+  PREV_PAGE(script_keys_settings),
+  NEXT_PAGE(build_keys_settings2),
   FINAL_ENTRY
 };
 
 setup_menu_t build_keys_settings2[] = {
-  { "Build Mode (2)", S_SKIP | S_TITLE, m_null, KB_X, KB_Y + 0 * 8 },
-  { "Fire", S_INPUT, m_build, KB_X, KB_Y + 1 * 8, 0, dsda_input_build_fire },
-  { "Fist", S_INPUT, m_build, KB_X, KB_Y + 2 * 8, 0, dsda_input_build_weapon1 },
-  { "Pistol", S_INPUT, m_build, KB_X, KB_Y + 3 * 8, 0, dsda_input_build_weapon2 },
-  { "Shotgun", S_INPUT, m_build, KB_X, KB_Y + 4 * 8, 0, dsda_input_build_weapon3 },
-  { "Chaingun", S_INPUT, m_build, KB_X, KB_Y + 5 * 8, 0, dsda_input_build_weapon4 },
-  { "Rocket", S_INPUT, m_build, KB_X, KB_Y + 6 * 8, 0, dsda_input_build_weapon5 },
-  { "Plasma", S_INPUT, m_build, KB_X, KB_Y + 7 * 8, 0, dsda_input_build_weapon6 },
-  { "BFG", S_INPUT, m_build, KB_X, KB_Y + 8 * 8, 0, dsda_input_build_weapon7 },
-  { "Chainsaw", S_INPUT, m_build, KB_X, KB_Y + 9 * 8, 0, dsda_input_build_weapon8 },
-  { "SSG", S_INPUT, m_build, KB_X, KB_Y + 10 * 8, 0, dsda_input_build_weapon9 },
+  { "Build Mode (2)", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Fire", S_INPUT, m_build, KB_X, 0, dsda_input_build_fire },
+  { "Fist", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon1 },
+  { "Pistol", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon2 },
+  { "Shotgun", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon3 },
+  { "Chaingun", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon4 },
+  { "Rocket", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon5 },
+  { "Plasma", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon6 },
+  { "BFG", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon7 },
+  { "Chainsaw", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon8 },
+  { "SSG", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon9 },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, build_keys_settings1),
+  PREV_PAGE(build_keys_settings1),
   FINAL_ENTRY
 };
 
@@ -2465,10 +2539,7 @@ void M_KeyBindings(int choice)
   setup_select = false;
   setup_gather = false;
   mult_screens_index = 0;
-  current_setup_menu = keys_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
+  M_UpdateSetupMenu(keys_settings[0]);
 }
 
 // The drawing part of the Key Bindings Setup initialization. Draw the
@@ -2485,7 +2556,7 @@ void M_DrawKeybnd(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", cr_title);
   M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
 /////////////////////////////
@@ -2493,7 +2564,6 @@ void M_DrawKeybnd(void)
 // The Weapon Screen tables.
 
 #define WP_X 203
-#define WP_Y  33
 
 static const char *weapon_attack_alignment_strings[] = {
   "OFF", "HORIZONTAL", "CENTERED", "BOBBING", NULL
@@ -2516,16 +2586,16 @@ setup_menu_t* weap_settings[] =
 
 setup_menu_t weap_settings1[] =  // Weapons Settings screen
 {
-  { "Weapon Preferences", S_SKIP | S_TITLE, m_null, WP_X, WP_Y + 1 * 8 },
-  { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 2 * 8, dsda_config_weapon_choice_1 },
-  { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 3 * 8, dsda_config_weapon_choice_2 },
-  { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 4 * 8, dsda_config_weapon_choice_3 },
-  { "4th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 5 * 8, dsda_config_weapon_choice_4 },
-  { "5th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 6 * 8, dsda_config_weapon_choice_5 },
-  { "6th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 7 * 8, dsda_config_weapon_choice_6 },
-  { "7th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 8 * 8, dsda_config_weapon_choice_7 },
-  { "8th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 9 * 8, dsda_config_weapon_choice_8 },
-  { "9th CHOICE WEAPON", S_WEAP, m_conf, WP_X, WP_Y + 10 * 8, dsda_config_weapon_choice_9 },
+  { "Weapon Preferences", S_SKIP | S_TITLE, m_null, WP_X},
+  { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_1 },
+  { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_2 },
+  { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_3 },
+  { "4th CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_4 },
+  { "5th CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_5 },
+  { "6th CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_6 },
+  { "7th CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_7 },
+  { "8th CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_8 },
+  { "9th CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_9 },
 
   FINAL_ENTRY
 };
@@ -2543,10 +2613,7 @@ void M_Weapons(int choice)
   setup_select = false;
   setup_gather = false;
   mult_screens_index = 0;
-  current_setup_menu = weap_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
+  M_UpdateSetupMenu(weap_settings[0]);
 }
 
 
@@ -2562,7 +2629,7 @@ void M_DrawWeapons(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", cr_title);
   M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
 /////////////////////////////
@@ -2570,7 +2637,6 @@ void M_DrawWeapons(void)
 // The Status Bar / HUD tables.
 
 #define SB_X 203
-#define SB_Y  31
 
 // Screen table definitions
 
@@ -2588,24 +2654,22 @@ setup_menu_t* stat_settings[] =
 
 setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 {
-  { "STATUS BAR", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 1 * 8 },
+  { "STATUS BAR", S_SKIP | S_TITLE, m_null, SB_X},
+  { "USE RED NUMBERS", S_YESNO, m_conf, SB_X, dsda_config_sts_always_red },
+  { "GRAY %",S_YESNO, m_conf, SB_X, dsda_config_sts_pct_always_gray },
+  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, SB_X, dsda_config_sts_traditional_keys },
+  EMPTY_LINE,
+  { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X},
+  { "SHOW MESSAGES", S_YESNO, m_conf, SB_X, dsda_config_show_messages },
+  { "HEALTH LOW/OK", S_NUM, m_conf, SB_X, dsda_config_hud_health_red },
+  { "HEALTH OK/GOOD", S_NUM, m_conf, SB_X, dsda_config_hud_health_yellow },
+  { "HEALTH GOOD/EXTRA", S_NUM, m_conf, SB_X, dsda_config_hud_health_green },
+  { "AMMO LOW/OK", S_NUM, m_conf, SB_X, dsda_config_hud_ammo_red },
+  { "AMMO OK/GOOD", S_NUM, m_conf, SB_X, dsda_config_hud_ammo_yellow },
+  { "REPORT REVEALED SECRETS", S_YESNO, m_conf, SB_X, dsda_config_hudadd_secretarea },
+  { "DEMO PLAYBACK PROGRESS BAR", S_YESNO, m_conf, SB_X, dsda_config_hudadd_demoprogressbar },
 
-  { "USE RED NUMBERS", S_YESNO, m_conf, SB_X, SB_Y + 2 * 8, dsda_config_sts_always_red },
-  { "GRAY %",S_YESNO, m_conf, SB_X, SB_Y + 3 * 8, dsda_config_sts_pct_always_gray },
-  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, SB_X, SB_Y + 4 * 8, dsda_config_sts_traditional_keys },
-
-  { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X, SB_Y + 6 * 8 },
-
-  { "SHOW MESSAGES", S_YESNO, m_conf, SB_X, SB_Y + 7 * 8, dsda_config_show_messages },
-  { "HEALTH LOW/OK", S_NUM, m_conf, SB_X, SB_Y + 8 * 8, dsda_config_hud_health_red },
-  { "HEALTH OK/GOOD", S_NUM, m_conf, SB_X, SB_Y + 9 * 8, dsda_config_hud_health_yellow },
-  { "HEALTH GOOD/EXTRA", S_NUM, m_conf, SB_X, SB_Y + 10 * 8, dsda_config_hud_health_green },
-  { "AMMO LOW/OK", S_NUM, m_conf, SB_X, SB_Y + 11 * 8, dsda_config_hud_ammo_red },
-  { "AMMO OK/GOOD", S_NUM, m_conf, SB_X, SB_Y + 12 * 8, dsda_config_hud_ammo_yellow },
-  { "REPORT REVEALED SECRETS", S_YESNO, m_conf, SB_X, SB_Y + 13 * 8, dsda_config_hudadd_secretarea },
-  { "DEMO PLAYBACK PROGRESS BAR", S_YESNO, m_conf, SB_X, SB_Y + 14 * 8, dsda_config_hudadd_demoprogressbar },
-
-  NEXT_PAGE(KB_NEXT, SB_Y + 20 * 8, stat_settings2),
+  NEXT_PAGE(stat_settings2),
   FINAL_ENTRY
 };
 
@@ -2617,17 +2681,16 @@ static const char *crosshair_str[] =
 
 setup_menu_t stat_settings2[] =
 {
-  { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X, SB_Y + 1 * 8 },
+  { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X},
+  { "ENABLE CROSSHAIR", S_CHOICE, m_conf, HUD_X, dsda_config_hudadd_crosshair, 0, crosshair_str },
+  { "SCALE CROSSHAIR", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale },
+  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
+  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
+  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_lock_target },
+  { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color },
+  { "TARGET CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color },
 
-  { "ENABLE CROSSHAIR", S_CHOICE, m_conf, HUD_X, SB_Y + 2 * 8, dsda_config_hudadd_crosshair, 0, crosshair_str },
-  { "SCALE CROSSHAIR", S_YESNO, m_conf, HUD_X, SB_Y + 3 * 8, dsda_config_hudadd_crosshair_scale },
-  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_conf, HUD_X, SB_Y + 4 * 8, dsda_config_hudadd_crosshair_health },
-  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_conf, HUD_X, SB_Y + 5 * 8, dsda_config_hudadd_crosshair_target },
-  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_conf, HUD_X, SB_Y + 6 * 8, dsda_config_hudadd_crosshair_lock_target },
-  { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, SB_Y + 7 * 8, dsda_config_hudadd_crosshair_color },
-  { "TARGET CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, SB_Y + 8 * 8, dsda_config_hudadd_crosshair_target_color },
-
-  PREV_PAGE(KB_PREV, SB_Y + 20 * 8, stat_settings1),
+  PREV_PAGE(stat_settings1),
   FINAL_ENTRY
 };
 
@@ -2644,10 +2707,7 @@ void M_StatusBar(int choice)
   setup_select = false;
   setup_gather = false;
   mult_screens_index = 0;
-  current_setup_menu = stat_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
+  M_UpdateSetupMenu(stat_settings[0]);
 }
 
 
@@ -2663,7 +2723,7 @@ void M_DrawStatusHUD(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", cr_title);
   M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
 
@@ -2672,9 +2732,6 @@ void M_DrawStatusHUD(void)
 // The Automap tables.
 
 #define AU_X    275
-#define AU_Y     31
-#define AU_PREV KB_PREV
-#define AU_NEXT KB_NEXT
 
 setup_menu_t auto_settings1[];
 setup_menu_t auto_settings2[];
@@ -2700,69 +2757,69 @@ static const char *map_things_appearance_list[] =
 
 setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
 {
-  { "Automap Components", S_SKIP | S_TITLE, m_null, AU_X, AU_Y },
-  { "Stat Totals", S_YESNO, m_conf, AU_X, AU_Y + 1 * 8, dsda_config_map_totals },
-  { "Player Coordinates", S_YESNO, m_conf, AU_X, AU_Y + 2 * 8, dsda_config_map_coordinates },
-  { "Level / Total Time", S_YESNO, m_conf, AU_X, AU_Y + 3 * 8, dsda_config_map_time },
-  { "Level Title", S_YESNO, m_conf, AU_X, AU_Y + 4 * 8, dsda_config_map_title },
+  { "Automap Components", S_SKIP | S_TITLE, m_null, AU_X},
+  { "Stat Totals", S_YESNO, m_conf, AU_X, dsda_config_map_totals },
+  { "Player Coordinates", S_YESNO, m_conf, AU_X, dsda_config_map_coordinates },
+  { "Level / Total Time", S_YESNO, m_conf, AU_X, dsda_config_map_time },
+  { "Level Title", S_YESNO, m_conf, AU_X, dsda_config_map_title },
+  EMPTY_LINE,
+  { "Show Secrets only after entering", S_YESNO, m_conf, AU_X, dsda_config_map_secret_after },
+  { "Grid cell size 8..256, -1 for autosize", S_NUM, m_conf, AU_X, dsda_config_map_grid_size },
+  { "Scroll / Zoom speed  (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_scroll_speed },
+  { "Use mouse wheel for zooming", S_YESNO, m_conf, AU_X, dsda_config_map_wheel_zoom },
+  { "Apply multisampling", S_YESNO, m_conf, AU_X, dsda_config_map_use_multisamling },
+  { "Enable textured display", S_YESNO, m_conf, AU_X, dsda_config_map_textured },
+  { "Things appearance", S_CHOICE, m_conf, AU_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
+  { "Show Minimap", S_YESNO, m_conf, AU_X, dsda_config_show_minimap },
+  EMPTY_LINE,
+  { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X},
+  { "Textured automap", S_NUM, m_conf, AU_X, dsda_config_map_textured_trans },
+  { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_textured_overlay_trans },
+  { "Lines in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_lines_overlay_trans },
 
-  { "Show Secrets only after entering", S_YESNO, m_conf, AU_X, AU_Y + 6 * 8, dsda_config_map_secret_after },
-  { "Grid cell size 8..256, -1 for autosize", S_NUM, m_conf, AU_X, AU_Y + 7 * 8, dsda_config_map_grid_size },
-  { "Scroll / Zoom speed  (1..32)", S_NUM, m_conf, AU_X, AU_Y + 8 * 8, dsda_config_map_scroll_speed },
-  { "Use mouse wheel for zooming", S_YESNO, m_conf, AU_X, AU_Y + 9 * 8, dsda_config_map_wheel_zoom },
-  { "Apply multisampling", S_YESNO, m_conf, AU_X, AU_Y + 10 * 8, dsda_config_map_use_multisamling },
-  { "Enable textured display", S_YESNO, m_conf, AU_X, AU_Y + 11 * 8, dsda_config_map_textured },
-  { "Things appearance", S_CHOICE, m_conf, AU_X, AU_Y + 12 * 8, dsda_config_map_things_appearance, 0, map_things_appearance_list },
-  { "Show Minimap", S_YESNO, m_conf, AU_X, AU_Y + 13 * 8, dsda_config_show_minimap },
-
-  { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X, AU_Y + 15 * 8 },
-  { "Textured automap", S_NUM, m_conf, AU_X, AU_Y + 16 * 8, dsda_config_map_textured_trans },
-  { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 17 * 8, dsda_config_map_textured_overlay_trans },
-  { "Lines in overlay mode", S_NUM, m_conf, AU_X, AU_Y + 18 * 8, dsda_config_map_lines_overlay_trans },
-
-  NEXT_PAGE(AU_NEXT, AU_Y + 20 * 8, auto_settings2),
+  NEXT_PAGE(auto_settings2),
   FINAL_ENTRY
 };
 
 setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
 {
-  {"background", S_COLOR, m_conf, AU_X, AU_Y, dsda_config_mapcolor_back},
-  {"grid lines", S_COLOR, m_conf, AU_X, AU_Y + 1*8, dsda_config_mapcolor_grid},
-  {"normal 1s wall", S_COLOR, m_conf,AU_X,AU_Y+ 2*8, dsda_config_mapcolor_wall},
-  {"line at floor height change", S_COLOR, m_conf, AU_X, AU_Y+ 3*8, dsda_config_mapcolor_fchg},
-  {"line at ceiling height change"      ,S_COLOR,m_conf,AU_X,AU_Y+ 4*8, dsda_config_mapcolor_cchg},
-  {"line at sector with floor = ceiling",S_COLOR,m_conf,AU_X,AU_Y+ 5*8, dsda_config_mapcolor_clsd},
-  {"red key"                            ,S_COLOR,m_conf,AU_X,AU_Y+ 6*8, dsda_config_mapcolor_rkey},
-  {"blue key"                           ,S_COLOR,m_conf,AU_X,AU_Y+ 7*8, dsda_config_mapcolor_bkey},
-  {"yellow key"                         ,S_COLOR,m_conf,AU_X,AU_Y+ 8*8, dsda_config_mapcolor_ykey},
-  {"red door"                           ,S_COLOR,m_conf,AU_X,AU_Y+ 9*8, dsda_config_mapcolor_rdor},
-  {"blue door"                          ,S_COLOR,m_conf,AU_X,AU_Y+10*8, dsda_config_mapcolor_bdor},
-  {"yellow door"                        ,S_COLOR,m_conf,AU_X,AU_Y+11*8, dsda_config_mapcolor_ydor},
+  {"background", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_back},
+  {"grid lines", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_grid},
+  {"normal 1s wall", S_COLOR, m_conf,AU_X, dsda_config_mapcolor_wall},
+  {"line at floor height change", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_fchg},
+  {"line at ceiling height change"      ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_cchg},
+  {"line at sector with floor = ceiling",S_COLOR,m_conf,AU_X, dsda_config_mapcolor_clsd},
+  {"red key"                            ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_rkey},
+  {"blue key"                           ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_bkey},
+  {"yellow key"                         ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_ykey},
+  {"red door"                           ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_rdor},
+  {"blue door"                          ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_bdor},
+  {"yellow door"                        ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_ydor},
 
-  PREV_PAGE(AU_PREV, AU_Y+20*8, auto_settings1),
-  NEXT_PAGE(AU_NEXT, AU_Y+20*8, auto_settings3),
+  PREV_PAGE(auto_settings1),
+  NEXT_PAGE(auto_settings3),
   FINAL_ENTRY
 };
 
 setup_menu_t auto_settings3[] =  // 3nd AutoMap Settings screen
 {
-  {"teleporter line"                ,S_COLOR ,m_conf,AU_X,AU_Y, dsda_config_mapcolor_tele},
-  {"secret sector boundary"         ,S_COLOR ,m_conf,AU_X,AU_Y+ 1*8, dsda_config_mapcolor_secr},
-  {"revealed secret sector boundary",S_COLOR ,m_conf,AU_X,AU_Y+ 2*8, dsda_config_mapcolor_revsecr},
+  {"teleporter line"                ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_tele},
+  {"secret sector boundary"         ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_secr},
+  {"revealed secret sector boundary",S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_revsecr},
   //jff 4/23/98 add exit line to automap
-  {"exit line"                      ,S_COLOR ,m_conf,AU_X,AU_Y+ 3*8, dsda_config_mapcolor_exit},
-  {"computer map unseen line"       ,S_COLOR ,m_conf,AU_X,AU_Y+ 4*8, dsda_config_mapcolor_unsn},
-  {"line w/no floor/ceiling changes",S_COLOR ,m_conf,AU_X,AU_Y+ 5*8, dsda_config_mapcolor_flat},
-  {"general sprite"                 ,S_COLOR ,m_conf,AU_X,AU_Y+ 6*8, dsda_config_mapcolor_sprt},
-  {"countable enemy sprite"         ,S_COLOR ,m_conf,AU_X,AU_Y+ 7*8, dsda_config_mapcolor_enemy},      // cph 2006/06/30
-  {"countable item sprite"          ,S_COLOR ,m_conf,AU_X,AU_Y+ 8*8, dsda_config_mapcolor_item},       // mead 3/4/2003
-  {"crosshair"                      ,S_COLOR ,m_conf,AU_X,AU_Y+ 9*8, dsda_config_mapcolor_hair},
-  {"single player arrow"            ,S_COLOR ,m_conf,AU_X,AU_Y+10*8, dsda_config_mapcolor_sngl},
-  {"your colour in multiplayer"     ,S_COLOR ,m_conf,AU_X,AU_Y+11*8, dsda_config_mapcolor_me},
+  {"exit line"                      ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_exit},
+  {"computer map unseen line"       ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_unsn},
+  {"line w/no floor/ceiling changes",S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_flat},
+  {"general sprite"                 ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_sprt},
+  {"countable enemy sprite"         ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_enemy},      // cph 2006/06/30
+  {"countable item sprite"          ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_item},       // mead 3/4/2003
+  {"crosshair"                      ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_hair},
+  {"single player arrow"            ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_sngl},
+  {"your colour in multiplayer"     ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_me},
+  EMPTY_LINE,
+  {"friends"                        ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_frnd},        // killough 8/8/98
 
-  {"friends"                        ,S_COLOR ,m_conf,AU_X,AU_Y+13*8, dsda_config_mapcolor_frnd},        // killough 8/8/98
-
-  PREV_PAGE(AU_PREV, AU_Y+20*8, auto_settings2),
+  PREV_PAGE(auto_settings2),
   FINAL_ENTRY
 };
 
@@ -2781,10 +2838,7 @@ void M_Automap(int choice)
   colorbox_active = false;
   setup_gather = false;
   mult_screens_index = 0;
-  current_setup_menu = auto_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
+  M_UpdateSetupMenu(auto_settings[0]);
 }
 
 // Data used by the color palette that is displayed for the player to
@@ -2831,7 +2885,7 @@ void M_DrawAutoMap(void)
   // CPhipps - patch drawing updated
   M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", cr_title);
   M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 
   // If a color is being selected, need to show color paint chips
 
@@ -2861,7 +2915,6 @@ setup_menu_t* gen_settings[] =
 };
 
 #define G_X 226
-#define G_Y 23
 
 static const char *videomodes[] = {
   "Software",
@@ -2913,181 +2966,181 @@ static const char* render_stretch_list[] = {
 };
 
 setup_menu_t audiovideo_settings[] = {
-  { "Video", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Video mode", S_CHOICE | S_STR, m_conf, G_X, G_Y + 2 * 8, dsda_config_videomode, 0, videomodes },
-  { "Screen Resolution", S_CHOICE | S_STR, m_conf, G_X, G_Y + 3 * 8, dsda_config_screen_resolution, 0, screen_resolutions_list },
-  { "Aspect Ratio", S_CHOICE, m_conf, G_X, G_Y + 4 * 8, dsda_config_render_aspect, 0, render_aspects_list },
-  { "Fullscreen Video mode", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_use_fullscreen },
-  { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_exclusive_fullscreen },
-  { "Vertical Sync", S_YESNO, m_conf, G_X, G_Y + 7 * 8, dsda_config_render_vsync },
-  { "Uncapped Framerate", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_uncapped_framerate },
-  { "FPS Limit", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_fps_limit },
+  { "Video", S_SKIP | S_TITLE, m_null, G_X},
+  { "Video mode", S_CHOICE | S_STR, m_conf, G_X, dsda_config_videomode, 0, videomodes },
+  { "Screen Resolution", S_CHOICE | S_STR, m_conf, G_X, dsda_config_screen_resolution, 0, screen_resolutions_list },
+  { "Aspect Ratio", S_CHOICE, m_conf, G_X, dsda_config_render_aspect, 0, render_aspects_list },
+  { "Fullscreen Video mode", S_YESNO, m_conf, G_X, dsda_config_use_fullscreen },
+  { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, dsda_config_exclusive_fullscreen },
+  { "Vertical Sync", S_YESNO, m_conf, G_X, dsda_config_render_vsync },
+  { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
+  { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
+  EMPTY_LINE,
+  { "OpenGL Light Mode", S_CHOICE, m_conf, G_X, dsda_config_gl_lightmode, 0, gl_lightmodes },
+  EMPTY_LINE,
+  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
+  { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
+  { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
+  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, dsda_config_snd_pcspeaker },
+  { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, dsda_config_full_sounds },
+  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, dsda_config_snd_midiplayer, 0, midiplayers },
 
-  { "OpenGL Light Mode", S_CHOICE, m_conf, G_X, G_Y + 11 * 8, dsda_config_gl_lightmode, 0, gl_lightmodes },
-
-  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X, G_Y + 13 * 8 },
-  { "Number of Sound Channels", S_NUM, m_conf, G_X, G_Y + 14 * 8, dsda_config_snd_channels },
-  { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_pitched_sounds },
-  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, G_Y + 16 * 8, dsda_config_snd_pcspeaker },
-  { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, G_Y + 17 * 8, dsda_config_full_sounds },
-  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, G_Y + 18 * 8, dsda_config_snd_midiplayer, 0, midiplayers },
-
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mouse_settings),
+  NEXT_PAGE(mouse_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t mouse_settings[] = {
-  { "Mouse Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Enable Mouse", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_use_mouse },
+  { "Mouse Options", S_SKIP | S_TITLE, m_null, G_X},
+  { "Enable Mouse", S_YESNO, m_conf, G_X, dsda_config_use_mouse },
+  EMPTY_LINE,
+  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_mouse_sensitivity_horiz },
+  { "Vertical Sensitivity", S_NUM, m_conf, G_X, dsda_config_mouse_sensitivity_vert },
+  { "Free Look Sensitivity", S_NUM, m_conf, G_X, dsda_config_mouse_sensitivity_mlook },
+  { "Acceleration", S_NUM, m_conf, G_X, dsda_config_mouse_acceleration },
+  EMPTY_LINE,
+  { "Enable Free Look", S_YESNO, m_conf, G_X, dsda_config_freelook },
+  { "Invert Free Look", S_YESNO, m_conf, G_X, dsda_config_movement_mouseinvert },
+  EMPTY_LINE,
+  { "Mouse Strafe Divisor", S_NUM, m_conf, G_X, dsda_config_movement_mousestrafedivisor },
+  { "Dbl-Click As Use", S_YESNO, m_conf, G_X, dsda_config_mouse_doubleclick_as_use },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, dsda_config_vertmouse },
+  { "Carry Fractional Tics", S_YESNO, m_conf, G_X, dsda_config_mouse_carrytics },
+  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, dsda_config_mouse_stutter_correction },
 
-  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_mouse_sensitivity_horiz },
-  { "Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 5 * 8, dsda_config_mouse_sensitivity_vert },
-  { "Free Look Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_mouse_sensitivity_mlook },
-  { "Acceleration", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_mouse_acceleration },
-
-  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_freelook },
-  { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_movement_mouseinvert },
-
-  { "Mouse Strafe Divisor", S_NUM, m_conf, G_X, G_Y + 12 * 8, dsda_config_movement_mousestrafedivisor },
-  { "Dbl-Click As Use", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_mouse_doubleclick_as_use },
-  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_vertmouse },
-  { "Carry Fractional Tics", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_mouse_carrytics },
-  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_mouse_stutter_correction },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, audiovideo_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, controller_settings),
+  PREV_PAGE(audiovideo_settings),
+  NEXT_PAGE(controller_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t controller_settings[] = {
-  { "Controller Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Enable Controller", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_use_game_controller },
+  { "Controller Options", S_SKIP | S_TITLE, m_null, G_X},
+  { "Enable Controller", S_YESNO, m_conf, G_X, dsda_config_use_game_controller },
+  EMPTY_LINE,
+  { "Left Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_left_analog_sensitivity_x },
+  { "Left Vertical Sensitivity", S_NUM, m_conf, G_X, dsda_config_left_analog_sensitivity_y },
+  { "Right Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_right_analog_sensitivity_x },
+  { "Right Vertical Sensitivity", S_NUM, m_conf, G_X, dsda_config_right_analog_sensitivity_y },
+  { "Acceleration", S_NUM, m_conf, G_X, dsda_config_analog_look_acceleration },
+  EMPTY_LINE,
+  { "Enable Free Look", S_YESNO, m_conf, G_X, dsda_config_freelook },
+  { "Invert Free Look", S_YESNO, m_conf, G_X, dsda_config_invert_analog_look },
+  { "Swap Analogs", S_YESNO, m_conf, G_X, dsda_config_swap_analogs },
+  EMPTY_LINE,
+  { "Left Analog Deadzone", S_NUM, m_conf, G_X, dsda_config_left_analog_deadzone },
+  { "Right Analog Deadzone", S_NUM, m_conf, G_X, dsda_config_right_analog_deadzone },
+  { "Left Trigger Deadzone", S_NUM, m_conf, G_X, dsda_config_left_trigger_deadzone },
+  { "Right Trigger Deadzone", S_NUM, m_conf, G_X, dsda_config_right_trigger_deadzone },
 
-  { "Left Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_left_analog_sensitivity_x },
-  { "Left Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 5 * 8, dsda_config_left_analog_sensitivity_y },
-  { "Right Horizontal Sensitivity", S_NUM, m_conf, G_X, G_Y + 6 * 8, dsda_config_right_analog_sensitivity_x },
-  { "Right Vertical Sensitivity", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_right_analog_sensitivity_y },
-  { "Acceleration", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_analog_look_acceleration },
-
-  { "Enable Free Look", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_freelook },
-  { "Invert Free Look", S_YESNO, m_conf, G_X, G_Y + 11 * 8, dsda_config_invert_analog_look },
-  { "Swap Analogs", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_swap_analogs },
-
-  { "Left Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 14 * 8, dsda_config_left_analog_deadzone },
-  { "Right Analog Deadzone", S_NUM, m_conf, G_X, G_Y + 15 * 8, dsda_config_right_analog_deadzone },
-  { "Left Trigger Deadzone", S_NUM, m_conf, G_X, G_Y + 16 * 8, dsda_config_left_trigger_deadzone },
-  { "Right Trigger Deadzone", S_NUM, m_conf, G_X, G_Y + 17 * 8, dsda_config_right_trigger_deadzone },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mouse_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, misc_settings),
+  PREV_PAGE(mouse_settings),
+  NEXT_PAGE(misc_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t misc_settings[] = {
-  { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Default skill level", S_CHOICE, m_conf, G_X, G_Y + 2 * 8, dsda_config_default_skill, 0, gen_skillstrings },
-  { "Default compatibility level", S_CHOICE, m_conf, G_X, G_Y + 3 * 8, dsda_config_default_complevel, 0, &gen_compstrings[1] },
-  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, G_Y + 4 * 8, dsda_config_cheat_codes },
+  { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X},
+  { "Default skill level", S_CHOICE, m_conf, G_X, dsda_config_default_skill, 0, gen_skillstrings },
+  { "Default compatibility level", S_CHOICE, m_conf, G_X, dsda_config_default_complevel, 0, &gen_compstrings[1] },
+  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, dsda_config_cheat_codes },
+  EMPTY_LINE,
+  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X},
+  { "Rewind Interval (s)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_interval },
+  { "Rewind Depth", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_depth },
+  { "Rewind Timeout (ms)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_timeout },
+  { "Organize My Save Files", S_YESNO, m_conf, G_X, dsda_config_organized_saves },
+  { "Skip Quit Prompt", S_YESNO, m_conf, G_X, dsda_config_skip_quit_prompt },
+  { "Death Use Action", S_CHOICE, m_conf, G_X, dsda_config_death_use_action, 0, death_use_strings },
+  { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
+  { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
+  { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
 
-  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X, G_Y + 6 * 8 },
-  { "Rewind Interval (s)", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_auto_key_frame_interval },
-  { "Rewind Depth", S_NUM, m_conf, G_X, G_Y + 8 * 8, dsda_config_auto_key_frame_depth },
-  { "Rewind Timeout (ms)", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_auto_key_frame_timeout },
-  { "Organize My Save Files", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_organized_saves },
-  { "Skip Quit Prompt", S_YESNO, m_conf, G_X, G_Y + 11 * 8, dsda_config_skip_quit_prompt },
-  { "Death Use Action", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, dsda_config_death_use_action, 0, death_use_strings },
-  { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_switch_when_ammo_runs_out },
-  { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, G_Y + 14 * 8, dsda_config_parallel_sfx_limit },
-  { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, G_Y + 15 * 8, dsda_config_parallel_sfx_window },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, controller_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, display_settings),
+  PREV_PAGE(controller_settings),
+  NEXT_PAGE(display_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t display_settings[] = {
-  { "Display Options", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Use Extended Hud", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_exhud },
-  { "Ex Hud Scale %", S_NUM, m_conf, G_X, G_Y + 3 * 8, dsda_config_ex_text_scale_x },
-  { "Ex Hud Ratio %", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_ex_text_ratio_y },
-  { "Hide Status Bar Horns", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_hide_horns },
-  { "Hide Weapon", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_hide_weapon },
-  { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, G_Y + 7 * 8, dsda_config_render_wipescreen },
-  { "Show FPS", S_YESNO,  m_conf, G_X, G_Y + 8 * 8, dsda_config_show_fps },
-  { "View Bobbing", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_viewbob },
-  { "Weapon Bobbing", S_YESNO, m_conf, G_X, G_Y + 10 * 8, dsda_config_weaponbob },
-  { "Quake Intensity", S_NUM, m_conf, G_X, G_Y + 11 * 8, dsda_config_quake_intensity },
-  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, G_Y + 12 * 8, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  { "Display Options", S_SKIP | S_TITLE, m_null, G_X},
+  { "Use Extended Hud", S_YESNO, m_conf, G_X, dsda_config_exhud },
+  { "Ex Hud Scale %", S_NUM, m_conf, G_X, dsda_config_ex_text_scale_x },
+  { "Ex Hud Ratio %", S_NUM, m_conf, G_X, dsda_config_ex_text_ratio_y },
+  { "Hide Status Bar Horns", S_YESNO, m_conf, G_X, dsda_config_hide_horns },
+  { "Hide Weapon", S_YESNO, m_conf, G_X, dsda_config_hide_weapon },
+  { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, dsda_config_render_wipescreen },
+  { "Show FPS", S_YESNO,  m_conf, G_X, dsda_config_show_fps },
+  { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
+  { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
+  { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
+  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  EMPTY_LINE,
+  { "Change Palette On Pain", S_YESNO, m_conf, G_X, dsda_config_palette_ondamage },
+  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, dsda_config_palette_onbonus },
+  { "Change Palette On Powers", S_YESNO, m_conf, G_X, dsda_config_palette_onpowers },
+  EMPTY_LINE,
+  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, dsda_config_render_stretch_hud, 0, render_stretch_list },
+  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, dsda_config_menu_background },
 
-  { "Change Palette On Pain", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_palette_ondamage },
-  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_palette_onbonus },
-  { "Change Palette On Powers", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_palette_onpowers },
-
-  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, G_Y + 18 * 8, dsda_config_render_stretch_hud, 0, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, G_Y + 19 * 8, dsda_config_menu_background },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, misc_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, mapping_settings),
+  PREV_PAGE(misc_settings),
+  NEXT_PAGE(mapping_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t mapping_settings[] = {
-  { "EMULATION", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8},
-  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_overrun_spechit_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 3 * 8, dsda_config_overrun_spechit_emulate },
-  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 4 * 8, dsda_config_overrun_reject_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_overrun_reject_emulate },
-  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_overrun_intercept_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 7 * 8, dsda_config_overrun_intercept_emulate },
-  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_overrun_playeringame_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, G_Y + 9 * 8, dsda_config_overrun_playeringame_emulate },
+  { "EMULATION", S_SKIP | S_TITLE, m_null, G_X},
+  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_spechit_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_spechit_emulate },
+  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_reject_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_reject_emulate },
+  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_intercept_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_intercept_emulate },
+  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_playeringame_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_playeringame_emulate },
+  EMPTY_LINE,
+  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G_X},
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, dsda_config_comperr_passuse },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, dsda_config_comperr_hangsolid },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, dsda_config_comperr_blockmap },
+  { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, dsda_config_comperr_freeaim },
 
-  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G_X, G_Y + 11 * 8 },
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, G_Y + 12 * 8, dsda_config_comperr_passuse },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, G_Y + 13 * 8, dsda_config_comperr_hangsolid },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, G_Y + 14 * 8, dsda_config_comperr_blockmap },
-  { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_comperr_freeaim },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, display_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, demo_settings),
+  PREV_PAGE(display_settings),
+  NEXT_PAGE(demo_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t demo_settings[] = {
-  { "Demo Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Strict Mode", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_strict_mode },
-  { "Cycle Ghost Colors", S_YESNO, m_conf, G_X, G_Y + 3 * 8, dsda_config_cycle_ghost_colors },
-  { "Show Demo Attempts", S_YESNO, m_conf, G_X, G_Y + 4 * 8, dsda_config_show_demo_attempts },
-  { "Show Split Data", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_show_split_data },
-  { "Text File Author", S_NAME, m_conf, G_X, G_Y + 6 * 8, dsda_config_player_name },
-  { "Quickstart Cache Tics", S_NUM, m_conf, G_X, G_Y + 7 * 8, dsda_config_quickstart_cache_tics },
-  { "Smooth Demo Playback", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_demo_smoothturns },
-  { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, G_Y + 9 * 8, dsda_config_demo_smoothturnsfactor },
-  { "Show Precise Intermission Time", S_YESNO,  m_conf, G_X, G_Y + 10 * 8, dsda_config_show_level_splits },
+  { "Demo Settings", S_SKIP | S_TITLE, m_null, G_X},
+  { "Strict Mode", S_YESNO, m_conf, G_X, dsda_config_strict_mode },
+  { "Cycle Ghost Colors", S_YESNO, m_conf, G_X, dsda_config_cycle_ghost_colors },
+  { "Show Demo Attempts", S_YESNO, m_conf, G_X, dsda_config_show_demo_attempts },
+  { "Show Split Data", S_YESNO, m_conf, G_X, dsda_config_show_split_data },
+  { "Text File Author", S_NAME, m_conf, G_X, dsda_config_player_name },
+  { "Quickstart Cache Tics", S_NUM, m_conf, G_X, dsda_config_quickstart_cache_tics },
+  { "Smooth Demo Playback", S_YESNO, m_conf, G_X, dsda_config_demo_smoothturns },
+  { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, dsda_config_demo_smoothturnsfactor },
+  { "Show Precise Intermission Time", S_YESNO,  m_conf, G_X, dsda_config_show_level_splits },
+  EMPTY_LINE,
+  { "Organize Failed Demos", S_YESNO,  m_conf, G_X, dsda_config_organize_failed_demos },
+  EMPTY_LINE,
+  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X},
+  { "Allow Jumping", S_YESNO, m_conf, G_X, dsda_config_allow_jumping },
+  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
 
-  { "Organize Failed Demos", S_YESNO,  m_conf, G_X, G_Y + 12 * 8, dsda_config_organize_failed_demos },
-
-  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 14 * 8 },
-  { "Allow Jumping", S_YESNO, m_conf, G_X, G_Y + 15 * 8, dsda_config_allow_jumping },
-  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, G_Y + 16 * 8, dsda_config_gl_health_bar },
-
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, mapping_settings),
-  NEXT_PAGE(KB_NEXT, KB_Y + 20 * 8, tas_settings),
+  PREV_PAGE(mapping_settings),
+  NEXT_PAGE(tas_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t tas_settings[] = {
-  { "TAS Settings", S_SKIP | S_TITLE, m_null, G_X, G_Y + 1 * 8 },
-  { "Wipe At Full Speed", S_YESNO, m_conf, G_X, G_Y + 2 * 8, dsda_config_wipe_at_full_speed },
-  { "Show Command Display", S_YESNO, m_conf, G_X, G_Y + 3 * 8, dsda_config_command_display },
-  { "Command History", S_NUM, m_conf, G_X, G_Y + 4 * 8, dsda_config_command_history_size },
-  { "Hide Empty Commands", S_YESNO, m_conf, G_X, G_Y + 5 * 8, dsda_config_hide_empty_commands },
-  { "Show Coordinate Display", S_YESNO, m_conf, G_X, G_Y + 6 * 8, dsda_config_coordinate_display },
-  { "Permanent Strafe50", S_YESNO, m_conf, G_X, G_Y + 7 * 8, dsda_config_movement_strafe50 },
-  { "Strafe50 On Turns", S_YESNO, m_conf, G_X, G_Y + 8 * 8, dsda_config_movement_strafe50onturns },
-  { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, G_Y + 9 * 8, dsda_config_realtic_clock_rate },
+  { "TAS Settings", S_SKIP | S_TITLE, m_null, G_X},
+  { "Wipe At Full Speed", S_YESNO, m_conf, G_X, dsda_config_wipe_at_full_speed },
+  { "Show Command Display", S_YESNO, m_conf, G_X, dsda_config_command_display },
+  { "Command History", S_NUM, m_conf, G_X, dsda_config_command_history_size },
+  { "Hide Empty Commands", S_YESNO, m_conf, G_X, dsda_config_hide_empty_commands },
+  { "Show Coordinate Display", S_YESNO, m_conf, G_X, dsda_config_coordinate_display },
+  { "Permanent Strafe50", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50 },
+  { "Strafe50 On Turns", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50onturns },
+  { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, dsda_config_realtic_clock_rate },
 
-  PREV_PAGE(KB_PREV, KB_Y + 20 * 8, demo_settings),
+  PREV_PAGE(demo_settings),
   FINAL_ENTRY
 };
 
@@ -3139,10 +3192,7 @@ void M_General(int choice)
   setup_select = false;
   setup_gather = false;
   mult_screens_index = 0;
-  current_setup_menu = gen_settings[0];
-  set_menu_itemon = M_GetSetupMenuItemOn();
-  while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-  current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
+  M_UpdateSetupMenu(gen_settings[0]);
 }
 
 // The drawing part of the General Setup initialization. Draw the
@@ -3157,7 +3207,7 @@ void M_DrawGeneral(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", cr_title);
   M_DrawInstructions();
-  M_DrawScreenItems(current_setup_menu);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
 /////////////////////////////
@@ -3408,70 +3458,66 @@ int M_GetKeyString(int c,int offset)
 #define KT_X2 172
 #define KT_X3  87
 
-#define KT_Y1   2
-#define KT_Y2 118
-#define KT_Y3 102
-
 setup_menu_t helpstrings[] =  // HELP screen strings
 {
-  {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KT_X1,KT_Y1},
-  {"HELP"        ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 1*8,0,dsda_input_help},
-  {"MENU"        ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 2*8,0,dsda_input_escape},
-  {"PAUSE"       ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 4*8,0,dsda_input_pause},
-  {"AUTOMAP"     ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 5*8,0,dsda_input_map},
-  {"SOUND VOLUME",S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 6*8,0,dsda_input_soundvolume},
-  {"HUD"         ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 7*8,0,dsda_input_hud},
-  {"MESSAGES"    ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 8*8,0,dsda_input_messages},
-  {"GAMMA FIX"   ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+ 9*8,0,dsda_input_gamma},
-  {"SPY"         ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+10*8,0,dsda_input_spy},
-  {"LARGER VIEW" ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+11*8,0,dsda_input_zoomin},
-  {"SMALLER VIEW",S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+12*8,0,dsda_input_zoomout},
-  {"SCREENSHOT"  ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y1+13*8,0,dsda_input_screenshot},
-
-  {"AUTOMAP"     ,S_SKIP|S_TITLE,m_null,KT_X1,KT_Y2},
-  {"FOLLOW MODE" ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 1*8,0,dsda_input_map_follow},
-  {"ZOOM IN"     ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 2*8,0,dsda_input_map_zoomin},
-  {"ZOOM OUT"    ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 3*8,0,dsda_input_map_zoomout},
-  {"MARK PLACE"  ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 4*8,0,dsda_input_map_mark},
-  {"CLEAR MARKS" ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 5*8,0,dsda_input_map_clear},
-  {"FULL/ZOOM"   ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 6*8,0,dsda_input_map_gobig},
-  {"GRID"        ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 7*8,0,dsda_input_map_grid},
-  {"ROTATE"      ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 8*8,0,dsda_input_map_rotate},
-  {"OVERLAY"     ,S_SKIP|S_INPUT,m_null,KT_X1,KT_Y2+ 9*8,0,dsda_input_map_overlay},
-
-  {"WEAPONS"     ,S_SKIP|S_TITLE,m_null,KT_X3,KT_Y1},
-  {"FIST"        ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 1*8,0,dsda_input_weapon1},
-  {"PISTOL"      ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 2*8,0,dsda_input_weapon2},
-  {"SHOTGUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 3*8,0,dsda_input_weapon3},
-  {"CHAINGUN"    ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 4*8,0,dsda_input_weapon4},
-  {"ROCKET"      ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 5*8,0,dsda_input_weapon5},
-  {"PLASMA"      ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 6*8,0,dsda_input_weapon6},
-  {"BFG 9000"    ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 7*8,0,dsda_input_weapon7},
-  {"CHAINSAW"    ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 8*8,0,dsda_input_weapon8},
-  {"SSG"         ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+ 9*8,0,dsda_input_weapon9},
-  {"BEST"        ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+10*8,0,dsda_input_toggleweapon},
-  {"FIRE"        ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y1+11*8,0,dsda_input_fire},
-
-  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KT_X3,KT_Y3},
-  {"FORWARD"     ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 1*8,0,dsda_input_forward},
-  {"BACKWARD"    ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 2*8,0,dsda_input_backward},
-  {"TURN LEFT"   ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 3*8,0,dsda_input_turnleft},
-  {"TURN RIGHT"  ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 4*8,0,dsda_input_turnright},
-  {"RUN"         ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 5*8,0,dsda_input_speed},
-  {"STRAFE LEFT" ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 6*8,0,dsda_input_strafeleft},
-  {"STRAFE RIGHT",S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 7*8,0,dsda_input_straferight},
-  {"STRAFE"      ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 8*8,0,dsda_input_strafe},
-  {"AUTORUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+ 9*8,0,dsda_input_autorun},
-  {"180 TURN"    ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+10*8,0,dsda_input_reverse},
-  {"USE"         ,S_SKIP|S_INPUT,m_null,KT_X3,KT_Y3+11*8,0,dsda_input_use},
-
-  {"GAME"        ,S_SKIP|S_TITLE,m_null,KT_X2,KT_Y1},
-  {"SAVE"        ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 1*8,0,dsda_input_savegame},
-  {"LOAD"        ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 2*8,0,dsda_input_loadgame},
-  {"QUICKSAVE"   ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 3*8,0,dsda_input_quicksave},
-  {"END GAME"    ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 4*8,0,dsda_input_endgame},
-  {"QUICKLOAD"   ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 5*8,0,dsda_input_quickload},
-  {"QUIT"        ,S_SKIP|S_INPUT,m_null,KT_X2,KT_Y1+ 6*8,0,dsda_input_quit},
+  {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KT_X1},
+  {"HELP"        ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_help},
+  {"MENU"        ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_escape},
+  {"PAUSE"       ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_pause},
+  {"AUTOMAP"     ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map},
+  {"SOUND VOLUME",S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_soundvolume},
+  {"HUD"         ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_hud},
+  {"MESSAGES"    ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_messages},
+  {"GAMMA FIX"   ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_gamma},
+  {"SPY"         ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_spy},
+  {"LARGER VIEW" ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_zoomin},
+  {"SMALLER VIEW",S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_zoomout},
+  {"SCREENSHOT"  ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_screenshot},
+  EMPTY_LINE,
+  {"AUTOMAP"     ,S_SKIP|S_TITLE,m_null,KT_X1},
+  {"FOLLOW MODE" ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_follow},
+  {"ZOOM IN"     ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_zoomin},
+  {"ZOOM OUT"    ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_zoomout},
+  {"MARK PLACE"  ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_mark},
+  {"CLEAR MARKS" ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_clear},
+  {"FULL/ZOOM"   ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_gobig},
+  {"GRID"        ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_grid},
+  {"ROTATE"      ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_rotate},
+  {"OVERLAY"     ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_overlay},
+  NEW_COLUMN,
+  {"WEAPONS"     ,S_SKIP|S_TITLE,m_null,KT_X3},
+  {"FIST"        ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon1},
+  {"PISTOL"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon2},
+  {"SHOTGUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon3},
+  {"CHAINGUN"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon4},
+  {"ROCKET"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon5},
+  {"PLASMA"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon6},
+  {"BFG 9000"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon7},
+  {"CHAINSAW"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon8},
+  {"SSG"         ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon9},
+  {"BEST"        ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_toggleweapon},
+  {"FIRE"        ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_fire},
+  EMPTY_LINE,
+  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KT_X3},
+  {"FORWARD"     ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_forward},
+  {"BACKWARD"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_backward},
+  {"TURN LEFT"   ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_turnleft},
+  {"TURN RIGHT"  ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_turnright},
+  {"RUN"         ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_speed},
+  {"STRAFE LEFT" ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_strafeleft},
+  {"STRAFE RIGHT",S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_straferight},
+  {"STRAFE"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_strafe},
+  {"AUTORUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_autorun},
+  {"180 TURN"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_reverse},
+  {"USE"         ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_use},
+  NEW_COLUMN,
+  {"GAME"        ,S_SKIP|S_TITLE,m_null,KT_X2},
+  {"SAVE"        ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_savegame},
+  {"LOAD"        ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_loadgame},
+  {"QUICKSAVE"   ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_quicksave},
+  {"END GAME"    ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_endgame},
+  {"QUICKLOAD"   ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_quickload},
+  {"QUIT"        ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_quit},
 
   FINAL_ENTRY
 };
@@ -3562,7 +3608,7 @@ void M_DrawHelp (void)
   else
   {
     M_DrawBackground(g_menu_flat, 0);
-    M_DrawScreenItems(helpstrings);
+    M_DrawScreenItems(helpstrings, 2);
   }
 }
 
@@ -3571,42 +3617,25 @@ void M_DrawHelp (void)
 //
 ////////////////////////////////////////////////////////////////////////////
 
-enum {
-  prog,
-  prog_stub,
-  prog_stub1,
-  prog_stub2,
-  adcr
-};
-
-enum {
-  cr_prog=0,
-  cr_adcr=2,
-};
-
-#define CR_S 9
 #define CR_X 20
 #define CR_X2 50
-#define CR_Y 32
-#define CR_SH 9
 
 setup_menu_t cred_settings[]={
-
-  {"Programmers",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X, CR_Y + CR_S*prog + CR_SH*cr_prog},
-  {"Florian 'Proff' Schulze",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(prog+1) + CR_SH*cr_prog},
-  {"Colin Phipps",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(prog+2) + CR_SH*cr_prog},
-  {"Neil Stevens",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(prog+3) + CR_SH*cr_prog},
-  {"Andrey Budko",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(prog+4) + CR_SH*cr_prog},
-
-  {"Additional Credit To",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X, CR_Y + CR_S*adcr + CR_SH*cr_adcr},
-  {"id Software for DOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+1)+CR_SH*cr_adcr},
-  {"TeamTNT for BOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+2)+CR_SH*cr_adcr},
-  {"Lee Killough for MBF",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+3)+CR_SH*cr_adcr},
-  {"The DOSDoom-Team for DOSDOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+4)+CR_SH*cr_adcr},
-  {"Randy Heit for ZDOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+5)+CR_SH*cr_adcr},
-  {"Michael 'Kodak' Ryssen for DOOMGL",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+6)+CR_SH*cr_adcr},
-  {"Jess Haas for lSDLDoom",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+7) + CR_SH*cr_adcr},
-  {"all others who helped (see AUTHORS file)",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2, CR_Y + CR_S*(adcr+8)+CR_SH*cr_adcr},
+  {"Programmers",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X},
+  {"Florian 'Proff' Schulze",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Colin Phipps",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Neil Stevens",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Andrey Budko",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  EMPTY_LINE,
+  {"Additional Credit To",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X},
+  {"id Software for DOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"TeamTNT for BOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Lee Killough for MBF",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"The DOSDoom-Team for DOSDOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Randy Heit for ZDOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Michael 'Kodak' Ryssen for DOOMGL",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Jess Haas for lSDLDoom",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"all others who helped (see AUTHORS file)",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
 
   FINAL_ENTRY
 };
@@ -3632,7 +3661,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
     M_DrawTitle(81, 9, "PRBOOM", cr_title, PACKAGE_NAME " v" PACKAGE_VERSION, cr_title);
-    M_DrawScreenItems(cred_settings);
+    M_DrawScreenItems(cred_settings, 32);
   }
 }
 
@@ -4753,11 +4782,8 @@ dboolean M_Responder (event_t* ev) {
           ptr1->m_flags &= ~S_HILITE;
           mult_screens_index--;
           M_SetSetupMenuItemOn(set_menu_itemon);
-          current_setup_menu = ptr2->menu;
-          set_menu_itemon = M_GetSetupMenuItemOn();
+          M_UpdateSetupMenu(ptr2->menu);
           print_warning_about_changes = false; // killough 10/98
-          while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-          current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
           S_StartVoidSound(g_sfx_menu);  // killough 10/98
           return true;
         }
@@ -4776,11 +4802,8 @@ dboolean M_Responder (event_t* ev) {
           ptr1->m_flags &= ~S_HILITE;
           mult_screens_index++;
           M_SetSetupMenuItemOn(set_menu_itemon);
-          current_setup_menu = ptr2->menu;
-          set_menu_itemon = M_GetSetupMenuItemOn();
+          M_UpdateSetupMenu(ptr2->menu);
           print_warning_about_changes = false; // killough 10/98
-          while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
-          current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
           S_StartVoidSound(g_sfx_menu);  // killough 10/98
           return true;
         }
