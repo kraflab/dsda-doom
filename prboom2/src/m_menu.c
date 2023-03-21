@@ -5379,8 +5379,9 @@ void M_InitHelpScreen(void)
 {
   setup_menu_t* src;
 
-  src = helpstrings;
-  while (!(src->m_flags & S_END)) {
+  for (src = helpstrings; !(src->m_flags & S_END); src++) {
+    if (!src->m_text)
+      continue;
 
     if ((strncmp(src->m_text,"PLASMA",6) == 0) && (gamemode == shareware))
       src->m_flags = S_SKIP; // Don't show setting or item
@@ -5388,7 +5389,6 @@ void M_InitHelpScreen(void)
       src->m_flags = S_SKIP; // Don't show setting or item
     if ((strncmp(src->m_text,"SSG",3) == 0) && (gamemode != commercial))
       src->m_flags = S_SKIP; // Don't show setting or item
-    src++;
   }
 }
 
