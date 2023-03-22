@@ -117,16 +117,12 @@
 #define S_KEEP     0x00004000 // Don't swap key out
 #define S_END      0x00008000 // Last item in list (dummy)
 #define S_LEVWARN  0x00010000// killough 8/30/98: Always warn about pending change
-#define S_PRGWARN  0x00020000// killough 10/98: Warn about change until next run
-#define S_BADVAL   0x00040000// killough 10/98: Warn about bad value
 #define S_FILE     0x00080000// killough 10/98: Filenames
 #define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
 #define S_CREDIT   0x00200000  // killough 10/98: credit
-#define S_BADVID   0x00400000  // killough 12/98: video mode change error
 #define S_CHOICE   0x00800000  // this item has several values
 #define S_NAME     0x02000000
 #define S_RESET_Y  0x04000000
-#define S_EVEN     0x20000000
 #define S_STR      0x40000000 // need to refactor things...
 #define S_NOCLEAR  0x80000000
 
@@ -171,8 +167,6 @@ int     messageLastMenuActive;
 dboolean messageNeedsInput; // timed message = no input from user
 
 void (*messageRoutine)(int response);
-
-int warning_about_changes, print_warning_about_changes;
 
 static void M_DrawBackground(const char *flat, int scrn)
 {
@@ -1933,32 +1927,6 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 // M_DrawScreenItems takes the data for each menu item and gives it to
 // the drawing routines above.
 
-static void M_DrawScreenItemWarnings(void)
-{
-  /* killough 8/15/98: print warning */
-  if (print_warning_about_changes > 0) {
-    if (warning_about_changes & S_EVEN) {
-      strcpy(menu_buffer, "Mast be even number like 0-none, 2, 4, 6");
-      M_DrawMenuString(30, 176, cr_warning);
-    }
-    else if (warning_about_changes & S_BADVAL) {
-      strcpy(menu_buffer, "Value out of Range");
-      M_DrawMenuString(100, 176, cr_warning);
-    }
-    else if (warning_about_changes & S_PRGWARN) {
-      strcpy(menu_buffer, "Warning: Program must be restarted to see changes");
-      M_DrawMenuString(3, 176, cr_warning);
-    }
-    else if (warning_about_changes & S_BADVID) {
-      strcpy(menu_buffer, "Video mode not supported");
-      M_DrawMenuString(80, 176, cr_warning);
-    } else {
-      strcpy(menu_buffer, "Warning: Changes are pending until next game");
-      M_DrawMenuString(18, 184, cr_warning);
-    }
-  }
-}
-
 // CPhipps - static, const parameter, formatting
 static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 {
@@ -1971,8 +1939,6 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   int limit_i = 0;
   int buffer_i = 0;
   const setup_menu_t* src;
-
-  M_DrawScreenItemWarnings();
 
   i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
@@ -2981,9 +2947,9 @@ setup_menu_t audiovideo_settings[] = {
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
-  { "PC Speaker emulation", S_YESNO | S_PRGWARN, m_conf, G_X, dsda_config_snd_pcspeaker },
+  { "PC Speaker emulation", S_YESNO, m_conf, G_X, dsda_config_snd_pcspeaker },
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, dsda_config_full_sounds },
-  { "Preferred MIDI player", S_CHOICE | S_STR | S_PRGWARN, m_conf, G_X, dsda_config_snd_midiplayer, 0, midiplayers },
+  { "Preferred MIDI player", S_CHOICE | S_STR, m_conf, G_X, dsda_config_snd_midiplayer, 0, midiplayers },
 
   NEXT_PAGE(mouse_settings),
   FINAL_ENTRY
@@ -3138,7 +3104,7 @@ setup_menu_t tas_settings[] = {
   { "Show Coordinate Display", S_YESNO, m_conf, G_X, dsda_config_coordinate_display },
   { "Permanent Strafe50", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50 },
   { "Strafe50 On Turns", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50onturns },
-  { "Game speed (%)", S_NUM | S_PRGWARN, m_conf, G_X, dsda_config_realtic_clock_rate },
+  { "Game speed (%)", S_NUM, m_conf, G_X, dsda_config_realtic_clock_rate },
 
   PREV_PAGE(demo_settings),
   FINAL_ENTRY
@@ -3228,8 +3194,6 @@ static void M_SelectDone(setup_menu_t* ptr)
   S_StartVoidSound(g_sfx_itemup);
   setup_select = false;
   colorbox_active = false;
-  if (print_warning_about_changes)     // killough 8/15/98
-    print_warning_about_changes--;
 }
 
 //
@@ -4276,11 +4240,7 @@ dboolean M_Responder (event_t* ev) {
               gather_buffer[gather_count] = 0;
               value = atoi(gather_buffer);  // Integer value
 
-              //e6y
-              if ((ptr1->m_flags & S_EVEN) && value % 2 != 0)
-                warn_about_changes(ptr1->m_flags & S_EVEN);
-              else
-                dsda_UpdateIntConfig(ptr1->config_id, value, true);
+              dsda_UpdateIntConfig(ptr1->config_id, value, true);
             }
             M_SelectDone(ptr1);     // phares 4/17/98
             setup_gather = false; // finished gathering keys
@@ -4699,7 +4659,6 @@ dboolean M_Responder (event_t* ev) {
       if (flags & (S_NUM | S_CRITEM))
       {
         setup_gather = true;
-        print_warning_about_changes = false;
         gather_count = 0;
       }
       else if (flags & S_COLOR)
@@ -4783,7 +4742,6 @@ dboolean M_Responder (event_t* ev) {
           mult_screens_index--;
           M_SetSetupMenuItemOn(set_menu_itemon);
           M_UpdateSetupMenu(ptr2->menu);
-          print_warning_about_changes = false; // killough 10/98
           S_StartVoidSound(g_sfx_menu);  // killough 10/98
           return true;
         }
@@ -4803,7 +4761,6 @@ dboolean M_Responder (event_t* ev) {
           mult_screens_index++;
           M_SetSetupMenuItemOn(set_menu_itemon);
           M_UpdateSetupMenu(ptr2->menu);
-          print_warning_about_changes = false; // killough 10/98
           S_StartVoidSound(g_sfx_menu);  // killough 10/98
           return true;
         }
@@ -5002,7 +4959,6 @@ void M_StartControlPanel (void)
 
   M_ChangeMenu(&MainDef, mnact_float);
   itemOn = currentMenu->lastOn;   // JDC
-  print_warning_about_changes = false;   // killough 11/98
 }
 
 //
@@ -5134,7 +5090,6 @@ void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
 void M_ClearMenus (void)
 {
   M_ChangeMenu(&MainDef, mnact_inactive);
-  print_warning_about_changes = 0;     // killough 8/15/98
 
   BorderNeedRefresh = true;
 }
