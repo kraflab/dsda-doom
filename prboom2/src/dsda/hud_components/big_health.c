@@ -30,6 +30,7 @@ typedef struct {
 static local_component_t* local;
 
 static int health_lump;
+static int strength_lump;
 static int patch_delta_x;
 static int patch_vertical_spacing;
 static int patch_spacing;
@@ -49,7 +50,9 @@ static void dsda_DrawComponent(void) {
        player->health <= hud_health_green ? CR_GREEN :
        CR_LIGHTBLUE;
 
-  V_DrawNumPatch(x, y, FG, health_lump, CR_DEFAULT, local->component.vpt);
+  V_DrawNumPatch(x, y, FG,
+                 player->powers[pw_strength] ? strength_lump : health_lump,
+                 CR_DEFAULT, local->component.vpt);
 
   x += patch_spacing;
   y += patch_vertical_spacing;
@@ -66,18 +69,21 @@ void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int ar
 
   if (heretic) {
     health_lump = R_NumPatchForSpriteIndex(HERETIC_SPR_PTN2);
+    strength_lump = health_lump;
     patch_delta_x = 10;
     patch_vertical_spacing = 6;
     patch_spacing = 4;
   }
   else if (hexen) {
     health_lump = R_NumPatchForSpriteIndex(HEXEN_SPR_PTN2);
+    strength_lump = health_lump;
     patch_delta_x = 10;
     patch_vertical_spacing = 6;
     patch_spacing = 4;
   }
   else {
     health_lump = R_NumPatchForSpriteIndex(SPR_MEDI);
+    strength_lump = R_NumPatchForSpriteIndex(SPR_PSTR);
     patch_delta_x = 14;
     patch_vertical_spacing = 2;
     patch_spacing = 2;
