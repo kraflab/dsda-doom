@@ -54,7 +54,7 @@ if(LibMad_FOUND)
   endif()
 
   set(LibMad_LIBRARIES LibMad::libmad)
-  set(LibMad_INCLUDE_DIRS LibMad::libmad)
+  set(LibMad_INCLUDE_DIRS "${LibMad_INCLUDE_DIR}")
 endif()
 
 mark_as_advanced(LibMad_INCLUDE_DIR LibMad_LIBRARY)

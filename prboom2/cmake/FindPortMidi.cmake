@@ -90,7 +90,7 @@ if(PortMidi_FOUND)
   endif()
 
   set(PortMidi_LIBRARIES PortMidi::portmidi)
-  set(PortMidi_INCLUDE_DIRS PortMidi::portmidi)
+  set(PortMidi_INCLUDE_DIRS "${PortMidi_INCLUDE_DIR}")
 endif()
 
 mark_as_advanced(PortMidi_INCLUDE_DIR PortMidi_LIBRARY)
