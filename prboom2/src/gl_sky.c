@@ -339,7 +339,7 @@ void gld_DrawSkyCaps(void)
   {
     if (dsda_MouseLook())
     {
-      gld_BindTexture(SkyBox.wall.gltexture, 0);
+      gld_BindSkyTexture(SkyBox.wall.gltexture);
 
       glMatrixMode(GL_TEXTURE);
       glPushMatrix();
