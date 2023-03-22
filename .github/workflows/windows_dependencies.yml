@@ -2,66 +2,61 @@
 #
 # HOW TO USE
 #
-# Go to the "Actions" tab in the repository
-# In the left sidebar, select this workflow
-# Above the list of workflow runs, select "Run workflow".
+# Push any commit to build_windows_dependencies branch, create it if needed
+# This will trigger execution of the following workflow
+# Generated artifacts can be used to update the dependency package
 #
 ###############################################################################
 
 name: Windows Dependencies
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+    - build_windows_dependencies
+  pull_request:
+    branches:
+    - build_windows_dependencies
 
 jobs:
   build:
     name: ${{ matrix.config.name }}
-    runs-on: windows-latest
-    defaults:
-      run:
-        shell: bash
+    runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
         config:
-          - { name: "x64", triplet: x64-windows-release }
-          - { name: "x86", triplet: x86-windows-release }
+        - {
+            name: "Visual Studio 64-bit",
+            os: windows-latest,
+            triplet: x64-windows
+          }
 
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v1
 
-      - name: Update vcpkg
-        run: |
-          cd $VCPKG_INSTALLATION_ROOT
-          git pull
-          ./bootstrap-vcpkg.bat
+    - name: Configure
+      id: vars
+      shell: cmd
+      run: |
+        echo ::set-output name=common_options::sdl2-image sdl2-mixer[dynamic-load,libflac,libmodplug,libvorbis,mpg123,opusfile] libmad fluidsynth dumb portmidi --triplet ${{ matrix.config.triplet }}
 
-      - name: Build
-        working-directory: prboom2
-        run: |
-          vcpkg install \
-            --triplet=${{ matrix.config.triplet }} \
-            --host-triplet=${{ matrix.config.triplet }} \
-            --x-feature="dumb" \
-            --x-feature="fluidsynth" \
-            --x-feature="libmad" \
-            --x-feature="libvorbis" \
-            --x-feature="portmidi" \
-            --x-feature="sdl2-image"
+    - name: Install
+      shell: cmd
+      run: |
+        xcopy .github\workflows\dumb %VCPKG_INSTALLATION_ROOT%\ports\dumb\
+        xcopy .github\workflows\portmidi %VCPKG_INSTALLATION_ROOT%\ports\portmidi\ /y
+        vcpkg update
+        vcpkg install ${{ steps.vars.outputs.common_options }}
 
-      - name: Copy dependencies
-        run: |
-          mkdir -p output/dependencies_${{ matrix.config.name }}
-          mv prboom2/vcpkg_installed/${{ matrix.config.triplet }}/{include,lib,share} \
-             output/dependencies_${{ matrix.config.name }}
+    - name: Export
+      shell: cmd
+      run: |
+        md artifact
+        .github\workflows\copy_dependencies.cmd %VCPKG_INSTALLATION_ROOT%\installed\${{ matrix.config.triplet }} artifact
 
-          if [[ -d prboom2/vcpkg_installed/${{ matrix.config.triplet }}/bin ]]; then
-            mkdir -p output/dependencies_${{ matrix.config.name }}/bin
-            mv prboom2/vcpkg_installed/${{ matrix.config.triplet }}/bin/*.dll \
-               output/dependencies_${{ matrix.config.name }}/bin
-          fi
-
-      - name: Upload
-        uses: actions/upload-artifact@v3
-        with:
-          path: output/*
-          name: windows_dependencies
+    - name: Upload
+      uses: actions/upload-artifact@v1
+      with:
+        path: artifact
+        name: ${{ matrix.config.triplet }}
