@@ -121,13 +121,14 @@ find_package_handle_standard_args(
   HANDLE_COMPONENTS)
 
 if(SDL2_SDL2_FOUND)
+  set(SDL2_INCLUDE_DIRS "${SDL2_INCLUDE_DIR}" "${SDL2_INCLUDE_DIR}/..")
+
   if(NOT TARGET SDL2::SDL2)
     add_library(SDL2::SDL2 UNKNOWN IMPORTED)
     set_target_properties(
       SDL2::SDL2
       PROPERTIES IMPORTED_LOCATION "${SDL2_SDL2_LIBRARY}"
-                 INTERFACE_INCLUDE_DIRECTORIES
-                 "${SDL2_INCLUDE_DIR};${SDL2_INCLUDE_DIR}/.."
+                 INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIRS}"
                  INTERFACE_COMPILE_OPTIONS "${_sdl2_compile_options}"
                  INTERFACE_LINK_LIBRARIES "${_sdl2_link_libraries}"
                  INTERFACE_LINK_DIRECTORIES "${_sdl2_link_directories}"
@@ -152,7 +153,6 @@ if(SDL2_SDL2_FOUND)
   endif()
 
   set(SDL2_LIBRARIES SDL2::SDL2)
-  set(SDL2_INCLUDE_DIRS SDL2::SDL2)
 endif()
 
 if(SDL2_SDL2main_FOUND)

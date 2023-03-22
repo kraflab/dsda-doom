@@ -72,7 +72,7 @@ if(FluidSynth_FOUND)
   endif()
 
   set(FluidSynth_LIBRARIES FluidSynth::libfluidsynth)
-  set(FluidSynth_INCLUDE_DIRS FluidSynth::libfluidsynth)
+  set(FluidSynth_INCLUDE_DIRS "${FluidSynth_INCLUDE_DIR}")
 endif()
 
 mark_as_advanced(FluidSynth_INCLUDE_DIR FluidSynth_LIBRARY)

@@ -109,7 +109,7 @@ if(SDL2_image_FOUND)
   endif()
 
   set(SDL2_image_LIBRARIES SDL2_image::SDL2_image)
-  set(SDL2_image_INCLUDE_DIRS SDL2_image::SDL2_image)
+  set(SDL2_image_INCLUDE_DIRS "${SDL2_image_INCLUDE_DIR}")
 endif()
 
 mark_as_advanced(SDL2_image_INCLUDE_DIR SDL2_image_LIBRARY)

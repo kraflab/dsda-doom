@@ -109,7 +109,7 @@ if(SDL2_mixer_FOUND)
   endif()
 
   set(SDL2_mixer_LIBRARIES SDL2_mixer::SDL2_mixer)
-  set(SDL2_mixer_INCLUDE_DIRS SDL2_mixer::SDL2_mixer)
+  set(SDL2_mixer_INCLUDE_DIRS "${SDL2_mixer_INCLUDE_DIR}")
 endif()
 
 mark_as_advanced(SDL2_mixer_INCLUDE_DIR SDL2_mixer_LIBRARY)
