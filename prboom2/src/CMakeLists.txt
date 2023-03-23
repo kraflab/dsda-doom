@@ -90,6 +90,8 @@ set(COMMON_SRC
     dsda/hud_components/event_split.h
     dsda/hud_components/fps.c
     dsda/hud_components/fps.h
+    dsda/hud_components/free_text.c
+    dsda/hud_components/free_text.h
     dsda/hud_components/health_text.c
     dsda/hud_components/health_text.h
     dsda/hud_components/keys.c

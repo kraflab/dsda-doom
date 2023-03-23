@@ -70,6 +70,7 @@ typedef enum {
   dsda_tc_exhud_event_split,
   dsda_tc_exhud_line_activation,
   dsda_tc_exhud_local_time,
+  dsda_tc_exhud_free_text,
   dsda_tc_hud_message,
   dsda_tc_hud_secret_message,
   dsda_tc_map_coords,

@@ -91,6 +91,9 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
   - `height`: height of the component
   - `scale`: width of the component in map units
 - `color_test`: shows the hud fonts in different color modes
+- `free_text`: shows arbitrary text set with `free_text.update <text>` in the console
+  - Use `\n` to create a new line
+  - Use `\cXY` to change to color `XY`
 - `map_totals`: shows the kills / secrets / items on the current map
   - Uses the message font with word labels
   - Supports 3 arguments: `show_kills show_items show_secrets`

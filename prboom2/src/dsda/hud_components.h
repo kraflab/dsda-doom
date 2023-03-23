@@ -30,6 +30,7 @@
 #include "hud_components/coordinate_display.h"
 #include "hud_components/event_split.h"
 #include "hud_components/fps.h"
+#include "hud_components/free_text.h"
 #include "hud_components/health_text.h"
 #include "hud_components/keys.h"
 #include "hud_components/level_splits.h"

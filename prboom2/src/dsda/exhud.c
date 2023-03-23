@@ -77,6 +77,7 @@ typedef enum {
   exhud_event_split,
   exhud_level_splits,
   exhud_color_test,
+  exhud_free_text,
   exhud_message,
   exhud_secret_message,
   exhud_map_coordinates,
@@ -281,6 +282,13 @@ exhud_component_t components_template[exhud_component_count] = {
     dsda_UpdateColorTestHC,
     dsda_DrawColorTestHC,
     "color_test",
+    .default_vpt = VPT_EX_TEXT,
+  },
+  [exhud_free_text] = {
+    dsda_InitFreeTextHC,
+    dsda_UpdateFreeTextHC,
+    dsda_DrawFreeTextHC,
+    "free_text",
     .default_vpt = VPT_EX_TEXT,
   },
   [exhud_message] = {

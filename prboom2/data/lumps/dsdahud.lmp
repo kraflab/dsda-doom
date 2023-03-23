@@ -1,6 +1,7 @@
 doom ex
 stat_totals 2 8 bottom_left
 composite_time 2 16 bottom_left
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -17,6 +18,7 @@ add_offset 1 top_left
 heretic ex
 stat_totals 2 8 bottom_left
 composite_time 2 16 bottom_left
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -33,6 +35,7 @@ add_offset 1 top_left
 hexen ex
 stat_totals 2 8 bottom_left
 composite_time 2 16 bottom_left
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -47,6 +50,7 @@ secret_message 0 76 none
 add_offset 1 top_left
 
 doom off
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -61,6 +65,7 @@ secret_message 0 76 none
 add_offset 1 top_left
 
 heretic off
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -75,6 +80,7 @@ secret_message 0 76 none
 add_offset 1 top_left
 
 hexen off
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -95,6 +101,7 @@ armor_text 52 16 bottom_left
 weapon_text 2 24 bottom_left
 stat_totals 2 32 bottom_left
 composite_time 2 40 bottom_left
+free_text 2 48 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 32 bottom_right
 keys 241 30 bottom_right
@@ -117,6 +124,7 @@ armor_text 52 16 bottom_left
 weapon_text 2 24 bottom_left
 stat_totals 2 32 bottom_left
 composite_time 2 40 bottom_left
+free_text 2 48 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 48 bottom_right
 keys 241 30 bottom_right
@@ -140,6 +148,7 @@ armor_text 52 16 bottom_left
 weapon_text 2 24 bottom_left
 stat_totals 2 32 bottom_left
 composite_time 2 40 bottom_left
+free_text 2 48 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 24 bottom_right
 keys 102 30 bottom_left

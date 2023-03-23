@@ -1073,6 +1073,14 @@ static dboolean console_ConfigRemember(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_FreeTextUpdate(const char* command, const char* args) {
+  void dsda_UpdateFreeText(const char* text);
+
+  dsda_UpdateFreeText(args);
+
+  return true;
+}
+
 static dboolean console_SetMobjState(mobj_t* mobj, statenum_t state) {
   if (!state)
     return false;
@@ -2084,6 +2092,7 @@ static console_command_entry_t console_commands[] = {
   { "toggle_update", console_ToggleUpdate, CF_ALWAYS },
   { "config.forget", console_ConfigForget, CF_ALWAYS },
   { "config.remember", console_ConfigRemember, CF_ALWAYS },
+  { "free_text.update", console_FreeTextUpdate, CF_ALWAYS },
 
   // tracking
   { "tracker.add_line", console_TrackerAddLine, CF_DEMO },

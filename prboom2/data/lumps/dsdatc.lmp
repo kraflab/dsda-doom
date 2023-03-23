@@ -65,6 +65,7 @@ exhud_attempts 3
 exhud_event_split 3
 exhud_line_activation 3
 exhud_local_time 3
+exhud_free_text 3
 hud_message 0
 hud_secret_message 6
 map_coords 4
