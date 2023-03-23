@@ -298,8 +298,11 @@ void dsda_WatchKill(player_t* player, mobj_t* target) {
   if (target->intflags & MIF_SPAWNED_BY_ICON) player->maxkilldiscount++;
 }
 
-void dsda_WatchResurrection(mobj_t* target) {
+void dsda_WatchResurrection(mobj_t* target, mobj_t* raiser) {
   int i;
+
+  if (raiser && raiser->intflags & MIF_SPAWNED_BY_ICON)
+    target->intflags |= MIF_SPAWNED_BY_ICON;
 
   if (
     (

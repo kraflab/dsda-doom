@@ -1873,7 +1873,7 @@ dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
     corpse->flags = (corpse->flags & ~MF_FRIEND) | (raiser->flags & MF_FRIEND);
   }
 
-  dsda_WatchResurrection(corpse);
+  dsda_WatchResurrection(corpse, raiser);
 
   if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
     totallive++;
@@ -1951,7 +1951,7 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
             (info->flags & ~MF_FRIEND) | (actor->flags & MF_FRIEND);
           corpsehit->flags = corpsehit->flags | MF_RESSURECTED;//e6y
 
-          dsda_WatchResurrection(corpsehit);
+          dsda_WatchResurrection(corpsehit, actor);
 
           if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
             totallive++;
