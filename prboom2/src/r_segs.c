@@ -380,7 +380,7 @@ void R_RenderMaskedSegRange(drawseg_t *ds, int x1, int x2)
 
   // cph 2001/11/25 - middle textures did not animate in v1.2
   texnum = curline->sidedef->midtexture;
-  if (!comp[comp_maskedanim])
+  if (raven || !comp[comp_maskedanim])
     texnum = texturetranslation[texnum];
 
   // killough 4/13/98: get correct lightlevel for 2s normal textures

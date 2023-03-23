@@ -1814,7 +1814,7 @@ void gld_AddWall(seg_t *seg)
 
     /* midtexture */
     //e6y
-    if (comp[comp_maskedanim])
+    if (!raven && comp[comp_maskedanim])
       temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed);
     else
       // e6y
