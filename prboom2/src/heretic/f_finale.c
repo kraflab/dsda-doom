@@ -22,6 +22,7 @@
 #include "sounds.h"
 
 #include "dsda/palette.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
@@ -34,8 +35,8 @@ static int finalecount;
 #define TEXTSPEED       3
 #define TEXTWAIT        250
 
-static const char *finaletext;
-static const char *finaleflat;
+const char *finaletext;
+const char *finaleflat;
 
 static int FontABaseLump;
 
@@ -76,6 +77,8 @@ void Heretic_F_StartFinale(void)
       finaletext = HERETIC_E5TEXT;
       break;
   }
+
+  dsda_StartFinale();
 
   finalestage = 0;
   finalecount = 0;
