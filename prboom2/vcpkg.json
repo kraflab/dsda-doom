@@ -1,0 +1,62 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "dsda-doom",
+  "version": "0.25.6",
+  "homepage": "https://github.com/kraflab/dsda-doom",
+  "license": "GPL-2.0-only",
+  "dependencies": [
+    "sdl2",
+    {
+      "name": "sdl2-mixer",
+      "features": [
+        "fluidsynth",
+        "libflac",
+        "libmodplug",
+        "mpg123",
+        "opusfile"
+      ]
+    },
+    "zlib"
+  ],
+  "features": {
+    "dumb": {
+      "description": "Build with DUMB support",
+      "dependencies": [
+        "dumb"
+      ]
+    },
+    "fluidsynth": {
+      "description": "Build with FluidSynth support",
+      "dependencies": [
+        {
+          "name": "fluidsynth",
+          "default-features": false
+        }
+      ]
+    },
+    "libmad": {
+      "description": "Build with libmad support",
+      "dependencies": [
+        "libmad"
+      ]
+    },
+    "libvorbis": {
+      "description": "Build with vorbisfile support",
+      "dependencies": [
+        "libvorbis"
+      ]
+    },
+    "portmidi": {
+      "description": "Build with PortMidi support",
+      "dependencies": [
+        "portmidi"
+      ]
+    },
+    "sdl2-image": {
+      "description": "Build with SDL2_image support",
+      "dependencies": [
+        "sdl2-image"
+      ]
+    }
+  }
+}
