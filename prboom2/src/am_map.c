@@ -89,10 +89,10 @@ int mapcolor_hair;    // crosshair color
 int mapcolor_sngl;    // single player arrow color
 int mapcolor_plyr[4] = { 112, 96, 64, 176 }; // colors for player arrows in multiplayer
 
-static int heretic_mapcolor_back = 13 * 8 - 1;
+static int heretic_mapcolor_back = 0;
 static int heretic_mapcolor_grid = 5 * 8;
-static int heretic_mapcolor_wall = 14 * 8;
-static int heretic_mapcolor_fchg = 12 * 8;
+static int heretic_mapcolor_wall = 104;
+static int heretic_mapcolor_fchg = 88;
 static int heretic_mapcolor_cchg = 10 * 8;
 static int heretic_mapcolor_clsd;
 static int heretic_mapcolor_rkey = 220;
@@ -101,21 +101,21 @@ static int heretic_mapcolor_ykey = 144;
 static int heretic_mapcolor_rdor = 220;
 static int heretic_mapcolor_bdor = 197;
 static int heretic_mapcolor_ydor = 144;
-static int heretic_mapcolor_tele = 12 * 8;
-static int heretic_mapcolor_secr = 12 * 8;
-static int heretic_mapcolor_revsecr = 12 * 8;
+static int heretic_mapcolor_tele = 88;
+static int heretic_mapcolor_secr = 88;
+static int heretic_mapcolor_revsecr = 88;
 static int heretic_mapcolor_exit;
 static int heretic_mapcolor_unsn = 5 * 8 + 3;
 static int heretic_mapcolor_flat;
-static int heretic_mapcolor_sprt = 33 * 8;
-static int heretic_mapcolor_item = 33 * 8;
-static int heretic_mapcolor_frnd = 33 * 8;
-static int heretic_mapcolor_enemy = 33 * 8;
+static int heretic_mapcolor_sprt = 224;
+static int heretic_mapcolor_item = 144;
+static int heretic_mapcolor_frnd = 224;
+static int heretic_mapcolor_enemy = 160;
 static int heretic_mapcolor_hair = 5 * 8;
 static int heretic_mapcolor_sngl = 4 * 8;
 static int heretic_mapcolor_plyr[4] = { 220, 144, 150, 197 };
 
-static int hexen_mapcolor_back = 13 * 8 - 1;
+static int hexen_mapcolor_back = 0;
 static int hexen_mapcolor_grid = 5 * 8;
 static int hexen_mapcolor_wall = 12 * 8;
 static int hexen_mapcolor_fchg = 14 * 8;
@@ -133,10 +133,10 @@ static int hexen_mapcolor_revsecr;
 static int hexen_mapcolor_exit = 177;
 static int hexen_mapcolor_unsn = 5 * 8 + 3;
 static int hexen_mapcolor_flat;
-static int hexen_mapcolor_sprt = 33 * 8;
-static int hexen_mapcolor_item = 33 * 8;
-static int hexen_mapcolor_frnd = 33 * 8;
-static int hexen_mapcolor_enemy = 33 * 8;
+static int hexen_mapcolor_sprt = 216;
+static int hexen_mapcolor_item = 230;
+static int hexen_mapcolor_frnd = 216;
+static int hexen_mapcolor_enemy = 176;
 static int hexen_mapcolor_hair = 5 * 8;
 static int hexen_mapcolor_sngl = 4 * 8;
 static int hexen_mapcolor_plyr[8] = { 157, 177, 137, 198, 215, 32, 106, 234 };
