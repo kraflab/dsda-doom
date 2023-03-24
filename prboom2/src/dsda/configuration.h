@@ -59,6 +59,7 @@ typedef enum {
   dsda_config_show_fps,
   dsda_config_show_level_splits,
   dsda_config_exhud,
+  dsda_config_free_text,
   dsda_config_mute_sfx,
   dsda_config_mute_music,
   dsda_config_cheat_codes,

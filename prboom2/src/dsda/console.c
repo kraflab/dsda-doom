@@ -1074,9 +1074,13 @@ static dboolean console_ConfigRemember(const char* command, const char* args) {
 }
 
 static dboolean console_FreeTextUpdate(const char* command, const char* args) {
-  void dsda_UpdateFreeText(const char* text);
+  dsda_UpdateStringConfig(dsda_config_free_text, args, true);
 
-  dsda_UpdateFreeText(args);
+  return true;
+}
+
+static dboolean console_FreeTextClear(const char* command, const char* args) {
+  dsda_UpdateStringConfig(dsda_config_free_text, "", true);
 
   return true;
 }
@@ -2093,6 +2097,7 @@ static console_command_entry_t console_commands[] = {
   { "config.forget", console_ConfigForget, CF_ALWAYS },
   { "config.remember", console_ConfigRemember, CF_ALWAYS },
   { "free_text.update", console_FreeTextUpdate, CF_ALWAYS },
+  { "free_text.clear", console_FreeTextClear, CF_ALWAYS },
 
   // tracking
   { "tracker.add_line", console_TrackerAddLine, CF_DEMO },

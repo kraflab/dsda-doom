@@ -130,6 +130,7 @@ void M_ChangeAspectRatio(void);
 void deh_changeCompTranslucency(void);
 void dsda_InitGameControllerParameters(void);
 void dsda_InitExHud(void);
+void dsda_UpdateFreeText(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -349,6 +350,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_exhud] = {
     "dsda_exhud", dsda_config_exhud,
     CONF_BOOL(0), NULL, CONF_FEATURE | NOT_STRICT, dsda_InitExHud
+  },
+  [dsda_config_free_text] = {
+    "dsda_free_text", dsda_config_free_text,
+    CONF_STRING(""), NULL, NOT_STRICT, dsda_UpdateFreeText
   },
   [dsda_config_mute_sfx] = {
     "dsda_mute_sfx", dsda_config_mute_sfx,

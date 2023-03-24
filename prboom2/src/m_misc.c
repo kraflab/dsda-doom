@@ -268,6 +268,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_exhud),
   MIGRATED_SETTING(dsda_config_ex_text_scale_x),
   MIGRATED_SETTING(dsda_config_ex_text_ratio_y),
+  MIGRATED_SETTING(dsda_config_free_text),
   MIGRATED_SETTING(dsda_config_wipe_at_full_speed),
   MIGRATED_SETTING(dsda_config_show_demo_attempts),
   MIGRATED_SETTING(dsda_config_hide_horns),

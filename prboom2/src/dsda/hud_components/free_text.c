@@ -27,8 +27,11 @@ static local_component_t* local;
 
 static char* free_text;
 
-void dsda_UpdateFreeText(const char* text) {
+void dsda_UpdateFreeText(void) {
   int i, j;
+  const char* text;
+
+  text = dsda_StringConfig(dsda_config_free_text);
 
   if (free_text)
     Z_Free(free_text);
@@ -104,6 +107,8 @@ void dsda_InitFreeTextHC(int x_offset, int y_offset, int vpt, int* args, int arg
   local = *data;
 
   dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
+
+  dsda_UpdateFreeText();
 }
 
 void dsda_UpdateFreeTextHC(void* data) {
