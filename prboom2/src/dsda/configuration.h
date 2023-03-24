@@ -211,6 +211,7 @@ typedef enum {
   dsda_config_viewbob,
   dsda_config_weaponbob,
   dsda_config_quake_intensity,
+  dsda_config_map_blinking_locks,
   dsda_config_map_secret_after,
   dsda_config_map_coordinates,
   dsda_config_map_totals,

@@ -223,6 +223,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_mapcolor_me),
   MIGRATED_SETTING(dsda_config_mapcolor_enemy),
   MIGRATED_SETTING(dsda_config_mapcolor_frnd),
+  MIGRATED_SETTING(dsda_config_map_blinking_locks),
   MIGRATED_SETTING(dsda_config_map_secret_after),
   MIGRATED_SETTING(dsda_config_map_coordinates),
   MIGRATED_SETTING(dsda_config_map_totals),

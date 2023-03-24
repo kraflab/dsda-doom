@@ -255,6 +255,7 @@ static void AM_SetColors(void)
   }
 }
 
+static int map_blinking_locks;
 static int map_secret_after;
 static int map_grid_size;
 static int map_scroll_speed;
@@ -797,6 +798,7 @@ void AM_clearMarks(void)
 
 void AM_InitParams(void)
 {
+  map_blinking_locks = dsda_IntConfig(dsda_config_map_blinking_locks);
   map_secret_after = dsda_IntConfig(dsda_config_map_secret_after);
   map_scroll_speed = dsda_IntConfig(dsda_config_map_scroll_speed);
   map_grid_size = dsda_IntConfig(dsda_config_map_grid_size);
@@ -1653,6 +1655,9 @@ static void AM_drawWalls(void)
   int i;
   automap_style_t automap_style;
   static mline_t l;
+  int hide_locks;
+
+  hide_locks = map_blinking_locks && (gametic & 16);
 
   // draw the unclipped visible portions of all lines
   for (i=0;i<numlines;i++)
@@ -1689,6 +1694,12 @@ static void AM_drawWalls(void)
         continue;
 
       case ams_locked:
+        if (hide_locks)
+        {
+          AM_drawMline(&l, *mapcolor_grid_p);
+          continue;
+        }
+
         switch (dsda_DoorType(i))
         {
           case 0: // red

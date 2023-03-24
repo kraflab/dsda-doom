@@ -962,6 +962,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_quake_intensity", dsda_config_quake_intensity,
     dsda_config_int, 0, 100, { 100 }
   },
+  [dsda_config_map_blinking_locks] = {
+    "map_blinking_locks", dsda_config_map_blinking_locks,
+    CONF_BOOL(0), NULL, NOT_STRICT, AM_InitParams
+  },
   [dsda_config_map_secret_after] = {
     "map_secret_after", dsda_config_map_secret_after,
     CONF_BOOL(0), NULL, NOT_STRICT, AM_InitParams
