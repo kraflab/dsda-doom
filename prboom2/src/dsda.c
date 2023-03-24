@@ -269,7 +269,7 @@ void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int dam
       player_damage_last_tic += damage;
     }
 
-    if (target->type == MT_BARREL)
+    if (target->type == MT_BARREL || (heretic && target->type == HERETIC_MT_POD))
       target->intflags |= MIF_PLAYER_DAMAGED_BARREL;
     else if (!target->player)
       dsda_pacifist = false;
