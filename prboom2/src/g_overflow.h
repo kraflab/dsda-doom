@@ -45,7 +45,7 @@ typedef struct overrun_param_s
   int footer;
   int footer_emulate;
   int promted;
-  int shit_happens;
+  int happened;
 } overrun_param_t;
 
 typedef enum overrun_list_s

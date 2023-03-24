@@ -62,9 +62,18 @@ const char *overflow_cfgname[OVERFLOW_MAX] =
   "overrun_missedbackside_emulate"
 };
 
+void ResetOverruns(void)
+{
+  overrun_list_t overflow;
+  for (overflow = 0; overflow < OVERFLOW_MAX; ++overflow)
+  {
+    overflows[overflow].happened = false;
+  }
+}
+
 static void ShowOverflowWarning(overrun_list_t overflow, int fatal, const char *params, ...)
 {
-  overflows[overflow].shit_happens = true;
+  overflows[overflow].happened = true;
 
   if (overflows[overflow].warn && !overflows[overflow].promted)
   {
@@ -160,6 +169,8 @@ static void InterceptsMemoryOverrun(int location, int value)
 
 void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
 {
+  void P_MustRebuildBlockmap(void);
+
   if (!hexen && num_intercepts > MAXINTERCEPTS_ORIGINAL && demo_compatibility && PROCESS(OVERFLOW_INTERCEPT))
   {
     ShowOverflowWarning(OVERFLOW_INTERCEPT, false, "");
@@ -178,6 +189,8 @@ void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
       InterceptsMemoryOverrun(location, intercept->frac);
       InterceptsMemoryOverrun(location + 4, intercept->isaline);
       InterceptsMemoryOverrun(location + 8, (int)(intptr_t) intercept->d.thing);
+
+      P_MustRebuildBlockmap();
     }
   }
 }

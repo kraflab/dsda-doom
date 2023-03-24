@@ -517,6 +517,8 @@ static char* dsda_DemoNameWithTime(void) {
 }
 
 void dsda_EndDemoRecording(void) {
+  void ResetOverruns(void);
+
   char* demo_name;
 
   demorecording = false;
@@ -533,6 +535,8 @@ void dsda_EndDemoRecording(void) {
   dsda_FreeDemoBuffer();
 
   Z_Free(demo_name);
+
+  ResetOverruns();
 }
 
 void dsda_ExportDemo(const char* name) {

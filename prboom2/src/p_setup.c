@@ -3674,6 +3674,13 @@ void P_InitSubsectorsLines(void)
   }
 }
 
+static dboolean must_rebuild_blockmap;
+
+void P_MustRebuildBlockmap(void)
+{
+  must_rebuild_blockmap = true;
+}
+
 //
 // P_SetupLevel
 //
@@ -3789,8 +3796,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   //
   // BlockMap should be reloaded after OVERFLOW_INTERCEPT,
   // because bmapwidth/bmapheight/bmaporgx/bmaporgy can be overwritten
-  if (!samelevel || overflows[OVERFLOW_INTERCEPT].shit_happens)
+  if (!samelevel || must_rebuild_blockmap)
   {
+    must_rebuild_blockmap = false;
     P_LoadBlockMap(level_components.blockmap);
   }
   else

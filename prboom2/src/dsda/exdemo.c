@@ -367,7 +367,7 @@ static void DemoEx_AddParams(wadtbl_t* wadtbl) {
   {
     overrun_list_t overflow;
     for (overflow = 0; overflow < OVERFLOW_MAX; overflow++) {
-      if (overflows[overflow].shit_happens) {
+      if (overflows[overflow].happened) {
         sprintf(buf, "-set %s=%d ", overflow_cfgname[overflow], overflows[overflow].emulate);
         dsda_StringCat(&files, buf);
       }
