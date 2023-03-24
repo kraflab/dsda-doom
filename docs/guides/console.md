@@ -39,6 +39,10 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - do not overwrite the config file on exit
 - `config.remember`
   - do overwrite the config file on exit
+- `free_text.update <text>`
+  - update free text component
+- `free_text.clear`
+  - clear free text component
 - `music.restart`
   - restart the current music track
 - `game.quit`
