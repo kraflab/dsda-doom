@@ -1,75 +1,147 @@
 name: Continuous Integration
 
-on:
-  push:
-    branches-ignore:
-    - build_windows_dependencies
-  pull_request:
-    branches-ignore:
-    - build_windows_dependencies
+on: [push, pull_request]
+
+env:
+  VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
 
 jobs:
   build:
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.config.shell }}
     strategy:
       fail-fast: false
       matrix:
         config:
-        - {
-            name: "Visual Studio 64-bit",
-            os: windows-2019,
-            build_type: "Release",
-            extra_options: "-A x64",
-            package_name: "vs_x64"
-          }
-        - {
-            name: "Linux GCC",
-            os: ubuntu-20.04,
-            build_type: "Release",
-            extra_options: "",
-            package_name: "linux_gcc"
-          }
-        - {
-            name: "macOS Clang",
-            os: macos-11,
-            build_type: "Release",
-            extra_options: "",
-            package_name: "macos"
-          }
+          - {
+              name: "MSVC x64",
+              os: windows-latest,
+              build_type: "Release",
+              extra_options: "-A x64",
+              package_name: "vs_x64",
+              vcpkg_triplet: x64-windows,
+              shell: bash,
+            }
+          - {
+              name: "MSYS2 UCRT64",
+              os: windows-latest,
+              build_type: "Release",
+              extra_options: "-G Ninja",
+              package_name: "mingw_x64",
+              shell: "msys2 {0}",
+              msystem: ucrt64,
+              msys-env: mingw-w64-ucrt-x86_64,
+            }
+          - {
+              name: "Linux GCC",
+              os: ubuntu-latest,
+              build_type: "Release",
+              extra_options: "-G Ninja",
+              package_name: "linux_gcc",
+              shell: bash,
+            }
+          - {
+              name: "macOS Clang",
+              os: macos-latest,
+              build_type: "Release",
+              extra_options: "-G Ninja",
+              package_name: "macos",
+              shell: bash,
+            }
 
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
-    - name: Install Dependencies
-      shell: bash
-      run: |
-        mkdir build
-        cd build
-        if [[ "${{ runner.os }}" == 'Windows' ]]; then
-          declare -x DEPS_FILENAME=windows_dependencies_v4.zip
-          curl -LO https://github.com/coelckers/prboom-plus/releases/download/windows_dependencies/${DEPS_FILENAME}
-          7z x ${DEPS_FILENAME} -o..
-        elif [[ "${{ runner.os }}" == 'Linux' ]]; then
-          sudo apt update
-          sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev \
-            libmad0-dev libfluidsynth-dev libdumb1-dev libvorbis-dev libportmidi-dev
-        elif [[ "${{ runner.os }}" == 'macOS' ]]; then
-          brew install sdl2 sdl2_image sdl2_mixer mad fluidsynth dumb portmidi
-        fi
+      - name: Install Dependencies (MSYS2)
+        if: matrix.config.shell == 'msys2 {0}'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.config.msystem }}
+          install: >-
+            ${{ matrix.config.msys-env }}-gcc
+            ${{ matrix.config.msys-env }}-cmake
+            ${{ matrix.config.msys-env }}-ninja
+            ${{ matrix.config.msys-env }}-pkgconf
+            ${{ matrix.config.msys-env }}-dumb
+            ${{ matrix.config.msys-env }}-fluidsynth
+            ${{ matrix.config.msys-env }}-libmad
+            ${{ matrix.config.msys-env }}-libvorbis
+            ${{ matrix.config.msys-env }}-portmidi
+            ${{ matrix.config.msys-env }}-SDL2
+            ${{ matrix.config.msys-env }}-SDL2_image
+            ${{ matrix.config.msys-env }}-SDL2_mixer
 
-    - name: Configure
-      shell: bash
-      run: |
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} ${{ matrix.config.extra_options }} ../prboom2
+      - name: Setup vcpkg (MSVC)
+        if: ${{ matrix.config.vcpkg_triplet }}
+        run: |
+          set -euo pipefail
 
-    - name: Build
-      shell: bash
-      run: |
-        cd build
-        if [[ "${{ runner.os }}" == 'Windows' ]]; then
-          cmake --build . --config ${{ matrix.config.build_type }} -- -maxcpucount -verbosity:minimal
-        else
-          cmake --build . -- --jobs=2 --keep-going
-        fi
+          cd $VCPKG_INSTALLATION_ROOT
+          git pull
+          ./bootstrap-vcpkg.bat -disableMetrics
+
+          NUGET=$(./vcpkg.exe fetch nuget | tail -n 1)
+          GH_PACKAGES_URL="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+          "$NUGET" sources add \
+            -source "$GH_PACKAGES_URL" \
+            -storepasswordincleartext \
+            -name "GitHub" \
+            -username "${{ github.repository_owner }}" \
+            -password "${{ secrets.GITHUB_TOKEN }}"
+
+          "$NUGET" setapikey "${{ secrets.GITHUB_TOKEN }}" \
+            -source "$GH_PACKAGES_URL"
+
+          echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
+          echo "VCPKG_TARGET_TRIPLET=${{ matrix.config.vcpkg_triplet }}" >> $GITHUB_ENV
+
+      - name: Install Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get upgrade
+          sudo apt-get install -y \
+            gcc \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libdumb1-dev \
+            libfluidsynth-dev \
+            libmad0-dev \
+            libportmidi-dev \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libvorbis-dev
+
+      - name: Install Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew upgrade
+          brew install \
+            cmake \
+            ninja \
+            pkg-config \
+            dumb \
+            fluid-synth \
+            libvorbis \
+            mad \
+            portmidi \
+            sdl2 \
+            sdl2_image \
+            sdl2_mixer
+
+      - name: Configure
+        run: |
+          cmake -S prboom2 \
+            -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            ${{ matrix.config.extra_options }}
+
+      - name: Build
+        run: cmake --build build --config ${{ matrix.config.build_type }}
