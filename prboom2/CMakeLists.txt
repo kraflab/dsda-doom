@@ -84,14 +84,7 @@ set(PACKAGE_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
 include(CheckSymbolExists)
 
 check_symbol_exists(stricmp "string.h" HAVE_STRICMP)
-if(NOT HAVE_STRICMP)
-    add_definitions("-Dstricmp=strcasecmp")
-endif()
 check_symbol_exists(strnicmp "string.h" HAVE_STRNICMP)
-if(NOT HAVE_STRNICMP)
-    add_definitions("-Dstrnicmp=strncasecmp")
-endif()
-
 check_symbol_exists(getopt "unistd.h" HAVE_GETOPT)
 check_symbol_exists(mmap "sys/mman.h" HAVE_MMAP)
 check_symbol_exists(CreateFileMapping "windows.h" HAVE_CREATE_FILE_MAPPING)
@@ -104,6 +97,13 @@ check_include_file("sys/wait.h" HAVE_SYS_WAIT_H)
 check_include_file("unistd.h" HAVE_UNISTD_H)
 check_include_file("asm/byteorder.h" HAVE_ASM_BYTEORDER_H)
 check_include_file("dirent.h" HAVE_DIRENT_H)
+
+include(GetAvailableFlags)
+
+get_supported_warnings(SUPPORTED_WARNINGS)
+get_fast_math_flag(FAST_MATH_FLAG)
+get_compile_definitions(DSDA_COMPILE_DEFINITIONS)
+get_deprecation_silencing_definitions(DEPRECATION_SILENCING_DEFINITIONS)
 
 include(PkgConfigHelper)
 
@@ -178,21 +178,6 @@ option(SIMPLECHECKS "Enable checks which only impose significant overhead if a p
 option(RANGECHECK "Enable internal range checking" OFF)
 
 configure_file(cmake/config.h.cin config.h)
-
-add_definitions(-DHAVE_CONFIG_H)
-
-if (MSVC)
-    add_definitions("/D_CRT_SECURE_NO_WARNINGS")
-else()
-    set(CMAKE_C_FLAGS
-        "${CMAKE_C_FLAGS} \
-        -Wall -Wno-missing-field-initializers -Wwrite-strings -Wundef \
-        -Wbad-function-cast -Wcast-align -Wcast-qual -Wdeclaration-after-statement \
-        -Wpointer-arith -Wno-unused-function -Wno-switch -Wno-sign-compare -Wno-pointer-sign \
-        -Wtype-limits -Wabsolute-value \
-        -ffast-math"
-    )
-endif()
 
 # Support cross compiling
 option(FORCE_CROSSCOMPILE "Enable cross-compilation" OFF)

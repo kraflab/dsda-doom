@@ -500,7 +500,6 @@ function(AddGameExecutable TARGET SOURCES)
     )
 
     if(WIN32)
-        add_definitions("-DUSE_WIN32_PCSOUND_DRIVER")
         set(SOURCES
             ${SOURCES}
             ../ICONS/icons.rc
@@ -516,6 +515,17 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     add_executable(${TARGET} WIN32 ${SOURCES})
+
+    target_compile_options(${TARGET} PRIVATE
+        ${SUPPORTED_WARNINGS}
+        ${FAST_MATH_FLAG}
+    )
+
+    target_compile_definitions(${TARGET} PRIVATE
+        ${DEPRECATION_SILENCING_DEFINITIONS}
+        ${DSDA_COMPILE_DEFINITIONS}
+    )
+
     target_include_directories(${TARGET} PRIVATE
         ${SDL2_INCLUDE_DIRS}
         ${CMAKE_BINARY_DIR}
