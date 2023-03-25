@@ -47,8 +47,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(TargetArch)
 
-include(TestBigEndian)
-TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
+include(CheckBigEndian)
+check_big_endian(WORDS_BIGENDIAN)
 
 include(GNUInstallDirs)
 
