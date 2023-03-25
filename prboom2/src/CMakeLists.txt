@@ -463,7 +463,7 @@ set(EXTRA_FILES
     r_drawflush.inl
 )
 
-set(PRBOOM_PLUS_SOURCES
+set(DSDA_SOURCES
     ${COMMON_SRC}
     ${NET_CLIENT_SRC}
     ${WAD_SRC}
@@ -546,7 +546,7 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     set_target_properties(${TARGET} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
+        RUNTIME_OUTPUT_DIRECTORY ${DSDA_OUTPUT_PATH}
     )
 
     if(HAVE_LIBSDL2_IMAGE)
@@ -597,4 +597,4 @@ function(AddGameExecutable TARGET SOURCES)
     )
 endfunction()
 
-AddGameExecutable(dsda-doom "${PRBOOM_PLUS_SOURCES}")
+AddGameExecutable(dsda-doom "${DSDA_SOURCES}")

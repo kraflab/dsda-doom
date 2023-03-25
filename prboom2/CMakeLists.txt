@@ -187,9 +187,9 @@ else()
     endif()
 endif()
 
-set(PRBOOM_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(DSDA_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-set(WAD_DATA_PATH "${PRBOOM_OUTPUT_PATH}/${WAD_DATA}")
+set(WAD_DATA_PATH "${DSDA_OUTPUT_PATH}/${WAD_DATA}")
 
 add_subdirectory(data)
 add_subdirectory(src)
