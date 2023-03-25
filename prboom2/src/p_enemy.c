@@ -1165,6 +1165,10 @@ void A_Look(mobj_t *actor)
   P_SetMobjState(actor, actor->info->seestate);
 }
 
+#ifdef UNUSED
+// This function seems to have only ever been used by Eternity Engine,
+// not any descendant of Boom
+
 //
 // A_KeepChasing
 //
@@ -1182,6 +1186,7 @@ static void A_KeepChasing(mobj_t *actor)
       P_SmartMove(actor);
     }
 }
+#endif
 
 //
 // A_Chase
