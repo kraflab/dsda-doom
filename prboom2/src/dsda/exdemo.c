@@ -410,7 +410,7 @@ static void DemoEx_GetFeatures(const wadinfo_t* header) {
   if (!str)
     return;
 
-  if (sscanf(str, "%*[^\n]\n%llx-%32s", &exdemo.features, signature) == 2) {
+  if (sscanf(str, "%*[^\n]\n%" PRIx64 "-%32s", &exdemo.features, signature) == 2) {
     byte features[FEATURE_SIZE];
     dsda_cksum_t cksum;
 
@@ -444,7 +444,7 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   buffer_length = strlen(cksum.string) + strlen(description) + 24;
   buffer = Z_Calloc(buffer_length, 1);
 
-  snprintf(buffer, buffer_length, "%s\n0x%016llx-%s", description, features, cksum.string);
+  snprintf(buffer, buffer_length, "%s\n0x%016" PRIx64 "-%s", description, features, cksum.string);
 
   AddPWADTableLump(wadtbl, DEMOEX_FEATURE_LUMPNAME, buffer, buffer_length);
 
