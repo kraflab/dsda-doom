@@ -503,13 +503,6 @@ static int checkGLVertex(int num)
   return num;
 }
 
-
-static float GetDistance(int dx, int dy)
-{
-  float fx = (float)(dx)/FRACUNIT, fy = (float)(dy)/FRACUNIT;
-  return (float)sqrt(fx*fx + fy*fy);
-}
-
 static float GetTexelDistance(int dx, int dy)
 {
   //return (float)((int)(GetDistance(dx, dy) + 0.5f));
