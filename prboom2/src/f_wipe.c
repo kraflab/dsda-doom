@@ -116,7 +116,7 @@ static int wipe_doMelt(int ticks)
       }
       if (y_lookup[i] < SCREENHEIGHT) {
         byte *s, *d;
-        int j, k, dy;
+        int j, dy;
 
         /* cph 2001/07/29 -
           *  The original melt rate was 8 pixels/sec, i.e. 25 frames to melt

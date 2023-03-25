@@ -35,8 +35,6 @@ typedef enum {
   death_use_reload,
 } death_use_action_t;
 
-static int dsda_death_use_action;
-
 static int dsda_DeathUseAction(void)
 {
   if (demorecording || demoplayback)

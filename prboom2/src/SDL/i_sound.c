@@ -752,7 +752,6 @@ void I_InitSound(void)
   int audio_rate;
   int audio_channels;
   int audio_buffers;
-  SDL_AudioSpec audio;
 
   if (sound_was_initialized || (nomusicparm && nosfxparm))
     return;
@@ -1119,9 +1118,6 @@ void I_UnRegisterSong(int handle)
 
 int I_RegisterSong(const void *data, size_t len)
 {
-  int i;
-  char *name;
-
   registered_non_rw = false;
 
   if (RegisterSong(data, len))

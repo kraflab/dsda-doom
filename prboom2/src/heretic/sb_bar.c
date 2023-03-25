@@ -63,7 +63,6 @@ int playerkeys = 0;
 
 // Private Data
 
-static int DisplayTicker = 0;
 static int HealthMarker;
 static int ChainWiggle;
 static player_t *CPlayer;
@@ -1287,7 +1286,7 @@ static void DrawWeaponPieces(void)
 
 static void Hexen_DrawMainBar(void)
 {
-    int i, j, k;
+    int i;
     int temp;
     int manaLump1, manaLump2;
     int manaVialLump1, manaVialLump2;

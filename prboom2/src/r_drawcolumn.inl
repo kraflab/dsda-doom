@@ -53,9 +53,12 @@
 static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
 {
   int              count;
+
+#if (!(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ))
   byte             *dest;            // killough
   fixed_t          frac;
   const fixed_t    fracstep = dcvars->iscale;
+#endif
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
   // Adjust borders. Low...
@@ -90,10 +93,12 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
     I_Error("R_DrawColumn: %i to %i at %i", dcvars->yl, dcvars->yh, dcvars->x);
 #endif
 
+#if (!(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ))
   if (dcvars->flags & DRAW_COLUMN_ISPATCH)
     frac = ((dcvars->yl - dcvars->dy) * fracstep) & 0xFFFF;
   else
     frac = dcvars->texturemid + (dcvars->yl-centery)*fracstep;
+#endif
 
   // Framebuffer destination address.
    // SoM: MAGIC
@@ -117,7 +122,9 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
          R_FlushWholeColumns = R_FLUSHWHOLE_FUNCNAME;
          R_FlushHTColumns    = R_FLUSHHEADTAIL_FUNCNAME;
          R_FlushQuadColumn   = R_FLUSHQUAD_FUNCNAME;
+#if (!(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ))
          dest = &tempbuf[dcvars->yl << 2];
+#endif
       } else {
          tempyl[temp_x] = dcvars->yl;
          tempyh[temp_x] = dcvars->yh;
@@ -126,8 +133,9 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
             commontop = dcvars->yl;
          if(dcvars->yh < commonbot)
             commonbot = dcvars->yh;
-
+#if (!(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ))
          dest = &tempbuf[(dcvars->yl << 2) + temp_x];
+#endif
       }
       temp_x += 1;
    }
@@ -136,8 +144,14 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
 #if (!(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ))
   {
     const byte          *source = dcvars->source;
+
+#if (!(R_DRAWCOLUMN_PIPELINE & RDC_NOCOLMAP))
     const lighttable_t  *colormap = dcvars->colormap;
+#endif
+
+#if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLATED)
     const byte          *translation = dcvars->translation;
+#endif
 
     count++;
 

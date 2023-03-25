@@ -94,7 +94,7 @@ static int dsda_WadCompatibilityLevel(void) {
 }
 
 int dsda_CompatibilityLevel(void) {
-  int i, level;
+  int level;
   dsda_arg_t* complevel_arg;
 
   if (raven) return doom_12_compatibility;

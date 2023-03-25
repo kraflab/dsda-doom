@@ -267,9 +267,6 @@ static int veryfirsttime = 1;
 // used for timing
 static unsigned int st_clock;
 
-// used for making messages go away
-static int st_msgcounter=0;
-
 // whether left-side main status bar is active
 static dboolean st_statusbaron;
 

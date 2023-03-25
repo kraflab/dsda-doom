@@ -1179,7 +1179,6 @@ int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t hei
   const int *id_p;
   int rtn = 0;
   sector_t *sec;
-  elevator_t *elevator;
 
   height *= FRACUNIT;
 
@@ -1207,7 +1206,6 @@ int EV_DoElevator
   const int *id_p;
   int                   rtn;
   sector_t*             sec;
-  elevator_t*           elevator;
 
   rtn = 0;
   // act on all sectors with the same tag as the triggering linedef
@@ -1790,7 +1788,6 @@ int EV_BuildZDoomStairs(int tag, stair_e type, line_t *line, fixed_t stairsize,
   fixed_t height;
   fixed_t stairstep;
   int texture;
-  floormove_t *floor;
   int ok;
   sector_t *sec;
   sector_t *tsec;
@@ -2040,7 +2037,6 @@ void P_SpawnZDoomPillar(sector_t *sec, pillar_e type, fixed_t speed,
                         fixed_t floordist, fixed_t ceilingdist, int crush, dboolean hexencrush)
 {
   pillar_t *pillar;
-  fixed_t newheight;
 
   pillar = Z_MallocLevel(sizeof(*pillar));
   memset(pillar, 0, sizeof(*pillar));
@@ -2446,7 +2442,6 @@ dboolean EV_StartFloorWaggle(int tag, int height, int speed, int offset,
 {
     const int *id_p;
     sector_t *sector;
-    planeWaggle_t *waggle;
     dboolean retCode;
 
     retCode = false;

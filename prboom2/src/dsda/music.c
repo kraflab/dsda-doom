@@ -63,7 +63,7 @@ int dsda_GetDehMusicIndex(const char* key, size_t length) {
 
 int dsda_GetOriginalMusicIndex(const char* key) {
   int i;
-  const char* c;
+  // const char* c;
 
   for (i = 1; deh_musicnames[i]; ++i)
     if (!strncasecmp(deh_musicnames[i], key, 6))

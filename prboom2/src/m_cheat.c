@@ -66,9 +66,6 @@
 
 #define plyr (players+consoleplayer)     /* the console player */
 
-//e6y: for speedup
-static int boom_cheat_route[MAX_COMPATIBILITY_LEVEL];
-
 //-----------------------------------------------------------------------------
 //
 // CHEAT SEQUENCE PACKAGE
@@ -486,7 +483,6 @@ extern int EpiCustom;
 static void cheat_clev(char buf[3])
 {
   int epsd, map;
-  struct MapEntry* entry;
 
   if (gamemode == commercial)
   {
@@ -1221,7 +1217,7 @@ static void cheat_inventory(void)
 
 static void cheat_puzzle(void)
 {
-  int i, j;
+  int i;
 
   if (!hexen) return;
 

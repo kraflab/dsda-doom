@@ -280,7 +280,7 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
   /* erase the entire screen to a tiled background */
   const byte *data;
   int sx, sy, w, h;
-  int i, j, pitch;
+  int j, pitch;
 
   lump += firstflat;
 

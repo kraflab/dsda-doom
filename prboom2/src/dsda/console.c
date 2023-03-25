@@ -431,7 +431,6 @@ static dboolean console_PlayerRemovePower(const char* command, const char* args)
 
 static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
   int x, x_frac = 0;
-  double x_double;
 
   if (sscanf(args, "%i.%i", &x, &x_frac)) {
     *dest = FRACUNIT * x;
@@ -797,8 +796,6 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       return false;
 
     for (i = 0; conditions[i]; ++i) {
-      dsda_bf_attribute_t attribute;
-      dsda_bf_operator_t operator;
       fixed_t value;
       char attr_s[4] = { 0 };
       char oper_s[5] = { 0 };
@@ -990,7 +987,6 @@ static dboolean console_Check(const char* command, const char* args) {
 static dboolean console_ChangeConfig(const char* command, const char* args, dboolean persist) {
   char name[CONSOLE_ENTRY_SIZE];
   char value_string[CONSOLE_ENTRY_SIZE];
-  int value_int;
 
   if (sscanf(args, "%s %s", name, value_string)) {
     int id;
@@ -1028,8 +1024,6 @@ static dboolean console_Update(const char* command, const char* args) {
 
 static dboolean console_ToggleConfig(const char* command, const char* args, dboolean persist) {
   char name[CONSOLE_ENTRY_SIZE];
-  char value_string[CONSOLE_ENTRY_SIZE];
-  int value_int;
 
   if (sscanf(args, "%s", name)) {
     int id;

@@ -27,7 +27,6 @@
 void dsda_CacheSoundLumps(void) {
   int i;
   unsigned int count = 0;
-  unsigned long long cache_time;
 
   for (i = 0; i < num_sfx; ++i) {
     sfxinfo_t *sfx = &S_sfx[i];

@@ -286,8 +286,6 @@ int gld_HiRes_BuildTables(void)
   const int chanel_bits = 5;
   const int numcolors_per_chanel = (1 << chanel_bits);
   const int RGB2PAL_size = numcolors_per_chanel * numcolors_per_chanel * numcolors_per_chanel;
-  unsigned char* RGB2PAL_fname;
-  int lump, size;
 
   if (!gl_boom_colormaps)
     return false;
@@ -297,8 +295,6 @@ int gld_HiRes_BuildTables(void)
 
   {
     int ok = true;
-    FILE *RGB2PAL_fp = NULL;
-    char fname[PATH_MAX+1];
 
     if (ok)
     {

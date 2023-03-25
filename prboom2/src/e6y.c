@@ -423,9 +423,6 @@ float viewPitch;
 
 int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
 {
-  static int prev_value = 0;
-  static int prev_direction = 0;
-
   int newvalue;
   int val = (direction > 0 ? value : value - 1);
 
@@ -447,12 +444,6 @@ int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
 
   if ((value < defval && newvalue > defval) || (value > defval && newvalue < defval))
     newvalue = defval;
-
-  if (newvalue != value)
-  {
-    prev_value = value;
-    prev_direction = direction;
-  }
 
   return newvalue;
 }

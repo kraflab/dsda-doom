@@ -65,9 +65,7 @@
 
 static player_t*  plr;
 
-static dboolean    always_off = false;
 static dboolean    message_on;
-static dboolean    message_list; //2/26/98 enable showing list of messages
 dboolean           message_dontfuckwithme;
 static dboolean    message_nottobefuckedwith;
 static int         message_counter;
@@ -245,18 +243,17 @@ void SetCrosshairTarget(void)
 
 mobj_t *HU_Target(void)
 {
-  fixed_t slope;
   angle_t an = plr->mo->angle;
 
   // intercepts overflow guard
   overflows_enabled = false;
-  slope = P_AimLineAttack(plr->mo, an, 16*64*FRACUNIT, 0);
+  P_AimLineAttack(plr->mo, an, 16*64*FRACUNIT, 0);
   if (plr->readyweapon == wp_missile || plr->readyweapon == wp_plasma || plr->readyweapon == wp_bfg)
   {
     if (!linetarget)
-      slope = P_AimLineAttack(plr->mo, an += 1<<26, 16*64*FRACUNIT, 0);
+      P_AimLineAttack(plr->mo, an += 1<<26, 16*64*FRACUNIT, 0);
     if (!linetarget)
-      slope = P_AimLineAttack(plr->mo, an -= 2<<26, 16*64*FRACUNIT, 0);
+      P_AimLineAttack(plr->mo, an -= 2<<26, 16*64*FRACUNIT, 0);
   }
   overflows_enabled = true;
 

@@ -581,7 +581,7 @@ static void dsda_InitHexen(void) {
 static dboolean dsda_AutoDetectHeretic(void)
 {
   dsda_arg_t* arg;
-  int i, length;
+  int length;
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found) {
     length = strlen(arg->value.v_string);
@@ -595,7 +595,7 @@ static dboolean dsda_AutoDetectHeretic(void)
 static dboolean dsda_AutoDetectHexen(void)
 {
   dsda_arg_t* arg;
-  int i, length;
+  int length;
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found) {
     length = strlen(arg->value.v_string);

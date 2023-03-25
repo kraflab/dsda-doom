@@ -135,7 +135,6 @@ void Heretic_F_Ticker(void)
 
 void Heretic_F_TextWrite(void)
 {
-  int x, y;
   int count;
   const char *ch;
   int c;

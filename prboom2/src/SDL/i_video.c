@@ -758,7 +758,7 @@ static void I_FillScreenResolutionsList(void)
 {
   int display_index = 0;
   SDL_DisplayMode mode;
-  int i, j, list_size, current_resolution_index, count;
+  int i, list_size, current_resolution_index, count;
   char desired_resolution[256];
 
   // do it only once
@@ -788,8 +788,6 @@ static void I_FillScreenResolutionsList(void)
 
     for(i = count - 1 + num_canonicals; i >= 0; i--)
     {
-      int in_list = false;
-
       // make sure the canonical resolutions are always available
       if (i > count - 1)
       {

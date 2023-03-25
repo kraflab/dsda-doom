@@ -141,28 +141,21 @@ void get_fuzz_shader_bindings()
 
 int glsl_Init(void)
 {
-  static int init = false;
-
-  //if (!init)
+  if (!gl_arb_shader_objects)
   {
-    init = true;
+    lprintf(LO_WARN, "glsl_Init: shaders expects OpenGL 2.0\n");
+  }
+  else
+  {
+    sh_main = gld_LoadShader("glvp", "glfp");
+    get_light_shader_bindings();
 
-    if (!gl_arb_shader_objects)
-    {
-      lprintf(LO_WARN, "glsl_Init: shaders expects OpenGL 2.0\n");
-    }
-    else
-    {
-      sh_main = gld_LoadShader("glvp", "glfp");
-      get_light_shader_bindings();
+    sh_indexed = gld_LoadShader("glvp", "glfp_idx");
+    get_indexed_shader_bindings();
 
-      sh_indexed = gld_LoadShader("glvp", "glfp_idx");
-      get_indexed_shader_bindings();
-
-      sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
-      get_fuzz_shader_bindings();
-      glsl_SetFuzzScreenResolution((float)SCREENWIDTH, (float)SCREENHEIGHT);
-    }
+    sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
+    get_fuzz_shader_bindings();
+    glsl_SetFuzzScreenResolution((float)SCREENWIDTH, (float)SCREENHEIGHT);
   }
 
   return (sh_main != NULL) && (sh_indexed != NULL) && (sh_fuzz != NULL);
@@ -204,7 +197,6 @@ static int ReadLump(const char *filename, const char *lumpname, char **buffer)
 static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 {
 #define buffer_size 2048
-  int idx;
   int linked;
   char buffer[buffer_size];
   char *vp_data = NULL;

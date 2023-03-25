@@ -69,7 +69,6 @@ static double dsda_CalculateDistance(void) {
 
 static void dsda_WriteCoordinate(dsda_text_t* text, fixed_t x, const char* ch) {
   char str[FIXED_STRING_LENGTH];
-  const char* format;
 
   dsda_FixedToString(str, x);
 
@@ -80,7 +79,6 @@ static void dsda_WriteCoordinate(dsda_text_t* text, fixed_t x, const char* ch) {
 
 static void dsda_WriteAngle(dsda_text_t* text, angle_t x, const char* ch) {
   dsda_angle_t value;
-  const char* format;
 
   value = dsda_SplitAngle(x);
 
@@ -96,7 +94,6 @@ static void dsda_WriteAngle(dsda_text_t* text, angle_t x, const char* ch) {
 
 static void dsda_WriteCoordinateSimple(dsda_text_t* text, fixed_t x, const char* ch, const char* color) {
   dsda_fixed_t value;
-  const char* format;
 
   value = dsda_SplitFixed(x);
 

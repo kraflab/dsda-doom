@@ -188,7 +188,7 @@ else()
         "${CMAKE_C_FLAGS} \
         -Wall -Wno-missing-field-initializers -Wwrite-strings -Wundef \
         -Wbad-function-cast -Wcast-align -Wcast-qual -Wdeclaration-after-statement \
-        -Wpointer-arith -Wno-unused -Wno-switch -Wno-sign-compare -Wno-pointer-sign \
+        -Wpointer-arith -Wno-unused-function -Wno-switch -Wno-sign-compare -Wno-pointer-sign \
         -Wtype-limits -Wabsolute-value \
         -ffast-math"
     )

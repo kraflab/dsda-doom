@@ -1325,7 +1325,8 @@ static void P_LoadGLZSegs(const byte *data, int type)
   {
     for (j = 0; j < subsectors[i].numlines; ++j)
     {
-      unsigned int v1, partner;
+      unsigned int v1;
+      // unsigned int partner;
       unsigned int line;
       unsigned char side;
       seg_t *seg;
@@ -1333,7 +1334,7 @@ static void P_LoadGLZSegs(const byte *data, int type)
       if (type < 2)
       {
         v1 = LittleLong(ml->v1);
-        partner = LittleLong(ml->v2);
+        // partner = LittleLong(ml->v2);
         line = (unsigned short) LittleShort(ml->linedef);
         side = ml->side;
 
@@ -1345,7 +1346,7 @@ static void P_LoadGLZSegs(const byte *data, int type)
       else
       {
         v1 = LittleLong(ml2->v1);
-        partner = LittleLong(ml2->v2);
+        // partner = LittleLong(ml2->v2);
         line = (unsigned int) LittleLong(ml2->linedef);
         side = ml2->side;
 
@@ -2176,7 +2177,6 @@ static void P_LoadUDMFLineDefs(int lump)
   for (i = 0; i < numlines; ++i)
   {
     line_t *ld = &lines[i];
-    vertex_t *v1, *v2;
     const udmf_line_t *mld = &udmf.lines[i];
 
     ld->iLineID=i; // proff 04/05/2000: needed for OpenGL
@@ -2547,7 +2547,6 @@ static void P_LoadUDMFSideDefs(int lump)
   {
     const udmf_side_t *msd = &udmf.sides[i];
     side_t *sd = &sides[i];
-    sector_t *sec;
 
     sd->textureoffset = dsda_IntToFixed(msd->offsetx);
     sd->rowoffset = dsda_IntToFixed(msd->offsety);

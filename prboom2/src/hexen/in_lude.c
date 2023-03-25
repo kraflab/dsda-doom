@@ -78,7 +78,6 @@ extern void AM_Stop(void);
 
 void Hexen_IN_Start(wbstartstruct_t* wbstartstruct)
 {
-    int i;
     V_SetPalette(0);
     InitStats();
     LoadPics();
@@ -196,8 +195,6 @@ static void InitStats(void)
 
 static void LoadPics(void)
 {
-    int i;
-
     if (HubCount || gametype == DEATHMATCH)
     {
         FontABaseLump = W_GetNumForName("FONTA_S") + 1;

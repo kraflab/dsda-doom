@@ -264,7 +264,6 @@ void dsda_ParseOptionsLump(void) {
   char* scan;
   int lumpnum;
   int i, value, count;
-  dsda_option_t* option;
 
   lumpnum = W_CheckNumForName("OPTIONS");
 

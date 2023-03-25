@@ -212,7 +212,6 @@ void dsda_SpawnGhost(void) {
   mobj_t* mobj;
   state_t* ghost_state;
   int ghost_i;
-  dboolean any_ghosts;
 
   if (dsda_StrictMode())
     return;

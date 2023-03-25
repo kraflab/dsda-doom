@@ -186,8 +186,6 @@ static dboolean dsda_RemoveTracker(int type, int id) {
 }
 
 dboolean dsda_TrackLine(int id) {
-  int i;
-
   if (dsda_StrictMode())
     return false;
 
@@ -202,8 +200,6 @@ dboolean dsda_UntrackLine(int id) {
 }
 
 dboolean dsda_TrackLineDistance(int id) {
-  int i;
-
   if (dsda_StrictMode())
     return false;
 
@@ -218,8 +214,6 @@ dboolean dsda_UntrackLineDistance(int id) {
 }
 
 dboolean dsda_TrackSector(int id) {
-  int i;
-
   if (dsda_StrictMode())
     return false;
 
@@ -234,7 +228,6 @@ dboolean dsda_UntrackSector(int id) {
 }
 
 dboolean dsda_TrackMobj(int id) {
-  int i;
   mobj_t* mobj = NULL;
 
   if (dsda_StrictMode())
@@ -260,8 +253,6 @@ dboolean dsda_UntrackMobj(int id) {
 }
 
 dboolean dsda_TrackPlayer(int id) {
-  int i;
-
   if (dsda_StrictMode())
     return false;
 

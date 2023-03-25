@@ -198,11 +198,7 @@ dboolean dsda_BruteForceEnded(void) {
 }
 
 static void dsda_EndBF(int result) {
-  int percent;
-
   brute_force_ended = true;
-
-  percent = 100 * bf_volume / bf_volume_max;
 
   lprintf(LO_INFO, "Brute force complete (%s)!\n", bf_result_text[result]);
   dsda_PrintBFProgress();

@@ -82,7 +82,6 @@ const char* dsda_DemoNameBase(void) {
 
 void dsda_SetDemoBaseName(const char* name) {
   size_t base_size;
-  char* p;
 
   if (dsda_demo_name_base)
     Z_Free(dsda_demo_name_base);
@@ -104,7 +103,6 @@ void dsda_SetDemoBaseName(const char* name) {
 char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
   char* demo_name;
   size_t demo_name_size;
-  FILE* fp;
   int j;
 
   j = *counter;
@@ -788,8 +786,6 @@ const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size) {
   p = G_ReadDemoHeaderEx(buffer, file_size, RDH_SKIP_HEADER);
 
   if (dsda_demo_version) {
-    int i;
-
     p = (const byte*) (buffer + dsda_demo_header_data.end_marker_location);
 
     if (*p != DEMOMARKER)

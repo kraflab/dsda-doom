@@ -714,7 +714,6 @@ void S_StopMusic(void)
 
 void S_StopChannel(int cnum)
 {
-  int i;
   channel_t *c = &channels[cnum];
 
   if (AmbChan == cnum)

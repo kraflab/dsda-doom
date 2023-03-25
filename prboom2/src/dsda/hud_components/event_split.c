@@ -51,7 +51,6 @@ void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt, int* args, int a
 void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
   int minutes;
   float seconds;
-  char* s;
   dsda_split_state_t* split_state;
 
   split_state = &dsda_split_state[split_class];

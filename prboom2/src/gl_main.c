@@ -206,13 +206,13 @@ void gld_MultisamplingSet(void)
 
 int gld_LoadGLDefs(const char * defsLump)
 {
-  typedef enum
+  enum
   {
     TAG_SKYBOX,
     TAG_DETAIL,
 
     TAG_MAX
-  } gldef_type_e;
+  };
 
   // these are the core types available in the *DEFS lump
   static const char *CoreKeywords[TAG_MAX + 1] =
@@ -834,7 +834,6 @@ color_rgb_t gld_LookupIndexedColor(int index, dboolean usecolormap)
 
 void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
 {
-  const unsigned char *playpal = V_GetPlaypal();
   color_rgb_t color;
   unsigned char a;
   map_line_t *line;
@@ -962,7 +961,6 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
 
 void gld_FillBlock(int x, int y, int width, int height, int col)
 {
-  const unsigned char *playpal = V_GetPlaypal();
   color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
   glsl_SuspendActiveShader();

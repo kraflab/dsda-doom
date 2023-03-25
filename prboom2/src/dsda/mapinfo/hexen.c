@@ -362,7 +362,6 @@ void dsda_HexenLoadMapInfo(void) {
   int mapMax;
   int mcmdValue;
   mapInfo_t* info;
-  char songMulch[10];
   const char* default_sky_name = DEFAULT_SKY_NAME;
 
   if (!map_format.mapinfo)

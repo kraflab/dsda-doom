@@ -559,7 +559,7 @@ static void R_CopyScreenBufferSection(int x, int y, int count)
 
 void R_DrawViewBorder(void)
 {
-  int top, i;
+  int i;
 
   if (V_IsOpenGLMode()) {
     // proff 11/99: we don't have a backscreen in OpenGL from where we can copy this

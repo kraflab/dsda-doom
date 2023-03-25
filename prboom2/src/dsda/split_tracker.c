@@ -47,8 +47,6 @@ static char* dsda_SplitTrackerDir(void) {
 }
 
 static char* dsda_SplitTrackerPath(void) {
-  static char* dsda_split_tracker_path = NULL;
-
   if (!dsda_split_tracker_path) {
     int length;
     const char* name_base;

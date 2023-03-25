@@ -120,7 +120,6 @@ static char* dsda_TextFileTime(void) {
 }
 
 void dsda_ExportTextFile(void) {
-  int p;
   dsda_arg_t* arg;
   char* name;
   const char* iwad = NULL;

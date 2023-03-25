@@ -845,7 +845,6 @@ dboolean delete_verify = false;
 static void M_DeleteGame(int slot)
 {
   char *name;
-  int len;
 
   if (dsda_LastSaveSlot() == slot)
     dsda_ResetLastSaveSlot();
@@ -2886,9 +2885,6 @@ static const char *videomodes[] = {
   "Software",
   "OpenGL",
   NULL};
-
-static const char *gltexformats[] = {
-  "GL_RGBA","GL_RGB5_A1", "GL_RGBA4", NULL};
 
 static const char *gen_skillstrings[] = {
   // Dummy first option because defaultskill is 1-based

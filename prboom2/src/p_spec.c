@@ -7083,7 +7083,6 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         FIND_SECTORS(id_p, args[0])
         {
           int i;
-          line_t *line;
 
           buttonSuccess = 1;
 

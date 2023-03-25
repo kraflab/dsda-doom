@@ -238,7 +238,6 @@ static void DemoEx_GetParams(const wadinfo_t* header) {
 static void DemoEx_AddParams(wadtbl_t* wadtbl) {
   dsda_arg_t* arg;
   size_t i;
-  int p;
   char buf[200];
 
   const char* filename_p;

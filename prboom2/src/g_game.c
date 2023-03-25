@@ -225,21 +225,21 @@ static const struct
 };
 
 // HERETIC_TODO: dynamically set these
-static const struct
-{
-    weapontype_t weapon;
-    weapontype_t weapon_num;
-} heretic_weapon_order_table[] = {
-    { wp_staff,       wp_staff },
-    { wp_gauntlets,   wp_staff },
-    { wp_goldwand,    wp_goldwand },
-    { wp_crossbow,    wp_crossbow },
-    { wp_blaster,     wp_blaster },
-    { wp_skullrod,    wp_skullrod },
-    { wp_phoenixrod,  wp_phoenixrod },
-    { wp_mace,        wp_mace },
-    { wp_beak,        wp_beak },
-};
+// static const struct
+// {
+//     weapontype_t weapon;
+//     weapontype_t weapon_num;
+// } heretic_weapon_order_table[] = {
+//     { wp_staff,       wp_staff },
+//     { wp_gauntlets,   wp_staff },
+//     { wp_goldwand,    wp_goldwand },
+//     { wp_crossbow,    wp_crossbow },
+//     { wp_blaster,     wp_blaster },
+//     { wp_skullrod,    wp_skullrod },
+//     { wp_phoenixrod,  wp_phoenixrod },
+//     { wp_mace,        wp_mace },
+//     { wp_beak,        wp_beak },
+// };
 
 // mouse values are used once
 static int   mousex;
@@ -328,7 +328,6 @@ static inline signed char fudgef(signed char b)
 
 void G_SetSpeed(dboolean reset)
 {
-  int p;
   dsda_pclass_t *player_class;
   static dsda_pclass_t *last_player_class = NULL;
 
@@ -2339,13 +2338,10 @@ void G_AfterLoad(void)
 
 void G_DoLoadGame(void)
 {
-  int  length, i;
+  int  length;
   // CPhipps - do savegame filename stuff here
   char *name;                // killough 3/22/98
   int saveversion;
-  int savegame_compatibility = -1;
-  const char *maplump;
-  int time, ttime;
 
   dsda_SetLastLoadSlot(savegameslot);
 
@@ -2438,7 +2434,6 @@ static void G_DoSaveGame(dboolean via_cmd)
   char *description;
   int saveversion;
   uint64_t checksum;
-  int  i;
   const char *maplump;
   int time, ttime;
 
@@ -4108,8 +4103,6 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
 //e6y
 void G_ContinueDemo(const char *playback_name)
 {
-  const byte *demo_p;
-
   if (LoadDemo(playback_name, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_JOIN_ON_END);

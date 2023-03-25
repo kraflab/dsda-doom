@@ -948,32 +948,8 @@ static void gld_BlendOverTexture(byte *data, int pixelCount, byte blend[4])
 
 void gld_SetTexFilters(GLTexture *gltexture)
 {
-  int mip, mag_filter, min_filter;
+  int mag_filter, min_filter;
   float aniso_filter = 0.0f;
-
-  if (gltexture->flags & GLTEXTURE_INDEXED)
-  {
-    mip = MIP_INDEXED;
-  }
-  else
-  {
-    switch (gltexture->textype)
-    {
-    case GLDT_TEXTURE:
-    case GLDT_FLAT:
-      mip = MIP_TEXTURE;
-      break;
-    case GLDT_PATCH:
-      mip = ((gltexture->flags & GLTEXTURE_SPRITE) ? MIP_SPRITE : MIP_PATCH);
-      break;
-    case GLDT_COLORMAP:
-      mip = MIP_INDEXED;
-      break;
-    default:
-      mip = MIP_TEXTURE;
-      break;
-    }
-  }
 
   if (render_usedetail && gltexture->detail)
     mag_filter = GL_LINEAR;

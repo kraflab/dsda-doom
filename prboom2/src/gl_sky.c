@@ -737,8 +737,11 @@ static void gld_BuildSky(int row_count, int col_count, SkyBoxParams_t *sky, int 
 static void RenderDome(SkyBoxParams_t *sky)
 {
   int i, j;
-  int vbosize;
   GLSkyVBO *vbo;
+
+#ifdef USE_VBO
+  int vbosize;
+#endif
 
   if (!sky || !sky->wall.gltexture)
     return;
@@ -756,7 +759,9 @@ static void RenderDome(SkyBoxParams_t *sky)
   rows = 4;
   columns = 64;
 
+#ifdef USE_VBO
   vbosize = 2 * rows * (columns * 2 + 2) + columns * 2;
+#endif
 
   if (sky->y_offset != y_offset_saved ||
       sky->wall.gltexture->index != sky->index)

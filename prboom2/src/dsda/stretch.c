@@ -109,7 +109,6 @@ stretch_param_t* dsda_StretchParams(int flags) {
 }
 
 static void InitExTextParam(stretch_param_t* offsets, enum patch_translation_e flags) {
-  int scale;
   int offset2x, offset2y;
 
   offset2x = SCREENWIDTH - ex_text_screenwidth;

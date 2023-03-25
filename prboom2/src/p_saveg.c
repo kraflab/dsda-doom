@@ -731,7 +731,6 @@ typedef enum {
 // merges P_ArchiveThinkers & P_ArchiveSpecials
 void P_TrueArchiveThinkers(void) {
   thinker_t *th;
-  size_t    size = 0;          // killough
 
   P_SAVE_X(brain);
 

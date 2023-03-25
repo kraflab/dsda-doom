@@ -35,7 +35,6 @@ static int dsda_SplitComparisonDelta(dsda_split_time_t* split_time) {
 }
 
 static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
-  char* s;
   char delta[16];
   const char* color;
 
@@ -82,7 +81,6 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
 }
 
 static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
-  char* s;
   char delta[16];
   const char* color;
 
@@ -141,7 +139,6 @@ void dsda_UpdateLevelSplitsHC(void* data) {
 }
 
 void dsda_DrawLevelSplitsHC(void* data) {
-  char* s;
   dsda_split_t* split;
 
   local = data;
