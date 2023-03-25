@@ -519,11 +519,11 @@ static void gld_PrecalculateSector(int num)
     return;
   }
   // set callbacks
-  gluTessCallback(tess, GLU_TESS_BEGIN, ntessBegin);
-  gluTessCallback(tess, GLU_TESS_VERTEX, ntessVertex);
-  gluTessCallback(tess, GLU_TESS_ERROR, ntessError);
-  gluTessCallback(tess, GLU_TESS_COMBINE, ntessCombine);
-  gluTessCallback(tess, GLU_TESS_END, ntessEnd);
+  gluTessCallback(tess, GLU_TESS_BEGIN, (void(*)())ntessBegin);
+  gluTessCallback(tess, GLU_TESS_VERTEX, (void(*)())ntessVertex);
+  gluTessCallback(tess, GLU_TESS_ERROR, (void(*)())ntessError);
+  gluTessCallback(tess, GLU_TESS_COMBINE, (void(*)())ntessCombine);
+  gluTessCallback(tess, GLU_TESS_END, (void(*)())ntessEnd);
   if (levelinfo) fprintf(levelinfo, "sector %i, %i lines in sector\n", num, sectors[num].linecount);
   // remove any line which has both sides in the same sector (i.e. Doom2 Map01 Sector 1)
   for (i=0; i<sectors[num].linecount; i++)
