@@ -46,12 +46,12 @@
 
 typedef struct camera_s
 {
-  long x;
-  long y;
-  long z;
-  long PrevX;
-  long PrevY;
-  long PrevZ;
+  fixed_t x;
+  fixed_t y;
+  fixed_t z;
+  fixed_t PrevX;
+  fixed_t PrevY;
+  fixed_t PrevZ;
   angle_t angle;
   angle_t pitch;
   angle_t PrevAngle;
