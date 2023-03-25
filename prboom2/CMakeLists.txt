@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
 option(WITH_DUMB "Use DUMB if available" ON)
 if(WITH_DUMB)
