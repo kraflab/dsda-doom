@@ -266,7 +266,7 @@ void SB_Init(void)
     }
     else
     {
-        LumpLIFEGEM = W_GetNumForName("LIFEGEM0" + consoleplayer);
+        LumpLIFEGEM = W_GetNumForName("LIFEGEM0") + consoleplayer;
     }
     LumpLTFCTOP = W_GetNumForName("LTFCTOP");
     LumpRTFCTOP = W_GetNumForName("RTFCTOP");
