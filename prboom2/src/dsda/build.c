@@ -47,9 +47,12 @@ static signed char forward50(void) {
   return pclass[players[consoleplayer].pclass].forwardmove[1];
 }
 
+#ifdef UNUSED
+// For future use
 static signed char strafe40(void) {
   return pclass[players[consoleplayer].pclass].sidemove[1];
 }
+#endif
 
 static signed char strafe50(void) {
   return forward50();
