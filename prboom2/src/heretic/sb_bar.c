@@ -38,7 +38,10 @@
 static void ShadeLine(int x, int y, int height, int shade);
 static void ShadeChain(void);
 static void DrINumber(signed int val, int x, int y);
+#ifdef UNUSED
+// Big font is currently unused
 static void DrBNumber(signed int val, int x, int y);
+#endif
 static void DrawCommonBar(void);
 static void DrawMainBar(void);
 static void DrawInventoryBar(void);
@@ -87,7 +90,10 @@ int LumpBLACKSQ;
 int LumpINVBAR;
 int LumpARMCLEAR;
 int LumpCHAINBACK;
+#ifdef UNUSED
+// Big font is currently unused
 int FontBNumBase;
+#endif
 int spinbooklump;
 int spinflylump;
 
@@ -284,7 +290,10 @@ void SB_Init(void)
         LumpINumbers[i] = startLump + i;
     }
     LumpNEGATIVE = W_GetNumForName("NEGNUM");
+#ifdef UNUSED
+    // Big font is currently unused
     FontBNumBase = W_GetNumForName("FONTB16");
+#endif
     startLump = W_GetNumForName("SMALLIN0");
     for (i = 0; i < 10; i++)
     {
@@ -391,6 +400,8 @@ static void DrINumber(signed int val, int x, int y)
     V_DrawNumPatch(x + 18, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
 }
 
+#ifdef UNUSED
+// Big font is currently unused
 //---------------------------------------------------------------------------
 //
 // PROC DrBNumber
@@ -428,6 +439,7 @@ static void DrBNumber(signed int val, int x, int y)
     lump = FontBNumBase + val;
     V_DrawShadowedNumPatch(xpos + 6 - R_NumPatchWidth(lump) / 2, y, lump);
 }
+#endif
 
 //---------------------------------------------------------------------------
 //
@@ -470,23 +482,25 @@ static void DrSmallNumber(int val, int x, int y)
 
 static void ShadeLine(int x, int y, int height, int shade)
 {
+#ifdef UNUSED
     // HERETIC_TODO: ShadeLine
-    // byte *dest;
-    // byte *shades;
-    //
-    // x <<= crispy->hires;
-    // y <<= crispy->hires;
-    // height <<= crispy->hires;
-    //
-    // shades = colormaps + 9 * 256 + shade * 2 * 256;
-    // dest = I_VideoBuffer + y * SCREENWIDTH + x;
-    // while (height--)
-    // {
-    //     if (crispy->hires)
-    //         *(dest + 1) = *(shades + *dest);
-    //     *(dest) = *(shades + *dest);
-    //     dest += SCREENWIDTH;
-    // }
+    byte *dest;
+    byte *shades;
+
+    x <<= crispy->hires;
+    y <<= crispy->hires;
+    height <<= crispy->hires;
+
+    shades = colormaps + 9 * 256 + shade * 2 * 256;
+    dest = I_VideoBuffer + y * SCREENWIDTH + x;
+    while (height--)
+    {
+        if (crispy->hires)
+            *(dest + 1) = *(shades + *dest);
+        *(dest) = *(shades + *dest);
+        dest += SCREENWIDTH;
+    }
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -981,7 +995,10 @@ static void Hexen_SB_Init(void)
         LumpINumbers[i] = startLump + i;
     }
     LumpNEGATIVE = W_GetNumForName("NEGNUM");
+#ifdef UNUSED
+    // Big font is currently unused
     FontBNumBase = W_GetNumForName("FONTB16");
+#endif
     startLump = W_GetNumForName("SMALLIN0");
     for (i = 0; i < 10; i++)
     {
