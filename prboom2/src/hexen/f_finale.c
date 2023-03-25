@@ -42,9 +42,12 @@ static const char* FinaleLumpName;
 static int FontABaseLump;
 static char *FinaleText;
 
-// static fixed_t *Palette;
-// static fixed_t *PaletteDelta;
-// static byte *RealPalette;
+#ifdef UNUSED
+// Palette handling to be implemented
+static fixed_t *Palette;
+static fixed_t *PaletteDelta;
+static byte *RealPalette;
+#endif
 
 void Hexen_F_StartFinale(void)
 {
