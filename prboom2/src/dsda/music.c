@@ -29,6 +29,9 @@ int mus_musinfo;
 static char** deh_musicnames;
 static byte* music_state;
 
+#ifdef UNUSED
+// S_music is currently not dynamically grown, but it may
+// become so in the future.
 static void dsda_EnsureCapacity(int limit) {
   while (limit >= num_music) {
     int old_num_music = num_music;
@@ -43,6 +46,7 @@ static void dsda_EnsureCapacity(int limit) {
       (num_music - old_num_music) * sizeof(*music_state));
   }
 }
+#endif
 
 int dsda_GetDehMusicIndex(const char* key, size_t length) {
   int i;
@@ -71,15 +75,18 @@ int dsda_GetOriginalMusicIndex(const char* key) {
 
   return -1;
 
+#ifdef UNUSED
+  // If we want to support keys that are numbers in the future
   // is it a number?
-  // for (c = key; *c; c++)
-  //   if (!isdigit(*c))
-  //     return -1;
-  //
-  // i = atoi(key);
-  // dsda_EnsureCapacity(i);
-  //
-  // return i;
+  for (c = key; *c; c++)
+    if (!isdigit(*c))
+      return -1;
+
+  i = atoi(key);
+  dsda_EnsureCapacity(i);
+
+  return i;
+#endif
 }
 
 void dsda_InitializeMusic(musicinfo_t* source, int count) {
@@ -91,8 +98,11 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
 
   S_music = source;
 
-  // S_music = malloc(num_music * sizeof(*S_music));
-  // memcpy(S_music, source, num_music * sizeof(*S_music));
+#ifdef UNUSED
+  // S_music might grow dynamically in the future
+  S_music = malloc(num_music * sizeof(*S_music));
+  memcpy(S_music, source, num_music * sizeof(*S_music));
+#endif
 
   if (raven) return;
 
