@@ -1333,12 +1333,14 @@ static void I_OPL_UnRegisterSong(const void *handle)
     }
 }
 
+#ifdef UNUSED
 // Determine whether memory block is a .mid file
-
+// Currently not used
 static dboolean IsMid(byte *mem, int len)
 {
     return len > 4 && !memcmp(mem, "MThd", 4);
 }
+#endif
 
 // now only takes files in MIDI format
 static const void *I_OPL_RegisterSong(const void *data, unsigned len)
