@@ -224,22 +224,24 @@ static const struct
   { wp_bfg,          wp_bfg }
 };
 
-// HERETIC_TODO: dynamically set these
-// static const struct
-// {
-//     weapontype_t weapon;
-//     weapontype_t weapon_num;
-// } heretic_weapon_order_table[] = {
-//     { wp_staff,       wp_staff },
-//     { wp_gauntlets,   wp_staff },
-//     { wp_goldwand,    wp_goldwand },
-//     { wp_crossbow,    wp_crossbow },
-//     { wp_blaster,     wp_blaster },
-//     { wp_skullrod,    wp_skullrod },
-//     { wp_phoenixrod,  wp_phoenixrod },
-//     { wp_mace,        wp_mace },
-//     { wp_beak,        wp_beak },
-// };
+#ifdef UNUSED
+// HERETIC_TODO: select table based on game
+static const struct
+{
+    weapontype_t weapon;
+    weapontype_t weapon_num;
+} heretic_weapon_order_table[] = {
+    { wp_staff,       wp_staff },
+    { wp_gauntlets,   wp_staff },
+    { wp_goldwand,    wp_goldwand },
+    { wp_crossbow,    wp_crossbow },
+    { wp_blaster,     wp_blaster },
+    { wp_skullrod,    wp_skullrod },
+    { wp_phoenixrod,  wp_phoenixrod },
+    { wp_mace,        wp_mace },
+    { wp_beak,        wp_beak },
+};
+#endif
 
 // mouse values are used once
 static int   mousex;
