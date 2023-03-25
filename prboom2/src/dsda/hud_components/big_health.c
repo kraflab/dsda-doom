@@ -60,7 +60,7 @@ static void dsda_DrawComponent(void) {
   health = player->health < 0 ? 0 : player->health;
 
   dsda_DrawBigNumber(x, y, patch_delta_x, 0,
-                     cm, local->component.vpt, 3, player->health);
+                     cm, local->component.vpt, 3, health);
 }
 
 void dsda_InitBigHealthHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
