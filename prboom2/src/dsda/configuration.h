@@ -124,6 +124,7 @@ typedef enum {
   dsda_config_gl_render_fov,
   dsda_config_gl_lightmode,
   dsda_config_gl_health_bar,
+  dsda_config_gl_usevbo,
   dsda_config_use_mouse,
   dsda_config_mouse_sensitivity_horiz,
   dsda_config_mouse_sensitivity_vert,
