@@ -14,7 +14,7 @@ function(get_flags_from_pkg_config _library _pc_prefix _out_prefix)
   endif()
 
   # The *_LIBRARIES lists always start with the library itself
-  list(POP_FRONT "${_link_libraries}")
+  list(REMOVE_AT "${_link_libraries}" 0)
 
   # Work around CMake's flag deduplication when pc files use `-framework A` instead of `-Wl,-framework,A`
   string(REPLACE "-framework;" "-Wl,-framework," "_filtered_link_options" "${${_link_options}}")

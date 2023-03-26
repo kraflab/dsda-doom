@@ -109,9 +109,9 @@ typedef uint16_t udmf_side_flags_t;
 typedef struct {
   int offsetx;
   int offsety;
-  char texturetop[8];
-  char texturebottom[8];
-  char texturemiddle[8];
+  char texturetop[9];
+  char texturebottom[9];
+  char texturemiddle[9];
   int sector;
   float scalex_top;
   float scaley_top;
@@ -154,8 +154,8 @@ typedef uint16_t udmf_sector_flags_t;
 typedef struct {
   int heightfloor;
   int heightceiling;
-  char texturefloor[8];
-  char textureceiling[8];
+  char texturefloor[9];
+  char textureceiling[9];
   int lightlevel;
   int special;
   int id;

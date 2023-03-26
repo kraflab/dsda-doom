@@ -215,11 +215,6 @@ static uint64_t SV_ReadFlags(void)
     return result;
 }
 
-static void *SV_ReadPtr(void)
-{
-    return (void *) (intptr_t) SV_ReadLong();
-}
-
 static void SV_Write(const void *buffer, size_t size)
 {
     CheckBuffer(size);
@@ -245,18 +240,6 @@ static void SV_WriteLong(unsigned int val)
 static void SV_WriteFlags(uint64_t val)
 {
     SV_Write(&val, sizeof(uint64_t));
-}
-
-static void SV_WritePtr(void *val)
-{
-    unsigned int ptr;
-
-    // Write a pointer value. In Vanilla Hexen pointers are 32-bit but
-    // nowadays they might be larger. Whatever value we write here isn't
-    // going to be much use when we reload the game.
-
-    ptr = (unsigned int)(intptr_t) val;
-    SV_WriteLong(ptr & 0xffffffff);
 }
 
 static void SV_OpenRead(int map)
@@ -333,9 +316,7 @@ static void StreamIn_mobj_t(mobj_t *str)
 
     // struct mobj_s *snext, *sprev;
     // Pointer values are discarded:
-    str->snext = SV_ReadPtr();
     str->snext = NULL;
-    str->sprev = SV_ReadPtr();
     str->sprev = NULL;
 
     // angle_t angle;
@@ -350,14 +331,11 @@ static void StreamIn_mobj_t(mobj_t *str)
     // struct mobj_s *bnext, *bprev;
     // Values are read but discarded; this will be restored when the thing's
     // position is set.
-    str->bnext = SV_ReadPtr();
     str->bnext = NULL;
-    str->bprev = SV_ReadPtr();
     str->bprev = NULL;
 
     // struct subsector_s *subsector;
     // Read but discard: pointer will be restored when thing position is set.
-    str->subsector = SV_ReadPtr();
     str->subsector = NULL;
 
     // fixed_t floorz, ceilingz;
@@ -384,7 +362,6 @@ static void StreamIn_mobj_t(mobj_t *str)
 
     // mobjinfo_t *info;
     // Pointer value is read but discarded.
-    str->info = SV_ReadPtr();
     str->info = NULL;
 
     // int tics;
@@ -492,10 +469,6 @@ static void StreamOut_mobj_t(mobj_t *str)
     SV_WriteLong(str->y);
     SV_WriteLong(str->z);
 
-    // struct mobj_s *snext, *sprev;
-    SV_WritePtr(str->snext);
-    SV_WritePtr(str->sprev);
-
     // angle_t angle;
     SV_WriteLong(str->angle);
 
@@ -504,13 +477,6 @@ static void StreamOut_mobj_t(mobj_t *str)
 
     // int frame;
     SV_WriteLong(str->frame);
-
-    // struct mobj_s *bnext, *bprev;
-    SV_WritePtr(str->bnext);
-    SV_WritePtr(str->bprev);
-
-    // struct subsector_s *subsector;
-    SV_WritePtr(str->subsector);
 
     // fixed_t floorz, ceilingz;
     SV_WriteLong(str->floorz);
@@ -533,9 +499,6 @@ static void StreamOut_mobj_t(mobj_t *str)
 
     // mobjtype_t type;
     SV_WriteLong(str->type);
-
-    // mobjinfo_t *info;
-    SV_WritePtr(str->info);
 
     // int tics;
     SV_WriteLong(str->tics);

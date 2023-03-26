@@ -494,6 +494,7 @@ int dsda_UEnterPic(const char** enter_pic) {
 int dsda_UPrepareEntering(void) {
   extern const char *el_levelname;
   extern const char *el_levelpic;
+  extern const char *el_author;
 
   if (!nextmapinfo)
     return false;
@@ -501,12 +502,14 @@ int dsda_UPrepareEntering(void) {
   if (nextmapinfo->levelname && nextmapinfo->levelpic[0] == 0) {
     el_levelname = nextmapinfo->levelname;
     el_levelpic = NULL;
+    el_author = nextmapinfo->author;
 
     return true;
   }
   else if (nextmapinfo->levelpic[0]) {
     el_levelname = NULL;
     el_levelpic = nextmapinfo->levelpic;
+    el_author = NULL;
 
     return true;
   }
@@ -517,6 +520,7 @@ int dsda_UPrepareEntering(void) {
 int dsda_UPrepareFinished(void) {
   extern const char *lf_levelname;
   extern const char *lf_levelpic;
+  extern const char *lf_author;
 
   if (!lastmapinfo)
     return false;
@@ -524,12 +528,14 @@ int dsda_UPrepareFinished(void) {
   if (lastmapinfo->levelname && lastmapinfo->levelpic[0] == 0) {
     lf_levelname = lastmapinfo->levelname;
     lf_levelpic = NULL;
+    lf_author = lastmapinfo->author;
 
     return true;
   }
   else if (lastmapinfo->levelpic[0]) {
     lf_levelname = NULL;
     lf_levelpic = lastmapinfo->levelpic;
+    lf_author = NULL;
 
     return true;
   }

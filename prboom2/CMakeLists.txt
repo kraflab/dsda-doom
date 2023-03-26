@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.4)
 
 option(WITH_DUMB "Use DUMB if available" ON)
 if(WITH_DUMB)
@@ -30,6 +30,10 @@ if(WITH_VORBISFILE)
     list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
 endif()
 
+# Automatically install dependencies
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
+
 project("dsda-doom" VERSION 0.25.6)
 
 # Set a default build type if none was specified
@@ -47,8 +51,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(TargetArch)
 
-include(TestBigEndian)
-TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
+include(CheckBigEndian)
+check_big_endian(WORDS_BIGENDIAN)
 
 include(GNUInstallDirs)
 
@@ -84,14 +88,7 @@ set(PACKAGE_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
 include(CheckSymbolExists)
 
 check_symbol_exists(stricmp "string.h" HAVE_STRICMP)
-if(NOT HAVE_STRICMP)
-    add_definitions("-Dstricmp=strcasecmp")
-endif()
 check_symbol_exists(strnicmp "string.h" HAVE_STRNICMP)
-if(NOT HAVE_STRNICMP)
-    add_definitions("-Dstrnicmp=strncasecmp")
-endif()
-
 check_symbol_exists(getopt "unistd.h" HAVE_GETOPT)
 check_symbol_exists(mmap "sys/mman.h" HAVE_MMAP)
 check_symbol_exists(CreateFileMapping "windows.h" HAVE_CREATE_FILE_MAPPING)
@@ -104,6 +101,13 @@ check_include_file("sys/wait.h" HAVE_SYS_WAIT_H)
 check_include_file("unistd.h" HAVE_UNISTD_H)
 check_include_file("asm/byteorder.h" HAVE_ASM_BYTEORDER_H)
 check_include_file("dirent.h" HAVE_DIRENT_H)
+
+include(GetAvailableFlags)
+
+get_supported_warnings(SUPPORTED_WARNINGS)
+get_fast_math_flag(FAST_MATH_FLAG)
+get_compile_definitions(DSDA_COMPILE_DEFINITIONS)
+get_deprecation_silencing_definitions(DEPRECATION_SILENCING_DEFINITIONS)
 
 include(PkgConfigHelper)
 
@@ -162,15 +166,16 @@ if(WITH_PORTMIDI)
     endif()
 endif()
 
-set(CMAKE_REQUIRED_INCLUDES_PREV ${CMAKE_REQUIRED_INCLUDES})
-set(CMAKE_REQUIRED_LIBRARIES_PREV ${CMAKE_REQUIRED_LIBRARIES})
-set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${SDL2_INCLUDE_DIRS})
-set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${SDL2_LIBRARIES})
-set(CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES_PREV})
-set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES_PREV})
+if(WIN32)
+    set(DEFAULT_WAD_DIR ".")
+else()
+    set(DEFAULT_WAD_DIR "${CMAKE_INSTALL_DATADIR}/games/doom")
+endif()
 
-set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/share/games/doom" CACHE PATH "Path to look for WAD files")
-set(DSDAPWADDIR "${DOOMWADDIR}" CACHE PATH "Path to install DSDA-Doom internal WAD")
+set(DSDAPWADDIR "${DEFAULT_WAD_DIR}" CACHE STRING "Path to install DSDA-Doom internal WAD, relative to CMAKE_INSTALL_PREFIX.")
+set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/${DEFAULT_WAD_DIR}" CACHE PATH "Path to look for WAD files.")
+
+set(FULL_PWAD_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${DSDAPWADDIR}")
 
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 
@@ -178,21 +183,6 @@ option(SIMPLECHECKS "Enable checks which only impose significant overhead if a p
 option(RANGECHECK "Enable internal range checking" OFF)
 
 configure_file(cmake/config.h.cin config.h)
-
-add_definitions(-DHAVE_CONFIG_H)
-
-if (MSVC)
-    add_definitions("/D_CRT_SECURE_NO_WARNINGS")
-else()
-    set(CMAKE_C_FLAGS
-        "${CMAKE_C_FLAGS} \
-        -Wall -Wno-missing-field-initializers -Wwrite-strings -Wundef \
-        -Wbad-function-cast -Wcast-align -Wcast-qual -Wdeclaration-after-statement \
-        -Wpointer-arith -Wno-unused-function -Wno-switch -Wno-sign-compare -Wno-pointer-sign \
-        -Wtype-limits -Wabsolute-value \
-        -ffast-math"
-    )
-endif()
 
 # Support cross compiling
 option(FORCE_CROSSCOMPILE "Enable cross-compilation" OFF)
@@ -209,13 +199,17 @@ else()
     endif()
 endif()
 
-set(PRBOOM_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(DSDA_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
-set(WAD_DATA_PATH "${PRBOOM_OUTPUT_PATH}/${WAD_DATA}")
+set(WAD_DATA_PATH "${DSDA_OUTPUT_PATH}/${WAD_DATA}")
 
 add_subdirectory(data)
 add_subdirectory(src)
 
 if(NOT CMAKE_CROSSCOMPILING)
     export(TARGETS ${CROSS_EXPORTS} FILE "${CMAKE_BINARY_DIR}/ImportExecutables.cmake")
+endif()
+
+if(WIN32)
+    include(CPack)
 endif()

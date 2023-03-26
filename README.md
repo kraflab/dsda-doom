@@ -53,5 +53,9 @@ There is a dedicated launcher for this port available [here](https://github.com/
   - Dehacked support for heretic isn't implemented yet.
   - Some menus extend over the hud.
 
+### Other Standards
+- [MBF21 v1.4](https://github.com/kraflab/mbf21)
+- [UMAPINFO v2.2](https://github.com/kraflab/umapinfo)
+
 ### Credits
 - The DSDA-Doom icon was designed by Mal (129thVisplane). Thanks!

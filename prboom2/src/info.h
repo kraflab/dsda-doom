@@ -5761,7 +5761,7 @@ typedef enum
  * Definition of the state (frames) structure                       *
  ********************************************************************/
 
-typedef int64_t statearg_t;
+typedef long long statearg_t;
 
 typedef struct
 {
