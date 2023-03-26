@@ -28,24 +28,28 @@ function(get_supported_warnings outvar)
     return()
   endif()
 
-  include(CheckCCompilerFlag)
   set(_warnings
       "-Wall"
       "-Wno-missing-field-initializers"
       "-Wwrite-strings"
       "-Wundef"
-      "-Wbad-function-cast"
       "-Wcast-align"
       "-Wcast-qual"
-      "-Wdeclaration-after-statement"
       "-Wpointer-arith"
       "-Wno-unused-function"
       "-Wno-switch"
       "-Wno-sign-compare"
-      "-Wno-pointer-sign"
-      "-Wtype-limits"
-      "-Wabsolute-value")
+      "-Wtype-limits")
   check_flags_list("${_warnings}" "_supported_warnings")
+
+  # The following warnings do not apply to C++ and should be treated separately
+  set(_c_only_warnings "-Wabsolute-value" "-Wno-pointer-sign"
+                       "-Wdeclaration-after-statement" "-Wbad-function-cast")
+  check_flags_list("${_c_only_warnings}" "_supported_c_warnings")
+  foreach(_c_warning IN LISTS _supported_c_warnings)
+    list(APPEND _supported_warnings $<$<COMPILE_LANGUAGE:C>:${_c_warning}>)
+  endforeach()
+
   set("${outvar}"
       "${_supported_warnings}"
       PARENT_SCOPE)
