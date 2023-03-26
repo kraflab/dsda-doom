@@ -162,8 +162,16 @@ if(WITH_PORTMIDI)
     endif()
 endif()
 
-set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/share/games/doom" CACHE PATH "Path to look for WAD files")
-set(DSDAPWADDIR "${DOOMWADDIR}" CACHE PATH "Path to install DSDA-Doom internal WAD")
+if(WIN32)
+    set(DEFAULT_WAD_DIR ".")
+else()
+    set(DEFAULT_WAD_DIR "${CMAKE_INSTALL_DATADIR}/games/doom")
+endif()
+
+set(DSDAPWADDIR "${DEFAULT_WAD_DIR}" CACHE STRING "Path to install DSDA-Doom internal WAD, relative to CMAKE_INSTALL_PREFIX.")
+set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/${DEFAULT_WAD_DIR}" CACHE PATH "Path to look for WAD files.")
+
+set(FULL_PWAD_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${DSDAPWADDIR}")
 
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 
