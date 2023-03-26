@@ -572,11 +572,11 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	else if (!stricmp(pname, "bossaction"))
 	{
 		scanner.MustGetToken(TK_Identifier);
-		int classnum, special, tag;
+		int special, tag;
 		if (!stricmp(scanner.string, "clear"))
 		{
 			// mark level free of boss actions
-			classnum = special = tag = -1;
+			special = tag = -1;
 			if (mape->bossactions) Z_Free(mape->bossactions);
 			mape->bossactions = NULL;
 			mape->numbossactions = -1;
