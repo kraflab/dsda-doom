@@ -745,9 +745,6 @@ static void WRAP_gld_DrawNumPatchPrecise(float x, float y, int scrn, int lump, i
 {
   gld_DrawNumPatch_f(x,y,lump,cm,flags);
 }
-static void WRAP_gld_DrawBlock(int x, int y, int scrn, int width, int height, const byte *src, enum patch_translation_e flags)
-{
-}
 static void V_PlotPixelGL(int scrn, int x, int y, byte color) {
   gld_DrawLine(x-1, y, x+1, y, color);
   gld_DrawLine(x, y-1, x, y+1, color);
@@ -771,7 +768,6 @@ static void NULL_FillPatch(int lump, int n, int x, int y, int width, int height,
 static void NULL_DrawBackground(const char *flatname, int n) {}
 static void NULL_DrawNumPatch(int x, int y, int scrn, int lump, int cm, enum patch_translation_e flags) {}
 static void NULL_DrawNumPatchPrecise(float x, float y, int scrn, int lump, int cm, enum patch_translation_e flags) {}
-static void NULL_DrawBlock(int x, int y, int scrn, int width, int height, const byte *src, enum patch_translation_e flags) {}
 static void NULL_PlotPixel(int scrn, int x, int y, byte color) {}
 static void NULL_PlotPixelWu(int scrn, int x, int y, byte color, int weight) {}
 static void NULL_DrawLine(fline_t* fl, int color) {}
