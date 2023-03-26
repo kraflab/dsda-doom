@@ -79,11 +79,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          cd $VCPKG_INSTALLATION_ROOT
-          git pull
-          ./bootstrap-vcpkg.bat -disableMetrics
-
-          NUGET=$(./vcpkg.exe fetch nuget | tail -n 1)
+          NUGET=$(vcpkg fetch nuget | tail -n 1)
           GH_PACKAGES_URL="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
           "$NUGET" sources add \
