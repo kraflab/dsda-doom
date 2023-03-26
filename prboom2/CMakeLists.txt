@@ -30,6 +30,10 @@ if(WITH_VORBISFILE)
     list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
 endif()
 
+# Automatically install dependencies
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
+
 project("dsda-doom" VERSION 0.25.6)
 
 # Set a default build type if none was specified
