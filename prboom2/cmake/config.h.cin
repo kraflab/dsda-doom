@@ -5,7 +5,7 @@
 #cmakedefine PACKAGE_STRING "@PACKAGE_STRING@"
 
 #cmakedefine DOOMWADDIR "@DOOMWADDIR@"
-#cmakedefine DSDAPWADDIR "@DSDAPWADDIR@"
+#cmakedefine DSDAPWADDIR "@FULL_PWAD_INSTALL_DIR@"
 
 #cmakedefine WORDS_BIGENDIAN
 

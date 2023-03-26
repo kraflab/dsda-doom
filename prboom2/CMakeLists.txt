@@ -30,6 +30,10 @@ if(WITH_VORBISFILE)
     list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
 endif()
 
+# Automatically install dependencies
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
+
 project("dsda-doom" VERSION 0.25.6)
 
 # Set a default build type if none was specified
@@ -162,8 +166,16 @@ if(WITH_PORTMIDI)
     endif()
 endif()
 
-set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/share/games/doom" CACHE PATH "Path to look for WAD files")
-set(DSDAPWADDIR "${DOOMWADDIR}" CACHE PATH "Path to install DSDA-Doom internal WAD")
+if(WIN32)
+    set(DEFAULT_WAD_DIR ".")
+else()
+    set(DEFAULT_WAD_DIR "${CMAKE_INSTALL_DATADIR}/games/doom")
+endif()
+
+set(DSDAPWADDIR "${DEFAULT_WAD_DIR}" CACHE STRING "Path to install DSDA-Doom internal WAD, relative to CMAKE_INSTALL_PREFIX.")
+set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/${DEFAULT_WAD_DIR}" CACHE PATH "Path to look for WAD files.")
+
+set(FULL_PWAD_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${DSDAPWADDIR}")
 
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 
@@ -196,4 +208,8 @@ add_subdirectory(src)
 
 if(NOT CMAKE_CROSSCOMPILING)
     export(TARGETS ${CROSS_EXPORTS} FILE "${CMAKE_BINARY_DIR}/ImportExecutables.cmake")
+endif()
+
+if(WIN32)
+    include(CPack)
 endif()
