@@ -2868,22 +2868,6 @@ static void gld_DrawItemsSortByTexture(GLDrawItemType itemtype)
   }
 }
 
-static int no_overlapped_sprites;
-static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
-{
-  GLSprite *s1 = ((const GLDrawItem *)a)->item.sprite;
-  GLSprite *s2 = ((const GLDrawItem *)b)->item.sprite;
-  int res = s2->xy - s1->xy;
-  no_overlapped_sprites = no_overlapped_sprites && res;
-  return res;
-}
-
-static void gld_DrawItemsSort(GLDrawItemType itemtype, int (C_DECL *PtFuncCompare)(const void *, const void *))
-{
-  qsort(gld_drawinfo.items[itemtype], gld_drawinfo.num_items[itemtype],
-    sizeof(gld_drawinfo.items[itemtype][0]), PtFuncCompare);
-}
-
 static void gld_DrawItemsSortSprites(GLDrawItemType itemtype)
 {
   static const float delta = 0.2f / MAP_COEFF;
