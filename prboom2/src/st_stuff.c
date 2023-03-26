@@ -904,10 +904,9 @@ void ST_Drawer(dboolean refresh)
 //
 // ST_loadGraphics
 //
-// CPhipps - Loads graphics needed for status bar if doload is true,
-//  unloads them otherwise
+// CPhipps - Loads graphics needed for status bar
 //
-static void ST_loadGraphics(dboolean doload)
+static void ST_loadGraphics(void)
 {
   int  i, facenum;
   char namebuf[9];
@@ -984,16 +983,6 @@ static void ST_loadGraphics(dboolean doload)
 
   // [FG] support widescreen status bar backgrounds
   ST_SetScaledWidth();
-}
-
-static void ST_loadData(void)
-{
-  ST_loadGraphics(true);
-}
-
-static void ST_unloadData(void)
-{
-  ST_loadGraphics(false);
 }
 
 static void ST_initData(void)
@@ -1196,5 +1185,5 @@ void ST_Init(void)
   if (raven) return SB_Init();
 
   veryfirsttime = 0;
-  ST_loadData();
+  ST_loadGraphics();
 }
