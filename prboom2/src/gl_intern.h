@@ -53,16 +53,6 @@ typedef enum
 
 typedef enum
 {
-  MIP_TEXTURE,
-  MIP_SPRITE,
-  MIP_PATCH,
-  MIP_INDEXED,
-
-  MIP_COUNT
-} GLMipType;
-
-typedef enum
-{
   GLTEXTURE_SPRITE    = 0x00000002,
   GLTEXTURE_HASHOLES  = 0x00000004,
   GLTEXTURE_SKY       = 0x00000008,
