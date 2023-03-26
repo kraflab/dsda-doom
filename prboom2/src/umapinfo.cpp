@@ -315,6 +315,7 @@ static void FreeMap(MapEntry *mape)
 	if (mape->mapname) Z_Free(mape->mapname);
 	if (mape->levelname) Z_Free(mape->levelname);
 	if (mape->label) Z_Free(mape->label);
+	if (mape->author) Z_Free(mape->author);
 	if (mape->intertext) Z_Free(mape->intertext);
 	if (mape->intertextsecret) Z_Free(mape->intertextsecret);
 	if (mape->properties) Z_Free(mape->properties);
@@ -440,6 +441,11 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			scanner.MustGetToken(TK_StringConst);
 	                ReplaceString(&mape->label, scanner.string);
 	        }
+	}
+	else if (!stricmp(pname, "author"))
+	{
+		scanner.MustGetToken(TK_StringConst);
+		ReplaceString(&mape->author, scanner.string);
 	}
 	else if (!stricmp(pname, "next"))
 	{
