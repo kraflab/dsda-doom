@@ -14,6 +14,8 @@ if(NOT CMAKE_CROSSCOMPILING)
         rd_graphic.c
         rd_graphic.h
     )
+    target_compile_options(rdatawad PRIVATE ${SUPPORTED_WARNINGS})
+    target_compile_definitions(rdatawad PRIVATE ${DEPRECATION_SILENCING_DEFINITIONS})
     target_include_directories(rdatawad PRIVATE ${CMAKE_BINARY_DIR})
 
     set(CROSS_EXPORTS ${CROSS_EXPORTS} rdatawad PARENT_SCOPE)

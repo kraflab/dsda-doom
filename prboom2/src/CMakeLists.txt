@@ -463,7 +463,7 @@ set(EXTRA_FILES
     r_drawflush.inl
 )
 
-set(PRBOOM_PLUS_SOURCES
+set(DSDA_SOURCES
     ${COMMON_SRC}
     ${NET_CLIENT_SRC}
     ${WAD_SRC}
@@ -500,7 +500,6 @@ function(AddGameExecutable TARGET SOURCES)
     )
 
     if(WIN32)
-        add_definitions("-DUSE_WIN32_PCSOUND_DRIVER")
         set(SOURCES
             ${SOURCES}
             ../ICONS/icons.rc
@@ -516,6 +515,17 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     add_executable(${TARGET} WIN32 ${SOURCES})
+
+    target_compile_options(${TARGET} PRIVATE
+        ${SUPPORTED_WARNINGS}
+        ${FAST_MATH_FLAG}
+    )
+
+    target_compile_definitions(${TARGET} PRIVATE
+        ${DEPRECATION_SILENCING_DEFINITIONS}
+        ${DSDA_COMPILE_DEFINITIONS}
+    )
+
     target_include_directories(${TARGET} PRIVATE
         ${SDL2_INCLUDE_DIRS}
         ${CMAKE_BINARY_DIR}
@@ -536,7 +546,7 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     set_target_properties(${TARGET} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
+        RUNTIME_OUTPUT_DIRECTORY ${DSDA_OUTPUT_PATH}
     )
 
     if(HAVE_LIBSDL2_IMAGE)
@@ -587,4 +597,4 @@ function(AddGameExecutable TARGET SOURCES)
     )
 endfunction()
 
-AddGameExecutable(dsda-doom "${PRBOOM_PLUS_SOURCES}")
+AddGameExecutable(dsda-doom "${DSDA_SOURCES}")
