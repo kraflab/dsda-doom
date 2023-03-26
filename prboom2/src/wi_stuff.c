@@ -499,6 +499,7 @@ static void WI_DrawString(int cx, int cy, const char* ch)
 //
 const char *lf_levelname;
 const char *lf_levelpic;
+const char *lf_author;
 
 void WI_drawLF(void)
 {
@@ -512,6 +513,12 @@ void WI_drawLF(void)
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, lf_levelname);
     y += (5 * hud_font.height / 4);
+
+    if (lf_author)
+    {
+      WI_DrawString(160, y, lf_author);
+      y += (5 * hud_font.height / 4);
+    }
   }
   else
   {
@@ -548,6 +555,7 @@ void WI_drawLF(void)
 //
 const char *el_levelname;
 const char *el_levelpic;
+const char *el_author;
 
 void WI_drawEL(void)
 {
@@ -568,6 +576,12 @@ void WI_drawEL(void)
 
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, el_levelname);
+
+    if (el_author)
+    {
+      y += (5 * hud_font.height / 4);
+      WI_DrawString(160, y, el_author);
+    }
   }
   else
   {

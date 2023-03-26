@@ -573,9 +573,11 @@ int dsda_LegacyEnterPic(const char** enter_pic) {
 int dsda_LegacyPrepareEntering(void) {
   extern const char *el_levelname;
   extern const char *el_levelpic;
+  extern const char *el_author;
 
   el_levelname = NULL;
   el_levelpic = NULL;
+  el_author = NULL;
 
   return true;
 }
@@ -583,9 +585,11 @@ int dsda_LegacyPrepareEntering(void) {
 int dsda_LegacyPrepareFinished(void) {
   extern const char *lf_levelname;
   extern const char *lf_levelpic;
+  extern const char *lf_author;
 
   lf_levelname = NULL;
   lf_levelpic = NULL;
+  lf_author = NULL;
 
   return true;
 }
