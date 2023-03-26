@@ -32,6 +32,8 @@
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/utility.h"
+#include "dsda/exhud.h"
+#include "dsda/stretch.h"
 
 #include "exhud.h"
 
@@ -596,9 +598,6 @@ static void dsda_UpdateActiveHUD(void) {
 }
 
 static void dsda_ResetOffsets(void) {
-  void dsda_UpdateExTextOffset(enum patch_translation_e flags, int offset);
-  void dsda_ResetExTextOffsets(void);
-
   int i;
 
   dsda_ResetExTextOffsets();

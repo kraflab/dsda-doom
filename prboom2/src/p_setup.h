@@ -34,6 +34,7 @@
 #ifndef __P_SETUP__
 #define __P_SETUP__
 
+#include "r_state.h"
 #include "p_mobj.h"
 
 void P_SetupLevel(int episode, int map, int playermask, skill_t skill);
@@ -82,5 +83,16 @@ typedef struct
 
 extern map_loader_t map_loader;
 
+void P_PostProcessZDoomLineSpecial(line_t *ld);
+void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+void P_TranslateZDoomLineFlags(unsigned int *flags, line_activation_t *spac);
+void P_PostProcessHexenLineSpecial(line_t *ld);
+void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+void P_TranslateHexenLineFlags(unsigned int *flags, line_activation_t *spac);
+void P_TranslateCompatibleLineFlags(unsigned int *flags, line_activation_t *spac);
+void P_PostProcessHereticLineSpecial(line_t *ld);
+void P_PostProcessHereticSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+
+void P_MustRebuildBlockmap(void);
 
 #endif

@@ -19,15 +19,13 @@
 #include "p_saveg.h"
 #include "lprintf.h"
 #include "p_tick.h"
+#include "p_map.h"
+#include "p_saveg.h"
 
 #include "msecnode.h"
 
 extern sector_t *sectors;
 extern int numsectors;
-
-msecnode_t* P_GetSecnode(void);
-msecnode_t* P_DelSecnode(msecnode_t* node);
-int P_GetMobj(mobj_t* mi, size_t s);
 
 static dboolean dsda_IsMSecNodeMobj(thinker_t* thinker)
 {

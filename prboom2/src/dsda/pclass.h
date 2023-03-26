@@ -40,4 +40,6 @@ typedef struct dsda_pclass_s {
 
 extern dsda_pclass_t pclass[NUMCLASSES];
 
+void dsda_ResetNullPClass(void);
+
 #endif

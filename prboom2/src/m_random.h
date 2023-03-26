@@ -160,5 +160,6 @@ int P_RandomHitscanSlope(pr_class_t pr_class, fixed_t spread);
 #define HITDICE(a) ((1+(P_Random(pr_heretic)&7))*a)
 
 int P_SubRandom (void);
+void P_UseHexenRNG(void);
 
 #endif

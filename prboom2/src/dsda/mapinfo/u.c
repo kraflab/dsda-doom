@@ -26,12 +26,15 @@
 #include "umapinfo.h"
 #include "v_video.h"
 #include "w_wad.h"
+#include "wi_stuff.h"
+#include "f_finale.h"
 
 #include "dsda/args.h"
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 
+#include "legacy.h"
 #include "u.h"
 
 static struct MapEntry* gamemapinfo;
@@ -217,10 +220,6 @@ int dsda_UStartFinale(void) {
 }
 
 int dsda_UFTicker(void) {
-  void WI_checkForAccelerate(void);
-  float Get_TextSpeed(void);
-  void F_StartCast (void);
-
   int next_level = false;
   const int TEXTSPEED = 3;
   const int TEXTWAIT = 250;
@@ -275,9 +274,6 @@ int dsda_UFTicker(void) {
 }
 
 void dsda_UFDrawer(void) {
-  void F_TextWrite(void);
-  void F_BunnyScroll(void);
-
   if (!finalestage || !gamemapinfo->endpic[0] || (strcmp(gamemapinfo->endpic, "-") == 0))
     F_TextWrite();
   else if (strcmp(gamemapinfo->endpic, "$BUNNY") == 0)
@@ -394,8 +390,6 @@ int dsda_UPrepareIntermission(int* result) {
   wminfo.modified_partime = true;
 
   if (!wminfo.partime) {
-    extern void dsda_LegacyParTime(int* partime, dboolean* modified);
-
     dsda_LegacyParTime(&wminfo.fake_partime, &wminfo.modified_partime);
   }
 

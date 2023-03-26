@@ -60,6 +60,7 @@
 #include <math.h>
 #include "e6y.h"//e6y
 #include "xs_Float.h"
+#include "hu_stuff.h"
 
 #include "dsda/configuration.h"
 #include "dsda/exhud.h"
@@ -815,8 +816,6 @@ void R_ResetColorMap(void)
 
 static void R_SetupFrame (player_t *player)
 {
-  dboolean HU_CrosshairEnabled(void);
-
   int i, cm;
 
   int FocalTangent = finetangent[FINEANGLES/4 + FieldOfView/2];

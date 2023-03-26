@@ -1780,6 +1780,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 // heretic
 
 #include "p_user.h"
+#include "heretic/p_action.h"
 
 #define CHICKENTICS (40*35)
 

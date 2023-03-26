@@ -51,6 +51,7 @@
 #include "hu_stuff.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
+#include "heretic/p_action.h"
 
 #include "dsda.h"
 #include "dsda/configuration.h"
@@ -5225,16 +5226,6 @@ dboolean P_CheckMeleeRange2(mobj_t * actor)
     return (true);
 }
 
-void A_SetInvulnerable(mobj_t * actor)
-{
-    actor->flags2 |= MF2_INVULNERABLE;
-}
-
-void A_UnSetInvulnerable(mobj_t * actor)
-{
-    actor->flags2 &= ~MF2_INVULNERABLE;
-}
-
 void A_SetReflective(mobj_t * actor)
 {
     actor->flags2 |= MF2_REFLECTIVE;
@@ -8107,8 +8098,6 @@ void A_FastChase(mobj_t * actor)
 
 void A_FighterAttack(mobj_t * actor)
 {
-    extern void A_FSwordAttack2(mobj_t * actor);
-
     if (!actor->target)
         return;
     A_FSwordAttack2(actor);
@@ -8116,8 +8105,6 @@ void A_FighterAttack(mobj_t * actor)
 
 void A_ClericAttack(mobj_t * actor)
 {
-    extern void A_CHolyAttack3(mobj_t * actor);
-
     if (!actor->target)
         return;
     A_CHolyAttack3(actor);
@@ -8125,8 +8112,6 @@ void A_ClericAttack(mobj_t * actor)
 
 void A_MageAttack(mobj_t * actor)
 {
-    extern void A_MStaffAttack2(mobj_t * actor);
-
     if (!actor->target)
         return;
     A_MStaffAttack2(actor);

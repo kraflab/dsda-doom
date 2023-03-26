@@ -14,7 +14,9 @@
 // GNU General Public License for more details.
 //
 #include "p_mobj.h"
+#include "p_pspr.h"
 #include "p_action.h"
+#include "p_enemy.h"
 #include "sounds.h"
 #include "info.h"
 

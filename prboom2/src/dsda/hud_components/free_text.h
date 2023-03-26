@@ -21,5 +21,6 @@
 void dsda_InitFreeTextHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count, void** data);
 void dsda_UpdateFreeTextHC(void* data);
 void dsda_DrawFreeTextHC(void* data);
+void dsda_UpdateFreeText(void);
 
 #endif

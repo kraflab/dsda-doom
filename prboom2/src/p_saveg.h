@@ -123,4 +123,7 @@ void P_UnArchiveSounds(void);
 void P_ArchiveMisc(void);
 void P_UnArchiveMisc(void);
 
+
+int P_GetMobj(mobj_t* mi, size_t s);
+
 #endif

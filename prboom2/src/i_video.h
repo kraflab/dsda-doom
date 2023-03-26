@@ -86,6 +86,7 @@ void I_StartTic (void);
  */
 
 void I_StartFrame (void);
+void I_InitMouse(void);
 
 extern int desired_fullscreen; //e6y
 extern int exclusive_fullscreen;

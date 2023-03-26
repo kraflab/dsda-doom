@@ -103,4 +103,9 @@ dboolean P_GiveMana(player_t * player, manatype_t mana, int count);
 dboolean Hexen_P_GiveArmor(player_t *player, armortype_t armortype, int amount);
 dboolean P_MorphPlayer(player_t * player);
 
+dboolean P_GiveWeapon(player_t* player, weapontype_t weapon, dboolean dropped);
+void TryPickupWeapon(player_t* player, pclass_t weaponClass,
+                     weapontype_t weaponType, mobj_t* weapon,
+                     const char* message);
+
 #endif

@@ -20,21 +20,8 @@
 #ifndef HERETIC_P_ACTION_H
 #define HERETIC_P_ACTION_H
 
-// in doom
-void A_Scream();
-void A_Explode();
-void A_Light0();
-void A_WeaponReady();
-void A_Lower();
-void A_Raise();
-void A_ReFire();
-void A_Pain();
-void A_SkullPop();
-void A_FaceTarget();
-void A_Look();
-void A_Chase();
-void A_HeadAttack();
-void A_BossDeath();
+#include "p_mobj.h"
+#include "p_pspr.h"
 
 // not in doom
 void A_FreeTargMobj();

@@ -49,5 +49,9 @@ void F_Drawer (void);
 
 void F_StartFinale (void);
 dboolean F_BlockingInput(void);
+float Get_TextSpeed(void);
+void F_StartCast (void);
+void F_TextWrite (void);
+void F_BunnyScroll (void);
 
 #endif

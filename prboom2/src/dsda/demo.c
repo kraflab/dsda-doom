@@ -27,6 +27,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 #include "p_saveg.h"
+#include "g_overflow.h"
 
 #include "dsda.h"
 #include "dsda/args.h"
@@ -516,8 +517,6 @@ static char* dsda_DemoNameWithTime(void) {
 }
 
 void dsda_EndDemoRecording(void) {
-  void ResetOverruns(void);
-
   char* demo_name;
 
   demorecording = false;

@@ -17,6 +17,8 @@
 
 #include "base.h"
 
+#include "hu_stuff.h"
+
 #include "secret_message.h"
 
 typedef struct {
@@ -27,8 +29,6 @@ typedef struct {
 static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
-  char* HU_SecretMessage(void);
-
   char* message;
 
   message = HU_SecretMessage();

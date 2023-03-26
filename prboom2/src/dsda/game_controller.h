@@ -49,5 +49,6 @@ typedef enum {
 const char* dsda_GameControllerButtonName(int button);
 void dsda_PollGameController(void);
 void dsda_InitGameController(void);
+void dsda_InitGameControllerParameters(void);
 
 #endif

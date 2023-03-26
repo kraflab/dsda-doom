@@ -29,6 +29,18 @@
 #include "smooth.h"
 #include "v_video.h"
 #include "z_zone.h"
+#include "st_stuff.h"
+#include "m_menu.h"
+#include "r_fps.h"
+#include "i_main.h"
+#include "am_map.h"
+#include "hu_stuff.h"
+#include "d_deh.h"
+#include "dsda.h"
+#include "e6y.h"
+#include "i_sound.h"
+#include "i_video.h"
+#include "g_game.h"
 
 #include "dsda/args.h"
 #include "dsda/exhud.h"
@@ -36,6 +48,11 @@
 #include "dsda/input.h"
 #include "dsda/stretch.h"
 #include "dsda/utility.h"
+#include "dsda/key_frame.h"
+#include "dsda/game_controller.h"
+#include "dsda/mouse.h"
+#include "dsda/sfx.h"
+#include "dsda/hud_components/free_text.h"
 
 #include "configuration.h"
 
@@ -87,50 +104,6 @@ extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 extern int full_sounds;
 extern int fake_contrast;
-
-void I_Init2(void);
-void M_ChangeDemoSmoothTurns(void);
-void M_ChangeSkyMode(void);
-void M_ChangeMessages(void);
-void S_ResetSfxVolume(void);
-void I_ResetMusicVolume(void);
-void M_ChangeAllowFog(void);
-void gld_ResetShadowParameters(void);
-void M_ChangeTextureParams(void);
-void gld_MultisamplingInit(void);
-void M_ChangeFOV(void);
-void M_ChangeLightMode(void);
-void I_InitMouse(void);
-void AccelChanging(void);
-void G_UpdateMouseSensitivity(void);
-void dsda_InitGameController(void);
-void M_ChangeSpeed(void);
-void M_ChangeShorttics(void);
-void I_InitSoundParams(void);
-void S_Init(void);
-void M_ChangeMIDIPlayer(void);
-void HU_InitCrosshair(void);
-void HU_InitThresholds(void);
-void dsda_InitKeyFrame(void);
-void dsda_SetupStretchParams(void);
-void dsda_InitCommandHistory(void);
-void dsda_InitQuickstartCache(void);
-void dsda_InitParallelSFXFilter(void);
-void M_ChangeMapMultisamling(void);
-void M_ChangeMapTextured(void);
-void AM_InitParams(void);
-void gld_ResetAutomapTransparency(void);
-void M_ChangeVideoMode(void);
-void M_ChangeUncappedFrameRate(void);
-void M_ChangeFullScreen(void);
-void R_SetViewSize(void);
-void M_ChangeApplyPalette(void);
-void M_ChangeStretch(void);
-void M_ChangeAspectRatio(void);
-void deh_changeCompTranslucency(void);
-void dsda_InitGameControllerParameters(void);
-void dsda_InitExHud(void);
-void dsda_UpdateFreeText(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 

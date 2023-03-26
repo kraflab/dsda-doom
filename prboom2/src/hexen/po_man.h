@@ -79,4 +79,10 @@ dboolean EV_StopPoly(int polyNum);
 dboolean EV_MovePolyTo(line_t * line, int polyNum, fixed_t speed,
                        fixed_t x, fixed_t y, dboolean overRide);
 
+void PO_LoadUDMFThings(int lump);
+void PO_LoadThings(int lump);
+void LinkPolyobj(polyobj_t * po);
+void UnLinkPolyobj(polyobj_t * po);
+void ResetPolySubSector(polyobj_t *po);
+
 #endif

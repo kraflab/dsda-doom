@@ -38,5 +38,9 @@ void P_AnimateSurfaces(void);
 void P_ForceLightning(void);
 void P_InitLightning(void);
 void P_InitFTAnims(void);
+void P_AnimateZDoomSurfaces(void);
+void P_AnimateHexenSurfaces(void);
+void P_AnimateCompatibleSurfaces(void);
+void P_AnimateHereticSurfaces(void);
 
 #endif

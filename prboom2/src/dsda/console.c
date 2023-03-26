@@ -220,11 +220,6 @@ static dboolean console_PlayerSetArmor(const char* command, const char* args) {
 }
 
 static dboolean console_PlayerGiveWeapon(const char* command, const char* args) {
-  dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped);
-  void TryPickupWeapon(player_t * player, pclass_t weaponClass,
-                       weapontype_t weaponType, mobj_t * weapon,
-                       const char *message);
-
   int weapon;
 
   if (sscanf(args, "%i", &weapon)) {
@@ -1058,16 +1053,12 @@ static dboolean console_ToggleUpdate(const char* command, const char* args) {
 }
 
 static dboolean console_ConfigForget(const char* command, const char* args) {
-  void M_ForgetCurrentConfig(void);
-
   M_ForgetCurrentConfig();
 
   return true;
 }
 
 static dboolean console_ConfigRemember(const char* command, const char* args) {
-  void M_RememberCurrentConfig(void);
-
   M_RememberCurrentConfig();
 
   return true;

@@ -80,6 +80,8 @@ void ST_SetResolution(void);
 
 void ST_Refresh(void);
 
+void M_ChangeApplyPalette(void);
+
 // States for status bar code.
 typedef enum
 {

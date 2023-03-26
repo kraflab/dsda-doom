@@ -21,5 +21,7 @@
 void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt_flags, int* args, int arg_count, void** data);
 void dsda_UpdateMinimapHC(void* data);
 void dsda_DrawMinimapHC(void* data);
+void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h);
+int dsda_MinimapScale(void);
 
 #endif

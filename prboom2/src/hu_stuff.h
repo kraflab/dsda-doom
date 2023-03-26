@@ -54,6 +54,12 @@ mobj_t *HU_Target(void);
 int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx);
 void ClearMessage(void);
 
+void HU_InitCrosshair(void);
+void HU_InitThresholds(void);
+char* HU_PlayerMessage(void);
+dboolean HU_CrosshairEnabled(void);
+char* HU_SecretMessage(void);
+
 extern int hud_health_red;    // health amount less than which status is red
 extern int hud_health_yellow; // health amount less than which status is yellow
 extern int hud_health_green;  // health amount above is blue, below is green

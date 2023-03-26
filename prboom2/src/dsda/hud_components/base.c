@@ -19,6 +19,8 @@
 
 #include "base.h"
 
+#include "dsda/exhud.h"
+
 static char digit_lump[9];
 static const char* digit_lump_format;
 

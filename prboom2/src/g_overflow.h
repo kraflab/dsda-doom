@@ -135,5 +135,6 @@ int DonutOverrun(fixed_t *pfloorheight, short *pfloorpic);
 
 int MissedBackSideOverrun(line_t *line);
 sector_t* GetSectorAtNullAddress(void);
+void ResetOverruns(void);
 
 #endif // __G_OVERFLOW__

@@ -21,6 +21,7 @@
 #include "p_spec.h"
 #include "r_main.h"
 
+#include "dsda/destructible.h"
 #include "dsda/utility.h"
 
 extern mobj_t* bombsource;

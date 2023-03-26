@@ -27,6 +27,7 @@
 #include "d_main.h"
 #include "v_video.h"
 #include "hu_stuff.h"
+#include "m_random.h"
 #include "heretic/def.h"
 
 #include "global.h"
@@ -38,6 +39,7 @@
 #include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
+#include "dsda/pclass.h"
 
 #define IGNORE_VALUE -1
 
@@ -571,11 +573,7 @@ static void dsda_InitHexen(void) {
     mobjinfo[j].visibility = VF_HEXEN;
   }
 
-  {
-    extern void P_UseHexenRNG(void);
-
-    P_UseHexenRNG();
-  }
+  P_UseHexenRNG();
 }
 
 static dboolean dsda_AutoDetectHeretic(void)
@@ -605,8 +603,6 @@ static dboolean dsda_AutoDetectHexen(void)
 
   return false;
 }
-
-extern void dsda_ResetNullPClass(void);
 
 void dsda_InitGlobal(void) {
   heretic = dsda_Flag(dsda_arg_heretic) || dsda_AutoDetectHeretic();

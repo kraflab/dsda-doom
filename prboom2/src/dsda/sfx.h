@@ -26,5 +26,6 @@ sfxinfo_t* dsda_GetDehSFX(int index);
 void dsda_InitializeSFX(sfxinfo_t* source, int count);
 void dsda_FreeDehSFX(void);
 dboolean dsda_BlockSFX(sfxinfo_t *sfx);
+void dsda_InitParallelSFXFilter(void);
 
 #endif

@@ -67,4 +67,8 @@ void P_MorphPlayerThink(player_t * player);
 
 void P_PlayerEndFlight(player_t * player);
 
+void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t move);
+void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move);
+void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move);
+
 #endif  /* __P_USER__ */

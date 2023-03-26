@@ -133,5 +133,7 @@ typedef enum
 extern const char *midiplayers[];
 
 void M_ChangeMIDIPlayer(void);
+void I_InitSoundParams(void);
+void I_ResetMusicVolume(void);
 
 #endif

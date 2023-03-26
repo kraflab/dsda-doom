@@ -137,4 +137,12 @@ void PIT_ThrustSpike(mobj_t * actor);
 dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fog);
 int P_SplashDamage(fixed_t dist);
 
+void P_CheckCompatibleImpact(mobj_t *thing);
+void P_CheckZDoomImpact(mobj_t *thing);
+void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
+void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
+void P_CheckHereticImpact(mobj_t *thing);
+msecnode_t* P_DelSecnode(msecnode_t* node);
+msecnode_t* P_GetSecnode(void);
+
 #endif // __P_MAP__

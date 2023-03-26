@@ -1613,6 +1613,8 @@ void P_ChickenPlayerThink(player_t * player)
 
 // hexen
 
+#include "hexen/a_action.h"
+
 #define BLAST_RADIUS_DIST	255*FRACUNIT
 #define BLAST_SPEED			20*FRACUNIT
 #define BLAST_FULLSTRENGTH	255

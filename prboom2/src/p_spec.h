@@ -1404,6 +1404,10 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index);
 void P_SpawnLightSequence(sector_t * sector, int indexStep);
 dboolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type);
 
+// p_switch
+
+int GetPairForSwitchTexture(side_t *side);
+
 // p_ceilng
 
 int Hexen_EV_CeilingCrushStop(line_t * line, byte * args);
@@ -1686,6 +1690,51 @@ int EV_TeleportGroup(short group_tid, mobj_t *thing, short source_tid, short des
                      dboolean move_source, dboolean fog);
 int EV_TeleportInSector(int tag, short source_tid, short dest_tid,
                         dboolean fog, short group_tid);
+
+void P_SpawnZDoomSectorSpecial(sector_t *sector, int i);
+void P_PlayerInZDoomSector(player_t *player, sector_t *sector);
+dboolean P_MobjInZDoomSector(mobj_t *mobj);
+void P_SpawnZDoomScroller(line_t *l, int i);
+void P_SpawnZDoomFriction(line_t *l);
+void P_SpawnZDoomPusher(line_t *l);
+void P_SpawnZDoomExtra(line_t *l, int i);
+void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
+dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
+dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
+
+void T_VerticalCompatibleDoor(vldoor_t *door);
+void T_MoveCompatibleFloor(floormove_t * floor);
+void T_MoveCompatibleCeiling(ceiling_t * ceiling);
+void T_BuildZDoomPillar(pillar_t * pillar);
+void T_ZDoomPlatRaise(plat_t * plat);
+int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags);
+void P_PlayerInHexenSector(player_t * player, sector_t * sector);
+dboolean P_MobjInHexenSector(mobj_t *mobj);
+void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
+dboolean P_ExecuteHexenLineSpecial(int special, int * special_args, line_t * line, int side, mobj_t * mo);
+void T_VerticalHexenDoor(vldoor_t *door);
+void T_MoveHexenFloor(floormove_t * floor);
+void T_MoveHexenCeiling(ceiling_t * ceiling);
+void T_BuildHexenPillar(pillar_t * pillar);
+void T_HexenPlatRaise(plat_t * plat);
+void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i);
+void P_PlayerInCompatibleSector(player_t *player, sector_t *sector);
+dboolean P_MobjInCompatibleSector(mobj_t *mobj);
+void P_SpawnCompatibleScroller(line_t *l, int i);
+void P_SpawnCompatibleFriction(line_t *l);
+void P_SpawnCompatiblePusher(line_t *l);
+void P_SpawnCompatibleExtra(line_t *l, int i);
+void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
+void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
+void P_PostProcessCompatibleLineSpecial(line_t *ld);
+void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+void T_CompatiblePlatRaise(plat_t * plat);
+void P_PlayerInHereticSector(player_t * player, sector_t * sector);
+dboolean P_MobjInHereticSector(mobj_t *mobj);
+void P_CrossHereticSpecialLine(line_t * line, int side, mobj_t * thing, dboolean bossaction);
+int EV_HereticTeleport(short thing_id, int tag, line_t * line, int side, mobj_t * thing, int flags);
 
 #define NO_CRUSH -1
 #define DOOM_CRUSH 10

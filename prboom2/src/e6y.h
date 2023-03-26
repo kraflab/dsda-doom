@@ -117,6 +117,7 @@ void M_ChangeAllowFog(void);
 void M_ChangeSpeed(void);
 void M_ChangeScreenMultipleFactor(void);
 void M_ChangeInterlacedScanning(void);
+void M_ChangeShorttics(void);
 void M_MouseMLook(int choice);
 void M_MouseAccel(int choice);
 void CheckPitch(signed int *pitch);

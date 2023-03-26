@@ -71,6 +71,8 @@
 #include "i_pcsound.h"
 #include "e6y.h"
 
+#include "PCSOUND/pcsound.h"
+
 #include "dsda/settings.h"
 
 static dboolean registered_non_rw = false;
@@ -569,9 +571,6 @@ dboolean I_AnySoundStillPlaying(void)
 //
 
 static void UpdateMusic (void *buff, unsigned nsamp);
-
-// from pcsound_sdl.c
-void PCSound_Mix_Callback(void *udata, Uint8 *stream, int len);
 
 static void I_UpdateSound(void *unused, Uint8 *stream, int len)
 {

@@ -298,7 +298,6 @@ int gld_HiRes_BuildTables(void)
 
     if (ok)
     {
-      void* NewIntDynArray(int dimCount, int *dims);
       const byte* palette;
       int r, g, b, k, color;
       int **x, **y, **z;

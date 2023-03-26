@@ -20,8 +20,13 @@
 #include "p_spec.h"
 #include "r_state.h"
 #include "w_wad.h"
+#include "p_map.h"
+#include "p_setup.h"
+#include "p_user.h"
+#include "hexen/p_anim.h"
 
 #include "dsda/args.h"
+#include "dsda/thing_id.h"
 
 #include "map_format.h"
 
@@ -152,106 +157,6 @@ static void dsda_MigrateMobjInfo(void) {
     }
   }
 }
-
-extern void P_SpawnCompatibleSectorSpecial(sector_t *sector, int i);
-extern void P_SpawnZDoomSectorSpecial(sector_t *sector, int i);
-
-extern void P_PlayerInCompatibleSector(player_t *player, sector_t *sector);
-extern void P_PlayerInZDoomSector(player_t *player, sector_t *sector);
-extern void P_PlayerInHereticSector(player_t * player, sector_t * sector);
-extern void P_PlayerInHexenSector(player_t * player, sector_t * sector);
-
-extern void P_SpawnCompatibleScroller(line_t *l, int i);
-extern void P_SpawnZDoomScroller(line_t *l, int i);
-
-extern void P_SpawnCompatibleFriction(line_t *l);
-extern void P_SpawnZDoomFriction(line_t *l);
-
-extern void P_SpawnCompatiblePusher(line_t *l);
-extern void P_SpawnZDoomPusher(line_t *l);
-
-extern void P_SpawnCompatibleExtra(line_t *l, int i);
-extern void P_SpawnZDoomExtra(line_t *l, int i);
-
-extern void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-extern void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-extern void P_CrossHereticSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
-
-extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
-extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
-
-extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
-extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
-
-extern void P_PostProcessCompatibleLineSpecial(line_t *ld);
-extern void P_PostProcessHereticLineSpecial(line_t *ld);
-extern void P_PostProcessHexenLineSpecial(line_t *ld);
-extern void P_PostProcessZDoomLineSpecial(line_t *ld);
-
-extern void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
-extern void P_PostProcessHereticSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
-extern void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
-extern void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
-
-extern void P_AnimateCompatibleSurfaces(void);
-extern void P_AnimateHereticSurfaces(void);
-extern void P_AnimateHexenSurfaces(void);
-extern void P_AnimateZDoomSurfaces(void);
-
-extern void P_CheckCompatibleImpact(mobj_t *);
-extern void P_CheckHereticImpact(mobj_t *);
-extern void P_CheckZDoomImpact(mobj_t *);
-
-extern void P_TranslateHexenLineFlags(unsigned int *, line_activation_t *);
-extern void P_TranslateZDoomLineFlags(unsigned int *, line_activation_t *);
-extern void P_TranslateCompatibleLineFlags(unsigned int *, line_activation_t *);
-
-extern void P_ApplyCompatibleSectorMovementSpecial(mobj_t *, int);
-extern void P_ApplyHereticSectorMovementSpecial(mobj_t *, int);
-
-extern dboolean P_MobjInCompatibleSector(mobj_t *);
-extern dboolean P_MobjInHereticSector(mobj_t *);
-extern dboolean P_MobjInHexenSector(mobj_t *);
-extern dboolean P_MobjInZDoomSector(mobj_t *);
-
-extern void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t move);
-extern void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move);
-extern void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move);
-
-extern dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
-extern dboolean P_ExecuteHexenLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
-
-extern void T_VerticalCompatibleDoor(vldoor_t *door);
-extern void T_VerticalHexenDoor(vldoor_t *door);
-
-extern void T_MoveCompatibleFloor(floormove_t *);
-extern void T_MoveHexenFloor(floormove_t *);
-
-void T_MoveCompatibleCeiling(ceiling_t * ceiling);
-void T_MoveHexenCeiling(ceiling_t * ceiling);
-
-int EV_CompatibleTeleport(short thing_id, int tag, line_t *line, int side, mobj_t *thing, int flags);
-int EV_HereticTeleport(short thing_id, int tag, line_t * line, int side, mobj_t * thing, int flags);
-
-void T_BuildHexenPillar(pillar_t * pillar);
-void T_BuildZDoomPillar(pillar_t * pillar);
-
-void T_CompatiblePlatRaise(plat_t * plat);
-void T_HexenPlatRaise(plat_t * plat);
-void T_ZDoomPlatRaise(plat_t * plat);
-
-void P_CreateTIDList(void);
-void dsda_BuildMobjThingIDList(void);
-
-void P_InsertMobjIntoTIDList(mobj_t * mobj, short tid);
-void dsda_AddMobjThingID(mobj_t* mo, short thing_id);
-
-void P_RemoveMobjFromTIDList(mobj_t * mobj);
-void dsda_RemoveMobjThingID(mobj_t* mo);
-
-void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
-void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
 
 static const map_format_t zdoom_in_hexen_map_format = {
   .zdoom = true,

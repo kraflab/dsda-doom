@@ -2963,6 +2963,8 @@ void P_BlasterMobjThinker(mobj_t * mobj)
     }
 }
 
+#include "heretic/p_action.h"
+
 void A_ContMobjSound(mobj_t * actor)
 {
     switch (actor->type)

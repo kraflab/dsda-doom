@@ -46,6 +46,7 @@
 #include "m_misc.h"
 #include "w_wad.h"
 #include "e6y.h"
+#include "p_setup.h"
 
 #include "dsda/args.h"
 
@@ -169,8 +170,6 @@ static void InterceptsMemoryOverrun(int location, int value)
 
 void InterceptsOverrun(int num_intercepts, intercept_t *intercept)
 {
-  void P_MustRebuildBlockmap(void);
-
   if (!hexen && num_intercepts > MAXINTERCEPTS_ORIGINAL && demo_compatibility && PROCESS(OVERFLOW_INTERCEPT))
   {
     ShowOverflowWarning(OVERFLOW_INTERCEPT, false, "");

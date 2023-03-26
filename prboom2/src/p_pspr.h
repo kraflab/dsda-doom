@@ -39,6 +39,8 @@
 
 #include "m_fixed.h"
 #include "tables.h"
+#include "p_mobj.h"
+#include "doomdef.h"
 
 /* Needs to include the precompiled sprite animation tables.
  *
@@ -157,5 +159,8 @@ void P_UpdateBeak(struct player_s * player, pspdef_t * psp);
 void P_SetPspriteNF(struct player_s * player, int position, statenum_t stnum);
 void P_PostMorphWeapon(struct player_s * player, weapontype_t weapon);
 void P_ActivateMorphWeapon(struct player_s * player);
+void A_FSwordAttack2(mobj_t * actor);
+void A_CHolyAttack3(mobj_t * actor);
+void A_MStaffAttack2(mobj_t * actor);
 
 #endif

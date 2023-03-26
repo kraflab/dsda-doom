@@ -3503,9 +3503,6 @@ static void P_UpdateUDMFLevelComponents(int lumpnum, int gl_lumpnum)
     I_Error("P_SetupLevel: Level wad structure is incomplete. There is no ZNODES lump.");
 }
 
-void PO_LoadThings(int lump);
-void PO_LoadUDMFThings(int lump);
-
 map_loader_t udmf_map_loader = {
   .load_vertexes = P_LoadUDMFVertexes,
   .load_sectors = P_LoadUDMFSectors,
@@ -3853,11 +3850,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   // should be after P_RemoveSlimeTrails, because it changes vertexes
   R_CalcSegsLength();
 
-  {
-    void A_ResetPlayerCorpseQueue(void);
-
-    A_ResetPlayerCorpseQueue();
-  }
+  A_ResetPlayerCorpseQueue();
 
   po_NumPolyobjs = 0; // hexen
 

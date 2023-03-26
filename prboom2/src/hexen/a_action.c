@@ -964,3 +964,13 @@ void A_NoGravity(mobj_t * actor)
 {
     actor->flags |= MF_NOGRAVITY;
 }
+
+void A_SetInvulnerable(mobj_t * actor)
+{
+    actor->flags2 |= MF2_INVULNERABLE;
+}
+
+void A_UnSetInvulnerable(mobj_t * actor)
+{
+    actor->flags2 &= ~MF2_INVULNERABLE;
+}

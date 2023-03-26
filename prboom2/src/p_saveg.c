@@ -1615,10 +1615,6 @@ void P_ArchivePolyobjs(void)
 
 void P_UnArchivePolyobjs(void)
 {
-  void UnLinkPolyobj(polyobj_t * po);
-  void LinkPolyobj(polyobj_t * po);
-  void ResetPolySubSector(polyobj_t *po);
-
   int i;
 
   if (!map_format.polyobjs) return;

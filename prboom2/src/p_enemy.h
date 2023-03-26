@@ -159,6 +159,7 @@ void A_DeQueueCorpse(mobj_t * actor);
 dboolean A_RaiseMobj(mobj_t * actor);
 dboolean A_SinkMobj(mobj_t * actor);
 void A_NoBlocking(mobj_t * actor);
+void A_ResetPlayerCorpseQueue(void);
 
 // zdoom
 

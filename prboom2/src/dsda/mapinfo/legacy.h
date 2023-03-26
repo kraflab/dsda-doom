@@ -56,5 +56,6 @@ int dsda_LegacyMapCluster(int* cluster, int map);
 int dsda_LegacySky1Texture(short* texture);
 int dsda_LegacySky2Texture(short* texture);
 int dsda_LegacyInitSky(void);
+void dsda_LegacyParTime(int* partime, dboolean* modified);
 
 #endif

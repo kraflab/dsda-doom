@@ -1811,7 +1811,6 @@ void gld_Precache(void)
 
     //e6y: swithes
     {
-      int GetPairForSwitchTexture(side_t *side);
       int pair = GetPairForSwitchTexture(&sides[i]);
       if (pair != -1)
         hitlist[pair] = 1;

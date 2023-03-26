@@ -61,6 +61,7 @@
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
+#include "dsda/hud_components/minimap.h"
 
 //jff 1/7/98 default automap colors added
 int mapcolor_back;    // map background
@@ -716,8 +717,6 @@ void AM_SetPosition(void)
   }
   else if (dsda_ShowMinimap())
   {
-    void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h);
-
     dsda_CopyMinimapCoordinates(&f_x, &f_y, &f_w, &f_h);
   }
 }
@@ -815,8 +814,6 @@ void AM_ExchangeScales(int full_automap, int *last_full_automap)
 
   if (*last_full_automap && !full_automap)
   {
-    int dsda_MinimapScale(void);
-
     full_min_scale_mtof = min_scale_mtof;
     full_max_scale_mtof = max_scale_mtof;
     full_scale_mtof = scale_mtof;

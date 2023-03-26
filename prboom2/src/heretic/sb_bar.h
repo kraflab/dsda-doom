@@ -37,6 +37,10 @@ void SB_Ticker(void);
 void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu);
 void SB_PaletteFlash(dboolean forceChange);
 
+// Heretic
+
+void DrawArtifact(int x, int y, int vpt);
+
 // hexen
 
 void SB_SetClassData(void);

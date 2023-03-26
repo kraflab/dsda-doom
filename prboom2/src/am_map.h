@@ -80,6 +80,8 @@ void AM_Start(dboolean full_automap);
 
 void AM_clearMarks(void);
 
+void AM_InitParams(void);
+
 void AM_setMarkParams(int num);
 
 void AM_SetResolution(void);

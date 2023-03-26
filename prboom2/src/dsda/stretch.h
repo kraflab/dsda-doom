@@ -61,3 +61,6 @@ extern int patches_scaley;
 stretch_param_t* dsda_StretchParams(int flags);
 void dsda_SetupStretchParams(void);
 void dsda_EvaluatePatchScale(void);
+
+void dsda_UpdateExTextOffset(enum patch_translation_e flags, int offset);
+void dsda_ResetExTextOffsets(void);

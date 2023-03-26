@@ -67,4 +67,7 @@ typedef struct array_s
 void M_ArrayClear(array_t *data);
 void* M_ArrayGetNewItem(array_t *data, int itemsize);
 
+void M_ForgetCurrentConfig(void);
+void M_RememberCurrentConfig(void);
+
 #endif

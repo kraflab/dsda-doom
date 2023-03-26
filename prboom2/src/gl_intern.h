@@ -551,14 +551,16 @@ int glsl_Init(void);
 void glsl_SetActiveShader(GLShader *shader);
 void glsl_SuspendActiveShader(void);
 void glsl_ResumeActiveShader(void);
-void glsl_SetMainShaderActive();
-void glsl_SetFuzzShaderActive();
-void glsl_SetFuzzShaderInactive();
+void glsl_SetMainShaderActive(void);
+void glsl_SetFuzzShaderActive(void);
+void glsl_SetFuzzShaderInactive(void);
 void glsl_SetLightLevel(float lightlevel);
 void glsl_SetFuzzTime(int time);
 void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
 void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
 int glsl_IsActive(void);
 dboolean glsl_UseFuzzShader(void);
+
+void* NewIntDynArray(int dimCount, int *dims);
 
 #endif // _GL_INTERN_H

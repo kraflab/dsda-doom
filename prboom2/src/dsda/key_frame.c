@@ -247,8 +247,6 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 
 // Stripped down version of G_DoLoadGame
 void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
-  void G_AfterLoad(void);
-
   byte complete;
 
   if (key_frame->buffer == NULL) {

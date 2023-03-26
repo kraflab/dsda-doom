@@ -570,4 +570,10 @@ dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_
 	                         fixed_t speed, fixed_t vspeed, short dest_id, mobj_t *forcedest,
                            int gravity, short new_thing_id);
 
+void P_ApplyHereticSectorMovementSpecial(mobj_t *mo, int special);
+void P_CreateTIDList(void);
+void P_InsertMobjIntoTIDList(mobj_t * mobj, short tid);
+void P_RemoveMobjFromTIDList(mobj_t * mobj);
+void P_ApplyCompatibleSectorMovementSpecial(mobj_t *mo, int special);
+
 #endif

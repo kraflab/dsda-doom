@@ -835,12 +835,8 @@ static void I_FillScreenResolutionsList(void)
 
   screen_resolutions_list[list_size] = NULL;
   // This code is inside of the onUpdate for screen resolution, so it must avoid recursion
-  {
-    const char* dsda_HackStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist);
-
-    dsda_HackStringConfig(dsda_config_screen_resolution,
-                          screen_resolutions_list[current_resolution_index], false);
-  }
+  dsda_HackStringConfig(dsda_config_screen_resolution,
+                        screen_resolutions_list[current_resolution_index], false);
 }
 
 // e6y

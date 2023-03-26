@@ -28,6 +28,8 @@
 
 #include "heretic/f_finale.h"
 
+#include <f_finale.h>
+
 static int finalestage;                // 0 = text, 1 = art screen
 static int finalecount;
 

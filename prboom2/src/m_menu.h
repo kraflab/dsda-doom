@@ -167,9 +167,15 @@ typedef struct menu_s
 void M_SetupNextMenu(menu_t *menudef);
 void M_DrawDelVerify(void);
 void M_ChangeMessages(void);
+void M_ChangeFullScreen(void);
+void M_ChangeVideoMode(void);
+void M_ChangeTextureParams(void);
+void M_ChangeDemoSmoothTurns(void);
 
 extern dboolean delete_verify;
 
 dboolean M_ConsoleOpen(void);
+void M_ClearEpisodes(void);
+void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char *alpha);
 
 #endif

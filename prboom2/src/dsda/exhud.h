@@ -32,5 +32,6 @@ void dsda_RefreshMapCoordinates(void);
 void dsda_RefreshMapTotals(void);
 void dsda_RefreshMapTime(void);
 void dsda_RefreshMapTitle(void);
+int dsda_ExHudVerticalOffset(void);
 
 #endif

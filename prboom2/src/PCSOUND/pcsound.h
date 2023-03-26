@@ -42,5 +42,6 @@ struct pcsound_driver_s
 
 int PCSound_Init(pcsound_callback_func callback_func);
 void PCSound_Shutdown(void);
+void PCSound_Mix_Callback(void *udata, unsigned char *stream, int len);
 
 #endif /* #ifndef PCSOUND_H */

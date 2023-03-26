@@ -24,6 +24,8 @@
 
 #include "dsda/utility.h"
 
+#include "zipfile.h"
+
 /* Allow a maximum of 1GB to be uncompressed to prevent zip-bombs */
 #define UNZIPPED_BYTES_LIMIT 1000000000ULL
 
