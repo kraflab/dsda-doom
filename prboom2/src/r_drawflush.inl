@@ -45,14 +45,18 @@
 //
 static void R_FLUSHWHOLE_FUNCNAME(void)
 {
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
    byte *source;
+#endif
    byte *dest;
    int  count, yl;
 
    while(--temp_x >= 0)
    {
       yl     = tempyl[temp_x];
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
       source = &tempbuf[temp_x + (yl << 2)];
+#endif
       dest   = drawvars.topleft + yl*drawvars.pitch + startx + temp_x;
       count  = tempyh[temp_x] - yl + 1;
 
@@ -71,7 +75,9 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          *dest = *source;
 #endif
 
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
          source += 4;
+#endif
          dest += drawvars.pitch;
       }
    }
@@ -86,7 +92,9 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 //
 static void R_FLUSHHEADTAIL_FUNCNAME(void)
 {
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
    byte *source;
+#endif
    byte *dest;
    int count, colnum = 0;
    int yl, yh;
@@ -99,7 +107,9 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
       // flush column head
       if(yl < commontop)
       {
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
          source = &tempbuf[colnum + (yl << 2)];
+#endif
          dest   = drawvars.topleft + yl*drawvars.pitch + startx + colnum;
          count  = commontop - yl;
 
@@ -119,7 +129,9 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
             *dest = *source;
 #endif
 
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
             source += 4;
+#endif
             dest += drawvars.pitch;
          }
       }
@@ -127,7 +139,9 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
       // flush column tail
       if(yh > commonbot)
       {
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
          source = &tempbuf[colnum + ((commonbot + 1) << 2)];
+#endif
          dest   = drawvars.topleft + (commonbot + 1)*drawvars.pitch + startx + colnum;
          count  = yh - commonbot;
 
@@ -147,7 +161,9 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
             *dest = *source;
 #endif
 
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
             source += 4;
+#endif
             dest += drawvars.pitch;
          }
       }
@@ -157,7 +173,9 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
 
 static void R_FLUSHQUAD_FUNCNAME(void)
 {
+#if !(R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
    byte *source = &tempbuf[commontop << 2];
+#endif
    byte *dest = drawvars.topleft + commontop*drawvars.pitch + startx;
    int count;
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
