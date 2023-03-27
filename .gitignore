@@ -14,3 +14,10 @@ levelstat.txt
 
 # vcpkg
 vcpkg_installed
+
+# Visual Studio
+/.vs/**
+!/.vs/CMakeWorkspaceSettings.json
+out
+CMakeSettings.json
+CMakeUserPresets.json

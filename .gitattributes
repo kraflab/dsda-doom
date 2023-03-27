@@ -385,3 +385,4 @@ prboom2/tests/heightlist_overflow.wad -text
 prboom2/tests/missed_back_side.zip -text
 prboom2/tests/sky.wad -text
 prboom2/tests/weaponinfo.wad -text
+.vs/CMakeWorkspaceSettings.json text eol=crlf
