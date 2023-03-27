@@ -21,3 +21,7 @@ vcpkg_installed
 out
 CMakeSettings.json
 CMakeUserPresets.json
+
+# Visual Studio Code
+/.vscode/**
+!/.vscode/extension.json
