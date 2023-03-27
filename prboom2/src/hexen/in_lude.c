@@ -119,7 +119,6 @@ static void InitStats(void)
     int j;
     int oldCluster;
     signed int slaughterfrags;
-    int posnum;
     int slaughtercount;
     int playercount;
     const char *msgLumpName;
@@ -155,7 +154,6 @@ static void InitStats(void)
         gametype = DEATHMATCH;
         slaughterboy = 0;
         slaughterfrags = -9999;
-        posnum = 0;
         playercount = 0;
         slaughtercount = 0;
         for (i = 0; i < g_maxplayers; i++)
@@ -171,7 +169,6 @@ static void InitStats(void)
                         totalFrags[i] += players[i].frags[j];
                     }
                 }
-                posnum++;
             }
             if (totalFrags[i] > slaughterfrags)
             {

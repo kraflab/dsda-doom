@@ -26,15 +26,12 @@
 
 void dsda_CacheSoundLumps(void) {
   int i;
-  unsigned int count = 0;
 
   for (i = 0; i < num_sfx; ++i) {
     sfxinfo_t *sfx = &S_sfx[i];
     sfx->lumpnum = I_GetSfxLumpNum(sfx);
 
-    if (sfx->lumpnum >= 0) {
-      ++count;
+    if (sfx->lumpnum >= 0)
       W_LockLumpNum(sfx->lumpnum);
-    }
   }
 }

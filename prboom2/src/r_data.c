@@ -625,7 +625,7 @@ int R_SetSpriteByIndex(patchnum_t *patchnum, spritenum_t item)
 
 int R_NumPatchForSpriteIndex(spritenum_t item)
 {
-  if (item < 0 || item >= num_sprites)
+  if (item >= num_sprites)
   {
     return -1;
   }

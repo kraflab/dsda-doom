@@ -752,6 +752,7 @@ void MIDI_RestartIterator(midi_track_iter_t *iter)
 
 
 
+#if 0
 static void MIDI_PrintFlatListDBG (const midi_event_t **evs)
 {
   const midi_event_t *event;
@@ -822,6 +823,7 @@ static void MIDI_PrintFlatListDBG (const midi_event_t **evs)
     }
   }
 }
+#endif
 
 
 

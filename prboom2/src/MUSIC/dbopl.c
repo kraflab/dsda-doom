@@ -1249,50 +1249,16 @@ void Chip__WriteReg(Chip *self, Bit32u reg, Bit8u val ) {
   }
 }
 
-Bit32u Chip__WriteAddr(Chip *self, Bit32u port, Bit8u val ) {
-  switch ( port & 3 ) {
-  case 0:
-    return val;
-  case 2:
-    if ( self->opl3Active || (val == 0x05) )
-      return 0x100 | val;
-    else
-      return val;
-  }
-  return 0;
-}
-
 void Chip__GenerateBlock2(Chip *self, Bitu total, Bit32s* output ) {
   while ( total > 0 ) {
                 Channel *ch;
-    int count;
-
     Bit32u samples = Chip__ForwardLFO( self, total );
     memset(output, 0, sizeof(Bit32s) * samples);
-    count = 0;
     for ( ch = self->chan; ch < self->chan + 9; ) {
-      count++;
       ch = (ch->synthHandler)( ch, self, samples, output );
     }
     total -= samples;
     output += samples;
-  }
-}
-
-void Chip__GenerateBlock3(Chip *self, Bitu total, Bit32s* output  ) {
-  while ( total > 0 ) {
-                int count;
-                Channel *ch;
-
-    Bit32u samples = Chip__ForwardLFO( self, total );
-    memset(output, 0, sizeof(Bit32s) * samples *2);
-    count = 0;
-    for ( ch = self->chan; ch < self->chan + 18; ) {
-      count++;
-      ch = (ch->synthHandler)( ch, self, samples, output );
-    }
-    total -= samples;
-    output += samples * 2;
   }
 }
 

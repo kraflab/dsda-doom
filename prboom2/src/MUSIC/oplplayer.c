@@ -1158,13 +1158,11 @@ static void ScheduleTrack(opl_track_data_t *track)
 {
     unsigned int nticks;
     unsigned int ms;
-    static int total = 0;
 
     // Get the number of milliseconds until the next event.
 
     nticks = MIDI_GetDeltaTime(track->iter);
     ms = (nticks * track->ms_per_beat) / track->ticks_per_beat;
-    total += ms;
 
     // Set a timer to be invoked when the next event is
     // ready to play.
