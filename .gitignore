@@ -2,7 +2,6 @@
 /prboom2/release
 /build*
 /release*
-/dependencies*
 
 # spec files
 analysis.txt

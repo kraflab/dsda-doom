@@ -49,8 +49,6 @@ endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(TargetArch)
-
 include(CheckBigEndian)
 check_big_endian(WORDS_BIGENDIAN)
 
@@ -67,17 +65,6 @@ option(CMAKE_FIND_PACKAGE_PREFER_CONFIG "Search for package config before using 
 if(VCPKG_TOOLCHAIN)
     set(ENV{PKG_CONFIG_PATH} "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/pkgconfig")
 endif()
-
-# Automated dependencies discovery, mostly needed for MSVC
-target_architecture(TARGET_ARCH)
-foreach(target ${TARGET_ARCH})
-    if(${target} MATCHES "i386")
-        set(DEPENDENCY_SUFFIX x86)
-    elseif(${target} MATCHES "x86_64")
-        set(DEPENDENCY_SUFFIX x64)
-    endif()
-endforeach()
-set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/../dependencies_${DEPENDENCY_SUFFIX}")
 
 set(PACKAGE_NAME "${PROJECT_NAME}")
 set(PACKAGE_TARNAME "dsda-doom")
