@@ -743,7 +743,7 @@ static void gld_GetSubSectorVertices(void)
   {
     subsector_t* ssector = &subsectors[i];
 
-    if (gld_TriangulateSubsector(ssector))
+    if (!gld_TriangulateSubsector(ssector))
       continue;
 
     numedgepoints  = ssector->numlines;
