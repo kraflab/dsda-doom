@@ -503,7 +503,6 @@ function(AddGameExecutable TARGET SOURCES)
         set(SOURCES
             ${SOURCES}
             ../ICONS/icons.rc
-            SDL/SDL_windows_main.c
         )
         if(MSVC)
             set(SOURCES
