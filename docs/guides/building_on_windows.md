@@ -50,7 +50,7 @@ By default, the CMake integration only provides an `x64-Debug` configuration. To
 
 On the left, you should see a list of all the configurations you have, click the green + at the top and search for `x64-Release`. After adding it, you should now be able to switch configuration at the top. This menu also lets you customise the CMake cache and set defaults.
 
-To install a build, select "Build" and then "Install dsda-doom". The default directories for build and install are, respectively, `out/build/<config>` and `out/install<config>`.
+To install a build, select "Build" and then "Install dsda-doom". The default directories for build and install are, respectively, `prboom2/out/build/<config>` and `prboom2/out/install/<config>`.
 
 ### Building from the terminal
 
@@ -64,7 +64,7 @@ Run the CMake configuration:
 
 ```
 cd dsda-doom
-cmake -Sprboom2 -Bbuild -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DCMAKE_BUILD_TYPE=Release
+cmake -Sprboom2 -Bbuild -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake"
 ```
 
 During this step, vcpkg will build all the dependencies. If vcpkg does not get invoked or CMake fails at finding the dependencies, delete the build directory and make sure the path to the `vcpkg.cmake` toolchain is correct.
@@ -74,6 +74,8 @@ And finally, build the project:
 ```
 cmake --build build --config Release
 ```
+
+You may replace `Release` with `Debug`, `MinSizeRel`, or `RelWithDebInfo` depending on your needs.
 
 You should then be able to run dsda-doom from the build directory:
 
@@ -105,6 +107,27 @@ If you use the CMake Tools extension, you will need to:
 ```json
 "toolchainFile": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
 ```
+
+### Installing and Packaging
+
+This section will assume the build directory is `build`, note that by default on Visual Studio the build directory is different.
+
+To install the project, run:
+
+```
+cmake --install build --config Release
+```
+
+This will install all the necessary runtime files to the directory `CMAKE_INSTALL_PREFIX` is set to. This can also be overwritten by passing `--prefix C:/my/custom/prefix`. Prefer a directory that does not need priviledges to write files to, otherwise editing config and saving the game may fail.
+
+To package the project, run:
+
+```
+cd build
+cpack -G ZIP -C Release
+```
+
+This will produce a zip archive in your build directory named `dsda-doom-<version>-win64` which contains everything necessary to run the game.
 
 ## Building with MSYS2
 
@@ -152,26 +175,11 @@ cd build
 ./dsda-doom
 ```
 
-## Installing and Packaging
-
-This section is common to most build environment, except Visual Studio where the build directory is slightly different. For the sake of simplicity, it will be assumed that the build directory is `build`.
-
-To install the project, run:
+While you may be able to run the executable from the MSYS2 terminal with no issue, it is likely going to fail if you click on the executable or run it from another terminal with "X.dll could not be found" errors. Similarly, running CMake's install or packaging with CPack will not copy over the necessary DLLs. You can use the following command to get a list of all the DLLs that need to be copied next to the executable:
 
 ```
-cmake --install build --config Release
+ldd dsda-doom | grep "bin"
 ```
-
-This will install all the necessary runtime files to the directory `CMAKE_INSTALL_PREFIX` is set to. This can also be overwritten by passing `--prefix C:/my/custom/prefix`. Prefer a directory that does not need priviledges to write files to, otherwise editing config and saving the game may fail.
-
-To package the project, run:
-
-```
-cd build
-cpack -G ZIP -C Release
-```
-
-This will produce a zip archive in your build directory named `dsda-doom-<version>-win64` which contains everything necessary to run the game.
 
 ## Troubleshooting
 
