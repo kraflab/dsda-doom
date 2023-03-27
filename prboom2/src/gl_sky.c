@@ -738,10 +738,7 @@ static void RenderDome(SkyBoxParams_t *sky)
 {
   int i, j;
   GLSkyVBO *vbo;
-
-#ifdef USE_VBO
   int vbosize;
-#endif
 
   if (!sky || !sky->wall.gltexture)
     return;
@@ -758,10 +755,7 @@ static void RenderDome(SkyBoxParams_t *sky)
 
   rows = 4;
   columns = 64;
-
-#ifdef USE_VBO
   vbosize = 2 * rows * (columns * 2 + 2) + columns * 2;
-#endif
 
   if (sky->y_offset != y_offset_saved ||
       sky->wall.gltexture->index != sky->index)
@@ -777,7 +771,6 @@ static void RenderDome(SkyBoxParams_t *sky)
     gld_BuildSky(rows, columns, sky, 0);
     gld_BuildSky(rows, columns, sky, INVERSECOLORMAP);
 
-#ifdef USE_VBO
     if (gl_ext_arb_vertex_buffer_object)
     {
       if (vbo->id)
@@ -794,7 +787,6 @@ static void RenderDome(SkyBoxParams_t *sky)
         vbosize * sizeof(vbo->data[0]),
         vbo->data, GL_STATIC_DRAW_ARB);
     }
-#endif
   }
 
   gld_BindTexture(SkyBox.wall.gltexture, 0);

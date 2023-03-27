@@ -43,6 +43,8 @@
 #include "doomtype.h"
 #include "lprintf.h"
 
+#include "dsda/configuration.h"
+
 #define isExtensionSupported(ext) strstr(extensions, ext)
 
 int gl_max_texture_size = 0;
@@ -233,24 +235,23 @@ void gld_InitOpenGL(void)
     lprintf(LO_DEBUG, "using GL_EXT_blend_color\n");
 
   // VBO
-#ifdef USE_VBO
-  gl_ext_arb_vertex_buffer_object = isExtensionSupported("GL_ARB_vertex_buffer_object") != NULL;
-  if (gl_ext_arb_vertex_buffer_object)
+  if (dsda_IntConfig(dsda_config_gl_usevbo))
   {
-    GLEXT_glGenBuffersARB = SDL_GL_GetProcAddress("glGenBuffersARB");
-    GLEXT_glDeleteBuffersARB = SDL_GL_GetProcAddress("glDeleteBuffersARB");
-    GLEXT_glBindBufferARB = SDL_GL_GetProcAddress("glBindBufferARB");
-    GLEXT_glBufferDataARB = SDL_GL_GetProcAddress("glBufferDataARB");
+    gl_ext_arb_vertex_buffer_object = isExtensionSupported("GL_ARB_vertex_buffer_object") != NULL;
+    if (gl_ext_arb_vertex_buffer_object)
+    {
+      GLEXT_glGenBuffersARB = SDL_GL_GetProcAddress("glGenBuffersARB");
+      GLEXT_glDeleteBuffersARB = SDL_GL_GetProcAddress("glDeleteBuffersARB");
+      GLEXT_glBindBufferARB = SDL_GL_GetProcAddress("glBindBufferARB");
+      GLEXT_glBufferDataARB = SDL_GL_GetProcAddress("glBufferDataARB");
 
-    if (!GLEXT_glGenBuffersARB || !GLEXT_glDeleteBuffersARB ||
-        !GLEXT_glBindBufferARB || !GLEXT_glBufferDataARB)
-      gl_ext_arb_vertex_buffer_object = false;
+      if (!GLEXT_glGenBuffersARB || !GLEXT_glDeleteBuffersARB ||
+          !GLEXT_glBindBufferARB || !GLEXT_glBufferDataARB)
+        gl_ext_arb_vertex_buffer_object = false;
+    }
+    if (gl_ext_arb_vertex_buffer_object)
+      lprintf(LO_DEBUG, "using GL_ARB_vertex_buffer_object\n");
   }
-  if (gl_ext_arb_vertex_buffer_object)
-    lprintf(LO_DEBUG, "using GL_ARB_vertex_buffer_object\n");
-#else
-  gl_ext_arb_vertex_buffer_object = false;
-#endif
 
   gl_arb_pixel_buffer_object = isExtensionSupported("GL_ARB_pixel_buffer_object") != NULL;
   if (gl_arb_pixel_buffer_object)

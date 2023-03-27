@@ -1096,13 +1096,7 @@ void gld_PreprocessLevel(void)
 
       Z_Free(flats_vbo);
       flats_vbo = NULL;
-
-      // bind VBO in order to use
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
     }
-
-    glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
   }
 
   //e6y

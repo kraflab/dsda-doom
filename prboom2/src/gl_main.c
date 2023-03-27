@@ -448,25 +448,37 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   dsda_GLSetScreenSpaceScissor(fx, fy, fw, fh);
   glEnable(GL_SCISSOR_TEST);
 
+  // Look "down" at the floor, since subsector flats extend along x and z coordinates
+  glRotatef(-90.0, 1.0f, 0.0f, 0.0f);
+
   if (automap_rotate)
   {
     float pivotx = (float)(fx + fw / 2);
     float pivoty = (float)(fy + fh / 2);
 
-    float rot = -(float)(ANG90 - viewangle) / (float)(1u << 31) * 180.0f;
+    float rot = (float)(ANG90 - viewangle) / (float)(1u << 31) * 180.0f;
 
     // Apply the automap's rotation to the vertexes.
-    glTranslatef(pivotx, pivoty, 0.0f);
-    glRotatef(rot, 0.0f, 0.0f, 1.0f);
-    glTranslatef(-pivotx, -pivoty, 0.0f);
+    glTranslatef(pivotx, 0.0f, pivoty);
+    glRotatef(rot, 0.0f, 1.0f, 0.0f);
+    glTranslatef(-pivotx, 0.0f, -pivoty);
   }
 
   glTranslatef(
     (float)fx - (float)mx / (float)FRACUNIT * (float)scale / (float)FRACUNIT,
-    (float)fy + (float)fh + (float)my / (float)FRACUNIT * (float)scale / (float)FRACUNIT,
-    0);
+    0,
+    (float)fy + (float)fh + (float)my / (float)FRACUNIT * (float)scale / (float)FRACUNIT);
   coord_scale = (float)scale / (float)(1<<FRACTOMAPBITS) / (float)FRACUNIT * MAP_COEFF;
-  glScalef(-coord_scale, -coord_scale, 1.0f);
+  glScalef(-coord_scale, 1.0, -coord_scale);
+
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
+
+  if (gl_ext_arb_vertex_buffer_object)
+    GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
+  glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
+  glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
 
   for (i = 0; i < visible_subsectors_count; i++)
   {
@@ -527,22 +539,9 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
 
       for (loopnum = 0; loopnum < subsectorloops[ssidx].loopcount; loopnum++)
       {
-        int vertexnum;
         GLLoopDef *currentloop = &subsectorloops[ssidx].loops[loopnum];
 
-        if (!currentloop)
-          continue;
-
-        // set the mode (GL_TRIANGLE_FAN)
-        glBegin(currentloop->mode);
-        // go through all vertexes of this loop
-        for (vertexnum = currentloop->vertexindex; vertexnum < (currentloop->vertexindex + currentloop->vertexcount); vertexnum++)
-        {
-          glTexCoord2f(flats_vbo[vertexnum].u, flats_vbo[vertexnum].v);
-
-          glVertex3f(flats_vbo[vertexnum].x, flats_vbo[vertexnum].z, 0);
-        }
-        glEnd();
+        glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
       }
 
       if (transform)
@@ -555,6 +554,13 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   glMatrixMode(GL_MODELVIEW);
   glPopMatrix();
   glDisable(GL_SCISSOR_TEST);
+
+  if (gl_ext_arb_vertex_buffer_object)
+    GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, 0);
+
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_COLOR_ARRAY);
 }
 
 void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)

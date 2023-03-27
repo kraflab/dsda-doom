@@ -614,6 +614,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_health_bar", dsda_config_gl_health_bar,
     CONF_BOOL(0), NULL, STRICT_INT(0)
   },
+  [dsda_config_gl_usevbo] = {
+    "gl_usevbo", dsda_config_gl_usevbo,
+    CONF_BOOL(1), NULL, NOT_STRICT
+  },
   [dsda_config_use_mouse] = {
     "use_mouse", dsda_config_use_mouse,
     CONF_BOOL(1), NULL, NOT_STRICT, I_InitMouse
