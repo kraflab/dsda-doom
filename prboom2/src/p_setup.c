@@ -1186,6 +1186,11 @@ static byte *P_DecompressData(const byte **data, int *len)
   byte *output;
   int outlen, err;
   z_stream *zstream;
+  union
+  {
+    const byte* cd;
+    byte* d;
+  } u = {*data};
 
   // first estimate for compression rate:
   // output buffer size == 2.5 * input size
@@ -1197,10 +1202,7 @@ static byte *P_DecompressData(const byte **data, int *len)
   memset(zstream, 0, sizeof(*zstream));
 
   // Evidently next_in is the wrong type for legacy reasons
-  #pragma GCC diagnostic push
-  #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-  zstream->next_in = *data;
-  #pragma GCC diagnostic pop
+  zstream->next_in = u.d;
   zstream->avail_in = *len;
   zstream->next_out = output;
   zstream->avail_out = outlen;

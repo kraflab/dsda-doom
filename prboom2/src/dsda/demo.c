@@ -384,17 +384,18 @@ dboolean dsda_StartDemoSegment(const char* demo_name) {
 const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
   if (dsda_demo_version && dsda_demo_header_data.flags & DF_FROM_KEYFRAME) {
     dsda_key_frame_t key_frame;
+    union
+    {
+      const byte* cb;
+      byte* b;
+    } u = {demo_p};
 
     memset(&key_frame, 0, sizeof(key_frame));
 
     memcpy(&key_frame.buffer_length, demo_p, sizeof(key_frame.buffer_length));
     demo_p += sizeof(key_frame.buffer_length);
 
-    // Is it worth creating a redundant read-only version?
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-    key_frame.buffer = demo_p;
-    #pragma GCC diagnostic pop
+    key_frame.buffer = u.b;
 
     dsda_RestoreKeyFrame(&key_frame, false);
     demo_p += key_frame.buffer_length;
