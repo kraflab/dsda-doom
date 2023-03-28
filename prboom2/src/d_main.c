@@ -102,8 +102,10 @@
 #include "dsda/signal_context.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
+#include "dsda/tempdir.h"
 #include "dsda/time.h"
 #include "dsda/utility.h"
+#include "dsda/zipfile.h"
 #include "dsda/gl/render_scale.h"
 
 #include "heretic/mn_menu.h"
@@ -1159,6 +1161,7 @@ static void DoLooseFiles(void)
     dsda_arg_identifier_t arg_id;
   } looses[] = {
     { ".wad", dsda_arg_file },
+    { ".zip", dsda_arg_file },
     { ".lmp", dsda_arg_playdemo },
     { ".deh", dsda_arg_deh },
     { ".bex", dsda_arg_deh },
@@ -1510,6 +1513,24 @@ static void EvaluateDoomVerStr(void)
   lprintf(LO_INFO, "Playing: %s\n", doomverstr);
 }
 
+static void D_AddZip(const char* zipped_file_name)
+{
+  char* temporary_directory;
+  char* full_zip_path = I_FindZip(zipped_file_name);
+  if (full_zip_path == NULL)
+  {
+    return;
+  }
+
+  temporary_directory = dsda_GetTempDir();
+  dsda_UnzipFile(full_zip_path, temporary_directory);
+
+  AutoLoadWADs(temporary_directory);
+  AutoLoadPatches(temporary_directory);
+
+  Z_Free(temporary_directory);
+}
+
 //
 // D_DoomMainSetup
 //
@@ -1656,6 +1677,11 @@ static void D_DoomMainSetup(void)
         continue;
       }
 
+      if (dsda_HasFileExt(file_name, ".zip"))
+      {
+        D_AddZip(file_name);
+        continue;
+      }
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)
