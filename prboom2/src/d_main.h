@@ -38,10 +38,6 @@
 #include "d_event.h"
 #include "w_wad.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 /* CPhipps - removed wadfiles[] stuff to w_wad.h */
 
 //jff 1/24/98 make command line copies of play modes available

@@ -72,11 +72,6 @@
 #include "e6y.h"
 #include "i_system.h"
 
-#ifdef __GNUG__
-#pragma implementation "i_system.h"
-#endif
-#include "i_system.h"
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif

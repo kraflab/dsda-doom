@@ -49,9 +49,6 @@
 #include "p_pspr.h"
 #include "p_user.h"
 
-#ifdef __GNUG__
-#pragma implementation "p_inter.h"
-#endif
 #include "p_inter.h"
 #include "e6y.h"//e6y
 

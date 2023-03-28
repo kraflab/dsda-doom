@@ -44,10 +44,6 @@
 #include "v_video.h"
 #include "SDL.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern SDL_Window *sdl_window;
 extern SDL_Renderer *sdl_renderer;
 

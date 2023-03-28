@@ -37,10 +37,6 @@
 
 #include "doomdef.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 //
 // Internal weapon flags
 //

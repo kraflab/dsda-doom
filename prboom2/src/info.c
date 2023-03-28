@@ -44,9 +44,6 @@
 #include "p_enemy.h"
 #include "p_pspr.h"
 
-#ifdef __GNUG__
-#pragma implementation "info.h"
-#endif
 #include "info.h"
 
 void A_BetaSkullAttack(); // killough 10/98: beta lost souls attacked different
