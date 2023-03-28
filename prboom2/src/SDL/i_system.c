@@ -513,3 +513,8 @@ char* I_FindDeh(const char* wfname)
 
   return I_FindFile(wfname, ".deh");
 }
+
+char* I_FindZip(const char* wfname)
+{
+  return I_FindFile(wfname, ".zip");
+}
