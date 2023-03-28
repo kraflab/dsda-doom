@@ -40,9 +40,6 @@
 #include "doomstat.h"
 #include "doomtype.h"
 
-#ifdef __GNUG__
-#pragma implementation "w_wad.h"
-#endif
 #include "w_wad.h"
 #include "z_zone.h"
 #include "lprintf.h"

@@ -43,10 +43,6 @@
 
 #include "m_fixed.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #ifdef _MSC_VER
 #define    F_OK    0    /* Check for file existence */
 #define    W_OK    2    /* Check for write permission */

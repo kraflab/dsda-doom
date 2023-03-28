@@ -36,10 +36,6 @@
 
 #include "doomtype.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 typedef struct {
   byte actions;
   byte save_slot;

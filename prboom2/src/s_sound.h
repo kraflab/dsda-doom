@@ -34,10 +34,6 @@
 #ifndef __S_SOUND__
 #define __S_SOUND__
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "doomtype.h"
 #include "p_mobj.h"
 #include "r_defs.h"

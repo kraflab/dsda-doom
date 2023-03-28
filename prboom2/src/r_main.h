@@ -37,10 +37,6 @@
 #include "d_player.h"
 #include "r_data.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern int r_frame_count;
 
 //
