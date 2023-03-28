@@ -82,6 +82,36 @@ check_symbol_exists(CreateFileMapping "windows.h" HAVE_CREATE_FILE_MAPPING)
 check_symbol_exists(strsignal "string.h" HAVE_STRSIGNAL)
 check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
 
+check_symbol_exists(GetTempPath "windows.h" HAVE_GET_TEMP_PATH_1)
+check_symbol_exists(GetTempPath2 "windows.h" HAVE_GET_TEMP_PATH_2)
+if(HAVE_GET_TEMP_PATH_1 OR HAVE_GET_TEMP_PATH_2)
+    set(HAVE_GET_TEMP_PATH TRUE)
+endif()
+
+include(CMakePushCheckState)
+
+check_symbol_exists(mkdtemp "unistd.h" HAVE_MKDTEMP_UNISTD)
+cmake_push_check_state(RESET)
+check_symbol_exists(mkdtemp "stdlib.h" HAVE_MKDTEMP_STDLIB_NODEF)
+set(CMAKE_REQUIRED_DEFINITIONS "_POSIX_C_SOURCE=200809L")
+check_symbol_exists(mkdtemp "stdlib.h" HAVE_MKDTEMP_STDLIB_POSIX_SOURCE)
+set(CMAKE_REQUIRED_DEFINITIONS "_BSD_SOURCE")
+check_symbol_exists(mkdtemp "stdlib.h" HAVE_MKDTEMP_STDLIB_BSD_SOURCE)
+set(CMAKE_REQUIRED_DEFINITIONS "_DEFAULT_SOURCE")
+check_symbol_exists(mkdtemp "stdlib.h" HAVE_MKDTEMP_STDLIB_DEFAULT_SOURCE)
+cmake_pop_check_state()
+
+if(HAVE_MKDTEMP_STDLIB_NODEF
+   OR HAVE_MKDTEMP_STDLIB_POSIX_SOURCE
+   OR HAVE_MKDTEMP_STDLIB_BSD_SOURCE
+   OR HAVE_MKDTEMP_STDLIB_DEFAULT_SOURCE)
+  set(HAVE_MKDTEMP_STDLIB TRUE)
+endif()
+
+if(HAVE_MKDTEMP_STDLIB OR HAVE_MKDTEMP_UNISTD)
+  set(HAVE_MKDTEMP TRUE)
+endif()
+
 include(CheckIncludeFile)
 
 check_include_file("sys/wait.h" HAVE_SYS_WAIT_H)

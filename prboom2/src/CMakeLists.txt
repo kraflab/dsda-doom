@@ -201,6 +201,8 @@ set(COMMON_SRC
     dsda/state.h
     dsda/stretch.c
     dsda/stretch.h
+    dsda/tempdir.c
+    dsda/tempdir.h
     dsda/text_color.c
     dsda/text_color.h
     dsda/text_file.c
