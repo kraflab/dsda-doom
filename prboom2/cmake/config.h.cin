@@ -37,6 +37,7 @@
 #cmakedefine HAVE_LIBDUMB
 #cmakedefine HAVE_LIBVORBISFILE
 #cmakedefine HAVE_LIBPORTMIDI
+#cmakedefine HAVE_LIBZIP
 
 #cmakedefine SIMPLECHECKS
 

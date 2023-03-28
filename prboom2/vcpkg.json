@@ -46,6 +46,19 @@
         "libvorbis"
       ]
     },
+    "libzip": {
+      "description": "Build with zip support",
+      "dependencies": [
+        {
+          "name": "libzip",
+          "default-features": false,
+          "features": [
+            "bzip2",
+            "liblzma"
+          ]
+        }
+      ]
+    },
     "portmidi": {
       "description": "Build with PortMidi support",
       "dependencies": [
