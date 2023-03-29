@@ -816,6 +816,7 @@ void P_PlayerThink (player_t* player)
     if (cmd->ex.actions & XC_JUMP && onground && !player->jumpTics)
     {
       player->mo->momz = 9 * FRACUNIT;
+      player->mo->flags2 &= ~MF2_ONMOBJ;
       player->jumpTics = 18;
     }
   }
