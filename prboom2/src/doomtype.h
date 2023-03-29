@@ -116,6 +116,12 @@ typedef unsigned char byte;
   #define INLINE inline        /* use standard inline */
 #endif
 
+#ifdef WIN32
+#define PATHNAME_SEPARATOR '\\'
+#else
+#define PATHNAME_SEPARATOR '/'
+#endif
+
 typedef enum {
   doom_12_compatibility,   /* Doom v1.2 */
   doom_1666_compatibility, /* Doom v1.666 */
