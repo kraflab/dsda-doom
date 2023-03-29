@@ -102,7 +102,6 @@
 #include "dsda/signal_context.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
-#include "dsda/tempdir.h"
 #include "dsda/time.h"
 #include "dsda/utility.h"
 #include "dsda/zipfile.h"
@@ -1515,20 +1514,25 @@ static void EvaluateDoomVerStr(void)
 
 static void D_AddZip(const char* zipped_file_name)
 {
-  char* temporary_directory;
+  dsda_string_t temporary_directory = { NULL, 0 };
   char* full_zip_path = I_FindZip(zipped_file_name);
   if (full_zip_path == NULL)
   {
     return;
   }
+  dsda_InitString(&temporary_directory, I_GetTempDir());
+  dsda_StringCatF(&temporary_directory, "%c%s%c",
+                  PATHNAME_SEPARATOR,
+                  dsda_BaseName(zipped_file_name),
+                  PATHNAME_SEPARATOR);
+  M_MakeDir(temporary_directory.string, false);
 
-  temporary_directory = dsda_GetTempDir();
-  dsda_UnzipFile(full_zip_path, temporary_directory);
+  dsda_UnzipFile(full_zip_path, temporary_directory.string);
 
-  AutoLoadWADs(temporary_directory);
-  AutoLoadPatches(temporary_directory);
+  AutoLoadWADs(temporary_directory.string);
+  AutoLoadPatches(temporary_directory.string);
 
-  Z_Free(temporary_directory);
+  dsda_FreeString(&temporary_directory);
 }
 
 //
