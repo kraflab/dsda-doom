@@ -138,10 +138,11 @@ void dsda_InitializeSFX(sfxinfo_t* source, int count) {
 void dsda_FreeDehSFX(void) {
   int i;
 
-  for (i = 0; i < num_sfx; i++) {
-    if (deh_soundnames[i])
-      free(deh_soundnames[i]);
-  }
+  if (deh_soundnames)
+    for (i = 0; i < num_sfx; i++)
+      if (deh_soundnames[i])
+        free(deh_soundnames[i]);
+
   free(deh_soundnames);
   free(sfx_state);
 }
