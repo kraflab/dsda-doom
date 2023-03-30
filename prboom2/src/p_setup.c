@@ -3718,10 +3718,18 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   // find map name
   strcpy(lumpname, MAPNAME(episode, map));
-  sprintf(gl_lumpname, "GL_%s", lumpname);
-
   lumpnum = W_GetNumForName(lumpname);
-  gl_lumpnum = W_CheckNumForName(gl_lumpname); // figgi
+
+  if (strlen(lumpname) < 6)
+  {
+    sprintf(gl_lumpname, "GL_%s", lumpname);
+    gl_lumpnum = W_CheckNumForName(gl_lumpname); // figgi
+  }
+  else
+  {
+    gl_lumpname[0] = '\0';
+    gl_lumpnum = LUMP_NOT_FOUND;
+  }
 
   // e6y
   // Refuse to load a map with incomplete pwad structure.
