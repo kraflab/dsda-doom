@@ -107,6 +107,12 @@ void dsda_InitializeSprites(const char** source, int count) {
 }
 
 void dsda_FreeDehSprites(void) {
+  int i;
+
+  for (i = 0; i < num_sprites; i++) {
+    if (deh_spritenames[i])
+      free(deh_spritenames[i]);
+  }
   free(deh_spritenames);
   free(sprnames_state);
 }

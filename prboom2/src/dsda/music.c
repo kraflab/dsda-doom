@@ -109,6 +109,11 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
 }
 
 void dsda_FreeDehMusic(void) {
+  int i;
+  for (i = 0; i < num_music; i++) {
+    if (deh_musicnames[i])
+      free(deh_musicnames[i]);
+  }
   free(deh_musicnames);
   free(music_state);
 }
