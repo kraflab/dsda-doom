@@ -39,6 +39,7 @@ function(get_supported_warnings outvar)
       "-Wno-unused-function"
       "-Wno-switch"
       "-Wno-sign-compare"
+      "-Wno-format-truncation"
       "-Wtype-limits")
   check_flags_list("${_warnings}" "_supported_warnings")
 
