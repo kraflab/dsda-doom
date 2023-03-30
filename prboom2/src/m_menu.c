@@ -1542,7 +1542,9 @@ static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
 //
 // The menu_buffer is used to construct strings for display on the screen.
 
-static char menu_buffer[66];
+#define MENU_BUFFER_SIZE 128
+
+static char menu_buffer[MENU_BUFFER_SIZE];
 
 /////////////////////////////
 //
