@@ -1514,12 +1514,10 @@ static void EvaluateDoomVerStr(void)
 
 static void D_AddZip(const char* zipped_file_name)
 {
-  dsda_string_t temporary_directory = { NULL, 0 };
-  char* full_zip_path = I_FindZip(zipped_file_name);
-  if (full_zip_path == NULL)
-  {
-    return;
-  }
+  dsda_string_t temporary_directory;
+  char* full_zip_path;
+
+  full_zip_path = I_RequireZip(zipped_file_name);
   dsda_InitString(&temporary_directory, I_GetTempDir());
   dsda_StringCatF(&temporary_directory, "%c%s%c",
                   PATHNAME_SEPARATOR,
