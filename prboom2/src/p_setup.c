@@ -3722,7 +3722,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   if (strlen(lumpname) < 6)
   {
-    sprintf(gl_lumpname, "GL_%s", lumpname);
+    snprintf(gl_lumpname, sizeof(gl_lumpname), "GL_%s", lumpname);
     gl_lumpnum = W_CheckNumForName(gl_lumpname); // figgi
   }
   else

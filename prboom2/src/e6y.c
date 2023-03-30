@@ -589,9 +589,9 @@ void e6y_WriteStats(void)
       memset(&all[level], 0, sizeof(tmpdata_t));
     else
     {
-      sprintf(all[level].kill,   " (%s)", tmp.kill  );
-      sprintf(all[level].item,   " (%s)", tmp.item  );
-      sprintf(all[level].secret, " (%s)", tmp.secret);
+      snprintf(all[level].kill, sizeof(all[level].kill),  " (%s)", tmp.kill  );
+      snprintf(all[level].item, sizeof(all[level].item),   " (%s)", tmp.item  );
+      snprintf(all[level].secret, sizeof(all[level].secret), " (%s)", tmp.secret);
     }
 
     if (strlen(all[level].kill) > allkills_len)
