@@ -460,9 +460,9 @@ void I_vWarning(const char *message, va_list argList)
 
 int I_MessageBox(const char* text, unsigned int type)
 {
+#ifdef _WIN32
   int result = PRB_IDCANCEL;
 
-#ifdef _WIN32
   if (!dsda_Flag(dsda_arg_no_message_box))
   {
     HWND current_hwnd = GetForegroundWindow();
