@@ -114,6 +114,7 @@ void dsda_InitGhostExport(const char* name) {
 
 static void dsda_OpenGhostFile(const char* ghost_name, dsda_ghost_file_t* ghost_file) {
   char* filename;
+  int read_result;
 
   memset(ghost_file, 0, sizeof(dsda_ghost_file_t));
 
@@ -125,12 +126,19 @@ static void dsda_OpenGhostFile(const char* ghost_name, dsda_ghost_file_t* ghost_
   if (ghost_file->fstream == NULL)
     I_Error("dsda_OpenGhostImport: failed to open %s", ghost_name);
 
-  fread(&ghost_file->version, sizeof(int), 1, ghost_file->fstream);
-  if (ghost_file->version < DSDA_GHOST_MIN_VERSION || ghost_file->version > DSDA_GHOST_VERSION)
+  read_result = fread(&ghost_file->version, sizeof(int), 1, ghost_file->fstream);
+  if (ghost_file->version < DSDA_GHOST_MIN_VERSION ||
+      ghost_file->version > DSDA_GHOST_VERSION ||
+      read_result != 1)
     I_Error("dsda_OpenGhostImport: unsupported ghost version %s", ghost_name);
 
-  if (ghost_file->version == 1) ghost_file->count = 1;
-  else fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
+  if (ghost_file->version == 1)
+    ghost_file->count = 1;
+  else {
+    read_result = fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
+    if (read_result != 1)
+      I_Error("dsda_OpenGhostImport: error reading ghost count %s", ghost_name);
+  }
 
   Z_Free(filename);
 }
