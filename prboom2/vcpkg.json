@@ -5,6 +5,14 @@
   "homepage": "https://github.com/kraflab/dsda-doom",
   "license": "GPL-2.0-only",
   "dependencies": [
+    {
+      "name": "libzip",
+      "default-features": false,
+      "features": [
+        "bzip2",
+        "liblzma"
+      ]
+    },
     "sdl2",
     {
       "name": "sdl2-mixer",
@@ -44,19 +52,6 @@
       "description": "Build with vorbisfile support",
       "dependencies": [
         "libvorbis"
-      ]
-    },
-    "libzip": {
-      "description": "Build with zip support",
-      "dependencies": [
-        {
-          "name": "libzip",
-          "default-features": false,
-          "features": [
-            "bzip2",
-            "liblzma"
-          ]
-        }
       ]
     },
     "portmidi": {

@@ -30,11 +30,6 @@ if(WITH_VORBISFILE)
     list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
 endif()
 
-option(WITH_ZIP "Use libzip if available" ON)
-if(WITH_ZIP)
-    list(APPEND VCPKG_MANIFEST_FEATURES "libzip")
-endif()
-
 # Automatically install dependencies
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
@@ -105,6 +100,7 @@ include(PkgConfigHelper)
 
 set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(OpenGL 2.0 REQUIRED)
+find_package(libzip REQUIRED)
 find_package(SDL2 2.0.7 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(ZLIB REQUIRED)
@@ -155,13 +151,6 @@ if(WITH_PORTMIDI)
     find_package(PortMidi)
     if(PortMidi_FOUND)
         set(HAVE_LIBPORTMIDI TRUE)
-    endif()
-endif()
-
-if(WITH_ZIP)
-    find_package(libzip)
-    if(libzip_FOUND)
-        set(HAVE_LIBZIP TRUE)
     endif()
 endif()
 

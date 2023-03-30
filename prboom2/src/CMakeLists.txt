@@ -534,6 +534,7 @@ function(AddGameExecutable TARGET SOURCES)
     )
 
     target_link_libraries(${TARGET} PRIVATE
+        libzip::zip
         ${SDL2_LIBRARIES}
         SDL2_mixer::SDL2_mixer
         ZLIB::ZLIB
@@ -572,10 +573,6 @@ function(AddGameExecutable TARGET SOURCES)
 
     if(HAVE_LIBPORTMIDI)
         target_link_libraries(${TARGET} PRIVATE PortMidi::portmidi)
-    endif()
-
-    if(HAVE_LIBZIP)
-        target_link_libraries(${TARGET} PRIVATE libzip::zip)
     endif()
 
     add_dependencies(${TARGET} dsda-doom-wad)

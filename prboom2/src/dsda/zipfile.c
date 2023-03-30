@@ -15,11 +15,7 @@
 //	DSDA zipfile support using libzip
 //
 
-#include "config.h"
-
 #include "../lprintf.h"
-
-#ifdef HAVE_LIBZIP
 #include "../m_file.h"
 #include "../z_zone.h"
 #include "utility.h"
@@ -123,13 +119,3 @@ void dsda_UnzipFile(const char *zipped_file_name, const char *destination_direct
   dsda_WriteZippedFilesToDest(archive_handle, destination_directory);
   zip_close(archive_handle);
 }
-
-#else /* HAVE_LIBZIP */
-
-void dsda_UnzipFile(const char *zipped_file_name, const char *destination_directory) {
-  (void)destination_directory;
-  lprintf(LO_WARN, "Unable to unzip '%s': zip support was not built in.\n", zipped_file_name);
-  return NULL;
-}
-
-#endif /* HAVE_LIBZIP */
