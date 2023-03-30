@@ -35,7 +35,7 @@ static int dsda_SplitComparisonDelta(dsda_split_time_t* split_time) {
 }
 
 static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
-  char delta[16];
+  char delta[18];
   const char* color;
 
   delta[0] = '\0';
