@@ -427,7 +427,7 @@ static void WI_slamBackground(void)
   else if (gamemode == commercial || wbs->epsd < 0 || (gamemode == retail && wbs->epsd >= 3))
     strcpy(name, "INTERPIC");
   else
-    sprintf(name, "WIMAP%d", wbs->epsd);
+    snprintf(name, sizeof(name), "WIMAP%d", wbs->epsd);
 
   // e6y: wide-res
   V_FillBorder(-1, 0);
