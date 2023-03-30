@@ -1006,16 +1006,24 @@ void M_ReadSaveStrings(void)
 
     // killough 3/22/98
     name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
+
     fp = M_OpenFile(name,"rb");
     Z_Free(name);
-    if (!fp) {   // Ty 03/27/98 - externalized:
-      strcpy(&savegamestrings[i][0],s_EMPTYSTRING);
+
+    if (!fp || !fread(&savegamestrings[i], SAVESTRINGSIZE, 1, fp))
+    {
+      strcpy(&savegamestrings[i][0],s_EMPTYSTRING); // Ty 03/27/98 - externalized
       LoadMenue[i].status = 0;
-      continue;
     }
-    fread(&savegamestrings[i], SAVESTRINGSIZE, 1, fp);
-    fclose(fp);
-    LoadMenue[i].status = 1;
+    else
+    {
+      LoadMenue[i].status = 1;
+    }
+
+    if (fp)
+    {
+      fclose(fp);
+    }
   }
 
   snprintf(save_page_string, SAVE_PAGE_STRING_SIZE, "PAGE %d/%d", save_page + 1, save_page_limit);
