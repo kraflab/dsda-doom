@@ -703,7 +703,11 @@ void M_LoadDefaults (void)
     while (!feof(f))
     {
       parm = 0;
-      fgets(cfgline, CFG_BUFFERMAX, f);
+
+      cfgline = fgets(cfgline, CFG_BUFFERMAX, f);
+      if (!cfgline)
+        break;
+
       if (sscanf (cfgline, "%79s %[^\n]\n", def, strparm) == 2)
       {
         newstring = NULL;
