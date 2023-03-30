@@ -626,6 +626,7 @@ static void pm_render (void *vdest, unsigned bufflen)
               {
                 writeevent (when, 0xB0, i, 0x7B, 0x00); // all notes off
                 writeevent (when, 0xB0, i, 0x79, 0x00); // reset all controllers
+                write_volume (when, i, DEFAULT_VOLUME); // reset volume
               }
               continue;
             }
@@ -637,6 +638,12 @@ static void pm_render (void *vdest, unsigned bufflen)
         if (currevent->data.channel.param1 == MIDI_CONTROLLER_MAIN_VOLUME)
         {
           write_volume (when, currevent->data.channel.channel, currevent->data.channel.param2);
+          break;
+        }
+        else if (currevent->data.channel.param1 == 0x79)
+        {
+          writeevent (when, 0xB0, currevent->data.channel.channel, 0x79, 0x00); // reset all controllers
+          write_volume (when, currevent->data.channel.channel, DEFAULT_VOLUME); // reset volume
           break;
         }
         // fall through
