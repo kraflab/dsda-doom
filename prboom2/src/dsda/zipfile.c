@@ -15,16 +15,21 @@
 //	DSDA zipfile support using libzip
 //
 
-#include "../lprintf.h"
-#include "../m_file.h"
-#include "../z_zone.h"
-#include "utility.h"
 #include <stdio.h>
 #include <zip.h>
 
+#include "lprintf.h"
+#include "m_file.h"
+#include "z_zone.h"
+
+#include "dsda/utility.h"
+
 static char *dsda_JoinPath(const char *prefix, const char *suffix) {
-  int joined_path_length = snprintf(NULL, 0, "%s%s", prefix, suffix) + 1;
-  char *joined_path = (char *)Z_Malloc(joined_path_length);
+  int joined_path_length;
+  char *joined_path;
+
+  joined_path_length = snprintf(NULL, 0, "%s%s", prefix, suffix) + 1;
+  joined_path = (char *)Z_Malloc(joined_path_length);
   if (joined_path == NULL) {
     lprintf(LO_ERROR, "dsda_JoinPath: Failed to allocate joined path.\n");
     return NULL;
@@ -34,8 +39,10 @@ static char *dsda_JoinPath(const char *prefix, const char *suffix) {
 }
 
 static void dsda_CreateSubDir(const char *directory, const char *subdirectory) {
-  int result = 0;
-  char *full_path = dsda_JoinPath(directory, subdirectory);
+  char *full_path;
+  int result;
+
+  full_path = dsda_JoinPath(directory, subdirectory);
   if (full_path == NULL) {
     return;
   }
@@ -47,8 +54,10 @@ static void dsda_CreateSubDir(const char *directory, const char *subdirectory) {
 }
 
 static FILE *dsda_CreateFile(const char *directory, const char *filename) {
-  FILE *file_handle = NULL;
-  char *full_path = dsda_JoinPath(directory, filename);
+  FILE *file_handle;
+  char *full_path;
+
+  full_path = dsda_JoinPath(directory, filename);
   if (full_path == NULL) {
     return NULL;
   }
@@ -58,7 +67,9 @@ static FILE *dsda_CreateFile(const char *directory, const char *filename) {
 }
 
 static void dsda_WriteContentToFile(zip_file_t *input_file, FILE *dest_file, zip_uint64_t data_size) {
-  char *buffer = (char *)Z_Malloc(data_size);
+  char *buffer;
+
+  buffer = (char *)Z_Malloc(data_size);
   if (buffer == NULL) {
     lprintf(LO_ERROR, "dsda_WriteContentToFile: Could not allocate temporary buffer.\n");
     return;
@@ -70,10 +81,10 @@ static void dsda_WriteContentToFile(zip_file_t *input_file, FILE *dest_file, zip
 
 static void dsda_WriteZippedFilesToDest(zip_t *archive, const char *destination_directory) {
   for (zip_int64_t i = 0; i < zip_get_num_entries(archive, ZIP_FL_UNCHANGED); i++) {
-    const char *file_name = zip_get_name(archive, i, ZIP_FL_UNCHANGED);
-    zip_file_t *zipped_file = NULL;
+    zip_file_t *zipped_file;
     zip_stat_t stat;
-    FILE *dest_file_handle = NULL;
+    FILE *dest_file_handle;
+    const char *file_name = zip_get_name(archive, i, ZIP_FL_UNCHANGED);
 
     /* Intermediate directories show up as file */
     if (dsda_HasFileExt(file_name, "/")) {
@@ -108,7 +119,9 @@ static void dsda_WriteZippedFilesToDest(zip_t *archive, const char *destination_
 
 void dsda_UnzipFile(const char *zipped_file_name, const char *destination_directory) {
   int error_code;
-  zip_t *archive_handle = zip_open(zipped_file_name, ZIP_RDONLY, &error_code);
+  zip_t *archive_handle;
+
+  archive_handle = zip_open(zipped_file_name, ZIP_RDONLY, &error_code);
   if (archive_handle == NULL) {
     zip_error_t error;
     zip_error_init_with_code(&error, error_code);
