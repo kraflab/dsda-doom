@@ -220,9 +220,6 @@ extern int mlooky;
 void e6y_G_Compatibility(void);
 
 const char* PathFindFileName(const char* pPath);
-void NormalizeSlashes2(char *str);
-unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax);
-void AbbreviateName(char* lpszCanon, int cchMax, int bAtLeastName);
 
 //extern int viewMaxY;
 
