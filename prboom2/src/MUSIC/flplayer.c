@@ -77,6 +77,16 @@ const music_player_t fl_player =
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 
+#if (FLUIDSYNTH_VERSION_MAJOR < 2 || (FLUIDSYNTH_VERSION_MAJOR == 2 && FLUIDSYNTH_VERSION_MINOR < 2))
+  typedef int fl_sfread_count_t;
+  typedef long fl_sfseek_offset_t;
+  typedef long fl_sftell_t;
+#else
+  typedef fluid_long_long_t fl_sfread_count_t;
+  typedef fluid_long_long_t fl_sfseek_offset_t;
+  typedef fluid_long_long_t fl_sftell_t;
+#endif
+
 static fluid_settings_t *f_set;
 static fluid_synth_t *f_syn;
 static int f_font;
@@ -121,7 +131,7 @@ static void *fl_sfopen(const char *lumpname)
   return instream;
 }
 
-static int fl_sfread(void *buf, long long count, void *handle)
+static int fl_sfread(void *buf, fl_sfread_count_t count, void *handle)
 {
   if (mem_fread(buf, sizeof(byte), count, (MEMFILE *)handle) == count)
   {
@@ -130,7 +140,7 @@ static int fl_sfread(void *buf, long long count, void *handle)
   return FLUID_FAILED;
 }
 
-static int fl_sfseek(void *handle, long long offset, int origin)
+static int fl_sfseek(void *handle, fl_sfseek_offset_t offset, int origin)
 {
   if (mem_fseek((MEMFILE *)handle, offset, origin) < 0)
   {
@@ -145,7 +155,7 @@ static int fl_sfclose(void *handle)
   return FLUID_OK;
 }
 
-static long long fl_sftell(void *handle)
+static fl_sftell_t fl_sftell(void *handle)
 {
   return mem_ftell((MEMFILE *)handle);
 }
