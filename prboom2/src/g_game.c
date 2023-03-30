@@ -2202,19 +2202,18 @@ static uint64_t G_Signature(void)
 {
   static uint64_t s = 0;
   static dboolean computed = false;
-  char name[9];
   int episode, map;
 
   if (!computed) {
    computed = true;
    if (gamemode == commercial)
     for (map = haswolflevels ? 32 : 30; map; map--)
-      sprintf(name, "map%02d", map), s = G_UpdateSignature(s, name);
+      s = G_UpdateSignature(s, MAPNAME(1, map));
    else
     for (episode = gamemode==retail ? 4 :
      gamemode==shareware ? 1 : 3; episode; episode--)
       for (map = 9; map; map--)
-        sprintf(name, "E%dM%d", episode, map), s = G_UpdateSignature(s, name);
+        s = G_UpdateSignature(s, MAPNAME(episode, map));
   }
   return s;
 }
