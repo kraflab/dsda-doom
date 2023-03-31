@@ -1201,7 +1201,6 @@ static byte *P_DecompressData(const byte **data, int *len)
   zstream = Z_Malloc(sizeof(*zstream));
   memset(zstream, 0, sizeof(*zstream));
 
-  // Evidently next_in is the wrong type for legacy reasons
   zstream->next_in = u.d;
   zstream->avail_in = *len;
   zstream->next_out = output;
