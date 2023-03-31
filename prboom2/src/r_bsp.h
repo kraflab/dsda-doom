@@ -34,10 +34,6 @@
 #ifndef __R_BSP__
 #define __R_BSP__
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern seg_t    *curline;
 extern side_t   *sidedef;
 extern line_t   *linedef;

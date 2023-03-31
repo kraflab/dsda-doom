@@ -34,9 +34,6 @@
  *
  *-----------------------------------------------------------------------------*/
 
-#ifdef __GNUG__
-#pragma implementation "m_bbox.h"
-#endif
 #include "m_bbox.h"
 
 void M_ClearBox (fixed_t *box)

@@ -36,10 +36,6 @@
 
 #include "d_player.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Create any new ticcmds
 void FakeNetUpdate (void);
 

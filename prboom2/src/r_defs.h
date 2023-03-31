@@ -48,10 +48,6 @@
 // SECTORS do store MObjs anyway.
 #include "p_mobj.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // Silhouette, needed for clipping Segs (mainly)
 // and sprites representing things.
 #define SIL_NONE    0

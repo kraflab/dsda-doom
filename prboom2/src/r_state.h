@@ -39,11 +39,6 @@
 #include "d_player.h"
 #include "r_data.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 //
 // Refresh internal data structures,
 //  for rendering.
