@@ -1319,7 +1319,7 @@ static void D_AutoloadPWadDir()
 
 // Load all dehacked patches from the given directory.
 
-static void AutoLoadPatches(const char *path)
+static void LoadDehackedFilesAtPath(const char *path, dboolean defer_loading)
 {
     const char *filename;
     glob_t *glob;
@@ -1333,7 +1333,14 @@ static void AutoLoadPatches(const char *path)
         {
             break;
         }
-        ProcessDehFile(filename, D_dehout(), 0);
+        if(defer_loading)
+        {
+            dsda_AppendStringArg(dsda_arg_deh, filename);
+        }
+        else
+        {
+            ProcessDehFile(filename, D_dehout(), 0);
+        }
     }
 
     I_EndGlob(glob);
@@ -1347,17 +1354,17 @@ static void D_AutoloadDehIWadDir()
 
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false);
   Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false);
   Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false);
   Z_Free(autoload_dir);
 }
 
@@ -1369,7 +1376,7 @@ static void D_AutoloadDehPWadDir()
     {
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
-      AutoLoadPatches(autoload_dir);
+      LoadDehackedFilesAtPath(autoload_dir, false);
       Z_Free(autoload_dir);
     }
 }
@@ -1525,7 +1532,7 @@ static void D_AddZip(const char* zipped_file_name)
   dsda_UnzipFile(full_zip_path, temporary_directory.string);
 
   LoadWADsAtPath(temporary_directory.string, source_pwad);
-  AutoLoadPatches(temporary_directory.string);
+  LoadDehackedFilesAtPath(temporary_directory.string, true);
 
   dsda_FreeString(&temporary_directory);
 }
