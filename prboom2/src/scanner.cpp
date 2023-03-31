@@ -201,18 +201,13 @@ void Scanner::ExpandState()
 
 void Scanner::SaveState(Scanner &savedstate)
 {
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wclass-memaccess"
-
 	// This saves the entire parser state except for the data pointer.
 	if (savedstate.string != NULL) free(savedstate.string);
 	if (savedstate.nextState.string != NULL) free(savedstate.nextState.string);
-	memcpy(&savedstate, this, sizeof(*this));
+	savedstate = *this;
 	savedstate.string = strdup(string);
 	savedstate.nextState.string = strdup(nextState.string);
 	savedstate.data = NULL;
-
-	#pragma GCC diagnostic pop
 }
 
 void Scanner::RestoreState(Scanner &savedstate)
