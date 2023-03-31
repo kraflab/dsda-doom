@@ -686,7 +686,7 @@ void R_StoreWallRange(const int start, const int stop)
     maxdrawsegs = newmax;
   }
 
-  if(curline->miniseg == false) // figgi -- skip minisegs
+  if(curline->linedef)
     curline->linedef->flags |= ML_MAPPED;
 
   if (V_IsOpenGLMode())

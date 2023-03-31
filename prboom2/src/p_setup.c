@@ -557,8 +557,6 @@ static void P_LoadSegs (int lump)
       //li->v1 = &vertexes[v1];
       //li->v2 = &vertexes[v2];
 
-      li->miniseg = false; // figgi -- there are no minisegs in classic BSP nodes
-
       // e6y: moved down, see below
       //li->length  = GetDistance(li->v2->x - li->v1->x, li->v2->y - li->v1->y);
 
@@ -691,8 +689,6 @@ static void P_LoadSegs_V4(int lump)
     v1 = LittleLong(ml->v1);
     v2 = LittleLong(ml->v2);
 
-    li->miniseg = false; // figgi -- there are no minisegs in classic BSP nodes
-
     li->angle = (LittleShort(ml->angle))<<16;
     li->offset =(LittleShort(ml->offset))<<16;
     linedef = (unsigned short)LittleShort(ml->linedef);
@@ -817,7 +813,6 @@ static void P_LoadGLSegs(int lump)
     {
       ldef = &lines[ml->linedef];
       segs[i].linedef = ldef;
-      segs[i].miniseg = false;
       segs[i].angle = R_PointToAngle2(segs[i].v1->x,segs[i].v1->y,segs[i].v2->x,segs[i].v2->y);
 
       segs[i].sidedef = &sides[ldef->sidenum[ml->side]];
@@ -834,7 +829,6 @@ static void P_LoadGLSegs(int lump)
     }
     else
     {
-      segs[i].miniseg = true;
       segs[i].angle  = 0;
       segs[i].offset  = 0;
       segs[i].linedef = NULL;
@@ -1250,8 +1244,6 @@ static void P_LoadZSegs (const byte *data)
     v1 = LittleLong(ml->v1);
     v2 = LittleLong(ml->v2);
 
-    li->miniseg = false;
-
     linedef = (unsigned short)LittleShort(ml->linedef);
 
     //e6y: check for wrong indexes
@@ -1362,8 +1354,6 @@ static void P_LoadGLZSegs(const byte *data, int type)
       {
         line_t *ldef;
 
-        seg->miniseg = false;
-
         if ((unsigned int) line >= (unsigned int) numlines)
         {
           I_Error("P_LoadGLZSegs: seg %d, %d references a non-existent linedef %d",
@@ -1409,7 +1399,6 @@ static void P_LoadGLZSegs(const byte *data, int type)
       }
       else
       {
-        seg->miniseg = true;
         seg->angle = 0;
         seg->offset = 0;
         seg->linedef = NULL;
@@ -1426,7 +1415,7 @@ static void P_LoadGLZSegs(const byte *data, int type)
 
       seg = &segs[subsectors[i].firstline + j];
 
-      if (!seg->miniseg)
+      if (seg->linedef)
         seg->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
     }
   }
@@ -3265,7 +3254,7 @@ static void P_RemoveSlimeTrails(void)         // killough 10/98
   {
     const line_t *l;
 
-    if (segs[i].miniseg == true)        //figgi -- skip minisegs
+    if (!segs[i].linedef)
       break;                            //e6y: probably 'continue;'?
 
     l = segs[i].linedef;            // The parent linedef
