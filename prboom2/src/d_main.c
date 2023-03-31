@@ -1253,7 +1253,7 @@ const char *IWADBaseName(void)
 
 // Load all WAD files from the given directory.
 
-static void AutoLoadWADs(const char *path)
+static void LoadWADsAtPath(const char *path, wad_source_t source)
 {
     glob_t *glob;
     const char *filename;
@@ -1267,7 +1267,7 @@ static void AutoLoadWADs(const char *path)
         {
             break;
         }
-        D_AddFile(filename,source_auto_load);
+        D_AddFile(filename, source);
     }
 
     I_EndGlob(glob);
@@ -1290,17 +1290,17 @@ void D_AutoloadIWadDir()
 
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
   Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
   Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
   Z_Free(autoload_dir);
 }
 
@@ -1312,7 +1312,7 @@ static void D_AutoloadPWadDir()
     {
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
-      AutoLoadWADs(autoload_dir);
+      LoadWADsAtPath(autoload_dir, source_auto_load);
       Z_Free(autoload_dir);
     }
 }
@@ -1524,7 +1524,7 @@ static void D_AddZip(const char* zipped_file_name)
 
   dsda_UnzipFile(full_zip_path, temporary_directory.string);
 
-  AutoLoadWADs(temporary_directory.string);
+  LoadWADsAtPath(temporary_directory.string, source_pwad);
   AutoLoadPatches(temporary_directory.string);
 
   dsda_FreeString(&temporary_directory);
