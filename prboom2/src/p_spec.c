@@ -6287,7 +6287,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
         dboolean raise_or_lower;
         byte index;
 
-        static floor_e ceiling_type[2][7] = {
+        static ceiling_e ceiling_type[2][7] = {
           {
             ceilLowerByValue,
             ceilLowerToHighest,
@@ -6412,7 +6412,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       break;
     case zl_generic_stairs:
       {
-        stairs_e type;
+        stair_e type;
 
         type = (args[3] & 1) ? stairBuildUp : stairBuildDown;
         buttonSuccess = EV_BuildZDoomStairs(args[0], type, line,
