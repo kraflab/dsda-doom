@@ -388,7 +388,7 @@ const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
     {
       const byte* cb;
       byte* b;
-    } u = {demo_p};
+    } u = { demo_p };
 
     memset(&key_frame, 0, sizeof(key_frame));
 

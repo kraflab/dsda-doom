@@ -1190,7 +1190,7 @@ static byte *P_DecompressData(const byte **data, int *len)
   {
     const byte* cd;
     byte* d;
-  } u = {*data};
+  } u = { *data };
 
   // first estimate for compression rate:
   // output buffer size == 2.5 * input size

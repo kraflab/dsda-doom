@@ -118,7 +118,7 @@ static void dsda_PollRightStick(void) {
 static inline int PollButton(dsda_game_controller_button_t button)
 {
   // This depends on enums having same values
-  return SDL_GameControllerGetButton(game_controller, (SDL_GameControllerButton)button) << button;
+  return SDL_GameControllerGetButton(game_controller, (SDL_GameControllerButton) button) << button;
 }
 
 
