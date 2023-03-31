@@ -30,7 +30,7 @@ static int use_game_controller;
 static SDL_GameController* game_controller;
 
 typedef struct {
-  SDL_GameControllerButton button;
+  SDL_GameControllerAxis axis;
   int deadzone;
   int sensitivity;
 } axis_t;
@@ -80,7 +80,7 @@ const char* dsda_GameControllerButtonName(int button) {
 static float dsda_AxisValue(axis_t* axis) {
   int value;
 
-  value = SDL_GameControllerGetAxis(game_controller, axis->button);
+  value = SDL_GameControllerGetAxis(game_controller, axis->axis);
 
   // the positive axis max is 1 less
   if (value > (axis->deadzone - 1))
@@ -115,33 +115,39 @@ static void dsda_PollRightStick(void) {
     D_PostEvent(&ev);
 }
 
+static inline int PollButton(dsda_game_controller_button_t button)
+{
+  // This depends on enums having same values
+  return SDL_GameControllerGetButton(game_controller, (SDL_GameControllerButton)button) << button;
+}
+
+
 static void dsda_PollButtons(void) {
   event_t ev;
   float trigger;
 
   ev.type = ev_joystick;
-  ev.data1.i =
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_A) << 0) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_B) << 1) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_X) << 2) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_Y) << 3) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_BACK) << 4) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_GUIDE) << 5) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_START) << 6) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_LEFTSTICK) << 7) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_RIGHTSTICK) << 8) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_LEFTSHOULDER) << 9) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER) << 10) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_UP) << 11) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_DOWN) << 12) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_LEFT) << 13) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_DPAD_RIGHT) << 14) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_MISC1) << 15) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE1) << 16) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE2) << 17) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE3) << 18) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_PADDLE4) << 19) |
-    (SDL_GameControllerGetButton(game_controller, DSDA_CONTROLLER_BUTTON_TOUCHPAD) << 20);
+  ev.data1.i = PollButton(DSDA_CONTROLLER_BUTTON_A) |
+               PollButton(DSDA_CONTROLLER_BUTTON_B) |
+               PollButton(DSDA_CONTROLLER_BUTTON_X) |
+               PollButton(DSDA_CONTROLLER_BUTTON_Y) |
+               PollButton(DSDA_CONTROLLER_BUTTON_BACK) |
+               PollButton(DSDA_CONTROLLER_BUTTON_GUIDE) |
+               PollButton(DSDA_CONTROLLER_BUTTON_START) |
+               PollButton(DSDA_CONTROLLER_BUTTON_LEFTSTICK) |
+               PollButton(DSDA_CONTROLLER_BUTTON_RIGHTSTICK) |
+               PollButton(DSDA_CONTROLLER_BUTTON_LEFTSHOULDER) |
+               PollButton(DSDA_CONTROLLER_BUTTON_RIGHTSHOULDER) |
+               PollButton(DSDA_CONTROLLER_BUTTON_DPAD_UP) |
+               PollButton(DSDA_CONTROLLER_BUTTON_DPAD_DOWN) |
+               PollButton(DSDA_CONTROLLER_BUTTON_DPAD_LEFT) |
+               PollButton(DSDA_CONTROLLER_BUTTON_DPAD_RIGHT) |
+               PollButton(DSDA_CONTROLLER_BUTTON_MISC1) |
+               PollButton(DSDA_CONTROLLER_BUTTON_PADDLE1) |
+               PollButton(DSDA_CONTROLLER_BUTTON_PADDLE2) |
+               PollButton(DSDA_CONTROLLER_BUTTON_PADDLE3) |
+               PollButton(DSDA_CONTROLLER_BUTTON_PADDLE4) |
+               PollButton(DSDA_CONTROLLER_BUTTON_TOUCHPAD);
 
   trigger = dsda_AxisValue(&left_trigger);
   if (trigger)
