@@ -1519,10 +1519,7 @@ static void D_AddZip(const char* zipped_file_name)
 
   full_zip_path = I_RequireZip(zipped_file_name);
   dsda_InitString(&temporary_directory, I_GetTempDir());
-  dsda_StringCatF(&temporary_directory, "%c%s%c",
-                  PATHNAME_SEPARATOR,
-                  dsda_BaseName(zipped_file_name),
-                  PATHNAME_SEPARATOR);
+  dsda_StringCatF(&temporary_directory, "/%s/", dsda_BaseName(zipped_file_name));
   M_MakeDir(temporary_directory.string, false);
 
   dsda_UnzipFile(full_zip_path, temporary_directory.string);
