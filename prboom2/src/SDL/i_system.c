@@ -254,14 +254,7 @@ const char *I_DoomExeDir(void)
 
 const char* I_GetTempDir(void)
 {
-  static char tmp_path[PATH_MAX] = {0};
-
-  if (tmp_path[0] == 0)
-  {
-    GetTempPath(sizeof(tmp_path), tmp_path);
-  }
-
-  return tmp_path;
+  return M_getenv("TEMP");
 }
 
 #elif defined(AMIGA)
