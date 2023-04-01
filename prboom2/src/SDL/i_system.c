@@ -261,11 +261,8 @@ const char* I_GetTempDir(void)
     wchar_t wpath[PATH_MAX];
     DWORD result;
 
-#ifdef HAVE_GET_TEMP_PATH_2
-    result = GetTempPath2W(PATH_MAX, wpath);
-#else
     result = GetTempPathW(PATH_MAX, wpath);
-#endif
+
     if (result == 0 || result > MAX_PATH)
     {
       lprintf(LO_ERROR, "GetTempPath(2) failed\n");

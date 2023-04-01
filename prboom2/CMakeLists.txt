@@ -79,7 +79,6 @@ check_symbol_exists(strnicmp "string.h" HAVE_STRNICMP)
 check_symbol_exists(getopt "unistd.h" HAVE_GETOPT)
 check_symbol_exists(mmap "sys/mman.h" HAVE_MMAP)
 check_symbol_exists(CreateFileMapping "windows.h" HAVE_CREATE_FILE_MAPPING)
-check_symbol_exists(GetTempPath2 "windows.h" HAVE_GET_TEMP_PATH_2)
 check_symbol_exists(strsignal "string.h" HAVE_STRSIGNAL)
 check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
 
