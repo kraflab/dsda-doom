@@ -418,9 +418,9 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "force classic bsp nodes",
     arg_null,
   },
-  [dsda_arg_devparm] = {
-    "-devparm", NULL, NULL,
-    "turn on old development mode",
+  [dsda_arg_sigsegv] = {
+    "-sigsegv", NULL, NULL,
+    "disable the SIGSEGV signal handler",
     arg_null,
   },
   [dsda_arg_deathmatch] = {
