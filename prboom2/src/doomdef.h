@@ -41,7 +41,7 @@
 #endif
 
 // killough 4/25/98: Make gcc extensions mean nothing on other compilers
-#ifndef __GNUC__
+#if !defined(__GNUC__) && !defined(__clang__)
 #define __attribute__(x)
 #endif
 

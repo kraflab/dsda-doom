@@ -23,7 +23,7 @@
 #include "d_ticcmd.h"
 #include "tables.h"
 
-#ifndef __GNUC__
+#if !defined(__GNUC__) && !defined(__clang__)
 #define __attribute__(x)
 #endif
 

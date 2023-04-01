@@ -46,7 +46,7 @@ typedef enum
   LO_DEBUG=8,
 } OutputLevels;
 
-#ifndef __GNUC__
+#if !defined(__GNUC__) && !defined(__clang__)
 #define __attribute__(x)
 #endif
 
