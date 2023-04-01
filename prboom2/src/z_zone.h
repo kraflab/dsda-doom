@@ -39,7 +39,7 @@
 #ifndef __Z_ZONE__
 #define __Z_ZONE__
 
-#ifndef __GNUC__
+#if !defined(__GNUC__) && !defined(__clang__)
 #define __attribute__(x)
 #endif
 
