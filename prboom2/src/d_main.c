@@ -104,6 +104,7 @@
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
 #include "dsda/utility.h"
+#include "dsda/zipfile.h"
 #include "dsda/gl/render_scale.h"
 
 #include "heretic/mn_menu.h"
@@ -1159,6 +1160,7 @@ static void DoLooseFiles(void)
     dsda_arg_identifier_t arg_id;
   } looses[] = {
     { ".wad", dsda_arg_file },
+    { ".zip", dsda_arg_file },
     { ".lmp", dsda_arg_playdemo },
     { ".deh", dsda_arg_deh },
     { ".bex", dsda_arg_deh },
@@ -1251,7 +1253,7 @@ const char *IWADBaseName(void)
 
 // Load all WAD files from the given directory.
 
-static void AutoLoadWADs(const char *path)
+static void LoadWADsAtPath(const char *path, wad_source_t source)
 {
     glob_t *glob;
     const char *filename;
@@ -1265,7 +1267,7 @@ static void AutoLoadWADs(const char *path)
         {
             break;
         }
-        D_AddFile(filename,source_auto_load);
+        D_AddFile(filename, source);
     }
 
     I_EndGlob(glob);
@@ -1288,17 +1290,17 @@ void D_AutoloadIWadDir()
 
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
   Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
   Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
   Z_Free(autoload_dir);
 }
 
@@ -1310,14 +1312,14 @@ static void D_AutoloadPWadDir()
     {
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
-      AutoLoadWADs(autoload_dir);
+      LoadWADsAtPath(autoload_dir, source_auto_load);
       Z_Free(autoload_dir);
     }
 }
 
 // Load all dehacked patches from the given directory.
 
-static void AutoLoadPatches(const char *path)
+static void LoadDehackedFilesAtPath(const char *path, dboolean defer_loading)
 {
     const char *filename;
     glob_t *glob;
@@ -1331,7 +1333,14 @@ static void AutoLoadPatches(const char *path)
         {
             break;
         }
-        ProcessDehFile(filename, D_dehout(), 0);
+        if(defer_loading)
+        {
+            dsda_AppendStringArg(dsda_arg_deh, filename);
+        }
+        else
+        {
+            ProcessDehFile(filename, D_dehout(), 0);
+        }
     }
 
     I_EndGlob(glob);
@@ -1345,17 +1354,17 @@ static void D_AutoloadDehIWadDir()
 
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false);
   Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false);
   Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false);
   Z_Free(autoload_dir);
 }
 
@@ -1367,7 +1376,7 @@ static void D_AutoloadDehPWadDir()
     {
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
-      AutoLoadPatches(autoload_dir);
+      LoadDehackedFilesAtPath(autoload_dir, false);
       Z_Free(autoload_dir);
     }
 }
@@ -1508,6 +1517,24 @@ static void EvaluateDoomVerStr(void)
           PACKAGE_NAME);
 
   lprintf(LO_INFO, "Playing: %s\n", doomverstr);
+}
+
+static void D_AddZip(const char* zipped_file_name)
+{
+  dsda_string_t temporary_directory;
+  char* full_zip_path;
+
+  full_zip_path = I_RequireZip(zipped_file_name);
+  dsda_InitString(&temporary_directory, I_GetTempDir());
+  dsda_StringCatF(&temporary_directory, "/%s/", dsda_BaseName(zipped_file_name));
+  M_MakeDir(temporary_directory.string, true);
+
+  dsda_UnzipFile(full_zip_path, temporary_directory.string);
+
+  LoadWADsAtPath(temporary_directory.string, source_pwad);
+  LoadDehackedFilesAtPath(temporary_directory.string, true);
+
+  dsda_FreeString(&temporary_directory);
 }
 
 //
@@ -1656,6 +1683,11 @@ static void D_DoomMainSetup(void)
         continue;
       }
 
+      if (dsda_HasFileExt(file_name, ".zip"))
+      {
+        D_AddZip(file_name);
+        continue;
+      }
       // e6y
       // reorganization of the code for looking for wads
       // in all standard dirs (%DOOMWADDIR%, etc)

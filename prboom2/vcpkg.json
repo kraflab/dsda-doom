@@ -5,6 +5,14 @@
   "homepage": "https://github.com/kraflab/dsda-doom",
   "license": "GPL-2.0-only",
   "dependencies": [
+    {
+      "name": "libzip",
+      "default-features": false,
+      "features": [
+        "bzip2",
+        "liblzma"
+      ]
+    },
     "sdl2",
     {
       "name": "sdl2-mixer",

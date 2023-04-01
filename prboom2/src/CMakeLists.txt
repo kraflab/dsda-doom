@@ -217,6 +217,8 @@ set(COMMON_SRC
     dsda/udmf.h
     dsda/utility.c
     dsda/utility.h
+    dsda/zipfile.c
+    dsda/zipfile.h
     dstrings.c
     dstrings.h
     d_deh.c
@@ -532,6 +534,7 @@ function(AddGameExecutable TARGET SOURCES)
     )
 
     target_link_libraries(${TARGET} PRIVATE
+        libzip::zip
         ${SDL2_LIBRARIES}
         SDL2_mixer::SDL2_mixer
         ZLIB::ZLIB

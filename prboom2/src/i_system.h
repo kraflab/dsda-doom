@@ -90,6 +90,9 @@ char* I_FindWad(const char* wfname);
 char* I_RequireDeh(const char* wfname);
 char* I_FindDeh(const char* wfname);
 
+char* I_RequireZip(const char* wfname);
+char* I_FindZip(const char* wfname);
+
 /* cph 2001/11/18 - wrapper for read(2) which deals with partial reads */
 void I_Read(int fd, void* buf, size_t sz);
 

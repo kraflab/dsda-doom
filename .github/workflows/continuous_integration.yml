@@ -73,6 +73,7 @@ jobs:
             ${{ matrix.config.msys-env }}-SDL2
             ${{ matrix.config.msys-env }}-SDL2_image
             ${{ matrix.config.msys-env }}-SDL2_mixer
+            ${{ matrix.config.msys-env }}-libzip
 
       - name: Setup vcpkg (MSVC)
         if: ${{ matrix.config.vcpkg_triplet }}
@@ -112,7 +113,11 @@ jobs:
             libsdl2-dev \
             libsdl2-image-dev \
             libsdl2-mixer-dev \
-            libvorbis-dev
+            libvorbis-dev \
+            libzip-dev \
+            zipcmp \
+            zipmerge \
+            ziptool
 
       - name: Install Dependencies (macOS)
         if: runner.os == 'macOS'
@@ -126,6 +131,7 @@ jobs:
             dumb \
             fluid-synth \
             libvorbis \
+            libzip \
             mad \
             portmidi \
             sdl2 \

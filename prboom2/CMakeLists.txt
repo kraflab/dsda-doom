@@ -100,6 +100,7 @@ include(PkgConfigHelper)
 
 set(OpenGL_GL_PREFERENCE LEGACY)
 find_package(OpenGL 2.0 REQUIRED)
+find_package(libzip REQUIRED)
 find_package(SDL2 2.0.7 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(ZLIB REQUIRED)
