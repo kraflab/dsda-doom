@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2022 by Pierre Wendling
+// Copyright(C) 2023 by Pierre Wendling
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -15,15 +15,9 @@
 //	DSDA zipfile support using libzip
 //
 
-#ifndef DSDA_ZIPFILE
-#define DSDA_ZIPFILE
+#ifndef __DSDA_ZIPFILE__
+#define __DSDA_ZIPFILE__
 
-/**
- * Unzips the file into the destination
- *
- * @param zipped_file_name the name of the zip file
- * @param destination_directory the directory to unpack the content to
- */
 void dsda_UnzipFile(const char *zipped_file_name, const char *destination_directory);
 
-#endif /* DSDA_ZIPFILE */
+#endif /* __DSDA_ZIPFILE__ */
