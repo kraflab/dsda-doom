@@ -96,6 +96,7 @@ void dsda_UnzipFile(const char *zipped_file_name, const char *destination_direct
   int error_code;
   zip_t *archive_handle;
 
+  total_bytes_read = 0;
   archive_handle = zip_open(zipped_file_name, ZIP_RDONLY, &error_code);
   if (archive_handle == NULL) {
     zip_error_t error;
