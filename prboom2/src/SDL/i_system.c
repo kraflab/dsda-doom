@@ -254,7 +254,7 @@ const char *I_DoomExeDir(void)
 
 const char* I_GetTempDir(void)
 {
-  static const char* tmp_path = NULL;
+  static const char* tmp_path;
 
   if (!tmp_path)
   {
@@ -264,14 +264,9 @@ const char* I_GetTempDir(void)
     result = GetTempPathW(PATH_MAX, wpath);
 
     if (result == 0 || result > MAX_PATH)
-    {
-      lprintf(LO_ERROR, "GetTempPath(2) failed\n");
-      tmp_path = strdup(".");
-    }
+      I_Error("I_GetTempDir: GetTempPathW failed");
     else
-    {
       tmp_path = ConvertWideToUtf8(wpath);
-    }
   }
 
   return tmp_path;
