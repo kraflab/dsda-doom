@@ -466,7 +466,11 @@ int I_MessageBox(const char* text, unsigned int type)
   if (!dsda_Flag(dsda_arg_no_message_box))
   {
     HWND current_hwnd = GetForegroundWindow();
-    result = MessageBox(GetDesktopWindow(), text, PACKAGE_NAME, type|MB_TASKMODAL|MB_TOPMOST);
+    wchar_t *wtext = ConvertUtf8ToWide(text);
+    wchar_t *wpackage = ConvertUtf8ToWide(PACKAGE_NAME);
+    result = MessageBoxW(GetDesktopWindow(), wtext, wpackage, type|MB_TASKMODAL|MB_TOPMOST);
+    Z_Free(wtext);
+    Z_Free(wpackage);
     I_SwitchToWindow(current_hwnd);
     return result;
   }
