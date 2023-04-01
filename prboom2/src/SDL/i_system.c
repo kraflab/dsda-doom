@@ -258,10 +258,23 @@ const char* I_GetTempDir(void)
 
   if (!tmp_path)
   {
-    tmp_path = M_getenv("TEMP");
+    wchar_t wpath[PATH_MAX];
+    DWORD result;
 
-    if (!tmp_path)
+#ifdef HAVE_GET_TEMP_PATH_2
+    result = GetTempPath2W(PATH_MAX, wpath);
+#else
+    result = GetTempPathW(PATH_MAX, wpath);
+#endif
+    if (result == 0 || result > MAX_PATH)
+    {
+      lprintf(LO_ERROR, "GetTempPath(2) failed\n");
       tmp_path = strdup(".");
+    }
+    else
+    {
+      tmp_path = ConvertWideToUtf8(wpath);
+    }
   }
 
   return tmp_path;

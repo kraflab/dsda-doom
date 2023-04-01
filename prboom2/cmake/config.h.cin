@@ -12,6 +12,7 @@
 #cmakedefine HAVE_GETOPT
 #cmakedefine HAVE_MMAP
 #cmakedefine HAVE_CREATE_FILE_MAPPING
+#cmakedefine HAVE_GET_TEMP_PATH_2
 #cmakedefine HAVE_STRSIGNAL
 #cmakedefine HAVE_MKSTEMP
 
