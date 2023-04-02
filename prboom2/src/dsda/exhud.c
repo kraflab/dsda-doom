@@ -760,6 +760,11 @@ void dsda_RefreshExHudMinimap(void) {
 
   if (dsda_ShowMinimap()) {
     dsda_TurnComponentOn(exhud_minimap);
+
+    // Need to update the component before calling AM_Start
+    if (components[exhud_minimap].initialized)
+      components[exhud_minimap].update(components[exhud_minimap].data);
+
     if (in_game && gamestate == GS_LEVEL)
       AM_Start(false);
   }
