@@ -328,6 +328,7 @@ typedef struct line_s
   sector_t *backsector;
   int validcount;        // if == validcount, already checked
   int validcount2;
+  int gl_culled_frame;
   void *specialdata;     // thinker_t for reversable actions
   int r_validcount;      // cph: if == gametic, r_flags already done
   r_flags_t r_flags;     // cph

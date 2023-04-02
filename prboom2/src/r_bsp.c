@@ -390,12 +390,18 @@ static void R_AddLine (seg_t *line)
       gld_AddPlane(currentsubsectornum, floorplane, ceilingplane);
     }
 
+    if (!l || l->gl_culled_frame == r_frame_count)
+    {
+      return;
+    }
+
     angle1 = R_PointToPseudoAngle(line->v1->x, line->v1->y);
     angle2 = R_PointToPseudoAngle(line->v2->x, line->v2->y);
 
     // Back side, i.e. backface culling	- read: endAngle >= startAngle!
-    if (angle2 - angle1 < ANG180 || !line->linedef)
+    if (angle2 - angle1 < ANG180)
     {
+      l->gl_culled_frame = r_frame_count;
       return;
     }
     if (!gld_clipper_SafeCheckRange(angle2, angle1))
