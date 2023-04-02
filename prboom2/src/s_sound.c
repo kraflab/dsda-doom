@@ -983,7 +983,7 @@ static int Raven_S_getChannel(mobj_t *origin, sfxinfo_t *sfx, sfx_params_t *para
 
   for (i = 0; i < numChannels; i++)
   {
-    if (gamestate != GS_LEVEL || origin->player)
+    if (gamestate != GS_LEVEL || origin == players[displayplayer].mo)
     {
       i = numChannels;
       break;              // let the player have more than one sound.
