@@ -254,11 +254,19 @@ const char *I_DoomExeDir(void)
 
 const char* I_GetTempDir(void)
 {
-  static char tmp_path[PATH_MAX] = {0};
+  static const char* tmp_path;
 
-  if (tmp_path[0] == 0)
+  if (!tmp_path)
   {
-    GetTempPath(sizeof(tmp_path), tmp_path);
+    wchar_t wpath[PATH_MAX];
+    DWORD result;
+
+    result = GetTempPathW(PATH_MAX, wpath);
+
+    if (result == 0 || result > MAX_PATH)
+      I_Error("I_GetTempDir: GetTempPathW failed");
+    else
+      tmp_path = ConvertWideToUtf8(wpath);
   }
 
   return tmp_path;
