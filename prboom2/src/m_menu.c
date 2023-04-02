@@ -1296,7 +1296,8 @@ void M_SfxVol(int choice)
   switch(choice)
   {
     case 0:
-      dsda_DecrementIntConfig(dsda_config_sfx_volume, true);
+      if (dsda_IntConfig(dsda_config_sfx_volume) > 0)
+        dsda_DecrementIntConfig(dsda_config_sfx_volume, true);
       break;
     case 1:
       dsda_IncrementIntConfig(dsda_config_sfx_volume, true);
@@ -1313,7 +1314,8 @@ void M_MusicVol(int choice)
   switch(choice)
   {
     case 0:
-      dsda_DecrementIntConfig(dsda_config_music_volume, true);
+      if (dsda_IntConfig(dsda_config_music_volume) > 0)
+        dsda_DecrementIntConfig(dsda_config_music_volume, true);
       break;
     case 1:
       dsda_IncrementIntConfig(dsda_config_music_volume, true);
