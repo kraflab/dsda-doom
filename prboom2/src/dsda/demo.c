@@ -152,7 +152,7 @@ char* dsda_FailedDemoName(void) {
 
     dsda_StringPrintF(&str, "%s/failed_demos", dsda_DataDir());
     M_MakeDir(str.string, false); // false: it's ok to fail here
-    dsda_StringCatF(&str, "/%s", dsda_demo_name_base);
+    dsda_StringCatF(&str, "/%s", dsda_BaseName(dsda_demo_name_base));
 
     dsda_failed_demo_name_base = str.string;
   }
