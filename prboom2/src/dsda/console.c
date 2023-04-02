@@ -891,6 +891,12 @@ static dboolean console_BasicCheat(const char* command, const char* args) {
   return M_CheatEntered(command, args);
 }
 
+static dboolean console_IDDT(const char* command, const char* args) {
+  M_CheatIDDT();
+
+  return true;
+}
+
 static dboolean console_CheatFullClip(const char* command, const char* args) {
   target_player.cheats ^= CF_INFINITE_AMMO;
   return true;
@@ -2233,7 +2239,7 @@ static console_command_entry_t console_commands[] = {
   { "idclip", console_BasicCheat, CF_DEMO },
   { "idmypos", console_BasicCheat, CF_DEMO },
   { "idrate", console_BasicCheat, CF_DEMO },
-  { "iddt", console_BasicCheat, CF_DEMO },
+  { "iddt", console_IDDT, CF_DEMO },
   { "iddst", console_BasicCheat, CF_DEMO },
   { "iddkt", console_BasicCheat, CF_DEMO },
   { "iddit", console_BasicCheat, CF_DEMO },
@@ -2264,7 +2270,7 @@ static console_command_entry_t console_commands[] = {
   { "rambo", console_BasicCheat, CF_DEMO },
   { "skel", console_BasicCheat, CF_DEMO },
   { "shazam", console_BasicCheat, CF_DEMO },
-  { "ravmap", console_BasicCheat, CF_DEMO },
+  { "ravmap", console_IDDT, CF_DEMO },
   { "cockadoodledoo", console_BasicCheat, CF_DEMO },
   { "gimme", console_BasicCheat, CF_DEMO },
   { "engage", console_BasicCheat, CF_DEMO },
@@ -2278,7 +2284,7 @@ static console_command_entry_t console_commands[] = {
   { "sherlock", console_BasicCheat, CF_DEMO },
   { "casper", console_BasicCheat, CF_DEMO },
   { "init", console_BasicCheat, CF_DEMO },
-  { "mapsco", console_BasicCheat, CF_DEMO },
+  { "mapsco", console_IDDT, CF_DEMO },
   { "deliverance", console_BasicCheat, CF_DEMO },
   { "shadowcaster", console_BasicCheat, CF_DEMO },
   { "visit", console_BasicCheat, CF_DEMO },

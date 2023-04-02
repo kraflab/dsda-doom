@@ -70,6 +70,7 @@ extern cheatseq_t cheat[];
 
 void M_CheatGod(void);
 void M_CheatNoClip(void);
+void M_CheatIDDT(void);
 dboolean M_CheatResponder(event_t *ev);
 dboolean M_CheatEntered(const char* element, const char* value);
 

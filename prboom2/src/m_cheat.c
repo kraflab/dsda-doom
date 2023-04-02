@@ -591,18 +591,21 @@ static void cheat_massacre()    // jff 2/01/98 kill all monsters
   doom_printf("%d Monster%s Killed", killcount, killcount==1 ? "" : "s");
 }
 
+void M_CheatIDDT(void)
+{
+  extern int dsda_reveal_map;
+
+  dsda_TrackFeature(uf_iddt);
+
+  dsda_reveal_map = (dsda_reveal_map+1) % 3;
+}
+
 // killough 2/7/98: move iddt cheat from am_map.c to here
 // killough 3/26/98: emulate Doom better
 static void cheat_ddt()
 {
-  extern int dsda_reveal_map;
-
   if (automap_input)
-  {
-    dsda_TrackFeature(uf_iddt);
-
-    dsda_reveal_map = (dsda_reveal_map+1) % 3;
-  }
+    M_CheatIDDT();
 }
 
 static void cheat_reveal_secret()
