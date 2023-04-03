@@ -567,6 +567,34 @@ static void R_DoDrawPlane(visplane_t *pl)
       // old code: dcvars.iscale = FRACUNIT*200/viewheight;
       dcvars.iscale = skyiscale;
 
+      // heretic has a hack: sky textures are defined with 128 height, but the patches are 200
+      // heretic textures with only one patch point their columns to the original patch data
+      // when drawing skies, it used this to "overrun" into the lower patch pixels
+      if (heretic && textures[texture]->patchcount == 1)
+      {
+        const rpatch_t *patch;
+
+        patch = (const rpatch_t*) R_PatchByNum(textures[texture]->patches[0].patch);
+
+        if (patch->height == 200)
+        {
+          dcvars.texheight = patch->height;
+          dcvars.texturemid = 200 << FRACBITS;
+          dcvars.iscale = (200 << FRACBITS) / SCREENHEIGHT;
+
+          for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)
+            if ((dcvars.yl = pl->top[x]) != SHRT_MAX && dcvars.yl <= (dcvars.yh = pl->bottom[x])) // dropoff overflow
+            {
+              dcvars.source = R_GetPatchColumn(patch, (an + xtoviewangle[x]) >> ANGLETOSKYSHIFT)->pixels;
+              dcvars.prevsource = R_GetPatchColumn(patch, (an + xtoviewangle[x-1]) >> ANGLETOSKYSHIFT)->pixels;
+              dcvars.nextsource = R_GetPatchColumn(patch, (an + xtoviewangle[x+1]) >> ANGLETOSKYSHIFT)->pixels;
+              colfunc(&dcvars);
+            }
+
+          return;
+        }
+      }
+
       tex_patch = R_TextureCompositePatchByNum(texture);
 
       // killough 10/98: Use sky scrolling offset, and possibly flip picture

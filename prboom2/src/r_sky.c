@@ -65,8 +65,7 @@ void R_InitSkyMap(void)
   if (!dsda_MouseLook())
   {
     skystretch = false;
-    // HERETIC_TODO: this is set to 200, but something else is missing...
-    skytexturemid = 100*FRACUNIT;
+    skytexturemid = (raven ? 200 : 100) * FRACUNIT;
     skyiscale = (200 << FRACBITS) / SCREENHEIGHT;
   }
   else
