@@ -549,6 +549,7 @@ function(AddGameExecutable TARGET SOURCES)
 
     set_target_properties(${TARGET} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${DSDA_OUTPUT_PATH}
+        INTERPROCEDURAL_OPTIMIZATION ${ENABLE_LTO}
     )
 
     if(HAVE_LIBSDL2_IMAGE)

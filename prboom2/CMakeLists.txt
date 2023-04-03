@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.4)
+cmake_minimum_required(VERSION 3.9)
 
 option(WITH_DUMB "Use DUMB if available" ON)
 if(WITH_DUMB)
@@ -65,6 +65,16 @@ option(CMAKE_FIND_PACKAGE_PREFER_CONFIG "Search for package config before using 
 if(VCPKG_TOOLCHAIN)
     set(ENV{PKG_CONFIG_PATH} "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/pkgconfig")
 endif()
+
+if(POLICY CMP0069)
+    cmake_policy(SET CMP0069 NEW)
+endif()
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT HAVE_LTO)
+
+include(CMakeDependentOption)
+cmake_dependent_option(ENABLE_LTO "Use link-time optimisation" ON "HAVE_LTO" OFF)
 
 set(PACKAGE_NAME "${PROJECT_NAME}")
 set(PACKAGE_TARNAME "dsda-doom")
