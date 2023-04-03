@@ -164,7 +164,7 @@ endif()
 set(DSDAPWADDIR "${DEFAULT_WAD_DIR}" CACHE STRING "Path to install DSDA-Doom internal WAD, relative to CMAKE_INSTALL_PREFIX.")
 set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/${DEFAULT_WAD_DIR}" CACHE PATH "Path to look for WAD files.")
 
-set(FULL_PWAD_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${DSDAPWADDIR}")
+file(RELATIVE_PATH DSDA_BIN_TO_PWAD_PATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}" "${CMAKE_INSTALL_PREFIX}/${DSDAPWADDIR}")
 
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 
