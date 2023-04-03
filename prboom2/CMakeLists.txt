@@ -156,6 +156,7 @@ endif()
 
 if(WIN32)
     set(DEFAULT_WAD_DIR ".")
+    set(CMAKE_INSTALL_BINDIR ".")
 else()
     set(DEFAULT_WAD_DIR "${CMAKE_INSTALL_DATADIR}/games/doom")
 endif()
