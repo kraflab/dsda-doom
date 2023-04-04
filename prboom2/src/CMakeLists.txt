@@ -591,7 +591,12 @@ function(AddGameExecutable TARGET SOURCES)
         )
     endif()
 
-    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+    if(WIN32)
+        set(DSDA_BINARY_INSTALL_DIR ".")
+    else()
+        set(DSDA_BINARY_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}")
+    endif()
+    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
 
     target_link_libraries(${TARGET} PRIVATE
         ${OPENGL_gl_LIBRARY}
