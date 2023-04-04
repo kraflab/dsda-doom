@@ -333,10 +333,10 @@ dboolean HasTrailingSlash(const char* dn)
           );
 }
 
-static const char *GetExecutableDir(void)
+static const char *I_GetBasePath(void)
 {
   static char *executable_dir;
-  /* SDL_GetBasePath is expensive call */
+  /* SDL_GetBasePath is an expensive call */
   if (!executable_dir)
     executable_dir = SDL_GetBasePath();
   return executable_dir;
@@ -373,7 +373,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
     {DOOMWADDIR}, // build-time configured DOOMWADDIR
     {DSDA_ABSOLUTE_PWAD_PATH}, // build-time configured absolute path to dsda-doom.wad
-    {NULL, DSDA_BIN_TO_PWAD_PATH, NULL, GetExecutableDir}, // build-time configured location of dsda-doom.wad based on the executable
+    {NULL, DSDA_BIN_TO_PWAD_PATH, NULL, I_GetBasePath}, // build-time configured location of dsda-doom.wad based on the executable
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
     {"/usr/local/share/games/doom"},
