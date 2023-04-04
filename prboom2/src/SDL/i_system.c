@@ -372,7 +372,8 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL}, // current working directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
     {DOOMWADDIR}, // build-time configured DOOMWADDIR
-    {NULL, DSDAPWADDIR, NULL, GetExecutableDir}, // build-time configured location of dsda-doom.wad
+    {DSDA_ABSOLUTE_PWAD_PATH}, // build-time configured absolute path to dsda-doom.wad
+    {NULL, DSDA_BIN_TO_PWAD_PATH, NULL, GetExecutableDir}, // build-time configured location of dsda-doom.wad based on the executable
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
     {"/usr/local/share/games/doom"},
