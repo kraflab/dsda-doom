@@ -171,6 +171,11 @@ else()
 endif()
 file(RELATIVE_PATH DSDA_BIN_TO_PWAD_PATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}" "${DSDA_ABSOLUTE_PWAD_PATH}")
 
+# If empty, both are in the same directory
+if(NOT DSDA_BIN_TO_PWAD_PATH)
+    set(DSDA_BIN_TO_PWAD_PATH ".")
+endif()
+
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 
 # Debug options, disabled by default
