@@ -64,7 +64,7 @@ Run the CMake configuration:
 
 ```
 cd dsda-doom
-cmake -Sprboom2 -Bbuild -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake"
+cmake -Sprboom2 -Bbuild -DCMAKE_TOOLCHAIN_FILE="C:\vcpkg\scripts\buildsystems\vcpkg.cmake" -DENABLE_LTO=ON
 ```
 
 During this step, vcpkg will build all the dependencies. If vcpkg does not get invoked or CMake fails at finding the dependencies, delete the build directory and make sure the path to the `vcpkg.cmake` toolchain is correct.
@@ -161,6 +161,8 @@ Run the CMake configuration:
 cd dsda-doom
 cmake -Sprboom2 -Bbuild -GNinja -DCMAKE_BUILD_TYPE=Release
 ```
+
+CMake does not appear to support LTO properly for MinGW GCC which results in much longer linking time. Consider only enabling it when making a release.
 
 And finally, build the project:
 

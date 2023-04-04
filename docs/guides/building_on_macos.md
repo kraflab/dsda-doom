@@ -22,20 +22,16 @@ git clone https://github.com/kraflab/dsda-doom.git
 ```
 Prepare the build folder, generate the build system, and compile:
 ```
-cd dsda-doom/prboom2
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make
+cd dsda-doom
+cmake -Sprboom2 -Bbuild -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=ON
+cmake --build build
 ```
-Note: Instead of `make`, consider using `make -j4` or `make -j$(nproc)` to speed up compiling.
 
 The newly built binaries are located in the build folder.
 
 ## Collect DYLIB Files
 Create a release folder next to the build folder and copy the Binaries and .wad files to it:
 ```
-cd ..
 mkdir release
 cp ./build/dsda-doom ./release/dsda-doom
 cp ./build/*.wad ./release/
