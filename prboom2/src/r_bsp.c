@@ -434,8 +434,7 @@ static void R_AddLine (seg_t *line)
       maxdrawsegs = newmax;
     }
 
-    if(curline->miniseg == false) // figgi -- skip minisegs
-      curline->linedef->flags |= ML_MAPPED;
+    curline->linedef->flags |= ML_MAPPED;
 
     // proff 11/99: the rest of the calculations is not needed for OpenGL
     ds_p++->curline = curline;
@@ -849,7 +848,7 @@ static void R_Subsector(int num)
   line = &segs[sub->firstline];
   while (count--)
   {
-    if (line->miniseg == false)
+    if (line->linedef)
       R_AddLine (line);
     line++;
     curline = NULL; /* cph 2001/11/18 - must clear curline now we're done with it, so R_ColourMap doesn't try using it for other things */

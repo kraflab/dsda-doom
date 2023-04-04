@@ -397,10 +397,6 @@ typedef struct
   side_t* sidedef;
   line_t* linedef;
 
-  // figgi -- needed for glnodes
-  dboolean   miniseg;
-
-
   // Sector references.
   // Could be retrieved from linedef, too
   // (but that would be slower -- killough)
