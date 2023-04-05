@@ -1449,6 +1449,20 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
       gltexture->flags = 0;
       gltexture->realtexwidth=texture->width;
       gltexture->realtexheight=texture->height;
+
+      {
+        const rpatch_t *patch;
+
+        patch = R_HackedSkyPatch(texture);
+
+        if (patch)
+        {
+          gltexture->patch_index = texture->patches[0].patch;
+          gltexture->flags |= GLTEXTURE_SKYHACK;
+          gltexture->realtexheight=patch->height;
+        }
+      }
+
       gltexture->leftoffset=0;
       gltexture->topoffset=0;
       gltexture->tex_width=gld_GetTexDimension(gltexture->realtexwidth);
@@ -1529,7 +1543,15 @@ void gld_BindSkyTexture(GLTexture *gltexture)
 
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   memset(buffer,0,gltexture->buffer_size);
-  patch=R_TextureCompositePatchByNum(gltexture->index);
+
+  if (gltexture->flags & GLTEXTURE_SKYHACK)
+  {
+    patch=R_PatchByNum(gltexture->patch_index);
+  }
+  else
+  {
+    patch=R_TextureCompositePatchByNum(gltexture->index);
+  }
 
   gld_AddIndexedSkyToTexture(gltexture, buffer, patch, gld_paletteIndex, usegamma);
 
