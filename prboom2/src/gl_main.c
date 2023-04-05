@@ -1194,6 +1194,12 @@ void gld_Clear(void)
     glClear(clearbits);
 }
 
+#define ANGLE_T_TO_PITCH_F(x) (float) ((x) >> ANGLETOFINESHIFT) * 360.0f / FINEANGLES;
+
+// lookdir range is -110 (down) to 90 (up)
+// pitch is -lookdir * ang1 / pi
+static const float raven_pitch_limit = ANGLE_T_TO_PITCH_F((angle_t) (int) (-90 * ANG1 / M_PI));
+
 void gld_StartDrawScene(void)
 {
   // Progress fuzz time seed
@@ -1225,11 +1231,24 @@ void gld_StartDrawScene(void)
   mlook_or_fov = dsda_MouseLook() || (gl_render_fov != FOV90);
   if(!mlook_or_fov)
   {
-    pitch = 0.0f;
-    paperitems_pitch = 0.0f;
+    if (raven)
+    {
+      pitch = ANGLE_T_TO_PITCH_F(viewpitch);
+      paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
 
-    skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
-    skyYShift = 200.0f / 319.5f;
+      viewPitch = (pitch > 180 ? pitch - 360 : pitch);
+
+      skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
+      skyYShift = 0.875 * (200.0f / 320.0f) * viewPitch / (360.0f - raven_pitch_limit);
+    }
+    else
+    {
+      pitch = 0.0f;
+      paperitems_pitch = 0.0f;
+
+      skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
+      skyYShift = 200.0f / 319.5f;
+    }
   }
   else
   {
@@ -1238,7 +1257,7 @@ void gld_StartDrawScene(void)
     skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f / skyscale);
     skyYShift = f / 128.0f + 200.0f / 320.0f / skyscale;
 
-    pitch = (float)(viewpitch>>ANGLETOFINESHIFT) * 360.0f / FINEANGLES;
+    pitch = ANGLE_T_TO_PITCH_F(viewpitch);
     paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
     viewPitch = (pitch > 180 ? pitch - 360 : pitch);
   }
