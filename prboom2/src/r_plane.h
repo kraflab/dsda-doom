@@ -52,6 +52,8 @@ void R_InitPlanes(void);
 void R_ClearPlanes(void);
 void R_DrawPlanes (void);
 
+const rpatch_t *R_HackedSkyPatch(texture_t *texture);
+
 visplane_t *R_FindPlane(
                         fixed_t height,
                         int picnum,

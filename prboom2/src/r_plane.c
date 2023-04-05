@@ -389,6 +389,26 @@ static void R_MakeSpans(int x, unsigned int t1, unsigned int b1,
     spanstart[b2--] = x;
 }
 
+// heretic has a hack: sky textures are defined with 128 height, but the patches are 200
+// heretic textures with only one patch point their columns to the original patch data
+// when drawing skies, it used this to "overrun" into the lower patch pixels
+const rpatch_t *R_HackedSkyPatch(texture_t *texture)
+{
+  if (heretic && texture->patchcount == 1)
+  {
+    const rpatch_t *patch;
+
+    patch = (const rpatch_t*) R_PatchByNum(texture->patches[0].patch);
+
+    if (patch->height == 200)
+    {
+      return patch;
+    }
+  }
+
+  return NULL;
+}
+
 // New function, by Lee Killough
 
 static void R_DoDrawPlane(visplane_t *pl)
@@ -567,16 +587,12 @@ static void R_DoDrawPlane(visplane_t *pl)
       // old code: dcvars.iscale = FRACUNIT*200/viewheight;
       dcvars.iscale = skyiscale;
 
-      // heretic has a hack: sky textures are defined with 128 height, but the patches are 200
-      // heretic textures with only one patch point their columns to the original patch data
-      // when drawing skies, it used this to "overrun" into the lower patch pixels
-      if (heretic && textures[texture]->patchcount == 1)
       {
         const rpatch_t *patch;
 
-        patch = (const rpatch_t*) R_PatchByNum(textures[texture]->patches[0].patch);
+        patch = R_HackedSkyPatch(textures[texture]);
 
-        if (patch->height == 200)
+        if (patch)
         {
           dcvars.texheight = patch->height;
           dcvars.texturemid = 200 << FRACBITS;
