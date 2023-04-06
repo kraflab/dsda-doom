@@ -76,6 +76,15 @@
 
 typedef unsigned angle_t;
 
+#define ANGLE_T_TO_PITCH_F(x) ((float) ((x) >> ANGLETOFINESHIFT) * 360.0f / FINEANGLES)
+#define ANGLE_T_TO_LOOKDIR(x) ((int) -((int) (x) * M_PI / ANG1))
+
+// lookdir range is -110 (down) to 90 (up)
+// pitch is -lookdir * ang1 / pi
+static const angle_t raven_angle_down_limit = (angle_t) (int) (110 * ANG1 / M_PI);
+static const angle_t raven_angle_up_limit = (angle_t) (int) (-90 * ANG1 / M_PI);
+static const float raven_pitch_up_limit = ANGLE_T_TO_PITCH_F(raven_angle_up_limit);
+
 // Load trig tables if needed
 void R_LoadTrigTables(void);
 

@@ -147,7 +147,7 @@ void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y)
 
   sx = (wall->flag == GLDWF_SKYFLIP ? -128.0f : 128.0f);
 
-  if (!mlook_or_fov)
+  if (raven || !mlook_or_fov)
   {
     sx = sx / (float)wall->gltexture->buffer_width;
     sy = 200.0f / (wall->gltexture->buffer_height * 1.25f);
@@ -190,7 +190,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
       texturetranslation[s->toptexture] == skytexture || l->special == 271 || l->special == 272);
     if (wall->gltexture)
     {
-      if (!mlook_or_fov)
+      if (raven || !mlook_or_fov)
       {
         wall->skyyaw  = -2.0f*((-(float)((viewangle+s->textureoffset)>>ANGLETOFINESHIFT)*360.0f/FINEANGLES)/90.0f);
         wall->skyymid = 200.0f/319.5f*(((float)s->rowoffset/(float)FRACUNIT - 28.0f)/100.0f);
@@ -461,7 +461,7 @@ void gld_DrawScreenSkybox(void)
     gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-    if (!mlook_or_fov)
+    if (raven || !mlook_or_fov)
     {
       fV1 = SkyBox.y_offset / 127.0f;
       fV2 = fV1 + 320.0f / 200.0f;

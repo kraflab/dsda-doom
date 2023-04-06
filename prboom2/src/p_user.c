@@ -335,8 +335,19 @@ void P_SetPitch(player_t *player)
       {
         if (!mo->reactiontime && automap_off)
         {
-          mo->pitch += (mlooky << 16);
-          CheckPitch((signed int *)&mo->pitch);
+          if (raven && !demorecording)
+          {
+            player->lookdir += ANGLE_T_TO_LOOKDIR(mlooky << 16);
+            if (player->lookdir > 90)
+              player->lookdir = 90;
+            if (player->lookdir < -110)
+              player->lookdir = -110;
+          }
+          else
+          {
+            mo->pitch += (mlooky << 16);
+            CheckPitch((signed int *)&mo->pitch);
+          }
         }
       }
       else

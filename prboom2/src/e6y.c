@@ -113,9 +113,6 @@ float skyXShift;
 float skyYShift;
 dboolean mlook_or_fov;
 
-int maxViewPitch;
-int minViewPitch;
-
 #ifdef _WIN32
 const char* WINError(void)
 {
@@ -278,28 +275,23 @@ void M_ChangeSkyMode(void)
     gl_drawskys = gl_skymode;
 }
 
+static int upViewPitchLimit;
+static int downViewPitchLimit;
+
 void M_ChangeMaxViewPitch(void)
 {
-  int max_up, max_dn, angle_up, angle_dn;
-
-  if (V_IsOpenGLMode())
+  if (raven || !V_IsOpenGLMode())
   {
-    max_up = 90;
-    max_dn = 90;
+    upViewPitchLimit = (int) raven_angle_up_limit;
+    downViewPitchLimit = (int) raven_angle_down_limit;
   }
   else
   {
-    max_up = 56;
-    max_dn = 32;
+    upViewPitchLimit = -ANG90 + (1 << ANGLETOFINESHIFT);
+    downViewPitchLimit = ANG90 - (1 << ANGLETOFINESHIFT);
   }
 
-  angle_up = (int)((float)max_up / 45.0f * ANG45);
-  angle_dn = (int)((float)max_dn / 45.0f * ANG45);
-
-  maxViewPitch = (+angle_up - (1<<ANGLETOFINESHIFT));
-  minViewPitch = (-angle_dn + (1<<ANGLETOFINESHIFT));
-
-  viewpitch = 0;
+  CheckPitch(&viewpitch);
 }
 
 void M_ChangeScreenMultipleFactor(void)
@@ -314,10 +306,11 @@ dboolean HaveMouseLook(void)
 
 void CheckPitch(signed int *pitch)
 {
-  if(*pitch > maxViewPitch)
-    *pitch = maxViewPitch;
-  if(*pitch < minViewPitch)
-    *pitch = minViewPitch;
+  if (*pitch < upViewPitchLimit)
+    *pitch = upViewPitchLimit;
+
+  if (*pitch > downViewPitchLimit)
+    *pitch = downViewPitchLimit;
 
   (*pitch) >>= 16;
   (*pitch) <<= 16;
