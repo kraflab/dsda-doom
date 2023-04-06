@@ -83,7 +83,7 @@ typedef unsigned angle_t;
 // pitch is -lookdir * ang1 / pi
 static const angle_t raven_angle_down_limit = (angle_t) (int) (110 * ANG1 / M_PI);
 static const angle_t raven_angle_up_limit = (angle_t) (int) (-90 * ANG1 / M_PI);
-static const float raven_pitch_up_limit = ANGLE_T_TO_PITCH_F(raven_angle_up_limit);
+#define RAVEN_PITCH_UP_LIMIT ANGLE_T_TO_PITCH_F(raven_angle_up_limit)
 
 // Load trig tables if needed
 void R_LoadTrigTables(void);

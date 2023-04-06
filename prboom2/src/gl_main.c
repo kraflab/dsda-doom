@@ -1233,7 +1233,7 @@ void gld_StartDrawScene(void)
       viewPitch = (pitch > 180 ? pitch - 360 : pitch);
 
       skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
-      skyYShift = 0.875 * (200.0f / 320.0f) * viewPitch / (360.0f - raven_pitch_up_limit);
+      skyYShift = 0.875 * (200.0f / 320.0f) * viewPitch / (360.0f - RAVEN_PITCH_UP_LIMIT);
     }
     else
     {
