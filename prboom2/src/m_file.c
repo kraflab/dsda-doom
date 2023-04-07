@@ -83,7 +83,7 @@ static wchar_t *ConvertMultiByteToWide(const char *str, UINT code_page) {
     return NULL;
   }
 
-  wstr = Z_Malloc(sizeof(wchar_t) * wlen);
+  wstr = Z_Calloc(sizeof(wchar_t), wlen + 1);
 
   if (!wstr) {
     lprintf(LO_INFO, "ConvertMultiByteToWide: Failed to allocate new string\n");
