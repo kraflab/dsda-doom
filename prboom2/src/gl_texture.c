@@ -292,7 +292,17 @@ static GLTexture *gld_AddNewGLIndexedSkyTextures(int texture_num)
   return gld_GLIndexedSkyTextures[baseTextureNum];
 }
 
-// [XA] returns a specific indexed sky texture from a set.
+static GLTexture *gld_AddNewGLSkyTexture(int texture_num)
+{
+  int numIndexedSkyTextures = numtextures * gld_numGLColormaps;
+  int baseTextureNum = texture_num * gld_numGLColormaps;
+
+  gld_AddNewGLTexItem(baseTextureNum, numIndexedSkyTextures, &gld_GLIndexedSkyTextures);
+
+  return gld_GLIndexedSkyTextures[baseTextureNum];
+}
+
+// [XA] returns a specific sky texture from a set.
 static GLTexture *gld_GetGLIndexedSkyTexture(int texture_num, int index)
 {
   if (texture_num < 0 || texture_num >= numtextures)
@@ -301,10 +311,16 @@ static GLTexture *gld_GetGLIndexedSkyTexture(int texture_num, int index)
   return gld_GLIndexedSkyTextures[texture_num * gld_numGLColormaps + index];
 }
 
-// [XA] returns the indexed sky texture for the current palette & gamma level.
-static GLTexture *gld_GetCurrentGLIndexedSkyTexture(GLTexture *basetexture)
+// Translate from base texture reference to sky texture
+static GLTexture *gld_GetGLSkyTexture(GLTexture *basetexture)
 {
-  return gld_GetGLIndexedSkyTexture(basetexture->index, gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma);
+  int index = 0;
+
+  // [XA] returns the indexed sky texture for the current palette & gamma level.
+  if (V_IsWorldLightmodeIndexed())
+    index = gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma;
+
+  return gld_GetGLIndexedSkyTexture(basetexture->index, index);
 }
 
 void gld_SetTexturePalette(GLenum target)
@@ -820,73 +836,96 @@ static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buff
   }
 }
 
+static GLTexture *gld_InitUnregisteredTexture(int texture_num, GLTexture *gltexture, dboolean indexed, dboolean sky)
+{
+  texture_t *texture = NULL;
+
+  if (texture_num >= 0 || texture_num < numtextures)
+    texture = textures[texture_num];
+
+  if (!texture)
+    return NULL;
+
+  gltexture->textype = GLDT_BROKEN;
+  gltexture->index = texture_num;
+
+  //e6y
+  gltexture->flags = 0;
+
+  if (indexed)
+    gltexture->flags |= GLTEXTURE_INDEXED;
+
+  gltexture->realtexwidth = texture->width;
+  gltexture->realtexheight = texture->height;
+
+  if (sky)
+  {
+    const rpatch_t *patch;
+
+    patch = R_HackedSkyPatch(texture);
+
+    if (patch)
+    {
+      gltexture->patch_index = texture->patches[0].patch;
+      gltexture->flags |= GLTEXTURE_SKYHACK;
+      gltexture->realtexheight=patch->height;
+    }
+  }
+
+  gltexture->leftoffset = 0;
+  gltexture->topoffset = 0;
+  gltexture->tex_width = gld_GetTexDimension(gltexture->realtexwidth);
+  gltexture->tex_height = gld_GetTexDimension(gltexture->realtexheight);
+  gltexture->width = MIN(gltexture->realtexwidth, gltexture->tex_width);
+  gltexture->height = MIN(gltexture->realtexheight, gltexture->tex_height);
+  gltexture->buffer_width = gltexture->tex_width;
+  gltexture->buffer_height = gltexture->tex_height;
+  gltexture->width = gltexture->tex_width;
+  gltexture->height = gltexture->tex_height;
+  gltexture->buffer_width = gltexture->realtexwidth;
+  gltexture->buffer_height = gltexture->realtexheight;
+
+  //e6y: right/bottom UV coordinates for texture drawing
+  gltexture->scalexfac = (float) gltexture->width / (float) gltexture->tex_width;
+  gltexture->scaleyfac = (float) gltexture->height / (float) gltexture->tex_height;
+
+  gltexture->buffer_size = gltexture->buffer_width * gltexture->buffer_height * 4;
+
+  if (gltexture->realtexwidth > gltexture->buffer_width)
+    return gltexture;
+
+  if (gltexture->realtexheight > gltexture->buffer_height)
+    return gltexture;
+
+  gltexture->textype = GLDT_TEXTURE;
+
+  if (!indexed)
+    gld_SetTexDetail(gltexture);
+
+  return gltexture;
+}
+
 //e6y: "force" flag for loading texture with zero index
 // [XA]  "indexed" flag for new indexed lightmode
-GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed)
+GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed, dboolean sky)
 {
   GLTexture *gltexture;
 
   //e6y: textures with zero index should be loaded sometimes
-  if (texture_num==NO_TEXTURE && !force)
+  if (texture_num == NO_TEXTURE && !force)
     return NULL;
-  gltexture=gld_AddNewGLTexture(texture_num, indexed);
+
+  if (sky)
+    gltexture = gld_AddNewGLSkyTexture(texture_num);
+  else
+    gltexture = gld_AddNewGLTexture(texture_num, indexed);
+
   if (!gltexture)
     return NULL;
-  if (gltexture->textype==GLDT_UNREGISTERED)
-  {
-    texture_t *texture=NULL;
 
-    if ((texture_num>=0) || (texture_num<numtextures))
-      texture=textures[texture_num];
-    if (!texture)
-      return NULL;
-    gltexture->textype=GLDT_BROKEN;
-    gltexture->index=texture_num;
+  if (gltexture->textype == GLDT_UNREGISTERED)
+    gltexture = gld_InitUnregisteredTexture(texture_num, gltexture, indexed, sky);
 
-    //e6y
-    gltexture->flags = 0;
-
-    if (indexed)
-      gltexture->flags |= GLTEXTURE_INDEXED;
-
-    gltexture->realtexwidth=texture->width;
-    gltexture->realtexheight=texture->height;
-    gltexture->leftoffset=0;
-    gltexture->topoffset=0;
-    gltexture->tex_width=gld_GetTexDimension(gltexture->realtexwidth);
-    gltexture->tex_height=gld_GetTexDimension(gltexture->realtexheight);
-    gltexture->width=MIN(gltexture->realtexwidth, gltexture->tex_width);
-    gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
-    gltexture->buffer_width=gltexture->tex_width;
-    gltexture->buffer_height=gltexture->tex_height;
-    gltexture->width=gltexture->tex_width;
-    gltexture->height=gltexture->tex_height;
-    gltexture->buffer_width=gltexture->realtexwidth;
-    gltexture->buffer_height=gltexture->realtexheight;
-
-    if (gltexture->flags & GLTEXTURE_MIPMAP)
-    {
-      gltexture->width=gltexture->tex_width;
-      gltexture->height=gltexture->tex_height;
-      gltexture->buffer_width=gltexture->realtexwidth;
-      gltexture->buffer_height=gltexture->realtexheight;
-    }
-
-    //e6y: right/bottom UV coordinates for texture drawing
-    gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
-    gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
-
-    gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
-    if (gltexture->realtexwidth>gltexture->buffer_width)
-      return gltexture;
-    if (gltexture->realtexheight>gltexture->buffer_height)
-      return gltexture;
-
-    gltexture->textype=GLDT_TEXTURE;
-
-    if (!indexed)
-      gld_SetTexDetail(gltexture);
-  }
   return gltexture;
 }
 
@@ -1102,10 +1141,16 @@ l_exit:
   return result;
 }
 
-void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
+void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
 {
   const rpatch_t *patch;
   unsigned char *buffer;
+
+  // resolve the actual texture for the related sky
+  if (sky)
+  {
+    gltexture = gld_GetGLSkyTexture(gltexture);
+  }
 
   if (!gltexture || gltexture->textype != GLDT_TEXTURE)
   {
@@ -1142,8 +1187,25 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags)
 
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   memset(buffer,0,gltexture->buffer_size);
-  patch=R_TextureCompositePatchByNum(gltexture->index);
-  gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, CR_DEFAULT, 0);
+
+  if (gltexture->flags & GLTEXTURE_SKYHACK)
+  {
+    patch=R_PatchByNum(gltexture->patch_index);
+  }
+  else
+  {
+    patch=R_TextureCompositePatchByNum(gltexture->index);
+  }
+
+  if (sky && V_IsWorldLightmodeIndexed())
+  {
+    gld_AddIndexedSkyToTexture(gltexture, buffer, patch, gld_paletteIndex, usegamma);
+  }
+  else
+  {
+    gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, CR_DEFAULT, 0);
+  }
+
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
@@ -1418,12 +1480,12 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
   int i;
 
   if (!V_IsWorldLightmodeIndexed())
-    return gld_RegisterTexture(texture_num, false, force, false);
+    return gld_RegisterTexture(texture_num, false, force, false, true);
 
   if (texture_num == NO_TEXTURE && !force)
     return NULL;
 
-  basetexture=gld_AddNewGLIndexedSkyTextures(texture_num);
+  basetexture = gld_AddNewGLIndexedSkyTextures(texture_num);
   if (!basetexture)
     return NULL;
 
@@ -1431,63 +1493,8 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
   for(i = 0; i < gld_numGLColormaps; i++)
   {
     gltexture = gld_GetGLIndexedSkyTexture(texture_num, i);
-    if (gltexture->textype==GLDT_UNREGISTERED)
-    {
-      texture_t *texture=NULL;
-
-      if ((texture_num>=0) || (texture_num<numtextures))
-        texture=textures[texture_num];
-
-      if (!texture)
-        return NULL;
-
-      gltexture->textype=GLDT_BROKEN;
-      gltexture->index=texture_num;
-
-      // [XA] removed some stuff like mipmaps here since these
-      // are only used in indexed lightmode, where those dont' matter
-      gltexture->flags = 0;
-      gltexture->realtexwidth=texture->width;
-      gltexture->realtexheight=texture->height;
-
-      {
-        const rpatch_t *patch;
-
-        patch = R_HackedSkyPatch(texture);
-
-        if (patch)
-        {
-          gltexture->patch_index = texture->patches[0].patch;
-          gltexture->flags |= GLTEXTURE_SKYHACK;
-          gltexture->realtexheight=patch->height;
-        }
-      }
-
-      gltexture->leftoffset=0;
-      gltexture->topoffset=0;
-      gltexture->tex_width=gld_GetTexDimension(gltexture->realtexwidth);
-      gltexture->tex_height=gld_GetTexDimension(gltexture->realtexheight);
-      gltexture->width=MIN(gltexture->realtexwidth, gltexture->tex_width);
-      gltexture->height=MIN(gltexture->realtexheight, gltexture->tex_height);
-      gltexture->buffer_width=gltexture->tex_width;
-      gltexture->buffer_height=gltexture->tex_height;
-      gltexture->width=gltexture->tex_width;
-      gltexture->height=gltexture->tex_height;
-      gltexture->buffer_width=gltexture->realtexwidth;
-      gltexture->buffer_height=gltexture->realtexheight;
-
-      //e6y: right/bottom UV coordinates for texture drawing
-      gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
-      gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
-
-      gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
-      if (gltexture->realtexwidth>gltexture->buffer_width)
-        return gltexture;
-      if (gltexture->realtexheight>gltexture->buffer_height)
-        return gltexture;
-
-      gltexture->textype=GLDT_TEXTURE;
-    }
+    if (gltexture->textype == GLDT_UNREGISTERED)
+      gld_InitUnregisteredTexture(texture_num, gltexture, true, true);
   }
 
   return basetexture;
@@ -1495,78 +1502,7 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
 
 void gld_BindSkyTexture(GLTexture *gltexture)
 {
-  const rpatch_t *patch;
-  unsigned char *buffer;
-
-  // nothing special to do unless we're in indexed lightmode
-  if (!V_IsWorldLightmodeIndexed())
-  {
-    gld_BindTexture(gltexture, 0);
-    return;
-  }
-
-  // resolve the actual texture for the current GL colormap
-  gltexture = gld_GetCurrentGLIndexedSkyTexture(gltexture);
-
-  if (!gltexture || gltexture->textype != GLDT_TEXTURE)
-  {
-    glBindTexture(GL_TEXTURE_2D, 0);
-    last_glTexID = NULL;
-    return;
-  }
-
-#ifdef HAVE_LIBSDL2_IMAGE
-  if (gld_LoadHiresTex(gltexture, CR_DEFAULT))
-  {
-    gld_SetTexClamp(gltexture, 0);
-    last_glTexID = gltexture->texid_p;
-    return;
-  }
-#endif
-
-  gld_GetTextureTexID(gltexture, CR_DEFAULT);
-
-  if (last_glTexID == gltexture->texid_p)
-  {
-    gld_SetTexClamp(gltexture, 0);
-    return;
-  }
-
-  last_glTexID = gltexture->texid_p;
-
-  if (*gltexture->texid_p != 0)
-  {
-    glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
-    gld_SetTexClamp(gltexture, 0);
-    return;
-  }
-
-  buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
-  memset(buffer,0,gltexture->buffer_size);
-
-  if (gltexture->flags & GLTEXTURE_SKYHACK)
-  {
-    patch=R_PatchByNum(gltexture->patch_index);
-  }
-  else
-  {
-    patch=R_TextureCompositePatchByNum(gltexture->index);
-  }
-
-  gld_AddIndexedSkyToTexture(gltexture, buffer, patch, gld_paletteIndex, usegamma);
-
-  if (*gltexture->texid_p == 0)
-    glGenTextures(1, gltexture->texid_p);
-  glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
-
-  if (gltexture->flags & GLTEXTURE_HASHOLES)
-  {
-    SmoothEdges(buffer, gltexture->buffer_width, gltexture->buffer_height);
-  }
-
-  gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
-
-  gld_SetTexClamp(gltexture, 0);
+  gld_BindTexture(gltexture, 0, true);
 }
 
 GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level, dboolean fullbright)
@@ -1661,14 +1597,14 @@ void gld_InitColormapTextures(dboolean fullbright)
 {
   GLTexture *gltexture;
 
-  // ain't in indexed mode? ain't nothin' to do.
-  if (!V_IsWorldLightmodeIndexed())
-    return;
-
   // figure out how many palette variants are in the
   // PLAYPAL lump and create a colormap texture for
   // each palette at each gamma level. word.
   gld_numGLColormaps = V_GetPlaypalCount() * NUM_GAMMA_LEVELS;
+
+  // ain't in indexed mode? ain't nothin' to do.
+  if (!V_IsWorldLightmodeIndexed())
+    return;
 
   // abort if we're trying to show an out-of-bounds palette.
   if (gld_paletteIndex < 0 || gld_paletteIndex >= gld_numGLColormaps)
@@ -1929,10 +1865,10 @@ void gld_Precache(void)
     if (hitlist[i])
     {
       gld_ProgressUpdate("Loading Textures...", ++hit, hitcount);
-      gltexture = gld_RegisterTexture(i, i != skytexture, false, indexed);
+      gltexture = gld_RegisterTexture(i, i != skytexture, false, indexed, false);
       if (gltexture)
       {
-        gld_BindTexture(gltexture, 0);
+        gld_BindTexture(gltexture, 0, false);
       }
     }
 

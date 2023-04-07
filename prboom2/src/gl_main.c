@@ -1438,7 +1438,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
           currpic = wall->gltexture->index - anim->basepic;
           nextpic = anim->basepic + (currpic + 1) % anim->numpics;
           wall->alpha = oldalpha;
-          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed);
+          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed, false);
         }
       }
       break;
@@ -1477,7 +1477,7 @@ static void gld_DrawWall(GLWall *wall)
   else
     flags = 0;
 
-  gld_BindTexture(wall->gltexture, flags);
+  gld_BindTexture(wall->gltexture, flags, false);
   gld_BindDetailARB(wall->gltexture, has_detail);
 
   if (!wall->gltexture)
@@ -1667,7 +1667,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom=-MAXCOORD;
       gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
     }
-    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed);
+    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed, false);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
     {
       wall.gltexture=temptex;
@@ -1795,7 +1795,7 @@ void gld_AddWall(seg_t *seg)
     {
       if (!((frontsector->ceilingpic==skyflatnum) && (backsector->ceilingpic==skyflatnum)))
       {
-        temptex=gld_RegisterTexture(toptexture, true, false, indexed);
+        temptex=gld_RegisterTexture(toptexture, true, false, indexed, false);
         if (!temptex && gl_use_stencil && backsector &&
           !(seg->linedef->r_flags & RF_ISOLATED) &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
@@ -1831,12 +1831,12 @@ void gld_AddWall(seg_t *seg)
     /* midtexture */
     //e6y
     if (!raven && comp[comp_maskedanim])
-      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed);
+      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed, false);
     else
       // e6y
       // Animated middle textures with a zero index should be forced
       // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
-      temptex=gld_RegisterTexture(midtexture, true, true, indexed);
+      temptex=gld_RegisterTexture(midtexture, true, true, indexed, false);
 
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
@@ -2000,7 +2000,7 @@ bottomtexture:
     }
     if (floor_height<ceiling_height)
     {
-      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed);
+      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed, false);
       if (!temptex && gl_use_stencil && backsector &&
         !(seg->linedef->r_flags & RF_ISOLATED) &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&

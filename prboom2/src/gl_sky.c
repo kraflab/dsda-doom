@@ -496,7 +496,7 @@ void gld_DrawScreenSkybox(void)
     glLoadIdentity();
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    gld_BindTexture(wall->gltexture, 0);
+    gld_BindSkyTexture(wall->gltexture);
     w = 160.0f * SCREENWIDTH / WIDE_SCREENWIDTH;
     glBegin(GL_TRIANGLE_STRIP);
       glTexCoord2f(fU1, fV1); glVertex3f(-w, +100.5f, -screen_skybox_zplane);
@@ -544,7 +544,7 @@ void gld_GetSkyCapColors(void)
   fixedcolormap = fullcolormap;
   frame_fixedcolormap = 0;
 
-  gld_BindTexture(SkyBox.wall.gltexture, 0);
+  gld_BindSkyTexture(SkyBox.wall.gltexture);
 
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
@@ -789,7 +789,7 @@ static void RenderDome(SkyBoxParams_t *sky)
     }
   }
 
-  gld_BindTexture(SkyBox.wall.gltexture, 0);
+  gld_BindSkyTexture(SkyBox.wall.gltexture);
 
   if (gl_ext_arb_vertex_buffer_object)
   {
@@ -1002,8 +1002,8 @@ int gld_BindFace(box_skybox_t *sb, int index)
   lump = R_CheckTextureNumForName(name);
   if (lump != -1)
   {
-    gltexture = gld_RegisterTexture(lump, false, false, false);
-    gld_BindTexture(gltexture, GLTEXTURE_CLAMPXY);
+    gltexture = gld_RegisterTexture(lump, false, false, false, false);
+    gld_BindTexture(gltexture, GLTEXTURE_CLAMPXY, false);
     return true;
   }
 

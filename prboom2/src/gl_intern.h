@@ -380,8 +380,8 @@ extern int scene_has_wall_details;
 extern int scene_has_flat_details;
 
 extern GLuint* last_glTexID;
-GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed);
-void gld_BindTexture(GLTexture *gltexture, unsigned int flags);
+GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed, dboolean sky);
+void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky);
 GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean indexed);
 void gld_BindPatch(GLTexture *gltexture, int cm);
 GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dboolean indexed);
