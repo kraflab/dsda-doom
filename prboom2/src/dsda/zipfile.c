@@ -63,7 +63,7 @@ static void dsda_WriteZippedFilesToDest(zip_t *archive, const char *destination_
     FILE *dest_file;
     const char *file_name = zip_get_name(archive, i, ZIP_FL_UNCHANGED);
 
-    dsda_StringPrintF(&full_path, "%s%s", destination_directory, file_name);
+    dsda_StringPrintF(&full_path, "%s/%s", destination_directory, file_name);
 
     /* Intermediate directories have a trailing '/' */
     if (dsda_HasFileExt(full_path.string, "/")) {
