@@ -44,6 +44,7 @@
 #include "gl_opengl.h"
 
 #include <SDL.h>
+#include <math.h>
 
 #include "doomstat.h"
 #include "v_video.h"
@@ -496,16 +497,16 @@ void gld_GetSkyCapColors(void)
 
 static void SkyVertex(vbo_vertex_t *vbo, int r, int c)
 {
-  static fixed_t scale = 10000 << FRACBITS;
-  static angle_t maxSideAngle = ANG180 / 3;
+  static const float scale = 10000.0f;
+  static const float maxSideAngle = DEG2RAD(60.0f);
 
-  angle_t topAngle= (angle_t)(c / (double)columns * ANGLE_MAX);
-  angle_t sideAngle = maxSideAngle * (rows - r) / rows;
-  fixed_t height = finesine[sideAngle>>ANGLETOFINESHIFT];
-  fixed_t realRadius = FixedMul(scale, finecosine[sideAngle>>ANGLETOFINESHIFT]);
-  fixed_t x = FixedMul(realRadius, finecosine[topAngle>>ANGLETOFINESHIFT]);
-  fixed_t y = (!yflip) ? FixedMul(scale, height) : FixedMul(scale, height) * -1;
-  fixed_t z = FixedMul(realRadius, finesine[topAngle>>ANGLETOFINESHIFT]);
+  float topAngle = DEG2RAD(c / (float)columns * 360.0f);
+  float sideAngle = maxSideAngle * (float)(rows - r) / (float)rows;
+  float height = (float)sin(sideAngle);
+  float realRadius = scale * (float)cos(sideAngle);
+  float x = realRadius * (float)cos(topAngle);
+  float y = (!yflip) ? scale * height : -scale * height;
+  float z = realRadius * (float)sin(topAngle);
   float timesRepeat;
 
   timesRepeat = (short)(4 * (256.0f / texw));
@@ -537,13 +538,13 @@ static void SkyVertex(vbo_vertex_t *vbo, int r, int c)
 
   if (r != 4)
   {
-    y += FRACUNIT * 300;
+    y += 300;
   }
 
   // And finally the vertex.
-  vbo->x =-(float)x/(float)MAP_SCALE;	// Doom mirrors the sky vertically!
-  vbo->y = (float)y/(float)MAP_SCALE + delta;
-  vbo->z = (float)z/(float)MAP_SCALE;
+  vbo->x =-x / MAP_COEFF;	// Doom mirrors the sky vertically!
+  vbo->y = y / MAP_COEFF + delta;
+  vbo->z = z / MAP_COEFF;
 }
 
 GLSkyVBO sky_vbo[2];
