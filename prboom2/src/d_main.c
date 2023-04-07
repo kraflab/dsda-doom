@@ -1525,8 +1525,10 @@ static void D_AddZip(const char* zipped_file_name)
   char* full_zip_path;
 
   full_zip_path = I_RequireZip(zipped_file_name);
-  dsda_InitString(&temporary_directory, I_GetTempDir());
-  dsda_StringCatF(&temporary_directory, "/%s/", dsda_BaseName(zipped_file_name));
+  dsda_StringPrintF(&temporary_directory, "%s/%s/", I_GetTempDir(), dsda_BaseName(zipped_file_name));
+  if (M_IsDir(temporary_directory.string))
+    if (!M_RemoveDirRecursive(temporary_directory.string))
+      I_Error("Unable to remove existing temporary directory %s\n", temporary_directory.string);
   M_MakeDir(temporary_directory.string, true);
 
   dsda_UnzipFile(full_zip_path, temporary_directory.string);
