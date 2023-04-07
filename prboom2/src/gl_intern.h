@@ -492,8 +492,6 @@ typedef struct SkyBoxParams_s
   // 0 - no colormap; 1 - INVUL inverse colormap
   PalEntry_t FloorSkyColor[2];
   PalEntry_t CeilingSkyColor[2];
-  // for BoxSkybox
-  side_t *side;
 } SkyBoxParams_t;
 extern SkyBoxParams_t SkyBox;
 extern GLfloat gl_whitecolor[];
@@ -506,7 +504,6 @@ void gld_DrawScreenSkybox(void);
 void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y);
 void gld_DrawDomeSkyBox(void);
 void gld_DrawSkyCaps(void);
-int gld_DrawBoxSkyBox(void);
 
 // VBO
 typedef struct vbo_vertex_s
@@ -536,18 +533,6 @@ typedef struct vbo_xy_uv_rgba_s
   float u, v;
   unsigned char r, g, b, a;
 } PACKEDATTR vbo_xy_uv_rgba_t;
-
-//BoxSkybox
-typedef struct box_skybox_s
-{
-  char name[9];
-  int fliptop;
-  char faces[6][9];
-  GLTexture texture[6];
-} box_skybox_t;
-box_skybox_t* R_GetBoxSkybox(int index);
-void gld_ParseSkybox(void);
-extern box_skybox_t *BoxSkybox_default;
 
 // preprocessing
 extern byte *segrendered; // true if sector rendered (only here for malloc)

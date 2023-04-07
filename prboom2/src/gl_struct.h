@@ -152,10 +152,6 @@ sector_t* GetBestBleedSector(sector_t* source, enum bleedtype type);
 
 void gld_DrawMapLines(void);
 
-//skybox
-int R_BoxSkyboxNumForName(const char *name);
-void R_SetBoxSkybox(int texture);
-
 //multisampling
 void gld_MultisamplingInit(void);
 void gld_MultisamplingSet(void);

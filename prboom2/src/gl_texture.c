@@ -1708,7 +1708,6 @@ void gld_Precache(void)
   byte *hitlist;
   int hit, hitcount = 0;
   GLTexture *gltexture;
-  box_skybox_t *sb;
   dboolean indexed;
 
   unsigned int tics = SDL_GetTicks();
@@ -1788,24 +1787,6 @@ void gld_Precache(void)
     int bottomtexture, toptexture, midtexture;
     anim_t *textureanims[3];
 
-    if (sides[i].special == 271 || sides[i].special == 272)
-    {
-      sb = R_GetBoxSkybox(sides[i].skybox_index);
-      if (sb)
-      {
-        int texture;
-        int face;
-        for (face = 0; face < 6; face++)
-        {
-          texture = R_CheckTextureNumForName(sb->faces[face]);
-          if (texture != -1)
-          {
-            hitlist[texture] = 1;
-          }
-        }
-      }
-    }
-
     bottomtexture = sides[i].bottomtexture;
     toptexture = sides[i].toptexture;
     midtexture = sides[i].midtexture;
@@ -1846,21 +1827,6 @@ void gld_Precache(void)
 
   if (hitlist)
     hitlist[skytexture] = usehires ? 1 : 0;
-
-  sb = BoxSkybox_default;
-  if (sb)
-  {
-    int texture;
-    int face;
-    for (face = 0; face < 6; face++)
-    {
-      texture = R_CheckTextureNumForName(sb->faces[face]);
-      if (texture != -1)
-      {
-        hitlist[texture] = 1;
-      }
-    }
-  }
 
   CalcHitsCount(hitlist, numtextures, &hit, &hitcount);
 

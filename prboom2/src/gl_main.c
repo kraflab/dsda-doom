@@ -206,21 +206,6 @@ void gld_MultisamplingSet(void)
 
 int gld_LoadGLDefs(const char * defsLump)
 {
-  typedef enum
-  {
-    TAG_SKYBOX,
-    TAG_DETAIL,
-  } gldef_type_e;
-
-  // these are the core types available in the *DEFS lump
-  static const char *CoreKeywords[] =
-  {
-    "skybox",
-    "detail",
-
-    NULL
-  };
-
   int result = false;
 
   if (W_LumpNameExists(defsLump))
@@ -230,17 +215,10 @@ int gld_LoadGLDefs(const char * defsLump)
     // Get actor class name.
     while (SC_GetString())
     {
-      gldef_type_e type = SC_MatchString(CoreKeywords);
-      switch (type)
+      if (SC_Compare("detail"))
       {
-      case TAG_SKYBOX:
-        result = true;
-        gld_ParseSkybox();
-        break;
-      case TAG_DETAIL:
         result = true;
         gld_ParseDetail();
-        break;
       }
     }
 
@@ -2954,7 +2932,6 @@ void gld_DrawProjectedWalls(GLDrawItemType itemtype)
 void gld_DrawScene(player_t *player)
 {
   int i;
-  int skybox;
 
   //e6y: must call it twice for correct initialisation
   glEnable(GL_ALPHA_TEST);
@@ -2970,19 +2947,9 @@ void gld_DrawScene(player_t *player)
   glEnableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
 
-  //e6y: skybox
-  skybox = 0;
-  if (gl_drawskys != skytype_none)
+  if (gl_drawskys == skytype_skydome)
   {
-    skybox = gld_DrawBoxSkyBox();
-  }
-
-  if (!skybox)
-  {
-    if (gl_drawskys == skytype_skydome)
-    {
-      gld_DrawDomeSkyBox();
-    }
+    gld_DrawDomeSkyBox();
   }
 
   if (gl_ext_arb_vertex_buffer_object)
@@ -3117,7 +3084,7 @@ void gld_DrawScene(player_t *player)
   glEnable(GL_ALPHA_TEST);
 
   // normal sky (not a skybox)
-  if (!skybox && (gl_drawskys == skytype_none || gl_drawskys == skytype_standard))
+  if (gl_drawskys == skytype_none || gl_drawskys == skytype_standard)
   {
     dsda_RecordDrawSegs(gld_drawinfo.num_items[GLDIT_SWALL]);
     // fake strips of sky
