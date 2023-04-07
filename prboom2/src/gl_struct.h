@@ -43,7 +43,6 @@ typedef enum {
   skytype_none,
   skytype_standard,
   skytype_skydome,
-  skytype_screen,
 
   skytype_count
 } skytype_t;
@@ -152,10 +151,6 @@ sector_t* GetBestFake(sector_t *sector, int ceiling, int validcount);
 sector_t* GetBestBleedSector(sector_t* source, enum bleedtype type);
 
 void gld_DrawMapLines(void);
-
-//skybox
-int R_BoxSkyboxNumForName(const char *name);
-void R_SetBoxSkybox(int texture);
 
 //multisampling
 void gld_MultisamplingInit(void);

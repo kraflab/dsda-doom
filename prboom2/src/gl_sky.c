@@ -86,12 +86,6 @@ static PalEntry_t *SkyColor;
 SkyBoxParams_t SkyBox;
 float y_offset_saved;
 
-// skybox
-box_skybox_t *BoxSkybox = NULL;
-int BoxSkyboxCount = 0;
-
-box_skybox_t *BoxSkybox_default;
-
 void gld_InitSky(void)
 {
   memset(&SkyBox, 0, sizeof(SkyBox));
@@ -107,7 +101,6 @@ void gld_InitFrameSky(void)
   SkyBox.y_scale = 0;
   SkyBox.x_offset = 0;
   SkyBox.y_offset = 0;
-  SkyBox.side = NULL;
 }
 
 void gld_DrawFakeSkyStrips(void)
@@ -147,7 +140,7 @@ void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y)
 
   sx = (wall->flag == GLDWF_SKYFLIP ? -128.0f : 128.0f);
 
-  if (!mlook_or_fov)
+  if (raven || !mlook_or_fov)
   {
     sx = sx / (float)wall->gltexture->buffer_width;
     sy = 200.0f / (wall->gltexture->buffer_height * 1.25f);
@@ -185,12 +178,11 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
   if (l)
   {
     s = *l->sidenum + sides;
-    SkyBox.side = s;
     wall->gltexture = gld_RegisterSkyTexture(texturetranslation[s->toptexture],
       texturetranslation[s->toptexture] == skytexture || l->special == 271 || l->special == 272);
     if (wall->gltexture)
     {
-      if (!mlook_or_fov)
+      if (raven || !mlook_or_fov)
       {
         wall->skyyaw  = -2.0f*((-(float)((viewangle+s->textureoffset)>>ANGLETOFINESHIFT)*360.0f/FINEANGLES)/90.0f);
         wall->skyymid = 200.0f/319.5f*(((float)s->rowoffset/(float)FRACUNIT - 28.0f)/100.0f);
@@ -232,18 +224,15 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
         gld_GetScreenSkyScale(wall, &SkyBox.x_scale, &SkyBox.y_scale);
         break;
 
-      case skytype_screen:
-        if (s)
-        {
-          SkyBox.x_offset = (float)s->textureoffset;
-          SkyBox.y_offset = (float)s->rowoffset / (float)FRACUNIT;
-        }
-        break;
       case skytype_skydome:
         if (s)
         {
           SkyBox.x_offset = (float)s->textureoffset * 180.0f / (float)ANG180;
           SkyBox.y_offset = (float)s->rowoffset / (float)FRACUNIT;
+        }
+        else if (raven)
+        {
+          SkyBox.y_offset = 39.0f;
         }
         break;
       }
@@ -428,90 +417,6 @@ void averageColor(PalEntry_t * PalEntry, const unsigned int *data, int size, fix
   return;
 }
 
-// It is an alternative way of drawing the sky (gl_drawskys == skytype_screen)
-// This method make sense only for old hardware which have no support for GL_TEXTURE_GEN_*
-// Voodoo as example
-void gld_DrawScreenSkybox(void)
-{
-  if (SkyBox.wall.gltexture)
-  {
-    #define WRAPANGLE (ANGLE_MAX/4)
-
-    double fU1, fU2, fV1, fV2;
-    GLWall *wall = &SkyBox.wall;
-    angle_t angle;
-    int i, k;
-    float w;
-
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no graphics
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
-
-    for (i = gld_drawinfo.num_items[GLDIT_SWALL] - 1; i >= 0; i--)
-    {
-      GLWall* wall = gld_drawinfo.items[GLDIT_SWALL][i].item.wall;
-
-      glBegin(GL_TRIANGLE_STRIP);
-      glVertex3f(wall->glseg->x1,wall->ytop,wall->glseg->z1);
-      glVertex3f(wall->glseg->x1,wall->ybottom,wall->glseg->z1);
-      glVertex3f(wall->glseg->x2,wall->ytop,wall->glseg->z2);
-      glVertex3f(wall->glseg->x2,wall->ybottom,wall->glseg->z2);
-      glEnd();
-    }
-
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-    if (!mlook_or_fov)
-    {
-      fV1 = SkyBox.y_offset / 127.0f;
-      fV2 = fV1 + 320.0f / 200.0f;
-    }
-    else
-    {
-      float f = viewPitch * 2 + 40 / skyscale;
-      f = BETWEEN(0, 127, f);
-      fV1 = (f + SkyBox.y_offset) / 127.0f * skyscale;
-      fV2 = fV1 + 1.0f;
-    }
-
-    k = MAX(wall->gltexture->buffer_width, 256) / 256;
-    angle = ((viewangle - ANG45) / k) % WRAPANGLE;
-
-    if (wall->flag == GLDWF_SKYFLIP)
-    {
-      fU1 = -((double)angle + SkyBox.x_offset) / (WRAPANGLE - 1);
-      fU2 = fU1 + 1.0f / k;
-    }
-    else
-    {
-      fU2 = ((double)angle + SkyBox.x_offset) / (WRAPANGLE - 1);
-      fU1 = fU2 + 1.0f / k;
-    }
-
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_ALPHA_TEST);
-
-    glPushMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    gld_BindTexture(wall->gltexture, 0);
-    w = 160.0f * SCREENWIDTH / WIDE_SCREENWIDTH;
-    glBegin(GL_TRIANGLE_STRIP);
-      glTexCoord2f(fU1, fV1); glVertex3f(-w, +100.5f, -screen_skybox_zplane);
-      glTexCoord2f(fU1, fV2); glVertex3f(-w, -100.5f, -screen_skybox_zplane);
-      glTexCoord2f(fU2, fV1); glVertex3f(+w, +100.5f, -screen_skybox_zplane);
-      glTexCoord2f(fU2, fV2); glVertex3f(+w, -100.5f, -screen_skybox_zplane);
-    glEnd();
-
-    glPopMatrix();
-
-    glEnable(GL_ALPHA_TEST);
-    glEnable(GL_DEPTH_TEST);
-  }
-}
-
 // The texture offset to be applied to the texture coordinates in SkyVertex().
 static int rows, columns;
 static dboolean yflip;
@@ -544,7 +449,7 @@ void gld_GetSkyCapColors(void)
   fixedcolormap = fullcolormap;
   frame_fixedcolormap = 0;
 
-  gld_BindTexture(SkyBox.wall.gltexture, 0);
+  gld_BindSkyTexture(SkyBox.wall.gltexture);
 
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
   glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
@@ -789,7 +694,7 @@ static void RenderDome(SkyBoxParams_t *sky)
     }
   }
 
-  gld_BindTexture(SkyBox.wall.gltexture, 0);
+  gld_BindSkyTexture(SkyBox.wall.gltexture);
 
   if (gl_ext_arb_vertex_buffer_object)
   {
@@ -892,336 +797,4 @@ void gld_DrawDomeSkyBox(void)
 
     glShadeModel(shading_mode);
   }
-}
-
-int R_BoxSkyboxNumForName(const char *name)
-{
-  int i;
-
-  for (i = 0; i < BoxSkyboxCount; i++)
-  {
-    if (!strcasecmp(BoxSkybox[i].name, name))
-    {
-      return i;
-    }
-  }
-
-  return -1;
-}
-
-void R_SetBoxSkybox(int texture)
-{
-  int i;
-
-  BoxSkybox_default = NULL;
-
-  for (i = 0; i < BoxSkyboxCount; i++)
-  {
-    if (R_CheckTextureNumForName(BoxSkybox[i].name) == texture)
-    {
-      BoxSkybox_default = &BoxSkybox[i];
-      return;
-    }
-  }
-}
-
-box_skybox_t* R_GetBoxSkybox(int index)
-{
-  if (index >= 0 && index < BoxSkyboxCount)
-    return &BoxSkybox[index];
-  else
-    return NULL;
-}
-
-void gld_ParseSkybox(void)
-{
-  if (SC_GetString())
-  {
-    box_skybox_t sb;
-    memset(&sb, 0, sizeof(sb));
-
-    strncpy(sb.name, sc_String, 8);
-    sb.name[8] = 0;
-    M_Strupr(sb.name);
-
-    while (SC_Check())
-    {
-      SC_GetString();
-      if (SC_Compare("fliptop"))
-      {
-        sb.fliptop = true;
-      }
-    }
-
-    if (SC_GetString() && SC_Compare("{"))
-    {
-      int facecount = 0;
-
-      while (SC_GetString() && !SC_Compare("}"))
-      {
-        if (facecount < 6)
-        {
-          strcpy(sb.faces[facecount], sc_String);
-        }
-        facecount++;
-      }
-
-      if (SC_Compare("}") && (facecount == 3 || facecount == 6))
-      {
-        int i;
-        int ok = true;
-
-        for (i = 0; i < facecount; i++)
-        {
-          if (R_CheckTextureNumForName(sb.faces[i]) == -1)
-          {
-            ok = false;
-            break;
-          }
-        }
-
-        if (ok)
-        {
-          BoxSkyboxCount++;
-          BoxSkybox = Z_Realloc(BoxSkybox, BoxSkyboxCount * sizeof(BoxSkybox[0]));
-          memcpy(&BoxSkybox[BoxSkyboxCount - 1], &sb, sizeof(sb));
-        }
-      }
-    }
-  }
-
-  R_SetBoxSkybox(skytexture);
-}
-
-int gld_BindFace(box_skybox_t *sb, int index)
-{
-  int lump;
-  GLTexture *gltexture;
-  char *name = sb->faces[index];
-
-  lump = R_CheckTextureNumForName(name);
-  if (lump != -1)
-  {
-    gltexture = gld_RegisterTexture(lump, false, false, false);
-    gld_BindTexture(gltexture, GLTEXTURE_CLAMPXY);
-    return true;
-  }
-
-  return false;
-}
-
-int gld_DrawBoxSkyBox(void)
-{
-  int faces;
-  box_skybox_t *sb;
-
-  if (BoxSkyboxCount == 0)
-    return false;
-
-  if (SkyBox.side)
-  {
-    sb = R_GetBoxSkybox(SkyBox.side->skybox_index);
-  }
-  else
-  {
-    sb = BoxSkybox_default;
-  }
-
-  if (!sb)
-  {
-    return false;
-  }
-
-  gld_DrawFakeSkyStrips();
-
-  glDepthMask(false);
-
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_ALPHA_TEST);
-
-  SetTextureMode(TM_OPAQUE);
-
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-
-  glLoadIdentity();
-
-  glRotatef(roll,  0.0f, 0.0f, 1.0f);
-  glRotatef(pitch, 1.0f, 0.0f, 0.0f);
-  glRotatef(yaw,   0.0f, 1.0f, 0.0f);
-  glScalef(-2.0f, 2.0f, 2.0f);
-
-  if (SkyBox.side)
-  {
-    float xoffset = (float)SkyBox.side->textureoffset * 180.0f / (float)ANG180;
-    glRotatef(-180.0f + xoffset, 0.0f, 1.0f, 0.0f);
-  }
-
-  if (sb->faces[5][0])
-  {
-    faces = 4;
-
-    // north
-    gld_BindFace(sb, 0);
-
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(+MAXCOORD, MAXCOORD, -MAXCOORD);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(+MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glEnd();
-
-    // east
-    gld_BindFace(sb, 1);
-
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glEnd();
-
-    // south
-    gld_BindFace(sb, 2);
-
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(+MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(-MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glEnd();
-
-    // west
-    gld_BindFace(sb, 3);
-
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(+MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(+MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glEnd();
-  }
-  else
-  {
-    faces = 1;
-
-    // all 4 sides
-    gld_BindFace(sb, 0);
-
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(.25f, 0);
-    glVertex3f(-MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(.25f, 1);
-    glVertex3f(-MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(+MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glEnd();
-
-    // east
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(.25f, 0);
-    glVertex3f(-MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(.5f, 0);
-    glVertex3f(-MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(.5f, 1);
-    glVertex3f(-MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glTexCoord2f(.25f, 1);
-    glVertex3f(-MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glEnd();
-
-    // south
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(.5f, 0);
-    glVertex3f(-MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(.75f, 0);
-    glVertex3f(+MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(.75f, 1);
-    glVertex3f(+MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glTexCoord2f(.5f, 1);
-    glVertex3f(-MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glEnd();
-
-    // west
-    glBegin(GL_TRIANGLE_FAN);
-    glTexCoord2f(.75f, 0);
-    glVertex3f(+MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(+MAXCOORD, -MAXCOORD, -MAXCOORD);
-    glTexCoord2f(.75f, 1);
-    glVertex3f(+MAXCOORD, -MAXCOORD, +MAXCOORD);
-    glEnd();
-  }
-
-  // top
-  gld_BindFace(sb, faces);
-  glBegin(GL_TRIANGLE_FAN);
-  if (!sb->fliptop)
-  {
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, +MAXCOORD);
-  }
-  else
-  {
-    glTexCoord2f(0.0f, 0.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(1.0f, 0.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, +MAXCOORD);
-    glTexCoord2f(1.0f, 1.0f);
-    glVertex3f(-MAXCOORD, +MAXCOORD, -MAXCOORD);
-    glTexCoord2f(0.0f, 1.0f);
-    glVertex3f(+MAXCOORD, +MAXCOORD, -MAXCOORD);
-  }
-  glEnd();
-
-  // bottom
-  gld_BindFace(sb, faces + 1);
-
-  glBegin(GL_TRIANGLE_FAN);
-  glTexCoord2f(0.0f, 0.0f);
-  glVertex3f(+MAXCOORD, -MAXCOORD, -MAXCOORD);
-  glTexCoord2f(1.0f, 0.0f);
-  glVertex3f(-MAXCOORD, -MAXCOORD, -MAXCOORD);
-  glTexCoord2f(1.0f, 1.0f);
-  glVertex3f(-MAXCOORD, -MAXCOORD, +MAXCOORD);
-  glTexCoord2f(0.0f, 1.0f);
-  glVertex3f(+MAXCOORD, -MAXCOORD, +MAXCOORD);
-  glEnd();
-
-  glPopMatrix();
-
-  glEnable(GL_ALPHA_TEST);
-  glEnable(GL_DEPTH_TEST);
-  glDepthMask(true);
-
-  SetFrameTextureMode();
-
-  return true;
 }

@@ -206,21 +206,6 @@ void gld_MultisamplingSet(void)
 
 int gld_LoadGLDefs(const char * defsLump)
 {
-  typedef enum
-  {
-    TAG_SKYBOX,
-    TAG_DETAIL,
-  } gldef_type_e;
-
-  // these are the core types available in the *DEFS lump
-  static const char *CoreKeywords[] =
-  {
-    "skybox",
-    "detail",
-
-    NULL
-  };
-
   int result = false;
 
   if (W_LumpNameExists(defsLump))
@@ -230,17 +215,10 @@ int gld_LoadGLDefs(const char * defsLump)
     // Get actor class name.
     while (SC_GetString())
     {
-      gldef_type_e type = SC_MatchString(CoreKeywords);
-      switch (type)
+      if (SC_Compare("detail"))
       {
-      case TAG_SKYBOX:
-        result = true;
-        gld_ParseSkybox();
-        break;
-      case TAG_DETAIL:
         result = true;
         gld_ParseDetail();
-        break;
       }
     }
 
@@ -1223,13 +1201,26 @@ void gld_StartDrawScene(void)
 
 //e6y
   mlook_or_fov = dsda_MouseLook() || (gl_render_fov != FOV90);
-  if(!mlook_or_fov)
+  if (raven || !mlook_or_fov)
   {
-    pitch = 0.0f;
-    paperitems_pitch = 0.0f;
+    if (raven)
+    {
+      pitch = ANGLE_T_TO_PITCH_F(viewpitch);
+      paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
 
-    skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
-    skyYShift = 200.0f / 319.5f;
+      viewPitch = (pitch > 180 ? pitch - 360 : pitch);
+
+      skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
+      skyYShift = 0.875 * (200.0f / 320.0f) * viewPitch / (360.0f - RAVEN_PITCH_UP_LIMIT);
+    }
+    else
+    {
+      pitch = 0.0f;
+      paperitems_pitch = 0.0f;
+
+      skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
+      skyYShift = 200.0f / 319.5f;
+    }
   }
   else
   {
@@ -1238,7 +1229,7 @@ void gld_StartDrawScene(void)
     skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f / skyscale);
     skyYShift = f / 128.0f + 200.0f / 320.0f / skyscale;
 
-    pitch = (float)(viewpitch>>ANGLETOFINESHIFT) * 360.0f / FINEANGLES;
+    pitch = ANGLE_T_TO_PITCH_F(viewpitch);
     paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
     viewPitch = (pitch > 180 ? pitch - 360 : pitch);
   }
@@ -1425,7 +1416,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
           currpic = wall->gltexture->index - anim->basepic;
           nextpic = anim->basepic + (currpic + 1) % anim->numpics;
           wall->alpha = oldalpha;
-          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed);
+          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed, false);
         }
       }
       break;
@@ -1464,7 +1455,7 @@ static void gld_DrawWall(GLWall *wall)
   else
     flags = 0;
 
-  gld_BindTexture(wall->gltexture, flags);
+  gld_BindTexture(wall->gltexture, flags, false);
   gld_BindDetailARB(wall->gltexture, has_detail);
 
   if (!wall->gltexture)
@@ -1654,7 +1645,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom=-MAXCOORD;
       gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
     }
-    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed);
+    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed, false);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
     {
       wall.gltexture=temptex;
@@ -1782,7 +1773,7 @@ void gld_AddWall(seg_t *seg)
     {
       if (!((frontsector->ceilingpic==skyflatnum) && (backsector->ceilingpic==skyflatnum)))
       {
-        temptex=gld_RegisterTexture(toptexture, true, false, indexed);
+        temptex=gld_RegisterTexture(toptexture, true, false, indexed, false);
         if (!temptex && gl_use_stencil && backsector &&
           !(seg->linedef->r_flags & RF_ISOLATED) &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
@@ -1818,12 +1809,12 @@ void gld_AddWall(seg_t *seg)
     /* midtexture */
     //e6y
     if (!raven && comp[comp_maskedanim])
-      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed);
+      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed, false);
     else
       // e6y
       // Animated middle textures with a zero index should be forced
       // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
-      temptex=gld_RegisterTexture(midtexture, true, true, indexed);
+      temptex=gld_RegisterTexture(midtexture, true, true, indexed, false);
 
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
@@ -1987,7 +1978,7 @@ bottomtexture:
     }
     if (floor_height<ceiling_height)
     {
-      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed);
+      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed, false);
       if (!temptex && gl_use_stencil && backsector &&
         !(seg->linedef->r_flags & RF_ISOLATED) &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
@@ -2941,7 +2932,6 @@ void gld_DrawProjectedWalls(GLDrawItemType itemtype)
 void gld_DrawScene(player_t *player)
 {
   int i;
-  int skybox;
 
   //e6y: must call it twice for correct initialisation
   glEnable(GL_ALPHA_TEST);
@@ -2957,24 +2947,9 @@ void gld_DrawScene(player_t *player)
   glEnableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
 
-  //e6y: skybox
-  skybox = 0;
-  if (gl_drawskys != skytype_none)
+  if (gl_drawskys == skytype_skydome)
   {
-    skybox = gld_DrawBoxSkyBox();
-  }
-
-  if (!skybox)
-  {
-    if (gl_drawskys == skytype_skydome)
-    {
-      gld_DrawDomeSkyBox();
-    }
-    //e6y: 3d emulation of screen quad
-    if (gl_drawskys == skytype_screen)
-    {
-      gld_DrawScreenSkybox();
-    }
+    gld_DrawDomeSkyBox();
   }
 
   if (gl_ext_arb_vertex_buffer_object)
@@ -3109,7 +3084,7 @@ void gld_DrawScene(player_t *player)
   glEnable(GL_ALPHA_TEST);
 
   // normal sky (not a skybox)
-  if (!skybox && (gl_drawskys == skytype_none || gl_drawskys == skytype_standard))
+  if (gl_drawskys == skytype_none || gl_drawskys == skytype_standard)
   {
     dsda_RecordDrawSegs(gld_drawinfo.num_items[GLDIT_SWALL]);
     // fake strips of sky

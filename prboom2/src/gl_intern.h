@@ -63,6 +63,7 @@ typedef enum
   GLTEXTURE_CLAMPXY   = (GLTEXTURE_CLAMPX | GLTEXTURE_CLAMPY),
   GLTEXTURE_MIPMAP    = 0x00000100,
   GLTEXTURE_INDEXED   = 0x00000200,
+  GLTEXTURE_SKYHACK   = 0x00000400,
 } GLTexture_flag_t;
 
 typedef struct gl_strip_coords_s
@@ -92,6 +93,7 @@ typedef struct color_rgb_s
 typedef struct
 {
   int index;
+  int patch_index;
   int width,height;
   int leftoffset,topoffset;
   int tex_width,tex_height;
@@ -378,8 +380,8 @@ extern int scene_has_wall_details;
 extern int scene_has_flat_details;
 
 extern GLuint* last_glTexID;
-GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed);
-void gld_BindTexture(GLTexture *gltexture, unsigned int flags);
+GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed, dboolean sky);
+void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky);
 GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean indexed);
 void gld_BindPatch(GLTexture *gltexture, int cm);
 GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dboolean indexed);
@@ -490,8 +492,6 @@ typedef struct SkyBoxParams_s
   // 0 - no colormap; 1 - INVUL inverse colormap
   PalEntry_t FloorSkyColor[2];
   PalEntry_t CeilingSkyColor[2];
-  // for BoxSkybox
-  side_t *side;
 } SkyBoxParams_t;
 extern SkyBoxParams_t SkyBox;
 extern GLfloat gl_whitecolor[];
@@ -504,7 +504,6 @@ void gld_DrawScreenSkybox(void);
 void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y);
 void gld_DrawDomeSkyBox(void);
 void gld_DrawSkyCaps(void);
-int gld_DrawBoxSkyBox(void);
 
 // VBO
 typedef struct vbo_vertex_s
@@ -534,18 +533,6 @@ typedef struct vbo_xy_uv_rgba_s
   float u, v;
   unsigned char r, g, b, a;
 } PACKEDATTR vbo_xy_uv_rgba_t;
-
-//BoxSkybox
-typedef struct box_skybox_s
-{
-  char name[9];
-  int fliptop;
-  char faces[6][9];
-  GLTexture texture[6];
-} box_skybox_t;
-box_skybox_t* R_GetBoxSkybox(int index);
-void gld_ParseSkybox(void);
-extern box_skybox_t *BoxSkybox_default;
 
 // preprocessing
 extern byte *segrendered; // true if sector rendered (only here for malloc)

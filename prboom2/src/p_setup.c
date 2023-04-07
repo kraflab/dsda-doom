@@ -2446,14 +2446,6 @@ void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, 
       sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
       break;
 
-    case 271:
-    case 272:
-      if (R_CheckTextureNumForName(msd->toptexture) == -1)
-      {
-        sd->skybox_index = R_BoxSkyboxNumForName(msd->toptexture);
-      }
-      // fallthrough
-
     default:                        // normal cases
       sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
       sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
