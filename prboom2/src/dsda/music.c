@@ -26,6 +26,7 @@
 musicinfo_t* S_music;
 int num_music;
 int mus_musinfo;
+static int deh_musicnames_size;
 static char** deh_musicnames;
 static byte* music_state;
 
@@ -87,6 +88,7 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
   extern int raven;
 
   num_music = count;
+  deh_musicnames_size = num_music + 1;
   mus_musinfo = num_music - 1;
 
   S_music = source;
@@ -96,7 +98,7 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
 
   if (raven) return;
 
-  deh_musicnames = malloc((num_music + 1) * sizeof(*deh_musicnames));
+  deh_musicnames = malloc(deh_musicnames_size * sizeof(*deh_musicnames));
   for (i = 1; i < num_music; i++)
     if (S_music[i].name != NULL)
       deh_musicnames[i] = strdup(S_music[i].name);
@@ -112,7 +114,7 @@ void dsda_FreeDehMusic(void) {
   int i;
 
   if (deh_musicnames)
-    for (i = 0; i < num_music; i++)
+    for (i = 0; i < deh_musicnames_size; i++)
       if (deh_musicnames[i])
         free(deh_musicnames[i]);
 

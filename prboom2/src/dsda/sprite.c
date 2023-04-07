@@ -25,6 +25,7 @@
 
 const char** sprnames;
 int num_sprites;
+static int deh_spritenames_size;
 static char** deh_spritenames;
 static byte* sprnames_state;
 
@@ -93,12 +94,13 @@ void dsda_InitializeSprites(const char** source, int count) {
   extern int raven;
 
   num_sprites = count;
+  deh_spritenames_size = num_sprites + 1;
 
   sprnames = source;
 
   if (raven) return;
 
-  deh_spritenames = malloc((num_sprites + 1) * sizeof(*deh_spritenames));
+  deh_spritenames = malloc(deh_spritenames_size * sizeof(*deh_spritenames));
   for (i = 0; i < num_sprites; i++)
     deh_spritenames[i] = strdup(sprnames[i]);
   deh_spritenames[num_sprites] = NULL;
@@ -110,7 +112,7 @@ void dsda_FreeDehSprites(void) {
   int i;
 
   if (deh_spritenames)
-    for (i = 0; i < num_sprites; i++)
+    for (i = 0; i < deh_spritenames_size; i++)
       if (deh_spritenames[i])
         free(deh_spritenames[i]);
 

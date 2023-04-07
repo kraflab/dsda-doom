@@ -27,6 +27,7 @@
 
 sfxinfo_t* S_sfx;
 int num_sfx;
+static int deh_soundnames_size;
 static char** deh_soundnames;
 static byte* sfx_state;
 
@@ -118,12 +119,13 @@ void dsda_InitializeSFX(sfxinfo_t* source, int count) {
   extern int raven;
 
   num_sfx = count;
+  deh_soundnames_size = num_sfx + 1;
 
   S_sfx = source;
 
   if (raven) return;
 
-  deh_soundnames = malloc((num_sfx + 1) * sizeof(*deh_soundnames));
+  deh_soundnames = malloc(deh_soundnames_size * sizeof(*deh_soundnames));
   for (i = 1; i < num_sfx; i++)
     if (S_sfx[i].name != NULL)
       deh_soundnames[i] = strdup(S_sfx[i].name);
@@ -139,7 +141,7 @@ void dsda_FreeDehSFX(void) {
   int i;
 
   if (deh_soundnames)
-    for (i = 0; i < num_sfx; i++)
+    for (i = 0; i < deh_soundnames_size; i++)
       if (deh_soundnames[i])
         free(deh_soundnames[i]);
 
