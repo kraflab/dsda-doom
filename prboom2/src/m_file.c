@@ -283,7 +283,7 @@ int M_remove(const char *path)
   wpath = ConvertUtf8ToWide(path);
 
   if (!wpath)
-    return 0;
+    return -1;
 
   ret = _wremove(wpath);
 
