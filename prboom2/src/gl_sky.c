@@ -232,13 +232,6 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
         gld_GetScreenSkyScale(wall, &SkyBox.x_scale, &SkyBox.y_scale);
         break;
 
-      case skytype_screen:
-        if (s)
-        {
-          SkyBox.x_offset = (float)s->textureoffset;
-          SkyBox.y_offset = (float)s->rowoffset / (float)FRACUNIT;
-        }
-        break;
       case skytype_skydome:
         if (s)
         {
@@ -426,90 +419,6 @@ void averageColor(PalEntry_t * PalEntry, const unsigned int *data, int size, fix
   PalEntry->g = g;
   PalEntry->b = b;
   return;
-}
-
-// It is an alternative way of drawing the sky (gl_drawskys == skytype_screen)
-// This method make sense only for old hardware which have no support for GL_TEXTURE_GEN_*
-// Voodoo as example
-void gld_DrawScreenSkybox(void)
-{
-  if (SkyBox.wall.gltexture)
-  {
-    #define WRAPANGLE (ANGLE_MAX/4)
-
-    double fU1, fU2, fV1, fV2;
-    GLWall *wall = &SkyBox.wall;
-    angle_t angle;
-    int i, k;
-    float w;
-
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // no graphics
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
-
-    for (i = gld_drawinfo.num_items[GLDIT_SWALL] - 1; i >= 0; i--)
-    {
-      GLWall* wall = gld_drawinfo.items[GLDIT_SWALL][i].item.wall;
-
-      glBegin(GL_TRIANGLE_STRIP);
-      glVertex3f(wall->glseg->x1,wall->ytop,wall->glseg->z1);
-      glVertex3f(wall->glseg->x1,wall->ybottom,wall->glseg->z1);
-      glVertex3f(wall->glseg->x2,wall->ytop,wall->glseg->z2);
-      glVertex3f(wall->glseg->x2,wall->ybottom,wall->glseg->z2);
-      glEnd();
-    }
-
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-    if (raven || !mlook_or_fov)
-    {
-      fV1 = SkyBox.y_offset / 127.0f;
-      fV2 = fV1 + 320.0f / 200.0f;
-    }
-    else
-    {
-      float f = viewPitch * 2 + 40 / skyscale;
-      f = BETWEEN(0, 127, f);
-      fV1 = (f + SkyBox.y_offset) / 127.0f * skyscale;
-      fV2 = fV1 + 1.0f;
-    }
-
-    k = MAX(wall->gltexture->buffer_width, 256) / 256;
-    angle = ((viewangle - ANG45) / k) % WRAPANGLE;
-
-    if (wall->flag == GLDWF_SKYFLIP)
-    {
-      fU1 = -((double)angle + SkyBox.x_offset) / (WRAPANGLE - 1);
-      fU2 = fU1 + 1.0f / k;
-    }
-    else
-    {
-      fU2 = ((double)angle + SkyBox.x_offset) / (WRAPANGLE - 1);
-      fU1 = fU2 + 1.0f / k;
-    }
-
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_ALPHA_TEST);
-
-    glPushMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    gld_BindSkyTexture(wall->gltexture);
-    w = 160.0f * SCREENWIDTH / WIDE_SCREENWIDTH;
-    glBegin(GL_TRIANGLE_STRIP);
-      glTexCoord2f(fU1, fV1); glVertex3f(-w, +100.5f, -screen_skybox_zplane);
-      glTexCoord2f(fU1, fV2); glVertex3f(-w, -100.5f, -screen_skybox_zplane);
-      glTexCoord2f(fU2, fV1); glVertex3f(+w, +100.5f, -screen_skybox_zplane);
-      glTexCoord2f(fU2, fV2); glVertex3f(+w, -100.5f, -screen_skybox_zplane);
-    glEnd();
-
-    glPopMatrix();
-
-    glEnable(GL_ALPHA_TEST);
-    glEnable(GL_DEPTH_TEST);
-  }
 }
 
 // The texture offset to be applied to the texture coordinates in SkyVertex().

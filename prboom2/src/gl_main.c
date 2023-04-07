@@ -2983,11 +2983,6 @@ void gld_DrawScene(player_t *player)
     {
       gld_DrawDomeSkyBox();
     }
-    //e6y: 3d emulation of screen quad
-    if (gl_drawskys == skytype_screen)
-    {
-      gld_DrawScreenSkybox();
-    }
   }
 
   if (gl_ext_arb_vertex_buffer_object)

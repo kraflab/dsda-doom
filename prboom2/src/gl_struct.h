@@ -43,7 +43,6 @@ typedef enum {
   skytype_none,
   skytype_standard,
   skytype_skydome,
-  skytype_screen,
 
   skytype_count
 } skytype_t;
