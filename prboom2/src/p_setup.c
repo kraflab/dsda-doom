@@ -3299,7 +3299,7 @@ static void R_CalcSegsLength(void)
     int64_t dx = (int64_t)li->v2->px - li->v1->px;
     int64_t dy = (int64_t)li->v2->py - li->v1->py;
     length = sqrt((double)dx*dx + (double)dy*dy);
-    li->length = (int64_t)length;
+    li->halflength = (uint32_t)(length / 2.0);
     // [crispy] re-calculate angle used for rendering
     li->pangle = R_PointToAngleEx2(li->v1->px, li->v1->py, li->v2->px, li->v2->py);
   }

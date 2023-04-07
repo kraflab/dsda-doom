@@ -390,19 +390,17 @@ typedef struct msecnode_s
 typedef struct
 {
   vertex_t *v1, *v2;
-  fixed_t offset;
-  angle_t angle;
-  angle_t pangle; // re-calculated angle used for rendering
-  int64_t length; // fix long wall wobble
   side_t* sidedef;
   line_t* linedef;
-
   // Sector references.
   // Could be retrieved from linedef, too
   // (but that would be slower -- killough)
   // backsector is NULL for one sided lines
-
   sector_t *frontsector, *backsector;
+  fixed_t offset;
+  angle_t angle;
+  angle_t pangle; // re-calculated angle used for rendering
+  uint32_t halflength; // fix long wall wobble
 } seg_t;
 
 typedef struct ssline_s

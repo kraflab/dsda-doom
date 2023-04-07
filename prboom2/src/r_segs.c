@@ -718,7 +718,7 @@ void R_StoreWallRange(const int start, const int stop)
   dy = ((int64_t)curline->v2->py - curline->v1->py) >> shift_bits;
   dx1 = ((int64_t)viewx - curline->v1->px) >> shift_bits;
   dy1 = ((int64_t)viewy - curline->v1->py) >> shift_bits;
-  len = curline->length >> shift_bits;
+  len = curline->halflength; // No need to shift
 
   dist = (((dy * dx1 - dx * dy1) / len) << shift_bits);
   rw_distance = (fixed_t)BETWEEN(INT_MIN, INT_MAX, dist);
