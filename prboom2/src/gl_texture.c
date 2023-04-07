@@ -316,6 +316,9 @@ static GLTexture *gld_GetGLSkyTexture(GLTexture *basetexture)
 {
   int index = 0;
 
+  if (!basetexture)
+    return NULL;
+
   // [XA] returns the indexed sky texture for the current palette & gamma level.
   if (V_IsWorldLightmodeIndexed())
     index = gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma;
