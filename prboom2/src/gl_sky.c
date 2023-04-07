@@ -238,6 +238,10 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
           SkyBox.x_offset = (float)s->textureoffset * 180.0f / (float)ANG180;
           SkyBox.y_offset = (float)s->rowoffset / (float)FRACUNIT;
         }
+        else if (raven)
+        {
+          SkyBox.y_offset = 39.0f;
+        }
         break;
       }
     }
