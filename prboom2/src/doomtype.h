@@ -41,8 +41,8 @@
 
 #ifndef __BYTEBOOL__
 #define __BYTEBOOL__
-/* Fixed to use builtin bool type with C++. */
-#ifdef __cplusplus
+/* On C++ and C23, use the builtin bool type */
+#if defined(__cplusplus) || defined(HAVE_C23_BOOL_KEYWORDS)
 typedef bool dboolean;
 #else
 typedef enum {false, true} dboolean;

@@ -106,6 +106,13 @@ get_fast_math_flag(FAST_MATH_FLAG)
 get_compile_definitions(DSDA_COMPILE_DEFINITIONS)
 get_deprecation_silencing_definitions(DEPRECATION_SILENCING_DEFINITIONS)
 
+include(CheckCSourceCompiles)
+
+check_c_source_compiles("
+int main() {
+  bool foo = false || true;
+}" HAVE_C23_BOOL_KEYWORDS)
+
 include(PkgConfigHelper)
 
 set(OpenGL_GL_PREFERENCE LEGACY)
