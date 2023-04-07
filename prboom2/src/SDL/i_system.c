@@ -333,6 +333,15 @@ dboolean HasTrailingSlash(const char* dn)
           );
 }
 
+static const char *I_GetBasePath(void)
+{
+  static char *executable_dir;
+  /* SDL_GetBasePath is an expensive call */
+  if (!executable_dir)
+    executable_dir = SDL_GetBasePath();
+  return executable_dir;
+}
+
 /*
  * I_FindFile
  *
@@ -363,7 +372,8 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL}, // current working directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
     {DOOMWADDIR}, // build-time configured DOOMWADDIR
-    {DSDAPWADDIR}, // build-time configured location of dsda-doom.wad
+    {DSDA_ABSOLUTE_PWAD_PATH}, // build-time configured absolute path to dsda-doom.wad
+    {NULL, NULL, NULL, I_GetBasePath}, // search the base path provided by SDL
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
     {"/usr/local/share/games/doom"},
