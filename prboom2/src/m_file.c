@@ -36,7 +36,6 @@
 #include <windows.h>
 #include <io.h>
 #include <direct.h>
-#include <shellapi.h>
 #endif
 
 #ifdef HAVE_CONFIG_H
@@ -45,10 +44,6 @@
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-
-#ifdef HAVE_FTW_H
-#include <ftw.h>
 #endif
 
 #include <stdlib.h>
@@ -548,48 +543,5 @@ char *M_getenv(const char *name) {
   return env;
 #else
   return getenv(name);
-#endif
-}
-
-static int nftwfunc(const char *filename, const struct stat *stats, int flags, struct FTW *pfwt)
-{
-  (void)stats;
-  (void)flags;
-  (void)pfwt;
-  return M_remove(filename);
-}
-
-#define NFTW_LIMIT 64
-
-dboolean M_RemoveDirRecursive(const char *path)
-{
-#ifdef _WIN32
-  wchar_t *wpath;
-  int result;
-
-  SHFILEOPSTRUCTW file_op = {
-    NULL,
-    FO_DELETE,
-    NULL,
-    NULL,
-    FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT,
-    false,
-    NULL,
-    NULL};
-
-  wpath = ConvertUtf8ToWide(path);
-  if (!wpath)
-    return false;
-
-  file_op.pFrom = wpath;
-  result = SHFileOperationW(&file_op);
-
-  Z_Free(wpath);
-  return result == 0;
-#elif defined(HAVE_FTW_H)
-  return nftw(path, nftwfunc, NFTW_LIMIT, FTW_DEPTH | FTW_PHYS) == 0;
-#else /* !defined(_WIN32) && !defined(HAVE_FTW_H) */
-  lprintf(LO_WARN, "M_RemoveDirRecursive: Not supported on your platform.\n");
-  return false;
 #endif
 }
