@@ -1,0 +1,233 @@
+//
+// Copyright(C) 2023 by Ryan Krafnick
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// DESCRIPTION:
+//	DSDA Wad Stats
+//
+
+#include <stdio.h>
+
+#include "lprintf.h"
+#include "m_file.h"
+#include "w_wad.h"
+#include "z_zone.h"
+
+#include "dsda/data_organizer.h"
+#include "dsda/utility.h"
+
+#include "wad_stats.h"
+
+static const char* filename = "stats.txt";
+static const int current_version = 1;
+
+wad_stats_t wad_stats;
+
+static void dsda_EnsureMapCount(int count) {
+  wad_stats.map_count = count;
+
+  if (wad_stats.maps_size < wad_stats.map_count) {
+    int old_size;
+
+    old_size = wad_stats.maps_size;
+    while (wad_stats.maps_size < wad_stats.map_count)
+      wad_stats.maps_size = wad_stats.maps_size ? wad_stats.maps_size * 2 : 32;
+    wad_stats.maps = Z_Realloc(wad_stats.maps, sizeof(*wad_stats.maps) * wad_stats.maps_size);
+    memset(wad_stats.maps + old_size * sizeof(*wad_stats.maps),
+           0, (wad_stats.maps_size - old_size) * sizeof(*wad_stats.maps));
+  }
+}
+
+static const char* dsda_WadStatsPath(void) {
+  static dsda_string_t path;
+
+  if (!path.string)
+    dsda_StringPrintF(&path, "%s/%s", dsda_DataDir(), filename);
+
+  return path.string;
+}
+
+static dboolean dsda_MapStatsExist(const char* lump) {
+  int i;
+
+  for (i = 0; i < wad_stats.maps_size && wad_stats.maps[i].lump[0]; ++i)
+    if (!strncasecmp(wad_stats.maps[i].lump, lump, 8))
+      return true;
+
+  return false;
+}
+
+static int C_DECL dicmp_map_stats(const void* a, const void* b) {
+  const map_stats_t* m1 = (const map_stats_t *) a;
+  const map_stats_t* m2 = (const map_stats_t *) b;
+
+  return (m1->episode == m2->episode) ?
+         (m1->map == m2->map) ?
+         m1->lump[0] - m2->lump[0] : m1->map - m2->map : m1->episode - m2->episode;
+}
+
+static void dsda_CreateWadStats(void) {
+  int i;
+  const char* map_name;
+  int map_count = 0;
+  dboolean any_pwad_map = false;
+
+  for (i = numlumps - 1; i > 0; --i) {
+    if (any_pwad_map && lumpinfo[i].source == source_iwad)
+      break;
+
+    if (lumpinfo[i].source != source_iwad &&
+        lumpinfo[i].source != source_pwad)
+      continue;
+
+    if (strncasecmp(lumpinfo[i].name, "THINGS", 8) &&
+        strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
+      continue;
+
+    map_name = lumpinfo[i - 1].name;
+    if (dsda_MapStatsExist(map_name))
+      continue;
+
+    if (lumpinfo[i - 1].source == source_pwad)
+      any_pwad_map = true;
+
+    {
+      int episode, map;
+      map_stats_t* ms;
+
+      map_count += 1;
+      dsda_EnsureMapCount(map_count);
+      ms = &wad_stats.maps[map_count - 1];
+      memset(ms, 0, sizeof(*wad_stats.maps));
+
+      strcpy(ms->lump, map_name);
+
+      if (sscanf(map_name, "MAP%d", &map) == 1) {
+        ms->episode = 1;
+        ms->map = map;
+      }
+      else if (sscanf(map_name, "E%dM%d", &episode, &map) == 2) {
+        ms->episode = episode;
+        ms->map = map;
+      }
+      else {
+        ms->episode = -1;
+        ms->map = -1;
+      }
+
+      ms->max_kills = -1;
+      ms->max_items = -1;
+      ms->max_secrets = -1;
+    }
+  }
+
+  qsort(wad_stats.maps, wad_stats.map_count, sizeof(*wad_stats.maps), dicmp_map_stats);
+}
+
+static void dsda_LoadWadStats(void) {
+  const char* path;
+  char* buffer;
+  char** lines;
+  int version;
+  int map_count = 0;
+  int i;
+
+  path = dsda_WadStatsPath();
+
+  if (M_ReadFileToString(path, &buffer) != -1) {
+    lines = dsda_SplitString(buffer, "\n\r");
+
+    if (lines) {
+      if (!lines[0] || !lines[1])
+        I_Error("Encountered invalid wad stats: %s", path);
+
+      if (sscanf(lines[0], "%d", &version) != 1)
+        I_Error("Encountered invalid wad stats: %s", path);
+
+      if (version > current_version)
+        I_Error("Encountered unsupported wad stats version: %s", path);
+
+      if (
+        sscanf(
+          lines[1], "%d %d %d %d",
+          &wad_stats.total_exits, &wad_stats.total_kills,
+          &wad_stats.total_items, &wad_stats.total_secrets
+        ) != 4
+      )
+        I_Error("Encountered invalid wad stats: %s", path);
+
+      for (i = 2; lines[i] && *lines[i]; ++i) {
+        map_stats_t ms;
+
+        if (
+          sscanf(
+            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+            ms.lump, &ms.episode, &ms.map,
+            &ms.best_skill, &ms.best_time, &ms.best_max_time, &ms.total_time,
+            &ms.total_exits, &ms.total_kills, &ms.total_items, &ms.total_secrets,
+            &ms.best_kills, &ms.best_items, &ms.best_secrets,
+            &ms.max_kills, &ms.max_items, &ms.max_secrets
+          ) != 17
+        ) {
+          map_count += 1;
+          dsda_EnsureMapCount(map_count);
+          wad_stats.maps[map_count - 1] = ms;
+        }
+      }
+
+      Z_Free(lines);
+    }
+
+    Z_Free(buffer);
+  }
+}
+
+void dsda_SaveWadStats(void) {
+  const char* path;
+  FILE* file;
+  int i;
+
+  if (!wad_stats.map_count)
+    return;
+
+  path = dsda_WadStatsPath();
+
+  file = M_OpenFile(path, "wb");
+  if (!file)
+    lprintf(LO_WARN, "dsda_SaveWadStats: Failed to save wad stats file \"%s\".", path);
+
+  fprintf(file, "%d\n", current_version);
+  fprintf(file, "%d %d %d %d\n",
+          wad_stats.total_exits, wad_stats.total_kills,
+          wad_stats.total_items, wad_stats.total_secrets);
+
+  for (i = 0; i < wad_stats.map_count; ++i) {
+    map_stats_t* ms;
+
+    ms = &wad_stats.maps[i];
+    fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+            ms->lump, ms->episode, ms->map,
+            ms->best_skill, ms->best_time, ms->best_max_time, ms->total_time,
+            ms->total_exits, ms->total_kills, ms->total_items, ms->total_secrets,
+            ms->best_kills, ms->best_items, ms->best_secrets,
+            ms->max_kills, ms->max_items, ms->max_secrets);
+  }
+
+  fclose(file);
+}
+
+void dsda_InitWadStats(void) {
+  dsda_LoadWadStats();
+
+  if (!wad_stats.map_count)
+    dsda_CreateWadStats();
+}
