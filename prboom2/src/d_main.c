@@ -1527,7 +1527,7 @@ static void D_AddZip(const char* zipped_file_name)
   full_zip_path = I_RequireZip(zipped_file_name);
   dsda_StringPrintF(&temporary_directory, "%s/%s", I_GetTempDir(), dsda_BaseName(zipped_file_name));
   if (M_IsDir(temporary_directory.string))
-    if (!M_ClearDirectory(temporary_directory.string))
+    if (!M_RemoveFilesAtPath(temporary_directory.string))
       I_Error("D_AddZip: unable to clear tempdir %s\n", temporary_directory.string);
   M_MakeDir(temporary_directory.string, true);
 

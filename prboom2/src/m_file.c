@@ -547,7 +547,7 @@ char *M_getenv(const char *name) {
 #endif
 }
 
-dboolean M_ClearDirectory(const char *path)
+dboolean M_RemoveFilesAtPath(const char *path)
 {
   glob_t *glob;
   const char *filename;
@@ -561,7 +561,7 @@ dboolean M_ClearDirectory(const char *path)
       break;
 
     if (M_remove(filename) != 0) {
-      lprintf(LO_ERROR, "M_ClearDirectory: unable to delete file %s\n", filename);
+      lprintf(LO_ERROR, "M_RemoveFilesAtPath: unable to delete file %s\n", filename);
       success = false;
       break;
     }
