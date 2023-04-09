@@ -92,6 +92,8 @@
 #include "dsda/console.h"
 #include "dsda/stretch.h"
 #include "dsda/text_color.h"
+#include "dsda/utility.h"
+#include "dsda/wad_stats.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -289,6 +291,8 @@ void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
 void M_General(int);      // killough 10/98
 void M_DrawGeneral(void); // killough 10/98
+void M_LevelTable(int);
+void M_DrawLevelTable(void);
 void M_ChangeFullScreen(void);
 void M_ChangeVideoMode(void);
 void M_ChangeUseGLSurface(void);
@@ -1135,6 +1139,7 @@ enum
   set_statbar,
   set_automap,
   soundvol,
+  level_table,
   opt_end
 } options_e;
 
@@ -1148,6 +1153,7 @@ menuitem_t OptionsMenu[]=
   { 1, "M_STAT", M_StatusBar, 's', "STATUS BAR / HUD" },
   { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
   { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" },
+  { 1, "M_LVLTBL", M_LevelTable, 's', "LEVEL TABLE" },
 };
 
 menu_t OptionsDef =
@@ -1623,6 +1629,16 @@ menu_t GeneralDef =                                           // killough 10/98
   &OptionsDef,
   Generic_Setup,
   M_DrawGeneral,
+  34,5,      // skull drawn here
+  0
+};
+
+menu_t LevelTableDef =
+{
+  generic_setup_end,
+  &OptionsDef,
+  Generic_Setup,
+  M_DrawLevelTable,
   34,5,      // skull drawn here
   0
 };
@@ -3182,6 +3198,92 @@ void M_DrawGeneral(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", cr_title);
   M_DrawInstructions();
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
+}
+
+/////////////////////////////
+//
+// The level table.
+//
+
+static setup_menu_t *level_table_page[1];
+//static setup_menu_t next_page_template = NEXT_PAGE(NULL);
+//static setup_menu_t prev_page_template = PREV_PAGE(NULL);
+static setup_menu_t final_entry_template = FINAL_ENTRY;
+static setup_menu_t new_column_template = NEW_COLUMN;
+
+#define LOOP_LEVEL_TABLE_COLUMN { \
+  for (i = 0; i < wad_stats.map_count; ++i) { \
+    map = &wad_stats.maps[i]; \
+    if (map->episode == -1) \
+      continue; \
+    entry = &level_table_page[0][base_i + i]; \
+
+#define END_LOOP_LEVEL_TABLE_COLUMN } \
+  base_i += i; \
+}
+
+#define INSERT_NEW_LEVEL_TABLE_COLUMN { \
+  level_table_page[0][base_i] = new_column_template; \
+  ++base_i; \
+}
+
+#define INSERT_FINAL_LEVEL_TABLE_ENTRY { \
+  level_table_page[0][base_i] = final_entry_template; \
+}
+
+static void M_BuildLevelTable(void)
+{
+  DO_ONCE
+    int i;
+    int base_i = 0;
+    setup_menu_t *entry;
+    map_stats_t *map;
+    dsda_string_t m_text;
+
+    level_table_page[0] = Z_Calloc(wad_stats.map_count * 2 + 3, sizeof(*level_table_page[0]));
+
+    LOOP_LEVEL_TABLE_COLUMN
+      dsda_StringPrintF(&m_text, "%s", map->lump);
+      entry->m_text = m_text.string;
+      entry->m_flags = S_TITLE | S_LEFTJUST;
+      entry->m_x = 8;
+    END_LOOP_LEVEL_TABLE_COLUMN
+
+    INSERT_NEW_LEVEL_TABLE_COLUMN;
+
+    LOOP_LEVEL_TABLE_COLUMN
+      dsda_StringPrintF(&m_text, "%d", map->map);
+      entry->m_text = m_text.string;
+      entry->m_flags = S_TITLE | S_LEFTJUST | S_SKIP;
+      entry->m_x = 8 + 64;
+    END_LOOP_LEVEL_TABLE_COLUMN
+
+    INSERT_FINAL_LEVEL_TABLE_ENTRY;
+  END_ONCE
+}
+
+void M_LevelTable(int choice)
+{
+  M_SetupNextMenu(&LevelTableDef);
+
+  M_BuildLevelTable();
+
+  setup_active = true;
+  setup_select = false;
+  setup_gather = false;
+  mult_screens_index = 0;
+  M_UpdateSetupMenu(level_table_page[0]);
+}
+
+void M_DrawLevelTable(void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+
+  M_DrawBackground(g_menu_flat, 0);
+
+  M_DrawTitle(114, 2, "M_LVLTBL", CR_DEFAULT, "LEVEL TABLE", cr_title);
+  M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
