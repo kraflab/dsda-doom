@@ -61,16 +61,14 @@ static void dsda_WriteZippedFilesToDest(zip_t *archive, const char *destination_
     zip_file_t *zipped_file;
     zip_stat_t stat;
     FILE *dest_file;
-    const char *file_name = zip_get_name(archive, i, ZIP_FL_UNCHANGED);
+    const char *file_name = dsda_BaseName(zip_get_name(archive, i, ZIP_FL_UNCHANGED));
 
-    dsda_StringPrintF(&full_path, "%s/%s", destination_directory, file_name);
-
-    /* Intermediate directories have a trailing '/' */
-    if (dsda_HasFileExt(full_path.string, "/")) {
-      M_MakeDir(full_path.string, true);
-      dsda_FreeString(&full_path);
+    /* Intermediate directories have a trailing '/', so their base name is empty */
+    if (*file_name == '\0') {
       continue;
     }
+
+    dsda_StringPrintF(&full_path, "%s/%s", destination_directory, file_name);
 
     zip_stat_index(archive, i, ZIP_FL_UNCHANGED, &stat);
     if ((stat.valid & ZIP_STAT_SIZE) == 0)
