@@ -561,12 +561,12 @@ static void gld_BuildSky(int row_count, int col_count, SkyBoxParams_t *sky, int 
   {
     Z_Free(vbo->loops);
     Z_Free(vbo->data);
-    memset(vbo, 0, sizeof(vbo[0]));
+    vbo->loops = NULL;
+    vbo->data = NULL;
   }
 
   if (!vbo->data)
   {
-    memset(vbo, 0, sizeof(vbo[0]));
     vbo->loops = Z_Malloc((row_count * 2 + 2) * sizeof(vbo->loops[0]));
     // create vertex array
     vbo->data = Z_Malloc(vertex_count * sizeof(vbo->data[0]));
