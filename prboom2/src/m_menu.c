@@ -2104,7 +2104,7 @@ static void M_DrawInstructions(void)
 #define PREV_PAGE(page) { "<-", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
-#define NEW_COLUMN { 0, S_RESET_Y, m_null }
+#define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
 #define DEFAULT_LIST_Y (INSTRUCTION_Y + 1.5 * menu_font->line_height)
 
