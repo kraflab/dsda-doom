@@ -2049,7 +2049,7 @@ void M_DrawDelVerify(void)
 
 static void M_DrawInstructionString(int cr, const char *str)
 {
-  M_DrawStringCentered(160, INSTRUCTION_Y, cr, "Press key or button for this action");
+  M_DrawStringCentered(160, INSTRUCTION_Y, cr, str);
 }
 
 static void M_DrawInstructions(void)
