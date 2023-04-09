@@ -487,7 +487,7 @@ int PUREFUNC R_SafeTextureNumForName(const char *name, int snum)
   int i = R_CheckTextureNumForName(name);
   if (i == -1) {
     i = NO_TEXTURE; // e6y - return "no texture"
-    lprintf(LO_DEBUG,"bad texture '%s' in sidedef %d\n",name,snum);
+    lprintf(LO_DEBUG,"bad texture '%.8s' in sidedef %d\n",name,snum);
   }
   return i;
 }
