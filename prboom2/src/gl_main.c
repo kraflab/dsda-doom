@@ -2793,14 +2793,14 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 //e6y
 void gld_ProcessWall(GLWall *wall)
 {
-  // e6y
-  // The ultimate 'ATI sucks' fix: Some of ATIs graphics cards are so unprecise when
-  // rendering geometry that each and every border between polygons must be seamless,
-  // otherwise there are rendering artifacts worse than anything that could be seen
-  // on Geforce 2's! Made this a menu option because the speed impact is quite severe
-  // and this special handling is not necessary on modern NVidia cards.
   seg_t *seg = wall->seg;
 
+  // The following code decides where to insert vertices in the left and right
+  // sides of a wall polygon so that it precisely shares vertices with adjacent
+  // ceilings/floors/walls.  This prevents gaps between polygons from the
+  // T-junction problem.
+  //
+  // See: https://computergraphics.stackexchange.com/questions/1461/why-do-t-junctions-in-meshes-result-in-cracks
   wall->glseg->fracleft  = 0;
   wall->glseg->fracright = 0;
 
