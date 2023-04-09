@@ -39,16 +39,10 @@
 #include "config.h"
 #endif
 
-#ifndef __DBOOLEAN__
-#define __DBOOLEAN__
 #include <stdbool.h>
 typedef int dboolean;
-#endif
 
-#ifndef __BYTE__
-#define __BYTE__
 typedef unsigned char byte;
-#endif
 
 //e6y
 #ifndef MAX
