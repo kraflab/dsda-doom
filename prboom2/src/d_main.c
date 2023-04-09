@@ -1721,7 +1721,6 @@ static void D_DoomMainSetup(void)
     }
   }
 
-
   lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
   dsda_ParseOptionsLump();
   G_ReloadDefaults();
