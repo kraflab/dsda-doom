@@ -3985,6 +3985,57 @@ dboolean M_WeaponResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+dboolean M_AutoResponder(int ch, int action, event_t* ev)
+{
+  // changing an entry
+  if (setup_select)
+  {
+    if (action == MENU_DOWN)
+    {
+      if (++color_palette_y == 16)
+        color_palette_y = 0;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_UP)
+    {
+      if (--color_palette_y < 0)
+        color_palette_y = 15;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_LEFT)
+    {
+      if (--color_palette_x < 0)
+        color_palette_x = 15;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_RIGHT)
+    {
+      if (++color_palette_x == 16)
+        color_palette_x = 0;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_ENTER)
+    {
+      setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+
+      dsda_UpdateIntConfig(ptr1->config_id, color_palette_x + 16 * color_palette_y, true);
+      M_SelectDone(ptr1);                         // phares 4/17/98
+      colorbox_active = false;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -4616,51 +4667,9 @@ dboolean M_Responder (event_t* ev) {
       if (M_WeaponResponder(ch, action, ev))
         return true;
 
-    // Automap
-
     if (set_auto_active) // on the automap setup screen
-      if (setup_select) // incoming key
-      {
-        if (action == MENU_DOWN)
-        {
-          if (++color_palette_y == 16)
-            color_palette_y = 0;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_UP)
-        {
-          if (--color_palette_y < 0)
-            color_palette_y = 15;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_LEFT)
-        {
-          if (--color_palette_x < 0)
-            color_palette_x = 15;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_RIGHT)
-        {
-          if (++color_palette_x == 16)
-            color_palette_x = 0;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_ENTER)
-        {
-          dsda_UpdateIntConfig(ptr1->config_id, color_palette_x + 16 * color_palette_y, true);
-          M_SelectDone(ptr1);                         // phares 4/17/98
-          colorbox_active = false;
-          return true;
-        }
-      }
+      if (M_AutoResponder(ch, action, ev))
+        return true;
 
     // killough 10/98: consolidate handling into one place:
     if (setup_select && set_general_active | set_status_active)
