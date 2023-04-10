@@ -4247,6 +4247,186 @@ dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
+{
+  setup_menu_t* ptr1 = current_setup_menu + set_menu_itemon;
+  setup_menu_t* ptr2 = NULL;
+
+  if (action == MENU_DOWN)
+  {
+    ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
+    do
+      if (ptr1->m_flags & S_END)
+      {
+        set_menu_itemon = 0;
+        ptr1 = current_setup_menu;
+      }
+      else
+      {
+        set_menu_itemon++;
+        ptr1++;
+      }
+    while (ptr1->m_flags & S_SKIP);
+    M_SelectDone(ptr1);         // phares 4/17/98
+    return true;
+  }
+
+  if (action == MENU_UP)
+  {
+    ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
+    do
+    {
+      if (set_menu_itemon == 0)
+        do
+          set_menu_itemon++;
+        while(!((current_setup_menu + set_menu_itemon)->m_flags & S_END));
+      set_menu_itemon--;
+    }
+    while((current_setup_menu + set_menu_itemon)->m_flags & S_SKIP);
+    M_SelectDone(current_setup_menu + set_menu_itemon);         // phares 4/17/98
+    return true;
+  }
+
+  if (action == MENU_CLEAR)
+  {
+    if (ptr1->m_flags & S_INPUT)
+    {
+      if (ptr1->m_flags & S_NOCLEAR)
+      {
+        S_StartVoidSound(g_sfx_oof);
+      }
+      else
+      {
+        dsda_InputReset(ptr1->input);
+      }
+    }
+
+    return true;
+  }
+
+  if (action == MENU_ENTER)
+  {
+    int flags = ptr1->m_flags;
+
+    // You've selected an item to change. Highlight it, post a new
+    // message about what to do, and get ready to process the
+    // change.
+    //
+    // killough 10/98: use friendlier char-based input buffer
+
+    if (flags & (S_NUM | S_CRITEM))
+    {
+      setup_gather = true;
+      gather_count = 0;
+    }
+    else if (flags & S_COLOR)
+    {
+      int color = dsda_PersistentIntConfig(ptr1->config_id);
+
+      if (color < 0 || color > 255) // range check the value
+        color = 0;        // 'no show' if invalid
+
+      color_palette_x = color & 15;
+      color_palette_y = color >> 4;
+      colorbox_active = true;
+    }
+    else if (flags & S_STRING)
+    {
+      strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
+              ENTRY_STRING_BFR_SIZE - 1);
+
+      entry_index = 0; // current cursor position in entry_string_index
+    }
+    else if (flags & S_CHOICE)
+    {
+      if (flags & S_STR)
+      {
+        strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
+                ENTRY_STRING_BFR_SIZE - 1);
+      }
+      else
+      {
+        choice_value = dsda_PersistentIntConfig(ptr1->config_id);
+      }
+    }
+
+    ptr1->m_flags |= S_SELECT;
+    setup_select = true;
+    S_StartVoidSound(g_sfx_itemup);
+    return true;
+  }
+
+  if ((action == MENU_ESCAPE) || (action == MENU_BACKSPACE))
+  {
+    M_SetSetupMenuItemOn(set_menu_itemon);
+    if (action == MENU_ESCAPE) // Clear all menus
+      M_ClearMenus();
+    else // MENU_BACKSPACE = return to Setup Menu
+      if (currentMenu->prevMenu)
+      {
+        M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
+        itemOn = currentMenu->lastOn;
+        S_StartVoidSound(g_sfx_swtchn);
+      }
+    ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
+    setup_active = false;
+    set_keybnd_active = false;
+    set_weapon_active = false;
+    set_status_active = false;
+    set_auto_active = false;
+    colorbox_active = false;
+    set_general_active = false;    // killough 10/98
+    HU_Start();    // catch any message changes // phares 4/19/98
+    S_StartVoidSound(g_sfx_swtchx);
+    return true;
+  }
+
+  // Some setup screens may have multiple screens.
+  // When there are multiple screens, m_prev and m_next items need to
+  // be placed on the appropriate screen tables so the user can
+  // move among the screens using the left and right arrow keys.
+  // The m_var1 field contains a pointer to the appropriate screen
+  // to move to.
+
+  if (action == MENU_LEFT)
+  {
+    ptr2 = ptr1;
+    do
+    {
+      ptr2++;
+      if (ptr2->m_flags & S_PREV)
+      {
+        ptr1->m_flags &= ~S_HILITE;
+        M_SetSetupMenuItemOn(set_menu_itemon);
+        M_UpdateSetupMenu(ptr2->menu);
+        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        return true;
+      }
+    }
+    while (!(ptr2->m_flags & S_END));
+  }
+
+  if (action == MENU_RIGHT)
+  {
+    ptr2 = ptr1;
+    do
+    {
+      ptr2++;
+      if (ptr2->m_flags & S_NEXT)
+      {
+        ptr1->m_flags &= ~S_HILITE;
+        M_SetSetupMenuItemOn(set_menu_itemon);
+        M_UpdateSetupMenu(ptr2->menu);
+        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        return true;
+      }
+    }
+    while (!(ptr2->m_flags & S_END));
+  }
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -4734,9 +4914,6 @@ dboolean M_Responder (event_t* ev) {
   // Setup screen key processing
 
   if (setup_active) {
-    setup_menu_t* ptr1= current_setup_menu + set_menu_itemon;
-    setup_menu_t* ptr2 = NULL;
-
     if (M_SetupCommonSelectResponder(ch, action, ev))
       return true;
 
@@ -4759,179 +4936,9 @@ dboolean M_Responder (event_t* ev) {
 
     // Not changing any items on the Setup screens. See if we're
     // navigating the Setup menus or selecting an item to change.
-
-    if (action == MENU_DOWN)
-    {
-      ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
-      do
-        if (ptr1->m_flags & S_END)
-        {
-          set_menu_itemon = 0;
-          ptr1 = current_setup_menu;
-        }
-        else
-        {
-          set_menu_itemon++;
-          ptr1++;
-        }
-      while (ptr1->m_flags & S_SKIP);
-      M_SelectDone(ptr1);         // phares 4/17/98
+    if (M_SetupNavigationResponder(ch, action, ev))
       return true;
-    }
-
-    if (action == MENU_UP)
-    {
-      ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
-      do
-      {
-        if (set_menu_itemon == 0)
-          do
-            set_menu_itemon++;
-          while(!((current_setup_menu + set_menu_itemon)->m_flags & S_END));
-        set_menu_itemon--;
-      }
-      while((current_setup_menu + set_menu_itemon)->m_flags & S_SKIP);
-      M_SelectDone(current_setup_menu + set_menu_itemon);         // phares 4/17/98
-      return true;
-    }
-
-    if (action == MENU_CLEAR)
-    {
-      if (ptr1->m_flags & S_INPUT)
-      {
-        if (ptr1->m_flags & S_NOCLEAR)
-        {
-          S_StartVoidSound(g_sfx_oof);
-        }
-        else
-        {
-          dsda_InputReset(ptr1->input);
-        }
-      }
-
-      return true;
-    }
-
-    if (action == MENU_ENTER)
-    {
-      int flags = ptr1->m_flags;
-
-      // You've selected an item to change. Highlight it, post a new
-      // message about what to do, and get ready to process the
-      // change.
-      //
-      // killough 10/98: use friendlier char-based input buffer
-
-      if (flags & (S_NUM | S_CRITEM))
-      {
-        setup_gather = true;
-        gather_count = 0;
-      }
-      else if (flags & S_COLOR)
-      {
-        int color = dsda_PersistentIntConfig(ptr1->config_id);
-
-        if (color < 0 || color > 255) // range check the value
-          color = 0;        // 'no show' if invalid
-
-        color_palette_x = color & 15;
-        color_palette_y = color >> 4;
-        colorbox_active = true;
-      }
-      else if (flags & S_STRING)
-      {
-        strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
-                ENTRY_STRING_BFR_SIZE - 1);
-
-        entry_index = 0; // current cursor position in entry_string_index
-      }
-      else if (flags & S_CHOICE)
-      {
-        if (flags & S_STR)
-        {
-          strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
-                  ENTRY_STRING_BFR_SIZE - 1);
-        }
-        else
-        {
-          choice_value = dsda_PersistentIntConfig(ptr1->config_id);
-        }
-      }
-
-      ptr1->m_flags |= S_SELECT;
-      setup_select = true;
-      S_StartVoidSound(g_sfx_itemup);
-      return true;
-    }
-
-    if ((action == MENU_ESCAPE) || (action == MENU_BACKSPACE))
-    {
-      M_SetSetupMenuItemOn(set_menu_itemon);
-      if (action == MENU_ESCAPE) // Clear all menus
-        M_ClearMenus();
-      else // MENU_BACKSPACE = return to Setup Menu
-        if (currentMenu->prevMenu)
-        {
-          M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
-          itemOn = currentMenu->lastOn;
-          S_StartVoidSound(g_sfx_swtchn);
-        }
-      ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
-      setup_active = false;
-      set_keybnd_active = false;
-      set_weapon_active = false;
-      set_status_active = false;
-      set_auto_active = false;
-      colorbox_active = false;
-      set_general_active = false;    // killough 10/98
-      HU_Start();    // catch any message changes // phares 4/19/98
-      S_StartVoidSound(g_sfx_swtchx);
-      return true;
-    }
-
-    // Some setup screens may have multiple screens.
-    // When there are multiple screens, m_prev and m_next items need to
-    // be placed on the appropriate screen tables so the user can
-    // move among the screens using the left and right arrow keys.
-    // The m_var1 field contains a pointer to the appropriate screen
-    // to move to.
-
-    if (action == MENU_LEFT)
-    {
-      ptr2 = ptr1;
-      do
-      {
-        ptr2++;
-        if (ptr2->m_flags & S_PREV)
-        {
-          ptr1->m_flags &= ~S_HILITE;
-          M_SetSetupMenuItemOn(set_menu_itemon);
-          M_UpdateSetupMenu(ptr2->menu);
-          S_StartVoidSound(g_sfx_menu);  // killough 10/98
-          return true;
-        }
-      }
-      while (!(ptr2->m_flags & S_END));
-    }
-
-    if (action == MENU_RIGHT)
-    {
-      ptr2 = ptr1;
-      do
-      {
-        ptr2++;
-        if (ptr2->m_flags & S_NEXT)
-        {
-          ptr1->m_flags &= ~S_HILITE;
-          M_SetSetupMenuItemOn(set_menu_itemon);
-          M_UpdateSetupMenu(ptr2->menu);
-          S_StartVoidSound(g_sfx_menu);  // killough 10/98
-          return true;
-        }
-      }
-      while (!(ptr2->m_flags & S_END));
-    }
-  } // End of Setup Screen processing
+  }
 
   // From here on, these navigation keys are used on the BIG FONT menus
   // like the Main Menu.
