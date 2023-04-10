@@ -110,6 +110,8 @@
 #define S_YESNO    0x00000008 // Yes or No item
 #define S_CRITEM   0x00000010 // Message color
 #define S_COLOR    0x00000020 // Automap color
+// #define S_      0x00000040
+// #define S_      0x00000080
 #define S_PREV     0x00000100 // Previous menu exists
 #define S_NEXT     0x00000200 // Next menu exists
 #define S_INPUT    0x00000400 // Composite input binding
@@ -118,13 +120,20 @@
 #define S_SKIP     0x00002000 // Cursor can't land here
 #define S_KEEP     0x00004000 // Don't swap key out
 #define S_END      0x00008000 // Last item in list (dummy)
-#define S_LEVWARN  0x00010000// killough 8/30/98: Always warn about pending change
-#define S_FILE     0x00080000// killough 10/98: Filenames
+#define S_LEVWARN  0x00010000 // killough 8/30/98: Always warn about pending change
+// #define S_      0x00020000
+// #define S_      0x00040000
+#define S_FILE     0x00080000 // killough 10/98: Filenames
 #define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
-#define S_CREDIT   0x00200000  // killough 10/98: credit
-#define S_CHOICE   0x00800000  // this item has several values
+#define S_CREDIT   0x00200000 // killough 10/98: credit
+// #define S_      0x00400000
+#define S_CHOICE   0x00800000 // this item has several values
+// #define S_      0x01000000
 #define S_NAME     0x02000000
 #define S_RESET_Y  0x04000000
+// #define S_      0x08000000
+// #define S_      0x10000000
+// #define S_      0x20000000
 #define S_STR      0x40000000 // need to refactor things...
 #define S_NOCLEAR  0x80000000
 
