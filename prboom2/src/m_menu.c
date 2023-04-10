@@ -110,8 +110,8 @@
 #define S_YESNO    0x00000008 // Yes or No item
 #define S_CRITEM   0x00000010 // Message color
 #define S_COLOR    0x00000020 // Automap color
-// #define S_      0x00000040
-// #define S_      0x00000080
+#define S_LABEL    0x00000040
+#define S_TC_SEL   0x00000080
 #define S_PREV     0x00000100 // Previous menu exists
 #define S_NEXT     0x00000200 // Next menu exists
 #define S_INPUT    0x00000400 // Composite input binding
@@ -143,7 +143,7 @@
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
+#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
 
 #define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_NAME)
 
@@ -1692,7 +1692,7 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   char *p, *t;
   int w = 0;
   int color =
-    flags & S_SELECT ? cr_label_edit :
+    flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
     flags & S_HILITE ? cr_label_highlight :
     flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
     cr_label; // killough 10/98
@@ -3232,11 +3232,12 @@ static void M_BuildLevelTable(void)
   DO_ONCE
     int i;
     int base_i = 0;
+    int column_x = 16;
     setup_menu_t *entry;
     map_stats_t *map;
     dsda_string_t m_text;
 
-    level_table_page[0] = Z_Calloc(wad_stats.map_count * 2 + 4, sizeof(*level_table_page[0]));
+    level_table_page[0] = Z_Calloc(wad_stats.map_count * 5 + 16, sizeof(*level_table_page[0]));
 
     INSERT_LEVEL_TABLE_EMPTY_LINE
 
@@ -3244,12 +3245,16 @@ static void M_BuildLevelTable(void)
       dsda_StringPrintF(&m_text, "%s", map->lump);
       entry->m_text = m_text.string;
       entry->m_flags = S_TITLE | S_LEFTJUST;
-      entry->m_x = 16;
+      entry->m_x = column_x;
     END_LOOP_LEVEL_TABLE_COLUMN
 
-    INSERT_LEVEL_TABLE_COLUMN("SKILL", 128)
+    column_x += 96;
+    INSERT_LEVEL_TABLE_COLUMN("SKILL", column_x)
 
     LOOP_LEVEL_TABLE_COLUMN
+      entry->m_flags = S_LABEL | S_SKIP;
+      entry->m_x = column_x;
+
       if (map->best_skill) {
         dsda_StringPrintF(&m_text, "%d", map->best_skill);
         entry->m_text = m_text.string;
@@ -3257,9 +3262,60 @@ static void M_BuildLevelTable(void)
       else {
         entry->m_text = "-";
       }
+    END_LOOP_LEVEL_TABLE_COLUMN
 
-      entry->m_flags = S_TITLE | S_SKIP;
-      entry->m_x = 128;
+    column_x += 64;
+    INSERT_LEVEL_TABLE_COLUMN("K", column_x);
+
+    LOOP_LEVEL_TABLE_COLUMN
+      entry->m_flags = S_LABEL | S_SKIP;
+      entry->m_x = column_x;
+
+      if (map->best_skill) {
+        dsda_StringPrintF(&m_text, "%d/%d", map->best_kills, map->max_kills);
+        entry->m_text = m_text.string;
+        if (map->best_kills == map->max_kills)
+          entry->m_flags |= S_TC_SEL;
+      }
+      else {
+        entry->m_text = "-";
+      }
+    END_LOOP_LEVEL_TABLE_COLUMN
+
+    column_x += 48;
+    INSERT_LEVEL_TABLE_COLUMN("I", column_x);
+
+    LOOP_LEVEL_TABLE_COLUMN
+      entry->m_flags = S_LABEL | S_SKIP;
+      entry->m_x = column_x;
+
+      if (map->best_skill) {
+        dsda_StringPrintF(&m_text, "%d/%d", map->best_items, map->max_items);
+        entry->m_text = m_text.string;
+        if (map->best_items == map->max_items)
+          entry->m_flags |= S_TC_SEL;
+      }
+      else {
+        entry->m_text = "-";
+      }
+    END_LOOP_LEVEL_TABLE_COLUMN
+
+    column_x += 48;
+    INSERT_LEVEL_TABLE_COLUMN("S", column_x);
+
+    LOOP_LEVEL_TABLE_COLUMN
+      entry->m_flags = S_LABEL | S_SKIP;
+      entry->m_x = column_x;
+
+      if (map->best_skill) {
+        dsda_StringPrintF(&m_text, "%d/%d", map->best_secrets, map->max_secrets);
+        entry->m_text = m_text.string;
+        if (map->best_secrets == map->max_secrets)
+          entry->m_flags |= S_TC_SEL;
+      }
+      else {
+        entry->m_text = "-";
+      }
     END_LOOP_LEVEL_TABLE_COLUMN
 
     INSERT_FINAL_LEVEL_TABLE_ENTRY

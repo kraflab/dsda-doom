@@ -49,6 +49,8 @@ typedef struct {
 
 extern wad_stats_t wad_stats;
 
+void dsda_WadStatsEnterMap(void);
+void dsda_WadStatsExitMap(int missed_monsters);
 void dsda_SaveWadStats(void);
 void dsda_InitWadStats(void);
 

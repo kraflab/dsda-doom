@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 
+#include "doomstat.h"
 #include "lprintf.h"
 #include "m_file.h"
 #include "w_wad.h"
@@ -29,6 +30,7 @@
 
 static const char* filename = "stats.txt";
 static const int current_version = 1;
+static map_stats_t* current_map_stats;
 
 wad_stats_t wad_stats;
 
@@ -232,6 +234,51 @@ void dsda_SaveWadStats(void) {
   }
 
   fclose(file);
+}
+
+static map_stats_t* dsda_MapStats(int episode, int map) {
+  int i;
+
+  if (demoplayback)
+    return NULL;
+
+  for (i = 0; i < wad_stats.map_count; ++i)
+    if (wad_stats.maps[i].episode == episode && wad_stats.maps[i].map == map)
+      return &wad_stats.maps[i];
+
+  return NULL;
+}
+
+void dsda_WadStatsEnterMap(void) {
+  current_map_stats = dsda_MapStats(gameepisode, gamemap);
+}
+
+void dsda_WadStatsExitMap(int missed_monsters) {
+  int skill;
+
+  if (!current_map_stats)
+    return;
+
+  skill = gameskill + 1;
+  if (skill > current_map_stats->best_skill)
+    current_map_stats->best_skill = skill;
+
+  if (skill >= current_map_stats->best_skill && skill != 5) {
+    current_map_stats->max_kills = totalkills;
+    current_map_stats->max_items = totalitems;
+    current_map_stats->max_secrets = totalsecret;
+
+    if (totalkills - missed_monsters > current_map_stats->best_kills)
+      current_map_stats->best_kills = totalkills - missed_monsters;
+
+    if (players[consoleplayer].itemcount > current_map_stats->best_items)
+      current_map_stats->best_items = players[consoleplayer].itemcount;
+
+    if (players[consoleplayer].secretcount > current_map_stats->best_secrets)
+      current_map_stats->best_secrets = players[consoleplayer].secretcount;
+  }
+
+  ++current_map_stats->total_exits;
 }
 
 void dsda_InitWadStats(void) {
