@@ -179,13 +179,13 @@ static void dsda_LoadWadStats(void) {
 
         if (
           sscanf(
-            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
             ms.lump, &ms.episode, &ms.map,
-            &ms.best_skill, &ms.best_time, &ms.best_max_time, &ms.total_time,
+            &ms.best_skill, &ms.best_time, &ms.best_max_time,
             &ms.total_exits, &ms.total_kills, &ms.total_items, &ms.total_secrets,
             &ms.best_kills, &ms.best_items, &ms.best_secrets,
             &ms.max_kills, &ms.max_items, &ms.max_secrets
-          ) != 17
+          ) == 16
         ) {
           map_count += 1;
           dsda_EnsureMapCount(map_count);
@@ -223,9 +223,9 @@ void dsda_SaveWadStats(void) {
     map_stats_t* ms;
 
     ms = &wad_stats.maps[i];
-    fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+    fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             ms->lump, ms->episode, ms->map,
-            ms->best_skill, ms->best_time, ms->best_max_time, ms->total_time,
+            ms->best_skill, ms->best_time, ms->best_max_time,
             ms->total_exits, ms->total_kills, ms->total_items, ms->total_secrets,
             ms->best_kills, ms->best_items, ms->best_secrets,
             ms->max_kills, ms->max_items, ms->max_secrets);
