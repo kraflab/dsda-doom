@@ -3220,6 +3220,7 @@ static setup_menu_t *level_table_page[1];
 //static setup_menu_t prev_page_template = PREV_PAGE(NULL);
 static setup_menu_t final_entry_template = FINAL_ENTRY;
 static setup_menu_t new_column_template = NEW_COLUMN;
+static setup_menu_t empty_line_template = EMPTY_LINE;
 
 #define LOOP_LEVEL_TABLE_COLUMN { \
   for (i = 0; i < wad_stats.map_count; ++i) { \
@@ -3232,13 +3233,23 @@ static setup_menu_t new_column_template = NEW_COLUMN;
   base_i += i; \
 }
 
-#define INSERT_NEW_LEVEL_TABLE_COLUMN { \
+#define INSERT_LEVEL_TABLE_COLUMN(heading, x) { \
   level_table_page[0][base_i] = new_column_template; \
+  ++base_i; \
+  level_table_page[0][base_i] = empty_line_template; \
+  level_table_page[0][base_i].m_flags |= S_TITLE; \
+  level_table_page[0][base_i].m_text = heading; \
+  level_table_page[0][base_i].m_x = x; \
   ++base_i; \
 }
 
 #define INSERT_FINAL_LEVEL_TABLE_ENTRY { \
   level_table_page[0][base_i] = final_entry_template; \
+}
+
+#define INSERT_LEVEL_TABLE_EMPTY_LINE { \
+  level_table_page[0][base_i] = empty_line_template; \
+  ++base_i; \
 }
 
 static void M_BuildLevelTable(void)
@@ -3250,25 +3261,33 @@ static void M_BuildLevelTable(void)
     map_stats_t *map;
     dsda_string_t m_text;
 
-    level_table_page[0] = Z_Calloc(wad_stats.map_count * 2 + 3, sizeof(*level_table_page[0]));
+    level_table_page[0] = Z_Calloc(wad_stats.map_count * 2 + 4, sizeof(*level_table_page[0]));
+
+    INSERT_LEVEL_TABLE_EMPTY_LINE
 
     LOOP_LEVEL_TABLE_COLUMN
       dsda_StringPrintF(&m_text, "%s", map->lump);
       entry->m_text = m_text.string;
       entry->m_flags = S_TITLE | S_LEFTJUST;
-      entry->m_x = 8;
+      entry->m_x = 16;
     END_LOOP_LEVEL_TABLE_COLUMN
 
-    INSERT_NEW_LEVEL_TABLE_COLUMN;
+    INSERT_LEVEL_TABLE_COLUMN("SKILL", 128)
 
     LOOP_LEVEL_TABLE_COLUMN
-      dsda_StringPrintF(&m_text, "%d", map->map);
-      entry->m_text = m_text.string;
-      entry->m_flags = S_TITLE | S_LEFTJUST | S_SKIP;
-      entry->m_x = 8 + 64;
+      if (map->best_skill) {
+        dsda_StringPrintF(&m_text, "%d", map->best_skill);
+        entry->m_text = m_text.string;
+      }
+      else {
+        entry->m_text = "-";
+      }
+
+      entry->m_flags = S_TITLE | S_SKIP;
+      entry->m_x = 128;
     END_LOOP_LEVEL_TABLE_COLUMN
 
-    INSERT_FINAL_LEVEL_TABLE_ENTRY;
+    INSERT_FINAL_LEVEL_TABLE_ENTRY
   END_ONCE
 }
 
