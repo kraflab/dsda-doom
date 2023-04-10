@@ -70,6 +70,15 @@ static int C_DECL dicmp_map_stats(const void* a, const void* b) {
   const map_stats_t* m1 = (const map_stats_t *) a;
   const map_stats_t* m2 = (const map_stats_t *) b;
 
+  if (m1->episode == -1 && m2->episode == -1)
+    return m1->lump[0] - m2->lump[0];
+
+  if (m1->episode == -1)
+    return 1;
+
+  if (m2->episode == -1)
+    return -1;
+
   return (m1->episode == m2->episode) ?
          (m1->map == m2->map) ?
          m1->lump[0] - m2->lump[0] : m1->map - m2->map : m1->episode - m2->episode;
