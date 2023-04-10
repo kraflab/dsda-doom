@@ -4107,6 +4107,146 @@ dboolean M_StringResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
+{
+  // changing an entry
+  if (setup_select)
+  {
+    setup_menu_t* ptr1 = current_setup_menu + set_menu_itemon;
+
+    if (action == MENU_ESCAPE) // Exit key = no change
+    {
+      M_SelectDone(ptr1);                           // phares 4/17/98
+      setup_gather = false;   // finished gathering keys, if any
+      return true;
+    }
+
+    if (ptr1->m_flags & S_YESNO) // yes or no setting?
+    {
+      if (action == MENU_ENTER) {
+        dsda_ToggleConfig(ptr1->config_id, true);
+      }
+      M_SelectDone(ptr1);                           // phares 4/17/98
+      return true;
+    }
+
+    if (ptr1->m_flags & (S_NUM | S_CRITEM)) // number?
+    {
+      if (setup_gather) { // gathering keys for a value?
+        /* killough 10/98: Allow negatives, and use a more
+          * friendly input method (e.g. don't clear value early,
+          * allow backspace, and return to original value if bad
+          * value is entered).
+          */
+        if (action == MENU_ENTER) {
+          if (gather_count) {     // Any input?
+            int value;
+
+            gather_buffer[gather_count] = 0;
+            value = atoi(gather_buffer);  // Integer value
+
+            dsda_UpdateIntConfig(ptr1->config_id, value, true);
+          }
+          M_SelectDone(ptr1);     // phares 4/17/98
+          setup_gather = false; // finished gathering keys
+          return true;
+        }
+
+        if (action == MENU_BACKSPACE && gather_count) {
+          gather_count--;
+          return true;
+        }
+
+        if (gather_count >= MAXGATHER)
+          return true;
+
+        if (!isdigit(ch) && ch != '-')
+          return true; // ignore
+
+        /* killough 10/98: character-based numerical input */
+        gather_buffer[gather_count++] = ch;
+      }
+      return true;
+    }
+
+    if (ptr1->m_flags & S_CHOICE) // selection of choices?
+    {
+      if (action == MENU_LEFT) {
+        if (ptr1->m_flags & S_STR)
+        {
+          int old_value, value;
+
+          old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
+          value = old_value - 1;
+          if (value < 0)
+            value = 0;
+          if (old_value != value)
+          {
+            S_StartVoidSound(g_sfx_menu);
+            strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
+          }
+        }
+        else
+        {
+          int value = choice_value;
+
+          do {
+            --value;
+          } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
+
+          if (value >= 0 && choice_value != value) {
+            S_StartVoidSound(g_sfx_menu);
+            choice_value = value;
+          }
+        }
+      }
+      else if (action == MENU_RIGHT) {
+        if (ptr1->m_flags & S_STR)
+        {
+          int old_value, value;
+
+          old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
+          value = old_value + 1;
+          if (ptr1->selectstrings[value] == NULL)
+            value = old_value;
+          if (old_value != value)
+          {
+            S_StartVoidSound(g_sfx_menu);
+            strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
+          }
+        }
+        else
+        {
+          int value = choice_value;
+
+          do {
+            ++value;
+          } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
+
+          if (ptr1->selectstrings[value] && choice_value != value) {
+            S_StartVoidSound(g_sfx_menu);
+            choice_value = value;
+          }
+        }
+      }
+      else if (action == MENU_ENTER) {
+        if (ptr1->m_flags & S_STR)
+        {
+          dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
+        }
+        else
+        {
+          dsda_UpdateIntConfig(ptr1->config_id, choice_value, true);
+        }
+        M_SelectDone(ptr1);                           // phares 4/17/98
+      }
+      return true;
+    }
+  }
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -4597,138 +4737,8 @@ dboolean M_Responder (event_t* ev) {
     setup_menu_t* ptr1= current_setup_menu + set_menu_itemon;
     setup_menu_t* ptr2 = NULL;
 
-    // Common processing for some items
-
-    if (setup_select) { // changing an entry
-      if (action == MENU_ESCAPE) // Exit key = no change
-      {
-        M_SelectDone(ptr1);                           // phares 4/17/98
-        setup_gather = false;   // finished gathering keys, if any
-        return true;
-      }
-
-      if (ptr1->m_flags & S_YESNO) // yes or no setting?
-      {
-        if (action == MENU_ENTER) {
-          dsda_ToggleConfig(ptr1->config_id, true);
-        }
-        M_SelectDone(ptr1);                           // phares 4/17/98
-        return true;
-      }
-
-      if (ptr1->m_flags & (S_NUM | S_CRITEM)) // number?
-      {
-        if (setup_gather) { // gathering keys for a value?
-          /* killough 10/98: Allow negatives, and use a more
-           * friendly input method (e.g. don't clear value early,
-           * allow backspace, and return to original value if bad
-           * value is entered).
-           */
-          if (action == MENU_ENTER) {
-            if (gather_count) {     // Any input?
-              int value;
-
-              gather_buffer[gather_count] = 0;
-              value = atoi(gather_buffer);  // Integer value
-
-              dsda_UpdateIntConfig(ptr1->config_id, value, true);
-            }
-            M_SelectDone(ptr1);     // phares 4/17/98
-            setup_gather = false; // finished gathering keys
-            return true;
-          }
-
-          if (action == MENU_BACKSPACE && gather_count) {
-            gather_count--;
-            return true;
-          }
-
-          if (gather_count >= MAXGATHER)
-            return true;
-
-          if (!isdigit(ch) && ch != '-')
-            return true; // ignore
-
-          /* killough 10/98: character-based numerical input */
-          gather_buffer[gather_count++] = ch;
-        }
-        return true;
-      }
-
-      if (ptr1->m_flags & S_CHOICE) // selection of choices?
-      {
-        if (action == MENU_LEFT) {
-          if (ptr1->m_flags & S_STR)
-          {
-            int old_value, value;
-
-            old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
-            value = old_value - 1;
-            if (value < 0)
-              value = 0;
-            if (old_value != value)
-            {
-              S_StartVoidSound(g_sfx_menu);
-              strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
-            }
-          }
-          else
-          {
-            int value = choice_value;
-
-            do {
-              --value;
-            } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
-
-            if (value >= 0 && choice_value != value) {
-              S_StartVoidSound(g_sfx_menu);
-              choice_value = value;
-            }
-          }
-        }
-        else if (action == MENU_RIGHT) {
-          if (ptr1->m_flags & S_STR)
-          {
-            int old_value, value;
-
-            old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
-            value = old_value + 1;
-            if (ptr1->selectstrings[value] == NULL)
-              value = old_value;
-            if (old_value != value)
-            {
-              S_StartVoidSound(g_sfx_menu);
-              strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
-            }
-          }
-          else
-          {
-            int value = choice_value;
-
-            do {
-              ++value;
-            } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
-
-            if (ptr1->selectstrings[value] && choice_value != value) {
-              S_StartVoidSound(g_sfx_menu);
-              choice_value = value;
-            }
-          }
-        }
-        else if (action == MENU_ENTER) {
-          if (ptr1->m_flags & S_STR)
-          {
-            dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
-          }
-          else
-          {
-            dsda_UpdateIntConfig(ptr1->config_id, choice_value, true);
-          }
-          M_SelectDone(ptr1);                           // phares 4/17/98
-        }
-        return true;
-      }
-    }
+    if (M_SetupCommonSelectResponder(ch, action, ev))
+      return true;
 
     if (set_keybnd_active) // on a key binding setup screen
       if (M_KeyBndResponder(ch, action, ev))
