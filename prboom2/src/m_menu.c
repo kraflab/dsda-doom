@@ -1506,6 +1506,7 @@ dboolean setup_select      = false; // changing an item
 dboolean setup_gather      = false; // gathering keys for value
 dboolean colorbox_active   = false; // color palette being shown
 dboolean set_general_active = false;
+dboolean level_table_active = false;
 
 /////////////////////////////
 //
@@ -2133,6 +2134,19 @@ static void M_DrawInstructions(void)
 
 #define DEFAULT_LIST_Y (INSTRUCTION_Y + 1.5 * menu_font->line_height)
 
+static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
+{
+  M_SetupNextMenu(menu);
+
+  setup_active = true;
+  *setup_flag = true;
+  setup_select = false;
+  colorbox_active = false;
+  setup_gather = false;
+
+  M_UpdateSetupMenu(setup_menu);
+}
+
 /////////////////////////////
 //
 // The Key Binding Screen tables.
@@ -2176,8 +2190,6 @@ setup_menu_t* keys_settings[] =
   build_keys_settings2,
   NULL
 };
-
-int mult_screens_index; // the index of the current screen in a set
 
 // The first Key Binding screen table.
 // Note that the Y values are ascending. If you need to add something to
@@ -2534,14 +2546,7 @@ setup_menu_t build_keys_settings2[] = {
 
 void M_KeyBindings(int choice)
 {
-  M_SetupNextMenu(&KeybndDef);
-
-  setup_active = true;
-  set_keybnd_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(keys_settings[0]);
+  M_EnterSetup(&KeybndDef, &set_keybnd_active, keys_settings[0]);
 }
 
 // The drawing part of the Key Bindings Setup initialization. Draw the
@@ -2608,14 +2613,7 @@ setup_menu_t weap_settings1[] =  // Weapons Settings screen
 
 void M_Weapons(int choice)
 {
-  M_SetupNextMenu(&WeaponDef);
-
-  setup_active = true;
-  set_weapon_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(weap_settings[0]);
+  M_EnterSetup(&WeaponDef, &set_weapon_active, weap_settings[0]);
 }
 
 
@@ -2702,16 +2700,8 @@ setup_menu_t stat_settings2[] =
 
 void M_StatusBar(int choice)
 {
-  M_SetupNextMenu(&StatusHUDDef);
-
-  setup_active = true;
-  set_status_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(stat_settings[0]);
+  M_EnterSetup(&StatusHUDDef, &set_status_active, stat_settings[0]);
 }
-
 
 // The drawing part of the Status Bar / HUD Setup initialization. Draw the
 // background, title, instruction line, and items.
@@ -2832,15 +2822,7 @@ setup_menu_t auto_settings3[] =  // 3nd AutoMap Settings screen
 
 void M_Automap(int choice)
 {
-  M_SetupNextMenu(&AutoMapDef);
-
-  setup_active = true;
-  set_auto_active = true;
-  setup_select = false;
-  colorbox_active = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(auto_settings[0]);
+  M_EnterSetup(&AutoMapDef, &set_auto_active, auto_settings[0]);
 }
 
 // Data used by the color palette that is displayed for the player to
@@ -3185,14 +3167,7 @@ void M_ChangeTextureParams(void)
 
 void M_General(int choice)
 {
-  M_SetupNextMenu(&GeneralDef);
-
-  setup_active = true;
-  set_general_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(gen_settings[0]);
+  M_EnterSetup(&GeneralDef, &set_general_active, gen_settings[0]);
 }
 
 // The drawing part of the General Setup initialization. Draw the
@@ -3293,15 +3268,8 @@ static void M_BuildLevelTable(void)
 
 void M_LevelTable(int choice)
 {
-  M_SetupNextMenu(&LevelTableDef);
-
   M_BuildLevelTable();
-
-  setup_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(level_table_page[0]);
+  M_EnterSetup(&LevelTableDef, &level_table_active, level_table_page[0]);
 }
 
 void M_DrawLevelTable(void)
@@ -4878,7 +4846,6 @@ dboolean M_Responder (event_t* ev) {
         if (ptr2->m_flags & S_PREV)
         {
           ptr1->m_flags &= ~S_HILITE;
-          mult_screens_index--;
           M_SetSetupMenuItemOn(set_menu_itemon);
           M_UpdateSetupMenu(ptr2->menu);
           S_StartVoidSound(g_sfx_menu);  // killough 10/98
@@ -4897,7 +4864,6 @@ dboolean M_Responder (event_t* ev) {
         if (ptr2->m_flags & S_NEXT)
         {
           ptr1->m_flags &= ~S_HILITE;
-          mult_screens_index++;
           M_SetSetupMenuItemOn(set_menu_itemon);
           M_UpdateSetupMenu(ptr2->menu);
           S_StartVoidSound(g_sfx_menu);  // killough 10/98
