@@ -3824,15 +3824,15 @@ dboolean M_ConsoleOpen(void)
 
 dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
 {
-  int i;
-  setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
-  setup_menu_t *ptr2 = NULL;
-
-  int s_input = (ptr1->m_flags & S_INPUT) ? ptr1->input : 0;
-
-  // incoming key or button gets bound
+  // changing an entry
   if (setup_select)
   {
+    int i;
+    setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+    setup_menu_t *ptr2 = NULL;
+
+    int s_input = (ptr1->m_flags & S_INPUT) ? ptr1->input : 0;
+
     if (ev->type == ev_joystick)
     {
       setup_group group;
@@ -3949,12 +3949,12 @@ dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
 
 dboolean M_WeaponResponder(int ch, int action, event_t* ev)
 {
-  setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
-  setup_menu_t *ptr2 = NULL;
-
   // changing an entry
   if (setup_select)
   {
+    setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+    setup_menu_t *ptr2 = NULL;
+
     if (action != MENU_ENTER)
     {
       int old_value;
@@ -4038,11 +4038,11 @@ dboolean M_AutoResponder(int ch, int action, event_t* ev)
 
 dboolean M_StringResponder(int ch, int action, event_t* ev)
 {
-  setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
-
   // changing an entry
   if (setup_select)
   {
+    setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+
     if (ptr1->m_flags & S_STRING) // creating/editing a string?
     {
       if (action == MENU_BACKSPACE) // backspace and DEL
