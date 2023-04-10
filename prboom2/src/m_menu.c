@@ -4036,6 +4036,77 @@ dboolean M_AutoResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+dboolean M_StringResponder(int ch, int action, event_t* ev)
+{
+  setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+
+  // changing an entry
+  if (setup_select)
+  {
+    if (ptr1->m_flags & S_STRING) // creating/editing a string?
+    {
+      if (action == MENU_BACKSPACE) // backspace and DEL
+      {
+        if (entry_string_index[entry_index] == 0)
+        {
+          if (entry_index > 0)
+            entry_string_index[--entry_index] = 0;
+        }
+        // shift the remainder of the text one char left
+        else
+        {
+          int i;
+
+          for (i = entry_index; entry_string_index[i + 1]; ++i)
+            entry_string_index[i] = entry_string_index[i + 1];
+          entry_string_index[i] = '\0';
+        }
+      }
+      else if (action == MENU_LEFT) // move cursor left
+      {
+        if (entry_index > 0)
+          entry_index--;
+      }
+      else if (action == MENU_RIGHT) // move cursor right
+      {
+        if (entry_string_index[entry_index] != 0)
+          entry_index++;
+      }
+      else if ((action == MENU_ENTER) || (action == MENU_ESCAPE))
+      {
+        dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
+        M_SelectDone(ptr1);   // phares 4/17/98
+      }
+
+      // Adding a char to the text. Has to be a printable
+      // char, and you can't overrun the buffer. If the
+      // string gets larger than what the screen can hold,
+      // it is dealt with when the string is drawn (above).
+
+      else if ((ch >= 32) && (ch <= 126))
+        if ((entry_index + 1) < ENTRY_STRING_BFR_SIZE)
+        {
+          if (shiftdown)
+            ch = shiftxform[ch];
+          if (entry_string_index[entry_index] == 0)
+          {
+            entry_string_index[entry_index++] = ch;
+            entry_string_index[entry_index] = 0;
+          }
+          else
+            entry_string_index[entry_index++] = ch;
+        }
+
+      return true;
+    }
+
+    M_SelectDone(ptr1);       // phares 4/17/98
+    return true;
+  }
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -4672,67 +4743,9 @@ dboolean M_Responder (event_t* ev) {
         return true;
 
     // killough 10/98: consolidate handling into one place:
-    if (setup_select && set_general_active | set_status_active)
-    {
-      if (ptr1->m_flags & S_STRING) // creating/editing a string?
-      {
-        if (action == MENU_BACKSPACE) // backspace and DEL
-        {
-          if (entry_string_index[entry_index] == 0)
-          {
-            if (entry_index > 0)
-              entry_string_index[--entry_index] = 0;
-          }
-          // shift the remainder of the text one char left
-          else
-          {
-            int i;
-
-            for (i = entry_index; entry_string_index[i + 1]; ++i)
-              entry_string_index[i] = entry_string_index[i + 1];
-            entry_string_index[i] = '\0';
-          }
-        }
-        else if (action == MENU_LEFT) // move cursor left
-        {
-          if (entry_index > 0)
-            entry_index--;
-        }
-        else if (action == MENU_RIGHT) // move cursor right
-        {
-          if (entry_string_index[entry_index] != 0)
-            entry_index++;
-        }
-        else if ((action == MENU_ENTER) || (action == MENU_ESCAPE))
-        {
-          dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
-          M_SelectDone(ptr1);   // phares 4/17/98
-        }
-
-        // Adding a char to the text. Has to be a printable
-        // char, and you can't overrun the buffer. If the
-        // string gets larger than what the screen can hold,
-        // it is dealt with when the string is drawn (above).
-
-        else if ((ch >= 32) && (ch <= 126))
-          if ((entry_index + 1) < ENTRY_STRING_BFR_SIZE)
-          {
-            if (shiftdown)
-              ch = shiftxform[ch];
-            if (entry_string_index[entry_index] == 0)
-            {
-              entry_string_index[entry_index++] = ch;
-              entry_string_index[entry_index] = 0;
-            }
-            else
-              entry_string_index[entry_index++] = ch;
-          }
+    if (set_general_active || set_status_active)
+      if (M_StringResponder(ch, action, ev))
         return true;
-      }
-
-      M_SelectDone(ptr1);       // phares 4/17/98
-      return true;
-    }
 
     // Not changing any items on the Setup screens. See if we're
     // navigating the Setup menus or selecting an item to change.
