@@ -4427,6 +4427,36 @@ dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+dboolean M_SetupResponder(int ch, int action, event_t* ev)
+{
+  if (M_SetupCommonSelectResponder(ch, action, ev))
+    return true;
+
+  if (set_keybnd_active) // on a key binding setup screen
+    if (M_KeyBndResponder(ch, action, ev))
+      return true;
+
+  if (set_weapon_active) // on the weapons setup screen
+    if (M_WeaponResponder(ch, action, ev))
+      return true;
+
+  if (set_auto_active) // on the automap setup screen
+    if (M_AutoResponder(ch, action, ev))
+      return true;
+
+  // killough 10/98: consolidate handling into one place:
+  if (set_general_active || set_status_active)
+    if (M_StringResponder(ch, action, ev))
+      return true;
+
+  // Not changing any items on the Setup screens. See if we're
+  // navigating the Setup menus or selecting an item to change.
+  if (M_SetupNavigationResponder(ch, action, ev))
+    return true;
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -4910,35 +4940,9 @@ dboolean M_Responder (event_t* ev) {
     }
   }
 
-  // phares 3/26/98 - 4/11/98:
-  // Setup screen key processing
-
-  if (setup_active) {
-    if (M_SetupCommonSelectResponder(ch, action, ev))
+  if (setup_active)
+    if (M_SetupResponder(ch, action, ev))
       return true;
-
-    if (set_keybnd_active) // on a key binding setup screen
-      if (M_KeyBndResponder(ch, action, ev))
-        return true;
-
-    if (set_weapon_active) // on the weapons setup screen
-      if (M_WeaponResponder(ch, action, ev))
-        return true;
-
-    if (set_auto_active) // on the automap setup screen
-      if (M_AutoResponder(ch, action, ev))
-        return true;
-
-    // killough 10/98: consolidate handling into one place:
-    if (set_general_active || set_status_active)
-      if (M_StringResponder(ch, action, ev))
-        return true;
-
-    // Not changing any items on the Setup screens. See if we're
-    // navigating the Setup menus or selecting an item to change.
-    if (M_SetupNavigationResponder(ch, action, ev))
-      return true;
-  }
 
   // From here on, these navigation keys are used on the BIG FONT menus
   // like the Main Menu.
