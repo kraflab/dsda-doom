@@ -4120,6 +4120,28 @@ static dboolean M_StringResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+static dboolean M_LevelTableResponder(int ch, int action, event_t* ev)
+{
+  if (action == MENU_ENTER)
+  {
+    int map_index;
+    map_stats_t *map;
+
+    map_index = set_menu_itemon - 1;
+    map = &wad_stats.maps[map_index];
+
+    G_DeferedInitNew(gameskill, map->episode, map->map);
+
+    M_LeaveSetupMenu();
+    M_ClearMenus();
+    S_StartVoidSound(g_sfx_swtchx);
+
+    return true;
+  }
+
+  return false;
+}
+
 static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
 {
   // changing an entry
@@ -4453,6 +4475,10 @@ static dboolean M_SetupResponder(int ch, int action, event_t* ev)
   // killough 10/98: consolidate handling into one place:
   if (set_general_active || set_status_active)
     if (M_StringResponder(ch, action, ev))
+      return true;
+
+  if (level_table_active)
+    if (M_LevelTableResponder(ch, action, ev))
       return true;
 
   // Not changing any items on the Setup screens. See if we're
