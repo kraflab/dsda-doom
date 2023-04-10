@@ -3947,6 +3947,44 @@ dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+dboolean M_WeaponResponder(int ch, int action, event_t* ev)
+{
+  setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+  setup_menu_t *ptr2 = NULL;
+
+  // changing an entry
+  if (setup_select)
+  {
+    if (action != MENU_ENTER)
+    {
+      int old_value;
+
+      ch -= '0'; // out of ascii
+      if (ch < 1 || ch > 9)
+        return true; // ignore
+
+      // see if 'ch' is already assigned elsewhere. if so,
+      // you have to swap assignments.
+      ptr2 = weap_settings1;
+      old_value = dsda_PersistentIntConfig(ptr1->config_id);
+      for (; !(ptr2->m_flags & S_END); ptr2++)
+        if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
+            dsda_PersistentIntConfig(ptr2->config_id) == ch)
+        {
+          dsda_UpdateIntConfig(ptr2->config_id, old_value, true);
+          break;
+        }
+
+      dsda_UpdateIntConfig(ptr1->config_id, ch, true);
+    }
+
+    M_SelectDone(ptr1);       // phares 4/17/98
+    return true;
+  }
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -4574,36 +4612,9 @@ dboolean M_Responder (event_t* ev) {
       if (M_KeyBndResponder(ch, action, ev))
         return true;
 
-    // Weapons
-
     if (set_weapon_active) // on the weapons setup screen
-      if (setup_select) // changing an entry
-      {
-        if (action != MENU_ENTER)
-        {
-          int old_value;
-
-          ch -= '0'; // out of ascii
-          if (ch < 1 || ch > 9)
-            return true; // ignore
-
-          // see if 'ch' is already assigned elsewhere. if so,
-          // you have to swap assignments.
-          ptr2 = weap_settings1;
-          old_value = dsda_PersistentIntConfig(ptr1->config_id);
-          for (; !(ptr2->m_flags & S_END); ptr2++)
-            if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
-                dsda_PersistentIntConfig(ptr2->config_id) == ch)
-            {
-              dsda_UpdateIntConfig(ptr2->config_id, old_value, true);
-              break;
-            }
-          dsda_UpdateIntConfig(ptr1->config_id, ch, true);
-        }
-
-        M_SelectDone(ptr1);       // phares 4/17/98
+      if (M_WeaponResponder(ch, action, ev))
         return true;
-      }
 
     // Automap
 
