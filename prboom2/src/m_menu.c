@@ -3814,6 +3814,19 @@ dboolean M_ConsoleOpen(void)
   return menuactive && currentMenu == &dsda_ConsoleDef;
 }
 
+static void M_LeaveSetupMenu(void)
+{
+  M_SetSetupMenuItemOn(set_menu_itemon);
+  setup_active = false;
+  set_keybnd_active = false;
+  set_weapon_active = false;
+  set_status_active = false;
+  set_auto_active = false;
+  colorbox_active = false;
+  set_general_active = false;
+  level_table_active = false;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // M_Responder
@@ -4358,7 +4371,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
 
   if ((action == MENU_ESCAPE) || (action == MENU_BACKSPACE))
   {
-    M_SetSetupMenuItemOn(set_menu_itemon);
+    M_LeaveSetupMenu();
     if (action == MENU_ESCAPE) // Clear all menus
       M_ClearMenus();
     else // MENU_BACKSPACE = return to Setup Menu
@@ -4369,13 +4382,6 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         S_StartVoidSound(g_sfx_swtchn);
       }
     ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
-    setup_active = false;
-    set_keybnd_active = false;
-    set_weapon_active = false;
-    set_status_active = false;
-    set_auto_active = false;
-    colorbox_active = false;
-    set_general_active = false;    // killough 10/98
     HU_Start();    // catch any message changes // phares 4/19/98
     S_StartVoidSound(g_sfx_swtchx);
     return true;
