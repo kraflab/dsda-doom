@@ -3822,7 +3822,7 @@ dboolean M_ConsoleOpen(void)
 // action based on the state of the system.
 //
 
-dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
+static dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
 {
   // changing an entry
   if (setup_select)
@@ -3947,7 +3947,7 @@ dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
   return false;
 }
 
-dboolean M_WeaponResponder(int ch, int action, event_t* ev)
+static dboolean M_WeaponResponder(int ch, int action, event_t* ev)
 {
   // changing an entry
   if (setup_select)
@@ -3985,7 +3985,7 @@ dboolean M_WeaponResponder(int ch, int action, event_t* ev)
   return false;
 }
 
-dboolean M_AutoResponder(int ch, int action, event_t* ev)
+static dboolean M_AutoResponder(int ch, int action, event_t* ev)
 {
   // changing an entry
   if (setup_select)
@@ -4036,7 +4036,7 @@ dboolean M_AutoResponder(int ch, int action, event_t* ev)
   return false;
 }
 
-dboolean M_StringResponder(int ch, int action, event_t* ev)
+static dboolean M_StringResponder(int ch, int action, event_t* ev)
 {
   // changing an entry
   if (setup_select)
@@ -4107,7 +4107,7 @@ dboolean M_StringResponder(int ch, int action, event_t* ev)
   return false;
 }
 
-dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
+static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
 {
   // changing an entry
   if (setup_select)
@@ -4247,7 +4247,7 @@ dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
   return false;
 }
 
-dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
+static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
 {
   setup_menu_t* ptr1 = current_setup_menu + set_menu_itemon;
   setup_menu_t* ptr2 = NULL;
@@ -4427,7 +4427,7 @@ dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
   return false;
 }
 
-dboolean M_SetupResponder(int ch, int action, event_t* ev)
+static dboolean M_SetupResponder(int ch, int action, event_t* ev)
 {
   if (M_SetupCommonSelectResponder(ch, action, ev))
     return true;
