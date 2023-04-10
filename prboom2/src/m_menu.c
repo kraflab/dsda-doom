@@ -3822,10 +3822,134 @@ dboolean M_ConsoleOpen(void)
 // action based on the state of the system.
 //
 
+dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
+{
+  int i;
+  setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+  setup_menu_t *ptr2 = NULL;
+
+  int s_input = (ptr1->m_flags & S_INPUT) ? ptr1->input : 0;
+
+  // incoming key or button gets bound
+  if (setup_select)
+  {
+    if (ev->type == ev_joystick)
+    {
+      setup_group group;
+      dboolean search = true;
+
+      if (!s_input)
+        return true; // not a legal action here (yet)
+
+      // see if the button is already bound elsewhere. if so, you
+      // have to swap bindings so the action where it's currently
+      // bound doesn't go dead. Since there is more than one
+      // keybinding screen, you have to search all of them for
+      // any duplicates. You're only interested in the items
+      // that belong to the same group as the one you're changing.
+
+      group  = ptr1->m_group;
+      if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1.i)) == -1)
+        return true;
+
+      for (i = 0; keys_settings[i] && search; i++)
+        for (ptr2 = keys_settings[i]; !(ptr2->m_flags & S_END); ptr2++)
+          if (ptr2->m_group == group && ptr1 != ptr2)
+          {
+            if (ptr2->m_flags & S_INPUT)
+              if (dsda_InputMatchJoyB(ptr2->input, ch))
+              {
+                dsda_InputRemoveJoyB(ptr2->input, ch);
+                search = false;
+                break;
+              }
+          }
+
+      dsda_InputAddJoyB(s_input, ch);
+    }
+    else if (ev->type == ev_mouse)
+    {
+      int i;
+      setup_group group;
+      dboolean search = true;
+
+      if (!s_input)
+        return true; // not a legal action here (yet)
+
+      // see if the button is already bound elsewhere. if so, you
+      // have to swap bindings so the action where it's currently
+      // bound doesn't go dead. Since there is more than one
+      // keybinding screen, you have to search all of them for
+      // any duplicates. You're only interested in the items
+      // that belong to the same group as the one you're changing.
+
+      group  = ptr1->m_group;
+      if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1.i)) == -1)
+        return true;
+
+      for (i = 0 ; keys_settings[i] && search ; i++)
+        for (ptr2 = keys_settings[i]; !(ptr2->m_flags & S_END); ptr2++)
+          if (ptr2->m_group == group && ptr1 != ptr2)
+          {
+            if (ptr2->m_flags & S_INPUT)
+              if (dsda_InputMatchMouseB(ptr2->input, ch))
+              {
+                dsda_InputRemoveMouseB(ptr2->input, ch);
+                search = false;
+                break;
+              }
+          }
+
+      dsda_InputAddMouseB(s_input, ch);
+    }
+    else  // keyboard key
+    {
+      int i;
+      setup_group group;
+      dboolean search = true;
+
+      // see if 'ch' is already bound elsewhere. if so, you have
+      // to swap bindings so the action where it's currently
+      // bound doesn't go dead. Since there is more than one
+      // keybinding screen, you have to search all of them for
+      // any duplicates. You're only interested in the items
+      // that belong to the same group as the one you're changing.
+
+      // if you find that you're trying to swap with an action
+      // that has S_KEEP set, you can't bind ch; it's already
+      // bound to that S_KEEP action, and that action has to
+      // keep that key.
+
+      group  = ptr1->m_group;
+      for (i = 0; keys_settings[i] && search; i++)
+        for (ptr2 = keys_settings[i]; !(ptr2->m_flags & S_END); ptr2++)
+          if (ptr2->m_group == group && ptr1 != ptr2)
+          {
+            if (ptr2->m_flags & (S_INPUT | S_KEEP))
+              if (dsda_InputMatchKey(ptr2->input, ch))
+              {
+                if (ptr2->m_flags & S_KEEP)
+                  return true; // can't have it!
+
+                dsda_InputRemoveKey(ptr2->input, ch);
+                search = false;
+                break;
+              }
+          }
+
+      dsda_InputAddKey(s_input, ch);
+    }
+
+    M_SelectDone(ptr1);       // phares 4/17/98
+    return true;
+  }
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
-  int s_input;
   static int joywait   = 0;
   static int mousewait = 0;
 
@@ -4446,117 +4570,9 @@ dboolean M_Responder (event_t* ev) {
       }
     }
 
-    // Key Bindings
-
-    s_input = (ptr1->m_flags & S_INPUT) ? ptr1->input : 0;
-
     if (set_keybnd_active) // on a key binding setup screen
-      if (setup_select)    // incoming key or button gets bound
-      {
-        if (ev->type == ev_joystick)
-        {
-          setup_group group;
-          dboolean search = true;
-
-          if (!s_input)
-            return true; // not a legal action here (yet)
-
-          // see if the button is already bound elsewhere. if so, you
-          // have to swap bindings so the action where it's currently
-          // bound doesn't go dead. Since there is more than one
-          // keybinding screen, you have to search all of them for
-          // any duplicates. You're only interested in the items
-          // that belong to the same group as the one you're changing.
-
-          group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1.i)) == -1)
-            return true;
-          for (i = 0 ; keys_settings[i] && search ; i++)
-            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-              if (ptr2->m_group == group && ptr1 != ptr2)
-              {
-                if (ptr2->m_flags & S_INPUT)
-                  if (dsda_InputMatchJoyB(ptr2->input, ch))
-                  {
-                    dsda_InputRemoveJoyB(ptr2->input, ch);
-                    search = false;
-                    break;
-                  }
-              }
-          dsda_InputAddJoyB(s_input, ch);
-        }
-        else if (ev->type == ev_mouse)
-        {
-          int i;
-          setup_group group;
-          dboolean search = true;
-
-          if (!s_input)
-            return true; // not a legal action here (yet)
-
-          // see if the button is already bound elsewhere. if so, you
-          // have to swap bindings so the action where it's currently
-          // bound doesn't go dead. Since there is more than one
-          // keybinding screen, you have to search all of them for
-          // any duplicates. You're only interested in the items
-          // that belong to the same group as the one you're changing.
-
-          group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1.i)) == -1)
-            return true;
-          for (i = 0 ; keys_settings[i] && search ; i++)
-            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-              if (ptr2->m_group == group && ptr1 != ptr2)
-              {
-                if (ptr2->m_flags & S_INPUT)
-                  if (dsda_InputMatchMouseB(ptr2->input, ch))
-                  {
-                    dsda_InputRemoveMouseB(ptr2->input, ch);
-                    search = false;
-                    break;
-                  }
-              }
-          dsda_InputAddMouseB(s_input, ch);
-        }
-        else  // keyboard key
-        {
-          int i;
-          setup_group group;
-          dboolean search = true;
-
-          // see if 'ch' is already bound elsewhere. if so, you have
-          // to swap bindings so the action where it's currently
-          // bound doesn't go dead. Since there is more than one
-          // keybinding screen, you have to search all of them for
-          // any duplicates. You're only interested in the items
-          // that belong to the same group as the one you're changing.
-
-          // if you find that you're trying to swap with an action
-          // that has S_KEEP set, you can't bind ch; it's already
-          // bound to that S_KEEP action, and that action has to
-          // keep that key.
-
-          group  = ptr1->m_group;
-          for (i = 0 ; keys_settings[i] && search ; i++)
-            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-              if (ptr2->m_group == group && ptr1 != ptr2)
-              {
-                if (ptr2->m_flags & (S_INPUT | S_KEEP))
-                  if (dsda_InputMatchKey(ptr2->input, ch))
-                  {
-                    if (ptr2->m_flags & S_KEEP)
-                      return true; // can't have it!
-                    dsda_InputRemoveKey(ptr2->input, ch);
-                    search = false;
-                    break;
-                  }
-              }
-          dsda_InputAddKey(s_input, ch);
-        }
-
-        M_SelectDone(ptr1);       // phares 4/17/98
+      if (M_KeyBndResponder(ch, action, ev))
         return true;
-      }
 
     // Weapons
 
