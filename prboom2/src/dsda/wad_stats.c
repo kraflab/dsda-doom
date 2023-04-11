@@ -257,23 +257,41 @@ void dsda_WadStatsExitMap(int missed_monsters) {
   if (!current_map_stats)
     return;
 
-  skill = gameskill + 1;
-  if (skill > current_map_stats->best_skill)
-    current_map_stats->best_skill = skill;
+  if (!nomonsters) {
+    skill = gameskill + 1;
+    if (skill > current_map_stats->best_skill) {
+      if (current_map_stats->best_skill < 4) {
+        current_map_stats->best_time = -1;
+        current_map_stats->best_max_time = -1;
+      }
 
-  if (skill >= current_map_stats->best_skill && skill != 5) {
-    current_map_stats->max_kills = totalkills;
-    current_map_stats->max_items = totalitems;
-    current_map_stats->max_secrets = totalsecret;
+      current_map_stats->best_skill = skill;
+    }
 
-    if (totalkills - missed_monsters > current_map_stats->best_kills)
-      current_map_stats->best_kills = totalkills - missed_monsters;
+    if (skill >= current_map_stats->best_skill) {
+      if (current_map_stats->best_time == -1 || current_map_stats->best_time > leveltime)
+        current_map_stats->best_time = leveltime;
 
-    if (players[consoleplayer].itemcount > current_map_stats->best_items)
-      current_map_stats->best_items = players[consoleplayer].itemcount;
+      current_map_stats->max_kills = totalkills;
+      current_map_stats->max_items = totalitems;
+      current_map_stats->max_secrets = totalsecret;
 
-    if (players[consoleplayer].secretcount > current_map_stats->best_secrets)
-      current_map_stats->best_secrets = players[consoleplayer].secretcount;
+      if (!respawnmonsters) {
+        if (totalkills - missed_monsters > current_map_stats->best_kills)
+          current_map_stats->best_kills = totalkills - missed_monsters;
+
+        if (current_map_stats->best_kills == current_map_stats->max_kills &&
+            current_map_stats->best_secrets == current_map_stats->max_secrets &&
+            (current_map_stats->best_max_time == -1 || current_map_stats->best_max_time > leveltime))
+          current_map_stats->best_max_time = leveltime;
+      }
+
+      if (players[consoleplayer].itemcount > current_map_stats->best_items)
+        current_map_stats->best_items = players[consoleplayer].itemcount;
+
+      if (players[consoleplayer].secretcount > current_map_stats->best_secrets)
+        current_map_stats->best_secrets = players[consoleplayer].secretcount;
+    }
   }
 
   ++current_map_stats->total_exits;
