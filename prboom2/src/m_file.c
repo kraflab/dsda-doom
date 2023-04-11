@@ -52,6 +52,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
+#include "i_glob.h"
 #include "lprintf.h"
 #include "z_zone.h"
 
@@ -283,7 +284,7 @@ int M_remove(const char *path)
   wpath = ConvertUtf8ToWide(path);
 
   if (!wpath)
-    return 0;
+    return -1;
 
   ret = _wremove(wpath);
 
@@ -544,4 +545,27 @@ char *M_getenv(const char *name) {
 #else
   return getenv(name);
 #endif
+}
+
+dboolean M_RemoveFilesAtPath(const char *path)
+{
+  glob_t *glob;
+  const char *filename;
+  dboolean success = true;
+
+  glob = I_StartGlob(path, "*.*", GLOB_FLAG_NOCASE | GLOB_FLAG_SORTED);
+
+  for(;;) {
+    filename = I_NextGlob(glob);
+    if (filename == NULL)
+      break;
+
+    if (M_remove(filename) != 0) {
+      lprintf(LO_ERROR, "M_RemoveFilesAtPath: unable to delete file %s\n", filename);
+      success = false;
+      break;
+    }
+  }
+  I_EndGlob(glob);
+  return success;
 }

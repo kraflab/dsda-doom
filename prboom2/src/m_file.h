@@ -49,6 +49,7 @@ dboolean M_FileExists(const char *name);
 dboolean M_WriteFile (char const* name, const void* source, size_t length);
 int M_ReadFile (char const* name,byte** buffer);
 int M_ReadFileToString(char const *name, char **buffer);
+dboolean M_RemoveFilesAtPath(const char *path);
 
 int M_remove(const char *path);
 char *M_getcwd(char *buffer, int len);
