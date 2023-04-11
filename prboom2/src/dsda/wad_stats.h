@@ -27,8 +27,6 @@ typedef struct {
   int best_max_time; // check pistol start ?
   int total_exits;
   int total_kills;
-  int total_items;
-  int total_secrets;
   int best_kills;
   int best_items;
   int best_secrets;
@@ -40,8 +38,6 @@ typedef struct {
 typedef struct {
   int total_exits;
   int total_kills;
-  int total_items;
-  int total_secrets;
   map_stats_t* maps;
   int maps_size;
   int map_count;

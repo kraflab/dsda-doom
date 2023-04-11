@@ -169,10 +169,9 @@ static void dsda_LoadWadStats(void) {
 
       if (
         sscanf(
-          lines[1], "%d %d %d %d",
-          &wad_stats.total_exits, &wad_stats.total_kills,
-          &wad_stats.total_items, &wad_stats.total_secrets
-        ) != 4
+          lines[1], "%d %d",
+          &wad_stats.total_exits, &wad_stats.total_kills
+        ) != 2
       )
         I_Error("Encountered invalid wad stats: %s", path);
 
@@ -181,13 +180,13 @@ static void dsda_LoadWadStats(void) {
 
         if (
           sscanf(
-            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d",
             ms.lump, &ms.episode, &ms.map,
             &ms.best_skill, &ms.best_time, &ms.best_max_time,
-            &ms.total_exits, &ms.total_kills, &ms.total_items, &ms.total_secrets,
+            &ms.total_exits, &ms.total_kills,
             &ms.best_kills, &ms.best_items, &ms.best_secrets,
             &ms.max_kills, &ms.max_items, &ms.max_secrets
-          ) == 16
+          ) == 14
         ) {
           map_count += 1;
           dsda_EnsureMapCount(map_count);
@@ -217,18 +216,17 @@ void dsda_SaveWadStats(void) {
     lprintf(LO_WARN, "dsda_SaveWadStats: Failed to save wad stats file \"%s\".", path);
 
   fprintf(file, "%d\n", current_version);
-  fprintf(file, "%d %d %d %d\n",
-          wad_stats.total_exits, wad_stats.total_kills,
-          wad_stats.total_items, wad_stats.total_secrets);
+  fprintf(file, "%d %d\n",
+          wad_stats.total_exits, wad_stats.total_kills);
 
   for (i = 0; i < wad_stats.map_count; ++i) {
     map_stats_t* ms;
 
     ms = &wad_stats.maps[i];
-    fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+    fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             ms->lump, ms->episode, ms->map,
             ms->best_skill, ms->best_time, ms->best_max_time,
-            ms->total_exits, ms->total_kills, ms->total_items, ms->total_secrets,
+            ms->total_exits, ms->total_kills,
             ms->best_kills, ms->best_items, ms->best_secrets,
             ms->max_kills, ms->max_items, ms->max_secrets);
   }
