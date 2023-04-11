@@ -108,27 +108,6 @@ If you use the CMake Tools extension, you will need to:
 "toolchainFile": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
 ```
 
-### Installing and Packaging
-
-This section will assume the build directory is `build`, note that by default on Visual Studio the build directory is different.
-
-To install the project, run:
-
-```
-cmake --install build --config Release
-```
-
-This will install all the necessary runtime files to the directory `CMAKE_INSTALL_PREFIX` is set to. This can also be overwritten by passing `--prefix C:/my/custom/prefix`. Prefer a directory that does not need priviledges to write files to, otherwise editing config and saving the game may fail.
-
-To package the project, run:
-
-```
-cd build
-cpack -G ZIP -C Release
-```
-
-This will produce a zip archive in your build directory named `dsda-doom-<version>-win64` which contains everything necessary to run the game.
-
 ## Building with MSYS2
 
 At the time of writing, MSYS2 provides seven different environments. This section assumes you are using UCRT64 (`mingw-w64-ucrt-x86_64-`). If you wish to use another one, refer to [the package naming](https://www.msys2.org/docs/package-naming/) and replace the UCRT64 prefix with the one of your choice.
@@ -177,11 +156,28 @@ cd build
 ./dsda-doom
 ```
 
-While you may be able to run the executable from the MSYS2 terminal with no issue, it is likely going to fail if you click on the executable or run it from another terminal with "X.dll could not be found" errors. Similarly, running CMake's install or packaging with CPack will not copy over the necessary DLLs. You can use the following command to get a list of all the DLLs that need to be copied next to the executable:
+You will only be able to run the executable from the MSYS2 Terminal directly as the necessary DLLs are not copied over to the build directory.
+
+## Installing and Packaging
+
+This section will assume the build directory is `build`, note that by default on Visual Studio the build directory is different.
+
+To install the project, run:
 
 ```
-ldd dsda-doom | grep "bin"
+cmake --install build --config Release
 ```
+
+This will install all the necessary runtime files to the directory `CMAKE_INSTALL_PREFIX` is set to. This can also be overwritten by passing `--prefix C:/my/custom/prefix`. Prefer a directory that does not need priviledges to write files to, otherwise editing config and saving the game may fail.
+
+To package the project, run:
+
+```
+cd build
+cpack -G ZIP -C Release
+```
+
+This will produce a zip archive in your build directory named `dsda-doom-<version>-win64` which contains everything necessary to run the game.
 
 ## Troubleshooting
 
