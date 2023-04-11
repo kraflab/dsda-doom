@@ -1,7 +1,23 @@
 # Helper for Find modules
 
-function(get_flags_from_pkg_config _library _pc_prefix _out_prefix)
-  if("${_library}" MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+function(get_flags_from_pkg_config _library_type _pc_prefix _out_prefix)
+  if(NOT ${_pc_prefix}_FOUND)
+    set(${_out_prefix}_compile_options
+        ""
+        PARENT_SCOPE)
+    set(${_out_prefix}_link_libraries
+        ""
+        PARENT_SCOPE)
+    set(${_out_prefix}_link_options
+        ""
+        PARENT_SCOPE)
+    set(${_out_prefix}_link_directories
+        ""
+        PARENT_SCOPE)
+    return()
+  endif()
+
+  if("${_library_type}" STREQUAL "STATIC")
     set(_cflags ${_pc_prefix}_STATIC_CFLAGS_OTHER)
     set(_link_libraries ${_pc_prefix}_STATIC_LIBRARIES)
     set(_link_options ${_pc_prefix}_STATIC_LDFLAGS_OTHER)
