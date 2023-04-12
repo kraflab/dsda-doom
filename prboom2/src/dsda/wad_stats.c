@@ -291,6 +291,14 @@ void dsda_WadStatsExitMap(int missed_monsters) {
   ++current_map_stats->total_exits;
 }
 
+void dsda_WadStatsKill(void) {
+  if (!current_map_stats)
+    return;
+
+  ++current_map_stats->total_kills;
+  ++wad_stats.total_kills;
+}
+
 void dsda_InitWadStats(void) {
   dsda_LoadWadStats();
 

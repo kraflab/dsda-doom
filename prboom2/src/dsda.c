@@ -297,6 +297,7 @@ void dsda_WatchDeath(mobj_t* thing) {
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
   if (target->intflags & MIF_SPAWNED_BY_ICON) player->maxkilldiscount++;
+  dsda_WadStatsKill();
 }
 
 void dsda_WatchResurrection(mobj_t* target, mobj_t* raiser) {
