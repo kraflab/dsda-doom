@@ -3213,7 +3213,7 @@ static setup_menu_t empty_line_template = EMPTY_LINE;
   ++base_i; \
   level_table_page[0][base_i] = empty_line_template; \
   level_table_page[0][base_i].m_flags |= S_TITLE; \
-  level_table_page[0][base_i].m_text = heading; \
+  level_table_page[0][base_i].m_text = Z_Strdup(heading); \
   level_table_page[0][base_i].m_x = x; \
   ++base_i; \
 }
@@ -3227,99 +3227,118 @@ static setup_menu_t empty_line_template = EMPTY_LINE;
   ++base_i; \
 }
 
+static void M_FreeMText(const char *m_text)
+{
+  union { const char *c; char *s; } str;
+
+  str.c = m_text;
+  Z_Free(str.s);
+}
+
 static void M_BuildLevelTable(void)
 {
-  DO_ONCE
-    int i;
-    int base_i = 0;
-    int column_x = 16;
-    setup_menu_t *entry;
-    map_stats_t *map;
-    dsda_string_t m_text;
+  int i;
+  int base_i = 0;
+  int column_x = 16;
+  const int page_0_count = wad_stats.map_count * 5 + 16;
+  setup_menu_t *entry;
+  map_stats_t *map;
+  dsda_string_t m_text;
 
-    level_table_page[0] = Z_Calloc(wad_stats.map_count * 5 + 16, sizeof(*level_table_page[0]));
+  if (!level_table_page[0])
+    level_table_page[0] = Z_Calloc(page_0_count, sizeof(*level_table_page[0]));
+  else
+  {
+    for (i = 0; !(level_table_page[0][i].m_flags & S_END); ++i)
+    {
+      if (level_table_page[0][i].m_text &&
+          !(level_table_page[0][i].m_flags & (S_NEXT | S_PREV)))
+        M_FreeMText(level_table_page[0][i].m_text);
+    }
 
-    INSERT_LEVEL_TABLE_EMPTY_LINE
+    memset(level_table_page[0], 0, page_0_count * sizeof(*level_table_page[0]));
+  }
 
-    LOOP_LEVEL_TABLE_COLUMN
-      dsda_StringPrintF(&m_text, "%s", map->lump);
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  LOOP_LEVEL_TABLE_COLUMN
+    dsda_StringPrintF(&m_text, "%s", map->lump);
+    entry->m_text = m_text.string;
+    entry->m_flags = S_TITLE | S_LEFTJUST;
+    entry->m_x = column_x;
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 96;
+  INSERT_LEVEL_TABLE_COLUMN("SKILL", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d", map->best_skill);
       entry->m_text = m_text.string;
-      entry->m_flags = S_TITLE | S_LEFTJUST;
-      entry->m_x = column_x;
-    END_LOOP_LEVEL_TABLE_COLUMN
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
 
-    column_x += 96;
-    INSERT_LEVEL_TABLE_COLUMN("SKILL", column_x)
+  column_x += 64;
+  INSERT_LEVEL_TABLE_COLUMN("K", column_x);
 
-    LOOP_LEVEL_TABLE_COLUMN
-      entry->m_flags = S_LABEL | S_SKIP;
-      entry->m_x = column_x;
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
 
-      if (map->best_skill) {
-        dsda_StringPrintF(&m_text, "%d", map->best_skill);
-        entry->m_text = m_text.string;
-      }
-      else {
-        entry->m_text = "-";
-      }
-    END_LOOP_LEVEL_TABLE_COLUMN
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d/%d", map->best_kills, map->max_kills);
+      entry->m_text = m_text.string;
+      if (map->best_kills == map->max_kills)
+        entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
 
-    column_x += 64;
-    INSERT_LEVEL_TABLE_COLUMN("K", column_x);
+  column_x += 48;
+  INSERT_LEVEL_TABLE_COLUMN("I", column_x);
 
-    LOOP_LEVEL_TABLE_COLUMN
-      entry->m_flags = S_LABEL | S_SKIP;
-      entry->m_x = column_x;
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
 
-      if (map->best_skill) {
-        dsda_StringPrintF(&m_text, "%d/%d", map->best_kills, map->max_kills);
-        entry->m_text = m_text.string;
-        if (map->best_kills == map->max_kills)
-          entry->m_flags |= S_TC_SEL;
-      }
-      else {
-        entry->m_text = "-";
-      }
-    END_LOOP_LEVEL_TABLE_COLUMN
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d/%d", map->best_items, map->max_items);
+      entry->m_text = m_text.string;
+      if (map->best_items == map->max_items)
+        entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
 
-    column_x += 48;
-    INSERT_LEVEL_TABLE_COLUMN("I", column_x);
+  column_x += 48;
+  INSERT_LEVEL_TABLE_COLUMN("S", column_x);
 
-    LOOP_LEVEL_TABLE_COLUMN
-      entry->m_flags = S_LABEL | S_SKIP;
-      entry->m_x = column_x;
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
 
-      if (map->best_skill) {
-        dsda_StringPrintF(&m_text, "%d/%d", map->best_items, map->max_items);
-        entry->m_text = m_text.string;
-        if (map->best_items == map->max_items)
-          entry->m_flags |= S_TC_SEL;
-      }
-      else {
-        entry->m_text = "-";
-      }
-    END_LOOP_LEVEL_TABLE_COLUMN
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d/%d", map->best_secrets, map->max_secrets);
+      entry->m_text = m_text.string;
+      if (map->best_secrets == map->max_secrets)
+        entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
 
-    column_x += 48;
-    INSERT_LEVEL_TABLE_COLUMN("S", column_x);
-
-    LOOP_LEVEL_TABLE_COLUMN
-      entry->m_flags = S_LABEL | S_SKIP;
-      entry->m_x = column_x;
-
-      if (map->best_skill) {
-        dsda_StringPrintF(&m_text, "%d/%d", map->best_secrets, map->max_secrets);
-        entry->m_text = m_text.string;
-        if (map->best_secrets == map->max_secrets)
-          entry->m_flags |= S_TC_SEL;
-      }
-      else {
-        entry->m_text = "-";
-      }
-    END_LOOP_LEVEL_TABLE_COLUMN
-
-    INSERT_FINAL_LEVEL_TABLE_ENTRY
-  END_ONCE
+  INSERT_FINAL_LEVEL_TABLE_ENTRY
 }
 
 void M_LevelTable(int choice)
