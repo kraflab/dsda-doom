@@ -36,7 +36,6 @@ typedef struct {
 } map_stats_t;
 
 typedef struct {
-  int total_exits;
   int total_kills;
   map_stats_t* maps;
   int maps_size;

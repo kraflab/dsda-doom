@@ -167,12 +167,7 @@ static void dsda_LoadWadStats(void) {
       if (version > current_version)
         I_Error("Encountered unsupported wad stats version: %s", path);
 
-      if (
-        sscanf(
-          lines[1], "%d %d",
-          &wad_stats.total_exits, &wad_stats.total_kills
-        ) != 2
-      )
+      if (sscanf(lines[1], "%d", &wad_stats.total_kills) != 1)
         I_Error("Encountered invalid wad stats: %s", path);
 
       for (i = 2; lines[i] && *lines[i]; ++i) {
@@ -216,8 +211,7 @@ void dsda_SaveWadStats(void) {
     lprintf(LO_WARN, "dsda_SaveWadStats: Failed to save wad stats file \"%s\".", path);
 
   fprintf(file, "%d\n", current_version);
-  fprintf(file, "%d %d\n",
-          wad_stats.total_exits, wad_stats.total_kills);
+  fprintf(file, "%d\n", wad_stats.total_kills);
 
   for (i = 0; i < wad_stats.map_count; ++i) {
     map_stats_t* ms;
