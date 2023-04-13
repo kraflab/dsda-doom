@@ -262,7 +262,7 @@ void dsda_WadStatsExitMap(int missed_monsters) {
       current_map_stats->best_skill = skill;
     }
 
-    if (skill >= current_map_stats->best_skill) {
+    if (skill >= current_map_stats->best_skill || skill == 4) {
       if (levels_completed == 1)
         if (current_map_stats->best_time == -1 || current_map_stats->best_time > leveltime)
           current_map_stats->best_time = leveltime;
