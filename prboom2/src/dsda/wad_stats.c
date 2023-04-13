@@ -135,6 +135,8 @@ static void dsda_CreateWadStats(void) {
         ms->map = -1;
       }
 
+      ms->best_time = -1;
+      ms->best_max_time = -1;
       ms->max_kills = -1;
       ms->max_items = -1;
       ms->max_secrets = -1;
