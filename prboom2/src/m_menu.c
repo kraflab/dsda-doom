@@ -3190,11 +3190,11 @@ void M_DrawGeneral(void)
 // The level table.
 //
 
-#define LEVEL_TABLE_PAGES 1
+#define LEVEL_TABLE_PAGES 2
 
 static setup_menu_t *level_table_page[LEVEL_TABLE_PAGES];
-//static setup_menu_t next_page_template = NEXT_PAGE(NULL);
-//static setup_menu_t prev_page_template = PREV_PAGE(NULL);
+static setup_menu_t next_page_template = NEXT_PAGE(NULL);
+static setup_menu_t prev_page_template = PREV_PAGE(NULL);
 static setup_menu_t final_entry_template = FINAL_ENTRY;
 static setup_menu_t new_column_template = NEW_COLUMN;
 static setup_menu_t empty_line_template = EMPTY_LINE;
@@ -3229,6 +3229,25 @@ static setup_menu_t empty_line_template = EMPTY_LINE;
   ++base_i; \
 }
 
+#define INSERT_LEVEL_TABLE_NEXT_PAGE { \
+  level_table_page[page][base_i] = next_page_template; \
+  level_table_page[page][base_i].menu = level_table_page[page + 1]; \
+  ++base_i; \
+}
+
+#define INSERT_LEVEL_TABLE_PREV_PAGE { \
+  level_table_page[page][base_i] = prev_page_template; \
+  level_table_page[page][base_i].menu = level_table_page[page - 1]; \
+  ++base_i; \
+}
+
+#define START_LEVEL_TABLE_PAGE(page_number) { \
+  page = page_number; \
+  base_i = 0; \
+  column_x = 16; \
+  INSERT_LEVEL_TABLE_EMPTY_LINE \
+}
+
 static void M_FreeMText(const char *m_text)
 {
   union { const char *c; char *s; } str;
@@ -3242,6 +3261,7 @@ static void M_ResetLevelTable(void)
   int i, page;
   const int page_count[LEVEL_TABLE_PAGES] = {
     wad_stats.map_count * 5 + 16,
+    wad_stats.map_count * 3 + 16,
   };
 
   for (page = 0; page < LEVEL_TABLE_PAGES; ++page)
@@ -3265,16 +3285,16 @@ static void M_ResetLevelTable(void)
 static void M_BuildLevelTable(void)
 {
   int i;
-  int page = 0;
-  int base_i = 0;
-  int column_x = 16;
+  int page;
+  int base_i;
+  int column_x;
   setup_menu_t *entry;
   map_stats_t *map;
   dsda_string_t m_text;
 
   M_ResetLevelTable();
 
-  INSERT_LEVEL_TABLE_EMPTY_LINE
+  START_LEVEL_TABLE_PAGE(0)
 
   LOOP_LEVEL_TABLE_COLUMN
     dsda_StringPrintF(&m_text, "%s", map->lump);
@@ -3353,6 +3373,59 @@ static void M_BuildLevelTable(void)
     }
   END_LOOP_LEVEL_TABLE_COLUMN
 
+  INSERT_LEVEL_TABLE_NEXT_PAGE
+  INSERT_FINAL_LEVEL_TABLE_ENTRY
+
+  // -------- //
+
+  START_LEVEL_TABLE_PAGE(1)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    dsda_StringPrintF(&m_text, "%s", map->lump);
+    entry->m_text = m_text.string;
+    entry->m_flags = S_TITLE | S_LEFTJUST;
+    entry->m_x = column_x;
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 128;
+  INSERT_LEVEL_TABLE_COLUMN("TIME", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_time >= 0) {
+      dsda_StringPrintF(&m_text, "%d:%05.2f",
+                        map->best_time / 35 / 60,
+                        (float) (map->best_time % (60 * 35)) / 35);
+      entry->m_text = m_text.string;
+      entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("- : --");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 96;
+  INSERT_LEVEL_TABLE_COLUMN("MAX TIME", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_max_time >= 0) {
+      dsda_StringPrintF(&m_text, "%d:%05.2f",
+                        map->best_max_time / 35 / 60,
+                        (float) (map->best_max_time % (60 * 35)) / 35);
+      entry->m_text = m_text.string;
+      entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("- : --");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  INSERT_LEVEL_TABLE_PREV_PAGE
   INSERT_FINAL_LEVEL_TABLE_ENTRY
 }
 
