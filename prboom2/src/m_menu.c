@@ -3303,7 +3303,7 @@ static void M_BuildLevelTable(void)
     entry->m_x = column_x;
   END_LOOP_LEVEL_TABLE_COLUMN
 
-  column_x += 96;
+  column_x += 112;
   INSERT_LEVEL_TABLE_COLUMN("SKILL", column_x)
 
   LOOP_LEVEL_TABLE_COLUMN
