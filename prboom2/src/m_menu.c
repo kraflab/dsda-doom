@@ -3190,7 +3190,9 @@ void M_DrawGeneral(void)
 // The level table.
 //
 
-static setup_menu_t *level_table_page[1];
+#define LEVEL_TABLE_PAGES 1
+
+static setup_menu_t *level_table_page[LEVEL_TABLE_PAGES];
 //static setup_menu_t next_page_template = NEXT_PAGE(NULL);
 //static setup_menu_t prev_page_template = PREV_PAGE(NULL);
 static setup_menu_t final_entry_template = FINAL_ENTRY;
@@ -3202,28 +3204,28 @@ static setup_menu_t empty_line_template = EMPTY_LINE;
     map = &wad_stats.maps[i]; \
     if (map->episode == -1) \
       continue; \
-    entry = &level_table_page[0][base_i + i]; \
+    entry = &level_table_page[page][base_i + i]; \
 
 #define END_LOOP_LEVEL_TABLE_COLUMN } \
   base_i += i; \
 }
 
 #define INSERT_LEVEL_TABLE_COLUMN(heading, x) { \
-  level_table_page[0][base_i] = new_column_template; \
+  level_table_page[page][base_i] = new_column_template; \
   ++base_i; \
-  level_table_page[0][base_i] = empty_line_template; \
-  level_table_page[0][base_i].m_flags |= S_TITLE; \
-  level_table_page[0][base_i].m_text = Z_Strdup(heading); \
-  level_table_page[0][base_i].m_x = x; \
+  level_table_page[page][base_i] = empty_line_template; \
+  level_table_page[page][base_i].m_flags |= S_TITLE; \
+  level_table_page[page][base_i].m_text = Z_Strdup(heading); \
+  level_table_page[page][base_i].m_x = x; \
   ++base_i; \
 }
 
 #define INSERT_FINAL_LEVEL_TABLE_ENTRY { \
-  level_table_page[0][base_i] = final_entry_template; \
+  level_table_page[page][base_i] = final_entry_template; \
 }
 
 #define INSERT_LEVEL_TABLE_EMPTY_LINE { \
-  level_table_page[0][base_i] = empty_line_template; \
+  level_table_page[page][base_i] = empty_line_template; \
   ++base_i; \
 }
 
@@ -3235,29 +3237,42 @@ static void M_FreeMText(const char *m_text)
   Z_Free(str.s);
 }
 
+static void M_ResetLevelTable(void)
+{
+  int i, page;
+  const int page_count[LEVEL_TABLE_PAGES] = {
+    wad_stats.map_count * 5 + 16,
+  };
+
+  for (page = 0; page < LEVEL_TABLE_PAGES; ++page)
+  {
+    if (!level_table_page[page])
+      level_table_page[page] = Z_Calloc(page_count[page], sizeof(*level_table_page[page]));
+    else
+    {
+      for (i = 0; !(level_table_page[page][i].m_flags & S_END); ++i)
+      {
+        if (level_table_page[page][i].m_text &&
+            !(level_table_page[page][i].m_flags & (S_NEXT | S_PREV)))
+          M_FreeMText(level_table_page[page][i].m_text);
+      }
+
+      memset(level_table_page[page], 0, page_count[page] * sizeof(*level_table_page[page]));
+    }
+  }
+}
+
 static void M_BuildLevelTable(void)
 {
   int i;
+  int page = 0;
   int base_i = 0;
   int column_x = 16;
-  const int page_0_count = wad_stats.map_count * 5 + 16;
   setup_menu_t *entry;
   map_stats_t *map;
   dsda_string_t m_text;
 
-  if (!level_table_page[0])
-    level_table_page[0] = Z_Calloc(page_0_count, sizeof(*level_table_page[0]));
-  else
-  {
-    for (i = 0; !(level_table_page[0][i].m_flags & S_END); ++i)
-    {
-      if (level_table_page[0][i].m_text &&
-          !(level_table_page[0][i].m_flags & (S_NEXT | S_PREV)))
-        M_FreeMText(level_table_page[0][i].m_text);
-    }
-
-    memset(level_table_page[0], 0, page_0_count * sizeof(*level_table_page[0]));
-  }
+  M_ResetLevelTable();
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
