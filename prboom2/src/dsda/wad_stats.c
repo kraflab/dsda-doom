@@ -234,9 +234,6 @@ void dsda_SaveWadStats(void) {
 static map_stats_t* dsda_MapStats(int episode, int map) {
   int i;
 
-  if (demoplayback)
-    return NULL;
-
   for (i = 0; i < wad_stats.map_count; ++i)
     if (wad_stats.maps[i].episode == episode && wad_stats.maps[i].map == map)
       return &wad_stats.maps[i];
@@ -251,7 +248,7 @@ void dsda_WadStatsEnterMap(void) {
 void dsda_WadStatsExitMap(int missed_monsters) {
   int skill;
 
-  if (!current_map_stats)
+  if (!current_map_stats || demoplayback)
     return;
 
   if (!nomonsters) {
@@ -301,7 +298,7 @@ void dsda_WadStatsExitMap(int missed_monsters) {
 }
 
 void dsda_WadStatsKill(void) {
-  if (!current_map_stats)
+  if (!current_map_stats || demoplayback)
     return;
 
   ++current_map_stats->total_kills;
