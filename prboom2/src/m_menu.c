@@ -3261,7 +3261,7 @@ static void M_ResetLevelTable(void)
   int i, page;
   const int page_count[LEVEL_TABLE_PAGES] = {
     wad_stats.map_count * 5 + 16,
-    wad_stats.map_count * 3 + 16,
+    wad_stats.map_count * 4 + 16,
   };
 
   for (page = 0; page < LEVEL_TABLE_PAGES; ++page)
@@ -3387,7 +3387,7 @@ static void M_BuildLevelTable(void)
     entry->m_x = column_x;
   END_LOOP_LEVEL_TABLE_COLUMN
 
-  column_x += 128;
+  column_x += 120;
   INSERT_LEVEL_TABLE_COLUMN("TIME", column_x)
 
   LOOP_LEVEL_TABLE_COLUMN
@@ -3406,7 +3406,7 @@ static void M_BuildLevelTable(void)
     }
   END_LOOP_LEVEL_TABLE_COLUMN
 
-  column_x += 96;
+  column_x += 80;
   INSERT_LEVEL_TABLE_COLUMN("MAX TIME", column_x)
 
   LOOP_LEVEL_TABLE_COLUMN
@@ -3417,6 +3417,25 @@ static void M_BuildLevelTable(void)
       dsda_StringPrintF(&m_text, "%d:%05.2f",
                         map->best_max_time / 35 / 60,
                         (float) (map->best_max_time % (60 * 35)) / 35);
+      entry->m_text = m_text.string;
+      entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("- : --");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 80;
+  INSERT_LEVEL_TABLE_COLUMN("SK 5 TIME", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_sk5_time >= 0) {
+      dsda_StringPrintF(&m_text, "%d:%05.2f",
+                        map->best_sk5_time / 35 / 60,
+                        (float) (map->best_sk5_time % (60 * 35)) / 35);
       entry->m_text = m_text.string;
       entry->m_flags |= S_TC_SEL;
     }

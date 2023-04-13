@@ -137,6 +137,7 @@ static void dsda_CreateWadStats(void) {
 
       ms->best_time = -1;
       ms->best_max_time = -1;
+      ms->best_sk5_time = -1;
       ms->max_kills = -1;
       ms->max_items = -1;
       ms->max_secrets = -1;
@@ -177,13 +178,13 @@ static void dsda_LoadWadStats(void) {
 
         if (
           sscanf(
-            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d",
+            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
             ms.lump, &ms.episode, &ms.map,
-            &ms.best_skill, &ms.best_time, &ms.best_max_time,
+            &ms.best_skill, &ms.best_time, &ms.best_max_time, &ms.best_sk5_time,
             &ms.total_exits, &ms.total_kills,
             &ms.best_kills, &ms.best_items, &ms.best_secrets,
             &ms.max_kills, &ms.max_items, &ms.max_secrets
-          ) == 14
+          ) == 15
         ) {
           map_count += 1;
           dsda_EnsureMapCount(map_count);
@@ -219,9 +220,9 @@ void dsda_SaveWadStats(void) {
     map_stats_t* ms;
 
     ms = &wad_stats.maps[i];
-    fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
+    fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             ms->lump, ms->episode, ms->map,
-            ms->best_skill, ms->best_time, ms->best_max_time,
+            ms->best_skill, ms->best_time, ms->best_max_time, ms->best_sk5_time,
             ms->total_exits, ms->total_kills,
             ms->best_kills, ms->best_items, ms->best_secrets,
             ms->max_kills, ms->max_items, ms->max_secrets);
@@ -268,6 +269,10 @@ void dsda_WadStatsExitMap(int missed_monsters) {
       if (levels_completed == 1)
         if (current_map_stats->best_time == -1 || current_map_stats->best_time > leveltime)
           current_map_stats->best_time = leveltime;
+
+      if (levels_completed == 1 && skill == 5)
+        if (current_map_stats->best_sk5_time == -1 || current_map_stats->best_sk5_time > leveltime)
+          current_map_stats->best_sk5_time = leveltime;
 
       current_map_stats->max_kills = totalkills;
       current_map_stats->max_items = totalitems;

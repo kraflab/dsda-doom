@@ -23,8 +23,9 @@ typedef struct {
   int episode;
   int map;
   int best_skill;
-  int best_time; // check pistol start ?
-  int best_max_time; // check pistol start ?
+  int best_time;
+  int best_max_time;
+  int best_sk5_time;
   int total_exits;
   int total_kills;
   int best_kills;
