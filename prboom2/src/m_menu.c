@@ -121,7 +121,7 @@
 #define S_KEEP     0x00004000 // Don't swap key out
 #define S_END      0x00008000 // Last item in list (dummy)
 #define S_LEVWARN  0x00010000 // killough 8/30/98: Always warn about pending change
-// #define S_      0x00020000
+#define S_NOSELECT 0x00020000
 // #define S_      0x00040000
 #define S_FILE     0x00080000 // killough 10/98: Filenames
 #define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
@@ -1552,6 +1552,8 @@ static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
 {
   current_setup_menu = new_setup_menu;
   set_menu_itemon = M_GetSetupMenuItemOn();
+  if (current_setup_menu[set_menu_itemon].m_flags & S_NOSELECT)
+    return;
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -1709,7 +1711,7 @@ static void M_DrawItem(const setup_menu_t* s, int y)
       w = M_GetPixelWidth(menu_buffer) + 4;
     M_DrawMenuString(x - w, y ,color);
     // print a blinking "arrow" next to the currently highlighted menu item
-    if (s == current_setup_menu + set_menu_itemon && whichSkull)
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
       M_DrawString(x - w - 8, y, color, ">");
   }
   Z_Free(t);
@@ -4473,6 +4475,9 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
 
   if (action == MENU_DOWN)
   {
+    if (ptr1->m_flags & S_NOSELECT)
+      return true;
+
     ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
     do
       if (ptr1->m_flags & S_END)
@@ -4492,6 +4497,9 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
 
   if (action == MENU_UP)
   {
+    if (ptr1->m_flags & S_NOSELECT)
+      return true;
+
     ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
     do
     {
