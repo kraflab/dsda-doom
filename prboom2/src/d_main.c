@@ -534,6 +534,9 @@ static void D_DoomLoop(void)
 
   for (;;)
   {
+    if (I_Interrupted())
+      I_SafeExit(0);
+
     WasRenderedInTryRunTics = false;
     // frame syncronous IO operations
     I_StartFrame ();
