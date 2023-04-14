@@ -3329,7 +3329,7 @@ static void M_ResetLevelTable(void)
   const int page_count[LEVEL_TABLE_PAGES] = {
     wad_stats.map_count * 5 + 16,
     wad_stats.map_count * 4 + 16,
-    24,
+    40,
   };
 
   for (page = 0; page < LEVEL_TABLE_PAGES; ++page)
@@ -3536,99 +3536,165 @@ static void M_BuildLevelTable(void)
   base_i = 0;
   wad_stats_summary_page = page;
 
-  level_table_page[page][base_i].m_text = Z_Strdup("Wad Stats Summary");
+  level_table_page[page][base_i].m_text = Z_Strdup("Summary");
   level_table_page[page][base_i].m_flags = S_TITLE | S_NOSELECT;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Maps: %d / %d",
-                    wad_stats_summary.completed_count, wad_stats.map_count);
+  dsda_StringPrintF(&m_text, "Maps");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
-  if (wad_stats_summary.completed_count == wad_stats.map_count)
-    dsda_StringPrintF(&m_text, "Skill: %d", wad_stats_summary.best_skill);
-  else
-    dsda_StringPrintF(&m_text, "Skill: -");
+  dsda_StringPrintF(&m_text, "Skill");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Kill Completion: %d/", wad_stats_summary.best_kills);
+  dsda_StringPrintF(&m_text, "Kill Completion");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Item Completion");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Secret Completion");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Time");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Max Time");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Sk 5 Time");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  level_table_page[page][base_i] = new_column_template;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "%d / %d",
+                    wad_stats_summary.completed_count, wad_stats.map_count);
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  if (wad_stats_summary.completed_count == wad_stats.map_count)
+    dsda_StringPrintF(&m_text, "%d", wad_stats_summary.best_skill);
+  else
+    dsda_StringPrintF(&m_text, "-");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_kills);
   if (wad_stats_summary.completed_count == wad_stats.map_count)
     dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_kills);
   else
     dsda_StringCat(&m_text, "-");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Item Completion: %d/", wad_stats_summary.best_items);
+  dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_items);
   if (wad_stats_summary.completed_count == wad_stats.map_count)
     dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_items);
   else
     dsda_StringCat(&m_text, "-");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Secret Completion: %d/", wad_stats_summary.best_secrets);
+  dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_secrets);
   if (wad_stats_summary.completed_count == wad_stats.map_count)
     dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_secrets);
   else
     dsda_StringCat(&m_text, "-");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Time: ");
   if (wad_stats_summary.timed_count == wad_stats.map_count)
-    M_CatTime(&m_text, wad_stats_summary.best_time);
+    M_PrintTime(&m_text, wad_stats_summary.best_time);
   else
-    dsda_StringCat(&m_text, "- : --");
+    dsda_StringPrintF(&m_text, "- : --");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Max Time: ");
   if (wad_stats_summary.max_timed_count == wad_stats.map_count)
-    M_CatTime(&m_text, wad_stats_summary.best_max_time);
+    M_PrintTime(&m_text, wad_stats_summary.best_max_time);
   else
-    dsda_StringCat(&m_text, "- : --");
+    dsda_StringPrintF(&m_text, "- : --");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Sk 5 Time: ");
   if (wad_stats_summary.sk5_timed_count == wad_stats.map_count)
-    M_CatTime(&m_text, wad_stats_summary.best_sk5_time);
+    M_PrintTime(&m_text, wad_stats_summary.best_sk5_time);
   else
-    dsda_StringCat(&m_text, "- : --");
+    dsda_StringPrintF(&m_text, "- : --");
   level_table_page[page][base_i].m_text = m_text.string;
-  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
   level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  level_table_page[page][base_i] = new_column_template;
   ++base_i;
 
   INSERT_LEVEL_TABLE_PREV_PAGE
