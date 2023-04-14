@@ -3284,6 +3284,20 @@ static void M_ResetLevelTable(void)
   }
 }
 
+static void M_CatTime(dsda_string_t* m_text, int tics)
+{
+  dsda_StringCatF(m_text, "%d:%05.2f",
+                  tics / 35 / 60,
+                  (float) (tics % (60 * 35)) / 35);
+}
+
+static void M_PrintTime(dsda_string_t* m_text, int tics)
+{
+  dsda_StringPrintF(m_text, "%d:%05.2f",
+                    tics / 35 / 60,
+                    (float) (tics % (60 * 35)) / 35);
+}
+
 static void M_BuildLevelTable(void)
 {
   int i;
@@ -3399,9 +3413,7 @@ static void M_BuildLevelTable(void)
     entry->m_x = column_x;
 
     if (map->best_time >= 0) {
-      dsda_StringPrintF(&m_text, "%d:%05.2f",
-                        map->best_time / 35 / 60,
-                        (float) (map->best_time % (60 * 35)) / 35);
+      M_PrintTime(&m_text, map->best_time);
       entry->m_text = m_text.string;
       entry->m_flags |= S_TC_SEL;
     }
@@ -3418,9 +3430,7 @@ static void M_BuildLevelTable(void)
     entry->m_x = column_x;
 
     if (map->best_max_time >= 0) {
-      dsda_StringPrintF(&m_text, "%d:%05.2f",
-                        map->best_max_time / 35 / 60,
-                        (float) (map->best_max_time % (60 * 35)) / 35);
+      M_PrintTime(&m_text, map->best_max_time);
       entry->m_text = m_text.string;
       entry->m_flags |= S_TC_SEL;
     }
@@ -3437,9 +3447,7 @@ static void M_BuildLevelTable(void)
     entry->m_x = column_x;
 
     if (map->best_sk5_time >= 0) {
-      dsda_StringPrintF(&m_text, "%d:%05.2f",
-                        map->best_sk5_time / 35 / 60,
-                        (float) (map->best_sk5_time % (60 * 35)) / 35);
+      M_PrintTime(&m_text, map->best_sk5_time);
       entry->m_text = m_text.string;
       entry->m_flags |= S_TC_SEL;
     }
