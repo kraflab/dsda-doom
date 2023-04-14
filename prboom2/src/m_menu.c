@@ -122,7 +122,7 @@
 #define S_END      0x00008000 // Last item in list (dummy)
 #define S_LEVWARN  0x00010000 // killough 8/30/98: Always warn about pending change
 #define S_NOSELECT 0x00020000
-// #define S_      0x00040000
+#define S_CENTER   0x00040000
 #define S_FILE     0x00080000 // killough 10/98: Filenames
 #define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
 #define S_CREDIT   0x00200000 // killough 10/98: credit
@@ -1707,7 +1707,9 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
   {      /* killough 10/98: support left-justification: */
     strcpy(menu_buffer,p);
-    if (!(flags & S_LEFTJUST))
+    if (flags & S_CENTER)
+      w = M_GetPixelWidth(menu_buffer) / 2;
+    else if (!(flags & S_LEFTJUST))
       w = M_GetPixelWidth(menu_buffer) + 4;
     M_DrawMenuString(x - w, y ,color);
     // print a blinking "arrow" next to the currently highlighted menu item
