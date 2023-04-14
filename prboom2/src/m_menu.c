@@ -3350,13 +3350,6 @@ static void M_ResetLevelTable(void)
   }
 }
 
-static void M_CatTime(dsda_string_t* m_text, int tics)
-{
-  dsda_StringCatF(m_text, "%d:%05.2f",
-                  tics / 35 / 60,
-                  (float) (tics % (60 * 35)) / 35);
-}
-
 static void M_PrintTime(dsda_string_t* m_text, int tics)
 {
   dsda_StringPrintF(m_text, "%d:%05.2f",
