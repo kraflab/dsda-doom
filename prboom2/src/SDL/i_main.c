@@ -104,6 +104,13 @@ void I_Init2(void)
 
 int signal_context;
 
+static volatile sig_atomic_t interrupted = 0;
+
+dboolean I_Interrupted(void)
+{
+  return interrupted;
+}
+
 static void I_SignalHandler(int s)
 {
   char buf[2048];
@@ -119,6 +126,11 @@ static void I_SignalHandler(int s)
   I_Error("The game has crashed!\n"
           "Please report the following information: %s (0x%04x)",
           buf, signal_context);
+}
+
+static void I_IntHandler(int s)
+{
+  interrupted = 1;
 }
 
 static void PrintVer(void)
@@ -298,11 +310,12 @@ int main(int argc, char **argv)
   {
     signal(SIGSEGV, I_SignalHandler);
   }
-  signal(SIGTERM, I_SignalHandler);
   signal(SIGFPE,  I_SignalHandler);
   signal(SIGILL,  I_SignalHandler);
-  signal(SIGINT,  I_SignalHandler);  /* killough 3/6/98: allow CTRL-BRK during init */
   signal(SIGABRT, I_SignalHandler);
+
+  signal(SIGTERM, I_IntHandler);
+  signal(SIGINT,  I_IntHandler);
 #endif
 
   // Priority class for the prboom-plus process
