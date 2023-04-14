@@ -1211,6 +1211,7 @@ static char *autoload_path = NULL;
 static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 {
     char *result;
+    char *cur;
     int len;
 
     if (autoload_path == NULL)
@@ -1226,6 +1227,9 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
     len = snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
     result = Z_Malloc(len+1);
     snprintf(result, len+1, "%s/%s", autoload_path, iwadname);
+
+    for (cur = result; *cur; ++cur)
+      *cur = tolower(*cur);
 
     if (createdir)
     {
