@@ -3258,6 +3258,71 @@ static void M_FreeMText(const char *m_text)
   Z_Free(str.s);
 }
 
+typedef struct {
+  int completed_count;
+  int timed_count;
+  int max_timed_count;
+  int sk5_timed_count;
+  int best_skill;
+  int best_kills;
+  int best_items;
+  int best_secrets;
+  int max_kills;
+  int max_items;
+  int max_secrets;
+  int best_time;
+  int best_max_time;
+  int best_sk5_time;
+} wad_stats_summary_t;
+
+static wad_stats_summary_t wad_stats_summary;
+
+static void M_CalculateWadStatsSummary(void)
+{
+  int i;
+  map_stats_t *map;
+
+  memset(&wad_stats_summary, 0, sizeof(wad_stats_summary));
+
+  wad_stats_summary.best_skill = 6;
+
+  for (i = 0; i < wad_stats.map_count; ++i)
+  {
+    map = &wad_stats.maps[i];
+    if (map->episode == -1 || !map->best_skill)
+      continue;
+
+    if (map->best_skill < wad_stats_summary.best_skill)
+      wad_stats_summary.best_skill = map->best_skill;
+
+    ++wad_stats_summary.completed_count;
+    wad_stats_summary.best_kills += map->best_kills;
+    wad_stats_summary.best_items += map->best_items;
+    wad_stats_summary.best_secrets += map->best_secrets;
+    wad_stats_summary.max_kills += map->max_kills;
+    wad_stats_summary.max_items += map->max_items;
+    wad_stats_summary.max_secrets += map->max_secrets;
+
+    if (map->best_time >= 0)
+    {
+      ++wad_stats_summary.timed_count;
+      wad_stats_summary.best_time += map->best_time;
+    }
+
+    if (map->best_max_time >= 0)
+    {
+      ++wad_stats_summary.max_timed_count;
+      wad_stats_summary.best_max_time += map->best_max_time;
+    }
+
+    if (map->best_sk5_time >= 0)
+    {
+      ++wad_stats_summary.sk5_timed_count;
+      wad_stats_summary.best_sk5_time += map->best_sk5_time;
+    }
+  }
+}
+
 static void M_ResetLevelTable(void)
 {
   int i, page;
