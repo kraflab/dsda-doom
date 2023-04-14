@@ -3532,7 +3532,7 @@ static void M_BuildLevelTable(void)
   wad_stats_summary_page = page;
 
   level_table_page[page][base_i].m_text = Z_Strdup("Summary");
-  level_table_page[page][base_i].m_flags = S_TITLE | S_NOSELECT;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_NOSELECT | S_CENTER;
   level_table_page[page][base_i].m_x = 160;
   ++base_i;
 
@@ -3541,13 +3541,13 @@ static void M_BuildLevelTable(void)
   dsda_StringPrintF(&m_text, "Maps");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   dsda_StringPrintF(&m_text, "Skill");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3555,7 +3555,7 @@ static void M_BuildLevelTable(void)
   dsda_StringPrintF(&m_text, "Kill Completion");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3563,7 +3563,7 @@ static void M_BuildLevelTable(void)
   dsda_StringPrintF(&m_text, "Item Completion");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3571,7 +3571,7 @@ static void M_BuildLevelTable(void)
   dsda_StringPrintF(&m_text, "Secret Completion");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3579,7 +3579,7 @@ static void M_BuildLevelTable(void)
   dsda_StringPrintF(&m_text, "Time");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3587,7 +3587,7 @@ static void M_BuildLevelTable(void)
   dsda_StringPrintF(&m_text, "Max Time");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3595,7 +3595,7 @@ static void M_BuildLevelTable(void)
   dsda_StringPrintF(&m_text, "Sk 5 Time");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   level_table_page[page][base_i] = new_column_template;
@@ -3608,7 +3608,7 @@ static void M_BuildLevelTable(void)
                     wad_stats_summary.completed_count, wad_stats.map_count);
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   if (wad_stats_summary.completed_count == wad_stats.map_count)
@@ -3617,7 +3617,7 @@ static void M_BuildLevelTable(void)
     dsda_StringPrintF(&m_text, "-");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3629,7 +3629,7 @@ static void M_BuildLevelTable(void)
     dsda_StringCat(&m_text, "-");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3641,7 +3641,7 @@ static void M_BuildLevelTable(void)
     dsda_StringCat(&m_text, "-");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3653,7 +3653,7 @@ static void M_BuildLevelTable(void)
     dsda_StringCat(&m_text, "-");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3664,7 +3664,7 @@ static void M_BuildLevelTable(void)
     dsda_StringPrintF(&m_text, "- : --");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3675,7 +3675,7 @@ static void M_BuildLevelTable(void)
     dsda_StringPrintF(&m_text, "- : --");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
@@ -3686,7 +3686,7 @@ static void M_BuildLevelTable(void)
     dsda_StringPrintF(&m_text, "- : --");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
-  level_table_page[page][base_i].m_x = 160;
+  level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
   level_table_page[page][base_i] = new_column_template;
