@@ -217,6 +217,8 @@ set(COMMON_SRC
     dsda/udmf.h
     dsda/utility.c
     dsda/utility.h
+    dsda/wad_stats.c
+    dsda/wad_stats.h
     dsda/zipfile.c
     dsda/zipfile.h
     dstrings.c

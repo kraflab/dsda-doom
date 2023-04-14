@@ -104,6 +104,7 @@
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
 #include "dsda/utility.h"
+#include "dsda/wad_stats.h"
 #include "dsda/zipfile.h"
 #include "dsda/gl/render_scale.h"
 
@@ -1812,6 +1813,9 @@ static void D_DoomMainSetup(void)
   PostProcessDeh();
   dsda_AppendZDoomMobjInfo();
   dsda_ApplyDefaultMapFormat();
+
+  lprintf(LO_DEBUG, "dsda_InitWadStats: Setting up wad stats.\n");
+  dsda_InitWadStats();
 
   lprintf(LO_INFO, "\n"); // Separator after file loading
 

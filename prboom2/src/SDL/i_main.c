@@ -81,6 +81,7 @@
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"
 #include "dsda/time.h"
+#include "dsda/wad_stats.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -192,6 +193,7 @@ static void I_EssentialQuit (void)
   dsda_ExportTextFile();
   dsda_WriteAnalysis();
   dsda_WriteSplits();
+  dsda_SaveWadStats();
 }
 
 static void I_Quit (void)
