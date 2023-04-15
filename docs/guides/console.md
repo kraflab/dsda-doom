@@ -39,6 +39,10 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - do not overwrite the config file on exit
 - `config.remember`
   - do overwrite the config file on exit
+- `wad_stats.forget`
+  - do not update wad stats on exit
+- `wad_stats.remember`
+  - do update wad stats on exit
 - `free_text.update <text>`
   - update free text component
 - `free_text.clear`

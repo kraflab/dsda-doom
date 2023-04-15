@@ -1073,6 +1073,22 @@ static dboolean console_ConfigRemember(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_WadStatsForget(const char* command, const char* args) {
+  void M_ForgetWadStats(void);
+
+  M_ForgetWadStats();
+
+  return true;
+}
+
+static dboolean console_WadStatsRemember(const char* command, const char* args) {
+  void M_RememberWadStats(void);
+
+  M_RememberWadStats();
+
+  return true;
+}
+
 static dboolean console_FreeTextUpdate(const char* command, const char* args) {
   dsda_UpdateStringConfig(dsda_config_free_text, args, true);
 
@@ -2096,6 +2112,8 @@ static console_command_entry_t console_commands[] = {
   { "toggle_update", console_ToggleUpdate, CF_ALWAYS },
   { "config.forget", console_ConfigForget, CF_ALWAYS },
   { "config.remember", console_ConfigRemember, CF_ALWAYS },
+  { "wad_stats.forget", console_WadStatsForget, CF_ALWAYS },
+  { "wad_stats.remember", console_WadStatsRemember, CF_ALWAYS },
   { "free_text.update", console_FreeTextUpdate, CF_ALWAYS },
   { "free_text.clear", console_FreeTextClear, CF_ALWAYS },
 

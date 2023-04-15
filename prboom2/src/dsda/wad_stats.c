@@ -199,10 +199,25 @@ static void dsda_LoadWadStats(void) {
   }
 }
 
+static dboolean forget_wad_stats;
+
+void M_ForgetWadStats(void)
+{
+  forget_wad_stats = true;
+}
+
+void M_RememberWadStats(void)
+{
+  forget_wad_stats = false;
+}
+
 void dsda_SaveWadStats(void) {
   const char* path;
   FILE* file;
   int i;
+
+  if (forget_wad_stats)
+    return;
 
   if (!wad_stats.map_count)
     return;
