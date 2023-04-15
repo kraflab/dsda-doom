@@ -29,6 +29,8 @@
 
 #include "split_tracker.h"
 
+#define SPLIT_VERSION 1
+
 static dsda_split_t* dsda_splits;
 static size_t dsda_splits_count;
 static int attempts;
@@ -80,17 +82,18 @@ static char* dsda_SplitTrackerPath(void) {
 
 static void dsda_InitSplitTime(dsda_split_time_t* split_time) {
   split_time->current = 0;
-  split_time->best = 0;
+  split_time->best = -1;
   split_time->best_delta = 0;
-  split_time->session_best = 0;
+  split_time->session_best = -1;
   split_time->session_best_delta = 0;
-  split_time->ref = 0;
+  split_time->ref = -1;
   split_time->ref_delta = 0;
 }
 
 static void dsda_LoadSplits(void) {
   char* path;
   char* buffer;
+  int version;
   static int loaded = false;
 
   if (loaded)
@@ -109,7 +112,14 @@ static void dsda_LoadSplits(void) {
     line = strtok(buffer, "\n");
 
     if (line) {
-      count = sscanf(line, "%i", &attempts);
+      count = sscanf(line, "%d %d", &attempts, &version);
+
+      if (count < 1)
+        attempts = 0;
+
+      if (count < 2)
+        version = 0;
+
       line = strtok(NULL, "\n");
     }
 
@@ -137,6 +147,21 @@ static void dsda_LoadSplits(void) {
       dsda_splits[i].exits = exits;
       dsda_splits[i].run_counter = 0;
 
+      // in version 0, a time of 0 was considered unset
+      if (version == 0) {
+        if (!dsda_splits[i].leveltime.best)
+          dsda_splits[i].leveltime.best = -1;
+
+        if (!dsda_splits[i].totalleveltimes.best)
+          dsda_splits[i].totalleveltimes.best = -1;
+
+        if (!dsda_splits[i].leveltime.ref)
+          dsda_splits[i].leveltime.ref = -1;
+
+        if (!dsda_splits[i].totalleveltimes.ref)
+          dsda_splits[i].totalleveltimes.ref = -1;
+      }
+
       line = strtok(NULL, "\n");
     }
 
@@ -155,7 +180,7 @@ void dsda_WriteSplits(void) {
 
   path = dsda_SplitTrackerPath();
 
-  p += sprintf(p, "%i\n", attempts);
+  p += sprintf(p, "%d %d\n", attempts, SPLIT_VERSION);
 
   for (i = 0; i < dsda_splits_count; ++i) {
     p += sprintf(
@@ -180,10 +205,10 @@ static void dsda_TrackSplitTime(dsda_split_time_t* split_time, int current) {
   split_time->session_best_delta = current - split_time->session_best;
   split_time->ref_delta = current - split_time->ref;
 
-  if (current < split_time->best || !split_time->best)
+  if (current < split_time->best || split_time->best == -1)
     split_time->best = current;
 
-  if (current < split_time->session_best || !split_time->session_best)
+  if (current < split_time->session_best || split_time->session_best == -1)
     split_time->session_best = current;
 }
 
