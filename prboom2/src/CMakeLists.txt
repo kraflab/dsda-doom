@@ -600,7 +600,20 @@ function(AddGameExecutable TARGET SOURCES)
     else()
         set(DSDA_BINARY_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}")
     endif()
-    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
+
+    if(CMAKE_VERSION VERSION_GREATER 3.20 AND NOT VCPKG_TOOLCHAIN AND WIN32)
+        install(
+            TARGETS ${TARGET}
+            RUNTIME_DEPENDENCIES 
+                PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+                POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+                DIRECTORIES $<TARGET_FILE_DIR:${TARGET}> $ENV{PATH}
+            RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}"
+            COMPONENT "Game executable"
+        )
+    else()
+        install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
+    endif()
 
     target_link_libraries(${TARGET} PRIVATE
         ${OPENGL_gl_LIBRARY}
