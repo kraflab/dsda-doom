@@ -230,7 +230,7 @@ static void D_Wipe(void)
 {
   dboolean done;
   int wipestart;
-  int old_realtic_clock_rate = 0;
+  int old_game_speed = 0;
 
   //e6y
   if (!dsda_RenderWipeScreen() || dsda_SkipWipe())
@@ -243,10 +243,10 @@ static void D_Wipe(void)
     return;
   }
 
-  if (dsda_RealticClockRate() != 100 && dsda_WipeAtFullSpeed())
+  if (dsda_GameSpeed() != 100 && dsda_WipeAtFullSpeed())
   {
-    old_realtic_clock_rate = dsda_RealticClockRate();
-    dsda_UpdateRealticClockRate(100);
+    old_game_speed = dsda_GameSpeed();
+    dsda_UpdateGameSpeed(100);
   }
 
   wipestart = dsda_GetTick() - 1;
@@ -288,9 +288,9 @@ static void D_Wipe(void)
   }
   while (!done);
 
-  if (old_realtic_clock_rate)
+  if (old_game_speed)
   {
-    dsda_UpdateRealticClockRate(old_realtic_clock_rate);
+    dsda_UpdateGameSpeed(old_game_speed);
   }
 
   force_singletics_to = gametic + BACKUPTICS;

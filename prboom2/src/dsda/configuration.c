@@ -156,10 +156,10 @@ void dsda_TrackConfigFeatures(void) {
   if (R_FullView() && dsda_IntConfig(dsda_config_hud_displayed))
     dsda_TrackFeature(uf_advhud);
 
-  if (dsda_IntConfig(dsda_config_realtic_clock_rate) > 100)
+  if (dsda_IntConfig(dsda_config_game_speed) > 100)
     dsda_TrackFeature(uf_speedup);
 
-  if (dsda_IntConfig(dsda_config_realtic_clock_rate) < 100)
+  if (dsda_IntConfig(dsda_config_game_speed) < 100)
     dsda_TrackFeature(uf_slowdown);
 
   if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_coordinates))
@@ -209,8 +209,8 @@ void dsda_TrackConfigFeatures(void) {
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
-  [dsda_config_realtic_clock_rate] = {
-    "realtic_clock_rate", dsda_config_realtic_clock_rate,
+  [dsda_config_game_speed] = {
+    "game_speed", dsda_config_game_speed,
     dsda_config_int, 3, 10000, { 100 }, NULL, STRICT_INT(100), I_Init2
   },
   [dsda_config_default_complevel] = {

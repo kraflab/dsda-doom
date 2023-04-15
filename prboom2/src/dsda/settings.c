@@ -268,12 +268,12 @@ void dsda_ResetRevealMap(void) {
   dsda_reveal_map = 0;
 }
 
-int dsda_RealticClockRate(void) {
-  return dsda_IntConfig(dsda_config_realtic_clock_rate);
+int dsda_GameSpeed(void) {
+  return dsda_IntConfig(dsda_config_game_speed);
 }
 
-void dsda_UpdateRealticClockRate(int value) {
-  dsda_UpdateIntConfig(dsda_config_realtic_clock_rate, value, true);
+void dsda_UpdateGameSpeed(int value) {
+  dsda_UpdateIntConfig(dsda_config_game_speed, value, true);
 }
 
 void dsda_SkipNextWipe(void) {

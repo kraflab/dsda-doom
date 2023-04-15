@@ -24,7 +24,7 @@
 
 typedef enum {
   dsda_config_none,
-  dsda_config_realtic_clock_rate,
+  dsda_config_game_speed,
   dsda_config_default_complevel,
   dsda_config_default_skill,
   dsda_config_vanilla_keymap,
