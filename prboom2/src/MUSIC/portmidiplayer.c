@@ -143,14 +143,19 @@ static void reset_device (void)
 {
   Pm_Write(pm_stream, event_notes_off, 16);
   Pm_Write(pm_stream, event_sound_off, 16);
-  Pm_Write(pm_stream, event_reset, 16 * 6);
 
-  if (sysex_reset != NULL)
+  if (sysex_reset == NULL)
+    Pm_Write(pm_stream, event_reset, 16 * 6);
+  else
     Pm_WriteSysEx(pm_stream, 0, sysex_reset);
 
   Pm_Write(pm_stream, event_pbs, 16 * 6);
-  Pm_Write(pm_stream, event_reverb, 16);
-  Pm_Write(pm_stream, event_chorus, 16);
+
+  if (mus_portmidi_reverb_level > -1 || sysex_reset == NULL)
+    Pm_Write(pm_stream, event_reverb, 16);
+
+  if (mus_portmidi_chorus_level > -1 || sysex_reset == NULL)
+    Pm_Write(pm_stream, event_chorus, 16);
 
   use_reset_delay = mus_portmidi_reset_delay > 0;
 }
@@ -160,6 +165,9 @@ static void init_reset_buffer (void)
   int i;
   PmEvent *reset = event_reset;
   PmEvent *pbs = event_pbs;
+  int reverb = mus_portmidi_reverb_level;
+  int chorus = mus_portmidi_chorus_level;
+
   for (i = 0; i < 16; ++i)
   {
     event_notes_off[i].message = Pm_Message(0xB0 | i, 0x7B, 0x00);
@@ -180,9 +188,6 @@ static void init_reset_buffer (void)
     pbs[4].message = Pm_Message(0xB0 | i, 0x64, 0x7F); // null RPN LSB
     pbs[5].message = Pm_Message(0xB0 | i, 0x65, 0x7F); // null RPN MSB
     pbs += 6;
-
-    event_reverb[i].message = Pm_Message(0xB0 | i, 0x5B, mus_portmidi_reverb_level);
-    event_chorus[i].message = Pm_Message(0xB0 | i, 0x5D, mus_portmidi_chorus_level);
   }
 
   if (!strcasecmp(mus_portmidi_reset_type, "gs"))
@@ -195,6 +200,26 @@ static void init_reset_buffer (void)
     sysex_reset = xg_system_on;
   else
     sysex_reset = NULL;
+
+  // if no reverb specified and no SysEx reset selected, then use GM default
+  if (reverb == -1 && sysex_reset == NULL)
+    reverb = 40;
+
+  if (reverb > -1)
+  {
+    for (i = 0; i < 16; ++i)
+      event_reverb[i].message = Pm_Message(0xB0 | i, 0x5B, reverb);
+  }
+
+  // if no chorus specified and no SysEx reset selected, then use GM default
+  if (chorus == -1 && sysex_reset == NULL)
+    chorus = 0;
+
+  if (chorus > -1)
+  {
+    for (i = 0; i < 16; ++i)
+      event_chorus[i].message = Pm_Message(0xB0 | i, 0x5D, chorus);
+  }
 }
 
 static int pm_init (int samplerate)
