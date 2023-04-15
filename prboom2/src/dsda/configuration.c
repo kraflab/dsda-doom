@@ -1359,8 +1359,14 @@ static void dsda_ParseConfigArg(int arg_id, dboolean persist) {
 }
 
 void dsda_ApplyAdHocConfiguration(void) {
+  dsda_arg_t* arg;
+
   dsda_ParseConfigArg(dsda_arg_update, true);
   dsda_ParseConfigArg(dsda_arg_assign, false);
+
+  arg = dsda_Arg(dsda_arg_game_speed);
+  if (arg->found)
+    dsda_ReadConfig("game_speed", NULL, arg->value.v_int);
 }
 
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist) {

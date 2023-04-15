@@ -3123,7 +3123,6 @@ setup_menu_t tas_settings[] = {
   { "Show Coordinate Display", S_YESNO, m_conf, G_X, dsda_config_coordinate_display },
   { "Permanent Strafe50", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50 },
   { "Strafe50 On Turns", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50onturns },
-  { "Game speed (%)", S_NUM, m_conf, G_X, dsda_config_realtic_clock_rate },
 
   PREV_PAGE(demo_settings),
   FINAL_ENTRY
