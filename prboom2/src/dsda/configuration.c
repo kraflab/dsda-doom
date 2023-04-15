@@ -768,11 +768,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mus_portmidi_reverb_level] = {
     "mus_portmidi_reverb_level", dsda_config_mus_portmidi_reverb_level,
-    dsda_config_int, 0, 127, { 40 }
+    dsda_config_int, -1, 127, { -1 }
   },
   [dsda_config_mus_portmidi_chorus_level] = {
     "mus_portmidi_chorus_level", dsda_config_mus_portmidi_chorus_level,
-    dsda_config_int, 0, 127, { 0 }
+    dsda_config_int, -1, 127, { -1 }
   },
   [dsda_config_cap_soundcommand] = {
     "cap_soundcommand", dsda_config_cap_soundcommand,
