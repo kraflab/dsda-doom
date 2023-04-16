@@ -44,7 +44,7 @@ static void dsda_EnsureMapCount(int count) {
     while (wad_stats.maps_size < wad_stats.map_count)
       wad_stats.maps_size = wad_stats.maps_size ? wad_stats.maps_size * 2 : 32;
     wad_stats.maps = Z_Realloc(wad_stats.maps, sizeof(*wad_stats.maps) * wad_stats.maps_size);
-    memset(wad_stats.maps + old_size * sizeof(*wad_stats.maps),
+    memset(wad_stats.maps + old_size,
            0, (wad_stats.maps_size - old_size) * sizeof(*wad_stats.maps));
   }
 }
