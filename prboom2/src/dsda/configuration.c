@@ -950,6 +950,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_parallel_sfx_window", dsda_config_parallel_sfx_window,
     dsda_config_int, 1, 32, { 1 }, NULL, NOT_STRICT, dsda_InitParallelSFXFilter
   },
+  [dsda_config_movement_toggle_sfx] = {
+    "dsda_movement_toggle_sfx", dsda_config_movement_toggle_sfx,
+    CONF_BOOL(0)
+  },
   [dsda_config_switch_when_ammo_runs_out] = {
     "dsda_switch_when_ammo_runs_out", dsda_config_switch_when_ammo_runs_out,
     CONF_BOOL(1)

@@ -3037,6 +3037,7 @@ setup_menu_t misc_settings[] = {
   { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
+  { "Play SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
 
   PREV_PAGE(controller_settings),
   NEXT_PAGE(display_settings),
@@ -4202,13 +4203,14 @@ typedef struct {
   dboolean persist;
   const char* message;
   dboolean invert_message;
+  dboolean play_sound;
 } toggle_input_t;
 
 static toggle_input_t toggle_inputs[] = {
   { dsda_input_strict_mode, dsda_config_strict_mode, true, false, "Strict Mode" },
-  { dsda_input_novert, dsda_config_vertmouse, true, false, "Vertical Mouse Movement" },
-  { dsda_input_mlook, dsda_config_freelook, true, true, "Free Look" },
-  { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run" },
+  { dsda_input_novert, dsda_config_vertmouse, true, false, "Vertical Mouse Movement", .play_sound = true },
+  { dsda_input_mlook, dsda_config_freelook, true, true, "Free Look", .play_sound = true },
+  { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run", .play_sound = true },
   { dsda_input_messages, dsda_config_show_messages, true, true, "Messages" },
   { dsda_input_command_display, dsda_config_command_display, false, true, "Command Display" },
   { dsda_input_coordinate_display, dsda_config_coordinate_display, false, true, "Coordinate Display" },
@@ -4235,6 +4237,18 @@ static void M_HandleToggles(void)
       value = dsda_ToggleConfig(toggle->config_id, toggle->persist);
       doom_printf("%s %s", toggle->message, value ? toggle->invert_message ? "off" : "on"
                                                   : toggle->invert_message ? "on"  : "off");
+
+      if (toggle->play_sound && dsda_IntConfig(dsda_config_movement_toggle_sfx))
+      {
+        if (toggle->invert_message ? !value : value)
+        {
+          S_StartVoidSound(g_sfx_console);
+        }
+        else
+        {
+          S_StartVoidSound(g_sfx_oof);
+        }
+      }
     }
   }
 }

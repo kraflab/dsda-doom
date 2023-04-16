@@ -293,6 +293,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_allow_jumping),
   MIGRATED_SETTING(dsda_config_parallel_sfx_limit),
   MIGRATED_SETTING(dsda_config_parallel_sfx_window),
+  MIGRATED_SETTING(dsda_config_movement_toggle_sfx),
   MIGRATED_SETTING(dsda_config_switch_when_ammo_runs_out),
   MIGRATED_SETTING(dsda_config_viewbob),
   MIGRATED_SETTING(dsda_config_weaponbob),
