@@ -74,7 +74,8 @@ dboolean dsda_StartBruteForce(int depth);
 int dsda_AddBruteForceFrame(int i,
                             int forwardmove_min, int forwardmove_max,
                             int sidemove_min, int sidemove_max,
-                            int angleturn_min, int angleturn_max);
+                            int angleturn_min, int angleturn_max,
+                            byte buttons);
 void dsda_UpdateBruteForce(void);
 void dsda_EvaluateBruteForce(void);
 void dsda_CopyBruteForceCommand(ticcmd_t* cmd);

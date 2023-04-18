@@ -734,22 +734,50 @@ static dboolean console_BruteForceFrame(const char* command, const char* args) {
   int forwardmove_min, forwardmove_max;
   int sidemove_min, sidemove_max;
   int angleturn_min, angleturn_max;
-  int arg_count;
+  byte buttons = 0;
+  int weapon = 0;
+  char button_str[4] = { 0 };
+  int i, arg_count;
 
   arg_count = sscanf(
-    args, "%i %i:%i %i:%i %i:%i", &frame,
+    args, "%i %i:%i %i:%i %i:%i %3s %d", &frame,
     &forwardmove_min, &forwardmove_max,
     &sidemove_min, &sidemove_max,
-    &angleturn_min, &angleturn_max
+    &angleturn_min, &angleturn_max,
+    button_str, &weapon
   );
 
-  if (arg_count != 7)
+  if (arg_count < 7)
     return false;
+
+  if (arg_count > 7)
+    for (i = 0; i < 3; ++i)
+      switch (button_str[i]) {
+        case 'a':
+          buttons |= BT_ATTACK;
+          break;
+        case 'u':
+          buttons |= BT_USE;
+          break;
+        case 'c':
+          if (weapon > 0 && weapon < 16) {
+            buttons |= BT_CHANGE;
+            buttons |= (weapon << BT_WEAPONSHIFT);
+          }
+          else
+            return false;
+          break;
+        case '\0':
+          break;
+        default:
+          return false;
+      }
 
   return dsda_AddBruteForceFrame(frame,
                                  forwardmove_min, forwardmove_max,
                                  sidemove_min, sidemove_max,
-                                 angleturn_min, angleturn_max);
+                                 angleturn_min, angleturn_max,
+                                 buttons);
 }
 
 static dboolean console_BruteForceStart(const char* command, const char* args) {
@@ -777,7 +805,8 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       dsda_AddBruteForceFrame(i,
                               forwardmove_min, forwardmove_max,
                               sidemove_min, sidemove_max,
-                              angleturn_min, angleturn_max);
+                              angleturn_min, angleturn_max,
+                              0);
   }
   else {
     arg_count = sscanf(args, "%i %[^;]", &depth, condition_args);
