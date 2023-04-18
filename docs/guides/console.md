@@ -162,7 +162,7 @@ The in-game console offers extra tools for advanced users, including adjusting p
 #### Build Mode
 See the [build mode guide](./build_mode.md) for more info.
 - `brute_force.start / bf.start <depth> [<forwardmove_range> <sidemove_range> <angleturn_range>] <conditions>`
-- `brute_force.frame / bf.frame <frame> <forwardmove_range> <sidemove_range> <angleturn_range>`
+- `brute_force.frame / bf.frame <frame> <forwardmove_range> <sidemove_range> <angleturn_range> [<buttons> <weapon>]`
 - `build.turbo / b.turbo`
 - `mf <value>`
 - `mb <value>`
