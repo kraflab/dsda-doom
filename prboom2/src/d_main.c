@@ -1680,25 +1680,35 @@ static void D_DoomMainSetup(void)
     for (file_i = 0; file_i < arg->count; ++file_i)
     {
       const char* file_name;
-      char *file;
+      char *file = NULL;
 
       file_name = arg->value.v_string_array[file_i];
+
+      if (!dsda_FileExtension(file_name))
+      {
+        const char *extensions[] = { ".wad", ".zip", ".deh", ".bex", NULL };
+
+        file = I_RequireAnyFile(file_name, extensions);
+        file_name = file;
+      }
+
       if (dsda_HasFileExt(file_name, ".deh") || dsda_HasFileExt(file_name, ".bex"))
       {
         dsda_AppendStringArg(dsda_arg_deh, file_name);
-        continue;
       }
-
-      if (dsda_HasFileExt(file_name, ".zip"))
+      else if (dsda_HasFileExt(file_name, ".zip"))
       {
         D_AddZip(file_name);
-        continue;
       }
-      // e6y
-      // reorganization of the code for looking for wads
-      // in all standard dirs (%DOOMWADDIR%, etc)
-      file = I_RequireWad(file_name);
-      D_AddFile(file,source_pwad);
+      else if (dsda_HasFileExt(file_name, ".wad"))
+      {
+        D_AddFile(file_name, source_pwad);
+      }
+      else
+      {
+        I_Error("File type \"%s\" is not supported", dsda_FileExtension(file_name));
+      }
+
       Z_Free(file);
     }
   }
