@@ -1523,7 +1523,7 @@ static void EvaluateDoomVerStr(void)
   lprintf(LO_INFO, "Playing: %s\n", doomverstr);
 }
 
-static void D_AddZip(const char* zipped_file_name)
+static void D_AddZip(const char* zipped_file_name, wad_source_t source)
 {
   dsda_string_t temporary_directory;
   char* full_zip_path;
@@ -1537,7 +1537,7 @@ static void D_AddZip(const char* zipped_file_name)
 
   dsda_UnzipFile(full_zip_path, temporary_directory.string);
 
-  LoadWADsAtPath(temporary_directory.string, source_pwad);
+  LoadWADsAtPath(temporary_directory.string, source);
   LoadDehackedFilesAtPath(temporary_directory.string, true);
 
   dsda_FreeString(&temporary_directory);
@@ -1698,7 +1698,7 @@ static void D_DoomMainSetup(void)
       }
       else if (dsda_HasFileExt(file_name, ".zip"))
       {
-        D_AddZip(file_name);
+        D_AddZip(file_name, source_pwad);
       }
       else if (dsda_HasFileExt(file_name, ".wad"))
       {
