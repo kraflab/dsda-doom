@@ -299,6 +299,11 @@ dboolean dsda_SkipWipe(void) {
   return !dsda_RenderWipeScreen() || hexen;
 }
 
+int dsda_WipeSpeed(void)
+{
+  return dsda_IntConfig(dsda_config_wipe_speed);
+}
+
 static dboolean game_controller_used;
 static dboolean mouse_used;
 

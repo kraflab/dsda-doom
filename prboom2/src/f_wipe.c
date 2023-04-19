@@ -106,6 +106,7 @@ static int wipe_doMelt(int ticks)
 {
   dboolean done = true;
   int i;
+  int speed = dsda_WipeSpeed();
 
   while (ticks--) {
     for (i=0;i<(SCREENWIDTH);i++) {
@@ -136,7 +137,7 @@ static int wipe_doMelt(int ticks)
           s += wipe_scr_end.pitch;
         }
        }
-        y_lookup[i] += dy;
+        y_lookup[i] += MAX(1, (dy * speed) / 100);
        if (V_IsSoftwareMode()) {
         s = wipe_scr_start.data  + i;
         d = wipe_scr.data        + (y_lookup[i]*wipe_scr.pitch+i);
