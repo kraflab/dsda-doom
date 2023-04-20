@@ -1527,9 +1527,10 @@ static void D_AddZip(const char* zipped_file_name, wad_source_t source)
 {
   dsda_string_t temporary_directory;
   char* full_zip_path;
+  static unsigned int file_counter = 0;
 
   full_zip_path = I_RequireZip(zipped_file_name);
-  dsda_StringPrintF(&temporary_directory, "%s/%s", I_GetTempDir(), dsda_BaseName(zipped_file_name));
+  dsda_StringPrintF(&temporary_directory, "%s/%u-%s", I_GetTempDir(), file_counter, dsda_BaseName(zipped_file_name));
   if (M_IsDir(temporary_directory.string))
     if (!M_RemoveFilesAtPath(temporary_directory.string))
       I_Error("D_AddZip: unable to clear tempdir %s\n", temporary_directory.string);
@@ -1541,6 +1542,7 @@ static void D_AddZip(const char* zipped_file_name, wad_source_t source)
   LoadDehackedFilesAtPath(temporary_directory.string, true);
 
   dsda_FreeString(&temporary_directory);
+  file_counter++;
 }
 
 //
