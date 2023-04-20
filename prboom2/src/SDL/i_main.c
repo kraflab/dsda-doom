@@ -82,6 +82,7 @@
 #include "dsda/text_file.h"
 #include "dsda/time.h"
 #include "dsda/wad_stats.h"
+#include "dsda/zipfile.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -206,6 +207,7 @@ static void I_EssentialQuit (void)
   dsda_WriteAnalysis();
   dsda_WriteSplits();
   dsda_SaveWadStats();
+  dsda_CleanZipTempDirs();
 }
 
 static void I_Quit (void)

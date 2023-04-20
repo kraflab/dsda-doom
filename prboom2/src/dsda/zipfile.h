@@ -18,6 +18,8 @@
 #ifndef __DSDA_ZIPFILE__
 #define __DSDA_ZIPFILE__
 
-void dsda_UnzipFile(const char *zipped_file_name, const char *destination_directory);
+const char* dsda_UnzipFile(const char *zipped_file_name);
+
+void dsda_CleanZipTempDirs(void);
 
 #endif /* __DSDA_ZIPFILE__ */
