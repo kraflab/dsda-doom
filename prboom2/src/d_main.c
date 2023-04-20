@@ -1255,6 +1255,52 @@ const char *IWADBaseName(void)
   return dsda_BaseName(wadfiles[i].name);
 }
 
+typedef struct {
+  char **list;
+  int count;
+  int allocated_count;
+} deh_queue_t;
+
+static deh_queue_t autoload_deh_all_queue;
+static deh_queue_t autoload_deh_game_queue;
+static deh_queue_t autoload_deh_iwad_queue;
+static deh_queue_t autoload_deh_pwad_queue;
+
+static void D_QueueAutoloadDeh(deh_queue_t *queue, const char *name)
+{
+  int old_count;
+
+  old_count = queue->count;
+  ++queue->count;
+
+  if (queue->count > queue->allocated_count)
+  {
+    if (!queue->allocated_count)
+      queue->allocated_count = 4;
+
+    while (queue->count > queue->allocated_count)
+      queue->allocated_count *= 2;
+
+    queue->list = Z_Realloc(queue->list, queue->allocated_count * sizeof(*queue->list));
+    memset(&queue->list[old_count], 0, (queue->allocated_count - old_count) * sizeof(*queue->list));
+  }
+
+  queue->list[queue->count - 1] = Z_Strdup(name);
+}
+
+static void D_ProcessDehAutoloadQueue(deh_queue_t *queue)
+{
+  int i;
+
+  for (i = 0; i < queue->count; ++i)
+  {
+    ProcessDehFile(queue->list[i], D_dehout(), 0);
+    Z_Free(queue->list[i]);
+  }
+
+  Z_Free(queue->list);
+}
+
 // Load all WAD files from the given directory.
 
 static void LoadWADsAtPath(const char *path, wad_source_t source)
