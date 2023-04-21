@@ -36,6 +36,7 @@
 #include "p_tick.h"
 #include "p_user.h"
 #include "s_sound.h"
+#include "smooth.h"
 #include "v_video.h"
 
 #include "dsda.h"
@@ -506,6 +507,8 @@ static dboolean console_PlayerSetAngle(const char* command, const char* args) {
     else
       target_player.mo->angle += (a_frac << 16);
 
+    R_SmoothPlaying_Reset(&target_player);
+
     return true;
   }
 
@@ -521,6 +524,8 @@ static dboolean console_PlayerRoundAngle(const char* command, const char* args) 
 
   if (remainder >= 0x80)
     target_player.mo->angle += 0x01000000;
+
+  R_SmoothPlaying_Reset(&target_player);
 
   return true;
 }
