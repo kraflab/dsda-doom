@@ -1525,22 +1525,16 @@ static void EvaluateDoomVerStr(void)
 
 static void D_AddZip(const char* zipped_file_name, wad_source_t source)
 {
-  dsda_string_t temporary_directory;
   char* full_zip_path;
+  const char* temporary_directory;
 
   full_zip_path = I_RequireZip(zipped_file_name);
-  dsda_StringPrintF(&temporary_directory, "%s/%s", I_GetTempDir(), dsda_BaseName(zipped_file_name));
-  if (M_IsDir(temporary_directory.string))
-    if (!M_RemoveFilesAtPath(temporary_directory.string))
-      I_Error("D_AddZip: unable to clear tempdir %s\n", temporary_directory.string);
-  M_MakeDir(temporary_directory.string, true);
+  temporary_directory = dsda_UnzipFile(full_zip_path);
 
-  dsda_UnzipFile(full_zip_path, temporary_directory.string);
+  LoadWADsAtPath(temporary_directory, source);
+  LoadDehackedFilesAtPath(temporary_directory, true);
 
-  LoadWADsAtPath(temporary_directory.string, source);
-  LoadDehackedFilesAtPath(temporary_directory.string, true);
-
-  dsda_FreeString(&temporary_directory);
+  Z_Free(full_zip_path);
 }
 
 //
