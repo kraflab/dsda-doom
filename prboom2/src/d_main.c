@@ -1264,7 +1264,8 @@ typedef struct {
 static deh_queue_t autoload_deh_all_queue;
 static deh_queue_t autoload_deh_game_queue;
 static deh_queue_t autoload_deh_iwad_queue;
-static deh_queue_t autoload_deh_pwad_queue;
+static deh_queue_t *autoload_deh_pwad_queue;
+static int autoload_deh_pwad_count;
 
 static void D_QueueAutoloadDeh(deh_queue_t *queue, const char *name)
 {
@@ -1426,13 +1427,17 @@ void D_AutoloadIWadDir()
 static void D_AutoloadPWadDir()
 {
   int i;
+
+  autoload_deh_pwad_count = numwadfiles;
+  autoload_deh_pwad_queue = Z_Calloc(autoload_deh_pwad_count, sizeof(*autoload_deh_pwad_queue));
+
   for (i = 0; i < numwadfiles; ++i)
     if (wadfiles[i].src == source_pwad)
     {
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
       LoadWADsAtPath(autoload_dir, source_auto_load);
-      LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_pwad_queue);
+      LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_pwad_queue[i]);
       Z_Free(autoload_dir);
     }
 }
@@ -1471,10 +1476,12 @@ static void D_AutoloadDehPWadDir()
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
       LoadDehackedFilesAtPath(autoload_dir, false, NULL);
+      if (i < autoload_deh_pwad_count)
+        D_ProcessDehAutoloadQueue(&autoload_deh_pwad_queue[i]);
       Z_Free(autoload_dir);
     }
 
-  D_ProcessDehAutoloadQueue(&autoload_deh_pwad_queue);
+  Z_Free(autoload_deh_pwad_queue);
 }
 
 int warpepisode = -1;
