@@ -2428,6 +2428,11 @@ static dboolean dsda_AuthorizeCommand(console_command_entry_t* entry) {
     return false;
   }
 
+  if (gamestate != GS_LEVEL) {
+    dsda_AddConsoleMessage("command only allowed during levels");
+    return false;
+  }
+
   return true;
 }
 
