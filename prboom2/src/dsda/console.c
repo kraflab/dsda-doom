@@ -164,6 +164,36 @@ dboolean dsda_OpenConsole(void) {
   return true;
 }
 
+static dboolean console_LevelExit(const char* command, const char* args) {
+  void G_ExitLevel(int position);
+
+  int position = 0;
+
+  if (hexen)
+    return false;
+
+  sscanf(args, "%d", &position);
+
+  G_ExitLevel(position);
+
+  return true;
+}
+
+static dboolean console_LevelSecretExit(const char* command, const char* args) {
+  void G_SecretExitLevel(int position);
+
+  int position = 0;
+
+  if (hexen)
+    return false;
+
+  sscanf(args, "%d", &position);
+
+  G_SecretExitLevel(position);
+
+  return true;
+}
+
 static dboolean console_ActivateLine(mobj_t* mobj, int id, dboolean bossaction) {
   if (!mobj || id < 0 || id >= numlines)
     return false;
@@ -2169,6 +2199,9 @@ static console_command_entry_t console_commands[] = {
   { "player.round_angle", console_PlayerRoundAngle, CF_NEVER },
 
   { "music.restart", console_MusicRestart, CF_ALWAYS },
+
+  { "level.exit", console_LevelExit, CF_NEVER },
+  { "level.secret_exit", console_LevelSecretExit, CF_NEVER },
 
   { "script.run", console_ScriptRun, CF_ALWAYS },
   { "check", console_Check, CF_ALWAYS },

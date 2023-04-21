@@ -51,6 +51,10 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - clear free text component
 - `music.restart`
   - restart the current music track
+- `level.exit`
+  - exit the current level (go to intermission screen)
+- `level.secret_exit`
+  - exit the current level via the secret exit (go to intermission screen)
 - `game.quit`
   - quit the game immediately (no prompt)
 - `exit`
