@@ -495,6 +495,23 @@ static dboolean console_PlayerRoundXY(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_PlayerSetAngle(const char* command, const char* args) {
+  int a, a_frac = 0;
+
+  if (sscanf(args, "%d.%d", &a, &a_frac)) {
+    target_player.mo->angle = ((angle_t) a) << 24;
+
+    if (args[0] == '-')
+      target_player.mo->angle -= (a_frac << 16);
+    else
+      target_player.mo->angle += (a_frac << 16);
+
+    return true;
+  }
+
+  return false;
+}
+
 static dboolean console_DemoExport(const char* command, const char* args) {
   char name[CONSOLE_ENTRY_SIZE];
 
@@ -2130,6 +2147,7 @@ static console_command_entry_t console_commands[] = {
   { "player.round_x", console_PlayerRoundX, CF_NEVER },
   { "player.round_y", console_PlayerRoundY, CF_NEVER },
   { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
+  { "player.set_angle", console_PlayerSetAngle, CF_NEVER },
 
   { "music.restart", console_MusicRestart, CF_ALWAYS },
 
