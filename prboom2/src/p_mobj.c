@@ -56,6 +56,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/settings.h"
 #include "dsda/spawn_number.h"
 #include "dsda/thing_id.h"
 #include "dsda/tranmap.h"
@@ -696,6 +697,11 @@ fixed_t P_MobjGravity(mobj_t* mo)
 
 void P_AutoCorrectLookDir(player_t* player)
 {
+  if (!demorecording && !demoplayback && dsda_MouseLook())
+  {
+    return;
+  }
+
   player->centering = true;
 }
 
