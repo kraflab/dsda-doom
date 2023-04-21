@@ -23,6 +23,7 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `player.round_y`
 - `player.round_xy`
 - `player.set_angle <angle>`
+- `player.round_angle`
 
 #### Miscellaneous
 - `script.run <script>`
