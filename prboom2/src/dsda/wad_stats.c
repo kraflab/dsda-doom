@@ -295,8 +295,7 @@ void dsda_WadStatsExitMap(int missed_monsters) {
           current_map_stats->best_kills = totalkills - missed_monsters;
 
         if (levels_completed == 1)
-          if (current_map_stats->best_kills == current_map_stats->max_kills &&
-              current_map_stats->best_secrets == current_map_stats->max_secrets &&
+          if (missed_monsters == 0 && players[consoleplayer].secretcount == totalsecret &&
               (current_map_stats->best_max_time == -1 || current_map_stats->best_max_time > leveltime))
             current_map_stats->best_max_time = leveltime;
       }
