@@ -1781,7 +1781,10 @@ static void D_DoomMainSetup(void)
       }
       else if (dsda_HasFileExt(file_name, ".wad"))
       {
-        D_AddFile(file_name, source_pwad);
+        if (!file)
+          file = I_RequireWad(file_name);
+
+        D_AddFile(file, source_pwad);
       }
       else
       {
