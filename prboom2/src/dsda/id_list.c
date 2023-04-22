@@ -56,7 +56,7 @@ static id_list_t* dsda_GetIDList(id_hash_t* hash, int id) {
   int i;
   id_index_t* index;
 
-  index = &hash->data[id % hash->size];
+  index = &hash->data[(unsigned int)id % hash->size];
 
   for (i = 0; i < index->size; ++i)
     if (index->lists[i].id == id)
@@ -75,29 +75,21 @@ static void dsda_AddToIDHash(id_hash_t* hash, int id, int value) {
 }
 
 void dsda_AddLineID(int id, int value) {
-  if (id >= 0)
-    dsda_AddToIDHash(&line_id_hash, id, value);
+  dsda_AddToIDHash(&line_id_hash, id, value);
 }
 
 void dsda_AddSectorID(int id, int value) {
-  if (id >= 0)
-    dsda_AddToIDHash(&sector_id_hash, id, value);
+  dsda_AddToIDHash(&sector_id_hash, id, value);
 }
 
 static int empty_list[] = { -1 };
 static int missing_id_list[] = { -1, -1 };
 
 const int* dsda_FindLinesFromID(int id) {
-  if (id < 0)
-    return empty_list;
-
   return dsda_GetIDList(&line_id_hash, id)->data;
 }
 
 const int* dsda_FindSectorsFromID(int id) {
-  if (id < 0)
-    return empty_list;
-
   return dsda_GetIDList(&sector_id_hash, id)->data;
 }
 
