@@ -76,6 +76,7 @@ static signed char minStrafeLeft(void) {
 }
 
 void dsda_ChangeBuildCommand(void) {
+  replace_source = true;
 }
 
 dboolean dsda_BuildMF(int x) {
