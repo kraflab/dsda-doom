@@ -477,7 +477,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
   }
 
   if (dsda_InputActivated(dsda_input_build_advance_frame)) {
-    advance_frame = gametic;
+    advance_frame = true;
     build_cmd_tic = logictic;
 
     build_cmd.angleturn = 0;
@@ -669,7 +669,7 @@ dboolean dsda_AdvanceFrame(void) {
   dboolean result;
 
   if (dsda_SkipMode())
-    advance_frame = gametic;
+    advance_frame = true;
 
   result = advance_frame;
   advance_frame = false;
