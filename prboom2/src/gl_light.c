@@ -61,11 +61,7 @@ int gl_distfog = 70;
 float gl_CurrentFogDensity = -1.0f;
 float distfogtable[3][256];
 
-typedef void (*gld_InitLightTable_f)(void);
-
-static float lighttable_glboom[5][256];
-
-static void gld_InitLightTable_glboom(void);
+static float lighttable[5][256];
 
 int gl_hardware_gamma = false;
 
@@ -110,14 +106,14 @@ void gld_InitLightTable(void)
   {
     for (i = 0; i < 256; i++)
     {
-      lighttable_glboom[g][i] = (float)((1.0f - exp(pow(i / 255.0f, 3) * gamma[g])) / (1.0f - exp(1.0f * gamma[g])));
+      lighttable[g][i] = (float)((1.0f - exp(pow(i / 255.0f, 3) * gamma[g])) / (1.0f - exp(1.0f * gamma[g])));
     }
   }
 }
 
 float gld_Calc2DLightLevel(int lightlevel)
 {
-  return lighttable_glboom[usegamma][BETWEEN(0, 255, lightlevel)];
+  return lighttable[usegamma][BETWEEN(0, 255, lightlevel)];
 }
 
 float gld_CalcLightLevel(int lightlevel)
