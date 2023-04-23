@@ -98,11 +98,6 @@ void M_ChangeLightMode(void)
   M_ChangeSkyMode();
 }
 
-void gld_InitLightTable(void)
-{
-  gld_InitLightTable_glboom();
-}
-
 /*
  * lookuptable for lightvalues
  * calculated as follow:
@@ -110,7 +105,7 @@ void gld_InitLightTable(void)
  * gamma=-0,2;-2,0;-4,0;-6,0;-8,0
  * light=0,0 .. 1,0
  */
-static void gld_InitLightTable_glboom(void)
+void gld_InitLightTable(void)
 {
   int i, g;
   float gamma[5] = {-0.2f, -2.0f, -4.0f, -6.0f, -8.0f};
