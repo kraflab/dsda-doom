@@ -371,12 +371,6 @@ void dsda_CopyBuildCmd(ticcmd_t* cmd) {
 
 void dsda_ReadBuildCmd(ticcmd_t* cmd) {
   dsda_CopyBuildCmd(cmd);
-
-  build_cmd.angleturn = 0;
-  build_cmd.arti = 0;
-  build_cmd.buttons &= ~BT_USE;
-  if (build_cmd.buttons & BT_CHANGE)
-    build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
 }
 
 void dsda_EnterBuildMode(void) {
@@ -419,6 +413,12 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
   if (dsda_InputActivated(dsda_input_build_advance_frame)) {
     advance_frame = gametic;
+
+    build_cmd.angleturn = 0;
+    build_cmd.arti = 0;
+    build_cmd.buttons &= ~BT_USE;
+    if (build_cmd.buttons & BT_CHANGE)
+      build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
 
     return true;
   }
