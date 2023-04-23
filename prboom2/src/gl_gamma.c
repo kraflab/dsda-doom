@@ -156,7 +156,8 @@ int gld_SetGammaRamp(int gamma)
     if (!succeeded)
     {
       lprintf(LO_WARN, "gld_SetGammaRamp: hardware gamma adjustment is not supported\n");
-      gl_lightmode = gl_lightmode_indexed;
+      gl_lightmode_indexed = true;
+      gl_hardware_gamma = false;
     }
   }
 

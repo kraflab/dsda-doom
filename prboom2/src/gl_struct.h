@@ -48,13 +48,6 @@ typedef enum {
 } skytype_t;
 
 #define MAX_GLGAMMA 32
-typedef enum
-{
-  gl_lightmode_shaders,
-  gl_lightmode_indexed,
-
-  gl_lightmode_last
-} gl_lightmode_t;
 
 enum bleedtype {
   BLEED_NONE = 0x0,
@@ -64,7 +57,7 @@ enum bleedtype {
 
 extern int gl_drawskys;
 extern int gl_hardware_gamma;
-extern gl_lightmode_t gl_lightmode;
+extern dboolean gl_lightmode_indexed;
 extern dboolean gl_ui_lightmode_indexed;
 extern dboolean gl_automap_lightmode_indexed;
 extern int gl_usegamma;

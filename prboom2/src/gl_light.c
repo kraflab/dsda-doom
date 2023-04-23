@@ -49,7 +49,7 @@
 
 #include "dsda/configuration.h"
 
-gl_lightmode_t gl_lightmode;
+dboolean gl_lightmode_indexed = true;
 dboolean gl_ui_lightmode_indexed = false;
 dboolean gl_automap_lightmode_indexed = false;
 
@@ -67,19 +67,18 @@ int gl_hardware_gamma = false;
 
 void M_ChangeLightMode(void)
 {
-  gl_lightmode_t gl_lightmode_default = dsda_IntConfig(dsda_config_gl_lightmode);
-
   glsl_Init();
 
-  gl_lightmode = gl_lightmode_default;
-
-  gl_hardware_gamma = (gl_lightmode == gl_lightmode_shaders);
+  gl_lightmode_indexed = dsda_IntConfig(dsda_config_gl_lightmode_indexed);
+  gl_hardware_gamma = !gl_lightmode_indexed;
 
   if (gl_hardware_gamma)
   {
     gld_SetGammaRamp(gl_usegamma);
   }
-  else
+
+  // Not "else" because the above call can fail and revert gl_hardware_gamma
+  if (!gl_hardware_gamma)
   {
     gld_SetGammaRamp(-1);
     gld_FlushTextures();

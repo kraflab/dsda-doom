@@ -2950,8 +2950,6 @@ static const char* render_stretch_list[] = {
   "Not Adjusted", "Doom Format", "Fit to Width", NULL
 };
 
-static const char *gl_lightmodes[] = { "shaders", "indexed", NULL };
-
 setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X},
   { "Video mode", S_CHOICE | S_STR, m_conf, G_X, dsda_config_videomode, 0, videomodes },
@@ -2963,7 +2961,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   EMPTY_LINE,
-  { "OpenGL Light Mode", S_CHOICE, m_conf, G_X, dsda_config_gl_lightmode, 0, gl_lightmodes },
+  { "OpenGL Indexed Light Mode", S_YESNO, m_conf, G_X, dsda_config_gl_lightmode_indexed },
   EMPTY_LINE,
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
