@@ -67,6 +67,19 @@ dboolean dsda_JumpToLogicTic(int tic) {
   return true;
 }
 
+dboolean dsda_JumpToLogicTicFrom(int tic, int from_tic) {
+  if (tic < 0 || tic > logictic)
+    return false;
+
+  if (!dsda_RestoreClosestKeyFrame(from_tic))
+    return false;
+
+  if (tic != logictic)
+    dsda_SkipToLogicTic(tic);
+
+  return true;
+}
+
 const char* dsda_PlaybackName(void) {
   return playback_name;
 }
