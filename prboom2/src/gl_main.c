@@ -309,6 +309,7 @@ void gld_Init(int width, int height)
 
   gld_InitLightTable();
   gld_InitSky();
+  glsl_Init();
   M_ChangeLightMode();
   M_ChangeAllowFog();
 
@@ -331,8 +332,6 @@ void gld_Init(int width, int height)
   gld_ResetLastTexture();
 
   I_AtExit(gld_CleanMemory, true, "gld_CleanMemory", exit_priority_normal); //e6y
-
-  glsl_Init(); // elim - Required for fuzz shader, even if lighting mode not set to "shaders"
 }
 
 void gld_InitCommandLine(void)
