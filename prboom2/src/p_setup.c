@@ -578,7 +578,7 @@ static void P_LoadSegs (int lump)
       //e6y: fix wrong side index
       if (side != 0 && side != 1)
       {
-        lprintf(LO_WARN, "P_LoadSegs: seg %d contains wrong side index %d. Replaced with 1.\n", i, side);
+        lprintf(LO_DEBUG, "P_LoadSegs: seg %d contains wrong side index %d. Replaced with 1.\n", i, side);
         side = 1;
       }
 
@@ -598,7 +598,7 @@ static void P_LoadSegs (int lump)
         li->frontsector = sides[ldef->sidenum[side]].sector;
       else {
         li->frontsector = 0;
-        lprintf(LO_WARN, "P_LoadSegs: front of seg %i has no sidedef\n", i);
+        lprintf(LO_DEBUG, "P_LoadSegs: front of seg %i has no sidedef\n", i);
       }
 
       if (ldef->flags & ML_TWOSIDED)
@@ -707,7 +707,7 @@ static void P_LoadSegs_V4(int lump)
     //e6y: fix wrong side index
     if (side != 0 && side != 1)
     {
-      lprintf(LO_WARN, "P_LoadSegs_V4: seg %d contains wrong side index %d. Replaced with 1.\n", i, side);
+      lprintf(LO_DEBUG, "P_LoadSegs_V4: seg %d contains wrong side index %d. Replaced with 1.\n", i, side);
       side = 1;
     }
 
@@ -730,7 +730,7 @@ static void P_LoadSegs_V4(int lump)
     else
     {
       li->frontsector = 0;
-      lprintf(LO_WARN, "P_LoadSegs_V4: front of seg %i has no sidedef\n", i);
+      lprintf(LO_DEBUG, "P_LoadSegs_V4: front of seg %i has no sidedef\n", i);
     }
 
     if (ldef->flags & ML_TWOSIDED && ldef->sidenum[side^1]!=NO_INDEX)
@@ -1260,7 +1260,7 @@ static void P_LoadZSegs (const byte *data)
     //e6y: fix wrong side index
     if (side != 0 && side != 1)
     {
-      lprintf(LO_WARN, "P_LoadZSegs: seg %d contains wrong side index %d. Replaced with 1.\n", i, side);
+      lprintf(LO_DEBUG, "P_LoadZSegs: seg %d contains wrong side index %d. Replaced with 1.\n", i, side);
       side = 1;
     }
 
@@ -1283,7 +1283,7 @@ static void P_LoadZSegs (const byte *data)
     else
     {
       li->frontsector = 0;
-      lprintf(LO_WARN, "P_LoadZSegs: front of seg %i has no sidedef\n", i);
+      lprintf(LO_DEBUG, "P_LoadZSegs: front of seg %i has no sidedef\n", i);
     }
 
     if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side^1] != NO_INDEX))
@@ -1387,7 +1387,7 @@ static void P_LoadGLZSegs(const byte *data, int type)
         else
         {
           seg->frontsector = 0;
-          lprintf(LO_WARN, "P_LoadGLZSegs: front of seg %d, %d has no sidedef\n", i, j);
+          lprintf(LO_DEBUG, "P_LoadGLZSegs: front of seg %d, %d has no sidedef\n", i, j);
         }
 
         if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side^1] != NO_INDEX))
@@ -2051,7 +2051,7 @@ static void P_CalculateLineDefProperties(line_t *ld)
       if (ld->sidenum[j] != NO_INDEX && ld->sidenum[j] >= numsides)
       {
         ld->sidenum[j] = NO_INDEX;
-        lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
+        lprintf(LO_DEBUG, "P_LoadLineDefs: linedef %d"
                          " has out-of-range sidedef number\n", ld->iLineID);
       }
     }
@@ -2075,7 +2075,7 @@ static void P_CalculateLineDefProperties(line_t *ld)
       }
 
       // cph - print a warning about the bug
-      lprintf(LO_WARN, "P_LoadLineDefs: linedef %d"
+      lprintf(LO_DEBUG, "P_LoadLineDefs: linedef %d"
               " has two-sided flag set, but no second sidedef\n", ld->iLineID);
     }
   }
@@ -2503,7 +2503,7 @@ static void P_LoadSideDefs(int lump)
     { /* cph 2006/09/30 - catch out-of-range sector numbers; use sector 0 instead */
       unsigned short sector_num = LittleShort(msd->sector);
       if (sector_num >= numsectors) {
-        lprintf(LO_WARN,"P_LoadSideDefs: sidedef %i has out-of-range sector num %u\n", i, sector_num);
+        lprintf(LO_DEBUG,"P_LoadSideDefs: sidedef %i has out-of-range sector num %u\n", i, sector_num);
         sector_num = 0;
       }
       sd->sector = sec = &sectors[sector_num];
