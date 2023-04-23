@@ -37,6 +37,7 @@ void dsda_WriteQueueToDemo(const void* buffer, size_t length);
 void dsda_WriteTicToDemo(const void* buffer, size_t length);
 void dsda_WriteDemoToFile(void);
 dboolean dsda_CopyPendingCmd(ticcmd_t* cmd);
+void dsda_CopyPriorCmd(ticcmd_t* cmd, int delta);
 void dsda_QueueJoin(void);
 dboolean dsda_PendingJoin(void);
 void dsda_JoinDemoCmd(ticcmd_t* cmd);

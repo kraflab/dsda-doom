@@ -222,6 +222,11 @@ dboolean dsda_CopyPendingCmd(ticcmd_t* cmd) {
   }
 }
 
+void dsda_CopyPriorCmd(ticcmd_t* cmd, int delta) {
+  if (demorecording && dsda_DemoBufferOffset() >= delta * bytes_per_tic) {
+    const byte* p = dsda_demo_write_buffer_p - delta * bytes_per_tic;
+
+    G_ReadOneTick(cmd, &p);
   }
   else {
     memset(cmd, 0, sizeof(*cmd));
