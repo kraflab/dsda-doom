@@ -460,11 +460,11 @@ void gld_SetupFloodedPlaneLight(GLWall *wall);
 void gld_StaticLightAlpha(float light, float alpha);
 #define gld_StaticLight(light) gld_StaticLightAlpha(light, 1.0f)
 void gld_InitLightTable(void);
-typedef float (*gld_CalcLightLevel_f)(int lightlevel);
 typedef float (*gld_Calc2DLightLevel_f)(int lightlevel);
-extern gld_CalcLightLevel_f gld_CalcLightLevel;
 extern gld_Calc2DLightLevel_f gld_Calc2DLightLevel;
 int gld_GetGunFlashLight(void);
+
+float gld_CalcLightLevel(int lightlevel);
 
 //fog
 extern int gl_fog;
