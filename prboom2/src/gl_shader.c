@@ -419,11 +419,6 @@ void glsl_SetFuzzTextureDimensions(float texwidth, float texheight)
   }
 }
 
-int glsl_IsActive(void)
-{
-  return ((gl_lightmode == gl_lightmode_shaders && sh_main) || (V_IsWorldLightmodeIndexed() && sh_indexed));
-}
-
 dboolean glsl_UseFuzzShader(void)
 {
   // stub in case we ever want to make this an option.
