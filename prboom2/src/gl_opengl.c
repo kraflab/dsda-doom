@@ -327,13 +327,16 @@ void gld_InitOpenGL(void)
         !GLEXT_glGetUniformfvARB)
       gl_arb_shader_objects = false;
   }
-  if (gl_arb_shader_objects)
+
+  if (!gl_arb_shader_objects)
   {
-    lprintf(LO_DEBUG, "using GL_ARB_shader_objects\n");
-    lprintf(LO_DEBUG, "using GL_ARB_vertex_shader\n");
-    lprintf(LO_DEBUG, "using GL_ARB_fragment_shader\n");
-    lprintf(LO_DEBUG, "using GL_ARB_shading_language_100\n");
+    I_Error("gld_InitOpenGL: Insufficient support for shader objects");
   }
+
+  lprintf(LO_DEBUG, "using GL_ARB_shader_objects\n");
+  lprintf(LO_DEBUG, "using GL_ARB_vertex_shader\n");
+  lprintf(LO_DEBUG, "using GL_ARB_fragment_shader\n");
+  lprintf(LO_DEBUG, "using GL_ARB_shading_language_100\n");
 
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
   lprintf(LO_DEBUG, "GL_MAX_TEXTURE_SIZE=%i\n", gl_max_texture_size);

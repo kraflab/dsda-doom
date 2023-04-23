@@ -460,19 +460,18 @@ void gld_SetupFloodedPlaneLight(GLWall *wall);
 void gld_StaticLightAlpha(float light, float alpha);
 #define gld_StaticLight(light) gld_StaticLightAlpha(light, 1.0f)
 void gld_InitLightTable(void);
-typedef float (*gld_CalcLightLevel_f)(int lightlevel);
-typedef float (*gld_Calc2DLightLevel_f)(int lightlevel);
-extern gld_CalcLightLevel_f gld_CalcLightLevel;
-extern gld_Calc2DLightLevel_f gld_Calc2DLightLevel;
 int gld_GetGunFlashLight(void);
+
+float gld_CalcLightLevel(int lightlevel);
+float gld_Calc2DLightLevel(int lightlevel);
 
 //fog
 extern int gl_fog;
 extern int gl_use_fog;
 void gl_EnableFog(int on);
 void gld_SetFog(float fogdensity);
-typedef float (*gld_CalcFogDensity_f)(sector_t *sector, int lightlevel, GLDrawItemType type);
-extern gld_CalcFogDensity_f gld_CalcFogDensity;
+
+float gld_CalcFogDensity(sector_t *sector, int lightlevel, GLDrawItemType type);
 
 // SkyBox
 #define SKY_NONE    0
@@ -547,7 +546,7 @@ typedef struct GLShader_s
   GLhandleARB hFragProg;
 } GLShader;
 
-int glsl_Init(void);
+void glsl_Init(void);
 void glsl_SetActiveShader(GLShader *shader);
 void glsl_SuspendActiveShader(void);
 void glsl_ResumeActiveShader(void);
@@ -558,7 +557,6 @@ void glsl_SetLightLevel(float lightlevel);
 void glsl_SetFuzzTime(int time);
 void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
 void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
-int glsl_IsActive(void);
 dboolean glsl_UseFuzzShader(void);
 
 #endif // _GL_INTERN_H
