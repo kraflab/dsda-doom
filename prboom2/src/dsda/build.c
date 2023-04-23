@@ -505,10 +505,12 @@ dboolean dsda_BuildResponder(event_t* ev) {
       return true;
     }
 
-    dsda_CopyPriorCmd(&build_cmd, 2);
-    overwritten_cmd = build_cmd;
+    if (logictic > 1) {
+      dsda_CopyPriorCmd(&build_cmd, 2);
+      overwritten_cmd = build_cmd;
 
-    dsda_JumpToLogicTic(logictic - 1);
+      dsda_JumpToLogicTic(logictic - 1);
+    }
 
     return true;
   }
