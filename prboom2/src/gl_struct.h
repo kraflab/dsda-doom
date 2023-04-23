@@ -50,7 +50,6 @@ typedef enum {
 #define MAX_GLGAMMA 32
 typedef enum
 {
-  gl_lightmode_glboom,
   gl_lightmode_shaders,
   gl_lightmode_indexed,
 

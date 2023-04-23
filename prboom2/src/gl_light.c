@@ -64,15 +64,6 @@ float distfogtable[3][256];
 
 typedef void (*gld_InitLightTable_f)(void);
 
-typedef struct
-{
-  int use_hwgamma;
-  gld_InitLightTable_f Init;
-  gld_CalcLightLevel_f GetLight;
-  gld_Calc2DLightLevel_f Get2DLight;
-  gld_CalcFogDensity_f GetFog;
-} GLLight;
-
 static float lighttable_glboom[5][256];
 
 static void gld_InitLightTable_glboom(void);
@@ -81,26 +72,6 @@ static float gld_CalcLightLevel_glboom(int lightlevel);
 static float gld_CalcLightLevel_shaders(int lightlevel);
 
 static float gld_CalcFogDensity_glboom(sector_t *sector, int lightlevel, GLDrawItemType type);
-
-static GLLight gld_light[gl_lightmode_last] = {
-  //gl_lightmode_glboom
-  {false,
-   gld_InitLightTable_glboom,
-   gld_CalcLightLevel_glboom, gld_CalcLightLevel_glboom,
-   gld_CalcFogDensity_glboom},
-
-   //gl_lightmode_shaders
-  {true,
-   gld_InitLightTable_glboom,
-   gld_CalcLightLevel_shaders, gld_CalcLightLevel_glboom,
-   gld_CalcFogDensity_glboom},
-
-   //gl_lightmode_indexed
-  {false,
-   gld_InitLightTable_glboom,
-   gld_CalcLightLevel_shaders, gld_CalcLightLevel_glboom,
-   gld_CalcFogDensity_glboom},
-};
 
 int gl_hardware_gamma = false;
 gld_CalcLightLevel_f gld_CalcLightLevel = gld_CalcLightLevel_glboom;
@@ -111,20 +82,17 @@ void M_ChangeLightMode(void)
 {
   gl_lightmode_t gl_lightmode_default = dsda_IntConfig(dsda_config_gl_lightmode);
 
-  if (gl_lightmode_default == gl_lightmode_shaders || gl_lightmode_default == gl_lightmode_indexed)
+  if (!glsl_Init())
   {
-    if (!glsl_Init())
-    {
-      gl_lightmode_default = gl_lightmode_glboom;
-    }
+    I_Error("glsl_Init failed!");
   }
 
   gl_lightmode = gl_lightmode_default;
 
-  gl_hardware_gamma = gld_light[gl_lightmode].use_hwgamma;
-  gld_CalcLightLevel = gld_light[gl_lightmode].GetLight;
-  gld_Calc2DLightLevel = gld_light[gl_lightmode].Get2DLight;
-  gld_CalcFogDensity = gld_light[gl_lightmode].GetFog;
+  gl_hardware_gamma = (gl_lightmode == gl_lightmode_shaders);
+  gld_CalcLightLevel = gld_CalcLightLevel_shaders;
+  gld_Calc2DLightLevel = gld_CalcLightLevel_glboom;
+  gld_CalcFogDensity = gld_CalcFogDensity_glboom;
 
   if (gl_hardware_gamma)
   {
@@ -143,12 +111,7 @@ void M_ChangeLightMode(void)
 
 void gld_InitLightTable(void)
 {
-  int i;
-
-  for (i = 0; i < gl_lightmode_last; i++)
-  {
-    gld_light[i].Init();
-  }
+  gld_InitLightTable_glboom();
 }
 
 /*
@@ -189,12 +152,10 @@ static float gld_CalcLightLevel_shaders(int lightlevel)
 void gld_StaticLightAlpha(float light, float alpha)
 {
   player_t *player = &players[displayplayer];
-  int shaders = (gl_lightmode == gl_lightmode_shaders || V_IsWorldLightmodeIndexed());
 
   if (!player->fixedcolormap)
   {
-    float ll = (shaders ? 1.0f : light);
-    glColor4f(ll, ll, ll, alpha);
+    glColor4f(1.0f, 1.0f, 1.0f, alpha);
   }
   else
   {
@@ -215,10 +176,7 @@ void gld_StaticLightAlpha(float light, float alpha)
     }
   }
 
-  if (shaders)
-  {
-    glsl_SetLightLevel((player->fixedcolormap ? 1.0f : light));
-  }
+  glsl_SetLightLevel((player->fixedcolormap ? 1.0f : light));
 }
 
 // [XA] return amount of light to add from the player's gun flash.

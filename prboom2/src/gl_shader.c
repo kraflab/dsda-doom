@@ -272,13 +272,10 @@ static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
 
 void glsl_SetActiveShader(GLShader *shader)
 {
-  if (gl_lightmode == gl_lightmode_shaders || V_IsWorldLightmodeIndexed())
+  if (shader != active_shader)
   {
-    if (shader != active_shader)
-    {
-      GLEXT_glUseProgramObjectARB((shader ? shader->hShader : 0));
-      active_shader = shader;
-    }
+    GLEXT_glUseProgramObjectARB((shader ? shader->hShader : 0));
+    active_shader = shader;
   }
 }
 

@@ -607,7 +607,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_lightmode] = {
     "gl_lightmode", dsda_config_gl_lightmode,
-    dsda_config_int, gl_lightmode_glboom, gl_lightmode_last - 1, { gl_lightmode_indexed },
+    dsda_config_int, 0, gl_lightmode_last - 1, { gl_lightmode_indexed },
     NULL, NOT_STRICT, M_ChangeLightMode
   },
   [dsda_config_gl_health_bar] = {
