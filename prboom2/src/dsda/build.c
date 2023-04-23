@@ -408,6 +408,10 @@ dboolean dsda_BuildPlayback(void) {
 }
 
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
+  *cmd = build_cmd;
+}
+
+void dsda_ReadBuildCmd(ticcmd_t* cmd) {
   if (cmd_queue.depth)
     dsda_PopCommandQueue(cmd);
   else if (dsda_BruteForce())
@@ -418,10 +422,6 @@ void dsda_CopyBuildCmd(ticcmd_t* cmd) {
     dsda_CopyPendingCmd(cmd);
 
   dsda_JoinDemoCmd(cmd);
-}
-
-void dsda_ReadBuildCmd(ticcmd_t* cmd) {
-  dsda_CopyBuildCmd(cmd);
 }
 
 void dsda_EnterBuildMode(void) {
