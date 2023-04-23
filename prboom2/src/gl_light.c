@@ -68,10 +68,7 @@ static float lighttable_glboom[5][256];
 
 static void gld_InitLightTable_glboom(void);
 
-static float gld_CalcFogDensity_glboom(sector_t *sector, int lightlevel, GLDrawItemType type);
-
 int gl_hardware_gamma = false;
-gld_CalcFogDensity_f gld_CalcFogDensity = gld_CalcFogDensity_glboom;
 
 void M_ChangeLightMode(void)
 {
@@ -85,7 +82,6 @@ void M_ChangeLightMode(void)
   gl_lightmode = gl_lightmode_default;
 
   gl_hardware_gamma = (gl_lightmode == gl_lightmode_shaders);
-  gld_CalcFogDensity = gld_CalcFogDensity_glboom;
 
   if (gl_hardware_gamma)
   {
@@ -245,7 +241,7 @@ void M_ChangeAllowFog(void)
   }
 }
 
-static float gld_CalcFogDensity_glboom(sector_t *sector, int lightlevel, GLDrawItemType type)
+float gld_CalcFogDensity(sector_t *sector, int lightlevel, GLDrawItemType type)
 {
   return 0;
 }

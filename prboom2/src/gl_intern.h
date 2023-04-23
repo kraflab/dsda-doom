@@ -470,8 +470,8 @@ extern int gl_fog;
 extern int gl_use_fog;
 void gl_EnableFog(int on);
 void gld_SetFog(float fogdensity);
-typedef float (*gld_CalcFogDensity_f)(sector_t *sector, int lightlevel, GLDrawItemType type);
-extern gld_CalcFogDensity_f gld_CalcFogDensity;
+
+float gld_CalcFogDensity(sector_t *sector, int lightlevel, GLDrawItemType type);
 
 // SkyBox
 #define SKY_NONE    0
