@@ -40,6 +40,7 @@ static dboolean allow_turbo;
 static dboolean build_mode;
 static dboolean advance_frame;
 static ticcmd_t build_cmd;
+static ticcmd_t overwritten_cmd;
 static dboolean replace_source = true;
 static build_cmd_queue_t cmd_queue;
 
@@ -460,6 +461,13 @@ dboolean dsda_BuildResponder(event_t* ev) {
   if (dsda_InputActivated(dsda_input_build_source)) {
     replace_source = !replace_source;
 
+    if (!replace_source) {
+      build_cmd = overwritten_cmd;
+
+      dsda_ChangeBuildCommand();
+      replace_source = false;
+    }
+
     return true;
   }
 
@@ -472,6 +480,13 @@ dboolean dsda_BuildResponder(event_t* ev) {
     if (build_cmd.buttons & BT_CHANGE)
       build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
 
+    if (dsda_CopyPendingCmd(&overwritten_cmd)) {
+       if (!replace_source)
+          build_cmd = overwritten_cmd;
+    }
+    else
+      overwritten_cmd = build_cmd;
+
     return true;
   }
 
@@ -480,6 +495,9 @@ dboolean dsda_BuildResponder(event_t* ev) {
       doom_printf("Cannot reverse outside demo");
       return true;
     }
+
+    dsda_CopyPriorCmd(&build_cmd, 2);
+    overwritten_cmd = build_cmd;
 
     dsda_JumpToLogicTic(logictic - 1);
 
