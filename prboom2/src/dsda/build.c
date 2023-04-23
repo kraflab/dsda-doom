@@ -41,6 +41,7 @@ static dboolean build_mode;
 static dboolean advance_frame;
 static ticcmd_t build_cmd;
 static ticcmd_t overwritten_cmd;
+static int build_cmd_tic = -1;
 static dboolean replace_source = true;
 static build_cmd_queue_t cmd_queue;
 
@@ -78,6 +79,8 @@ static signed char minStrafeLeft(void) {
 
 void dsda_ChangeBuildCommand(void) {
   replace_source = true;
+  build_cmd_tic = logictic - 1;
+  dsda_JumpToLogicTicFrom(logictic, logictic - 1);
 }
 
 dboolean dsda_BuildMF(int x) {
@@ -418,8 +421,10 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
     dsda_PopCommandQueue(cmd);
   else if (dsda_BruteForce())
     dsda_CopyBruteForceCommand(cmd);
-  else if (replace_source && !dsda_SkipMode())
+  else if (logictic == build_cmd_tic) {
     *cmd = build_cmd;
+    build_cmd_tic = -1;
+  }
   else
     dsda_CopyPendingCmd(cmd);
 
@@ -473,6 +478,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
   if (dsda_InputActivated(dsda_input_build_advance_frame)) {
     advance_frame = gametic;
+    build_cmd_tic = logictic;
 
     build_cmd.angleturn = 0;
     build_cmd.arti = 0;
