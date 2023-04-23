@@ -50,7 +50,6 @@
 #include "dsda/configuration.h"
 
 gl_lightmode_t gl_lightmode;
-const char *gl_lightmodes[] = {"glboom", "shaders", "indexed", NULL};
 dboolean gl_ui_lightmode_indexed = false;
 dboolean gl_automap_lightmode_indexed = false;
 

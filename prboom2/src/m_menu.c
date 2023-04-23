@@ -2950,6 +2950,8 @@ static const char* render_stretch_list[] = {
   "Not Adjusted", "Doom Format", "Fit to Width", NULL
 };
 
+static const char *gl_lightmodes[] = { "shaders", "indexed", NULL };
+
 setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X},
   { "Video mode", S_CHOICE | S_STR, m_conf, G_X, dsda_config_videomode, 0, videomodes },
