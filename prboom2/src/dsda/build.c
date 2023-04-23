@@ -434,6 +434,9 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
 void dsda_EnterBuildMode(void) {
   dsda_TrackFeature(uf_build);
 
+  if (!logictic)
+    advance_frame = true;
+
   build_mode = true;
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);
 
