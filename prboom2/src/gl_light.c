@@ -67,7 +67,10 @@ int gl_hardware_gamma = false;
 
 void M_ChangeLightMode(void)
 {
-  glsl_Init();
+  if (!V_IsOpenGLMode())
+  {
+    return;
+  }
 
   gl_lightmode_indexed = dsda_IntConfig(dsda_config_gl_lightmode_indexed);
   gl_hardware_gamma = !gl_lightmode_indexed;
