@@ -75,11 +75,16 @@ static signed char minStrafeLeft(void) {
   return allow_turbo ? -128 : -strafe50();
 }
 
+void dsda_ChangeBuildCommand(void) {
+}
+
 dboolean dsda_BuildMF(int x) {
   if (x < 0 || x > 127)
     return false;
 
   build_cmd.forwardmove = x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -90,6 +95,8 @@ dboolean dsda_BuildMB(int x) {
 
   build_cmd.forwardmove = -x;
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
@@ -98,6 +105,8 @@ dboolean dsda_BuildSR(int x) {
     return false;
 
   build_cmd.sidemove = x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -108,6 +117,8 @@ dboolean dsda_BuildSL(int x) {
 
   build_cmd.sidemove = -x;
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
@@ -116,6 +127,8 @@ dboolean dsda_BuildTR(int x) {
     return false;
 
   build_cmd.angleturn = (-x << 8);
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -126,6 +139,8 @@ dboolean dsda_BuildTL(int x) {
 
   build_cmd.angleturn = (x << 8);
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
@@ -135,6 +150,8 @@ dboolean dsda_BuildFU(int x) {
 
   build_cmd.lookfly &= 0x0f;
   build_cmd.lookfly |= (x << 4);
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -149,12 +166,16 @@ dboolean dsda_BuildFD(int x) {
   build_cmd.lookfly &= 0x0f;
   build_cmd.lookfly |= (x << 4);
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
 dboolean dsda_BuildFC(void) {
   build_cmd.lookfly &= 0x0f;
   build_cmd.lookfly |= 0x80;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -165,6 +186,8 @@ dboolean dsda_BuildLU(int x) {
 
   build_cmd.lookfly &= 0xf0;
   build_cmd.lookfly |= x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -179,12 +202,16 @@ dboolean dsda_BuildLD(int x) {
   build_cmd.lookfly &= 0xf0;
   build_cmd.lookfly |= x;
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
 dboolean dsda_BuildLC(void) {
   build_cmd.lookfly &= 0xf0;
   build_cmd.lookfly |= 0x08;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -194,6 +221,8 @@ dboolean dsda_BuildUA(int x) {
     return false;
 
   build_cmd.arti = x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -206,14 +235,15 @@ static void buildForward(void) {
       build_cmd.forwardmove = 127;
     else
       build_cmd.forwardmove = forward50();
-
-    return;
+  }
+  else {
+    if (build_cmd.forwardmove == forward50())
+      build_cmd.forwardmove = 0;
+    else
+      build_cmd.forwardmove = forward50();
   }
 
-  if (build_cmd.forwardmove == forward50())
-    build_cmd.forwardmove = 0;
-  else
-    build_cmd.forwardmove = forward50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildBackward(void) {
@@ -224,24 +254,29 @@ static void buildBackward(void) {
       build_cmd.forwardmove = -127;
     else
       build_cmd.forwardmove = -forward50();
-
-    return;
+  }
+  else {
+    if (build_cmd.forwardmove == -forward50())
+      build_cmd.forwardmove = 0;
+    else
+      build_cmd.forwardmove = -forward50();
   }
 
-  if (build_cmd.forwardmove == -forward50())
-    build_cmd.forwardmove = 0;
-  else
-    build_cmd.forwardmove = -forward50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineForward(void) {
   if (build_cmd.forwardmove < maxForward())
     ++build_cmd.forwardmove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineBackward(void) {
   if (build_cmd.forwardmove > minBackward())
     --build_cmd.forwardmove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildStrafeRight(void) {
@@ -252,14 +287,15 @@ static void buildStrafeRight(void) {
       build_cmd.sidemove = 127;
     else
       build_cmd.sidemove = strafe50();
-
-    return;
+  }
+  else {
+    if (build_cmd.sidemove == strafe50())
+      build_cmd.sidemove = 0;
+    else
+      build_cmd.sidemove = strafe50();
   }
 
-  if (build_cmd.sidemove == strafe50())
-    build_cmd.sidemove = 0;
-  else
-    build_cmd.sidemove = strafe50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildStrafeLeft(void) {
@@ -270,40 +306,53 @@ static void buildStrafeLeft(void) {
       build_cmd.sidemove = -128;
     else
       build_cmd.sidemove = -strafe50();
-
-    return;
+  }
+  else {
+    if (build_cmd.sidemove == -strafe50())
+      build_cmd.sidemove = 0;
+    else
+      build_cmd.sidemove = -strafe50();
   }
 
-  if (build_cmd.sidemove == -strafe50())
-    build_cmd.sidemove = 0;
-  else
-    build_cmd.sidemove = -strafe50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineStrafeRight(void) {
   if (build_cmd.sidemove < maxStrafeRight())
     ++build_cmd.sidemove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineStrafeLeft(void) {
   if (build_cmd.sidemove > minStrafeLeft())
     --build_cmd.sidemove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildTurnRight(void) {
   build_cmd.angleturn -= shortTic();
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildTurnLeft(void) {
   build_cmd.angleturn += shortTic();
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildUse(void) {
   build_cmd.buttons ^= BT_USE;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFire(void) {
   build_cmd.buttons ^= BT_ATTACK;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildWeapon(int weapon) {
@@ -319,6 +368,8 @@ static void buildWeapon(int weapon) {
   build_cmd.buttons &= ~BT_WEAPONMASK;
   if (build_cmd.buttons & BT_CHANGE)
     build_cmd.buttons |= cmdweapon;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void resetCmd(void) {
