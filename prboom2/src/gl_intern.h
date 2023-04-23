@@ -546,7 +546,7 @@ typedef struct GLShader_s
   GLhandleARB hFragProg;
 } GLShader;
 
-int glsl_Init(void);
+void glsl_Init(void);
 void glsl_SetActiveShader(GLShader *shader);
 void glsl_SuspendActiveShader(void);
 void glsl_ResumeActiveShader(void);

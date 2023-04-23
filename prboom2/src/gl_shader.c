@@ -139,26 +139,22 @@ void get_fuzz_shader_bindings()
   }
 }
 
-int glsl_Init(void)
+void glsl_Init(void)
 {
-  if (!gl_arb_shader_objects)
+  sh_main = gld_LoadShader("glvp", "glfp");
+  get_light_shader_bindings();
+
+  sh_indexed = gld_LoadShader("glvp", "glfp_idx");
+  get_indexed_shader_bindings();
+
+  sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
+  get_fuzz_shader_bindings();
+  glsl_SetFuzzScreenResolution((float)SCREENWIDTH, (float)SCREENHEIGHT);
+
+  if (!sh_main || !sh_indexed || !sh_fuzz)
   {
-    lprintf(LO_WARN, "glsl_Init: shaders expects OpenGL 2.0\n");
+    I_Error("glsl_Init: Failed to load shaders");
   }
-  else
-  {
-    sh_main = gld_LoadShader("glvp", "glfp");
-    get_light_shader_bindings();
-
-    sh_indexed = gld_LoadShader("glvp", "glfp_idx");
-    get_indexed_shader_bindings();
-
-    sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
-    get_fuzz_shader_bindings();
-    glsl_SetFuzzScreenResolution((float)SCREENWIDTH, (float)SCREENHEIGHT);
-  }
-
-  return (sh_main != NULL) && (sh_indexed != NULL) && (sh_fuzz != NULL);
 }
 
 static int ReadLump(const char *filename, const char *lumpname, char **buffer)

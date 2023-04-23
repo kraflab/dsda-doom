@@ -74,10 +74,7 @@ void M_ChangeLightMode(void)
 {
   gl_lightmode_t gl_lightmode_default = dsda_IntConfig(dsda_config_gl_lightmode);
 
-  if (!glsl_Init())
-  {
-    I_Error("glsl_Init failed!");
-  }
+  glsl_Init();
 
   gl_lightmode = gl_lightmode_default;
 
