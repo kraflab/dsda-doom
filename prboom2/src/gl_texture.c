@@ -35,6 +35,8 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "gl_opengl.h"
 
 #include "z_zone.h"
@@ -200,16 +202,17 @@ void* NewIntDynArray(int dimCount, int *dims)
 
 // e6y
 // Get index of player->fixedcolormap for GLTexture().glTexExID array
-// There are three known values for player->fixedcolormap: 0, 1 and 32
-// 0 (normal) -> 0; 1 (pw_infrared) -> 1; 32 (pw_invulnerability) -> 2
+// There are 9 known values for player->fixedcolormap:
+// 0 (normal) -> 0; 1 (pw_infrared) -> 1; 2..7 -> 2..7 (heretic torch flicker);
+// 32 (pw_invulnerability) -> 8
 void gld_GetTextureTexID(GLTexture *gltexture, int cm)
 {
   static int data[NUMCOLORMAPS+1] = {
-     0,  1, -1, -1, -1, -1, -1, -1,
+     0,  1,  2,  3,  4,  5,  6,  7,
     -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1,
-     2
+     8
   };
 
   gltexture->cm = cm;
@@ -225,6 +228,7 @@ void gld_GetTextureTexID(GLTexture *gltexture, int cm)
   if (!(gltexture->flags & GLTEXTURE_HIRES))
   {
     gltexture->player_cm = data[frame_fixedcolormap];
+    assert(gltexture->player_cm != -1);
   }
 
   gltexture->texflags_p = &gltexture->texflags[cm][gltexture->player_cm];
