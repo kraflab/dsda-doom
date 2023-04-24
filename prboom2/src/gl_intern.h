@@ -73,7 +73,7 @@ typedef struct gl_strip_coords_s
   GLfloat t[4][2];
 } gl_strip_coords_t;
 
-#define PLAYERCOLORMAP_COUNT (3)
+#define PLAYERCOLORMAP_COUNT (9)
 
 typedef struct detail_s
 {
