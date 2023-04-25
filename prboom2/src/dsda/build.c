@@ -455,6 +455,9 @@ void dsda_ExitBuildMode(void) {
 }
 
 void dsda_RefreshBuildMode(void) {
+  if (demoplayback)
+    replace_source = false;
+
   if (!dsda_SkipMode() &&
       overwritten_logictic != logictic - 1 &&
       build_cmd_tic == -1 &&
