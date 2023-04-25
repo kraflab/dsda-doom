@@ -41,6 +41,7 @@ static dboolean build_mode;
 static dboolean advance_frame;
 static ticcmd_t build_cmd;
 static ticcmd_t overwritten_cmd;
+static int overwritten_logictic;
 static int build_cmd_tic = -1;
 static dboolean replace_source = true;
 static build_cmd_queue_t cmd_queue;
@@ -450,6 +451,17 @@ void dsda_ExitBuildMode(void) {
   dsda_RefreshExHudCommandDisplay();
 }
 
+void dsda_RefreshBuildMode(void) {
+  if (!dsda_SkipMode() &&
+      overwritten_logictic != logictic - 1 &&
+      build_cmd_tic == -1 &&
+      logictic > 0) {
+    dsda_CopyPriorCmd(&overwritten_cmd, 1);
+    build_cmd = overwritten_cmd;
+    overwritten_logictic = logictic - 1;
+  }
+}
+
 dboolean dsda_BuildResponder(event_t* ev) {
   if (!dsda_AllowBuilding())
     return false;
@@ -496,6 +508,8 @@ dboolean dsda_BuildResponder(event_t* ev) {
     else
       overwritten_cmd = build_cmd;
 
+    overwritten_logictic = logictic;
+
     return true;
   }
 
@@ -508,6 +522,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
     if (logictic > 1) {
       dsda_CopyPriorCmd(&build_cmd, 2);
       overwritten_cmd = build_cmd;
+      overwritten_logictic = logictic - 2;
 
       dsda_JumpToLogicTic(logictic - 1);
     }

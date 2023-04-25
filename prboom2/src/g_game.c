@@ -1425,6 +1425,9 @@ void G_Ticker (void)
   if (dsda_BruteForce())
     dsda_EvaluateBruteForce();
 
+  if (dsda_BuildMode())
+    dsda_RefreshBuildMode();
+
   if (dsda_AdvanceFrame())
   {
     advance_frame = true;
