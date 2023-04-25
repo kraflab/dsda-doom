@@ -79,6 +79,9 @@ static signed char minStrafeLeft(void) {
 }
 
 void dsda_ChangeBuildCommand(void) {
+  if (demoplayback)
+    dsda_JoinDemo(NULL);
+
   replace_source = true;
   build_cmd_tic = logictic - 1;
   dsda_JumpToLogicTicFrom(logictic, logictic - 1);
