@@ -532,6 +532,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
       dsda_CopyPriorCmd(&build_cmd, 2);
       overwritten_cmd = build_cmd;
       overwritten_logictic = logictic - 2;
+      replace_source = false;
 
       dsda_JumpToLogicTic(logictic - 1);
     }
