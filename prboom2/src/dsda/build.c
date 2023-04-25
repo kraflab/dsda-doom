@@ -465,6 +465,7 @@ void dsda_RefreshBuildMode(void) {
     dsda_CopyPriorCmd(&overwritten_cmd, 1);
     build_cmd = overwritten_cmd;
     overwritten_logictic = logictic - 1;
+    replace_source = false;
   }
 }
 
