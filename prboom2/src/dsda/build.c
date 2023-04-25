@@ -512,8 +512,10 @@ dboolean dsda_BuildResponder(event_t* ev) {
        if (!replace_source)
           build_cmd = overwritten_cmd;
     }
-    else
+    else {
       overwritten_cmd = build_cmd;
+      replace_source = true;
+    }
 
     overwritten_logictic = logictic;
 
