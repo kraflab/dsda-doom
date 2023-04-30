@@ -114,8 +114,7 @@ static int fuzzcellsize;
 
 // NOTE: Formula is (6 + 21 - (9 - i) * (9 - i) * 5 / 19), where i is the fuzz
 // intensity
-// NOTE2: Not const because it's stored closer to fuzzpos this way
-static byte fuzzcmaps[FUZZTABLE] = {
+static const byte fuzzcmaps[FUZZTABLE] = {
   6, 11, 6, 11, 6, 6, 11,
   6, 6, 11, 6, 6, 6, 11,
   6, 6, 6, 11, 15, 18, 21,
