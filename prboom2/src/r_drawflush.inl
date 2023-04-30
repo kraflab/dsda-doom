@@ -101,13 +101,6 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
       {
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
          *dest = GETDESTCOLOR(*dest, *source);
-#elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-         // SoM 7-28-04: Fix the fuzz problem.
-         *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
-
-         // Clamp table lookup index.
-         if(++fuzzpos == FUZZTABLE)
-            fuzzpos = 0;
 #else
          *dest = *source;
 #endif
@@ -156,13 +149,6 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
             // haleyjd 09/11/04: use temptranmap here
             *dest = GETDESTCOLOR(*dest, *source);
-#elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-            // SoM 7-28-04: Fix the fuzz problem.
-            *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
-
-            // Clamp table lookup index.
-            if(++fuzzpos == FUZZTABLE)
-               fuzzpos = 0;
 #else
             *dest = *source;
 #endif
@@ -184,13 +170,6 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
             // haleyjd 09/11/04: use temptranmap here
             *dest = GETDESTCOLOR(*dest, *source);
-#elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-            // SoM 7-28-04: Fix the fuzz problem.
-            *dest = GETDESTCOLOR(dest[fuzzoffset[fuzzpos]]);
-
-            // Clamp table lookup index.
-            if(++fuzzpos == FUZZTABLE)
-               fuzzpos = 0;
 #else
             *dest = *source;
 #endif

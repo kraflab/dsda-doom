@@ -107,18 +107,6 @@ static const byte   *tempfuzzmap;
 //#define FUZZOFF (SCREENWIDTH)
 #define FUZZOFF 1
 
-static const int fuzzoffset_org[FUZZTABLE] = {
-  FUZZOFF,-FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-  FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-  FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,
-  FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-  FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,
-  FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,
-  FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF
-};
-
-static int fuzzoffset[FUZZTABLE];
-
 static int fuzzpos = 0;
 
 // Lovey01 04/29/2023: Scaled software fuzz
@@ -491,18 +479,13 @@ void R_InitBuffersRes(void)
 
 void R_InitBuffer(int width, int height)
 {
-  int i;
-
   drawvars.topleft = screens[0].data;
   drawvars.pitch = screens[0].pitch;
 
-  for (i=0; i<FUZZTABLE; i++)
-    fuzzoffset[i] = fuzzoffset_org[i]*screens[0].pitch;
-
   if (!tallscreen)
-    fuzzcellsize = (WIDE_SCREENHEIGHT + 100) / 200;
+    fuzzcellsize = (SCREENHEIGHT + 100) / 200;
   else
-    fuzzcellsize = (WIDE_SCREENWIDTH + 160) / 320;
+    fuzzcellsize = (SCREENWIDTH + 160) / 320;
 }
 
 //
