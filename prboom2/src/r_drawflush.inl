@@ -52,19 +52,20 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
    int intensitycmap;
    int yl;
    int count, count2, cmask;
-   int fp;
+   int fp, cs;
 
    x = temp_x;
    topleft = drawvars.topleft + startx;
+   cs = fuzzcellsize;
 
    while (--x >= 0)
    {
       yl = tempyl[x];
       dest = topleft + yl * drawvars.pitch + x;
       count = tempyh[x] - yl + 1;
-      fp = fuzzpos + (yl / FUZZCELLSIZE);
+      fp = fuzzpos + (yl / cs);
 
-      count2 = FUZZCELLSIZE - (yl % FUZZCELLSIZE);
+      count2 = cs - (yl % cs);
       do
       {
          intensitycmap = fuzzcmaps[fp % FUZZTABLE] << 8;
@@ -81,7 +82,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          } while (--count2);
 
          ++fp;
-         count2 = FUZZCELLSIZE;
+         count2 = cs;
       } while (count);
    }
 #else  /* if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ) */

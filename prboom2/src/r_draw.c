@@ -122,7 +122,7 @@ static int fuzzoffset[FUZZTABLE];
 static int fuzzpos = 0;
 
 // Lovey01 04/29/2023: Scaled software fuzz
-#define FUZZCELLSIZE 5
+static int fuzzcellsize;
 
 // NOTE: Formula is (6 + 21 - (9 - i) * (9 - i) * 5 / 19), where i is the fuzz
 // intensity
@@ -498,6 +498,11 @@ void R_InitBuffer(int width, int height)
 
   for (i=0; i<FUZZTABLE; i++)
     fuzzoffset[i] = fuzzoffset_org[i]*screens[0].pitch;
+
+  if (!tallscreen)
+    fuzzcellsize = (WIDE_SCREENHEIGHT + 100) / 200;
+  else
+    fuzzcellsize = (WIDE_SCREENWIDTH + 160) / 320;
 }
 
 //
@@ -607,10 +612,10 @@ int R_GetFuzzPos()
 void R_ResetFuzzCol(int rows)
 {
   R_ResetColumnBuffer(); // Flush current columns before changing fuzzpos
-  fuzzpos = (fuzzpos + (rows / FUZZCELLSIZE)) % FUZZTABLE;
+  fuzzpos = (fuzzpos + (rows / fuzzcellsize)) % FUZZTABLE;
 }
 
 void R_NewFuzzCol(int x, int rows)
 {
-  if (!(x % FUZZCELLSIZE)) R_ResetFuzzCol(rows);
+  if (!(x % fuzzcellsize)) R_ResetFuzzCol(rows);
 }
