@@ -43,7 +43,7 @@
 //
 static void R_FLUSHWHOLE_FUNCNAME(void)
 {
-   // Lovey01 04/29/2023: Scaled software fuzz algorithm
+   // Scaled software fuzz algorithm
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
    int x;
    byte *dest, *topleft;
@@ -134,7 +134,7 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
    int yl, yh;
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-   // Lovey01 04/29/2023: Only whole flushes are supported for fuzz
+   // Only whole flushes are supported for fuzz
    R_FLUSHWHOLE_FUNCNAME();
    return;
 #endif
@@ -195,7 +195,7 @@ static void R_FLUSHQUAD_FUNCNAME(void)
    byte *dest = drawvars.topleft + commontop*drawvars.pitch + startx;
    int count;
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-   // Lovey01 04/29/2023: Only whole flushes are supported for fuzz
+   // Only whole flushes are supported for fuzz
    return;
 #endif
 

@@ -143,8 +143,6 @@ void R_ResetColumnBuffer(void);
 void R_SetFuzzPos(int fuzzpos);
 int R_GetFuzzPos();
 
-// Lovey01 04/30/2023: Scaled software fuzz
-
 // Reset scaled fuzz column
 // rows is the number of rows, in pixels, of the last column
 void R_ResetFuzzCol(int rows);

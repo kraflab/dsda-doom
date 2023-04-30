@@ -109,7 +109,7 @@ static const byte   *tempfuzzmap;
 
 static int fuzzpos = 0;
 
-// Lovey01 04/29/2023: Scaled software fuzz
+// Fuzz cell size for scaled software fuzz
 static int fuzzcellsize;
 
 // NOTE: Formula is (6 + 21 - (9 - i) * (9 - i) * 5 / 19), where i is the fuzz
