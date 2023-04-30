@@ -77,7 +77,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          //    count2 += count;
          //    count = 0;
          // }
-         cmask = count >> 31;
+         cmask = count >> (sizeof(int) * 8 - 1);
          count2 += count & cmask;
          count &= ~cmask;
 
