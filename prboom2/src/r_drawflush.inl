@@ -61,18 +61,27 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
       yl = tempyl[x];
       dest = topleft + yl * drawvars.pitch + x;
       count = tempyh[x] - yl + 1;
+
+      // Draw fuzz stripe independently from vertical screen position
       fp = fuzzpos + (yl / cs);
 
+      // Draw column, cell stripe by cell stripe
       count2 = cs - (yl % cs);
       do
       {
          intensitycmap = fuzzcmaps[fp % FUZZTABLE] << 8;
 
          count -= count2;
+
+         // if (count < 0) {
+         //    count2 += count;
+         //    count = 0;
+         // }
          cmask = count >> 31;
          count2 += count & cmask;
          count &= ~cmask;
 
+         // Draw cell stripe, pixel by pixel
          do
          {
             *dest = tempfuzzmap[intensitycmap + *dest];
