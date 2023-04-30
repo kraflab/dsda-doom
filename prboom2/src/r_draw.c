@@ -122,8 +122,7 @@ static int fuzzoffset[FUZZTABLE];
 static int fuzzpos = 0;
 
 // Lovey01 04/29/2023: Scaled software fuzz
-#define FUZZCELLSHIFT 2
-#define FUZZCELLSIZE (1 << FUZZCELLSHIFT)
+#define FUZZCELLSIZE 5
 
 // NOTE: Formula is (6 + 21 - (9 - i) * (9 - i) * 5 / 19), where i is the fuzz
 // intensity
@@ -608,10 +607,10 @@ int R_GetFuzzPos()
 void R_ResetFuzzCol(int rows)
 {
   R_ResetColumnBuffer(); // Flush current columns before changing fuzzpos
-  fuzzpos = (fuzzpos + (rows >> FUZZCELLSHIFT)) % FUZZTABLE;
+  fuzzpos = (fuzzpos + (rows / FUZZCELLSIZE)) % FUZZTABLE;
 }
 
 void R_NewFuzzCol(int x, int rows)
 {
-  if (!(x & (FUZZCELLSIZE - 1))) R_ResetFuzzCol(rows);
+  if (!(x % FUZZCELLSIZE)) R_ResetFuzzCol(rows);
 }

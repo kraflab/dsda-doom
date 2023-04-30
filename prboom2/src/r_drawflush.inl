@@ -56,19 +56,18 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 
    x = temp_x;
    topleft = drawvars.topleft + startx;
-   fp = fuzzpos;
 
    while (--x >= 0)
    {
       yl = tempyl[x];
       dest = topleft + yl * drawvars.pitch + x;
       count = tempyh[x] - yl + 1;
+      fp = fuzzpos + (yl / FUZZCELLSIZE);
 
-      count2 = FUZZCELLSIZE - (yl & (FUZZCELLSIZE - 1));
+      count2 = FUZZCELLSIZE - (yl % FUZZCELLSIZE);
       do
       {
-         intensitycmap =
-            fuzzcmaps[(fp + (yl >> FUZZCELLSHIFT)) % FUZZTABLE] << 8;
+         intensitycmap = fuzzcmaps[fp % FUZZTABLE] << 8;
 
          count -= count2;
          cmask = count >> 31;
@@ -81,7 +80,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
             dest += drawvars.pitch;
          } while (--count2);
 
-         yl += FUZZCELLSIZE;
+         ++fp;
          count2 = FUZZCELLSIZE;
       } while (count);
    }
