@@ -30,8 +30,6 @@
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)
 #define GETDESTCOLOR(col1, col2) (temptranmap[((col1)<<8)+(col2)])
-#elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-#define GETDESTCOLOR(col) (tempfuzzmap[6*256+(col)])
 #else
 #define GETDESTCOLOR(col) (col)
 #endif
