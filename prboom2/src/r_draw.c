@@ -121,6 +121,23 @@ static int fuzzoffset[FUZZTABLE];
 
 static int fuzzpos = 0;
 
+// Lovey01 04/29/2023: Scaled software fuzz
+#define FUZZCELLSHIFT 2
+#define FUZZCELLSIZE (1 << FUZZCELLSHIFT)
+
+// NOTE: Formula is (6 + 21 - (9 - i) * (9 - i) * 5 / 19), where i is the fuzz
+// intensity
+// NOTE2: Not const because it's stored closer to fuzzpos this way
+static byte fuzzcmaps[FUZZTABLE] = {
+  6, 11, 6, 11, 6, 6, 11,
+  6, 6, 11, 6, 6, 6, 11,
+  6, 6, 6, 11, 15, 18, 21,
+  6, 11, 15, 6, 6, 6, 6, 11,
+  6, 11, 6, 6, 11, 15, 6,
+  6, 11, 15, 18, 21, 6, 6,
+  6, 6, 11, 6, 6, 11, 6
+};
+
 // render pipelines
 #define RDC_STANDARD      1
 #define RDC_TRANSLUCENT   2
@@ -586,4 +603,15 @@ void R_SetFuzzPos(int fp)
 int R_GetFuzzPos()
 {
   return fuzzpos;
+}
+
+void R_ResetFuzzCol(int rows)
+{
+  R_ResetColumnBuffer(); // Flush current columns before changing fuzzpos
+  fuzzpos = (fuzzpos + (rows >> FUZZCELLSHIFT)) % FUZZTABLE;
+}
+
+void R_NewFuzzCol(int x, int rows)
+{
+  if (!(x & (FUZZCELLSIZE - 1))) R_ResetFuzzCol(rows);
 }

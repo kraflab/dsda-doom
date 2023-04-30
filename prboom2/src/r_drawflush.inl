@@ -45,6 +45,47 @@
 //
 static void R_FLUSHWHOLE_FUNCNAME(void)
 {
+   // Lovey01 04/29/2023: Scaled software fuzz algorithm
+#if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
+   int x;
+   byte *dest, *topleft;
+   int intensitycmap;
+   int yl;
+   int count, count2, cmask;
+   int fp;
+
+   x = temp_x;
+   topleft = drawvars.topleft + startx;
+   fp = fuzzpos;
+
+   while (--x >= 0)
+   {
+      yl = tempyl[x];
+      dest = topleft + yl * drawvars.pitch + x;
+      count = tempyh[x] - yl + 1;
+
+      count2 = FUZZCELLSIZE - (yl & (FUZZCELLSIZE - 1));
+      do
+      {
+         intensitycmap =
+            fuzzcmaps[(fp + (yl >> FUZZCELLSHIFT)) % FUZZTABLE] << 8;
+
+         count -= count2;
+         cmask = count >> 31;
+         count2 += count & cmask;
+         count &= ~cmask;
+
+         do
+         {
+            *dest = tempfuzzmap[intensitycmap + *dest];
+            dest += drawvars.pitch;
+         } while (--count2);
+
+         yl += FUZZCELLSIZE;
+         count2 = FUZZCELLSIZE;
+      } while (count);
+   }
+#else  /* if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ) */
    byte *source;
    byte *dest;
    int  count, yl;
@@ -75,6 +116,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          dest += drawvars.pitch;
       }
    }
+#endif  /* if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ) */
 }
 
 //
@@ -90,6 +132,12 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
    byte *dest;
    int count, colnum = 0;
    int yl, yh;
+
+#if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
+   // Lovey01 04/29/2023: Only whole flushes are supported for fuzz
+   R_FLUSHWHOLE_FUNCNAME();
+   return;
+#endif
 
    while(colnum < 4)
    {
@@ -161,12 +209,8 @@ static void R_FLUSHQUAD_FUNCNAME(void)
    byte *dest = drawvars.topleft + commontop*drawvars.pitch + startx;
    int count;
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-   int fuzz1, fuzz2, fuzz3, fuzz4;
-
-   fuzz1 = fuzzpos;
-   fuzz2 = (fuzz1 + tempyl[1]) % FUZZTABLE;
-   fuzz3 = (fuzz2 + tempyl[2]) % FUZZTABLE;
-   fuzz4 = (fuzz3 + tempyl[3]) % FUZZTABLE;
+   // Lovey01 04/29/2023: Only whole flushes are supported for fuzz
+   return;
 #endif
 
    count = commonbot - commontop + 1;
@@ -178,20 +222,6 @@ static void R_FLUSHQUAD_FUNCNAME(void)
       dest[1] = GETDESTCOLOR(dest[1], source[1]);
       dest[2] = GETDESTCOLOR(dest[2], source[2]);
       dest[3] = GETDESTCOLOR(dest[3], source[3]);
-      source += 4 * sizeof(byte);
-      dest += drawvars.pitch * sizeof(byte);
-   }
-#elif (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-   while(--count >= 0)
-   {
-      dest[0] = GETDESTCOLOR(dest[0 + fuzzoffset[fuzz1]]);
-      dest[1] = GETDESTCOLOR(dest[1 + fuzzoffset[fuzz2]]);
-      dest[2] = GETDESTCOLOR(dest[2 + fuzzoffset[fuzz3]]);
-      dest[3] = GETDESTCOLOR(dest[3 + fuzzoffset[fuzz4]]);
-      fuzz1 = (fuzz1 + 1) % FUZZTABLE;
-      fuzz2 = (fuzz2 + 1) % FUZZTABLE;
-      fuzz3 = (fuzz3 + 1) % FUZZTABLE;
-      fuzz4 = (fuzz4 + 1) % FUZZTABLE;
       source += 4 * sizeof(byte);
       dest += drawvars.pitch * sizeof(byte);
    }
