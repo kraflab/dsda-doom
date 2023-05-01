@@ -124,7 +124,7 @@ static const byte fuzzintensity[FUZZTABLE] = {
 // A fuzz intensity table contains 5 tables of 256 colors, where each table
 // contains darkened colors corresponding to the intensity
 // (table 0 is intensity 0, table 1 is intensity 1, etc.)
-static byte *fuzzintensitytables;
+static byte *fuzzintensitytables = NULL;
 
 // render pipelines
 #define RDC_STANDARD      1
