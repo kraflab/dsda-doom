@@ -593,7 +593,9 @@ int R_GetFuzzPos()
 
 void R_ResetFuzzCol(int rows)
 {
-  R_ResetColumnBuffer(); // Flush current columns before changing fuzzpos
+  // Make sure previous columns are drawn before changing fuzzpos
+  R_ResetColumnBuffer();
+
   fuzzpos = (fuzzpos + (rows / fuzzcellsize)) % FUZZTABLE;
 }
 
