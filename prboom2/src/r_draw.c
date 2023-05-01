@@ -599,5 +599,6 @@ void R_ResetFuzzCol(int rows)
 
 void R_NewFuzzCol(int x, int rows)
 {
-  if (!(x % fuzzcellsize)) R_ResetFuzzCol(rows);
+  if (!(x % fuzzcellsize))
+    R_ResetFuzzCol(rows);
 }
