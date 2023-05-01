@@ -207,9 +207,24 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
   );
 }
 
-void dsda_CopyPendingCmd(ticcmd_t* cmd) {
+dboolean dsda_CopyPendingCmd(ticcmd_t* cmd) {
   if (demorecording && largest_real_offset - dsda_DemoBufferOffset() >= bytes_per_tic) {
     const byte* p = dsda_demo_write_buffer_p;
+
+    G_ReadOneTick(cmd, &p);
+
+    return true;
+  }
+  else {
+    memset(cmd, 0, sizeof(*cmd));
+
+    return false;
+  }
+}
+
+void dsda_CopyPriorCmd(ticcmd_t* cmd, int delta) {
+  if (demorecording && dsda_DemoBufferOffset() >= delta * bytes_per_tic) {
+    const byte* p = dsda_demo_write_buffer_p - delta * bytes_per_tic;
 
     G_ReadOneTick(cmd, &p);
   }

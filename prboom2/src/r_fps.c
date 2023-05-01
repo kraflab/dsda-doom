@@ -101,7 +101,6 @@ dboolean R_ViewInterpolation(void) {
 void R_InterpolateView(player_t *player, fixed_t frac)
 {
   static mobj_t *oviewer;
-  angle_t angleoffset;
   int quake_intensity;
 
   dboolean NoInterpolate = dsda_CameraPaused() || dsda_PausedViaMenu();
@@ -109,7 +108,6 @@ void R_InterpolateView(player_t *player, fixed_t frac)
   quake_intensity = dsda_IntConfig(dsda_config_quake_intensity);
 
   viewplayer = player;
-  angleoffset = dsda_BuildModeViewAngleOffset();
 
   if (player->mo != oviewer || NoInterpolate)
   {
@@ -128,7 +126,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
       NoInterpolateView = false;
 
       player->prev_viewz = player->viewz;
-      player->prev_viewangle = player->mo->angle + angleoffset;
+      player->prev_viewangle = player->mo->angle;
       player->prev_viewpitch = P_PlayerPitch(player);
 
       P_ResetWalkcam();
@@ -154,7 +152,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     }
     else
     {
-      viewangle = player->prev_viewangle + FixedMul (frac, R_SmoothPlaying_Get(player) - player->prev_viewangle) + angleoffset;
+      viewangle = player->prev_viewangle + FixedMul (frac, R_SmoothPlaying_Get(player) - player->prev_viewangle);
       viewpitch = player->prev_viewpitch + FixedMul (frac, P_PlayerPitch(player) - player->prev_viewpitch);
     }
   }
@@ -179,7 +177,7 @@ void R_InterpolateView(player_t *player, fixed_t frac)
     }
     else
     {
-      viewangle = R_SmoothPlaying_Get(player) + angleoffset;
+      viewangle = R_SmoothPlaying_Get(player);
       viewpitch = P_PlayerPitch(player);
     }
   }

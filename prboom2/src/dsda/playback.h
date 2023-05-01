@@ -22,6 +22,7 @@
 
 void dsda_RestartPlayback(void);
 dboolean dsda_JumpToLogicTic(int tic);
+dboolean dsda_JumpToLogicTicFrom(int tic, int from_tic);
 void dsda_ExecutePlaybackOptions(void);
 const char* dsda_ParsePlaybackOptions(void);
 const char* dsda_PlaybackName(void);
