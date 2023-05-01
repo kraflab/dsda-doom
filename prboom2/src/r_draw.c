@@ -112,8 +112,11 @@ static int fuzzpos = 0;
 // Fuzz cell size for scaled software fuzz
 static int fuzzcellsize;
 
-// NOTE: Formula is (6 + 21 - (9 - i) * (9 - i) * 5 / 19), where i is the fuzz
-// intensity
+// Fuzz colormap table. Contains colormaps for fuzz intensities, where a
+// fuzz intensity is how strong a fuzz cell is, or how much it darkens its
+// contents
+// NOTE: Formula to find a colormap for an intensity is
+// (6 + 21 - (9 - i) * (9 - i) * 5 / 19), where i is the fuzz intensity
 static const byte fuzzcmaps[FUZZTABLE] = {
   6, 11, 6, 11, 6, 6, 11,
   6, 6, 11, 6, 6, 6, 11,
