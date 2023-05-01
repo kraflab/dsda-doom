@@ -47,9 +47,9 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
    int x;
    byte *dest, *topleft;
-   int intensitycmap;
    int yl;
    int count, count2, cmask;
+   int intensity, i;
    int fp, cs;
 
    x = temp_x;
@@ -69,7 +69,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
       count2 = cs - (yl % cs);
       do
       {
-         intensitycmap = fuzzcmaps[fp % FUZZTABLE] << 8;
+         intensity = fuzzintensity[fp % FUZZTABLE];
 
          count -= count2;
 
@@ -84,7 +84,12 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          // Draw cell stripe, pixel by pixel
          do
          {
-            *dest = tempfuzzmap[intensitycmap + *dest];
+            i = intensity;
+
+            do {
+               *dest = tempfuzzmap[6 * 256 + *dest];
+            } while (--i >= 0);
+
             dest += drawvars.pitch;
          } while (--count2);
 
