@@ -616,7 +616,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
       texturecolumn = frac>>FRACBITS;
 
       // Fuzz column handling
-      if (!dcvars.colormap) R_NewFuzzCol(dcvars.x, colheight);
+      if (!dcvars.colormap) R_CheckFuzzCol(dcvars.x, colheight);
 
       R_DrawMaskedColumn(
         patch,

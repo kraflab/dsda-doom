@@ -144,10 +144,10 @@ void R_SetFuzzPos(int fuzzpos);
 int R_GetFuzzPos();
 
 // Reset scaled fuzz column
-// rows is the number of rows, in pixels, of the last column
-void R_ResetFuzzCol(int rows);
+// height is the height of the last column, in pixels
+void R_ResetFuzzCol(int height);
 
 // Calls R_ResetFuzzCol if x is aligned to the fuzz cell grid
-void R_NewFuzzCol(int x, int rows);
+void R_CheckFuzzCol(int x, int height);
 
 #endif

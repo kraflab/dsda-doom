@@ -594,16 +594,16 @@ int R_GetFuzzPos()
   return fuzzpos;
 }
 
-void R_ResetFuzzCol(int rows)
+void R_ResetFuzzCol(int height)
 {
   // Make sure previous columns are drawn before changing fuzzpos
   R_ResetColumnBuffer();
 
-  fuzzpos = (fuzzpos + (rows / fuzzcellsize)) % FUZZTABLE;
+  fuzzpos = (fuzzpos + (height / fuzzcellsize)) % FUZZTABLE;
 }
 
-void R_NewFuzzCol(int x, int rows)
+void R_CheckFuzzCol(int x, int height)
 {
   if (!(x % fuzzcellsize))
-    R_ResetFuzzCol(rows);
+    R_ResetFuzzCol(height);
 }
