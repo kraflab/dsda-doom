@@ -46,15 +46,16 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
    // Scaled software fuzz algorithm
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
    int x;
-   byte *dest, *topleft;
+   byte *dest, *topleft, *fuzztable;
    int yl;
    int count, count2, cmask;
-   int intensity, i;
+   int tableoffset;
    int fp, cs;
 
    x = temp_x;
    topleft = drawvars.topleft + startx;
    cs = fuzzcellsize;
+   fuzztable = fuzzintensitytables + 5 * 256 * boom_cm;
 
    while (--x >= 0)
    {
@@ -69,7 +70,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
       count2 = cs - (yl % cs);
       do
       {
-         intensity = fuzzintensity[fp % FUZZTABLE];
+         tableoffset = fuzzintensity[fp % FUZZTABLE] * 256;
 
          count -= count2;
 
@@ -84,12 +85,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          // Draw cell stripe, pixel by pixel
          do
          {
-            i = intensity;
-
-            do {
-               *dest = tempfuzzmap[6 * 256 + *dest];
-            } while (--i >= 0);
-
+            *dest = fuzztable[tableoffset + *dest];
             dest += drawvars.pitch;
          } while (--count2);
 

@@ -44,6 +44,7 @@
 #include "g_game.h"
 #include "am_map.h"
 #include "lprintf.h"
+#include "i_system.h"
 
 #include "dsda/stretch.h"
 
@@ -112,12 +113,18 @@ static int fuzzpos = 0;
 // Fuzz cell size for scaled software fuzz
 static int fuzzcellsize;
 
-// Fuzz intensity table. Contains a pattern of fuzz intensities, where a
+// A pattern of fuzz intensities, where a
 // fuzz intensity is how much a fuzz cell darkens its contents
 static const byte fuzzintensity[FUZZTABLE] = {
   0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 3, 4, 0, 1, 2,
   0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 2, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0, 1, 0, 0, 1, 0
 };
+
+// Fuzz intensity table for every colormap
+// A fuzz intensity table contains 5 tables of 256 colors, where each table
+// contains darkened colors corresponding to the intensity
+// (table 0 is intensity 0, table 1 is intensity 1, etc.)
+static byte *fuzzintensitytables;
 
 // render pipelines
 #define RDC_STANDARD      1
@@ -463,6 +470,38 @@ void R_InitBuffersRes(void)
   temp_x = 0;
 }
 
+static void R_InitFuzzIntensityTables(void)
+{
+  int i, j, k, l;
+  byte *table;
+
+  fuzzintensitytables = Z_Malloc(sizeof(*fuzzintensitytables) * 5 * 256 * numcolormaps);
+
+  for (i = 0; i < numcolormaps; i++)
+  {
+    table = fuzzintensitytables + 5 * 256 * i;
+
+    for (j = 0; j < 5; j++)
+    {
+      for (k = 0; k < 256; k++)
+      {
+        // Get accurate shade for fuzz intensity
+        table[j * 256 + k] = colormaps[i][6 * 256 + k];
+
+        for (l = 0; l < j; l++)
+        {
+          table[j * 256 + k] = colormaps[i][6 * 256 + table[j * 256 + k]];
+        }
+      }
+    }
+  }
+}
+
+static void R_FreeFuzzIntensityTables(void)
+{
+  Z_Free(fuzzintensitytables);
+}
+
 //
 // R_InitBuffer
 // Creats lookup tables that avoid
@@ -480,6 +519,12 @@ void R_InitBuffer(int width, int height)
     fuzzcellsize = (SCREENHEIGHT + 100) / 200;
   else
     fuzzcellsize = (SCREENWIDTH + 160) / 320;
+
+  if (!fuzzintensitytables)
+  {
+    R_InitFuzzIntensityTables();
+    I_AtExit(R_FreeFuzzIntensityTables, true, "R_FreeFuzzIntensityTables", exit_priority_normal);
+  }
 }
 
 //
