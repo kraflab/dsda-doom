@@ -231,8 +231,6 @@ void gld_SplitRightEdge(const GLWall *wall, dboolean detail)
 //==========================================================================
 void gld_RecalcVertexHeights(const vertex_t *v)
 {
-  extern byte rendermarker;
-
   int i,j,k;
   float height;
   vertexsplit_info_t *vi;

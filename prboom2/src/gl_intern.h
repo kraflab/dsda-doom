@@ -535,7 +535,8 @@ typedef struct vbo_xy_uv_rgba_s
 
 // preprocessing
 extern byte *segrendered; // true if sector rendered (only here for malloc)
-extern byte *linerendered[2]; // true if linedef rendered (only here for malloc)
+extern int *linerendered[2]; // true if linedef rendered (only here for malloc)
+extern int rendermarker;
 extern GLuint flats_vbo_id;
 
 typedef struct GLShader_s

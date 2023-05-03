@@ -1137,9 +1137,9 @@ vbo_xyz_uv_t *flats_vbo = NULL;
 GLSeg *gl_segs=NULL;
 GLSeg *gl_lines=NULL;
 
-byte rendermarker=0;
+int rendermarker=0;
 byte *segrendered; // true if sector rendered (only here for malloc)
-byte *linerendered[2]; // true if linedef rendered (only here for malloc)
+int *linerendered[2]; // true if linedef rendered (only here for malloc)
 
 float roll     = 0.0f;
 float yaw      = 0.0f;
