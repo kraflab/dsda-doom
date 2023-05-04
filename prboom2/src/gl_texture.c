@@ -1610,12 +1610,7 @@ void gld_FlushTextures(void)
   gld_CleanTexItems(gld_numGLColormaps, &gld_GLFullbrightColormapTextures);
   gld_CleanTexItems(numtextures * gld_numGLColormaps, &gld_GLIndexedSkyTextures);
 
-  gl_has_hires = 0;
-
   gld_ResetLastTexture();
-#ifdef HAVE_LIBSDL2_IMAGE
-  gld_HiRes_BuildTables();
-#endif
 
   gld_InitSky();
   gld_InitColormapTextures(V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());

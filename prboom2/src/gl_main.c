@@ -311,7 +311,6 @@ void gld_Init(int width, int height)
 
 #ifdef HAVE_LIBSDL2_IMAGE
   gld_InitMapPics();
-  gld_InitHiRes();
 #endif
 
   // Create FBO object and associated render targets
@@ -1232,7 +1231,7 @@ void gld_StartDrawScene(void)
   invul_method = 0;
   if (players[displayplayer].fixedcolormap == 32)
   {
-    if (gl_boom_colormaps && !gl_has_hires)
+    if (gl_boom_colormaps)
     {
       invul_method = INVUL_CM;
     }
