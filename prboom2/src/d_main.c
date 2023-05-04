@@ -476,9 +476,6 @@ void D_Display (fixed_t frac)
     DSDA_ADD_CONTEXT(sf_hud);
     HU_Drawer();
     DSDA_REMOVE_CONTEXT(sf_hud);
-
-    if (V_IsOpenGLMode())
-      gld_ProcessExtraAlpha();
   }
 
   isborderstate      = isborder;

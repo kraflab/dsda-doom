@@ -87,7 +87,7 @@ int gl_blend_animations;
 
 float gldepthmin, gldepthmax;
 
-int invul_method;
+dboolean invul_cm;
 float bw_red = 0.3f;
 float bw_green = 0.59f;
 float bw_blue = 0.11f;
@@ -106,28 +106,18 @@ extern int playpal_white;
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
 
 int fog_density=200;
-static float extra_red=0.0f;
-static float extra_green=0.0f;
-static float extra_blue=0.0f;
-static float extra_alpha=0.0f;
 
 GLfloat gl_whitecolor[4]={1.0f,1.0f,1.0f,1.0f};
+
+float xCamera,yCamera,zCamera;
+TAnimItemParam *anim_flats = NULL;
+TAnimItemParam *anim_textures = NULL;
 
 void SetFrameTextureMode(void)
 {
   if (SceneInTexture)
   {
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-  }
-  else
-  if (invul_method == INVUL_BW)
-  {
-    glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-    glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_DOT3_RGB);
-    glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB,GL_PRIMARY_COLOR);
-    glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND0_RGB,GL_SRC_COLOR);
-    glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_TEXTURE);
-    glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND1_RGB,GL_SRC_COLOR);
   }
 
   glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
@@ -204,32 +194,6 @@ void gld_MultisamplingSet(void)
   }
 }
 
-int gld_LoadGLDefs(const char * defsLump)
-{
-  int result = false;
-
-  if (W_LumpNameExists(defsLump))
-  {
-    SC_OpenLump(defsLump);
-
-    // Get actor class name.
-    while (SC_GetString())
-    {
-      if (SC_Compare("detail"))
-      {
-        result = true;
-        gld_ParseDetail();
-      }
-    }
-
-    SC_Close();
-  }
-
-  return result;
-}
-
-
-
 void gld_Init(int width, int height)
 {
   GLfloat params[4]={0.0f,0.0f,1.0f,0.0f};
@@ -301,33 +265,22 @@ void gld_Init(int width, int height)
   glClear(GL_COLOR_BUFFER_BIT);
   glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
 
-  // e6y
-  // if you have a prior crash in the game,
-  // you can restore the gamma values to at least a linear value
-  // with -resetgamma command-line switch
-  gld_ResetGammaRamp();
-
   gld_InitLightTable();
   gld_InitSky();
   glsl_Init();
-  M_ChangeLightMode();
+  gld_FlushTextures(); // TODO: should this be here?
+  M_ChangeSkyMode();
   M_ChangeAllowFog();
 
   gld_InitDetail();
 
 #ifdef HAVE_LIBSDL2_IMAGE
   gld_InitMapPics();
-  gld_InitHiRes();
 #endif
 
   // Create FBO object and associated render targets
   gld_InitFBO();
   I_AtExit(gld_FreeScreenSizeFBO, true, "gld_FreeScreenSizeFBO", exit_priority_normal);
-
-  if(!gld_LoadGLDefs("GLBDEFS"))
-  {
-    gld_LoadGLDefs("GLDEFS");
-  }
 
   gld_ResetLastTexture();
 
@@ -560,41 +513,27 @@ void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)
 
 void gld_BeginUIDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gld_InitColormapTextures(true);
-    glsl_SetMainShaderActive();
-    gl_ui_lightmode_indexed = true;
-  }
+  gld_InitColormapTextures(true);
+  glsl_SetMainShaderActive();
+  gl_ui_lightmode_indexed = true;
 }
 
 void gld_EndUIDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gl_ui_lightmode_indexed = false;
-    glsl_SetActiveShader(NULL);
-    return;
-  }
+  gl_ui_lightmode_indexed = false;
+  glsl_SetActiveShader(NULL);
 }
 
 void gld_BeginAutomapDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gld_InitColormapTextures(true);
-    glsl_SetActiveShader(NULL);
-    gl_automap_lightmode_indexed = true;
-  }
+  gld_InitColormapTextures(true);
+  glsl_SetActiveShader(NULL);
+  gl_automap_lightmode_indexed = true;
 }
 
 void gld_EndAutomapDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gl_automap_lightmode_indexed = false;
-    return;
-  }
+  gl_automap_lightmode_indexed = false;
 }
 
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
@@ -853,30 +792,15 @@ void gld_StartFuzz(float width, float height)
 {
   color_rgb_t color;
 
-  // legacy (non-shader) effect. remove this in case
-  // we want to absolutely require the fuzz shader.
-  if (!glsl_UseFuzzShader())
-  {
-    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.2f, 0.2f, 0.2f, 0.33f);
-    return;
-  }
-
   // shader init
   glsl_SetFuzzShaderActive();
   glsl_SetFuzzTextureDimensions(width, height);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  // for non-indexed modes, just use black as the fuzz color.
-  if (!V_IsWorldLightmodeIndexed()) {
-    glColor3f(0.0f, 0.0f, 0.0f);
-    return;
-  }
-
   // for indexed lightmode, the fuzz color needs to take
   // pain/item fades and gamma into account, so do a color
   // lookup based on the closest-to-black color index.
-  color = gld_LookupIndexedColor(invul_method ? playpal_white : playpal_black, true);
+  color = gld_LookupIndexedColor(invul_cm ? playpal_white : playpal_black, true);
   glColor3f((float)color.r/255.0f,
             (float)color.g/255.0f,
             (float)color.b/255.0f);
@@ -894,7 +818,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   int x1,y1,x2,y2;
   float light;
 
-  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, V_IsWorldLightmodeIndexed());
+  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, true);
   if (!gltexture)
     return;
   gld_BindPatch(gltexture, CR_DEFAULT);
@@ -968,10 +892,6 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
 void gld_SetPalette(int palette)
 {
   static int last_palette = 0;
-  extra_red=0.0f;
-  extra_green=0.0f;
-  extra_blue=0.0f;
-  extra_alpha=0.0f;
 
   if (palette < 0)
     palette = last_palette;
@@ -979,85 +899,7 @@ void gld_SetPalette(int palette)
 
   // [XA] store the current palette so
   // the indexed lightmode can use it.
-  // if we're actually in indexed mode,
-  // then we're all done here.
   gld_SetIndexedPalette(palette);
-  if (V_IsWorldLightmodeIndexed())
-    return;
-
-  if (palette > 0)
-  {
-    if (palette <= 8)
-    {
-      // doom [0] 226 1 1
-      extra_red = 1.0f;
-      extra_green = 0.0f;
-      extra_blue = 0.0f;
-      extra_alpha = (float) palette / 9.0f;
-    }
-    else if (palette <= 12)
-    {
-      // doom [0] 108 94 35
-      palette = palette - 8;
-      extra_red = 1.0f;
-      extra_green = 0.9f;
-      extra_blue = 0.3f;
-      extra_alpha = (float) palette / 10.0f;
-    }
-    else if (!hexen && palette == 13)
-    {
-      extra_red = 0.4f;
-      extra_green = 1.0f;
-      extra_blue = 0.0f;
-      extra_alpha = 0.2f;
-    }
-    else if (hexen)
-    {
-      if (palette <= 20)
-      {
-        // hexen [0] = 35 74 29
-        palette = palette - 12;
-        extra_red = 0.5f;
-        extra_green = 1.0f;
-        extra_blue = 0.4f;
-        extra_alpha = (float) palette / 27.f;
-      }
-      else if (palette == 21)
-      {
-        // hexen [0] = 1 1 113
-        extra_red = 0.0f;
-        extra_green = 0.0f;
-        extra_blue = 1.0f;
-        extra_alpha = 0.4f;
-      }
-      else if (palette <= 24)
-      {
-        // hexen [...] = 66, 51, 36
-        palette = 24 - palette;
-        extra_red = 1.0f;
-        extra_green = 1.0f;
-        extra_blue = 1.0f;
-        extra_alpha = 0.14f + 0.06f * palette;
-      }
-      else if (palette <= 27)
-      {
-        // hexen [0] = 76 56 1
-        palette = 27 - palette;
-        extra_red = 1.0f;
-        extra_green = 0.7f;
-        extra_blue = 0.0f;
-        extra_alpha = 0.14f + 0.06f * palette;
-      }
-    }
-  }
-  if (extra_red > 1.0f)
-    extra_red = 1.0f;
-  if (extra_green > 1.0f)
-    extra_green = 1.0f;
-  if (extra_blue > 1.0f)
-    extra_blue = 1.0f;
-  if (extra_alpha > 1.0f)
-    extra_alpha = 1.0f;
 }
 
 unsigned char *gld_ReadScreen(void)
@@ -1087,8 +929,6 @@ unsigned char *gld_ReadScreen(void)
     glReadPixels(0, 0, gl_window_width, gl_window_height, GL_RGB, GL_UNSIGNED_BYTE, scr);
 
     glPixelStorei(GL_PACK_ALIGNMENT, pack_aligment);
-
-    gld_ApplyGammaRamp(scr, pixels_per_row, gl_window_width, gl_window_height);
 
     // GL textures are bottom up, so copy the rows in reverse to flip vertically
     for (src_row = gl_window_height - 1, dest_row = 0; src_row >= 0; --src_row, ++dest_row)
@@ -1237,18 +1077,7 @@ void gld_StartDrawScene(void)
 
   gld_InitFrameSky();
 
-  invul_method = 0;
-  if (players[displayplayer].fixedcolormap == 32)
-  {
-    if (gl_boom_colormaps && !gl_has_hires)
-    {
-      invul_method = INVUL_CM;
-    }
-    else
-    {
-      invul_method = INVUL_BW;
-    }
-  }
+  invul_cm = (players[displayplayer].fixedcolormap == 32);
 
   // elim - Always enabled (when supported) for upscaling with GL exclusive disabled
   SceneInTexture = gl_ext_framebuffer_object;
@@ -1275,30 +1104,6 @@ void gld_StartDrawScene(void)
 
   rendermarker++;
   scene_has_overlapped_sprites = false;
-  scene_has_wall_details = 0;
-  scene_has_flat_details = 0;
-}
-
-//e6y
-void gld_ProcessExtraAlpha(void)
-{
-  if (extra_alpha>0.0f && !invul_method)
-  {
-    float current_color[4];
-    glGetFloatv(GL_CURRENT_COLOR, current_color);
-    glDisable(GL_ALPHA_TEST);
-    glColor4f(extra_red, extra_green, extra_blue, extra_alpha);
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
-    glBegin(GL_TRIANGLE_STRIP);
-      glVertex2f( 0.0f, 0.0f);
-      glVertex2f( 0.0f, (float)SCREENHEIGHT);
-      glVertex2f( (float)SCREENWIDTH, 0.0f);
-      glVertex2f( (float)SCREENWIDTH, (float)SCREENHEIGHT);
-    glEnd();
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-    glEnable(GL_ALPHA_TEST);
-    glColor4f(current_color[0], current_color[1], current_color[2], current_color[3]);
-  }
 }
 
 void gld_EndDrawScene(void)
@@ -1327,21 +1132,7 @@ void gld_EndDrawScene(void)
     glBindTexture(GL_TEXTURE_2D, glSceneImageTextureFBOTexID);
 
     // Setup blender
-    if (invul_method == INVUL_BW)
-    {
-      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-      glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_DOT3_RGB);
-      glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB,GL_PRIMARY_COLOR);
-      glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND0_RGB,GL_SRC_COLOR);
-      glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_TEXTURE);
-      glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND1_RGB,GL_SRC_COLOR);
-
-      glColor3f(0.3f, 0.3f, 0.4f);
-    }
-    else
-    {
-      glColor3f(1.0f, 1.0f, 1.0f);
-    }
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     // Setup GL camera for drawing the render texture
     dsda_GLFullscreenOrtho2D();
@@ -1364,13 +1155,6 @@ void gld_EndDrawScene(void)
 
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
-  else
-  {
-    if (invul_method == INVUL_BW)
-    {
-      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    }
-  }
 
   glColor3f(1.0f,1.0f,1.0f);
   glDisable(GL_SCISSOR_TEST);
@@ -1385,7 +1169,6 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
     int currpic, nextpic;
     GLWall *wall = (GLWall*)itemdata;
     float oldalpha = wall->alpha;
-    dboolean indexed = V_IsWorldLightmodeIndexed();
 
     switch (itemtype)
     {
@@ -1399,7 +1182,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
         currpic = wall->gltexture->index - firstflat - anim->basepic;
         nextpic = anim->basepic + (currpic + 1) % anim->numpics;
         wall->alpha = oldalpha;
-        wall->gltexture = gld_RegisterFlat(nextpic, true, indexed);
+        wall->gltexture = gld_RegisterFlat(nextpic, true, true);
       }
       break;
     case GLDIT_WALL:
@@ -1415,15 +1198,12 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
           currpic = wall->gltexture->index - anim->basepic;
           nextpic = anim->basepic + (currpic + 1) % anim->numpics;
           wall->alpha = oldalpha;
-          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed, false);
+          wall->gltexture = gld_RegisterTexture(nextpic, true, false, true, false);
         }
       }
       break;
     }
   }
-
-  if (((GLWall*)itemdata)->gltexture->detail)
-    scene_has_wall_details++;
 
   gld_AddDrawItem(itemtype, itemdata);
 }
@@ -1436,16 +1216,9 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
 
 static void gld_DrawWall(GLWall *wall)
 {
-  int has_detail;
   unsigned int flags;
 
   dsda_RecordDrawSeg();
-
-  has_detail =
-    scene_has_details &&
-    gl_arb_multitexture &&
-    (wall->flag < GLDWF_SKY) &&
-    (wall->gltexture->detail);
 
   // Do not repeat middle texture vertically
   // to avoid visual glitches for textures with holes
@@ -1455,64 +1228,56 @@ static void gld_DrawWall(GLWall *wall)
     flags = 0;
 
   gld_BindTexture(wall->gltexture, flags, false);
-  gld_BindDetailARB(wall->gltexture, has_detail);
 
   if (!wall->gltexture)
   {
     glColor4f(1.0f,0.0f,0.0f,1.0f);
   }
 
-  if (has_detail)
+  if ((wall->flag == GLDWF_TOPFLUD) || (wall->flag == GLDWF_BOTFLUD))
   {
-    gld_DrawWallWithDetail(wall);
+    gl_strip_coords_t c;
+
+    gld_BindFlat(wall->gltexture, 0);
+
+    gld_SetupFloodStencil(wall);
+    gld_SetupFloodedPlaneCoords(wall, &c);
+    gld_SetupFloodedPlaneLight(wall);
+    gld_DrawTriangleStrip(wall, &c);
+
+    gld_ClearFloodStencil(wall);
   }
   else
   {
-    if ((wall->flag == GLDWF_TOPFLUD) || (wall->flag == GLDWF_BOTFLUD))
-    {
-      gl_strip_coords_t c;
+    gld_StaticLightAlpha(wall->light, wall->alpha);
 
-      gld_BindFlat(wall->gltexture, 0);
+    glBegin(GL_TRIANGLE_FAN);
 
-      gld_SetupFloodStencil(wall);
-      gld_SetupFloodedPlaneCoords(wall, &c);
-      gld_SetupFloodedPlaneLight(wall);
-      gld_DrawTriangleStrip(wall, &c);
+    // lower left corner
+    glTexCoord2f(wall->ul,wall->vb);
+    glVertex3f(wall->glseg->x1,wall->ybottom,wall->glseg->z1);
 
-      gld_ClearFloodStencil(wall);
-    }
-    else
-    {
-      gld_StaticLightAlpha(wall->light, wall->alpha);
+    // split left edge of wall
+    if (!wall->glseg->fracleft)
+      gld_SplitLeftEdge(wall);
 
-      glBegin(GL_TRIANGLE_FAN);
+    // upper left corner
+    glTexCoord2f(wall->ul,wall->vt);
+    glVertex3f(wall->glseg->x1,wall->ytop,wall->glseg->z1);
 
-      // lower left corner
-      glTexCoord2f(wall->ul,wall->vb);
-      glVertex3f(wall->glseg->x1,wall->ybottom,wall->glseg->z1);
+    // upper right corner
+    glTexCoord2f(wall->ur,wall->vt);
+    glVertex3f(wall->glseg->x2,wall->ytop,wall->glseg->z2);
 
-      // split left edge of wall
-      if (!wall->glseg->fracleft)
-        gld_SplitLeftEdge(wall, false);
+    // split right edge of wall
+    if (!wall->glseg->fracright)
+      gld_SplitRightEdge(wall);
 
-      // upper left corner
-      glTexCoord2f(wall->ul,wall->vt);
-      glVertex3f(wall->glseg->x1,wall->ytop,wall->glseg->z1);
+    // lower right corner
+    glTexCoord2f(wall->ur,wall->vb);
+    glVertex3f(wall->glseg->x2,wall->ybottom,wall->glseg->z2);
 
-      // upper right corner
-      glTexCoord2f(wall->ur,wall->vt);
-      glVertex3f(wall->glseg->x2,wall->ytop,wall->glseg->z2);
-
-      // split right edge of wall
-      if (!wall->glseg->fracright)
-        gld_SplitRightEdge(wall, false);
-
-      // lower right corner
-      glTexCoord2f(wall->ur,wall->vb);
-      glVertex3f(wall->glseg->x2,wall->ybottom,wall->glseg->z2);
-
-      glEnd();
-    }
+    glEnd();
   }
 }
 
@@ -1582,7 +1347,6 @@ void gld_AddWall(seg_t *seg)
   int base_lightlevel;
   int backseg;
   dboolean fix_sky_bleed = false;
-  dboolean indexed;
 
   int side = (seg->sidedef == &sides[seg->linedef->sidenum[0]] ? 0 : 1);
   if (linerendered[side][seg->linedef->iLineID] == rendermarker)
@@ -1591,8 +1355,6 @@ void gld_AddWall(seg_t *seg)
   linelength = lines[seg->linedef->iLineID].texel_length;
   wall.glseg=&gl_lines[seg->linedef->iLineID];
   backseg = seg->sidedef != &sides[seg->linedef->sidenum[0]];
-
-  indexed = V_IsWorldLightmodeIndexed();
 
   if (poly_add_line)
   {
@@ -1644,7 +1406,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom=-MAXCOORD;
       gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
     }
-    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed, false);
+    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, true, false);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
     {
       wall.gltexture=temptex;
@@ -1772,7 +1534,7 @@ void gld_AddWall(seg_t *seg)
     {
       if (!((frontsector->ceilingpic==skyflatnum) && (backsector->ceilingpic==skyflatnum)))
       {
-        temptex=gld_RegisterTexture(toptexture, true, false, indexed, false);
+        temptex=gld_RegisterTexture(toptexture, true, false, true, false);
         if (!temptex && gl_use_stencil && backsector &&
           !(seg->linedef->r_flags & RF_ISOLATED) &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
@@ -1783,7 +1545,7 @@ void gld_AddWall(seg_t *seg)
           if (wall.ybottom >= zCamera)
           {
             wall.flag=GLDWF_TOPFLUD;
-            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true, indexed);
+            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true, true);
             if (temptex)
             {
               wall.gltexture=temptex;
@@ -1808,12 +1570,12 @@ void gld_AddWall(seg_t *seg)
     /* midtexture */
     //e6y
     if (!raven && comp[comp_maskedanim])
-      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed, false);
+      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, true, false);
     else
       // e6y
       // Animated middle textures with a zero index should be forced
       // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
-      temptex=gld_RegisterTexture(midtexture, true, true, indexed, false);
+      temptex=gld_RegisterTexture(midtexture, true, true, true, false);
 
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
@@ -1977,7 +1739,7 @@ bottomtexture:
     }
     if (floor_height<ceiling_height)
     {
-      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed, false);
+      temptex=gld_RegisterTexture(bottomtexture, true, false, true, false);
       if (!temptex && gl_use_stencil && backsector &&
         !(seg->linedef->r_flags & RF_ISOLATED) &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
@@ -1988,7 +1750,7 @@ bottomtexture:
         if (wall.ytop <= zCamera)
         {
           wall.flag = GLDWF_BOTFLUD;
-          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true, indexed);
+          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true, true);
           if (temptex)
           {
             wall.gltexture=temptex;
@@ -2041,25 +1803,12 @@ static void gld_DrawFlat(GLFlat *flat)
 {
   int loopnum; // current loop number
   GLLoopDef *currentloop; // the current loop
-  dboolean has_detail;
   int has_offset;
-  unsigned int flags;
+  unsigned int flags = 0;
 
   dsda_RecordVisPlane();
 
-  has_detail =
-    scene_has_details &&
-    gl_arb_multitexture &&
-    flat->gltexture->detail;
-
-  has_offset = (has_detail || (flat->flags & GLFLAT_HAVE_TRANSFORM));
-
-  if ((sectorloops[flat->sectornum].flags & SECTOR_CLAMPXY) && (!has_detail) &&
-      (flat->gltexture->flags & GLTEXTURE_HIRES) &&
-      !(flat->flags & GLFLAT_HAVE_TRANSFORM))
-    flags = GLTEXTURE_CLAMPXY;
-  else
-    flags = 0;
+  has_offset = (flat->flags & GLFLAT_HAVE_TRANSFORM);
 
   gld_BindFlat(flat->gltexture, flags);
   gld_StaticLightAlpha(flat->light, flat->alpha);
@@ -2077,30 +1826,6 @@ static void gld_DrawFlat(GLFlat *flat)
     glRotatef(-flat->rotation, 0.f, 0.f, 1.f);
   }
 
-  gld_BindDetailARB(flat->gltexture, has_detail);
-  if (has_detail)
-  {
-    float w, h, dx, dy;
-    detail_t *detail = flat->gltexture->detail;
-
-    GLEXT_glActiveTextureARB(GL_TEXTURE1_ARB);
-    gld_StaticLightAlpha(flat->light, flat->alpha);
-
-    glPushMatrix();
-
-    w = flat->gltexture->detail_width;
-    h = flat->gltexture->detail_height;
-    dx = detail->offsetx;
-    dy = detail->offsety;
-
-    if ((flat->flags & GLFLAT_HAVE_TRANSFORM) || dx || dy)
-    {
-      glTranslatef(flat->uoffs * w + dx, flat->voffs * h + dy, 0.0f);
-    }
-
-    glScalef(w, h, 1.0f);
-  }
-
   if (flat->sectornum>=0)
   {
     // go through all loops of this sector
@@ -2110,13 +1835,6 @@ static void gld_DrawFlat(GLFlat *flat)
       currentloop=&sectorloops[flat->sectornum].loops[loopnum];
       glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
     }
-  }
-
-  //e6y
-  if (has_detail)
-  {
-    glPopMatrix();
-    GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
   }
 
   if (has_offset)
@@ -2140,7 +1858,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   int floorlightlevel;      // killough 3/16/98: set floor lightlevel
   int ceilinglightlevel;    // killough 4/11/98
   GLFlat flat;
-  dboolean indexed;
 
   if (sectornum<0)
     return;
@@ -2149,8 +1866,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   sector=R_FakeFlat(sector, &tempsec, &floorlightlevel, &ceilinglightlevel, false); // for boom effects
   flat.flags = (ceiling ? GLFLAT_CEILING : 0);
 
-  indexed = V_IsWorldLightmodeIndexed();
-
   if (plane->picnum & PL_SKYFLAT || plane->picnum == skyflatnum) // don't draw if sky
     return;
 
@@ -2158,7 +1873,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   {
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, true);
     if (!flat.gltexture)
       return;
     // get the lightlevel from floorlightlevel
@@ -2262,7 +1977,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   {
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, true);
     if (!flat.gltexture)
       return;
     // get the lightlevel from ceilinglightlevel
@@ -2319,14 +2034,11 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
 
       currpic = flat.gltexture->index - firstflat - anim->basepic;
       nextpic = anim->basepic + (currpic + 1) % anim->numpics;
-      flat.gltexture = gld_RegisterFlat(nextpic, true, indexed);
+      flat.gltexture = gld_RegisterFlat(nextpic, true, true);
     }
   }
 
   flat.alpha = 1.0;
-
-  if (flat.gltexture->detail)
-    scene_has_flat_details++;
 
   gld_AddDrawItem(((flat.flags & GLFLAT_CEILING) ? GLDIT_CEILING : GLDIT_FLOOR), &flat);
 }
@@ -2730,7 +2442,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.cm = thing->color;
   else
     sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
-  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, V_IsWorldLightmodeIndexed());
+  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, true);
   if (!sprite.gltexture)
     return;
   sprite.flags = thing->flags;
@@ -2939,9 +2651,6 @@ void gld_DrawScene(player_t *player)
   gl_EnableFog(true);
   gl_EnableFog(false);
 
-  gld_EnableDetail(false);
-  gld_InitFrameDetails();
-
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
@@ -2993,9 +2702,6 @@ void gld_DrawScene(player_t *player)
   // disable backside removing
   glDisable(GL_CULL_FACE);
 
-  // detail texture works only with flats and walls
-  gld_EnableDetail(false);
-
   // top, bottom, one-sided walls
   gld_DrawItemsSortByTexture(GLDIT_WALL);
   for (i = gld_drawinfo.num_items[GLDIT_WALL] - 1; i >= 0; i--)
@@ -3009,8 +2715,7 @@ void gld_DrawScene(player_t *player)
 
   gld_DrawItemsSortByTexture(GLDIT_MWALL);
 
-  if (!gl_arb_multitexture && render_usedetail && gl_use_stencil &&
-      gld_drawinfo.num_items[GLDIT_MWALL] > 0)
+  if (!gl_arb_multitexture && gl_use_stencil && gld_drawinfo.num_items[GLDIT_MWALL] > 0)
   {
     // opaque mid walls without holes
     for (i = gld_drawinfo.num_items[GLDIT_MWALL] - 1; i >= 0; i--)
@@ -3045,18 +2750,6 @@ void gld_DrawScene(player_t *player)
     glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
     glBlendFunc (GL_DST_COLOR, GL_SRC_COLOR);
 
-    // details for opaque mid walls with holes
-    gld_DrawItemsSortByDetail(GLDIT_MWALL);
-    for (i = gld_drawinfo.num_items[GLDIT_MWALL] - 1; i >= 0; i--)
-    {
-      GLWall *wall = gld_drawinfo.items[GLDIT_MWALL][i].item.wall;
-      if (wall->gltexture->flags & GLTEXTURE_HASHOLES)
-      {
-        gld_SetFog(wall->fogdensity);
-        gld_DrawWallDetail_NoARB(wall);
-      }
-    }
-
     //restoring
     SetFrameTextureMode();
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -3074,7 +2767,6 @@ void gld_DrawScene(player_t *player)
   }
 
   gl_EnableFog(false);
-  gld_EnableDetail(false);
 
   // projected walls
   gld_DrawProjectedWalls(GLDIT_FWALL);
@@ -3243,12 +2935,6 @@ void gld_DrawScene(player_t *player)
     }
     glEnable(GL_ALPHA_TEST);
   }
-
-  // e6y: detail
-  if (!gl_arb_multitexture && render_usedetail)
-    gld_DrawDetail_NoARB();
-
-  gld_EnableDetail(false);
 
   if (gl_ext_arb_vertex_buffer_object)
   {

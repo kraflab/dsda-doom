@@ -104,7 +104,6 @@ typedef enum
   ns_colormaps,
   ns_prboom,
   ns_demos,
-  ns_hires //e6y
 } li_namespace_e; // haleyjd 05/21/02: renamed from "namespace"
 
 typedef struct

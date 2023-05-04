@@ -379,35 +379,6 @@ void M_ChangeFOV(void)
   skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
 }
 
-void ResolveColormapsHiresConflict(dboolean prefer_colormap)
-{
-  gl_boom_colormaps = !r_have_internal_hires;
-}
-
-void M_ChangeAllowBoomColormaps(void)
-{
-  if (gl_boom_colormaps == -1)
-  {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
-  }
-  else
-  {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
-    gld_FlushTextures();
-    gld_Precache();
-  }
-}
-
-void M_ChangeTextureUseHires(void)
-{
-  ResolveColormapsHiresConflict(false);
-
-  gld_FlushTextures();
-  gld_Precache();
-}
-
 float viewPitch;
 
 int StepwiseSum(int value, int direction, int minval, int maxval, int defval)

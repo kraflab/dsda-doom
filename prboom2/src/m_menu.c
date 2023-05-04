@@ -2961,8 +2961,6 @@ setup_menu_t audiovideo_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   EMPTY_LINE,
-  { "OpenGL Indexed Light Mode", S_YESNO, m_conf, G_X, dsda_config_gl_lightmode_indexed },
-  EMPTY_LINE,
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
@@ -5215,25 +5213,14 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_gamma))
     {
 //e6y
-      if (V_IsOpenGLMode() && gl_hardware_gamma)
-      {
-        static char str[200];
-        sprintf(str, "Gamma correction level %d", dsda_CycleConfig(dsda_config_gl_usegamma, true));
-        players[consoleplayer].message = str;
-
-        gld_SetGammaRamp(gl_usegamma);
-      }
-      else
-      {
-        dsda_CycleConfig(dsda_config_usegamma, true);
-        players[consoleplayer].message =
-          usegamma == 0 ? s_GAMMALVL0 :
-          usegamma == 1 ? s_GAMMALVL1 :
-          usegamma == 2 ? s_GAMMALVL2 :
-          usegamma == 3 ? s_GAMMALVL3 :
-          s_GAMMALVL4;
-        return true;
-      }
+      dsda_CycleConfig(dsda_config_usegamma, true);
+      players[consoleplayer].message =
+        usegamma == 0 ? s_GAMMALVL0 :
+        usegamma == 1 ? s_GAMMALVL1 :
+        usegamma == 2 ? s_GAMMALVL2 :
+        usegamma == 3 ? s_GAMMALVL3 :
+        s_GAMMALVL4;
+      return true;
     }
 
     if (dsda_InputActivated(dsda_input_zoomout))
@@ -6074,7 +6061,6 @@ void M_Init(void)
   M_ChangeMaxViewPitch();
   M_ChangeSkyMode();
   M_ChangeFOV();
-  M_ChangeAllowBoomColormaps();
 
   M_ChangeDemoSmoothTurns();
 

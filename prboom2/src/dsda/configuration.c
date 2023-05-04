@@ -99,7 +99,6 @@ void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
-void M_ChangeLightMode(void);
 void I_InitMouse(void);
 void AccelChanging(void);
 void G_UpdateMouseSensitivity(void);
@@ -583,10 +582,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_blend_animations", dsda_config_gl_blend_animations,
     CONF_BOOL(0), &gl_blend_animations
   },
-  [dsda_config_gl_usegamma] = {
-    "gl_usegamma", dsda_config_gl_usegamma,
-    dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &gl_usegamma
-  },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
@@ -604,10 +599,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_render_fov] = {
     "gl_render_fov", dsda_config_gl_render_fov,
     dsda_config_int, 20, 160, { 90 }, &gl_render_fov, NOT_STRICT, M_ChangeFOV
-  },
-  [dsda_config_gl_lightmode_indexed] = {
-    "gl_lightmode_indexed", dsda_config_gl_lightmode_indexed,
-    CONF_BOOL(1), NULL, NOT_STRICT, M_ChangeLightMode
   },
   [dsda_config_gl_health_bar] = {
     "gl_health_bar", dsda_config_gl_health_bar,

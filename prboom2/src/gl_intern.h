@@ -56,8 +56,8 @@ typedef enum
   GLTEXTURE_SPRITE    = 0x00000002,
   GLTEXTURE_HASHOLES  = 0x00000004,
   GLTEXTURE_SKY       = 0x00000008,
-  GLTEXTURE_HIRES     = 0x00000010,
-  GLTEXTURE_HASNOHIRES= 0x00000020,
+
+
   GLTEXTURE_CLAMPX    = 0x00000040,
   GLTEXTURE_CLAMPY    = 0x00000080,
   GLTEXTURE_CLAMPXY   = (GLTEXTURE_CLAMPX | GLTEXTURE_CLAMPY),
@@ -113,10 +113,6 @@ typedef struct
   GLTexType textype;
   unsigned int flags;
   float scalexfac, scaleyfac; //e6y: right/bottom UV coordinates for patch drawing
-
-  //detail
-  detail_t *detail;
-  float detail_width, detail_height;
 } GLTexture;
 
 typedef struct
@@ -329,7 +325,6 @@ typedef struct
 void gld_AddDrawItem(GLDrawItemType itemtype, void *itemdata);
 
 void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c);
-void gld_DrawTriangleStripARB(GLWall *wall, gl_strip_coords_t *c1, gl_strip_coords_t *c2);
 
 extern float roll;
 extern float yaw;
@@ -358,26 +353,8 @@ extern float xCamera,yCamera,zCamera;
 //
 
 void gld_InitDetail(void);
-void gld_InitFrameDetails(void);
-void gld_ParseDetail(void);
-void gld_SetTexDetail(GLTexture *gltexture);
 
 void gld_PreprocessDetail(void);
-void gld_DrawDetail_NoARB(void);
-void gld_EnableDetail(int enable);
-void gld_DrawWallWithDetail(GLWall *wall);
-void gld_BindDetail(GLTexture *gltexture, int enable);
-void gld_BindDetailARB(GLTexture *gltexture, int enable);
-void gld_DrawItemsSortByDetail(GLDrawItemType itemtype);
-void gld_DrawWallDetail_NoARB(GLWall *wall);
-
-extern int render_usedetail;
-extern int scene_has_details;
-extern detail_t *details;
-extern int details_count;
-
-extern int scene_has_wall_details;
-extern int scene_has_flat_details;
 
 extern GLuint* last_glTexID;
 GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed, dboolean sky);
@@ -403,12 +380,9 @@ void gld_Precache(void);
 
 void SetFrameTextureMode(void);
 
-//gamma
-void gld_ResetGammaRamp(void);
-
 //gl_vertex
-void gld_SplitLeftEdge(const GLWall *wall, dboolean detail);
-void gld_SplitRightEdge(const GLWall *wall, dboolean detail);
+void gld_SplitLeftEdge(const GLWall *wall);
+void gld_SplitRightEdge(const GLWall *wall);
 void gld_RecalcVertexHeights(const vertex_t *v);
 
 //e6y
@@ -419,24 +393,18 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
 
 int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int width, int height);
 
-//hires
-extern unsigned int gl_has_hires;
-int gld_HiRes_BuildTables(void);
-void gld_InitHiRes(void);
-int gld_LoadHiresTex(GLTexture *gltexture, int cm);
-void gld_GetTextureTexID(GLTexture *gltexture, int cm);
 GLuint CaptureScreenAsTexID(void);
+
+//progress
 void gld_ProgressUpdate(const char * text, int progress, int total);
 int gld_ProgressStart(void);
 int gld_ProgressEnd(void);
 
 //FBO
-#define INVUL_CM 1
-#define INVUL_BW 2
 extern GLuint glSceneImageFBOTexID;
 extern GLuint glSceneImageTextureFBOTexID;
 
-extern int invul_method;
+extern dboolean invul_cm;
 extern float bw_red;
 extern float bw_green;
 extern float bw_blue;
@@ -558,6 +526,5 @@ void glsl_SetLightLevel(float lightlevel);
 void glsl_SetFuzzTime(int time);
 void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
 void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
-dboolean glsl_UseFuzzShader(void);
 
 #endif // _GL_INTERN_H

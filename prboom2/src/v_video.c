@@ -845,10 +845,6 @@ dboolean V_IsOpenGLMode(void) {
   return current_videomode == VID_MODEGL;
 }
 
-dboolean V_IsWorldLightmodeIndexed(void) {
-  return gl_lightmode_indexed;
-}
-
 dboolean V_IsUILightmodeIndexed(void) {
   return gl_ui_lightmode_indexed;
 }

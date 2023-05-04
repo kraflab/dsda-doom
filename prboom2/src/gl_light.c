@@ -49,7 +49,6 @@
 
 #include "dsda/configuration.h"
 
-dboolean gl_lightmode_indexed = true;
 dboolean gl_ui_lightmode_indexed = false;
 dboolean gl_automap_lightmode_indexed = false;
 
@@ -62,35 +61,6 @@ float gl_CurrentFogDensity = -1.0f;
 float distfogtable[3][256];
 
 static float lighttable[5][256];
-
-int gl_hardware_gamma = false;
-
-void M_ChangeLightMode(void)
-{
-  if (!V_IsOpenGLMode())
-  {
-    return;
-  }
-
-  gl_lightmode_indexed = dsda_IntConfig(dsda_config_gl_lightmode_indexed);
-  gl_hardware_gamma = !gl_lightmode_indexed;
-
-  if (gl_hardware_gamma)
-  {
-    gld_SetGammaRamp(gl_usegamma);
-  }
-
-  // Not "else" because the above call can fail and revert gl_hardware_gamma
-  if (!gl_hardware_gamma)
-  {
-    gld_SetGammaRamp(-1);
-    gld_FlushTextures();
-  }
-
-  // [XA] recalculate skymode since it depends
-  // on whether or not indexed mode is set
-  M_ChangeSkyMode();
-}
 
 /*
  * lookuptable for lightvalues
@@ -131,40 +101,15 @@ void gld_StaticLightAlpha(float light, float alpha)
 {
   player_t *player = &players[displayplayer];
 
-  if (!player->fixedcolormap)
-  {
-    glColor4f(1.0f, 1.0f, 1.0f, alpha);
-  }
-  else
-  {
-    if (invul_method != INVUL_BW)
-    {
-      glColor4f(1.0f, 1.0f, 1.0f, alpha);
-    }
-    else
-    {
-      if (SceneInTexture)
-      {
-        glColor4f(0.5f, 0.5f, 0.5f, alpha);
-      }
-      else
-      {
-        glColor4f(bw_red, bw_green, bw_blue, alpha);
-      }
-    }
-  }
+  glColor4f(1.0f, 1.0f, 1.0f, alpha);
 
   glsl_SetLightLevel((player->fixedcolormap ? 1.0f : light));
 }
 
 // [XA] return amount of light to add from the player's gun flash.
-// for non-indexed modes this is twice as large for some reason.
 int gld_GetGunFlashLight(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-    return (extralight << 4);
-  else
-    return (extralight << 5);
+  return (extralight << 4);
 }
 
 void M_ChangeAllowFog(void)

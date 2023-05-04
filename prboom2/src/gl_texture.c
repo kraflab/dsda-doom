@@ -95,9 +95,6 @@ static GLTexture **gld_GLIndexedSkyTextures = NULL;
 
 int gl_tex_format=GL_RGB5_A1;
 
-int gl_boom_colormaps = -1;
-int gl_boom_colormaps_default = true;
-
 GLuint* last_glTexID = NULL;
 
 int transparent_pal_index;
@@ -207,7 +204,7 @@ void* NewIntDynArray(int dimCount, int *dims)
 // There are 9 known values for player->fixedcolormap:
 // 0 (normal) -> 0; 1 (pw_infrared) -> 1; 2..7 -> 2..7 (heretic torch flicker);
 // 32 (pw_invulnerability) -> 8
-void gld_GetTextureTexID(GLTexture *gltexture, int cm)
+static void gld_GetTextureTexID(GLTexture *gltexture, int cm)
 {
   static int data[NUMCOLORMAPS+1] = {
      0,  1,  2,  3,  4,  5,  6,  7,
@@ -218,20 +215,8 @@ void gld_GetTextureTexID(GLTexture *gltexture, int cm)
   };
 
   gltexture->cm = cm;
-  gltexture->player_cm = 0;
-
-  if (!gl_boom_colormaps)
-  {
-    gltexture->texflags_p = &gltexture->texflags[cm][0];
-    gltexture->texid_p = &gltexture->glTexExID[cm][0][0];
-    return;
-  }
-
-  if (!(gltexture->flags & GLTEXTURE_HIRES))
-  {
-    gltexture->player_cm = data[frame_fixedcolormap];
-    assert(gltexture->player_cm != -1);
-  }
+  gltexture->player_cm = data[frame_fixedcolormap];
+  assert(gltexture->player_cm != -1);
 
   gltexture->texflags_p = &gltexture->texflags[cm][gltexture->player_cm];
   gltexture->texid_p = &gltexture->glTexExID[cm][gltexture->player_cm][boom_cm];
@@ -326,8 +311,7 @@ static GLTexture *gld_GetGLSkyTexture(GLTexture *basetexture)
     return NULL;
 
   // [XA] returns the indexed sky texture for the current palette & gamma level.
-  if (V_IsWorldLightmodeIndexed())
-    index = gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma;
+  index = gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma;
 
   return gld_GetGLIndexedSkyTexture(basetexture->index, index);
 }
@@ -444,7 +428,7 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
             buffer[pos + 1] = 0;
             buffer[pos + 2] = 0;
           }
-          else if (gl_boom_colormaps && use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
+          else if (use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
           {
             //e6y: Boom's color maps
             buffer[pos+0]=playpal[colormap[source[j]]*3+0];
@@ -561,7 +545,7 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
             buffer[pos+1]=0;
             buffer[pos+2]=0;
           }
-          else if (gl_boom_colormaps && use_boom_cm)
+          else if (use_boom_cm)
           {
             //e6y: Boom's color maps
             buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
@@ -629,7 +613,7 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
           buffer[pos+1]=0;
           buffer[pos+2]=0;
         }
-        else if (gl_boom_colormaps && use_boom_cm)
+        else if (use_boom_cm)
         {
           //e6y: Boom's color maps
           buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
@@ -788,7 +772,7 @@ static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buff
         }
 #endif
         //e6y: Boom's color maps
-        if (gl_boom_colormaps && use_boom_cm && !comp[comp_skymap])
+        if (use_boom_cm && !comp[comp_skymap])
         {
           const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
           buffer[pos+0]=gtable[playpal[colormap[source[j]]*3+0]];
@@ -870,9 +854,6 @@ static GLTexture *gld_InitUnregisteredTexture(int texture_num, GLTexture *gltext
 
   gltexture->textype = GLDT_TEXTURE;
 
-  if (!indexed)
-    gld_SetTexDetail(gltexture);
-
   return gltexture;
 }
 
@@ -936,18 +917,10 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
 
 void gld_SetTexFilters(GLTexture *gltexture)
 {
-  int mag_filter, min_filter;
   float aniso_filter = 0.0f;
 
-  if (render_usedetail && gltexture->detail)
-    mag_filter = GL_LINEAR;
-  else
-    mag_filter = GL_NEAREST;
-
-  min_filter =  GL_NEAREST;
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   if (aniso_filter > 0.0f)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso_filter);
 }
@@ -1130,15 +1103,6 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
     return;
   }
 
-#ifdef HAVE_LIBSDL2_IMAGE
-  if (gld_LoadHiresTex(gltexture, CR_DEFAULT))
-  {
-    gld_SetTexClamp(gltexture, flags);
-    last_glTexID = gltexture->texid_p;
-    return;
-  }
-#endif
-
   gld_GetTextureTexID(gltexture, CR_DEFAULT);
 
   if (last_glTexID == gltexture->texid_p)
@@ -1168,7 +1132,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
     patch=R_TextureCompositePatchByNum(gltexture->index);
   }
 
-  if (sky && V_IsWorldLightmodeIndexed())
+  if (sky)
   {
     gld_AddIndexedSkyToTexture(gltexture, buffer, patch, gld_paletteIndex, usegamma);
   }
@@ -1265,15 +1229,6 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
     last_glTexID = NULL;
     return;
   }
-
-#ifdef HAVE_LIBSDL2_IMAGE
-  if (gld_LoadHiresTex(gltexture, cm))
-  {
-    gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
-    last_glTexID = gltexture->texid_p;
-    return;
-  }
-#endif
 
   gld_GetTextureTexID(gltexture, cm);
 
@@ -1376,9 +1331,6 @@ GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dbo
       return gltexture;
 
     gltexture->textype=GLDT_FLAT;
-
-    if (!indexed)
-      gld_SetTexDetail(gltexture);
   }
   return gltexture;
 }
@@ -1394,15 +1346,6 @@ void gld_BindRaw(GLTexture *gltexture, unsigned int flags)
     last_glTexID = NULL;
     return;
   }
-
-#ifdef HAVE_LIBSDL2_IMAGE
-  if (gld_LoadHiresTex(gltexture, CR_DEFAULT))
-  {
-    gld_SetTexClamp(gltexture, flags);
-    last_glTexID = gltexture->texid_p;
-    return;
-  }
-#endif
 
   gld_GetTextureTexID(gltexture, CR_DEFAULT);
 
@@ -1449,9 +1392,6 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
   GLTexture *basetexture;
   GLTexture *gltexture;
   int i;
-
-  if (!V_IsWorldLightmodeIndexed())
-    return gld_RegisterTexture(texture_num, false, force, false, true);
 
   if (texture_num == NO_TEXTURE && !force)
     return NULL;
@@ -1573,10 +1513,6 @@ void gld_InitColormapTextures(dboolean fullbright)
   // each palette at each gamma level. word.
   gld_numGLColormaps = V_GetPlaypalCount() * NUM_GAMMA_LEVELS;
 
-  // ain't in indexed mode? ain't nothin' to do.
-  if (!V_IsWorldLightmodeIndexed())
-    return;
-
   // abort if we're trying to show an out-of-bounds palette.
   if (gld_paletteIndex < 0 || gld_paletteIndex >= gld_numGLColormaps)
     return;
@@ -1640,12 +1576,7 @@ void gld_FlushTextures(void)
   gld_CleanTexItems(gld_numGLColormaps, &gld_GLFullbrightColormapTextures);
   gld_CleanTexItems(numtextures * gld_numGLColormaps, &gld_GLIndexedSkyTextures);
 
-  gl_has_hires = 0;
-
   gld_ResetLastTexture();
-#ifdef HAVE_LIBSDL2_IMAGE
-  gld_HiRes_BuildTables();
-#endif
 
   gld_InitSky();
   gld_InitColormapTextures(V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
@@ -1676,20 +1607,14 @@ void gld_Precache(void)
   byte *hitlist;
   int hit, hitcount = 0;
   GLTexture *gltexture;
-  dboolean indexed;
 
   unsigned int tics = SDL_GetTicks();
-
-  int usehires = r_have_internal_hires;
 
   if (nodrawers)
     return;
 
-  if (!usehires)
-  {
-    if (timingdemo)
-      return;
-  }
+  if (timingdemo)
+    return;
 
   gld_ProgressStart();
 
@@ -1697,11 +1622,6 @@ void gld_Precache(void)
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
     hitlist = Z_Malloc((size_t)numtextures > size ? (size_t)numtextures : size);
   }
-
-  // [XA] TODO: precache both indexed and non-indexed textures?
-  // right now if a player switches lightmode while-ingame, the
-  // other texture set will not have been precached.
-  indexed = V_IsWorldLightmodeIndexed();
 
   // Precache flats.
 
@@ -1738,7 +1658,7 @@ void gld_Precache(void)
     if (hitlist[i])
     {
       gld_ProgressUpdate("Loading Flats...", ++hit, hitcount);
-      gltexture = gld_RegisterFlat(i, true, indexed);
+      gltexture = gld_RegisterFlat(i, true, true);
       if (gltexture)
       {
         gld_BindFlat(gltexture, 0);
@@ -1794,7 +1714,7 @@ void gld_Precache(void)
   //  name.
 
   if (hitlist)
-    hitlist[skytexture] = usehires ? 1 : 0;
+    hitlist[skytexture] = 0;
 
   CalcHitsCount(hitlist, numtextures, &hit, &hitcount);
 
@@ -1802,7 +1722,7 @@ void gld_Precache(void)
     if (hitlist[i])
     {
       gld_ProgressUpdate("Loading Textures...", ++hit, hitcount);
-      gltexture = gld_RegisterTexture(i, i != skytexture, false, indexed, false);
+      gltexture = gld_RegisterTexture(i, i != skytexture, false, true, false);
       if (gltexture)
       {
         gld_BindTexture(gltexture, 0, false);
@@ -1841,7 +1761,7 @@ void gld_Precache(void)
             do
             {
               gld_ProgressUpdate("Loading Sprites...", ++hit, hitcount);
-              gltexture = gld_RegisterPatch(firstspritelump + sflump[k], CR_LIMIT, true, indexed);
+              gltexture = gld_RegisterPatch(firstspritelump + sflump[k], CR_LIMIT, true, true);
               if (gltexture)
               {
                 gld_BindPatch(gltexture, CR_LIMIT);
@@ -1856,7 +1776,7 @@ void gld_Precache(void)
 
   gld_InitFBO();
 
-  // e6y: some statistics.  make sense for hires
+  // e6y: some statistics
   {
     char map[8];
 

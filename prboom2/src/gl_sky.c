@@ -249,19 +249,15 @@ void gld_DrawStripsSky(void)
 
   if (gl_drawskys == skytype_standard)
   {
-    if (comp[comp_skymap] && invul_method == INVUL_BW)
-      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-
     glEnable(GL_TEXTURE_GEN_S);
     glEnable(GL_TEXTURE_GEN_T);
     glEnable(GL_TEXTURE_GEN_Q);
-    if (comp[comp_skymap] || invul_method != INVUL_BW)
-      glColor4fv(gl_whitecolor);
+
+    glColor4fv(gl_whitecolor);
 
     SetTextureMode(TM_OPAQUE);
   }
 
-  gld_EnableDetail(false);
   glMatrixMode(GL_TEXTURE);
 
   skyymid_multiplier = 1.0f;
@@ -315,9 +311,6 @@ void gld_DrawStripsSky(void)
     glDisable(GL_TEXTURE_GEN_Q);
     glDisable(GL_TEXTURE_GEN_T);
     glDisable(GL_TEXTURE_GEN_S);
-
-    if (comp[comp_skymap] && invul_method == INVUL_BW)
-      glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_COMBINE);
 
     SetFrameTextureMode();
   }
@@ -650,13 +643,10 @@ static void RenderDome(SkyBoxParams_t *sky)
   if (!sky || !sky->wall.gltexture)
     return;
 
-  if (invul_method == INVUL_CM && frame_fixedcolormap == INVERSECOLORMAP)
+  if (invul_cm && frame_fixedcolormap == INVERSECOLORMAP)
     vbo = &sky_vbo[1];
   else
     vbo = &sky_vbo[0];
-
-  // be sure the second ARB is not enabled
-  gld_EnableDetail(false);
 
   glRotatef(-180.0f + sky->x_offset, 0.f, 1.f, 0.f);
 
