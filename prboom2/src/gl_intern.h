@@ -329,7 +329,6 @@ typedef struct
 void gld_AddDrawItem(GLDrawItemType itemtype, void *itemdata);
 
 void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c);
-void gld_DrawTriangleStripARB(GLWall *wall, gl_strip_coords_t *c1, gl_strip_coords_t *c2);
 
 extern float roll;
 extern float yaw;
@@ -358,25 +357,9 @@ extern float xCamera,yCamera,zCamera;
 //
 
 void gld_InitDetail(void);
-void gld_InitFrameDetails(void);
-void gld_SetTexDetail(GLTexture *gltexture);
 
 void gld_PreprocessDetail(void);
-void gld_DrawDetail_NoARB(void);
 void gld_EnableDetail(int enable);
-void gld_DrawWallWithDetail(GLWall *wall);
-void gld_BindDetail(GLTexture *gltexture, int enable);
-void gld_BindDetailARB(GLTexture *gltexture, int enable);
-void gld_DrawItemsSortByDetail(GLDrawItemType itemtype);
-void gld_DrawWallDetail_NoARB(GLWall *wall);
-
-extern int render_usedetail;
-extern int scene_has_details;
-extern detail_t *details;
-extern int details_count;
-
-extern int scene_has_wall_details;
-extern int scene_has_flat_details;
 
 extern GLuint* last_glTexID;
 GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed, dboolean sky);

@@ -854,9 +854,6 @@ static GLTexture *gld_InitUnregisteredTexture(int texture_num, GLTexture *gltext
 
   gltexture->textype = GLDT_TEXTURE;
 
-  if (!indexed)
-    gld_SetTexDetail(gltexture);
-
   return gltexture;
 }
 
@@ -920,18 +917,10 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
 
 void gld_SetTexFilters(GLTexture *gltexture)
 {
-  int mag_filter, min_filter;
   float aniso_filter = 0.0f;
 
-  if (render_usedetail && gltexture->detail)
-    mag_filter = GL_LINEAR;
-  else
-    mag_filter = GL_NEAREST;
-
-  min_filter =  GL_NEAREST;
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   if (aniso_filter > 0.0f)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso_filter);
 }
@@ -1342,9 +1331,6 @@ GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dbo
       return gltexture;
 
     gltexture->textype=GLDT_FLAT;
-
-    if (!indexed)
-      gld_SetTexDetail(gltexture);
   }
   return gltexture;
 }
