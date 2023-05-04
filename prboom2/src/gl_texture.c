@@ -311,8 +311,7 @@ static GLTexture *gld_GetGLSkyTexture(GLTexture *basetexture)
     return NULL;
 
   // [XA] returns the indexed sky texture for the current palette & gamma level.
-  if (V_IsWorldLightmodeIndexed())
-    index = gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma;
+  index = gld_paletteIndex * NUM_GAMMA_LEVELS + usegamma;
 
   return gld_GetGLIndexedSkyTexture(basetexture->index, index);
 }
@@ -1144,7 +1143,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
     patch=R_TextureCompositePatchByNum(gltexture->index);
   }
 
-  if (sky && V_IsWorldLightmodeIndexed())
+  if (sky)
   {
     gld_AddIndexedSkyToTexture(gltexture, buffer, patch, gld_paletteIndex, usegamma);
   }
@@ -1408,9 +1407,6 @@ GLTexture *gld_RegisterSkyTexture(int texture_num, dboolean force)
   GLTexture *gltexture;
   int i;
 
-  if (!V_IsWorldLightmodeIndexed())
-    return gld_RegisterTexture(texture_num, false, force, false, true);
-
   if (texture_num == NO_TEXTURE && !force)
     return NULL;
 
@@ -1531,10 +1527,6 @@ void gld_InitColormapTextures(dboolean fullbright)
   // each palette at each gamma level. word.
   gld_numGLColormaps = V_GetPlaypalCount() * NUM_GAMMA_LEVELS;
 
-  // ain't in indexed mode? ain't nothin' to do.
-  if (!V_IsWorldLightmodeIndexed())
-    return;
-
   // abort if we're trying to show an out-of-bounds palette.
   if (gld_paletteIndex < 0 || gld_paletteIndex >= gld_numGLColormaps)
     return;
@@ -1629,7 +1621,6 @@ void gld_Precache(void)
   byte *hitlist;
   int hit, hitcount = 0;
   GLTexture *gltexture;
-  dboolean indexed;
 
   unsigned int tics = SDL_GetTicks();
 
@@ -1645,11 +1636,6 @@ void gld_Precache(void)
     size_t size = numflats > num_sprites  ? numflats : num_sprites;
     hitlist = Z_Malloc((size_t)numtextures > size ? (size_t)numtextures : size);
   }
-
-  // [XA] TODO: precache both indexed and non-indexed textures?
-  // right now if a player switches lightmode while-ingame, the
-  // other texture set will not have been precached.
-  indexed = V_IsWorldLightmodeIndexed();
 
   // Precache flats.
 
@@ -1686,7 +1672,7 @@ void gld_Precache(void)
     if (hitlist[i])
     {
       gld_ProgressUpdate("Loading Flats...", ++hit, hitcount);
-      gltexture = gld_RegisterFlat(i, true, indexed);
+      gltexture = gld_RegisterFlat(i, true, true);
       if (gltexture)
       {
         gld_BindFlat(gltexture, 0);
@@ -1750,7 +1736,7 @@ void gld_Precache(void)
     if (hitlist[i])
     {
       gld_ProgressUpdate("Loading Textures...", ++hit, hitcount);
-      gltexture = gld_RegisterTexture(i, i != skytexture, false, indexed, false);
+      gltexture = gld_RegisterTexture(i, i != skytexture, false, true, false);
       if (gltexture)
       {
         gld_BindTexture(gltexture, 0, false);
@@ -1789,7 +1775,7 @@ void gld_Precache(void)
             do
             {
               gld_ProgressUpdate("Loading Sprites...", ++hit, hitcount);
-              gltexture = gld_RegisterPatch(firstspritelump + sflump[k], CR_LIMIT, true, indexed);
+              gltexture = gld_RegisterPatch(firstspritelump + sflump[k], CR_LIMIT, true, true);
               if (gltexture)
               {
                 gld_BindPatch(gltexture, CR_LIMIT);
