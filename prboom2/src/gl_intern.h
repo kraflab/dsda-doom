@@ -359,7 +359,6 @@ extern float xCamera,yCamera,zCamera;
 
 void gld_InitDetail(void);
 void gld_InitFrameDetails(void);
-void gld_ParseDetail(void);
 void gld_SetTexDetail(GLTexture *gltexture);
 
 void gld_PreprocessDetail(void);

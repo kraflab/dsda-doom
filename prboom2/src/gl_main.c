@@ -190,32 +190,6 @@ void gld_MultisamplingSet(void)
   }
 }
 
-int gld_LoadGLDefs(const char * defsLump)
-{
-  int result = false;
-
-  if (W_LumpNameExists(defsLump))
-  {
-    SC_OpenLump(defsLump);
-
-    // Get actor class name.
-    while (SC_GetString())
-    {
-      if (SC_Compare("detail"))
-      {
-        result = true;
-        gld_ParseDetail();
-      }
-    }
-
-    SC_Close();
-  }
-
-  return result;
-}
-
-
-
 void gld_Init(int width, int height)
 {
   GLfloat params[4]={0.0f,0.0f,1.0f,0.0f};
@@ -303,11 +277,6 @@ void gld_Init(int width, int height)
   // Create FBO object and associated render targets
   gld_InitFBO();
   I_AtExit(gld_FreeScreenSizeFBO, true, "gld_FreeScreenSizeFBO", exit_priority_normal);
-
-  if(!gld_LoadGLDefs("GLBDEFS"))
-  {
-    gld_LoadGLDefs("GLDEFS");
-  }
 
   gld_ResetLastTexture();
 

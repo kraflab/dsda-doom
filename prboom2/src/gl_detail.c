@@ -73,13 +73,6 @@ typedef enum
   TAG_DETAIL_MAX,
 } tag_detail_e;
 
-static const char *DetailItem_Keywords[TAG_DETAIL_MAX + 1] =
-{
-  "walls",
-  "flats",
-  NULL
-};
-
 static GLuint last_detail_texid = -1;
 
 float xCamera,yCamera,zCamera;
@@ -593,110 +586,6 @@ void gld_SetTexDetail(GLTexture *gltexture)
     {
       gltexture->detail_width  = (float)gltexture->realtexwidth  / gltexture->detail->width;
       gltexture->detail_height = (float)gltexture->realtexheight / gltexture->detail->height;
-    }
-  }
-}
-
-int gld_ReadDetailParams(tag_detail_e item, detail_t *detail)
-{
-  if (SC_Check())
-  {
-    // get detail texture name
-    SC_GetString();
-
-    if (strlen(sc_String) < 9)
-    {
-      detail->texid = 0;
-    }
-
-    // skip the rest of unknown params
-    while (SC_Check())
-      SC_GetString();
-  }
-
-  return false;
-}
-
-void gld_ParseDetailItem(tag_detail_e item)
-{
-  // item's default values
-  details[item].width = 16.0f;
-  details[item].height = 16.0f;
-  details[item].offsetx = 0.0f;
-  details[item].offsety = 0.0f;
-  if (SC_Check() && !SC_Compare("{"))
-  {
-    gld_ReadDetailParams(item, &details[item]);
-  }
-
-  if (SC_GetString() && SC_Compare("{"))
-  {
-    while (SC_GetString() && !SC_Compare("}"))
-    {
-      int result;
-      detail_t detail;
-
-      // reset fields for next iteration
-      detail.texid   = 0;
-      detail.width   = 16.0f;
-      detail.height  = 16.0f;
-      detail.offsetx = 0.0f;
-      detail.offsety = 0.0f;
-
-      if (strlen(sc_String) < 9)
-      {
-        switch (item)
-        {
-        case TAG_DETAIL_WALL:
-          detail.texture_num = R_CheckTextureNumForName(sc_String);
-          break;
-        case TAG_DETAIL_FLAT:
-          detail.texture_num = W_CheckNumForName2(sc_String, ns_flats);
-          break;
-        }
-
-        result = gld_ReadDetailParams(item, &detail);
-
-        if (result || details[item].texid > 0)
-        {
-          if (details_count + 1 > details_size)
-          {
-            details_size = (details_size == 0 ? 128 : details_size * 2);
-            details = Z_Realloc(details, details_size * sizeof(details[0]));
-          }
-          details[details_count] = detail;
-          details_count++;
-        }
-      }
-    }
-  }
-}
-
-void gld_ParseDetail(void)
-{
-  gld_ShutdownDetail();
-
-  details_count = 2; // reserved for default wall and flat
-  details_size = 128;
-  details = Z_Calloc(details_size, sizeof(details[0]));
-
-  // skip "Detail" params
-  while (SC_Check() && !SC_Compare("{"))
-    SC_GetString();
-
-  if (SC_GetString() && SC_Compare("{"))
-  {
-    while (SC_GetString() && !SC_Compare("}"))
-    {
-      switch (SC_MatchString(DetailItem_Keywords))
-      {
-      case TAG_DETAIL_WALL:
-        gld_ParseDetailItem(TAG_DETAIL_WALL);
-        break;
-      case TAG_DETAIL_FLAT:
-        gld_ParseDetailItem(TAG_DETAIL_FLAT);
-        break;
-      }
     }
   }
 }
