@@ -818,15 +818,6 @@ void gld_StartFuzz(float width, float height)
 {
   color_rgb_t color;
 
-  // legacy (non-shader) effect. remove this in case
-  // we want to absolutely require the fuzz shader.
-  if (!glsl_UseFuzzShader())
-  {
-    glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.2f, 0.2f, 0.2f, 0.33f);
-    return;
-  }
-
   // shader init
   glsl_SetFuzzShaderActive();
   glsl_SetFuzzTextureDimensions(width, height);
