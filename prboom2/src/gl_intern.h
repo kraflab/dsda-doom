@@ -355,7 +355,6 @@ extern float xCamera,yCamera,zCamera;
 void gld_InitDetail(void);
 
 void gld_PreprocessDetail(void);
-void gld_EnableDetail(int enable);
 
 extern GLuint* last_glTexID;
 GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed, dboolean sky);

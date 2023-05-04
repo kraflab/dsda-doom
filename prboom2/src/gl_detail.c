@@ -57,16 +57,14 @@
 #include "e6y.h"
 #include "i_system.h"
 
-typedef enum
+void gld_EnableDetail(int enable)
 {
-  TAG_DETAIL_WALL,
-  TAG_DETAIL_FLAT,
-  TAG_DETAIL_MAX,
-} tag_detail_e;
+  if (!gl_arb_multitexture)
+    return;
 
-float xCamera,yCamera,zCamera;
-TAnimItemParam *anim_flats = NULL;
-TAnimItemParam *anim_textures = NULL;
+  gld_EnableTexture2D(GL_TEXTURE1_ARB, enable);
+  gld_EnableClientCoordArray(GL_TEXTURE1_ARB, enable);
+}
 
 void gld_InitDetail(void)
 {
@@ -91,14 +89,4 @@ void gld_PreprocessDetail(void)
     glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 2);
     GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
   }
-}
-
-
-void gld_EnableDetail(int enable)
-{
-  if (!gl_arb_multitexture)
-    return;
-
-  gld_EnableTexture2D(GL_TEXTURE1_ARB, enable);
-  gld_EnableClientCoordArray(GL_TEXTURE1_ARB, enable);
 }

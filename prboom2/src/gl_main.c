@@ -109,6 +109,10 @@ int fog_density=200;
 
 GLfloat gl_whitecolor[4]={1.0f,1.0f,1.0f,1.0f};
 
+float xCamera,yCamera,zCamera;
+TAnimItemParam *anim_flats = NULL;
+TAnimItemParam *anim_textures = NULL;
+
 void SetFrameTextureMode(void)
 {
   if (SceneInTexture)
@@ -2647,8 +2651,6 @@ void gld_DrawScene(player_t *player)
   gl_EnableFog(true);
   gl_EnableFog(false);
 
-  gld_EnableDetail(false);
-
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
@@ -2699,9 +2701,6 @@ void gld_DrawScene(player_t *player)
 
   // disable backside removing
   glDisable(GL_CULL_FACE);
-
-  // detail texture works only with flats and walls
-  gld_EnableDetail(false);
 
   // top, bottom, one-sided walls
   gld_DrawItemsSortByTexture(GLDIT_WALL);
@@ -2768,7 +2767,6 @@ void gld_DrawScene(player_t *player)
   }
 
   gl_EnableFog(false);
-  gld_EnableDetail(false);
 
   // projected walls
   gld_DrawProjectedWalls(GLDIT_FWALL);
@@ -2937,8 +2935,6 @@ void gld_DrawScene(player_t *player)
     }
     glEnable(GL_ALPHA_TEST);
   }
-
-  gld_EnableDetail(false);
 
   if (gl_ext_arb_vertex_buffer_object)
   {
