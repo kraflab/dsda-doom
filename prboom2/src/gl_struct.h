@@ -65,8 +65,6 @@ void gld_InitVertexData();
 void gld_CleanVertexData();
 void gld_UpdateSplitData(sector_t *sector);
 
-extern int gl_boom_colormaps;
-
 void gld_Init(int width, int height);
 void gld_InitCommandLine(void);
 void gld_InitTextureParams(void);

@@ -379,20 +379,6 @@ void M_ChangeFOV(void)
   skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
 }
 
-void M_ChangeAllowBoomColormaps(void)
-{
-  if (gl_boom_colormaps == -1)
-  {
-    gl_boom_colormaps = true;
-  }
-  else
-  {
-    gl_boom_colormaps = true;
-    gld_FlushTextures();
-    gld_Precache();
-  }
-}
-
 float viewPitch;
 
 int StepwiseSum(int value, int direction, int minval, int maxval, int defval)

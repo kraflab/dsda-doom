@@ -6061,7 +6061,6 @@ void M_Init(void)
   M_ChangeMaxViewPitch();
   M_ChangeSkyMode();
   M_ChangeFOV();
-  M_ChangeAllowBoomColormaps();
 
   M_ChangeDemoSmoothTurns();
 

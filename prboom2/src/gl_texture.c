@@ -95,8 +95,6 @@ static GLTexture **gld_GLIndexedSkyTextures = NULL;
 
 int gl_tex_format=GL_RGB5_A1;
 
-int gl_boom_colormaps = -1;
-
 GLuint* last_glTexID = NULL;
 
 int transparent_pal_index;
@@ -217,15 +215,6 @@ static void gld_GetTextureTexID(GLTexture *gltexture, int cm)
   };
 
   gltexture->cm = cm;
-  gltexture->player_cm = 0;
-
-  if (!gl_boom_colormaps)
-  {
-    gltexture->texflags_p = &gltexture->texflags[cm][0];
-    gltexture->texid_p = &gltexture->glTexExID[cm][0][0];
-    return;
-  }
-
   gltexture->player_cm = data[frame_fixedcolormap];
   assert(gltexture->player_cm != -1);
 
@@ -440,7 +429,7 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
             buffer[pos + 1] = 0;
             buffer[pos + 2] = 0;
           }
-          else if (gl_boom_colormaps && use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
+          else if (use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
           {
             //e6y: Boom's color maps
             buffer[pos+0]=playpal[colormap[source[j]]*3+0];
@@ -557,7 +546,7 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
             buffer[pos+1]=0;
             buffer[pos+2]=0;
           }
-          else if (gl_boom_colormaps && use_boom_cm)
+          else if (use_boom_cm)
           {
             //e6y: Boom's color maps
             buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
@@ -625,7 +614,7 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
           buffer[pos+1]=0;
           buffer[pos+2]=0;
         }
-        else if (gl_boom_colormaps && use_boom_cm)
+        else if (use_boom_cm)
         {
           //e6y: Boom's color maps
           buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
@@ -784,7 +773,7 @@ static void gld_AddIndexedSkyToTexture(GLTexture *gltexture, unsigned char *buff
         }
 #endif
         //e6y: Boom's color maps
-        if (gl_boom_colormaps && use_boom_cm && !comp[comp_skymap])
+        if (use_boom_cm && !comp[comp_skymap])
         {
           const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
           buffer[pos+0]=gtable[playpal[colormap[source[j]]*3+0]];

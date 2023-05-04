@@ -1231,14 +1231,7 @@ void gld_StartDrawScene(void)
   invul_method = 0;
   if (players[displayplayer].fixedcolormap == 32)
   {
-    if (gl_boom_colormaps)
-    {
-      invul_method = INVUL_CM;
-    }
-    else
-    {
-      invul_method = INVUL_BW;
-    }
+    invul_method = INVUL_CM;
   }
 
   // elim - Always enabled (when supported) for upscaling with GL exclusive disabled
