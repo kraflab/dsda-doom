@@ -31,31 +31,9 @@
  *---------------------------------------------------------------------
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "gl_opengl.h"
 
-#include "z_zone.h"
-#include <SDL.h>
-
-#ifdef HAVE_LIBSDL2_IMAGE
-#include <SDL_image.h>
-#endif
-
-#include <math.h>
-
-#include "v_video.h"
-#include "r_main.h"
 #include "gl_intern.h"
-#include "w_wad.h"
-#include "lprintf.h"
-#include "p_spec.h"
-#include "m_misc.h"
-#include "sc_man.h"
-#include "e6y.h"
-#include "i_system.h"
 
 void gld_InitDetail(void)
 {
