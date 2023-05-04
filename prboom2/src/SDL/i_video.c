@@ -1192,7 +1192,6 @@ void I_UpdateVideoMode(void)
     if (V_IsOpenGLMode())
     {
       gld_CleanMemory();
-      // hires patches
       gld_CleanStaticMemory();
     }
 
