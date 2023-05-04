@@ -53,12 +53,6 @@
 #include "r_things.h"
 #include "doomdef.h"
 
-// Lighting shader uniform bindings
-typedef struct shdr_light_unif_s
-{
-  int lightlevel_index; // float
-} shdr_light_unif_t;
-
 // Indexed lighting shader uniform bindings
 typedef struct shdr_indexed_unif_s
 {
@@ -73,8 +67,6 @@ typedef struct shdr_fuzz_unif_s
   int time_index;              // float
 } shdr_fuzz_unif_t;
 
-static GLShader *sh_main = NULL;
-static shdr_light_unif_t light_unifs;
 static GLShader *sh_indexed = NULL;
 static shdr_indexed_unif_t indexed_unifs;
 static GLShader *sh_fuzz = NULL;
@@ -82,20 +74,6 @@ static shdr_fuzz_unif_t fuzz_unifs;
 static GLShader *active_shader = NULL;
 
 static GLShader* gld_LoadShader(const char *vpname, const char *fpname);
-
-static void get_light_shader_bindings()
-{
-  int idx;
-
-  light_unifs.lightlevel_index = GLEXT_glGetUniformLocationARB(sh_main->hShader, "lightlevel");
-
-  GLEXT_glUseProgramObjectARB(sh_main->hShader);
-
-  idx = GLEXT_glGetUniformLocationARB(sh_main->hShader, "tex");
-  GLEXT_glUniform1iARB(idx, 0);
-
-  GLEXT_glUseProgramObjectARB(0);
-}
 
 static void get_indexed_shader_bindings()
 {
@@ -132,9 +110,6 @@ static void get_fuzz_shader_bindings()
 
 void glsl_Init(void)
 {
-  sh_main = gld_LoadShader("glvp", "glfp");
-  get_light_shader_bindings();
-
   sh_indexed = gld_LoadShader("glvp", "glfp_idx");
   get_indexed_shader_bindings();
 
