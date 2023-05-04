@@ -1130,15 +1130,6 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
     return;
   }
 
-#ifdef HAVE_LIBSDL2_IMAGE
-  if (gld_LoadHiresTex(gltexture, CR_DEFAULT))
-  {
-    gld_SetTexClamp(gltexture, flags);
-    last_glTexID = gltexture->texid_p;
-    return;
-  }
-#endif
-
   gld_GetTextureTexID(gltexture, CR_DEFAULT);
 
   if (last_glTexID == gltexture->texid_p)
@@ -1266,15 +1257,6 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
     return;
   }
 
-#ifdef HAVE_LIBSDL2_IMAGE
-  if (gld_LoadHiresTex(gltexture, cm))
-  {
-    gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
-    last_glTexID = gltexture->texid_p;
-    return;
-  }
-#endif
-
   gld_GetTextureTexID(gltexture, cm);
 
   if (last_glTexID == gltexture->texid_p)
@@ -1394,15 +1376,6 @@ void gld_BindRaw(GLTexture *gltexture, unsigned int flags)
     last_glTexID = NULL;
     return;
   }
-
-#ifdef HAVE_LIBSDL2_IMAGE
-  if (gld_LoadHiresTex(gltexture, CR_DEFAULT))
-  {
-    gld_SetTexClamp(gltexture, flags);
-    last_glTexID = gltexture->texid_p;
-    return;
-  }
-#endif
 
   gld_GetTextureTexID(gltexture, CR_DEFAULT);
 
