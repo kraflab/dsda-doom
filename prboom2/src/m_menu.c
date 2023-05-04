@@ -4568,6 +4568,7 @@ static dboolean M_LevelTableResponder(int ch, int action, event_t* ev)
 {
   if (action == MENU_ENTER)
   {
+    int skill;
     int map_index;
     map_stats_t *map;
 
@@ -4577,7 +4578,9 @@ static dboolean M_LevelTableResponder(int ch, int action, event_t* ev)
     map_index = set_menu_itemon - 1;
     map = &wad_stats.maps[map_index];
 
-    G_DeferedInitNew(gameskill, map->episode, map->map);
+    skill = in_game ? gameskill : startskill;
+
+    G_DeferedInitNew(skill, map->episode, map->map);
 
     M_LeaveSetupMenu();
     M_ClearMenus();
