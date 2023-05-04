@@ -425,7 +425,6 @@ int gld_ProgressEnd(void);
 
 //FBO
 #define INVUL_CM 1
-#define INVUL_BW 2
 extern GLuint glSceneImageFBOTexID;
 extern GLuint glSceneImageTextureFBOTexID;
 

@@ -115,28 +115,7 @@ void gld_StaticLightAlpha(float light, float alpha)
 {
   player_t *player = &players[displayplayer];
 
-  if (!player->fixedcolormap)
-  {
-    glColor4f(1.0f, 1.0f, 1.0f, alpha);
-  }
-  else
-  {
-    if (invul_method != INVUL_BW)
-    {
-      glColor4f(1.0f, 1.0f, 1.0f, alpha);
-    }
-    else
-    {
-      if (SceneInTexture)
-      {
-        glColor4f(0.5f, 0.5f, 0.5f, alpha);
-      }
-      else
-      {
-        glColor4f(bw_red, bw_green, bw_blue, alpha);
-      }
-    }
-  }
+  glColor4f(1.0f, 1.0f, 1.0f, alpha);
 
   glsl_SetLightLevel((player->fixedcolormap ? 1.0f : light));
 }

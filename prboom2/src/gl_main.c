@@ -119,16 +119,6 @@ void SetFrameTextureMode(void)
   {
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
-  else
-  if (invul_method == INVUL_BW)
-  {
-    glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-    glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_DOT3_RGB);
-    glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB,GL_PRIMARY_COLOR);
-    glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND0_RGB,GL_SRC_COLOR);
-    glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_TEXTURE);
-    glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND1_RGB,GL_SRC_COLOR);
-  }
 
   glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
@@ -1311,21 +1301,7 @@ void gld_EndDrawScene(void)
     glBindTexture(GL_TEXTURE_2D, glSceneImageTextureFBOTexID);
 
     // Setup blender
-    if (invul_method == INVUL_BW)
-    {
-      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_COMBINE);
-      glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB,GL_DOT3_RGB);
-      glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB,GL_PRIMARY_COLOR);
-      glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND0_RGB,GL_SRC_COLOR);
-      glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB,GL_TEXTURE);
-      glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND1_RGB,GL_SRC_COLOR);
-
-      glColor3f(0.3f, 0.3f, 0.4f);
-    }
-    else
-    {
-      glColor3f(1.0f, 1.0f, 1.0f);
-    }
+    glColor3f(1.0f, 1.0f, 1.0f);
 
     // Setup GL camera for drawing the render texture
     dsda_GLFullscreenOrtho2D();
@@ -1347,13 +1323,6 @@ void gld_EndDrawScene(void)
     gld_Set2DMode();
 
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-  }
-  else
-  {
-    if (invul_method == INVUL_BW)
-    {
-      glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    }
   }
 
   glColor3f(1.0f,1.0f,1.0f);
