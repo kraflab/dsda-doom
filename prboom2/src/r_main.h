@@ -132,8 +132,6 @@ angle_t R_PointToAngleEx(fixed_t x, fixed_t y);
 angle_t R_PointToAngleEx2(fixed_t x1, fixed_t y1, fixed_t x, fixed_t y);
 angle_t R_PointToPseudoAngle(fixed_t x, fixed_t y);
 
-extern int r_have_internal_hires;
-
 //
 // REFRESH - the actual rendering functions.
 //

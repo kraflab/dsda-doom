@@ -1645,7 +1645,7 @@ void gld_Precache(void)
 
   unsigned int tics = SDL_GetTicks();
 
-  int usehires = r_have_internal_hires;
+  int usehires = false;
 
   if (nodrawers)
     return;

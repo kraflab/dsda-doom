@@ -381,7 +381,7 @@ void M_ChangeFOV(void)
 
 void ResolveColormapsHiresConflict(dboolean prefer_colormap)
 {
-  gl_boom_colormaps = !r_have_internal_hires;
+  gl_boom_colormaps = true;
 }
 
 void M_ChangeAllowBoomColormaps(void)
