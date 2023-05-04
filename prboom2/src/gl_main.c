@@ -106,10 +106,6 @@ extern int playpal_white;
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
 
 int fog_density=200;
-static float extra_red=0.0f;
-static float extra_green=0.0f;
-static float extra_blue=0.0f;
-static float extra_alpha=0.0f;
 
 GLfloat gl_whitecolor[4]={1.0f,1.0f,1.0f,1.0f};
 
@@ -931,10 +927,6 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
 void gld_SetPalette(int palette)
 {
   static int last_palette = 0;
-  extra_red=0.0f;
-  extra_green=0.0f;
-  extra_blue=0.0f;
-  extra_alpha=0.0f;
 
   if (palette < 0)
     palette = last_palette;
@@ -942,85 +934,7 @@ void gld_SetPalette(int palette)
 
   // [XA] store the current palette so
   // the indexed lightmode can use it.
-  // if we're actually in indexed mode,
-  // then we're all done here.
   gld_SetIndexedPalette(palette);
-  if (V_IsWorldLightmodeIndexed())
-    return;
-
-  if (palette > 0)
-  {
-    if (palette <= 8)
-    {
-      // doom [0] 226 1 1
-      extra_red = 1.0f;
-      extra_green = 0.0f;
-      extra_blue = 0.0f;
-      extra_alpha = (float) palette / 9.0f;
-    }
-    else if (palette <= 12)
-    {
-      // doom [0] 108 94 35
-      palette = palette - 8;
-      extra_red = 1.0f;
-      extra_green = 0.9f;
-      extra_blue = 0.3f;
-      extra_alpha = (float) palette / 10.0f;
-    }
-    else if (!hexen && palette == 13)
-    {
-      extra_red = 0.4f;
-      extra_green = 1.0f;
-      extra_blue = 0.0f;
-      extra_alpha = 0.2f;
-    }
-    else if (hexen)
-    {
-      if (palette <= 20)
-      {
-        // hexen [0] = 35 74 29
-        palette = palette - 12;
-        extra_red = 0.5f;
-        extra_green = 1.0f;
-        extra_blue = 0.4f;
-        extra_alpha = (float) palette / 27.f;
-      }
-      else if (palette == 21)
-      {
-        // hexen [0] = 1 1 113
-        extra_red = 0.0f;
-        extra_green = 0.0f;
-        extra_blue = 1.0f;
-        extra_alpha = 0.4f;
-      }
-      else if (palette <= 24)
-      {
-        // hexen [...] = 66, 51, 36
-        palette = 24 - palette;
-        extra_red = 1.0f;
-        extra_green = 1.0f;
-        extra_blue = 1.0f;
-        extra_alpha = 0.14f + 0.06f * palette;
-      }
-      else if (palette <= 27)
-      {
-        // hexen [0] = 76 56 1
-        palette = 27 - palette;
-        extra_red = 1.0f;
-        extra_green = 0.7f;
-        extra_blue = 0.0f;
-        extra_alpha = 0.14f + 0.06f * palette;
-      }
-    }
-  }
-  if (extra_red > 1.0f)
-    extra_red = 1.0f;
-  if (extra_green > 1.0f)
-    extra_green = 1.0f;
-  if (extra_blue > 1.0f)
-    extra_blue = 1.0f;
-  if (extra_alpha > 1.0f)
-    extra_alpha = 1.0f;
 }
 
 unsigned char *gld_ReadScreen(void)
@@ -1227,28 +1141,6 @@ void gld_StartDrawScene(void)
   scene_has_overlapped_sprites = false;
   scene_has_wall_details = 0;
   scene_has_flat_details = 0;
-}
-
-//e6y
-void gld_ProcessExtraAlpha(void)
-{
-  if (extra_alpha>0.0f && !invul_cm)
-  {
-    float current_color[4];
-    glGetFloatv(GL_CURRENT_COLOR, current_color);
-    glDisable(GL_ALPHA_TEST);
-    glColor4f(extra_red, extra_green, extra_blue, extra_alpha);
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
-    glBegin(GL_TRIANGLE_STRIP);
-      glVertex2f( 0.0f, 0.0f);
-      glVertex2f( 0.0f, (float)SCREENHEIGHT);
-      glVertex2f( (float)SCREENWIDTH, 0.0f);
-      glVertex2f( (float)SCREENWIDTH, (float)SCREENHEIGHT);
-    glEnd();
-    gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
-    glEnable(GL_ALPHA_TEST);
-    glColor4f(current_color[0], current_color[1], current_color[2], current_color[3]);
-  }
 }
 
 void gld_EndDrawScene(void)

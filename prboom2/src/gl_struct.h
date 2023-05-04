@@ -109,7 +109,6 @@ void gld_AddWall(seg_t *seg);
 void gld_ProjectSprite(mobj_t* thing, int lightlevel);
 void gld_DrawScene(player_t *player);
 void gld_EndDrawScene(void);
-void gld_ProcessExtraAlpha(void);
 void gld_Finish();
 
 //blend animation from zdoomgl
