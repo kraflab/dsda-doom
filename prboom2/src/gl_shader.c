@@ -280,14 +280,7 @@ void glsl_ResumeActiveShader(void)
 
 void glsl_SetMainShaderActive()
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    glsl_SetActiveShader(sh_indexed);
-  }
-  else
-  {
-    glsl_SetActiveShader(sh_main);
-  }
+  glsl_SetActiveShader(sh_indexed);
 }
 
 void glsl_SetFuzzShaderActive()
@@ -303,29 +296,14 @@ void glsl_SetFuzzShaderInactive()
 {
   if (active_shader == sh_fuzz)
   {
-    if (V_IsWorldLightmodeIndexed())
-    {
-      GLEXT_glUseProgramObjectARB(sh_indexed->hShader);
-      active_shader = sh_indexed;
-    }
-    else
-    {
-      GLEXT_glUseProgramObjectARB(0);
-      active_shader = NULL;
-    }
+    GLEXT_glUseProgramObjectARB(sh_indexed->hShader);
+    active_shader = sh_indexed;
   }
 }
 
 void glsl_SetLightLevel(float lightlevel)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    GLEXT_glUniform1fARB(indexed_unifs.lightlevel_index, lightlevel);
-  }
-  else
-  {
-    GLEXT_glUniform1fARB(light_unifs.lightlevel_index, lightlevel);
-  }
+  GLEXT_glUniform1fARB(indexed_unifs.lightlevel_index, lightlevel);
 }
 
 void glsl_SetFuzzTime(int time)
