@@ -31,35 +31,14 @@
  *---------------------------------------------------------------------
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "gl_opengl.h"
 
-#ifdef _MSC_VER
-//#include <ddraw.h> /* needed for DirectX's DDSURFACEDESC2 structure definition */
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
 #include <SDL.h>
-#ifdef HAVE_LIBSDL2_IMAGE
-#include <SDL_image.h>
-#endif
-#include "doomstat.h"
-#include "v_video.h"
+
 #include "gl_intern.h"
-#include "i_system.h"
-#include "w_wad.h"
-#include "lprintf.h"
 #include "i_video.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
-#include "r_main.h"
-#include "r_sky.h"
-#include "m_misc.h"
-#include "e6y.h"
 
 #include "dsda/font.h"
 #include "dsda/utility.h"
