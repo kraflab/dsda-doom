@@ -57,19 +57,16 @@
 #include "e6y.h"
 #include "i_system.h"
 
-void gld_EnableDetail(int enable)
-{
-  if (!gl_arb_multitexture)
-    return;
-
-  gld_EnableTexture2D(GL_TEXTURE1_ARB, enable);
-  gld_EnableClientCoordArray(GL_TEXTURE1_ARB, enable);
-}
-
 void gld_InitDetail(void)
 {
-  gld_EnableDetail(true);
-  gld_EnableDetail(false);
+  if (gl_arb_multitexture)
+  {
+    gld_EnableTexture2D(GL_TEXTURE1_ARB, true);
+    gld_EnableClientCoordArray(GL_TEXTURE1_ARB, true);
+    gld_EnableTexture2D(GL_TEXTURE1_ARB, false);
+    gld_EnableClientCoordArray(GL_TEXTURE1_ARB, false);
+  }
+
   gld_FlushTextures();
 }
 
