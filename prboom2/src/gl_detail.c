@@ -599,59 +599,7 @@ void gld_SetTexDetail(GLTexture *gltexture)
 
 GLuint gld_LoadDetailName(const char *name)
 {
-  GLuint texid = 0;
-  int lump;
-
-  lump = W_CheckNumForName2(name, ns_hires);
-
-  if (lump != LUMP_NOT_FOUND)
-  {
-    SDL_PixelFormat fmt;
-    SDL_Surface *surf = NULL;
-    SDL_Surface *surf_raw;
-
-#ifdef HAVE_LIBSDL2_IMAGE
-    surf_raw = IMG_Load_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), 1);
-#else
-    surf_raw = SDL_LoadBMP_RW(SDL_RWFromConstMem(W_LumpByNum(lump), W_LumpLength(lump)), 1);
-#endif
-
-    if (surf_raw)
-    {
-      fmt = *surf_raw->format;
-      fmt.BitsPerPixel = 24;
-      fmt.BytesPerPixel = 3;
-      surf = SDL_ConvertSurface(surf_raw, &fmt, surf_raw->flags);
-      SDL_FreeSurface(surf_raw);
-      if (surf)
-      {
-        if (gl_arb_multitexture)
-          GLEXT_glActiveTextureARB(GL_TEXTURE1_ARB);
-        glGenTextures(1, &texid);
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glBindTexture(GL_TEXTURE_2D, texid);
-
-        gluBuild2DMipmaps(GL_TEXTURE_2D, gl_tex_format,
-          surf->w, surf->h,
-          imageformats[surf->format->BytesPerPixel],
-          GL_UNSIGNED_BYTE, surf->pixels);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        if (gl_ext_texture_filter_anisotropic)
-          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, gl_texture_filter_anisotropic);
-
-        if (gl_arb_multitexture)
-          GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
-
-        SDL_FreeSurface(surf);
-      }
-    }
-  }
-
-  return texid;
+  return 0;
 }
 
 int gld_ReadDetailParams(tag_detail_e item, detail_t *detail)
