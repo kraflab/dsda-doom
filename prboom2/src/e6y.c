@@ -379,22 +379,15 @@ void M_ChangeFOV(void)
   skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
 }
 
-void ResolveColormapsHiresConflict(dboolean prefer_colormap)
-{
-  gl_boom_colormaps = true;
-}
-
 void M_ChangeAllowBoomColormaps(void)
 {
   if (gl_boom_colormaps == -1)
   {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
+    gl_boom_colormaps = true;
   }
   else
   {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
+    gl_boom_colormaps = true;
     gld_FlushTextures();
     gld_Precache();
   }

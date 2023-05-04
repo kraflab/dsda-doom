@@ -96,7 +96,6 @@ static GLTexture **gld_GLIndexedSkyTextures = NULL;
 int gl_tex_format=GL_RGB5_A1;
 
 int gl_boom_colormaps = -1;
-int gl_boom_colormaps_default = true;
 
 GLuint* last_glTexID = NULL;
 
