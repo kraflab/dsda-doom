@@ -485,7 +485,6 @@ function(AddGameExecutable TARGET SOURCES)
         gl_detail.c
         gl_drawinfo.c
         gl_fbo.c
-        gl_hires.c
         gl_intern.h
         gl_light.c
         gl_main.c
@@ -494,6 +493,7 @@ function(AddGameExecutable TARGET SOURCES)
         gl_opengl.c
         gl_opengl.h
         gl_preprocess.c
+        gl_progress.c
         gl_shader.c
         gl_sky.c
         gl_struct.h

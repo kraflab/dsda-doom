@@ -416,8 +416,9 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
 
 int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int width, int height);
 
-//hires
 GLuint CaptureScreenAsTexID(void);
+
+//progress
 void gld_ProgressUpdate(const char * text, int progress, int total);
 int gld_ProgressStart(void);
 int gld_ProgressEnd(void);
