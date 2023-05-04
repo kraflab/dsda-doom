@@ -1645,16 +1645,11 @@ void gld_Precache(void)
 
   unsigned int tics = SDL_GetTicks();
 
-  int usehires = false;
-
   if (nodrawers)
     return;
 
-  if (!usehires)
-  {
-    if (timingdemo)
-      return;
-  }
+  if (timingdemo)
+    return;
 
   gld_ProgressStart();
 
@@ -1759,7 +1754,7 @@ void gld_Precache(void)
   //  name.
 
   if (hitlist)
-    hitlist[skytexture] = usehires ? 1 : 0;
+    hitlist[skytexture] = 0;
 
   CalcHitsCount(hitlist, numtextures, &hit, &hitcount);
 
@@ -1821,7 +1816,7 @@ void gld_Precache(void)
 
   gld_InitFBO();
 
-  // e6y: some statistics.  make sense for hires
+  // e6y: some statistics
   {
     char map[8];
 
