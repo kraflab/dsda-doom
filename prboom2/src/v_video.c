@@ -846,7 +846,7 @@ dboolean V_IsOpenGLMode(void) {
 }
 
 dboolean V_IsWorldLightmodeIndexed(void) {
-  return gl_lightmode_indexed;
+  return true;
 }
 
 dboolean V_IsUILightmodeIndexed(void) {

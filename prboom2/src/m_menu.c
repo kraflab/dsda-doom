@@ -2961,8 +2961,6 @@ setup_menu_t audiovideo_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   EMPTY_LINE,
-  { "OpenGL Indexed Light Mode", S_YESNO, m_conf, G_X, dsda_config_gl_lightmode_indexed },
-  EMPTY_LINE,
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },

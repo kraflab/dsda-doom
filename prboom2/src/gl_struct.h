@@ -56,7 +56,6 @@ enum bleedtype {
 };
 
 extern int gl_drawskys;
-extern dboolean gl_lightmode_indexed;
 extern dboolean gl_ui_lightmode_indexed;
 extern dboolean gl_automap_lightmode_indexed;
 void gld_FlushTextures(void);

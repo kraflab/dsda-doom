@@ -601,10 +601,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_render_fov", dsda_config_gl_render_fov,
     dsda_config_int, 20, 160, { 90 }, &gl_render_fov, NOT_STRICT, M_ChangeFOV
   },
-  [dsda_config_gl_lightmode_indexed] = {
-    "gl_lightmode_indexed", dsda_config_gl_lightmode_indexed,
-    CONF_BOOL(1), NULL, NOT_STRICT, M_ChangeLightMode
-  },
   [dsda_config_gl_health_bar] = {
     "gl_health_bar", dsda_config_gl_health_bar,
     CONF_BOOL(0), NULL, STRICT_INT(0)

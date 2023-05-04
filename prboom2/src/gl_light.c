@@ -49,7 +49,6 @@
 
 #include "dsda/configuration.h"
 
-dboolean gl_lightmode_indexed = true;
 dboolean gl_ui_lightmode_indexed = false;
 dboolean gl_automap_lightmode_indexed = false;
 
@@ -69,8 +68,6 @@ void M_ChangeLightMode(void)
   {
     return;
   }
-
-  gl_lightmode_indexed = dsda_IntConfig(dsda_config_gl_lightmode_indexed);
 
   gld_FlushTextures();
 
