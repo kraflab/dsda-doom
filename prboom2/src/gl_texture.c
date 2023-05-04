@@ -227,11 +227,8 @@ void gld_GetTextureTexID(GLTexture *gltexture, int cm)
     return;
   }
 
-  if (!(gltexture->flags & GLTEXTURE_HIRES))
-  {
-    gltexture->player_cm = data[frame_fixedcolormap];
-    assert(gltexture->player_cm != -1);
-  }
+  gltexture->player_cm = data[frame_fixedcolormap];
+  assert(gltexture->player_cm != -1);
 
   gltexture->texflags_p = &gltexture->texflags[cm][gltexture->player_cm];
   gltexture->texid_p = &gltexture->glTexExID[cm][gltexture->player_cm][boom_cm];

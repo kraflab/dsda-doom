@@ -2035,7 +2035,7 @@ static void gld_DrawFlat(GLFlat *flat)
   GLLoopDef *currentloop; // the current loop
   dboolean has_detail;
   int has_offset;
-  unsigned int flags;
+  unsigned int flags = 0;
 
   dsda_RecordVisPlane();
 
@@ -2045,13 +2045,6 @@ static void gld_DrawFlat(GLFlat *flat)
     flat->gltexture->detail;
 
   has_offset = (has_detail || (flat->flags & GLFLAT_HAVE_TRANSFORM));
-
-  if ((sectorloops[flat->sectornum].flags & SECTOR_CLAMPXY) && (!has_detail) &&
-      (flat->gltexture->flags & GLTEXTURE_HIRES) &&
-      !(flat->flags & GLFLAT_HAVE_TRANSFORM))
-    flags = GLTEXTURE_CLAMPXY;
-  else
-    flags = 0;
 
   gld_BindFlat(flat->gltexture, flags);
   gld_StaticLightAlpha(flat->light, flat->alpha);
