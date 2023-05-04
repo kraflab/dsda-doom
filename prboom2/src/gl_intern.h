@@ -113,10 +113,6 @@ typedef struct
   GLTexType textype;
   unsigned int flags;
   float scalexfac, scaleyfac; //e6y: right/bottom UV coordinates for patch drawing
-
-  //detail
-  detail_t *detail;
-  float detail_width, detail_height;
 } GLTexture;
 
 typedef struct
