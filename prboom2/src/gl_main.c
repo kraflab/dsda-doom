@@ -1206,7 +1206,6 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
     int currpic, nextpic;
     GLWall *wall = (GLWall*)itemdata;
     float oldalpha = wall->alpha;
-    dboolean indexed = V_IsWorldLightmodeIndexed();
 
     switch (itemtype)
     {
@@ -1220,7 +1219,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
         currpic = wall->gltexture->index - firstflat - anim->basepic;
         nextpic = anim->basepic + (currpic + 1) % anim->numpics;
         wall->alpha = oldalpha;
-        wall->gltexture = gld_RegisterFlat(nextpic, true, indexed);
+        wall->gltexture = gld_RegisterFlat(nextpic, true, true);
       }
       break;
     case GLDIT_WALL:
@@ -1236,7 +1235,7 @@ static void gld_AddDrawWallItem(GLDrawItemType itemtype, void *itemdata)
           currpic = wall->gltexture->index - anim->basepic;
           nextpic = anim->basepic + (currpic + 1) % anim->numpics;
           wall->alpha = oldalpha;
-          wall->gltexture = gld_RegisterTexture(nextpic, true, false, indexed, false);
+          wall->gltexture = gld_RegisterTexture(nextpic, true, false, true, false);
         }
       }
       break;
@@ -1403,7 +1402,6 @@ void gld_AddWall(seg_t *seg)
   int base_lightlevel;
   int backseg;
   dboolean fix_sky_bleed = false;
-  dboolean indexed;
 
   int side = (seg->sidedef == &sides[seg->linedef->sidenum[0]] ? 0 : 1);
   if (linerendered[side][seg->linedef->iLineID] == rendermarker)
@@ -1412,8 +1410,6 @@ void gld_AddWall(seg_t *seg)
   linelength = lines[seg->linedef->iLineID].texel_length;
   wall.glseg=&gl_lines[seg->linedef->iLineID];
   backseg = seg->sidedef != &sides[seg->linedef->sidenum[0]];
-
-  indexed = V_IsWorldLightmodeIndexed();
 
   if (poly_add_line)
   {
@@ -1465,7 +1461,7 @@ void gld_AddWall(seg_t *seg)
       wall.ybottom=-MAXCOORD;
       gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
     }
-    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, indexed, false);
+    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, true, false);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
     {
       wall.gltexture=temptex;
@@ -1593,7 +1589,7 @@ void gld_AddWall(seg_t *seg)
     {
       if (!((frontsector->ceilingpic==skyflatnum) && (backsector->ceilingpic==skyflatnum)))
       {
-        temptex=gld_RegisterTexture(toptexture, true, false, indexed, false);
+        temptex=gld_RegisterTexture(toptexture, true, false, true, false);
         if (!temptex && gl_use_stencil && backsector &&
           !(seg->linedef->r_flags & RF_ISOLATED) &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
@@ -1604,7 +1600,7 @@ void gld_AddWall(seg_t *seg)
           if (wall.ybottom >= zCamera)
           {
             wall.flag=GLDWF_TOPFLUD;
-            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true, indexed);
+            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true, true);
             if (temptex)
             {
               wall.gltexture=temptex;
@@ -1629,12 +1625,12 @@ void gld_AddWall(seg_t *seg)
     /* midtexture */
     //e6y
     if (!raven && comp[comp_maskedanim])
-      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, indexed, false);
+      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, true, false);
     else
       // e6y
       // Animated middle textures with a zero index should be forced
       // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
-      temptex=gld_RegisterTexture(midtexture, true, true, indexed, false);
+      temptex=gld_RegisterTexture(midtexture, true, true, true, false);
 
     if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
@@ -1798,7 +1794,7 @@ bottomtexture:
     }
     if (floor_height<ceiling_height)
     {
-      temptex=gld_RegisterTexture(bottomtexture, true, false, indexed, false);
+      temptex=gld_RegisterTexture(bottomtexture, true, false, true, false);
       if (!temptex && gl_use_stencil && backsector &&
         !(seg->linedef->r_flags & RF_ISOLATED) &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
@@ -1809,7 +1805,7 @@ bottomtexture:
         if (wall.ytop <= zCamera)
         {
           wall.flag = GLDWF_BOTFLUD;
-          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true, indexed);
+          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true, true);
           if (temptex)
           {
             wall.gltexture=temptex;
@@ -1954,7 +1950,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   int floorlightlevel;      // killough 3/16/98: set floor lightlevel
   int ceilinglightlevel;    // killough 4/11/98
   GLFlat flat;
-  dboolean indexed;
 
   if (sectornum<0)
     return;
@@ -1963,8 +1958,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   sector=R_FakeFlat(sector, &tempsec, &floorlightlevel, &ceilinglightlevel, false); // for boom effects
   flat.flags = (ceiling ? GLFLAT_CEILING : 0);
 
-  indexed = V_IsWorldLightmodeIndexed();
-
   if (plane->picnum & PL_SKYFLAT || plane->picnum == skyflatnum) // don't draw if sky
     return;
 
@@ -1972,7 +1965,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   {
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, true);
     if (!flat.gltexture)
       return;
     // get the lightlevel from floorlightlevel
@@ -2076,7 +2069,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   {
     // get the texture. flattranslation is maintained by doom and
     // contains the number of the current animation frame
-    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, indexed);
+    flat.gltexture=gld_RegisterFlat(flattranslation[plane->picnum], true, true);
     if (!flat.gltexture)
       return;
     // get the lightlevel from ceilinglightlevel
@@ -2133,7 +2126,7 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
 
       currpic = flat.gltexture->index - firstflat - anim->basepic;
       nextpic = anim->basepic + (currpic + 1) % anim->numpics;
-      flat.gltexture = gld_RegisterFlat(nextpic, true, indexed);
+      flat.gltexture = gld_RegisterFlat(nextpic, true, true);
     }
   }
 
@@ -2544,7 +2537,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     sprite.cm = thing->color;
   else
     sprite.cm = CR_LIMIT + (int)((thing->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT));
-  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, V_IsWorldLightmodeIndexed());
+  sprite.gltexture = gld_RegisterPatch(lump, sprite.cm, true, true);
   if (!sprite.gltexture)
     return;
   sprite.flags = thing->flags;
