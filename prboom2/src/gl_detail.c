@@ -597,14 +597,8 @@ void gld_SetTexDetail(GLTexture *gltexture)
   }
 }
 
-GLuint gld_LoadDetailName(const char *name)
-{
-  return 0;
-}
-
 int gld_ReadDetailParams(tag_detail_e item, detail_t *detail)
 {
-  int result = false;
   if (SC_Check())
   {
     // get detail texture name
@@ -612,31 +606,15 @@ int gld_ReadDetailParams(tag_detail_e item, detail_t *detail)
 
     if (strlen(sc_String) < 9)
     {
-      detail->texid = gld_LoadDetailName(sc_String);
-
-      if (detail->texid > 0)
-      {
-        float f;
-
-        if (SC_Check() && SC_GetString() && M_StrToFloat(sc_String, &f))
-          detail->width = f;
-        if (SC_Check() && SC_GetString() && M_StrToFloat(sc_String, &f))
-          detail->height = f;
-
-        if (SC_Check() && SC_GetString() && M_StrToFloat(sc_String, &f))
-          detail->offsetx = f / detail->width;
-        if (SC_Check() && SC_GetString() && M_StrToFloat(sc_String, &f))
-          detail->offsety = f / detail->height;
-
-        result = true;
-      }
+      detail->texid = 0;
     }
+
     // skip the rest of unknown params
     while (SC_Check())
       SC_GetString();
   }
 
-  return result;
+  return false;
 }
 
 void gld_ParseDetailItem(tag_detail_e item)
