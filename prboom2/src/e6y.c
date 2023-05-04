@@ -400,14 +400,6 @@ void M_ChangeAllowBoomColormaps(void)
   }
 }
 
-void M_ChangeTextureUseHires(void)
-{
-  ResolveColormapsHiresConflict(false);
-
-  gld_FlushTextures();
-  gld_Precache();
-}
-
 float viewPitch;
 
 int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
