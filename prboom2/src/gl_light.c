@@ -121,13 +121,9 @@ void gld_StaticLightAlpha(float light, float alpha)
 }
 
 // [XA] return amount of light to add from the player's gun flash.
-// for non-indexed modes this is twice as large for some reason.
 int gld_GetGunFlashLight(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-    return (extralight << 4);
-  else
-    return (extralight << 5);
+  return (extralight << 4);
 }
 
 void M_ChangeAllowFog(void)
