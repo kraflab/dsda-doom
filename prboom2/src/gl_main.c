@@ -290,7 +290,8 @@ void gld_Init(int width, int height)
   gld_InitLightTable();
   gld_InitSky();
   glsl_Init();
-  M_ChangeLightMode();
+  gld_FlushTextures(); // TODO: should this be here?
+  M_ChangeSkyMode();
   M_ChangeAllowFog();
 
   gld_InitDetail();

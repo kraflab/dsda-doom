@@ -59,7 +59,6 @@ extern int gl_drawskys;
 extern dboolean gl_ui_lightmode_indexed;
 extern dboolean gl_automap_lightmode_indexed;
 void gld_FlushTextures(void);
-void M_ChangeLightMode(void);
 
 void gld_InitVertexData();
 void gld_CleanVertexData();

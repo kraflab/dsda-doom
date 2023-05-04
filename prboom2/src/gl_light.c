@@ -62,20 +62,6 @@ float distfogtable[3][256];
 
 static float lighttable[5][256];
 
-void M_ChangeLightMode(void)
-{
-  if (!V_IsOpenGLMode())
-  {
-    return;
-  }
-
-  gld_FlushTextures();
-
-  // [XA] recalculate skymode since it depends
-  // on whether or not indexed mode is set
-  M_ChangeSkyMode();
-}
-
 /*
  * lookuptable for lightvalues
  * calculated as follow:

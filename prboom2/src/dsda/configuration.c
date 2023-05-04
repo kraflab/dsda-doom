@@ -99,7 +99,6 @@ void gld_ResetShadowParameters(void);
 void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
-void M_ChangeLightMode(void);
 void I_InitMouse(void);
 void AccelChanging(void);
 void G_UpdateMouseSensitivity(void);
