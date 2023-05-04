@@ -59,9 +59,6 @@
 
 int render_usedetail;
 
-detail_t *details;
-int details_count;
-int details_size;
 int scene_has_details;
 int scene_has_wall_details;
 int scene_has_flat_details;
@@ -79,34 +76,12 @@ float xCamera,yCamera,zCamera;
 TAnimItemParam *anim_flats = NULL;
 TAnimItemParam *anim_textures = NULL;
 
-void gld_ShutdownDetail(void);
-
 void gld_InitDetail(void)
 {
-  I_AtExit(gld_ShutdownDetail, true, "gld_ShutdownDetail", exit_priority_normal);
-
   render_usedetail = true;
   gld_EnableDetail(true);
   gld_EnableDetail(false);
   gld_FlushTextures();
-}
-
-void gld_ShutdownDetail(void)
-{
-  int i;
-
-  if (details)
-  {
-    for (i = 0; i < details_count; i++)
-    {
-      glDeleteTextures(1, &details[i].texid);
-    }
-
-    Z_Free(details);
-    details = NULL;
-    details_count = 0;
-    details_size = 0;
-  }
 }
 
 void gld_DrawTriangleStripARB(GLWall *wall, gl_strip_coords_t *c1, gl_strip_coords_t *c2)
@@ -551,41 +526,5 @@ void gld_BindDetail(GLTexture *gltexture, int enable)
 
 void gld_SetTexDetail(GLTexture *gltexture)
 {
-  int i;
-
   gltexture->detail = NULL;
-
-  if (details_count > 0)
-  {
-    // linear search
-    for (i = 0; i < details_count; i++)
-    {
-      if (gltexture->index == details[i].texture_num)
-      {
-        gltexture->detail = &details[i];
-        break;
-      }
-    }
-
-    if (!gltexture->detail)
-    {
-      switch (gltexture->textype)
-      {
-      case GLDT_TEXTURE:
-        if (details[TAG_DETAIL_WALL].texid > 0)
-          gltexture->detail = &details[TAG_DETAIL_WALL];
-        break;
-      case GLDT_FLAT:
-        if (details[TAG_DETAIL_FLAT].texid > 0)
-          gltexture->detail = &details[TAG_DETAIL_FLAT];
-        break;
-      }
-    }
-
-    if (gltexture->detail)
-    {
-      gltexture->detail_width  = (float)gltexture->realtexwidth  / gltexture->detail->width;
-      gltexture->detail_height = (float)gltexture->realtexheight / gltexture->detail->height;
-    }
-  }
 }
