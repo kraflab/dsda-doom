@@ -192,70 +192,7 @@ void gld_ProgressUpdate(const char * text, int progress, int total)
 
 #ifdef HAVE_LIBSDL2_IMAGE
 
-static const char* gld_HiRes_GetInternalName(GLTexture *gltexture);
-static void gld_HiRes_Bind(GLTexture *gltexture, GLuint *glTexID);
-
 static byte* RGB2PAL = NULL;
-
-static const char* gld_HiRes_GetInternalName(GLTexture *gltexture)
-{
-  static char texname[9];
-  char *texname_p = NULL;
-
-  switch (gltexture->textype)
-  {
-  case GLDT_TEXTURE:
-    texname_p = textures[gltexture->index]->name;
-    break;
-  case GLDT_FLAT:
-  case GLDT_PATCH:
-    texname_p = lumpinfo[gltexture->index].name;
-    break;
-  }
-
-  if (!texname_p)
-    return NULL;
-
-  strncpy(texname, texname_p, 8);
-  texname[8] = 0;
-  M_Strlwr(texname);
-
-  return texname;
-}
-
-static void gld_HiRes_Bind(GLTexture *gltexture, GLuint *glTexID)
-{
-  switch (gltexture->textype)
-  {
-  case GLDT_TEXTURE:
-    gl_has_hires |= 1;
-    break;
-  case GLDT_FLAT:
-    gl_has_hires |= 2;
-    break;
-  case GLDT_PATCH:
-    gl_has_hires |= 4;
-    break;
-  }
-
-  if ((gltexture->textype == GLDT_TEXTURE) || (gltexture->textype == GLDT_FLAT))
-    gltexture->flags |= GLTEXTURE_MIPMAP;
-  else
-    gltexture->flags &= ~GLTEXTURE_MIPMAP;
-
-  gltexture->flags |= GLTEXTURE_HIRES;
-
-  if (gltexture->textype == GLDT_PATCH)
-  {
-    gltexture->scalexfac = 1.0f;
-    gltexture->scaleyfac = 1.0f;
-  }
-
-  if (*glTexID == 0)
-    glGenTextures(1, glTexID);
-
-  glBindTexture(GL_TEXTURE_2D, *glTexID);
-}
 
 void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
 {
