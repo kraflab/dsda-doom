@@ -194,30 +194,6 @@ void gld_ProgressUpdate(const char * text, int progress, int total)
 
 static byte* RGB2PAL = NULL;
 
-void gld_HiRes_ProcessColormap(unsigned char *buffer, int bufSize)
-{
-  int pos;
-  const lighttable_t *colormap;
-  const unsigned char *playpal;
-
-  if (!RGB2PAL)
-    return;
-
-  playpal = V_GetPlaypal();
-  colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
-
-  for (pos = 0; pos < bufSize; pos += 4)
-  {
-    byte color;
-
-    color = RGB2PAL[((buffer[pos+0]>>3)<<10) + ((buffer[pos+1]>>3)<<5) + (buffer[pos+2]>>3)];
-
-    buffer[pos+0] = playpal[colormap[color]*3+0];
-    buffer[pos+1] = playpal[colormap[color]*3+1];
-    buffer[pos+2] = playpal[colormap[color]*3+2];
-  }
-}
-
 int gld_HiRes_BuildTables(void)
 {
   const int chanel_bits = 5;
