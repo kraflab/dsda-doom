@@ -207,7 +207,7 @@ void* NewIntDynArray(int dimCount, int *dims)
 // There are 9 known values for player->fixedcolormap:
 // 0 (normal) -> 0; 1 (pw_infrared) -> 1; 2..7 -> 2..7 (heretic torch flicker);
 // 32 (pw_invulnerability) -> 8
-void gld_GetTextureTexID(GLTexture *gltexture, int cm)
+static void gld_GetTextureTexID(GLTexture *gltexture, int cm)
 {
   static int data[NUMCOLORMAPS+1] = {
      0,  1,  2,  3,  4,  5,  6,  7,
