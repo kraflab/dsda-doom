@@ -130,7 +130,6 @@ dboolean V_IsSoftwareMode(void);
 dboolean V_IsOpenGLMode(void);
 
 // [XA] indexed lightmode query interface
-dboolean V_IsWorldLightmodeIndexed(void);
 dboolean V_IsUILightmodeIndexed(void);
 dboolean V_IsAutomapLightmodeIndexed(void);
 
