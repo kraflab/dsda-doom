@@ -87,7 +87,7 @@ int gl_blend_animations;
 
 float gldepthmin, gldepthmax;
 
-int invul_method;
+dboolean invul_cm;
 float bw_red = 0.3f;
 float bw_green = 0.59f;
 float bw_blue = 0.11f;
@@ -859,7 +859,7 @@ void gld_StartFuzz(float width, float height)
   // for indexed lightmode, the fuzz color needs to take
   // pain/item fades and gamma into account, so do a color
   // lookup based on the closest-to-black color index.
-  color = gld_LookupIndexedColor(invul_method ? playpal_white : playpal_black, true);
+  color = gld_LookupIndexedColor(invul_cm ? playpal_white : playpal_black, true);
   glColor3f((float)color.r/255.0f,
             (float)color.g/255.0f,
             (float)color.b/255.0f);
@@ -1218,11 +1218,7 @@ void gld_StartDrawScene(void)
 
   gld_InitFrameSky();
 
-  invul_method = 0;
-  if (players[displayplayer].fixedcolormap == 32)
-  {
-    invul_method = INVUL_CM;
-  }
+  invul_cm = (players[displayplayer].fixedcolormap == 32);
 
   // elim - Always enabled (when supported) for upscaling with GL exclusive disabled
   SceneInTexture = gl_ext_framebuffer_object;
@@ -1256,7 +1252,7 @@ void gld_StartDrawScene(void)
 //e6y
 void gld_ProcessExtraAlpha(void)
 {
-  if (extra_alpha>0.0f && !invul_method)
+  if (extra_alpha>0.0f && !invul_cm)
   {
     float current_color[4];
     glGetFloatv(GL_CURRENT_COLOR, current_color);

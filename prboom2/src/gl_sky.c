@@ -644,7 +644,7 @@ static void RenderDome(SkyBoxParams_t *sky)
   if (!sky || !sky->wall.gltexture)
     return;
 
-  if (invul_method == INVUL_CM && frame_fixedcolormap == INVERSECOLORMAP)
+  if (invul_cm && frame_fixedcolormap == INVERSECOLORMAP)
     vbo = &sky_vbo[1];
   else
     vbo = &sky_vbo[0];

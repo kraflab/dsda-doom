@@ -424,11 +424,10 @@ int gld_ProgressStart(void);
 int gld_ProgressEnd(void);
 
 //FBO
-#define INVUL_CM 1
 extern GLuint glSceneImageFBOTexID;
 extern GLuint glSceneImageTextureFBOTexID;
 
-extern int invul_method;
+extern dboolean invul_cm;
 extern float bw_red;
 extern float bw_green;
 extern float bw_blue;
