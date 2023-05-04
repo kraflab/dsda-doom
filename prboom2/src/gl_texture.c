@@ -200,6 +200,8 @@ void* NewIntDynArray(int dimCount, int *dims)
   return buffer;
 }
 
+#define INVULN_PLAYER_CM 8
+
 // e6y
 // Get index of player->fixedcolormap for GLTexture().glTexExID array
 // There are 9 known values for player->fixedcolormap:
@@ -212,7 +214,7 @@ void gld_GetTextureTexID(GLTexture *gltexture, int cm)
     -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1,
-     8
+    INVULN_PLAYER_CM
   };
 
   gltexture->cm = cm;
@@ -364,6 +366,7 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
   const byte *source;
   int i, pos;
   const unsigned char *playpal;
+  const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
 
   if (!gltexture)
     return;
@@ -433,40 +436,26 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
             return;
           }
 #endif
-          //e6y: Boom's color maps
-          if (gl_boom_colormaps && use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
+          if (gltexture->flags & GLTEXTURE_INDEXED)
           {
-            const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
-            if (gltexture->flags & GLTEXTURE_INDEXED)
-            {
-              // [XA] new indexed color mode: store the palette index in
-              // the R channel and get the colormap index in the shader.
-              buffer[pos + 0] = colormap[source[j]];
-              buffer[pos + 1] = 0;
-              buffer[pos + 2] = 0;
-            }
-            else
-            {
-              buffer[pos+0]=playpal[colormap[source[j]]*3+0];
-              buffer[pos+1]=playpal[colormap[source[j]]*3+1];
-              buffer[pos+2]=playpal[colormap[source[j]]*3+2];
-            }
+            // [XA] new indexed color mode: store the palette index in
+            // the R channel and get the colormap index in the shader.
+            buffer[pos + 0] = gltexture->player_cm == INVULN_PLAYER_CM ? colormap[source[j]] : source[j];
+            buffer[pos + 1] = 0;
+            buffer[pos + 2] = 0;
+          }
+          else if (gl_boom_colormaps && use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
+          {
+            //e6y: Boom's color maps
+            buffer[pos+0]=playpal[colormap[source[j]]*3+0];
+            buffer[pos+1]=playpal[colormap[source[j]]*3+1];
+            buffer[pos+2]=playpal[colormap[source[j]]*3+2];
           }
           else
           {
-            if (gltexture->flags & GLTEXTURE_INDEXED)
-            {
-              // [XA] new indexed color mode
-              buffer[pos + 0] = source[j];
-              buffer[pos + 1] = 0;
-              buffer[pos + 2] = 0;
-            }
-            else
-            {
-              buffer[pos+0]=playpal[source[j]*3+0];
-              buffer[pos+1]=playpal[source[j]*3+1];
-              buffer[pos+2]=playpal[source[j]*3+2];
-            }
+            buffer[pos+0]=playpal[source[j]*3+0];
+            buffer[pos+1]=playpal[source[j]*3+1];
+            buffer[pos+2]=playpal[source[j]*3+2];
           }
           buffer[pos+3]=255;
         }
@@ -485,6 +474,7 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
   int i, pos;
   const unsigned char *playpal;
   const unsigned char *outr;
+  const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
 
   if (!gltexture)
     return;
@@ -564,38 +554,25 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
           }
 #endif
           //e6y: Boom's color maps
-          if (gl_boom_colormaps && use_boom_cm)
+          if (gltexture->flags & GLTEXTURE_INDEXED)
           {
-            const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
-            if (gltexture->flags & GLTEXTURE_INDEXED)
-            {
-              // [XA] new indexed color mode
-              buffer[pos+0]=colormap[outr[source[j]]];
-              buffer[pos+1]=0;
-              buffer[pos+2]=0;
-            }
-            else
-            {
-              buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
-              buffer[pos+1]=playpal[colormap[outr[source[j]]]*3+1];
-              buffer[pos+2]=playpal[colormap[outr[source[j]]]*3+2];
-            }
+            // [XA] new indexed color mode
+            buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[outr[source[j]]] : outr[source[j]];
+            buffer[pos+1]=0;
+            buffer[pos+2]=0;
+          }
+          else if (gl_boom_colormaps && use_boom_cm)
+          {
+            //e6y: Boom's color maps
+            buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
+            buffer[pos+1]=playpal[colormap[outr[source[j]]]*3+1];
+            buffer[pos+2]=playpal[colormap[outr[source[j]]]*3+2];
           }
           else
           {
-            if (gltexture->flags & GLTEXTURE_INDEXED)
-            {
-              // [XA] new indexed color mode
-              buffer[pos+0]=outr[source[j]];
-              buffer[pos+1]=0;
-              buffer[pos+2]=0;
-            }
-            else
-            {
-              buffer[pos+0]=playpal[outr[source[j]]*3+0];
-              buffer[pos+1]=playpal[outr[source[j]]*3+1];
-              buffer[pos+2]=playpal[outr[source[j]]*3+2];
-            }
+            buffer[pos+0]=playpal[outr[source[j]]*3+0];
+            buffer[pos+1]=playpal[outr[source[j]]*3+1];
+            buffer[pos+2]=playpal[outr[source[j]]*3+2];
           }
           buffer[pos+3]=255;
         }
@@ -608,6 +585,7 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
 {
   int x,y,w,pos;
   const unsigned char *playpal;
+  const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
 
   if (!gltexture)
     return;
@@ -644,39 +622,25 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
           return;
         }
 #endif
-        //e6y: Boom's color maps
-        if (gl_boom_colormaps && use_boom_cm)
+        if (gltexture->flags & GLTEXTURE_INDEXED)
         {
-          const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
-          if (gltexture->flags & GLTEXTURE_INDEXED)
-          {
-            // [XA] new indexed color mode
-            buffer[pos+0]=colormap[raw[y*w+x]];
-            buffer[pos+1]=0;
-            buffer[pos+2]=0;
-          }
-          else
-          {
-            buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
-            buffer[pos+1]=playpal[colormap[raw[y*w+x]]*3+1];
-            buffer[pos+2]=playpal[colormap[raw[y*w+x]]*3+2];
-          }
+          // [XA] new indexed color mode
+          buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[raw[y*w+x]] : raw[y*w+x];
+          buffer[pos+1]=0;
+          buffer[pos+2]=0;
+        }
+        else if (gl_boom_colormaps && use_boom_cm)
+        {
+          //e6y: Boom's color maps
+          buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
+          buffer[pos+1]=playpal[colormap[raw[y*w+x]]*3+1];
+          buffer[pos+2]=playpal[colormap[raw[y*w+x]]*3+2];
         }
         else
         {
-          if (gltexture->flags & GLTEXTURE_INDEXED)
-          {
-            // [XA] new indexed color mode
-            buffer[pos+0]=raw[y*w+x];
-            buffer[pos+1]=0;
-            buffer[pos+2]=0;
-          }
-          else
-          {
-            buffer[pos+0]=playpal[raw[y*w+x]*3+0];
-            buffer[pos+1]=playpal[raw[y*w+x]*3+1];
-            buffer[pos+2]=playpal[raw[y*w+x]*3+2];
-          }
+          buffer[pos+0]=playpal[raw[y*w+x]*3+0];
+          buffer[pos+1]=playpal[raw[y*w+x]*3+1];
+          buffer[pos+2]=playpal[raw[y*w+x]*3+2];
         }
         buffer[pos+3]=255;
       }
