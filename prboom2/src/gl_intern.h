@@ -403,9 +403,6 @@ void gld_Precache(void);
 
 void SetFrameTextureMode(void);
 
-//gamma
-void gld_ResetGammaRamp(void);
-
 //gl_vertex
 void gld_SplitLeftEdge(const GLWall *wall, dboolean detail);
 void gld_SplitRightEdge(const GLWall *wall, dboolean detail);

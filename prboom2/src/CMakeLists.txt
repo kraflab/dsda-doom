@@ -485,7 +485,6 @@ function(AddGameExecutable TARGET SOURCES)
         gl_detail.c
         gl_drawinfo.c
         gl_fbo.c
-        gl_gamma.c
         gl_hires.c
         gl_intern.h
         gl_light.c
@@ -604,7 +603,7 @@ function(AddGameExecutable TARGET SOURCES)
     if(CMAKE_VERSION VERSION_GREATER 3.20 AND NOT VCPKG_TOOLCHAIN AND WIN32)
         install(
             TARGETS ${TARGET}
-            RUNTIME_DEPENDENCIES 
+            RUNTIME_DEPENDENCIES
                 PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
                 POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
                 DIRECTORIES $<TARGET_FILE_DIR:${TARGET}> $ENV{PATH}

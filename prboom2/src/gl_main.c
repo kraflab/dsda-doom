@@ -301,12 +301,6 @@ void gld_Init(int width, int height)
   glClear(GL_COLOR_BUFFER_BIT);
   glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
 
-  // e6y
-  // if you have a prior crash in the game,
-  // you can restore the gamma values to at least a linear value
-  // with -resetgamma command-line switch
-  gld_ResetGammaRamp();
-
   gld_InitLightTable();
   gld_InitSky();
   glsl_Init();
@@ -1087,8 +1081,6 @@ unsigned char *gld_ReadScreen(void)
     glReadPixels(0, 0, gl_window_width, gl_window_height, GL_RGB, GL_UNSIGNED_BYTE, scr);
 
     glPixelStorei(GL_PACK_ALIGNMENT, pack_aligment);
-
-    gld_ApplyGammaRamp(scr, pixels_per_row, gl_window_width, gl_window_height);
 
     // GL textures are bottom up, so copy the rows in reverse to flip vertically
     for (src_row = gl_window_height - 1, dest_row = 0; src_row >= 0; --src_row, ++dest_row)

@@ -5215,25 +5215,14 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_gamma))
     {
 //e6y
-      if (V_IsOpenGLMode() && gl_hardware_gamma)
-      {
-        static char str[200];
-        sprintf(str, "Gamma correction level %d", dsda_CycleConfig(dsda_config_gl_usegamma, true));
-        players[consoleplayer].message = str;
-
-        gld_SetGammaRamp(gl_usegamma);
-      }
-      else
-      {
-        dsda_CycleConfig(dsda_config_usegamma, true);
-        players[consoleplayer].message =
-          usegamma == 0 ? s_GAMMALVL0 :
-          usegamma == 1 ? s_GAMMALVL1 :
-          usegamma == 2 ? s_GAMMALVL2 :
-          usegamma == 3 ? s_GAMMALVL3 :
-          s_GAMMALVL4;
-        return true;
-      }
+      dsda_CycleConfig(dsda_config_usegamma, true);
+      players[consoleplayer].message =
+        usegamma == 0 ? s_GAMMALVL0 :
+        usegamma == 1 ? s_GAMMALVL1 :
+        usegamma == 2 ? s_GAMMALVL2 :
+        usegamma == 3 ? s_GAMMALVL3 :
+        s_GAMMALVL4;
+      return true;
     }
 
     if (dsda_InputActivated(dsda_input_zoomout))

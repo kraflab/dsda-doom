@@ -56,15 +56,10 @@ enum bleedtype {
 };
 
 extern int gl_drawskys;
-extern int gl_hardware_gamma;
 extern dboolean gl_lightmode_indexed;
 extern dboolean gl_ui_lightmode_indexed;
 extern dboolean gl_automap_lightmode_indexed;
-extern int gl_usegamma;
-int gld_SetGammaRamp(int gamma);
-void gld_CheckHardwareGamma(void);
 void gld_FlushTextures(void);
-void gld_ApplyGammaRamp(byte *buf, int pitch, int width, int height);
 void M_ChangeLightMode(void);
 
 void gld_InitVertexData();

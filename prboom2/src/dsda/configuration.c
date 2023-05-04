@@ -583,10 +583,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_blend_animations", dsda_config_gl_blend_animations,
     CONF_BOOL(0), &gl_blend_animations
   },
-  [dsda_config_gl_usegamma] = {
-    "gl_usegamma", dsda_config_gl_usegamma,
-    dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &gl_usegamma
-  },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
