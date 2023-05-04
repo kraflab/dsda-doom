@@ -543,41 +543,27 @@ void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)
 
 void gld_BeginUIDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gld_InitColormapTextures(true);
-    glsl_SetMainShaderActive();
-    gl_ui_lightmode_indexed = true;
-  }
+  gld_InitColormapTextures(true);
+  glsl_SetMainShaderActive();
+  gl_ui_lightmode_indexed = true;
 }
 
 void gld_EndUIDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gl_ui_lightmode_indexed = false;
-    glsl_SetActiveShader(NULL);
-    return;
-  }
+  gl_ui_lightmode_indexed = false;
+  glsl_SetActiveShader(NULL);
 }
 
 void gld_BeginAutomapDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gld_InitColormapTextures(true);
-    glsl_SetActiveShader(NULL);
-    gl_automap_lightmode_indexed = true;
-  }
+  gld_InitColormapTextures(true);
+  glsl_SetActiveShader(NULL);
+  gl_automap_lightmode_indexed = true;
 }
 
 void gld_EndAutomapDraw(void)
 {
-  if (V_IsWorldLightmodeIndexed())
-  {
-    gl_automap_lightmode_indexed = false;
-    return;
-  }
+  gl_automap_lightmode_indexed = false;
 }
 
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
@@ -850,12 +836,6 @@ void gld_StartFuzz(float width, float height)
   glsl_SetFuzzTextureDimensions(width, height);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  // for non-indexed modes, just use black as the fuzz color.
-  if (!V_IsWorldLightmodeIndexed()) {
-    glColor3f(0.0f, 0.0f, 0.0f);
-    return;
-  }
-
   // for indexed lightmode, the fuzz color needs to take
   // pain/item fades and gamma into account, so do a color
   // lookup based on the closest-to-black color index.
@@ -877,7 +857,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   int x1,y1,x2,y2;
   float light;
 
-  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, V_IsWorldLightmodeIndexed());
+  gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, true);
   if (!gltexture)
     return;
   gld_BindPatch(gltexture, CR_DEFAULT);
