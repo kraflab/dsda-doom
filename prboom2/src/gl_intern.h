@@ -386,8 +386,8 @@ void gld_Precache(void);
 void SetFrameTextureMode(void);
 
 //gl_vertex
-void gld_SplitLeftEdge(const GLWall *wall, dboolean detail);
-void gld_SplitRightEdge(const GLWall *wall, dboolean detail);
+void gld_SplitLeftEdge(const GLWall *wall);
+void gld_SplitRightEdge(const GLWall *wall);
 void gld_RecalcVertexHeights(const vertex_t *v);
 
 //e6y

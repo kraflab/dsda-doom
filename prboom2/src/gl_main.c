@@ -1255,7 +1255,7 @@ static void gld_DrawWall(GLWall *wall)
 
     // split left edge of wall
     if (!wall->glseg->fracleft)
-      gld_SplitLeftEdge(wall, false);
+      gld_SplitLeftEdge(wall);
 
     // upper left corner
     glTexCoord2f(wall->ul,wall->vt);
@@ -1267,7 +1267,7 @@ static void gld_DrawWall(GLWall *wall)
 
     // split right edge of wall
     if (!wall->glseg->fracright)
-      gld_SplitRightEdge(wall, false);
+      gld_SplitRightEdge(wall);
 
     // lower right corner
     glTexCoord2f(wall->ur,wall->vb);
