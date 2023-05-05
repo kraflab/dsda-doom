@@ -174,13 +174,24 @@ static void gld_GetTextureTexID(GLTexture *gltexture, int cm)
     -1, -1, -1, -1, -1, -1, -1, -1,
     INVULN_PLAYER_CM
   };
+  int player_cm;
+  int bcm = boom_cm;
 
   gltexture->cm = cm;
-  gltexture->player_cm = data[frame_fixedcolormap];
+  gltexture->player_cm = player_cm = data[frame_fixedcolormap];
   assert(gltexture->player_cm != -1);
 
+  if (gltexture->flags & GLTEXTURE_INDEXED)
+  {
+    // Collapse indices that share the same texture contents in indexed mode
+    if (cm == CR_LIMIT)
+      cm = CR_DEFAULT;
+    if (player_cm != INVULN_PLAYER_CM)
+      player_cm = 0;
+    bcm = 0;
+  }
   gltexture->texflags_p = &gltexture->texflags[cm][gltexture->player_cm];
-  gltexture->texid_p = &gltexture->glTexExID[cm][gltexture->player_cm][boom_cm];
+  gltexture->texid_p = &gltexture->glTexExID[cm][gltexture->player_cm][bcm];
   return;
 }
 
