@@ -2713,7 +2713,7 @@ void gld_DrawScene(player_t *player)
 
   gld_DrawItemsSortByTexture(GLDIT_MWALL);
 
-  if (!gl_arb_multitexture && gl_use_stencil && gld_drawinfo.num_items[GLDIT_MWALL] > 0)
+  if (gl_use_stencil && gld_drawinfo.num_items[GLDIT_MWALL] > 0)
   {
     // opaque mid walls without holes
     for (i = gld_drawinfo.num_items[GLDIT_MWALL] - 1; i >= 0; i--)

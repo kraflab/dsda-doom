@@ -53,7 +53,6 @@ SDL_PixelFormat RGBAFormat;
 
 dboolean gl_ext_texture_filter_anisotropic = false;
 dboolean gl_arb_texture_non_power_of_two = false;
-dboolean gl_arb_multitexture = false;
 dboolean gl_arb_texture_compression = false;
 dboolean gl_ext_framebuffer_object = false;
 dboolean gl_ext_packed_depth_stencil = false;
@@ -141,6 +140,7 @@ void gld_InitOpenGL(void)
 {
   GLenum texture;
   const char *extensions = (const char*)glGetString(GL_EXTENSIONS);
+  dboolean gl_arb_multitexture = false;
 
   gld_InitOpenGLVersion();
 
@@ -169,8 +169,8 @@ void gld_InitOpenGL(void)
         !GLEXT_glMultiTexCoord2fARB || !GLEXT_glMultiTexCoord2fvARB)
       gl_arb_multitexture = false;
   }
-  if (gl_arb_multitexture)
-    lprintf(LO_DEBUG, "using GL_ARB_multitexture\n");
+  if (!gl_arb_multitexture)
+    I_Error("gld_InitOpenGL: OpenGL driver does not support GL_ARB_multitexture");
 
   //
   // ARB_texture_compression
@@ -375,9 +375,6 @@ void gld_EnableTexture2D(GLenum texture, int enable)
 {
   int arb;
 
-  if (!gl_arb_multitexture && texture != GL_TEXTURE0_ARB)
-    return;
-
   arb = texture - GL_TEXTURE0_ARB;
 
 #ifdef RANGECHECK
@@ -424,9 +421,6 @@ void gld_EnableTexture2D(GLenum texture, int enable)
 void gld_EnableClientCoordArray(GLenum texture, int enable)
 {
   int arb;
-
-  if (!gl_arb_multitexture)
-    return;
 
   arb = texture - GL_TEXTURE0_ARB;
 
