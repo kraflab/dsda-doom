@@ -1051,11 +1051,6 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
 
-  if (gltexture->flags & GLTEXTURE_HASHOLES)
-  {
-    SmoothEdges(buffer, gltexture->buffer_width, gltexture->buffer_height);
-  }
-
   gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
 
   gld_SetTexClamp(gltexture, flags);
@@ -1157,24 +1152,6 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   memset(buffer,0,gltexture->buffer_size);
   gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, cm, 0);
-
-  // e6y
-  // Post-process the texture data after the buffer has been created.
-  // Smooth the edges of transparent fields in the texture.
-  //
-  // It is a workaround to set the color of all transparent pixels
-  // that border on a non-transparent pixel to the color
-  // of one bordering non-transparent pixel.
-  // It is necessary for textures that are not power of two
-  // to avoid the lines (boxes) around the elements that change
-  // on the intermission screens in Doom1 (E2, E3)
-
-//  if ((gltexture->flags & (GLTEXTURE_HASHOLES | GLTEXTURE_SPRITE)) ==
-//    (GLTEXTURE_HASHOLES | GLTEXTURE_SPRITE))
-  if ((gltexture->flags & GLTEXTURE_HASHOLES))
-  {
-    SmoothEdges(buffer, gltexture->buffer_width, gltexture->buffer_height);
-  }
 
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);

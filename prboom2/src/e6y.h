@@ -253,6 +253,4 @@ void I_vWarning(const char *message, va_list argList);
 #define PRB_IDNO                7
 int I_MessageBox(const char* text, unsigned int type);
 
-dboolean SmoothEdges(unsigned char * buffer,int w, int h);
-
 #endif
