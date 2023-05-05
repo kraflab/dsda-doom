@@ -272,8 +272,6 @@ void gld_Init(int width, int height)
   M_ChangeSkyMode();
   M_ChangeAllowFog();
 
-  gld_InitDetail();
-
 #ifdef HAVE_LIBSDL2_IMAGE
   gld_InitMapPics();
 #endif

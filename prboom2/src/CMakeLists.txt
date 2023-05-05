@@ -482,7 +482,6 @@ function(AddGameExecutable TARGET SOURCES)
     set(SOURCES
         ${SOURCES}
         gl_clipper.c
-        gl_detail.c
         gl_drawinfo.c
         gl_fbo.c
         gl_intern.h

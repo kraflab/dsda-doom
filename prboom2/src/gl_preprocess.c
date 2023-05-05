@@ -1102,7 +1102,6 @@ void gld_PreprocessLevel(void)
   }
 
   //e6y
-  gld_PreprocessDetail();
   gld_InitVertexData();
 
   gl_preprocessed = true;
