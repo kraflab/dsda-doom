@@ -96,7 +96,6 @@ void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
-void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
 void I_InitMouse(void);
@@ -586,11 +585,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
     NOT_STRICT, M_ChangeSkyMode
-  },
-  [dsda_config_gl_tex_format_string] = {
-    "gl_tex_format_string", dsda_config_gl_tex_format_string,
-    CONF_STRING("GL_RGBA"),
-    NULL, NOT_STRICT, M_ChangeTextureParams
   },
   [dsda_config_gl_render_multisampling] = {
     "gl_render_multisampling", dsda_config_gl_render_multisampling,

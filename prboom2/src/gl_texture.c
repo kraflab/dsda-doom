@@ -93,8 +93,6 @@ of a misnomer since the textures themselves aren't indexed,
 but rather have the GL colormaps pre-applied, but meh. */
 static GLTexture **gld_GLIndexedSkyTextures = NULL;
 
-int gl_tex_format=GL_RGB5_A1;
-
 GLuint* last_glTexID = NULL;
 
 void gld_ResetLastTexture(void)
@@ -876,7 +874,7 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
 
   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 
-  glTexImage2D( GL_TEXTURE_2D, 0, gl_tex_format,
+  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA,
     tex_width, tex_height,
     0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 

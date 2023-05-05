@@ -3154,15 +3154,6 @@ void M_ChangeDemoSmoothTurns(void)
   R_SmoothPlaying_Reset(NULL);
 }
 
-void M_ChangeTextureParams(void)
-{
-  if (V_IsOpenGLMode())
-  {
-    gld_InitTextureParams();
-    gld_FlushTextures();
-  }
-}
-
 // Setting up for the General screen. Turn on flags, set pointers,
 // locate the first item on the screen where the cursor is allowed to
 // land.

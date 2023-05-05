@@ -125,40 +125,6 @@ void SetFrameTextureMode(void)
   glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
 }
 
-void gld_InitTextureParams(void)
-{
-  typedef struct tex_format_s
-  {
-    int tex_format;
-    const char *tex_format_name;
-  } tex_format_t;
-
-  tex_format_t tex_formats[] = {
-    {GL_RGBA2,   "GL_RGBA2"},
-    {GL_RGBA4,   "GL_RGBA4"},
-    {GL_RGB5_A1, "GL_RGB5_A1"},
-    {GL_RGBA8,   "GL_RGBA8"},
-    {GL_RGBA,    "GL_RGBA"},
-    {0, NULL}
-  };
-
-  int i;
-
-  const char* gl_tex_format_string = dsda_StringConfig(dsda_config_gl_tex_format_string);
-
-  i = 0;
-  while (tex_formats[i].tex_format_name)
-  {
-    if (!strcasecmp(gl_tex_format_string, tex_formats[i].tex_format_name))
-    {
-      gl_tex_format = tex_formats[i].tex_format;
-      lprintf(LO_DEBUG, "Using texture format %s.\n", tex_formats[i].tex_format_name);
-      break;
-    }
-    i++;
-  }
-}
-
 const int gl_colorbuffer_bits = 32;
 const int gl_depthbuffer_bits = 24;
 int gl_render_multisampling;
@@ -231,7 +197,6 @@ void gld_Init(int width, int height)
   }
 
   gld_InitOpenGL();
-  gld_InitTextureParams();
 
   dsda_GLSetRenderViewport();
   dsda_GLSetRenderViewportScissor();

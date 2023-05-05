@@ -339,7 +339,6 @@ void gld_ResetDrawInfo(void);
 extern GLSector *sectorloops;
 extern GLMapSubsector *subsectorloops;
 
-extern int gl_tex_format;
 extern GLfloat gl_texture_filter_anisotropic;
 void gld_SetTexFilters(GLTexture *gltexture);
 
