@@ -970,8 +970,7 @@ int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int wi
   tex_width  = gld_GetTexDimension(width);
   tex_height = gld_GetTexDimension(height);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,
-    ((gltexture->flags & GLTEXTURE_MIPMAP) ? GL_TRUE : GL_FALSE));
+  glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 
   glTexImage2D( GL_TEXTURE_2D, 0, gl_tex_format,
     tex_width, tex_height,
@@ -1097,14 +1096,6 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean inde
     gltexture->buffer_width=MAX(gltexture->realtexwidth, gltexture->tex_width);
     gltexture->buffer_height=MAX(gltexture->realtexheight, gltexture->tex_height);
 
-    if (gltexture->flags & GLTEXTURE_MIPMAP)
-    {
-      gltexture->width=gltexture->tex_width;
-      gltexture->height=gltexture->tex_height;
-      gltexture->buffer_width=gltexture->realtexwidth;
-      gltexture->buffer_height=gltexture->realtexheight;
-    }
-
     //e6y: right/bottom UV coordinates for patch drawing
     gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
     gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
@@ -1194,14 +1185,6 @@ GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dbo
     gltexture->height=gltexture->tex_height;
     gltexture->buffer_width=gltexture->realtexwidth;
     gltexture->buffer_height=gltexture->realtexheight;
-
-    if (gltexture->flags & GLTEXTURE_MIPMAP)
-    {
-      gltexture->width=gltexture->tex_width;
-      gltexture->height=gltexture->tex_height;
-      gltexture->buffer_width=gltexture->realtexwidth;
-      gltexture->buffer_height=gltexture->realtexheight;
-    }
 
     //e6y: right/bottom UV coordinates for flat drawing
     gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
