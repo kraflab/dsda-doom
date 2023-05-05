@@ -67,7 +67,6 @@ extern int gl_max_texture_size;
 extern SDL_PixelFormat RGBAFormat;
 
 extern dboolean gl_ext_texture_filter_anisotropic;
-extern dboolean gl_arb_texture_non_power_of_two;
 extern dboolean gl_arb_texture_compression;
 extern dboolean gl_ext_framebuffer_object;
 extern dboolean gl_ext_packed_depth_stencil;

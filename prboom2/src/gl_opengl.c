@@ -52,7 +52,6 @@ int gl_max_texture_size = 0;
 SDL_PixelFormat RGBAFormat;
 
 dboolean gl_ext_texture_filter_anisotropic = false;
-dboolean gl_arb_texture_non_power_of_two = false;
 dboolean gl_arb_texture_compression = false;
 dboolean gl_ext_framebuffer_object = false;
 dboolean gl_ext_packed_depth_stencil = false;
@@ -141,6 +140,7 @@ void gld_InitOpenGL(void)
   GLenum texture;
   const char *extensions = (const char*)glGetString(GL_EXTENSIONS);
   dboolean gl_arb_multitexture = false;
+  dboolean gl_arb_texture_non_power_of_two = false;
 
   gld_InitOpenGLVersion();
 
@@ -150,8 +150,8 @@ void gld_InitOpenGL(void)
 
   // Any textures sizes are allowed
   gl_arb_texture_non_power_of_two = isExtensionSupported("GL_ARB_texture_non_power_of_two") != NULL;
-  if (gl_arb_texture_non_power_of_two)
-    lprintf(LO_DEBUG, "using GL_ARB_texture_non_power_of_two\n");
+  if (!gl_arb_texture_non_power_of_two)
+    I_Error("gld_InitOpenGL: OpenGL driver does not support GL_ARB_texture_non_power_of_two");
 
   //
   // ARB_multitexture command function pointers
