@@ -436,20 +436,6 @@ static void WI_slamBackground(void)
   V_DrawNamePatch(0, 0, FB, name, CR_DEFAULT, VPT_STRETCH);
 }
 
-
-// ====================================================================
-// WI_Responder
-// Purpose: Draw animations on intermission background screen
-// Args:    ev    -- event pointer, not actually used here.
-// Returns: False -- dummy routine
-//
-// The ticker is used to detect keys
-//  because of timing issues in netgames.
-dboolean WI_Responder(event_t* ev)
-{
-  return false;
-}
-
 #define SPACEWIDTH 4
 
 static void WI_DrawString(int cx, int cy, const char* ch)
