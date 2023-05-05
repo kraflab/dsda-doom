@@ -526,6 +526,7 @@ void IN_Drawer(void)
     oldinterstate = interstate;
     switch (interstate)
     {
+        case -1:
         case 0:                // draw stats
             IN_DrawStatBack();
             switch (gametype)
