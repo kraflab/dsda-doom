@@ -66,7 +66,6 @@ void gld_UpdateSplitData(sector_t *sector);
 
 void gld_Init(int width, int height);
 void gld_InitCommandLine(void);
-void gld_InitTextureParams(void);
 
 void gld_BeginUIDraw(void);
 void gld_EndUIDraw(void);

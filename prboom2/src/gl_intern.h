@@ -61,9 +61,8 @@ typedef enum
   GLTEXTURE_CLAMPX    = 0x00000040,
   GLTEXTURE_CLAMPY    = 0x00000080,
   GLTEXTURE_CLAMPXY   = (GLTEXTURE_CLAMPX | GLTEXTURE_CLAMPY),
-  GLTEXTURE_MIPMAP    = 0x00000100,
-  GLTEXTURE_INDEXED   = 0x00000200,
-  GLTEXTURE_SKYHACK   = 0x00000400,
+  GLTEXTURE_INDEXED   = 0x00000100,
+  GLTEXTURE_SKYHACK   = 0x00000200,
 } GLTexture_flag_t;
 
 typedef struct gl_strip_coords_s
@@ -340,10 +339,7 @@ void gld_ResetDrawInfo(void);
 extern GLSector *sectorloops;
 extern GLMapSubsector *subsectorloops;
 
-extern int gl_tex_format;
 extern GLfloat gl_texture_filter_anisotropic;
-extern int transparent_pal_index;
-extern unsigned char gld_palmap[256];
 void gld_SetTexFilters(GLTexture *gltexture);
 
 extern float xCamera,yCamera,zCamera;
@@ -372,9 +368,7 @@ void gld_BindSkyTexture(GLTexture *gltexture);
 GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level, dboolean fullbright);
 void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level, dboolean fullbright);
 void gld_InitColormapTextures(dboolean fullbright);
-void gld_InitPalettedTextures(void);
 int gld_GetTexDimension(int value);
-void gld_SetTexturePalette(GLenum target);
 void gld_SetIndexedPalette(int palette_index);
 void gld_Precache(void);
 

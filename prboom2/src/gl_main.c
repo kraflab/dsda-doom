@@ -125,40 +125,6 @@ void SetFrameTextureMode(void)
   glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
 }
 
-void gld_InitTextureParams(void)
-{
-  typedef struct tex_format_s
-  {
-    int tex_format;
-    const char *tex_format_name;
-  } tex_format_t;
-
-  tex_format_t tex_formats[] = {
-    {GL_RGBA2,   "GL_RGBA2"},
-    {GL_RGBA4,   "GL_RGBA4"},
-    {GL_RGB5_A1, "GL_RGB5_A1"},
-    {GL_RGBA8,   "GL_RGBA8"},
-    {GL_RGBA,    "GL_RGBA"},
-    {0, NULL}
-  };
-
-  int i;
-
-  const char* gl_tex_format_string = dsda_StringConfig(dsda_config_gl_tex_format_string);
-
-  i = 0;
-  while (tex_formats[i].tex_format_name)
-  {
-    if (!strcasecmp(gl_tex_format_string, tex_formats[i].tex_format_name))
-    {
-      gl_tex_format = tex_formats[i].tex_format;
-      lprintf(LO_DEBUG, "Using texture format %s.\n", tex_formats[i].tex_format_name);
-      break;
-    }
-    i++;
-  }
-}
-
 const int gl_colorbuffer_bits = 32;
 const int gl_depthbuffer_bits = 24;
 int gl_render_multisampling;
@@ -231,8 +197,6 @@ void gld_Init(int width, int height)
   }
 
   gld_InitOpenGL();
-  gld_InitPalettedTextures();
-  gld_InitTextureParams();
 
   dsda_GLSetRenderViewport();
   dsda_GLSetRenderViewportScissor();
@@ -271,8 +235,6 @@ void gld_Init(int width, int height)
   gld_FlushTextures(); // TODO: should this be here?
   M_ChangeSkyMode();
   M_ChangeAllowFog();
-
-  gld_InitDetail();
 
 #ifdef HAVE_LIBSDL2_IMAGE
   gld_InitMapPics();
@@ -2715,7 +2677,7 @@ void gld_DrawScene(player_t *player)
 
   gld_DrawItemsSortByTexture(GLDIT_MWALL);
 
-  if (!gl_arb_multitexture && gl_use_stencil && gld_drawinfo.num_items[GLDIT_MWALL] > 0)
+  if (gl_use_stencil && gld_drawinfo.num_items[GLDIT_MWALL] > 0)
   {
     // opaque mid walls without holes
     for (i = gld_drawinfo.num_items[GLDIT_MWALL] - 1; i >= 0; i--)

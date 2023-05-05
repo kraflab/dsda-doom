@@ -46,5 +46,5 @@ void main()
   gl_FragColor = color * texture2D(colormap, vec2(colorIndex, lightIndex));
 
   // reapply transparency & translucency
-  gl_FragColor.a = color.a * texel.a;
+  gl_FragColor.a = color.a * texel.g;
 }
