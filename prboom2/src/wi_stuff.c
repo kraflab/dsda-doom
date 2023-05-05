@@ -436,7 +436,6 @@ static void WI_slamBackground(void)
   V_DrawNamePatch(0, 0, FB, name, CR_DEFAULT, VPT_STRETCH);
 }
 
-
 #define SPACEWIDTH 4
 
 static void WI_DrawString(int cx, int cy, const char* ch)

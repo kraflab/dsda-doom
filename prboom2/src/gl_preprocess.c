@@ -886,8 +886,8 @@ static void gld_PreprocessSectors(void)
 
   if (numlines)
   {
-    linerendered[0]=Z_Calloc(numlines, sizeof(byte));
-    linerendered[1]=Z_Calloc(numlines, sizeof(byte));
+    linerendered[0]=Z_Calloc(numlines, sizeof(*linerendered[0]));
+    linerendered[1]=Z_Calloc(numlines, sizeof(*linerendered[1]));
     if (!linerendered[0] || !linerendered[1])
       I_Error("gld_PreprocessSectors: Not enough memory for array linerendered");
   }
@@ -1071,6 +1071,8 @@ void gld_PreprocessLevel(void)
     memset(linerendered[1], 0, numlines*sizeof(linerendered[1][0]));
   }
 
+  rendermarker = 0;
+
   gld_ResetLastTexture();
   gld_ResetTexturedAutomap();
 
@@ -1100,7 +1102,6 @@ void gld_PreprocessLevel(void)
   }
 
   //e6y
-  gld_PreprocessDetail();
   gld_InitVertexData();
 
   gl_preprocessed = true;

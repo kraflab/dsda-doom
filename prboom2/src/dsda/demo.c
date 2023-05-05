@@ -38,6 +38,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/settings.h"
+#include "dsda/split_tracker.h"
 #include "dsda/utility.h"
 
 #include "demo.h"
@@ -118,8 +119,15 @@ char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
   return demo_name;
 }
 
+#define ADD_FILE_COUNTER static unsigned int counter; \
+                         DO_ONCE \
+                           counter = dsda_DemoAttempts(); \
+                           if (counter < 2) \
+                             counter = 2; \
+                         END_ONCE
+
 char* dsda_FallbackDemoName(void) {
-  static unsigned int counter = 2;
+  ADD_FILE_COUNTER
 
   dsda_SetDemoBaseName("fallback");
 
@@ -127,7 +135,7 @@ char* dsda_FallbackDemoName(void) {
 }
 
 char* dsda_NewDemoName(void) {
-  static unsigned int counter = 2;
+  ADD_FILE_COUNTER
 
   if (!dsda_demo_name_base)
     dsda_SetDemoBaseName("null");
@@ -141,8 +149,8 @@ static dboolean dsda_UseFailedDemoName(void) {
 }
 
 char* dsda_FailedDemoName(void) {
-  static unsigned int counter = 2;
   static char* dsda_failed_demo_name_base;
+  ADD_FILE_COUNTER
 
   if (!dsda_demo_name_base)
     dsda_SetDemoBaseName("null");
@@ -199,9 +207,24 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
   );
 }
 
-void dsda_CopyPendingCmd(ticcmd_t* cmd) {
+dboolean dsda_CopyPendingCmd(ticcmd_t* cmd) {
   if (demorecording && largest_real_offset - dsda_DemoBufferOffset() >= bytes_per_tic) {
     const byte* p = dsda_demo_write_buffer_p;
+
+    G_ReadOneTick(cmd, &p);
+
+    return true;
+  }
+  else {
+    memset(cmd, 0, sizeof(*cmd));
+
+    return false;
+  }
+}
+
+void dsda_CopyPriorCmd(ticcmd_t* cmd, int delta) {
+  if (demorecording && dsda_DemoBufferOffset() >= delta * bytes_per_tic) {
+    const byte* p = dsda_demo_write_buffer_p - delta * bytes_per_tic;
 
     G_ReadOneTick(cmd, &p);
   }

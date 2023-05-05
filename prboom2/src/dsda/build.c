@@ -40,6 +40,9 @@ static dboolean allow_turbo;
 static dboolean build_mode;
 static dboolean advance_frame;
 static ticcmd_t build_cmd;
+static ticcmd_t overwritten_cmd;
+static int overwritten_logictic;
+static int build_cmd_tic = -1;
 static dboolean replace_source = true;
 static build_cmd_queue_t cmd_queue;
 
@@ -75,11 +78,22 @@ static signed char minStrafeLeft(void) {
   return allow_turbo ? -128 : -strafe50();
 }
 
+void dsda_ChangeBuildCommand(void) {
+  if (demoplayback)
+    dsda_JoinDemo(NULL);
+
+  replace_source = true;
+  build_cmd_tic = logictic - 1;
+  dsda_JumpToLogicTicFrom(logictic, logictic - 1);
+}
+
 dboolean dsda_BuildMF(int x) {
   if (x < 0 || x > 127)
     return false;
 
   build_cmd.forwardmove = x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -90,6 +104,8 @@ dboolean dsda_BuildMB(int x) {
 
   build_cmd.forwardmove = -x;
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
@@ -98,6 +114,8 @@ dboolean dsda_BuildSR(int x) {
     return false;
 
   build_cmd.sidemove = x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -108,6 +126,8 @@ dboolean dsda_BuildSL(int x) {
 
   build_cmd.sidemove = -x;
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
@@ -116,6 +136,8 @@ dboolean dsda_BuildTR(int x) {
     return false;
 
   build_cmd.angleturn = (-x << 8);
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -126,6 +148,8 @@ dboolean dsda_BuildTL(int x) {
 
   build_cmd.angleturn = (x << 8);
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
@@ -135,6 +159,8 @@ dboolean dsda_BuildFU(int x) {
 
   build_cmd.lookfly &= 0x0f;
   build_cmd.lookfly |= (x << 4);
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -149,12 +175,16 @@ dboolean dsda_BuildFD(int x) {
   build_cmd.lookfly &= 0x0f;
   build_cmd.lookfly |= (x << 4);
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
 dboolean dsda_BuildFC(void) {
   build_cmd.lookfly &= 0x0f;
   build_cmd.lookfly |= 0x80;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -165,6 +195,8 @@ dboolean dsda_BuildLU(int x) {
 
   build_cmd.lookfly &= 0xf0;
   build_cmd.lookfly |= x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -179,12 +211,16 @@ dboolean dsda_BuildLD(int x) {
   build_cmd.lookfly &= 0xf0;
   build_cmd.lookfly |= x;
 
+  dsda_ChangeBuildCommand();
+
   return true;
 }
 
 dboolean dsda_BuildLC(void) {
   build_cmd.lookfly &= 0xf0;
   build_cmd.lookfly |= 0x08;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -194,6 +230,8 @@ dboolean dsda_BuildUA(int x) {
     return false;
 
   build_cmd.arti = x;
+
+  dsda_ChangeBuildCommand();
 
   return true;
 }
@@ -206,14 +244,15 @@ static void buildForward(void) {
       build_cmd.forwardmove = 127;
     else
       build_cmd.forwardmove = forward50();
-
-    return;
+  }
+  else {
+    if (build_cmd.forwardmove == forward50())
+      build_cmd.forwardmove = 0;
+    else
+      build_cmd.forwardmove = forward50();
   }
 
-  if (build_cmd.forwardmove == forward50())
-    build_cmd.forwardmove = 0;
-  else
-    build_cmd.forwardmove = forward50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildBackward(void) {
@@ -224,24 +263,29 @@ static void buildBackward(void) {
       build_cmd.forwardmove = -127;
     else
       build_cmd.forwardmove = -forward50();
-
-    return;
+  }
+  else {
+    if (build_cmd.forwardmove == -forward50())
+      build_cmd.forwardmove = 0;
+    else
+      build_cmd.forwardmove = -forward50();
   }
 
-  if (build_cmd.forwardmove == -forward50())
-    build_cmd.forwardmove = 0;
-  else
-    build_cmd.forwardmove = -forward50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineForward(void) {
   if (build_cmd.forwardmove < maxForward())
     ++build_cmd.forwardmove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineBackward(void) {
   if (build_cmd.forwardmove > minBackward())
     --build_cmd.forwardmove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildStrafeRight(void) {
@@ -252,14 +296,15 @@ static void buildStrafeRight(void) {
       build_cmd.sidemove = 127;
     else
       build_cmd.sidemove = strafe50();
-
-    return;
+  }
+  else {
+    if (build_cmd.sidemove == strafe50())
+      build_cmd.sidemove = 0;
+    else
+      build_cmd.sidemove = strafe50();
   }
 
-  if (build_cmd.sidemove == strafe50())
-    build_cmd.sidemove = 0;
-  else
-    build_cmd.sidemove = strafe50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildStrafeLeft(void) {
@@ -270,40 +315,53 @@ static void buildStrafeLeft(void) {
       build_cmd.sidemove = -128;
     else
       build_cmd.sidemove = -strafe50();
-
-    return;
+  }
+  else {
+    if (build_cmd.sidemove == -strafe50())
+      build_cmd.sidemove = 0;
+    else
+      build_cmd.sidemove = -strafe50();
   }
 
-  if (build_cmd.sidemove == -strafe50())
-    build_cmd.sidemove = 0;
-  else
-    build_cmd.sidemove = -strafe50();
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineStrafeRight(void) {
   if (build_cmd.sidemove < maxStrafeRight())
     ++build_cmd.sidemove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFineStrafeLeft(void) {
   if (build_cmd.sidemove > minStrafeLeft())
     --build_cmd.sidemove;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildTurnRight(void) {
   build_cmd.angleturn -= shortTic();
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildTurnLeft(void) {
   build_cmd.angleturn += shortTic();
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildUse(void) {
   build_cmd.buttons ^= BT_USE;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildFire(void) {
   build_cmd.buttons ^= BT_ATTACK;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void buildWeapon(int weapon) {
@@ -319,17 +377,12 @@ static void buildWeapon(int weapon) {
   build_cmd.buttons &= ~BT_WEAPONMASK;
   if (build_cmd.buttons & BT_CHANGE)
     build_cmd.buttons |= cmdweapon;
+
+  dsda_ChangeBuildCommand();
 }
 
 static void resetCmd(void) {
   memset(&build_cmd, 0, sizeof(build_cmd));
-}
-
-angle_t dsda_BuildModeViewAngleOffset(void) {
-  if (!build_mode)
-    return 0;
-
-  return build_cmd.angleturn << 16;
 }
 
 dboolean dsda_AllowBuilding(void) {
@@ -364,30 +417,29 @@ dboolean dsda_BuildPlayback(void) {
 }
 
 void dsda_CopyBuildCmd(ticcmd_t* cmd) {
+  *cmd = build_cmd;
+}
+
+void dsda_ReadBuildCmd(ticcmd_t* cmd) {
   if (cmd_queue.depth)
     dsda_PopCommandQueue(cmd);
   else if (dsda_BruteForce())
     dsda_CopyBruteForceCommand(cmd);
-  else if (replace_source && !dsda_SkipMode())
+  else if (logictic == build_cmd_tic) {
     *cmd = build_cmd;
+    build_cmd_tic = -1;
+  }
   else
     dsda_CopyPendingCmd(cmd);
 
   dsda_JoinDemoCmd(cmd);
 }
 
-void dsda_ReadBuildCmd(ticcmd_t* cmd) {
-  dsda_CopyBuildCmd(cmd);
-
-  build_cmd.angleturn = 0;
-  build_cmd.arti = 0;
-  build_cmd.buttons &= ~BT_USE;
-  if (build_cmd.buttons & BT_CHANGE)
-    build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
-}
-
 void dsda_EnterBuildMode(void) {
   dsda_TrackFeature(uf_build);
+
+  if (!logictic)
+    advance_frame = true;
 
   build_mode = true;
   dsda_ApplyPauseMode(PAUSE_BUILDMODE);
@@ -400,6 +452,21 @@ void dsda_ExitBuildMode(void) {
   dsda_RemovePauseMode(PAUSE_BUILDMODE);
 
   dsda_RefreshExHudCommandDisplay();
+}
+
+void dsda_RefreshBuildMode(void) {
+  if (demoplayback)
+    replace_source = false;
+
+  if (!dsda_SkipMode() &&
+      overwritten_logictic != logictic - 1 &&
+      build_cmd_tic == -1 &&
+      logictic > 0) {
+    dsda_CopyPriorCmd(&overwritten_cmd, 1);
+    build_cmd = overwritten_cmd;
+    overwritten_logictic = logictic - 1;
+    replace_source = false;
+  }
 }
 
 dboolean dsda_BuildResponder(event_t* ev) {
@@ -421,11 +488,36 @@ dboolean dsda_BuildResponder(event_t* ev) {
   if (dsda_InputActivated(dsda_input_build_source)) {
     replace_source = !replace_source;
 
+    if (!replace_source) {
+      build_cmd = overwritten_cmd;
+
+      dsda_ChangeBuildCommand();
+      replace_source = false;
+    }
+
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_build_advance_frame)) {
-    advance_frame = gametic;
+    advance_frame = true;
+    build_cmd_tic = logictic;
+
+    build_cmd.angleturn = 0;
+    build_cmd.arti = 0;
+    build_cmd.buttons &= ~BT_USE;
+    if (build_cmd.buttons & BT_CHANGE)
+      build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
+
+    if (dsda_CopyPendingCmd(&overwritten_cmd)) {
+       if (!replace_source)
+          build_cmd = overwritten_cmd;
+    }
+    else {
+      overwritten_cmd = build_cmd;
+      replace_source = true;
+    }
+
+    overwritten_logictic = logictic;
 
     return true;
   }
@@ -436,7 +528,14 @@ dboolean dsda_BuildResponder(event_t* ev) {
       return true;
     }
 
-    dsda_JumpToLogicTic(logictic - 1);
+    if (logictic > 1) {
+      dsda_CopyPriorCmd(&build_cmd, 2);
+      overwritten_cmd = build_cmd;
+      overwritten_logictic = logictic - 2;
+      replace_source = false;
+
+      dsda_JumpToLogicTic(logictic - 1);
+    }
 
     return true;
   }
@@ -600,7 +699,7 @@ dboolean dsda_AdvanceFrame(void) {
   dboolean result;
 
   if (dsda_SkipMode())
-    advance_frame = gametic;
+    advance_frame = true;
 
   result = advance_frame;
   advance_frame = false;

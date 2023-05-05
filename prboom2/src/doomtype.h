@@ -39,16 +39,10 @@
 #include "config.h"
 #endif
 
-#ifndef __BYTEBOOL__
-#define __BYTEBOOL__
-/* Fixed to use builtin bool type with C++. */
-#ifdef __cplusplus
-typedef bool dboolean;
-#else
-typedef enum {false, true} dboolean;
-#endif
+#include <stdbool.h>
+typedef int dboolean;
+
 typedef unsigned char byte;
-#endif
 
 //e6y
 #ifndef MAX

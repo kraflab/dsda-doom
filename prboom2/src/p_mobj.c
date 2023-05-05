@@ -56,6 +56,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/settings.h"
 #include "dsda/spawn_number.h"
 #include "dsda/thing_id.h"
 #include "dsda/tranmap.h"
@@ -694,6 +695,16 @@ fixed_t P_MobjGravity(mobj_t* mo)
   return FixedMul(mo->subsector->sector->gravity, mo->gravity);
 }
 
+void P_AutoCorrectLookDir(player_t* player)
+{
+  if (!demorecording && !demoplayback && dsda_MouseLook())
+  {
+    return;
+  }
+
+  player->centering = true;
+}
+
 //
 // P_ZMovement
 //
@@ -959,7 +970,7 @@ floater:
           if (heretic)
           {
             S_StartMobjSound(mo, heretic_sfx_plroof);
-            mo->player->centering = true;
+            P_AutoCorrectLookDir(mo->player);
           }
           else if (hexen)
           {
@@ -990,7 +1001,7 @@ floater:
             {
               S_StartMobjSound(mo, hexen_sfx_player_land);
             }
-            mo->player->centering = true;
+            P_AutoCorrectLookDir(mo->player);
           }
           //e6y: compatibility optioned
           else if (comp[comp_sound] || (mo->health > 0)) /* cph - prevent "oof" when dead */
@@ -3512,7 +3523,7 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj, fixed_t gravity)
     {
         S_StartMobjSound(mo, hexen_sfx_player_land);
     }
-    mo->player->centering = true;
+    P_AutoCorrectLookDir(mo->player);
 }
 
 void P_CreateTIDList(void)

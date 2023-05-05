@@ -153,6 +153,7 @@ static yahpt_t YAHspot[3][9] = {
 static const char *NameForMap(int map)
 {
     const char *name = LevelNames[(gameepisode - 1) * 9 + map - 1];
+
     if (strlen(name) < 7)
     {
         return "";
@@ -525,6 +526,7 @@ void IN_Drawer(void)
     oldinterstate = interstate;
     switch (interstate)
     {
+        case -1:
         case 0:                // draw stats
             IN_DrawStatBack();
             switch (gametype)

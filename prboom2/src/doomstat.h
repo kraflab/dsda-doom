@@ -230,6 +230,7 @@ extern  int totalsecret;
 extern  int basetic;
 extern  int leveltime;       // level time in tics
 extern  int totalleveltimes; // sum of intermission times in tics at second resolution
+extern  int levels_completed;
 
 // --------------------------------------
 // DEMO playback/recording related stuff.

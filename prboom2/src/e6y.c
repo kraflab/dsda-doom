@@ -146,7 +146,7 @@ const char* WINError(void)
 /* ParamsMatchingCheck
  * Conflicting command-line parameters could cause the engine to be confused
  * in some cases. Added checks to prevent this.
- * Example: glboom.exe -record mydemo -playdemo demoname
+ * Example: dsda-doom.exe -record mydemo -playdemo demoname
  */
 void ParamsMatchingCheck()
 {
@@ -377,35 +377,6 @@ void M_ChangeFOV(void)
   skyUpShift = (float)tan(DEG2RAD(gl_render_fovy)/2.0f);
 
   skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
-}
-
-void ResolveColormapsHiresConflict(dboolean prefer_colormap)
-{
-  gl_boom_colormaps = !r_have_internal_hires;
-}
-
-void M_ChangeAllowBoomColormaps(void)
-{
-  if (gl_boom_colormaps == -1)
-  {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
-  }
-  else
-  {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
-    gld_FlushTextures();
-    gld_Precache();
-  }
-}
-
-void M_ChangeTextureUseHires(void)
-{
-  ResolveColormapsHiresConflict(false);
-
-  gld_FlushTextures();
-  gld_Precache();
 }
 
 float viewPitch;
@@ -827,100 +798,3 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
   return false;
 }
 #endif
-
-//Begin of GZDoom code
-/*
-**---------------------------------------------------------------------------
-** Copyright 2004-2005 Christoph Oelckers
-** All rights reserved.
-**
-** Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions
-** are met:
-**
-** 1. Redistributions of source code must retain the above copyright
-**    notice, this list of conditions and the following disclaimer.
-** 2. Redistributions in binary form must reproduce the above copyright
-**    notice, this list of conditions and the following disclaimer in the
-**    documentation and/or other materials provided with the distribution.
-** 3. The name of the author may not be used to endorse or promote products
-**    derived from this software without specific prior written permission.
-** 4. When not used as part of GZDoom or a GZDoom derivative, this code will be
-**    covered by the terms of the GNU Lesser General Public License as published
-**    by the Free Software Foundation; either version 2.1 of the License, or (at
-**    your option) any later version.
-*/
-
-//===========================================================================
-//
-// smooth the edges of transparent fields in the texture
-// returns false when nothing is manipulated to save the work on further
-// levels
-
-// 28/10/2003: major optimization: This function was far too pedantic.
-// taking the value of one of the neighboring pixels is fully sufficient
-//
-//===========================================================================
-
-#ifdef WORDS_BIGENDIAN
-#define MSB 0
-#define SOME_MASK 0xffffff00
-#else
-#define MSB 3
-#define SOME_MASK 0x00ffffff
-#endif
-
-#define CHKPIX(ofs) (l1[(ofs)*4+MSB]==255 ? (( ((unsigned int*)l1)[0] = ((unsigned int*)l1)[ofs]&SOME_MASK), trans=true ) : false)
-
-dboolean SmoothEdges(unsigned char * buffer,int w, int h)
-{
-  int x,y;
-  dboolean trans=buffer[MSB]==0; // If I set this to false here the code won't detect textures
-                                // that only contain transparent pixels.
-  unsigned char * l1;
-
-  // makes (a) no sense and (b) doesn't work with this code!
-  // if (h<=1 || w<=1)
-  // e6y: Do not smooth small patches.
-  // Makes sense for HUD small digits
-  // 2 and 7 still look ugly
-  if (h<=8 || w<=8)
-    return false;
-
-  l1=buffer;
-
-  if (l1[MSB]==0 && !CHKPIX(1)) CHKPIX(w);
-  l1+=4;
-  for(x=1;x<w-1;x++, l1+=4)
-  {
-    if (l1[MSB]==0 &&  !CHKPIX(-1) && !CHKPIX(1)) CHKPIX(w);
-  }
-  if (l1[MSB]==0 && !CHKPIX(-1)) CHKPIX(w);
-  l1+=4;
-
-  for(y=1;y<h-1;y++)
-  {
-    if (l1[MSB]==0 && !CHKPIX(-w) && !CHKPIX(1)) CHKPIX(w);
-    l1+=4;
-    for(x=1;x<w-1;x++, l1+=4)
-    {
-      if (l1[MSB]==0 &&  !CHKPIX(-w) && !CHKPIX(-1) && !CHKPIX(1)) CHKPIX(w);
-    }
-    if (l1[MSB]==0 && !CHKPIX(-w) && !CHKPIX(-1)) CHKPIX(w);
-    l1+=4;
-  }
-
-  if (l1[MSB]==0 && !CHKPIX(-w)) CHKPIX(1);
-  l1+=4;
-  for(x=1;x<w-1;x++, l1+=4)
-  {
-    if (l1[MSB]==0 &&  !CHKPIX(-w) && !CHKPIX(-1)) CHKPIX(1);
-  }
-  if (l1[MSB]==0 && !CHKPIX(-w)) CHKPIX(-1);
-
-  return trans;
-}
-
-#undef MSB
-#undef SOME_MASK
-//End of GZDoom code

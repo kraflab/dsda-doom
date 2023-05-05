@@ -48,14 +48,6 @@ typedef enum {
 } skytype_t;
 
 #define MAX_GLGAMMA 32
-typedef enum
-{
-  gl_lightmode_glboom,
-  gl_lightmode_shaders,
-  gl_lightmode_indexed,
-
-  gl_lightmode_last
-} gl_lightmode_t;
 
 enum bleedtype {
   BLEED_NONE = 0x0,
@@ -64,28 +56,16 @@ enum bleedtype {
 };
 
 extern int gl_drawskys;
-extern int gl_hardware_gamma;
-extern gl_lightmode_t gl_lightmode;
-extern const char *gl_lightmodes[];
 extern dboolean gl_ui_lightmode_indexed;
 extern dboolean gl_automap_lightmode_indexed;
-extern int gl_usegamma;
-int gld_SetGammaRamp(int gamma);
-void gld_CheckHardwareGamma(void);
 void gld_FlushTextures(void);
-void gld_ApplyGammaRamp(byte *buf, int pitch, int width, int height);
-void M_ChangeLightMode(void);
 
 void gld_InitVertexData();
 void gld_CleanVertexData();
 void gld_UpdateSplitData(sector_t *sector);
 
-extern int gl_boom_colormaps;
-extern int gl_boom_colormaps_default;
-
 void gld_Init(int width, int height);
 void gld_InitCommandLine(void);
-void gld_InitTextureParams(void);
 
 void gld_BeginUIDraw(void);
 void gld_EndUIDraw(void);
@@ -127,7 +107,6 @@ void gld_AddWall(seg_t *seg);
 void gld_ProjectSprite(mobj_t* thing, int lightlevel);
 void gld_DrawScene(player_t *player);
 void gld_EndDrawScene(void);
-void gld_ProcessExtraAlpha(void);
 void gld_Finish();
 
 //blend animation from zdoomgl

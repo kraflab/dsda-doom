@@ -36,6 +36,7 @@
 #include "p_tick.h"
 #include "p_user.h"
 #include "s_sound.h"
+#include "smooth.h"
 #include "v_video.h"
 
 #include "dsda.h"
@@ -159,6 +160,36 @@ dboolean dsda_OpenConsole(void) {
   M_StartControlPanel();
   M_SetupNextMenu(&dsda_ConsoleDef);
   dsda_ResetConsoleEntry();
+
+  return true;
+}
+
+static dboolean console_LevelExit(const char* command, const char* args) {
+  void G_ExitLevel(int position);
+
+  int position = 0;
+
+  if (hexen)
+    return false;
+
+  sscanf(args, "%d", &position);
+
+  G_ExitLevel(position);
+
+  return true;
+}
+
+static dboolean console_LevelSecretExit(const char* command, const char* args) {
+  void G_SecretExitLevel(int position);
+
+  int position = 0;
+
+  if (hexen)
+    return false;
+
+  sscanf(args, "%d", &position);
+
+  G_SecretExitLevel(position);
 
   return true;
 }
@@ -495,6 +526,40 @@ static dboolean console_PlayerRoundXY(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_PlayerSetAngle(const char* command, const char* args) {
+  int a, a_frac = 0;
+
+  if (sscanf(args, "%d.%d", &a, &a_frac)) {
+    target_player.mo->angle = ((angle_t) a) << 24;
+
+    if (args[0] == '-')
+      target_player.mo->angle -= (a_frac << 16);
+    else
+      target_player.mo->angle += (a_frac << 16);
+
+    R_SmoothPlaying_Reset(&target_player);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerRoundAngle(const char* command, const char* args) {
+  int remainder;
+
+  remainder = (target_player.mo->angle >> 16) & 0xff;
+
+  target_player.mo->angle &= 0xff000000;
+
+  if (remainder >= 0x80)
+    target_player.mo->angle += 0x01000000;
+
+  R_SmoothPlaying_Reset(&target_player);
+
+  return true;
+}
+
 static dboolean console_DemoExport(const char* command, const char* args) {
   char name[CONSOLE_ENTRY_SIZE];
 
@@ -734,22 +799,50 @@ static dboolean console_BruteForceFrame(const char* command, const char* args) {
   int forwardmove_min, forwardmove_max;
   int sidemove_min, sidemove_max;
   int angleturn_min, angleturn_max;
-  int arg_count;
+  byte buttons = 0;
+  int weapon = 0;
+  char button_str[4] = { 0 };
+  int i, arg_count;
 
   arg_count = sscanf(
-    args, "%i %i:%i %i:%i %i:%i", &frame,
+    args, "%i %i:%i %i:%i %i:%i %3s %d", &frame,
     &forwardmove_min, &forwardmove_max,
     &sidemove_min, &sidemove_max,
-    &angleturn_min, &angleturn_max
+    &angleturn_min, &angleturn_max,
+    button_str, &weapon
   );
 
-  if (arg_count != 7)
+  if (arg_count < 7)
     return false;
+
+  if (arg_count > 7)
+    for (i = 0; i < 3; ++i)
+      switch (button_str[i]) {
+        case 'a':
+          buttons |= BT_ATTACK;
+          break;
+        case 'u':
+          buttons |= BT_USE;
+          break;
+        case 'c':
+          if (weapon > 0 && weapon < 16) {
+            buttons |= BT_CHANGE;
+            buttons |= (weapon << BT_WEAPONSHIFT);
+          }
+          else
+            return false;
+          break;
+        case '\0':
+          break;
+        default:
+          return false;
+      }
 
   return dsda_AddBruteForceFrame(frame,
                                  forwardmove_min, forwardmove_max,
                                  sidemove_min, sidemove_max,
-                                 angleturn_min, angleturn_max);
+                                 angleturn_min, angleturn_max,
+                                 buttons);
 }
 
 static dboolean console_BruteForceStart(const char* command, const char* args) {
@@ -777,7 +870,8 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       dsda_AddBruteForceFrame(i,
                               forwardmove_min, forwardmove_max,
                               sidemove_min, sidemove_max,
-                              angleturn_min, angleturn_max);
+                              angleturn_min, angleturn_max,
+                              0);
   }
   else {
     arg_count = sscanf(args, "%i %[^;]", &depth, condition_args);
@@ -1069,6 +1163,22 @@ static dboolean console_ConfigRemember(const char* command, const char* args) {
   void M_RememberCurrentConfig(void);
 
   M_RememberCurrentConfig();
+
+  return true;
+}
+
+static dboolean console_WadStatsForget(const char* command, const char* args) {
+  void M_ForgetWadStats(void);
+
+  M_ForgetWadStats();
+
+  return true;
+}
+
+static dboolean console_WadStatsRemember(const char* command, const char* args) {
+  void M_RememberWadStats(void);
+
+  M_RememberWadStats();
 
   return true;
 }
@@ -2085,8 +2195,13 @@ static console_command_entry_t console_commands[] = {
   { "player.round_x", console_PlayerRoundX, CF_NEVER },
   { "player.round_y", console_PlayerRoundY, CF_NEVER },
   { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
+  { "player.set_angle", console_PlayerSetAngle, CF_NEVER },
+  { "player.round_angle", console_PlayerRoundAngle, CF_NEVER },
 
   { "music.restart", console_MusicRestart, CF_ALWAYS },
+
+  { "level.exit", console_LevelExit, CF_NEVER },
+  { "level.secret_exit", console_LevelSecretExit, CF_NEVER },
 
   { "script.run", console_ScriptRun, CF_ALWAYS },
   { "check", console_Check, CF_ALWAYS },
@@ -2096,6 +2211,8 @@ static console_command_entry_t console_commands[] = {
   { "toggle_update", console_ToggleUpdate, CF_ALWAYS },
   { "config.forget", console_ConfigForget, CF_ALWAYS },
   { "config.remember", console_ConfigRemember, CF_ALWAYS },
+  { "wad_stats.forget", console_WadStatsForget, CF_ALWAYS },
+  { "wad_stats.remember", console_WadStatsRemember, CF_ALWAYS },
   { "free_text.update", console_FreeTextUpdate, CF_ALWAYS },
   { "free_text.clear", console_FreeTextClear, CF_ALWAYS },
 
@@ -2308,6 +2425,11 @@ static dboolean dsda_AuthorizeCommand(console_command_entry_t* entry) {
 
   if (!(entry->flags & CF_STRICT) && dsda_StrictMode()) {
     dsda_AddConsoleMessage("command not allowed in strict mode");
+    return false;
+  }
+
+  if (gamestate != GS_LEVEL) {
+    dsda_AddConsoleMessage("command only allowed during levels");
     return false;
   }
 

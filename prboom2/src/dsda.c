@@ -39,6 +39,7 @@
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/tracker.h"
+#include "dsda/wad_stats.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
@@ -296,6 +297,7 @@ void dsda_WatchDeath(mobj_t* thing) {
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
   if (target->intflags & MIF_SPAWNED_BY_ICON) player->maxkilldiscount++;
+  dsda_WadStatsKill();
 }
 
 void dsda_WatchResurrection(mobj_t* target, mobj_t* raiser) {
@@ -425,6 +427,7 @@ void dsda_WatchAfterLevelSetup(void) {
   dsda_SpawnGhost();
   dsda_ResetTrackers();
   dsda_ResetLineActivationTracker();
+  dsda_WadStatsEnterMap();
 }
 
 void dsda_WatchNewLevel(void) {
@@ -437,6 +440,7 @@ void dsda_WatchLevelCompletion(void) {
   int i;
   int secret_count = 0;
   int kill_count = 0;
+  int missed_monsters = 0;
 
   for (th = thinkercap.next; th != &thinkercap; th = th->next) {
     if (th->function != P_MobjThinker) continue;
@@ -449,7 +453,7 @@ void dsda_WatchLevelCompletion(void) {
       && !(mobj->intflags & MIF_SPAWNED_BY_ICON) \
       && mobj->health > 0
     ) {
-      ++dsda_missed_monsters;
+      ++missed_monsters;
     }
 
     if (dsda_IsWeapon(mobj)) {
@@ -457,6 +461,8 @@ void dsda_WatchLevelCompletion(void) {
       dsda_weapon_collector = false;
     }
   }
+
+  dsda_missed_monsters += missed_monsters;
 
   for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i]) continue;
@@ -477,6 +483,7 @@ void dsda_WatchLevelCompletion(void) {
   dsda_any_map_completed = true;
 
   dsda_RecordSplit();
+  dsda_WadStatsExitMap(missed_monsters);
 }
 
 dboolean dsda_IsWeapon(mobj_t* thing) {

@@ -18,11 +18,14 @@
 #include <stdio.h>
 #include <zip.h>
 
+#include "i_system.h"
 #include "lprintf.h"
 #include "m_file.h"
 #include "z_zone.h"
 
 #include "dsda/utility.h"
+
+static char **temp_dirs;
 
 /* Allow a maximum of 1GB to be uncompressed to prevent zip-bombs */
 #define UNZIPPED_BYTES_LIMIT 1000000000ULL
@@ -61,16 +64,14 @@ static void dsda_WriteZippedFilesToDest(zip_t *archive, const char *destination_
     zip_file_t *zipped_file;
     zip_stat_t stat;
     FILE *dest_file;
-    const char *file_name = zip_get_name(archive, i, ZIP_FL_UNCHANGED);
+    const char *file_name = dsda_BaseName(zip_get_name(archive, i, ZIP_FL_UNCHANGED));
 
-    dsda_StringPrintF(&full_path, "%s%s", destination_directory, file_name);
-
-    /* Intermediate directories have a trailing '/' */
-    if (dsda_HasFileExt(full_path.string, "/")) {
-      M_MakeDir(full_path.string, true);
-      dsda_FreeString(&full_path);
+    /* Intermediate directories have a trailing '/', so their base name is empty */
+    if (*file_name == '\0') {
       continue;
     }
+
+    dsda_StringPrintF(&full_path, "%s/%s", destination_directory, file_name);
 
     zip_stat_index(archive, i, ZIP_FL_UNCHANGED, &stat);
     if ((stat.valid & ZIP_STAT_SIZE) == 0)
@@ -92,7 +93,7 @@ static void dsda_WriteZippedFilesToDest(zip_t *archive, const char *destination_
   }
 }
 
-void dsda_UnzipFile(const char *zipped_file_name, const char *destination_directory) {
+static void dsda_UnzipFileToDestination(const char *zipped_file_name, const char *destination_directory) {
   int error_code;
   zip_t *archive_handle;
 
@@ -101,10 +102,44 @@ void dsda_UnzipFile(const char *zipped_file_name, const char *destination_direct
   if (archive_handle == NULL) {
     zip_error_t error;
     zip_error_init_with_code(&error, error_code);
-    I_Error("dsda_UnzipFile: Unable to open %s: %s.\n", zipped_file_name, zip_error_strerror(&error));
+    I_Error("dsda_UnzipFileToDestination: Unable to open %s: %s.\n", zipped_file_name, zip_error_strerror(&error));
   }
 
   dsda_WriteZippedFilesToDest(archive_handle, destination_directory);
 
   zip_close(archive_handle);
+}
+
+const char* dsda_UnzipFile(const char *zipped_file_name) {
+  dsda_string_t temporary_directory;
+  static unsigned int file_counter = 0;
+
+  dsda_StringPrintF(&temporary_directory, "%s/%u-%s", I_GetTempDir(), file_counter, dsda_BaseName(zipped_file_name));
+  if (M_IsDir(temporary_directory.string))
+    if (!M_RemoveFilesAtPath(temporary_directory.string))
+      I_Error("dsda_UnzipFile: unable to clear tempdir %s\n", temporary_directory.string);
+  M_MakeDir(temporary_directory.string, true);
+
+  dsda_UnzipFileToDestination(zipped_file_name, temporary_directory.string);
+
+  temp_dirs = Z_Realloc(temp_dirs, (file_counter + 2) * sizeof(*temp_dirs));
+  temp_dirs[file_counter] = temporary_directory.string;
+  temp_dirs[file_counter + 1] = NULL;
+  file_counter++;
+
+  return temporary_directory.string;
+}
+
+void dsda_CleanZipTempDirs(void) {
+  int i;
+
+  if(temp_dirs == NULL)
+    return;
+
+  for (i = 0; temp_dirs[i] != NULL; i++) {
+    M_RemoveFilesAtPath(temp_dirs[i]);
+    M_remove(temp_dirs[i]);
+    Z_Free(temp_dirs[i]);
+  }
+  Z_Free(temp_dirs);
 }

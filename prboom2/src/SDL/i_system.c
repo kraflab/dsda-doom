@@ -495,6 +495,20 @@ const char* I_FindFile2(const char* wfname, const char* ext)
   return (const char*) I_FindFileInternal(wfname, ext, true);
 }
 
+char* I_RequireAnyFile(const char* wfname, const char** ext)
+{
+  char* result = NULL;
+
+  for (; *ext; ext++)
+  {
+    result = I_FindFile(wfname, *ext);
+    if (result)
+      return result;
+  }
+
+  I_Error("Unable to find required file \"%s\"", wfname);
+}
+
 char* I_RequireWad(const char* wfname)
 {
   return I_RequireFile(wfname, ".wad");

@@ -47,6 +47,7 @@ typedef struct {
   bf_range_t forwardmove;
   bf_range_t sidemove;
   bf_range_t angleturn;
+  byte buttons;
 } bf_t;
 
 typedef struct {
@@ -156,6 +157,7 @@ static void dsda_CopyBFCommandDepth(ticcmd_t* cmd, bf_t* bf) {
   cmd->angleturn = bf->angleturn.i << 8;
   cmd->forwardmove = bf->forwardmove.i;
   cmd->sidemove = bf->sidemove.i;
+  cmd->buttons = bf->buttons;
 }
 
 static void dsda_CopyBFResult(bf_t* bf, int depth) {
@@ -432,7 +434,8 @@ static void dsda_SortIntPair(int* a, int* b) {
 int dsda_AddBruteForceFrame(int i,
                             int forwardmove_min, int forwardmove_max,
                             int sidemove_min, int sidemove_max,
-                            int angleturn_min, int angleturn_max) {
+                            int angleturn_min, int angleturn_max,
+                            byte buttons) {
   if (i < 0 || i >= MAX_BF_DEPTH)
     return false;
 
@@ -451,6 +454,8 @@ int dsda_AddBruteForceFrame(int i,
   brute_force[i].angleturn.min = angleturn_min;
   brute_force[i].angleturn.max = angleturn_max;
   brute_force[i].angleturn.i = angleturn_min;
+
+  brute_force[i].buttons = buttons;
 
   return true;
 }
@@ -471,10 +476,11 @@ dboolean dsda_StartBruteForce(int depth) {
   bf_volume_max = 1;
 
   for (i = 0; i < bf_depth; ++i) {
-    lprintf(LO_INFO, "  %d: F %d:%d S %d:%d T %d:%d\n", i,
+    lprintf(LO_INFO, "  %d: F %d:%d S %d:%d T %d:%d B %d\n", i,
             brute_force[i].forwardmove.min, brute_force[i].forwardmove.max,
             brute_force[i].sidemove.min, brute_force[i].sidemove.max,
-            brute_force[i].angleturn.min, brute_force[i].angleturn.max);
+            brute_force[i].angleturn.min, brute_force[i].angleturn.max,
+            brute_force[i].buttons);
 
     bf_volume_max *= (brute_force[i].forwardmove.max - brute_force[i].forwardmove.min + 1) *
                      (brute_force[i].sidemove.max - brute_force[i].sidemove.min + 1) *

@@ -208,6 +208,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets player speed percent",
     arg_int, 10, 255,
   },
+  [dsda_arg_game_speed] = {
+    "-game_speed", NULL, NULL,
+    "sets game speed percent",
+    arg_int, 10, 10000,
+  },
   [dsda_arg_tas] = {
     "-tas", NULL, NULL,
     "lifts strict mode restrictions",

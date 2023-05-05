@@ -92,6 +92,8 @@
 #include "dsda/console.h"
 #include "dsda/stretch.h"
 #include "dsda/text_color.h"
+#include "dsda/utility.h"
+#include "dsda/wad_stats.h"
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
@@ -108,6 +110,8 @@
 #define S_YESNO    0x00000008 // Yes or No item
 #define S_CRITEM   0x00000010 // Message color
 #define S_COLOR    0x00000020 // Automap color
+#define S_LABEL    0x00000040
+#define S_TC_SEL   0x00000080
 #define S_PREV     0x00000100 // Previous menu exists
 #define S_NEXT     0x00000200 // Next menu exists
 #define S_INPUT    0x00000400 // Composite input binding
@@ -116,13 +120,20 @@
 #define S_SKIP     0x00002000 // Cursor can't land here
 #define S_KEEP     0x00004000 // Don't swap key out
 #define S_END      0x00008000 // Last item in list (dummy)
-#define S_LEVWARN  0x00010000// killough 8/30/98: Always warn about pending change
-#define S_FILE     0x00080000// killough 10/98: Filenames
+#define S_LEVWARN  0x00010000 // killough 8/30/98: Always warn about pending change
+#define S_NOSELECT 0x00020000
+#define S_CENTER   0x00040000
+#define S_FILE     0x00080000 // killough 10/98: Filenames
 #define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
-#define S_CREDIT   0x00200000  // killough 10/98: credit
-#define S_CHOICE   0x00800000  // this item has several values
+#define S_CREDIT   0x00200000 // killough 10/98: credit
+// #define S_      0x00400000
+#define S_CHOICE   0x00800000 // this item has several values
+// #define S_      0x01000000
 #define S_NAME     0x02000000
 #define S_RESET_Y  0x04000000
+// #define S_      0x08000000
+// #define S_      0x10000000
+// #define S_      0x20000000
 #define S_STR      0x40000000 // need to refactor things...
 #define S_NOCLEAR  0x80000000
 
@@ -132,7 +143,7 @@
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
+#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
 
 #define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_NAME)
 
@@ -289,6 +300,8 @@ void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
 void M_General(int);      // killough 10/98
 void M_DrawGeneral(void); // killough 10/98
+void M_LevelTable(int);
+void M_DrawLevelTable(void);
 void M_ChangeFullScreen(void);
 void M_ChangeVideoMode(void);
 void M_ChangeUseGLSurface(void);
@@ -1135,6 +1148,7 @@ enum
   set_statbar,
   set_automap,
   soundvol,
+  level_table,
   opt_end
 } options_e;
 
@@ -1148,6 +1162,7 @@ menuitem_t OptionsMenu[]=
   { 1, "M_STAT", M_StatusBar, 's', "STATUS BAR / HUD" },
   { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
   { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" },
+  { 1, "M_LVLTBL", M_LevelTable, 's', "LEVEL TABLE" },
 };
 
 menu_t OptionsDef =
@@ -1491,6 +1506,7 @@ dboolean setup_select      = false; // changing an item
 dboolean setup_gather      = false; // gathering keys for value
 dboolean colorbox_active   = false; // color palette being shown
 dboolean set_general_active = false;
+dboolean level_table_active = false;
 
 /////////////////////////////
 //
@@ -1536,6 +1552,8 @@ static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
 {
   current_setup_menu = new_setup_menu;
   set_menu_itemon = M_GetSetupMenuItemOn();
+  if (current_setup_menu[set_menu_itemon].m_flags & S_NOSELECT)
+    return;
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
@@ -1627,6 +1645,16 @@ menu_t GeneralDef =                                           // killough 10/98
   0
 };
 
+menu_t LevelTableDef =
+{
+  generic_setup_end,
+  &OptionsDef,
+  Generic_Setup,
+  M_DrawLevelTable,
+  34,5,      // skull drawn here
+  0
+};
+
 // Data used by the Automap color selection code
 
 #define CHIP_SIZE 7 // size of color block for colored items
@@ -1666,7 +1694,7 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   char *p, *t;
   int w = 0;
   int color =
-    flags & S_SELECT ? cr_label_edit :
+    flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
     flags & S_HILITE ? cr_label_highlight :
     flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
     cr_label; // killough 10/98
@@ -1679,11 +1707,13 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
   {      /* killough 10/98: support left-justification: */
     strcpy(menu_buffer,p);
-    if (!(flags & S_LEFTJUST))
+    if (flags & S_CENTER)
+      w = M_GetPixelWidth(menu_buffer) / 2;
+    else if (!(flags & S_LEFTJUST))
       w = M_GetPixelWidth(menu_buffer) + 4;
     M_DrawMenuString(x - w, y ,color);
     // print a blinking "arrow" next to the currently highlighted menu item
-    if (s == current_setup_menu + set_menu_itemon && whichSkull)
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
       M_DrawString(x - w - 8, y, color, ">");
   }
   Z_Free(t);
@@ -2049,7 +2079,7 @@ void M_DrawDelVerify(void)
 
 static void M_DrawInstructionString(int cr, const char *str)
 {
-  M_DrawStringCentered(160, INSTRUCTION_Y, cr, "Press key or button for this action");
+  M_DrawStringCentered(160, INSTRUCTION_Y, cr, str);
 }
 
 static void M_DrawInstructions(void)
@@ -2104,9 +2134,22 @@ static void M_DrawInstructions(void)
 #define PREV_PAGE(page) { "<-", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
-#define NEW_COLUMN { 0, S_RESET_Y, m_null }
+#define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
 #define DEFAULT_LIST_Y (INSTRUCTION_Y + 1.5 * menu_font->line_height)
+
+static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
+{
+  M_SetupNextMenu(menu);
+
+  setup_active = true;
+  *setup_flag = true;
+  setup_select = false;
+  colorbox_active = false;
+  setup_gather = false;
+
+  M_UpdateSetupMenu(setup_menu);
+}
 
 /////////////////////////////
 //
@@ -2151,8 +2194,6 @@ setup_menu_t* keys_settings[] =
   build_keys_settings2,
   NULL
 };
-
-int mult_screens_index; // the index of the current screen in a set
 
 // The first Key Binding screen table.
 // Note that the Y values are ascending. If you need to add something to
@@ -2509,14 +2550,7 @@ setup_menu_t build_keys_settings2[] = {
 
 void M_KeyBindings(int choice)
 {
-  M_SetupNextMenu(&KeybndDef);
-
-  setup_active = true;
-  set_keybnd_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(keys_settings[0]);
+  M_EnterSetup(&KeybndDef, &set_keybnd_active, keys_settings[0]);
 }
 
 // The drawing part of the Key Bindings Setup initialization. Draw the
@@ -2583,14 +2617,7 @@ setup_menu_t weap_settings1[] =  // Weapons Settings screen
 
 void M_Weapons(int choice)
 {
-  M_SetupNextMenu(&WeaponDef);
-
-  setup_active = true;
-  set_weapon_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(weap_settings[0]);
+  M_EnterSetup(&WeaponDef, &set_weapon_active, weap_settings[0]);
 }
 
 
@@ -2677,16 +2704,8 @@ setup_menu_t stat_settings2[] =
 
 void M_StatusBar(int choice)
 {
-  M_SetupNextMenu(&StatusHUDDef);
-
-  setup_active = true;
-  set_status_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(stat_settings[0]);
+  M_EnterSetup(&StatusHUDDef, &set_status_active, stat_settings[0]);
 }
-
 
 // The drawing part of the Status Bar / HUD Setup initialization. Draw the
 // background, title, instruction line, and items.
@@ -2807,15 +2826,7 @@ setup_menu_t auto_settings3[] =  // 3nd AutoMap Settings screen
 
 void M_Automap(int choice)
 {
-  M_SetupNextMenu(&AutoMapDef);
-
-  setup_active = true;
-  set_auto_active = true;
-  setup_select = false;
-  colorbox_active = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(auto_settings[0]);
+  M_EnterSetup(&AutoMapDef, &set_auto_active, auto_settings[0]);
 }
 
 // Data used by the color palette that is displayed for the player to
@@ -2950,8 +2961,6 @@ setup_menu_t audiovideo_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   EMPTY_LINE,
-  { "OpenGL Light Mode", S_CHOICE, m_conf, G_X, dsda_config_gl_lightmode, 0, gl_lightmodes },
-  EMPTY_LINE,
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
@@ -3026,6 +3035,7 @@ setup_menu_t misc_settings[] = {
   { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
+  { "Play SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
 
   PREV_PAGE(controller_settings),
   NEXT_PAGE(display_settings),
@@ -3112,7 +3122,6 @@ setup_menu_t tas_settings[] = {
   { "Show Coordinate Display", S_YESNO, m_conf, G_X, dsda_config_coordinate_display },
   { "Permanent Strafe50", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50 },
   { "Strafe50 On Turns", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50onturns },
-  { "Game speed (%)", S_NUM, m_conf, G_X, dsda_config_realtic_clock_rate },
 
   PREV_PAGE(demo_settings),
   FINAL_ENTRY
@@ -3145,29 +3154,13 @@ void M_ChangeDemoSmoothTurns(void)
   R_SmoothPlaying_Reset(NULL);
 }
 
-void M_ChangeTextureParams(void)
-{
-  if (V_IsOpenGLMode())
-  {
-    gld_InitTextureParams();
-    gld_FlushTextures();
-  }
-}
-
 // Setting up for the General screen. Turn on flags, set pointers,
 // locate the first item on the screen where the cursor is allowed to
 // land.
 
 void M_General(int choice)
 {
-  M_SetupNextMenu(&GeneralDef);
-
-  setup_active = true;
-  set_general_active = true;
-  setup_select = false;
-  setup_gather = false;
-  mult_screens_index = 0;
-  M_UpdateSetupMenu(gen_settings[0]);
+  M_EnterSetup(&GeneralDef, &set_general_active, gen_settings[0]);
 }
 
 // The drawing part of the General Setup initialization. Draw the
@@ -3182,6 +3175,531 @@ void M_DrawGeneral(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", cr_title);
   M_DrawInstructions();
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
+}
+
+/////////////////////////////
+//
+// The level table.
+//
+
+#define LEVEL_TABLE_PAGES 3
+
+static setup_menu_t *level_table_page[LEVEL_TABLE_PAGES];
+static setup_menu_t next_page_template = NEXT_PAGE(NULL);
+static setup_menu_t prev_page_template = PREV_PAGE(NULL);
+static setup_menu_t final_entry_template = FINAL_ENTRY;
+static setup_menu_t new_column_template = NEW_COLUMN;
+static setup_menu_t empty_line_template = EMPTY_LINE;
+
+#define LOOP_LEVEL_TABLE_COLUMN { \
+  for (i = 0; i < wad_stats.map_count; ++i) { \
+    map = &wad_stats.maps[i]; \
+    if (map->episode == -1) \
+      continue; \
+    entry = &level_table_page[page][base_i + i]; \
+
+#define END_LOOP_LEVEL_TABLE_COLUMN } \
+  base_i += i; \
+}
+
+#define INSERT_LEVEL_TABLE_COLUMN(heading, x) { \
+  level_table_page[page][base_i] = new_column_template; \
+  ++base_i; \
+  level_table_page[page][base_i] = empty_line_template; \
+  level_table_page[page][base_i].m_flags |= S_TITLE; \
+  level_table_page[page][base_i].m_text = Z_Strdup(heading); \
+  level_table_page[page][base_i].m_x = x; \
+  ++base_i; \
+}
+
+#define INSERT_FINAL_LEVEL_TABLE_ENTRY { \
+  level_table_page[page][base_i] = final_entry_template; \
+}
+
+#define INSERT_LEVEL_TABLE_EMPTY_LINE { \
+  level_table_page[page][base_i] = empty_line_template; \
+  ++base_i; \
+}
+
+#define INSERT_LEVEL_TABLE_NEXT_PAGE { \
+  level_table_page[page][base_i] = next_page_template; \
+  level_table_page[page][base_i].menu = level_table_page[page + 1]; \
+  ++base_i; \
+}
+
+#define INSERT_LEVEL_TABLE_PREV_PAGE { \
+  level_table_page[page][base_i] = prev_page_template; \
+  level_table_page[page][base_i].menu = level_table_page[page - 1]; \
+  ++base_i; \
+}
+
+#define START_LEVEL_TABLE_PAGE(page_number) { \
+  page = page_number; \
+  base_i = 0; \
+  column_x = 16; \
+  INSERT_LEVEL_TABLE_EMPTY_LINE \
+}
+
+static void M_FreeMText(const char *m_text)
+{
+  union { const char *c; char *s; } str;
+
+  str.c = m_text;
+  Z_Free(str.s);
+}
+
+typedef struct {
+  int completed_count;
+  int timed_count;
+  int max_timed_count;
+  int sk5_timed_count;
+  int best_skill;
+  int best_kills;
+  int best_items;
+  int best_secrets;
+  int max_kills;
+  int max_items;
+  int max_secrets;
+  int best_time;
+  int best_max_time;
+  int best_sk5_time;
+} wad_stats_summary_t;
+
+static wad_stats_summary_t wad_stats_summary;
+
+static void M_CalculateWadStatsSummary(void)
+{
+  int i;
+  map_stats_t *map;
+
+  memset(&wad_stats_summary, 0, sizeof(wad_stats_summary));
+
+  wad_stats_summary.best_skill = 6;
+
+  for (i = 0; i < wad_stats.map_count; ++i)
+  {
+    map = &wad_stats.maps[i];
+    if (map->episode == -1 || !map->best_skill)
+      continue;
+
+    if (map->best_skill < wad_stats_summary.best_skill)
+      wad_stats_summary.best_skill = map->best_skill;
+
+    ++wad_stats_summary.completed_count;
+    wad_stats_summary.best_kills += map->best_kills;
+    wad_stats_summary.best_items += map->best_items;
+    wad_stats_summary.best_secrets += map->best_secrets;
+    wad_stats_summary.max_kills += map->max_kills;
+    wad_stats_summary.max_items += map->max_items;
+    wad_stats_summary.max_secrets += map->max_secrets;
+
+    if (map->best_time >= 0)
+    {
+      ++wad_stats_summary.timed_count;
+      wad_stats_summary.best_time += map->best_time;
+    }
+
+    if (map->best_max_time >= 0)
+    {
+      ++wad_stats_summary.max_timed_count;
+      wad_stats_summary.best_max_time += map->best_max_time;
+    }
+
+    if (map->best_sk5_time >= 0)
+    {
+      ++wad_stats_summary.sk5_timed_count;
+      wad_stats_summary.best_sk5_time += map->best_sk5_time;
+    }
+  }
+}
+
+static void M_ResetLevelTable(void)
+{
+  int i, page;
+  const int page_count[LEVEL_TABLE_PAGES] = {
+    wad_stats.map_count * 5 + 16,
+    wad_stats.map_count * 4 + 16,
+    40,
+  };
+
+  for (page = 0; page < LEVEL_TABLE_PAGES; ++page)
+  {
+    if (!level_table_page[page])
+      level_table_page[page] = Z_Calloc(page_count[page], sizeof(*level_table_page[page]));
+    else
+    {
+      for (i = 0; !(level_table_page[page][i].m_flags & S_END); ++i)
+      {
+        if (level_table_page[page][i].m_text &&
+            !(level_table_page[page][i].m_flags & (S_NEXT | S_PREV)))
+          M_FreeMText(level_table_page[page][i].m_text);
+      }
+
+      memset(level_table_page[page], 0, page_count[page] * sizeof(*level_table_page[page]));
+    }
+  }
+}
+
+static void M_PrintTime(dsda_string_t* m_text, int tics)
+{
+  dsda_StringPrintF(m_text, "%d:%05.2f",
+                    tics / 35 / 60,
+                    (float) (tics % (60 * 35)) / 35);
+}
+
+static int wad_stats_summary_page;
+
+static void M_BuildLevelTable(void)
+{
+  int i;
+  int page;
+  int base_i;
+  int column_x;
+  setup_menu_t *entry;
+  map_stats_t *map;
+  dsda_string_t m_text;
+
+  M_ResetLevelTable();
+
+  START_LEVEL_TABLE_PAGE(0)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    dsda_StringPrintF(&m_text, "%s", map->lump);
+    entry->m_text = m_text.string;
+    entry->m_flags = S_TITLE | S_LEFTJUST;
+    entry->m_x = column_x;
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 112;
+  INSERT_LEVEL_TABLE_COLUMN("SKILL", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d", map->best_skill);
+      entry->m_text = m_text.string;
+      if (map->best_skill == 5)
+        entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 64;
+  INSERT_LEVEL_TABLE_COLUMN("K", column_x);
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d/%d", map->best_kills, map->max_kills);
+      entry->m_text = m_text.string;
+      if (map->best_kills == map->max_kills)
+        entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 48;
+  INSERT_LEVEL_TABLE_COLUMN("I", column_x);
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d/%d", map->best_items, map->max_items);
+      entry->m_text = m_text.string;
+      if (map->best_items == map->max_items)
+        entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 48;
+  INSERT_LEVEL_TABLE_COLUMN("S", column_x);
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_skill) {
+      dsda_StringPrintF(&m_text, "%d/%d", map->best_secrets, map->max_secrets);
+      entry->m_text = m_text.string;
+      if (map->best_secrets == map->max_secrets)
+        entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("-");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  INSERT_LEVEL_TABLE_NEXT_PAGE
+  INSERT_FINAL_LEVEL_TABLE_ENTRY
+
+  // -------- //
+
+  START_LEVEL_TABLE_PAGE(1)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    dsda_StringPrintF(&m_text, "%s", map->lump);
+    entry->m_text = m_text.string;
+    entry->m_flags = S_TITLE | S_LEFTJUST;
+    entry->m_x = column_x;
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 120;
+  INSERT_LEVEL_TABLE_COLUMN("TIME", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_time >= 0) {
+      M_PrintTime(&m_text, map->best_time);
+      entry->m_text = m_text.string;
+      entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("- : --");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 80;
+  INSERT_LEVEL_TABLE_COLUMN("MAX TIME", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_max_time >= 0) {
+      M_PrintTime(&m_text, map->best_max_time);
+      entry->m_text = m_text.string;
+      entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("- : --");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  column_x += 80;
+  INSERT_LEVEL_TABLE_COLUMN("SK 5 TIME", column_x)
+
+  LOOP_LEVEL_TABLE_COLUMN
+    entry->m_flags = S_LABEL | S_SKIP;
+    entry->m_x = column_x;
+
+    if (map->best_sk5_time >= 0) {
+      M_PrintTime(&m_text, map->best_sk5_time);
+      entry->m_text = m_text.string;
+      entry->m_flags |= S_TC_SEL;
+    }
+    else {
+      entry->m_text = Z_Strdup("- : --");
+    }
+  END_LOOP_LEVEL_TABLE_COLUMN
+
+  INSERT_LEVEL_TABLE_PREV_PAGE
+  INSERT_LEVEL_TABLE_NEXT_PAGE
+  INSERT_FINAL_LEVEL_TABLE_ENTRY
+
+  // -------- //
+
+  M_CalculateWadStatsSummary();
+
+  ++page;
+  base_i = 0;
+  wad_stats_summary_page = page;
+
+  level_table_page[page][base_i].m_text = Z_Strdup("Summary");
+  level_table_page[page][base_i].m_flags = S_TITLE | S_NOSELECT | S_CENTER;
+  level_table_page[page][base_i].m_x = 160;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Maps");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  dsda_StringPrintF(&m_text, "Skill");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Kill Completion");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Item Completion");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Secret Completion");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Time");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Max Time");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "Sk 5 Time");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  level_table_page[page][base_i] = new_column_template;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "%d / %d",
+                    wad_stats_summary.completed_count, wad_stats.map_count);
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  if (wad_stats_summary.completed_count == wad_stats.map_count)
+    dsda_StringPrintF(&m_text, "%d", wad_stats_summary.best_skill);
+  else
+    dsda_StringPrintF(&m_text, "-");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_kills);
+  if (wad_stats_summary.completed_count == wad_stats.map_count)
+    dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_kills);
+  else
+    dsda_StringCat(&m_text, "-");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_items);
+  if (wad_stats_summary.completed_count == wad_stats.map_count)
+    dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_items);
+  else
+    dsda_StringCat(&m_text, "-");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_secrets);
+  if (wad_stats_summary.completed_count == wad_stats.map_count)
+    dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_secrets);
+  else
+    dsda_StringCat(&m_text, "-");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  if (wad_stats_summary.timed_count == wad_stats.map_count)
+    M_PrintTime(&m_text, wad_stats_summary.best_time);
+  else
+    dsda_StringPrintF(&m_text, "- : --");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  if (wad_stats_summary.max_timed_count == wad_stats.map_count)
+    M_PrintTime(&m_text, wad_stats_summary.best_max_time);
+  else
+    dsda_StringPrintF(&m_text, "- : --");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_EMPTY_LINE
+
+  if (wad_stats_summary.sk5_timed_count == wad_stats.map_count)
+    M_PrintTime(&m_text, wad_stats_summary.best_sk5_time);
+  else
+    dsda_StringPrintF(&m_text, "- : --");
+  level_table_page[page][base_i].m_text = m_text.string;
+  level_table_page[page][base_i].m_flags = S_LABEL | S_SKIP | S_LEFTJUST;
+  level_table_page[page][base_i].m_x = 162;
+  ++base_i;
+
+  level_table_page[page][base_i] = new_column_template;
+  ++base_i;
+
+  INSERT_LEVEL_TABLE_PREV_PAGE
+  INSERT_FINAL_LEVEL_TABLE_ENTRY
+}
+
+void M_LevelTable(int choice)
+{
+  M_BuildLevelTable();
+  M_EnterSetup(&LevelTableDef, &level_table_active, level_table_page[0]);
+}
+
+void M_DrawLevelTable(void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+
+  M_DrawBackground(g_menu_flat, 0);
+
+  M_DrawTitle(114, 2, "M_LVLTBL", CR_DEFAULT, "LEVEL TABLE", cr_title);
+  if (current_setup_menu != level_table_page[wad_stats_summary_page])
+    M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3674,13 +4192,14 @@ typedef struct {
   dboolean persist;
   const char* message;
   dboolean invert_message;
+  dboolean play_sound;
 } toggle_input_t;
 
 static toggle_input_t toggle_inputs[] = {
   { dsda_input_strict_mode, dsda_config_strict_mode, true, false, "Strict Mode" },
-  { dsda_input_novert, dsda_config_vertmouse, true, false, "Vertical Mouse Movement" },
-  { dsda_input_mlook, dsda_config_freelook, true, true, "Free Look" },
-  { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run" },
+  { dsda_input_novert, dsda_config_vertmouse, true, false, "Vertical Mouse Movement", .play_sound = true },
+  { dsda_input_mlook, dsda_config_freelook, true, true, "Free Look", .play_sound = true },
+  { dsda_input_autorun, dsda_config_autorun, true, true, "Auto Run", .play_sound = true },
   { dsda_input_messages, dsda_config_show_messages, true, true, "Messages" },
   { dsda_input_command_display, dsda_config_command_display, false, true, "Command Display" },
   { dsda_input_coordinate_display, dsda_config_coordinate_display, false, true, "Coordinate Display" },
@@ -3707,6 +4226,18 @@ static void M_HandleToggles(void)
       value = dsda_ToggleConfig(toggle->config_id, toggle->persist);
       doom_printf("%s %s", toggle->message, value ? toggle->invert_message ? "off" : "on"
                                                   : toggle->invert_message ? "on"  : "off");
+
+      if (toggle->play_sound && dsda_IntConfig(dsda_config_movement_toggle_sfx))
+      {
+        if (toggle->invert_message ? !value : value)
+        {
+          S_StartVoidSound(g_sfx_console);
+        }
+        else
+        {
+          S_StartVoidSound(g_sfx_oof);
+        }
+      }
     }
   }
 }
@@ -3714,6 +4245,19 @@ static void M_HandleToggles(void)
 dboolean M_ConsoleOpen(void)
 {
   return menuactive && currentMenu == &dsda_ConsoleDef;
+}
+
+static void M_LeaveSetupMenu(void)
+{
+  M_SetSetupMenuItemOn(set_menu_itemon);
+  setup_active = false;
+  set_keybnd_active = false;
+  set_weapon_active = false;
+  set_status_active = false;
+  set_auto_active = false;
+  colorbox_active = false;
+  set_general_active = false;
+  level_table_active = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -3724,10 +4268,675 @@ dboolean M_ConsoleOpen(void)
 // action based on the state of the system.
 //
 
+static dboolean M_KeyBndResponder(int ch, int action, event_t* ev)
+{
+  // changing an entry
+  if (setup_select)
+  {
+    int i;
+    setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+    setup_menu_t *ptr2 = NULL;
+
+    int s_input = (ptr1->m_flags & S_INPUT) ? ptr1->input : 0;
+
+    if (ev->type == ev_joystick)
+    {
+      setup_group group;
+      dboolean search = true;
+
+      if (!s_input)
+        return true; // not a legal action here (yet)
+
+      // see if the button is already bound elsewhere. if so, you
+      // have to swap bindings so the action where it's currently
+      // bound doesn't go dead. Since there is more than one
+      // keybinding screen, you have to search all of them for
+      // any duplicates. You're only interested in the items
+      // that belong to the same group as the one you're changing.
+
+      group  = ptr1->m_group;
+      if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1.i)) == -1)
+        return true;
+
+      for (i = 0; keys_settings[i] && search; i++)
+        for (ptr2 = keys_settings[i]; !(ptr2->m_flags & S_END); ptr2++)
+          if (ptr2->m_group == group && ptr1 != ptr2)
+          {
+            if (ptr2->m_flags & S_INPUT)
+              if (dsda_InputMatchJoyB(ptr2->input, ch))
+              {
+                dsda_InputRemoveJoyB(ptr2->input, ch);
+                search = false;
+                break;
+              }
+          }
+
+      dsda_InputAddJoyB(s_input, ch);
+    }
+    else if (ev->type == ev_mouse)
+    {
+      int i;
+      setup_group group;
+      dboolean search = true;
+
+      if (!s_input)
+        return true; // not a legal action here (yet)
+
+      // see if the button is already bound elsewhere. if so, you
+      // have to swap bindings so the action where it's currently
+      // bound doesn't go dead. Since there is more than one
+      // keybinding screen, you have to search all of them for
+      // any duplicates. You're only interested in the items
+      // that belong to the same group as the one you're changing.
+
+      group  = ptr1->m_group;
+      if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1.i)) == -1)
+        return true;
+
+      for (i = 0 ; keys_settings[i] && search ; i++)
+        for (ptr2 = keys_settings[i]; !(ptr2->m_flags & S_END); ptr2++)
+          if (ptr2->m_group == group && ptr1 != ptr2)
+          {
+            if (ptr2->m_flags & S_INPUT)
+              if (dsda_InputMatchMouseB(ptr2->input, ch))
+              {
+                dsda_InputRemoveMouseB(ptr2->input, ch);
+                search = false;
+                break;
+              }
+          }
+
+      dsda_InputAddMouseB(s_input, ch);
+    }
+    else  // keyboard key
+    {
+      int i;
+      setup_group group;
+      dboolean search = true;
+
+      // see if 'ch' is already bound elsewhere. if so, you have
+      // to swap bindings so the action where it's currently
+      // bound doesn't go dead. Since there is more than one
+      // keybinding screen, you have to search all of them for
+      // any duplicates. You're only interested in the items
+      // that belong to the same group as the one you're changing.
+
+      // if you find that you're trying to swap with an action
+      // that has S_KEEP set, you can't bind ch; it's already
+      // bound to that S_KEEP action, and that action has to
+      // keep that key.
+
+      group  = ptr1->m_group;
+      for (i = 0; keys_settings[i] && search; i++)
+        for (ptr2 = keys_settings[i]; !(ptr2->m_flags & S_END); ptr2++)
+          if (ptr2->m_group == group && ptr1 != ptr2)
+          {
+            if (ptr2->m_flags & (S_INPUT | S_KEEP))
+              if (dsda_InputMatchKey(ptr2->input, ch))
+              {
+                if (ptr2->m_flags & S_KEEP)
+                  return true; // can't have it!
+
+                dsda_InputRemoveKey(ptr2->input, ch);
+                search = false;
+                break;
+              }
+          }
+
+      dsda_InputAddKey(s_input, ch);
+    }
+
+    M_SelectDone(ptr1);       // phares 4/17/98
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean M_WeaponResponder(int ch, int action, event_t* ev)
+{
+  // changing an entry
+  if (setup_select)
+  {
+    setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+    setup_menu_t *ptr2 = NULL;
+
+    if (action != MENU_ENTER)
+    {
+      int old_value;
+
+      ch -= '0'; // out of ascii
+      if (ch < 1 || ch > 9)
+        return true; // ignore
+
+      // see if 'ch' is already assigned elsewhere. if so,
+      // you have to swap assignments.
+      ptr2 = weap_settings1;
+      old_value = dsda_PersistentIntConfig(ptr1->config_id);
+      for (; !(ptr2->m_flags & S_END); ptr2++)
+        if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
+            dsda_PersistentIntConfig(ptr2->config_id) == ch)
+        {
+          dsda_UpdateIntConfig(ptr2->config_id, old_value, true);
+          break;
+        }
+
+      dsda_UpdateIntConfig(ptr1->config_id, ch, true);
+    }
+
+    M_SelectDone(ptr1);       // phares 4/17/98
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean M_AutoResponder(int ch, int action, event_t* ev)
+{
+  // changing an entry
+  if (setup_select)
+  {
+    if (action == MENU_DOWN)
+    {
+      if (++color_palette_y == 16)
+        color_palette_y = 0;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_UP)
+    {
+      if (--color_palette_y < 0)
+        color_palette_y = 15;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_LEFT)
+    {
+      if (--color_palette_x < 0)
+        color_palette_x = 15;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_RIGHT)
+    {
+      if (++color_palette_x == 16)
+        color_palette_x = 0;
+      S_StartVoidSound(g_sfx_itemup);
+      return true;
+    }
+
+    if (action == MENU_ENTER)
+    {
+      setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+
+      dsda_UpdateIntConfig(ptr1->config_id, color_palette_x + 16 * color_palette_y, true);
+      M_SelectDone(ptr1);                         // phares 4/17/98
+      colorbox_active = false;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean M_StringResponder(int ch, int action, event_t* ev)
+{
+  // changing an entry
+  if (setup_select)
+  {
+    setup_menu_t *ptr1 = current_setup_menu + set_menu_itemon;
+
+    if (ptr1->m_flags & S_STRING) // creating/editing a string?
+    {
+      if (action == MENU_BACKSPACE) // backspace and DEL
+      {
+        if (entry_string_index[entry_index] == 0)
+        {
+          if (entry_index > 0)
+            entry_string_index[--entry_index] = 0;
+        }
+        // shift the remainder of the text one char left
+        else
+        {
+          int i;
+
+          for (i = entry_index; entry_string_index[i + 1]; ++i)
+            entry_string_index[i] = entry_string_index[i + 1];
+          entry_string_index[i] = '\0';
+        }
+      }
+      else if (action == MENU_LEFT) // move cursor left
+      {
+        if (entry_index > 0)
+          entry_index--;
+      }
+      else if (action == MENU_RIGHT) // move cursor right
+      {
+        if (entry_string_index[entry_index] != 0)
+          entry_index++;
+      }
+      else if ((action == MENU_ENTER) || (action == MENU_ESCAPE))
+      {
+        dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
+        M_SelectDone(ptr1);   // phares 4/17/98
+      }
+
+      // Adding a char to the text. Has to be a printable
+      // char, and you can't overrun the buffer. If the
+      // string gets larger than what the screen can hold,
+      // it is dealt with when the string is drawn (above).
+
+      else if ((ch >= 32) && (ch <= 126))
+        if ((entry_index + 1) < ENTRY_STRING_BFR_SIZE)
+        {
+          if (shiftdown)
+            ch = shiftxform[ch];
+          if (entry_string_index[entry_index] == 0)
+          {
+            entry_string_index[entry_index++] = ch;
+            entry_string_index[entry_index] = 0;
+          }
+          else
+            entry_string_index[entry_index++] = ch;
+        }
+
+      return true;
+    }
+
+    M_SelectDone(ptr1);       // phares 4/17/98
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean M_LevelTableResponder(int ch, int action, event_t* ev)
+{
+  if (action == MENU_ENTER)
+  {
+    int skill;
+    int map_index;
+    map_stats_t *map;
+
+    if (current_setup_menu == level_table_page[wad_stats_summary_page])
+      return true;
+
+    map_index = set_menu_itemon - 1;
+    map = &wad_stats.maps[map_index];
+
+    skill = in_game ? gameskill : startskill;
+
+    G_DeferedInitNew(skill, map->episode, map->map);
+
+    M_LeaveSetupMenu();
+    M_ClearMenus();
+    S_StartVoidSound(g_sfx_swtchx);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
+{
+  // changing an entry
+  if (setup_select)
+  {
+    setup_menu_t* ptr1 = current_setup_menu + set_menu_itemon;
+
+    if (action == MENU_ESCAPE) // Exit key = no change
+    {
+      M_SelectDone(ptr1);                           // phares 4/17/98
+      setup_gather = false;   // finished gathering keys, if any
+      return true;
+    }
+
+    if (ptr1->m_flags & S_YESNO) // yes or no setting?
+    {
+      if (action == MENU_ENTER) {
+        dsda_ToggleConfig(ptr1->config_id, true);
+      }
+      M_SelectDone(ptr1);                           // phares 4/17/98
+      return true;
+    }
+
+    if (ptr1->m_flags & (S_NUM | S_CRITEM)) // number?
+    {
+      if (setup_gather) { // gathering keys for a value?
+        /* killough 10/98: Allow negatives, and use a more
+          * friendly input method (e.g. don't clear value early,
+          * allow backspace, and return to original value if bad
+          * value is entered).
+          */
+        if (action == MENU_ENTER) {
+          if (gather_count) {     // Any input?
+            int value;
+
+            gather_buffer[gather_count] = 0;
+            value = atoi(gather_buffer);  // Integer value
+
+            dsda_UpdateIntConfig(ptr1->config_id, value, true);
+          }
+          M_SelectDone(ptr1);     // phares 4/17/98
+          setup_gather = false; // finished gathering keys
+          return true;
+        }
+
+        if (action == MENU_BACKSPACE && gather_count) {
+          gather_count--;
+          return true;
+        }
+
+        if (gather_count >= MAXGATHER)
+          return true;
+
+        if (!isdigit(ch) && ch != '-')
+          return true; // ignore
+
+        /* killough 10/98: character-based numerical input */
+        gather_buffer[gather_count++] = ch;
+      }
+      return true;
+    }
+
+    if (ptr1->m_flags & S_CHOICE) // selection of choices?
+    {
+      if (action == MENU_LEFT) {
+        if (ptr1->m_flags & S_STR)
+        {
+          int old_value, value;
+
+          old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
+          value = old_value - 1;
+          if (value < 0)
+            value = 0;
+          if (old_value != value)
+          {
+            S_StartVoidSound(g_sfx_menu);
+            strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
+          }
+        }
+        else
+        {
+          int value = choice_value;
+
+          do {
+            --value;
+          } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
+
+          if (value >= 0 && choice_value != value) {
+            S_StartVoidSound(g_sfx_menu);
+            choice_value = value;
+          }
+        }
+      }
+      else if (action == MENU_RIGHT) {
+        if (ptr1->m_flags & S_STR)
+        {
+          int old_value, value;
+
+          old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
+          value = old_value + 1;
+          if (ptr1->selectstrings[value] == NULL)
+            value = old_value;
+          if (old_value != value)
+          {
+            S_StartVoidSound(g_sfx_menu);
+            strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
+          }
+        }
+        else
+        {
+          int value = choice_value;
+
+          do {
+            ++value;
+          } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
+
+          if (ptr1->selectstrings[value] && choice_value != value) {
+            S_StartVoidSound(g_sfx_menu);
+            choice_value = value;
+          }
+        }
+      }
+      else if (action == MENU_ENTER) {
+        if (ptr1->m_flags & S_STR)
+        {
+          dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
+        }
+        else
+        {
+          dsda_UpdateIntConfig(ptr1->config_id, choice_value, true);
+        }
+        M_SelectDone(ptr1);                           // phares 4/17/98
+      }
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
+{
+  setup_menu_t* ptr1 = current_setup_menu + set_menu_itemon;
+  setup_menu_t* ptr2 = NULL;
+
+  if (action == MENU_DOWN)
+  {
+    if (ptr1->m_flags & S_NOSELECT)
+      return true;
+
+    ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
+    do
+      if (ptr1->m_flags & S_END)
+      {
+        set_menu_itemon = 0;
+        ptr1 = current_setup_menu;
+      }
+      else
+      {
+        set_menu_itemon++;
+        ptr1++;
+      }
+    while (ptr1->m_flags & S_SKIP);
+    M_SelectDone(ptr1);         // phares 4/17/98
+    return true;
+  }
+
+  if (action == MENU_UP)
+  {
+    if (ptr1->m_flags & S_NOSELECT)
+      return true;
+
+    ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
+    do
+    {
+      if (set_menu_itemon == 0)
+        do
+          set_menu_itemon++;
+        while(!((current_setup_menu + set_menu_itemon)->m_flags & S_END));
+      set_menu_itemon--;
+    }
+    while((current_setup_menu + set_menu_itemon)->m_flags & S_SKIP);
+    M_SelectDone(current_setup_menu + set_menu_itemon);         // phares 4/17/98
+    return true;
+  }
+
+  if (action == MENU_CLEAR)
+  {
+    if (ptr1->m_flags & S_INPUT)
+    {
+      if (ptr1->m_flags & S_NOCLEAR)
+      {
+        S_StartVoidSound(g_sfx_oof);
+      }
+      else
+      {
+        dsda_InputReset(ptr1->input);
+      }
+    }
+
+    return true;
+  }
+
+  if (action == MENU_ENTER)
+  {
+    int flags = ptr1->m_flags;
+
+    // You've selected an item to change. Highlight it, post a new
+    // message about what to do, and get ready to process the
+    // change.
+    //
+    // killough 10/98: use friendlier char-based input buffer
+
+    if (flags & (S_NUM | S_CRITEM))
+    {
+      setup_gather = true;
+      gather_count = 0;
+    }
+    else if (flags & S_COLOR)
+    {
+      int color = dsda_PersistentIntConfig(ptr1->config_id);
+
+      if (color < 0 || color > 255) // range check the value
+        color = 0;        // 'no show' if invalid
+
+      color_palette_x = color & 15;
+      color_palette_y = color >> 4;
+      colorbox_active = true;
+    }
+    else if (flags & S_STRING)
+    {
+      strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
+              ENTRY_STRING_BFR_SIZE - 1);
+
+      entry_index = 0; // current cursor position in entry_string_index
+    }
+    else if (flags & S_CHOICE)
+    {
+      if (flags & S_STR)
+      {
+        strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
+                ENTRY_STRING_BFR_SIZE - 1);
+      }
+      else
+      {
+        choice_value = dsda_PersistentIntConfig(ptr1->config_id);
+      }
+    }
+
+    ptr1->m_flags |= S_SELECT;
+    setup_select = true;
+    S_StartVoidSound(g_sfx_itemup);
+    return true;
+  }
+
+  if ((action == MENU_ESCAPE) || (action == MENU_BACKSPACE))
+  {
+    M_LeaveSetupMenu();
+    if (action == MENU_ESCAPE) // Clear all menus
+      M_ClearMenus();
+    else // MENU_BACKSPACE = return to Setup Menu
+      if (currentMenu->prevMenu)
+      {
+        M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
+        itemOn = currentMenu->lastOn;
+        S_StartVoidSound(g_sfx_swtchn);
+      }
+    ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
+    HU_Start();    // catch any message changes // phares 4/19/98
+    S_StartVoidSound(g_sfx_swtchx);
+    return true;
+  }
+
+  // Some setup screens may have multiple screens.
+  // When there are multiple screens, m_prev and m_next items need to
+  // be placed on the appropriate screen tables so the user can
+  // move among the screens using the left and right arrow keys.
+  // The m_var1 field contains a pointer to the appropriate screen
+  // to move to.
+
+  if (action == MENU_LEFT)
+  {
+    ptr2 = ptr1;
+    do
+    {
+      ptr2++;
+      if (ptr2->m_flags & S_PREV)
+      {
+        ptr1->m_flags &= ~S_HILITE;
+        M_SetSetupMenuItemOn(set_menu_itemon);
+        M_UpdateSetupMenu(ptr2->menu);
+        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        return true;
+      }
+    }
+    while (!(ptr2->m_flags & S_END));
+  }
+
+  if (action == MENU_RIGHT)
+  {
+    ptr2 = ptr1;
+    do
+    {
+      ptr2++;
+      if (ptr2->m_flags & S_NEXT)
+      {
+        ptr1->m_flags &= ~S_HILITE;
+        M_SetSetupMenuItemOn(set_menu_itemon);
+        M_UpdateSetupMenu(ptr2->menu);
+        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        return true;
+      }
+    }
+    while (!(ptr2->m_flags & S_END));
+  }
+
+  return false;
+}
+
+static dboolean M_SetupResponder(int ch, int action, event_t* ev)
+{
+  if (M_SetupCommonSelectResponder(ch, action, ev))
+    return true;
+
+  if (set_keybnd_active) // on a key binding setup screen
+    if (M_KeyBndResponder(ch, action, ev))
+      return true;
+
+  if (set_weapon_active) // on the weapons setup screen
+    if (M_WeaponResponder(ch, action, ev))
+      return true;
+
+  if (set_auto_active) // on the automap setup screen
+    if (M_AutoResponder(ch, action, ev))
+      return true;
+
+  // killough 10/98: consolidate handling into one place:
+  if (set_general_active || set_status_active)
+    if (M_StringResponder(ch, action, ev))
+      return true;
+
+  if (level_table_active)
+    if (M_LevelTableResponder(ch, action, ev))
+      return true;
+
+  // Not changing any items on the Setup screens. See if we're
+  // navigating the Setup menus or selecting an item to change.
+  if (M_SetupNavigationResponder(ch, action, ev))
+    return true;
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
-  int s_input;
   static int joywait   = 0;
   static int mousewait = 0;
 
@@ -3995,25 +5204,14 @@ dboolean M_Responder (event_t* ev) {
     if (dsda_InputActivated(dsda_input_gamma))
     {
 //e6y
-      if (V_IsOpenGLMode() && gl_hardware_gamma)
-      {
-        static char str[200];
-        sprintf(str, "Gamma correction level %d", dsda_CycleConfig(dsda_config_gl_usegamma, true));
-        players[consoleplayer].message = str;
-
-        gld_SetGammaRamp(gl_usegamma);
-      }
-      else
-      {
-        dsda_CycleConfig(dsda_config_usegamma, true);
-        players[consoleplayer].message =
-          usegamma == 0 ? s_GAMMALVL0 :
-          usegamma == 1 ? s_GAMMALVL1 :
-          usegamma == 2 ? s_GAMMALVL2 :
-          usegamma == 3 ? s_GAMMALVL3 :
-          s_GAMMALVL4;
-        return true;
-      }
+      dsda_CycleConfig(dsda_config_usegamma, true);
+      players[consoleplayer].message =
+        usegamma == 0 ? s_GAMMALVL0 :
+        usegamma == 1 ? s_GAMMALVL1 :
+        usegamma == 2 ? s_GAMMALVL2 :
+        usegamma == 3 ? s_GAMMALVL3 :
+        s_GAMMALVL4;
+      return true;
     }
 
     if (dsda_InputActivated(dsda_input_zoomout))
@@ -4037,24 +5235,24 @@ dboolean M_Responder (event_t* ev) {
     //e6y
     if (dsda_InputActivated(dsda_input_speed_default) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_RealticClockRate(), 0, 3, 10000, 100);
-      dsda_UpdateRealticClockRate(value);
+      int value = StepwiseSum(dsda_GameSpeed(), 0, 3, 10000, 100);
+      dsda_UpdateGameSpeed(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
       // return true;
     }
     if (dsda_InputActivated(dsda_input_speed_up) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_RealticClockRate(), 1, 3, 10000, 100);
-      dsda_UpdateRealticClockRate(value);
+      int value = StepwiseSum(dsda_GameSpeed(), 1, 3, 10000, 100);
+      dsda_UpdateGameSpeed(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
       // return true;
     }
     if (dsda_InputActivated(dsda_input_speed_down) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_RealticClockRate(), -1, 3, 10000, 100);
-      dsda_UpdateRealticClockRate(value);
+      int value = StepwiseSum(dsda_GameSpeed(), -1, 3, 10000, 100);
+      dsda_UpdateGameSpeed(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
       // return true;
@@ -4208,575 +5406,9 @@ dboolean M_Responder (event_t* ev) {
     }
   }
 
-  // phares 3/26/98 - 4/11/98:
-  // Setup screen key processing
-
-  if (setup_active) {
-    setup_menu_t* ptr1= current_setup_menu + set_menu_itemon;
-    setup_menu_t* ptr2 = NULL;
-
-    // Common processing for some items
-
-    if (setup_select) { // changing an entry
-      if (action == MENU_ESCAPE) // Exit key = no change
-      {
-        M_SelectDone(ptr1);                           // phares 4/17/98
-        setup_gather = false;   // finished gathering keys, if any
-        return true;
-      }
-
-      if (ptr1->m_flags & S_YESNO) // yes or no setting?
-      {
-        if (action == MENU_ENTER) {
-          dsda_ToggleConfig(ptr1->config_id, true);
-        }
-        M_SelectDone(ptr1);                           // phares 4/17/98
-        return true;
-      }
-
-      if (ptr1->m_flags & (S_NUM | S_CRITEM)) // number?
-      {
-        if (setup_gather) { // gathering keys for a value?
-          /* killough 10/98: Allow negatives, and use a more
-           * friendly input method (e.g. don't clear value early,
-           * allow backspace, and return to original value if bad
-           * value is entered).
-           */
-          if (action == MENU_ENTER) {
-            if (gather_count) {     // Any input?
-              int value;
-
-              gather_buffer[gather_count] = 0;
-              value = atoi(gather_buffer);  // Integer value
-
-              dsda_UpdateIntConfig(ptr1->config_id, value, true);
-            }
-            M_SelectDone(ptr1);     // phares 4/17/98
-            setup_gather = false; // finished gathering keys
-            return true;
-          }
-
-          if (action == MENU_BACKSPACE && gather_count) {
-            gather_count--;
-            return true;
-          }
-
-          if (gather_count >= MAXGATHER)
-            return true;
-
-          if (!isdigit(ch) && ch != '-')
-            return true; // ignore
-
-          /* killough 10/98: character-based numerical input */
-          gather_buffer[gather_count++] = ch;
-        }
-        return true;
-      }
-
-      if (ptr1->m_flags & S_CHOICE) // selection of choices?
-      {
-        if (action == MENU_LEFT) {
-          if (ptr1->m_flags & S_STR)
-          {
-            int old_value, value;
-
-            old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
-            value = old_value - 1;
-            if (value < 0)
-              value = 0;
-            if (old_value != value)
-            {
-              S_StartVoidSound(g_sfx_menu);
-              strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
-            }
-          }
-          else
-          {
-            int value = choice_value;
-
-            do {
-              --value;
-            } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
-
-            if (value >= 0 && choice_value != value) {
-              S_StartVoidSound(g_sfx_menu);
-              choice_value = value;
-            }
-          }
-        }
-        else if (action == MENU_RIGHT) {
-          if (ptr1->m_flags & S_STR)
-          {
-            int old_value, value;
-
-            old_value = M_IndexInChoices(entry_string_index, ptr1->selectstrings);
-            value = old_value + 1;
-            if (ptr1->selectstrings[value] == NULL)
-              value = old_value;
-            if (old_value != value)
-            {
-              S_StartVoidSound(g_sfx_menu);
-              strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
-            }
-          }
-          else
-          {
-            int value = choice_value;
-
-            do {
-              ++value;
-            } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
-
-            if (ptr1->selectstrings[value] && choice_value != value) {
-              S_StartVoidSound(g_sfx_menu);
-              choice_value = value;
-            }
-          }
-        }
-        else if (action == MENU_ENTER) {
-          if (ptr1->m_flags & S_STR)
-          {
-            dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
-          }
-          else
-          {
-            dsda_UpdateIntConfig(ptr1->config_id, choice_value, true);
-          }
-          M_SelectDone(ptr1);                           // phares 4/17/98
-        }
-        return true;
-      }
-    }
-
-    // Key Bindings
-
-    s_input = (ptr1->m_flags & S_INPUT) ? ptr1->input : 0;
-
-    if (set_keybnd_active) // on a key binding setup screen
-      if (setup_select)    // incoming key or button gets bound
-      {
-        if (ev->type == ev_joystick)
-        {
-          setup_group group;
-          dboolean search = true;
-
-          if (!s_input)
-            return true; // not a legal action here (yet)
-
-          // see if the button is already bound elsewhere. if so, you
-          // have to swap bindings so the action where it's currently
-          // bound doesn't go dead. Since there is more than one
-          // keybinding screen, you have to search all of them for
-          // any duplicates. You're only interested in the items
-          // that belong to the same group as the one you're changing.
-
-          group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_JOY_BUTTONS, ev->data1.i)) == -1)
-            return true;
-          for (i = 0 ; keys_settings[i] && search ; i++)
-            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-              if (ptr2->m_group == group && ptr1 != ptr2)
-              {
-                if (ptr2->m_flags & S_INPUT)
-                  if (dsda_InputMatchJoyB(ptr2->input, ch))
-                  {
-                    dsda_InputRemoveJoyB(ptr2->input, ch);
-                    search = false;
-                    break;
-                  }
-              }
-          dsda_InputAddJoyB(s_input, ch);
-        }
-        else if (ev->type == ev_mouse)
-        {
-          int i;
-          setup_group group;
-          dboolean search = true;
-
-          if (!s_input)
-            return true; // not a legal action here (yet)
-
-          // see if the button is already bound elsewhere. if so, you
-          // have to swap bindings so the action where it's currently
-          // bound doesn't go dead. Since there is more than one
-          // keybinding screen, you have to search all of them for
-          // any duplicates. You're only interested in the items
-          // that belong to the same group as the one you're changing.
-
-          group  = ptr1->m_group;
-          if ((ch = GetButtons(MAX_MOUSE_BUTTONS, ev->data1.i)) == -1)
-            return true;
-          for (i = 0 ; keys_settings[i] && search ; i++)
-            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-              if (ptr2->m_group == group && ptr1 != ptr2)
-              {
-                if (ptr2->m_flags & S_INPUT)
-                  if (dsda_InputMatchMouseB(ptr2->input, ch))
-                  {
-                    dsda_InputRemoveMouseB(ptr2->input, ch);
-                    search = false;
-                    break;
-                  }
-              }
-          dsda_InputAddMouseB(s_input, ch);
-        }
-        else  // keyboard key
-        {
-          int i;
-          setup_group group;
-          dboolean search = true;
-
-          // see if 'ch' is already bound elsewhere. if so, you have
-          // to swap bindings so the action where it's currently
-          // bound doesn't go dead. Since there is more than one
-          // keybinding screen, you have to search all of them for
-          // any duplicates. You're only interested in the items
-          // that belong to the same group as the one you're changing.
-
-          // if you find that you're trying to swap with an action
-          // that has S_KEEP set, you can't bind ch; it's already
-          // bound to that S_KEEP action, and that action has to
-          // keep that key.
-
-          group  = ptr1->m_group;
-          for (i = 0 ; keys_settings[i] && search ; i++)
-            for (ptr2 = keys_settings[i] ; !(ptr2->m_flags & S_END) ; ptr2++)
-              if (ptr2->m_group == group && ptr1 != ptr2)
-              {
-                if (ptr2->m_flags & (S_INPUT | S_KEEP))
-                  if (dsda_InputMatchKey(ptr2->input, ch))
-                  {
-                    if (ptr2->m_flags & S_KEEP)
-                      return true; // can't have it!
-                    dsda_InputRemoveKey(ptr2->input, ch);
-                    search = false;
-                    break;
-                  }
-              }
-          dsda_InputAddKey(s_input, ch);
-        }
-
-        M_SelectDone(ptr1);       // phares 4/17/98
-        return true;
-      }
-
-    // Weapons
-
-    if (set_weapon_active) // on the weapons setup screen
-      if (setup_select) // changing an entry
-      {
-        if (action != MENU_ENTER)
-        {
-          int old_value;
-
-          ch -= '0'; // out of ascii
-          if (ch < 1 || ch > 9)
-            return true; // ignore
-
-          // see if 'ch' is already assigned elsewhere. if so,
-          // you have to swap assignments.
-          ptr2 = weap_settings1;
-          old_value = dsda_PersistentIntConfig(ptr1->config_id);
-          for (; !(ptr2->m_flags & S_END); ptr2++)
-            if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
-                dsda_PersistentIntConfig(ptr2->config_id) == ch)
-            {
-              dsda_UpdateIntConfig(ptr2->config_id, old_value, true);
-              break;
-            }
-          dsda_UpdateIntConfig(ptr1->config_id, ch, true);
-        }
-
-        M_SelectDone(ptr1);       // phares 4/17/98
-        return true;
-      }
-
-    // Automap
-
-    if (set_auto_active) // on the automap setup screen
-      if (setup_select) // incoming key
-      {
-        if (action == MENU_DOWN)
-        {
-          if (++color_palette_y == 16)
-            color_palette_y = 0;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_UP)
-        {
-          if (--color_palette_y < 0)
-            color_palette_y = 15;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_LEFT)
-        {
-          if (--color_palette_x < 0)
-            color_palette_x = 15;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_RIGHT)
-        {
-          if (++color_palette_x == 16)
-            color_palette_x = 0;
-          S_StartVoidSound(g_sfx_itemup);
-          return true;
-        }
-
-        if (action == MENU_ENTER)
-        {
-          dsda_UpdateIntConfig(ptr1->config_id, color_palette_x + 16 * color_palette_y, true);
-          M_SelectDone(ptr1);                         // phares 4/17/98
-          colorbox_active = false;
-          return true;
-        }
-      }
-
-    // killough 10/98: consolidate handling into one place:
-    if (setup_select && set_general_active | set_status_active)
-    {
-      if (ptr1->m_flags & S_STRING) // creating/editing a string?
-      {
-        if (action == MENU_BACKSPACE) // backspace and DEL
-        {
-          if (entry_string_index[entry_index] == 0)
-          {
-            if (entry_index > 0)
-              entry_string_index[--entry_index] = 0;
-          }
-          // shift the remainder of the text one char left
-          else
-          {
-            int i;
-
-            for (i = entry_index; entry_string_index[i + 1]; ++i)
-              entry_string_index[i] = entry_string_index[i + 1];
-            entry_string_index[i] = '\0';
-          }
-        }
-        else if (action == MENU_LEFT) // move cursor left
-        {
-          if (entry_index > 0)
-            entry_index--;
-        }
-        else if (action == MENU_RIGHT) // move cursor right
-        {
-          if (entry_string_index[entry_index] != 0)
-            entry_index++;
-        }
-        else if ((action == MENU_ENTER) || (action == MENU_ESCAPE))
-        {
-          dsda_UpdateStringConfig(ptr1->config_id, entry_string_index, true);
-          M_SelectDone(ptr1);   // phares 4/17/98
-        }
-
-        // Adding a char to the text. Has to be a printable
-        // char, and you can't overrun the buffer. If the
-        // string gets larger than what the screen can hold,
-        // it is dealt with when the string is drawn (above).
-
-        else if ((ch >= 32) && (ch <= 126))
-          if ((entry_index + 1) < ENTRY_STRING_BFR_SIZE)
-          {
-            if (shiftdown)
-              ch = shiftxform[ch];
-            if (entry_string_index[entry_index] == 0)
-            {
-              entry_string_index[entry_index++] = ch;
-              entry_string_index[entry_index] = 0;
-            }
-            else
-              entry_string_index[entry_index++] = ch;
-          }
-        return true;
-      }
-
-      M_SelectDone(ptr1);       // phares 4/17/98
+  if (setup_active)
+    if (M_SetupResponder(ch, action, ev))
       return true;
-    }
-
-    // Not changing any items on the Setup screens. See if we're
-    // navigating the Setup menus or selecting an item to change.
-
-    if (action == MENU_DOWN)
-    {
-      ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
-      do
-        if (ptr1->m_flags & S_END)
-        {
-          set_menu_itemon = 0;
-          ptr1 = current_setup_menu;
-        }
-        else
-        {
-          set_menu_itemon++;
-          ptr1++;
-        }
-      while (ptr1->m_flags & S_SKIP);
-      M_SelectDone(ptr1);         // phares 4/17/98
-      return true;
-    }
-
-    if (action == MENU_UP)
-    {
-      ptr1->m_flags &= ~S_HILITE;     // phares 4/17/98
-      do
-      {
-        if (set_menu_itemon == 0)
-          do
-            set_menu_itemon++;
-          while(!((current_setup_menu + set_menu_itemon)->m_flags & S_END));
-        set_menu_itemon--;
-      }
-      while((current_setup_menu + set_menu_itemon)->m_flags & S_SKIP);
-      M_SelectDone(current_setup_menu + set_menu_itemon);         // phares 4/17/98
-      return true;
-    }
-
-    if (action == MENU_CLEAR)
-    {
-      if (ptr1->m_flags & S_INPUT)
-      {
-        if (ptr1->m_flags & S_NOCLEAR)
-        {
-          S_StartVoidSound(g_sfx_oof);
-        }
-        else
-        {
-          dsda_InputReset(ptr1->input);
-        }
-      }
-
-      return true;
-    }
-
-    if (action == MENU_ENTER)
-    {
-      int flags = ptr1->m_flags;
-
-      // You've selected an item to change. Highlight it, post a new
-      // message about what to do, and get ready to process the
-      // change.
-      //
-      // killough 10/98: use friendlier char-based input buffer
-
-      if (flags & (S_NUM | S_CRITEM))
-      {
-        setup_gather = true;
-        gather_count = 0;
-      }
-      else if (flags & S_COLOR)
-      {
-        int color = dsda_PersistentIntConfig(ptr1->config_id);
-
-        if (color < 0 || color > 255) // range check the value
-          color = 0;        // 'no show' if invalid
-
-        color_palette_x = color & 15;
-        color_palette_y = color >> 4;
-        colorbox_active = true;
-      }
-      else if (flags & S_STRING)
-      {
-        strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
-                ENTRY_STRING_BFR_SIZE - 1);
-
-        entry_index = 0; // current cursor position in entry_string_index
-      }
-      else if (flags & S_CHOICE)
-      {
-        if (flags & S_STR)
-        {
-          strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
-                  ENTRY_STRING_BFR_SIZE - 1);
-        }
-        else
-        {
-          choice_value = dsda_PersistentIntConfig(ptr1->config_id);
-        }
-      }
-
-      ptr1->m_flags |= S_SELECT;
-      setup_select = true;
-      S_StartVoidSound(g_sfx_itemup);
-      return true;
-    }
-
-    if ((action == MENU_ESCAPE) || (action == MENU_BACKSPACE))
-    {
-      M_SetSetupMenuItemOn(set_menu_itemon);
-      if (action == MENU_ESCAPE) // Clear all menus
-        M_ClearMenus();
-      else // MENU_BACKSPACE = return to Setup Menu
-        if (currentMenu->prevMenu)
-        {
-          M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
-          itemOn = currentMenu->lastOn;
-          S_StartVoidSound(g_sfx_swtchn);
-        }
-      ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
-      setup_active = false;
-      set_keybnd_active = false;
-      set_weapon_active = false;
-      set_status_active = false;
-      set_auto_active = false;
-      colorbox_active = false;
-      set_general_active = false;    // killough 10/98
-      HU_Start();    // catch any message changes // phares 4/19/98
-      S_StartVoidSound(g_sfx_swtchx);
-      return true;
-    }
-
-    // Some setup screens may have multiple screens.
-    // When there are multiple screens, m_prev and m_next items need to
-    // be placed on the appropriate screen tables so the user can
-    // move among the screens using the left and right arrow keys.
-    // The m_var1 field contains a pointer to the appropriate screen
-    // to move to.
-
-    if (action == MENU_LEFT)
-    {
-      ptr2 = ptr1;
-      do
-      {
-        ptr2++;
-        if (ptr2->m_flags & S_PREV)
-        {
-          ptr1->m_flags &= ~S_HILITE;
-          mult_screens_index--;
-          M_SetSetupMenuItemOn(set_menu_itemon);
-          M_UpdateSetupMenu(ptr2->menu);
-          S_StartVoidSound(g_sfx_menu);  // killough 10/98
-          return true;
-        }
-      }
-      while (!(ptr2->m_flags & S_END));
-    }
-
-    if (action == MENU_RIGHT)
-    {
-      ptr2 = ptr1;
-      do
-      {
-        ptr2++;
-        if (ptr2->m_flags & S_NEXT)
-        {
-          ptr1->m_flags &= ~S_HILITE;
-          mult_screens_index++;
-          M_SetSetupMenuItemOn(set_menu_itemon);
-          M_UpdateSetupMenu(ptr2->menu);
-          S_StartVoidSound(g_sfx_menu);  // killough 10/98
-          return true;
-        }
-      }
-      while (!(ptr2->m_flags & S_END));
-    }
-  } // End of Setup Screen processing
 
   // From here on, these navigation keys are used on the BIG FONT menus
   // like the Main Menu.
@@ -5420,7 +6052,6 @@ void M_Init(void)
   M_ChangeMaxViewPitch();
   M_ChangeSkyMode();
   M_ChangeFOV();
-  M_ChangeAllowBoomColormaps();
 
   M_ChangeDemoSmoothTurns();
 

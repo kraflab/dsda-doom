@@ -96,10 +96,8 @@ void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
-void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
-void M_ChangeLightMode(void);
 void I_InitMouse(void);
 void AccelChanging(void);
 void G_UpdateMouseSensitivity(void);
@@ -156,10 +154,10 @@ void dsda_TrackConfigFeatures(void) {
   if (R_FullView() && dsda_IntConfig(dsda_config_hud_displayed))
     dsda_TrackFeature(uf_advhud);
 
-  if (dsda_IntConfig(dsda_config_realtic_clock_rate) > 100)
+  if (dsda_IntConfig(dsda_config_game_speed) > 100)
     dsda_TrackFeature(uf_speedup);
 
-  if (dsda_IntConfig(dsda_config_realtic_clock_rate) < 100)
+  if (dsda_IntConfig(dsda_config_game_speed) < 100)
     dsda_TrackFeature(uf_slowdown);
 
   if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_coordinates))
@@ -209,8 +207,8 @@ void dsda_TrackConfigFeatures(void) {
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
-  [dsda_config_realtic_clock_rate] = {
-    "realtic_clock_rate", dsda_config_realtic_clock_rate,
+  [dsda_config_game_speed] = {
+    "game_speed", dsda_config_game_speed,
     dsda_config_int, 3, 10000, { 100 }, NULL, STRICT_INT(100), I_Init2
   },
   [dsda_config_default_complevel] = {
@@ -583,19 +581,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_blend_animations", dsda_config_gl_blend_animations,
     CONF_BOOL(0), &gl_blend_animations
   },
-  [dsda_config_gl_usegamma] = {
-    "gl_usegamma", dsda_config_gl_usegamma,
-    dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &gl_usegamma
-  },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
     NOT_STRICT, M_ChangeSkyMode
-  },
-  [dsda_config_gl_tex_format_string] = {
-    "gl_tex_format_string", dsda_config_gl_tex_format_string,
-    CONF_STRING("GL_RGBA"),
-    NULL, NOT_STRICT, M_ChangeTextureParams
   },
   [dsda_config_gl_render_multisampling] = {
     "gl_render_multisampling", dsda_config_gl_render_multisampling,
@@ -604,11 +593,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_gl_render_fov] = {
     "gl_render_fov", dsda_config_gl_render_fov,
     dsda_config_int, 20, 160, { 90 }, &gl_render_fov, NOT_STRICT, M_ChangeFOV
-  },
-  [dsda_config_gl_lightmode] = {
-    "gl_lightmode", dsda_config_gl_lightmode,
-    dsda_config_int, gl_lightmode_glboom, gl_lightmode_last - 1, { gl_lightmode_indexed },
-    NULL, NOT_STRICT, M_ChangeLightMode
   },
   [dsda_config_gl_health_bar] = {
     "gl_health_bar", dsda_config_gl_health_bar,
@@ -768,11 +752,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mus_portmidi_reverb_level] = {
     "mus_portmidi_reverb_level", dsda_config_mus_portmidi_reverb_level,
-    dsda_config_int, 0, 127, { 40 }
+    dsda_config_int, -1, 127, { -1 }
   },
   [dsda_config_mus_portmidi_chorus_level] = {
     "mus_portmidi_chorus_level", dsda_config_mus_portmidi_chorus_level,
-    dsda_config_int, 0, 127, { 0 }
+    dsda_config_int, -1, 127, { -1 }
   },
   [dsda_config_cap_soundcommand] = {
     "cap_soundcommand", dsda_config_cap_soundcommand,
@@ -949,6 +933,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_parallel_sfx_window] = {
     "dsda_parallel_sfx_window", dsda_config_parallel_sfx_window,
     dsda_config_int, 1, 32, { 1 }, NULL, NOT_STRICT, dsda_InitParallelSFXFilter
+  },
+  [dsda_config_movement_toggle_sfx] = {
+    "dsda_movement_toggle_sfx", dsda_config_movement_toggle_sfx,
+    CONF_BOOL(0)
   },
   [dsda_config_switch_when_ammo_runs_out] = {
     "dsda_switch_when_ammo_runs_out", dsda_config_switch_when_ammo_runs_out,
@@ -1359,8 +1347,14 @@ static void dsda_ParseConfigArg(int arg_id, dboolean persist) {
 }
 
 void dsda_ApplyAdHocConfiguration(void) {
+  dsda_arg_t* arg;
+
   dsda_ParseConfigArg(dsda_arg_update, true);
   dsda_ParseConfigArg(dsda_arg_assign, false);
+
+  arg = dsda_Arg(dsda_arg_game_speed);
+  if (arg->found)
+    dsda_ReadConfig("game_speed", NULL, arg->value.v_int);
 }
 
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist) {

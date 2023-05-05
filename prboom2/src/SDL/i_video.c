@@ -1192,7 +1192,6 @@ void I_UpdateVideoMode(void)
     if (V_IsOpenGLMode())
     {
       gld_CleanMemory();
-      // hires patches
       gld_CleanStaticMemory();
     }
 
@@ -1260,8 +1259,6 @@ void I_UpdateVideoMode(void)
       init_flags);
     sdl_glcontext = SDL_GL_CreateContext(sdl_window);
     SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, SCREENHEIGHT);
-
-    gld_CheckHardwareGamma();
   }
   else
   {
@@ -1560,22 +1557,6 @@ static void UpdateFocus(void)
       st_palette = 0;
 
     V_SetPalette(st_palette);
-  }
-
-  if (V_IsOpenGLMode())
-  {
-    if (gl_hardware_gamma)
-    {
-      if (!window_focused)
-      {
-        // e6y: Restore of startup gamma if window loses focus
-        gld_SetGammaRamp(-1);
-      }
-      else
-      {
-        gld_SetGammaRamp(gl_usegamma);
-      }
-    }
   }
 
   // Should the screen be grabbed?

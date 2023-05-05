@@ -217,6 +217,8 @@ set(COMMON_SRC
     dsda/udmf.h
     dsda/utility.c
     dsda/utility.h
+    dsda/wad_stats.c
+    dsda/wad_stats.h
     dsda/zipfile.c
     dsda/zipfile.h
     dstrings.c
@@ -480,11 +482,8 @@ function(AddGameExecutable TARGET SOURCES)
     set(SOURCES
         ${SOURCES}
         gl_clipper.c
-        gl_detail.c
         gl_drawinfo.c
         gl_fbo.c
-        gl_gamma.c
-        gl_hires.c
         gl_intern.h
         gl_light.c
         gl_main.c
@@ -493,6 +492,7 @@ function(AddGameExecutable TARGET SOURCES)
         gl_opengl.c
         gl_opengl.h
         gl_preprocess.c
+        gl_progress.c
         gl_shader.c
         gl_sky.c
         gl_struct.h
@@ -550,6 +550,7 @@ function(AddGameExecutable TARGET SOURCES)
     set_target_properties(${TARGET} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${DSDA_OUTPUT_PATH}
         INTERPROCEDURAL_OPTIMIZATION ${ENABLE_LTO}
+        C_STANDARD 99
     )
 
     if(HAVE_LIBSDL2_IMAGE)
@@ -597,7 +598,20 @@ function(AddGameExecutable TARGET SOURCES)
     else()
         set(DSDA_BINARY_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}")
     endif()
-    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
+
+    if(CMAKE_VERSION VERSION_GREATER 3.20 AND NOT VCPKG_TOOLCHAIN AND WIN32)
+        install(
+            TARGETS ${TARGET}
+            RUNTIME_DEPENDENCIES
+                PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+                POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+                DIRECTORIES $<TARGET_FILE_DIR:${TARGET}> $ENV{PATH}
+            RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}"
+            COMPONENT "Game executable"
+        )
+    else()
+        install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
+    endif()
 
     target_link_libraries(${TARGET} PRIVATE
         ${OPENGL_gl_LIBRARY}

@@ -111,8 +111,6 @@ void M_ChangeMaxViewPitch(void);
 
 void M_ChangeFOV(void);
 
-void M_ChangeAllowBoomColormaps(void);
-void M_ChangeTextureUseHires(void);
 void M_ChangeAllowFog(void);
 void M_ChangeSpeed(void);
 void M_ChangeScreenMultipleFactor(void);
@@ -254,7 +252,5 @@ void I_vWarning(const char *message, va_list argList);
 #define PRB_IDYES               6
 #define PRB_IDNO                7
 int I_MessageBox(const char* text, unsigned int type);
-
-dboolean SmoothEdges(unsigned char * buffer,int w, int h);
 
 #endif

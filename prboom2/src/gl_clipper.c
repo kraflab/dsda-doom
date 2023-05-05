@@ -335,6 +335,7 @@ static void gld_clipper_Clear(void)
 
 static angle_t gld_FrustumAngle(void)
 {
+  double fov;
   double floatangle;
   angle_t a1;
 
@@ -350,10 +351,11 @@ static angle_t gld_FrustumAngle(void)
 
   // ok, this is a gross hack that barely works...
   // but at least it doesn't overestimate too much...
-  floatangle = 2.0f + (45.0f + (tilt / 1.9f)) * (float)gl_render_fov * ratio_scale / gl_render_multiplier / 90.0f;
-  a1 = (angle_t)xs_CRoundToInt(ANG1 * floatangle);
-  if (a1 >= ANG180)
+  fov = atan(1 / projMatrix[0]) * 360 / M_PI;
+  floatangle = 2.0f + (45.0f + (tilt / 1.9f)) * fov / 90.0f;
+  if (floatangle >= 180.0)
     return 0xffffffff;
+  a1 = (angle_t)xs_CRoundToInt(ANG1 * floatangle);
   return a1;
 }
 

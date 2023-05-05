@@ -29,7 +29,7 @@ static local_component_t* local;
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int speed;
 
-  speed = dsda_RealticClockRate();
+  speed = dsda_GameSpeed();
 
   snprintf(
     str,

@@ -10,7 +10,7 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 - Advance Frame: moves forward one frame, using the pending command.
 - Reverse Frame: go back one frame.
 - Reset Command: sets the pending command empty (a wait tic). If your command source is an existing buffer, this will not change the command that gets executed.
-- Toggle Source: by default, the command you edit in build mode is the one that gets sent to the game when you advance a frame. You can toggle the source to play back commands from the demo buffer instead. If you are past the end of any existing demo buffer, wait tics will be played.
+- Toggle Source: switches between editing the command and replaying the existing command.
 - Fine Movement: adjusts movement commands by 1 unit.
 - Turn values and the use action are reset every time the frame advances. Other values are kept.
 - Use `build.turbo` / `b.turbo` in the console to toggle turbo on and off (or launch with `-turbo`).
@@ -44,11 +44,13 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 
 Brute force is a technique in built tases where you automatically apply different sequences of commands until you reach a desired outcome. A common use case is for performing glides. You can activate brute force from the console.
 
-- `brute_force.frame / bf.frame frame forward_range strafe_range turn_range`
+- `brute_force.frame / bf.frame frame forward_range strafe_range turn_range [buttons weapon]`
   - `frame` is the frame number from the start of brute force (0, 1, 2...)
   - `forward_range` is the range of values for forwardmove. Format: `40:50`, `-50:-40`, etc.
   - `strafe_range` is the same as `forward_range`, but for strafe values.
   - `turn_range` is the same as `forward_range`, but for turn values.
+  - `buttons` is any combination of `a`, `u`, and `c` (attack, use, change weapon).
+  - `weapon` is the number for the weapon to change to if `c` is given as a button.
 - `brute_force.start / bf.start depth [forward_range strafe_range turn_range] conditions`
   - Ranges are optional and will override frame-specific instructions
   - `depth` is the number of tics you want to brute force (limit 35)

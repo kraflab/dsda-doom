@@ -211,6 +211,17 @@ const char* dsda_BaseName(const char* str)
   return p;
 }
 
+const char* dsda_FileExtension(const char* str)
+{
+  const char* p;
+
+  p = str + strlen(str);
+  while (p > str && *(p - 1) != '.')
+    --p;
+
+  return p == str ? NULL : p;
+}
+
 static double dsda_DistanceLF(double x1, double y1, double x2, double y2) {
   return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }

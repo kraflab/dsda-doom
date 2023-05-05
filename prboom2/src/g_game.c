@@ -172,6 +172,7 @@ dboolean         demorecording;
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
 int             totalleveltimes;      // CPhipps - total time for all completed levels
+int             levels_completed;
 int             longtics;
 
 dboolean coop_spawns;
@@ -1424,6 +1425,9 @@ void G_Ticker (void)
   if (dsda_BruteForce())
     dsda_EvaluateBruteForce();
 
+  if (dsda_BuildMode())
+    dsda_RefreshBuildMode();
+
   if (dsda_AdvanceFrame())
   {
     advance_frame = true;
@@ -1801,6 +1805,8 @@ void G_PlayerReborn (int player)
 
   for (i=0 ; i<NUMAMMO ; i++)
     p->maxammo[i] = maxammo[i];
+
+  levels_completed = 0;
 }
 
 //
@@ -2053,6 +2059,7 @@ void G_DoCompleted (void)
     totalleveltimes = players[consoleplayer].worldTimer;
   else
     totalleveltimes += leveltime - leveltime % 35;
+  ++levels_completed;
 
   gameaction = ga_nothing;
 
@@ -2969,6 +2976,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dsda_UpdateGameMap(episode, map);
 
   totalleveltimes = 0; // cph
+  levels_completed = 0;
 
   dsda_EvaluateSkipModeInitNew();
 

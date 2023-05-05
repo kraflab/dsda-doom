@@ -23,9 +23,9 @@ void main()
   // Blend mode is 1 - src_alpha, so lighten pixels a bit since the lighter they are,
   // the more translucent they'll become
   brightness = min(1.0, brightness + 0.55);
-  brightness = mix(0.375, 0.825, brightness * brightness);
+  brightness = mix(0.425, 0.875, brightness * brightness);
 
   // [XA] new for 0.25: use brightness as an alpha value so the game can
   // pass in a non-black gl_color for pain/gamma support in indexed lightmode
-  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, uv).w * (1 - brightness));
+  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, uv).g * (1 - brightness));
 }

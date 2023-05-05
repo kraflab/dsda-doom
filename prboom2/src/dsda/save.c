@@ -84,6 +84,7 @@ static void dsda_ArchiveContext(void) {
 
   P_SAVE_X(leveltime);
   P_SAVE_X(totalleveltimes);
+  P_SAVE_X(levels_completed);
 
   logictic_value = logictic;
   P_SAVE_X(logictic_value);
@@ -115,6 +116,7 @@ static void dsda_UnArchiveContext(void) {
 
   P_LOAD_X(leveltime);
   P_LOAD_X(totalleveltimes);
+  P_LOAD_X(levels_completed);
 
   P_LOAD_X(logictic_value);
   basetic = gametic - logictic_value;

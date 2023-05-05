@@ -83,7 +83,6 @@ cfg_def_t cfg_defs[] =
 
   SETTING_HEADING("Misc settings"),
   MIGRATED_SETTING(dsda_config_vanilla_keymap),
-  MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   MIGRATED_SETTING(dsda_config_menu_background),
   MIGRATED_SETTING(dsda_config_max_player_corpse),
   MIGRATED_SETTING(dsda_config_flashing_hom),
@@ -161,12 +160,9 @@ cfg_def_t cfg_defs[] =
   SETTING_HEADING("OpenGL settings"),
   MIGRATED_SETTING(dsda_config_gl_fog),
   MIGRATED_SETTING(dsda_config_gl_blend_animations),
-  MIGRATED_SETTING(dsda_config_gl_tex_format_string),
   MIGRATED_SETTING(dsda_config_gl_render_multisampling),
   MIGRATED_SETTING(dsda_config_gl_render_fov),
-  MIGRATED_SETTING(dsda_config_gl_lightmode),
   MIGRATED_SETTING(dsda_config_gl_skymode),
-  MIGRATED_SETTING(dsda_config_gl_usegamma),
   MIGRATED_SETTING(dsda_config_gl_health_bar),
   MIGRATED_SETTING(dsda_config_gl_usevbo),
 
@@ -294,6 +290,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_allow_jumping),
   MIGRATED_SETTING(dsda_config_parallel_sfx_limit),
   MIGRATED_SETTING(dsda_config_parallel_sfx_window),
+  MIGRATED_SETTING(dsda_config_movement_toggle_sfx),
   MIGRATED_SETTING(dsda_config_switch_when_ammo_runs_out),
   MIGRATED_SETTING(dsda_config_viewbob),
   MIGRATED_SETTING(dsda_config_weaponbob),
