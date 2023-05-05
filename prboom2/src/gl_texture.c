@@ -97,37 +97,9 @@ int gl_tex_format=GL_RGB5_A1;
 
 GLuint* last_glTexID = NULL;
 
-int transparent_pal_index;
-unsigned char gld_palmap[256];
-
 void gld_ResetLastTexture(void)
 {
   last_glTexID = NULL;
-}
-
-void gld_InitPalettedTextures(void)
-{
-  const unsigned char *playpal;
-  int pal[256];
-  int i,j;
-
-  playpal = V_GetPlaypal();
-  for (i=0; i<256; i++) {
-    pal[i] = (playpal[i*3+0] << 16) | (playpal[i*3+1] << 8) | playpal[i*3+2];
-    gld_palmap[i] = i;
-  }
-  transparent_pal_index = -1;
-  for (i=0; i<256; i++) {
-    for (j=i+1; j<256; j++) {
-      if (pal[i] == pal[j]) {
-        transparent_pal_index = j;
-        gld_palmap[j] = i;
-        break;
-      }
-    }
-    if (transparent_pal_index >= 0)
-      break;
-  }
 }
 
 int gld_GetTexDimension(int value)
@@ -307,32 +279,12 @@ static GLTexture *gld_GetGLSkyTexture(GLTexture *basetexture)
   return gld_GetGLIndexedSkyTexture(basetexture->index, index);
 }
 
-void gld_SetTexturePalette(GLenum target)
-{
-  const unsigned char *playpal;
-  unsigned char pal[1024];
-  int i;
-
-  playpal = V_GetPlaypal();
-  for (i=0; i<256; i++) {
-    pal[i*4+0] = playpal[i*3+0];
-    pal[i*4+1] = playpal[i*3+1];
-    pal[i*4+2] = playpal[i*3+2];
-    pal[i*4+3] = 255;
-  }
-  pal[transparent_pal_index*4+0]=0;
-  pal[transparent_pal_index*4+1]=0;
-  pal[transparent_pal_index*4+2]=0;
-  pal[transparent_pal_index*4+3]=0;
-  GLEXT_glColorTableEXT(target, GL_RGBA, 256, GL_RGBA, GL_UNSIGNED_BYTE, pal);
-}
-
 void gld_SetIndexedPalette(int palette_index)
 {
   gld_paletteIndex = palette_index;
 }
 
-static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned char *buffer, const rpatch_t *patch, int originx, int originy, int paletted)
+static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned char *buffer, const rpatch_t *patch, int originx, int originy)
 {
   int x,y,j;
   int xs,xe;
@@ -387,59 +339,44 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
       if ((je+y)>gltexture->realtexheight)
         je+=(gltexture->realtexheight-(je+y));
       source = column->pixels + post->topdelta;
-      if (paletted) {
-        pos=(((js+y)*gltexture->buffer_width)+x+originx);
-        for (j=js;j<je;j++,pos+=(gltexture->buffer_width))
-        {
+      pos=4*(((js+y)*gltexture->buffer_width)+x+originx);
+      for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
+      {
 #ifdef RANGECHECK
-          if (pos>=gltexture->buffer_size)
-          {
-            lprintf(LO_ERROR,"gld_AddPatchToTexture_UnTranslated pos>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
-            return;
-          }
-#endif
-          buffer[pos]=gld_palmap[source[j]];
-        }
-      } else {
-        pos=4*(((js+y)*gltexture->buffer_width)+x+originx);
-        for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
+        if ((pos+3)>=gltexture->buffer_size)
         {
-#ifdef RANGECHECK
-          if ((pos+3)>=gltexture->buffer_size)
-          {
-            lprintf(LO_ERROR,"gld_AddPatchToTexture_UnTranslated pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
-            return;
-          }
-#endif
-          if (gltexture->flags & GLTEXTURE_INDEXED)
-          {
-            // [XA] new indexed color mode: store the palette index in
-            // the R channel and get the colormap index in the shader.
-            buffer[pos + 0] = gltexture->player_cm == INVULN_PLAYER_CM ? colormap[source[j]] : source[j];
-            buffer[pos + 1] = 0;
-            buffer[pos + 2] = 0;
-          }
-          else if (use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
-          {
-            //e6y: Boom's color maps
-            buffer[pos+0]=playpal[colormap[source[j]]*3+0];
-            buffer[pos+1]=playpal[colormap[source[j]]*3+1];
-            buffer[pos+2]=playpal[colormap[source[j]]*3+2];
-          }
-          else
-          {
-            buffer[pos+0]=playpal[source[j]*3+0];
-            buffer[pos+1]=playpal[source[j]*3+1];
-            buffer[pos+2]=playpal[source[j]*3+2];
-          }
-          buffer[pos+3]=255;
+          lprintf(LO_ERROR,"gld_AddPatchToTexture_UnTranslated pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+          return;
         }
+#endif
+        if (gltexture->flags & GLTEXTURE_INDEXED)
+        {
+          // [XA] new indexed color mode: store the palette index in
+          // the R channel and get the colormap index in the shader.
+          buffer[pos + 0] = gltexture->player_cm == INVULN_PLAYER_CM ? colormap[source[j]] : source[j];
+          buffer[pos + 1] = 0;
+          buffer[pos + 2] = 0;
+        }
+        else if (use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
+        {
+          //e6y: Boom's color maps
+          buffer[pos+0]=playpal[colormap[source[j]]*3+0];
+          buffer[pos+1]=playpal[colormap[source[j]]*3+1];
+          buffer[pos+2]=playpal[colormap[source[j]]*3+2];
+        }
+        else
+        {
+          buffer[pos+0]=playpal[source[j]*3+0];
+          buffer[pos+1]=playpal[source[j]*3+1];
+          buffer[pos+2]=playpal[source[j]*3+2];
+        }
+        buffer[pos+3]=255;
       }
     }
   }
 }
 
-void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rpatch_t *patch, int originx, int originy, int cm, int paletted)
+void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rpatch_t *patch, int originx, int originy, int cm)
 {
   int x,y,j;
   int xs,xe;
@@ -457,7 +394,7 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
     return;
   if ((cm==CR_DEFAULT) || (cm==CR_LIMIT))
   {
-    gld_AddPatchToTexture_UnTranslated(gltexture,buffer,patch,originx,originy, paletted);
+    gld_AddPatchToTexture_UnTranslated(gltexture,buffer,patch,originx,originy);
     return;
   }
   if (cm<CR_LIMIT)
@@ -504,59 +441,44 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
       if ((je+y)>gltexture->realtexheight)
         je+=(gltexture->realtexheight-(je+y));
       source = column->pixels + post->topdelta;
-      if (paletted) {
-        pos=(((js+y)*gltexture->buffer_width)+x+originx);
-        for (j=js;j<je;j++,pos+=(gltexture->buffer_width))
-        {
+      pos=4*(((js+y)*gltexture->buffer_width)+x+originx);
+      for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
+      {
 #ifdef RANGECHECK
-          if (pos>=gltexture->buffer_size)
-          {
-            lprintf(LO_ERROR,"gld_AddPatchToTexture_UnTranslated pos>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
-            return;
-          }
-#endif
-          buffer[pos]=gld_palmap[outr[source[j]]];
+        if ((pos+3)>=gltexture->buffer_size)
+        {
+          lprintf(LO_ERROR,"gld_AddPatchToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+          return;
         }
-      } else {
-        pos=4*(((js+y)*gltexture->buffer_width)+x+originx);
-        for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
-        {
-#ifdef RANGECHECK
-          if ((pos+3)>=gltexture->buffer_size)
-          {
-            lprintf(LO_ERROR,"gld_AddPatchToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
-            return;
-          }
 #endif
+        //e6y: Boom's color maps
+        if (gltexture->flags & GLTEXTURE_INDEXED)
+        {
+          // [XA] new indexed color mode
+          buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[outr[source[j]]] : outr[source[j]];
+          buffer[pos+1]=0;
+          buffer[pos+2]=0;
+        }
+        else if (use_boom_cm)
+        {
           //e6y: Boom's color maps
-          if (gltexture->flags & GLTEXTURE_INDEXED)
-          {
-            // [XA] new indexed color mode
-            buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[outr[source[j]]] : outr[source[j]];
-            buffer[pos+1]=0;
-            buffer[pos+2]=0;
-          }
-          else if (use_boom_cm)
-          {
-            //e6y: Boom's color maps
-            buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
-            buffer[pos+1]=playpal[colormap[outr[source[j]]]*3+1];
-            buffer[pos+2]=playpal[colormap[outr[source[j]]]*3+2];
-          }
-          else
-          {
-            buffer[pos+0]=playpal[outr[source[j]]*3+0];
-            buffer[pos+1]=playpal[outr[source[j]]*3+1];
-            buffer[pos+2]=playpal[outr[source[j]]*3+2];
-          }
-          buffer[pos+3]=255;
+          buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
+          buffer[pos+1]=playpal[colormap[outr[source[j]]]*3+1];
+          buffer[pos+2]=playpal[colormap[outr[source[j]]]*3+2];
         }
+        else
+        {
+          buffer[pos+0]=playpal[outr[source[j]]*3+0];
+          buffer[pos+1]=playpal[outr[source[j]]*3+1];
+          buffer[pos+2]=playpal[outr[source[j]]*3+2];
+        }
+        buffer[pos+3]=255;
       }
     }
   }
 }
 
-static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, const unsigned char *raw, int paletted)
+static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, const unsigned char *raw)
 {
   int x,y,w,pos;
   const unsigned char *playpal;
@@ -567,58 +489,40 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
   if (!raw)
     return;
   w = gltexture->realtexwidth;
-  if (paletted) {
-    for (y=0;y<gltexture->realtexheight;y++)
+  playpal = V_GetPlaypal();
+  for (y=0;y<gltexture->realtexheight;y++)
+  {
+    pos=4*(y*gltexture->buffer_width);
+    for (x=0;x<gltexture->realtexwidth;x++,pos+=4)
     {
-      pos=(y*gltexture->buffer_width);
-      for (x=0;x<gltexture->realtexwidth;x++,pos++)
-      {
 #ifdef RANGECHECK
-        if (pos>=gltexture->buffer_size)
-        {
-          lprintf(LO_ERROR,"gld_AddRawToTexture pos>=size (%i >= %i)\n",pos,gltexture->buffer_size);
-          return;
-        }
-#endif
-        buffer[pos]=gld_palmap[raw[y*w+x]];
-      }
-    }
-  } else {
-    playpal = V_GetPlaypal();
-    for (y=0;y<gltexture->realtexheight;y++)
-    {
-      pos=4*(y*gltexture->buffer_width);
-      for (x=0;x<gltexture->realtexwidth;x++,pos+=4)
+      if ((pos+3)>=gltexture->buffer_size)
       {
-#ifdef RANGECHECK
-        if ((pos+3)>=gltexture->buffer_size)
-        {
-          lprintf(LO_ERROR,"gld_AddRawToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
-          return;
-        }
-#endif
-        if (gltexture->flags & GLTEXTURE_INDEXED)
-        {
-          // [XA] new indexed color mode
-          buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[raw[y*w+x]] : raw[y*w+x];
-          buffer[pos+1]=0;
-          buffer[pos+2]=0;
-        }
-        else if (use_boom_cm)
-        {
-          //e6y: Boom's color maps
-          buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
-          buffer[pos+1]=playpal[colormap[raw[y*w+x]]*3+1];
-          buffer[pos+2]=playpal[colormap[raw[y*w+x]]*3+2];
-        }
-        else
-        {
-          buffer[pos+0]=playpal[raw[y*w+x]*3+0];
-          buffer[pos+1]=playpal[raw[y*w+x]*3+1];
-          buffer[pos+2]=playpal[raw[y*w+x]*3+2];
-        }
-        buffer[pos+3]=255;
+        lprintf(LO_ERROR,"gld_AddRawToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+        return;
       }
+#endif
+      if (gltexture->flags & GLTEXTURE_INDEXED)
+      {
+        // [XA] new indexed color mode
+        buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[raw[y*w+x]] : raw[y*w+x];
+        buffer[pos+1]=0;
+        buffer[pos+2]=0;
+      }
+      else if (use_boom_cm)
+      {
+        //e6y: Boom's color maps
+        buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
+        buffer[pos+1]=playpal[colormap[raw[y*w+x]]*3+1];
+        buffer[pos+2]=playpal[colormap[raw[y*w+x]]*3+2];
+      }
+      else
+      {
+        buffer[pos+0]=playpal[raw[y*w+x]*3+0];
+        buffer[pos+1]=playpal[raw[y*w+x]*3+1];
+        buffer[pos+2]=playpal[raw[y*w+x]*3+2];
+      }
+      buffer[pos+3]=255;
     }
   }
 }
@@ -1043,7 +947,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
   }
   else
   {
-    gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, CR_DEFAULT, 0);
+    gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, CR_DEFAULT);
   }
 
   if (*gltexture->texid_p == 0)
@@ -1142,7 +1046,7 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   patch=R_PatchByNum(gltexture->index);
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   memset(buffer,0,gltexture->buffer_size);
-  gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, cm, 0);
+  gld_AddPatchToTexture(gltexture, buffer, patch, 0, 0, cm);
 
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
@@ -1233,7 +1137,7 @@ void gld_BindRaw(GLTexture *gltexture, unsigned int flags)
   raw=W_LumpByNum(gltexture->index);
   buffer=(unsigned char*)Z_Malloc(gltexture->buffer_size);
   memset(buffer,0,gltexture->buffer_size);
-  gld_AddRawToTexture(gltexture, buffer, raw, 0);
+  gld_AddRawToTexture(gltexture, buffer, raw);
   if (*gltexture->texid_p == 0)
     glGenTextures(1, gltexture->texid_p);
   glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);

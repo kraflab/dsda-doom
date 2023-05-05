@@ -64,9 +64,6 @@ dboolean gl_arb_shader_objects = false;
 int active_texture_enabled[32];
 int clieant_active_texture_enabled[32];
 
-// obsolete?
-PFNGLCOLORTABLEEXTPROC              GLEXT_glColorTableEXT              = NULL;
-
 /* EXT_framebuffer_object */
 PFNGLBINDFRAMEBUFFEREXTPROC         GLEXT_glBindFramebufferEXT         = NULL;
 PFNGLGENFRAMEBUFFERSEXTPROC         GLEXT_glGenFramebuffersEXT         = NULL;

@@ -231,7 +231,6 @@ void gld_Init(int width, int height)
   }
 
   gld_InitOpenGL();
-  gld_InitPalettedTextures();
   gld_InitTextureParams();
 
   dsda_GLSetRenderViewport();

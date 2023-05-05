@@ -76,9 +76,6 @@ extern dboolean gl_ext_arb_vertex_buffer_object;
 extern dboolean gl_arb_pixel_buffer_object;
 extern dboolean gl_arb_shader_objects;
 
-// obsolete?
-extern PFNGLCOLORTABLEEXTPROC              GLEXT_glColorTableEXT;
-
 extern PFNGLBINDFRAMEBUFFEREXTPROC         GLEXT_glBindFramebufferEXT;
 extern PFNGLGENFRAMEBUFFERSEXTPROC         GLEXT_glGenFramebuffersEXT;
 extern PFNGLGENRENDERBUFFERSEXTPROC        GLEXT_glGenRenderbuffersEXT;
