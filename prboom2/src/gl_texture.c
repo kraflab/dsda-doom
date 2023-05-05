@@ -290,6 +290,7 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
   const rcolumn_t *column;
   const byte *source;
   int i, pos;
+  int bpp;
   const unsigned char *playpal;
   const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
 
@@ -312,6 +313,8 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
   //e6y
   if (patch->flags&PATCH_HASHOLES)
     gltexture->flags |= GLTEXTURE_HASHOLES;
+
+  bpp = gltexture->flags & GLTEXTURE_INDEXED ? 2 : 4;
 
   for (x=xs;x<xe;x++)
   {
@@ -337,13 +340,13 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
       if ((je+y)>gltexture->realtexheight)
         je+=(gltexture->realtexheight-(je+y));
       source = column->pixels + post->topdelta;
-      pos=4*(((js+y)*gltexture->buffer_width)+x+originx);
-      for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
+      pos=bpp*(((js+y)*gltexture->buffer_width)+x+originx);
+      for (j=js;j<je;j++,pos+=(bpp*gltexture->buffer_width))
       {
 #ifdef RANGECHECK
-        if ((pos+3)>=gltexture->buffer_size)
+        if ((pos+bpp)>gltexture->buffer_size)
         {
-          lprintf(LO_ERROR,"gld_AddPatchToTexture_UnTranslated pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+          lprintf(LO_ERROR,"gld_AddPatchToTexture_UnTranslated pos+bpp>size (%i > %i)\n",pos+bpp,gltexture->buffer_size);
           return;
         }
 #endif
@@ -351,9 +354,8 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
         {
           // [XA] new indexed color mode: store the palette index in
           // the R channel and get the colormap index in the shader.
-          buffer[pos + 0] = gltexture->player_cm == INVULN_PLAYER_CM ? colormap[source[j]] : source[j];
-          buffer[pos + 1] = 0;
-          buffer[pos + 2] = 0;
+          buffer[pos] = gltexture->player_cm == INVULN_PLAYER_CM ? colormap[source[j]] : source[j];
+          buffer[pos+1] = 255;
         }
         else if (use_boom_cm && !(comp[comp_skymap] && (gltexture->flags&GLTEXTURE_SKY)))
         {
@@ -361,14 +363,15 @@ static void gld_AddPatchToTexture_UnTranslated(GLTexture *gltexture, unsigned ch
           buffer[pos+0]=playpal[colormap[source[j]]*3+0];
           buffer[pos+1]=playpal[colormap[source[j]]*3+1];
           buffer[pos+2]=playpal[colormap[source[j]]*3+2];
+          buffer[pos+3]=255;
         }
         else
         {
           buffer[pos+0]=playpal[source[j]*3+0];
           buffer[pos+1]=playpal[source[j]*3+1];
           buffer[pos+2]=playpal[source[j]*3+2];
+          buffer[pos+3]=255;
         }
-        buffer[pos+3]=255;
       }
     }
   }
@@ -385,6 +388,7 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
   const unsigned char *playpal;
   const unsigned char *outr;
   const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
+  int bpp;
 
   if (!gltexture)
     return;
@@ -415,6 +419,8 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
   if (patch->flags&PATCH_HASHOLES)
     gltexture->flags |= GLTEXTURE_HASHOLES;
 
+  bpp = gltexture->flags & GLTEXTURE_INDEXED ? 2 : 4;
+
   for (x=xs;x<xe;x++)
   {
 #ifdef RANGECHECK
@@ -439,13 +445,13 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
       if ((je+y)>gltexture->realtexheight)
         je+=(gltexture->realtexheight-(je+y));
       source = column->pixels + post->topdelta;
-      pos=4*(((js+y)*gltexture->buffer_width)+x+originx);
-      for (j=js;j<je;j++,pos+=(4*gltexture->buffer_width))
+      pos=bpp*(((js+y)*gltexture->buffer_width)+x+originx);
+      for (j=js;j<je;j++,pos+=(bpp*gltexture->buffer_width))
       {
 #ifdef RANGECHECK
-        if ((pos+3)>=gltexture->buffer_size)
+        if ((pos+bpp)>gltexture->buffer_size)
         {
-          lprintf(LO_ERROR,"gld_AddPatchToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+          lprintf(LO_ERROR,"gld_AddPatchToTexture pos+bpp>size (%i > %i)\n",pos+bpp,gltexture->buffer_size);
           return;
         }
 #endif
@@ -453,9 +459,8 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
         if (gltexture->flags & GLTEXTURE_INDEXED)
         {
           // [XA] new indexed color mode
-          buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[outr[source[j]]] : outr[source[j]];
-          buffer[pos+1]=0;
-          buffer[pos+2]=0;
+          buffer[pos]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[outr[source[j]]] : outr[source[j]];
+          buffer[pos+1]=255;
         }
         else if (use_boom_cm)
         {
@@ -463,14 +468,15 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
           buffer[pos+0]=playpal[colormap[outr[source[j]]]*3+0];
           buffer[pos+1]=playpal[colormap[outr[source[j]]]*3+1];
           buffer[pos+2]=playpal[colormap[outr[source[j]]]*3+2];
+          buffer[pos+3]=255;
         }
         else
         {
           buffer[pos+0]=playpal[outr[source[j]]*3+0];
           buffer[pos+1]=playpal[outr[source[j]]*3+1];
           buffer[pos+2]=playpal[outr[source[j]]*3+2];
+          buffer[pos+3]=255;
         }
-        buffer[pos+3]=255;
       }
     }
   }
@@ -478,7 +484,7 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
 
 static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, const unsigned char *raw)
 {
-  int x,y,w,pos;
+  int x,y,w,pos,bpp;
   const unsigned char *playpal;
   const lighttable_t *colormap = (fixedcolormap ? fixedcolormap : fullcolormap);
 
@@ -488,24 +494,24 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
     return;
   w = gltexture->realtexwidth;
   playpal = V_GetPlaypal();
+  bpp = gltexture->flags & GLTEXTURE_INDEXED ? 2 : 4;
   for (y=0;y<gltexture->realtexheight;y++)
   {
-    pos=4*(y*gltexture->buffer_width);
-    for (x=0;x<gltexture->realtexwidth;x++,pos+=4)
+    pos=bpp*(y*gltexture->buffer_width);
+    for (x=0;x<gltexture->realtexwidth;x++,pos+=bpp)
     {
 #ifdef RANGECHECK
-      if ((pos+3)>=gltexture->buffer_size)
+      if ((pos+bpp)>=gltexture->buffer_size)
       {
-        lprintf(LO_ERROR,"gld_AddRawToTexture pos+3>=size (%i >= %i)\n",pos+3,gltexture->buffer_size);
+        lprintf(LO_ERROR,"gld_AddRawToTexture pos+bpp>size (%i > %i)\n",pos+bpp,gltexture->buffer_size);
         return;
       }
 #endif
       if (gltexture->flags & GLTEXTURE_INDEXED)
       {
         // [XA] new indexed color mode
-        buffer[pos+0]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[raw[y*w+x]] : raw[y*w+x];
-        buffer[pos+1]=0;
-        buffer[pos+2]=0;
+        buffer[pos]=gltexture->player_cm == INVULN_PLAYER_CM ? colormap[raw[y*w+x]] : raw[y*w+x];
+        buffer[pos+1] = 255;
       }
       else if (use_boom_cm)
       {
@@ -513,14 +519,15 @@ static void gld_AddRawToTexture(GLTexture *gltexture, unsigned char *buffer, con
         buffer[pos+0]=playpal[colormap[raw[y*w+x]]*3+0];
         buffer[pos+1]=playpal[colormap[raw[y*w+x]]*3+1];
         buffer[pos+2]=playpal[colormap[raw[y*w+x]]*3+2];
+        buffer[pos+3]=255;
       }
       else
       {
         buffer[pos+0]=playpal[raw[y*w+x]*3+0];
         buffer[pos+1]=playpal[raw[y*w+x]*3+1];
         buffer[pos+2]=playpal[raw[y*w+x]*3+2];
+        buffer[pos+3]=255;
       }
-      buffer[pos+3]=255;
     }
   }
 }
@@ -700,7 +707,7 @@ static GLTexture *gld_InitUnregisteredTexture(int texture_num, GLTexture *gltext
   //e6y
   gltexture->flags = 0;
 
-  if (indexed)
+  if (indexed && !sky)
     gltexture->flags |= GLTEXTURE_INDEXED;
 
   gltexture->realtexwidth = texture->width;
@@ -737,7 +744,7 @@ static GLTexture *gld_InitUnregisteredTexture(int texture_num, GLTexture *gltext
   gltexture->scalexfac = (float) gltexture->width / (float) gltexture->tex_width;
   gltexture->scaleyfac = (float) gltexture->height / (float) gltexture->tex_height;
 
-  gltexture->buffer_size = gltexture->buffer_width * gltexture->buffer_height * 4;
+  gltexture->buffer_size = gltexture->buffer_width * gltexture->buffer_height * ((indexed && !sky) ? 2 : 4);
 
   if (gltexture->realtexwidth > gltexture->buffer_width)
     return gltexture;
@@ -867,16 +874,17 @@ void gld_SetTexClamp(GLTexture *gltexture, unsigned int flags)
 
 int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int width, int height)
 {
-  int tex_width, tex_height;
+  int tex_width, tex_height, tex_format;
 
+  tex_format = gltexture->flags & GLTEXTURE_INDEXED ? GL_RG : GL_RGBA;
   tex_width  = gld_GetTexDimension(width);
   tex_height = gld_GetTexDimension(height);
 
   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 
-  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA,
+  glTexImage2D( GL_TEXTURE_2D, 0, tex_format,
     tex_width, tex_height,
-    0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    0, tex_format, GL_UNSIGNED_BYTE, data);
 
   gld_SetTexFilters(gltexture);
 
@@ -1002,7 +1010,7 @@ GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean inde
     gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
     gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
 
-    gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
+    gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*(indexed ? 2 : 4);
     if (gltexture->realtexwidth>gltexture->buffer_width)
       return gltexture;
     if (gltexture->realtexheight>gltexture->buffer_height)
@@ -1092,7 +1100,7 @@ GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dbo
     gltexture->scalexfac=(float)gltexture->width/(float)gltexture->tex_width;
     gltexture->scaleyfac=(float)gltexture->height/(float)gltexture->tex_height;
 
-    gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*4;
+    gltexture->buffer_size=gltexture->buffer_width*gltexture->buffer_height*(indexed ? 2 : 4);
     if (gltexture->realtexwidth>gltexture->buffer_width)
       return gltexture;
     if (gltexture->realtexheight>gltexture->buffer_height)
