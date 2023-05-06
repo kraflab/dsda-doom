@@ -1287,6 +1287,12 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             }
             polyobjs[index].seqType = (*polyobjs[index].segs)->linedef->special_args[3];
         }
+
+        if (!polyobjs[index].segs)
+        {
+            I_Error("SpawnPolyobj: Missing start / explicit line for poly %d\n", tag);
+        }
+
         // Next, change the polyobjs first line to point to a mirror
         //              if it exists
         (*polyobjs[index].segs)->linedef->special_args[1] =
