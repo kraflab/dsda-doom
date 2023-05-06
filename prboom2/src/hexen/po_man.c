@@ -1150,7 +1150,9 @@ static void IterFindPolySegs(int x, int y, seg_t ** segList)
     }
     for (i = 0; i < numsegs; i++)
     {
-        if (segs[i].v1->x == x && segs[i].v1->y == y)
+        if (segs[i].linedef &&
+            segs[i].v1->x == x &&
+            segs[i].v1->y == y)
         {
             if (!segList)
             {
@@ -1177,7 +1179,8 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
 
     for (i = 0; i < numsegs; i++)
     {
-        if (segs[i].linedef->special == PO_LINE_START &&
+        if (segs[i].linedef &&
+            segs[i].linedef->special == PO_LINE_START &&
             segs[i].linedef->special_args[0] == tag)
         {
             if (polyobjs[index].segs)
@@ -1217,7 +1220,8 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             psIndexOld = psIndex;
             for (i = 0; i < numsegs; i++)
             {
-                if (segs[i].linedef->special == PO_LINE_EXPLICIT &&
+                if (segs[i].linedef &&
+                    segs[i].linedef->special == PO_LINE_EXPLICIT &&
                     segs[i].linedef->special_args[0] == tag)
                 {
                     if (!segs[i].linedef->special_args[1])
@@ -1244,7 +1248,8 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
             //              linedef.
             for (i = 0; i < numsegs; i++)
             {
-                if (segs[i].linedef->special == PO_LINE_EXPLICIT &&
+                if (segs[i].linedef &&
+                    segs[i].linedef->special == PO_LINE_EXPLICIT &&
                     segs[i].linedef->special_args[0] == tag
                     && segs[i].linedef->special_args[1] == j)
                 {
@@ -1258,7 +1263,8 @@ static void SpawnPolyobj(int index, int tag, dboolean crush, dboolean hurt)
                 // lines with the current tag value
                 for (i = 0; i < numsegs; i++)
                 {
-                    if (segs[i].linedef->special == PO_LINE_EXPLICIT &&
+                    if (segs[i].linedef &&
+                        segs[i].linedef->special == PO_LINE_EXPLICIT &&
                         segs[i].linedef->special_args[0] == tag)
                     {
                         I_Error
