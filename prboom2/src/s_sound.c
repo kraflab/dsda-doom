@@ -57,6 +57,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/memory.h"
+#include "dsda/music.h"
 #include "dsda/settings.h"
 #include "dsda/sfx.h"
 #include "dsda/skip.h"
@@ -269,14 +270,17 @@ void S_Start(void)
   if (muslump >= 0)
   {
     musinfo.items[0] = muslump;
-    S_ChangeMusInfoMusic(muslump, true);
+
+    if (!dsda_StartQueuedMusic())
+      S_ChangeMusInfoMusic(muslump, true);
   }
   else
   {
     memset(&musinfo, 0, sizeof(musinfo));
     musinfo.items[0] = -1;
 
-    S_ChangeMusic(mnum, true);
+    if (!dsda_StartQueuedMusic())
+      S_ChangeMusic(mnum, true);
   }
 }
 

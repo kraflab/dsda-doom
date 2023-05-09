@@ -20,6 +20,9 @@
 #include <ctype.h>
 
 #include "doomtype.h"
+#include "p_saveg.h"
+#include "s_advsound.h"
+#include "s_sound.h"
 
 #include "music.h"
 
@@ -120,4 +123,24 @@ void dsda_FreeDehMusic(void) {
 
   free(deh_musicnames);
   free(music_state);
+}
+
+static int music_queue = -1;
+
+void dsda_ArchiveMusic(void) {
+  P_SAVE_X(musinfo.current_item);
+}
+
+void dsda_UnArchiveMusic(void) {
+  P_LOAD_X(music_queue);
+}
+
+dboolean dsda_StartQueuedMusic(void) {
+  if (music_queue == -1)
+    return false;
+
+  S_ChangeMusInfoMusic(music_queue, true);
+  music_queue = -1;
+
+  return true;
 }

@@ -2314,11 +2314,6 @@ void G_AfterLoad(void)
   R_ActivateSectorInterpolations(); //e6y
   R_SmoothPlaying_Reset(NULL); // e6y
 
-  if (musinfo.current_item != -1)
-  {
-    S_ChangeMusInfoMusic(musinfo.current_item, true);
-  }
-
   RecalculateDrawnSubsectors();
 
   if (hexen)
