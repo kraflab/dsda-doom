@@ -221,24 +221,26 @@ void P_ArchiveWorld (void)
         P_SAVE_X(si->bottomtexture);
         P_SAVE_X(si->midtexture);
 
-        // zdoom
-        P_SAVE_X(si->textureoffset_top);
-        P_SAVE_X(si->textureoffset_mid);
-        P_SAVE_X(si->textureoffset_bottom);
-        P_SAVE_X(si->rowoffset_top);
-        P_SAVE_X(si->rowoffset_mid);
-        P_SAVE_X(si->rowoffset_bottom);
-        P_SAVE_X(si->scalex_top);
-        P_SAVE_X(si->scaley_top);
-        P_SAVE_X(si->scalex_mid);
-        P_SAVE_X(si->scaley_mid);
-        P_SAVE_X(si->scalex_bottom);
-        P_SAVE_X(si->scaley_bottom);
-        P_SAVE_X(si->lightlevel);
-        P_SAVE_X(si->lightlevel_top);
-        P_SAVE_X(si->lightlevel_mid);
-        P_SAVE_X(si->lightlevel_bottom);
-        P_SAVE_X(si->flags);
+        if (map_format.zdoom)
+        {
+          P_SAVE_X(si->textureoffset_top);
+          P_SAVE_X(si->textureoffset_mid);
+          P_SAVE_X(si->textureoffset_bottom);
+          P_SAVE_X(si->rowoffset_top);
+          P_SAVE_X(si->rowoffset_mid);
+          P_SAVE_X(si->rowoffset_bottom);
+          P_SAVE_X(si->scalex_top);
+          P_SAVE_X(si->scaley_top);
+          P_SAVE_X(si->scalex_mid);
+          P_SAVE_X(si->scaley_mid);
+          P_SAVE_X(si->scalex_bottom);
+          P_SAVE_X(si->scaley_bottom);
+          P_SAVE_X(si->lightlevel);
+          P_SAVE_X(si->lightlevel_top);
+          P_SAVE_X(si->lightlevel_mid);
+          P_SAVE_X(si->lightlevel_bottom);
+          P_SAVE_X(si->flags);
+        }
       }
   }
 
@@ -321,23 +323,26 @@ void P_UnArchiveWorld (void)
         P_LOAD_X(si->midtexture);
 
         // zdoom
-        P_LOAD_X(si->textureoffset_top);
-        P_LOAD_X(si->textureoffset_mid);
-        P_LOAD_X(si->textureoffset_bottom);
-        P_LOAD_X(si->rowoffset_top);
-        P_LOAD_X(si->rowoffset_mid);
-        P_LOAD_X(si->rowoffset_bottom);
-        P_LOAD_X(si->scalex_top);
-        P_LOAD_X(si->scaley_top);
-        P_LOAD_X(si->scalex_mid);
-        P_LOAD_X(si->scaley_mid);
-        P_LOAD_X(si->scalex_bottom);
-        P_LOAD_X(si->scaley_bottom);
-        P_LOAD_X(si->lightlevel);
-        P_LOAD_X(si->lightlevel_top);
-        P_LOAD_X(si->lightlevel_mid);
-        P_LOAD_X(si->lightlevel_bottom);
-        P_LOAD_X(si->flags);
+        if (map_format.zdoom)
+        {
+          P_LOAD_X(si->textureoffset_top);
+          P_LOAD_X(si->textureoffset_mid);
+          P_LOAD_X(si->textureoffset_bottom);
+          P_LOAD_X(si->rowoffset_top);
+          P_LOAD_X(si->rowoffset_mid);
+          P_LOAD_X(si->rowoffset_bottom);
+          P_LOAD_X(si->scalex_top);
+          P_LOAD_X(si->scaley_top);
+          P_LOAD_X(si->scalex_mid);
+          P_LOAD_X(si->scaley_mid);
+          P_LOAD_X(si->scalex_bottom);
+          P_LOAD_X(si->scaley_bottom);
+          P_LOAD_X(si->lightlevel);
+          P_LOAD_X(si->lightlevel_top);
+          P_LOAD_X(si->lightlevel_mid);
+          P_LOAD_X(si->lightlevel_bottom);
+          P_LOAD_X(si->flags);
+        }
       }
   }
 
