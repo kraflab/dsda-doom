@@ -79,13 +79,6 @@ typedef struct custom_message_s
   const char *msg;
 } custom_message_t;
 
-typedef struct message_thinker_s
-{
-  thinker_t thinker;
-  int plr;
-  custom_message_t msg;
-} message_thinker_t;
-
 static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
 
