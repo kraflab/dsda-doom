@@ -83,7 +83,6 @@ typedef struct message_thinker_s
 {
   thinker_t thinker;
   int plr;
-  int delay;
   custom_message_t msg;
 } message_thinker_t;
 
@@ -502,7 +501,7 @@ void T_ShowMessage (message_thinker_t* message)
   P_RemoveThinker(&message->thinker); // unlink and free
 }
 
-int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx)
+int SetCustomMessage(int plr, const char *msg, int ticks, int cm, int sfx)
 {
   custom_message_t item;
 
@@ -517,21 +516,7 @@ int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int
   item.cm = cm;
   item.sfx = sfx;
 
-  if (delay <= 0)
-  {
-    custom_message[plr] = item;
-  }
-  else
-  {
-    message_thinker_t *message = Z_CallocLevel(1, sizeof(*message));
-    message->thinker.function = T_ShowMessage;
-    message->delay = delay;
-    message->plr = plr;
-
-    message->msg = item;
-
-    P_AddThinker(&message->thinker);
-  }
+  custom_message[plr] = item;
 
   return true;
 }
