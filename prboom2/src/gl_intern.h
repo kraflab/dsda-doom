@@ -517,8 +517,6 @@ void glsl_SetMainShaderActive();
 void glsl_SetFuzzShaderActive();
 void glsl_SetFuzzShaderInactive();
 void glsl_SetLightLevel(float lightlevel);
-void glsl_SetFuzzTime(int time);
-void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
 void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
 
 #endif // _GL_INTERN_H

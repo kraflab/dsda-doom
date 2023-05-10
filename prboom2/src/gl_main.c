@@ -975,9 +975,6 @@ void gld_Clear(void)
 
 void gld_StartDrawScene(void)
 {
-  // Progress fuzz time seed
-  glsl_SetFuzzTime(gametic);
-
   gld_MultisamplingSet();
 
   gld_SetPalette(-1);

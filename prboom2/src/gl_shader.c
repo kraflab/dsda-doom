@@ -62,9 +62,8 @@ typedef struct shdr_indexed_unif_s
 // Fuzz shader uniform bindings
 typedef struct shdr_fuzz_unif_s
 {
-  int screen_resolution_index; // vec2
   int tex_d_index;             // vec2
-  int time_index;              // float
+  int count_index;             // int
 } shdr_fuzz_unif_t;
 
 static GLShader *sh_indexed = NULL;
@@ -96,9 +95,8 @@ static void get_fuzz_shader_bindings()
 {
   int idx;
 
-  fuzz_unifs.screen_resolution_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "screen_res");
   fuzz_unifs.tex_d_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex_d");
-  fuzz_unifs.time_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "time");
+  fuzz_unifs.count_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "count");
 
   GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
 
@@ -115,7 +113,6 @@ void glsl_Init(void)
 
   sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
   get_fuzz_shader_bindings();
-  glsl_SetFuzzScreenResolution((float)SCREENWIDTH, (float)SCREENHEIGHT);
 }
 
 static int ReadLump(const char *filename, const char *lumpname, char **buffer)
@@ -260,10 +257,12 @@ void glsl_SetMainShaderActive()
 
 void glsl_SetFuzzShaderActive()
 {
+  static int count = 0;
   if (active_shader != sh_fuzz)
   {
     GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
     active_shader = sh_fuzz;
+    GLEXT_glUniform1iARB(fuzz_unifs.count_index, count++);
   }
 }
 
@@ -279,55 +278,6 @@ void glsl_SetFuzzShaderInactive()
 void glsl_SetLightLevel(float lightlevel)
 {
   GLEXT_glUniform1fARB(indexed_unifs.lightlevel_index, lightlevel);
-}
-
-void glsl_SetFuzzTime(int time)
-{
-  GLShader* prev_active_shader;
-  prev_active_shader = NULL;
-
-  if (active_shader != sh_fuzz)
-  {
-    prev_active_shader = active_shader;
-    glsl_SetFuzzShaderActive();
-  }
-  else
-  {
-    prev_active_shader = sh_fuzz;
-  }
-
-  //lprintf(LO_INFO,"fuzz time: %i\n", time);
-  GLEXT_glUniform1iARB(fuzz_unifs.time_index, time);
-
-  if (prev_active_shader != sh_fuzz)
-  {
-    glsl_SetFuzzShaderInactive();
-    glsl_SetActiveShader(prev_active_shader);
-  }
-}
-
-void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight)
-{
-  GLShader* prev_active_shader;
-  prev_active_shader = NULL;
-
-  if (active_shader != sh_fuzz)
-  {
-    prev_active_shader = active_shader;
-    glsl_SetFuzzShaderActive();
-  }
-  else
-  {
-    prev_active_shader = sh_fuzz;
-  }
-
-  GLEXT_glUniform2fARB(fuzz_unifs.screen_resolution_index, screenwidth, screenheight);
-
-  if (prev_active_shader != sh_fuzz)
-  {
-    glsl_SetFuzzShaderInactive();
-    glsl_SetActiveShader(prev_active_shader);
-  }
 }
 
 void glsl_SetFuzzTextureDimensions(float texwidth, float texheight)
