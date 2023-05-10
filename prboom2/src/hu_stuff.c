@@ -490,17 +490,6 @@ dboolean HU_Responder(event_t *ev)
   return false;
 }
 
-void T_ShowMessage (message_thinker_t* message)
-{
-  if (--message->delay > 0)
-    return;
-
-  SetCustomMessage(message->plr, message->msg.msg, 0,
-    message->msg.ticks, message->msg.cm, message->msg.sfx);
-
-  P_RemoveThinker(&message->thinker); // unlink and free
-}
-
 int SetCustomMessage(int plr, const char *msg, int ticks, int cm, int sfx)
 {
   custom_message_t item;
