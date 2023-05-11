@@ -430,8 +430,7 @@ dboolean HU_Responder(event_t *ev)
 {
   if (dsda_InputActivated(dsda_input_repeat_message)) // phares
   {
-    message_on = true;
-    message_counter = HU_MSGTIMEOUT;
+    dsda_ReplayMessage();
 
     return true;
   }

@@ -140,6 +140,11 @@ void dsda_InitMessenger(void) {
   last_message = NULL;
 }
 
+void dsda_ReplayMessage(void) {
+  if (last_message) {
+    dsda_ClearMessages();
+    dsda_QueueMessage(last_message->str, last_message->priority);
+  }
 }
 
 char* dsda_PlayerMessage(void) {
