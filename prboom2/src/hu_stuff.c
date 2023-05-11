@@ -344,6 +344,7 @@ void HU_Start(void)
   HU_FetchTitle();
   HU_InitCrosshair();
 
+  dsda_InitMessenger();
   dsda_InitExHud();
 }
 

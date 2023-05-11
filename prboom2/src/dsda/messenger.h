@@ -24,5 +24,6 @@ void dsda_AddPlayerMessage(const char* str, player_t* player);
 void dsda_AddMessage(const char* str);
 void dsda_AddUnblockableMessage(const char* str);
 void dsda_UpdateMessenger(void);
+void dsda_InitMessenger(void);
 
 #endif

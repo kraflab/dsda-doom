@@ -142,6 +142,10 @@ void dsda_UpdateMessenger(void) {
   }
 }
 
+void dsda_InitMessenger(void) {
+  dsda_ClearMessages();
+}
+
 char* dsda_PlayerMessage(void) {
   if (!current_message)
     return NULL;
