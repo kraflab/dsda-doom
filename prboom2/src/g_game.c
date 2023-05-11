@@ -96,6 +96,7 @@
 #include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
+#include "dsda/messenger.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
 #include "dsda/input.h"
@@ -3951,7 +3952,8 @@ void doom_printf(const char *s, ...)
   va_start(v,s);
   vsnprintf(msg,sizeof(msg),s,v);   /* print message in buffer */
   va_end(v);
-  players[consoleplayer].message = msg;  // set new message
+
+  dsda_AddMessage(msg);
 }
 
 //e6y

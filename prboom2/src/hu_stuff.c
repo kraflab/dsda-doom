@@ -59,6 +59,7 @@
 #include "dsda/exhud.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/messenger.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
@@ -368,20 +369,7 @@ void HU_Drawer(void)
   V_EndUIDraw();
 }
 
-char* player_message;
 char* secret_message;
-
-static void HU_UpdateMessage(const char* message)
-{
-  if (player_message)
-    Z_Free(player_message);
-
-  player_message = Z_Strdup(message);
-}
-
-char* HU_PlayerMessage(void) {
-  return message_on ? player_message : NULL;
-}
 
 static void HU_UpdateSecretMessage(const char* message)
 {
@@ -406,40 +394,7 @@ void HU_Ticker(void)
 {
   int i;
 
-  // tick down message counter if message is up
-  if (message_counter && !--message_counter)
-  {
-    message_on = false;
-    message_nottobefuckedwith = false;
-    yellow_message = false;
-  }
-
-  // if messages on, or "Messages Off" is being displayed
-  // this allows the notification of turning messages off to be seen
-  if (dsda_ShowMessages() || message_dontfuckwithme)
-  {
-    // display message if necessary
-    if ((plr->message && !message_nottobefuckedwith)
-        || (plr->message && message_dontfuckwithme))
-    {
-      // update the active message
-      HU_UpdateMessage(plr->message);
-
-      // clear the message to avoid posting multiple times
-      plr->message = 0;
-      // note a message is displayed
-      message_on = true;
-      // start the message persistence counter
-      message_counter = HU_MSGTIMEOUT;
-      // transfer "Messages Off" exception to the "being displayed" variable
-      message_nottobefuckedwith = message_dontfuckwithme;
-      // clear the flag that "Messages Off" is being posted
-      message_dontfuckwithme = 0;
-
-      yellow_message = plr->yellowMessage;
-      // hexen_note: use FONTAY_S for yellow messages (new font, y_message, etc)
-    }
-  }
+  dsda_UpdateMessenger();
 
   // centered messages
   for (i = 0; i < g_maxplayers; i++)

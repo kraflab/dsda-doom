@@ -54,6 +54,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/messenger.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -464,13 +465,13 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
     case SPR_ARM1:
       if (!P_GiveArmor (player, green_armor_class))
         return;
-      player->message = s_GOTARMOR; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTARMOR, player);
       break;
 
     case SPR_ARM2:
       if (!P_GiveArmor (player, blue_armor_class))
         return;
-      player->message = s_GOTMEGA; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTMEGA, player);
       break;
 
         // bonus items
@@ -479,7 +480,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       if (player->health > (maxhealthbonus))//e6y
         player->health = (maxhealthbonus);//e6y
       player->mo->health = player->health;
-      player->message = s_GOTHTHBONUS; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTHTHBONUS, player);
       break;
 
     case SPR_BON2:
@@ -500,7 +501,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
         player->armortype =
          ((!demo_compatibility || prboom_comp[PC_APPLY_GREEN_ARMOR_CLASS_TO_ARMOR_BONUSES].state) ?
           green_armor_class : 1);
-      player->message = s_GOTARMBONUS; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTARMBONUS, player);
       break;
 
     case SPR_SOUL:
@@ -508,7 +509,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       if (player->health > max_soul)
         player->health = max_soul;
       player->mo->health = player->health;
-      player->message = s_GOTSUPER; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTSUPER, player);
       sound = sfx_getpow;
       break;
 
@@ -523,7 +524,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       P_GiveArmor (player,
          ((!demo_compatibility || prboom_comp[PC_APPLY_BLUE_ARMOR_CLASS_TO_MEGASPHERE].state) ?
           blue_armor_class : 2));
-      player->message = s_GOTMSPHERE; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTMSPHERE, player);
       sound = sfx_getpow;
       break;
 
@@ -531,7 +532,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
         // leave cards for everyone
     case SPR_BKEY:
       if (!player->cards[it_bluecard])
-        player->message = s_GOTBLUECARD; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTBLUECARD, player);
       P_GiveCard (player, it_bluecard);
       if (!netgame)
         break;
@@ -539,7 +540,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
     case SPR_YKEY:
       if (!player->cards[it_yellowcard])
-        player->message = s_GOTYELWCARD; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTYELWCARD, player);
       P_GiveCard (player, it_yellowcard);
       if (!netgame)
         break;
@@ -547,7 +548,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
     case SPR_RKEY:
       if (!player->cards[it_redcard])
-        player->message = s_GOTREDCARD; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTREDCARD, player);
       P_GiveCard (player, it_redcard);
       if (!netgame)
         break;
@@ -555,7 +556,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
     case SPR_BSKU:
       if (!player->cards[it_blueskull])
-        player->message = s_GOTBLUESKUL; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTBLUESKUL, player);
       P_GiveCard (player, it_blueskull);
       if (!netgame)
         break;
@@ -563,7 +564,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
     case SPR_YSKU:
       if (!player->cards[it_yellowskull])
-        player->message = s_GOTYELWSKUL; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTYELWSKUL, player);
       P_GiveCard (player, it_yellowskull);
       if (!netgame)
         break;
@@ -571,7 +572,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
     case SPR_RSKU:
       if (!player->cards[it_redskull])
-        player->message = s_GOTREDSKULL; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTREDSKULL, player);
       P_GiveCard (player, it_redskull);
       if (!netgame)
         break;
@@ -581,7 +582,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
     case SPR_STIM:
       if (!P_GiveBody (player, 10))
         return;
-      player->message = s_GOTSTIM; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTSTIM, player);
       break;
 
     case SPR_MEDI:
@@ -589,9 +590,9 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
         return;
 
       if (player->health < 50) // cph - 25 + the 25 just added, thanks to Quasar for reporting this bug
-        player->message = s_GOTMEDINEED; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTMEDINEED, player);
       else
-        player->message = s_GOTMEDIKIT; // Ty 03/22/98 - externalized
+        dsda_AddPlayerMessage(s_GOTMEDIKIT, player);
       break;
 
 
@@ -599,14 +600,14 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
     case SPR_PINV:
       if (!P_GivePower (player, pw_invulnerability))
         return;
-      player->message = s_GOTINVUL; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTINVUL, player);
       sound = sfx_getpow;
       break;
 
     case SPR_PSTR:
       if (!P_GivePower (player, pw_strength))
         return;
-      player->message = s_GOTBERSERK; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTBERSERK, player);
       if (player->readyweapon != wp_fist)
         player->pendingweapon = wp_fist;
       sound = sfx_getpow;
@@ -615,28 +616,28 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
     case SPR_PINS:
       if (!P_GivePower (player, pw_invisibility))
         return;
-      player->message = s_GOTINVIS; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTINVIS, player);
       sound = sfx_getpow;
       break;
 
     case SPR_SUIT:
       if (!P_GivePower (player, pw_ironfeet))
         return;
-      player->message = s_GOTSUIT; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTSUIT, player);
       sound = sfx_getpow;
       break;
 
     case SPR_PMAP:
       if (!P_GivePower (player, pw_allmap))
         return;
-      player->message = s_GOTMAP; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTMAP, player);
       sound = sfx_getpow;
       break;
 
     case SPR_PVIS:
       if (!P_GivePower (player, pw_infrared))
         return;
-      player->message = s_GOTVISOR; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTVISOR, player);
       sound = sfx_getpow;
       break;
 
@@ -652,49 +653,49 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
           if (!P_GiveAmmo (player,am_clip,1))
             return;
         }
-      player->message = s_GOTCLIP; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTCLIP, player);
       break;
 
     case SPR_AMMO:
       if (!P_GiveAmmo (player, am_clip,5))
         return;
-      player->message = s_GOTCLIPBOX; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTCLIPBOX, player);
       break;
 
     case SPR_ROCK:
       if (!P_GiveAmmo (player, am_misl,1))
         return;
-      player->message = s_GOTROCKET; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTROCKET, player);
       break;
 
     case SPR_BROK:
       if (!P_GiveAmmo (player, am_misl,5))
         return;
-      player->message = s_GOTROCKBOX; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTROCKBOX, player);
       break;
 
     case SPR_CELL:
       if (!P_GiveAmmo (player, am_cell,1))
         return;
-      player->message = s_GOTCELL; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTCELL, player);
       break;
 
     case SPR_CELP:
       if (!P_GiveAmmo (player, am_cell,5))
         return;
-      player->message = s_GOTCELLBOX; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTCELLBOX, player);
       break;
 
     case SPR_SHEL:
       if (!P_GiveAmmo (player, am_shell,1))
         return;
-      player->message = s_GOTSHELLS; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTSHELLS, player);
       break;
 
     case SPR_SBOX:
       if (!P_GiveAmmo (player, am_shell,5))
         return;
-      player->message = s_GOTSHELLBOX; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTSHELLBOX, player);
       break;
 
     case SPR_BPAK:
@@ -706,56 +707,56 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
         }
       for (i=0 ; i<NUMAMMO ; i++)
         P_GiveAmmo (player, i, 1);
-      player->message = s_GOTBACKPACK; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTBACKPACK, player);
       break;
 
         // weapons
     case SPR_BFUG:
       if (!P_GiveWeapon (player, wp_bfg, false) )
         return;
-      player->message = s_GOTBFG9000; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTBFG9000, player);
       sound = sfx_wpnup;
       break;
 
     case SPR_MGUN:
       if (!P_GiveWeapon (player, wp_chaingun, (special->flags&MF_DROPPED)!=0) )
         return;
-      player->message = s_GOTCHAINGUN; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTCHAINGUN, player);
       sound = sfx_wpnup;
       break;
 
     case SPR_CSAW:
       if (!P_GiveWeapon (player, wp_chainsaw, false) )
         return;
-      player->message = s_GOTCHAINSAW; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTCHAINSAW, player);
       sound = sfx_wpnup;
       break;
 
     case SPR_LAUN:
       if (!P_GiveWeapon (player, wp_missile, false) )
         return;
-      player->message = s_GOTLAUNCHER; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTLAUNCHER, player);
       sound = sfx_wpnup;
       break;
 
     case SPR_PLAS:
       if (!P_GiveWeapon (player, wp_plasma, false) )
         return;
-      player->message = s_GOTPLASMA; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTPLASMA, player);
       sound = sfx_wpnup;
       break;
 
     case SPR_SHOT:
       if (!P_GiveWeapon (player, wp_shotgun, (special->flags&MF_DROPPED)!=0 ) )
         return;
-      player->message = s_GOTSHOTGUN; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTSHOTGUN, player);
       sound = sfx_wpnup;
       break;
 
     case SPR_SGN2:
       if (!P_GiveWeapon(player, wp_supershotgun, (special->flags&MF_DROPPED)!=0))
         return;
-      player->message = s_GOTSHOTGUN2; // Ty 03/22/98 - externalized
+      dsda_AddPlayerMessage(s_GOTSHOTGUN2, player);
       sound = sfx_wpnup;
       break;
 
@@ -1810,7 +1811,7 @@ void A_RestoreSpecialThing2(mobj_t * thing)
 
 void P_SetMessage(player_t * player, const char *message, dboolean ultmsg)
 {
-    player->message = message;
+    dsda_AddPlayerMessage(message, player);
     player->yellowMessage = false;
 }
 
@@ -2769,7 +2770,7 @@ dboolean Hexen_P_GiveArmor(player_t * player, armortype_t armortype, int amount)
 
 void P_SetYellowMessage(player_t * player, const char *message, dboolean ultmsg)
 {
-    player->message = message;
+    dsda_AddPlayerMessage(message, player);
     player->yellowMessage = true;
 }
 
