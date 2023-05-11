@@ -2014,7 +2014,6 @@ void SV_MapTeleport(int map, int position)
             continue;
         }
         players[i] = playerBackup[i];
-        ClearMessage();
         players[i].attacker = NULL;
         players[i].poisoner = NULL;
 

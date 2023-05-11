@@ -66,12 +66,6 @@
 
 static player_t*  plr;
 
-static dboolean    message_on;
-dboolean           message_dontfuckwithme;
-static dboolean    message_nottobefuckedwith;
-static int         message_counter;
-static int         yellow_message;
-
 typedef struct custom_message_s
 {
   int ticks;
@@ -112,10 +106,6 @@ static void HU_FetchTitle(void)
 static void HU_InitMessages(void)
 {
   custom_message_p = &custom_message[displayplayer];
-  message_on = false;
-  message_dontfuckwithme = false;
-  message_nottobefuckedwith = false;
-  yellow_message = false;
 }
 
 static void HU_InitPlayer(void)
@@ -456,10 +446,4 @@ int SetCustomMessage(int plr, const char *msg, int ticks, int cm, int sfx)
   custom_message[plr] = item;
 
   return true;
-}
-
-void ClearMessage(void)
-{
-  message_counter = 0;
-  yellow_message = false;
 }
