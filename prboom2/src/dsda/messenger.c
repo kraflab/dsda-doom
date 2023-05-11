@@ -126,24 +126,20 @@ void dsda_UpdateMessenger(void) {
 
   --current_message->tics;
   if (!current_message->tics) {
-    if (current_message->next_message) {
-      message_t* old_message;
-
-      old_message = current_message;
-      current_message = current_message->next_message;
-      dsda_FreeMessage(old_message);
-    }
-    else {
-      if (last_message)
-        dsda_FreeMessage(last_message);
-      last_message = current_message;
-      current_message = NULL;
-    }
+    if (last_message)
+      dsda_FreeMessage(last_message);
+    last_message = current_message;
+    current_message = current_message->next_message;
   }
 }
 
 void dsda_InitMessenger(void) {
   dsda_ClearMessages();
+  if (last_message)
+    dsda_FreeMessage(last_message);
+  last_message = NULL;
+}
+
 }
 
 char* dsda_PlayerMessage(void) {
