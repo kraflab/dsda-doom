@@ -4848,7 +4848,6 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         S_StartVoidSound(g_sfx_swtchn);
       }
     ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
-    HU_Start();    // catch any message changes // phares 4/19/98
     S_StartVoidSound(g_sfx_swtchx);
     return true;
   }
