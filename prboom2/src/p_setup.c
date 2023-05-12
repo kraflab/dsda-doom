@@ -65,6 +65,7 @@
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/preferences.h"
 #include "dsda/settings.h"
 #include "dsda/skip.h"
 #include "dsda/tranmap.h"
@@ -3941,6 +3942,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   dsda_WatchAfterLevelSetup();
 
   P_MapEnd();
+
+  dsda_HandleMapPreferences();
 
   dsda_ApplyFadeTable();
 

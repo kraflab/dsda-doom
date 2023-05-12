@@ -31,6 +31,7 @@
 #include "hexen/sn_sonix.h"
 
 #include "dsda/map_format.h"
+#include "dsda/preferences.h"
 #include "dsda/udmf.h"
 #include "dsda/utility.h"
 
@@ -1485,6 +1486,11 @@ void PO_LoadUDMFThings(int lump)
                                  dsda_StringToFixed(mt->x),
                                  dsda_StringToFixed(mt->y));
         }
+    }
+
+    if (polyIndex)
+    {
+        dsda_PreferOpenGL();
     }
 }
 
