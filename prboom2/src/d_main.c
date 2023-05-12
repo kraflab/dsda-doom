@@ -1762,7 +1762,7 @@ static void D_DoomMainSetup(void)
 
       if (!dsda_FileExtension(file_name))
       {
-        const char *extensions[] = { ".wad", ".zip", ".deh", ".bex", NULL };
+        const char *extensions[] = { ".wad", ".lmp", ".zip", ".deh", ".bex", NULL };
 
         file = I_RequireAnyFile(file_name, extensions);
         file_name = file;
@@ -1776,7 +1776,7 @@ static void D_DoomMainSetup(void)
       {
         D_AddZip(file_name, source_pwad, NULL);
       }
-      else if (dsda_HasFileExt(file_name, ".wad"))
+      else if (dsda_HasFileExt(file_name, ".wad") || dsda_HasFileExt(file_name, ".lmp"))
       {
         if (!file)
           file = I_RequireWad(file_name);
