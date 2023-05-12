@@ -2,12 +2,45 @@
 
 uniform sampler2D tex;
 uniform vec2 tex_d; // Texture dimensions
-uniform vec2 screen_res;
-uniform int time;
+uniform int count;
+
+const int darksize = 50;
+const float fdarksize = float(darksize);
+// Table of darkness steps for each pixel in a column, based on
+// offset table in software renderer
+const int darktable[darksize] = int[](
+  1, 2, 1, 2, 1, 1, 2, 1, 1, 2,
+  1, 1, 1, 2, 1, 1, 1, 2, 3, 4,
+  5, 1, 2, 3, 1, 1, 1, 1, 2, 1,
+  2, 1, 1, 2, 3, 1, 1, 2, 3, 4,
+  5, 1, 1, 1, 1, 2, 1, 1, 2, 1
+);
+
+// Darkness of each darkness step, based on the behavior of dcolors.c,
+// the colormap/playpal generator (credit to lovely847)
+const float darksteps[6] = float[](
+  0,
+  0.188235294117647058824,
+  0.341176470588235294118,
+  0.462745098039215686275,
+  0.564705882352941176471,
+  0.647058823529411764706
+);
 
 float random(vec2 n)
 {
-	return fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 143758.5453);
+  return fract(sin(dot(n, vec2(12.9898, 78.233))) * 143758.5453);
+}
+
+float darkness(vec2 t)
+{
+  // Compute random offset based on counter and sprite column
+  float r = random(vec2(float(count) / 1000, t.x));
+  // This should be read as (pixely + r) % darksize; there is no
+  // remainder operation in glsl 1.2, so we emulate it with
+  // floating point
+  int idx = int(fract(t.y * tex_d.y / fdarksize + r) * fdarksize);
+  return darksteps[darktable[idx]];
 }
 
 void main()
@@ -17,15 +50,7 @@ void main()
   float y = floor(tex_d.y * gl_TexCoord[0].y) / tex_d.y;
   vec2 uv = vec2(x, y);
 
-  float ftime = float(time) / 1000;
-  float brightness = random(uv + ftime);
-
-  // Blend mode is 1 - src_alpha, so lighten pixels a bit since the lighter they are,
-  // the more translucent they'll become
-  brightness = min(1.0, brightness + 0.55);
-  brightness = mix(0.425, 0.875, brightness * brightness);
-
-  // [XA] new for 0.25: use brightness as an alpha value so the game can
+  // [XA] new for 0.25: use darkness as an alpha value so the game can
   // pass in a non-black gl_color for pain/gamma support in indexed lightmode
-  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, uv).g * (1 - brightness));
+  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, uv).g * darkness(uv));
 }
