@@ -82,6 +82,7 @@
 #include "dsda/font.h"
 #include "dsda/game_controller.h"
 #include "dsda/global.h"
+#include "dsda/messenger.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
 #include "dsda/input.h"
@@ -1430,11 +1431,9 @@ void M_EndGame(int choice)
 void M_ChangeMessages(void)
 {
   if (!dsda_ShowMessages())
-    players[consoleplayer].message = s_MSGOFF; // Ty 03/27/98 - externalized
+    dsda_AddUnblockableMessage(s_MSGOFF);
   else
-    players[consoleplayer].message = s_MSGON ; // Ty 03/27/98 - externalized
-
-  message_dontfuckwithme = true;
+    dsda_AddMessage(s_MSGON);
 }
 
 /////////////////////////////
@@ -4849,7 +4848,6 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         S_StartVoidSound(g_sfx_swtchn);
       }
     ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
-    HU_Start();    // catch any message changes // phares 4/19/98
     S_StartVoidSound(g_sfx_swtchx);
     return true;
   }
@@ -5205,12 +5203,11 @@ dboolean M_Responder (event_t* ev) {
     {
 //e6y
       dsda_CycleConfig(dsda_config_usegamma, true);
-      players[consoleplayer].message =
-        usegamma == 0 ? s_GAMMALVL0 :
-        usegamma == 1 ? s_GAMMALVL1 :
-        usegamma == 2 ? s_GAMMALVL2 :
-        usegamma == 3 ? s_GAMMALVL3 :
-        s_GAMMALVL4;
+      dsda_AddMessage(usegamma == 0 ? s_GAMMALVL0 :
+                      usegamma == 1 ? s_GAMMALVL1 :
+                      usegamma == 2 ? s_GAMMALVL2 :
+                      usegamma == 3 ? s_GAMMALVL3 :
+                      s_GAMMALVL4);
       return true;
     }
 

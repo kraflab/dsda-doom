@@ -195,9 +195,6 @@ typedef struct player_s
   int                 itemcount;
   int                 secretcount;
 
-  // Hint messages. // CPhipps - const
-  const char*         message;
-
   // For screen flashing (red or bright).
   int                 damagecount;
   int                 bonuscount;

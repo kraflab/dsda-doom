@@ -27,11 +27,11 @@ typedef struct {
 static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
-  char* HU_PlayerMessage(void);
+  char* dsda_PlayerMessage(void);
 
   char* message;
 
-  message = HU_PlayerMessage();
+  message = dsda_PlayerMessage();
 
   if (message)
     snprintf(

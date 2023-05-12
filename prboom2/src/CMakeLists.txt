@@ -159,6 +159,8 @@ set(COMMON_SRC
     dsda/mapinfo/u.h
     dsda/memory.c
     dsda/memory.h
+    dsda/messenger.c
+    dsda/messenger.h
     dsda/mobjinfo.c
     dsda/mobjinfo.h
     dsda/mouse.c

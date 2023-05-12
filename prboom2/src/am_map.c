@@ -59,6 +59,7 @@
 
 #include "dsda/input.h"
 #include "dsda/map_format.h"
+#include "dsda/messenger.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 
@@ -1034,16 +1035,14 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map_follow))
   {
     dsda_ToggleConfig(dsda_config_automap_follow, true);
-    // Ty 03/27/98 - externalized
-    plr->message = automap_follow ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF;
+    dsda_AddMessage(automap_follow ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF);
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_grid))
   {
     dsda_ToggleConfig(dsda_config_automap_grid, true);
-    // Ty 03/27/98 - *not* externalized
-    plr->message = automap_grid ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF;
+    dsda_AddMessage(automap_grid ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF);
 
     return true;
   }
@@ -1059,14 +1058,14 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map_clear))
   {
     AM_clearMarks();  // Ty 03/27/98 - *not* externalized
-    plr->message = s_AMSTR_MARKSCLEARED;
+    dsda_AddMessage(s_AMSTR_MARKSCLEARED);
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_rotate))
   {
     dsda_ToggleConfig(dsda_config_automap_rotate, true);
-    plr->message = automap_rotate ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF;
+    dsda_AddMessage(automap_rotate ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF);
 
     return true;
   }
@@ -1081,7 +1080,7 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map_textured))
   {
     dsda_ToggleConfig(dsda_config_map_textured, true);
-    plr->message = (map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
+    dsda_AddMessage(map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
 
     return true;
   }

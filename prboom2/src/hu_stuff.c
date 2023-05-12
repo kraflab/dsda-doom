@@ -59,17 +59,12 @@
 #include "dsda/exhud.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/messenger.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 
 static player_t*  plr;
-
-static dboolean    message_on;
-dboolean           message_dontfuckwithme;
-static dboolean    message_nottobefuckedwith;
-static int         message_counter;
-static int         yellow_message;
 
 typedef struct custom_message_s
 {
@@ -78,14 +73,6 @@ typedef struct custom_message_s
   int sfx;
   const char *msg;
 } custom_message_t;
-
-typedef struct message_thinker_s
-{
-  thinker_t thinker;
-  int plr;
-  int delay;
-  custom_message_t msg;
-} message_thinker_t;
 
 static custom_message_t custom_message[MAX_MAXPLAYERS];
 static custom_message_t *custom_message_p;
@@ -119,10 +106,6 @@ static void HU_FetchTitle(void)
 static void HU_InitMessages(void)
 {
   custom_message_p = &custom_message[displayplayer];
-  message_on = false;
-  message_dontfuckwithme = false;
-  message_nottobefuckedwith = false;
-  yellow_message = false;
 }
 
 static void HU_InitPlayer(void)
@@ -351,6 +334,7 @@ void HU_Start(void)
   HU_FetchTitle();
   HU_InitCrosshair();
 
+  dsda_InitMessenger();
   dsda_InitExHud();
 }
 
@@ -376,20 +360,7 @@ void HU_Drawer(void)
   V_EndUIDraw();
 }
 
-char* player_message;
 char* secret_message;
-
-static void HU_UpdateMessage(const char* message)
-{
-  if (player_message)
-    Z_Free(player_message);
-
-  player_message = Z_Strdup(message);
-}
-
-char* HU_PlayerMessage(void) {
-  return message_on ? player_message : NULL;
-}
 
 static void HU_UpdateSecretMessage(const char* message)
 {
@@ -414,40 +385,7 @@ void HU_Ticker(void)
 {
   int i;
 
-  // tick down message counter if message is up
-  if (message_counter && !--message_counter)
-  {
-    message_on = false;
-    message_nottobefuckedwith = false;
-    yellow_message = false;
-  }
-
-  // if messages on, or "Messages Off" is being displayed
-  // this allows the notification of turning messages off to be seen
-  if (dsda_ShowMessages() || message_dontfuckwithme)
-  {
-    // display message if necessary
-    if ((plr->message && !message_nottobefuckedwith)
-        || (plr->message && message_dontfuckwithme))
-    {
-      // update the active message
-      HU_UpdateMessage(plr->message);
-
-      // clear the message to avoid posting multiple times
-      plr->message = 0;
-      // note a message is displayed
-      message_on = true;
-      // start the message persistence counter
-      message_counter = HU_MSGTIMEOUT;
-      // transfer "Messages Off" exception to the "being displayed" variable
-      message_nottobefuckedwith = message_dontfuckwithme;
-      // clear the flag that "Messages Off" is being posted
-      message_dontfuckwithme = 0;
-
-      yellow_message = plr->yellowMessage;
-      // hexen_note: use FONTAY_S for yellow messages (new font, y_message, etc)
-    }
-  }
+  dsda_UpdateMessenger();
 
   // centered messages
   for (i = 0; i < g_maxplayers; i++)
@@ -482,8 +420,7 @@ dboolean HU_Responder(event_t *ev)
 {
   if (dsda_InputActivated(dsda_input_repeat_message)) // phares
   {
-    message_on = true;
-    message_counter = HU_MSGTIMEOUT;
+    dsda_ReplayMessage();
 
     return true;
   }
@@ -491,18 +428,7 @@ dboolean HU_Responder(event_t *ev)
   return false;
 }
 
-void T_ShowMessage (message_thinker_t* message)
-{
-  if (--message->delay > 0)
-    return;
-
-  SetCustomMessage(message->plr, message->msg.msg, 0,
-    message->msg.ticks, message->msg.cm, message->msg.sfx);
-
-  P_RemoveThinker(&message->thinker); // unlink and free
-}
-
-int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx)
+int SetCustomMessage(int plr, const char *msg, int ticks, int cm, int sfx)
 {
   custom_message_t item;
 
@@ -517,27 +443,7 @@ int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int
   item.cm = cm;
   item.sfx = sfx;
 
-  if (delay <= 0)
-  {
-    custom_message[plr] = item;
-  }
-  else
-  {
-    message_thinker_t *message = Z_CallocLevel(1, sizeof(*message));
-    message->thinker.function = T_ShowMessage;
-    message->delay = delay;
-    message->plr = plr;
-
-    message->msg = item;
-
-    P_AddThinker(&message->thinker);
-  }
+  custom_message[plr] = item;
 
   return true;
-}
-
-void ClearMessage(void)
-{
-  message_counter = 0;
-  yellow_message = false;
 }

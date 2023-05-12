@@ -70,6 +70,7 @@
 #include "dsda/id_list.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
+#include "dsda/messenger.h"
 #include "dsda/thing_id.h"
 #include "dsda/utility.h"
 
@@ -942,7 +943,7 @@ dboolean P_CanUnlockGenDoor
         !player->cards[it_yellowskull]
       )
       {
-        player->message = s_PD_ANY; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(s_PD_ANY, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -954,7 +955,7 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_redskull])
       )
       {
-        player->message = skulliscard? s_PD_REDK : s_PD_REDC; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(skulliscard ? s_PD_REDK : s_PD_REDC, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -966,7 +967,7 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_blueskull])
       )
       {
-        player->message = skulliscard? s_PD_BLUEK : s_PD_BLUEC; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(skulliscard ? s_PD_BLUEK : s_PD_BLUEC, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -978,7 +979,7 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_yellowskull])
       )
       {
-        player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWC; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(skulliscard ? s_PD_YELLOWK : s_PD_YELLOWC, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -990,7 +991,7 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_redcard])
       )
       {
-        player->message = skulliscard? s_PD_REDK : s_PD_REDS; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(skulliscard ? s_PD_REDK : s_PD_REDS, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -1002,7 +1003,7 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_bluecard])
       )
       {
-        player->message = skulliscard? s_PD_BLUEK : s_PD_BLUES; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(skulliscard ? s_PD_BLUEK : s_PD_BLUES, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -1014,7 +1015,7 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_yellowcard])
       )
       {
-        player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWS; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(skulliscard ? s_PD_YELLOWK : s_PD_YELLOWS, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -1033,7 +1034,7 @@ dboolean P_CanUnlockGenDoor
         )
       )
       {
-        player->message = s_PD_ALL6; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(s_PD_ALL6, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -1057,7 +1058,7 @@ dboolean P_CanUnlockGenDoor
         )
       )
       {
-        player->message = s_PD_ALL3; // Ty 03/27/98 - externalized
+        dsda_AddPlayerMessage(s_PD_ALL3, player);
         S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
@@ -1203,7 +1204,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
 
   if (message)
   {
-    player->message = message;
+    dsda_AddPlayerMessage(message, player);
   }
 
   if (sfx != sfx_None)
@@ -1445,7 +1446,7 @@ void P_PlayerCollectSecret(player_t *player)
   {
     int sfx_id = raven ? g_sfx_secret :
                  I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
-    SetCustomMessage(player - players, "A secret is revealed!", 0, 2 * TICRATE, CR_GOLD, sfx_id);
+    SetCustomMessage(player - players, "A secret is revealed!", 2 * TICRATE, CR_GOLD, sfx_id);
   }
 }
 
