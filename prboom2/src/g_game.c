@@ -1111,6 +1111,8 @@ static void G_DoLoadLevel (void)
   // [RH] Set up details about sky rendering
   R_InitSkyMap ();
 
+  dsda_InitMessenger();
+
   levelstarttic = gametic;        // for time calculation
 
   if (!demo_compatibility && !mbf_features)   // killough 9/29/98
