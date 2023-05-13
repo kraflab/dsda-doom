@@ -57,6 +57,8 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - exit the current level via the secret exit (go to intermission screen)
 - `game.quit`
   - quit the game immediately (no prompt)
+- `game.describe`
+  - show the level, skill, and monster params
 - `exit`
 - `quit`
 

@@ -49,6 +49,7 @@
 #include "dsda/font.h"
 #include "dsda/global.h"
 #include "dsda/map_format.h"
+#include "dsda/messenger.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
@@ -601,6 +602,26 @@ static dboolean console_DemoJoin(const char* command, const char* args) {
 
 static dboolean console_GameQuit(const char* command, const char* args) {
   I_SafeExit(0);
+
+  return true;
+}
+
+static dboolean console_GameDescribe(const char* command, const char* args) {
+  extern dsda_string_t hud_title;
+
+  dsda_string_t str;
+
+  dsda_StringPrintF(&str, "%s\n"
+                          "Skill %d\n"
+                          "%s%s%s",
+                          hud_title.string, gameskill + 1,
+                          nomonsters ? "-nomo " : "",
+                          respawnparm ? "-respawn " : "",
+                          fastparm ? "-fast" : "");
+
+  dsda_AddAlert(str.string);
+
+  dsda_FreeString(&str);
 
   return true;
 }
@@ -2346,6 +2367,7 @@ static console_command_entry_t console_commands[] = {
   { "demo.join", console_DemoJoin, CF_ALWAYS },
 
   { "game.quit", console_GameQuit, CF_ALWAYS },
+  { "game.describe", console_GameDescribe, CF_ALWAYS },
 
   // cheats
   { "idchoppers", console_BasicCheat, CF_DEMO },
