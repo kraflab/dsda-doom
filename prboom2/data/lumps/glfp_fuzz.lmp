@@ -1,11 +1,15 @@
 #version 120
 
 uniform sampler2D tex;
-uniform vec2 tex_d; // Texture dimensions
-uniform int count;
+// Texture dimensions
+uniform vec2 tex_d;
+// Fuzz macro-pixel ratio in terms of window coordinates
+// If 0, use texture coordinates instead
+uniform float ratio;
+// Random seed
+uniform float seed;
 
 const int darksize = 50;
-const float fdarksize = float(darksize);
 // Table of darkness steps for each pixel in a column, based on
 // offset table in software renderer
 const int darktable[darksize] = int[](
@@ -32,25 +36,30 @@ float random(vec2 n)
   return fract(sin(dot(n, vec2(12.9898, 78.233))) * 143758.5453);
 }
 
-float darkness(vec2 t)
+float darkness(vec2 c)
 {
-  // Compute random offset based on counter and sprite column
-  float r = random(vec2(float(count) / 1000, t.x));
-  // This should be read as (pixely + r) % darksize; there is no
-  // remainder operation in glsl 1.2, so we emulate it with
-  // floating point
-  int idx = int(fract(t.y * tex_d.y / fdarksize + r) * fdarksize);
+  // Compute random offset based on sprite index, game tic, and sprite column
+  float r = random(vec2(seed, c.x));
+  // This should be read as (c.y + r) % darksize; there is no remainder
+  // operation in glsl 1.2, so we emulate it with floating point.
+  int idx = int(fract(c.y / darksize + r) * darksize);
   return darksteps[darktable[idx]];
 }
 
 void main()
 {
-  // Ensure texture coord is identical for each texel in the screenspace pixel
-  float x = floor(tex_d.x * gl_TexCoord[0].x) / tex_d.x;
-  float y = floor(tex_d.y * gl_TexCoord[0].y) / tex_d.y;
-  vec2 uv = vec2(x, y);
+  // Ensure fuzz coordinate is identical for each fragment in fuzz macro-pixel
+  vec2 c;
+
+  // Use window coordinates if ratio is non-zero
+  if (ratio != 0)
+    // Invert y coordinate since GL convention is opposite Doom's
+    c = floor(vec2(gl_FragCoord.x / ratio, -gl_FragCoord.y / ratio));
+  else
+    // Use texture coordinates
+    c = floor(gl_TexCoord[0].xy * tex_d);
 
   // [XA] new for 0.25: use darkness as an alpha value so the game can
   // pass in a non-black gl_color for pain/gamma support in indexed lightmode
-  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, uv).g * darkness(uv));
+  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, gl_TexCoord[0].xy).g * darkness(c));
 }

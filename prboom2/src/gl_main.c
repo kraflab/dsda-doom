@@ -750,13 +750,12 @@ void gld_DrawLine(int x0, int y0, int x1, int y1, int BaseColor)
 }
 
 
-void gld_StartFuzz(float width, float height)
+void gld_StartFuzz(int sprite, int width, int height, float ratio)
 {
   color_rgb_t color;
 
   // shader init
-  glsl_SetFuzzShaderActive();
-  glsl_SetFuzzTextureDimensions(width, height);
+  glsl_SetFuzzShaderActive(gametic, sprite, width, height, ratio);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // for indexed lightmode, the fuzz color needs to take
@@ -804,7 +803,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   // when invisibility is about to go
   if (/*(viewplayer->mo->flags & MF_SHADOW) && */!vis->colormap)
   {
-    gld_StartFuzz((float)gltexture->realtexwidth, (float)gltexture->realtexheight);
+    gld_StartFuzz(-1, gltexture->realtexwidth, gltexture->realtexheight, 0);
   }
   else
   {
@@ -2037,10 +2036,12 @@ static void gld_DrawSprite(GLSprite *sprite)
   {
     if(sprite->flags & g_mf_shadow)
     {
+      // Fuzz has less aliasing if ratio is an integer
+      float ratio = floor((SCREENWIDTH > SCREENHEIGHT ? SCREENHEIGHT : SCREENWIDTH) / 200.0);
       glGetIntegerv(GL_BLEND_SRC, &blend_src);
       glGetIntegerv(GL_BLEND_DST, &blend_dst);
       restore = 1;
-      gld_StartFuzz((float)sprite->gltexture->width, (float)sprite->gltexture->height);
+      gld_StartFuzz(sprite->id, sprite->gltexture->width, sprite->gltexture->height, ratio);
     }
     else
     {
@@ -2197,6 +2198,8 @@ static void gld_DrawHealthBars(void)
 
 void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 {
+  // Stupid C trick to get alignment without C11 alignof
+  static const size_t align = offsetof(struct { char a; mobj_t m; }, m);
   fixed_t   tx;
   spritedef_t   *sprdef;
   spriteframe_t *sprframe;
@@ -2410,6 +2413,8 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
     scene_has_overlapped_sprites = true;
 
   sprite.index = gl_spriteindex++;
+  // ID for rendering uniqueness purposes, collisions are OK
+  sprite.id = (int) ((uintptr_t) thing / align);
   sprite.xy = thing->x + (thing->y >> 16);
   sprite.fx = thing->x;
   sprite.fy = thing->y;
