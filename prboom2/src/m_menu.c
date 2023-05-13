@@ -3023,6 +3023,7 @@ setup_menu_t misc_settings[] = {
   { "Default skill level", S_CHOICE, m_conf, G_X, dsda_config_default_skill, 0, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_conf, G_X, dsda_config_default_complevel, 0, &gen_compstrings[1] },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, dsda_config_cheat_codes },
+  { "Announce Map On Entry", S_YESNO, m_conf, G_X, dsda_config_announce_map },
   EMPTY_LINE,
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X},
   { "Rewind Interval (s)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_interval },

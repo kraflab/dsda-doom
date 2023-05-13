@@ -316,6 +316,23 @@ void HU_DrawCrosshair(void)
   }
 }
 
+void HU_AnnounceMap(void)
+{
+  if (dsda_IntConfig(dsda_config_announce_map))
+  {
+    static int last_gamemap;
+    static int last_gameepisode;
+
+    if (gamemap != last_gamemap || gameepisode != last_gameepisode)
+    {
+      last_gamemap = gamemap;
+      last_gameepisode = gameepisode;
+
+      dsda_AddAlert(hud_title.string);
+    }
+  }
+}
+
 //
 // HU_Start(void)
 //
@@ -335,6 +352,8 @@ void HU_Start(void)
   HU_InitCrosshair();
 
   dsda_InitExHud();
+
+  HU_AnnounceMap();
 }
 
 //
