@@ -1072,6 +1072,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
   player_t *player;
   const char *message = NULL;
   int sfx = sfx_None;
+  dboolean successful = true;
 
   if (!mo || !mo->player)
     return false;
@@ -1087,7 +1088,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_REDC : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_blue_card:
@@ -1095,7 +1096,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_BLUEC : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_yellow_card:
@@ -1103,7 +1104,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_YELLOWC : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_red_skull:
@@ -1111,7 +1112,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_REDS : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_blue_skull:
@@ -1119,7 +1120,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_BLUES : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_yellow_skull:
@@ -1127,7 +1128,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_YELLOWS : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_any:
@@ -1142,7 +1143,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_ANY : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_all:
@@ -1157,7 +1158,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_ALL6 : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_red:
@@ -1166,7 +1167,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_REDK : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_blue:
@@ -1175,7 +1176,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_BLUEK : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_yellow:
@@ -1184,7 +1185,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_YELLOWK : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
       break;
     case zk_each_color:
@@ -1196,7 +1197,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
       {
         message = legacy ? s_PD_ALL3 : NULL;
         sfx = legacy ? sfx_oof : sfx_None;
-        return false;
+        successful = false;
       }
     default:
       break;
@@ -1212,7 +1213,7 @@ dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
     S_StartMobjSound(mo, sfx);
   }
 
-  return true;
+  return successful;
 }
 
 
@@ -5680,9 +5681,30 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t 
     return false;
   }
 
-  if (line->locknumber && !P_CheckKeys(mo, line->locknumber, false))
+  if (line->locknumber)
   {
-    return false;
+    dboolean legacy;
+
+    switch (line->special)
+    {
+      case zl_door_close:
+      case zl_door_open:
+      case zl_door_raise:
+      case zl_door_locked_raise:
+      case zl_door_close_wait_open:
+      case zl_door_wait_raise:
+      case zl_door_wait_close:
+      case zl_generic_door:
+        legacy = true;
+        break;
+      default:
+        legacy = false;
+    }
+
+    if (!P_CheckKeys(mo, line->locknumber, legacy))
+    {
+      return false;
+    }
   }
 
   repeat = (line->flags & ML_REPEATSPECIAL) != 0;
