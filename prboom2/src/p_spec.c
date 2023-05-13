@@ -4074,29 +4074,29 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_texture_left:
       j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, l->special_args[0] / 64, 0, -1, j, accel);
+      Add_Scroller(sc_side, FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_right:
       j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, -l->special_args[0] / 64, 0, -1, j, accel);
+      Add_Scroller(sc_side, -FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel);
       break;
     case zl_scroll_texture_up:
       j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, 0, l->special_args[0] / 64, -1, j, accel);
+      Add_Scroller(sc_side, 0, FRACUNIT * l->special_args[0] / 64, -1, j, accel);
       break;
     case zl_scroll_texture_down:
       j = lines[i].sidenum[0];
       // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, 0, -l->special_args[0] / 64, -1, j, accel);
+      Add_Scroller(sc_side, 0, -FRACUNIT * l->special_args[0] / 64, -1, j, accel);
       break;
     case zl_scroll_texture_both:
       j = lines[i].sidenum[0];
 
       if (l->special_args[0] == 0) {
-        dx = (l->special_args[1] - l->special_args[2]) / 64;
-        dy = (l->special_args[4] - l->special_args[3]) / 64;
+        dx = FRACUNIT * (l->special_args[1] - l->special_args[2]) / 64;
+        dy = FRACUNIT * (l->special_args[4] - l->special_args[3]) / 64;
         Add_Scroller(sc_side, dx, dy, -1, j, accel);
       }
 
