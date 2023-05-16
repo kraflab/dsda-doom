@@ -118,6 +118,26 @@ const byte *R_GetTextureColumn(const rpatch_t *texpatch, int col) {
 //  with the textures from the world map.
 //
 
+static dboolean R_IsPNGLump(int lump_num)
+{
+  return W_LumpLength(lump_num) >= 8 &&
+         !memcmp(W_LumpByNum(lump_num), "\211PNG\r\n\032\n", 8);
+}
+
+static int R_FilterValidPatch(int lump_num, const char *name)
+{
+  if (lump_num != LUMP_NOT_FOUND)
+  {
+    if (R_IsPNGLump(lump_num))
+    {
+      lprintf(LO_WARN, "Warning: patch %s is in an unsupported format (PNG)\n", name);
+      lump_num = W_CheckNumForName2("TNT1A0", ns_sprites);
+    }
+  }
+
+  return lump_num;
+}
+
 static void R_InitTextures (void)
 {
   const maptexture_t *mtexture;
@@ -163,6 +183,8 @@ static void R_InitTextures (void)
 
           patchlookup[i] = W_CheckNumForName2(name, ns_sprites);
         }
+
+      patchlookup[i] = R_FilterValidPatch(patchlookup[i], name);
     }
 
   // Load the map texture definitions from textures.lmp.
