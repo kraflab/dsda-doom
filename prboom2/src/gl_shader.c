@@ -62,8 +62,12 @@ typedef struct shdr_indexed_unif_s
 // Fuzz shader uniform bindings
 typedef struct shdr_fuzz_unif_s
 {
-  int tex_d_index;             // vec2
-  int count_index;             // int
+  // (vec2) sprite texture dimensions
+  int tex_d_index;
+  // (float) ratio of screen resolution to fuzz resolution
+  int ratio_index;
+  // (float) random seed
+  int seed_index;
 } shdr_fuzz_unif_t;
 
 static GLShader *sh_indexed = NULL;
@@ -96,7 +100,8 @@ static void get_fuzz_shader_bindings()
   int idx;
 
   fuzz_unifs.tex_d_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex_d");
-  fuzz_unifs.count_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "count");
+  fuzz_unifs.ratio_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "ratio");
+  fuzz_unifs.seed_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "seed");
 
   GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
 
@@ -255,15 +260,28 @@ void glsl_SetMainShaderActive()
   glsl_SetActiveShader(sh_indexed);
 }
 
-void glsl_SetFuzzShaderActive()
+void glsl_SetFuzzShaderActive(int tic, int sprite, int width, int height, float ratio)
 {
-  static int count = 0;
+  // Large integers converted to float can lose precision, causing
+  // problems in the shader.  Since the tic and sprite count are just
+  // used for randomness, munge them down and convert to float with
+  // double precision here
+  const int factor = 1103515245;
+  int seed = 0xD00D;
+
+  seed = seed * factor + tic;
+  seed = seed * factor + sprite;
+  seed *= factor;
+
   if (active_shader != sh_fuzz)
   {
     GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
     active_shader = sh_fuzz;
-    GLEXT_glUniform1iARB(fuzz_unifs.count_index, count++);
   }
+
+  GLEXT_glUniform2fARB(fuzz_unifs.tex_d_index, width, height);
+  GLEXT_glUniform1fARB(fuzz_unifs.ratio_index, ratio);
+  GLEXT_glUniform1fARB(fuzz_unifs.seed_index, (double) seed / INT_MAX);
 }
 
 void glsl_SetFuzzShaderInactive()
@@ -278,28 +296,4 @@ void glsl_SetFuzzShaderInactive()
 void glsl_SetLightLevel(float lightlevel)
 {
   GLEXT_glUniform1fARB(indexed_unifs.lightlevel_index, lightlevel);
-}
-
-void glsl_SetFuzzTextureDimensions(float texwidth, float texheight)
-{
-  GLShader* prev_active_shader;
-  prev_active_shader = NULL;
-
-  if (active_shader != sh_fuzz)
-  {
-    prev_active_shader = active_shader;
-    glsl_SetFuzzShaderActive();
-  }
-  else
-  {
-    prev_active_shader = sh_fuzz;
-  }
-
-  GLEXT_glUniform2fARB(fuzz_unifs.tex_d_index, texwidth, texheight);
-
-  if (prev_active_shader != sh_fuzz)
-  {
-    glsl_SetFuzzShaderInactive();
-    glsl_SetActiveShader(prev_active_shader);
-  }
 }

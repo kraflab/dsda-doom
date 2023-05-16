@@ -256,6 +256,7 @@ typedef struct
   GLTexture *gltexture;
   uint64_t flags;
   int index;
+  int id;
   int xy;
   fixed_t fx,fy;
 } GLSprite;
@@ -514,9 +515,8 @@ void glsl_SetActiveShader(GLShader *shader);
 void glsl_SuspendActiveShader(void);
 void glsl_ResumeActiveShader(void);
 void glsl_SetMainShaderActive();
-void glsl_SetFuzzShaderActive();
+void glsl_SetFuzzShaderActive(int tic, int sprite, int width, int height, float ratio);
 void glsl_SetFuzzShaderInactive();
 void glsl_SetLightLevel(float lightlevel);
-void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
 
 #endif // _GL_INTERN_H
