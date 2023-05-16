@@ -577,10 +577,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_fog", dsda_config_gl_fog,
     CONF_BOOL(1), &gl_fog, NOT_STRICT, M_ChangeAllowFog
   },
-  [dsda_config_gl_blend_animations] = {
-    "gl_blend_animations", dsda_config_gl_blend_animations,
-    CONF_BOOL(0), &gl_blend_animations
-  },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,

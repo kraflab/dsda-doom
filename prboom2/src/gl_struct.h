@@ -109,9 +109,6 @@ void gld_DrawScene(player_t *player);
 void gld_EndDrawScene(void);
 void gld_Finish();
 
-//blend animation from zdoomgl
-extern int gl_blend_animations;
-
 // wipe
 int gld_wipe_doMelt(int ticks, int *y_lookup);
 int gld_wipe_exitMelt(int ticks);
