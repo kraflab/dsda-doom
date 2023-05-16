@@ -32,6 +32,8 @@
 #ifndef R_PATCH_H
 #define R_PATCH_H
 
+#include "doomtype.h"
+
 // Used to specify the sloping of the top and bottom of a column post
 typedef enum {
   RDRAW_EDGESLOPE_TOP_UP   = (1<<0),
@@ -102,6 +104,7 @@ const rcolumn_t *R_GetPatchColumnClamped(const rpatch_t *patch, int columnIndex)
 // and R_GetPatchColumnClamped otherwise
 const rcolumn_t *R_GetPatchColumn(const rpatch_t *patch, int columnIndex);
 
+dboolean CheckIfPatch(int lump);
 
 void R_InitPatches();
 void R_UpdatePlayPal();

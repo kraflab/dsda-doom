@@ -324,11 +324,12 @@ static void FillEmptySpace(rpatch_t *patch)
 //
 //==========================================================================
 
-static dboolean CheckIfPatch(int lump)
+dboolean CheckIfPatch(int lump)
 {
   int size;
   int width, height;
   const patch_t * patch;
+  const unsigned char *magic;
   dboolean result;
 
   size = W_LumpLength(lump);
@@ -338,6 +339,11 @@ static dboolean CheckIfPatch(int lump)
     return false;
 
   patch = (const patch_t *)W_LumpByNum(lump);
+
+  // [FG] detect patches in PNG format early
+  magic = (const unsigned char *) patch;
+  if (magic[0] == 0x89 && magic[1] == 'P' && magic[2] == 'N' && magic[3] == 'G')
+    return false;
 
   width = LittleShort(patch->width);
   height = LittleShort(patch->height);
@@ -629,19 +635,6 @@ static void createTextureCompositePatch(int id) {
     texpatch = &texture->patches[i];
     patchNum = texpatch->patch;
     oldPatch = (const patch_t*)W_LumpByNum(patchNum);
-
-    // [FG] detect patches in PNG format, substitute dummy patch
-    {
-      const unsigned char *magic = (const unsigned char *) oldPatch;
-
-      if (magic[0] == 0x89 &&
-          magic[1] == 'P' && magic[2] == 'N' && magic[3] == 'G')
-      {
-        fprintf(stderr, "createTextureCompositePatch: patch '%.8s' in PNG format detected\n", W_LumpName(patchNum));
-        texpatch->patch = W_CheckNumForName2("TNT1A0", ns_sprites);
-        oldPatch = (const patch_t*)W_LumpByNum(texpatch->patch);
-      }
-    }
 
     for (x=0; x<LittleShort(oldPatch->width); x++) {
       int tx = texpatch->originx + x;

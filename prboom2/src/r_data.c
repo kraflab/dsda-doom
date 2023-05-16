@@ -112,6 +112,29 @@ const byte *R_GetTextureColumn(const rpatch_t *texpatch, int col) {
   return texpatch->columns[col].pixels;
 }
 
+// [FG] detect invalid patches, substitute dummy patch
+
+static void R_SubstInvalidPatches (int texnum)
+{
+  texture_t *texture = textures[texnum];
+  texpatch_t *patch = texture->patches;
+  int i = texture->patchcount;
+
+  while (--i >= 0)
+  {
+    int pat = patch[i].patch;
+
+    if (!CheckIfPatch(pat))
+    {
+      fprintf(stderr, "R_SubstInvalidPatches: Texture '%.8s'"
+              " patch num %d ('%.8s') is not valid\n",
+              texture->name, i, W_LumpName(pat));
+
+      patch[i].patch = W_CheckNumForName2("TNT1A0", ns_sprites);
+    }
+  }
+}
+
 //
 // R_InitTextures
 // Initializes the texture list
@@ -291,6 +314,9 @@ static void R_InitTextures (void)
 
   if (errors)
     I_Error("R_InitTextures: %d errors", errors);
+
+  for (i = 0; i < numtextures; i++)
+    R_SubstInvalidPatches(i);
 
   // Create translation table for global animation.
   // killough 4/9/98: make column offsets 32-bit;
