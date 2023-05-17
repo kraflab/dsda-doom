@@ -88,7 +88,6 @@ extern float skyUpAngle;
 extern float skyUpShift;
 extern float skyXShift;
 extern float skyYShift;
-extern dboolean mlook_or_fov;
 
 void ParamsMatchingCheck();
 void e6y_HandleSkip(void);

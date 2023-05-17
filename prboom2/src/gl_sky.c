@@ -98,8 +98,6 @@ void gld_InitFrameSky(void)
 {
   SkyBox.type = SKY_NONE;
   SkyBox.wall.gltexture = NULL;
-  SkyBox.x_scale = 0;
-  SkyBox.y_scale = 0;
   SkyBox.x_offset = 0;
   SkyBox.y_offset = 0;
 }
@@ -135,33 +133,13 @@ void gld_DrawFakeSkyStrips(void)
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }
 
-void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y)
-{
-  float sx, sy;
-
-  sx = (wall->flag == GLDWF_SKYFLIP ? -128.0f : 128.0f);
-
-  if (raven || !mlook_or_fov)
-  {
-    sx = sx / (float)wall->gltexture->buffer_width;
-    sy = 200.0f / (wall->gltexture->buffer_height * 1.25f);
-  }
-  else
-  {
-    sx = sx * skyscale / (float)wall->gltexture->buffer_width;
-    sy = 127.0f * skyscale / (wall->gltexture->buffer_height * 1.25f);
-  }
-
-  *scale_x = sx;
-  *scale_y = sy;
-}
-
 // Sky textures with a zero index should be forced
 // See third episode of requiem.wad
 void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
 {
   side_t *s = NULL;
   line_t *l = NULL;
+
   wall->gltexture = NULL;
 
   if ((sky1) & PL_SKYFLAT)
@@ -183,17 +161,12 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
       texturetranslation[s->toptexture] == skytexture || l->special == 271 || l->special == 272);
     if (wall->gltexture)
     {
-      if (raven || !mlook_or_fov)
-      {
-        wall->skyyaw  = -2.0f*((-(float)((viewangle+s->textureoffset)>>ANGLETOFINESHIFT)*360.0f/FINEANGLES)/90.0f);
-        wall->skyymid = 200.0f/319.5f*(((float)s->rowoffset/(float)FRACUNIT - 28.0f)/100.0f);
-      }
-      else
-      {
-        wall->skyyaw  = -2.0f*(((270.0f-(float)((viewangle+s->textureoffset)>>ANGLETOFINESHIFT)*360.0f/FINEANGLES)+90.0f)/90.0f/skyscale);
-        wall->skyymid = skyYShift+(((float)s->rowoffset/(float)FRACUNIT + 28.0f)/wall->gltexture->buffer_height)/skyscale;
-      }
-      wall->flag = (l->special == 272 ? GLDWF_SKY : GLDWF_SKYFLIP);
+      // As far as I can tell, textureoffset just adds directly to viewangle and is
+      // therefore affected by tiling, but rowoffset is not.
+      wall->skyyaw = (double) (viewangle + s->textureoffset) / (double) ANGLE_MAX;
+      wall->skypitch = skyYShift;
+      wall->skyoffset = (((float)s->rowoffset/(float)FRACUNIT - 28.0f)/wall->gltexture->buffer_height);
+      wall->flag = l->special == 282 ? GLDWF_SKY : GLDWF_SKYFLIP;
     }
   }
   else
@@ -201,8 +174,17 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
     wall->gltexture = gld_RegisterSkyTexture(skytexture, true);
     if (wall->gltexture)
     {
-      wall->skyyaw  = skyXShift;
-      wall->skyymid = skyYShift;
+      int h = wall->gltexture->buffer_height;
+
+      wall->skyyaw = skyXShift;
+      wall->skypitch = skyYShift;
+      // Choose offset based on logic from r_sky.c
+      if (h >= 128 && h < 200)
+        wall->skyoffset = -28.0f / 128.0f;
+      else if (h > 200)
+        wall->skyoffset = (200 - h) / 128.0f;
+      else
+        wall->skyoffset = 0.0f;
       wall->flag = GLDWF_SKY;
     }
   }
@@ -221,10 +203,6 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
 
       switch (gl_drawskys)
       {
-      case skytype_standard:
-        gld_GetScreenSkyScale(wall, &SkyBox.x_scale, &SkyBox.y_scale);
-        break;
-
       case skytype_skydome:
         if (s)
         {
@@ -241,10 +219,56 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
   }
 }
 
+// The fussy arithmetic to correctly scale and translate the sky texture lives here.
+void gld_SkyTransform(GLWall* wall)
+{
+  // Make apparent scale of sky closer to software
+  const float scale_correction = 0.80f;
+  // 360 horizontal degrees of sky in texels (4 tilings of default sky)
+  float sky_width = 256 * 4;
+  // 360 vertical degrees of sky in texels (determined emperically with Heretic
+  // software mode)
+  float sky_height = 880;
+  // Texture dimensions
+  float w = wall->gltexture->buffer_width;
+  float h = wall->gltexture->buffer_height;
+  // Tile factors
+  float tilex = sky_width / w;
+  float tiley = sky_height / h;
+  // Adjustment for tall screens
+  float ratio = tallscreen ? (float)ratio_multiplier / ratio_scale : 1.0f;
+  // X flip coefficient
+  float flipx = wall->flag == GLDWF_SKYFLIP ? -1.0 : 1.0;
+  // Scale factors
+  float scalex = scale_correction / skyscale * flipx;
+  float scaley = scale_correction * ratio * (skystretch ? 2.0 : 1.0f) / skyscale;
+  // Translations
+  float transx = wall->skyyaw * tilex * flipx;
+  float transy = wall->skypitch * tiley;
+
+  // Apply scaling centered at horizon and view yaw
+  glTranslatef(transx, wall->skyoffset, 0.0f);
+  glScalef(1.0f / scalex, 1.0f / scaley, 1.0);
+  //glTranslatef(-transx, -wall->skyoffset, 0.0f);
+
+  // Apply offset
+  //glTranslatef(0, wall->skyoffset, 0.0f);
+
+  // Apply view yaw and pitch
+  //glTranslatef(transx, transy, 0.0f);
+
+  // The above translations (which are part of logically distinct operations)
+  // are commented out and combined here for efficiency
+  glTranslatef(0.0, transy, 0.0f);
+
+  // Scale texture coordinates generated by glTexGen so the range [0, 1]
+  // corresponds to the full range of the texture as usual
+  glScalef(MAP_COEFF / w, MAP_COEFF / h, 1.0f);
+}
+
 void gld_DrawStripsSky(void)
 {
   int i;
-  float skyymid_multiplier;
   GLTexture *gltexture = NULL;
 
   if (gl_drawskys == skytype_standard)
@@ -260,12 +284,6 @@ void gld_DrawStripsSky(void)
 
   glMatrixMode(GL_TEXTURE);
 
-  skyymid_multiplier = 1.0f;
-  if (tallscreen)
-  {
-    skyymid_multiplier = (float)ratio_multiplier / ratio_scale;
-  }
-
   for (i = gld_drawinfo.num_items[GLDIT_SWALL] - 1; i >= 0; i--)
   {
     GLWall *wall = gld_drawinfo.items[GLDIT_SWALL][i].item.wall;
@@ -280,13 +298,9 @@ void gld_DrawStripsSky(void)
 
     if (gltexture)
     {
-      float sx, sy;
-
       glPushMatrix();
 
-      gld_GetScreenSkyScale(wall, &sx, &sy);
-      glScalef(sx, sy * skyymid_multiplier, 1.0f);
-      glTranslatef(wall->skyyaw, wall->skyymid / skyymid_multiplier, 0.0f);
+      gld_SkyTransform(wall);
     }
 
     glBegin(GL_TRIANGLE_STRIP);
@@ -327,8 +341,7 @@ void gld_DrawSkyCaps(void)
       glMatrixMode(GL_TEXTURE);
       glPushMatrix();
 
-      glScalef(SkyBox.x_scale, SkyBox.y_scale, 1.0f);
-      glTranslatef(SkyBox.wall.skyyaw, SkyBox.wall.skyymid, 0.0f);
+      gld_SkyTransform(&SkyBox.wall);
 
       if (SkyBox.type & SKY_CEILING)
       {
