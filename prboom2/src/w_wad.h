@@ -95,6 +95,7 @@ extern size_t numwadfiles; // CPhipps - size of the wadfiles array
 void W_Init(void); // CPhipps - uses the above array
 void W_InitCache(void);
 void W_DoneCache(void);
+void W_Shutdown(void);
 
 typedef enum
 {

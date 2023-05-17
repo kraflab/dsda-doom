@@ -617,3 +617,17 @@ int W_LumpNameExists2(const char *name, int ns)
 {
   return W_CheckNumForName2(name, ns) != LUMP_NOT_FOUND;
 }
+
+void W_Shutdown(void)
+{
+  int i;
+
+  for (i = 0; i < numwadfiles; ++i)
+  {
+    if (wadfiles[i].handle > 0)
+    {
+      close(wadfiles[i].handle);
+      wadfiles[i].handle = -1;
+    }
+  }
+}
