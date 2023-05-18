@@ -28,8 +28,7 @@
 
 #include "text_file.h"
 
-extern int gameepisode, gameskill, totalleveltimes, compatibility_level,
-           dsda_last_leveltime, dsda_last_gamemap, dsda_startmap;
+extern int dsda_last_leveltime, dsda_last_gamemap, dsda_startmap;
 
 static char* dsda_TextFileName(void) {
   int name_length;
