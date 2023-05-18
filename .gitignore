@@ -1,4 +1,9 @@
 /prboom2/ICONS/icons.aps
+/prboom2/ImportExecutables.cmake
+/prboom2/config.h
+/prboom2/dsda-doom
+/prboom2/dsda-doom.wad
+/prboom2/data/rdatawad
 /prboom2/release
 /build*
 /release*
@@ -10,7 +15,13 @@ levelstat.txt
 !/spec/support/wads/analysis_test.wad
 
 # macOS
-.DS_Store
+.DS_Store/
+
+# just cmake thing
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
 
 # vcpkg
 vcpkg_installed
