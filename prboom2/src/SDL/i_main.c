@@ -207,6 +207,10 @@ static void I_EssentialQuit (void)
   dsda_WriteAnalysis();
   dsda_WriteSplits();
   dsda_SaveWadStats();
+  // We need to close out all wad handles/memory mappings before we can remove
+  // temporary wads on Windows
+  W_Shutdown();
+  W_DoneCache();
   dsda_CleanZipTempDirs();
 }
 
