@@ -622,6 +622,8 @@ void W_Shutdown(void)
 {
   int i;
 
+  W_DoneCache();
+
   for (i = 0; i < numwadfiles; ++i)
   {
     if (wadfiles[i].handle > 0)

@@ -212,7 +212,7 @@ void W_DoneCache(void)
     for (i=0; i<numlumps; i++)
       if (lumpinfo[i].wadfile) {
         int fd = lumpinfo[i].wadfile->handle;
-        if (mapped_wad[fd]) {
+        if (fd > 0 && mapped_wad[fd]) {
           if (munmap(mapped_wad[fd],I_Filelength(fd)))
             I_Error("W_DoneCache: failed to munmap");
           mapped_wad[fd] = NULL;
