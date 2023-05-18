@@ -23,6 +23,7 @@
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/input.h"
+#include "dsda/key_frame.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
@@ -438,6 +439,13 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
 void dsda_EnterBuildMode(void) {
   dsda_TrackFeature(uf_build);
 
+  if (!demorecording) {
+    if (!build_mode)
+      dsda_StoreTempKeyFrame();
+
+    advance_frame = true;
+  }
+
   if (!logictic)
     advance_frame = true;
 
@@ -518,6 +526,9 @@ dboolean dsda_BuildResponder(event_t* ev) {
     }
 
     overwritten_logictic = logictic;
+
+    if (!demorecording)
+      dsda_StoreTempKeyFrame();
 
     return true;
   }

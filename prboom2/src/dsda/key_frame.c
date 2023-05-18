@@ -57,6 +57,7 @@ static int auto_kf_timeout_count;
 
 static dsda_key_frame_t first_kf;
 static dsda_key_frame_t quick_kf;
+static dsda_key_frame_t temp_kf;
 static auto_kf_t* auto_key_frames;
 static auto_kf_t* last_auto_kf;
 static int auto_kf_size;
@@ -143,6 +144,11 @@ static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
           break;
         }
   }
+
+  if (!demorecording && temp_kf.buffer)
+    if (temp_kf.game_tic_count <= target_tic_count)
+      if (!closest || temp_kf.game_tic_count > closest->game_tic_count)
+        closest = &temp_kf;
 
   if (!demorecording && quick_kf.buffer)
     if (quick_kf.game_tic_count <= target_tic_count)
@@ -285,6 +291,10 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   dsda_ResolveParentKF(key_frame);
 
   doom_printf("Restored key frame");
+}
+
+void dsda_StoreTempKeyFrame(void) {
+  dsda_StoreKeyFrame(&temp_kf, true, true);
 }
 
 void dsda_StoreQuickKeyFrame(void) {
