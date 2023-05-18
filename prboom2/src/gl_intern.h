@@ -129,8 +129,9 @@ typedef struct
   float light;
   float fogdensity;
   float alpha;
-  float skyymid;
+  float skypitch;
   float skyyaw;
+  float skyoffset;
   float xscale;
   float yscale;
   dboolean anchor_vb;
@@ -449,7 +450,6 @@ typedef struct SkyBoxParams_s
   int index;
   unsigned int type;
   GLWall wall;
-  float x_scale, y_scale;
   float x_offset, y_offset;
   // 0 - no colormap; 1 - INVUL inverse colormap
   PalEntry_t FloorSkyColor[2];

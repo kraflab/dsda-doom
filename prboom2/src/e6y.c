@@ -111,7 +111,6 @@ float skyUpAngle;
 float skyUpShift;
 float skyXShift;
 float skyYShift;
-dboolean mlook_or_fov;
 
 #ifdef _WIN32
 const char* WINError(void)

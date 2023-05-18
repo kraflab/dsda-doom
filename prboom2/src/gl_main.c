@@ -994,40 +994,17 @@ void gld_StartDrawScene(void)
   //e6y: fog in frame
   gl_use_fog = gl_fog && !frame_fixedcolormap && !boom_cm;
 
-//e6y
-  mlook_or_fov = dsda_MouseLook() || (gl_render_fov != FOV90);
-  if (raven || !mlook_or_fov)
-  {
-    if (raven)
-    {
-      pitch = ANGLE_T_TO_PITCH_F(viewpitch);
-      paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
+  pitch = ANGLE_T_TO_PITCH_F(viewpitch);
+  viewPitch = (pitch > 180 ? pitch - 360 : pitch);
+  paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
 
-      viewPitch = (pitch > 180 ? pitch - 360 : pitch);
+  skyXShift = (double) viewangle / (double) ANGLE_MAX;
 
-      skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
-      skyYShift = 0.875 * (200.0f / 320.0f) * viewPitch / (360.0f - RAVEN_PITCH_UP_LIMIT);
-    }
-    else
-    {
-      pitch = 0.0f;
-      paperitems_pitch = 0.0f;
-
-      skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f);
-      skyYShift = 200.0f / 319.5f;
-    }
-  }
+  if (skystretch)
+    skyYShift = BETWEEN(-25 / skyscale, 180, viewPitch) / 360.0;
   else
-  {
-    float f = viewPitch * 2 + 50 / skyscale;
-    f = BETWEEN(0, 127, f);
-    skyXShift = -2.0f * ((yaw + 90.0f) / 90.0f / skyscale);
-    skyYShift = f / 128.0f + 200.0f / 320.0f / skyscale;
+    skyYShift = viewPitch / 360.0;
 
-    pitch = ANGLE_T_TO_PITCH_F(viewpitch);
-    paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
-    viewPitch = (pitch > 180 ? pitch - 360 : pitch);
-  }
   cos_paperitems_pitch = (float)cos(paperitems_pitch * M_PI / 180.f);
   sin_paperitems_pitch = (float)sin(paperitems_pitch * M_PI / 180.f);
 
