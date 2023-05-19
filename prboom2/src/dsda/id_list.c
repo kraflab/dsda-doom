@@ -22,6 +22,7 @@
 typedef struct {
   int id;
   int size;
+  int allocated_size;
   int* data;
 } id_list_t;
 
@@ -46,7 +47,8 @@ static id_list_t* dsda_NewListForIndex(id_index_t* index, int id) {
   new_list = &index->lists[index->size++];
   new_list->id = id;
   new_list->size = 0;
-  new_list->data = Z_CallocLevel(1, sizeof(*new_list->data));
+  new_list->allocated_size = 1;
+  new_list->data = Z_CallocLevel(new_list->allocated_size, sizeof(*new_list->data));
   new_list->data[0] = -1;
 
   return new_list;
@@ -69,7 +71,11 @@ static void dsda_AddToIDHash(id_hash_t* hash, int id, int value) {
   id_list_t* list;
 
   list = dsda_GetIDList(hash, id);
-  list->data = Z_ReallocLevel(list->data, sizeof(*list->data) * (list->size + 2));
+  if (list->allocated_size < list->size + 2) {
+    while (list->allocated_size < list->size + 2)
+      list->allocated_size *= 2;
+    list->data = Z_ReallocLevel(list->data, list->allocated_size * sizeof(*list->data));
+  }
   list->data[list->size++] = value;
   list->data[list->size] = -1;
 }
