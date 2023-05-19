@@ -24,6 +24,7 @@ typedef enum {
   dsda_timer_key_frame,
   dsda_timer_brute_force,
   dsda_timer_render_stats,
+  dsda_timer_temp,
   DSDA_TIMER_COUNT
 } dsda_timer_t;
 
