@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "i_system.h"
+#include "lprintf.h"
 
 #include "dsda/configuration.h"
 
@@ -69,6 +70,13 @@ unsigned long long dsda_ElapsedTime(int timer) {
 
 unsigned long long dsda_ElapsedTimeMS(int timer) {
   return dsda_ElapsedTime(timer) / 1000;
+}
+
+void dsda_PrintElapsedTime(int timer, const char* message) {
+  unsigned long long result;
+
+  result = dsda_ElapsedTime(timer);
+  lprintf(LO_INFO, "%s: %lf\n", message, (double) result / 1000);
 }
 
 static void dsda_Throttle(int timer, unsigned long long target_time) {
