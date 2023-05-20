@@ -69,7 +69,8 @@ static dsda_demo_header_data_t dsda_demo_header_data;
 
 #define DEMOMARKER 0x80
 
-#define DF_FROM_KEYFRAME 0x01
+#define DF_FROM_KEYFRAME   0x01
+#define DF_CASUAL_FEATURES 0x02
 
 static dboolean join_queued;
 static int dsda_demo_version;
@@ -680,7 +681,9 @@ static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* heade
     dsda_demo_header_data.flags = 0;
 
   dsda_EnableExCmd();
-  dsda_EnableCasualExCmdFeatures();
+
+  if (dsda_demo_header_data.flags & DF_CASUAL_FEATURES)
+    dsda_EnableCasualExCmdFeatures();
 
   return demo_p;
 }
@@ -756,6 +759,10 @@ void dsda_WriteDSDADemoHeader(byte** p) {
   dsda_demo_version = DSDA_DEMO_VERSION;
   dsda_extra_demo_header_data_offset = demo_p - *p;
   memset(demo_p, 0, dsda_demo_header_data_size[dsda_demo_version]);
+
+  if (dsda_AllowCasualExCmdFeatures())
+    demo_p[8] |= DF_CASUAL_FEATURES;
+
   demo_p += dsda_demo_header_data_size[dsda_demo_version];
 
   *p = demo_p;
