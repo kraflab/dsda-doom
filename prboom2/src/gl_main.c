@@ -1034,6 +1034,7 @@ void gld_StartDrawScene(void)
   glLoadMatrixf(modelMatrix);
 
   gld_InitColormapTextures(false);
+  gld_InitFuzzTexture();
 
   rendermarker++;
   scene_has_overlapped_sprites = false;

@@ -1313,6 +1313,51 @@ void gld_InitColormapTextures(dboolean fullbright)
     gld_BindColormapTexture(gltexture, gld_paletteIndex, usegamma, fullbright);
 }
 
+// Darkness values for 1 to 5 iterations of fuzz darkening, derived from
+// dcolors.c by lovely847
+#define FUZZ1 0.188235294117647058824
+#define FUZZ2 0.341176470588235294118
+#define FUZZ3 0.462745098039215686275
+#define FUZZ4 0.564705882352941176471
+#define FUZZ5 0.647058823529411764706
+
+// Darkness values for each fuzz pixel in a column, derived from software fuzz
+// offset table by counting consecutive negative offsets
+static const float fuzz[50] =
+{
+  FUZZ1, FUZZ2, FUZZ1, FUZZ2, FUZZ1, FUZZ1, FUZZ2, FUZZ1, FUZZ1, FUZZ2,
+  FUZZ1, FUZZ1, FUZZ1, FUZZ2, FUZZ1, FUZZ1, FUZZ1, FUZZ2, FUZZ3, FUZZ4,
+  FUZZ5, FUZZ1, FUZZ2, FUZZ3, FUZZ1, FUZZ1, FUZZ1, FUZZ1, FUZZ2, FUZZ1,
+  FUZZ2, FUZZ1, FUZZ1, FUZZ2, FUZZ3, FUZZ1, FUZZ1, FUZZ2, FUZZ3, FUZZ4,
+  FUZZ5, FUZZ1, FUZZ1, FUZZ1, FUZZ1, FUZZ2, FUZZ1, FUZZ1, FUZZ2, FUZZ1
+};
+
+static GLuint fuzz_texid = 0;
+
+void gld_InitFuzzTexture(void)
+{
+  if (fuzz_texid == 0)
+  {
+    GLEXT_glActiveTextureARB(GL_TEXTURE1_ARB);
+
+    glGenTextures(1, &fuzz_texid);
+    glBindTexture(GL_TEXTURE_2D, fuzz_texid);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
+                 sizeof(fuzz) / sizeof(*fuzz), 1, 0, GL_RED,
+                 GL_FLOAT, fuzz);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
+  }
+}
+
 // e6y
 // The common function for cleaning textures and patches
 // gld_CleanTextures and gld_CleanPatchTextures are replaced with that
@@ -1362,6 +1407,12 @@ void gld_FlushTextures(void)
   gld_CleanTexItems(gld_numGLColormaps, &gld_GLColormapTextures);
   gld_CleanTexItems(gld_numGLColormaps, &gld_GLFullbrightColormapTextures);
   gld_CleanTexItems(numtextures * gld_numGLColormaps, &gld_GLIndexedSkyTextures);
+
+  if (fuzz_texid)
+  {
+    glDeleteTextures(1, &fuzz_texid);
+    fuzz_texid = 0;
+  }
 
   gld_ResetLastTexture();
 
