@@ -1,6 +1,9 @@
 #version 120
 
+// Sprite texture
 uniform sampler2D tex;
+// Fuzz lookup texture
+uniform sampler2D fuzz;
 // Texture dimensions
 uniform vec2 tex_d;
 // Fuzz macro-pixel ratio in terms of window coordinates
@@ -9,27 +12,7 @@ uniform float ratio;
 // Random seed
 uniform float seed;
 
-const int darksize = 50;
-// Table of darkness steps for each pixel in a column, based on
-// offset table in software renderer
-const int darktable[darksize] = int[](
-  1, 2, 1, 2, 1, 1, 2, 1, 1, 2,
-  1, 1, 1, 2, 1, 1, 1, 2, 3, 4,
-  5, 1, 2, 3, 1, 1, 1, 1, 2, 1,
-  2, 1, 1, 2, 3, 1, 1, 2, 3, 4,
-  5, 1, 1, 1, 1, 2, 1, 1, 2, 1
-);
-
-// Darkness of each darkness step, based on the behavior of dcolors.c,
-// the colormap/playpal generator (credit to lovely847)
-const float darksteps[6] = float[](
-  0,
-  0.188235294117647058824,
-  0.341176470588235294118,
-  0.462745098039215686275,
-  0.564705882352941176471,
-  0.647058823529411764706
-);
+const float fuzzsize = 50;
 
 float random(vec2 n)
 {
@@ -38,12 +21,10 @@ float random(vec2 n)
 
 float darkness(vec2 c)
 {
-  // Compute random offset based on sprite index, game tic, and sprite column
+  // Compute random offset based on seed and x coordinate
   float r = random(vec2(seed, c.x));
-  // This should be read as (c.y + r) % darksize; there is no remainder
-  // operation in glsl 1.2, so we emulate it with floating point.
-  int idx = int(fract(c.y / darksize + r) * darksize);
-  return darksteps[darktable[idx]];
+  // Sample fuzz lookup texture at y coordinate plus random offset modulo size
+  return texture2D(fuzz, vec2(fract(c.y / fuzzsize + r), 0)).r;
 }
 
 void main()

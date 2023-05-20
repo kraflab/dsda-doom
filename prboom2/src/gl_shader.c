@@ -108,6 +108,9 @@ static void get_fuzz_shader_bindings()
   idx = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex");
   GLEXT_glUniform1iARB(idx, 0);
 
+  idx = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "fuzz");
+  GLEXT_glUniform1iARB(idx, 1);
+
   GLEXT_glUseProgramObjectARB(0);
 }
 
