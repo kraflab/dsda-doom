@@ -42,7 +42,7 @@
 static polyobj_t *GetPolyobj(int polyNum);
 static int GetPolyobjMirror(int poly);
 static void ThrustMobj(mobj_t * mobj, seg_t * seg, polyobj_t * po);
-static void UpdateSegBBox(seg_t * seg);
+static void UpdateSegBBox(seg_t * seg, polyobj_t * po);
 static void RotatePt(int an, fixed_t * x, fixed_t * y, fixed_t startSpotX, fixed_t startSpotY);
 void UnLinkPolyobj(polyobj_t * po);
 void LinkPolyobj(polyobj_t * po);
@@ -678,31 +678,75 @@ static void ThrustMobj(mobj_t * mobj, seg_t * seg, polyobj_t * po)
     }
 }
 
-static void UpdateSegBBox(seg_t * seg)
+static void ExpandBoxByVertex(vertex_t * v1, fixed_t * left, fixed_t * right,
+                                             fixed_t * top, fixed_t * bottom)
+{
+    if (v1->x > *right)
+    {
+        *right = v1->x;
+    }
+    if (v1->x < *left)
+    {
+        *left = v1->x;
+    }
+    if (v1->y > *top)
+    {
+        *top = v1->y;
+    }
+    if (v1->y < *bottom)
+    {
+        *bottom = v1->y;
+    }
+}
+
+static void UpdateSegBBox(seg_t * seg, polyobj_t * po)
 {
     line_t *line;
 
     line = seg->linedef;
 
-    if (seg->v1->x < seg->v2->x)
+    if (map_format.zdoom)
     {
-        line->bbox[BOXLEFT] = seg->v1->x;
-        line->bbox[BOXRIGHT] = seg->v2->x;
+        int i;
+
+        line->bbox[BOXRIGHT] = line->bbox[BOXLEFT] = seg->v1->x;
+        line->bbox[BOXTOP] = line->bbox[BOXBOTTOM] = seg->v1->y;
+
+        for (i = 0; i < po->numsegs; ++i)
+        {
+            seg = po->segs[i];
+            if (seg->linedef == line)
+            {
+                ExpandBoxByVertex(seg->v1, &line->bbox[BOXLEFT], &line->bbox[BOXRIGHT],
+                                           &line->bbox[BOXTOP], &line->bbox[BOXBOTTOM]);
+
+                ExpandBoxByVertex(seg->v2, &line->bbox[BOXLEFT], &line->bbox[BOXRIGHT],
+                                           &line->bbox[BOXTOP], &line->bbox[BOXBOTTOM]);
+            }
+        }
     }
     else
     {
-        line->bbox[BOXLEFT] = seg->v2->x;
-        line->bbox[BOXRIGHT] = seg->v1->x;
-    }
-    if (seg->v1->y < seg->v2->y)
-    {
-        line->bbox[BOXBOTTOM] = seg->v1->y;
-        line->bbox[BOXTOP] = seg->v2->y;
-    }
-    else
-    {
-        line->bbox[BOXBOTTOM] = seg->v2->y;
-        line->bbox[BOXTOP] = seg->v1->y;
+        if (seg->v1->x < seg->v2->x)
+        {
+            line->bbox[BOXLEFT] = seg->v1->x;
+            line->bbox[BOXRIGHT] = seg->v2->x;
+        }
+        else
+        {
+            line->bbox[BOXLEFT] = seg->v2->x;
+            line->bbox[BOXRIGHT] = seg->v1->x;
+        }
+        if (seg->v1->y < seg->v2->y)
+        {
+            line->bbox[BOXBOTTOM] = seg->v1->y;
+            line->bbox[BOXTOP] = seg->v2->y;
+        }
+        else
+        {
+            line->bbox[BOXBOTTOM] = seg->v2->y;
+            line->bbox[BOXTOP] = seg->v1->y;
+        }
     }
 
     // Update the line's slopetype
@@ -888,7 +932,7 @@ dboolean PO_RotatePolyobj(int num, angle_t angle)
         }
         if ((*segList)->linedef->validcount != validcount)
         {
-            UpdateSegBBox(*segList);
+            UpdateSegBBox(*segList, po);
             (*segList)->linedef->validcount = validcount;
         }
         (*segList)->angle += angle;
@@ -908,7 +952,7 @@ dboolean PO_RotatePolyobj(int num, angle_t angle)
         {
             if ((*segList)->linedef->validcount != validcount)
             {
-                UpdateSegBBox(*segList);
+                UpdateSegBBox(*segList, po);
                 (*segList)->linedef->validcount = validcount;
             }
             (*segList)->angle -= angle;
