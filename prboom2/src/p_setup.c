@@ -1462,7 +1462,7 @@ static void P_LoadZNodes(int lump, int glnodes)
   newVerts = LittleLong(*((const unsigned int*)data));
   data += sizeof(newVerts);
 
-  if (!samelevel)
+  if (!samelevel || glnodes)
   {
     if (orgVerts + newVerts == (unsigned int)numvertexes)
     {
