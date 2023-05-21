@@ -73,11 +73,12 @@ GLuint CaptureScreenAsTexID(void)
 
 int gld_wipe_doMelt(int ticks, int *y_lookup)
 {
-  int i, scaled_i;
+  int i, scaled_i, scaled_i2;
   int total_w, total_h;
   float fU1, fU2, fV1, fV2;
   int yoffs;
-  float tx, sx, sy;
+  float tx, tx2;
+  int dx = MAX(1, (SCREENWIDTH > SCREENHEIGHT) ? SCREENHEIGHT / 200 : SCREENWIDTH / 200);
 
   total_w = gld_GetTexDimension(gl_viewport_width);
   total_h = gld_GetTexDimension(gl_viewport_height);
@@ -103,24 +104,25 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   glBindTexture(GL_TEXTURE_2D, wipe_scr_start_tex);
   glColor3f(1.0f, 1.0f, 1.0f);
 
-  glBegin(GL_QUAD_STRIP);
-  for (i = 0; i <= SCREENWIDTH; i++)
+  glBegin(GL_TRIANGLE_STRIP);
+  for (i = 0; i < SCREENWIDTH; i += dx)
   {
-    // elim - when (i == SCREENWIDTH), use the previous y_lookup value as gl-quad-strip drawing
-    //        makes the right-most column "lag" behind, causing an annoying artifact
-    yoffs = MAX(0, y_lookup[MIN(SCREENWIDTH-1, i)]);
+    int i2 = (i + dx > SCREENWIDTH ? SCREENWIDTH : i + dx);
+    yoffs = MAX(0, y_lookup[i]);
 
     // elim - melt texture is the pixel size of the GL viewport, not the game scene texture size
     scaled_i = MIN(gl_viewport_width, (int)((float)i * gl_scale_x));
+    scaled_i2 = MIN(gl_viewport_width, (int)((float)i2 * gl_scale_x));
 
     // elim - texel coordinates don't necessarily match texture buffer dimensions, since textures
     //        have to be stored in dimensions that are power-of-2
     tx = (float) MIN(fU2, (float)scaled_i / (float)total_w);
-    sx = (float) i;
-    sy = (float) yoffs;
+    tx2 = (float) MIN(fU2, (float)scaled_i2 / (float)total_w);
 
-    glTexCoord2f(tx, fV1); glVertex2f(sx, sy);
-    glTexCoord2f(tx, fV2); glVertex2f(sx, sy + (float)SCREENHEIGHT);
+    glTexCoord2f(tx, fV1); glVertex2f(i, yoffs);
+    glTexCoord2f(tx, fV2); glVertex2f(i, yoffs + SCREENHEIGHT);
+    glTexCoord2f(tx2, fV1); glVertex2f(i2, yoffs);
+    glTexCoord2f(tx2, fV2); glVertex2f(i2, yoffs + SCREENHEIGHT);
   }
   glEnd();
 
