@@ -63,6 +63,7 @@
 
 #include "dsda/configuration.h"
 #include "dsda/exhud.h"
+#include "dsda/map_format.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
@@ -979,6 +980,11 @@ static void R_RenderBSPNodes(void)
   {
     // The head node is the last node output.
     R_RenderBSPNode(numnodes - 1);
+  }
+
+  if (map_format.zdoom && V_IsOpenGLMode())
+  {
+    R_ForceRenderPolyObjs();
   }
 }
 

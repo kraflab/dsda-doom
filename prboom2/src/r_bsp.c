@@ -367,6 +367,8 @@ static dboolean CheckClip(seg_t * seg, sector_t * frontsector, sector_t * backse
 // and adds any visible pieces to the line list.
 //
 
+static dboolean ignore_gl_range_clipping;
+
 static void R_AddLine (seg_t *line)
 {
   int      x1;
@@ -401,7 +403,7 @@ static void R_AddLine (seg_t *line)
     {
       return;
     }
-    if (!gld_clipper_SafeCheckRange(angle2, angle1))
+    if (!ignore_gl_range_clipping && !gld_clipper_SafeCheckRange(angle2, angle1))
     {
       return;
     }
@@ -889,4 +891,17 @@ void R_RenderBSPNode(int bspnum)
     }
   // e6y: support for extended nodes
   R_Subsector(bspnum == -1 ? 0 : bspnum & ~NF_SUBSECTOR);
+}
+
+void R_ForceRenderPolyObjs(void)
+{
+  int i;
+
+  ignore_gl_range_clipping = true;
+
+  for (i = 0; i < po_NumPolyobjs; i++)
+    if (polyobjs[i].subsector)
+      R_AddPolyLines(&polyobjs[i]);
+
+  ignore_gl_range_clipping = false;
 }
