@@ -1430,7 +1430,8 @@ void gld_AddWall(seg_t *seg)
         if (!temptex && gl_use_stencil && backsector &&
           !(seg->linedef->r_flags & RF_ISOLATED) &&
           /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
-          !(backsector->flags & NULL_SECTOR))
+          !(backsector->flags & NULL_SECTOR) &&
+          backsector->floorheight < backsector->ceilingheight)
         {
           wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
           wall.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
@@ -1635,7 +1636,8 @@ bottomtexture:
       if (!temptex && gl_use_stencil && backsector &&
         !(seg->linedef->r_flags & RF_ISOLATED) &&
         /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
-        !(backsector->flags & NULL_SECTOR))
+        !(backsector->flags & NULL_SECTOR) &&
+        backsector->floorheight < backsector->ceilingheight)
       {
         wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
         wall.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
