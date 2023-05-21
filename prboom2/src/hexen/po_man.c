@@ -66,7 +66,7 @@ static void ResetSegDrawingParameters(seg_t *seg)
   seg->v1->py = seg->v1->y;
   seg->v2->px = seg->v2->x;
   seg->v2->py = seg->v2->y;
-  seg->pangle = R_PointToAngle2(seg->v1->px, seg->v1->py, seg->v2->px, seg->v2->py);
+  seg->pangle = seg->angle;
 }
 
 void ResetPolySubSector(polyobj_t *po)
