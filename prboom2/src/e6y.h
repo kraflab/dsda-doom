@@ -122,9 +122,6 @@ dboolean HaveMouseLook(void);
 
 extern float viewPitch;
 
-void R_ClearClipSegs (void);
-void R_RenderBSPNode(int bspnum);
-
 typedef struct prboom_comp_s
 {
   unsigned int minver;
