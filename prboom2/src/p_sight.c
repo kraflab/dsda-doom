@@ -458,6 +458,67 @@ INLINE static int P_DivlineCrossed(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y
 //
 // killough 4/19/98: made static and cleaned up
 
+dboolean P_CrossSubsector_Poly(int num)
+{
+  if (map_format.zdoom && subsectors[num].poly)
+  {
+    int polyCount;
+    seg_t **polySeg;
+
+    polyCount = subsectors[num].poly->numsegs;
+    polySeg = subsectors[num].poly->segs;
+
+    while (polyCount--)
+    {
+      divline_t divl;
+      line_t *line;
+
+      line = (*polySeg++)->linedef;
+      if (line->validcount == validcount)
+        continue;
+
+      // OPTIMIZE: killough 4/20/98: Added quick bounding-box rejection test
+
+      if (line->bbox[BOXLEFT  ] > los.bbox[BOXRIGHT ] ||
+          line->bbox[BOXRIGHT ] < los.bbox[BOXLEFT  ] ||
+          line->bbox[BOXBOTTOM] > los.bbox[BOXTOP   ] ||
+          line->bbox[BOXTOP]    < los.bbox[BOXBOTTOM])
+      {
+        line->validcount = validcount;
+        continue;
+      }
+
+      // line isn't crossed?
+      if (P_DivlineCrossed(line->v1->x, line->v1->y, line->v2->x, line->v2->y, &los.strace))
+      {
+        line->validcount = validcount;
+        continue;
+      }
+
+      divl.dx = line->v2->x - (divl.x = line->v1->x);
+      divl.dy = line->v2->y - (divl.y = line->v1->y);
+
+      // line isn't crossed?
+      if (P_DivlineCrossed(los.strace.x, los.strace.y, los.t2x, los.t2y, &divl))
+      {
+        line->validcount = validcount;
+        continue;
+      }
+
+      // already checked other side?
+      if (line->validcount == validcount)
+        continue;
+
+      line->validcount = validcount;
+
+      // stop because it is not two sided anyway
+      return false;
+    }
+  }
+
+  return true;
+}
+
 dboolean P_CrossSubsector_PrBoom(int num)
 {
   ssline_t *ssline = &sslines[sslines_indexes[num]];
@@ -760,6 +821,10 @@ dboolean P_CrossSubsector_Boom(int num)
     if (los.topslope <= los.bottomslope)
       return false;               // stop
   }
+
+  if (!P_CrossSubsector_Poly(num))
+    return false;
+
   // passed the subsector ok
   return true;
 }
