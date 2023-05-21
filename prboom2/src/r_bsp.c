@@ -788,6 +788,23 @@ static void R_UpdateGlobalPlanes(sector_t *sector, int *floorlightlevel, int *ce
 //
 // killough 1/31/98 -- made static, polished
 
+static void R_AddPolyLines(polyobj_t *poly)
+{
+  int polyCount;
+  seg_t **polySeg;
+
+  poly_add_line = true;
+  poly_frontsector = poly->subsector->sector;
+  polyCount = poly->numsegs;
+  polySeg = poly->segs;
+  while (polyCount--)
+  {
+    R_AddLine(*polySeg++);
+  }
+  poly_add_line = false;
+  poly_frontsector = NULL;
+}
+
 static void R_Subsector(int num)
 {
   int         count;
@@ -830,22 +847,8 @@ static void R_Subsector(int num)
   }
 
   // hexen
-  if (sub->poly)
-  {                           // Render the polyobj in the subsector first
-    int polyCount;
-    seg_t **polySeg;
-
-    poly_add_line = true;
-    poly_frontsector = sub->sector;
-    polyCount = sub->poly->numsegs;
-    polySeg = sub->poly->segs;
-    while (polyCount--)
-    {
-      R_AddLine(*polySeg++);
-    }
-    poly_add_line = false;
-    poly_frontsector = NULL;
-  }
+  if (sub->poly) // Render the polyobj in the subsector first
+    R_AddPolyLines(sub->poly);
 
   count = sub->numlines;
   line = &segs[sub->firstline];
