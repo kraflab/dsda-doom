@@ -68,7 +68,7 @@ fixed_t CONSTFUNC P_AproxDistance(fixed_t dx, fixed_t dy)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-int PUREFUNC P_PointOnLineSide(fixed_t x, fixed_t y, const line_t *line)
+int PUREFUNC P_CompatiblePointOnLineSide(fixed_t x, fixed_t y, const line_t *line)
 {
   return
     !line->dx ? x <= line->v1->x ? line->dy > 0 : line->dy < 0 :
@@ -76,6 +76,16 @@ int PUREFUNC P_PointOnLineSide(fixed_t x, fixed_t y, const line_t *line)
     FixedMul(y-line->v1->y, line->dx>>FRACBITS) >=
     FixedMul(line->dy>>FRACBITS, x-line->v1->x);
 }
+
+int PUREFUNC P_ZDoomPointOnLineSide(fixed_t x, fixed_t y, const line_t *line)
+{
+  return
+    !line->dx ? x <= line->v1->x ? line->dy > 0 : line->dy < 0 :
+    !line->dy ? y <= line->v1->y ? line->dx < 0 : line->dx > 0 :
+    ((long long) y - line->v1->y) * line->dx >= ((long long) x - line->v1->x) * line->dy;
+}
+
+int (*P_PointOnLineSide)(fixed_t x, fixed_t y, const line_t *line);
 
 //
 // P_BoxOnLineSide
@@ -115,7 +125,7 @@ int PUREFUNC P_BoxOnLineSide(const fixed_t *tmbox, const line_t *ld)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-int PUREFUNC P_PointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
+int PUREFUNC P_CompatiblePointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
 {
   return
     !line->dx ? x <= line->x ? line->dy > 0 : line->dy < 0 :
@@ -123,6 +133,17 @@ int PUREFUNC P_PointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
     (line->dy^line->dx^(x -= line->x)^(y -= line->y)) < 0 ? (line->dy^x) < 0 :
     FixedMul(y>>8, line->dx>>8) >= FixedMul(line->dy>>8, x>>8);
 }
+
+int PUREFUNC P_ZDoomPointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
+{
+  return
+    !line->dx ? x <= line->x ? line->dy > 0 : line->dy < 0 :
+    !line->dy ? y <= line->y ? line->dx < 0 : line->dx > 0 :
+    (line->dy^line->dx^(x -= line->x)^(y -= line->y)) < 0 ? (line->dy^x) < 0 :
+    (long long) y * line->dx >= (long long) x * line->dy;
+}
+
+int (*P_PointOnDivlineSide)(fixed_t x, fixed_t y, const divline_t *line);
 
 //
 // P_MakeDivline

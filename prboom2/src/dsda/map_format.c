@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "lprintf.h"
 #include "p_spec.h"
+#include "r_main.h"
 #include "r_state.h"
 #include "w_wad.h"
 
@@ -296,6 +297,10 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .add_mobj_thing_id = dsda_AddMobjThingID,
   .remove_mobj_thing_id = dsda_RemoveMobjThingID,
   .iterate_spechit = P_IterateZDoomSpecHit,
+  .point_on_side = R_ZDoomPointOnSide,
+  .point_on_seg_side = R_ZDoomPointOnSegSide,
+  .point_on_line_side = P_ZDoomPointOnLineSide,
+  .point_on_divline_side = P_ZDoomPointOnDivlineSide,
   .mapthing_size = sizeof(hexen_mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = MT_PUSH,
@@ -350,6 +355,10 @@ static const map_format_t hexen_map_format = {
   .add_mobj_thing_id = P_InsertMobjIntoTIDList,
   .remove_mobj_thing_id = P_RemoveMobjFromTIDList,
   .iterate_spechit = NULL, // not used
+  .point_on_side = R_CompatiblePointOnSide,
+  .point_on_seg_side = R_CompatiblePointOnSegSide,
+  .point_on_line_side = P_CompatiblePointOnLineSide,
+  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(hexen_mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = -1,
@@ -404,6 +413,10 @@ static const map_format_t heretic_map_format = {
   .add_mobj_thing_id = NULL, // not used
   .remove_mobj_thing_id = NULL, // not used
   .iterate_spechit = P_IterateCompatibleSpecHit,
+  .point_on_side = R_CompatiblePointOnSide,
+  .point_on_seg_side = R_CompatiblePointOnSegSide,
+  .point_on_line_side = P_CompatiblePointOnLineSide,
+  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = -1,
@@ -458,6 +471,10 @@ static const map_format_t doom_map_format = {
   .add_mobj_thing_id = NULL, // not used
   .remove_mobj_thing_id = NULL, // not used
   .iterate_spechit = P_IterateCompatibleSpecHit,
+  .point_on_side = R_CompatiblePointOnSide,
+  .point_on_seg_side = R_CompatiblePointOnSegSide,
+  .point_on_line_side = P_CompatiblePointOnLineSide,
+  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = MT_PUSH,
@@ -469,12 +486,20 @@ static const map_format_t doom_map_format = {
   .visibility = VF_DOOM,
 };
 
+static void dsda_ApplyMapPrecision(void) {
+  R_PointOnSide = map_format.point_on_side;
+  R_PointOnSegSide = map_format.point_on_seg_side;
+  P_PointOnLineSide = map_format.point_on_line_side;
+  P_PointOnDivlineSide = map_format.point_on_divline_side;
+}
+
 void dsda_ApplyZDoomMapFormat(void) {
   map_format = zdoom_in_hexen_map_format;
 
   if (!mbf21)
     I_Error("You must use complevel 21 when playing doom-in-hexen format maps.");
 
+  dsda_ApplyMapPrecision();
   dsda_MigrateMobjInfo();
 }
 
@@ -489,5 +514,6 @@ void dsda_ApplyDefaultMapFormat(void) {
   if (dsda_Flag(dsda_arg_mapinfo) && !map_format.mapinfo)
     map_format.mapinfo = W_LumpNameExists("MAPINFO");
 
+  dsda_ApplyMapPrecision();
   dsda_MigrateMobjInfo();
 }

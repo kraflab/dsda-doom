@@ -171,9 +171,9 @@ int extralight;                           // bumped light from gun blasts
 // Workaround for optimization bug in clang
 // fixes desync in competn/doom/fp2-3655.lmp and in dmnsns.wad dmn01m909.lmp
 #if defined(__clang__)
-PUREFUNC int R_PointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
+PUREFUNC int R_CompatiblePointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
 #else
-PUREFUNC int R_PointOnSide(fixed_t x, fixed_t y, const node_t *node)
+PUREFUNC int R_CompatiblePointOnSide(fixed_t x, fixed_t y, const node_t *node)
 #endif
 {
   if (!node->dx)
@@ -191,9 +191,32 @@ PUREFUNC int R_PointOnSide(fixed_t x, fixed_t y, const node_t *node)
   return FixedMul(y, node->dx>>FRACBITS) >= FixedMul(node->dy>>FRACBITS, x);
 }
 
+#if defined(__clang__)
+PUREFUNC int R_ZDoomPointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
+#else
+PUREFUNC int R_ZDoomPointOnSide(fixed_t x, fixed_t y, const node_t *node)
+#endif
+{
+  if (!node->dx)
+    return x <= node->x ? node->dy > 0 : node->dy < 0;
+
+  if (!node->dy)
+    return y <= node->y ? node->dx < 0 : node->dx > 0;
+
+  x -= node->x;
+  y -= node->y;
+
+  // Try to quickly decide by looking at sign bits.
+  if ((node->dy ^ node->dx ^ x ^ y) < 0)
+    return (node->dy ^ x) < 0;  // (left is negative)
+  return (long long) y * node->dx >= (long long) x * node->dy;
+}
+
+int (*R_PointOnSide)(fixed_t x, fixed_t y, const node_t *node);
+
 // killough 5/2/98: reformatted
 
-PUREFUNC int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
+PUREFUNC int R_CompatiblePointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
 {
   fixed_t lx = line->v1->x;
   fixed_t ly = line->v1->y;
@@ -214,6 +237,30 @@ PUREFUNC int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
     return (ldy ^ x) < 0;          // (left is negative)
   return FixedMul(y, ldx>>FRACBITS) >= FixedMul(ldy>>FRACBITS, x);
 }
+
+PUREFUNC int R_ZDoomPointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
+{
+  fixed_t lx = line->v1->x;
+  fixed_t ly = line->v1->y;
+  fixed_t ldx = line->v2->x - lx;
+  fixed_t ldy = line->v2->y - ly;
+
+  if (!ldx)
+    return x <= lx ? ldy > 0 : ldy < 0;
+
+  if (!ldy)
+    return y <= ly ? ldx < 0 : ldx > 0;
+
+  x -= lx;
+  y -= ly;
+
+  // Try to quickly decide by looking at sign bits.
+  if ((ldy ^ ldx ^ x ^ y) < 0)
+    return (ldy ^ x) < 0;          // (left is negative)
+  return (long long) y * ldx >= (long long) x * ldy;
+}
+
+int (*R_PointOnSegSide)(fixed_t x, fixed_t y, const seg_t *line);
 
 //
 // R_PointToAngle
