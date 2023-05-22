@@ -1296,7 +1296,7 @@ static void P_LoadZSegs (const byte *data)
     li->v2 = &vertexes[v2];
 
     li->offset = GetOffset(li->v1, (side ? ldef->v2 : ldef->v1));
-    li->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
+    li->angle = R_PointToAngle2(li->v1->x, li->v1->y, li->v2->x, li->v2->y);
     //li->angle = (int)((float)atan2(li->v2->y - li->v1->y,li->v2->x - li->v1->x) * (ANG180 / M_PI));
   }
 }
@@ -1417,7 +1417,7 @@ static void P_LoadGLZSegs(const byte *data, int type)
       seg = &segs[subsectors[i].firstline + j];
 
       if (seg->linedef)
-        seg->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
+        seg->angle = R_PointToAngle2(seg->v1->x, seg->v1->y, seg->v2->x, seg->v2->y);
     }
   }
 }
