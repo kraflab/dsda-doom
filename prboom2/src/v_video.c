@@ -500,6 +500,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     int   w = (patch->width << 16) - 1; // CPhipps - -1 for faster flipping
     int   left, right, top, bottom;
     int   DXI, DYI;
+    int   deltay1;
     R_DrawColumn_f colfunc;
     draw_column_vars_t dcvars;
     draw_vars_t olddrawvars = drawvars;
@@ -532,10 +533,15 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     else
       bottom = params->video->y2lookup[y + patch->height - 1];
 
+    deltay1 = params->deltay1;
+
+    if (TOP_ALIGNMENT(flags & VPT_STRETCH_MASK))
+      deltay1 += global_patch_top_offset;
+
     left   += params->deltax1;
     right  += params->deltax2;
-    top    += params->deltay1;
-    bottom += params->deltay1;
+    top    += deltay1;
+    bottom += deltay1;
 
     dcvars.texheight = patch->height;
     dcvars.iscale = DYI;
@@ -578,15 +584,15 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
           tmpy = y + post->topdelta;
           if (tmpy < 0 || tmpy > 200)
-            dcvars.yl = (tmpy * params->video->height) / 200 + params->deltay1;
+            dcvars.yl = (tmpy * params->video->height) / 200 + deltay1;
           else
-            dcvars.yl = params->video->y1lookup[tmpy] + params->deltay1;
+            dcvars.yl = params->video->y1lookup[tmpy] + deltay1;
 
           tmpy = y + post->topdelta + post->length - 1;
           if (tmpy < 0 || tmpy > 200)
-            dcvars.yh = (tmpy * params->video->height) / 200 + params->deltay1;
+            dcvars.yh = (tmpy * params->video->height) / 200 + deltay1;
           else
-            dcvars.yh = params->video->y2lookup[tmpy] + params->deltay1;
+            dcvars.yh = params->video->y2lookup[tmpy] + deltay1;
         }
         dcvars.edgeslope = post->slope;
 
@@ -622,7 +628,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
         dcvars.texturemid = -((dcvars.yl-centery)*dcvars.iscale);
 
         //e6y
-        dcvars.dy = params->deltay1;
+        dcvars.dy = deltay1;
         dcvars.flags |= DRAW_COLUMN_ISPATCH;
 
         colfunc(&dcvars);

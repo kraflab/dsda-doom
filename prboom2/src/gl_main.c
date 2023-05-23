@@ -547,6 +547,9 @@ void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translati
     ypos   = (float)((y - topoffset)  * params->video->height) / 200.0f + params->deltay1;
     width  = (float)(gltexture->realtexwidth     * params->video->width)  / 320.0f;
     height = (float)(gltexture->realtexheight    * params->video->height) / 200.0f;
+
+    if (TOP_ALIGNMENT(flags & VPT_STRETCH_MASK))
+      ypos += global_patch_top_offset;
   }
   else
   {
