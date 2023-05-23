@@ -169,6 +169,10 @@ enum patch_translation_e {
                              (x) == VPT_ALIGN_LEFT_BOTTOM || \
                              (x) == VPT_ALIGN_RIGHT_BOTTOM)
 
+#define TOP_ALIGNMENT(x) ((x) == VPT_ALIGN_TOP || \
+                          (x) == VPT_ALIGN_LEFT_TOP || \
+                          (x) == VPT_ALIGN_RIGHT_TOP)
+
 #define arrlen(array) (sizeof(array) / sizeof(*array))
 
 #endif
