@@ -1421,7 +1421,7 @@ void V_FillRectVPT(int scrn, int x, int y, int width, int height, byte color, en
   V_FillRect(scrn, x, y, width, height, color);
 }
 
-void V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_translation_e flags)
+int V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_translation_e flags)
 {
   stretch_param_t *params = dsda_StretchParams(flags);
   int sy = y;
@@ -1430,6 +1430,8 @@ void V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_transla
   height = params->video->y2lookup[sy + height - 1] - y + 1;
   y += params->deltay1;
   V_FillRect(scrn, 0, y, SCREENWIDTH, height, color);
+
+  return height;
 }
 
 // heretic
