@@ -165,9 +165,9 @@ enum patch_translation_e {
   VPT_STRETCH_REAL       = 2048, // [XA] VPT_STRETCH in gld_fillRect means "tile", rather than "stretch"... these flags probably need a rename.
 };
 
-#define BOTTOM_ALIGNMENT(x) (x == VPT_ALIGN_BOTTOM || \
-                             x == VPT_ALIGN_LEFT_BOTTOM || \
-                             x == VPT_ALIGN_RIGHT_BOTTOM)
+#define BOTTOM_ALIGNMENT(x) ((x) == VPT_ALIGN_BOTTOM || \
+                             (x) == VPT_ALIGN_LEFT_BOTTOM || \
+                             (x) == VPT_ALIGN_RIGHT_BOTTOM)
 
 #define arrlen(array) (sizeof(array) / sizeof(*array))
 
