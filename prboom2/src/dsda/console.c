@@ -85,8 +85,14 @@ static hu_textline_t hu_console_message;
 
 static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
+static int console_height;
+
+int dsda_ConsoleHeight(void) {
+  return console_height;
+}
+
 static void dsda_DrawConsole(void) {
-  V_FillHeightVPT(0, 0, 16, 0, CONSOLE_TEXT_FLAGS);
+  console_height = V_FillHeightVPT(0, 0, 16, 0, CONSOLE_TEXT_FLAGS);
   HUlib_drawTextLine(&hu_console_prompt, false);
   HUlib_drawTextLine(&hu_console_message, false);
 }
