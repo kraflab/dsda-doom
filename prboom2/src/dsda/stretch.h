@@ -15,6 +15,9 @@
 //	DSDA Stretch
 //
 
+#ifndef __DSDA_STRETCH__
+#define __DSDA_STRETCH__
+
 typedef struct
 {
    fixed_t xstep;
@@ -61,3 +64,5 @@ extern int patches_scaley;
 stretch_param_t* dsda_StretchParams(int flags);
 void dsda_SetupStretchParams(void);
 void dsda_EvaluatePatchScale(void);
+
+#endif
