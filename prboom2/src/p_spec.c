@@ -3145,7 +3145,7 @@ void P_UpdateSpecials (void)
 //
 
 static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
-                         int control, int affectee, int accel)
+                         int control, int affectee, int accel, int flags)
 {
   scroll_t *s = Z_MallocLevel(sizeof *s);
   s->thinker.function = T_Scroll;
@@ -3153,6 +3153,7 @@ static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
   s->dx = dx;
   s->dy = dy;
   s->accel = accel;
+  s->flags = flags;
   s->vdx = s->vdy = 0;
   if ((s->control = control) != -1)
     s->last_height =
@@ -3343,7 +3344,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   switch (sector->special)
   {
     case zs_d_scroll_east_lava_damage:
-      Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
+      Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0, 0);
       P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
       break;
     case zs_s_light_strobe_hurt:
@@ -3435,14 +3436,14 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
         i = sector->special - zs_scroll_north_slow;
         dx = FixedDiv(hexenScrollies[i][0] << FRACBITS, 2);
         dy = FixedDiv(hexenScrollies[i][1] << FRACBITS, 2);
-        Add_Scroller(sc_floor, dx, dy, -1, sector - sectors, 0);
+        Add_Scroller(sc_floor, dx, dy, -1, sector - sectors, 0, 0);
       }
       else if (sector->special >= zs_carry_east5 &&
             sector->special <= zs_carry_east35)
       { // Heretic scroll special
         // Only east scrollers also scroll the texture
         fixed_t dx = FixedDiv((1 << (sector->special - zs_carry_east5)) << FRACBITS, 2);
-        Add_Scroller(sc_floor, dx, 0, -1, sector - sectors, 0);
+        Add_Scroller(sc_floor, dx, 0, -1, sector - sectors, 0, 0);
       }
       break;
   }
@@ -3741,8 +3742,31 @@ void T_Scroll(scroll_t *s)
 
     case sc_side:                   // killough 3/7/98: Scroll wall texture
         side = sides + s->affectee;
-        side->textureoffset += dx;
-        side->rowoffset += dy;
+        if (!s->flags)
+        {
+          side->textureoffset += dx;
+          side->rowoffset += dy;
+        }
+        else
+        {
+          if (s->flags & SCROLL_TOP)
+          {
+            side->textureoffset_top += dx;
+            side->rowoffset_top += dy;
+          }
+
+          if (s->flags & SCROLL_MID)
+          {
+            side->textureoffset_mid += dx;
+            side->rowoffset_mid += dy;
+          }
+
+          if (s->flags & SCROLL_BOTTOM)
+          {
+            side->textureoffset_bottom += dx;
+            side->rowoffset_bottom += dy;
+          }
+        }
         break;
 
     case sc_floor:                  // killough 3/7/98: Scroll floor texture
@@ -3815,7 +3839,7 @@ static void Add_WallScroller(fixed_t dx, fixed_t dy, const line_t *l,
     x = -FixedDiv(FixedMul(dy, l->dy) + FixedMul(dx, l->dx), d);
     y = -FixedDiv(FixedMul(dx, l->dy) - FixedMul(dy, l->dx), d);
   }
-  Add_Scroller(sc_side, x, y, control, *l->sidenum, accel);
+  Add_Scroller(sc_side, x, y, control, *l->sidenum, accel, 0);
 }
 
 // Amount (dx,dy) vector linedef is shifted right to get scroll amount
@@ -3861,13 +3885,13 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
 
     case 250:   // scroll effect ceiling
       FIND_SECTORS(id_p, l->tag)
-        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel);
+        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel, 0);
       break;
 
     case 251:   // scroll effect floor
     case 253:   // scroll and carry objects on floor
       FIND_SECTORS(id_p, l->tag)
-        Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel);
+        Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel, 0);
       if (special != 253)
         break;
       // fallthrough
@@ -3876,7 +3900,7 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       dx = FixedMul(dx, CARRYFACTOR);
       dy = FixedMul(dy, CARRYFACTOR);
       FIND_SECTORS(id_p, l->tag)
-        Add_Scroller(sc_carry, dx, dy, control, *id_p, accel);
+        Add_Scroller(sc_carry, dx, dy, control, *id_p, accel, 0);
       break;
 
       // killough 3/1/98: scroll wall according to linedef
@@ -3890,7 +3914,7 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
     case 255:    // killough 3/2/98: scroll according to sidedef offsets
       side = lines[i].sidenum[0];
       Add_Scroller(sc_side, -sides[side].textureoffset,
-                   sides[side].rowoffset, -1, side, accel);
+                   sides[side].rowoffset, -1, side, accel, 0);
       break;
 
     case 1024: // special 255 with tag control
@@ -3910,16 +3934,16 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       dy = sides[side].rowoffset / 8;
       for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
         if (*id_p != i)
-          Add_Scroller(sc_side, dx, dy, control, lines[*id_p].sidenum[0], accel);
+          Add_Scroller(sc_side, dx, dy, control, lines[*id_p].sidenum[0], accel, 0);
 
       break;
 
     case 48:                  // scroll first side
-      Add_Scroller(sc_side,  FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
+      Add_Scroller(sc_side,  FRACUNIT, 0, -1, lines[i].sidenum[0], accel, 0);
       break;
 
     case 85:                  // jff 1/30/98 2-way scroll
-      Add_Scroller(sc_side, -FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
+      Add_Scroller(sc_side, -FRACUNIT, 0, -1, lines[i].sidenum[0], accel, 0);
       break;
   }
 }
@@ -4010,14 +4034,14 @@ void P_SpawnZDoomScroller(line_t *l, int i)
 
     case zl_scroll_ceiling:
       FIND_SECTORS(id_p, l->special_args[0])
-        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel);
+        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel, 0);
 
       for (j = 0; j < copyscroller_count; ++j)
       {
         line_t *cs = copyscrollers[j];
 
         if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 1)
-          Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel);
+          Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel, 0);
       }
 
       l->special = 0;
@@ -4026,14 +4050,14 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       if (l->special_args[2] != 1)
       { // scroll the floor texture
         FIND_SECTORS(id_p, l->special_args[0])
-          Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel);
+          Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel, 0);
 
         for (j = 0; j < copyscroller_count; ++j)
         {
           line_t *cs = copyscrollers[j];
 
           if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 2)
-            Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel);
+            Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel, 0);
         }
       }
 
@@ -4042,14 +4066,14 @@ void P_SpawnZDoomScroller(line_t *l, int i)
         dx = FixedMul(dx, CARRYFACTOR);
         dy = FixedMul(dy, CARRYFACTOR);
         FIND_SECTORS(id_p, l->special_args[0])
-          Add_Scroller(sc_carry, dx, dy, control, *id_p, accel);
+          Add_Scroller(sc_carry, dx, dy, control, *id_p, accel, 0);
 
         for (j = 0; j < copyscroller_count; ++j)
         {
           line_t *cs = copyscrollers[j];
 
           if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 4)
-            Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel);
+            Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel, 0);
         }
       }
 
@@ -4066,30 +4090,25 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       break;
     case zl_scroll_texture_offsets:
       // killough 3/2/98: scroll according to sidedef offsets
-      // MAP_FORMAT_TODO: l->special_args[0] SCROLLTYPE
       j = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[j].textureoffset, sides[j].rowoffset, -1, j, accel);
+      Add_Scroller(sc_side, -sides[j].textureoffset, sides[j].rowoffset, -1, j, accel, l->special_args[0]);
       l->special = 0;
       break;
     case zl_scroll_texture_left:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel);
+      Add_Scroller(sc_side, FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel, l->special_args[1]);
       break;
     case zl_scroll_texture_right:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, -FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel);
+      Add_Scroller(sc_side, -FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel, l->special_args[1]);
       break;
     case zl_scroll_texture_up:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, 0, FRACUNIT * l->special_args[0] / 64, -1, j, accel);
+      Add_Scroller(sc_side, 0, FRACUNIT * l->special_args[0] / 64, -1, j, accel, l->special_args[1]);
       break;
     case zl_scroll_texture_down:
       j = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->special_args[1] SCROLLTYPE
-      Add_Scroller(sc_side, 0, -FRACUNIT * l->special_args[0] / 64, -1, j, accel);
+      Add_Scroller(sc_side, 0, -FRACUNIT * l->special_args[0] / 64, -1, j, accel, l->special_args[1]);
       break;
     case zl_scroll_texture_both:
       j = lines[i].sidenum[0];
@@ -4097,7 +4116,7 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       if (l->special_args[0] == 0) {
         dx = FRACUNIT * (l->special_args[1] - l->special_args[2]) / 64;
         dy = FRACUNIT * (l->special_args[4] - l->special_args[3]) / 64;
-        Add_Scroller(sc_side, dx, dy, -1, j, accel);
+        Add_Scroller(sc_side, dx, dy, -1, j, accel, 0);
       }
 
       l->special = 0;
@@ -6686,7 +6705,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
 
         for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          Add_Scroller(sc_side, args[1], args[2], -1, lines[*id_p].sidenum[side], 0);
+          Add_Scroller(sc_side, args[1], args[2], -1, lines[*id_p].sidenum[side], 0, args[4]);
         }
 
         buttonSuccess = 1;

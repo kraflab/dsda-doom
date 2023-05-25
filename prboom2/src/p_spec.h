@@ -907,6 +907,10 @@ typedef struct
 
 // killough 3/7/98: Add generalized scroll effects
 
+#define SCROLL_TOP    0x01
+#define SCROLL_MID    0x02
+#define SCROLL_BOTTOM 0x04
+
 typedef struct {
   thinker_t thinker;   // Thinker structure for scrolling
   fixed_t dx, dy;      // (dx,dy) scroll speeds
@@ -915,6 +919,7 @@ typedef struct {
   fixed_t last_height; // Last known height of control sector
   fixed_t vdx, vdy;    // Accumulated velocity if accelerative
   int accel;           // Whether it's accelerative
+  int flags;
   enum
   {
     sc_side,
