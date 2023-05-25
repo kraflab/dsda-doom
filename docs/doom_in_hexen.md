@@ -455,7 +455,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 - Thing_Hate only supports 0 for the third argument ("target only").
 - ThrustThing has an implicit speed limit.
 - Poly objects have no sound (no SNDSEQ lump support to define it yet).
-- Poly objects may have visual errors (especially for large objects).
+- Poly objects may have visual errors in software mode.
 
 ### Sector Specials
 
