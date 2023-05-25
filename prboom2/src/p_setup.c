@@ -2654,6 +2654,14 @@ static void P_CreateBlockMap(void)
 
   // scan for map limits, which the blockmap must enclose
 
+  // This fixes MBF's code, which has a bug where maxx/maxy
+  // are wrong if the 0th node has the largest x or y
+  if (numvertexes)
+  {
+    map_minx = map_maxx = vertexes[0].x;
+    map_miny = map_maxy = vertexes[0].y;
+  }
+
   for (i=0;i<numvertexes;i++)
   {
     fixed_t t;
