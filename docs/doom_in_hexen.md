@@ -224,7 +224,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 49    | GlassBreak                      | :comet:            |
 | 50    | ExtraFloor_LightOnly            | :x:                |
 | 51    | Sector_SetLink                  | :x:                |
-| 52    | Scroll_Wall                     | :warning:          |
+| 52    | Scroll_Wall                     | :heavy_check_mark: |
 | 53    | Line_SetTextureOffset           | :heavy_check_mark: |
 | 54    | Sector_ChangeFlags              | :warning:          |
 | 55    | Line_SetBlocking                | :warning:          |
@@ -272,10 +272,10 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 97    | Ceiling_LowerAndCrushDist       | :heavy_check_mark: |
 | 98    | Sector_SetTranslucent           | :x:                |
 | 99    | Floor_RaiseAndCrushDoom         | :heavy_check_mark: |
-| 100   | Scroll_Texture_Left             | :warning:          |
-| 101   | Scroll_Texture_Right            | :warning:          |
-| 102   | Scroll_Texture_Up               | :warning:          |
-| 103   | Scroll_Texture_Down             | :warning:          |
+| 100   | Scroll_Texture_Left             | :heavy_check_mark: |
+| 101   | Scroll_Texture_Right            | :heavy_check_mark: |
+| 102   | Scroll_Texture_Up               | :heavy_check_mark: |
+| 103   | Scroll_Texture_Down             | :heavy_check_mark: |
 | 104   | Ceiling_CrushAndRaiseSilentDist | :heavy_check_mark: |
 | 105   | Door_WaitRaise                  | :heavy_check_mark: |
 | 106   | Door_WaitClose                  | :heavy_check_mark: |
@@ -377,7 +377,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 222   | Scroll_Texture_Model            | :heavy_check_mark: |
 | 223   | Scroll_Floor                    | :heavy_check_mark: |
 | 224   | Scroll_Ceiling                  | :heavy_check_mark: |
-| 225   | Scroll_Texture_Offsets          | :warning:          |
+| 225   | Scroll_Texture_Offsets          | :heavy_check_mark: |
 | 226   | ACS_ExecuteAlways               | :comet:            |
 | 227   | PointPush_SetForce              | :heavy_check_mark: |
 | 228   | Plat_RaiseAndStayTx0            | :heavy_check_mark: |
@@ -440,7 +440,6 @@ This page tracks support for the "Doom in Hexen" map format and related features
 #### Notes
 
 - Specials above 255 are not accessible in hexen format.
-- Wall scrollers cannot distinguish between top, bottom, and mid textures.
 - The static init supports damage, gravity, and skies only.
 - Teleporting to a specific map currently...
   - Always triggers the intermission screen
