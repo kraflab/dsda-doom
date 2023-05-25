@@ -2306,6 +2306,9 @@ static void P_LoadUDMFLineDefs(int lump)
         Z_Free(more_ids);
       }
     }
+
+    if (ld->flags & ML_WRAPMIDTEX)
+      dsda_PreferOpenGL();
   }
 }
 
@@ -2554,6 +2557,12 @@ static void P_LoadUDMFSideDefs(int lump)
     sd->midtexture = R_SafeTextureNumForName(msd->texturemiddle, i);
     sd->toptexture = R_SafeTextureNumForName(msd->texturetop, i);
     sd->bottomtexture = R_SafeTextureNumForName(msd->texturebottom, i);
+
+    if (sd->scalex_top != FRACUNIT || sd->scaley_top != FRACUNIT ||
+        sd->scalex_mid != FRACUNIT || sd->scaley_mid != FRACUNIT ||
+        sd->scalex_bottom != FRACUNIT || sd->scaley_bottom != FRACUNIT ||
+        sd->flags & SF_WRAPMIDTEX)
+      dsda_PreferOpenGL();
   }
 }
 
