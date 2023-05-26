@@ -1048,10 +1048,6 @@ void gld_EndDrawScene(void)
   glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
   gld_Set2DMode();
 
-  glsl_PushMainShader();
-  R_DrawPlayerSprites();
-  glsl_PopMainShader();
-
   // e6y
   // Effect of invulnerability uses a colormap instead of hard-coding now
   // See nuts.wad
@@ -1089,6 +1085,10 @@ void gld_EndDrawScene(void)
 
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
   }
+
+  glsl_PushMainShader();
+  R_DrawPlayerSprites();
+  glsl_PopMainShader();
 
   glColor3f(1.0f,1.0f,1.0f);
   glDisable(GL_SCISSOR_TEST);
