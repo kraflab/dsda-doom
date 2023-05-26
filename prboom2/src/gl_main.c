@@ -777,7 +777,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
 {
   GLTexture *gltexture;
   float fU1,fU2,fV1,fV2;
-  int x1,y1,x2,y2;
+  float x1,y1,x2,y2;
   float light;
 
   gltexture=gld_RegisterPatch(firstspritelump+weaponlump, CR_DEFAULT, false, true);
@@ -792,10 +792,13 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   // More precise weapon drawing:
   // Shotgun from DSV3_War looks correctly now. Especially during movement.
   // There is no more line of graphics under certain weapons.
-  x1=vis->x1;
-  x2=x1+(int)((float)gltexture->realtexwidth*pspritexscale_f);
-  y1=centery-(int)(((float)vis->texturemid/(float)FRACUNIT)*pspriteyscale_f);
-  y2=y1+(int)((float)gltexture->realtexheight*pspriteyscale_f)+1;
+  x1 = vis->x1;
+  x2 = x1 + gltexture->realtexwidth * pspritexscale_f;
+  y1 = centery - vis->texturemid * pspriteyscale_f / FRACUNIT;
+  y2 = y1 + gltexture->realtexheight * pspriteyscale_f;
+  x2 = roundf(x2);
+  y1 = roundf(y1);
+  y2 = roundf(y2);
   // e6y: don't do the gamma table correction on the lighting
   light = (float)lightlevel / 255.0f;
 
@@ -814,10 +817,14 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
       gld_StaticLight(light);
   }
   glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(fU1, fV1); glVertex2f((float)(x1),(float)(y1));
-    glTexCoord2f(fU1, fV2); glVertex2f((float)(x1),(float)(y2));
-    glTexCoord2f(fU2, fV1); glVertex2f((float)(x2),(float)(y1));
-    glTexCoord2f(fU2, fV2); glVertex2f((float)(x2),(float)(y2));
+  glTexCoord2f(fU1, fV1);
+  glVertex2f(x1, y1);
+  glTexCoord2f(fU1, fV2);
+  glVertex2f(x1, y2);
+  glTexCoord2f(fU2, fV1);
+  glVertex2f(x2, y1);
+  glTexCoord2f(fU2, fV2);
+  glVertex2f(x2, y2);
   glEnd();
   if(!vis->colormap)
   {
