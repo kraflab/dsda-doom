@@ -1241,7 +1241,7 @@ static void P_SetFloorChangeType(floormove_t *floor, sector_t *sec, int change)
       floor->type = genFloorChg;
       break;
     case 3:
-      P_TransferSpecial(sec, &floor->newspecial);
+      P_CopyTransferSpecial(&floor->newspecial, sec);
       floor->type = genFloorChgT;
       break;
   }
