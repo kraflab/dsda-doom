@@ -151,7 +151,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_integer_scaling),
   MIGRATED_SETTING(dsda_config_render_aspect),
   MIGRATED_SETTING(dsda_config_render_doom_lightmaps),
-  MIGRATED_SETTING(dsda_config_fake_contrast),
+  MIGRATED_SETTING(dsda_config_fake_contrast_mode),
   MIGRATED_SETTING(dsda_config_render_stretch_hud),
   MIGRATED_SETTING(dsda_config_render_patches_scalex),
   MIGRATED_SETTING(dsda_config_render_patches_scaley),

@@ -25,6 +25,7 @@
 #include "gl_struct.h"
 #include "lprintf.h"
 #include "r_main.h"
+#include "r_segs.h"
 #include "s_sound.h"
 #include "smooth.h"
 #include "v_video.h"
@@ -86,7 +87,6 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 extern int full_sounds;
-extern int fake_contrast;
 
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
@@ -1099,9 +1099,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "render_doom_lightmaps", dsda_config_render_doom_lightmaps,
     CONF_BOOL(0)
   },
-  [dsda_config_fake_contrast] = {
-    "fake_contrast", dsda_config_fake_contrast,
-    CONF_BOOL(1), &fake_contrast
+  [dsda_config_fake_contrast_mode] = {
+    "fake_contrast_mode", dsda_config_fake_contrast_mode,
+    dsda_config_int, FAKE_CONTRAST_MODE_OFF, FAKE_CONTRAST_MODE_SMOOTH,
+    { FAKE_CONTRAST_MODE_ON }, (int*) &fake_contrast_mode
   },
   [dsda_config_render_stretch_hud] = {
     "render_stretch_hud", dsda_config_render_stretch_hud,
