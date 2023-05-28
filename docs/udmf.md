@@ -2,6 +2,13 @@
 
 This page tracks support for the universal doom map format, as seen in ZDoom. See the [Doom in Hexen docs](./doom_in_hexen.md) for more information about which specials and thing types are supported.
 
+In principle, udmf features supported in dsda-doom should work the same as they do in gzdoom. However, there may be maps that do not work in one port or the other due to differences in the underlying physics, similar to other map formats. Significant deviation in behaviour is likely a bug.
+
+Known differences (to be fixed):
+- dsda-doom acts as if ActivateOwnDeathSpecials is set to 1 by default (hexen behaviour)
+  - If you use death specials, add a MAPINFO lump that sets this flag to ensure your project works in other ports (and future versions of dsda-doom)
+- dsda-doom does not support finite monster height
+
 ### Legend
 
 | Symbol             | Meaning                      |
