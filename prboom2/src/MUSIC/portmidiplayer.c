@@ -109,7 +109,7 @@ static int mus_portmidi_chorus_level; // portmidi chorus send level
 // so the messages appear in the future.  ~46-47ms is the nominal length if i_sound.c gets its way
 #define DRIVER_LATENCY 80 // ms
 // driver event buffer needs to be big enough to hold however many events occur in latency time
-#define DRIVER_BUFFER 100 // events
+#define DRIVER_BUFFER 1024 // events
 
 static const char *pm_name (void)
 {
