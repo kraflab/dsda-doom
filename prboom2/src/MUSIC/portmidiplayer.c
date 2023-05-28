@@ -109,7 +109,7 @@ static int mus_portmidi_chorus_level; // portmidi chorus send level
 // so the messages appear in the future.  ~46-47ms is the nominal length if i_sound.c gets its way
 #define DRIVER_LATENCY 80 // ms
 // driver event buffer needs to be big enough to hold however many events occur in latency time
-#define DRIVER_BUFFER 100 // events
+#define DRIVER_BUFFER 1024 // events
 
 static const char *pm_name (void)
 {
@@ -651,7 +651,6 @@ static void pm_render (void *vdest, unsigned bufflen)
               {
                 writeevent (when, 0xB0, i, 0x7B, 0x00); // all notes off
                 writeevent (when, 0xB0, i, 0x79, 0x00); // reset all controllers
-                write_volume (when, i, channel_volume[i]); // reapply volume
               }
               continue;
             }
@@ -667,9 +666,8 @@ static void pm_render (void *vdest, unsigned bufflen)
         }
         else if (currevent->data.channel.param1 == 0x79)
         {
-          int i = currevent->data.channel.channel;
-          writeevent (when, 0xB0, i, 0x79, 0x00); // reset all controllers
-          write_volume (when, i, channel_volume[i]); // reapply volume
+          // ms gs synth resets volume if "reset all controllers" value isn't zero
+          writeevent (when, 0xB0, currevent->data.channel.channel, 0x79, 0x00);
           break;
         }
         // fall through
