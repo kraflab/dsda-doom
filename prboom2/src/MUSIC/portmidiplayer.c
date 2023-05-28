@@ -651,7 +651,6 @@ static void pm_render (void *vdest, unsigned bufflen)
               {
                 writeevent (when, 0xB0, i, 0x7B, 0x00); // all notes off
                 writeevent (when, 0xB0, i, 0x79, 0x00); // reset all controllers
-                write_volume (when, i, channel_volume[i]); // reapply volume
               }
               continue;
             }
@@ -667,9 +666,8 @@ static void pm_render (void *vdest, unsigned bufflen)
         }
         else if (currevent->data.channel.param1 == 0x79)
         {
-          int i = currevent->data.channel.channel;
-          writeevent (when, 0xB0, i, 0x79, 0x00); // reset all controllers
-          write_volume (when, i, channel_volume[i]); // reapply volume
+          // ms gs synth resets volume if "reset all controllers" value isn't zero
+          writeevent (when, 0xB0, currevent->data.channel.channel, 0x79, 0x00);
           break;
         }
         // fall through
