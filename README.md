@@ -44,7 +44,7 @@ There is a dedicated launcher for this port available [here](https://github.com/
 ### Heretic Support
 - DSDA-Doom includes demo-compatible support for heretic (all the demos stored on dsda are in sync).
 - Heretic game logic should be set automatically if you use `HERETIC.WAD` as the iwad. If it doesn't work, please use the `-heretic` commandline option. This flips a switch in the engine that determines all the core game data.
-- You do not need to (and can't) set the complevel when playing heretic. It is implicitly set to `0`, since heretic is based on doom v1.2.
+- Don't need to supply complevel (heretic is complevel 0 by necessity)
 - Known issues
   - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for heretic (it will default instead to "Doom format").
   - The "Apply multisampling" automap option is disabled for heretic.
