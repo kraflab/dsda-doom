@@ -1,9 +1,9 @@
-# dsda-doom v0.25.6
+# dsda-doom v0.26.0
 This is a fork of prboom+ with many new features, including:
-- Heretic, Hexen, MBF21, and Doom-in-Hexen support
+- Heretic, Hexen, MBF21, Doom-in-Hexen, and UDMF support
 - In-game console and scripting
 - Full controller support
-- Palette-based lightmode for opengl
+- Palette-based opengl renderer
 - Debugging features for testing
 - Strict mode for speedrunning
 - Various quality of life improvements
@@ -13,15 +13,18 @@ This is a fork of prboom+ with many new features, including:
 Download windows releases [here](https://drive.google.com/drive/folders/1KMU1dY0HZrY5h2EyPzxxXuyH8DunAJV_?usp=sharing).
 
 ### Patch Notes
+- [v0.26](./patch_notes/v0.26.md)
 - [v0.25](./patch_notes/v0.25.md)
 - [v0.24](./patch_notes/v0.24.md)
-- [v0.23](./patch_notes/v0.23.md)
 
 ### Launcher
 There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
 
 ### Doom-in-Hexen Support
 - [Full details](./docs/doom_in_hexen.md)
+
+### UDMF Support
+- [Full details](./docs/udmf.md)
 
 ### Hexen Support
 - DSDA-Doom includes demo-compatible support for hexen.
