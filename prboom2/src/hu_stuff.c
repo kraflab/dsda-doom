@@ -106,6 +106,7 @@ static void HU_FetchTitle(void)
 static void HU_InitMessages(void)
 {
   custom_message_p = &custom_message[displayplayer];
+  custom_message_p->ticks = 0;
 }
 
 static void HU_InitPlayer(void)
