@@ -15,4 +15,5 @@
 //	DSDA Endoom
 //
 
+void dsda_CacheEndoom(void);
 void dsda_DumpEndoom(void);

@@ -304,10 +304,11 @@ typedef enum {
   format_utf8,
 } output_format_t;
 
-void dsda_DumpEndoom(void) {
+static byte* endoom;
+static output_format_t output_format;
+
+void dsda_CacheEndoom(void) {
   int lump;
-  const byte* endoom;
-  output_format_t output_format;
 
   output_format = dsda_IntConfig(dsda_config_ansi_endoom);
 
@@ -328,8 +329,11 @@ void dsda_DumpEndoom(void) {
   if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000)
     return;
 
-  endoom = W_LumpByNum(lump);
+  endoom = Z_Malloc(4000);
+  memcpy(endoom, W_LumpByNum(lump), 4000);
+}
 
+void dsda_DumpEndoom(void) {
   if (endoom) {
     int i;
     const char* color_lookup[] = {
@@ -365,5 +369,8 @@ void dsda_DumpEndoom(void) {
     }
 
     lprintf(LO_INFO, "\n");
+
+    Z_Free(endoom);
+    endoom = NULL;
   }
 }

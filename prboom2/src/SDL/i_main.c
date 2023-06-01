@@ -209,6 +209,8 @@ static void I_EssentialQuit (void)
   dsda_SaveWadStats();
   // We need to close out all wad handles/memory mappings before we can remove
   // temporary wads on Windows
+  // Read Endoom before dumping the wads!
+  dsda_CacheEndoom();
   W_Shutdown();
   dsda_CleanZipTempDirs();
 }
