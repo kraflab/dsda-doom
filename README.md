@@ -1,4 +1,4 @@
-# dsda-doom v0.26.0
+# dsda-doom v0.26.1
 This is a fork of prboom+ with many new features, including:
 - Heretic, Hexen, MBF21, Doom-in-Hexen, and UDMF support
 - In-game console and scripting
