@@ -40,6 +40,37 @@ typedef enum {
 int dsda_DoorType(int index) {
   int special = lines[index].special;
 
+  if (map_format.zdoom) {
+    int lock;
+
+    if (special == 13)
+      lock = lines[index].special_args[3];
+    else
+      lock = lines[index].locknumber;
+
+    switch (lock) {
+      case zk_none:
+        return door_type_none;
+      case zk_red_card:
+      case zk_red_skull:
+      case zk_red:
+      case zk_redx:
+        return door_type_red;
+      case zk_blue_card:
+      case zk_blue_skull:
+      case zk_blue:
+      case zk_bluex:
+        return door_type_blue;
+      case zk_yellow_card:
+      case zk_yellow_skull:
+      case zk_yellow:
+      case zk_yellowx:
+        return door_type_yellow;
+      default:
+        return door_type_unknown;
+    }
+  }
+
   if (map_format.hexen) {
     if (special == 13 || special == 83)
       return door_type_unknown;
