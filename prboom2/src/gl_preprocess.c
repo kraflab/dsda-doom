@@ -1115,9 +1115,7 @@ void gld_PreprocessLevel(void)
 
 void gld_ProcessTexturedMap(void)
 {
-  extern int map_textured;
-
-  if (map_textured && subsectorloops && subsectorloops[0].loops == NULL)
+  if (subsectorloops && subsectorloops[0].loops == NULL)
   {
     gld_TurnOnSubsectorTriangulation();
 
