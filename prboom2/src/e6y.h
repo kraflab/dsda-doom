@@ -110,7 +110,6 @@ void M_ChangeMaxViewPitch(void);
 
 void M_ChangeFOV(void);
 
-void M_ChangeAllowFog(void);
 void M_ChangeSpeed(void);
 void M_ChangeScreenMultipleFactor(void);
 void M_ChangeInterlacedScanning(void);
