@@ -127,7 +127,6 @@ typedef struct
   float ytop,ybottom;
   float ul,ur,vt,vb;
   float light;
-  float fogdensity;
   float alpha;
   float skypitch;
   float skyyaw;
@@ -252,7 +251,6 @@ typedef struct
   float x2,y2;
   float light;
   float alpha;
-  float fogdensity;
   fixed_t scale;
   GLTexture *gltexture;
   uint64_t flags;
@@ -429,14 +427,6 @@ int gld_GetGunFlashLight(void);
 
 float gld_CalcLightLevel(int lightlevel);
 float gld_Calc2DLightLevel(int lightlevel);
-
-//fog
-extern int gl_fog;
-extern int gl_use_fog;
-void gl_EnableFog(int on);
-void gld_SetFog(float fogdensity);
-
-float gld_CalcFogDensity(sector_t *sector, int lightlevel, GLDrawItemType type);
 
 // SkyBox
 #define SKY_NONE    0

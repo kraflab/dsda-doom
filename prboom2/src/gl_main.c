@@ -92,8 +92,6 @@ float bw_blue = 0.11f;
 
 const int tran_filter_pct = 66;
 
-dboolean use_fog=false;
-
 GLfloat gl_texture_filter_anisotropic;
 
 extern int gld_paletteIndex;
@@ -102,8 +100,6 @@ extern int playpal_white;
 
 //sprites
 const float gl_spriteclip_threshold_f = 10.f / MAP_COEFF;
-
-int fog_density=200;
 
 GLfloat gl_whitecolor[4]={1.0f,1.0f,1.0f,1.0f};
 
@@ -232,7 +228,6 @@ void gld_Init(int width, int height)
   glsl_Init();
   gld_FlushTextures(); // TODO: should this be here?
   M_ChangeSkyMode();
-  M_ChangeAllowFog();
 
 #ifdef HAVE_LIBSDL2_IMAGE
   gld_InitMapPics();
@@ -998,9 +993,6 @@ void gld_StartDrawScene(void)
 
   gl_spriteindex = 0;
 
-  //e6y: fog in frame
-  gl_use_fog = gl_fog && !frame_fixedcolormap && !boom_cm;
-
   pitch = ANGLE_T_TO_PITCH_F(viewpitch);
   viewPitch = (pitch > 180 ? pitch - 360 : pitch);
   paperitems_pitch = ((pitch > 87.0f && pitch <= 90.0f) ? 87.0f : pitch);
@@ -1052,7 +1044,6 @@ void gld_EndDrawScene(void)
   glDisable(GL_POLYGON_SMOOTH);
 
   glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
-  gl_EnableFog(false);
   gld_Set2DMode();
 
   glsl_SetMainShaderActive();
@@ -1282,7 +1273,6 @@ void gld_AddWall(seg_t *seg)
 
   R_AddContrast(seg, &base_lightlevel);
 
-  wall.fogdensity = gld_CalcFogDensity(frontsector, frontsector->lightlevel, GLDIT_WALL);
   wall.alpha=1.0f;
   wall.gltexture=NULL;
   wall.seg = seg; //e6y
@@ -1779,7 +1769,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
       return;
     // get the lightlevel from floorlightlevel
     flat.light=gld_CalcLightLevel(plane->lightlevel+gld_GetGunFlashLight());
-    flat.fogdensity = gld_CalcFogDensity(sector, plane->lightlevel, GLDIT_FLOOR);
     // calculate texture offsets
     if (sector->floor_xoffs | sector->floor_yoffs)
     {
@@ -1883,7 +1872,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
       return;
     // get the lightlevel from ceilinglightlevel
     flat.light=gld_CalcLightLevel(plane->lightlevel+gld_GetGunFlashLight());
-    flat.fogdensity = gld_CalcFogDensity(sector, plane->lightlevel, GLDIT_CEILING);
     // calculate texture offsets
     if (sector->ceiling_xoffs | sector->ceiling_yoffs)
     {
@@ -2319,13 +2307,11 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   sprite.scale = FixedDiv(projectiony, tz);;
   if ((thing->frame & FF_FULLBRIGHT) || dsda_ShowAliveMonsters())
   {
-    sprite.fogdensity = 0.0f;
     sprite.light = 1.0f;
   }
   else
   {
     sprite.light = gld_CalcLightLevel(lightlevel+gld_GetGunFlashLight());
-    sprite.fogdensity = gld_CalcFogDensity(thing->subsector->sector, lightlevel, GLDIT_SPRITE);
   }
   if (thing->color)
     sprite.cm = thing->color;
@@ -2510,18 +2496,6 @@ void gld_DrawProjectedWalls(GLDrawItemType itemtype)
     {
       GLWall *wall = gld_drawinfo.items[itemtype][i].item.wall;
 
-      if (gl_use_fog)
-      {
-        // calculation of fog density for flooded walls
-        if (wall->seg->backsector)
-        {
-          wall->fogdensity = gld_CalcFogDensity(wall->seg->frontsector,
-            wall->seg->backsector->lightlevel, itemtype);
-        }
-
-        gld_SetFog(wall->fogdensity);
-      }
-
       gld_ProcessWall(wall);
     }
     glDisable(GL_STENCIL_TEST);
@@ -2535,12 +2509,7 @@ void gld_DrawScene(player_t *player)
 {
   int i;
 
-  //e6y: must call it twice for correct initialisation
   glEnable(GL_ALPHA_TEST);
-
-  //e6y: the same with fog
-  gl_EnableFog(true);
-  gl_EnableFog(false);
 
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -2577,7 +2546,6 @@ void gld_DrawScene(player_t *player)
   gld_DrawItemsSortByTexture(GLDIT_FLOOR);
   for (i = gld_drawinfo.num_items[GLDIT_FLOOR] - 1; i >= 0; i--)
   {
-    gld_SetFog(gld_drawinfo.items[GLDIT_FLOOR][i].item.flat->fogdensity);
     gld_DrawFlat(gld_drawinfo.items[GLDIT_FLOOR][i].item.flat);
   }
 
@@ -2586,7 +2554,6 @@ void gld_DrawScene(player_t *player)
   gld_DrawItemsSortByTexture(GLDIT_CEILING);
   for (i = gld_drawinfo.num_items[GLDIT_CEILING] - 1; i >= 0; i--)
   {
-    gld_SetFog(gld_drawinfo.items[GLDIT_CEILING][i].item.flat->fogdensity);
     gld_DrawFlat(gld_drawinfo.items[GLDIT_CEILING][i].item.flat);
   }
 
@@ -2597,7 +2564,6 @@ void gld_DrawScene(player_t *player)
   gld_DrawItemsSortByTexture(GLDIT_WALL);
   for (i = gld_drawinfo.num_items[GLDIT_WALL] - 1; i >= 0; i--)
   {
-    gld_SetFog(gld_drawinfo.items[GLDIT_WALL][i].item.wall->fogdensity);
     gld_ProcessWall(gld_drawinfo.items[GLDIT_WALL][i].item.wall);
   }
 
@@ -2614,7 +2580,6 @@ void gld_DrawScene(player_t *player)
       GLWall *wall = gld_drawinfo.items[GLDIT_MWALL][i].item.wall;
       if (!(wall->gltexture->flags & GLTEXTURE_HASHOLES))
       {
-        gld_SetFog(wall->fogdensity);
         gld_ProcessWall(wall);
       }
     }
@@ -2630,7 +2595,6 @@ void gld_DrawScene(player_t *player)
       GLWall *wall = gld_drawinfo.items[GLDIT_MWALL][i].item.wall;
       if (wall->gltexture->flags & GLTEXTURE_HASHOLES)
       {
-        gld_SetFog(wall->fogdensity);
         gld_ProcessWall(wall);
       }
     }
@@ -2652,17 +2616,13 @@ void gld_DrawScene(player_t *player)
     // opaque mid walls
     for (i = gld_drawinfo.num_items[GLDIT_MWALL] - 1; i >= 0; i--)
     {
-      gld_SetFog(gld_drawinfo.items[GLDIT_MWALL][i].item.wall->fogdensity);
       gld_ProcessWall(gld_drawinfo.items[GLDIT_MWALL][i].item.wall);
     }
   }
 
-  gl_EnableFog(false);
-
   // projected walls
   gld_DrawProjectedWalls(GLDIT_FWALL);
 
-  gl_EnableFog(false);
   glEnable(GL_ALPHA_TEST);
 
   // normal sky (not a skybox)
@@ -2679,7 +2639,6 @@ void gld_DrawScene(player_t *player)
   gld_DrawItemsSortSprites(GLDIT_SPRITE);
   for (i = gld_drawinfo.num_items[GLDIT_SPRITE] - 1; i >= 0; i--)
   {
-    gld_SetFog(gld_drawinfo.items[GLDIT_SPRITE][i].item.sprite->fogdensity);
     gld_DrawSprite(gld_drawinfo.items[GLDIT_SPRITE][i].item.sprite);
   }
 
@@ -2771,7 +2730,6 @@ void gld_DrawScene(player_t *player)
       if (draw_tsprite)
       {
         /* transparent sprite is farther, draw it */
-        gld_SetFog(gld_drawinfo.items[GLDIT_TSPRITE][tsprite_idx].item.sprite->fogdensity);
         gld_DrawSprite(gld_drawinfo.items[GLDIT_TSPRITE][tsprite_idx].item.sprite);
         tsprite_idx--;
       }
@@ -2779,7 +2737,6 @@ void gld_DrawScene(player_t *player)
       {
         glDepthMask(GL_FALSE);
         /* transparent wall is farther, draw it */
-        gld_SetFog(gld_drawinfo.items[GLDIT_TWALL][twall_idx].item.wall->fogdensity);
         gld_ProcessWall(gld_drawinfo.items[GLDIT_TWALL][twall_idx].item.wall);
         glDepthMask(GL_TRUE);
         twall_idx--;
