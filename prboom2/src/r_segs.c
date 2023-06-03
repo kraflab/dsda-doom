@@ -262,6 +262,42 @@ void R_AddContrast(seg_t *seg, int *base_lightlevel)
   };
 }
 
+static dboolean GL_FakeContrast(gl_wall_t *seg, side_t* sidedef)
+{
+  return fake_contrast && !(sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
+}
+
+
+void GL_AddContrast(gl_wall_t *wall, int *base_lightlevel)
+{
+  side_t* sidedef = &sides[wall->sidedef];
+  vertex_t* v1 = &vertexes[wall->v1id];
+  vertex_t* v2 = &vertexes[wall->v2id];
+  /* cph - ...what is this for? adding contrast to rooms?
+   * It looks crap in outdoor areas */
+  if (GL_FakeContrast(wall, sidedef))
+  {
+    if (v1->y == v2->y)
+    {
+      *base_lightlevel -= fake_contrast_value;
+    }
+    else if (v2->x == v1->x)
+    {
+      *base_lightlevel += fake_contrast_value;
+    }
+    else if (fake_contrast == 2 || sidedef->flags & SF_SMOOTHLIGHTING)
+    {
+      double dx, dy;
+
+      dx = (double) (v2->x - v1->x) / FRACUNIT;
+      dy = (double) (v2->y - v1->y) / FRACUNIT;
+
+      *base_lightlevel +=
+        lround(fabs(atan(dy / dx) * 2 / M_PI) * (2 * fake_contrast_value) - fake_contrast_value);
+    }
+  };
+}
+
 const lighttable_t** GetLightTable(int lightlevel)
 {
   int lightnum;
@@ -688,15 +724,6 @@ void R_StoreWallRange(const int start, const int stop)
 
   if(curline->linedef)
     curline->linedef->flags |= ML_MAPPED;
-
-  if (V_IsOpenGLMode())
-  {
-    // proff 11/99: the rest of the calculations is not needed for OpenGL
-    ds_p++->curline = curline;
-    gld_AddWall(curline);
-
-    return;
-  }
 
 #ifdef RANGECHECK
   if (start >=viewwidth || start > stop)

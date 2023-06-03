@@ -41,5 +41,6 @@ int R_TopLightLevel(side_t *side, int base_lightlevel);
 int R_MidLightLevel(side_t *side, int base_lightlevel);
 int R_BottomLightLevel(side_t *side, int base_lightlevel);
 void R_AddContrast(seg_t *seg, int *base_lightlevel);
+void GL_AddContrast(gl_wall_t *seg, int *base_lightlevel);
 
 #endif

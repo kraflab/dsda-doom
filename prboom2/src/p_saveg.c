@@ -162,7 +162,7 @@ void P_ArchiveWorld (void)
 {
   int            i;
   const sector_t *sec;
-  const line_t   *li;
+  line_t   *li;
   const side_t   *si;
 
   for (i = 0, sec = sectors; i < numsectors; i++, sec++)
@@ -197,6 +197,9 @@ void P_ArchiveWorld (void)
   for (i = 0, li = lines; i < numlines; i++, li++)
   {
     int j;
+
+    if (gl_rstate.map_lines_seen[i])
+      li->flags |= ML_MAPPED;
 
     P_SAVE_X(li->flags);
     P_SAVE_X(li->special);

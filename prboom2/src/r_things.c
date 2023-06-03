@@ -912,9 +912,8 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
 // During BSP traversal, this adds sprites by sector.
 //
 // killough 9/18/98: add lightlevel as parameter, fixing underwater lighting
-void R_AddSprites(subsector_t* subsec, int lightlevel)
+void R_AddSprites(sector_t* sec, int lightlevel)
 {
-  sector_t* sec=subsec->sector;
   mobj_t *thing;
 
   if (compatibility_level <= boom_202_compatibility)

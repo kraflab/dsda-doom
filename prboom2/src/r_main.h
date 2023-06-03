@@ -130,8 +130,12 @@ PUREFUNC int R_CompatiblePointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
 PUREFUNC int R_ZDoomPointOnSegSide(fixed_t x, fixed_t y, const seg_t *line);
 extern int (*R_PointOnSegSide)(fixed_t x, fixed_t y, const seg_t *line);
 
+PUREFUNC int GL_PointOnSegSide(fixed_t x, fixed_t y, const vertex_t *v1, const vertex_t *v2);
+
 angle_t R_PointToAngle2(fixed_t x1, fixed_t y1, fixed_t x, fixed_t y);
 subsector_t *R_PointInSubsector(fixed_t x, fixed_t y);
+
+subsector_t *GL_PointInSubsector(fixed_t x, fixed_t y);
 
 //e6y: made more precise
 angle_t R_PointToAngleEx(fixed_t x, fixed_t y);
@@ -161,5 +165,6 @@ extern int viewport[4];
 extern float modelMatrix[16];
 extern float projMatrix[16];
 int R_Project(float objx, float objy, float objz, float *winx, float *winy, float *winz);
+void R_MultMatrixVecd(const float matrix[16], const float in[4], float out[4]);
 
 #endif

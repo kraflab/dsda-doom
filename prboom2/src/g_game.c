@@ -88,6 +88,7 @@
 #include "dsda.h"
 #include "dsda/args.h"
 #include "dsda/brute_force.h"
+#include "dsda/bsp.h"
 #include "dsda/build.h"
 #include "dsda/configuration.h"
 #include "dsda/console.h"
@@ -2283,26 +2284,36 @@ const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 
 //==========================================================================
 //
-// RecalculateDrawnSubsectors
+// RecalculateDrawnChunks
 //
-// In case the subsector data is unusable this function tries to reconstruct
+// In case the chunk data is unusable this function tries to reconstruct
 // if from the linedefs' ML_MAPPED info.
 //
 //==========================================================================
 
-void RecalculateDrawnSubsectors(void)
+// FIXME: why is this here?
+void G_RecalculateDrawnChunks(void)
 {
   int i, j;
 
-  for (i = 0; i < numsubsectors; i++)
+  memset(gl_rstate.map_chunks, 0,
+         sizeof(*gl_rstate.map_chunks) * gl_rstate.numchunks);
+
+  for (i = 0; i < gl_rstate.numchunks; i++)
   {
-    subsector_t *sub = &subsectors[i];
-    seg_t *seg = &segs[sub->firstline];
-    for (j = 0; j < sub->numlines; j++, seg++)
+    chunkmeta_t *chunkmeta = &dsda_gl_rstate.chunkmeta[i];
+    subsector_t* sub;
+    int subnum;
+
+    for (subnum = chunkmeta->subsectors; subnum != -1;
+         subnum = dsda_gl_rstate.submeta[subnum].chunk_next)
     {
-      if (seg->linedef && seg->linedef->flags & ML_MAPPED)
+      sub = &gl_rstate.subsectors[subnum];
+      for (j = 0; j < sub->numlines; j++)
       {
-        map_subsectors[i] = 1;
+        seg_t *seg = &gl_rstate.segs[sub->firstline + j];
+        if (seg->linedef && seg->linedef->flags & ML_MAPPED)
+          gl_rstate.map_chunks[i] = 1;
       }
     }
   }
@@ -2317,7 +2328,13 @@ void G_AfterLoad(void)
   R_ActivateSectorInterpolations(); //e6y
   R_SmoothPlaying_Reset(NULL); // e6y
 
-  RecalculateDrawnSubsectors();
+  if (musinfo.current_item != -1)
+  {
+    S_ChangeMusInfoMusic(musinfo.current_item, true);
+  }
+
+  if (V_IsOpenGLMode())
+    G_RecalculateDrawnChunks();
 
   if (hexen)
   {

@@ -109,8 +109,6 @@ side_t   *sides;
 int      *sslines_indexes;
 ssline_t *sslines;
 
-byte     *map_subsectors;
-
 // GL-only structures
 gl_rstate_t gl_rstate = {0};
 
@@ -508,12 +506,6 @@ static int checkGLVertex(int num)
   if (num & 0x8000)
     num = (num&0x7FFF)+firstglvertex;
   return num;
-}
-
-static float GetTexelDistance(int dx, int dy)
-{
-  float fx = (float)(dx)/FRACUNIT, fy = (float)(dy)/FRACUNIT;
-  return (float)((int)(0.5f + (float)sqrt(fx*fx + fy*fy)));
 }
 
 static int GetOffset(vertex_t *v1, vertex_t *v2)
@@ -2014,8 +2006,6 @@ static void P_CalculateLineDefProperties(line_t *ld)
   // Rounding the wall length to the nearest integer
   // when determining length instead of always rounding down
   // There is no more glitches on seams between identical textures.
-  ld->texel_length = GetTexelDistance(ld->dx, ld->dy);
-
   ld->slopetype = !ld->dx                      ? ST_VERTICAL   :
                   !ld->dy                      ? ST_HORIZONTAL :
                   FixedDiv(ld->dy, ld->dx) > 0 ? ST_POSITIVE   : ST_NEGATIVE;
@@ -3773,7 +3763,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     Z_Free(segs);
     Z_Free(nodes);
     Z_Free(subsectors);
-    Z_Free(map_subsectors);
 
     Z_Free(blocklinks);
     Z_Free(blockmaplump);
@@ -3867,9 +3856,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   {
     P_InitSubsectorsLines();
   }
-
-  map_subsectors = calloc_IfSameLevel(map_subsectors,
-    numsubsectors, sizeof(map_subsectors[0]));
 
   gl_rstate.map_lines_seen = calloc_IfSameLevel(
       gl_rstate.map_lines_seen, numlines, sizeof(gl_rstate.map_lines_seen[0]));

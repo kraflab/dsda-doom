@@ -93,7 +93,6 @@ typedef struct
 
 #define NO_TOPTEXTURES             0x00000001
 #define NO_BOTTOMTEXTURES          0x00000002
-#define SECTOR_IS_CLOSED           0x00000004
 #define NULL_SECTOR                0x00000008
 #define MISSING_TOPTEXTURES        0x00000010
 #define MISSING_BOTTOMTEXTURES     0x00000020
@@ -135,8 +134,6 @@ typedef struct sector_s
   int bbox[4];           // bounding box in map units
   degenmobj_t soundorg;  // origin for any sounds played by the sector
   int validcount;        // if == validcount, already checked
-  // Needed by GL path to register flats in sector for rendering only once
-  int gl_validcount;
   mobj_t *thinglist;     // list of mobjs in sector
 
   /* killough 8/28/98: friction is a sector property, not an mobj property.
@@ -233,11 +230,6 @@ typedef struct sector_s
 
 typedef struct
 {
-  fixed_t textureoffset; // add this to the calculated texture column
-  fixed_t rowoffset;     // add this to the calculated texture top
-  short toptexture;      // Texture indices. We do not maintain names here.
-  short bottomtexture;
-  short midtexture;
   sector_t* sector;      // Sector the SideDef is facing.
 
   // killough 4/4/98, 4/11/98: highest referencing special linedef's type,
@@ -249,13 +241,14 @@ typedef struct
   int INTERP_WallPanning;
   int skybox_index;
 
+  fixed_t textureoffset; // add this to the calculated texture column
+  fixed_t rowoffset;     // add this to the calculated texture top
   fixed_t textureoffset_top;
   fixed_t textureoffset_mid;
   fixed_t textureoffset_bottom;
   fixed_t rowoffset_top;
   fixed_t rowoffset_mid;
   fixed_t rowoffset_bottom;
-
   fixed_t scalex_top;
   fixed_t scaley_top;
   fixed_t scalex_mid;
@@ -267,7 +260,12 @@ typedef struct
   int lightlevel_top;
   int lightlevel_mid;
   int lightlevel_bottom;
+
+  short toptexture;      // Texture indices. We do not maintain names here.
+  short bottomtexture;
+  short midtexture;
   unsigned short flags;
+
 } side_t;
 
 //
@@ -287,7 +285,6 @@ typedef byte r_flags_t;
 #define RF_BOT_TILE 0x04 // Lower texture needs tiling
 #define RF_IGNORE   0x08 // Renderer can skip this line
 #define RF_CLOSED   0x10 // Line blocks view
-#define RF_ISOLATED 0x20 // Isolated line
 
 typedef enum
 {
@@ -319,7 +316,6 @@ typedef struct line_s
   int iLineID;           // proff 04/05/2000: needed for OpenGL
   vertex_t *v1, *v2;     // Vertices, from v1 to v2.
   fixed_t dx, dy;        // Precalculated v2 - v1 for side checking.
-  float texel_length;
   line_flags_t flags;           // Animation related.
   short special;
   short tag;

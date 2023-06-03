@@ -77,6 +77,7 @@
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/gl/render_scale.h"
+#include "dsda/bsp.h"
 
 int gl_preprocessed = false;
 
@@ -256,10 +257,10 @@ static int C_DECL dicmp_visible_subsectors_by_pic(const void *a, const void *b)
          (*((const subsector_t *const *)a))->sector->floorpic;
 }
 
-static int visible_subsectors_count_prev = -1;
+static int visible_chunks_count_prev = -1;
 void gld_ResetTexturedAutomap(void)
 {
-  visible_subsectors_count_prev = -1;
+  visible_chunks_count_prev = -1;
 }
 
 static int map_textured_trans;
@@ -273,11 +274,11 @@ void gld_ResetAutomapTransparency(void)
   map_lines_overlay_trans = dsda_IntConfig(dsda_config_map_lines_overlay_trans);
 }
 
-void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my, int fw, int fh, fixed_t scale)
+void gld_MapDrawChunks(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my, int fw, int fh, fixed_t scale)
 {
-  static subsector_t **visible_subsectors = NULL;
-  static int visible_subsectors_size = 0;
-  int visible_subsectors_count;
+  static gl_chunk_t **visible_chunks = NULL;
+  static int visible_chunks_size = 0;
+  int visible_chunks_count;
 
   int i;
   float alpha;
@@ -288,43 +289,35 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   if (alpha == 0)
     return;
 
-  if (numsubsectors > visible_subsectors_size)
+  if (gl_rstate.numchunks > visible_chunks_size)
   {
-    visible_subsectors_size = numsubsectors;
-    visible_subsectors = Z_Realloc(visible_subsectors, visible_subsectors_size * sizeof(visible_subsectors[0]));
+    visible_chunks_size = gl_rstate.numchunks;
+    visible_chunks = Z_Realloc(visible_chunks, visible_chunks_size * sizeof(visible_chunks[0]));
   }
 
-  visible_subsectors_count = 0;
+  visible_chunks_count = 0;
   if (dsda_RevealAutomap())
-  {
-    visible_subsectors_count = numsubsectors;
-  }
+    visible_chunks_count = gl_rstate.numchunks;
   else
-  {
-    for (i = 0; i < numsubsectors; i++)
-    {
-      visible_subsectors_count += map_subsectors[i];
-    }
-  }
+    for (i = 0; i < gl_rstate.numchunks; i++)
+      visible_chunks_count += gl_rstate.map_chunks[i];
 
   // Do not sort static visible_subsectors array at all
   // if there are no new visible subsectors.
-  if (visible_subsectors_count != visible_subsectors_count_prev)
+  if (visible_chunks_count != visible_chunks_count_prev)
   {
-    visible_subsectors_count_prev = visible_subsectors_count;
+    visible_chunks_count_prev = visible_chunks_count;
 
-    visible_subsectors_count = 0;
-    for (i = 0; i < numsubsectors; i++)
+    visible_chunks_count = 0;
+    for (i = 0; i < gl_rstate.numchunks; i++)
     {
-      if (map_subsectors[i] || dsda_RevealAutomap())
-      {
-        visible_subsectors[visible_subsectors_count++] = &subsectors[i];
-      }
+      if (gl_rstate.map_chunks[i] || dsda_RevealAutomap())
+        visible_chunks[visible_chunks_count++] = &gl_rstate.chunks[i];
     }
 
     // sort subsectors by texture
-    qsort(visible_subsectors, visible_subsectors_count,
-      sizeof(visible_subsectors[0]), dicmp_visible_subsectors_by_pic);
+    qsort(visible_chunks, visible_chunks_count,
+      sizeof(visible_chunks[0]), dicmp_visible_subsectors_by_pic);
   }
 
   glMatrixMode(GL_MODELVIEW);
@@ -364,10 +357,10 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
   glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
 
-  for (i = 0; i < visible_subsectors_count; i++)
+  for (i = 0; i < visible_chunks_count; i++)
   {
-    subsector_t *sub = visible_subsectors[i];
-    int ssidx = sub - subsectors;
+    gl_chunk_t *sub = visible_chunks[i];
+    int compnum = sub - gl_rstate.chunks;
 
     if (sub->sector->bbox[BOXLEFT] > am_frame.bbox[BOXRIGHT] ||
       sub->sector->bbox[BOXRIGHT] < am_frame.bbox[BOXLEFT] ||
@@ -421,9 +414,9 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
         glRotatef(-rotation, 0.f, 0.f, 1.f);
       }
 
-      for (loopnum = 0; loopnum < subsectorloops[ssidx].loopcount; loopnum++)
+      for (loopnum = 0; loopnum < chunkloops[compnum].loopcount; loopnum++)
       {
-        GLLoopDef *currentloop = &subsectorloops[ssidx].loops[loopnum];
+        GLLoopDef *currentloop = &chunkloops[compnum].loops[loopnum];
 
         glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
       }
@@ -935,11 +928,9 @@ GLuint flats_vbo_id = 0; // ID of VBO
 
 vbo_xyz_uv_t *flats_vbo = NULL;
 
-GLSeg *gl_segs=NULL;
 GLSeg *gl_lines=NULL;
 
 int rendermarker=0;
-byte *segrendered; // true if sector rendered (only here for malloc)
 int *linerendered[2]; // true if linedef rendered (only here for malloc)
 
 float roll     = 0.0f;
@@ -1179,7 +1170,7 @@ static void gld_CalculateWallY(GLWall *wall, float *lineheight,
   *lineheight = (float) fabs((float) (ceiling_height - floor_height) / FRACUNIT);
 }
 
-static void gld_CalculateWallU(GLWall *wall, seg_t *seg, int backseg,
+static void gld_CalculateWallU(GLWall *wall, side_t *sidedef, int backseg,
                                float linelength, fixed_t specific_offset)
 {
   float scaled_texwidth;
@@ -1187,7 +1178,7 @@ static void gld_CalculateWallU(GLWall *wall, seg_t *seg, int backseg,
 
   scaled_texwidth = (float) wall->gltexture->buffer_width / wall->xscale;
   scaled_textureoffset =
-    (float) (seg->sidedef->textureoffset + specific_offset) / wall->xscale / FRACUNIT;
+    (float) (sidedef->textureoffset + specific_offset) / wall->xscale / FRACUNIT;
 
   if (backseg)
   {
@@ -1201,7 +1192,7 @@ static void gld_CalculateWallU(GLWall *wall, seg_t *seg, int backseg,
   }
 }
 
-static void gld_CalculateWallV(GLWall *wall, seg_t *seg, int peg,
+static void gld_CalculateWallV(GLWall *wall, side_t* sidedef, int peg,
                                float lineheight, fixed_t specific_offset)
 {
   float scaled_texheight;
@@ -1209,7 +1200,7 @@ static void gld_CalculateWallV(GLWall *wall, seg_t *seg, int peg,
 
   scaled_texheight = (float) wall->gltexture->buffer_height / wall->yscale;
   scaled_rowoffset =
-    (float) (seg->sidedef->rowoffset + specific_offset) / wall->yscale / FRACUNIT;
+    (float) (sidedef->rowoffset + specific_offset) / wall->yscale / FRACUNIT;
 
   if (peg)
   {
@@ -1223,32 +1214,42 @@ static void gld_CalculateWallV(GLWall *wall, seg_t *seg, int peg,
   }
 }
 
-void gld_AddWall(seg_t *seg)
+static float GetTexelDistance(fixed_t dx, fixed_t dy)
 {
-  extern sector_t *poly_frontsector;
-  extern dboolean poly_add_line;
-  GLWall wall;
+  float fx = (float)(dx)/FRACUNIT, fy = (float)(dy)/FRACUNIT;
+  return (float)((int)(0.5f + (float)sqrt(fx*fx + fy*fy)));
+}
+
+void gld_AddWall(gl_wall_t *wall)
+{
+  GLWall item;
   GLTexture *temptex;
+  sector_t* realfsec;
+  sector_t* realbsec;
   sector_t *frontsector;
   sector_t *backsector;
   sector_t ftempsec; // needed for R_FakeFlat
   sector_t btempsec; // needed for R_FakeFlat
   float lineheight, linelength;
   int base_lightlevel;
-  int backseg;
   dboolean fix_sky_bleed = false;
+  side_t* sidedef;
+  int side = wall->flags & GL_WALLF_BACK;
 
-  int side = (seg->sidedef == &sides[seg->linedef->sidenum[0]] ? 0 : 1);
-  if (linerendered[side][seg->linedef->iLineID] == rendermarker)
+  if (linerendered[side][wall->linedef] == rendermarker)
     return;
-  linerendered[side][seg->linedef->iLineID] = rendermarker;
-  linelength = lines[seg->linedef->iLineID].texel_length;
-  wall.glseg=&gl_lines[seg->linedef->iLineID];
-  backseg = seg->sidedef != &sides[seg->linedef->sidenum[0]];
+
+  linerendered[side][wall->linedef] = rendermarker;
+  gl_rstate.map_lines_seen[wall->linedef] = 1;
+
+  item.glseg=&gl_lines[wall->linedef];
+  sidedef = &sides[wall->sidedef];
+  realfsec = &sectors[wall->frontsec];
+  realbsec = wall->backsec == (unsigned short)-1 ? NULL : &sectors[wall->backsec];
 
   if (poly_add_line)
   {
-    int i = seg->linedef->iLineID;
+    int i = wall->linedef;
     // hexen_note: find some way to do this only on update?
     gl_lines[i].x1=-(float)lines[i].v1->x/(float)MAP_SCALE;
     gl_lines[i].z1= (float)lines[i].v1->y/(float)MAP_SCALE;
@@ -1260,51 +1261,47 @@ void gld_AddWall(seg_t *seg)
     frontsector=R_FakeFlat(poly_frontsector, &ftempsec, NULL, NULL, false); // for boom effects
   }
   else
-  {
-    if (!seg->frontsector)
-      return;
-    frontsector=R_FakeFlat(seg->frontsector, &ftempsec, NULL, NULL, false); // for boom effects
-  }
-
-  if (!frontsector)
-    return;
+    frontsector=R_FakeFlat(realfsec, &ftempsec, NULL, NULL, false); // for boom effects
 
   base_lightlevel = frontsector->lightlevel + gld_GetGunFlashLight();
 
-  R_AddContrast(seg, &base_lightlevel);
+  GL_AddContrast(wall, &base_lightlevel);
 
-  wall.alpha=1.0f;
-  wall.gltexture=NULL;
-  wall.seg = seg; //e6y
+  item.alpha=1.0f;
+  item.gltexture=NULL;
+  item.linedef = wall->linedef;
+  item.v1 = &vertexes[wall->v1id];
+  item.v2 = &vertexes[wall->v2id];
+  linelength = GetTexelDistance(item.v2->x - item.v1->x, item.v2->y - item.v1->y);
 
-  if (!seg->backsector) /* onesided */
+  if (!realbsec) /* onesided */
   {
-    wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
-    wall.xscale = (float) seg->sidedef->scalex_mid / FRACUNIT;
-    wall.yscale = (float) seg->sidedef->scaley_mid / FRACUNIT;
+    item.light = gld_CalcLightLevel(R_MidLightLevel(sidedef, base_lightlevel));
+    item.xscale = (float) sidedef->scalex_mid / FRACUNIT;
+    item.yscale = (float) sidedef->scaley_mid / FRACUNIT;
 
     if (frontsector->ceilingpic==skyflatnum)
     {
-      wall.ytop=MAXCOORD;
-      wall.ybottom=(float)frontsector->ceilingheight/MAP_SCALE;
-      gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_CEILING);
+      item.ytop=MAXCOORD;
+      item.ybottom=(float)frontsector->ceilingheight/MAP_SCALE;
+      gld_AddSkyTexture(&item, frontsector->sky, frontsector->sky, SKY_CEILING);
     }
     if (frontsector->floorpic==skyflatnum)
     {
-      wall.ytop=(float)frontsector->floorheight/MAP_SCALE;
-      wall.ybottom=-MAXCOORD;
-      gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
+      item.ytop=(float)frontsector->floorheight/MAP_SCALE;
+      item.ybottom=-MAXCOORD;
+      gld_AddSkyTexture(&item, frontsector->sky, frontsector->sky, SKY_FLOOR);
     }
-    temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, true, false);
+    temptex=gld_RegisterTexture(texturetranslation[sidedef->midtexture], true, false, true, false);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
     {
-      wall.gltexture=temptex;
-      wall.flag = GLDWF_M1S;
-      gld_CalculateWallY(&wall, &lineheight, frontsector->floorheight, frontsector->ceilingheight);
-      gld_CalculateWallU(&wall, seg, backseg, linelength, seg->sidedef->textureoffset_mid);
-      gld_CalculateWallV(&wall, seg, seg->linedef->flags & ML_DONTPEGBOTTOM, lineheight,
-                         seg->sidedef->rowoffset_mid);
-      gld_AddDrawWallItem(GLDIT_WALL, &wall);
+      item.gltexture=temptex;
+      item.flag = GLDWF_M1S;
+      gld_CalculateWallY(&item, &lineheight, frontsector->floorheight, frontsector->ceilingheight);
+      gld_CalculateWallU(&item, sidedef, side, linelength, sidedef->textureoffset_mid);
+      gld_CalculateWallV(&item, sidedef, wall->flags & GL_WALLF_DONTPEGBOTTOM, lineheight,
+                         sidedef->rowoffset_mid);
+      gld_AddDrawWallItem(GLDIT_WALL, &item);
     }
   }
   else /* twosided */
@@ -1316,7 +1313,7 @@ void gld_AddWall(seg_t *seg)
     fixed_t max_ceiling, min_ceiling;
     //fixed_t max_floor_tex, min_ceiling_tex;
 
-    backsector=R_FakeFlat(seg->backsector, &btempsec, NULL, NULL, true); // for boom effects
+    backsector=R_FakeFlat(realbsec, &btempsec, NULL, NULL, true); // for boom effects
     if (!backsector)
       return;
 
@@ -1342,7 +1339,7 @@ void gld_AddWall(seg_t *seg)
       min_ceiling = frontsector->ceilingheight;
     }
 
-    if (backseg)
+    if (side)
     {
       fs = backsector;
       bs = frontsector;
@@ -1353,19 +1350,19 @@ void gld_AddWall(seg_t *seg)
       bs = backsector;
     }
 
-    toptexture = texturetranslation[seg->sidedef->toptexture];
-    midtexture = texturetranslation[seg->sidedef->midtexture];
-    bottomtexture = texturetranslation[seg->sidedef->bottomtexture];
+    toptexture = texturetranslation[sidedef->toptexture];
+    midtexture = texturetranslation[sidedef->midtexture];
+    bottomtexture = texturetranslation[sidedef->bottomtexture];
 
     /* toptexture */
     ceiling_height=frontsector->ceilingheight;
     floor_height=backsector->ceilingheight;
-    wall.light = gld_CalcLightLevel(R_TopLightLevel(seg->sidedef, base_lightlevel));
-    wall.xscale = (float) seg->sidedef->scalex_top / FRACUNIT;
-    wall.yscale = (float) seg->sidedef->scaley_top / FRACUNIT;
+    item.light = gld_CalcLightLevel(R_TopLightLevel(sidedef, base_lightlevel));
+    item.xscale = (float) sidedef->scalex_top / FRACUNIT;
+    item.yscale = (float) sidedef->scaley_top / FRACUNIT;
     if (frontsector->ceilingpic==skyflatnum)// || backsector->ceilingpic==skyflatnum)
     {
-      wall.ytop= MAXCOORD;
+      item.ytop= MAXCOORD;
       if (
           // e6y
           // There is no more HOM in the starting area on Memento Mori map29 and on map30.
@@ -1378,26 +1375,26 @@ void gld_AddWall(seg_t *seg)
       {
         fixed_t specific_rowoffset;
 
-        specific_rowoffset = seg->sidedef->rowoffset + seg->sidedef->rowoffset_top;
+        specific_rowoffset = sidedef->rowoffset + sidedef->rowoffset_top;
 
         // e6y
         // There is no more visual glitches with sky on Icarus map14 sector 187
         // Old code: wall.ybottom=(float)backsector->floorheight/MAP_SCALE;
-        wall.ybottom=((float)(backsector->floorheight +
+        item.ybottom=((float)(backsector->floorheight +
           (specific_rowoffset > 0 ? specific_rowoffset : 0)))/MAP_SCALE;
-        gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+        gld_AddSkyTexture(&item, frontsector->sky, backsector->sky, SKY_CEILING);
       }
       else
       {
         if (bs->ceilingpic == skyflatnum && fs->ceilingpic != skyflatnum &&
           toptexture == NO_TEXTURE && midtexture == NO_TEXTURE)
         {
-          wall.ybottom=(float)min_ceiling/MAP_SCALE;
+          item.ybottom=(float)min_ceiling/MAP_SCALE;
           if (bs->ceilingheight < fs->floorheight)
           {
             fix_sky_bleed = true;
           }
-          gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+          gld_AddSkyTexture(&item, frontsector->sky, backsector->sky, SKY_CEILING);
         }
         else
         {
@@ -1407,14 +1404,14 @@ void gld_AddWall(seg_t *seg)
           {
             if (frontsector->ceilingpic == skyflatnum && frontsector->ceilingheight < backsector->floorheight)
             {
-              wall.ybottom=(float)min_ceiling/MAP_SCALE;
+              item.ybottom=(float)min_ceiling/MAP_SCALE;
               fix_sky_bleed = true;
             }
             else
             {
-              wall.ybottom=(float)max_ceiling/MAP_SCALE;
+              item.ybottom=(float)max_ceiling/MAP_SCALE;
             }
-            gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+            gld_AddSkyTexture(&item, frontsector->sky, backsector->sky, SKY_CEILING);
           }
         }
       }
@@ -1425,34 +1422,35 @@ void gld_AddWall(seg_t *seg)
       {
         temptex=gld_RegisterTexture(toptexture, true, false, true, false);
         if (!temptex && gl_use_stencil && backsector &&
-          !(seg->linedef->r_flags & RF_ISOLATED) &&
-          /*frontsector->ceilingpic != skyflatnum && */backsector->ceilingpic != skyflatnum &&
-          !(backsector->flags & NULL_SECTOR) &&
-          backsector->floorheight < backsector->ceilingheight)
+            backsector->ceilingpic != skyflatnum &&
+            !(backsector->flags & NULL_SECTOR) &&
+            !(wall->flags & GL_WALLF_NOBLEED) &&
+            backsector->floorheight < backsector->ceilingheight)
         {
-          wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
-          wall.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
-          if (wall.ybottom >= zCamera)
+          item.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
+          item.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
+          if (item.ybottom >= zCamera)
           {
-            wall.flag=GLDWF_TOPFLUD;
-            temptex=gld_RegisterFlat(flattranslation[seg->backsector->ceilingpic], true, true);
+            item.flag=GLDWF_TOPFLUD;
+            item.light = gld_CalcLightLevel(backsector->lightlevel+(extralight<<5));
+            temptex=gld_RegisterFlat(flattranslation[realbsec->ceilingpic], true, true);
             if (temptex)
             {
-              wall.gltexture=temptex;
-              gld_AddDrawWallItem(GLDIT_FWALL, &wall);
+              item.gltexture=temptex;
+              gld_AddDrawWallItem(GLDIT_FWALL, &item);
             }
           }
         }
         else
         if (temptex)
         {
-          wall.gltexture=temptex;
-          wall.flag = GLDWF_TOP;
-          gld_CalculateWallY(&wall, &lineheight, floor_height, ceiling_height);
-          gld_CalculateWallU(&wall, seg, backseg, linelength, seg->sidedef->textureoffset_top);
-          gld_CalculateWallV(&wall, seg, !(seg->linedef->flags & ML_DONTPEGTOP), lineheight,
-                             seg->sidedef->rowoffset_top);
-          gld_AddDrawWallItem(GLDIT_WALL, &wall);
+          item.gltexture=temptex;
+          item.flag = GLDWF_TOP;
+          gld_CalculateWallY(&item, &lineheight, floor_height, ceiling_height);
+          gld_CalculateWallU(&item, sidedef, side, linelength, sidedef->textureoffset_top);
+          gld_CalculateWallV(&item, sidedef, !(wall->flags & GL_WALLF_DONTPEGTOP), lineheight,
+                             sidedef->rowoffset_top);
+          gld_AddDrawWallItem(GLDIT_WALL, &item);
         }
       }
     }
@@ -1460,38 +1458,38 @@ void gld_AddWall(seg_t *seg)
     /* midtexture */
     //e6y
     if (!raven && comp[comp_maskedanim])
-      temptex=gld_RegisterTexture(seg->sidedef->midtexture, true, false, true, false);
+      temptex=gld_RegisterTexture(sidedef->midtexture, true, false, true, false);
     else
       // e6y
       // Animated middle textures with a zero index should be forced
       // See spacelab.wad (http://www.doomworld.com/idgames/index.php?id=6826)
       temptex=gld_RegisterTexture(midtexture, true, true, true, false);
 
-    if (temptex && seg->sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
+    if (temptex && sidedef->midtexture != NO_TEXTURE && backsector->ceilingheight>frontsector->floorheight)
     {
       int top, bottom;
       fixed_t scaled_texheight;
       fixed_t scaled_rowoffset;
       dboolean wrapmidtex;
 
-      wall.light = gld_CalcLightLevel(R_MidLightLevel(seg->sidedef, base_lightlevel));
-      wall.xscale = (float) seg->sidedef->scalex_mid / FRACUNIT;
-      wall.yscale = (float) seg->sidedef->scaley_mid / FRACUNIT;
-      wall.gltexture=temptex;
+      item.light = gld_CalcLightLevel(R_MidLightLevel(sidedef, base_lightlevel));
+      item.xscale = (float) sidedef->scalex_mid / FRACUNIT;
+      item.yscale = (float) sidedef->scaley_mid / FRACUNIT;
+      item.gltexture=temptex;
 
-      scaled_texheight = FixedDiv(wall.gltexture->realtexheight << FRACBITS, seg->sidedef->scaley_mid);
-      scaled_rowoffset = FixedDiv(seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid, seg->sidedef->scaley_mid);
+      scaled_texheight = FixedDiv(item.gltexture->realtexheight << FRACBITS, sidedef->scaley_mid);
+      scaled_rowoffset = FixedDiv(sidedef->rowoffset + sidedef->rowoffset_mid, sidedef->scaley_mid);
 
-      wrapmidtex = seg->sidedef->flags & SF_WRAPMIDTEX || seg->linedef->flags & ML_WRAPMIDTEX;
+      wrapmidtex = sidedef->flags & SF_WRAPMIDTEX || wall->flags & GL_WALLF_WRAPMIDTEX;
 
       if (wrapmidtex)
       {
         fixed_t real_ceiling_height;
 
-        floor_height = MAX(seg->frontsector->floorheight, seg->backsector->floorheight);
-        real_ceiling_height = MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight);
+        floor_height = MAX(realfsec->floorheight, realbsec->floorheight);
+        real_ceiling_height = MIN(realfsec->ceilingheight, realbsec->ceilingheight);
 
-        if (seg->linedef->flags & ML_DONTPEGBOTTOM)
+        if (wall->flags & GL_WALLF_DONTPEGBOTTOM)
         {
           ceiling_height = floor_height + scaled_rowoffset;
         }
@@ -1505,15 +1503,15 @@ void gld_AddWall(seg_t *seg)
       }
       else
       {
-        if (seg->linedef->flags & ML_DONTPEGBOTTOM)
+        if (wall->flags & GL_WALLF_DONTPEGBOTTOM)
         {
-          floor_height = MAX(seg->frontsector->floorheight, seg->backsector->floorheight) +
+          floor_height = MAX(realfsec->floorheight, realbsec->floorheight) +
                          scaled_rowoffset;
           ceiling_height = floor_height + scaled_texheight;
         }
         else
         {
-          ceiling_height = MIN(seg->frontsector->ceilingheight, seg->backsector->ceilingheight) +
+          ceiling_height = MIN(realfsec->ceilingheight, realbsec->ceilingheight) +
                            scaled_rowoffset;
           floor_height = ceiling_height - scaled_texheight;
         }
@@ -1521,13 +1519,13 @@ void gld_AddWall(seg_t *seg)
 
       // Depending on missing textures and possible plane intersections
       // decide which planes to use for the polygon
-      if (seg->frontsector != seg->backsector ||
-        seg->frontsector->heightsec != -1)
+      if (realfsec != realbsec ||
+        realfsec->heightsec != -1)
       {
         sector_t *f, *b;
 
-        f = (seg->frontsector->heightsec == -1 ? seg->frontsector : &ftempsec);
-        b = (seg->backsector->heightsec == -1 ? seg->backsector : &btempsec);
+        f = (realfsec->heightsec == -1 ? realfsec : &ftempsec);
+        b = (realbsec->heightsec == -1 ? realbsec : &btempsec);
 
         // Set up the top
         if (frontsector->ceilingpic != skyflatnum ||
@@ -1547,7 +1545,7 @@ void gld_AddWall(seg_t *seg)
             backsector->floorpic != skyflatnum ||
             frontsector->floorheight != backsector->floorheight)
         {
-          if (seg->sidedef->bottomtexture == NO_TEXTURE)
+          if (sidedef->bottomtexture == NO_TEXTURE)
             // texture is missing - use the lower plane
             bottom = MIN(f->floorheight, b->floorheight);
           else
@@ -1575,45 +1573,45 @@ void gld_AddWall(seg_t *seg)
       if (top <= bottom)
         goto bottomtexture;
 
-      wall.ytop = (float)top/(float)MAP_SCALE;
-      wall.ybottom = (float)bottom/(float)MAP_SCALE;
+      item.ytop = (float)top/(float)MAP_SCALE;
+      item.ybottom = (float)bottom/(float)MAP_SCALE;
 
       if (!wrapmidtex)
-        wall.flag = GLDWF_M2S;
+        item.flag = GLDWF_M2S;
 
-      gld_CalculateWallU(&wall, seg, backseg, linelength, seg->sidedef->textureoffset_mid);
+      gld_CalculateWallU(&item, sidedef, side, linelength, sidedef->textureoffset_mid);
 
-      wall.vt = (float) (-top + ceiling_height) / (float) scaled_texheight;
-      wall.vb = (float) (-bottom + ceiling_height) / (float) scaled_texheight;
+      item.vt = (float) (-top + ceiling_height) / (float) scaled_texheight;
+      item.vb = (float) (-bottom + ceiling_height) / (float) scaled_texheight;
 
-      wall.alpha = seg->linedef->alpha;
-      gld_AddDrawWallItem((wall.alpha == 1.0f ? GLDIT_MWALL : GLDIT_TWALL), &wall);
-      wall.alpha = 1.0f;
+      item.alpha = wall->alpha;
+      gld_AddDrawWallItem((item.alpha == 1.0f ? GLDIT_MWALL : GLDIT_TWALL), &item);
+      item.alpha = 1.0f;
     }
 bottomtexture:
     /* bottomtexture */
     ceiling_height=backsector->floorheight;
     floor_height=frontsector->floorheight;
-    wall.light = gld_CalcLightLevel(R_BottomLightLevel(seg->sidedef, base_lightlevel));
-    wall.xscale = (float) seg->sidedef->scalex_bottom / FRACUNIT;
-    wall.yscale = (float) seg->sidedef->scaley_bottom / FRACUNIT;
+    item.light = gld_CalcLightLevel(R_BottomLightLevel(sidedef, base_lightlevel));
+    item.xscale = (float) sidedef->scalex_bottom / FRACUNIT;
+    item.yscale = (float) sidedef->scaley_bottom / FRACUNIT;
     if (frontsector->floorpic==skyflatnum)
     {
-      wall.ybottom=-MAXCOORD;
+      item.ybottom=-MAXCOORD;
       if (
           (backsector->ceilingheight==backsector->floorheight) &&
           (backsector->floorpic==skyflatnum)
          )
       {
-        wall.ytop=(float)backsector->floorheight/MAP_SCALE;
-        gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_FLOOR);
+        item.ytop=(float)backsector->floorheight/MAP_SCALE;
+        gld_AddSkyTexture(&item, frontsector->sky, backsector->sky, SKY_FLOOR);
       }
       else
       {
         if (bottomtexture == NO_TEXTURE && midtexture == NO_TEXTURE)
         {
-          wall.ytop=(float)max_floor/MAP_SCALE;
-          gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+          item.ytop=(float)max_floor/MAP_SCALE;
+          gld_AddSkyTexture(&item, frontsector->sky, backsector->sky, SKY_CEILING);
         }
         else
         {
@@ -1621,8 +1619,8 @@ bottomtexture:
             backsector->floorpic != skyflatnum ||
             backsector->floorheight >= frontsector->ceilingheight)
           {
-            wall.ytop=(float)min_floor/MAP_SCALE;
-            gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_FLOOR);
+            item.ytop=(float)min_floor/MAP_SCALE;
+            gld_AddSkyTexture(&item, frontsector->sky, backsector->sky, SKY_FLOOR);
           }
         }
       }
@@ -1631,54 +1629,55 @@ bottomtexture:
     {
       temptex=gld_RegisterTexture(bottomtexture, true, false, true, false);
       if (!temptex && gl_use_stencil && backsector &&
-        !(seg->linedef->r_flags & RF_ISOLATED) &&
-        /*frontsector->floorpic != skyflatnum && */backsector->floorpic != skyflatnum &&
-        !(backsector->flags & NULL_SECTOR) &&
-        backsector->floorheight < backsector->ceilingheight)
+          backsector->floorpic != skyflatnum &&
+          !(backsector->flags & NULL_SECTOR) &&
+          !(wall->flags & GL_WALLF_NOBLEED) &&
+          backsector->floorheight < backsector->ceilingheight)
       {
-        wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
-        wall.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
-        if (wall.ytop <= zCamera)
+        item.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
+        item.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
+        if (item.ytop <= zCamera)
         {
-          wall.flag = GLDWF_BOTFLUD;
-          temptex=gld_RegisterFlat(flattranslation[seg->backsector->floorpic], true, true);
+          item.flag = GLDWF_BOTFLUD;
+          item.light = gld_CalcLightLevel(backsector->lightlevel+(extralight<<5));
+          temptex=gld_RegisterFlat(flattranslation[realbsec->floorpic], true, true);
           if (temptex)
           {
-            wall.gltexture=temptex;
-            gld_AddDrawWallItem(GLDIT_FWALL, &wall);
+            item.gltexture=temptex;
+            gld_AddDrawWallItem(GLDIT_FWALL, &item);
           }
         }
       }
       else
       if (temptex)
       {
-        fixed_t rowoffset = seg->sidedef->rowoffset;
+        fixed_t rowoffset = sidedef->rowoffset;
         fixed_t specific_rowoffset;
-        wall.gltexture=temptex;
-        wall.flag = GLDWF_BOT;
+        item.gltexture=temptex;
+        item.flag = GLDWF_BOT;
         if (fix_sky_bleed)
         {
           ceiling_height = MIN(frontsector->ceilingheight, backsector->ceilingheight);
-          seg->sidedef->rowoffset += (MAX(frontsector->floorheight, backsector->floorheight) - min_ceiling);
+          sidedef->rowoffset += (MAX(frontsector->floorheight, backsector->floorheight) - min_ceiling);
         }
 
-        specific_rowoffset = seg->sidedef->rowoffset_bottom;
-        if (seg->linedef->flags & ML_DONTPEGBOTTOM)
+        specific_rowoffset = sidedef->rowoffset_bottom;
+        if (wall->flags & GL_WALLF_DONTPEGBOTTOM)
           specific_rowoffset += frontsector->ceilingheight - floor_height;
 
         if (ceiling_height > backsector->ceilingheight)
         {
-          if (!(seg->linedef->flags & ML_DONTPEGBOTTOM))
+          if (!(wall->flags & GL_WALLF_DONTPEGBOTTOM))
             specific_rowoffset -= backsector->ceilingheight - ceiling_height;
           ceiling_height = backsector->ceilingheight;
         }
 
-        gld_CalculateWallY(&wall, &lineheight, floor_height, ceiling_height);
-        gld_CalculateWallU(&wall, seg, backseg, linelength, seg->sidedef->textureoffset_bottom);
-        gld_CalculateWallV(&wall, seg, seg->linedef->flags & ML_DONTPEGBOTTOM, lineheight,
+        gld_CalculateWallY(&item, &lineheight, floor_height, ceiling_height);
+        gld_CalculateWallU(&item, sidedef, side, linelength, sidedef->textureoffset_bottom);
+        gld_CalculateWallV(&item, sidedef, wall->flags & GL_WALLF_DONTPEGBOTTOM, lineheight,
                            specific_rowoffset);
-        gld_AddDrawWallItem(GLDIT_WALL, &wall);
-        seg->sidedef->rowoffset = rowoffset;
+        gld_AddDrawWallItem(GLDIT_WALL, &item);
+        sidedef->rowoffset = rowoffset;
       }
     }
   }
@@ -1717,13 +1716,13 @@ static void gld_DrawFlat(GLFlat *flat)
     glRotatef(-flat->rotation, 0.f, 0.f, 1.f);
   }
 
-  if (flat->sectornum>=0)
+  if (flat->chunk>=0)
   {
-    // go through all loops of this sector
-    for (loopnum=0; loopnum<sectorloops[flat->sectornum].loopcount; loopnum++)
+    // go through all loops of this chunk
+    for (loopnum=0; loopnum<chunkloops[flat->chunk].loopcount; loopnum++)
     {
       // set the current loop
-      currentloop=&sectorloops[flat->sectornum].loops[loopnum];
+      currentloop=&chunkloops[flat->chunk].loops[loopnum];
       glDrawArrays(currentloop->mode,currentloop->vertexindex,currentloop->vertexcount);
     }
   }
@@ -1739,22 +1738,21 @@ static void gld_DrawFlat(GLFlat *flat)
 
 // gld_AddFlat
 //
-// This draws on flat for the sector "num"
+// This draws on flat for the chunk
 // The ceiling boolean indicates if the flat is a floor(false) or a ceiling(true)
 
-static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
+void gld_AddFlat(int chunk, dboolean ceiling, gl_plane_t* plane, sector_t* sector)
 {
-  sector_t *sector; // the sector we want to draw
   sector_t tempsec; // needed for R_FakeFlat
   int floorlightlevel;      // killough 3/16/98: set floor lightlevel
   int ceilinglightlevel;    // killough 4/11/98
   GLFlat flat;
 
-  if (sectornum<0)
-    return;
-  flat.sectornum=sectornum;
-  sector=&sectors[sectornum]; // get the sector
-  sector=R_FakeFlat(sector, &tempsec, &floorlightlevel, &ceilinglightlevel, false); // for boom effects
+  gl_rstate.map_chunks[chunk] = 1;
+
+  flat.chunk = chunk;
+  sector = R_FakeFlat(sector, &tempsec, &floorlightlevel, &ceilinglightlevel,
+                      false); // for boom effects
   flat.flags = (ceiling ? GLFLAT_CEILING : 0);
 
   if (plane->picnum & PL_SKYFLAT || plane->picnum == skyflatnum) // don't draw if sky
@@ -1914,22 +1912,6 @@ static void gld_AddFlat(int sectornum, dboolean ceiling, visplane_t *plane)
   flat.alpha = 1.0;
 
   gld_AddDrawItem(((flat.flags & GLFLAT_CEILING) ? GLDIT_CEILING : GLDIT_FLOOR), &flat);
-}
-
-void gld_AddPlane(int subsectornum, visplane_t *floor, visplane_t *ceiling)
-{
-  subsector_t *subsector;
-
-  subsector = &subsectors[subsectornum];
-  if (!subsector)
-    return;
-
-  // render the floor
-  if (floor && floor->height < viewz)
-    gld_AddFlat(subsector->sector->iSectorID, false, floor);
-  // render the ceiling
-  if (ceiling && ceiling->height > viewz)
-    gld_AddFlat(subsector->sector->iSectorID, true, ceiling);
 }
 
 /*****************
@@ -2381,8 +2363,6 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
 //e6y
 void gld_ProcessWall(GLWall *wall)
 {
-  seg_t *seg = wall->seg;
-
   // The following code decides where to insert vertices in the left and right
   // sides of a wall polygon so that it precisely shares vertices with adjacent
   // ceilings/floors/walls.  This prevents gaps between polygons from the
@@ -2392,8 +2372,8 @@ void gld_ProcessWall(GLWall *wall)
   wall->glseg->fracleft  = 0;
   wall->glseg->fracright = 0;
 
-  gld_RecalcVertexHeights(seg->linedef->v1);
-  gld_RecalcVertexHeights(seg->linedef->v2);
+  gld_RecalcVertexHeights(wall->v1);
+  gld_RecalcVertexHeights(wall->v2);
 
   gld_DrawWall(wall);
 }
@@ -2704,14 +2684,15 @@ void gld_DrawScene(player_t *player)
       {
         /* both are left to draw, determine
          * which is farther */
-        seg_t *twseg = gld_drawinfo.items[GLDIT_TWALL][twall_idx].item.wall->seg;
+        vertex_t *v1 = gld_drawinfo.items[GLDIT_TWALL][twall_idx].item.wall->v1;
+        vertex_t *v2 = gld_drawinfo.items[GLDIT_TWALL][twall_idx].item.wall->v2;
         int ti;
         for (ti = tsprite_idx; ti >= 0; ti--) {
           /* reconstruct the sprite xy */
           fixed_t tsx = gld_drawinfo.items[GLDIT_TSPRITE][ti].item.sprite->fx;
           fixed_t tsy = gld_drawinfo.items[GLDIT_TSPRITE][ti].item.sprite->fy;
 
-          if (R_PointOnSegSide(tsx, tsy, twseg))
+          if (GL_PointOnSegSide(tsx, tsy, v1, v2))
           {
             /* a thing is behind the seg */
             /* do not draw the seg yet */

@@ -26,6 +26,7 @@
 #include "p_inter.h"
 #include "p_map.h"
 #include "p_maputl.h"
+#include "v_video.h"
 
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
@@ -60,6 +61,14 @@ static int PolySegCount;
 static fixed_t PolyStartX;
 static fixed_t PolyStartY;
 
+static subsector_t* PolySubsector(fixed_t x, fixed_t y)
+{
+  if (V_IsOpenGLMode() && gl_rstate.subsectors)
+    return GL_PointInSubsector(x, y);
+  else
+    return R_PointInSubsector(x, y);
+}
+
 static void ResetSegDrawingParameters(seg_t *seg)
 {
   seg->v1->px = seg->v1->x;
@@ -91,12 +100,18 @@ void ResetPolySubSector(polyobj_t *po)
   avg.x /= po->numsegs;
   avg.y /= po->numsegs;
 
-  new_sub = R_PointInSubsector(avg.x << FRACBITS, avg.y << FRACBITS);
+  new_sub = PolySubsector(avg.x << FRACBITS, avg.y << FRACBITS);
 
   if (new_sub->poly)
   {
     return; // Colliding poly objects?
   }
+
+  // Adjust polyobj count on chunks
+  if (new_sub->chunk != NO_CHUNK)
+    GL_Chunk(new_sub->chunk)->numpolyobjs++;
+  if (po->subsector->poly && po->subsector->chunk != NO_CHUNK)
+    GL_Chunk(po->subsector->chunk)->numpolyobjs--;
 
   po->subsector->poly = NULL;
   po->subsector = new_sub;
@@ -1422,7 +1437,7 @@ static void TranslateToStartSpot(int tag, int originX, int originY)
     }
     avg.x /= po->numsegs;
     avg.y /= po->numsegs;
-    sub = R_PointInSubsector(avg.x << FRACBITS, avg.y << FRACBITS);
+    sub = PolySubsector(avg.x << FRACBITS, avg.y << FRACBITS);
     if (sub->poly != NULL)
     {
         I_Error
@@ -1573,4 +1588,13 @@ dboolean PO_Busy(int polyobj)
     {
         return true;
     }
+}
+
+void PO_ChangeRenderMode(void)
+{
+  int i;
+  for (i = 0; i < po_NumPolyobjs; i++)
+  {
+    ResetPolySubSector(&polyobjs[i]);
+  }
 }

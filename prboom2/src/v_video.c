@@ -1415,7 +1415,7 @@ void V_ChangeScreenResolution(void)
 {
   I_UpdateVideoMode();
 
-  if (V_IsOpenGLMode())
+  if (gamestate == GS_LEVEL && V_IsOpenGLMode())
   {
     gld_PreprocessLevel();
   }

@@ -79,6 +79,7 @@ void G_ReadOneTick(ticcmd_t* cmd, const byte **data_p);
 void G_ChangedPlayerColour(int pn, int cl); // CPhipps - On-the-fly player colour changing
 void G_MakeSpecialEvent(buttoncode_t bc, ...); /* cph - new event stuff */
 int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap);
+void G_RecalculateDrawnChunks(void);
 
 //e6y
 void G_ContinueDemo(const char *playback_name);

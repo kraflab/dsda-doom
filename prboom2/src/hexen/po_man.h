@@ -67,6 +67,8 @@ dboolean PO_Busy(int polyobj);
 
 void PO_ResetBlockMap(dboolean allocate);
 
+void PO_ChangeRenderMode(void);
+
 // zdoom
 
 dboolean EV_RotateZDoomPoly(line_t * line, int polyobj, int speed,

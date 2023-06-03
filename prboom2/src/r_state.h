@@ -87,8 +87,6 @@ extern side_t           *sides;
 extern int              *sslines_indexes;
 extern ssline_t         *sslines;
 
-extern byte             *map_subsectors;
-
 //
 // POV data.
 //

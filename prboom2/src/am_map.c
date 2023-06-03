@@ -1559,7 +1559,7 @@ static automap_style_t AM_wallStyle(int i)
   }
 
   // if line has been seen or IDDT has been used
-  if (dsda_RevealAutomap() || (lines[i].flags & ML_MAPPED))
+  if (dsda_RevealAutomap() || lines[i].flags & ML_MAPPED || gl_rstate.map_lines_seen[i])
   {
     if ((lines[i].flags & ML_DONTDRAW) && !dsda_RevealAutomap())
       return ams_invisible;
@@ -2462,11 +2462,6 @@ static void AM_drawCrosshair(int color)
 void M_ChangeMapTextured(void)
 {
   map_textured = dsda_IntConfig(dsda_config_map_textured);
-
-  if (in_game && gamestate == GS_LEVEL && V_IsOpenGLMode())
-  {
-    gld_ProcessTexturedMap();
-  }
 }
 
 void M_ChangeMapMultisamling(void)
@@ -2489,7 +2484,7 @@ void AM_drawSubsectors(void)
 {
   if (V_IsOpenGLMode())
   {
-    gld_MapDrawSubsectors(plr, f_x, f_y, m_x, m_y, f_w, f_h, scale_mtof);
+    gld_MapDrawChunks(plr, f_x, f_y, m_x, m_y, f_w, f_h, scale_mtof);
   }
 }
 
