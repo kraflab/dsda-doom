@@ -111,6 +111,8 @@ typedef struct
 #define SECF_SILENT                0x00020000
 #define SECF_LIGHTFLOORABSOLUTE    0x00040000
 #define SECF_LIGHTCEILINGABSOLUTE  0x00080000
+#define SECF_DYNAMIC_FLOOR         0x00100000
+#define SECF_DYNAMIC_CEILING       0x00200000
 #define SECF_DAMAGEFLAGS (SECF_ENDGODMODE|SECF_ENDLEVEL|SECF_DMGTERRAINFX|SECF_HAZARD|SECF_DMGUNBLOCKABLE)
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET|SECF_DAMAGEFLAGS|SECF_FRICTION|SECF_PUSH)
 
@@ -384,6 +386,17 @@ typedef struct msecnode_s
   dboolean visited; // killough 4/4/98, 4/7/98: used in search algorithms
 } msecnode_t;
 
+typedef enum segflags_e
+{
+  SEGF_NONE = 0x0,
+  // Seg appears to be part of a render hack
+  SEGF_HACKED = 0x1,
+  // Part of chunk perimeter, but not used in path
+  SEGF_ORPHAN = 0x2,
+  // Generic mark
+  SEGF_MARK = 0x4
+} segflags_t;
+
 //
 // The LineSeg.
 //
@@ -425,9 +438,11 @@ struct polyobj_s;
 typedef struct subsector_s
 {
   sector_t *sector;
+  int chunk;
   // e6y: support for extended nodes
   // 'int' instead of 'short'
   int numlines, firstline;
+  int numwalls, firstwall;
 
   // hexen
   struct polyobj_s *poly;
@@ -627,5 +642,118 @@ extern int Sky2Texture;
 extern fixed_t Sky1ColumnOffset;
 extern fixed_t Sky2ColumnOffset;
 extern dboolean DoubleSky;
+
+enum
+{
+  GL_WALLF_BACK = 0x1,
+  GL_WALLF_DONTPEGBOTTOM = 0x2,
+  GL_WALLF_DONTPEGTOP = 0x4,
+  GL_WALLF_WRAPMIDTEX = 0x8,
+  GL_WALLF_NOBLEED = 0x10
+};
+typedef uint8_t gl_wall_flags_t;
+
+// GL: wall data
+// Everything needed by GL render loop to add wall to draw items
+// in a cache-efficient structure.  In particular, avoiding
+// having to access the line_t emperically makes a huge impact
+// since we need very few fields from it.
+typedef struct
+{
+  fixed_t x1, y1, x2, y2;
+  unsigned int v1id;
+  unsigned int v2id;
+  float alpha;
+  unsigned short linedef;
+  unsigned short frontsec;
+  unsigned short backsec;
+  unsigned short sidedef;
+  gl_wall_flags_t flags;
+} gl_wall_t;
+
+// A plane which can be a bleed source during rendering.
+// Everything needed to render it in one place.
+typedef struct
+{
+  fixed_t height;
+  fixed_t xscale;
+  fixed_t yscale;
+  angle_t rotation;
+  int lightlevel;
+  int picnum;
+  int special; // heretic
+  int validcount;
+} gl_plane_t;
+
+typedef uint8_t bleedtype_t;
+enum
+{
+  BLEED_FLOOR_OVER,
+  BLEED_FLOOR_UNDER,
+  BLEED_FLOOR_THROUGH,
+  BLEED_CEILING_OVER,
+  BLEED_CEILING_UNDER,
+  BLEED_CEILING_THROUGH,
+};
+
+// A bleed target in a chunk
+typedef struct
+{
+  gl_plane_t* source;
+  unsigned int depth;
+} bleedtarget_t;
+
+typedef uint8_t gl_chunk_flags_t;
+enum {
+  // Chunk has renderable flats (not a fake sector)
+  GL_CHUNKF_RENDER_FLATS = 0x1,
+  // Chunk has deferred flats to render
+  GL_CHUNKF_DEFERRED = 0x2,
+  // Chunk is in visible list for processing
+  GL_CHUNKF_VISIBLE = 0x4
+};
+
+// GL: A set of mutually-adjoint, normal subsectors in a sector.  These should
+// always end up being rendered with the same floor/ceiling flats.
+typedef struct
+{
+  // Containing sector
+  sector_t* sector;
+  // First and number of bleed targets
+  int firstbleed, numbleeds;
+
+  // Flat information
+  gl_plane_t floor;
+  gl_plane_t ceiling;
+
+  // Incoming Flat bleeding effects
+  bleedtarget_t floorover;
+  bleedtarget_t floorunder;
+  bleedtarget_t ceilingover;
+  bleedtarget_t ceilingunder;
+  bleedtarget_t floorthrough;
+  bleedtarget_t ceilingthrough;
+
+  int validcount;
+  uint8_t numpolyobjs;
+  gl_chunk_flags_t flags;
+} gl_chunk_t;
+
+#define NO_CHUNK ((int) -1)
+
+// A (potential) flat bleed between chunks
+typedef struct
+{
+  unsigned short target;
+  bleedtype_t type;
+  uint8_t depth;
+} bleed_t;
+
+// GL: data necessary to render a polyobj
+typedef struct
+{
+  // First and number of walls in gl_rstate.walls
+  int firstwall, numwalls;
+} gl_polyobj_t;
 
 #endif
