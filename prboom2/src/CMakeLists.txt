@@ -11,6 +11,19 @@ set(COMMON_SRC
     doomtype.h
     dsda.c
     dsda.h
+    dsda/ajbsp/bsp.h
+    dsda/ajbsp/level.cc
+    dsda/ajbsp/local.h
+    dsda/ajbsp/misc.cc
+    dsda/ajbsp/node.cc
+    dsda/ajbsp/parse.cc
+    dsda/ajbsp/parse.h
+    dsda/ajbsp/raw_def.h
+    dsda/ajbsp/system.h
+    dsda/ajbsp/utility.cc
+    dsda/ajbsp/utility.h
+    dsda/ajbsp/wad.cc
+    dsda/ajbsp/wad.h
     dsda/analysis.c
     dsda/analysis.h
     dsda/args.c
