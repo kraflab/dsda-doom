@@ -45,7 +45,7 @@ find_path(
 
 find_file(
   LibMad_DLL
-  NAMES libmad.dll libmad-0.dll
+  NAMES libmad.dll libmad-0.dll mad.dll
 )
 
 find_library(
