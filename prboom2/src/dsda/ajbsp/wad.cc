@@ -333,6 +333,10 @@ static int WhatLevelPart(const char *name)
 	if (StringCaseCmp(name, "SIDEDEFS") == 0) return 3;
 	if (StringCaseCmp(name, "VERTEXES") == 0) return 4;
 	if (StringCaseCmp(name, "SECTORS")  == 0) return 5;
+	if (StringCaseCmp(name, "GL_VERT") == 0) return 6;
+	if (StringCaseCmp(name, "GL_SEGS") == 0) return 7;
+	if (StringCaseCmp(name, "GL_SSECT") == 0) return 8;
+	if (StringCaseCmp(name, "GL_NODES")  == 0) return 9;
 
 	return 0;
 }
@@ -605,6 +609,8 @@ void Wad_file::DetectLevels()
 	// The test here is rather lax, since wads exist with a non-standard
 	// ordering of level lumps.
 
+	levels.clear();
+
 	for (int k = 0 ; k+1 < NumLumps() ; k++)
 	{
 		int part_mask  = 0;
@@ -620,12 +626,9 @@ void Wad_file::DetectLevels()
 			continue;
 		}
 
-		// check whether the next four lumps are level lumps
-		for (int i = 1 ; i <= 4 ; i++)
+		// check whether the following contiguous lumps are level lumps
+		for (int i = 1 ; k + i < NumLumps(); i++)
 		{
-			if (k+i >= NumLumps())
-				break;
-
 			int part = WhatLevelPart(directory[k+i]->name);
 
 			if (part == 0)
@@ -639,7 +642,7 @@ void Wad_file::DetectLevels()
 			part_count++;
 		}
 
-		if (part_count == 4)
+		if (part_count >= 4)
 		{
 			levels.push_back(k);
 
@@ -647,6 +650,9 @@ void Wad_file::DetectLevels()
 			cur_info->Debug("Detected level : %s\n", directory[k]->name);
 #endif
 		}
+
+		if (part_count)
+			k += part_count - 1;
 	}
 
 	// sort levels into alphabetical order
@@ -827,6 +833,9 @@ void Wad_file::EndWrite()
 
 	WriteDirectory();
 
+	// Re-detect levels
+	DetectLevels();
+
 	// reset the insertion point
 	insert_point = -1;
 }
@@ -891,7 +900,10 @@ void Wad_file::RemoveLevel(int lev_num)
 void Wad_file::RemoveGLNodes(int lev_num)
 {
 	SYS_ASSERT(begun_write);
-	SYS_ASSERT(0 <= lev_num && lev_num < LevelCount());
+	SYS_ASSERT(0 <= lev_num);
+
+	if (lev_num >= LevelCount())
+		return;
 
 	int start  = LevelHeader(lev_num);
 	int finish = LevelLastLump(lev_num);

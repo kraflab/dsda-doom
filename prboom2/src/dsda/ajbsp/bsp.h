@@ -115,7 +115,15 @@ void SetInfo(buildinfo_t *info);
 
 // attempt to open a wad.  on failure, the FatalError method in the
 // buildinfo_t interface is called.
-void OpenWad(const char *filename);
+void OpenInputWad(const char *filename);
+
+// attempt to open a wad.  on failure, the FatalError method in the
+// buildinfo_t interface is called.
+void OpenOutputWad(const char *filename);
+
+// attempt to open a wad.  on failure, the FatalError method in the
+// buildinfo_t interface is called.
+void OpenBothWad(const char *filename);
 
 // close a previously opened wad.
 void CloseWad();
@@ -126,9 +134,11 @@ void FinishXWA();
 
 // give the number of levels detected in the wad.
 int LevelsInWad();
+int LevelsInOutputWad();
 
 // retrieve the name of a particular level.
 const char *GetLevelName(int lev_idx);
+const char* GetOutputLevelName(int lev_idx);
 
 // build the nodes of a particular level.  if cancelled, returns the
 // BUILD_Cancelled result and the wad is unchanged.  otherwise the wad

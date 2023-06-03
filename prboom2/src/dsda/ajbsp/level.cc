@@ -40,6 +40,7 @@ namespace ajbsp
 {
 
 Wad_file * cur_wad;
+Wad_file * out_wad;
 Wad_file * xwa_wad;
 
 
@@ -809,6 +810,8 @@ const char *lev_current_name;
 
 int lev_current_idx;
 int lev_current_start;
+
+int lev_current_output_idx;
 
 map_format_e lev_format;
 
@@ -2547,7 +2550,7 @@ void UpdateGLMarker(Lump_c *marker)
 	// [ otherwise we write data into the wrong part of the file ]
 	u32_t crc = CalcGLChecksum();
 
-	cur_wad->RecreateLump(marker, max_size);
+	out_wad->RecreateLump(marker, max_size);
 
 	if (lev_long_name)
 	{
@@ -2563,33 +2566,44 @@ void UpdateGLMarker(Lump_c *marker)
 
 static void AddMissingLump(const char *name, const char *after)
 {
-	if (cur_wad->LevelLookupLump(lev_current_idx, name) >= 0)
+	if (out_wad->LevelLookupLump(lev_current_output_idx, name) >= 0)
 		return;
 
-	int exist = cur_wad->LevelLookupLump(lev_current_idx, after);
+	int exist = out_wad->LevelLookupLump(lev_current_output_idx, after);
 
 	// if this happens, the level structure is very broken
 	if (exist < 0)
 	{
 		Warning("Missing %s lump -- level structure is broken\n", after);
 
-		exist = cur_wad->LevelLastLump(lev_current_idx);
+		exist = out_wad->LevelLastLump(lev_current_output_idx);
 	}
 
-	cur_wad->InsertPoint(exist + 1);
+	out_wad->InsertPoint(exist + 1);
 
-	cur_wad->AddLump(name)->Finish();
+	out_wad->AddLump(name)->Finish();
 }
 
 
 build_result_e SaveLevel(node_t *root_node)
 {
-	// Note: root_node may be NULL
+	int out_idx;
 
-	cur_wad->BeginWrite();
+	// Note: root_node may be NULL
+	for (out_idx = 0; out_idx < LevelsInOutputWad(); ++out_idx)
+	{
+		const char* name = GetOutputLevelName(out_idx);
+
+		if (!StringCaseCmp(name, GetLevelName(lev_current_idx)))
+			break;
+	}
+
+	lev_current_output_idx = out_idx;
+
+	out_wad->BeginWrite();
 
 	// remove any existing GL-Nodes
-	cur_wad->RemoveGLNodes(lev_current_idx);
+	out_wad->RemoveGLNodes(lev_current_output_idx);
 
 	// ensure all necessary level lumps are present
 	AddMissingLump("SEGS",     "VERTEXES");
@@ -2674,7 +2688,7 @@ build_result_e SaveLevel(node_t *root_node)
 		UpdateGLMarker(gl_marker);
 	}
 
-	cur_wad->EndWrite();
+	out_wad->EndWrite();
 
 	if (lev_overflows)
 	{
@@ -2869,28 +2883,43 @@ Lump_c * FindLevelLump(const char *name)
 	return cur_wad->GetLump(idx);
 }
 
+Lump_c * FindOutputLevelLump(const char *name)
+{
+	if (lev_current_output_idx >= out_wad->LevelCount())
+		return NULL;
+
+	int idx = out_wad->LevelLookupLump(lev_current_output_idx, name);
+
+	if (idx < 0)
+		return NULL;
+
+	return out_wad->GetLump(idx);
+}
 
 Lump_c * CreateLevelLump(const char *name, int max_size)
 {
 	// look for existing one
-	Lump_c *lump = FindLevelLump(name);
+	Lump_c *lump = FindOutputLevelLump(name);
 
 	if (lump)
 	{
-		cur_wad->RecreateLump(lump, max_size);
+		out_wad->RecreateLump(lump, max_size);
 	}
 	else
 	{
-		int last_idx = cur_wad->LevelLastLump(lev_current_idx);
+		if (lev_current_output_idx < out_wad->LevelCount())
+		{
+			int last_idx = out_wad->LevelLastLump(lev_current_output_idx);
 
-		// in UDMF maps, insert before the ENDMAP lump, otherwise insert
-		// after the last known lump of the level.
-		if (lev_format != MAPF_UDMF)
-			last_idx += 1;
+			// in UDMF maps, insert before the ENDMAP lump, otherwise insert
+			// after the last known lump of the level.
+			if (lev_format != MAPF_UDMF)
+				last_idx += 1;
 
-		cur_wad->InsertPoint(last_idx);
+			out_wad->InsertPoint(last_idx);
+		}
 
-		lump = cur_wad->AddLump(name, max_size);
+		lump = out_wad->AddLump(name, max_size);
 	}
 
 	return lump;
@@ -2915,11 +2944,13 @@ Lump_c * CreateGLMarker()
 		lev_long_name = true;
 	}
 
-	int last_idx = cur_wad->LevelLastLump(lev_current_idx);
+	if (lev_current_output_idx < out_wad->LevelCount())
+	{
+		int last_idx = out_wad->LevelLastLump(lev_current_idx);
+		out_wad->InsertPoint(last_idx + 1);
+	}
 
-	cur_wad->InsertPoint(last_idx + 1);
-
-	Lump_c *marker = cur_wad->AddLump(name_buf);
+	Lump_c *marker = out_wad->AddLump(name_buf);
 
 	marker->Finish();
 
@@ -2939,16 +2970,20 @@ void SetInfo(buildinfo_t *info)
 }
 
 
-void OpenWad(const char *filename)
+void OpenInputWad(const char *filename)
 {
-	cur_wad = Wad_file::Open(filename, 'a');
+	cur_wad = Wad_file::Open(filename, 'r');
 	if (cur_wad == NULL)
 		cur_info->FatalError("Cannot open file: %s\n", filename);
+}
 
-	if (cur_wad->IsReadOnly())
+void OpenOutputWad(const char* filename)
+{
+	out_wad = Wad_file::Open(filename, 'a');
+	if (out_wad->IsReadOnly())
 	{
-		delete cur_wad;
-		cur_wad = NULL;
+		delete out_wad;
+		out_wad = NULL;
 
 		cur_info->FatalError("file is read only: %s\n", filename);
 	}
@@ -3000,6 +3035,13 @@ int LevelsInWad()
 	return cur_wad->LevelCount();
 }
 
+int LevelsInOutputWad()
+{
+	if (out_wad == NULL)
+		return 0;
+
+	return out_wad->LevelCount();
+}
 
 const char * GetLevelName(int lev_idx)
 {
@@ -3010,6 +3052,18 @@ const char * GetLevelName(int lev_idx)
 	return cur_wad->GetLump(lump_idx)->Name();
 }
 
+const char * GetOutputLevelName(int lev_idx)
+{
+	SYS_ASSERT(out_wad != NULL);
+
+	int lump_idx = out_wad->LevelHeader(lev_idx);
+
+	const char* name = out_wad->GetLump(lump_idx)->Name();
+
+	if (!StringCaseCmpMax(name, "GL_", 3))
+		return name + 3;
+	return name;
+}
 
 /* ----- build nodes for a single level ----- */
 
