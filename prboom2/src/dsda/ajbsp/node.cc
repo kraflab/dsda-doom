@@ -1271,9 +1271,14 @@ seg_t *CreateSegs()
 		if (line->zero_len)
 			continue;
 
+#if 0
+		// DSDA: We care about old maps using overlapping line tricks to get
+		// multiple overlapping mid textures, so dutifully include it
+
 		// ignore overlapping lines
 		if (line->overlap != NULL)
 			continue;
+#endif
 
 		// check for extremely long lines
 		if (hypot(line->start->x - line->end->x, line->start->y - line->end->y) >= 32000)
