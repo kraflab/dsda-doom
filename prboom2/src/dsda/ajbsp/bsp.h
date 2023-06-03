@@ -23,6 +23,11 @@
 
 #define AJBSP_VERSION  "1.07"
 
+// DSDA GL nodes revision.  Bump when changes to this code could
+// cause output differences.  This allows invalidating buggy output
+// from older versions, etc.
+#define DSDA_REV 0
+
 //
 // Node Build Information Structure
 //

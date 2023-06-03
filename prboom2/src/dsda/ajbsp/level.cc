@@ -2558,6 +2558,7 @@ void UpdateGLMarker(Lump_c *marker)
 	}
 
 	marker->Printf("BUILDER=%s\n", "AJBSP " AJBSP_VERSION);
+	marker->Printf("DSDA_REV=%d\n", DSDA_REV);
 	marker->Printf("CHECKSUM=0x%08x\n", crc);
 
 	marker->Finish();
