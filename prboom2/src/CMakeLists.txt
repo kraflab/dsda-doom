@@ -36,6 +36,8 @@ set(COMMON_SRC
     dsda/bsp.h
     dsda/bspbleed.c
     dsda/bspchunk.c
+    dsda/bspdump.c
+    dsda/bspdump.h
     dsda/bspnodes.c
     dsda/bsprender.c
     dsda/bspinternal.h

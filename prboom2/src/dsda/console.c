@@ -56,6 +56,8 @@
 #include "dsda/stretch.h"
 #include "dsda/tracker.h"
 #include "dsda/utility.h"
+#include "dsda/bsp.h"
+#include "dsda/bspdump.h"
 
 #include "console.h"
 
@@ -2197,6 +2199,18 @@ static dboolean console_AllGhosts(const char* command, const char* args) {
   return true;
 }
 
+static dboolean console_DumpBSP(const char* command, const char* args) {
+  FILE* fp = fopen(args, "w");
+  if (!fp)
+    return false;
+
+  dsda_AnnotateBSP();
+  dsda_DumpBSP(fp);
+  fclose(fp);
+
+  return true;
+}
+
 typedef dboolean (*console_command_t)(const char*, const char*);
 
 typedef struct {
@@ -2434,6 +2448,8 @@ static console_command_entry_t console_commands[] = {
   { "shadowcaster", console_BasicCheat, CF_DEMO },
   { "visit", console_BasicCheat, CF_DEMO },
   { "puke", console_BasicCheat, CF_DEMO },
+
+  { "dumpbsp", console_DumpBSP, CF_ALWAYS },
 
   // exit
   { "exit", console_Exit, CF_ALWAYS },
