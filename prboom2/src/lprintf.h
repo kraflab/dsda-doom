@@ -51,6 +51,7 @@ typedef enum
 #endif
 
 extern int lprintf(OutputLevels pri, const char *fmt, ...) __attribute__((format(printf,2,3)));
+extern int vlprintf(OutputLevels pri, const char* fmt, va_list ap);
 
 void I_EnableVerboseLogging(void);
 void I_DisableAllLogging(void);
@@ -60,6 +61,7 @@ void I_DisableMessageBoxes(void);
  * killough 4/25/98: add gcc attributes
  * cphipps 01/11- moved from i_system.h */
 NORETURNC11 void I_Error(const char *error, ...) __attribute__((format(printf,1,2))) NORETURN;
+NORETURNC11 void I_VError(const char *error, va_list ap) NORETURN;
 void I_Warn(const char *error, ...) __attribute__((format(printf,1,2)));
 
 #endif

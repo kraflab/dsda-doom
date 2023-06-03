@@ -66,16 +66,13 @@ int cons_stderr_mask = LO_WARN | LO_ERROR;
  */
 #define MAX_MESSAGE_SIZE 2048
 
-int lprintf(OutputLevels pri, const char *s, ...)
+int vlprintf(OutputLevels pri, const char* fmt, va_list ap)
 {
   int r=0;
   char msg[MAX_MESSAGE_SIZE];
   int lvl=pri;
 
-  va_list v;
-  va_start(v,s);
-  vsnprintf(msg,sizeof(msg),s,v);    /* print message in buffer  */
-  va_end(v);
+  vsnprintf(msg,sizeof(msg),fmt,ap);    /* print message in buffer  */
 
 #ifdef _WIN32
   // do not crash with unicode dirs
@@ -90,6 +87,17 @@ int lprintf(OutputLevels pri, const char *s, ...)
 #endif
   if (lvl & cons_stderr_mask)
     r = fprintf(stderr,"%s",msg);
+
+  return r;
+}
+
+int lprintf(OutputLevels pri, const char *s, ...)
+{
+  int r;
+  va_list v;
+  va_start(v,s);
+  r = vlprintf(pri, s, v);
+  va_end(v);
 
   return r;
 }
@@ -119,13 +127,10 @@ void I_DisableMessageBoxes(void)
  * killough 3/20/98: add const
  */
 
-void I_Error(const char *error, ...)
+void I_VError(const char *error, va_list ap)
 {
   char errmsg[MAX_MESSAGE_SIZE];
-  va_list argptr;
-  va_start(argptr,error);
-  vsnprintf(errmsg,sizeof(errmsg),error,argptr);
-  va_end(argptr);
+  vsnprintf(errmsg,sizeof(errmsg),error,ap);
   lprintf(LO_ERROR, "%s\n", errmsg);
 #ifdef _WIN32
   if (!disable_message_box && !dsda_Flag(dsda_arg_nodraw) && !capturing_video) {
@@ -133,6 +138,14 @@ void I_Error(const char *error, ...)
   }
 #endif
   I_SafeExit(-1);
+}
+
+void I_Error(const char *error, ...)
+{
+  va_list argptr;
+  va_start(argptr,error);
+  I_VError(error, argptr);
+  va_end(argptr);
 }
 
 void I_Warn(const char *error, ...)
