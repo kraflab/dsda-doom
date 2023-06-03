@@ -79,7 +79,7 @@ jobs:
         if: ${{ matrix.config.vcpkg_triplet }}
         run: |
           set -euo pipefail
-
+          ( cd "$VCPKG_INSTALLATION_ROOT" && git pull )
           NUGET=$(vcpkg fetch nuget | tail -n 1)
           GH_PACKAGES_URL="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
