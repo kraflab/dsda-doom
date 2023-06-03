@@ -60,7 +60,7 @@ char *StringNew(int length);
 char *StringDup(const char *orig, int limit = -1);
 char *StringUpper(const char *name);
 char *StringPrintf(const char *str, ...);
-void  StringFree(const char *str);
+void  StringFree(char *str);
 
 // checksum functions
 void Adler32_Begin(u32_t *crc);

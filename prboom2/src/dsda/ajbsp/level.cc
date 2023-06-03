@@ -306,7 +306,9 @@ static void CompressBlockmap(void)
 {
 	int i;
 	int cur_offset;
+#if DEBUG_BLOCKMAP
 	int dup_count=0;
+#endif
 
 	int orig_size, new_size;
 
@@ -358,7 +360,9 @@ static void CompressBlockmap(void)
 			UtilFree(block_lines[blk_num]);
 			block_lines[blk_num] = NULL;
 
+#if DEBUG_BLOCKMAP
 			dup_count++;
+#endif
 
 			orig_size += count;
 			continue;
@@ -1608,8 +1612,8 @@ void ParseUDMF()
 
 /* ----- writing routines ------------------------------ */
 
-static const u8_t *lev_v2_magic = (u8_t *) "gNd2";
-static const u8_t *lev_v5_magic = (u8_t *) "gNd5";
+static const u8_t *lev_v2_magic = (const u8_t *) "gNd2";
+static const u8_t *lev_v5_magic = (const u8_t *) "gNd5";
 
 
 void MarkOverflow(int flags)
@@ -2127,9 +2131,9 @@ void SortSegs()
 
 /* ----- ZDoom format writing --------------------------- */
 
-static const u8_t *lev_XNOD_magic = (u8_t *) "XNOD";
-static const u8_t *lev_XGL3_magic = (u8_t *) "XGL3";
-static const u8_t *lev_ZNOD_magic = (u8_t *) "ZNOD";
+static const u8_t *lev_XNOD_magic = (const u8_t *) "XNOD";
+static const u8_t *lev_XGL3_magic = (const u8_t *) "XGL3";
+static const u8_t *lev_ZNOD_magic = (const u8_t *) "ZNOD";
 
 void PutZVertices()
 {

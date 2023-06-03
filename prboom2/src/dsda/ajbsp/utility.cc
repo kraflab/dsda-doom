@@ -369,7 +369,7 @@ char *StringPrintf(const char *str, ...)
 }
 
 
-void StringFree(const char *str)
+void StringFree(char *str)
 {
 	if (str)
 	{

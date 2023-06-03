@@ -43,7 +43,7 @@ friend class Wad_file;
 private:
 	Wad_file *parent;
 
-	const char *name;
+	char *name;
 
 	int l_start;
 	int l_length;
@@ -110,7 +110,7 @@ friend void W_LoadFlats();
 friend void W_LoadTextures_TX_START(Wad_file *wf);
 
 private:
-	const char *filename;
+	char *filename;
 
 	char mode;  // mode value passed to ::Open()
 
