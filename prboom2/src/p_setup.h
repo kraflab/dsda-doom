@@ -82,5 +82,6 @@ typedef struct
 
 extern map_loader_t map_loader;
 
+extern char current_map_lump[9];
 
 #endif

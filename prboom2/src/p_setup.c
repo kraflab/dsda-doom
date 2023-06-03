@@ -221,6 +221,8 @@ size_t     num_deathmatchstarts;   // killough
 mapthing_t *deathmatch_p;
 mapthing_t playerstarts[MAX_PLAYER_STARTS][MAX_MAXPLAYERS];
 
+char current_map_lump[9];
+
 static int current_episode = -1;
 static int current_map = -1;
 static nodes_version_t current_nodesVersion = UNKNOWN_NODES;
@@ -3680,7 +3682,6 @@ void P_MustRebuildBlockmap(void)
 void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 {
   int   i;
-  char  lumpname[9];
   int   lumpnum;
 
   char  gl_lumpname[9];
@@ -3717,12 +3718,12 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
   //    W_Reload ();     killough 1/31/98: W_Reload obsolete
 
   // find map name
-  strcpy(lumpname, MAPNAME(episode, map));
-  lumpnum = W_GetNumForName(lumpname);
+  strcpy(current_map_lump, MAPNAME(episode, map));
+  lumpnum = W_GetNumForName(current_map_lump);
 
-  if (strlen(lumpname) < 6)
+  if (strlen(current_map_lump) < 6)
   {
-    snprintf(gl_lumpname, sizeof(gl_lumpname), "GL_%s", lumpname);
+    snprintf(gl_lumpname, sizeof(gl_lumpname), "GL_%s", current_map_lump);
     gl_lumpnum = W_CheckNumForName(gl_lumpname); // figgi
   }
   else
@@ -3947,7 +3948,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
   if (gamemode != shareware)
   {
-    S_ParseMusInfo(lumpname);
+    S_ParseMusInfo(current_map_lump);
   }
 
   // clear special respawning que
