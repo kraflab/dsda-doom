@@ -52,6 +52,8 @@ set(COMMON_SRC
     dsda/demo.h
     dsda/destructible.c
     dsda/destructible.h
+    dsda/dgeom.h
+    dsda/dgeom.c
     dsda/endoom.c
     dsda/endoom.h
     dsda/excmd.c
