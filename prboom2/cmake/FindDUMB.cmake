@@ -122,6 +122,7 @@ if(DUMB_FOUND)
       set_target_properties(
         DUMB::DUMB
         PROPERTIES IMPORTED_LOCATION "${DUMB_LIBRARY}"
+                   IMPORTED_IMPLIB "${DUMB_LIBRARY}"
       )
     endif()
   endif()
@@ -142,6 +143,7 @@ if(DUMB_FOUND)
       set_target_properties(
         DUMB::DUMB
         PROPERTIES IMPORTED_LOCATION_RELEASE "${DUMB_LIBRARY_RELEASE}"
+                   IMPORTED_IMPLIB_RELEASE "${DUMB_LIBRARY_RELEASE}"
       )
     endif()
   endif()
@@ -160,6 +162,7 @@ if(DUMB_FOUND)
       set_target_properties(
         DUMB::DUMB 
         PROPERTIES IMPORTED_LOCATION_DEBUG "${DUMB_LIBRARY_DEBUG}"
+                   IMPORTED_IMPLIB_DEBUG "${DUMB_LIBRARY_DEBUG}"
       )
     endif()
   endif()

@@ -44,14 +44,30 @@ find_path(
 )
 
 find_file(
-  LibMad_DLL
+  LibMad_DLL_RELEASE
   NAMES libmad.dll libmad-0.dll
 )
 
+find_file(
+  LibMad_DLL_DEBUG
+  NAMES libmad.dll libmad-0.dll
+)
+
+include(SelectDllConfigurations)
+select_dll_configurations(LibMad)
+
 find_library(
-  LibMad_LIBRARY
+  LibMad_LIBRARY_RELEASE
   NAMES mad
 )
+
+find_library(
+  LibMad_LIBRARY_DEBUG
+  NAMES mad
+)
+
+include(SelectLibraryConfigurations)
+select_library_configurations(LibMad)
 
 if(LibMad_DLL OR LibMad_LIBRARY MATCHES ".so|.dylib")
   set(_libmad_library_type SHARED)
@@ -83,8 +99,42 @@ if(LibMad_FOUND)
     set_target_properties(
       LibMad::libmad
       PROPERTIES IMPORTED_LOCATION "${LibMad_LIBRARY}"
+                 IMPORTED_IMPLIB "${LibMad_LIBRARY}"
     )
   endif()
+
+  if(LibMad_LIBRARY_RELEASE)
+    if(LibMad_DLL)
+      set_target_properties(
+        LibMad::libmad
+        PROPERTIES IMPORTED_LOCATION_RELEASE "${LibMad_DLL_RELEASE}"
+                   IMPORTED_IMPLIB_RELEASE "${LibMad_LIBRARY_RELEASE}"
+      )
+    else()
+      set_target_properties(
+        LibMad::libmad
+        PROPERTIES IMPORTED_LOCATION_RELEASE "${LibMad_LIBRARY_RELEASE}"
+                   IMPORTED_IMPLIB_RELEASE "${LibMad_LIBRARY_RELEASE}"
+      )
+    endif()
+  endif()
+
+  if(LibMad_LIBRARY_DEBUG)
+    if(LibMad_DLL)
+      set_target_properties(
+        LibMad::libmad
+        PROPERTIES IMPORTED_LOCATION_DEBUG "${LibMad_DLL_DEBUG}"
+                   IMPORTED_IMPLIB_DEBUG "${LibMad_LIBRARY_DEBUG}"
+      )
+    else()
+      set_target_properties(
+        LibMad::libmad
+        PROPERTIES IMPORTED_LOCATION_DEBUG "${LibMad_LIBRARY_DEBUG}"
+                   IMPORTED_IMPLIB_DEBUG "${LibMad_LIBRARY_DEBUG}"
+      )
+    endif()
+  endif()
+
 
   set(LibMad_LIBRARIES LibMad::libmad)
   set(LibMad_INCLUDE_DIRS "${LibMad_INCLUDE_DIR}")
