@@ -146,6 +146,11 @@ const char* GetOutputLevelName(int lev_idx);
 // BUILD_LumpOverflow if some limits were exceeded.
 build_result_e BuildLevel(int lev_idx);
 
+// build only the GL nodes of a particular level.  if cancelled, returns the
+// BUILD_Cancelled result and the wad is unchanged.  otherwise the wad
+// is updated to store the new lumps and returns either BUILD_OK or
+// BUILD_LumpOverflow if some limits were exceeded.
+build_result_e BuildGLNodes(int lev_idx);
 
 }  // namespace ajbsp
 

@@ -2702,6 +2702,85 @@ build_result_e SaveLevel(node_t *root_node)
 	return BUILD_OK;
 }
 
+build_result_e SaveGLNodes(node_t *root_node)
+{
+	int out_idx;
+	// Note: root_node may be NULL
+
+	for (out_idx = 0; out_idx < LevelsInOutputWad(); ++out_idx)
+	{
+		const char* name = GetOutputLevelName(out_idx);
+
+		if (!StringCaseCmp(name, GetLevelName(lev_current_idx)))
+			break;
+	}
+
+	lev_current_output_idx = out_idx;
+
+	out_wad->BeginWrite();
+
+	// remove any existing GL-Nodes
+	out_wad->RemoveGLNodes(lev_current_output_idx);
+
+	// user preferences
+	lev_force_v5   = cur_info->force_v5;
+	lev_force_xnod = cur_info->force_xnod;
+
+	// check for overflows...
+	// this sets the force_xxx vars if certain limits are breached
+	CheckLimits();
+
+	/* --- GL Nodes --- */
+
+	Lump_c * gl_marker = NULL;
+
+	if (num_real_lines > 0)
+	{
+		// this also removes minisegs and degenerate segs
+		SortSegs();
+
+		// create empty marker now, flesh it out later
+		gl_marker = CreateGLMarker();
+
+		PutGLVertices(lev_force_v5);
+
+		if (lev_force_v5)
+			PutGLSegs_V5();
+		else
+			PutGLSegs_V2();
+
+		if (lev_force_v5)
+			PutGLSubsecs_V5();
+		else
+			PutSubsecs("GL_SSECT", true);
+
+		PutNodes("GL_NODES", lev_force_v5, root_node);
+
+		// -JL- Add empty PVS lump
+		// This does us no good
+		//CreateLevelLump("GL_PVS")->Finish();
+	}
+
+	// keyword support (v5.0 of the specs).
+	// must be done *after* doing normal nodes, for proper checksum.
+	if (gl_marker)
+	{
+		UpdateGLMarker(gl_marker);
+	}
+
+	out_wad->EndWrite();
+
+	if (lev_overflows)
+	{
+		// no message here
+		// [ in verbose mode, each overflow already printed a message ]
+		// [ in normal mode, we don't want any messages at all ]
+
+		return BUILD_LumpOverflow;
+	}
+
+	return BUILD_OK;
+}
 
 build_result_e SaveUDMF(node_t *root_node)
 {
@@ -2957,6 +3036,16 @@ Lump_c * CreateGLMarker()
 	return marker;
 }
 
+Lump_c * FindOutputGLMarker()
+{
+	char name_buf[64];
+
+	SYS_ASSERT(strlen(lev_current_name) <= 5);
+	sprintf(name_buf, "GL_%s", lev_current_name);
+
+	return out_wad->FindLump(name_buf);
+}
+
 
 //------------------------------------------------------------------------
 // MAIN STUFF
@@ -3127,6 +3216,55 @@ build_result_e BuildLevel(int lev_idx)
 	return ret;
 }
 
+build_result_e BuildGLNodes(int lev_idx)
+{
+	if (cur_info->cancelled)
+		return BUILD_Cancelled;
+
+	node_t   *root_node = NULL;
+	subsec_t *root_sub  = NULL;
+	build_result_e ret = BUILD_OK;
+
+	lev_current_idx   = lev_idx;
+	lev_current_start = cur_wad->LevelHeader(lev_idx);
+	lev_format        = cur_wad->LevelFormat(lev_idx);
+
+	LoadLevel();
+
+	InitBlockmap();
+
+	if (num_real_lines > 0)
+	{
+		bbox_t dummy;
+
+		// create initial segs
+		seg_t *list = CreateSegs();
+
+		// recursively create nodes
+		ret = BuildNodes(list, 0, &dummy, &root_node, &root_sub);
+	}
+
+	if (ret == BUILD_OK)
+	{
+		cur_info->Print(2, "    Built %d NODES, %d SSECTORS, %d SEGS, %d VERTEXES\n",
+				num_nodes, num_subsecs, num_segs, num_old_vert + num_new_vert);
+
+		if (root_node != NULL)
+		{
+			cur_info->Print(2, "    Heights of subtrees: %d / %d\n",
+					ComputeBspHeight(root_node->r.node),
+					ComputeBspHeight(root_node->l.node));
+		}
+
+		ClockwiseBspTree();
+
+		ret = SaveGLNodes(root_node);
+	}
+
+	FreeLevel();
+
+	return ret;
+}
 
 }  // namespace ajbsp
 
