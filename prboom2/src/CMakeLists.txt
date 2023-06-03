@@ -24,6 +24,8 @@ set(COMMON_SRC
     dsda/ajbsp/utility.h
     dsda/ajbsp/wad.cc
     dsda/ajbsp/wad.h
+    dsda/ajbsp/glue.h
+    dsda/ajbsp/glue.cc
     dsda/analysis.c
     dsda/analysis.h
     dsda/args.c
