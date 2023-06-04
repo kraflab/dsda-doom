@@ -1479,8 +1479,8 @@ void gld_AddWall(seg_t *seg)
       wall.yscale = (float) seg->sidedef->scaley_mid / FRACUNIT;
       wall.gltexture=temptex;
 
-      scaled_texheight = FixedDiv(wall.gltexture->realtexheight << FRACBITS, seg->sidedef->scaley_mid);
-      scaled_rowoffset = FixedDiv(seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid, seg->sidedef->scaley_mid);
+      scaled_texheight = (fixed_t) ((wall.gltexture->realtexheight << FRACBITS) / wall.yscale);
+      scaled_rowoffset = (fixed_t) ((seg->sidedef->rowoffset + seg->sidedef->rowoffset_mid) / wall.yscale);
 
       wrapmidtex = seg->sidedef->flags & SF_WRAPMIDTEX || seg->linedef->flags & ML_WRAPMIDTEX;
 
