@@ -59,11 +59,13 @@ select_dll_configurations(LibMad)
 find_library(
   LibMad_LIBRARY_RELEASE
   NAMES mad
+  PATH_SUFFIXES ../../lib
 )
 
 find_library(
   LibMad_LIBRARY_DEBUG
   NAMES mad
+  PATH_SUFFIXES ../debug/lib
 )
 
 include(SelectLibraryConfigurations)
@@ -104,6 +106,11 @@ if(LibMad_FOUND)
   endif()
 
   if(LibMad_LIBRARY_RELEASE)
+    set_property(
+      TARGET LibMad::libmad
+      APPEND
+      PROPERTY IMPORTED_CONFIGURATIONS RELEASE
+    )
     if(LibMad_DLL)
       set_target_properties(
         LibMad::libmad
@@ -120,6 +127,11 @@ if(LibMad_FOUND)
   endif()
 
   if(LibMad_LIBRARY_DEBUG)
+    set_property(
+      TARGET LibMad::libmad
+      APPEND
+      PROPERTY IMPORTED_CONFIGURATIONS DEBUG
+    )
     if(LibMad_DLL)
       set_target_properties(
         LibMad::libmad
