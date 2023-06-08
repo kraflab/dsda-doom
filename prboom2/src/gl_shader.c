@@ -39,6 +39,7 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <math.h>
+#include <stdarg.h>
 #include "doomstat.h"
 #include "v_video.h"
 #include "gl_opengl.h"
@@ -53,217 +54,551 @@
 #include "r_things.h"
 #include "doomdef.h"
 
-// Indexed lighting shader uniform bindings
-typedef struct shdr_indexed_unif_s
+#include "dsda/utility.h"
+
+#define MAX_UNIFORMS 10
+#define MAX_STACK 10
+
+#define UNIF_VAL_END (-1)
+
+#define UNIF(num, name, type) [num] = {(name), (type)}
+#define UNIF_END {NULL, UNIF_COUNT}
+
+typedef enum
 {
-  int lightlevel_index; // float
-} shdr_indexed_unif_t;
+  UNIF_1F,
+  UNIF_2F,
+  UNIF_1I,
+  UNIF_TEX0,
+  UNIF_TEX1,
+  UNIF_TEX2,
+  UNIF_COUNT
+} shader_uniform_type_t;
 
-// Fuzz shader uniform bindings
-typedef struct shdr_fuzz_unif_s
+typedef struct
 {
-  // (vec2) sprite texture dimensions
-  int tex_d_index;
-  // (float) ratio of screen resolution to fuzz resolution
-  int ratio_index;
-  // (float) random seed
-  int seed_index;
-} shdr_fuzz_unif_t;
+  const char* name;
+  shader_uniform_type_t type;
+} shader_uniform_t;
 
-static GLShader *sh_indexed = NULL;
-static shdr_indexed_unif_t indexed_unifs;
-static GLShader *sh_fuzz = NULL;
-static shdr_fuzz_unif_t fuzz_unifs;
-static GLShader *active_shader = NULL;
-
-static GLShader* gld_LoadShader(const char *vpname, const char *fpname);
-
-static void get_indexed_shader_bindings()
+typedef struct
 {
-  int idx;
+  const char* name;
+  shader_uniform_t unifs[];
+} shader_info_t;
 
-  indexed_unifs.lightlevel_index = GLEXT_glGetUniformLocationARB(sh_indexed->hShader, "lightlevel");
+typedef struct
+{
+  const shader_info_t* info;
+  GLhandleARB hShader;
+  GLhandleARB hVertProg;
+  GLhandleARB hFragProg;
+  int indices[MAX_UNIFORMS];
+} shader_t;
 
-  GLEXT_glUseProgramObjectARB(sh_indexed->hShader);
+typedef struct
+{
+  const GLchar* name;
+  const GLchar* value;
+} shader_define_t;
 
-  idx = GLEXT_glGetUniformLocationARB(sh_indexed->hShader, "tex");
-  GLEXT_glUniform1iARB(idx, 0);
+typedef struct
+{
+  GLchar const** strs;
+  GLint* lens;
+  unsigned int size;
+  unsigned int cap;
+} shader_source_t;
 
-  idx = GLEXT_glGetUniformLocationARB(sh_indexed->hShader, "colormap");
-  GLEXT_glUniform1iARB(idx, 2);
+typedef union
+{
+  int i[2];
+  float f[2];
+} shader_uniform_value_t;
 
-  GLEXT_glUseProgramObjectARB(0);
+typedef struct
+{
+  shader_t* shader;
+  shader_uniform_value_t unifs[MAX_UNIFORMS];
+} shader_frame_t;
+
+static void glsl_ShaderSrcInit(shader_source_t* src)
+{
+  memset(src, 0, sizeof(*src));
 }
 
-static void get_fuzz_shader_bindings()
+static void glsl_ShaderSrcDestroy(shader_source_t* src)
 {
-  int idx;
-
-  fuzz_unifs.tex_d_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex_d");
-  fuzz_unifs.ratio_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "ratio");
-  fuzz_unifs.seed_index = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "seed");
-
-  GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
-
-  idx = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "tex");
-  GLEXT_glUniform1iARB(idx, 0);
-
-  idx = GLEXT_glGetUniformLocationARB(sh_fuzz->hShader, "fuzz");
-  GLEXT_glUniform1iARB(idx, 1);
-
-  GLEXT_glUseProgramObjectARB(0);
+  if (src->strs)
+    Z_Free(src->strs);
+  if (src->lens)
+    Z_Free(src->lens);
+  glsl_ShaderSrcInit(src);
 }
 
-void glsl_Init(void)
+static void glsl_ShaderSrcAppend(shader_source_t* src, const GLchar* str, GLint len)
 {
-  sh_indexed = gld_LoadShader("glvp", "glfp_idx");
-  get_indexed_shader_bindings();
+  unsigned int size = src->size;
 
-  sh_fuzz = gld_LoadShader("glvp", "glfp_fuzz");
-  get_fuzz_shader_bindings();
-}
-
-static int ReadLump(const char *filename, const char *lumpname, char **buffer)
-{
-  int size;
-
-  size = M_ReadFileToString(filename, buffer);
-
-  if (size < 0)
+  if (size && src->lens[size - 1] >= 0 && src->strs[size - 1] + src->lens[size - 1] == str)
   {
-    const unsigned char *data;
-    int lump;
-    char name[9];
-    char* p;
-
-    strncpy(name, lumpname, 9);
-    name[8] = 0;
-    for(p = name; *p; p++)
-      *p = toupper(*p);
-
-    lump = W_CheckNumForName2(name, ns_prboom);
-
-    if (lump != LUMP_NOT_FOUND)
-    {
-      size = W_LumpLength(lump);
-      data = W_LumpByNum(lump);
-      *buffer = Z_Calloc(1, size + 1);
-      memcpy (*buffer, data, size);
-      (*buffer)[size] = 0;
-    }
+    // Fast path -- expand last string to include more of source buffer
+    src->lens[src->size - 1] += len;
+    return;
   }
 
-  return size;
-}
-
-static GLShader* gld_LoadShader(const char *vpname, const char *fpname)
-{
-#define buffer_size 2048
-  int linked;
-  char buffer[buffer_size];
-  char *vp_data = NULL;
-  char *fp_data = NULL;
-  int vp_size, fp_size;
-  size_t vp_fnlen, fp_fnlen;
-  char *filename = NULL;
-  GLShader* shader = NULL;
-
-  vp_fnlen = snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
-  fp_fnlen = snprintf(NULL, 0, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
-  filename = Z_Malloc(MAX(vp_fnlen, fp_fnlen) + 1);
-
-  sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), vpname);
-  vp_size = ReadLump(filename, vpname, &vp_data);
-
-  sprintf(filename, "%s/shaders/%s.txt", I_DoomExeDir(), fpname);
-  fp_size = ReadLump(filename, fpname, &fp_data);
-
-  if (vp_data && fp_data)
+  if (src->size == src->cap)
   {
-    shader = Z_Calloc(1, sizeof(GLShader));
-
-    shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-    shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-
-    // I think this is fixable with temporary variables and exchanging data around
-    // Not sure on the right code to avoid adding extra variables, so ignoring...
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-    GLEXT_glShaderSourceARB(shader->hVertProg, 1, &vp_data, &vp_size);
-    GLEXT_glShaderSourceARB(shader->hFragProg, 1, &fp_data, &fp_size);
-    #pragma GCC diagnostic pop
-
-    GLEXT_glCompileShaderARB(shader->hVertProg);
-    GLEXT_glCompileShaderARB(shader->hFragProg);
-
-    shader->hShader = GLEXT_glCreateProgramObjectARB();
-
-    GLEXT_glAttachObjectARB(shader->hShader, shader->hVertProg);
-    GLEXT_glAttachObjectARB(shader->hShader, shader->hFragProg);
-
-    GLEXT_glLinkProgramARB(shader->hShader);
-
-    GLEXT_glGetInfoLogARB(shader->hShader, buffer_size, NULL, buffer);
-
-    GLEXT_glGetObjectParameterivARB(shader->hShader, GL_OBJECT_LINK_STATUS_ARB, &linked);
-
-    if (linked)
-    {
-      lprintf(LO_DEBUG, "gld_LoadShader: Shader \"%s+%s\" compiled OK: %s\n", vpname, fpname, buffer);
-    }
+    if (src->cap == 0)
+      src->cap = 8;
     else
+      src->cap *= 2;
+
+    src->strs = Z_Realloc(src->strs, src->cap * sizeof(*src->strs));
+    src->lens = Z_Realloc(src->lens, src->cap * sizeof(*src->lens));
+  }
+
+  src->strs[src->size] = str;
+  src->lens[src->size] = len;
+  ++src->size;
+}
+
+static void glsl_ShaderLookup(const char* name, GLchar const** text, GLint* len)
+{
+  int lump = W_CheckNumForName2(name, ns_prboom);
+
+  if (lump == LUMP_NOT_FOUND)
+    I_Error("Could not find shader source: %s\n", name);
+
+  *text = W_LumpByNum(lump);
+  *len = W_LumpLength(lump);
+}
+
+#define CSLEN(x) (sizeof((x)) - 1)
+
+static void glsl_ShaderSrcAppendDefine(shader_source_t* src,
+                                       const shader_define_t* def)
+{
+  static const char cdefine[] = "#define ";
+  static const char cspace[] = " ";
+  static const char cnl[] = "\n";
+
+  glsl_ShaderSrcAppend(src, cdefine, CSLEN(cdefine));
+  glsl_ShaderSrcAppend(src, def->name, strlen(def->name));
+  glsl_ShaderSrcAppend(src, cspace, CSLEN(cspace));
+  glsl_ShaderSrcAppend(src, def->value, strlen(def->value));
+  glsl_ShaderSrcAppend(src, cnl, CSLEN(cnl));
+}
+
+static void glsl_ShaderSrcProcess(shader_source_t* src, const GLchar* text,
+                                  GLint len, const shader_define_t* defs,
+                                  const shader_define_t* userdefs)
+{
+  static const char vdir[] = "#version";
+  static const char edir[] = "#extension";
+  static const char idir[] = "#include";
+  static const char iext[] = "GL_GOOGLE_include_directive";
+  dsda_strview_t v;
+  dsda_strview_t line;
+
+  dsda_StrViewInit(&v, text, len);
+
+  while (dsda_StrViewNextLine(&v, &line))
+  {
+    // Output any version and extension directives before defines
+    if (dsda_StrViewStartsWithCStr(&line, vdir))
     {
-      lprintf(LO_ERROR, "gld_LoadShader: Error compiling shader \"%s+%s\": %s\n", vpname, fpname, buffer);
-      Z_Free(shader);
-      shader = NULL;
+      glsl_ShaderSrcAppend(src, line.string, line.size);
+      continue;
+    }
+
+    if (dsda_StrViewStartsWithCStr(&line, edir))
+    {
+      dsda_strview_t cur;
+
+      dsda_StrViewOffset(&line, CSLEN(edir), &cur);
+      dsda_StrViewTrimStartCStr(&cur, " \t", &cur);
+
+      if (dsda_StrViewStartsWithCStr(&cur, iext))
+        // Omit include extension from output since we're handling it
+        continue;
+      glsl_ShaderSrcAppend(src, line.string, line.size);
+      continue;
+    }
+
+    // Output any outstanding defines
+    for (; defs && defs->name; ++defs)
+      glsl_ShaderSrcAppendDefine(src, defs);
+
+    for (; userdefs && userdefs->name; ++userdefs)
+      glsl_ShaderSrcAppendDefine(src, userdefs);
+
+    // Handle include directives
+    if (dsda_StrViewStartsWithCStr(&line, idir))
+    {
+      dsda_strview_t cur = line;
+      char lumpname[9] = {0};
+      const GLchar* itext;
+      GLint ilen;
+
+      // Parse include name
+      if (!dsda_StrViewSplitAfterChar(&line, '"', NULL, &cur) ||
+          !dsda_StrViewSplitBeforeChar(&cur, '"', &cur, NULL))
+        I_Error("Invalid include syntax: %.*s\n", (int) line.size, line.string);
+
+      // Trim off extension if present
+      dsda_StrViewSplitBeforeChar(&cur, '.', &cur, NULL);
+
+      // Truncate and NUL-terminate lump name
+      memcpy(lumpname, cur.string, MIN(8, cur.size));
+
+      // Recursively process include source text
+      glsl_ShaderLookup(lumpname, &itext, &ilen);
+      glsl_ShaderSrcProcess(src, itext, ilen, NULL, NULL);
+      continue;
+    }
+
+    // Pass line through verbatim
+    glsl_ShaderSrcAppend(src, line.string, line.size);
+  }
+}
+
+static void glsl_ShaderSrcLoad(shader_source_t* src, const char* name,
+                               const shader_define_t* defs,
+                               const shader_define_t* userdefs)
+{
+  const GLchar* text;
+  int len;
+
+  glsl_ShaderLookup(name, &text, &len);
+  glsl_ShaderSrcInit(src);
+  glsl_ShaderSrcProcess(src, text, len, defs, userdefs);
+}
+
+static shader_t* glsl_ShaderLoad(const shader_info_t* info,
+                                 const shader_define_t* userdefs)
+{
+  static const shader_define_t vpdefs[] =
+  {
+    {"VERTEX", "1"},
+    {NULL, NULL},
+  };
+  static const shader_define_t fpdefs[] =
+  {
+    {"FRAGMENT", "1"},
+    {NULL, NULL},
+  };
+  shader_source_t src;
+  int status;
+  char buffer[2048];
+  shader_t* shader = NULL;
+  const shader_uniform_t* unif;
+  unsigned int i;
+
+  shader = Z_Malloc(sizeof(*shader));
+  shader->info = info;
+
+  shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+  glsl_ShaderSrcLoad(&src, info->name, vpdefs, userdefs);
+  GLEXT_glShaderSourceARB(shader->hVertProg, src.size, src.strs, src.lens);
+  glsl_ShaderSrcDestroy(&src);
+
+  GLEXT_glCompileShaderARB(shader->hVertProg);
+  GLEXT_glGetInfoLogARB(shader->hVertProg, sizeof(buffer), NULL, buffer);
+  GLEXT_glGetObjectParameterivARB(shader->hVertProg,
+                                  GL_OBJECT_COMPILE_STATUS_ARB, &status);
+  if (status)
+    lprintf(LO_DEBUG, "ShaderLoad: Shader \"%s\" (vertex) compiled OK: %s\n",
+            info->name, buffer);
+  else
+    I_Error("ShaderLoad: Error compiling shader \"%s\" (vertex): %s\n",
+            info->name, buffer);
+
+  shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+  glsl_ShaderSrcLoad(&src, info->name, fpdefs, userdefs);
+  GLEXT_glShaderSourceARB(shader->hFragProg, src.size, src.strs, src.lens);
+  glsl_ShaderSrcDestroy(&src);
+
+  GLEXT_glCompileShaderARB(shader->hFragProg);
+  GLEXT_glGetInfoLogARB(shader->hFragProg, sizeof(buffer), NULL, buffer);
+  GLEXT_glGetObjectParameterivARB(shader->hFragProg,
+                                  GL_OBJECT_COMPILE_STATUS_ARB, &status);
+  if (status)
+    lprintf(LO_DEBUG, "ShaderLoad: Shader \"%s\" (fragment) compiled OK: %s\n",
+            info->name, buffer);
+  else
+    I_Error("ShaderLoad: Error compiling shader \"%s\" (fragment): %s\n",
+            info->name, buffer);
+
+  shader->hShader = GLEXT_glCreateProgramObjectARB();
+  GLEXT_glAttachObjectARB(shader->hShader, shader->hVertProg);
+  GLEXT_glAttachObjectARB(shader->hShader, shader->hFragProg);
+  GLEXT_glLinkProgramARB(shader->hShader);
+  GLEXT_glGetInfoLogARB(shader->hShader, sizeof(buffer), NULL, buffer);
+  GLEXT_glGetObjectParameterivARB(shader->hShader, GL_OBJECT_LINK_STATUS_ARB,
+                                  &status);
+
+  if (status)
+    lprintf(LO_DEBUG, "ShaderLoad: Shader \"%s\" linked OK: %s\n", info->name,
+            buffer);
+  else
+    I_Error("ShaderLoad: Error linking shader \"%s\": %s\n", info->name,
+            buffer);
+
+  GLEXT_glUseProgramObjectARB(shader->hShader);
+
+  for (unif = info->unifs, i = 0; unif->name; ++unif, ++i)
+  {
+    int idx;
+
+    if (i >= MAX_UNIFORMS)
+      I_Error("ShaderLoad: Too many uniforms in shader \"%s\"\n", info->name);
+
+    idx = GLEXT_glGetUniformLocationARB(shader->hShader, unif->name);
+    if (idx == -1)
+      I_Error("ShaderLoad: No such uniform \"%s\" in shader \"%s\"\n",
+              unif->name, info->name);
+    shader->indices[i] = idx;
+
+    switch (unif->type)
+    {
+    case UNIF_TEX0:
+      GLEXT_glUniform1iARB(idx, 0);
+      break;
+    case UNIF_TEX1:
+      GLEXT_glUniform1iARB(idx, 1);
+      break;
+    case UNIF_TEX2:
+      GLEXT_glUniform1iARB(idx, 2);
+      break;
+    default:
+      continue;
     }
   }
 
-  Z_Free(filename);
-  Z_Free(vp_data);
-  Z_Free(fp_data);
-
-  if (!shader)
-  {
-    I_Error("Failed to load shader %s, %s", vpname, fpname);
-  }
+  GLEXT_glUseProgramObjectARB(0);
 
   return shader;
 }
 
-// TODO: replace the active_shader variable with a stack;
-// a few places need to temporarily disable or switch the
-// current active shader (e.g. fuzz, gld_FillBlock, etc.)
-// and the current management around this is very brittle.
-// being able to push & pop to a stack would be quite nice.
+static shader_frame_t stack[MAX_STACK];
+static unsigned int sp = 0;
 
-void glsl_SetActiveShader(GLShader *shader)
+static shader_frame_t* glsl_ShaderFramePush(void)
 {
-  if (shader != active_shader)
+  if (sp == MAX_STACK - 1)
+    I_Error("ShaderFramePush: Max shader stack depth exceeded\n");
+
+  return &stack[sp++]; 
+}
+
+static void glsl_ShaderFrameActivate(const shader_frame_t* frame)
+{
+  unsigned int i;
+  const shader_uniform_t* unif;
+
+  GLEXT_glUseProgramObjectARB(frame->shader ? frame->shader->hShader : 0);
+
+  if (!frame->shader)
+    return;
+
+  for (unif = frame->shader->info->unifs, i = 0; unif->name; ++unif, ++i)
   {
-    GLEXT_glUseProgramObjectARB((shader ? shader->hShader : 0));
-    active_shader = shader;
+    const shader_uniform_value_t* val = &frame->unifs[i];
+    int idx = frame->shader->indices[i];
+
+    switch (unif->type)
+    {
+    case UNIF_1I:
+      GLEXT_glUniform1iARB(idx, val->i[0]);
+      break;
+    case UNIF_1F:
+      GLEXT_glUniform1fARB(idx, val->f[0]);
+      break;
+    case UNIF_2F:
+      GLEXT_glUniform2fARB(idx, val->f[0], val->f[1]);
+      break;
+    default:
+      continue;
+    }
   }
 }
 
-void glsl_SuspendActiveShader(void)
+static void glsl_ShaderPush(shader_t* shader, ...)
 {
-  if (active_shader)
+  shader_frame_t* frame = glsl_ShaderFramePush();
+  va_list ap;
+  int num;
+
+  frame->shader = shader;
+
+  if (shader != NULL)
+  {
+    va_start(ap, shader);
+
+    while ((num = va_arg(ap, int)) >= 0)
+    {
+      const shader_uniform_t* unif = &frame->shader->info->unifs[num];
+      shader_uniform_value_t* val;
+
+      val = &frame->unifs[num];
+      
+      switch(unif->type)
+      {
+      case UNIF_1I:
+        val->i[0] = va_arg(ap, GLint);
+        break;
+      case UNIF_1F:
+        val->f[0] = va_arg(ap, double);
+        break;
+      case UNIF_2F:
+        val->f[0] = va_arg(ap, double);
+        val->f[1] = va_arg(ap, double);
+        break;
+      default:
+        I_Error("ShaderPush: Can't dynamically set texture uniform type");
+      }
+    }
+
+    va_end(ap);
+  }
+
+  glsl_ShaderFrameActivate(frame);
+}
+
+static void glsl_ShaderPop(shader_t* shader)
+{
+  if (sp == 0)
+    I_Error("ShaderPop: Pop of empty shader stack\n");
+
+  if (stack[sp - 1].shader != shader)
+    I_Error("ShaderPop: Pop of incorrect shader (\"%s\" != \"%s\"\n",
+            shader->info->name, stack[sp - 1].shader->info->name);
+
+  if (--sp != 0)
+    glsl_ShaderFrameActivate(&stack[sp - 1]);
+  else
     GLEXT_glUseProgramObjectARB(0);
 }
 
-void glsl_ResumeActiveShader(void)
+static void glsl_ShaderUniform(shader_t* shader, int num, ...)
 {
-  if (active_shader)
-    GLEXT_glUseProgramObjectARB(active_shader->hShader);
+  shader_frame_t* frame;
+  va_list ap;
+  const shader_uniform_t* unif = &shader->info->unifs[num];
+  int idx = shader->indices[num];
+  shader_uniform_value_t* val;
+
+  if (sp == 0)
+    I_Error("ShaderUniform: Can't modify shader uniform with empty stack\n");
+
+  frame = &stack[sp - 1];
+  if (frame->shader != shader)
+    I_Error("ShaderUniform: Can't modify shader uniform for inactive shader\n");
+
+  val = &frame->unifs[num];
+
+  va_start(ap, num);
+
+  switch(unif->type)
+  {
+  case UNIF_1I:
+    val->i[0] = va_arg(ap, GLint);
+    GLEXT_glUniform1iARB(idx, val->i[0]);
+    break;
+  case UNIF_1F:
+    val->f[0] = va_arg(ap, double);
+    GLEXT_glUniform1fARB(idx, val->f[0]);
+    break;
+  case UNIF_2F:
+    val->f[0] = va_arg(ap, double);
+    val->f[1] = va_arg(ap, double);
+    GLEXT_glUniform2fARB(idx, val->f[0], val->f[1]);
+    break;
+  default:
+    I_Error("ShaderUniform: Can't dynamically set texture uniform type");
+  }
+
+  va_end(ap);
 }
 
-void glsl_SetMainShaderActive()
+enum
 {
-  glsl_SetActiveShader(sh_indexed);
+  MAIN_UNIF_TEX,
+  MAIN_UNIF_COLORMAP,
+  MAIN_UNIF_LIGHTLEVEL
+};
+
+enum
+{
+  FUZZ_UNIF_TEX,
+  FUZZ_UNIF_FUZZ,
+  FUZZ_UNIF_TEX_D,
+  FUZZ_UNIF_RATIO,
+  FUZZ_UNIF_SEED
+};
+
+static shader_t *sh_main = NULL;
+static shader_t *sh_fuzz = NULL;
+
+static const shader_info_t main_info =
+{
+  .name = "gls_main",
+  .unifs =
+  {
+    UNIF(MAIN_UNIF_TEX, "tex", UNIF_TEX0),
+    UNIF(MAIN_UNIF_COLORMAP, "colormap", UNIF_TEX2),
+    UNIF(MAIN_UNIF_LIGHTLEVEL, "lightlevel", UNIF_1F),
+    UNIF_END
+  }
+};
+
+static const shader_info_t fuzz_info =
+{
+  .name = "gls_fuzz",
+  .unifs =
+  {
+    UNIF(FUZZ_UNIF_TEX, "tex", UNIF_TEX0),
+    UNIF(FUZZ_UNIF_FUZZ, "fuzz", UNIF_TEX1),
+    UNIF(FUZZ_UNIF_TEX_D, "tex_d", UNIF_2F),
+    UNIF(FUZZ_UNIF_RATIO, "ratio", UNIF_1F),
+    UNIF(FUZZ_UNIF_SEED, "seed", UNIF_1F),
+    UNIF_END
+  }
+};
+
+void glsl_Init(void)
+{
+  sh_main = glsl_ShaderLoad(&main_info, NULL);
+  sh_fuzz = glsl_ShaderLoad(&fuzz_info, NULL);
 }
 
-void glsl_SetFuzzShaderActive(int tic, int sprite, int width, int height, float ratio)
+void glsl_PushNoShader(void)
+{
+  glsl_ShaderPush(NULL);
+}
+
+void glsl_PopNoShader(void)
+{
+  glsl_ShaderPop(NULL);
+}
+
+void glsl_PushMainShader(void)
+{
+  glsl_ShaderPush(sh_main, UNIF_VAL_END);
+}
+
+void glsl_PopMainShader(void)
+{
+  glsl_ShaderPop(sh_main);
+}
+
+void glsl_SetLightLevel(float lightlevel)
+{
+  glsl_ShaderUniform(sh_main, MAIN_UNIF_LIGHTLEVEL, lightlevel);
+}
+
+void glsl_PushFuzzShader(int tic, int sprite, int width, int height, float ratio)
 {
   // Large integers converted to float can lose precision, causing
   // problems in the shader.  Since the tic and sprite count are just
@@ -276,27 +611,14 @@ void glsl_SetFuzzShaderActive(int tic, int sprite, int width, int height, float 
   seed = seed * factor + sprite;
   seed *= factor;
 
-  if (active_shader != sh_fuzz)
-  {
-    GLEXT_glUseProgramObjectARB(sh_fuzz->hShader);
-    active_shader = sh_fuzz;
-  }
-
-  GLEXT_glUniform2fARB(fuzz_unifs.tex_d_index, width, height);
-  GLEXT_glUniform1fARB(fuzz_unifs.ratio_index, ratio);
-  GLEXT_glUniform1fARB(fuzz_unifs.seed_index, (double) seed / INT_MAX);
+  glsl_ShaderPush(sh_fuzz,
+             FUZZ_UNIF_TEX_D, (double) width, (double) height,
+             FUZZ_UNIF_RATIO, ratio,
+             FUZZ_UNIF_SEED, (double) seed / INT_MAX,
+             UNIF_VAL_END);
 }
 
-void glsl_SetFuzzShaderInactive()
+void glsl_PopFuzzShader(void)
 {
-  if (active_shader == sh_fuzz)
-  {
-    GLEXT_glUseProgramObjectARB(sh_indexed->hShader);
-    active_shader = sh_indexed;
-  }
-}
-
-void glsl_SetLightLevel(float lightlevel)
-{
-  GLEXT_glUniform1fARB(indexed_unifs.lightlevel_index, lightlevel);
+  glsl_ShaderPop(sh_fuzz);
 }

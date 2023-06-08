@@ -50,9 +50,8 @@ set(TABLES
     lumps/bfgbex.lmp
     lumps/nervebex.lmp
     lumps/glshadow.lmp
-    lumps/glfp_fuzz.lmp
-    lumps/glfp_idx.lmp
-    lumps/glvp.lmp
+    lumps/gls_main.lmp
+    lumps/gls_fuzz.lmp
     lumps/m_ammo.lmp
     lumps/m_armour.lmp
     lumps/m_arrow.lmp

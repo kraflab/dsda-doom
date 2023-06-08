@@ -1,5 +1,15 @@
-#version 120
+#version 110
 
+#ifdef VERTEX
+void main()
+{
+  gl_FrontColor = gl_Color;
+  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+  gl_Position = ftransform();
+}
+#endif
+
+#ifdef FRAGMENT
 // Sprite texture
 uniform sampler2D tex;
 // Fuzz lookup texture
@@ -12,7 +22,7 @@ uniform float ratio;
 // Random seed
 uniform float seed;
 
-const float fuzzsize = 50;
+const float fuzzsize = 50.0;
 
 float random(vec2 n)
 {
@@ -33,7 +43,7 @@ void main()
   vec2 c;
 
   // Use window coordinates if ratio is non-zero
-  if (ratio != 0)
+  if (ratio != 0.0)
     // Invert y coordinate since GL convention is opposite Doom's
     c = floor(vec2(gl_FragCoord.x / ratio, -gl_FragCoord.y / ratio));
   else
@@ -44,3 +54,4 @@ void main()
   // pass in a non-black gl_color for pain/gamma support in indexed lightmode
   gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, gl_TexCoord[0].xy).g * darkness(c));
 }
+#endif

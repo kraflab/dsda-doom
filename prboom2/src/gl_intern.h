@@ -493,21 +493,13 @@ extern int *linerendered[2]; // true if linedef rendered (only here for malloc)
 extern int rendermarker;
 extern GLuint flats_vbo_id;
 
-typedef struct GLShader_s
-{
-  char name[256];
-  GLhandleARB hShader;
-  GLhandleARB hVertProg;
-  GLhandleARB hFragProg;
-} GLShader;
-
 void glsl_Init(void);
-void glsl_SetActiveShader(GLShader *shader);
-void glsl_SuspendActiveShader(void);
-void glsl_ResumeActiveShader(void);
-void glsl_SetMainShaderActive();
-void glsl_SetFuzzShaderActive(int tic, int sprite, int width, int height, float ratio);
-void glsl_SetFuzzShaderInactive();
+void glsl_PushNoShader(void);
+void glsl_PopNoShader(void);
+void glsl_PushMainShader(void);
+void glsl_PopMainShader(void);
+void glsl_PushFuzzShader(int tic, int sprite, int width, int height, float ratio);
+void glsl_PopFuzzShader(void);
 void glsl_SetLightLevel(float lightlevel);
 
 #endif // _GL_INTERN_H
