@@ -1373,9 +1373,6 @@ void I_UpdateVideoMode(void)
   V_SetPalette(0);
   I_UploadNewPalette(0, true);
 
-  ST_SetResolution();
-  AM_SetResolution();
-
   if (V_IsOpenGLMode())
   {
     int temp;
@@ -1411,6 +1408,9 @@ void I_UpdateVideoMode(void)
 
     gld_Init(SCREENWIDTH, SCREENHEIGHT);
   }
+
+  ST_SetResolution();
+  AM_SetResolution();
 
   if (V_IsOpenGLMode())
   {
