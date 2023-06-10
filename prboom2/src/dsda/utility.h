@@ -53,12 +53,6 @@ typedef struct {
   size_t size;
 } dsda_string_t;
 
-// Non-allocated, read-only view into a string, like C++ string_view
-typedef struct {
-  const char* string;
-  size_t size;
-} dsda_strview_t;
-
 void dsda_InitString(dsda_string_t* dest, const char* value);
 void dsda_FreeString(dsda_string_t* dest);
 void dsda_StringCat(dsda_string_t* dest, const char* source);
@@ -86,67 +80,6 @@ fixed_t dsda_StringToFixed(const char* x);
 byte dsda_FloatToPercent(float x);
 int dsda_IntToFixed(int x);
 angle_t dsda_DegreesToAngle(float x);
-
-static inline void dsda_StrViewInit(dsda_strview_t* sv, const char* string, size_t size)
-{
-  sv->string = string;
-  sv->size = size;
-}
-
-static inline dboolean dsda_StrViewIsEmpty(const dsda_strview_t* sv)
-{
-  return sv->size == 0;
-}
-
-static inline void dsda_StrViewOffset(const dsda_strview_t* sv, size_t offset, dsda_strview_t* ofs)
-{
-  if (offset > sv->size)
-  {
-    dsda_StrViewInit(ofs, NULL, 0);
-    return;
-  }
-
-  ofs->string = sv->string + offset;
-  ofs->size = sv->size - offset;
-}
-
-// Splits `sv` at the first instance of `c`, putting everything up to and including it in `before`
-// and everything after in `after`.  `before` or `after` may safely alias `sv`.  If `c` does not
-// occur in `sv`, `before` is set to `sv` and `after` is set to empty.  Returns `true` if
-// an occurence was found.
-dboolean dsda_StrViewSplitAfterChar(const dsda_strview_t* sv, char c,
-                                    dsda_strview_t* before,
-                                    dsda_strview_t* after);
-
-// Like the above, except `c` is included in `after` if found
-dboolean dsda_StrViewSplitBeforeChar(const dsda_strview_t* sv, char c,
-                                     dsda_strview_t* before,
-                                     dsda_strview_t* after);
-
-// Advances `sv` past the next line and sets `line` to it, including any trailing '\r'
-// or '\n'.  If the string does not end with a '\n`, `line` is set to `sv` and `sv`
-// is emptied.  Returns `false` if there was no more data, i.e. `sv` was empty.
-static inline dboolean dsda_StrViewNextLine(dsda_strview_t* sv, dsda_strview_t* line)
-{
-  if (dsda_StrViewIsEmpty(sv))
-  {
-    dsda_StrViewInit(line, NULL, 0);
-    return false;
-  }
-
-  dsda_StrViewSplitAfterChar(sv, '\n', line, sv);
-  return true;
-}
-
-static inline dboolean dsda_StrViewStartsWithCStr(const dsda_strview_t* sv, const char* prefix)
-{
-  size_t len = strlen(prefix);
-  return sv->size >= len && !memcmp(sv->string, prefix, len);
-}
-
-// Removes any character in the C string `chars` from the start of `sv`, outputting `trim`,
-// which may safely alias `sv`.
-void dsda_StrViewTrimStartCStr(const dsda_strview_t* sv, const char* chars, dsda_strview_t* trim);
 
 #define DO_ONCE { static int do_once = true; if (do_once) {
 #define END_ONCE do_once = false; } }

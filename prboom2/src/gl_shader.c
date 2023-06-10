@@ -54,7 +54,7 @@
 #include "r_things.h"
 #include "doomdef.h"
 
-#include "dsda/utility.h"
+#include "dsda/utility/string_view.h"
 
 #define MAX_UNIFORMS 10
 #define MAX_STACK 10
@@ -198,28 +198,28 @@ static void glsl_ShaderSrcProcess(shader_source_t* src, const GLchar* text,
   static const char edir[] = "#extension";
   static const char idir[] = "#include";
   static const char iext[] = "GL_GOOGLE_include_directive";
-  dsda_strview_t v;
-  dsda_strview_t line;
+  dsda_string_view_t v;
+  dsda_string_view_t line;
 
-  dsda_StrViewInit(&v, text, len);
+  dsda_InitStringView(&v, text, len);
 
-  while (dsda_StrViewNextLine(&v, &line))
+  while (dsda_AdvanceStringViewToNextLine(&v, &line))
   {
     // Output any version and extension directives before defines
-    if (dsda_StrViewStartsWithCStr(&line, vdir))
+    if (dsda_StringViewStartsWithPrefix(&line, vdir))
     {
       glsl_ShaderSrcAppend(src, line.string, line.size);
       continue;
     }
 
-    if (dsda_StrViewStartsWithCStr(&line, edir))
+    if (dsda_StringViewStartsWithPrefix(&line, edir))
     {
-      dsda_strview_t cur;
+      dsda_string_view_t cur;
 
-      dsda_StrViewOffset(&line, CSLEN(edir), &cur);
-      dsda_StrViewTrimStartCStr(&cur, " \t", &cur);
+      dsda_StringViewAtOffset(&line, CSLEN(edir), &cur);
+      dsda_StringViewAfterChars(&cur, " \t", &cur);
 
-      if (dsda_StrViewStartsWithCStr(&cur, iext))
+      if (dsda_StringViewStartsWithPrefix(&cur, iext))
         // Omit include extension from output since we're handling it
         continue;
       glsl_ShaderSrcAppend(src, line.string, line.size);
@@ -234,20 +234,20 @@ static void glsl_ShaderSrcProcess(shader_source_t* src, const GLchar* text,
       glsl_ShaderSrcAppendDefine(src, userdefs);
 
     // Handle include directives
-    if (dsda_StrViewStartsWithCStr(&line, idir))
+    if (dsda_StringViewStartsWithPrefix(&line, idir))
     {
-      dsda_strview_t cur = line;
+      dsda_string_view_t cur = line;
       char lumpname[9] = {0};
       const GLchar* itext;
       GLint ilen;
 
       // Parse include name
-      if (!dsda_StrViewSplitAfterChar(&line, '"', NULL, &cur) ||
-          !dsda_StrViewSplitBeforeChar(&cur, '"', &cur, NULL))
+      if (!dsda_SplitStringViewAfterChar(&line, '"', NULL, &cur) ||
+          !dsda_SplitStringViewBeforeChar(&cur, '"', &cur, NULL))
         I_Error("Invalid include syntax: %.*s\n", (int) line.size, line.string);
 
       // Trim off extension if present
-      dsda_StrViewSplitBeforeChar(&cur, '.', &cur, NULL);
+      dsda_SplitStringViewBeforeChar(&cur, '.', &cur, NULL);
 
       // Truncate and NUL-terminate lump name
       memcpy(lumpname, cur.string, MIN(8, cur.size));
