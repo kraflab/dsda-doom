@@ -469,26 +469,27 @@ void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c)
 void gld_BeginUIDraw(void)
 {
   gld_InitColormapTextures(true);
-  glsl_SetMainShaderActive();
+  glsl_PushMainShader();
   gl_ui_lightmode_indexed = true;
 }
 
 void gld_EndUIDraw(void)
 {
   gl_ui_lightmode_indexed = false;
-  glsl_SetActiveShader(NULL);
+  glsl_PopMainShader();
 }
 
 void gld_BeginAutomapDraw(void)
 {
   gld_InitColormapTextures(true);
-  glsl_SetActiveShader(NULL);
+  glsl_PushNullShader();
   gl_automap_lightmode_indexed = true;
 }
 
 void gld_EndAutomapDraw(void)
 {
   gl_automap_lightmode_indexed = false;
+  glsl_PopNullShader();
 }
 
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
@@ -751,7 +752,7 @@ void gld_StartFuzz(int sprite, int width, int height, float ratio)
   color_rgb_t color;
 
   // shader init
-  glsl_SetFuzzShaderActive(gametic, sprite, width, height, ratio);
+  glsl_PushFuzzShader(gametic, sprite, width, height, ratio);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // for indexed lightmode, the fuzz color needs to take
@@ -765,7 +766,7 @@ void gld_StartFuzz(int sprite, int width, int height, float ratio)
 
 void gld_EndFuzz()
 {
-  glsl_SetFuzzShaderInactive(); // will no-op if fuzz shader wasn't enabled.
+  glsl_PopFuzzShader();
 }
 
 void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
@@ -823,14 +824,15 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   }
   glColor3f(1.0f,1.0f,1.0f);
-  gld_EndFuzz();
+  if (/*(viewplayer->mo->flags & MF_SHADOW) && */!vis->colormap)
+    gld_EndFuzz();
 }
 
 void gld_FillBlock(int x, int y, int width, int height, int col)
 {
   color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
-  glsl_SuspendActiveShader();
+  glsl_PushNullShader();
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
 
@@ -847,7 +849,7 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
   glColor3f(1.0f,1.0f,1.0f);
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
 
-  glsl_ResumeActiveShader();
+  glsl_PopNullShader();
 }
 
 void gld_SetPalette(int palette)
@@ -1046,9 +1048,9 @@ void gld_EndDrawScene(void)
   glViewport(0, 0, SCREENWIDTH, SCREENHEIGHT);
   gld_Set2DMode();
 
-  glsl_SetMainShaderActive();
+  glsl_PushMainShader();
   R_DrawPlayerSprites();
-  glsl_SetActiveShader(NULL);
+  glsl_PopMainShader();
 
   // e6y
   // Effect of invulnerability uses a colormap instead of hard-coding now
@@ -2527,7 +2529,7 @@ void gld_DrawScene(player_t *player)
   glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
   glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
 
-  glsl_SetMainShaderActive();
+  glsl_PushMainShader();
 
   //
   // opaque stuff
@@ -2630,9 +2632,9 @@ void gld_DrawScene(player_t *player)
   {
     dsda_RecordDrawSegs(gld_drawinfo.num_items[GLDIT_SWALL]);
     // fake strips of sky
-    glsl_SetActiveShader(NULL);
+    glsl_PushNullShader();
     gld_DrawStripsSky();
-    glsl_SetMainShaderActive();
+    glsl_PopNullShader();
   }
 
   // opaque sprites
@@ -2668,9 +2670,9 @@ void gld_DrawScene(player_t *player)
 
   if (dsda_ShowHealthBars())
   {
-    glsl_SetActiveShader(NULL);
+    glsl_PushNullShader();
     gld_DrawHealthBars();
-    glsl_SetMainShaderActive();
+    glsl_PopNullShader();
   }
 
   //
@@ -2754,5 +2756,5 @@ void gld_DrawScene(player_t *player)
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_COLOR_ARRAY);
 
-  glsl_SetActiveShader(NULL);
+  glsl_PopMainShader();
 }

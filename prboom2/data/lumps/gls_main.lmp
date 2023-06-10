@@ -1,3 +1,15 @@
+#version 110
+
+#ifdef VERTEX
+void main()
+{
+  gl_FrontColor = gl_Color;
+  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+  gl_Position = ftransform();
+}
+#endif
+
+#ifdef FRAGMENT
 uniform sampler2D tex;
 uniform sampler2D colormap;
 uniform float lightlevel;
@@ -48,3 +60,4 @@ void main()
   // reapply transparency & translucency
   gl_FragColor.a = color.a * texel.g;
 }
+#endif
