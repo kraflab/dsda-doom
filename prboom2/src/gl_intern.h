@@ -494,8 +494,8 @@ extern int rendermarker;
 extern GLuint flats_vbo_id;
 
 void glsl_Init(void);
-void glsl_PushNoShader(void);
-void glsl_PopNoShader(void);
+void glsl_PushNullShader(void);
+void glsl_PopNullShader(void);
 void glsl_PushMainShader(void);
 void glsl_PopMainShader(void);
 void glsl_PushFuzzShader(int tic, int sprite, int width, int height, float ratio);

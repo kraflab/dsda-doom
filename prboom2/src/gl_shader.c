@@ -573,12 +573,12 @@ void glsl_Init(void)
   sh_fuzz = glsl_ShaderLoad(&fuzz_info, NULL);
 }
 
-void glsl_PushNoShader(void)
+void glsl_PushNullShader(void)
 {
   glsl_ShaderPush(NULL);
 }
 
-void glsl_PopNoShader(void)
+void glsl_PopNullShader(void)
 {
   glsl_ShaderPop(NULL);
 }

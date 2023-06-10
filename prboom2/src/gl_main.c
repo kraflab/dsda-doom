@@ -482,14 +482,14 @@ void gld_EndUIDraw(void)
 void gld_BeginAutomapDraw(void)
 {
   gld_InitColormapTextures(true);
-  glsl_PushNoShader();
+  glsl_PushNullShader();
   gl_automap_lightmode_indexed = true;
 }
 
 void gld_EndAutomapDraw(void)
 {
   gl_automap_lightmode_indexed = false;
-  glsl_PopNoShader();
+  glsl_PopNullShader();
 }
 
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
@@ -832,7 +832,7 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
 {
   color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
-  glsl_PushNoShader();
+  glsl_PushNullShader();
 
   gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
 
@@ -849,7 +849,7 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
   glColor3f(1.0f,1.0f,1.0f);
   gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
 
-  glsl_PopNoShader();
+  glsl_PopNullShader();
 }
 
 void gld_SetPalette(int palette)
@@ -2632,9 +2632,9 @@ void gld_DrawScene(player_t *player)
   {
     dsda_RecordDrawSegs(gld_drawinfo.num_items[GLDIT_SWALL]);
     // fake strips of sky
-    glsl_PushNoShader();
+    glsl_PushNullShader();
     gld_DrawStripsSky();
-    glsl_PopNoShader();
+    glsl_PopNullShader();
   }
 
   // opaque sprites
@@ -2670,9 +2670,9 @@ void gld_DrawScene(player_t *player)
 
   if (dsda_ShowHealthBars())
   {
-    glsl_PushNoShader();
+    glsl_PushNullShader();
     gld_DrawHealthBars();
-    glsl_PopNoShader();
+    glsl_PopNullShader();
   }
 
   //
