@@ -389,7 +389,7 @@ static shader_frame_t* glsl_ShaderFramePush(void)
   if (sp == MAX_STACK - 1)
     I_Error("ShaderFramePush: Max shader stack depth exceeded\n");
 
-  return &stack[sp++]; 
+  return &stack[sp++];
 }
 
 static void glsl_ShaderFrameActivate(const shader_frame_t* frame)
@@ -442,7 +442,7 @@ static void glsl_ShaderPush(shader_t* shader, ...)
       shader_uniform_value_t* val;
 
       val = &frame->unifs[num];
-      
+
       switch(unif->type)
       {
       case UNIF_1I:
