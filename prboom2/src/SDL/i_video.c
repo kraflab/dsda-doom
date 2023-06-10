@@ -1255,7 +1255,7 @@ void I_UpdateVideoMode(void)
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      SCREENWIDTH, SCREENHEIGHT,
+      SCREENWIDTH * screen_multiply, SCREENHEIGHT * screen_multiply,
       init_flags);
     sdl_glcontext = SDL_GL_CreateContext(sdl_window);
     SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, SCREENHEIGHT);
