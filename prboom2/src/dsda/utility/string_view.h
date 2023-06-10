@@ -45,12 +45,13 @@ dboolean dsda_SplitStringViewBeforeChar(const dsda_string_view_t* sv, char c,
                                         dsda_string_view_t* before,
                                         dsda_string_view_t* after);
 
-// Advances `sv` past the next line and sets `line` to it, including any trailing '\r'
-// or '\n'.  If the string does not end with a '\n`, `line` is set to `sv` and `sv`
-// is emptied.  Returns `false` if there was no more data, i.e. `sv` was empty.
-dboolean dsda_AdvanceStringViewToNextLine(dsda_string_view_t* sv, dsda_string_view_t* line);
+// Sets `line` to the current line in `sv`, including any trailing '\r' or '\n'
+// and advances `sv` to the next line.
+// If the string does not end with a '\n', `line` is set to `sv` and `sv` is emptied.
+// Returns `false` if `sv` is empty.
+dboolean dsda_GetStringViewLine(dsda_string_view_t* sv, dsda_string_view_t* line);
 
-dboolean dsda_StringViewStartsWithPrefix(const dsda_string_view_t* sv, const char* prefix);
+dboolean dsda_StringViewStartsWith(const dsda_string_view_t* sv, const char* prefix);
 
 void dsda_StringViewAfterChars(const dsda_string_view_t* sv, const char* chars,
                                dsda_string_view_t* after);

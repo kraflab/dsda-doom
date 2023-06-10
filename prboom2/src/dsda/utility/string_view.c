@@ -93,7 +93,7 @@ dboolean dsda_SplitStringViewBeforeChar(const dsda_string_view_t* sv, char c,
   return false;
 }
 
-dboolean dsda_AdvanceStringViewToNextLine(dsda_string_view_t* sv, dsda_string_view_t* line) {
+dboolean dsda_GetStringViewLine(dsda_string_view_t* sv, dsda_string_view_t* line) {
   if (dsda_IsStringViewEmpty(sv)) {
     dsda_InitStringView(line, NULL, 0);
 
@@ -105,7 +105,7 @@ dboolean dsda_AdvanceStringViewToNextLine(dsda_string_view_t* sv, dsda_string_vi
   return true;
 }
 
-dboolean dsda_StringViewStartsWithPrefix(const dsda_string_view_t* sv, const char* prefix) {
+dboolean dsda_StringViewStartsWith(const dsda_string_view_t* sv, const char* prefix) {
   size_t len;
 
   len = strlen(prefix);

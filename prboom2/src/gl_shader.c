@@ -203,23 +203,23 @@ static void glsl_ShaderSrcProcess(shader_source_t* src, const GLchar* text,
 
   dsda_InitStringView(&v, text, len);
 
-  while (dsda_AdvanceStringViewToNextLine(&v, &line))
+  while (dsda_GetStringViewLine(&v, &line))
   {
     // Output any version and extension directives before defines
-    if (dsda_StringViewStartsWithPrefix(&line, vdir))
+    if (dsda_StringViewStartsWith(&line, vdir))
     {
       glsl_ShaderSrcAppend(src, line.string, line.size);
       continue;
     }
 
-    if (dsda_StringViewStartsWithPrefix(&line, edir))
+    if (dsda_StringViewStartsWith(&line, edir))
     {
       dsda_string_view_t cur;
 
       dsda_StringViewAtOffset(&line, CSLEN(edir), &cur);
       dsda_StringViewAfterChars(&cur, " \t", &cur);
 
-      if (dsda_StringViewStartsWithPrefix(&cur, iext))
+      if (dsda_StringViewStartsWith(&cur, iext))
         // Omit include extension from output since we're handling it
         continue;
       glsl_ShaderSrcAppend(src, line.string, line.size);
@@ -234,7 +234,7 @@ static void glsl_ShaderSrcProcess(shader_source_t* src, const GLchar* text,
       glsl_ShaderSrcAppendDefine(src, userdefs);
 
     // Handle include directives
-    if (dsda_StringViewStartsWithPrefix(&line, idir))
+    if (dsda_StringViewStartsWith(&line, idir))
     {
       dsda_string_view_t cur = line;
       char lumpname[9] = {0};
