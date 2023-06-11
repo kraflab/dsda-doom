@@ -16,13 +16,13 @@ uniform sampler2D tex;
 uniform sampler2D fuzz;
 // Texture dimensions
 uniform vec2 tex_d;
+// Fuzz texture dimensions
+uniform vec2 fuzz_d;
 // Fuzz macro-pixel ratio in terms of window coordinates
 // If 0, use texture coordinates instead
 uniform float ratio;
 // Random seed
 uniform float seed;
-
-const float fuzzsize = 50.0;
 
 float random(vec2 n)
 {
@@ -34,7 +34,7 @@ float darkness(vec2 c)
   // Compute random offset based on seed and x coordinate
   float r = random(vec2(seed, c.x));
   // Sample fuzz lookup texture at y coordinate plus random offset modulo size
-  return texture2D(fuzz, vec2(fract(c.y / fuzzsize + r), 0)).r;
+  return texture2D(fuzz, vec2(fract(c.y / fuzz_d.x + r), 0)).r;
 }
 
 void main()

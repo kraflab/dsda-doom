@@ -494,11 +494,12 @@ extern int rendermarker;
 extern GLuint flats_vbo_id;
 
 void glsl_Init(void);
+void glsl_SetTextureDims(int unit, unsigned int width, unsigned int height);
 void glsl_PushNullShader(void);
 void glsl_PopNullShader(void);
 void glsl_PushMainShader(void);
 void glsl_PopMainShader(void);
-void glsl_PushFuzzShader(int tic, int sprite, int width, int height, float ratio);
+void glsl_PushFuzzShader(int tic, int sprite, float ratio);
 void glsl_PopFuzzShader(void);
 void glsl_SetLightLevel(float lightlevel);
 
