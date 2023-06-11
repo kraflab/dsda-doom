@@ -123,19 +123,20 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install \
-            cmake \
-            ninja \
-            pkg-config \
-            dumb \
-            fluid-synth \
-            libvorbis \
-            libzip \
-            mad \
-            portmidi \
-            sdl2 \
-            sdl2_image \
-            sdl2_mixer
+          env HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
+            brew install \
+              cmake \
+              ninja \
+              pkg-config \
+              dumb \
+              fluid-synth \
+              libvorbis \
+              libzip \
+              mad \
+              portmidi \
+              sdl2 \
+              sdl2_image \
+              sdl2_mixer
 
       - name: Configure
         run: |
