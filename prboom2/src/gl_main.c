@@ -747,12 +747,12 @@ void gld_DrawLine(int x0, int y0, int x1, int y1, int BaseColor)
 }
 
 
-void gld_StartFuzz(int sprite, int width, int height, float ratio)
+void gld_StartFuzz(int sprite, float ratio)
 {
   color_rgb_t color;
 
   // shader init
-  glsl_PushFuzzShader(gametic, sprite, width, height, ratio);
+  glsl_PushFuzzShader(gametic, sprite, ratio);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // for indexed lightmode, the fuzz color needs to take
@@ -800,7 +800,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   // when invisibility is about to go
   if (/*(viewplayer->mo->flags & MF_SHADOW) && */!vis->colormap)
   {
-    gld_StartFuzz(-1, gltexture->realtexwidth, gltexture->realtexheight, 0);
+    gld_StartFuzz(-1, 0);
   }
   else
   {
@@ -1958,7 +1958,7 @@ static void gld_DrawSprite(GLSprite *sprite)
       glGetIntegerv(GL_BLEND_SRC, &blend_src);
       glGetIntegerv(GL_BLEND_DST, &blend_dst);
       restore = 1;
-      gld_StartFuzz(sprite->id, sprite->gltexture->width, sprite->gltexture->height, ratio);
+      gld_StartFuzz(sprite->id, ratio);
     }
     else
     {

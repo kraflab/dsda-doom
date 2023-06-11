@@ -579,6 +579,7 @@ enum
   FUZZ_UNIF_TEX,
   FUZZ_UNIF_FUZZ,
   FUZZ_UNIF_TEX_D,
+  FUZZ_UNIF_FUZZ_D,
   FUZZ_UNIF_RATIO,
   FUZZ_UNIF_SEED
 };
@@ -604,8 +605,9 @@ static const shader_info_t fuzz_info =
   .unifs =
   {
     UNIF(FUZZ_UNIF_TEX, "tex", UNIF_TEX0),
+    UNIF(FUZZ_UNIF_TEX_D, "tex_d", UNIF_TEX0D),
     UNIF(FUZZ_UNIF_FUZZ, "fuzz", UNIF_TEX1),
-    UNIF(FUZZ_UNIF_TEX_D, "tex_d", UNIF_2F),
+    UNIF(FUZZ_UNIF_FUZZ_D, "fuzz_d", UNIF_TEX1D),
     UNIF(FUZZ_UNIF_RATIO, "ratio", UNIF_1F),
     UNIF(FUZZ_UNIF_SEED, "seed", UNIF_1F),
     UNIF_END
@@ -643,7 +645,7 @@ void glsl_SetLightLevel(float lightlevel)
   glsl_ShaderUniform(sh_main, MAIN_UNIF_LIGHTLEVEL, lightlevel);
 }
 
-void glsl_PushFuzzShader(int tic, int sprite, int width, int height, float ratio)
+void glsl_PushFuzzShader(int tic, int sprite, float ratio)
 {
   // Large integers converted to float can lose precision, causing
   // problems in the shader.  Since the tic and sprite count are just
@@ -657,7 +659,6 @@ void glsl_PushFuzzShader(int tic, int sprite, int width, int height, float ratio
   seed *= factor;
 
   glsl_ShaderPush(sh_fuzz,
-             FUZZ_UNIF_TEX_D, (double) width, (double) height,
              FUZZ_UNIF_RATIO, ratio,
              FUZZ_UNIF_SEED, (double) seed / INT_MAX,
              UNIF_VAL_END);
