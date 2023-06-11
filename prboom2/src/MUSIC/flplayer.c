@@ -169,6 +169,12 @@ static int fl_init (int samplerate)
   int mus_fluidsynth_chorus;
   int mus_fluidsynth_reverb;
   int mus_fluidsynth_gain;
+  int mus_fluidsynth_chorus_depth;
+  int mus_fluidsynth_chorus_level;
+  int mus_fluidsynth_reverb_damp;
+  int mus_fluidsynth_reverb_level;
+  int mus_fluidsynth_reverb_width;
+  int mus_fluidsynth_reverb_room_size;
   const char *filename;
 
   if (!dsda_Flag(dsda_arg_verbose) || dsda_Flag(dsda_arg_quiet))
@@ -177,6 +183,12 @@ static int fl_init (int samplerate)
   mus_fluidsynth_chorus = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus);
   mus_fluidsynth_reverb = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb);
   mus_fluidsynth_gain = dsda_IntConfig(dsda_config_mus_fluidsynth_gain);
+  mus_fluidsynth_chorus_depth = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus_depth);
+  mus_fluidsynth_chorus_level = dsda_IntConfig(dsda_config_mus_fluidsynth_chorus_level);
+  mus_fluidsynth_reverb_damp = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb_damp);
+  mus_fluidsynth_reverb_level = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb_level);
+  mus_fluidsynth_reverb_width = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb_width);
+  mus_fluidsynth_reverb_room_size = dsda_IntConfig(dsda_config_mus_fluidsynth_reverb_room_size);
 
   f_soundrate = samplerate;
   // fluidsynth 1.1.4 supports sample rates as low as 8000hz.  earlier versions only go down to 22050hz
@@ -217,16 +229,16 @@ static int fl_init (int samplerate)
 
   if (mus_fluidsynth_chorus)
   {
-    FSET (num, "synth.chorus.depth", (double) 5);
-    FSET (num, "synth.chorus.level", (double) 0.35);
+    FSET (num, "synth.chorus.depth", mus_fluidsynth_chorus_depth / 100.0);
+    FSET (num, "synth.chorus.level", mus_fluidsynth_chorus_level / 100.0);
   }
 
   if (mus_fluidsynth_reverb)
   {
-    FSET (num, "synth.reverb.damp", (double) 0.4);
-    FSET (num, "synth.reverb.level", (double) 0.15);
-    FSET (num, "synth.reverb.width", (double) 4);
-    FSET (num, "synth.reverb.room-size", (double) 0.6);
+    FSET (num, "synth.reverb.damp", mus_fluidsynth_reverb_damp / 100.0);
+    FSET (num, "synth.reverb.level", mus_fluidsynth_reverb_level / 100.0);
+    FSET (num, "synth.reverb.width", mus_fluidsynth_reverb_width / 100.0);
+    FSET (num, "synth.reverb.room-size", mus_fluidsynth_reverb_room_size / 100.0);
   }
 
   // gain control

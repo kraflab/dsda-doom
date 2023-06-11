@@ -726,6 +726,30 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mus_fluidsynth_gain", dsda_config_mus_fluidsynth_gain,
     dsda_config_int, 0, 1000, { 50 }
   },
+  [dsda_config_mus_fluidsynth_chorus_depth] = {
+    "mus_fluidsynth_chorus_depth", dsda_config_mus_fluidsynth_chorus_depth,
+    dsda_config_int, 0, 10000, { 500 }
+  },
+  [dsda_config_mus_fluidsynth_chorus_level] = {
+    "mus_fluidsynth_chorus_level", dsda_config_mus_fluidsynth_chorus_level,
+    dsda_config_int, 0, 1000, { 35 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_damp] = {
+    "mus_fluidsynth_reverb_damp", dsda_config_mus_fluidsynth_reverb_damp,
+    dsda_config_int, 0, 1000, { 40 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_level] = {
+    "mus_fluidsynth_reverb_level", dsda_config_mus_fluidsynth_reverb_level,
+    dsda_config_int, 0, 1000, { 15 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_width] = {
+    "mus_fluidsynth_reverb_width", dsda_config_mus_fluidsynth_reverb_width,
+    dsda_config_int, 0, 10000, { 400 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_room_size] = {
+    "mus_fluidsynth_reverb_room_size", dsda_config_mus_fluidsynth_reverb_room_size,
+    dsda_config_int, 0, 1000, { 60 }
+  },
   [dsda_config_mus_opl_gain] = {
     "mus_opl_gain", dsda_config_mus_opl_gain,
     dsda_config_int, 0, 1000, { 50 }
