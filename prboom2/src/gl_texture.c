@@ -943,6 +943,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
   {
     glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
     gld_SetTexClamp(gltexture, flags);
+    glsl_SetTextureDims(0, gltexture->realtexwidth, gltexture->realtexheight);
     return;
   }
 
@@ -974,6 +975,7 @@ void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky)
   gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
 
   gld_SetTexClamp(gltexture, flags);
+  glsl_SetTextureDims(0, gltexture->realtexwidth, gltexture->realtexheight);
 }
 
 GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean indexed)
@@ -1057,6 +1059,7 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   {
     glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
     gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
+    glsl_SetTextureDims(0, gltexture->realtexwidth, gltexture->realtexheight);
     return;
   }
 
@@ -1072,6 +1075,7 @@ void gld_BindPatch(GLTexture *gltexture, int cm)
   gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
 
   gld_SetTexClamp(gltexture, GLTEXTURE_CLAMPXY);
+  glsl_SetTextureDims(0, gltexture->realtexwidth, gltexture->realtexheight);
 }
 
 GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dboolean indexed)
@@ -1148,6 +1152,7 @@ void gld_BindRaw(GLTexture *gltexture, unsigned int flags)
   {
     glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
     gld_SetTexClamp(gltexture, flags);
+    glsl_SetTextureDims(0, gltexture->realtexwidth, gltexture->realtexheight);
     return;
   }
 
@@ -1162,6 +1167,7 @@ void gld_BindRaw(GLTexture *gltexture, unsigned int flags)
   gld_BuildTexture(gltexture, buffer, false, gltexture->buffer_width, gltexture->buffer_height);
 
   gld_SetTexClamp(gltexture, flags);
+  glsl_SetTextureDims(0, gltexture->realtexwidth, gltexture->realtexheight);
 }
 
 
@@ -1271,6 +1277,7 @@ void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_
   {
     glBindTexture(GL_TEXTURE_2D, *gltexture->texid_p);
     GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
+    glsl_SetTextureDims(2, gltexture->realtexwidth, gltexture->realtexheight);
     return;
   }
 
@@ -1289,6 +1296,7 @@ void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_
 
   // 'pop' the active texture back to the default.
   GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
+  glsl_SetTextureDims(2, gltexture->realtexwidth, gltexture->realtexheight);
 }
 
 void gld_InitColormapTextures(dboolean fullbright)
@@ -1355,6 +1363,8 @@ void gld_InitFuzzTexture(void)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     GLEXT_glActiveTextureARB(GL_TEXTURE0_ARB);
+
+    glsl_SetTextureDims(1, sizeof(fuzz) / sizeof(*fuzz), 1);
   }
 }
 

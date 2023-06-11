@@ -36,6 +36,7 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <math.h>
@@ -56,6 +57,7 @@
 
 #include "dsda/utility/string_view.h"
 
+#define MAX_TEXTURES 3
 #define MAX_UNIFORMS 10
 #define MAX_STACK 10
 
@@ -72,6 +74,9 @@ typedef enum
   UNIF_TEX0,
   UNIF_TEX1,
   UNIF_TEX2,
+  UNIF_TEX0D,
+  UNIF_TEX1D,
+  UNIF_TEX2D,
   UNIF_COUNT
 } shader_uniform_type_t;
 
@@ -94,6 +99,7 @@ typedef struct
   GLhandleARB hVertProg;
   GLhandleARB hFragProg;
   int indices[MAX_UNIFORMS];
+  int texds[MAX_TEXTURES];
 } shader_t;
 
 typedef struct
@@ -294,9 +300,13 @@ static shader_t* glsl_ShaderLoad(const shader_info_t* info,
   shader_t* shader = NULL;
   const shader_uniform_t* unif;
   unsigned int i;
+  int t;
 
   shader = Z_Malloc(sizeof(*shader));
   shader->info = info;
+
+  for (i = 0; i < MAX_TEXTURES; ++i)
+    shader->texds[i] = -1;
 
   shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
   glsl_ShaderSrcLoad(&src, info->name, vpdefs, userdefs);
@@ -371,6 +381,14 @@ static shader_t* glsl_ShaderLoad(const shader_info_t* info,
     case UNIF_TEX2:
       GLEXT_glUniform1iARB(idx, 2);
       break;
+    case UNIF_TEX0D:
+    case UNIF_TEX1D:
+    case UNIF_TEX2D:
+      t = unif->type - UNIF_TEX0D;
+      if (shader->texds[t] != -1)
+        I_Error("ShaderLoad: Duplicate texture dimension uniform: %i\n", i);
+      shader->texds[t] = idx;
+      break;
     default:
       continue;
     }
@@ -381,6 +399,7 @@ static shader_t* glsl_ShaderLoad(const shader_info_t* info,
   return shader;
 }
 
+static unsigned int texds[MAX_TEXTURES][2];
 static shader_frame_t stack[MAX_STACK];
 static unsigned int sp = 0;
 
@@ -395,9 +414,10 @@ static shader_frame_t* glsl_ShaderFramePush(void)
 static void glsl_ShaderFrameActivate(const shader_frame_t* frame)
 {
   unsigned int i;
+  shader_t* shader = frame->shader;
   const shader_uniform_t* unif;
 
-  GLEXT_glUseProgramObjectARB(frame->shader ? frame->shader->hShader : 0);
+  GLEXT_glUseProgramObjectARB(shader ? shader->hShader : 0);
 
   if (!frame->shader)
     return;
@@ -421,6 +441,13 @@ static void glsl_ShaderFrameActivate(const shader_frame_t* frame)
     default:
       continue;
     }
+  }
+
+  for (i = 0; i < MAX_TEXTURES; ++i)
+  {
+    int idx = shader->texds[i];
+    if (idx != -1)
+      GLEXT_glUniform2fARB(idx, (float) texds[i][0], (float) texds[i][1]);
   }
 }
 
@@ -520,6 +547,24 @@ static void glsl_ShaderUniform(shader_t* shader, int num, ...)
   }
 
   va_end(ap);
+}
+
+void glsl_SetTextureDims(int unit, unsigned int width, unsigned int height)
+{
+  shader_t* shader;
+  int idx;
+
+  assert(unit < MAX_TEXTURES);
+
+  texds[unit][0] = width;
+  texds[unit][1] = height;
+
+  if (sp > 0 && (shader = stack[sp - 1].shader))
+  {
+    idx = shader->texds[unit];
+    if (idx != -1)
+      GLEXT_glUniform2fARB(idx, (float) width, (float) height);
+  }
 }
 
 enum

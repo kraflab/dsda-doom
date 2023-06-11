@@ -494,6 +494,7 @@ extern int rendermarker;
 extern GLuint flats_vbo_id;
 
 void glsl_Init(void);
+void glsl_SetTextureDims(int unit, unsigned int width, unsigned int height);
 void glsl_PushNullShader(void);
 void glsl_PopNullShader(void);
 void glsl_PushMainShader(void);
