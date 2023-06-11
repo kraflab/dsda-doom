@@ -246,7 +246,7 @@ typedef enum {
   dsda_config_integer_scaling,
   dsda_config_render_aspect,
   dsda_config_render_doom_lightmaps,
-  dsda_config_fake_contrast,
+  dsda_config_fake_contrast_mode,
   dsda_config_render_stretch_hud,
   dsda_config_render_patches_scalex,
   dsda_config_render_patches_scaley,

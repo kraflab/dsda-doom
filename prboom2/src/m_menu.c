@@ -74,6 +74,7 @@
 #include "smooth.h"
 #include "r_fps.h"
 #include "r_main.h"
+#include "r_segs.h"
 #include "f_finale.h"
 #include "e6y.h"//e6y
 
@@ -2949,6 +2950,14 @@ static const char* render_stretch_list[] = {
   "Not Adjusted", "Doom Format", "Fit to Width", NULL
 };
 
+static const char* fake_contrast_list[] =
+{
+  [FAKE_CONTRAST_MODE_OFF] = "Off",
+  [FAKE_CONTRAST_MODE_ON] = "Normal",
+  [FAKE_CONTRAST_MODE_SMOOTH] = "Smooth",
+  NULL
+};
+
 setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X},
   { "Video mode", S_CHOICE | S_STR, m_conf, G_X, dsda_config_videomode, 0, videomodes },
@@ -2959,6 +2968,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Vertical Sync", S_YESNO, m_conf, G_X, dsda_config_render_vsync },
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
+  { "Fake Contrast", S_CHOICE, m_conf, G_X, dsda_config_fake_contrast_mode, 0, fake_contrast_list },
   EMPTY_LINE,
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },

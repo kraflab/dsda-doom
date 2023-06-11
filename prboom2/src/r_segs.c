@@ -108,7 +108,7 @@ static int	HEIGHTUNIT = (1 << 12);
 static int	invhgtbits = 4;
 
 /* cph - allow crappy fake contrast to be disabled */
-int fake_contrast;
+fake_contrast_mode_t fake_contrast_mode;
 
 //
 // R_FixWiggle()
@@ -232,7 +232,7 @@ const int fake_contrast_value = 16;
 
 static dboolean R_FakeContrast(seg_t *seg)
 {
-  return fake_contrast && seg && !(seg->sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
+  return fake_contrast_mode != FAKE_CONTRAST_MODE_OFF && seg && !(seg->sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
 }
 
 void R_AddContrast(seg_t *seg, int *base_lightlevel)
@@ -249,7 +249,7 @@ void R_AddContrast(seg_t *seg, int *base_lightlevel)
     {
       *base_lightlevel += fake_contrast_value;
     }
-    else if (seg->sidedef->flags & SF_SMOOTHLIGHTING)
+    else if (fake_contrast_mode == FAKE_CONTRAST_MODE_SMOOTH || seg->sidedef->flags & SF_SMOOTHLIGHTING)
     {
       double dx, dy;
 
