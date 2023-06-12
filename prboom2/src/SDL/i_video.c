@@ -1168,7 +1168,7 @@ void I_InitGraphics(void)
 
 void I_UpdateVideoMode(void)
 {
-  int init_flags = 0;
+  int init_flags = SDL_WINDOW_ALLOW_HIGHDPI;
   int screen_multiply;
   int actualheight;
   int render_vsync;
@@ -1214,7 +1214,7 @@ void I_UpdateVideoMode(void)
 
   // Initialize SDL with this graphics mode
   if (V_IsOpenGLMode()) {
-    init_flags = SDL_WINDOW_OPENGL;
+    init_flags |= SDL_WINDOW_OPENGL;
   }
 
   if (desired_fullscreen)

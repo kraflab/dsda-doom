@@ -42,7 +42,7 @@ static int gl_clear_box_width;
 static int gl_clear_box_height;
 
 void dsda_GLGetSDLWindowSize(SDL_Window* sdl_window) {
-  SDL_GetWindowSize(sdl_window, &gl_window_width, &gl_window_height);
+  SDL_GL_GetDrawableSize(sdl_window, &gl_window_width, &gl_window_height);
 }
 
 void dsda_GLSetRenderViewportParams() {
