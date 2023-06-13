@@ -772,8 +772,10 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
     {
       return (true);
     }
-    else if (tmthing->z + tmthing->height < thing->z
-             && !(thing->flags & MF_SPECIAL))
+    else if (
+      (map_format.zdoom ? tmthing->z + tmthing->height <= thing->z
+                        : tmthing->z + tmthing->height <  thing->z)
+      && !(thing->flags & MF_SPECIAL))
     {                       // under thing
       return (true);
     }
