@@ -396,6 +396,29 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
     actor->momy += FixedMul(deltay, movefactor);
   }
 
+  // [RH] If a walking monster is no longer on the floor, move it down
+  // to the floor if it is within MaxStepHeight, presuming that it is
+  // actually walking down a step.
+  if (
+      try_ok &&
+      map_format.zdoom &&
+      actor->z > actor->floorz &&
+      actor->z <= actor->floorz + (24 << FRACBITS) &&
+      !(actor->flags & MF_NOGRAVITY) &&
+      !(actor->flags2 & MF2_ONMOBJ))
+  {
+    fixed_t saved_z = actor->z;
+
+    actor->z = actor->floorz;
+
+    // Make sure that there isn't some other actor between us and
+    // the floor we could get stuck in. The old code did not do this.
+    if (!P_CheckPosition(actor, actor->x, actor->y))
+    {
+      actor->z = saved_z;
+    }
+  }
+
   if (!try_ok)
   {      // open any specials
     int good;
@@ -455,7 +478,7 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
     actor->flags &= ~MF_INFLOAT;
 
   /* killough 11/98: fall more slowly, under gravity, if felldown==true */
-  if (!(actor->flags & MF_FLOAT) && (!felldown || !mbf_features)) {
+  if (!map_format.zdoom && !(actor->flags & MF_FLOAT) && (!felldown || !mbf_features)) {
     if (raven && actor->z > actor->floorz)
     {
       P_HitFloor(actor);
