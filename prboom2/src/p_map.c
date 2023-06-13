@@ -750,27 +750,32 @@ static dboolean PIT_CheckThing(mobj_t *thing) // killough 3/26/98: make static
 
   if (tmthing->flags2 & MF2_PASSMOBJ)
   {                           // check if a mobj passed over/under another object
-    if ((tmthing->type == HERETIC_MT_IMP || tmthing->type == HERETIC_MT_WIZARD)
-        && (thing->type == HERETIC_MT_IMP || thing->type == HERETIC_MT_WIZARD))
-    {                       // don't let imps/wizards fly over other imps/wizards
-      return false;
-    }
+    if (raven)
+    {
+      if ((tmthing->type == HERETIC_MT_IMP || tmthing->type == HERETIC_MT_WIZARD)
+          && (thing->type == HERETIC_MT_IMP || thing->type == HERETIC_MT_WIZARD))
+      {                       // don't let imps/wizards fly over other imps/wizards
+        return false;
+      }
 
-    if (tmthing->type == HEXEN_MT_BISHOP && thing->type == HEXEN_MT_BISHOP)
-    {                       // don't let bishops fly over other bishops
-      return false;
+      if (tmthing->type == HEXEN_MT_BISHOP && thing->type == HEXEN_MT_BISHOP)
+      {                       // don't let bishops fly over other bishops
+        return false;
+      }
     }
 
     if (
-      (hexen ? tmthing->z >= thing->z + thing->height
-             : tmthing->z >  thing->z + thing->height)
+      (map_format.hexen ? tmthing->z >= thing->z + thing->height
+                        : tmthing->z >  thing->z + thing->height)
       && !(thing->flags & MF_SPECIAL)
     )
     {
       return (true);
     }
-    else if (tmthing->z + tmthing->height < thing->z
-             && !(thing->flags & MF_SPECIAL))
+    else if (
+      (map_format.zdoom ? tmthing->z + tmthing->height <= thing->z
+                        : tmthing->z + tmthing->height <  thing->z)
+      && !(thing->flags & MF_SPECIAL))
     {                       // under thing
       return (true);
     }

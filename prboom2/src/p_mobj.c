@@ -56,6 +56,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 #include "dsda/spawn_number.h"
 #include "dsda/thing_id.h"
@@ -1280,7 +1281,14 @@ void P_MobjThinker (mobj_t* mobj)
       if (!(onmo = P_CheckOnmobj(mobj)))
       {
         P_ZMovement(mobj);
+
+        // This bug is part of the original source
         if (hexen && mobj->player && mobj->flags & MF2_ONMOBJ)
+        {
+          mobj->flags2 &= ~MF2_ONMOBJ;
+        }
+
+        if (map_format.zdoom)
         {
           mobj->flags2 &= ~MF2_ONMOBJ;
         }
@@ -1289,11 +1297,11 @@ void P_MobjThinker (mobj_t* mobj)
       {
         if (mobj->player)
         {
-          if (hexen)
+          if (map_format.hexen)
           {
             fixed_t gravity = P_MobjGravity(mobj);
 
-            if (mobj->momz < -gravity * 8 && !(mobj->flags2 & MF2_FLY))
+            if (hexen && mobj->momz < -gravity * 8 && !(mobj->flags2 & MF2_FLY))
             {
               PlayerLandedOnThing(mobj, onmo, gravity);
             }
@@ -1332,6 +1340,16 @@ void P_MobjThinker (mobj_t* mobj)
                 onmo->z = onmo->floorz;
               }
             }
+          }
+        }
+        else if (map_format.zdoom)
+        {
+          mobj->momz = 0;
+
+          if (onmo->z + onmo->height - mobj->z <= 24 * FRACUNIT)
+          {
+            mobj->z = onmo->z + onmo->height;
+            mobj->flags2 |= MF2_ONMOBJ;
           }
         }
       }
@@ -1654,6 +1672,9 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   else
     if (type == g_mt_player)         // Except in old demos, players
       mobj->flags |= MF_FRIEND;    // are always friends.
+
+  if (map_format.zdoom && map_info.finite_height && mobj->flags & MF_SOLID)
+    mobj->flags2 |= MF2_PASSMOBJ;
 
   mobj->health = info->spawnhealth;
 

@@ -21,12 +21,15 @@
 #include "doomstat.h"
 #include "m_misc.h"
 
+#include "dsda/args.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo/hexen.h"
 #include "dsda/mapinfo/u.h"
 #include "dsda/mapinfo/legacy.h"
 
 #include "mapinfo.h"
+
+map_info_t map_info;
 
 int dsda_NameToMap(const char* name, int* episode, int* map) {
   char name_upper[9];
@@ -122,9 +125,14 @@ int dsda_SkipDrawShowNextLoc(void) {
 }
 
 static void dsda_UpdateMapInfo(void) {
+  map_info.finite_height = false;
+
   dsda_HexenUpdateMapInfo();
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
+
+  if (!demorecording && !demoplayback && dsda_Flag(dsda_arg_debug_finite_height))
+    map_info.finite_height = true;
 }
 
 void dsda_UpdateGameMap(int episode, int map) {

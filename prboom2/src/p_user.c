@@ -389,7 +389,7 @@ void P_MovePlayer (player_t* player)
     R_SmoothPlaying_Add(cmd->angleturn << 16);
   }
 
-  onground = mo->z <= mo->floorz;
+  onground = (mo->z <= mo->floorz || mo->flags2 & MF2_ONMOBJ);
 
   if ((player->mo->flags & MF_FLY) && player == &players[consoleplayer] && upmove != 0)
   {
