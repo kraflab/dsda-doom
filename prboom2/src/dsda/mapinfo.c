@@ -21,6 +21,7 @@
 #include "doomstat.h"
 #include "m_misc.h"
 
+#include "dsda/args.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo/hexen.h"
 #include "dsda/mapinfo/u.h"
@@ -124,9 +125,14 @@ int dsda_SkipDrawShowNextLoc(void) {
 }
 
 static void dsda_UpdateMapInfo(void) {
+  map_info.finite_height = false;
+
   dsda_HexenUpdateMapInfo();
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
+
+  if (!demorecording && !demoplayback && dsda_Flag(dsda_arg_debug_finite_height))
+    map_info.finite_height = true;
 }
 
 void dsda_UpdateGameMap(int episode, int map) {
