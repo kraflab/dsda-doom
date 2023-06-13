@@ -573,7 +573,8 @@ enum
   MAIN_UNIF_TEX,
   MAIN_UNIF_COLORMAP,
   MAIN_UNIF_LIGHTLEVEL,
-  MAIN_UNIF_FADE_MODE
+  MAIN_UNIF_FADE_MODE,
+  MAIN_UNIF_DSCALE
 };
 
 enum
@@ -598,6 +599,7 @@ static const shader_info_t main_info =
     UNIF(MAIN_UNIF_COLORMAP, "colormap", UNIF_TEX2),
     UNIF(MAIN_UNIF_LIGHTLEVEL, "lightlevel", UNIF_1F),
     UNIF(MAIN_UNIF_FADE_MODE, "fade_mode", UNIF_1I),
+    UNIF(MAIN_UNIF_DSCALE, "dscale", UNIF_1F),
     UNIF_END
   }
 };
@@ -636,9 +638,11 @@ void glsl_PopNullShader(void)
 void glsl_PushMainShader(void)
 {
   int mode = dsda_IntConfig(dsda_config_gl_fade_mode);
+  float dscale = MAX(1, dsda_IntConfig(dsda_config_gl_dither_scale));
 
   glsl_ShaderPush(sh_main,
                   MAIN_UNIF_FADE_MODE, mode,
+                  MAIN_UNIF_DSCALE, dscale,
                   UNIF_VAL_END);
 }
 

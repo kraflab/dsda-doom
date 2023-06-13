@@ -2958,7 +2958,7 @@ static const char* fake_contrast_list[] =
   NULL
 };
 
-static const char *gl_fade_mode_list[] = { "Normal", "Smooth", NULL };
+static const char *gl_fade_mode_list[] = { "Normal", "Smooth", "Dithered", NULL };
 
 setup_menu_t audiovideo_settings[] = {
   { "Video", S_SKIP | S_TITLE, m_null, G_X},
@@ -2972,6 +2972,7 @@ setup_menu_t audiovideo_settings[] = {
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   { "Fake Contrast", S_CHOICE, m_conf, G_X, dsda_config_fake_contrast_mode, 0, fake_contrast_list },
   { "GL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list },
+  { "Dither Scale", S_NUM, m_conf, G_X, dsda_config_gl_dither_scale },
   EMPTY_LINE,
   { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
