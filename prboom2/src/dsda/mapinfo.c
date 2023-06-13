@@ -28,6 +28,8 @@
 
 #include "mapinfo.h"
 
+map_info_t map_info;
+
 int dsda_NameToMap(const char* name, int* episode, int* map) {
   char name_upper[9];
   int episode_from_name = -1;

@@ -31,6 +31,12 @@
 #define WD_VICTORY      0x01
 #define WD_START_FINALE 0x02
 
+typedef struct {
+  dboolean finite_height;
+} map_info_t;
+
+extern map_info_t map_info;
+
 void dsda_FirstMap(int* episode, int* map);
 void dsda_NewGameMap(int* episode, int* map);
 void dsda_ResolveWarp(int* args, int arg_count, int* episode, int* map);

@@ -56,6 +56,7 @@
 
 #include "dsda.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 #include "dsda/spawn_number.h"
 #include "dsda/thing_id.h"
@@ -1671,6 +1672,9 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   else
     if (type == g_mt_player)         // Except in old demos, players
       mobj->flags |= MF_FRIEND;    // are always friends.
+
+  if (map_format.zdoom && map_info.finite_height && mobj->flags & MF_SOLID)
+    mobj->flags2 |= MF2_PASSMOBJ;
 
   mobj->health = info->spawnhealth;
 
