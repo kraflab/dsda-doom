@@ -54,6 +54,7 @@
 #include "e6y.h"
 #include "r_things.h"
 #include "doomdef.h"
+#include "dsda/configuration.h"
 
 #include "dsda/utility/string_view.h"
 
@@ -571,7 +572,8 @@ enum
 {
   MAIN_UNIF_TEX,
   MAIN_UNIF_COLORMAP,
-  MAIN_UNIF_LIGHTLEVEL
+  MAIN_UNIF_LIGHTLEVEL,
+  MAIN_UNIF_FADE_MODE
 };
 
 enum
@@ -595,6 +597,7 @@ static const shader_info_t main_info =
     UNIF(MAIN_UNIF_TEX, "tex", UNIF_TEX0),
     UNIF(MAIN_UNIF_COLORMAP, "colormap", UNIF_TEX2),
     UNIF(MAIN_UNIF_LIGHTLEVEL, "lightlevel", UNIF_1F),
+    UNIF(MAIN_UNIF_FADE_MODE, "fade_mode", UNIF_1I),
     UNIF_END
   }
 };
@@ -632,7 +635,11 @@ void glsl_PopNullShader(void)
 
 void glsl_PushMainShader(void)
 {
-  glsl_ShaderPush(sh_main, UNIF_VAL_END);
+  int mode = dsda_IntConfig(dsda_config_gl_fade_mode);
+
+  glsl_ShaderPush(sh_main,
+                  MAIN_UNIF_FADE_MODE, mode,
+                  UNIF_VAL_END);
 }
 
 void glsl_PopMainShader(void)

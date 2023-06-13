@@ -1,4 +1,5 @@
 #version 110
+#extension GL_GOOGLE_include_directive : require
 
 #ifdef VERTEX
 void main()
@@ -10,54 +11,31 @@ void main()
 #endif
 
 #ifdef FRAGMENT
+#include "glh_idx.lmp"
+
 uniform sampler2D tex;
-uniform sampler2D colormap;
-uniform float lightlevel;
-
-// [XA] New "indexed" lightmode shader, which approximates
-// Doom's software lighting algorithm using the COLORMAP.
-// Looks very very close to the software renderer,
-// palette edits included, all while running on the GPU. :)
-
-// Big thanks to Jazz Mickle for pioneering this technique
-// and publishing an article explaining how it all works.
-// https://medium.com/@jmickle_/writing-a-doom-style-shader-for-unity-63fa13678634
-
-// Also thanks to Gooberman, since I borrowed his method for
-// fixing rounding issues for the colorIndex variable below.
-// A little bit of fudgery goes a long way... :P
-// https://github.com/GooberMan/rum-and-raisin-doom/commit/91500a86b02243dd90958aae4427051ad5c63b0d
-
-// [XA] adjusted this value a bit from the truecolor shader,
-// to taste -- seems to match software pretty damn closely
-#define DOOMLIGHTFACTOR 200.0
+uniform int fade_mode;
 
 void main()
 {
-  vec4 color = gl_Color;
-
-  // grab the texel and its color index,
-  // which is stuffed into the R channel
+  // grab the texel and its color index, which is stuffed into the R channel
   vec4 texel = texture2D(tex, gl_TexCoord[0].st);
-  float colorIndex = texel.r * 0.99609375 + 0.0009765625; // equivalent to (texel.r * 255 / 256) + (1 / 1024)
+  float ci = indexColor(texel.r);
+  float li = indexLight(gl_FragCoord.z);
+  vec3 color;
 
-  // calculate light level based on distance.
-  // equation originally from EDGE. now translated
-  // to an actual colormap lookup, for science.
-  float L = 63.0 * lightlevel;
-  float min_L = clamp(36.0 - L, 0.0, 31.0);
-  float dist = max(0.0, gl_FragCoord.z);
-  float index = 59.0 + DOOMLIGHTFACTOR - L - DOOMLIGHTFACTOR / dist;
-  float doomlight = (clamp(index, min_L, 31.0) / 31.0);
+  if (fade_mode == 1)
+  {
+    // Smooth fade mode.
+    color = mix(indexRGB(ci, floor(li)), indexRGB(ci, floor(li + 1.0)), fract(li));
+  }
+  else
+  {
+    // Normal (banded) fade mode.
+    color = indexRGB(ci, li);
+  }
 
-  // Map light level (1.0 to 0.0) to colormap index (0 to 31)
-  // and pluck the actual RGB color from the colormap; note
-  // that we're dividing by 32 at the end since there's an
-  // extra 32nd row in the colormap image for the invuln pal
-  float lightIndex = doomlight * 0.96875; // equivalent to (doomlight * 31 / 32)
-  gl_FragColor = color * texture2D(colormap, vec2(colorIndex, lightIndex));
-
-  // reapply transparency & translucency
-  gl_FragColor.a = color.a * texel.g;
+  // Apply color and alpha
+  gl_FragColor = vec4(gl_Color.rgb * color, gl_Color.a * texel.g);
 }
 #endif

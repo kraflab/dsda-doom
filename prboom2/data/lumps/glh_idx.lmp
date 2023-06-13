@@ -1,0 +1,45 @@
+// [XA] New "indexed" lightmode shader, which approximates
+// Doom's software lighting algorithm using the COLORMAP.
+// Looks very very close to the software renderer,
+// palette edits included, all while running on the GPU. :)
+
+// Big thanks to Jazz Mickle for pioneering this technique
+// and publishing an article explaining how it all works.
+// https://medium.com/@jmickle_/writing-a-doom-style-shader-for-unity-63fa13678634
+
+// [XA] adjusted this value a bit from the truecolor shader,
+// to taste -- seems to match software pretty damn closely
+#define DOOMLIGHTFACTOR 200.0
+
+uniform float lightlevel;
+uniform sampler2D colormap;
+
+// Returns color index based on R texel component
+float indexColor(float r)
+{
+  return r * 255.0;
+}
+
+// Returns light index based on depth and light level.
+// Based on equations from EDGE.
+float indexLight(float z)
+{
+  // Quantize light level to nearest of 64 discrete values
+  float L = floor(63.0 * lightlevel + 0.5);
+  // Compute minimal light index (brightest) for light level
+  float min_L = clamp(36.0 - L, 0.0, 31.0);
+  // Compute and clamp light index
+  return clamp(59.0 + DOOMLIGHTFACTOR - L - DOOMLIGHTFACTOR / max(0.0, z), min_L, 31.0);
+}
+
+// Returns RGB palette value based on color and light indices
+vec3 indexRGB(float ci, float li)
+{
+  // - Round to nearest integer indices
+  // - Re-clamp light index to valid range in case it was modified by caller
+  // - Convert to texture coordinates
+  ci = floor(ci + 0.5) / 256.0;
+  // There are 33 colormaps (32 + invuln), thus the 33 divisor
+  li = clamp(floor(li + 0.5), 0.0, 31.0) / 33.0;
+  return texture2D(colormap, vec2(ci, li)).rgb;
+}
