@@ -18,15 +18,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "doomstat.h"
+
 #include "dsda/configuration.h"
 
 #include "excmd.h"
 
 static dboolean excmd_enabled;
 static dboolean casual_excmd_features;
-
-extern int demorecording;
-extern int demoplayback;
 
 void dsda_EnableExCmd(void) {
   excmd_enabled = true;
@@ -37,7 +36,7 @@ void dsda_DisableExCmd(void) {
 }
 
 dboolean dsda_AllowExCmd(void) {
-  return (!demorecording && !demoplayback) || excmd_enabled;
+  return allow_incompatibility || excmd_enabled;
 }
 
 // If we are reading a demo header, it might not be in playback mode yet
@@ -54,7 +53,7 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
 }
 
 dboolean dsda_AllowJumping(void) {
-  return (!demorecording && !demoplayback && dsda_IntConfig(dsda_config_allow_jumping))
+  return (allow_incompatibility && dsda_IntConfig(dsda_config_allow_jumping))
          || dsda_AllowCasualExCmdFeatures();
 }
 

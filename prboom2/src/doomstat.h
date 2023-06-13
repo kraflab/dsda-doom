@@ -239,6 +239,9 @@ extern  dboolean demoplayback;
 extern  dboolean demorecording;
 extern  int demover;
 
+#define allow_incompatibility (!demorecording && !demoplayback)
+#define comperr(i) (default_comperr[i] && allow_incompatibility)
+
 extern  dboolean userdemo;
 #define userplayback (demoplayback && userdemo)
 #define reelplayback (demoplayback && !userdemo)

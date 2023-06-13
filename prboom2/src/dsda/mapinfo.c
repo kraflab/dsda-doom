@@ -131,7 +131,7 @@ static void dsda_UpdateMapInfo(void) {
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
 
-  if (!demorecording && !demoplayback && dsda_Flag(dsda_arg_debug_finite_height))
+  if (allow_incompatibility && dsda_Flag(dsda_arg_debug_finite_height))
     map_info.finite_height = true;
 }
 

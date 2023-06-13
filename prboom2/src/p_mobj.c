@@ -698,7 +698,7 @@ fixed_t P_MobjGravity(mobj_t* mo)
 
 void P_AutoCorrectLookDir(player_t* player)
 {
-  if (!demorecording && !demoplayback && dsda_MouseLook())
+  if (allow_incompatibility && dsda_MouseLook())
   {
     return;
   }
@@ -1039,7 +1039,7 @@ floater:
       return;
     }
   }
-  else if (mo->flags2 & MF2_LOGRAV || (mo->type == MT_GIBDTH && !demorecording && !demoplayback))
+  else if (mo->flags2 & MF2_LOGRAV || (mo->type == MT_GIBDTH && allow_incompatibility))
   {
     if (mo->momz == 0)
       mo->momz = -(gravity >> 3) * 2;
@@ -1874,8 +1874,7 @@ void P_RemoveMobj (mobj_t* mobj)
   // CPhipps - only leave dead references in old demos; I hope lxdoom_1 level
   // demos are rare and don't rely on this. I hope.
 
-  if ((compatibility_level >= lxdoom_1_compatibility) ||
-      (!demorecording && !demoplayback)) {
+  if (compatibility_level >= lxdoom_1_compatibility || allow_incompatibility) {
     P_SetTarget(&mobj->target,    NULL);
     P_SetTarget(&mobj->tracer,    NULL);
     P_SetTarget(&mobj->lastenemy, NULL);

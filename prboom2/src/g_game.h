@@ -125,9 +125,6 @@ extern int longtics;
 // automatic pistol start when advancing from one level to the next
 extern int pistolstart;
 
-#define singleplayer (!demorecording && !demoplayback && !netgame)
-#define comperr(i) (default_comperr[i] && singleplayer)
-
 // hexen
 
 void G_TeleportNewMap(int map, int position);

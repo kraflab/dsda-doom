@@ -288,7 +288,7 @@ float Get_TextSpeed(void)
 static dboolean F_ShowCast(void)
 {
   return gamemap == 30 ||
-         (gamemission == pack_nerve && singleplayer && gamemap == 8) ||
+         (gamemission == pack_nerve && allow_incompatibility && gamemap == 8) ||
          dsda_FinaleShortcut();
 }
 

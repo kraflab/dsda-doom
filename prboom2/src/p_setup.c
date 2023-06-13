@@ -1699,7 +1699,7 @@ static void P_PostProcessMapThing(mapthing_t *mt, int i, int *mobjcount, mobj_t 
   // Although all resources of the Wolf SS have been removed
   // off the BFG Edition, there is still one left in MAP33.
   // Replace with a Former Human instead.
-  if (bfgedition && singleplayer && mt->type == 84)
+  if (bfgedition && allow_incompatibility && mt->type == 84)
     mt->type = 3004;
 
   // Do spawn all other stuff.

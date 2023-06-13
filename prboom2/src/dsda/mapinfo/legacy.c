@@ -128,7 +128,7 @@ int dsda_LegacyNextMap(int* episode, int* map) {
     // secret level
     doom2_next[14] = (haswolflevels ? 31 : 16);
 
-    if (bfgedition && singleplayer) {
+    if (bfgedition && allow_incompatibility) {
       if (gamemission == pack_nerve) {
         doom2_next[3] = 9;
         doom2_next[7] = 1;
@@ -454,11 +454,11 @@ int dsda_LegacyPrepareIntermission(int* result) {
           wminfo.next = 31;
           break;
         case 2:
-          if (bfgedition && singleplayer)
+          if (bfgedition && allow_incompatibility)
             wminfo.next = 32;
           break;
         case 4:
-          if (gamemission == pack_nerve && singleplayer)
+          if (gamemission == pack_nerve && allow_incompatibility)
             wminfo.next = 8;
           break;
       }
@@ -469,7 +469,7 @@ int dsda_LegacyPrepareIntermission(int* result) {
           wminfo.next = 15;
           break;
         case 33:
-          if (bfgedition && singleplayer)
+          if (bfgedition && allow_incompatibility)
           {
             wminfo.next = 2;
             break;
@@ -479,7 +479,7 @@ int dsda_LegacyPrepareIntermission(int* result) {
           wminfo.next = gamemap;
       }
 
-    if (gamemission == pack_nerve && singleplayer && gamemap == 9)
+    if (gamemission == pack_nerve && allow_incompatibility && gamemap == 9)
       wminfo.next = 4;
   }
   else {
@@ -541,7 +541,7 @@ int dsda_LegacyPrepareFinale(int* result) {
         break;
     }
   }
-  else if (gamemission == pack_nerve && singleplayer && gamemap == 8)
+  else if (gamemission == pack_nerve && allow_incompatibility && gamemap == 8)
     *result = WD_START_FINALE;
   else if (gamemap == 8)
     *result = WD_VICTORY;

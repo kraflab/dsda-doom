@@ -211,8 +211,7 @@ int G_ReloadLevel(void)
   int result = false;
 
   if ((gamestate == GS_LEVEL || gamestate == GS_INTERMISSION) &&
-      !deathmatch && !netgame &&
-      !demorecording && !demoplayback &&
+      allow_incompatibility &&
       !menuactive)
   {
     G_DeferedInitNew(gameskill, gameepisode, gamemap);
@@ -238,8 +237,7 @@ int G_GotoNextLevel(void)
   dsda_NextMap(&epsd, &map);
 
   if ((gamestate == GS_LEVEL) &&
-    !deathmatch && !netgame &&
-    !demorecording && !demoplayback &&
+    allow_incompatibility &&
     !menuactive)
   {
     G_DeferedInitNew(gameskill, epsd, map);

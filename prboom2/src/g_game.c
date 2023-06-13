@@ -1133,7 +1133,7 @@ static void G_DoLoadLevel (void)
   // automatic pistol start when advancing from one level to the next
   if (pistolstart)
   {
-    if (singleplayer)
+    if (allow_incompatibility)
     {
       G_PlayerReborn(0);
     }
