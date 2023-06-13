@@ -1,0 +1,43 @@
+#version 110
+
+#ifdef VERTEX
+void main()
+{
+  gl_FrontColor = gl_Color;
+  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
+  gl_Position = ftransform();
+}
+#endif
+
+#ifdef FRAGMENT
+// Texture
+uniform sampler2D tex;
+// Texture dimensions
+uniform vec2 tex_d;
+// Scale factor
+uniform vec2 scale;
+
+void main()
+{
+  // FIXME: it's possible leverage fixed function bilinear filtering
+  // to do this more efficiently, but this requires refactoring
+  // the renderer to handle switching magnification functions for
+  // different shaders and textures units.
+
+  // Compute texture coordinates for gather
+  // See https://www.reedbeta.com/blog/texture-gathers-and-coordinate-precision/
+  vec2 c1 = gl_TexCoord[0].xy * tex_d - 0.5 + 1.0/512.0;
+  vec2 c2 = vec2(c1.x + 1.0, c1.y);
+  vec2 c3 = vec2(c1.x, c1.y + 1.0);
+  vec2 c4 = vec2(c1.x + 1.0, c1.y + 1.0);
+  // Gather texels
+  vec4 t1 = texture2D(tex, c1 / tex_d);
+  vec4 t2 = texture2D(tex, c2 / tex_d);
+  vec4 t3 = texture2D(tex, c3 / tex_d);
+  vec4 t4 = texture2D(tex, c4 / tex_d);
+  // Compute mix factors
+  vec2 m = clamp(scale * (fract(c1) - 0.5) + 0.5, 0.0, 1.0);
+  // Mix texels
+  gl_FragColor = mix(mix(t1, t2, m.x), mix(t3, t4, m.x), m.y);
+}
+#endif
