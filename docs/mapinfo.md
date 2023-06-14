@@ -32,8 +32,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | LevelNum                           | :grey_question: |
 | Next                               | :grey_question: |
 | SecretNext                         | :grey_question: |
-| Slideshow                          | :grey_question: |
-| DeathSequence                      | :grey_question: |
+| Slideshow                          | :x:             |
+| DeathSequence                      | :x:             |
 | Redirect                           | :grey_question: |
 | Cluster                            | :grey_question: |
 | Sky1                               | :grey_question: |
@@ -152,3 +152,6 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | SndSeq                             | :grey_question: |
 | Intro                              | :grey_question: |
 | Outro                              | :grey_question: |
+
+#### Notes
+- The `lookup` key for map name localization is not supported
