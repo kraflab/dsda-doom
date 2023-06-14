@@ -16,112 +16,139 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | :grey_question:    | Feature is under investigation |
 | :x:                | Feature is not planned         |
 
-### Major Features (old format)
+### Top Level Keys
 
-| Name         | Status          |
-| ------------ | --------------- |
-| episode      | :grey_question: |
-| map          | :warning:       |
-| clusterdef   | :grey_question: |
-| skill        | :grey_question: |
+| Key           | Status          |
+| ------------- | --------------- |
+| map           | :grey_question: |
+| defaultmap    | :grey_question: |
+| adddefaultmap | :grey_question: |
+| gamedefaults  | :grey_question: |
 
-### Episode
+### Map Properties
 
-Not looked at yet.
-
-### Map
-
-| Key                                | Status             |
-| ---------------------------------- | ------------------ |
-| map                                | :warning:          |
-| lookup                             | :grey_question:    |
-| defaultmap                         | :grey_question:    |
-| adddefaultmap                      | :grey_question:    |
-| gamedefaults                       | :grey_question:    |
-| levelnum                           | :grey_question:    |
-| warptrans                          | :heavy_check_mark: |
-| next                               | :warning:          |
-| secretnext                         | :telescope:        |
-| cluster                            | :warning:          |
-| doublesky                          | :warning:          |
-| sky1                               | :warning:          |
-| sky2                               | :warning:          |
-| fade                               | :grey_question:    |
-| outsidefog                         | :grey_question:    |
-| titlepatch                         | :grey_question:    |
-| par                                | :grey_question:    |
-| music                              | :grey_question:    |
-| cdtrack                            | :grey_question:    |
-| cdid                               | :grey_question:    |
-| nointermission                     | :grey_question:    |
-| exitpic                            | :grey_question:    |
-| enterpic                           | :grey_question:    |
-| intermusic                         | :grey_question:    |
-| bordertexture                      | :grey_question:    |
-| nosoundclipping                    | :grey_question:    |
-| allowmonstertelefrags              | :grey_question:    |
-| specialaction                      | :grey_question:    |
-| map07special                       | :grey_question:    |
-| baronspecial                       | :grey_question:    |
-| cyberdemonspecial                  | :grey_question:    |
-| spidermastermindspecial            | :grey_question:    |
-| specialaction_exitlevel            | :grey_question:    |
-| specialaction_opendoor             | :grey_question:    |
-| specialaction_lowerfloor           | :grey_question:    |
-| specialaction_killmonsters         | :grey_question:    |
-| lightning                          | :warning:          |
-| fadetable                          | :warning:          |
-| evenlighting                       | :grey_question:    |
-| smoothlighting                     | :grey_question:    |
-| vertwallshade                      | :grey_question:    |
-| horizwallshade                     | :grey_question:    |
-| clipmidtextures                    | :grey_question:    |
-| forcenoskystretch                  | :grey_question:    |
-| skystretch                         | :grey_question:    |
-| noautosequences                    | :grey_question:    |
-| autosquences                       | :grey_question:    |
-| strictmonsteractivation            | :grey_question:    |
-| laxmonsteractivation               | :grey_question:    |
-| missileshootersactivateimpactlines | :grey_question:    |
-| missilesactivateimpactlines        | :grey_question:    |
-| fallingdamage                      | :grey_question:    |
-| monsterfallingdamage               | :grey_question:    |
-| oldfallingdamage                   | :grey_question:    |
-| strifefallingdamage                | :grey_question:    |
-| forcefallingdamage                 | :grey_question:    |
-| nofallingdamage                    | :grey_question:    |
-| teamdamage                         | :grey_question:    |
-| gravity                            | :grey_question:    |
-| aircontrol                         | :grey_question:    |
-| airsupply                          | :grey_question:    |
-| filterstarts                       | :grey_question:    |
-| allowrespawn                       | :grey_question:    |
-| teamplayon                         | :grey_question:    |
-| teamplayoff                        | :grey_question:    |
-| noinventorybar                     | :grey_question:    |
-| keepfullinventory                  | :grey_question:    |
-| infiniteflightpowerup              | :grey_question:    |
-| nojump                             | :grey_question:    |
-| allowjump                          | :grey_question:    |
-| nocrouch                           | :grey_question:    |
-| allowcrouch                        | :grey_question:    |
-| noinfighting                       | :grey_question:    |
-| normalinfighting                   | :grey_question:    |
-| totalinfighting                    | :grey_question:    |
-| f1                                 | :grey_question:    |
-| checkswitchrange                   | :grey_question:    |
-| nocheckswitchrange                 | :grey_question:    |
-| translator                         | :grey_question:    |
-| unfreezesingleplayerconversations  | :grey_question:    |
-| compat_*                           | :grey_question:    |
-
-#### Notes
-- Various keys only work in Hexen.
-
-### Clusterdef
-
-Not looked at yet.
-
-### Skill
-
-Not looked at yet.
+| Key                                | Status          |
+| ---------------------------------- | --------------- |
+| LevelNum                           | :grey_question: |
+| Next                               | :grey_question: |
+| SecretNext                         | :grey_question: |
+| Slideshow                          | :grey_question: |
+| DeathSequence                      | :grey_question: |
+| Redirect                           | :grey_question: |
+| Cluster                            | :grey_question: |
+| Sky1                               | :grey_question: |
+| Sky2                               | :grey_question: |
+| Skybox                             | :grey_question: |
+| DoubleSky                          | :grey_question: |
+| ForceNoSkyStretch                  | :grey_question: |
+| SkyStretch                         | :grey_question: |
+| Fade                               | :grey_question: |
+| FadeTable                          | :grey_question: |
+| OutsideFog                         | :grey_question: |
+| TitlePatch                         | :grey_question: |
+| Par                                | :grey_question: |
+| SuckTime                           | :grey_question: |
+| NoIntermission                     | :grey_question: |
+| Intermission                       | :grey_question: |
+| Music                              | :grey_question: |
+| CDTrack                            | :grey_question: |
+| CDId                               | :grey_question: |
+| ExitPic                            | :grey_question: |
+| EnterPic                           | :grey_question: |
+| InterMusic                         | :grey_question: |
+| BorderTexture                      | :grey_question: |
+| Lightning                          | :grey_question: |
+| EvenLighting                       | :grey_question: |
+| SmoothLighting                     | :grey_question: |
+| VertWallShade                      | :grey_question: |
+| HorizWallShade                     | :grey_question: |
+| TeamDamage                         | :grey_question: |
+| Gravity                            | :grey_question: |
+| AirControl                         | :grey_question: |
+| AirSupply                          | :grey_question: |
+| F1                                 | :grey_question: |
+| MapBackground                      | :grey_question: |
+| Translator                         | :grey_question: |
+| AllowMonsterTelefrags              | :grey_question: |
+| ActivateOwnDeathSpecials           | :grey_question: |
+| SpecialAction                      | :grey_question: |
+| Map07Special                       | :grey_question: |
+| BaronSpecial                       | :grey_question: |
+| CyberdemonSpecial                  | :grey_question: |
+| SpiderMastermindSpecial            | :grey_question: |
+| IronlichSpecial                    | :grey_question: |
+| MinotaurSpecial                    | :grey_question: |
+| DSparilSpecial                     | :grey_question: |
+| SpecialAction_ExitLevel            | :grey_question: |
+| SpecialAction_OpenDoor             | :grey_question: |
+| SpecialAction_LowerFloor           | :grey_question: |
+| SpecialAction_KillMonsters         | :grey_question: |
+| ClipMidTextures                    | :grey_question: |
+| NoAutoSequences                    | :grey_question: |
+| AutoSequences                      | :grey_question: |
+| StrictMonsterActivation            | :grey_question: |
+| LaxMonsterActivation               | :grey_question: |
+| MissileShootersActivateImpactLines | :grey_question: |
+| MissilesActivateImpactLines        | :grey_question: |
+| FallingDamage                      | :grey_question: |
+| OldFallingDamage                   | :grey_question: |
+| ForceFallingDamage                 | :grey_question: |
+| StrifeFallingDamage                | :grey_question: |
+| NoFallingDamage                    | :grey_question: |
+| MonsterFallingDamage               | :grey_question: |
+| ProperMonsterFallingDamage         | :grey_question: |
+| AvoidMelee                         | :grey_question: |
+| FilterStarts                       | :grey_question: |
+| AllowRespawn                       | :grey_question: |
+| TeamPlayOn                         | :grey_question: |
+| TeamPlayOff                        | :grey_question: |
+| NoInventoryBar                     | :grey_question: |
+| KeepFullInventory                  | :grey_question: |
+| InfiniteFlightPowerup              | :grey_question: |
+| NoJump                             | :grey_question: |
+| AllowJump                          | :grey_question: |
+| NoCrouch                           | :grey_question: |
+| AllowCrouch                        | :grey_question: |
+| NoFreelook                         | :grey_question: |
+| AllowFreelook                      | :grey_question: |
+| NoInfighting                       | :grey_question: |
+| NormalInfighting                   | :grey_question: |
+| TotalInfighting                    | :grey_question: |
+| CheckSwitchRange                   | :grey_question: |
+| NoCheckSwitchRange                 | :grey_question: |
+| UnFreezeSinglePlayerConversations  | :grey_question: |
+| NoAllies                           | :grey_question: |
+| ResetHealth                        | :grey_question: |
+| ResetInventory                     | :grey_question: |
+| ResetItems                         | :grey_question: |
+| Grinding_Polyobj                   | :grey_question: |
+| No_Grinding_Polyobj                | :grey_question: |
+| compat_*                           | :grey_question: |
+| DefaultEnvironment                 | :grey_question: |
+| NoAutosaveHint                     | :grey_question: |
+| UsePlayerStartZ                    | :grey_question: |
+| RandomPlayerStarts                 | :grey_question: |
+| PrecacheSounds                     | :grey_question: |
+| PrecacheTextures                   | :grey_question: |
+| PrecacheClasses                    | :grey_question: |
+| ForgetState                        | :grey_question: |
+| RememberState                      | :grey_question: |
+| SpawnWithWeaponRaised              | :grey_question: |
+| ForceFakeContrast                  | :grey_question: |
+| ForceWorldPanning                  | :grey_question: |
+| HazardColor                        | :grey_question: |
+| HazardFlash                        | :grey_question: |
+| EventHandlers                      | :grey_question: |
+| NeedClusterText                    | :grey_question: |
+| NoClusterText                      | :grey_question: |
+| Author                             | :grey_question: |
+| EnableSkyboxAO                     | :grey_question: |
+| DisableSkyboxAO                    | :grey_question: |
+| EnableShadowmap                    | :grey_question: |
+| DisableShadowmap                   | :grey_question: |
+| AttenuateLights                    | :grey_question: |
+| SndInfo                            | :grey_question: |
+| SoundInfo                          | :grey_question: |
+| SndSeq                             | :grey_question: |
+| Intro                              | :grey_question: |
+| Outro                              | :grey_question: |
