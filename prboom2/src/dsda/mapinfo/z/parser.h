@@ -56,6 +56,11 @@ typedef struct {
 } zmapinfo_map_redirect_t;
 
 typedef struct {
+  const char* lump;
+  float scrollspeed;
+} zmapinfo_sky_t;
+
+typedef struct {
   const char* lump_name;
   const char* nice_name;
   int levelnum;
@@ -63,6 +68,8 @@ typedef struct {
   zmapinfo_map_next_t secretnext;
   zmapinfo_map_redirect_t redirect;
   int cluster;
+  zmapinfo_sky_t sky1;
+  zmapinfo_sky_t sky2;
 } zmapinfo_map_t;
 
 typedef struct {

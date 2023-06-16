@@ -161,6 +161,20 @@ static void dsda_ParseZMapInfoMapRedirect(Scanner &scanner, zmapinfo_map_redirec
   redirect.map = Z_Strdup(scanner.string);
 }
 
+static void dsda_ParseZMapInfoMapSky(Scanner &scanner, zmapinfo_sky_t &sky) {
+  scanner.MustGetToken('=');
+  scanner.MustGetToken(TK_StringConst);
+
+  sky.lump = Z_Strdup(scanner.string);
+  if (scanner.CheckToken(',')) {
+    scanner.MustGetFloat();
+    sky.scrollspeed = scanner.decimal;
+  }
+  else {
+    sky.scrollspeed = 0.0;
+  }
+}
+
 static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
   int map, episode;
 
@@ -207,6 +221,13 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "cluster")) {
       SCAN_INT(map.cluster);
+    }
+    else if (!stricmp(scanner.string, "sky1") ||
+             !stricmp(scanner.string, "skybox")) {
+      dsda_ParseZMapInfoMapSky(scanner, map.sky1);
+    }
+    else if (!stricmp(scanner.string, "sky2")) {
+      dsda_ParseZMapInfoMapSky(scanner, map.sky2);
     }
     else {
       // known ignored fields:
