@@ -98,6 +98,17 @@ static char* dsda_FloatString(Scanner &scanner) {
                                scanner.MustGetFloat(); \
                                x = dsda_FloatString(scanner); }
 
+static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
+  int map, episode;
+
+  if (sscanf(map.lump_name, "%1[mM]%1[aA]%1[pP]%d", &map) == 1)
+    map.levelnum = map;
+  else if (sscanf(map.lump_name, "%1[eE]%d%1[mM]%d", &episode, &map) == 2)
+    map.levelnum = (episode - 1) * 10 + map;
+  else
+    map.levelnum = -1;
+}
+
 static void dsda_ParseZMapInfoMap(Scanner &scanner) {
   zmapinfo_map_t map = { 0 };
 
@@ -112,7 +123,7 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
 
   map.nice_name = Z_Strdup(scanner.string);
 
-  // map.levelnum defaults from lump_name if it conforms
+  dsda_GuessLevelNum(map);
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
