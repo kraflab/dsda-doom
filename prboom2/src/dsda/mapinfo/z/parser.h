@@ -22,12 +22,34 @@
 extern "C" {
 #endif
 
+typedef enum {
+  zmn_null,
+  zmn_endgame1,
+  zmn_endgame2,
+  zmn_endgamew,
+  zmn_endgame4,
+  zmn_endgamec,
+  zmn_endgame3,
+  zmn_enddemon,
+  zmn_endgames,
+  zmn_endchess,
+  zmn_endtitle,
+  zmn_end_count,
+} zmn_end_t;
+
+typedef struct {
+  const char* map;
+  const char* endpic
+  const char* intermission;
+  zmn_end_t end;
+} zmapinfo_map_next_t;
+
 typedef struct {
   const char* lump_name;
   const char* nice_name;
   int levelnum;
-  const char* next;
-  const char* secretnext;
+  zmapinfo_map_next_t next;
+  zmapinfo_map_next_t secretnext;
 } zmapinfo_map_t;
 
 typedef struct {

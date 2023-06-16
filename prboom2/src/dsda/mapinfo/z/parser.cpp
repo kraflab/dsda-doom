@@ -98,6 +98,52 @@ static char* dsda_FloatString(Scanner &scanner) {
                                scanner.MustGetFloat(); \
                                x = dsda_FloatString(scanner); }
 
+static void const char* end_names[zmn_end_count] = {
+  [zmn_endgame1] = "EndGame1",
+  [zmn_endgame2] = "EndGame2",
+  [zmn_endgamew] = "EndGameW",
+  [zmn_endgame4] = "EndGame4",
+  [zmn_endgamec] = "EndGameC",
+  [zmn_endgame3] = "EndGame3",
+  [zmn_enddemon] = "EndDemon",
+  [zmn_endgames] = "EndGameS",
+  [zmn_endchess] = "EndChess",
+  [zmn_endtitle] = "EndTitle",
+};
+
+static void dsda_ParseZMapInfoMapNext(Scanner &scanner, zmapinfo_map_next_t &next) {
+  scanner.MustGetToken('=');
+
+  if (scanner.CheckToken(TK_StringConst)) {
+    for (int i = zmn_endgame1; i < zmn_end_count; ++i)
+      if (!stricmp(scanner.string, end_names[i])) {
+        next.end = i;
+        return;
+      }
+
+    next.map = Z_Strdup(scanner.string);
+  }
+  else if (scanner.CheckToken(TK_Identifier)) {
+    if (!stricmp(scanner.string, "EndPic")) {
+      scanner.MustGetToken(',');
+      scanner.MustGetToken(TK_StringConst);
+      next.endpic = Z_Strdup(scanner.string);
+    }
+    else if (!stricmp(scanner.string, "EndSequence")) {
+      scanner.MustGetToken(',');
+      scanner.MustGetToken(TK_StringConst);
+      next.intermission = Z_Strdup(scanner.string);
+    }
+    else if (!stricmp(scanner.string, "endgame")) {
+      // TODO: endgame block
+      dsda_SkipValue(scanner);
+    }
+    else {
+      dsda_SkipValue(scanner);
+    }
+  }
+}
+
 static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
   int map, episode;
 
@@ -131,6 +177,13 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
 
     if (!stricmp(scanner.string, "levelnum")) {
       SCAN_INT(map.levelnum);
+    }
+    else if (!stricmp(scanner.string, "next")) {
+      dsda_ParseZMapInfoMapNext(scanner, map.next);
+    }
+    else if (!stricmp(scanner.string, "secret") ||
+             !stricmp(scanner.string, "secretnext")) {
+      dsda_ParseZMapInfoMapNext(scanner, map.secretnext);
     }
     else {
       // known ignored fields:
