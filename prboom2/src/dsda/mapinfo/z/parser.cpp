@@ -144,6 +144,22 @@ static void dsda_ParseZMapInfoMapNext(Scanner &scanner, zmapinfo_map_next_t &nex
   }
 }
 
+static void const char* item_names[zmr_item_count] = { };
+
+static void dsda_ParseZMapInfoMapRedirect(Scanner &scanner, zmapinfo_map_redirect_t &redirect) {
+  scanner.MustGetToken('=');
+  scanner.MustGetToken(TK_StringConst);
+
+  for (int i = 1; i < zmr_item_count; ++i)
+    if (!stricmp(scanner.string, item_names[i]))
+      redirect.item = i;
+
+  scanner.MustGetToken(',');
+  scanner.MustGetToken(TK_StringConst);
+
+  redirect.map = Z_Strdup(scanner.string);
+}
+
 static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
   int map, episode;
 
@@ -184,6 +200,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "secret") ||
              !stricmp(scanner.string, "secretnext")) {
       dsda_ParseZMapInfoMapNext(scanner, map.secretnext);
+    }
+    else if (!stricmp(scanner.string, "redirect")) {
+      dsda_ParseZMapInfoMapRedirect(scanner, map.redirect);
     }
     else {
       // known ignored fields:

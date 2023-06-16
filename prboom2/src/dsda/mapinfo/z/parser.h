@@ -44,12 +44,24 @@ typedef struct {
   zmn_end_t end;
 } zmapinfo_map_next_t;
 
+// TODO: where is the list of items?
+typedef enum {
+  zmr_item_null,
+  zmr_item_count,
+} zmr_item_t;
+
+typedef struct {
+  zmr_item_t item;
+  const char* map;
+} zmapinfo_map_redirect_t;
+
 typedef struct {
   const char* lump_name;
   const char* nice_name;
   int levelnum;
   zmapinfo_map_next_t next;
   zmapinfo_map_next_t secretnext;
+  zmapinfo_map_redirect_t redirect;
 } zmapinfo_map_t;
 
 typedef struct {
