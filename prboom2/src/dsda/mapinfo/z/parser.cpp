@@ -28,6 +28,7 @@ void *Z_Malloc(size_t size);
 #include "parser.h"
 
 static std::vector<zmapinfo_map_t> zmapinfo_maps;
+static zmapinfo_map_t default_map;
 
 static void dsda_SkipValue(Scanner &scanner) {
   if (scanner.CheckToken('=')) {
@@ -172,7 +173,7 @@ static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
 }
 
 static void dsda_ParseZMapInfoMap(Scanner &scanner) {
-  zmapinfo_map_t map = { 0 };
+  zmapinfo_map_t map = default_map;
 
   scanner.MustGetToken(TK_Identifier);
   map.lump_name = Z_Strdup(scanner.string);
