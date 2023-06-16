@@ -33,7 +33,7 @@ static void dsda_SkipValue(Scanner &scanner) {
   if (scanner.CheckToken('=')) {
     do {
       scanner.GetNextToken();
-    } while (scanner.CheckToken(','))
+    } while (scanner.CheckToken(','));
 
     return;
   }
