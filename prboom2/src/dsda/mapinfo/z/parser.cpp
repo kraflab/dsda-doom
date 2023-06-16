@@ -99,7 +99,7 @@ static char* dsda_FloatString(Scanner &scanner) {
                                scanner.MustGetFloat(); \
                                x = dsda_FloatString(scanner); }
 
-static void const char* end_names[zmn_end_count] = {
+static const char* end_names[zmn_end_count] = {
   [zmn_endgame1] = "EndGame1",
   [zmn_endgame2] = "EndGame2",
   [zmn_endgamew] = "EndGameW",
@@ -145,7 +145,7 @@ static void dsda_ParseZMapInfoMapNext(Scanner &scanner, zmapinfo_map_next_t &nex
   }
 }
 
-static void const char* item_names[zmr_item_count] = { };
+static const char* item_names[zmr_item_count] = { };
 
 static void dsda_ParseZMapInfoMapRedirect(Scanner &scanner, zmapinfo_map_redirect_t &redirect) {
   scanner.MustGetToken('=');
