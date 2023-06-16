@@ -186,6 +186,14 @@ static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
     map.levelnum = -1;
 }
 
+static void dsda_InitDefaultMap(void) {
+  default_map.flags = ZM_SKY_STRETCH |
+                      ZM_INTERMISSION |
+                      ZM_LAX_MONSTER_ACTIVATION |
+                      ZM_ALLOW_JUMP |
+                      ZM_REMEMBER_STATE;
+}
+
 static void dsda_ParseZMapInfoMap(Scanner &scanner) {
   zmapinfo_map_t map = default_map;
 
@@ -233,6 +241,37 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // known ignored fields:
       // SlideShow
       // DeathSequence
+      // IronlichSpecial
+      // MinotaurSpecial
+      // DSparilSpecial
+      // NoAutoSequences
+      // AutoSequences
+      // FallingDamage
+      // OldFallingDamage
+      // ForceFallingDamage
+      // StrifeFallingDamage
+      // NoFallingDamage
+      // MonsterFallingDamage
+      // ProperMonsterFallingDamage
+      // TeamPlayOn
+      // TeamPlayOff
+      // NoInventoryBar
+      // KeepFullInventory
+      // InfiniteFlightPowerup
+      // NoCrouch
+      // AllowCrouch
+      // UnFreezeSinglePlayerConversations
+      // ResetItems
+      // NoAutosaveHint
+      // ForceFakeContrast
+      // ForceWorldPanning
+      // NeedClusterText
+      // NoClusterText
+      // EnableSkyboxAO
+      // DisableSkyboxAO
+      // EnableShadowmap
+      // DisableShadowmap
+      // AttenuateLights
       dsda_SkipValue(scanner);
     }
   }
@@ -259,6 +298,8 @@ void dsda_ParseZMapInfo(const unsigned char* buffer, size_t length, zmapinfo_err
   scanner.SetErrorCallback(err);
 
   zmapinfo_maps.clear();
+
+  dsda_InitDefaultMap();
 
   while (scanner.TokensLeft())
     dsda_ParseZMapInfoIdentifier(scanner);

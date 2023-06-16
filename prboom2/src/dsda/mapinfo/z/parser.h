@@ -22,6 +22,8 @@
 extern "C" {
 #endif
 
+#include <inttypes.h>
+
 typedef enum {
   zmn_null,
   zmn_endgame1,
@@ -60,6 +62,40 @@ typedef struct {
   float scrollspeed;
 } zmapinfo_sky_t;
 
+#define ZM_DOUBLE_SKY                     0x00000001ull
+#define ZM_SKY_STRETCH                    0x00000002ull
+#define ZM_INTERMISSION                   0x00000004ull
+#define ZM_LIGHTNING                      0x00000008ull
+#define ZM_ALLOW_MONSTER_TELEFRAGS        0x00000010ull
+#define ZM_ACTIVATE_OWN_DEATH_SPECIALS    0x00000020ull
+#define ZM_MAP07_SPECIAL                  0x00000040ull
+#define ZM_BARON_SPECIAL                  0x00000080ull
+#define ZM_CYBERDEMON_SPECIAL             0x00000100ull
+#define ZM_SPIDER_MASTERMIND_SPECIAL      0x00000200ull
+#define ZM_SPECIAL_ACTION_EXIT_LEVEL      0x00000400ull
+#define ZM_SPECIAL_ACTION_OPEN_DOOR       0x00000800ull
+#define ZM_SPECIAL_ACTION_LOWER_FLOOR     0x00001000ull
+#define ZM_SPECIAL_ACTION_KILL_MONSTERS   0x00002000ull
+#define ZM_CLIP_MID_TEXTURES              0x00004000ull
+#define ZM_LAX_MONSTER_ACTIVATION         0x00008000ull
+#define ZM_MISSILES_ACTIVATE_IMPACT_LINES 0x00010000ull
+#define ZM_AVOID_MELEE                    0x00020000ull
+#define ZM_FILTER_STARTS                  0x00040000ull
+#define ZM_ALLOW_RESPAWN                  0x00080000ull
+#define ZM_ALLOW_JUMP                     0x00100000ull
+#define ZM_ALLOW_FREE_LOOK                0x00200000ull
+#define ZM_CHECK_SWITCH_RANGE             0x00400000ull
+#define ZM_NO_ALLIES                      0x00800000ull
+#define ZM_RESET_HEALTH                   0x01000000ull
+#define ZM_RESET_INVENTORY                0x02000000ull
+#define ZM_GRINDING_POLYOBJ               0x04000000ull
+#define ZM_USE_PLAYER_START_Z             0x08000000ull
+#define ZM_RANDOM_PLAYER_STARTS           0x10000000ull
+#define ZM_REMEMBER_STATE                 0x20000000ull
+#define ZM_SPAWN_WITH_WEAPON_RAISED       0x40000000ull
+
+typedef uint32_t zmapinfo_map_flags_t;
+
 typedef struct {
   const char* lump_name;
   const char* nice_name;
@@ -70,6 +106,7 @@ typedef struct {
   int cluster;
   zmapinfo_sky_t sky1;
   zmapinfo_sky_t sky2;
+  zmapinfo_map_flags_t flags;
 } zmapinfo_map_t;
 
 typedef struct {
