@@ -62,6 +62,7 @@ typedef struct {
   zmapinfo_map_next_t next;
   zmapinfo_map_next_t secretnext;
   zmapinfo_map_redirect_t redirect;
+  int cluster;
 } zmapinfo_map_t;
 
 typedef struct {

@@ -205,6 +205,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "redirect")) {
       dsda_ParseZMapInfoMapRedirect(scanner, map.redirect);
     }
+    else if (!stricmp(scanner.string, "cluster")) {
+      SCAN_INT(map.cluster);
+    }
     else {
       // known ignored fields:
       // SlideShow
