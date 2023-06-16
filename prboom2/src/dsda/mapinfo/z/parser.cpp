@@ -31,12 +31,9 @@ static std::vector<zmapinfo_map_t> zmapinfo_maps;
 
 static void dsda_SkipValue(Scanner &scanner) {
   if (scanner.CheckToken('=')) {
-    while (scanner.TokensLeft()) {
-      if (scanner.CheckToken(';'))
-        break;
-
+    do {
       scanner.GetNextToken();
-    }
+    } while (scanner.CheckToken(','))
 
     return;
   }
@@ -78,34 +75,28 @@ static char* dsda_FloatString(Scanner &scanner) {
 
 #define SCAN_INT(x)  { scanner.MustGetToken('='); \
                        scanner.MustGetInteger(); \
-                       x = scanner.number; \
-                       scanner.MustGetToken(';'); }
+                       x = scanner.number; }
 
 #define SCAN_FLOAT(x) { scanner.MustGetToken('='); \
                         scanner.MustGetFloat(); \
-                        x = scanner.decimal; \
-                        scanner.MustGetToken(';'); }
+                        x = scanner.decimal; }
 
 #define SCAN_FLAG(x, f) { scanner.MustGetToken('='); \
                           scanner.MustGetToken(TK_BoolConst); \
                           if (scanner.boolean) \
-                            x |= f; \
-                          scanner.MustGetToken(';'); }
+                            x |= f; }
 
 #define SCAN_STRING_N(x, n) { scanner.MustGetToken('='); \
                               scanner.MustGetToken(TK_StringConst); \
-                              strncpy(x, scanner.string, n); \
-                              scanner.MustGetToken(';'); }
+                              strncpy(x, scanner.string, n); }
 
 #define SCAN_STRING(x) { scanner.MustGetToken('='); \
                          scanner.MustGetToken(TK_StringConst); \
-                         x = Z_Strdup(scanner.string); \
-                         scanner.MustGetToken(';'); }
+                         x = Z_Strdup(scanner.string); }
 
 #define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
                                scanner.MustGetFloat(); \
-                               x = dsda_FloatString(scanner); \
-                               scanner.MustGetToken(';'); }
+                               x = dsda_FloatString(scanner); }
 
 static void dsda_ParseZMapInfoMap(Scanner &scanner) {
   zmapinfo_map_t map = { 0 };
