@@ -212,6 +212,29 @@ static void dsda_ParseZMapInfoIntermissionPic(Scanner &scanner, const char* &pic
   pic = Z_Strdup(scanner.stirng);
 }
 
+static void dsda_ParseZMapInfoMapSpecialAction(Scanner &scanner,
+                                               std::vector<zmapinfo_special_action_t> &special_actions) {
+  zmapinfo_special_action_t special_action = { 0 };
+
+  scanner.MustGetToken('=');
+
+  scanner.MustGetToken(TK_StringConst);
+  special_action.monster_type = dsda_ThingNameToType(scanner.string);
+
+  scanner.MustGetToken(TK_StringConst);
+  special_action.action_special = dsda_ActionNameToNumber(scanner.string);
+
+  for (int i = 0; i < 5; ++i) {
+    if (!scanner.CheckToken(','))
+      break;
+
+    scanner.MustGetInteger();
+    special_action.special_args[i] = scanner.number;
+  }
+
+  special_actions.push_back(special_action);
+}
+
 static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
   int map, episode;
 
@@ -234,6 +257,11 @@ static void dsda_InitDefaultMap(void) {
 
 static void dsda_ParseZMapInfoMap(Scanner &scanner) {
   zmapinfo_map_t map = default_map;
+  std::vector<zmapinfo_special_action_t> special_actions;
+
+  // Create a copy of the existing special actions from the default map
+  for (int i = 0; i < map.num_special_actions; ++i)
+    special_actions.push_back(map.special_actions[i]);
 
   scanner.MustGetToken(TK_Identifier);
   map.lump_name = Z_Strdup(scanner.string);
@@ -338,6 +366,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "activateowndeathspecials")) {
       map.flags |= ZM_ACTIVATE_OWN_DEATH_SPECIALS;
     }
+    else if (!stricmp(scanner.string, "specialaction")) {
+      dsda_ParseZMapInfoMapSpecialAction(scanner, special_actions);
+    }
     else {
       // known ignored fields:
       // SlideShow
@@ -387,6 +418,11 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       dsda_SkipValue(scanner);
     }
   }
+
+  map.num_special_actions = special_actions.size();
+  map.special_actions = Z_Malloc(map.num_special_actions * sizeof(*map.special_actions));
+  memcpy(map.special_actions, &special_actions[0],
+         map.num_special_actions * sizeof(*map.special_actions));
 
   zmapinfo_maps.push_back(map);
 }

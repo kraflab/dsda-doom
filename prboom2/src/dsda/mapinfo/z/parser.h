@@ -68,6 +68,12 @@ typedef enum {
   zm_lighting_smooth,
 } zm_lighting_t;
 
+typedef struct {
+  int monster_type;
+  int action_special;
+  int special_args[5];
+} zmapinfo_special_action_t;
+
 typedef enum {
   zm_infighting_normal,
   zm_infighting_total,
@@ -132,6 +138,8 @@ typedef struct {
   int gravity;
   const char* air_control;
   zmapinfo_infighting_t infighting;
+  size_t num_special_actions;
+  zmapinfo_special_action_t* special_actions;
   zmapinfo_map_flags_t flags;
 } zmapinfo_map_t;
 
