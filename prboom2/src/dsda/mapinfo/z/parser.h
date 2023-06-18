@@ -123,6 +123,7 @@ typedef struct {
   const char* title_patch;
   int par;
   int suck_time;
+  const char* music;
   zm_lighting_t lighting;
   zmapinfo_infighting_t infighting;
   zmapinfo_map_flags_t flags;

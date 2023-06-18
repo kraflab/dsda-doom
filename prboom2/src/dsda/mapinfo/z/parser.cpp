@@ -187,6 +187,21 @@ static void dsda_ParseZMapInfoTitlePatch(Scanner &scanner, zmapinfo_map_t &map) 
   }
 }
 
+static void dsda_ParseZMapInfoMusic(Scanner &scanner, zmapinfo_map_t &map) {
+  scanner.MustGetToken('=');
+  scanner.MustGetToken(TK_StringConst);
+
+  if (strchr(scanner.string, ':'))
+    return;
+
+  if (scanner.CheckToken(',')) {
+    scanner.MustGetInteger();
+    return;
+  }
+
+  map.music = Z_Strdup(scanner.stirng);
+}
+
 static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
   int map, episode;
 
@@ -276,6 +291,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "intermission")) {
       map.flags |= ZM_INTERMISSION;
+    }
+    else if (!stricmp(scanner.string, "music")) {
+      dsda_ParseZMapInfoMusic(scanner, map);
     }
     else {
       // known ignored fields:
