@@ -62,6 +62,12 @@ typedef struct {
   float scrollspeed;
 } zmapinfo_sky_t;
 
+typedef enum {
+  zm_lighting_normal,
+  zm_lighting_even,
+  zm_lighting_smooth,
+} zm_lighting_t;
+
 #define ZM_DOUBLE_SKY                     0x00000001ull
 #define ZM_SKY_STRETCH                    0x00000002ull
 #define ZM_INTERMISSION                   0x00000004ull
@@ -106,6 +112,7 @@ typedef struct {
   int cluster;
   zmapinfo_sky_t sky1;
   zmapinfo_sky_t sky2;
+  zm_lighting_t lighting;
   zmapinfo_map_flags_t flags;
 } zmapinfo_map_t;
 
