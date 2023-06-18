@@ -326,6 +326,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "smoothlighting")) {
       map.lighting = zm_lighting_smooth;
     }
+    else if (!stricmp(scanner.string, "gravity")) {
+      SCAN_INT(map.gravity);
+    }
     else {
       // known ignored fields:
       // SlideShow
