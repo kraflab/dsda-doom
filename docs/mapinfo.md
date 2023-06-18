@@ -65,10 +65,10 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | TeamDamage                         | :x:             |
 | Gravity                            | :grey_question: |
 | AirControl                         | :grey_question: |
-| AirSupply                          | :grey_question: |
-| F1                                 | :grey_question: |
-| MapBackground                      | :grey_question: |
-| Translator                         | :grey_question: |
+| AirSupply                          | :x:             |
+| F1                                 | :x:             |
+| MapBackground                      | :x:             |
+| Translator                         | :x:             |
 | AllowMonsterTelefrags              | :grey_question: |
 | ActivateOwnDeathSpecials           | :grey_question: |
 | SpecialAction                      | :grey_question: |

@@ -343,6 +343,10 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // VertWallShade
       // HorizWallShade
       // TeamDamage
+      // AirSupply
+      // F1
+      // MapBackground
+      // Translator
       // IronlichSpecial
       // MinotaurSpecial
       // DSparilSpecial
