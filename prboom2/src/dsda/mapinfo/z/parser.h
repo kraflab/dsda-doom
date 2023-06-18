@@ -124,8 +124,10 @@ typedef struct {
   int par;
   int suck_time;
   const char* music;
+  const char* inter_music;
   const char* exit_pic;
   const char* enter_pic;
+  const char* border_texture;
   zm_lighting_t lighting;
   zmapinfo_infighting_t infighting;
   zmapinfo_map_flags_t flags;

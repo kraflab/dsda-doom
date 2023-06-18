@@ -311,6 +311,15 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "enterpic")) {
       dsda_ParseZMapInfoIntermissionPic(scanner, map.enter_pic);
     }
+    else if (!stricmp(scanner.string, "intermusic")) {
+      SCAN_STRING(map.inter_music);
+    }
+    else if (!stricmp(scanner.string, "bordertexture")) {
+      SCAN_STRING(map.border_texture);
+    }
+    else if (!stricmp(scanner.string, "lightning")) {
+      map.flags |= ZM_LIGHTNING;
+    }
     else {
       // known ignored fields:
       // SlideShow
