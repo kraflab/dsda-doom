@@ -265,6 +265,12 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "titlepatch")) {
       dsda_ParseZMapInfoTitlePatch(scanner, map);
     }
+    else if (!stricmp(scanner.string, "par")) {
+      SCAN_INT(map.par);
+    }
+    else if (!stricmp(scanner.string, "sucktime")) {
+      SCAN_INT(map.suck_time);
+    }
     else {
       // known ignored fields:
       // SlideShow

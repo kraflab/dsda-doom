@@ -121,6 +121,8 @@ typedef struct {
   zmapinfo_sky_t sky2;
   const char* fade_table;
   const char* title_patch;
+  int par;
+  int suck_time;
   zm_lighting_t lighting;
   zmapinfo_infighting_t infighting;
   zmapinfo_map_flags_t flags;
