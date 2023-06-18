@@ -191,7 +191,8 @@ static void dsda_InitDefaultMap(void) {
                       ZM_INTERMISSION |
                       ZM_LAX_MONSTER_ACTIVATION |
                       ZM_ALLOW_JUMP |
-                      ZM_REMEMBER_STATE;
+                      ZM_REMEMBER_STATE |
+                      ZM_SHOW_AUTHOR;
 }
 
 static void dsda_ParseZMapInfoMap(Scanner &scanner) {

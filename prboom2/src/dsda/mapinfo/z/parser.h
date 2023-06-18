@@ -105,6 +105,7 @@ typedef enum {
 #define ZM_RANDOM_PLAYER_STARTS           0x10000000ul
 #define ZM_REMEMBER_STATE                 0x20000000ul
 #define ZM_SPAWN_WITH_WEAPON_RAISED       0x40000000ul
+#define ZM_SHOW_AUTHOR                    0x80000000ul
 
 typedef uint32_t zmapinfo_map_flags_t;
 
