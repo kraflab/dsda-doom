@@ -334,6 +334,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // OutsideFog
       // CDTrack
       // CDId
+      // VertWallShade
+      // HorizWallShade
+      // TeamDamage
       // IronlichSpecial
       // MinotaurSpecial
       // DSparilSpecial

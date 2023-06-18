@@ -60,9 +60,9 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | Lightning                          | :grey_question: |
 | EvenLighting                       | :grey_question: |
 | SmoothLighting                     | :grey_question: |
-| VertWallShade                      | :grey_question: |
-| HorizWallShade                     | :grey_question: |
-| TeamDamage                         | :grey_question: |
+| VertWallShade                      | :x:             |
+| HorizWallShade                     | :x:             |
+| TeamDamage                         | :x:             |
 | Gravity                            | :grey_question: |
 | AirControl                         | :grey_question: |
 | AirSupply                          | :grey_question: |
