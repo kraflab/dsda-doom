@@ -237,6 +237,15 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "sky2")) {
       dsda_ParseZMapInfoMapSky(scanner, map.sky2);
     }
+    else if (!stricmp(scanner.string, "doublesky")) {
+      map.flags |= ZM_DOUBLE_SKY;
+    }
+    else if (!stricmp(scanner.string, "forcenoskystretch")) {
+      map.flags &= ~ZM_SKY_STRETCH;
+    }
+    else if (!stricmp(scanner.string, "skystretch")) {
+      map.flags |= ZM_SKY_STRETCH;
+    }
     else {
       // known ignored fields:
       // SlideShow
