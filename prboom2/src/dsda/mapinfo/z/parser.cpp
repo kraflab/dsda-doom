@@ -320,6 +320,12 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "lightning")) {
       map.flags |= ZM_LIGHTNING;
     }
+    else if (!stricmp(scanner.string, "evenlighting")) {
+      map.lighting = zm_lighting_even;
+    }
+    else if (!stricmp(scanner.string, "smoothlighting")) {
+      map.lighting = zm_lighting_smooth;
+    }
     else {
       // known ignored fields:
       // SlideShow
