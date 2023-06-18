@@ -130,6 +130,7 @@ typedef struct {
   const char* border_texture;
   zm_lighting_t lighting;
   int gravity;
+  const char* air_control;
   zmapinfo_infighting_t infighting;
   zmapinfo_map_flags_t flags;
 } zmapinfo_map_t;

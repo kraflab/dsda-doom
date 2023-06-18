@@ -329,6 +329,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "gravity")) {
       SCAN_INT(map.gravity);
     }
+    else if (!stricmp(scanner.string, "aircontrol")) {
+      SCAN_FLOAT_STRING(map.air_control);
+    }
     else {
       // known ignored fields:
       // SlideShow
