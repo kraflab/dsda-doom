@@ -247,10 +247,15 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "skystretch")) {
       map.flags |= ZM_SKY_STRETCH;
     }
+    else if (!stricmp(scanner.string, "fadetable")) {
+      SCAN_STRING(map.fade_table);
+    }
     else {
       // known ignored fields:
       // SlideShow
       // DeathSequence
+      // Fade
+      // OutsideFog
       // IronlichSpecial
       // MinotaurSpecial
       // DSparilSpecial

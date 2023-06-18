@@ -42,9 +42,9 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | DoubleSky                          | :grey_question: |
 | ForceNoSkyStretch                  | :grey_question: |
 | SkyStretch                         | :grey_question: |
-| Fade                               | :grey_question: |
+| Fade                               | :x:             |
 | FadeTable                          | :grey_question: |
-| OutsideFog                         | :grey_question: |
+| OutsideFog                         | :x:             |
 | TitlePatch                         | :grey_question: |
 | Par                                | :grey_question: |
 | SuckTime                           | :grey_question: |
