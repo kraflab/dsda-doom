@@ -51,8 +51,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | NoIntermission                     | :grey_question: |
 | Intermission                       | :grey_question: |
 | Music                              | :grey_question: |
-| CDTrack                            | :grey_question: |
-| CDId                               | :grey_question: |
+| CDTrack                            | :x:             |
+| CDId                               | :x:             |
 | ExitPic                            | :grey_question: |
 | EnterPic                           | :grey_question: |
 | InterMusic                         | :grey_question: |

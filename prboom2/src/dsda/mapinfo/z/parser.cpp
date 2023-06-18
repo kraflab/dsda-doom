@@ -283,6 +283,8 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // DeathSequence
       // Fade
       // OutsideFog
+      // CDTrack
+      // CDId
       // IronlichSpecial
       // MinotaurSpecial
       // DSparilSpecial
