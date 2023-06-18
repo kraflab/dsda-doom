@@ -156,3 +156,4 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 #### Notes
 - The `lookup` key for map name localization is not supported
 - The `tracknum` field for music is not supported
+- The `EnterPic` and `ExitPic` keys do not support intermission scripts

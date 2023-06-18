@@ -202,6 +202,16 @@ static void dsda_ParseZMapInfoMusic(Scanner &scanner, zmapinfo_map_t &map) {
   map.music = Z_Strdup(scanner.stirng);
 }
 
+static void dsda_ParseZMapInfoIntermissionPic(Scanner &scanner, const char* &pic) {
+  scanner.MustGetToken('=');
+  scanner.MustGetToken(TK_StringConst);
+
+  if (scanner.string[0] == '$')
+    return;
+
+  pic = Z_Strdup(scanner.stirng);
+}
+
 static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
   int map, episode;
 
@@ -294,6 +304,12 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "music")) {
       dsda_ParseZMapInfoMusic(scanner, map);
+    }
+    else if (!stricmp(scanner.string, "exitpic")) {
+      dsda_ParseZMapInfoIntermissionPic(scanner, map.exit_pic);
+    }
+    else if (!stricmp(scanner.string, "enterpic")) {
+      dsda_ParseZMapInfoIntermissionPic(scanner, map.enter_pic);
     }
     else {
       // known ignored fields:
