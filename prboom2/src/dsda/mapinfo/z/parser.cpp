@@ -332,6 +332,12 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "aircontrol")) {
       SCAN_FLOAT_STRING(map.air_control);
     }
+    else if (!stricmp(scanner.string, "allowmonstertelefrags")) {
+      map.flags |= ZM_ALLOW_MONSTER_TELEFRAGS;
+    }
+    else if (!stricmp(scanner.string, "activateowndeathspecials")) {
+      map.flags |= ZM_ACTIVATE_OWN_DEATH_SPECIALS;
+    }
     else {
       // known ignored fields:
       // SlideShow
