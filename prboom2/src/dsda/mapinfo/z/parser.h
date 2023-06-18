@@ -68,6 +68,12 @@ typedef enum {
   zm_lighting_smooth,
 } zm_lighting_t;
 
+typedef enum {
+  zm_infighting_normal,
+  zm_infighting_total,
+  zm_infighting_none,
+} zm_infighting_t;
+
 #define ZM_DOUBLE_SKY                     0x00000001ull
 #define ZM_SKY_STRETCH                    0x00000002ull
 #define ZM_INTERMISSION                   0x00000004ull
@@ -113,6 +119,7 @@ typedef struct {
   zmapinfo_sky_t sky1;
   zmapinfo_sky_t sky2;
   zm_lighting_t lighting;
+  zmapinfo_infighting_t infighting;
   zmapinfo_map_flags_t flags;
 } zmapinfo_map_t;
 
