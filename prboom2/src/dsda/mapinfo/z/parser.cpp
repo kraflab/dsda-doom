@@ -271,6 +271,12 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "sucktime")) {
       SCAN_INT(map.suck_time);
     }
+    else if (!stricmp(scanner.string, "nointermission")) {
+      map.flags &= ~ZM_INTERMISSION;
+    }
+    else if (!stricmp(scanner.string, "intermission")) {
+      map.flags |= ZM_INTERMISSION;
+    }
     else {
       // known ignored fields:
       // SlideShow
