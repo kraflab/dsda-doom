@@ -121,9 +121,9 @@ typedef uint8_t zmapinfo_special_action_flags_t;
 typedef struct {
   const char* lump_name;
   const char* nice_name;
-  int levelnum;
+  int level_num;
   zmapinfo_map_next_t next;
-  zmapinfo_map_next_t secretnext;
+  zmapinfo_map_next_t secret_next;
   zmapinfo_map_redirect_t redirect;
   int cluster;
   zmapinfo_sky_t sky1;

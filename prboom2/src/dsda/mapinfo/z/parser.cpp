@@ -280,117 +280,117 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "levelnum")) {
-      SCAN_INT(map.levelnum);
+    if (!stricmp(scanner.string, "LevelNum")) {
+      SCAN_INT(map.level_num);
     }
-    else if (!stricmp(scanner.string, "next")) {
+    else if (!stricmp(scanner.string, "Next")) {
       dsda_ParseZMapInfoMapNext(scanner, map.next);
     }
-    else if (!stricmp(scanner.string, "secret") ||
-             !stricmp(scanner.string, "secretnext")) {
-      dsda_ParseZMapInfoMapNext(scanner, map.secretnext);
+    else if (!stricmp(scanner.string, "Secret") ||
+             !stricmp(scanner.string, "SecretNext")) {
+      dsda_ParseZMapInfoMapNext(scanner, map.secret_next);
     }
-    else if (!stricmp(scanner.string, "redirect")) {
+    else if (!stricmp(scanner.string, "Redirect")) {
       dsda_ParseZMapInfoMapRedirect(scanner, map.redirect);
     }
-    else if (!stricmp(scanner.string, "cluster")) {
+    else if (!stricmp(scanner.string, "Cluster")) {
       SCAN_INT(map.cluster);
     }
-    else if (!stricmp(scanner.string, "sky1") ||
-             !stricmp(scanner.string, "skybox")) {
+    else if (!stricmp(scanner.string, "Sky1") ||
+             !stricmp(scanner.string, "Skybox")) {
       dsda_ParseZMapInfoMapSky(scanner, map.sky1);
     }
-    else if (!stricmp(scanner.string, "sky2")) {
+    else if (!stricmp(scanner.string, "Sky2")) {
       dsda_ParseZMapInfoMapSky(scanner, map.sky2);
     }
-    else if (!stricmp(scanner.string, "doublesky")) {
+    else if (!stricmp(scanner.string, "DoubleSky")) {
       map.flags |= ZM_DOUBLE_SKY;
     }
-    else if (!stricmp(scanner.string, "forcenoskystretch")) {
+    else if (!stricmp(scanner.string, "ForceNoSkyStretch")) {
       map.flags &= ~ZM_SKY_STRETCH;
     }
-    else if (!stricmp(scanner.string, "skystretch")) {
+    else if (!stricmp(scanner.string, "SkyStretch")) {
       map.flags |= ZM_SKY_STRETCH;
     }
-    else if (!stricmp(scanner.string, "fadetable")) {
+    else if (!stricmp(scanner.string, "FadeTable")) {
       SCAN_STRING(map.fade_table);
     }
-    else if (!stricmp(scanner.string, "titlepatch")) {
+    else if (!stricmp(scanner.string, "TitlePatch")) {
       dsda_ParseZMapInfoTitlePatch(scanner, map);
     }
-    else if (!stricmp(scanner.string, "par")) {
+    else if (!stricmp(scanner.string, "Par")) {
       SCAN_INT(map.par);
     }
-    else if (!stricmp(scanner.string, "sucktime")) {
+    else if (!stricmp(scanner.string, "SuckTime")) {
       SCAN_INT(map.suck_time);
     }
-    else if (!stricmp(scanner.string, "nointermission")) {
+    else if (!stricmp(scanner.string, "NoIntermission")) {
       map.flags &= ~ZM_INTERMISSION;
     }
-    else if (!stricmp(scanner.string, "intermission")) {
+    else if (!stricmp(scanner.string, "Intermission")) {
       map.flags |= ZM_INTERMISSION;
     }
-    else if (!stricmp(scanner.string, "music")) {
+    else if (!stricmp(scanner.string, "Music")) {
       dsda_ParseZMapInfoMusic(scanner, map);
     }
-    else if (!stricmp(scanner.string, "exitpic")) {
+    else if (!stricmp(scanner.string, "ExitPic")) {
       dsda_ParseZMapInfoIntermissionPic(scanner, map.exit_pic);
     }
-    else if (!stricmp(scanner.string, "enterpic")) {
+    else if (!stricmp(scanner.string, "EnterPic")) {
       dsda_ParseZMapInfoIntermissionPic(scanner, map.enter_pic);
     }
-    else if (!stricmp(scanner.string, "intermusic")) {
+    else if (!stricmp(scanner.string, "InterMusic")) {
       SCAN_STRING(map.inter_music);
     }
-    else if (!stricmp(scanner.string, "bordertexture")) {
+    else if (!stricmp(scanner.string, "BorderTexture")) {
       SCAN_STRING(map.border_texture);
     }
-    else if (!stricmp(scanner.string, "lightning")) {
+    else if (!stricmp(scanner.string, "Lightning")) {
       map.flags |= ZM_LIGHTNING;
     }
-    else if (!stricmp(scanner.string, "evenlighting")) {
+    else if (!stricmp(scanner.string, "EvenLighting")) {
       map.lighting = zm_lighting_even;
     }
-    else if (!stricmp(scanner.string, "smoothlighting")) {
+    else if (!stricmp(scanner.string, "SmoothLighting")) {
       map.lighting = zm_lighting_smooth;
     }
-    else if (!stricmp(scanner.string, "gravity")) {
+    else if (!stricmp(scanner.string, "Gravity")) {
       SCAN_INT(map.gravity);
     }
-    else if (!stricmp(scanner.string, "aircontrol")) {
+    else if (!stricmp(scanner.string, "AirControl")) {
       SCAN_FLOAT_STRING(map.air_control);
     }
-    else if (!stricmp(scanner.string, "allowmonstertelefrags")) {
+    else if (!stricmp(scanner.string, "AllowMonsterTelefrags")) {
       map.flags |= ZM_ALLOW_MONSTER_TELEFRAGS;
     }
-    else if (!stricmp(scanner.string, "activateowndeathspecials")) {
+    else if (!stricmp(scanner.string, "ActivateOwnDeathSpecials")) {
       map.flags |= ZM_ACTIVATE_OWN_DEATH_SPECIALS;
     }
-    else if (!stricmp(scanner.string, "specialaction")) {
+    else if (!stricmp(scanner.string, "SpecialAction")) {
       dsda_ParseZMapInfoMapSpecialAction(scanner, special_actions);
     }
-    else if (!stricmp(scanner.string, "map07special")) {
+    else if (!stricmp(scanner.string, "Map07Special")) {
       map.sa_flags |= SAF_MAP07;
     }
-    else if (!stricmp(scanner.string, "baronspecial")) {
+    else if (!stricmp(scanner.string, "BaronSpecial")) {
       map.sa_flags |= SAF_BARON;
     }
-    else if (!stricmp(scanner.string, "cyberdemonspecial")) {
+    else if (!stricmp(scanner.string, "CyberdemonSpecial")) {
       map.sa_flags |= SAF_CYBERDEMON;
     }
-    else if (!stricmp(scanner.string, "spidermastermindspecial")) {
+    else if (!stricmp(scanner.string, "SpiderMastermindSpecial")) {
       map.sa_flags |= SAF_SPIDER_MASTERMIND;
     }
-    else if (!stricmp(scanner.string, "specialaction_exitlevel")) {
+    else if (!stricmp(scanner.string, "SpecialAction_ExitLevel")) {
       map.sa_flags |= SAF_EXIT_LEVEL;
     }
-    else if (!stricmp(scanner.string, "specialaction_opendoor")) {
+    else if (!stricmp(scanner.string, "SpecialAction_OpenDoor")) {
       map.sa_flags |= SAF_OPEN_DOOR;
     }
-    else if (!stricmp(scanner.string, "specialaction_lowerfloor")) {
+    else if (!stricmp(scanner.string, "SpecialAction_LowerFloor")) {
       map.sa_flags |= SAF_LOWER_FLOOR;
     }
-    else if (!stricmp(scanner.string, "specialaction_killmonsters")) {
+    else if (!stricmp(scanner.string, "SpecialAction_KillMonsters")) {
       map.sa_flags |= SAF_KILL_MONSTERS;
     }
     else {
