@@ -394,40 +394,40 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       map.sa_flags |= SAF_KILL_MONSTERS;
     }
     else if (!stricmp(scanner.string, "ClipMidTextures")) {
-      map.sa_flags |= ZM_CLIP_MID_TEXTURES;
+      map.flags |= ZM_CLIP_MID_TEXTURES;
     }
     else if (!stricmp(scanner.string, "StrictMonsterActivation")) {
-      map.sa_flags &= ~ZM_LAX_MONSTER_ACTIVATION;
+      map.flags &= ~ZM_LAX_MONSTER_ACTIVATION;
     }
     else if (!stricmp(scanner.string, "LaxMonsterActivation")) {
-      map.sa_flags |= ZM_LAX_MONSTER_ACTIVATION;
+      map.flags |= ZM_LAX_MONSTER_ACTIVATION;
     }
     else if (!stricmp(scanner.string, "MissileShootersActivateImpactLines")) {
-      map.sa_flags &= ~ZM_MISSILES_ACTIVATE_IMPACT_LINES;
+      map.flags &= ~ZM_MISSILES_ACTIVATE_IMPACT_LINES;
     }
     else if (!stricmp(scanner.string, "MissilesActivateImpactLines")) {
-      map.sa_flags |= ZM_MISSILES_ACTIVATE_IMPACT_LINES;
+      map.flags |= ZM_MISSILES_ACTIVATE_IMPACT_LINES;
     }
     else if (!stricmp(scanner.string, "AvoidMelee")) {
-      map.sa_flags |= ZM_AVOID_MELEE;
+      map.flags |= ZM_AVOID_MELEE;
     }
     else if (!stricmp(scanner.string, "FilterStarts")) {
-      map.sa_flags |= ZM_FILTER_STARTS;
+      map.flags |= ZM_FILTER_STARTS;
     }
     else if (!stricmp(scanner.string, "AllowRespawn")) {
-      map.sa_flags |= ZM_ALLOW_RESPAWN;
+      map.flags |= ZM_ALLOW_RESPAWN;
     }
     else if (!stricmp(scanner.string, "NoJump")) {
-      map.sa_flags &= ~ZM_ALLOW_JUMP;
+      map.flags &= ~ZM_ALLOW_JUMP;
     }
     else if (!stricmp(scanner.string, "AllowJump")) {
-      map.sa_flags |= ZM_ALLOW_JUMP;
+      map.flags |= ZM_ALLOW_JUMP;
     }
     else if (!stricmp(scanner.string, "NoFreelook")) {
-      map.sa_flags &= ~ZM_ALLOW_FREE_LOOK;
+      map.flags &= ~ZM_ALLOW_FREE_LOOK;
     }
     else if (!stricmp(scanner.string, "AllowFreelook")) {
-      map.sa_flags |= ZM_ALLOW_FREE_LOOK;
+      map.flags |= ZM_ALLOW_FREE_LOOK;
     }
     else if (!stricmp(scanner.string, "NoInfighting")) {
       map.infighting = zm_infighting_none;
