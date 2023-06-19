@@ -440,6 +440,21 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "FiniteHeight")) {
       map.flags |= ZM_FINITE_HEIGHT;
     }
+    else if (!stricmp(scanner.string, "UsePlayerStartZ")) {
+      map.flags |= ZM_USE_PLAYER_START_Z;
+    }
+    else if (!stricmp(scanner.string, "RandomPlayerStarts")) {
+      map.flags |= ZM_RANDOM_PLAYER_STARTS;
+    }
+    else if (!stricmp(scanner.string, "ForgetState")) {
+      map.flags &= ~ZM_REMEMBER_STATE;
+    }
+    else if (!stricmp(scanner.string, "RememberState")) {
+      map.flags |= ZM_REMEMBER_STATE;
+    }
+    else if (!stricmp(scanner.string, "SpawnWithWeaponRaised")) {
+      map.flags |= ZM_SPAWN_WITH_WEAPON_RAISED;
+    }
     else {
       // known ignored fields:
       // SlideShow
