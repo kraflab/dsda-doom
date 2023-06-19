@@ -429,6 +429,15 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "AllowFreelook")) {
       map.sa_flags |= ZM_ALLOW_FREE_LOOK;
     }
+    else if (!stricmp(scanner.string, "NoInfighting")) {
+      map.infighting = zm_infighting_none;
+    }
+    else if (!stricmp(scanner.string, "NormalInfighting")) {
+      map.infighting = zm_infighting_normal;
+    }
+    else if (!stricmp(scanner.string, "TotalInfighting")) {
+      map.infighting = zm_infighting_total;
+    }
     else {
       // known ignored fields:
       // SlideShow
