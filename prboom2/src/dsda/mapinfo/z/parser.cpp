@@ -249,7 +249,9 @@ static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
 static void dsda_InitDefaultMap(void) {
   default_map.flags = ZM_SKY_STRETCH |
                       ZM_INTERMISSION |
+                      ZM_ACTIVATE_OWN_DEATH_SPECIALS |
                       ZM_LAX_MONSTER_ACTIVATION |
+                      ZM_MISSILES_ACTIVATE_IMPACT_LINES |
                       ZM_REMEMBER_STATE |
                       ZM_SHOW_AUTHOR;
 }
