@@ -439,11 +439,11 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "Grinding_Polyobj")) {
       map.flags |= ZM_GRINDING_POLYOBJ;
     }
-    else if (!stricmp(scanner.string, "InfiniteHeight")) {
-      map.flags &= ~ZM_FINITE_HEIGHT;
+    else if (!stricmp(scanner.string, "NoPassover")) {
+      map.flags &= ~ZM_PASSOVER;
     }
-    else if (!stricmp(scanner.string, "FiniteHeight")) {
-      map.flags |= ZM_FINITE_HEIGHT;
+    else if (!stricmp(scanner.string, "Passover")) {
+      map.flags |= ZM_PASSOVER;
     }
     else if (!stricmp(scanner.string, "UsePlayerStartZ")) {
       map.flags |= ZM_USE_PLAYER_START_Z;

@@ -153,11 +153,11 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | SndSeq                             | :x:             |
 | Intro                              | :x:             |
 | Outro                              | :x:             |
-| InfiniteHeight                     | :telescope:     |
-| FiniteHeight                       | :telescope:     |
+| NoPassover                         | :telescope:     |
+| Passover                           | :telescope:     |
 
 #### Notes
 - The `lookup` key for map name localization is not supported
 - The `tracknum` field for music is not supported
 - The `EnterPic` and `ExitPic` keys do not support intermission scripts
-- The `FiniteHeight` and `InfiniteHeight` flags are new (the gzdoom equivalent is `compat_nopassover = x`)
+- The `Passover` and `NoPassover` flags are new (the gzdoom equivalent is `compat_nopassover = x`)

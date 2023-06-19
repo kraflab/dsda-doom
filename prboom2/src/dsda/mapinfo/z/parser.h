@@ -104,7 +104,7 @@ typedef enum {
 #define ZM_REMEMBER_STATE                 0x00200000ul
 #define ZM_SPAWN_WITH_WEAPON_RAISED       0x00400000ul
 #define ZM_SHOW_AUTHOR                    0x00800000ul
-#define ZM_FINITE_HEIGHT                  0x01000000ul
+#define ZM_PASSOVER                       0x01000000ul
 
 typedef uint32_t zmapinfo_map_flags_t;
 
