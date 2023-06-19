@@ -123,7 +123,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | ResetItems                         | :x:             |
 | Grinding_Polyobj                   | :grey_question: |
 | No_Grinding_Polyobj                | :grey_question: |
-| compat_*                           | :grey_question: |
+| compat_*                           | :x:             |
 | DefaultEnvironment                 | :grey_question: |
 | NoAutosaveHint                     | :x:             |
 | UsePlayerStartZ                    | :grey_question: |
@@ -152,8 +152,11 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | SndSeq                             | :grey_question: |
 | Intro                              | :grey_question: |
 | Outro                              | :grey_question: |
+| InfiniteHeight                     | :telescope:     |
+| FiniteHeight                       | :telescope:     |
 
 #### Notes
 - The `lookup` key for map name localization is not supported
 - The `tracknum` field for music is not supported
 - The `EnterPic` and `ExitPic` keys do not support intermission scripts
+- The `FiniteHeight` and `InfiniteHeight` flags are new (the gzdoom equivalent is `compat_nopassover = x`)
