@@ -124,7 +124,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | Grinding_Polyobj                   | :grey_question: |
 | No_Grinding_Polyobj                | :grey_question: |
 | compat_*                           | :x:             |
-| DefaultEnvironment                 | :grey_question: |
+| DefaultEnvironment                 | :x:             |
 | NoAutosaveHint                     | :x:             |
 | UsePlayerStartZ                    | :grey_question: |
 | RandomPlayerStarts                 | :grey_question: |
