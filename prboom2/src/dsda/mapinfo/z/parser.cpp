@@ -502,8 +502,14 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // compat_*
       // DefaultEnvironment
       // NoAutosaveHint
+      // PrecacheSounds
+      // PrecacheTextures
+      // PrecacheClasses
       // ForceFakeContrast
       // ForceWorldPanning
+      // HazardColor
+      // HazardFlash
+      // EventHandlers
       // NeedClusterText
       // NoClusterText
       // EnableSkyboxAO
@@ -511,6 +517,11 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // EnableShadowmap
       // DisableShadowmap
       // AttenuateLights
+      // SndInfo
+      // SoundInfo
+      // SndSeq
+      // Intro
+      // Outro
       dsda_SkipValue(scanner);
     }
   }
