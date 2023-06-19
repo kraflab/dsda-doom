@@ -500,6 +500,8 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // AllowCrouch
       // UnFreezeSinglePlayerConversations
       // ResetItems
+      // compat_*
+      // DefaultEnvironment
       // NoAutosaveHint
       // ForceFakeContrast
       // ForceWorldPanning
