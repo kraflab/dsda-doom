@@ -369,6 +369,30 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "specialaction")) {
       dsda_ParseZMapInfoMapSpecialAction(scanner, special_actions);
     }
+    else if (!stricmp(scanner.string, "map07special")) {
+      map.sa_flags |= SAF_MAP07;
+    }
+    else if (!stricmp(scanner.string, "baronspecial")) {
+      map.sa_flags |= SAF_BARON;
+    }
+    else if (!stricmp(scanner.string, "cyberdemonspecial")) {
+      map.sa_flags |= SAF_CYBERDEMON;
+    }
+    else if (!stricmp(scanner.string, "spidermastermindspecial")) {
+      map.sa_flags |= SAF_SPIDER_MASTERMIND;
+    }
+    else if (!stricmp(scanner.string, "specialaction_exitlevel")) {
+      map.sa_flags |= SAF_EXIT_LEVEL;
+    }
+    else if (!stricmp(scanner.string, "specialaction_opendoor")) {
+      map.sa_flags |= SAF_OPEN_DOOR;
+    }
+    else if (!stricmp(scanner.string, "specialaction_lowerfloor")) {
+      map.sa_flags |= SAF_LOWER_FLOOR;
+    }
+    else if (!stricmp(scanner.string, "specialaction_killmonsters")) {
+      map.sa_flags |= SAF_KILL_MONSTERS;
+    }
     else {
       // known ignored fields:
       // SlideShow

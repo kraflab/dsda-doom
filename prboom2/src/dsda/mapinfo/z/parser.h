@@ -86,34 +86,37 @@ typedef enum {
 #define ZM_LIGHTNING                      0x00000008ul
 #define ZM_ALLOW_MONSTER_TELEFRAGS        0x00000010ul
 #define ZM_ACTIVATE_OWN_DEATH_SPECIALS    0x00000020ul
-#define ZM_MAP07_SPECIAL                  0x00000040ul
-#define ZM_BARON_SPECIAL                  0x00000080ul
-#define ZM_CYBERDEMON_SPECIAL             0x00000100ul
-#define ZM_SPIDER_MASTERMIND_SPECIAL      0x00000200ul
-#define ZM_SPECIAL_ACTION_EXIT_LEVEL      0x00000400ul
-#define ZM_SPECIAL_ACTION_OPEN_DOOR       0x00000800ul
-#define ZM_SPECIAL_ACTION_LOWER_FLOOR     0x00001000ul
-#define ZM_SPECIAL_ACTION_KILL_MONSTERS   0x00002000ul
-#define ZM_CLIP_MID_TEXTURES              0x00004000ul
-#define ZM_LAX_MONSTER_ACTIVATION         0x00008000ul
-#define ZM_MISSILES_ACTIVATE_IMPACT_LINES 0x00010000ul
-#define ZM_AVOID_MELEE                    0x00020000ul
-#define ZM_FILTER_STARTS                  0x00040000ul
-#define ZM_ALLOW_RESPAWN                  0x00080000ul
-#define ZM_ALLOW_JUMP                     0x00100000ul
-#define ZM_ALLOW_FREE_LOOK                0x00200000ul
-#define ZM_CHECK_SWITCH_RANGE             0x00400000ul
-#define ZM_NO_ALLIES                      0x00800000ul
-#define ZM_RESET_HEALTH                   0x01000000ul
-#define ZM_RESET_INVENTORY                0x02000000ul
-#define ZM_GRINDING_POLYOBJ               0x04000000ul
-#define ZM_USE_PLAYER_START_Z             0x08000000ul
-#define ZM_RANDOM_PLAYER_STARTS           0x10000000ul
-#define ZM_REMEMBER_STATE                 0x20000000ul
-#define ZM_SPAWN_WITH_WEAPON_RAISED       0x40000000ul
-#define ZM_SHOW_AUTHOR                    0x80000000ul
+#define ZM_CLIP_MID_TEXTURES              0x00000040ul
+#define ZM_LAX_MONSTER_ACTIVATION         0x00000080ul
+#define ZM_MISSILES_ACTIVATE_IMPACT_LINES 0x00000100ul
+#define ZM_AVOID_MELEE                    0x00000200ul
+#define ZM_FILTER_STARTS                  0x00000400ul
+#define ZM_ALLOW_RESPAWN                  0x00000800ul
+#define ZM_ALLOW_JUMP                     0x00001000ul
+#define ZM_ALLOW_FREE_LOOK                0x00002000ul
+#define ZM_CHECK_SWITCH_RANGE             0x00004000ul
+#define ZM_NO_ALLIES                      0x00008000ul
+#define ZM_RESET_HEALTH                   0x00010000ul
+#define ZM_RESET_INVENTORY                0x00020000ul
+#define ZM_GRINDING_POLYOBJ               0x00040000ul
+#define ZM_USE_PLAYER_START_Z             0x00080000ul
+#define ZM_RANDOM_PLAYER_STARTS           0x00100000ul
+#define ZM_REMEMBER_STATE                 0x00200000ul
+#define ZM_SPAWN_WITH_WEAPON_RAISED       0x00400000ul
+#define ZM_SHOW_AUTHOR                    0x00800000ul
 
 typedef uint32_t zmapinfo_map_flags_t;
+
+#define SAF_MAP07             0x01
+#define SAF_BARON             0x02
+#define SAF_CYBERDEMON        0x04
+#define SAF_SPIDER_MASTERMIND 0x08
+#define SAF_EXIT_LEVEL        0x10
+#define SAF_OPEN_DOOR         0x20
+#define SAF_LOWER_FLOOR       0x40
+#define SAF_KILL_MONSTERS     0x80
+
+typedef uint8_t zmapinfo_special_action_flags_t;
 
 typedef struct {
   const char* lump_name;
@@ -141,6 +144,7 @@ typedef struct {
   size_t num_special_actions;
   zmapinfo_special_action_t* special_actions;
   zmapinfo_map_flags_t flags;
+  zmapinfo_special_action_flags_t sa_flags;
 } zmapinfo_map_t;
 
 typedef struct {
