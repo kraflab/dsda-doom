@@ -362,6 +362,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "AllowMonsterTelefrags")) {
       map.flags |= ZM_ALLOW_MONSTER_TELEFRAGS;
     }
+    else if (!stricmp(scanner.string, "KillerActivatesDeathSpecials")) {
+      map.flags &= ~ZM_ACTIVATE_OWN_DEATH_SPECIALS;
+    }
     else if (!stricmp(scanner.string, "ActivateOwnDeathSpecials")) {
       map.flags |= ZM_ACTIVATE_OWN_DEATH_SPECIALS;
     }
