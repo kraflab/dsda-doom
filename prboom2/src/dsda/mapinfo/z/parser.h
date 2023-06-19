@@ -131,6 +131,7 @@ typedef struct {
   int gravity;
   const char* air_control;
   zmapinfo_infighting_t infighting;
+  const char* author;
   size_t num_special_actions;
   zmapinfo_special_action_t* special_actions;
   zmapinfo_map_flags_t flags;

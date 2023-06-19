@@ -455,6 +455,9 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "SpawnWithWeaponRaised")) {
       map.flags |= ZM_SPAWN_WITH_WEAPON_RAISED;
     }
+    else if (!stricmp(scanner.string, "Author")) {
+      SCAN_STRING(map.author);
+    }
     else {
       // known ignored fields:
       // SlideShow
