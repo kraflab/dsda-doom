@@ -70,7 +70,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | MapBackground                      | :x:             |
 | Translator                         | :x:             |
 | AllowMonsterTelefrags              | :grey_question: |
-| ActivateOwnDeathSpecials           | :grey_question: |
+| ActivateOwnDeathSpecials           | :telescope:     |
+| KillerActivatesDeathSpecials       | :telescope:     |
 | SpecialAction                      | :grey_question: |
 | Map07Special                       | :x:             |
 | BaronSpecial                       | :x:             |
