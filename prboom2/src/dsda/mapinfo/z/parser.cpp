@@ -368,30 +368,6 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "SpecialAction")) {
       dsda_ParseZMapInfoMapSpecialAction(scanner, special_actions);
     }
-    else if (!stricmp(scanner.string, "Map07Special")) {
-      map.sa_flags |= SAF_MAP07;
-    }
-    else if (!stricmp(scanner.string, "BaronSpecial")) {
-      map.sa_flags |= SAF_BARON;
-    }
-    else if (!stricmp(scanner.string, "CyberdemonSpecial")) {
-      map.sa_flags |= SAF_CYBERDEMON;
-    }
-    else if (!stricmp(scanner.string, "SpiderMastermindSpecial")) {
-      map.sa_flags |= SAF_SPIDER_MASTERMIND;
-    }
-    else if (!stricmp(scanner.string, "SpecialAction_ExitLevel")) {
-      map.sa_flags |= SAF_EXIT_LEVEL;
-    }
-    else if (!stricmp(scanner.string, "SpecialAction_OpenDoor")) {
-      map.sa_flags |= SAF_OPEN_DOOR;
-    }
-    else if (!stricmp(scanner.string, "SpecialAction_LowerFloor")) {
-      map.sa_flags |= SAF_LOWER_FLOOR;
-    }
-    else if (!stricmp(scanner.string, "SpecialAction_KillMonsters")) {
-      map.sa_flags |= SAF_KILL_MONSTERS;
-    }
     else if (!stricmp(scanner.string, "ClipMidTextures")) {
       map.flags |= ZM_CLIP_MID_TEXTURES;
     }
@@ -479,9 +455,17 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
       // F1
       // MapBackground
       // Translator
+      // Map07Special
+      // BaronSpecial
+      // CyberdemonSpecial
+      // SpiderMastermindSpecial
       // IronlichSpecial
       // MinotaurSpecial
       // DSparilSpecial
+      // SpecialAction_ExitLevel
+      // SpecialAction_OpenDoor
+      // SpecialAction_LowerFloor
+      // SpecialAction_KillMonsters
       // NoAutoSequences
       // AutoSequences
       // FallingDamage

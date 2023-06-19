@@ -108,17 +108,6 @@ typedef enum {
 
 typedef uint32_t zmapinfo_map_flags_t;
 
-#define SAF_MAP07             0x01
-#define SAF_BARON             0x02
-#define SAF_CYBERDEMON        0x04
-#define SAF_SPIDER_MASTERMIND 0x08
-#define SAF_EXIT_LEVEL        0x10
-#define SAF_OPEN_DOOR         0x20
-#define SAF_LOWER_FLOOR       0x40
-#define SAF_KILL_MONSTERS     0x80
-
-typedef uint8_t zmapinfo_special_action_flags_t;
-
 typedef struct {
   const char* lump_name;
   const char* nice_name;
@@ -145,7 +134,6 @@ typedef struct {
   size_t num_special_actions;
   zmapinfo_special_action_t* special_actions;
   zmapinfo_map_flags_t flags;
-  zmapinfo_special_action_flags_t sa_flags;
 } zmapinfo_map_t;
 
 typedef struct {
