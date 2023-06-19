@@ -437,6 +437,27 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
     else if (!stricmp(scanner.string, "TotalInfighting")) {
       map.infighting = zm_infighting_total;
     }
+    else if (!stricmp(scanner.string, "NoCheckSwitchRange")) {
+      map.flags &= ~ZM_CHECK_SWITCH_RANGE;
+    }
+    else if (!stricmp(scanner.string, "CheckSwitchRange")) {
+      map.flags |= ZM_CHECK_SWITCH_RANGE;
+    }
+    else if (!stricmp(scanner.string, "NoAllies")) {
+      map.flags |= ZM_NO_ALLIES;
+    }
+    else if (!stricmp(scanner.string, "ResetHealth")) {
+      map.flags |= ZM_RESET_HEALTH;
+    }
+    else if (!stricmp(scanner.string, "ResetInventory")) {
+      map.flags |= ZM_RESET_INVENTORY;
+    }
+    else if (!stricmp(scanner.string, "No_Grinding_Polyobj")) {
+      map.flags &= ~ZM_GRINDING_POLYOBJ;
+    }
+    else if (!stricmp(scanner.string, "Grinding_Polyobj")) {
+      map.flags |= ZM_GRINDING_POLYOBJ;
+    }
     else {
       // known ignored fields:
       // SlideShow
