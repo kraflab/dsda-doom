@@ -634,8 +634,6 @@ void dsda_ParseZMapInfo(const unsigned char* buffer, size_t length, zmapinfo_err
 
   scanner.SetErrorCallback(err);
 
-  zmapinfo_maps.clear();
-
   dsda_InitDefaultMap();
 
   while (scanner.TokensLeft())
