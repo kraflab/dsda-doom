@@ -21,6 +21,7 @@
 extern "C" {
 char *Z_Strdup(const char *s);
 void *Z_Malloc(size_t size);
+void *Z_Realloc(void *p, size_t n);
 }
 
 #include "scanner.h"
@@ -62,17 +63,18 @@ static void dsda_SkipValue(Scanner &scanner) {
 }
 
 // The scanner drops the sign when scanning, and we need it back
-static char* dsda_FloatString(Scanner &scanner) {
+static void dsda_FloatString(Scanner &scanner, const char* &str) {
   if (scanner.decimal >= 0)
-    return Z_Strdup(scanner.string);
-
-  char* buffer = (char*) Z_Malloc(strlen(scanner.string) + 2);
-  buffer[0] = '-';
-  buffer[1] = '\0';
-  strcat(buffer, scanner.string);
-
-  return buffer;
+    DUP_STR(str);
+  else {
+    str = (char*) Z_Realloc(strlen(scanner.string) + 2);
+    str[0] = '-';
+    str[1] = '\0';
+    strcat(str, scanner.string);
+  }
 }
+
+#define STR_DUP(x) { Z_Free(x); x = Z_Strdup(scanner.string); }
 
 #define SCAN_INT(x)  { scanner.MustGetToken('='); \
                        scanner.MustGetInteger(); \
@@ -82,22 +84,14 @@ static char* dsda_FloatString(Scanner &scanner) {
                         scanner.MustGetFloat(); \
                         x = scanner.decimal; }
 
-#define SCAN_FLAG(x, f) { scanner.MustGetToken('='); \
-                          scanner.MustGetToken(TK_BoolConst); \
-                          if (scanner.boolean) \
-                            x |= f; }
-
-#define SCAN_STRING_N(x, n) { scanner.MustGetToken('='); \
-                              scanner.MustGetToken(TK_StringConst); \
-                              strncpy(x, scanner.string, n); }
-
 #define SCAN_STRING(x) { scanner.MustGetToken('='); \
                          scanner.MustGetToken(TK_StringConst); \
-                         x = Z_Strdup(scanner.string); }
+                         STR_DUP(x); }
 
 #define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
                                scanner.MustGetFloat(); \
-                               x = dsda_FloatString(scanner); }
+                               Z_Free(x); \
+                               dsda_FloatString(scanner, x); }
 
 static const char* end_names[zmn_end_count] = {
   [zmn_endgame1] = "EndGame1",
@@ -122,18 +116,18 @@ static void dsda_ParseZMapInfoMapNext(Scanner &scanner, zmapinfo_map_next_t &nex
         return;
       }
 
-    next.map = Z_Strdup(scanner.string);
+    STR_DUP(next.map);
   }
   else if (scanner.CheckToken(TK_Identifier)) {
     if (!stricmp(scanner.string, "EndPic")) {
       scanner.MustGetToken(',');
       scanner.MustGetToken(TK_StringConst);
-      next.endpic = Z_Strdup(scanner.string);
+      STR_DUP(next.endpic);
     }
     else if (!stricmp(scanner.string, "EndSequence")) {
       scanner.MustGetToken(',');
       scanner.MustGetToken(TK_StringConst);
-      next.intermission = Z_Strdup(scanner.string);
+      STR_DUP(next.intermission);
     }
     else if (!stricmp(scanner.string, "endgame")) {
       // TODO: endgame block
@@ -158,14 +152,14 @@ static void dsda_ParseZMapInfoMapRedirect(Scanner &scanner, zmapinfo_map_redirec
   scanner.MustGetToken(',');
   scanner.MustGetToken(TK_StringConst);
 
-  redirect.map = Z_Strdup(scanner.string);
+  STR_DUP(redirect.map);
 }
 
 static void dsda_ParseZMapInfoMapSky(Scanner &scanner, zmapinfo_sky_t &sky) {
   scanner.MustGetToken('=');
   scanner.MustGetToken(TK_StringConst);
 
-  sky.lump = Z_Strdup(scanner.string);
+  STR_DUP(sky.lump);
   if (scanner.CheckToken(',')) {
     scanner.MustGetFloat();
     sky.scrollspeed = scanner.decimal;
@@ -179,7 +173,7 @@ static void dsda_ParseZMapInfoTitlePatch(Scanner &scanner, zmapinfo_map_t &map) 
   scanner.MustGetToken('=');
   scanner.MustGetToken(TK_StringConst);
 
-  map.title_patch = Z_Strdup(scanner.string);
+  STR_DUP(map.title_patch);
   if (scanner.CheckToken(',')) {
     scanner.MustGetInteger();
     if (scanner.number)
@@ -199,7 +193,7 @@ static void dsda_ParseZMapInfoMusic(Scanner &scanner, zmapinfo_map_t &map) {
     return;
   }
 
-  map.music = Z_Strdup(scanner.stirng);
+  STR_DUP(map.music);
 }
 
 static void dsda_ParseZMapInfoIntermissionPic(Scanner &scanner, const char* &pic) {
@@ -209,7 +203,17 @@ static void dsda_ParseZMapInfoIntermissionPic(Scanner &scanner, const char* &pic
   if (scanner.string[0] == '$')
     return;
 
-  pic = Z_Strdup(scanner.stirng);
+  STR_DUP(pic);
+}
+
+// TODO: type lookup
+static int dsda_ThingNameToType(const char* name) {
+  return 0;
+}
+
+ // TODO: action lookup
+static int dsda_ActionNameToNumber(const char* name) {
+  return 0;
 }
 
 static void dsda_ParseZMapInfoMapSpecialAction(Scanner &scanner,
@@ -246,37 +250,8 @@ static void dsda_GuessLevelNum(zmapinfo_map_t &map) {
     map.levelnum = -1;
 }
 
-static void dsda_InitDefaultMap(void) {
-  default_map.flags = ZM_SKY_STRETCH |
-                      ZM_INTERMISSION |
-                      ZM_ACTIVATE_OWN_DEATH_SPECIALS |
-                      ZM_LAX_MONSTER_ACTIVATION |
-                      ZM_MISSILES_ACTIVATE_IMPACT_LINES |
-                      ZM_REMEMBER_STATE |
-                      ZM_SHOW_AUTHOR;
-}
-
-static void dsda_ParseZMapInfoMap(Scanner &scanner) {
-  zmapinfo_map_t map = default_map;
-  std::vector<zmapinfo_special_action_t> special_actions;
-
-  // Create a copy of the existing special actions from the default map
-  for (int i = 0; i < map.num_special_actions; ++i)
-    special_actions.push_back(map.special_actions[i]);
-
-  scanner.MustGetToken(TK_Identifier);
-  map.lump_name = Z_Strdup(scanner.string);
-
-  scanner.MustGetToken(TK_Identifier);
-
-  // Lookup via a separate lump is not supported, so use the key instead
-  if (!stricmp(scanner.string, "lookup"))
-    scanner.MustGetToken(TK_Identifier);
-
-  map.nice_name = Z_Strdup(scanner.string);
-
-  dsda_GuessLevelNum(map);
-
+static void dsda_ParseZMapInfoMapBlock(Scanner &scanner, zmapinfo_map_t &map,
+                                       std::vector<zmapinfo_special_action_t> &special_actions) {
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
@@ -535,11 +510,104 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
   }
 
   map.num_special_actions = special_actions.size();
-  map.special_actions = Z_Malloc(map.num_special_actions * sizeof(*map.special_actions));
+  map.special_actions = Z_Realloc(map.num_special_actions * sizeof(*map.special_actions));
   memcpy(map.special_actions, &special_actions[0],
          map.num_special_actions * sizeof(*map.special_actions));
 
   zmapinfo_maps.push_back(map);
+}
+
+static void dsda_ParseZMapInfoMap(Scanner &scanner) {
+  zmapinfo_map_t map = default_map;
+  std::vector<zmapinfo_special_action_t> special_actions;
+
+  // Create a copy of the existing special actions from the default map
+  for (int i = 0; i < map.num_special_actions; ++i)
+    special_actions.push_back(map.special_actions[i]);
+
+  scanner.MustGetToken(TK_Identifier);
+  STR_DUP(map.lump_name);
+
+  scanner.MustGetToken(TK_Identifier);
+
+  // Lookup via a separate lump is not supported, so use the key instead
+  if (!stricmp(scanner.string, "lookup"))
+    scanner.MustGetToken(TK_Identifier);
+
+  STR_DUP(map.nice_name);
+
+  dsda_GuessLevelNum(map);
+
+  dsda_ParseZMapInfoMapBlock(scanner, map, special_actions);
+}
+
+static void dsda_FreeMapNext(zmapinfo_map_next_t &next) {
+  Z_Free(next.map);
+  Z_Free(next.endpic);
+  Z_Free(next.intermission);
+}
+
+static void dsda_FreeMapRedirect(zmapinfo_map_redirect_t &redirect) {
+  Z_Free(redirect.map);
+}
+
+static void dsda_FreeMapSky(zmapinfo_sky_t &sky) {
+  Z_Free(sky.lump);
+}
+
+static void dsda_FreeMap(zmapinfo_map_t &map) {
+  Z_Free(map.lump_name);
+  Z_Free(map.nice_name);
+  Z_Free(map.fade_table);
+  Z_Free(map.title_patch);
+  Z_Free(map.music);
+  Z_Free(map.inter_music);
+  Z_Free(map.exit_pic);
+  Z_Free(map.enter_pic);
+  Z_Free(map.border_texture);
+  Z_Free(map.air_control);
+  Z_Free(map.author);
+  Z_Free(map.special_actions);
+  dsda_FreeMapNext(map.next);
+  dsda_FreeMapNext(map.secret_next);
+  dsda_FreeMapRedirect(map.redirect);
+  dsda_FreeMapSky(map.sky1);
+  dsda_FreeMapSky(map.sky2);
+}
+
+static void dsda_InitDefaultMap(void) {
+  dsda_FreeMap(default_map);
+
+  memset(&default_map, 0, sizeof(default_map));
+
+  default_map.flags = ZM_SKY_STRETCH |
+                      ZM_INTERMISSION |
+                      ZM_ACTIVATE_OWN_DEATH_SPECIALS |
+                      ZM_LAX_MONSTER_ACTIVATION |
+                      ZM_MISSILES_ACTIVATE_IMPACT_LINES |
+                      ZM_REMEMBER_STATE |
+                      ZM_SHOW_AUTHOR;
+}
+
+static void dsda_ParseZMapInfoDefaultMap(Scanner &scanner) {
+  std::vector<zmapinfo_special_action_t> special_actions;
+
+  dsda_InitDefaultMap();
+
+  dsda_ParseZMapInfoMapBlock(scanner, default_map, special_actions);
+}
+
+static void dsda_ParseZMapInfoAddDefaultMap(Scanner &scanner) {
+  std::vector<zmapinfo_special_action_t> special_actions;
+
+  // Create a copy of the existing special actions from the default map
+  for (int i = 0; i < default_map.num_special_actions; ++i)
+    special_actions.push_back(default_map.special_actions[i]);
+
+  Z_Free(default_map.special_actions);
+  default_map.num_special_actions = 0;
+
+  dsda_ParseZMapInfoMapBlock(scanner, default_map, special_actions);
 }
 
 static void dsda_ParseZMapInfoIdentifier(Scanner &scanner) {
@@ -547,6 +615,12 @@ static void dsda_ParseZMapInfoIdentifier(Scanner &scanner) {
 
   if (!stricmp(scanner.string, "map")) {
     dsda_ParseZMapInfoMap(scanner);
+  }
+  else if (!stricmp(scanner.string, "defaultmap")) {
+    dsda_ParseZMapInfoDefaultMap(scanner);
+  }
+  else if (!stricmp(scanner.string, "adddefaultmap")) {
+    dsda_ParseZMapInfoAddDefaultMap(scanner);
   }
   else {
     dsda_SkipValue(scanner);
