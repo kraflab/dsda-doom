@@ -88,6 +88,10 @@ void dsda_StringPrintF(dsda_string_t* dest, const char* format, ...) {
   va_end(v);
 }
 
+void dsda_UppercaseString(char* str) {
+  for (; *str; str++) *str = toupper(*str);
+}
+
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
   unsigned int i;
 

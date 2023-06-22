@@ -151,6 +151,8 @@ set(COMMON_SRC
     dsda/map_format.h
     dsda/mapinfo.c
     dsda/mapinfo.h
+    dsda/mapinfo/doom/parser.cpp
+    dsda/mapinfo/doom/parser.h
     dsda/mapinfo/hexen.c
     dsda/mapinfo/hexen.h
     dsda/mapinfo/legacy.c
@@ -169,6 +171,8 @@ set(COMMON_SRC
     dsda/msecnode.h
     dsda/music.c
     dsda/music.h
+    dsda/name.c
+    dsda/name.h
     dsda/options.c
     dsda/options.h
     dsda/palette.c
