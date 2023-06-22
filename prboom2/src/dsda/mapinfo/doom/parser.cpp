@@ -97,13 +97,13 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
                                dsda_FloatString(scanner, x); }
 
 static const char* end_names[dmi_end_count] = {
-  [dmi_end_null] = NULL,
-  [dmi_end_game_1] = "EndGame1",
-  [dmi_end_game_2] = "EndGame2",
-  [dmi_end_game_3] = "EndGame3",
-  [dmi_end_game_4] = "EndGame4",
-  [dmi_end_game_d2] = "EndGameC",
-  [dmi_end_title] = "EndTitle",
+  NULL,
+  "EndGame1",
+  "EndGame2",
+  "EndGame3",
+  "EndGame4",
+  "EndGameC",
+  "EndTitle",
 };
 
 static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next_t &next) {
