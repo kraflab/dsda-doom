@@ -207,6 +207,10 @@ static void dsda_ParseDoomMapInfoMapSpecialAction(Scanner &scanner,
     special_action.special_args[i] = scanner.number;
   }
 
+  if (special_action.monster_type == NAME_NOT_FOUND ||
+      special_action.action_special == NAME_NOT_FOUND)
+    return;
+
   special_actions.push_back(special_action);
 }
 
