@@ -22,6 +22,7 @@
 extern "C" {
 #include "z_zone.h"
 
+#include "dsda/name.h"
 #include "dsda/utility.h"
 }
 
@@ -186,16 +187,6 @@ static void dsda_ParseDoomMapInfoIntermissionPic(Scanner &scanner, char* &pic) {
   STR_DUP(pic);
 }
 
-// TODO: type lookup
-static int dsda_ThingNameToType(const char* name) {
-  return 0;
-}
-
- // TODO: action lookup
-static int dsda_ActionNameToNumber(const char* name) {
-  return 0;
-}
-
 static void dsda_ParseDoomMapInfoMapSpecialAction(Scanner &scanner,
                                                std::vector<doom_mapinfo_special_action_t> &special_actions) {
   doom_mapinfo_special_action_t special_action = { 0 };
@@ -203,7 +194,7 @@ static void dsda_ParseDoomMapInfoMapSpecialAction(Scanner &scanner,
   scanner.MustGetToken('=');
 
   scanner.MustGetToken(TK_StringConst);
-  special_action.monster_type = dsda_ThingNameToType(scanner.string);
+  special_action.monster_type = dsda_ActorNameToType(scanner.string);
 
   scanner.MustGetToken(TK_StringConst);
   special_action.action_special = dsda_ActionNameToNumber(scanner.string);
