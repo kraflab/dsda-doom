@@ -61,6 +61,7 @@ void dsda_StringPrintF(dsda_string_t* dest, const char* format, ...) __attribute
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum);
 dboolean dsda_HasFileExt(const char* file, const char* ext);
 char** dsda_SplitString(char* str, const char* delimiter);
+void dsda_UppercaseString(char* str);
 void dsda_FixedToString(char* str, fixed_t x);
 dsda_fixed_t dsda_SplitFixed(fixed_t x);
 dsda_angle_t dsda_SplitAngle(angle_t x);
