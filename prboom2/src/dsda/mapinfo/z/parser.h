@@ -25,37 +25,21 @@ extern "C" {
 #include <inttypes.h>
 
 typedef enum {
-  zmn_null,
-  zmn_endgame1,
-  zmn_endgame2,
-  zmn_endgamew,
-  zmn_endgame4,
-  zmn_endgamec,
-  zmn_endgame3,
-  zmn_enddemon,
-  zmn_endgames,
-  zmn_endchess,
-  zmn_endtitle,
+  zmn_end_null,
+  zmn_end_game_1,
+  zmn_end_game_2,
+  zmn_end_game_3,
+  zmn_end_game_4,
+  zmn_end_game_d2,
+  zmn_end_title,
   zmn_end_count,
 } zmn_end_t;
 
 typedef struct {
   const char* map;
   const char* endpic
-  const char* intermission;
   zmn_end_t end;
 } zmapinfo_map_next_t;
-
-// TODO: where is the list of items?
-typedef enum {
-  zmr_item_null,
-  zmr_item_count,
-} zmr_item_t;
-
-typedef struct {
-  zmr_item_t item;
-  const char* map;
-} zmapinfo_map_redirect_t;
 
 typedef struct {
   const char* lump;
@@ -73,12 +57,6 @@ typedef struct {
   int action_special;
   int special_args[5];
 } zmapinfo_special_action_t;
-
-typedef enum {
-  zm_infighting_normal,
-  zm_infighting_total,
-  zm_infighting_none,
-} zm_infighting_t;
 
 #define ZM_DOUBLE_SKY                     0x00000001ul
 #define ZM_SKY_STRETCH                    0x00000002ul
@@ -98,40 +76,36 @@ typedef enum {
 #define ZM_NO_ALLIES                      0x00008000ul
 #define ZM_RESET_HEALTH                   0x00010000ul
 #define ZM_RESET_INVENTORY                0x00020000ul
-#define ZM_GRINDING_POLYOBJ               0x00040000ul
+#define ZM_WRAP_MID_TEXTURES              0x00040000ul
 #define ZM_USE_PLAYER_START_Z             0x00080000ul
 #define ZM_RANDOM_PLAYER_STARTS           0x00100000ul
 #define ZM_REMEMBER_STATE                 0x00200000ul
-#define ZM_SPAWN_WITH_WEAPON_RAISED       0x00400000ul
-#define ZM_SHOW_AUTHOR                    0x00800000ul
-#define ZM_PASSOVER                       0x01000000ul
+#define ZM_SHOW_AUTHOR                    0x00400000ul
+#define ZM_PASSOVER                       0x00800000ul
 
 typedef uint32_t zmapinfo_map_flags_t;
 
 typedef struct {
   const char* lump_name;
   const char* nice_name;
+  const char* author;
   int level_num;
+  int cluster;
   zmapinfo_map_next_t next;
   zmapinfo_map_next_t secret_next;
-  zmapinfo_map_redirect_t redirect;
-  int cluster;
   zmapinfo_sky_t sky1;
   zmapinfo_sky_t sky2;
   const char* fade_table;
   const char* title_patch;
-  int par;
-  int suck_time;
-  const char* music;
-  const char* inter_music;
   const char* exit_pic;
   const char* enter_pic;
   const char* border_texture;
+  const char* music;
+  const char* inter_music;
+  int par;
   zm_lighting_t lighting;
   int gravity;
   const char* air_control;
-  zmapinfo_infighting_t infighting;
-  const char* author;
   size_t num_special_actions;
   zmapinfo_special_action_t* special_actions;
   zmapinfo_map_flags_t flags;

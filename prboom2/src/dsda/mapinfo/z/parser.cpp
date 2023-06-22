@@ -94,23 +94,21 @@ static void dsda_FloatString(Scanner &scanner, const char* &str) {
                                dsda_FloatString(scanner, x); }
 
 static const char* end_names[zmn_end_count] = {
-  [zmn_endgame1] = "EndGame1",
-  [zmn_endgame2] = "EndGame2",
-  [zmn_endgamew] = "EndGameW",
-  [zmn_endgame4] = "EndGame4",
-  [zmn_endgamec] = "EndGameC",
-  [zmn_endgame3] = "EndGame3",
-  [zmn_enddemon] = "EndDemon",
-  [zmn_endgames] = "EndGameS",
-  [zmn_endchess] = "EndChess",
-  [zmn_endtitle] = "EndTitle",
+  [zmn_end_game_1] = "EndGame1",
+  [zmn_end_game_2] = "EndGame2",
+  [zmn_end_game_3] = "EndGame3",
+  [zmn_end_game_4] = "EndGame4",
+  [zmn_end_game_d2] = "EndGameC",
+  [zmn_end_title] = "EndTitle",
 };
 
 static void dsda_ParseZMapInfoMapNext(Scanner &scanner, zmapinfo_map_next_t &next) {
   scanner.MustGetToken('=');
 
+  next.end = zmn_end_null;
+
   if (scanner.CheckToken(TK_StringConst)) {
-    for (int i = zmn_endgame1; i < zmn_end_count; ++i)
+    for (int i = 1; i < zmn_end_count; ++i)
       if (!stricmp(scanner.string, end_names[i])) {
         next.end = i;
         return;
@@ -124,11 +122,6 @@ static void dsda_ParseZMapInfoMapNext(Scanner &scanner, zmapinfo_map_next_t &nex
       scanner.MustGetToken(TK_StringConst);
       STR_DUP(next.endpic);
     }
-    else if (!stricmp(scanner.string, "EndSequence")) {
-      scanner.MustGetToken(',');
-      scanner.MustGetToken(TK_StringConst);
-      STR_DUP(next.intermission);
-    }
     else if (!stricmp(scanner.string, "endgame")) {
       // TODO: endgame block
       dsda_SkipValue(scanner);
@@ -137,22 +130,6 @@ static void dsda_ParseZMapInfoMapNext(Scanner &scanner, zmapinfo_map_next_t &nex
       dsda_SkipValue(scanner);
     }
   }
-}
-
-static const char* item_names[zmr_item_count] = { };
-
-static void dsda_ParseZMapInfoMapRedirect(Scanner &scanner, zmapinfo_map_redirect_t &redirect) {
-  scanner.MustGetToken('=');
-  scanner.MustGetToken(TK_StringConst);
-
-  for (int i = 1; i < zmr_item_count; ++i)
-    if (!stricmp(scanner.string, item_names[i]))
-      redirect.item = i;
-
-  scanner.MustGetToken(',');
-  scanner.MustGetToken(TK_StringConst);
-
-  STR_DUP(redirect.map);
 }
 
 static void dsda_ParseZMapInfoMapSky(Scanner &scanner, zmapinfo_sky_t &sky) {
@@ -262,18 +239,13 @@ static void dsda_ParseZMapInfoMapBlock(Scanner &scanner, zmapinfo_map_t &map,
     else if (!stricmp(scanner.string, "Next")) {
       dsda_ParseZMapInfoMapNext(scanner, map.next);
     }
-    else if (!stricmp(scanner.string, "Secret") ||
-             !stricmp(scanner.string, "SecretNext")) {
+    else if (!stricmp(scanner.string, "SecretNext")) {
       dsda_ParseZMapInfoMapNext(scanner, map.secret_next);
-    }
-    else if (!stricmp(scanner.string, "Redirect")) {
-      dsda_ParseZMapInfoMapRedirect(scanner, map.redirect);
     }
     else if (!stricmp(scanner.string, "Cluster")) {
       SCAN_INT(map.cluster);
     }
-    else if (!stricmp(scanner.string, "Sky1") ||
-             !stricmp(scanner.string, "Skybox")) {
+    else if (!stricmp(scanner.string, "Sky1")) {
       dsda_ParseZMapInfoMapSky(scanner, map.sky1);
     }
     else if (!stricmp(scanner.string, "Sky2")) {
@@ -296,9 +268,6 @@ static void dsda_ParseZMapInfoMapBlock(Scanner &scanner, zmapinfo_map_t &map,
     }
     else if (!stricmp(scanner.string, "Par")) {
       SCAN_INT(map.par);
-    }
-    else if (!stricmp(scanner.string, "SuckTime")) {
-      SCAN_INT(map.suck_time);
     }
     else if (!stricmp(scanner.string, "NoIntermission")) {
       map.flags &= ~ZM_INTERMISSION;
@@ -351,6 +320,9 @@ static void dsda_ParseZMapInfoMapBlock(Scanner &scanner, zmapinfo_map_t &map,
     else if (!stricmp(scanner.string, "ClipMidTextures")) {
       map.flags |= ZM_CLIP_MID_TEXTURES;
     }
+    else if (!stricmp(scanner.string, "WrapMidTextures")) {
+      map.flags |= ZM_WRAP_MID_TEXTURES;
+    }
     else if (!stricmp(scanner.string, "StrictMonsterActivation")) {
       map.flags &= ~ZM_LAX_MONSTER_ACTIVATION;
     }
@@ -384,35 +356,17 @@ static void dsda_ParseZMapInfoMapBlock(Scanner &scanner, zmapinfo_map_t &map,
     else if (!stricmp(scanner.string, "AllowFreelook")) {
       map.flags |= ZM_ALLOW_FREE_LOOK;
     }
-    else if (!stricmp(scanner.string, "NoInfighting")) {
-      map.infighting = zm_infighting_none;
-    }
-    else if (!stricmp(scanner.string, "NormalInfighting")) {
-      map.infighting = zm_infighting_normal;
-    }
-    else if (!stricmp(scanner.string, "TotalInfighting")) {
-      map.infighting = zm_infighting_total;
-    }
     else if (!stricmp(scanner.string, "NoCheckSwitchRange")) {
       map.flags &= ~ZM_CHECK_SWITCH_RANGE;
     }
     else if (!stricmp(scanner.string, "CheckSwitchRange")) {
       map.flags |= ZM_CHECK_SWITCH_RANGE;
     }
-    else if (!stricmp(scanner.string, "NoAllies")) {
-      map.flags |= ZM_NO_ALLIES;
-    }
     else if (!stricmp(scanner.string, "ResetHealth")) {
       map.flags |= ZM_RESET_HEALTH;
     }
     else if (!stricmp(scanner.string, "ResetInventory")) {
       map.flags |= ZM_RESET_INVENTORY;
-    }
-    else if (!stricmp(scanner.string, "No_Grinding_Polyobj")) {
-      map.flags &= ~ZM_GRINDING_POLYOBJ;
-    }
-    else if (!stricmp(scanner.string, "Grinding_Polyobj")) {
-      map.flags |= ZM_GRINDING_POLYOBJ;
     }
     else if (!stricmp(scanner.string, "NoPassover")) {
       map.flags &= ~ZM_PASSOVER;
@@ -432,79 +386,10 @@ static void dsda_ParseZMapInfoMapBlock(Scanner &scanner, zmapinfo_map_t &map,
     else if (!stricmp(scanner.string, "RememberState")) {
       map.flags |= ZM_REMEMBER_STATE;
     }
-    else if (!stricmp(scanner.string, "SpawnWithWeaponRaised")) {
-      map.flags |= ZM_SPAWN_WITH_WEAPON_RAISED;
-    }
     else if (!stricmp(scanner.string, "Author")) {
       SCAN_STRING(map.author);
     }
     else {
-      // known ignored fields:
-      // SlideShow
-      // DeathSequence
-      // Fade
-      // OutsideFog
-      // CDTrack
-      // CDId
-      // VertWallShade
-      // HorizWallShade
-      // TeamDamage
-      // AirSupply
-      // F1
-      // MapBackground
-      // Translator
-      // Map07Special
-      // BaronSpecial
-      // CyberdemonSpecial
-      // SpiderMastermindSpecial
-      // IronlichSpecial
-      // MinotaurSpecial
-      // DSparilSpecial
-      // SpecialAction_ExitLevel
-      // SpecialAction_OpenDoor
-      // SpecialAction_LowerFloor
-      // SpecialAction_KillMonsters
-      // NoAutoSequences
-      // AutoSequences
-      // FallingDamage
-      // OldFallingDamage
-      // ForceFallingDamage
-      // StrifeFallingDamage
-      // NoFallingDamage
-      // MonsterFallingDamage
-      // ProperMonsterFallingDamage
-      // TeamPlayOn
-      // TeamPlayOff
-      // NoInventoryBar
-      // KeepFullInventory
-      // InfiniteFlightPowerup
-      // NoCrouch
-      // AllowCrouch
-      // UnFreezeSinglePlayerConversations
-      // ResetItems
-      // compat_*
-      // DefaultEnvironment
-      // NoAutosaveHint
-      // PrecacheSounds
-      // PrecacheTextures
-      // PrecacheClasses
-      // ForceFakeContrast
-      // ForceWorldPanning
-      // HazardColor
-      // HazardFlash
-      // EventHandlers
-      // NeedClusterText
-      // NoClusterText
-      // EnableSkyboxAO
-      // DisableSkyboxAO
-      // EnableShadowmap
-      // DisableShadowmap
-      // AttenuateLights
-      // SndInfo
-      // SoundInfo
-      // SndSeq
-      // Intro
-      // Outro
       dsda_SkipValue(scanner);
     }
   }
@@ -544,11 +429,6 @@ static void dsda_ParseZMapInfoMap(Scanner &scanner) {
 static void dsda_FreeMapNext(zmapinfo_map_next_t &next) {
   Z_Free(next.map);
   Z_Free(next.endpic);
-  Z_Free(next.intermission);
-}
-
-static void dsda_FreeMapRedirect(zmapinfo_map_redirect_t &redirect) {
-  Z_Free(redirect.map);
 }
 
 static void dsda_FreeMapSky(zmapinfo_sky_t &sky) {
@@ -570,7 +450,6 @@ static void dsda_FreeMap(zmapinfo_map_t &map) {
   Z_Free(map.special_actions);
   dsda_FreeMapNext(map.next);
   dsda_FreeMapNext(map.secret_next);
-  dsda_FreeMapRedirect(map.redirect);
   dsda_FreeMapSky(map.sky1);
   dsda_FreeMapSky(map.sky2);
 }
