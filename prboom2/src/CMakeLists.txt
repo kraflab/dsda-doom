@@ -171,6 +171,8 @@ set(COMMON_SRC
     dsda/msecnode.h
     dsda/music.c
     dsda/music.h
+    dsda/name.c
+    dsda/name.h
     dsda/options.c
     dsda/options.h
     dsda/palette.c
