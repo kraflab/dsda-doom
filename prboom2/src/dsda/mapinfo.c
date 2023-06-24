@@ -23,6 +23,7 @@
 
 #include "dsda/args.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo/doom.h"
 #include "dsda/mapinfo/hexen.h"
 #include "dsda/mapinfo/u.h"
 #include "dsda/mapinfo/legacy.h"
@@ -355,6 +356,7 @@ void dsda_PrepareFinale(int* behaviour) {
 }
 
 void dsda_LoadMapInfo(void) {
+  dsda_DoomLoadMapInfo();
   dsda_HexenLoadMapInfo();
   dsda_ULoadMapInfo();
   dsda_LegacyLoadMapInfo();

@@ -15,6 +15,12 @@
 //  DSDA MapInfo Doom
 //
 
+#include "lprintf.h"
+#include "w_wad.h"
+
+#include "dsda/args.h"
+#include "dsda/mapinfo/doom/parser.h"
+
 #include "doom.h"
 
 int dsda_DoomFirstMap(int* episode, int* map) {
@@ -110,7 +116,16 @@ int dsda_DoomPrepareFinale(int* result) {
 }
 
 void dsda_DoomLoadMapInfo(void) {
-  return; // TODO
+  int p;
+
+  if (!dsda_Flag(dsda_arg_debug_mapinfo))
+    return;
+
+  p = -1;
+  while ((p = W_ListNumFromName("MAPINFO", p)) >= 0) {
+    const unsigned char* lump = (const unsigned char *) W_LumpByNum(p);
+    dsda_ParseDoomMapInfo(lump, W_LumpLength(p), I_Error);
+  }
 }
 
 int dsda_DoomExitPic(const char** exit_pic) {
