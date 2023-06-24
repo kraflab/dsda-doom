@@ -291,7 +291,6 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .polyobjs = true,
   .acs = false,
   .thing_id = true,
-  .mapinfo = false,
   .sndseq = false,
   .sndinfo = false,
   .animdefs = false,
@@ -349,7 +348,6 @@ static const map_format_t hexen_map_format = {
   .polyobjs = true,
   .acs = true,
   .thing_id = true,
-  .mapinfo = true,
   .sndseq = true,
   .sndinfo = true,
   .animdefs = true,
@@ -407,7 +405,6 @@ static const map_format_t heretic_map_format = {
   .polyobjs = false,
   .acs = false,
   .thing_id = false,
-  .mapinfo = false,
   .sndseq = false,
   .sndinfo = false,
   .animdefs = false,
@@ -465,7 +462,6 @@ static const map_format_t doom_map_format = {
   .polyobjs = false,
   .acs = false,
   .thing_id = false,
-  .mapinfo = false,
   .sndseq = false,
   .sndinfo = false,
   .animdefs = false,
@@ -541,9 +537,6 @@ void dsda_ApplyDefaultMapFormat(void) {
     map_format = heretic_map_format;
   else
     map_format = doom_map_format;
-
-  if (dsda_Flag(dsda_arg_mapinfo) && !map_format.mapinfo)
-    map_format.mapinfo = W_LumpNameExists("MAPINFO");
 
   dsda_ApplyMapPrecision();
   dsda_MigrateMobjInfo();

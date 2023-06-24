@@ -81,7 +81,6 @@ typedef enum {
   dsda_arg_consoleplayer,
   dsda_arg_spechit,
   dsda_arg_setmem,
-  dsda_arg_mapinfo,
   dsda_arg_data,
   dsda_arg_save,
   dsda_arg_config,
