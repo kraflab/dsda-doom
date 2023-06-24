@@ -519,7 +519,9 @@ void dsda_ParseDoomMapInfo(const unsigned char* buffer, size_t length, doom_mapi
 
   scanner.SetErrorCallback(err);
 
-  dsda_InitDefaultMap();
+  DO_ONCE
+    dsda_InitDefaultMap();
+  END_ONCE
 
   while (scanner.TokensLeft())
     dsda_ParseDoomMapInfoIdentifier(scanner);
