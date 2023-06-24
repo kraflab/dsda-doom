@@ -415,11 +415,15 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
   STR_DUP(map.lump_name);
 
-  scanner.MustGetToken(TK_Identifier);
-
   // Lookup via a separate lump is not supported, so use the key instead
-  if (!stricmp(scanner.string, "lookup"))
-    scanner.MustGetToken(TK_Identifier);
+  if (scanner.CheckToken(TK_Identifier)) {
+    if (!stricmp(scanner.string, "lookup"))
+      scanner.MustGetToken(TK_Identifier);
+    else
+      scanner.ErrorF("Unknown map declaration %s", scanner.string);
+  }
+  else
+    scanner.MustGetToken(TK_StringConst);
 
   STR_DUP(map.nice_name);
 
