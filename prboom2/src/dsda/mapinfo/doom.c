@@ -112,7 +112,12 @@ int dsda_DoomBossAction(mobj_t* mo) {
 }
 
 int dsda_DoomHUTitle(dsda_string_t* str) {
-  return false; // TODO
+  if (!current_map)
+    return false;
+
+  dsda_StringPrintF(str, "%s", current_map->nice_name);
+
+  return true;
 }
 
 int dsda_DoomSkyTexture(int* sky) {

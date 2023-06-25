@@ -305,6 +305,9 @@ int dsda_BossAction(mobj_t* mo) {
 }
 
 void dsda_HUTitle(dsda_string_t* str) {
+  if (dsda_DoomHUTitle(str))
+    return;
+
   if (dsda_HexenHUTitle(str))
     return;
 
