@@ -96,6 +96,29 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
                                Z_Free(x); \
                                dsda_FloatString(scanner, x); }
 
+static void dsda_FreeMap(doom_mapinfo_map_t &map) {
+  Z_Free(map.lump_name);
+  Z_Free(map.nice_name);
+  Z_Free(map.fade_table);
+  Z_Free(map.title_patch);
+  Z_Free(map.music);
+  Z_Free(map.inter_music);
+  Z_Free(map.exit_pic);
+  Z_Free(map.enter_pic);
+  Z_Free(map.border_texture);
+  Z_Free(map.air_control);
+  Z_Free(map.author);
+  Z_Free(map.special_actions);
+
+  Z_Free(map.next.map);
+  Z_Free(map.next.endpic);
+  Z_Free(map.secret_next.map);
+  Z_Free(map.secret_next.endpic);
+
+  Z_Free(map.sky1.lump);
+  Z_Free(map.sky2.lump);
+}
+
 static const char* end_names[dmi_end_count] = {
   NULL,
   "EndGame1",
@@ -430,34 +453,6 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
   dsda_GuessLevelNum(map);
 
   dsda_ParseDoomMapInfoMapBlock(scanner, map, special_actions);
-}
-
-static void dsda_FreeMapNext(doom_mapinfo_map_next_t &next) {
-  Z_Free(next.map);
-  Z_Free(next.endpic);
-}
-
-static void dsda_FreeMapSky(doom_mapinfo_sky_t &sky) {
-  Z_Free(sky.lump);
-}
-
-static void dsda_FreeMap(doom_mapinfo_map_t &map) {
-  Z_Free(map.lump_name);
-  Z_Free(map.nice_name);
-  Z_Free(map.fade_table);
-  Z_Free(map.title_patch);
-  Z_Free(map.music);
-  Z_Free(map.inter_music);
-  Z_Free(map.exit_pic);
-  Z_Free(map.enter_pic);
-  Z_Free(map.border_texture);
-  Z_Free(map.air_control);
-  Z_Free(map.author);
-  Z_Free(map.special_actions);
-  dsda_FreeMapNext(map.next);
-  dsda_FreeMapNext(map.secret_next);
-  dsda_FreeMapSky(map.sky1);
-  dsda_FreeMapSky(map.sky2);
 }
 
 static void dsda_InitDefaultMap(void) {
