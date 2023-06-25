@@ -128,6 +128,7 @@ int dsda_SkipDrawShowNextLoc(void) {
 static void dsda_UpdateMapInfo(void) {
   map_info.finite_height = false;
 
+  dsda_DoomUpdateMapInfo();
   dsda_HexenUpdateMapInfo();
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
@@ -158,12 +159,14 @@ dboolean dsda_FinaleShortcut(void) {
 }
 
 void dsda_UpdateLastMapInfo(void) {
+  dsda_DoomUpdateLastMapInfo();
   dsda_HexenUpdateLastMapInfo();
   dsda_UUpdateLastMapInfo();
   dsda_LegacyUpdateLastMapInfo();
 }
 
 void dsda_UpdateNextMapInfo(void) {
+  dsda_DoomUpdateNextMapInfo();
   dsda_HexenUpdateNextMapInfo();
   dsda_UUpdateNextMapInfo();
   dsda_LegacyUpdateNextMapInfo();

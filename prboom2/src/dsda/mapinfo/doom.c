@@ -15,6 +15,7 @@
 //  DSDA MapInfo Doom
 //
 
+#include "doomstat.h"
 #include "lprintf.h"
 #include "w_wad.h"
 
@@ -22,6 +23,20 @@
 #include "dsda/mapinfo/doom/parser.h"
 
 #include "doom.h"
+
+static const doom_mapinfo_map_t* last_map;
+static const doom_mapinfo_map_t* next_map;
+static const doom_mapinfo_map_t* current_map;
+
+static doom_mapinfo_map_t* dsda_DoomMapEntry(int gamemap) {
+  int i;
+
+  for (i = 0; i < doom_mapinfo.num_maps; ++i)
+    if (gamemap == doom_mapinfo.maps[i].level_num)
+      return &doom_mapinfo.maps[i];
+
+  return NULL;
+}
 
 int dsda_DoomFirstMap(int* episode, int* map) {
   return false; // TODO
@@ -48,15 +63,16 @@ int dsda_DoomSkipDrawShowNextLoc(int* skip) {
 }
 
 void dsda_DoomUpdateMapInfo(void) {
-  // TODO
+  current_map = dsda_DoomMapEntry(gamemap);
 }
 
 void dsda_DoomUpdateLastMapInfo(void) {
-  // TODO
+  last_map = current_map;
+  next_map = NULL;
 }
 
 void dsda_DoomUpdateNextMapInfo(void) {
-  // TODO
+  next_map = dsda_DoomMapEntry(wminfo.next + 1);
 }
 
 int dsda_DoomResolveCLEV(int* clev, int* episode, int* map) {
