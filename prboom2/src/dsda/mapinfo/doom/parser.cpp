@@ -119,6 +119,35 @@ static void dsda_FreeMap(doom_mapinfo_map_t &map) {
   Z_Free(map.sky2.lump);
 }
 
+#define REPLACE_WITH_COPY(x) { if (x) x = Z_Strdup(x); }
+
+static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
+  dest = source;
+
+  REPLACE_WITH_COPY(dest.lump_name);
+  REPLACE_WITH_COPY(dest.nice_name);
+  REPLACE_WITH_COPY(dest.fade_table);
+  REPLACE_WITH_COPY(dest.title_patch);
+  REPLACE_WITH_COPY(dest.music);
+  REPLACE_WITH_COPY(dest.inter_music);
+  REPLACE_WITH_COPY(dest.exit_pic);
+  REPLACE_WITH_COPY(dest.enter_pic);
+  REPLACE_WITH_COPY(dest.border_texture);
+  REPLACE_WITH_COPY(dest.air_control);
+  REPLACE_WITH_COPY(dest.author);
+
+  REPLACE_WITH_COPY(dest.next.map);
+  REPLACE_WITH_COPY(dest.next.endpic);
+  REPLACE_WITH_COPY(dest.secret_next.map);
+  REPLACE_WITH_COPY(dest.secret_next.endpic);
+
+  REPLACE_WITH_COPY(dest.sky1.lump);
+  REPLACE_WITH_COPY(dest.sky2.lump);
+
+  dest.num_special_actions = 0;
+  dest.special_actions = NULL;
+}
+
 static const char* end_names[dmi_end_count] = {
   NULL,
   "EndGame1",
@@ -428,12 +457,14 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
 }
 
 static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
-  doom_mapinfo_map_t map = default_map;
+  doom_mapinfo_map_t map;
   std::vector<doom_mapinfo_special_action_t> special_actions;
 
   // Create a copy of the existing special actions from the default map
-  for (int i = 0; i < map.num_special_actions; ++i)
-    special_actions.push_back(map.special_actions[i]);
+  for (int i = 0; i < default_map.num_special_actions; ++i)
+    special_actions.push_back(default_map.special_actions[i]);
+
+  dsda_CopyMap(map, default_map);
 
   scanner.MustGetToken(TK_Identifier);
   STR_DUP(map.lump_name);
