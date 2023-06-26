@@ -28,7 +28,6 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | LevelNum                           | :telescope:     |
 | Next                               | :telescope:     |
 | SecretNext                         | :telescope:     |
-| Redirect                           | :telescope:     |
 | Cluster                            | :telescope:     |
 | Sky1                               | :telescope:     |
 | Sky2                               | :telescope:     |
