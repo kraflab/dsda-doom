@@ -82,6 +82,9 @@ void dsda_NewGameMap(int* episode, int* map) {
 }
 
 void dsda_ResolveWarp(int* args, int arg_count, int* episode, int* map) {
+  if (dsda_DoomResolveWarp(args, arg_count, episode, map))
+    return;
+
   if (dsda_HexenResolveWarp(args, arg_count, episode, map))
     return;
 

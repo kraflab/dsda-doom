@@ -47,7 +47,20 @@ int dsda_DoomNewGameMap(int* episode, int* map) {
 }
 
 int dsda_DoomResolveWarp(int* args, int arg_count, int* episode, int* map) {
-  return false; // TODO
+  const doom_mapinfo_map_t* entry;
+
+  if (!doom_mapinfo.loaded)
+    return false;
+
+  entry = dsda_DoomMapEntry(*map);
+
+  if (!entry)
+    return false;
+
+  *map = entry->level_num;
+  *episode = 1; // TODO: warp episode
+
+  return true;
 }
 
 int dsda_DoomNextMap(int* episode, int* map) {
