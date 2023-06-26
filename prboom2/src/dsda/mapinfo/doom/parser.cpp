@@ -558,4 +558,6 @@ void dsda_ParseDoomMapInfo(const unsigned char* buffer, size_t length, doom_mapi
 
   doom_mapinfo.maps = &doom_mapinfo_maps[0];
   doom_mapinfo.num_maps = doom_mapinfo_maps.size();
+
+  doom_mapinfo.loaded = true;
 }

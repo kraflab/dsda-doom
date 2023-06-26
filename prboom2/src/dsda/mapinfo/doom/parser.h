@@ -114,6 +114,7 @@ typedef struct {
 typedef struct {
   size_t num_maps;
   doom_mapinfo_map_t* maps;
+  int loaded;
 } doom_mapinfo_t;
 
 extern doom_mapinfo_t doom_mapinfo;
