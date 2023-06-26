@@ -483,6 +483,10 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
 
   dsda_ParseDoomMapInfoMapBlock(scanner, map, special_actions);
 
+  for (auto &old_map : doom_mapinfo_maps)
+    if (old_map.level_num == map.level_num)
+      old_map.level_num = 0;
+
   doom_mapinfo_maps.push_back(map);
 }
 
