@@ -452,8 +452,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
   );
   memcpy(map.special_actions, &special_actions[0],
          map.num_special_actions * sizeof(*map.special_actions));
-
-  doom_mapinfo_maps.push_back(map);
 }
 
 static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
@@ -484,6 +482,8 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
   dsda_GuessLevelNum(map);
 
   dsda_ParseDoomMapInfoMapBlock(scanner, map, special_actions);
+
+  doom_mapinfo_maps.push_back(map);
 }
 
 static void dsda_InitDefaultMap(void) {
