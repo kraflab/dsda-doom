@@ -88,6 +88,15 @@ const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_speed] = "spd",
   [dsda_bf_damage] = "dmg",
   [dsda_bf_rng] = "rng",
+  [dsda_bf_arm] = "arm",
+  [dsda_bf_hp] = "hp",
+  [dsda_bf_ammo_0] = "am0",
+  [dsda_bf_ammo_1] = "am1",
+  [dsda_bf_ammo_2] = "am2",
+  [dsda_bf_ammo_3] = "am3",
+  [dsda_bf_ammo_4] = "am4",
+  [dsda_bf_ammo_5] = "am5",
+  [dsda_bf_bmapwidth] = "bmw",
 };
 
 const char* dsda_bf_misc_names[dsda_bf_misc_max] = {
@@ -119,6 +128,15 @@ static dboolean fixed_point_attribute[dsda_bf_attribute_max] = {
   [dsda_bf_speed] = true,
   [dsda_bf_damage] = true,
   [dsda_bf_rng] = false,
+  [dsda_bf_arm] = false,
+  [dsda_bf_hp] = false,
+  [dsda_bf_ammo_0] = false,
+  [dsda_bf_ammo_1] = false,
+  [dsda_bf_ammo_2] = false,
+  [dsda_bf_ammo_3] = false,
+  [dsda_bf_ammo_4] = false,
+  [dsda_bf_ammo_5] = false,
+  [dsda_bf_bmapwidth] = false,
 };
 
 static dboolean dsda_AdvanceBFRange(bf_range_t* range) {
@@ -216,6 +234,8 @@ static void dsda_EndBF(int result) {
 }
 
 static fixed_t dsda_BFAttribute(int attribute) {
+  extern int bmapwidth;
+
   player_t* player;
 
   player = &players[displayplayer];
@@ -241,6 +261,24 @@ static fixed_t dsda_BFAttribute(int attribute) {
       }
     case dsda_bf_rng:
       return rng.rndindex;
+    case dsda_bf_arm:
+      return player->armorpoints[ARMOR_ARMOR];
+    case dsda_bf_hp:
+      return player->health;
+    case dsda_bf_ammo_0:
+      return player->ammo[0];
+    case dsda_bf_ammo_1:
+      return player->ammo[1];
+    case dsda_bf_ammo_2:
+      return player->ammo[2];
+    case dsda_bf_ammo_3:
+      return player->ammo[3];
+    case dsda_bf_ammo_4:
+      return player->ammo[4];
+    case dsda_bf_ammo_5:
+      return player->ammo[5];
+    case dsda_bf_bmapwidth:
+      return bmapwidth;
     default:
       return 0;
   }
