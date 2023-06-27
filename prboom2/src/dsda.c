@@ -535,7 +535,8 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
 
   dsda_InitDemoRecording();
 
-  basetic = gametic;
+  boom_basetic = gametic;
+  true_basetic = gametic;
 }
 
 void dsda_WatchNewGame(void) {

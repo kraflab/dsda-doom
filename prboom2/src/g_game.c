@@ -167,7 +167,8 @@ int             upmove;
 int             consoleplayer; // player taking events and displaying
 int             displayplayer; // view being displayed
 int             gametic;
-int             basetic;       /* killough 9/29/98: for demo sync */
+int             boom_basetic;       /* killough 9/29/98: for demo sync */
+int             true_basetic;
 int             totalkills, totallive, totalitems, totalsecret;    // for intermission
 dboolean         demorecording;
 wbstartstruct_t wminfo;               // parms for world map / intermission
@@ -1116,7 +1117,7 @@ static void G_DoLoadLevel (void)
   levelstarttic = gametic;        // for time calculation
 
   if (!demo_compatibility && !mbf_features)   // killough 9/29/98
-    basetic = gametic;
+    boom_basetic = gametic;
 
   if (wipegamestate == GS_LEVEL)
     wipegamestate = -1;             // force a wipe
@@ -1444,7 +1445,10 @@ void G_Ticker (void)
   }
 
   if (dsda_PausedOutsideDemo())
-    basetic++;  // For revenant tracers and RNG -- we must maintain sync
+  {
+    boom_basetic++;  // For revenant tracers and RNG -- we must maintain sync
+    true_basetic++;
+  }
   else {
     int buf = gametic % BACKUPTICS;
 
@@ -3482,7 +3486,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
   dboolean failonerror = (params&RDH_SAFE);
 
-  basetic = gametic;  // killough 9/29/98
+  boom_basetic = gametic;  // killough 9/29/98
+  true_basetic = gametic;
 
   // killough 2/22/98, 2/28/98: autodetect old demos and act accordingly.
   // Old demos turn on demo_compatibility => compatibility; new demos load

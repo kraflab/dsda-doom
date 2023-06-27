@@ -290,7 +290,7 @@ static void dsda_BFUpdateBestResult(fixed_t value) {
 
   bf_target.evaluated = true;
   bf_target.best_value = value;
-  bf_target.best_depth = logictic - bf_logictic;
+  bf_target.best_depth = true_logictic - bf_logictic;
 
   for (i = 0; i < bf_target.best_depth; ++i)
     bf_target.best_bf[i] = brute_force[i];
@@ -471,7 +471,7 @@ dboolean dsda_StartBruteForce(int depth) {
   lprintf(LO_INFO, "Brute force starting:\n");
 
   bf_depth = depth;
-  bf_logictic = logictic;
+  bf_logictic = true_logictic;
   bf_volume = 0;
   bf_volume_max = 1;
 
@@ -501,7 +501,7 @@ dboolean dsda_StartBruteForce(int depth) {
 void dsda_UpdateBruteForce(void) {
   int frame;
 
-  frame = logictic - bf_logictic;
+  frame = true_logictic - bf_logictic;
 
   if (frame == bf_depth) {
     if (bf_volume % 10000 == 0)
@@ -517,7 +517,7 @@ void dsda_UpdateBruteForce(void) {
 }
 
 void dsda_EvaluateBruteForce(void) {
-  if (logictic - bf_logictic != bf_depth)
+  if (true_logictic - bf_logictic != bf_depth)
     return;
 
   ++bf_volume;
@@ -537,7 +537,7 @@ void dsda_EvaluateBruteForce(void) {
 void dsda_CopyBruteForceCommand(ticcmd_t* cmd) {
   int depth;
 
-  depth = logictic - bf_logictic;
+  depth = true_logictic - bf_logictic;
 
   if (depth >= bf_depth) {
     memset(cmd, 0, sizeof(*cmd));

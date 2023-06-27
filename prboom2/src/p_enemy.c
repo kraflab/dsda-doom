@@ -1700,7 +1700,7 @@ void A_Tracer(mobj_t *actor)
    * and improvise around it (using leveltime causes desync across levels).
    */
 
-  if (logictic & 3)
+  if (boom_logictic & 3)
     return;
 
   // spawn a puff of smoke behind the rocket

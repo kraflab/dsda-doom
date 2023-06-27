@@ -240,11 +240,11 @@ void dsda_RestoreCommandHistory(void) {
   ticcmd_t cmd = { 0 };
 
   // the dsda format has variable bytes_per_tic - ignoring these for now
-  if (demorecording && logictic && dsda_command_history_size && !dsda_demo_version) {
+  if (demorecording && true_logictic && dsda_command_history_size && !dsda_demo_version) {
     const byte* p;
     int count;
 
-    count = MIN(logictic, dsda_command_history_size);
+    count = MIN(true_logictic, dsda_command_history_size);
 
     p = dsda_demo_write_buffer_p - bytes_per_tic * count;
 

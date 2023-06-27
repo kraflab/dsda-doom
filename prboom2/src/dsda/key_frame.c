@@ -219,7 +219,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
-  key_frame->game_tic_count = logictic;
+  key_frame->game_tic_count = true_logictic;
 
   P_InitSaveBuffer();
 

@@ -65,7 +65,8 @@ static void dsda_UnArchiveInternal(void) {
 
 static void dsda_ArchiveContext(void) {
   int i;
-  int logictic_value;
+  int boom_logictic_value;
+  int true_logictic_value;
 
   P_SAVE_BYTE(compatibility_level);
   P_SAVE_BYTE(gameskill);
@@ -89,14 +90,18 @@ static void dsda_ArchiveContext(void) {
   P_SAVE_X(totalleveltimes);
   P_SAVE_X(levels_completed);
 
-  logictic_value = logictic;
-  P_SAVE_X(logictic_value);
+  boom_logictic_value = boom_logictic;
+  P_SAVE_X(boom_logictic_value);
+
+  true_logictic_value = true_logictic;
+  P_SAVE_X(true_logictic_value);
 }
 
 static void dsda_UnArchiveContext(void) {
   int i;
   int epi, map;
-  int logictic_value;
+  int boom_logictic_value;
+  int true_logictic_value;
 
   P_LOAD_BYTE(compatibility_level);
   P_LOAD_BYTE(gameskill);
@@ -123,8 +128,11 @@ static void dsda_UnArchiveContext(void) {
   P_LOAD_X(totalleveltimes);
   P_LOAD_X(levels_completed);
 
-  P_LOAD_X(logictic_value);
-  basetic = gametic - logictic_value;
+  P_LOAD_X(boom_logictic_value);
+  boom_basetic = gametic - boom_logictic_value;
+
+  P_LOAD_X(true_logictic_value);
+  true_basetic = gametic - true_logictic_value;
 }
 
 void dsda_ArchiveAll(void) {

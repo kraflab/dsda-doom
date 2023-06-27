@@ -84,8 +84,8 @@ void dsda_ChangeBuildCommand(void) {
     dsda_JoinDemo(NULL);
 
   replace_source = true;
-  build_cmd_tic = logictic - 1;
-  dsda_JumpToLogicTicFrom(logictic, logictic - 1);
+  build_cmd_tic = true_logictic - 1;
+  dsda_JumpToLogicTicFrom(true_logictic, true_logictic - 1);
 }
 
 dboolean dsda_BuildMF(int x) {
@@ -426,7 +426,7 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
     dsda_PopCommandQueue(cmd);
   else if (dsda_BruteForce())
     dsda_CopyBruteForceCommand(cmd);
-  else if (logictic == build_cmd_tic) {
+  else if (true_logictic == build_cmd_tic) {
     *cmd = build_cmd;
     build_cmd_tic = -1;
   }
@@ -446,7 +446,7 @@ void dsda_EnterBuildMode(void) {
     advance_frame = true;
   }
 
-  if (!logictic)
+  if (!true_logictic)
     advance_frame = true;
 
   build_mode = true;
@@ -467,12 +467,12 @@ void dsda_RefreshBuildMode(void) {
     replace_source = false;
 
   if (!dsda_SkipMode() &&
-      overwritten_logictic != logictic - 1 &&
+      overwritten_logictic != true_logictic - 1 &&
       build_cmd_tic == -1 &&
-      logictic > 0) {
+      true_logictic > 0) {
     dsda_CopyPriorCmd(&overwritten_cmd, 1);
     build_cmd = overwritten_cmd;
-    overwritten_logictic = logictic - 1;
+    overwritten_logictic = true_logictic - 1;
     replace_source = false;
   }
 }
@@ -508,7 +508,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
 
   if (dsda_InputActivated(dsda_input_build_advance_frame)) {
     advance_frame = true;
-    build_cmd_tic = logictic;
+    build_cmd_tic = true_logictic;
 
     build_cmd.angleturn = 0;
     build_cmd.arti = 0;
@@ -525,7 +525,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
       replace_source = true;
     }
 
-    overwritten_logictic = logictic;
+    overwritten_logictic = true_logictic;
 
     if (!demorecording)
       dsda_StoreTempKeyFrame();
@@ -539,13 +539,13 @@ dboolean dsda_BuildResponder(event_t* ev) {
       return true;
     }
 
-    if (logictic > 1) {
+    if (true_logictic > 1) {
       dsda_CopyPriorCmd(&build_cmd, 2);
       overwritten_cmd = build_cmd;
-      overwritten_logictic = logictic - 2;
+      overwritten_logictic = true_logictic - 2;
       replace_source = false;
 
-      dsda_JumpToLogicTic(logictic - 1);
+      dsda_JumpToLogicTic(true_logictic - 1);
     }
 
     return true;

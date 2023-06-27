@@ -227,7 +227,8 @@ extern  int totalkills, totallive;
 extern  int totalitems;
 extern  int totalsecret;
 
-extern  int basetic;
+extern  int boom_basetic;
+extern  int true_basetic;
 extern  int leveltime;       // level time in tics
 extern  int totalleveltimes; // sum of intermission times in tics at second resolution
 extern  int levels_completed;
@@ -262,7 +263,8 @@ extern  dboolean     in_game;
 
 extern  int   gametic;
 
-#define logictic (gametic - basetic)
+#define boom_logictic (gametic - boom_basetic)
+#define true_logictic (gametic - true_basetic)
 
 //e6y
 extern  dboolean realframe;

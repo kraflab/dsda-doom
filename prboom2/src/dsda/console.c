@@ -737,7 +737,7 @@ static dboolean console_JumpByTic(const char* command, const char* args) {
   int tic;
 
   if (sscanf(args, "%i", &tic)) {
-    tic = logictic + tic;
+    tic = true_logictic + tic;
 
     dsda_JumpToLogicTic(tic);
 
