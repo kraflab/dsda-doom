@@ -101,7 +101,20 @@ int dsda_DoomMusicIndexToLumpNum(int* lump, int music_index) {
 }
 
 int dsda_DoomMapMusic(int* music_index, int* music_lump) {
-  return false; // TODO
+  int lump;
+
+  if (!current_map || !current_map->music)
+    return false;
+
+  lump = W_CheckNumForName(current_map->music);
+
+  if (lump == LUMP_NOT_FOUND)
+    return false;
+
+  *music_index = -1;
+  *music_lump = lump;
+
+  return true;
 }
 
 int dsda_DoomInterMusic(int* music_index, int* music_lump) {

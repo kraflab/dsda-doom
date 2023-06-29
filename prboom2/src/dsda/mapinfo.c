@@ -218,6 +218,9 @@ int dsda_MusicIndexToLumpNum(int music_index) {
 }
 
 void dsda_MapMusic(int* music_index, int* music_lump) {
+  if (dsda_DoomMapMusic(music_index, music_lump))
+    return;
+
   if (dsda_HexenMapMusic(music_index, music_lump))
     return;
 

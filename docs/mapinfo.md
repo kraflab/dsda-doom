@@ -39,7 +39,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | Par                                | :telescope:     |
 | NoIntermission                     | :telescope:     |
 | Intermission                       | :telescope:     |
-| Music                              | :telescope:     |
+| Music                              | :heavy_check_mark: |
 | ExitPic                            | :telescope:     |
 | EnterPic                           | :telescope:     |
 | InterMusic                         | :telescope:     |
