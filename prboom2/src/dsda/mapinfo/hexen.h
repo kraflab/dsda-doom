@@ -40,6 +40,7 @@ int dsda_HexenStartFinale(void);
 int dsda_HexenFTicker(void);
 void dsda_HexenFDrawer(void);
 int dsda_HexenBossAction(mobj_t* mo);
+int dsda_HexenMapLumpName(const char** name, int episode, int map);
 int dsda_HexenHUTitle(dsda_string_t* str);
 int dsda_HexenSkyTexture(int* sky);
 int dsda_HexenPrepareInitNew(void);

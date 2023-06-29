@@ -40,6 +40,7 @@ int dsda_DoomStartFinale(void);
 int dsda_DoomFTicker(void);
 void dsda_DoomFDrawer(void);
 int dsda_DoomBossAction(mobj_t* mo);
+int dsda_DoomMapLumpName(const char** name, int episode, int map);
 int dsda_DoomHUTitle(dsda_string_t* str);
 int dsda_DoomSkyTexture(int* sky);
 int dsda_DoomPrepareInitNew(void);

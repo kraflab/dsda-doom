@@ -300,6 +300,10 @@ int dsda_HexenBossAction(mobj_t* mo) {
   return false; // TODO
 }
 
+int dsda_HexenMapLumpName(const char** name, int episode, int map) {
+  return false; // TODO
+}
+
 int dsda_HexenHUTitle(dsda_string_t* str) {
   if (!hexen)
     return false;

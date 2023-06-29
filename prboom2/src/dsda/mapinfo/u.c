@@ -343,6 +343,10 @@ int dsda_UBossAction(mobj_t* mo) {
   return true;
 }
 
+int dsda_UMapLumpName(const char** name, int episode, int map) {
+  return false;
+}
+
 int dsda_UHUTitle(dsda_string_t* str) {
   const char* s;
 

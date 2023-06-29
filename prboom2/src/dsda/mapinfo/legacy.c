@@ -325,6 +325,12 @@ int dsda_LegacyBossAction(mobj_t* mo) {
   return false;
 }
 
+int dsda_LegacyMapLumpName(const char** name, int episode, int map) {
+  *name = MAPNAME(episode, map);
+
+  return true;
+}
+
 int dsda_LegacyHUTitle(dsda_string_t* str) {
   extern char** mapnames[];
   extern char** mapnames2[];

@@ -310,6 +310,23 @@ int dsda_BossAction(mobj_t* mo) {
   return false;
 }
 
+const char* dsda_MapLumpName(int episode, int map) {
+  const char* name;
+
+  if (dsda_DoomMapLumpName(&name, episode, map))
+    return name;
+
+  if (dsda_HexenMapLumpName(&name, episode, map))
+    return name;
+
+  if (dsda_UMapLumpName(&name, episode, map))
+    return name;
+
+  dsda_LegacyMapLumpName(&name, episode, map);
+
+  return name;
+}
+
 void dsda_HUTitle(dsda_string_t* str) {
   if (dsda_DoomHUTitle(str))
     return;

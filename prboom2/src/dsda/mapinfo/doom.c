@@ -137,6 +137,22 @@ int dsda_DoomBossAction(mobj_t* mo) {
   return false; // TODO
 }
 
+int dsda_DoomMapLumpName(const char** name, int episode, int map) {
+  const doom_mapinfo_map_t* target_map;
+
+  if (!doom_mapinfo.loaded)
+    return false;
+
+  target_map = dsda_DoomMapEntry(map);
+
+  if (!target_map)
+    return false;
+
+  *name = target_map->lump_name;
+
+  return true;
+}
+
 int dsda_DoomHUTitle(dsda_string_t* str) {
   if (!current_map)
     return false;
