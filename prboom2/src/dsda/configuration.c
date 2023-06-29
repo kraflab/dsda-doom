@@ -1145,6 +1145,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "render_stretchsky", dsda_config_render_stretchsky,
     CONF_BOOL(1)
   },
+  [dsda_config_gl_fade_mode] = {
+    "gl_fade_mode", dsda_config_gl_fade_mode,
+    dsda_config_int, 0, 1, { 0 }
+  },
   [dsda_config_boom_translucent_sprites] = {
     "boom_translucent_sprites", dsda_config_boom_translucent_sprites,
     CONF_BOOL(1), NULL, NOT_STRICT, deh_changeCompTranslucency
