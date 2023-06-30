@@ -21,6 +21,7 @@
 #include "w_wad.h"
 
 #include "dsda/args.h"
+#include "dsda/map_format.h"
 #include "dsda/mapinfo/doom/parser.h"
 
 #include "doom.h"
@@ -200,6 +201,7 @@ int dsda_DoomPrepareInitNew(void) {
 
 int dsda_DoomPrepareIntermission(int* result) {
   const char* next = NULL;
+  doom_mapinfo_map_t* map = NULL;
 
   if (!current_map)
     return false;
@@ -211,35 +213,38 @@ int dsda_DoomPrepareIntermission(int* result) {
     wminfo.modified_partime = true;
   }
 
-  if (secretexit)
-    next = current_map->secret_next.map;
+  if (map_format.zdoom)
+    if (leave_data.map > 0)
+      map = dsda_DoomMapEntry(leave_data.map);
 
-  if (!next)
-    next = current_map->next.map;
+  if (!map) {
+    if (secretexit)
+      next = current_map->secret_next.map;
 
-  if (next) {
-    doom_mapinfo_map_t* map;
+    if (!next)
+      next = current_map->next.map;
 
-    map = dsda_DoomMapEntryByName(next);
+    if (next)
+      map = dsda_DoomMapEntryByName(next);
+  }
 
-    if (map) {
-      wminfo.next = map->level_num - 1;
-      wminfo.nextep = 0; // TODO: next ep
+  if (map) {
+    wminfo.next = map->level_num - 1;
+    wminfo.nextep = 0; // TODO: next ep
 
-      // TODO: this should happen somewhere else
-      if (wminfo.nextep != wminfo.epsd) {
-        int i;
+    // TODO: this should happen somewhere else
+    if (wminfo.nextep != wminfo.epsd) {
+      int i;
 
-        for (i = 0; i < g_maxplayers; i++)
-          players[i].didsecret = false;
-      }
-
-      wminfo.didsecret = players[consoleplayer].didsecret;
-
-      *result = 0;
-
-      return true;
+      for (i = 0; i < g_maxplayers; i++)
+        players[i].didsecret = false;
     }
+
+    wminfo.didsecret = players[consoleplayer].didsecret;
+
+    *result = 0;
+
+    return true;
   }
 
   // TODO: what to do if no next map
