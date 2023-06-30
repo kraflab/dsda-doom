@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "g_game.h"
 #include "lprintf.h"
 #include "w_wad.h"
 
@@ -33,6 +34,16 @@ static doom_mapinfo_map_t* dsda_DoomMapEntry(int gamemap) {
 
   for (i = 0; i < doom_mapinfo.num_maps; ++i)
     if (gamemap == doom_mapinfo.maps[i].level_num)
+      return &doom_mapinfo.maps[i];
+
+  return NULL;
+}
+
+static doom_mapinfo_map_t* dsda_DoomMapEntryByName(const char* name) {
+  int i;
+
+  for (i = 0; i < doom_mapinfo.num_maps; ++i)
+    if (!stricmp(doom_mapinfo.maps[i].lump_name, name))
       return &doom_mapinfo.maps[i];
 
   return NULL;
@@ -188,7 +199,52 @@ int dsda_DoomPrepareInitNew(void) {
 }
 
 int dsda_DoomPrepareIntermission(int* result) {
-  return false; // TODO
+  const char* next = NULL;
+
+  if (!current_map)
+    return false;
+
+  // TODO: end pic / NoIntermission
+
+  if (current_map->par) {
+    wminfo.partime = current_map->par;
+    wminfo.modified_partime = true;
+  }
+
+  if (secretexit)
+    next = current_map->secret_next.map;
+
+  if (!next)
+    next = current_map->next.map;
+
+  if (next) {
+    doom_mapinfo_map_t* map;
+
+    map = dsda_DoomMapEntryByName(next);
+
+    if (map) {
+      wminfo.next = map->level_num - 1;
+      wminfo.nextep = 0; // TODO: next ep
+
+      // TODO: this should happen somewhere else
+      if (wminfo.nextep != wminfo.epsd) {
+        int i;
+
+        for (i = 0; i < g_maxplayers; i++)
+          players[i].didsecret = false;
+      }
+
+      wminfo.didsecret = players[consoleplayer].didsecret;
+
+      *result = 0;
+
+      return true;
+    }
+  }
+
+  // TODO: what to do if no next map
+
+  return false;
 }
 
 int dsda_DoomPrepareFinale(int* result) {

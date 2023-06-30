@@ -378,6 +378,9 @@ void dsda_PrepareInitNew(void) {
 }
 
 void dsda_PrepareIntermission(int* behaviour) {
+  if (dsda_DoomPrepareIntermission(behaviour))
+    return;
+
   if (dsda_HexenPrepareIntermission(behaviour))
     return;
 
