@@ -58,30 +58,23 @@ typedef struct {
   int special_args[5];
 } doom_mapinfo_special_action_t;
 
-#define DMI_DOUBLE_SKY                     0x00000001ul
-#define DMI_SKY_STRETCH                    0x00000002ul
-#define DMI_INTERMISSION                   0x00000004ul
-#define DMI_LIGHTNING                      0x00000008ul
-#define DMI_ALLOW_MONSTER_TELEFRAGS        0x00000010ul
-#define DMI_ACTIVATE_OWN_DEATH_SPECIALS    0x00000020ul
-#define DMI_CLIP_MID_TEXTURES              0x00000040ul
-#define DMI_LAX_MONSTER_ACTIVATION         0x00000080ul
-#define DMI_MISSILES_ACTIVATE_IMPACT_LINES 0x00000100ul
-#define DMI_AVOID_MELEE                    0x00000200ul
-#define DMI_FILTER_STARTS                  0x00000400ul
-#define DMI_ALLOW_RESPAWN                  0x00000800ul
-#define DMI_ALLOW_JUMP                     0x00001000ul
-#define DMI_ALLOW_FREE_LOOK                0x00002000ul
-#define DMI_CHECK_SWITCH_RANGE             0x00004000ul
-#define DMI_NO_ALLIES                      0x00008000ul
-#define DMI_RESET_HEALTH                   0x00010000ul
-#define DMI_RESET_INVENTORY                0x00020000ul
-#define DMI_WRAP_MID_TEXTURES              0x00040000ul
-#define DMI_USE_PLAYER_START_Z             0x00080000ul
-#define DMI_RANDOM_PLAYER_STARTS           0x00100000ul
-#define DMI_REMEMBER_STATE                 0x00200000ul
-#define DMI_SHOW_AUTHOR                    0x00400000ul
-#define DMI_PASSOVER                       0x00800000ul
+#define DMI_INTERMISSION                   0x00000001ul
+#define DMI_ALLOW_MONSTER_TELEFRAGS        0x00000002ul
+#define DMI_ACTIVATE_OWN_DEATH_SPECIALS    0x00000004ul
+#define DMI_LAX_MONSTER_ACTIVATION         0x00000008ul
+#define DMI_MISSILES_ACTIVATE_IMPACT_LINES 0x00000010ul
+#define DMI_FILTER_STARTS                  0x00000020ul
+#define DMI_ALLOW_RESPAWN                  0x00000040ul
+#define DMI_ALLOW_JUMP                     0x00000080ul
+#define DMI_ALLOW_FREE_LOOK                0x00000100ul
+#define DMI_CHECK_SWITCH_RANGE             0x00000200ul
+#define DMI_RESET_HEALTH                   0x00000400ul
+#define DMI_RESET_INVENTORY                0x00000800ul
+#define DMI_USE_PLAYER_START_Z             0x00001000ul
+#define DMI_RANDOM_PLAYER_STARTS           0x00002000ul
+#define DMI_REMEMBER_STATE                 0x00004000ul
+#define DMI_SHOW_AUTHOR                    0x00008000ul
+#define DMI_PASSOVER                       0x00010000ul
 
 typedef uint32_t doom_mapinfo_map_flags_t;
 
@@ -94,7 +87,6 @@ typedef struct {
   doom_mapinfo_map_next_t next;
   doom_mapinfo_map_next_t secret_next;
   doom_mapinfo_sky_t sky1;
-  doom_mapinfo_sky_t sky2;
   char* fade_table;
   char* title_patch;
   char* exit_pic;

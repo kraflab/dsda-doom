@@ -116,7 +116,6 @@ static void dsda_FreeMap(doom_mapinfo_map_t &map) {
   Z_Free(map.secret_next.endpic);
 
   Z_Free(map.sky1.lump);
-  Z_Free(map.sky2.lump);
 }
 
 #define REPLACE_WITH_COPY(x) { if (x) x = Z_Strdup(x); }
@@ -142,7 +141,6 @@ static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
   REPLACE_WITH_COPY(dest.secret_next.endpic);
 
   REPLACE_WITH_COPY(dest.sky1.lump);
-  REPLACE_WITH_COPY(dest.sky2.lump);
 
   dest.num_special_actions = 0;
   dest.special_actions = NULL;
@@ -300,18 +298,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (!stricmp(scanner.string, "Sky1")) {
       dsda_ParseDoomMapInfoMapSky(scanner, map.sky1);
     }
-    else if (!stricmp(scanner.string, "Sky2")) {
-      dsda_ParseDoomMapInfoMapSky(scanner, map.sky2);
-    }
-    else if (!stricmp(scanner.string, "DoubleSky")) {
-      map.flags |= DMI_DOUBLE_SKY;
-    }
-    else if (!stricmp(scanner.string, "ForceNoSkyStretch")) {
-      map.flags &= ~DMI_SKY_STRETCH;
-    }
-    else if (!stricmp(scanner.string, "SkyStretch")) {
-      map.flags |= DMI_SKY_STRETCH;
-    }
     else if (!stricmp(scanner.string, "FadeTable")) {
       SCAN_STRING(map.fade_table);
     }
@@ -342,9 +328,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (!stricmp(scanner.string, "BorderTexture")) {
       SCAN_STRING(map.border_texture);
     }
-    else if (!stricmp(scanner.string, "Lightning")) {
-      map.flags |= DMI_LIGHTNING;
-    }
     else if (!stricmp(scanner.string, "EvenLighting")) {
       map.lighting = dmi_lighting_even;
     }
@@ -369,12 +352,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (!stricmp(scanner.string, "SpecialAction")) {
       dsda_ParseDoomMapInfoMapSpecialAction(scanner, special_actions);
     }
-    else if (!stricmp(scanner.string, "ClipMidTextures")) {
-      map.flags |= DMI_CLIP_MID_TEXTURES;
-    }
-    else if (!stricmp(scanner.string, "WrapMidTextures")) {
-      map.flags |= DMI_WRAP_MID_TEXTURES;
-    }
     else if (!stricmp(scanner.string, "StrictMonsterActivation")) {
       map.flags &= ~DMI_LAX_MONSTER_ACTIVATION;
     }
@@ -386,9 +363,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     }
     else if (!stricmp(scanner.string, "MissilesActivateImpactLines")) {
       map.flags |= DMI_MISSILES_ACTIVATE_IMPACT_LINES;
-    }
-    else if (!stricmp(scanner.string, "AvoidMelee")) {
-      map.flags |= DMI_AVOID_MELEE;
     }
     else if (!stricmp(scanner.string, "FilterStarts")) {
       map.flags |= DMI_FILTER_STARTS;
@@ -495,8 +469,7 @@ static void dsda_InitDefaultMap(void) {
 
   memset(&default_map, 0, sizeof(default_map));
 
-  default_map.flags = DMI_SKY_STRETCH |
-                      DMI_INTERMISSION |
+  default_map.flags = DMI_INTERMISSION |
                       DMI_ACTIVATE_OWN_DEATH_SPECIALS |
                       DMI_LAX_MONSTER_ACTIVATION |
                       DMI_MISSILES_ACTIVATE_IMPACT_LINES |

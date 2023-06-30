@@ -30,10 +30,6 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | SecretNext                         | :telescope:     |
 | Cluster                            | :telescope:     |
 | Sky1                               | :heavy_check_mark: |
-| Sky2                               | :telescope:     |
-| DoubleSky                          | :telescope:     |
-| ForceNoSkyStretch                  | :telescope:     |
-| SkyStretch                         | :telescope:     |
 | FadeTable                          | :telescope:     |
 | TitlePatch                         | :heavy_check_mark: |
 | Par                                | :heavy_check_mark: |
@@ -44,7 +40,6 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | EnterPic                           | :telescope:     |
 | InterMusic                         | :heavy_check_mark: |
 | BorderTexture                      | :telescope:     |
-| Lightning                          | :telescope:     |
 | EvenLighting                       | :telescope:     |
 | SmoothLighting                     | :telescope:     |
 | Gravity                            | :telescope:     |
@@ -53,13 +48,10 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | ActivateOwnDeathSpecials           | :telescope:     |
 | KillerActivatesDeathSpecials       | :telescope:     |
 | SpecialAction                      | :telescope:     |
-| ClipMidTextures                    | :telescope:     |
-| WrapMidTextures                    | :telescope:     |
 | StrictMonsterActivation            | :telescope:     |
 | LaxMonsterActivation               | :telescope:     |
 | MissileShootersActivateImpactLines | :telescope:     |
 | MissilesActivateImpactLines        | :telescope:     |
-| AvoidMelee                         | :telescope:     |
 | FilterStarts                       | :telescope:     |
 | AllowRespawn                       | :telescope:     |
 | NoJump                             | :telescope:     |
