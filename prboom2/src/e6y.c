@@ -459,7 +459,7 @@ void e6y_G_DoCompleted(void)
 
   memset(&stats[numlevels], 0, sizeof(timetable_t));
 
-  strcpy(stats[numlevels].map, MAPNAME(gameepisode, gamemap));
+  snprintf(stats[numlevels].map, sizeof(stats[numlevels].map), "%s", dsda_MapLumpName(gameepisode, gamemap));
 
   if (secretexit)
   {

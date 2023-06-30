@@ -83,6 +83,7 @@
 #include "dsda/font.h"
 #include "dsda/game_controller.h"
 #include "dsda/global.h"
+#include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
 #include "dsda/settings.h"
 #include "dsda/key_frame.h"
@@ -1115,7 +1116,7 @@ void M_SaveSelect(int choice)
   if (!strcmp(savegamestrings[choice],s_EMPTYSTRING) || // Ty 03/27/98 - externalized
       IsMapName(savegamestrings[choice]))
   {
-    strncpy(savegamestrings[choice], MAPNAME(gameepisode, gamemap), SAVESTRINGSIZE);
+    snprintf(savegamestrings[choice], SAVESTRINGSIZE, "%s", dsda_MapLumpName(gameepisode, gamemap));
     savegamestrings[choice][SAVESTRINGSIZE - 1] = 0;
   }
   saveCharIndex = strlen(savegamestrings[choice]);
@@ -5039,7 +5040,7 @@ dboolean M_Responder (event_t* ev) {
     {
       if (saveCharIndex > 0)
       {
-        if (!strncmp(savegamestrings[saveSlot], MAPNAME(gameepisode, gamemap), SAVESTRINGSIZE))
+        if (!strcmp(savegamestrings[saveSlot], dsda_MapLumpName(gameepisode, gamemap)))
         {
           saveCharIndex = 0;
         }

@@ -72,6 +72,8 @@
 #include "p_spec.h"
 #include "e6y.h"
 
+#include "dsda/mapinfo.h"
+
 int imageformats[5] = {0, GL_LUMINANCE, GL_LUMINANCE_ALPHA, GL_RGB, GL_RGBA};
 
 /* TEXTURES */
@@ -1626,9 +1628,9 @@ void gld_Precache(void)
 
   // e6y: some statistics
   {
-    char map[8];
+    char map[9];
 
-    strcpy(map, MAPNAME(gameepisode, gamemap));
+    snprintf(map, sizeof(map), "%s", dsda_MapLumpName(gameepisode, gamemap));
 
     lprintf(LO_DEBUG, "gld_Precache: %s done in %d ms\n", map, SDL_GetTicks() - tics);
   }

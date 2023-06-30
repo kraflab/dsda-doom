@@ -24,6 +24,7 @@
 #include "dsda/analysis.h"
 #include "dsda/args.h"
 #include "dsda/configuration.h"
+#include "dsda/mapinfo.h"
 #include "dsda/playback.h"
 
 #include "text_file.h"
@@ -157,7 +158,7 @@ void dsda_ExportTextFile(void) {
     fprintf(file, "Pwad:      %s\n", pwad);
 
   if (dsda_IL())
-    fprintf(file, "Map:       %s\n", MAPNAME(gameepisode, dsda_startmap));
+    fprintf(file, "Map:       %s\n", dsda_MapLumpName(gameepisode, dsda_startmap));
   else {
     const char* movie;
 
@@ -166,8 +167,8 @@ void dsda_ExportTextFile(void) {
     if (movie)
       fprintf(file, "Movie:     %s\n", movie);
     else {
-      fprintf(file, "Movie:     %s", MAPNAME(gameepisode, dsda_startmap));
-      fprintf(file, " - %s\n",       MAPNAME(gameepisode, dsda_last_gamemap));
+      fprintf(file, "Movie:     %s", dsda_MapLumpName(gameepisode, dsda_startmap));
+      fprintf(file, " - %s\n",       dsda_MapLumpName(gameepisode, dsda_last_gamemap));
     }
   }
 

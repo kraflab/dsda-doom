@@ -96,6 +96,7 @@
 #include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
+#include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
@@ -2118,7 +2119,7 @@ void G_DoCompleted (void)
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
   if (nodrawers && (demoplayback || timingdemo))
-    lprintf(LO_INFO, "FINISHED: %s\n", MAPNAME(gameepisode, gamemap));
+    lprintf(LO_INFO, "FINISHED: %s\n", dsda_MapLumpName(gameepisode, gamemap));
 
   WI_Start (&wminfo);
 }
@@ -2220,12 +2221,12 @@ static uint64_t G_Signature(void)
    computed = true;
    if (gamemode == commercial)
     for (map = haswolflevels ? 32 : 30; map; map--)
-      s = G_UpdateSignature(s, MAPNAME(1, map));
+      s = G_UpdateSignature(s, dsda_MapLumpName(1, map));
    else
     for (episode = gamemode==retail ? 4 :
      gamemode==shareware ? 1 : 3; episode; episode--)
       for (map = 9; map; map--)
-        s = G_UpdateSignature(s, MAPNAME(episode, map));
+        s = G_UpdateSignature(s, dsda_MapLumpName(episode, map));
   }
   return s;
 }
@@ -2486,7 +2487,7 @@ static void G_DoSaveGame(dboolean via_cmd)
          : "Game save failed!"); // CPhipps - not externalised
 
   /* Print some information about the save game */
-  maplump = MAPNAME(gameepisode, gamemap);
+  maplump = dsda_MapLumpName(gameepisode, gamemap);
   time = leveltime / TICRATE;
   ttime = (totalleveltimes + leveltime) / TICRATE;
 
@@ -2890,7 +2891,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     episode = 1;
 
   // Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
-  if (!EpiCustom && !W_LumpNameExists(MAPNAME(episode, map)))
+  if (!EpiCustom && !W_LumpNameExists(dsda_MapLumpName(episode, map)))
   {
     if (heretic)
     {
