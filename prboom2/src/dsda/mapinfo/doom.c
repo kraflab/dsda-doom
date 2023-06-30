@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "r_data.h"
 #include "w_wad.h"
 
 #include "dsda/args.h"
@@ -192,7 +193,12 @@ int dsda_DoomHUTitle(dsda_string_t* str) {
 }
 
 int dsda_DoomSkyTexture(int* sky) {
-  return false; // TODO
+  if (!current_map || !current_map->sky1.lump)
+    return false;
+
+  *sky = R_TextureNumForName(current_map->sky1.lump);
+
+  return true;
 }
 
 int dsda_DoomPrepareInitNew(void) {

@@ -29,7 +29,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | Next                               | :telescope:     |
 | SecretNext                         | :telescope:     |
 | Cluster                            | :telescope:     |
-| Sky1                               | :telescope:     |
+| Sky1                               | :heavy_check_mark: |
 | Sky2                               | :telescope:     |
 | DoubleSky                          | :telescope:     |
 | ForceNoSkyStretch                  | :telescope:     |

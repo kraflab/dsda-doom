@@ -356,6 +356,9 @@ void dsda_HUTitle(dsda_string_t* str) {
 int dsda_SkyTexture(void) {
   int sky;
 
+  if (dsda_DoomSkyTexture(&sky))
+    return sky;
+
   if (dsda_HexenSkyTexture(&sky))
     return sky;
 
