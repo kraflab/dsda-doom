@@ -35,7 +35,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | ForceNoSkyStretch                  | :telescope:     |
 | SkyStretch                         | :telescope:     |
 | FadeTable                          | :telescope:     |
-| TitlePatch                         | :telescope:     |
+| TitlePatch                         | :heavy_check_mark: |
 | Par                                | :heavy_check_mark: |
 | NoIntermission                     | :telescope:     |
 | Intermission                       | :telescope:     |
@@ -74,6 +74,6 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | RandomPlayerStarts                 | :telescope:     |
 | ForgetState                        | :telescope:     |
 | RememberState                      | :telescope:     |
-| Author                             | :telescope:     |
+| Author                             | :heavy_check_mark: |
 | NoPassover                         | :telescope:     |
 | Passover                           | :telescope:     |

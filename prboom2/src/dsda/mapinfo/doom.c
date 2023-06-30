@@ -284,11 +284,47 @@ int dsda_DoomEnterPic(const char** enter_pic) {
 }
 
 int dsda_DoomPrepareEntering(void) {
-  return false; // TODO
+  extern const char *el_levelname;
+  extern const char *el_levelpic;
+  extern const char *el_author;
+
+  if (!next_map)
+    return false;
+
+  el_author = (next_map->flags & DMI_SHOW_AUTHOR) ? next_map->author : NULL;
+
+  if (next_map->title_patch) {
+    el_levelname = NULL;
+    el_levelpic = next_map->title_patch;
+  }
+  else {
+    el_levelname = next_map->nice_name;
+    el_levelpic = NULL;
+  }
+
+  return true;
 }
 
 int dsda_DoomPrepareFinished(void) {
-  return false; // TODO
+  extern const char *lf_levelname;
+  extern const char *lf_levelpic;
+  extern const char *lf_author;
+
+  if (!last_map)
+    return false;
+
+  lf_author = (last_map->flags & DMI_SHOW_AUTHOR) ? last_map->author : NULL;
+
+  if (last_map->title_patch) {
+    lf_levelname = NULL;
+    lf_levelpic = last_map->title_patch;
+  }
+  else {
+    lf_levelname = last_map->nice_name;
+    lf_levelpic = NULL;
+  }
+
+  return true;
 }
 
 int dsda_DoomMapLightning(int* lightning) {

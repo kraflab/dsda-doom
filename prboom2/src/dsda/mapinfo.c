@@ -437,6 +437,9 @@ const char* dsda_EnterPic(void) {
 }
 
 void dsda_PrepareEntering(void) {
+  if (dsda_DoomPrepareEntering())
+    return;
+
   if (dsda_HexenPrepareEntering())
     return;
 
@@ -447,6 +450,9 @@ void dsda_PrepareEntering(void) {
 }
 
 void dsda_PrepareFinished(void) {
+  if (dsda_DoomPrepareFinished())
+    return;
+
   if (dsda_HexenPrepareFinished())
     return;
 

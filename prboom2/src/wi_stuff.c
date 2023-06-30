@@ -498,13 +498,8 @@ void WI_drawLF(void)
   {
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, lf_levelname);
-    y += (5 * hud_font.height / 4);
 
-    if (lf_author)
-    {
-      WI_DrawString(160, y, lf_author);
-      y += (5 * hud_font.height / 4);
-    }
+    y += (5 * hud_font.height / 4);
   }
   else
   {
@@ -522,12 +517,18 @@ void WI_drawLF(void)
     V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y,
       FB, lname, CR_DEFAULT, VPT_STRETCH);
 
-    // draw "Finished!"
     y += (5 * V_NamePatchHeight(lname)) / 4;
   }
 
+  if (lf_author)
+  {
+    WI_DrawString(160, y, lf_author);
+
+    y += (5 * hud_font.height / 4);
+  }
 
   // CPhipps - patch drawing updated
+  // draw "Finished!"
   V_DrawNamePatch((320 - V_NamePatchWidth(finished))/2, y,
      FB, finished, CR_DEFAULT, VPT_STRETCH);
 }
@@ -553,21 +554,16 @@ void WI_drawEL(void)
   V_DrawNamePatch((320 - V_NamePatchWidth(entering)) / 2,
     y, FB, entering, CR_DEFAULT, VPT_STRETCH);
 
+  y += (5 * V_NamePatchHeight(entering)) / 4;
 
   dsda_PrepareEntering();
 
   if (el_levelname)
   {
-    y += (5 * V_NamePatchHeight(entering)) / 4;
-
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, el_levelname);
 
-    if (el_author)
-    {
-      y += (5 * hud_font.height / 4);
-      WI_DrawString(160, y, el_author);
-    }
+    y += (5 * hud_font.height / 4);
   }
   else
   {
@@ -580,12 +576,19 @@ void WI_drawEL(void)
     if (!W_LumpNameExists(lname))
       return;
 
-    // draw level
-    y += (5 * V_NamePatchHeight(lname)) / 4;
-
     // CPhipps - patch drawing updated
+    // draw level
     V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y, FB,
       lname, CR_DEFAULT, VPT_STRETCH);
+
+    y += (5 * V_NamePatchHeight(lname)) / 4;
+  }
+
+  if (el_author)
+  {
+    WI_DrawString(160, y, el_author);
+
+    y += (5 * hud_font.height / 4);
   }
 }
 
