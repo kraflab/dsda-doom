@@ -208,7 +208,7 @@ int dsda_HexenResolveCLEV(int* clev, int* episode, int* map) {
     return false;
 
   // Catch invalid maps
-  next = MAPNAME(*episode, P_TranslateMap(*map));
+  next = VANILLA_MAP_LUMP_NAME(*episode, P_TranslateMap(*map));
   if (!W_LumpNameExists(next)) {
     doom_printf("IDCLEV target not found: %s", next);
     *clev = false;
@@ -314,7 +314,7 @@ int dsda_HexenHUTitle(dsda_string_t* str) {
     dsda_StringCat(str, CurrentMap->name);
 
   if (!str->string)
-    dsda_StringCat(str, MAPNAME(gameepisode, gamemap));
+    dsda_StringCat(str, VANILLA_MAP_LUMP_NAME(gameepisode, gamemap));
 
   return true;
 }

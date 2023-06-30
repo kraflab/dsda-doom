@@ -36,7 +36,7 @@ int dsda_LegacyFirstMap(int* episode, int* map) {
 
   if (gamemode == commercial) {
     for (i = 1; i < 33; i++) {
-      lump = W_CheckNumForName(MAPNAME(1, i));
+      lump = W_CheckNumForName(VANILLA_MAP_LUMP_NAME(1, i));
 
       if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source == source_pwad) {
         *map = i;
@@ -48,7 +48,7 @@ int dsda_LegacyFirstMap(int* episode, int* map) {
   else
     for (i = 1; i < 5; i++)
       for (j = 1; j < 10; j++) {
-        lump = W_CheckNumForName(MAPNAME(i, j));
+        lump = W_CheckNumForName(VANILLA_MAP_LUMP_NAME(i, j));
 
         if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source == source_pwad) {
           *episode = i;
@@ -207,7 +207,7 @@ static int dsda_CannotCLEV(int episode, int map) {
   ) return true;
 
   // Catch invalid maps
-  next = MAPNAME(episode, map);
+  next = VANILLA_MAP_LUMP_NAME(episode, map);
   if (!W_LumpNameExists(next)) {
     doom_printf("IDCLEV target not found: %s", next);
     return true;
@@ -326,7 +326,7 @@ int dsda_LegacyBossAction(mobj_t* mo) {
 }
 
 int dsda_LegacyMapLumpName(const char** name, int episode, int map) {
-  *name = MAPNAME(episode, map);
+  *name = VANILLA_MAP_LUMP_NAME(episode, map);
 
   return true;
 }
@@ -371,7 +371,7 @@ int dsda_LegacyHUTitle(dsda_string_t* str) {
   }
 
   if (!str->string)
-    dsda_StringCat(str, MAPNAME(gameepisode, gamemap));
+    dsda_StringCat(str, VANILLA_MAP_LUMP_NAME(gameepisode, gamemap));
 
   return true;
 }

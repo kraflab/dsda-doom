@@ -58,7 +58,7 @@ extern GameMode_t gamemode;
 extern GameMission_t  gamemission;
 extern const char *doomverstr;
 
-extern char *MAPNAME(int e, int m);
+extern char *VANILLA_MAP_LUMP_NAME(int e, int m);
 
 // Set if homebrew PWAD stuff has been added.
 extern  dboolean modifiedgame;

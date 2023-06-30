@@ -434,7 +434,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 				int ep, map;
 				G_ValidateMapName(parsed.mapname, &ep, &map);
 				map++;
-				sprintf(parsed.nextmap, "%s", MAPNAME(ep, map));
+				sprintf(parsed.nextmap, "%s", VANILLA_MAP_LUMP_NAME(ep, map));
 			}
 		}
 

@@ -91,7 +91,7 @@ int help_friends;
 
 int monkeys;
 
-char *MAPNAME(int e, int m)
+char *VANILLA_MAP_LUMP_NAME(int e, int m)
 {
   static char name[9];
 
