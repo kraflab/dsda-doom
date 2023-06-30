@@ -1987,11 +1987,19 @@ void WI_Ticker(void)
 
   if (bcnt == 1)
   {
-    // intermission music
-    if ( gamemode == commercial )
-      S_ChangeMusic(mus_dm2int, true);
+    int mnum;
+    int muslump;
+
+    dsda_IntermissionMusic(&mnum, &muslump);
+
+    if (muslump >= 0)
+    {
+      S_ChangeMusInfoMusic(muslump, true);
+    }
     else
-      S_ChangeMusic(mus_inter, true);
+    {
+      S_ChangeMusic(mnum, true);
+    }
   }
 
   WI_checkForAccelerate();

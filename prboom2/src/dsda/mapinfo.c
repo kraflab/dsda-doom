@@ -230,6 +230,19 @@ void dsda_MapMusic(int* music_index, int* music_lump) {
   dsda_LegacyMapMusic(music_index, music_lump);
 }
 
+void dsda_IntermissionMusic(int* music_index, int* music_lump) {
+  if (dsda_DoomIntermissionMusic(music_index, music_lump))
+    return;
+
+  if (dsda_HexenIntermissionMusic(music_index, music_lump))
+    return;
+
+  if (dsda_UIntermissionMusic(music_index, music_lump))
+    return;
+
+  dsda_LegacyIntermissionMusic(music_index, music_lump);
+}
+
 void dsda_InterMusic(int* music_index, int* music_lump) {
   if (dsda_HexenInterMusic(music_index, music_lump))
     return;

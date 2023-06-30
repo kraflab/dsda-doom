@@ -42,7 +42,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | Music                              | :heavy_check_mark: |
 | ExitPic                            | :telescope:     |
 | EnterPic                           | :telescope:     |
-| InterMusic                         | :telescope:     |
+| InterMusic                         | :heavy_check_mark: |
 | BorderTexture                      | :telescope:     |
 | Lightning                          | :telescope:     |
 | EvenLighting                       | :telescope:     |

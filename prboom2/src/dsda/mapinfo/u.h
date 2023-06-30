@@ -35,6 +35,7 @@ int dsda_UResolveCLEV(int* clev, int* episode, int* map);
 int dsda_UResolveINIT(int* init);
 int dsda_UMusicIndexToLumpNum(int* lump, int music_index);
 int dsda_UMapMusic(int* music_index, int* music_lump);
+int dsda_UIntermissionMusic(int* music_index, int* music_lump);
 int dsda_UInterMusic(int* music_index, int* music_lump);
 int dsda_UStartFinale(void);
 int dsda_UFTicker(void);

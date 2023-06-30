@@ -292,6 +292,17 @@ int dsda_LegacyMapMusic(int* music_index, int* music_lump) {
   return true;
 }
 
+int dsda_LegacyIntermissionMusic(int* music_index, int* music_lump) {
+  *music_lump = -1;
+
+  if (gamemode == commercial)
+    *music_index = mus_dm2int;
+  else
+    *music_index = mus_inter;
+
+  return true;
+}
+
 int dsda_LegacyInterMusic(int* music_index, int* music_lump) {
   *music_lump = -1;
 

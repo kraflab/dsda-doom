@@ -160,6 +160,10 @@ int dsda_UMapMusic(int* music_index, int* music_lump) {
   return true;
 }
 
+int dsda_UIntermissionMusic(int* music_index, int* music_lump) {
+  return false;
+}
+
 int dsda_UInterMusic(int* music_index, int* music_lump) {
   int lump;
 

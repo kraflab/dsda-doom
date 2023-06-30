@@ -280,6 +280,10 @@ int dsda_HexenMapMusic(int* music_index, int* music_lump) {
   return true;
 }
 
+int dsda_HexenIntermissionMusic(int* music_index, int* music_lump) {
+  return false; // TODO
+}
+
 int dsda_HexenInterMusic(int* music_index, int* music_lump) {
   return false; // TODO
 }

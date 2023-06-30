@@ -117,6 +117,23 @@ int dsda_DoomMapMusic(int* music_index, int* music_lump) {
   return true;
 }
 
+int dsda_DoomIntermissionMusic(int* music_index, int* music_lump) {
+  int lump;
+
+  if (!last_map || !last_map->inter_music)
+    return false;
+
+  lump = W_CheckNumForName(last_map->inter_music);
+
+  if (lump == LUMP_NOT_FOUND)
+    return false;
+
+  *music_index = -1;
+  *music_lump = lump;
+
+  return true;
+}
+
 int dsda_DoomInterMusic(int* music_index, int* music_lump) {
   return false; // TODO
 }

@@ -35,6 +35,7 @@ int dsda_DoomResolveCLEV(int* clev, int* episode, int* map);
 int dsda_DoomResolveINIT(int* init);
 int dsda_DoomMusicIndexToLumpNum(int* lump, int music_index);
 int dsda_DoomMapMusic(int* music_index, int* music_lump);
+int dsda_DoomIntermissionMusic(int* music_index, int* music_lump);
 int dsda_DoomInterMusic(int* music_index, int* music_lump);
 int dsda_DoomStartFinale(void);
 int dsda_DoomFTicker(void);
