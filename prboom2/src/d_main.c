@@ -331,6 +331,13 @@ static void D_DrawPause(void)
   V_EndUIDraw();
 }
 
+static dboolean must_fill_back_screen;
+
+void D_MustFillBackScreen(void)
+{
+  must_fill_back_screen = true;
+}
+
 void D_Display (fixed_t frac)
 {
   static dboolean isborderstate        = false;
@@ -407,7 +414,8 @@ void D_Display (fixed_t frac)
     viewactive = automap_off && !inhelpscreens;
     isborder = viewactive ? R_PartialView() : (!inhelpscreens && automap_active);
 
-    if (oldgamestate != GS_LEVEL) {
+    if (oldgamestate != GS_LEVEL || must_fill_back_screen) {
+      must_fill_back_screen = false;
       R_FillBackScreen ();    // draw the pattern into the back screen
       redrawborderstuff = isborder;
     } else {
