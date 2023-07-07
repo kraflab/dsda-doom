@@ -934,7 +934,6 @@ static void ST_loadGraphics(void)
 
   //e6y: status bar background
   R_SetPatchNum(&stbarbg, "STBAR");
-  R_SetFloorNum(&grnrock, (gamemode == commercial ? "GRNROCK" : "FLOOR7_2"));
   R_SetPatchNum(&brdr_b, "brdr_b");
 
   // arms background

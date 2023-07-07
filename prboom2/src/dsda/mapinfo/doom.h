@@ -50,6 +50,7 @@ int dsda_DoomPrepareFinale(int* result);
 void dsda_DoomLoadMapInfo(void);
 int dsda_DoomExitPic(const char** exit_pic);
 int dsda_DoomEnterPic(const char** enter_pic);
+int dsda_DoomBorderTexture(const char** border_texture);
 int dsda_DoomPrepareEntering(void);
 int dsda_DoomPrepareFinished(void);
 int dsda_DoomMapLightning(int* lightning);

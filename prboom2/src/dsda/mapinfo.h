@@ -69,6 +69,7 @@ void dsda_PrepareFinale(int* behaviour);
 void dsda_LoadMapInfo(void);
 const char* dsda_ExitPic(void);
 const char* dsda_EnterPic(void);
+const char* dsda_BorderTexture(void);
 void dsda_PrepareEntering(void);
 void dsda_PrepareFinished(void);
 int dsda_MapLightning(void);

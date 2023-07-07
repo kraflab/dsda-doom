@@ -283,6 +283,15 @@ int dsda_DoomEnterPic(const char** enter_pic) {
   return false; // TODO
 }
 
+int dsda_DoomBorderTexture(const char** border_texture) {
+  if (!current_map || !current_map->border_texture)
+    return false;
+
+  *border_texture = current_map->border_texture;
+
+  return true;
+}
+
 int dsda_DoomPrepareEntering(void) {
   extern const char *el_levelname;
   extern const char *el_levelpic;

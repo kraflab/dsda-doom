@@ -587,6 +587,13 @@ int dsda_LegacyEnterPic(const char** enter_pic) {
   return true;
 }
 
+int dsda_LegacyBorderTexture(const char** border_texture) {
+  *border_texture = heretic ? "FLOOR30" :
+                    gamemode == commercial ? "GRNROCK" : "FLOOR7_2";
+
+  return true;
+}
+
 int dsda_LegacyPrepareEntering(void) {
   extern const char *el_levelname;
   extern const char *el_levelpic;

@@ -499,6 +499,10 @@ int dsda_UEnterPic(const char** enter_pic) {
   return true;
 }
 
+int dsda_UBorderTexture(const char** border_texture) {
+  return false;
+}
+
 int dsda_UPrepareEntering(void) {
   extern const char *el_levelname;
   extern const char *el_levelpic;

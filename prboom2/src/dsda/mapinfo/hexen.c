@@ -491,6 +491,15 @@ int dsda_HexenEnterPic(const char** enter_pic) {
   return false; // TODO
 }
 
+int dsda_HexenBorderTexture(const char** border_texture) {
+  if (!hexen)
+    return false;
+
+  *border_texture = "F_022";
+
+  return true;
+}
+
 int dsda_HexenPrepareEntering(void) {
   return false; // TODO
 }

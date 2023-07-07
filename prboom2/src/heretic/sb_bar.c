@@ -205,7 +205,6 @@ void SB_Start(void)
 //---------------------------------------------------------------------------
 
 extern patchnum_t stbarbg;
-extern patchnum_t grnrock;
 extern patchnum_t brdr_b;
 
 void SB_Init(void)
@@ -238,7 +237,6 @@ void SB_Init(void)
     sb_full_inv_gem_xr = 269;
 
     // magic globals that ends up in the background
-    R_SetFloorNum(&grnrock, "FLOOR30");
     R_SetPatchNum(&brdr_b, "bordb");
     R_SetPatchNum(&stbarbg, "BARBACK");
 
@@ -942,7 +940,6 @@ static void Hexen_SB_Init(void)
     sb_full_inv_gem_xr = 268;
 
     // magic globals that ends up in the background
-    R_SetFloorNum(&grnrock, "F_022");
     R_SetPatchNum(&brdr_b, "bordb");
     R_SetPatchNum(&stbarbg, "H2BAR");
 

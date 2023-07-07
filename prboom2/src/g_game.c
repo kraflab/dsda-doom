@@ -1109,6 +1109,7 @@ static void G_DoLoadLevel (void)
 
   skyflatnum = R_FlatNumForName(g_skyflatname);
   skytexture = dsda_SkyTexture();
+  R_SetFloorNum(&grnrock, dsda_BorderTexture());
 
   // [RH] Set up details about sky rendering
   R_InitSkyMap ();

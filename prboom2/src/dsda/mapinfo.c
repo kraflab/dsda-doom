@@ -436,6 +436,22 @@ const char* dsda_EnterPic(void) {
   return enter_pic;
 }
 
+const char* dsda_BorderTexture(void) {
+  const char* border_texture;
+
+  if (dsda_DoomBorderTexture(&border_texture))
+    return border_texture;
+
+  if (dsda_HexenBorderTexture(&border_texture))
+    return border_texture;
+
+  if (dsda_UBorderTexture(&border_texture))
+    return border_texture;
+
+  dsda_LegacyBorderTexture(&border_texture);
+  return border_texture;
+}
+
 void dsda_PrepareEntering(void) {
   if (dsda_DoomPrepareEntering())
     return;

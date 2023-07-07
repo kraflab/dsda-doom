@@ -50,6 +50,7 @@ int dsda_UPrepareFinale(int* result);
 void dsda_ULoadMapInfo(void);
 int dsda_UExitPic(const char** exit_pic);
 int dsda_UEnterPic(const char** enter_pic);
+int dsda_UBorderTexture(const char** border_texture);
 int dsda_UPrepareEntering(void);
 int dsda_UPrepareFinished(void);
 int dsda_UMapLightning(int* lightning);
