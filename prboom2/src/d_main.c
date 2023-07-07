@@ -625,7 +625,7 @@ static void D_PageDrawer(void)
   if (pagename)
   {
     // e6y: wide-res
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
   }
   else

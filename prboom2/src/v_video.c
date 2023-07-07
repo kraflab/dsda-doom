@@ -1158,7 +1158,7 @@ int V_GetPlaypalCount(void)
   return (dsda_PlayPalData()->length / PALETTE_SIZE);
 }
 
-void V_FillBorder(int lump, byte color)
+void V_ClearBorder(void)
 {
   int bordtop, bordbottom, bordleft, bordright;
 
@@ -1170,39 +1170,20 @@ void V_FillBorder(int lump, byte color)
   bordtop = wide_offsety;
   bordbottom = wide_offset2y - wide_offsety;
 
-  if (lump >= 0)
+  if (bordtop > 0)
   {
-    if (bordtop > 0)
-    {
-      // Top
-      V_FillFlat(lump, 0, 0, 0, SCREENWIDTH, bordtop, VPT_NONE);
-      // Bottom
-      V_FillFlat(lump, 0, 0, SCREENHEIGHT - bordbottom, SCREENWIDTH, bordbottom, VPT_NONE);
-    }
-    if (bordleft > 0)
-    {
-      // Left
-      V_FillFlat(lump, 0, 0, bordtop, bordleft, SCREENHEIGHT - bordbottom - bordtop, VPT_NONE);
-      // Right
-      V_FillFlat(lump, 0, SCREENWIDTH - bordright, bordtop, bordright, SCREENHEIGHT - bordbottom - bordtop, VPT_NONE);
-    }
+    // Top
+    V_FillRect(0, 0, 0, SCREENWIDTH, bordtop, 0);
+    // Bottom
+    V_FillRect(0, 0, SCREENHEIGHT - bordbottom, SCREENWIDTH, bordbottom, 0);
   }
-  else
+
+  if (bordleft > 0)
   {
-    if (bordtop > 0)
-    {
-      // Top
-      V_FillRect(0, 0, 0, SCREENWIDTH, bordtop, color);
-      // Bottom
-      V_FillRect(0, 0, SCREENHEIGHT - bordbottom, SCREENWIDTH, bordbottom, color);
-    }
-    if (bordleft > 0)
-    {
-      // Left
-      V_FillRect(0, 0, bordtop, bordleft, SCREENHEIGHT - bordbottom - bordtop, color);
-      // Right
-      V_FillRect(0, SCREENWIDTH - bordright, bordtop, bordright, SCREENHEIGHT - bordbottom - bordtop, color);
-    }
+    // Left
+    V_FillRect(0, 0, bordtop, bordleft, SCREENHEIGHT - bordbottom - bordtop, 0);
+    // Right
+    V_FillRect(0, SCREENWIDTH - bordright, bordtop, bordright, SCREENHEIGHT - bordbottom - bordtop, 0);
   }
 }
 
@@ -1462,7 +1443,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
   // which causes the black bars on the edge of heretic E3's
   // bottom endscreen to overlap the top screen during scrolling.
   // this happens in both software and GL at the time of writing.
-  V_FillBorder(-1, 0);
+  V_ClearBorder();
 
   // custom widescreen assets are a different format
   {

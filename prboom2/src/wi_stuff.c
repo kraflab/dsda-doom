@@ -430,7 +430,7 @@ static void WI_slamBackground(void)
     snprintf(name, sizeof(name), "WIMAP%d", wbs->epsd);
 
   // e6y: wide-res
-  V_FillBorder(-1, 0);
+  V_ClearBorder();
 
   // background
   V_DrawNamePatch(0, 0, FB, name, CR_DEFAULT, VPT_STRETCH);

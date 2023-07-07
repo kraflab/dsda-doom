@@ -262,7 +262,7 @@ void V_FreePlaypal(void);
 int V_GetPlaypalCount(void);
 
 // e6y: wide-res
-void V_FillBorder(int lump, byte color);
+void V_ClearBorder(void);
 
 void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flags);
 

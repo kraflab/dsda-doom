@@ -288,7 +288,7 @@ void dsda_UFDrawer(void) {
     F_BunnyScroll();
   else {
     // e6y: wide-res
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, gamemapinfo->endpic, CR_DEFAULT, VPT_STRETCH);
   }
 }

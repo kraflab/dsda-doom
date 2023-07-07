@@ -364,7 +364,7 @@ void F_TextWrite (void)
 {
   if (finalepatch)
   {
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, finalepatch, CR_DEFAULT, VPT_STRETCH);
   }
   else
@@ -663,7 +663,7 @@ void F_CastDrawer (void)
   dboolean             flip;
 
   // e6y: wide-res
-  V_FillBorder(-1, 0);
+  V_ClearBorder();
   // erase the entire screen to a background
   // CPhipps - patch drawing updated
   V_DrawNamePatch(0,0,0, bgcastcall, CR_DEFAULT, VPT_STRETCH); // Ty 03/30/98 bg texture extern
@@ -726,7 +726,7 @@ void F_BunnyScroll (void)
       V_DrawNamePatch(-scrolled, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
     }
     if (p2width == 320)
-      V_FillBorder(-1, 0);
+      V_ClearBorder();
   }
 
   if (finalecount < 1130)
@@ -778,7 +778,7 @@ void F_Drawer (void)
   else
   {
     // e6y: wide-res
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
 
     switch (gameepisode)
     {

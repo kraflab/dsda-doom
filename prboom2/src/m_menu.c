@@ -565,7 +565,7 @@ void M_DrawReadThis1(void)
   else if (gamemode == shareware)
   {
     // e6y: wide-res
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
   }
   else
@@ -4107,7 +4107,7 @@ void M_DrawHelp (void)
 
   if (helplump != LUMP_NOT_FOUND && lumpinfo[helplump].source != source_iwad)
   {
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNumPatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
   }
   else
@@ -4158,7 +4158,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   inhelpscreens = true;
   if (creditlump != LUMP_NOT_FOUND && lumpinfo[creditlump].source != source_iwad)
   {
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNumPatch(0, 0, 0, creditlump, CR_DEFAULT, VPT_STRETCH);
   }
   else
