@@ -1183,6 +1183,19 @@ static void G_DoLoadLevel (void)
   ST_Start();
   HU_Start();
 
+  // The border texture can change between maps, which must queue a backscreen fill
+  {
+    void D_MustFillBackScreen();
+
+    static int old_grnrock = -1;
+
+    if (old_grnrock != grnrock.lumpnum)
+    {
+      old_grnrock = grnrock.lumpnum;
+      D_MustFillBackScreen();
+    }
+  }
+
   // killough: make -timedemo work on multilevel demos
   // Move to end of function to minimize noise -- killough 2/22/98:
 
