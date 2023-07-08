@@ -99,7 +99,6 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
 static void dsda_FreeMap(doom_mapinfo_map_t &map) {
   Z_Free(map.lump_name);
   Z_Free(map.nice_name);
-  Z_Free(map.fade_table);
   Z_Free(map.title_patch);
   Z_Free(map.music);
   Z_Free(map.inter_music);
@@ -125,7 +124,6 @@ static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
 
   REPLACE_WITH_COPY(dest.lump_name);
   REPLACE_WITH_COPY(dest.nice_name);
-  REPLACE_WITH_COPY(dest.fade_table);
   REPLACE_WITH_COPY(dest.title_patch);
   REPLACE_WITH_COPY(dest.music);
   REPLACE_WITH_COPY(dest.inter_music);
@@ -297,9 +295,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     }
     else if (!stricmp(scanner.string, "Sky1")) {
       dsda_ParseDoomMapInfoMapSky(scanner, map.sky1);
-    }
-    else if (!stricmp(scanner.string, "FadeTable")) {
-      SCAN_STRING(map.fade_table);
     }
     else if (!stricmp(scanner.string, "TitlePatch")) {
       dsda_ParseDoomMapInfoTitlePatch(scanner, map);

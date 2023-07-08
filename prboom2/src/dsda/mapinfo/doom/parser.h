@@ -87,7 +87,6 @@ typedef struct {
   doom_mapinfo_map_next_t next;
   doom_mapinfo_map_next_t secret_next;
   doom_mapinfo_sky_t sky1;
-  char* fade_table;
   char* title_patch;
   char* exit_pic;
   char* enter_pic;
