@@ -93,7 +93,6 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
 
 #define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
                                scanner.MustGetFloat(); \
-                               Z_Free(x); \
                                dsda_FloatString(scanner, x); }
 
 static void dsda_FreeMap(doom_mapinfo_map_t &map) {
