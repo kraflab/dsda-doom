@@ -441,7 +441,7 @@ static void StreamIn_mobj_t(mobj_t *str)
     }
 
     str->friction = ORIG_FRICTION;
-    str->gravity = GRAVITY;
+    str->gravity = FRACUNIT;
     str->alpha = 1.f;
 }
 

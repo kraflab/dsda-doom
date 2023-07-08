@@ -646,6 +646,12 @@ int dsda_LegacySky2Texture(short* texture) {
   return true;
 }
 
+int dsda_LegacyGravity(fixed_t* gravity) {
+  *gravity = FRACUNIT;
+
+  return true;
+}
+
 int dsda_LegacyInitSky(void) {
   return true;
 }

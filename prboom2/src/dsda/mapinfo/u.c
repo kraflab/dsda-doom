@@ -575,6 +575,10 @@ int dsda_USky2Texture(short* texture) {
   return false;
 }
 
+int dsda_UGravity(fixed_t* gravity) {
+  return false;
+}
+
 int dsda_UInitSky(void) {
   return false;
 }

@@ -128,6 +128,23 @@ int dsda_SkipDrawShowNextLoc(void) {
   return skip;
 }
 
+static int dsda_Gravity(void) {
+  fixed_t gravity;
+
+  if (dsda_DoomGravity(&gravity))
+    return gravity;
+
+  if (dsda_HexenGravity(&gravity))
+    return gravity;
+
+  if (dsda_UGravity(&gravity))
+    return gravity;
+
+  dsda_LegacyGravity(&gravity);
+
+  return gravity;
+}
+
 static void dsda_UpdateMapInfo(void) {
   map_info.finite_height = false;
 
@@ -135,6 +152,8 @@ static void dsda_UpdateMapInfo(void) {
   dsda_HexenUpdateMapInfo();
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
+
+  map_info.gravity = dsda_Gravity();
 
   if (allow_incompatibility && dsda_Flag(dsda_arg_debug_finite_height))
     map_info.finite_height = true;

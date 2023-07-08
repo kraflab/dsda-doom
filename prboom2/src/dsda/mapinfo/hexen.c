@@ -565,6 +565,10 @@ int dsda_HexenSky2Texture(short* texture) {
   return true;
 }
 
+int dsda_HexenGravity(fixed_t* gravity) {
+  return false;
+}
+
 int dsda_HexenInitSky(void) {
   extern fixed_t Sky1ScrollDelta;
   extern fixed_t Sky2ScrollDelta;

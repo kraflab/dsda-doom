@@ -32,6 +32,7 @@
 #define WD_START_FINALE 0x02
 
 typedef struct {
+  fixed_t gravity;
   dboolean finite_height;
 } map_info_t;
 

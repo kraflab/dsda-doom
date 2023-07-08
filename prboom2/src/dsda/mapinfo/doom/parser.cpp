@@ -104,6 +104,7 @@ static void dsda_FreeMap(doom_mapinfo_map_t &map) {
   Z_Free(map.exit_pic);
   Z_Free(map.enter_pic);
   Z_Free(map.border_texture);
+  Z_Free(map.gravity);
   Z_Free(map.air_control);
   Z_Free(map.author);
   Z_Free(map.special_actions);
@@ -129,6 +130,7 @@ static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
   REPLACE_WITH_COPY(dest.exit_pic);
   REPLACE_WITH_COPY(dest.enter_pic);
   REPLACE_WITH_COPY(dest.border_texture);
+  REPLACE_WITH_COPY(dest.gravity);
   REPLACE_WITH_COPY(dest.air_control);
   REPLACE_WITH_COPY(dest.author);
 
@@ -329,7 +331,7 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
       map.lighting = dmi_lighting_smooth;
     }
     else if (!stricmp(scanner.string, "Gravity")) {
-      SCAN_INT(map.gravity);
+      SCAN_FLOAT_STRING(map.gravity);
     }
     else if (!stricmp(scanner.string, "AirControl")) {
       SCAN_FLOAT_STRING(map.air_control);
@@ -463,6 +465,7 @@ static void dsda_InitDefaultMap(void) {
 
   memset(&default_map, 0, sizeof(default_map));
 
+  default_map.gravity = Z_Strdup("800");
   default_map.flags = DMI_INTERMISSION |
                       DMI_ACTIVATE_OWN_DEATH_SPECIALS |
                       DMI_LAX_MONSTER_ACTIVATION |

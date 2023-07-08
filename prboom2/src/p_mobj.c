@@ -1770,7 +1770,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
 
   //e6y
   mobj->friction = ORIG_FRICTION;                        // phares 3/17/98
-  mobj->gravity = GRAVITY;
+  mobj->gravity = map_info.gravity;
   mobj->alpha = 1.f;
   mobj->index = -1;
 
@@ -2477,7 +2477,7 @@ spawnit:
     if (mthing->gravity < 0)
       mobj->gravity = -mthing->gravity;
     else
-      mobj->gravity = FixedMul(GRAVITY, mthing->gravity);
+      mobj->gravity = FixedMul(map_info.gravity, mthing->gravity);
   }
 
   mobj->alpha = mthing->alpha;

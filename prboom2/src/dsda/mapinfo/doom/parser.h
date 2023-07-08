@@ -95,7 +95,7 @@ typedef struct {
   char* inter_music;
   int par;
   dmi_lighting_t lighting;
-  int gravity;
+  char* gravity;
   char* air_control;
   size_t num_special_actions;
   doom_mapinfo_special_action_t* special_actions;

@@ -356,6 +356,15 @@ int dsda_DoomSky2Texture(short* texture) {
   return false; // TODO
 }
 
+int dsda_DoomGravity(fixed_t* gravity) {
+  if (!current_map || !current_map->gravity)
+    return false;
+
+  *gravity = dsda_StringToFixed(current_map->gravity) / 800;
+
+  return true;
+}
+
 int dsda_DoomInitSky(void) {
   return false; // TODO
 }

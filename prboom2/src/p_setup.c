@@ -935,7 +935,7 @@ static void P_InitializeSectorDefaults(sector_t *ss)
   ss->movefactor = ORIG_FRICTION_FACTOR;
 
   // zdoom
-  ss->gravity = GRAVITY;
+  ss->gravity = FRACUNIT;
 }
 
 static void P_LoadSectors (int lump)
