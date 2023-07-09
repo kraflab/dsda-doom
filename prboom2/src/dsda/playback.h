@@ -27,6 +27,7 @@ void dsda_ExecutePlaybackOptions(void);
 const char* dsda_ParsePlaybackOptions(void);
 const char* dsda_PlaybackName(void);
 void dsda_ClearPlaybackStream(void);
+void dsda_InitDemoPlayback(void);
 void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour);
 int dsda_PlaybackTics(void);
 void dsda_StorePlaybackPosition(void);

@@ -156,14 +156,16 @@ const char* dsda_ParsePlaybackOptions(void) {
   return NULL;
 }
 
+void dsda_InitDemoPlayback(void) {
+  demoplayback = true;
+}
+
 void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour) {
   playback_origin_p = demo_p;
   playback_p = demo_p;
   playback_length = length;
   playback_behaviour = behaviour;
   playback_tics = 0;
-
-  demoplayback = true;
 }
 
 int dsda_PlaybackTics(void) {

@@ -3845,6 +3845,7 @@ void G_StartDemoPlayback(const byte *buffer, int length, int behaviour)
 {
   const byte *demo_p;
 
+  dsda_InitDemoPlayback();
   demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
   dsda_AttachPlaybackStream(demo_p, demolength, behaviour);
 
