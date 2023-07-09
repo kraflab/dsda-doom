@@ -128,7 +128,7 @@ int dsda_SkipDrawShowNextLoc(void) {
   return skip;
 }
 
-static int dsda_Gravity(void) {
+static fixed_t dsda_Gravity(void) {
   fixed_t gravity;
 
   if (dsda_DoomGravity(&gravity))
