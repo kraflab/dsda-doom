@@ -569,6 +569,15 @@ int dsda_HexenGravity(fixed_t* gravity) {
   return false;
 }
 
+int dsda_HexenAirControl(fixed_t* air_control) {
+  if (!hexen)
+    return false;
+
+  *air_control = (FRACUNIT >> 8);
+
+  return true;
+}
+
 int dsda_HexenInitSky(void) {
   extern fixed_t Sky1ScrollDelta;
   extern fixed_t Sky2ScrollDelta;

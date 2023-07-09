@@ -59,6 +59,7 @@ int dsda_HexenMapCluster(int* cluster, int map);
 int dsda_HexenSky1Texture(short* texture);
 int dsda_HexenSky2Texture(short* texture);
 int dsda_HexenGravity(fixed_t* gravity);
+int dsda_HexenAirControl(fixed_t* air_control);
 int dsda_HexenInitSky(void);
 
 #endif

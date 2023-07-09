@@ -579,6 +579,10 @@ int dsda_UGravity(fixed_t* gravity) {
   return false;
 }
 
+int dsda_UAirControl(fixed_t* air_control) {
+  return false;
+}
+
 int dsda_UInitSky(void) {
   return false;
 }

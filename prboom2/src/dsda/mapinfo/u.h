@@ -59,6 +59,7 @@ int dsda_UMapCluster(int* cluster, int map);
 int dsda_USky1Texture(short* texture);
 int dsda_USky2Texture(short* texture);
 int dsda_UGravity(fixed_t* gravity);
+int dsda_UAirControl(fixed_t* air_control);
 int dsda_UInitSky(void);
 
 #endif

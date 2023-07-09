@@ -652,6 +652,14 @@ int dsda_LegacyGravity(fixed_t* gravity) {
   return true;
 }
 
+int dsda_LegacyAirControl(fixed_t* air_control) {
+  dboolean dsda_AllowJumping(void);
+
+  *air_control = dsda_AllowJumping() ? (FRACUNIT >> 8) : 0;
+
+  return true;
+}
+
 int dsda_LegacyInitSky(void) {
   return true;
 }

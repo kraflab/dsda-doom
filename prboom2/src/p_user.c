@@ -53,6 +53,7 @@
 #include "dsda/death.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 
 // heretic needs
@@ -430,13 +431,15 @@ void P_MovePlayer (player_t* player)
           P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
       }
-      else if (dsda_AllowJumping())
-      { // slight air control for jumping up ledges
+      else if (map_info.air_control)
+      {
         if (cmd->forwardmove)
-          P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
+          P_Thrust(player, player->mo->angle,
+                   cmd->forwardmove > 0 ? map_info.air_control : -map_info.air_control);
 
         if (cmd->sidemove)
-          P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+          P_Thrust(player, player->mo->angle - ANG90,
+                   cmd->sidemove > 0 ? map_info.air_control : -map_info.air_control);
       }
       if (mo->state == states+S_PLAY)
         P_SetMobjState(mo,S_PLAY_RUN1);
@@ -1475,16 +1478,16 @@ void Raven_P_MovePlayer(player_t * player)
         {
           if (onground || player->mo->flags2 & MF2_FLY)
               P_ForwardThrust(player, player->mo->angle, cmd->forwardmove * 2048);
-          else if (hexen) // air control?
-              P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
+          else if (hexen)
+              P_ForwardThrust(player, player->mo->angle, map_info.air_control);
         }
 
         if (cmd->sidemove)
         {
           if (onground || player->mo->flags2 & MF2_FLY)
               P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * 2048);
-          else if (hexen) // air control?
-              P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+          else if (hexen)
+              P_Thrust(player, player->mo->angle, map_info.air_control);
         }
     }
 

@@ -38,7 +38,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | InterMusic                         | :heavy_check_mark: |
 | BorderTexture                      | :heavy_check_mark: |
 | Gravity                            | :heavy_check_mark: |
-| AirControl                         | :telescope:     |
+| AirControl                         | :heavy_check_mark: |
 | Author                             | :heavy_check_mark: |
 | SpecialAction                      | :telescope:     |
 | Intermission                       | :telescope:     |

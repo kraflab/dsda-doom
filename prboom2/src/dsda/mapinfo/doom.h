@@ -59,6 +59,7 @@ int dsda_DoomMapCluster(int* cluster, int map);
 int dsda_DoomSky1Texture(short* texture);
 int dsda_DoomSky2Texture(short* texture);
 int dsda_DoomGravity(fixed_t* gravity);
+int dsda_DoomAirControl(fixed_t* air_control);
 int dsda_DoomInitSky(void);
 
 #endif

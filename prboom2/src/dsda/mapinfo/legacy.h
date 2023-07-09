@@ -59,6 +59,7 @@ int dsda_LegacyMapCluster(int* cluster, int map);
 int dsda_LegacySky1Texture(short* texture);
 int dsda_LegacySky2Texture(short* texture);
 int dsda_LegacyGravity(fixed_t* gravity);
+int dsda_LegacyAirControl(fixed_t* air_control);
 int dsda_LegacyInitSky(void);
 
 #endif

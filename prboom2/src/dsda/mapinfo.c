@@ -145,6 +145,23 @@ static fixed_t dsda_Gravity(void) {
   return gravity;
 }
 
+static fixed_t dsda_AirControl(void) {
+  fixed_t air_control;
+
+  if (dsda_DoomAirControl(&air_control))
+    return air_control;
+
+  if (dsda_HexenAirControl(&air_control))
+    return air_control;
+
+  if (dsda_UAirControl(&air_control))
+    return air_control;
+
+  dsda_LegacyAirControl(&air_control);
+
+  return air_control;
+}
+
 static void dsda_UpdateMapInfo(void) {
   map_info.finite_height = false;
 
@@ -154,6 +171,7 @@ static void dsda_UpdateMapInfo(void) {
   dsda_LegacyUpdateMapInfo();
 
   map_info.gravity = dsda_Gravity();
+  map_info.air_control = dsda_AirControl();
 
   if (allow_incompatibility && dsda_Flag(dsda_arg_debug_finite_height))
     map_info.finite_height = true;

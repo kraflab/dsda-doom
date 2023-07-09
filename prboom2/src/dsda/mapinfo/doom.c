@@ -365,6 +365,15 @@ int dsda_DoomGravity(fixed_t* gravity) {
   return true;
 }
 
+int dsda_DoomAirControl(fixed_t* air_control) {
+  if (!current_map || !current_map->air_control)
+    return false;
+
+  *air_control = dsda_StringToFixed(current_map->air_control);
+
+  return true;
+}
+
 int dsda_DoomInitSky(void) {
   return false; // TODO
 }

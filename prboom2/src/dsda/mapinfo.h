@@ -33,6 +33,7 @@
 
 typedef struct {
   fixed_t gravity;
+  fixed_t air_control;
   dboolean finite_height;
 } map_info_t;
 
