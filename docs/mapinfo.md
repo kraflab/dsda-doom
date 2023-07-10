@@ -25,7 +25,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 
 | Key                                | Status          |
 | ---------------------------------- | --------------- |
-| LevelNum                           | :telescope:     |
+| LevelNum                           | :heavy_check_mark: |
 | Next                               | :telescope:     |
 | SecretNext                         | :telescope:     |
 | Cluster                            | :heavy_check_mark: |
