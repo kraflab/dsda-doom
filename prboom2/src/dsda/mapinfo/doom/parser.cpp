@@ -245,6 +245,8 @@ static void dsda_ParseDoomMapInfoMapSpecialAction(Scanner &scanner,
   scanner.MustGetToken(TK_StringConst);
   special_action.monster_type = dsda_ActorNameToType(scanner.string);
 
+  scanner.MustGetToken(',');
+
   scanner.MustGetToken(TK_StringConst);
   special_action.action_special = dsda_ActionNameToNumber(scanner.string);
 
