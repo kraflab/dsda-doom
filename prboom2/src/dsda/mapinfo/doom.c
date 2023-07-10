@@ -276,11 +276,21 @@ void dsda_DoomLoadMapInfo(void) {
 }
 
 int dsda_DoomExitPic(const char** exit_pic) {
-  return false; // TODO
+  if (!current_map || !current_map->exit_pic)
+    return false;
+
+  *exit_pic = current_map->exit_pic;
+
+  return true;
 }
 
 int dsda_DoomEnterPic(const char** enter_pic) {
-  return false; // TODO
+  if (!current_map || !current_map->enter_pic)
+    return false;
+
+  *enter_pic = current_map->enter_pic;
+
+  return true;
 }
 
 int dsda_DoomBorderTexture(const char** border_texture) {

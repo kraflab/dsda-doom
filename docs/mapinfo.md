@@ -33,8 +33,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | TitlePatch                         | :heavy_check_mark: |
 | Par                                | :heavy_check_mark: |
 | Music                              | :heavy_check_mark: |
-| ExitPic                            | :telescope:     |
-| EnterPic                           | :telescope:     |
+| ExitPic                            | :heavy_check_mark: |
+| EnterPic                           | :heavy_check_mark: |
 | InterMusic                         | :heavy_check_mark: |
 | BorderTexture                      | :heavy_check_mark: |
 | Gravity                            | :heavy_check_mark: |

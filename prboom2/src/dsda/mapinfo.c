@@ -450,6 +450,9 @@ void dsda_LoadMapInfo(void) {
 const char* dsda_ExitPic(void) {
   const char* exit_pic;
 
+  if (dsda_DoomExitPic(&exit_pic))
+    return exit_pic;
+
   if (dsda_HexenExitPic(&exit_pic))
     return exit_pic;
 
@@ -462,6 +465,9 @@ const char* dsda_ExitPic(void) {
 
 const char* dsda_EnterPic(void) {
   const char* enter_pic;
+
+  if (dsda_DoomEnterPic(&enter_pic))
+    return enter_pic;
 
   if (dsda_HexenEnterPic(&enter_pic))
     return enter_pic;
