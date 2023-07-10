@@ -2576,11 +2576,35 @@ void A_Explode(mobj_t *thingy)
 // if on first boss level
 //
 
+dboolean P_CheckBossDeath(mobj_t *mo)
+{
+  int i;
+  thinker_t* th;
+
+  // make sure there is a player alive for victory
+  for (i = 0; i < g_maxplayers; i++)
+    if (playeringame[i] && players[i].health > 0)
+      break;
+
+  if (i == g_maxplayers)
+    return false; // no one left alive, so do not end game
+
+  // scan the remaining thinkers to see
+  // if all bosses are dead
+  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+    if (th->function == P_MobjThinker) {
+      mobj_t* mo2 = (mobj_t*) th;
+
+      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
+        return false; // other boss not dead
+    }
+
+  return true;
+}
+
 void A_BossDeath(mobj_t *mo)
 {
-  thinker_t *th;
-  line_t    junk;
-  int       i;
+  line_t junk;
 
   // heretic_note: probably we can adopt the clean heretic style and merge
   if (heretic) return Heretic_A_BossDeath(mo);
@@ -2672,23 +2696,10 @@ void A_BossDeath(mobj_t *mo)
     }
   }
 
-  // make sure there is a player alive for victory
-  for (i = 0; i < g_maxplayers; i++)
-    if (playeringame[i] && players[i].health > 0)
-      break;
-
-  if (i == g_maxplayers)
-    return;     // no one left alive, so do not end game
-
-  // scan the remaining thinkers to see
-  // if all bosses are dead
-  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-    if (th->function == P_MobjThinker)
-    {
-      mobj_t *mo2 = (mobj_t *) th;
-      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-        return;         // other boss not dead
-    }
+  if (!P_CheckBossDeath(mo))
+  {
+    return;
+  }
 
   // victory!
   if ( gamemode == commercial)

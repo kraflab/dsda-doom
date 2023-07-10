@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "p_enemy.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"
@@ -299,21 +300,12 @@ void dsda_UFDrawer(void) {
 int dsda_UBossAction(mobj_t* mo) {
   int i;
   line_t junk;
-  thinker_t* th;
 
   if (!gamemapinfo || !gamemapinfo->numbossactions)
     return false;
 
   if (gamemapinfo->numbossactions < 0)
     return true;
-
-  // make sure there is a player alive for victory
-  for (i = 0; i < g_maxplayers; i++)
-    if (playeringame[i] && players[i].health > 0)
-      break;
-
-  if (i == g_maxplayers)
-    return true; // no one left alive, so do not end game
 
   for (i = 0; i < gamemapinfo->numbossactions; i++)
     if (gamemapinfo->bossactions[i].type == mo->type)
@@ -322,15 +314,8 @@ int dsda_UBossAction(mobj_t* mo) {
   if (i >= gamemapinfo->numbossactions)
     return true; // no matches found
 
-  // scan the remaining thinkers to see
-  // if all bosses are dead
-  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-    if (th->function == P_MobjThinker) {
-      mobj_t* mo2 = (mobj_t*) th;
-
-      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-        return true; // other boss not dead
-    }
+  if (!P_CheckBossDeath(mo))
+    return true;
 
   for (i = 0; i < gamemapinfo->numbossactions; i++) {
     if (gamemapinfo->bossactions[i].type == mo->type) {
