@@ -350,6 +350,9 @@ int dsda_FDrawer(void) {
 }
 
 int dsda_BossAction(mobj_t* mo) {
+  if (dsda_DoomBossAction(mo))
+    return true;
+
   if (dsda_HexenBossAction(mo))
     return true;
 

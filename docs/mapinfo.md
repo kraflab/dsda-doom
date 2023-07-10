@@ -40,7 +40,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | Gravity                            | :heavy_check_mark: |
 | AirControl                         | :heavy_check_mark: |
 | Author                             | :heavy_check_mark: |
-| SpecialAction                      | :telescope:     |
+| SpecialAction                      | :heavy_check_mark: |
 | Intermission                       | :telescope:     |
 | NoIntermission                     | :telescope:     |
 | EvenLighting                       | :telescope:     |

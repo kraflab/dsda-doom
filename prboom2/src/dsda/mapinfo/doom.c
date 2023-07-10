@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "p_enemy.h"
 #include "r_data.h"
 #include "w_wad.h"
 
@@ -164,7 +165,30 @@ void dsda_DoomFDrawer(void) {
 }
 
 int dsda_DoomBossAction(mobj_t* mo) {
-  return false; // TODO
+  int i;
+
+  if (!current_map)
+    return false;
+
+  for (i = 0; i < current_map->num_special_actions; ++i)
+    if (current_map->special_actions[i].monster_type == mo->type)
+      break;
+
+  if (i == current_map->num_special_actions)
+    return true;
+
+  if (!P_CheckBossDeath(mo))
+    return true;
+
+  for (i = 0; i < current_map->num_special_actions; ++i)
+    if (current_map->special_actions[i].monster_type == mo->type)
+      map_format.execute_line_special(
+        current_map->special_actions[i].action_special,
+        current_map->special_actions[i].special_args,
+        NULL, 0, mo
+      );
+
+  return true;
 }
 
 int dsda_DoomMapLumpName(const char** name, int episode, int map) {
