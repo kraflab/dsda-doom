@@ -379,7 +379,12 @@ int dsda_DoomApplyFadeTable(void) {
 }
 
 int dsda_DoomMapCluster(int* cluster, int map) {
-  return false; // TODO
+  if (!current_map)
+    return false;
+
+  *cluster = current_map->cluster;
+
+  return true;
 }
 
 int dsda_DoomSky1Texture(short* texture) {
