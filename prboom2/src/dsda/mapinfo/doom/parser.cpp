@@ -95,7 +95,7 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
                                scanner.MustGetFloat(); \
                                dsda_FloatString(scanner, x); }
 
-static void dsda_FreeMap(doom_mapinfo_map_t &map) {
+static void dsda_ResetMap(doom_mapinfo_map_t &map) {
   Z_Free(map.lump_name);
   Z_Free(map.nice_name);
   Z_Free(map.title_patch);
@@ -115,6 +115,8 @@ static void dsda_FreeMap(doom_mapinfo_map_t &map) {
   Z_Free(map.secret_next.endpic);
 
   Z_Free(map.sky1.lump);
+
+  memset(&map, 0, sizeof(map));
 }
 
 #define REPLACE_WITH_COPY(x) { if (x) x = Z_Strdup(x); }
@@ -463,9 +465,7 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
 }
 
 static void dsda_InitDefaultMap(void) {
-  dsda_FreeMap(default_map);
-
-  memset(&default_map, 0, sizeof(default_map));
+  dsda_ResetMap(default_map);
 
   default_map.gravity = Z_Strdup("800");
   default_map.flags = DMI_INTERMISSION |
