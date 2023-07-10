@@ -78,7 +78,32 @@ int dsda_DoomResolveWarp(int* args, int arg_count, int* episode, int* map) {
 }
 
 int dsda_DoomNextMap(int* episode, int* map) {
-  return false; // TODO
+  const char* next = NULL;
+  const doom_mapinfo_map_t* entry = NULL;
+
+  if (!current_map)
+    return false;
+
+  if (current_map->secret_next.map)
+    next = current_map->secret_next.map;
+
+  if (!next)
+    next = current_map->next.map;
+
+  if (next)
+    entry = dsda_DoomMapEntryByName(next);
+
+  // TODO: next map default
+  if (!entry) {
+    *episode = 1;
+    *map = 1;
+  }
+  else {
+    *map = entry->level_num;
+    *episode = 1; // TODO: next map episode
+  }
+
+  return true;
 }
 
 int dsda_DoomShowNextLocBehaviour(int* behaviour) {

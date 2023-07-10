@@ -95,6 +95,9 @@ void dsda_ResolveWarp(int* args, int arg_count, int* episode, int* map) {
 }
 
 void dsda_NextMap(int* episode, int* map) {
+  if (dsda_DoomNextMap(episode, map))
+    return;
+
   if (dsda_HexenNextMap(episode, map))
     return;
 
