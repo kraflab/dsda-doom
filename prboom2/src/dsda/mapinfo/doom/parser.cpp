@@ -492,6 +492,7 @@ static void dsda_ParseDoomMapInfoAddDefaultMap(Scanner &scanner) {
     special_actions.push_back(default_map.special_actions[i]);
 
   Z_Free(default_map.special_actions);
+  default_map.special_actions = NULL;
   default_map.num_special_actions = 0;
 
   dsda_ParseDoomMapInfoMapBlock(scanner, default_map, special_actions);
