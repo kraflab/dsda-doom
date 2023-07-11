@@ -149,13 +149,6 @@ static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
   dest.special_actions = NULL;
 }
 
-static const char* end_names[dmi_end_count] = {
-  NULL,
-  "EndGame3",
-  "EndGameC",
-  "EndTitle",
-};
-
 static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next_t &next) {
   scanner.MustGetToken('=');
 
@@ -176,12 +169,14 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
       next.endpic = Z_Strdup("ENDPIC");
       return;
     }
-
-    for (int i = 1; i < dmi_end_count; ++i)
-      if (!stricmp(scanner.string, end_names[i])) {
-        next.end = (dmi_end_t) i;
-        return;
-      }
+    else if (!stricmp(scanner.string, "EndGame3")) {
+      next.end = dmi_end_game_scroll;
+      return;
+    }
+    else if (!stricmp(scanner.string, "EndGameC")) {
+      next.end = dmi_end_game_cast;
+      return;
+    }
 
     STR_DUP(next.map);
   }

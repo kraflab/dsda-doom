@@ -28,8 +28,6 @@ typedef enum {
   dmi_end_null,
   dmi_end_game_scroll,
   dmi_end_game_cast,
-  dmi_end_title,
-  dmi_end_count,
 } dmi_end_t;
 
 typedef struct {
