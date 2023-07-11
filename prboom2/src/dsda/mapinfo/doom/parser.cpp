@@ -455,6 +455,8 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
   STR_DUP(map.lump_name);
 
+  // TODO: see if map is already defined and replace it
+
   // Lookup via a separate lump is not supported, so use the key instead
   if (scanner.CheckToken(TK_Identifier)) {
     if (!stricmp(scanner.string, "lookup"))
