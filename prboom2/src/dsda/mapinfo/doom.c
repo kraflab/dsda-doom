@@ -182,6 +182,7 @@ int dsda_DoomStartFinale(void) {
 }
 
 int dsda_DoomFTicker(void) {
+  // TODO: zdoom default if no next definition is the doom 2 cast (even in doom 1)
   return false; // TODO
 }
 
@@ -302,7 +303,6 @@ int dsda_DoomPrepareIntermission(int* result) {
     return true;
   }
 
-  // TODO: zdoom default if no next definition is the doom 2 cast (even in doom 1)
 
   return false;
 }
