@@ -26,11 +26,8 @@ extern "C" {
 
 typedef enum {
   dmi_end_null,
-  dmi_end_game_1,
-  dmi_end_game_2,
-  dmi_end_game_3,
-  dmi_end_game_4,
-  dmi_end_game_d2,
+  dmi_end_game_scroll,
+  dmi_end_game_cast,
   dmi_end_title,
   dmi_end_count,
 } dmi_end_t;

@@ -20,6 +20,7 @@
 #include <vector>
 
 extern "C" {
+#include "doomstat.h"
 #include "z_zone.h"
 
 #include "dsda/name.h"
@@ -150,10 +151,7 @@ static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
 
 static const char* end_names[dmi_end_count] = {
   NULL,
-  "EndGame1",
-  "EndGame2",
   "EndGame3",
-  "EndGame4",
   "EndGameC",
   "EndTitle",
 };
@@ -166,6 +164,19 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
   next.end = dmi_end_null;
 
   if (scanner.CheckToken(TK_StringConst)) {
+    if (!stricmp(scanner.string, "EndGame1")) {
+      next.endpic = Z_Strdup(gamemode == retail ? "CREDIT" : "HELP2");
+      return;
+    }
+    else if (!stricmp(scanner.string, "EndGame2")) {
+      next.endpic = Z_Strdup("VICTORY2");
+      return;
+    }
+    else if (!stricmp(scanner.string, "EndGame4")) {
+      next.endpic = Z_Strdup("ENDPIC");
+      return;
+    }
+
     for (int i = 1; i < dmi_end_count; ++i)
       if (!stricmp(scanner.string, end_names[i])) {
         next.end = (dmi_end_t) i;
