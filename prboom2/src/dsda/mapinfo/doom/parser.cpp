@@ -65,6 +65,7 @@ static void dsda_SkipValue(Scanner &scanner) {
 }
 
 #define STR_DUP(x) { Z_Free(x); x = Z_Strdup(scanner.string); }
+#define RESET_STR(x) { Z_Free(x); x = NULL; }
 
 // The scanner drops the sign when scanning, and we need it back
 static void dsda_FloatString(Scanner &scanner, char* &str) {
@@ -160,6 +161,8 @@ static const char* end_names[dmi_end_count] = {
 static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next_t &next) {
   scanner.MustGetToken('=');
 
+  RESET_STR(next.map);
+  RESET_STR(next.endpic);
   next.end = dmi_end_null;
 
   if (scanner.CheckToken(TK_StringConst)) {
