@@ -109,11 +109,24 @@ int dsda_DoomNextMap(int* episode, int* map) {
 }
 
 int dsda_DoomShowNextLocBehaviour(int* behaviour) {
-  return false; // TODO
+  if (!current_map)
+    return false;
+
+  if (end_data)
+    *behaviour = WI_SHOW_NEXT_DONE;
+  else
+    *behaviour = WI_SHOW_NEXT_LOC | WI_SHOW_NEXT_EPISODAL;
+
+  return true;
 }
 
 int dsda_DoomSkipDrawShowNextLoc(int* skip) {
-  return false; // TODO
+  if (!current_map)
+    return false;
+
+  *skip = !!end_data;
+
+  return true;
 }
 
 void dsda_DoomUpdateMapInfo(void) {
@@ -304,6 +317,8 @@ int dsda_DoomPrepareIntermission(int* result) {
   }
 
   wminfo.didsecret = players[consoleplayer].didsecret;
+
+  end_data = NULL;
 
   *result = 0;
 

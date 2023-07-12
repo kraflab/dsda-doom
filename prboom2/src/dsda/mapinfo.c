@@ -108,6 +108,9 @@ void dsda_NextMap(int* episode, int* map) {
 }
 
 void dsda_ShowNextLocBehaviour(int* behaviour) {
+  if (dsda_DoomShowNextLocBehaviour(behaviour))
+    return;
+
   if (dsda_HexenShowNextLocBehaviour(behaviour))
     return;
 
@@ -119,6 +122,9 @@ void dsda_ShowNextLocBehaviour(int* behaviour) {
 
 int dsda_SkipDrawShowNextLoc(void) {
   int skip;
+
+  if (dsda_DoomSkipDrawShowNextLoc(&skip))
+    return skip;
 
   if (dsda_HexenSkipDrawShowNextLoc(&skip))
     return skip;
