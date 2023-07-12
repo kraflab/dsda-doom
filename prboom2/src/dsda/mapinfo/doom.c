@@ -20,6 +20,9 @@
 #include "lprintf.h"
 #include "p_enemy.h"
 #include "r_data.h"
+#include "s_sound.h"
+#include "sounds.h"
+#include "v_video.h"
 #include "w_wad.h"
 
 #include "dsda/args.h"
@@ -33,6 +36,10 @@ static const doom_mapinfo_map_t* last_map;
 static const doom_mapinfo_map_t* next_map;
 static const doom_mapinfo_map_t* current_map;
 static const doom_mapinfo_map_next_t* end_data;
+
+static doom_mapinfo_map_next_t default_end_data = {
+  .end = dmi_end_game_cast
+};
 
 static doom_mapinfo_map_t* dsda_DoomMapEntry(int gamemap) {
   int i;
@@ -192,17 +199,95 @@ int dsda_DoomInterMusic(int* music_index, int* music_lump) {
   return false; // TODO
 }
 
+extern int finalestage;
+extern int finalecount;
+extern const char* finaletext;
+extern const char* finaleflat;
+extern const char* finalepatch;
+extern int acceleratestage;
+extern int midstage;
+
+// TODO: use end_game everywhere and collapse all the finale implementations
+
 int dsda_DoomStartFinale(void) {
-  return false; // TODO
+  if (!current_map)
+    return false;
+
+  // TODO: cluster end text
+
+  return true;
 }
 
 int dsda_DoomFTicker(void) {
-  // TODO: zdoom default if no next definition is the doom 2 cast (even in doom 1)
-  return false; // TODO
+  void WI_checkForAccelerate(void);
+  float Get_TextSpeed(void);
+  void F_StartCast (void);
+
+  int next_level = false;
+  const int TEXTSPEED = 3;
+  const int TEXTWAIT = 250;
+  const int NEWTEXTWAIT = 1000;
+
+  if (!demo_compatibility)
+    WI_checkForAccelerate();
+  else {
+    int i;
+
+    for (i = 0; i < g_maxplayers; i++)
+      if (players[i].cmd.buttons)
+        next_level = true;
+  }
+
+  if (!next_level) {
+    // advance animation
+    finalecount++;
+
+    if (!finalestage) {
+      float speed = demo_compatibility ? TEXTSPEED : Get_TextSpeed();
+
+      if (
+        finalecount > strlen(finaletext) * speed + (midstage ? NEWTEXTWAIT : TEXTWAIT) ||
+        (midstage && acceleratestage)
+      )
+        next_level = true;
+    }
+  }
+
+  if (next_level) {
+    if (end_data) {
+      if (end_data->end == dmi_end_game_cast) {
+        F_StartCast(); // TODO: need to support cast in doom 1
+        return false; // let go of finale ownership
+      }
+      else {
+        finalecount = 0;
+        finalestage = 1;
+        wipegamestate = -1; // force a wipe
+        if (end_data->end == dmi_end_game_scroll && gamemode != commercial)
+          S_StartMusic(mus_bunny); // TODO: what music in doom 2?
+        return true; // keep finale ownership
+      }
+    }
+    else
+      gameaction = ga_worlddone; // next level, e.g. MAP07
+  }
+
+  return true; // keep finale ownership
 }
 
 void dsda_DoomFDrawer(void) {
-  return; // TODO
+  void F_TextWrite(void);
+  void F_BunnyScroll(void);
+
+  if (!finalestage || !end_data)
+    F_TextWrite();
+  else if (end_data->end == dmi_end_game_scroll)
+    F_BunnyScroll(); // TODO: need to support bunny in doom 2
+  else {
+    // e6y: wide-res
+    V_ClearBorder();
+    V_DrawNamePatch(0, 0, 0, end_data->end_pic, CR_DEFAULT, VPT_STRETCH);
+  }
 }
 
 int dsda_DoomBossAction(mobj_t* mo) {
@@ -295,6 +380,9 @@ int dsda_DoomPrepareIntermission(int* result) {
   if (!map) {
     end_data = next;
 
+    if (!end_data)
+      end_data = &default_end_data;
+
     *result = DC_VICTORY;
 
     return true;
@@ -326,7 +414,17 @@ int dsda_DoomPrepareIntermission(int* result) {
 }
 
 int dsda_DoomPrepareFinale(int* result) {
-  return false; // TODO
+  if (!current_map)
+    return false;
+
+  // TODO: check cluster finish text
+
+  if (end_data)
+    *result = WD_VICTORY;
+  else
+    *result = 0;
+
+  return true;
 }
 
 void dsda_DoomLoadMapInfo(void) {

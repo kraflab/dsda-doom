@@ -303,11 +303,17 @@ typedef enum {
   finale_owner_legacy,
   finale_owner_u,
   finale_owner_hexen,
+  finale_owner_doom,
 } finale_owner_t;
 
 static finale_owner_t finale_owner = finale_owner_legacy;
 
 void dsda_StartFinale(void) {
+  if (dsda_DoomStartFinale()) {
+    finale_owner = finale_owner_doom;
+    return;
+  }
+
   if (dsda_HexenStartFinale()) {
     finale_owner = finale_owner_hexen;
     return;
@@ -323,6 +329,13 @@ void dsda_StartFinale(void) {
 }
 
 int dsda_FTicker(void) {
+  if (finale_owner == finale_owner_doom) {
+    if (!dsda_DoomFTicker())
+      finale_owner = finale_owner_legacy;
+
+    return true;
+  }
+
   if (finale_owner == finale_owner_hexen) {
     if (!dsda_HexenFTicker())
       finale_owner = finale_owner_legacy;
@@ -342,6 +355,12 @@ int dsda_FTicker(void) {
 }
 
 int dsda_FDrawer(void) {
+  if (finale_owner == finale_owner_doom) {
+    dsda_DoomFDrawer();
+
+    return true;
+  }
+
   if (finale_owner == finale_owner_hexen) {
     dsda_HexenFDrawer();
 
@@ -443,6 +462,9 @@ void dsda_PrepareIntermission(int* behaviour) {
 }
 
 void dsda_PrepareFinale(int* behaviour) {
+  if (dsda_DoomPrepareFinale(behaviour))
+    return;
+
   if (dsda_HexenPrepareFinale(behaviour))
     return;
 
