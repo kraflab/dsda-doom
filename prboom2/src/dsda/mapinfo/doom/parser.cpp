@@ -112,9 +112,9 @@ static void dsda_ResetMap(doom_mapinfo_map_t &map) {
   Z_Free(map.special_actions);
 
   Z_Free(map.next.map);
-  Z_Free(map.next.endpic);
+  Z_Free(map.next.end_pic);
   Z_Free(map.secret_next.map);
-  Z_Free(map.secret_next.endpic);
+  Z_Free(map.secret_next.end_pic);
 
   Z_Free(map.sky1.lump);
 
@@ -139,9 +139,9 @@ static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
   REPLACE_WITH_COPY(dest.author);
 
   REPLACE_WITH_COPY(dest.next.map);
-  REPLACE_WITH_COPY(dest.next.endpic);
+  REPLACE_WITH_COPY(dest.next.end_pic);
   REPLACE_WITH_COPY(dest.secret_next.map);
-  REPLACE_WITH_COPY(dest.secret_next.endpic);
+  REPLACE_WITH_COPY(dest.secret_next.end_pic);
 
   REPLACE_WITH_COPY(dest.sky1.lump);
 
@@ -153,20 +153,20 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
   scanner.MustGetToken('=');
 
   RESET_STR(next.map);
-  RESET_STR(next.endpic);
+  RESET_STR(next.end_pic);
   next.end = dmi_end_null;
 
   if (scanner.CheckToken(TK_StringConst)) {
     if (!stricmp(scanner.string, "EndGame1")) {
-      next.endpic = Z_Strdup(gamemode == retail ? "CREDIT" : "HELP2");
+      next.end_pic = Z_Strdup(gamemode == retail ? "CREDIT" : "HELP2");
       return;
     }
     else if (!stricmp(scanner.string, "EndGame2")) {
-      next.endpic = Z_Strdup("VICTORY2");
+      next.end_pic = Z_Strdup("VICTORY2");
       return;
     }
     else if (!stricmp(scanner.string, "EndGame4")) {
-      next.endpic = Z_Strdup("ENDPIC");
+      next.end_pic = Z_Strdup("ENDPIC");
       return;
     }
     else if (!stricmp(scanner.string, "EndGame3")) {
@@ -184,7 +184,7 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
     if (!stricmp(scanner.string, "EndPic")) {
       scanner.MustGetToken(',');
       scanner.MustGetToken(TK_StringConst);
-      STR_DUP(next.endpic);
+      STR_DUP(next.end_pic);
     }
     else if (!stricmp(scanner.string, "endgame")) {
       // TODO: endgame block

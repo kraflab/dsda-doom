@@ -32,7 +32,7 @@ typedef enum {
 
 typedef struct {
   char* map;
-  char* endpic;
+  char* end_pic;
   dmi_end_t end;
 } doom_mapinfo_map_next_t;
 
