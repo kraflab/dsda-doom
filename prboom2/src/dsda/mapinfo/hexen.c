@@ -595,3 +595,7 @@ int dsda_HexenInitSky(void) {
 
   return true;
 }
+
+int dsda_HexenMapFlags(map_info_flags_t* flags) {
+  return false;
+}

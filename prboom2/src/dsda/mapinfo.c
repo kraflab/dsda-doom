@@ -171,6 +171,23 @@ static fixed_t dsda_AirControl(void) {
   return air_control;
 }
 
+static map_info_flags_t dsda_MapFlags(void) {
+  map_info_flags_t flags;
+
+  if (dsda_DoomMapFlags(&flags))
+    return flags;
+
+  if (dsda_HexenMapFlags(&flags))
+    return flags;
+
+  if (dsda_UMapFlags(&flags))
+    return flags;
+
+  dsda_LegacyMapFlags(&flags);
+
+  return flags;
+}
+
 static void dsda_UpdateMapInfo(void) {
   dsda_DoomUpdateMapInfo();
   dsda_HexenUpdateMapInfo();
@@ -179,7 +196,7 @@ static void dsda_UpdateMapInfo(void) {
 
   map_info.gravity = dsda_Gravity();
   map_info.air_control = dsda_AirControl();
-  map_info.flags = 0;
+  map_info.flags = dsda_MapFlags();
 }
 
 void dsda_UpdateGameMap(int episode, int map) {

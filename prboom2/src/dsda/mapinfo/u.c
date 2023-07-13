@@ -571,3 +571,7 @@ int dsda_UAirControl(fixed_t* air_control) {
 int dsda_UInitSky(void) {
   return false;
 }
+
+int dsda_UMapFlags(map_info_flags_t* flags) {
+  return false;
+}

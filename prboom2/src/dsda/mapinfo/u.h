@@ -20,6 +20,7 @@
 
 #include "p_mobj.h"
 
+#include "dsda/mapinfo.h"
 #include "dsda/utility.h"
 
 int dsda_UFirstMap(int* episode, int* map);
@@ -61,5 +62,6 @@ int dsda_USky2Texture(short* texture);
 int dsda_UGravity(fixed_t* gravity);
 int dsda_UAirControl(fixed_t* air_control);
 int dsda_UInitSky(void);
+int dsda_UMapFlags(map_info_flags_t* flags);
 
 #endif

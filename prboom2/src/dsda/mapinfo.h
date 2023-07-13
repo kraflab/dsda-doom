@@ -49,10 +49,12 @@
 #define MI_SHOW_AUTHOR                    0x00008000ul
 #define MI_PASSOVER                       0x00010000ul
 
+typedef uint32_t map_info_flags_t;
+
 typedef struct {
   fixed_t gravity;
   fixed_t air_control;
-  uint32_t flags;
+  map_info_flags_t flags;
 } map_info_t;
 
 extern map_info_t map_info;

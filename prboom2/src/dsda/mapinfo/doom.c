@@ -557,3 +557,12 @@ int dsda_DoomAirControl(fixed_t* air_control) {
 int dsda_DoomInitSky(void) {
   return false; // TODO
 }
+
+int dsda_DoomMapFlags(map_info_flags_t* flags) {
+  if (!current_map)
+    return false;
+
+  *flags = current_map->flags;
+
+  return true;
+}

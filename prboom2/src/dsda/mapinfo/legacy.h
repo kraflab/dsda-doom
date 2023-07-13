@@ -20,6 +20,7 @@
 
 #include "p_mobj.h"
 
+#include "dsda/mapinfo.h"
 #include "dsda/utility.h"
 
 int dsda_LegacyFirstMap(int* episode, int* map);
@@ -61,5 +62,6 @@ int dsda_LegacySky2Texture(short* texture);
 int dsda_LegacyGravity(fixed_t* gravity);
 int dsda_LegacyAirControl(fixed_t* air_control);
 int dsda_LegacyInitSky(void);
+int dsda_LegacyMapFlags(map_info_flags_t* flags);
 
 #endif
