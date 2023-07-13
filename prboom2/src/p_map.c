@@ -393,8 +393,8 @@ dboolean P_TeleportMove (mobj_t* thing,fixed_t x,fixed_t y, dboolean boss)
   subsector_t*  newsubsec;
 
   /* killough 8/9/98: make telefragging more consistent, preserve compatibility */
-  telefrag = thing->player ||
-    (!comp[comp_telefrag] ? boss : (gamemap==30));
+  telefrag = !raven &&
+    (thing->player || (!comp[comp_telefrag] ? boss : (gamemap==30)));
 
   // kill anything occupying the position
 
