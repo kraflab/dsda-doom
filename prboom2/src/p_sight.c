@@ -153,6 +153,10 @@ dboolean P_SightBlockLinesIterator(int x, int y)
 
   offset = y * bmapwidth + x;
 
+  // Invalid block, ignore this one
+  if (offset < 0)
+    return true;
+
   if (map_format.polyobjs)
   {
     polyblock_t *polyLink;
