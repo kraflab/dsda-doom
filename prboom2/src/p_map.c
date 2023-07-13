@@ -53,6 +53,7 @@
 #include "dsda.h"
 #include "dsda/destructible.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/def.h"
 
@@ -155,7 +156,10 @@ dboolean PIT_StompThing (mobj_t* thing)
     return true; // didn't hit it
 
   // monsters don't stomp things except on boss level
-  if (!telefrag && !(tmthing->flags2 & MF2_TELESTOMP))  // killough 8/9/98: make consistent across all levels
+  // killough 8/9/98: make consistent across all levels
+  if (!telefrag &&
+      !(map_info.flags & MI_ALLOW_MONSTER_TELEFRAGS) &&
+      !(tmthing->flags2 & MF2_TELESTOMP))
     return false;
 
   P_DamageMobj (thing, tmthing, tmthing, 10000); // Stomp!

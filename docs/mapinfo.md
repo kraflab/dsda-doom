@@ -45,7 +45,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | NoIntermission                     | :telescope:     |
 | EvenLighting                       | :telescope:     |
 | SmoothLighting                     | :telescope:     |
-| AllowMonsterTelefrags              | :telescope:     |
+| AllowMonsterTelefrags              | :heavy_check_mark: |
 | ActivateOwnDeathSpecials           | :telescope:     |
 | KillerActivatesDeathSpecials       | :telescope:     |
 | StrictMonsterActivation            | :telescope:     |
