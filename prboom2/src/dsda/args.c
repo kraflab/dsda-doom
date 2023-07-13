@@ -668,11 +668,6 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets a special flag to compensate for sync errors in certain demos",
     arg_null,
   },
-  [dsda_arg_debug_finite_height] = {
-    "-debug_finite_height", NULL, NULL,
-    "turns on finite height (temporary arg for testing)",
-    arg_null,
-  },
   [dsda_arg_debug_mapinfo] = {
     "-debug_mapinfo", NULL, NULL,
     "turns on mapinfo parsing in doom (temporary arg for testing)",

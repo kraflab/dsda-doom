@@ -31,10 +31,28 @@
 #define WD_VICTORY      0x01
 #define WD_START_FINALE 0x02
 
+#define MI_INTERMISSION                   0x00000001ul
+#define MI_ALLOW_MONSTER_TELEFRAGS        0x00000002ul
+#define MI_ACTIVATE_OWN_DEATH_SPECIALS    0x00000004ul
+#define MI_LAX_MONSTER_ACTIVATION         0x00000008ul
+#define MI_MISSILES_ACTIVATE_IMPACT_LINES 0x00000010ul
+#define MI_FILTER_STARTS                  0x00000020ul
+#define MI_ALLOW_RESPAWN                  0x00000040ul
+#define MI_ALLOW_JUMP                     0x00000080ul
+#define MI_ALLOW_FREE_LOOK                0x00000100ul
+#define MI_CHECK_SWITCH_RANGE             0x00000200ul
+#define MI_RESET_HEALTH                   0x00000400ul
+#define MI_RESET_INVENTORY                0x00000800ul
+#define MI_USE_PLAYER_START_Z             0x00001000ul
+#define MI_RANDOM_PLAYER_STARTS           0x00002000ul
+#define MI_REMEMBER_STATE                 0x00004000ul
+#define MI_SHOW_AUTHOR                    0x00008000ul
+#define MI_PASSOVER                       0x00010000ul
+
 typedef struct {
   fixed_t gravity;
   fixed_t air_control;
-  dboolean finite_height;
+  uint32_t flags;
 } map_info_t;
 
 extern map_info_t map_info;

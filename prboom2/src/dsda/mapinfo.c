@@ -172,8 +172,6 @@ static fixed_t dsda_AirControl(void) {
 }
 
 static void dsda_UpdateMapInfo(void) {
-  map_info.finite_height = false;
-
   dsda_DoomUpdateMapInfo();
   dsda_HexenUpdateMapInfo();
   dsda_UUpdateMapInfo();
@@ -181,9 +179,7 @@ static void dsda_UpdateMapInfo(void) {
 
   map_info.gravity = dsda_Gravity();
   map_info.air_control = dsda_AirControl();
-
-  if (allow_incompatibility && dsda_Flag(dsda_arg_debug_finite_height))
-    map_info.finite_height = true;
+  map_info.flags = 0;
 }
 
 void dsda_UpdateGameMap(int episode, int map) {
