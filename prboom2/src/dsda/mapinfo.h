@@ -45,7 +45,6 @@
 #define MI_RESET_INVENTORY                0x00000800ul
 #define MI_USE_PLAYER_START_Z             0x00001000ul
 #define MI_RANDOM_PLAYER_STARTS           0x00002000ul
-#define MI_REMEMBER_STATE                 0x00004000ul
 #define MI_SHOW_AUTHOR                    0x00008000ul
 #define MI_PASSOVER                       0x00010000ul
 #define MI_EVEN_LIGHTING                  0x00020000ul

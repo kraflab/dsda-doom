@@ -64,7 +64,5 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | ResetInventory                     | :telescope:     |
 | UsePlayerStartZ                    | :telescope:     |
 | RandomPlayerStarts                 | :telescope:     |
-| ForgetState                        | :telescope:     |
-| RememberState                      | :telescope:     |
 | NoPassover                         | :heavy_check_mark: |
 | Passover                           | :heavy_check_mark: |

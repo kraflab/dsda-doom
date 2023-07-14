@@ -417,12 +417,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (!stricmp(scanner.string, "RandomPlayerStarts")) {
       map.flags |= DMI_RANDOM_PLAYER_STARTS;
     }
-    else if (!stricmp(scanner.string, "ForgetState")) {
-      map.flags &= ~DMI_REMEMBER_STATE;
-    }
-    else if (!stricmp(scanner.string, "RememberState")) {
-      map.flags |= DMI_REMEMBER_STATE;
-    }
     else if (!stricmp(scanner.string, "Author")) {
       SCAN_STRING(map.author);
     }
@@ -485,7 +479,6 @@ static void dsda_InitDefaultMap(void) {
                       DMI_ACTIVATE_OWN_DEATH_SPECIALS |
                       DMI_LAX_MONSTER_ACTIVATION |
                       DMI_MISSILES_ACTIVATE_IMPACT_LINES |
-                      DMI_REMEMBER_STATE |
                       DMI_SHOW_AUTHOR;
 }
 
