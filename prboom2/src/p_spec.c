@@ -70,6 +70,7 @@
 #include "dsda/id_list.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
 #include "dsda/thing_id.h"
 #include "dsda/utility.h"
@@ -5557,7 +5558,10 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
 
   if (activationType == SPAC_USE || activationType == SPAC_USEBACK)
   {
-    if (line->flags & ML_CHECKSWITCHRANGE && !P_CheckSwitchRange(line, mo, side))
+    if (
+      (line->flags & ML_CHECKSWITCHRANGE || map_info.flags & MI_CHECK_SWITCH_RANGE) &&
+      !P_CheckSwitchRange(line, mo, side)
+    )
     {
       return false;
     }

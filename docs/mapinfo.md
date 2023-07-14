@@ -58,8 +58,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | AllowJump                          | :telescope:     |
 | NoFreelook                         | :telescope:     |
 | AllowFreelook                      | :telescope:     |
-| CheckSwitchRange                   | :telescope:     |
-| NoCheckSwitchRange                 | :telescope:     |
+| CheckSwitchRange                   | :heavy_check_mark: |
+| NoCheckSwitchRange                 | :heavy_check_mark: |
 | ResetHealth                        | :telescope:     |
 | ResetInventory                     | :telescope:     |
 | UsePlayerStartZ                    | :telescope:     |
