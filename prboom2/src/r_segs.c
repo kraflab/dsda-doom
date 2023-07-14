@@ -53,6 +53,7 @@
 #include "v_video.h"
 #include "lprintf.h"
 
+#include "dsda/mapinfo.h"
 #include "dsda/render_stats.h"
 
 // OPTIMIZE: closed two sided lines as single sided
@@ -232,7 +233,16 @@ const int fake_contrast_value = 16;
 
 static dboolean R_FakeContrast(seg_t *seg)
 {
-  return fake_contrast_mode != FAKE_CONTRAST_MODE_OFF && seg && !(seg->sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
+  return fake_contrast_mode != FAKE_CONTRAST_MODE_OFF &&
+         !(map_info.flags & MI_EVEN_LIGHTING) &&
+         seg && !(seg->sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
+}
+
+static dboolean R_SmoothLighting(seg_t *seg)
+{
+  return fake_contrast_mode == FAKE_CONTRAST_MODE_SMOOTH ||
+         map_info.flags & MI_SMOOTH_LIGHTING ||
+         seg->sidedef->flags & SF_SMOOTHLIGHTING;
 }
 
 void R_AddContrast(seg_t *seg, int *base_lightlevel)
@@ -249,7 +259,7 @@ void R_AddContrast(seg_t *seg, int *base_lightlevel)
     {
       *base_lightlevel += fake_contrast_value;
     }
-    else if (fake_contrast_mode == FAKE_CONTRAST_MODE_SMOOTH || seg->sidedef->flags & SF_SMOOTHLIGHTING)
+    else if (R_SmoothLighting(seg))
     {
       double dx, dy;
 
