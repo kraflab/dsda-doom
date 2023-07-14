@@ -20,6 +20,7 @@
 #include "v_video.h"
 
 #include "dsda/configuration.h"
+#include "dsda/mapinfo.h"
 #include "dsda/save.h"
 
 #include "death.h"
@@ -37,7 +38,7 @@ typedef enum {
 
 static int dsda_DeathUseAction(void)
 {
-  if (demorecording || demoplayback)
+  if (demorecording || demoplayback || map_info.flags & MI_ALLOW_RESPAWN)
     return death_use_default;
 
   return dsda_IntConfig(dsda_config_death_use_action);
