@@ -2025,6 +2025,9 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else
     mobj = P_SpawnMobj(x,y,z, g_mt_player);
 
+  if (map_info.flags & MI_USE_PLAYER_START_Z)
+    mobj->z += mthing->height;
+
   // set color translations for player sprites
   if (hexen)
   {
