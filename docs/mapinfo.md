@@ -46,8 +46,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | EvenLighting                       | :heavy_check_mark: |
 | SmoothLighting                     | :heavy_check_mark: |
 | AllowMonsterTelefrags              | :heavy_check_mark: |
-| ActivateOwnDeathSpecials           | :telescope:     |
-| KillerActivatesDeathSpecials       | :telescope:     |
+| ActivateOwnDeathSpecials           | :heavy_check_mark: |
+| KillerActivatesDeathSpecials       | :heavy_check_mark: |
 | StrictMonsterActivation            | :telescope:     |
 | LaxMonsterActivation               | :telescope:     |
 | MissileShootersActivateImpactLines | :telescope:     |
