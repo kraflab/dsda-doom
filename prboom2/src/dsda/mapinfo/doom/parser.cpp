@@ -338,10 +338,12 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
       SCAN_STRING(map.border_texture);
     }
     else if (!stricmp(scanner.string, "EvenLighting")) {
-      map.lighting = dmi_lighting_even;
+      map.flags |= DMI_EVEN_LIGHTING;
+      map.flags &= ~DMI_SMOOTH_LIGHTING;
     }
     else if (!stricmp(scanner.string, "SmoothLighting")) {
-      map.lighting = dmi_lighting_smooth;
+      map.flags |= DMI_SMOOTH_LIGHTING;
+      map.flags &= ~DMI_EVEN_LIGHTING;
     }
     else if (!stricmp(scanner.string, "Gravity")) {
       SCAN_FLOAT_STRING(map.gravity);

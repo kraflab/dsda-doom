@@ -48,6 +48,8 @@
 #define MI_REMEMBER_STATE                 0x00004000ul
 #define MI_SHOW_AUTHOR                    0x00008000ul
 #define MI_PASSOVER                       0x00010000ul
+#define MI_EVEN_LIGHTING                  0x00020000ul
+#define MI_SMOOTH_LIGHTING                0x00040000ul
 
 typedef uint32_t map_info_flags_t;
 

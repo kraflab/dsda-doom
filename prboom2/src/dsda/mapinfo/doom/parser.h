@@ -41,12 +41,6 @@ typedef struct {
   float scrollspeed;
 } doom_mapinfo_sky_t;
 
-typedef enum {
-  dmi_lighting_normal,
-  dmi_lighting_even,
-  dmi_lighting_smooth,
-} dmi_lighting_t;
-
 typedef struct {
   int monster_type;
   int action_special;
@@ -70,6 +64,8 @@ typedef struct {
 #define DMI_REMEMBER_STATE                 0x00004000ul
 #define DMI_SHOW_AUTHOR                    0x00008000ul
 #define DMI_PASSOVER                       0x00010000ul
+#define DMI_EVEN_LIGHTING                  0x00020000ul
+#define DMI_SMOOTH_LIGHTING                0x00040000ul
 
 typedef uint32_t doom_mapinfo_map_flags_t;
 
@@ -89,7 +85,6 @@ typedef struct {
   char* music;
   char* inter_music;
   int par;
-  dmi_lighting_t lighting;
   char* gravity;
   char* air_control;
   size_t num_special_actions;
