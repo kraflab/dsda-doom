@@ -43,7 +43,7 @@ static void dsda_SkipValue(Scanner &scanner) {
     return;
   }
 
-  scanner.MustGetToken('{');
+  if (scanner.CheckToken('{'))
   {
     int brace_count = 1;
 
