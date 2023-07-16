@@ -387,12 +387,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (!stricmp(scanner.string, "AllowJump")) {
       map.flags |= DMI_ALLOW_JUMP;
     }
-    else if (!stricmp(scanner.string, "NoFreelook")) {
-      map.flags &= ~DMI_ALLOW_FREE_LOOK;
-    }
-    else if (!stricmp(scanner.string, "AllowFreelook")) {
-      map.flags |= DMI_ALLOW_FREE_LOOK;
-    }
     else if (!stricmp(scanner.string, "NoCheckSwitchRange")) {
       map.flags &= ~DMI_CHECK_SWITCH_RANGE;
     }

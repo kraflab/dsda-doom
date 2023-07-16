@@ -55,7 +55,6 @@ typedef struct {
 #define DMI_FILTER_STARTS                  0x00000020ul
 #define DMI_ALLOW_RESPAWN                  0x00000040ul
 #define DMI_ALLOW_JUMP                     0x00000080ul
-#define DMI_ALLOW_FREE_LOOK                0x00000100ul
 #define DMI_CHECK_SWITCH_RANGE             0x00000200ul
 #define DMI_RESET_HEALTH                   0x00000400ul
 #define DMI_RESET_INVENTORY                0x00000800ul

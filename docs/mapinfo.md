@@ -56,8 +56,6 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | AllowRespawn                       | :heavy_check_mark: |
 | NoJump                             | :telescope:     |
 | AllowJump                          | :telescope:     |
-| NoFreelook                         | :telescope:     |
-| AllowFreelook                      | :telescope:     |
 | CheckSwitchRange                   | :heavy_check_mark: |
 | NoCheckSwitchRange                 | :heavy_check_mark: |
 | ResetHealth                        | :heavy_check_mark: |
