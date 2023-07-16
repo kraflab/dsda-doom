@@ -2133,10 +2133,128 @@ static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
                          !mthing->special_args[0]);
 }
 
+static dboolean P_ShouldSpawnMapThing(int options)
+{
+  unsigned int spawnMask;
+
+  if (map_format.hexen)
+  {
+    // Check current game type with spawn flags
+    if (netgame == false)
+    {
+      spawnMask = MTF_GSINGLE;
+    }
+    else if (deathmatch)
+    {
+      spawnMask = MTF_GDEATHMATCH;
+    }
+    else
+    {
+      spawnMask = MTF_GCOOP;
+    }
+
+    if (!(options & spawnMask))
+    {
+      return false;
+    }
+  }
+  else
+  {
+    /* jff "not single" thing flag */
+    if (!coop_spawns && !netgame && options & MTF_NOTSINGLE)
+      return false;
+
+    //jff 3/30/98 implement "not deathmatch" thing flag
+    if (netgame && deathmatch && options & MTF_NOTDM)
+      return false;
+
+    //jff 3/30/98 implement "not cooperative" thing flag
+    if ((coop_spawns || netgame) && !deathmatch && options & MTF_NOTCOOP)
+      return false;
+  }
+
+  // check for apropriate skill level
+  if (
+    gameskill == sk_baby   ? !(options & MTF_SKILL1) :
+    gameskill == sk_easy   ? !(options & MTF_SKILL2) :
+    gameskill == sk_medium ? !(options & MTF_SKILL3) :
+    gameskill == sk_hard   ? !(options & MTF_SKILL4) :
+                             !(options & MTF_SKILL5)
+  )
+    return false;
+
+  if (hexen)
+  {
+    static unsigned int classFlags[] = {
+      0, // null class
+      MTF_FIGHTER,
+      MTF_CLERIC,
+      MTF_MAGE
+    };
+
+    int i;
+
+    // Check current character classes with spawn flags
+    if (netgame == false)
+    {                           // Single player
+      if ((options & classFlags[PlayerClass[0]]) == 0)
+      {                       // Not for current class
+        return false;
+      }
+    }
+    else if (deathmatch == false)
+    {                           // Cooperative
+      spawnMask = 0;
+      for (i = 0; i < g_maxplayers; i++)
+      {
+        if (playeringame[i])
+        {
+          spawnMask |= classFlags[PlayerClass[i]];
+        }
+      }
+      if ((options & spawnMask) == 0)
+      {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+void P_TrySpawnPlayer(const mapthing_t *mthing, int player)
+{
+  mapthing_t *player_start;
+
+  player_start = &playerstarts[mthing->special_args[0]][player];
+  *player_start = *mthing;
+  player_start->type = player + 1;
+
+  /* cph 2006/07/24 - use the otherwise-unused options field to flag that
+   * this start is present (so we know which elements of the array are filled
+   * in, in effect). Also note that the call below to P_SpawnPlayer must use
+   * the playerstarts version with this field set */
+  player_start->options = 1;
+
+  if (P_ShouldSpawnPlayer(mthing))
+    P_SpawnPlayer(player, player_start);
+}
+
+static int P_TypeToPlayer(int type)
+{
+  if (type <= 4 && type > 0)
+    return type - 1;
+
+  if (map_format.hexen && type >= 9100 && type <= 9103)
+    return 4 + type - 9100;
+
+  return -1;
+}
+
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 {
   int     i;
-  unsigned int spawnMask;
+  int player;
   mobj_t* mobj;
   fixed_t x;
   fixed_t y;
@@ -2144,12 +2262,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   int options = mthing->options; /* cph 2001/07/07 - make writable copy */
   short thingtype = mthing->type;
   int iden_num = 0;
-  static unsigned int classFlags[] = {
-    0, // null class
-    MTF_FIGHTER,
-    MTF_CLERIC,
-    MTF_MAGE
-  };
 
   // killough 2/26/98: Ignore type-0 things as NOPs
   // phares 5/14/98: Ignore Player 5-8 starts (for now)
@@ -2228,20 +2340,16 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   }
 
   // check for players specially
-
-  if (thingtype <= 4 && thingtype > 0)  // killough 2/26/98 -- fix crashes
+  if ((player = P_TypeToPlayer(thingtype)) >= 0)
   {
-    int start = 0;
-
     // killough 7/19/98: Marine's best friend :)
     if (
       !netgame &&
-      thingtype > 1 &&
-      thingtype <= dogs + 1 &&
-      !players[thingtype - 1].secretcount
+      player > 0 && player <= dogs &&
+      !players[player].secretcount
     )
     {  // use secretcount to avoid multiple dogs in case of multiple starts
-      players[thingtype - 1].secretcount = 1;
+      players[player].secretcount = 1;
 
       // killough 10/98: force it to be a friend
       options |= (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND);
@@ -2264,19 +2372,8 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       goto spawnit;
     }
 
-    if (map_format.hexen)
-      start = mthing->special_args[0];
+    P_TrySpawnPlayer(mthing, player);
 
-    // save spots for respawning in coop games
-    playerstarts[start][thingtype - 1] = *mthing;
-    /* cph 2006/07/24 - use the otherwise-unused options field to flag that
-     * this start is present (so we know which elements of the array are filled
-     * in, in effect). Also note that the call below to P_SpawnPlayer must use
-     * the playerstarts version with this field set */
-    playerstarts[start][thingtype - 1].options = 1;
-
-    if (P_ShouldSpawnPlayer(mthing))
-      P_SpawnPlayer(thingtype - 1, &playerstarts[start][thingtype - 1]);
     return NULL;
   }
 
@@ -2301,25 +2398,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
   if (map_format.hexen)
   {
-    // Check for player starts 5 to 8
-    if (mthing->type >= 9100 && mthing->type <= 9103)
-    {
-      mapthing_t *player_start;
-      int player;
-
-      player = 4 + mthing->type - 9100;
-
-      player_start = &playerstarts[mthing->special_args[0]][player];
-      memcpy(player_start, mthing, sizeof(mapthing_t));
-      player_start->type = player + 1;
-
-      if (P_ShouldSpawnPlayer(mthing))
-      {
-        P_SpawnPlayer(player_start->type - 1, player_start);
-      }
-      return NULL;
-    }
-
     if (mthing->type >= 1400 && mthing->type < 1410)
     {
       R_PointInSubsector(
@@ -2327,50 +2405,9 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       )->sector->seqType = mthing->type - 1400;
       return NULL;
     }
-
-    // Check current game type with spawn flags
-    if (netgame == false)
-    {
-      spawnMask = MTF_GSINGLE;
-    }
-    else if (deathmatch)
-    {
-      spawnMask = MTF_GDEATHMATCH;
-    }
-    else
-    {
-      spawnMask = MTF_GCOOP;
-    }
-    if (!(options & spawnMask))
-    {
-      return NULL;
-    }
-  }
-  else
-  {
-    /* jff "not single" thing flag */
-    if (!coop_spawns && !netgame && options & MTF_NOTSINGLE)
-      return NULL;
-
-    //jff 3/30/98 implement "not deathmatch" thing flag
-
-    if (netgame && deathmatch && options & MTF_NOTDM)
-      return NULL;
-
-    //jff 3/30/98 implement "not cooperative" thing flag
-
-    if ((coop_spawns || netgame) && !deathmatch && options & MTF_NOTCOOP)
-      return NULL;
   }
 
-  // check for apropriate skill level
-  if (
-    gameskill == sk_baby   ? !(options & MTF_SKILL1) :
-    gameskill == sk_easy   ? !(options & MTF_SKILL2) :
-    gameskill == sk_medium ? !(options & MTF_SKILL3) :
-    gameskill == sk_hard   ? !(options & MTF_SKILL4) :
-                             !(options & MTF_SKILL5)
-  )
+  if (!P_ShouldSpawnMapThing(options))
     return NULL;
 
   if (!raven && thingtype >= 14100 && thingtype <= 14164)
@@ -2385,33 +2422,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     // Use the ambient number
     iden_num = BETWEEN(0, 64, mthing->special_args[0]); // Mus change
     thingtype = 14164;            // MT_MUSICSOURCE
-  }
-
-  if (hexen)
-  {
-    // Check current character classes with spawn flags
-    if (netgame == false)
-    {                           // Single player
-      if ((options & classFlags[PlayerClass[0]]) == 0)
-      {                       // Not for current class
-        return NULL;
-      }
-    }
-    else if (deathmatch == false)
-    {                           // Cooperative
-      spawnMask = 0;
-      for (i = 0; i < g_maxplayers; i++)
-      {
-        if (playeringame[i])
-        {
-          spawnMask |= classFlags[PlayerClass[i]];
-        }
-      }
-      if ((options & spawnMask) == 0)
-      {
-        return NULL;
-      }
-    }
   }
 
   // find which type to spawn
