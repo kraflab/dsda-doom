@@ -1122,6 +1122,25 @@ static void G_SetInitialInventory(player_t *p)
     p->maxammo[i] = maxammo[i];
 }
 
+static void G_ResetHealth(player_t *p)
+{
+  G_SetInitialHealth(p);
+}
+
+static void G_ResetInventory(player_t *p)
+{
+  memset(p->armorpoints, 0, sizeof(p->armorpoints));
+  p->armortype = 0;
+  memset(p->powers, 0, sizeof(p->powers));
+  memset(p->cards, 0, sizeof(p->cards));
+  p->backpack = false;
+  memset(p->weaponowned, 0, sizeof(p->weaponowned));
+  memset(p->ammo, 0, sizeof(p->ammo));
+
+  // readyweapon, pendingweapon, maxammo handled here
+  G_SetInitialInventory(p);
+}
+
 //
 // G_DoLoadLevel
 //
@@ -1157,8 +1176,19 @@ static void G_DoLoadLevel (void)
 
   for (i = 0; i < g_maxplayers; i++)
   {
-    if (playeringame[i] && players[i].playerstate == PST_DEAD)
-      players[i].playerstate = PST_REBORN;
+    if (playeringame[i])
+    {
+      if (players[i].playerstate == PST_DEAD)
+        players[i].playerstate = PST_REBORN;
+      else
+      {
+        if (map_info.flags & MI_RESET_HEALTH)
+          G_ResetHealth(&players[i]);
+
+        if (map_info.flags & MI_RESET_INVENTORY)
+          G_ResetInventory(&players[i]);
+      }
+    }
     memset(players[i].frags, 0, sizeof(players[i].frags));
   }
 
