@@ -825,7 +825,7 @@ void P_PlayerThink (player_t* player)
     }
   }
 
-  if (dsda_AllowJumping())
+  if (dsda_AllowExCmd())
   {
     if (cmd->ex.actions & XC_JUMP && onground && !player->jumpTics)
     {
