@@ -414,9 +414,6 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (!stricmp(scanner.string, "UsePlayerStartZ")) {
       map.flags |= DMI_USE_PLAYER_START_Z;
     }
-    else if (!stricmp(scanner.string, "RandomPlayerStarts")) {
-      map.flags |= DMI_RANDOM_PLAYER_STARTS;
-    }
     else if (!stricmp(scanner.string, "Author")) {
       SCAN_STRING(map.author);
     }

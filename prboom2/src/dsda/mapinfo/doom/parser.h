@@ -60,7 +60,6 @@ typedef struct {
 #define DMI_RESET_HEALTH                   0x00000400ul
 #define DMI_RESET_INVENTORY                0x00000800ul
 #define DMI_USE_PLAYER_START_Z             0x00001000ul
-#define DMI_RANDOM_PLAYER_STARTS           0x00002000ul
 #define DMI_SHOW_AUTHOR                    0x00008000ul
 #define DMI_PASSOVER                       0x00010000ul
 #define DMI_EVEN_LIGHTING                  0x00020000ul
