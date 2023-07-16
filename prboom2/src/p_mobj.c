@@ -2342,6 +2342,10 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // check for players specially
   if ((player = P_TypeToPlayer(thingtype)) >= 0)
   {
+    if (map_info.flags & MI_FILTER_STARTS)
+      if (!P_ShouldSpawnMapThing(options))
+        return NULL;
+
     // killough 7/19/98: Marine's best friend :)
     if (
       !netgame &&

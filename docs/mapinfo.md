@@ -52,7 +52,7 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | LaxMonsterActivation               | :telescope:     |
 | MissileShootersActivateImpactLines | :telescope:     |
 | MissilesActivateImpactLines        | :telescope:     |
-| FilterStarts                       | :telescope:     |
+| FilterStarts                       | :heavy_check_mark: |
 | AllowRespawn                       | :heavy_check_mark: |
 | NoJump                             | :telescope:     |
 | AllowJump                          | :telescope:     |
