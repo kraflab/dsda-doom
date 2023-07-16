@@ -1093,6 +1093,35 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
 }
 
+static void G_SetInitialHealth(player_t *p)
+{
+  p->health = initial_health;  // Ty 03/12/98 - use dehacked values
+}
+
+static void G_SetInitialInventory(player_t *p)
+{
+  int i;
+
+  if (hexen)
+  {
+    p->readyweapon = p->pendingweapon = wp_first;
+    p->weaponowned[wp_first] = true;
+  }
+  else
+  {
+    p->readyweapon = p->pendingweapon = g_wp_pistol;
+    p->weaponowned[g_wp_fist] = true;
+    p->weaponowned[g_wp_pistol] = true;
+    if (heretic)
+      p->ammo[am_goldwand] = 50;
+    else
+      p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  }
+
+  for (i = 0; i < NUMAMMO; i++)
+    p->maxammo[i] = maxammo[i];
+}
+
 //
 // G_DoLoadLevel
 //
@@ -1764,7 +1793,6 @@ void G_ChangedPlayerColour(int pn, int cl)
 void G_PlayerReborn (int player)
 {
   player_t *p;
-  int i;
   int frags[MAX_MAXPLAYERS];
   int killcount;
   int itemcount;
@@ -1798,23 +1826,9 @@ void G_PlayerReborn (int player)
 
   p->usedown = p->attackdown = true;  // don't do anything immediately
   p->playerstate = PST_LIVE;
-  p->health = initial_health;  // Ty 03/12/98 - use dehacked values
 
-  if (hexen)
-  {
-    p->readyweapon = p->pendingweapon = wp_first;
-    p->weaponowned[wp_first] = true;
-  }
-  else
-  {
-    p->readyweapon = p->pendingweapon = g_wp_pistol;
-    p->weaponowned[g_wp_fist] = true;
-    p->weaponowned[g_wp_pistol] = true;
-    if (heretic)
-      p->ammo[am_goldwand] = 50;
-    else
-      p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
-  }
+  G_SetInitialHealth(p);
+  G_SetInitialInventory(p);
 
   p->lookdir = 0;
   localQuakeHappening[player] = false;
@@ -1824,9 +1838,6 @@ void G_PlayerReborn (int player)
     inv_ptr = 0;            // reset the inventory pointer
     curpos = 0;
   }
-
-  for (i=0 ; i<NUMAMMO ; i++)
-    p->maxammo[i] = maxammo[i];
 
   levels_completed = 0;
 }
