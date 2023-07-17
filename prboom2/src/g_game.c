@@ -2176,7 +2176,14 @@ void G_DoCompleted (void)
   if (nodrawers && (demoplayback || timingdemo))
     lprintf(LO_INFO, "FINISHED: %s\n", dsda_MapLumpName(gameepisode, gamemap));
 
-  WI_Start (&wminfo);
+  if (!(map_info.flags & MI_INTERMISSION))
+  {
+    G_WorldDone();
+  }
+  else
+  {
+    WI_Start (&wminfo);
+  }
 }
 
 //

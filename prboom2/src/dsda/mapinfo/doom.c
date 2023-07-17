@@ -366,8 +366,6 @@ int dsda_DoomPrepareIntermission(int* result) {
   if (!current_map)
     return false;
 
-  // TODO: NoIntermission
-
   // TODO: check that teleport new map resets secretexit
   if (leave_data.map > 0)
     map = dsda_DoomMapEntry(leave_data.map); // TODO: what if this map doesn't exist?

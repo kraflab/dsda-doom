@@ -41,8 +41,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | AirControl                         | :heavy_check_mark: |
 | Author                             | :heavy_check_mark: |
 | SpecialAction                      | :heavy_check_mark: |
-| Intermission                       | :telescope:     |
-| NoIntermission                     | :telescope:     |
+| Intermission                       | :heavy_check_mark: |
+| NoIntermission                     | :heavy_check_mark: |
 | EvenLighting                       | :heavy_check_mark: |
 | SmoothLighting                     | :heavy_check_mark: |
 | AllowMonsterTelefrags              | :heavy_check_mark: |
