@@ -597,5 +597,13 @@ int dsda_HexenInitSky(void) {
 }
 
 int dsda_HexenMapFlags(map_info_flags_t* flags) {
-  return false;
+  if (!hexen)
+    return false;
+
+  *flags = MI_INTERMISSION |
+           MI_ACTIVATE_OWN_DEATH_SPECIALS |
+           MI_MISSILES_ACTIVATE_IMPACT_LINES |
+           MI_SHOW_AUTHOR;
+
+  return true;
 }
