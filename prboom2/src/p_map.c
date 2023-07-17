@@ -3706,7 +3706,16 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
         }
         else if (mobj->flags2 & MF2_IMPACT)
         {
-            P_ActivateLine(line, mobj, side, SPAC_IMPACT);
+            if (map_info.flags & MI_MISSILES_ACTIVATE_IMPACT_LINES ||
+                !(mobj->flags & MF_MISSILE) ||
+                !mobj->target)
+            {
+              P_ActivateLine(line, mobj, side, SPAC_IMPACT);
+            }
+            else
+            {
+              P_ActivateLine(line, mobj->target, side, SPAC_IMPACT);
+            }
         }
     }
 }
