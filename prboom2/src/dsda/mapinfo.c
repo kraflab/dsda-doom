@@ -205,6 +205,10 @@ void dsda_UpdateGameMap(int episode, int map) {
   dsda_UpdateMapInfo();
 }
 
+void dsda_ResetAirControl(void) {
+  map_info.air_control = dsda_AirControl();
+}
+
 void dsda_ResetLeaveData(void) {
   memset(&leave_data, 0, sizeof(leave_data));
 }

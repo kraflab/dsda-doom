@@ -129,6 +129,7 @@ void deh_changeCompTranslucency(void);
 void dsda_InitGameControllerParameters(void);
 void dsda_InitExHud(void);
 void dsda_UpdateFreeText(void);
+void dsda_ResetAirControl(void);
 
 // TODO: migrate all kinds of stuff from M_Init
 
@@ -940,7 +941,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_allow_jumping] = {
     "dsda_allow_jumping", dsda_config_allow_jumping,
-    CONF_BOOL(0)
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_ResetAirControl
   },
   [dsda_config_parallel_sfx_limit] = {
     "dsda_parallel_sfx_limit", dsda_config_parallel_sfx_limit,
