@@ -194,9 +194,9 @@ static void dsda_UpdateMapInfo(void) {
   dsda_UUpdateMapInfo();
   dsda_LegacyUpdateMapInfo();
 
+  map_info.flags = dsda_MapFlags();
   map_info.gravity = dsda_Gravity();
   map_info.air_control = dsda_AirControl();
-  map_info.flags = dsda_MapFlags();
 }
 
 void dsda_UpdateGameMap(int episode, int map) {
