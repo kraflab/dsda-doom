@@ -381,24 +381,19 @@ int dsda_DoomPrepareIntermission(int* result) {
       map = dsda_DoomMapEntryByName(next->map);
   }
 
-  if (!map) {
-    end_data = next;
-
-    if (!end_data)
-      end_data = &default_end_data;
-
-    *result = DC_VICTORY;
-
-    return true;
-  }
-
   if (current_map->par) {
     wminfo.partime = current_map->par;
     wminfo.modified_partime = true;
   }
 
-  wminfo.next = map->level_num - 1;
-  wminfo.nextep = 0; // TODO: next ep
+  if (map) {
+    wminfo.next = map->level_num - 1;
+    wminfo.nextep = 0; // TODO: next ep
+  }
+  else {
+    wminfo.next = 0;
+    wminfo.nextep = 0;
+  }
 
   // TODO: this should happen somewhere else
   if (wminfo.nextep != wminfo.epsd) {
@@ -410,7 +405,14 @@ int dsda_DoomPrepareIntermission(int* result) {
 
   wminfo.didsecret = players[consoleplayer].didsecret;
 
-  end_data = NULL;
+  if (!map) {
+    end_data = next;
+
+    if (!end_data)
+      end_data = &default_end_data;
+  }
+  else
+    end_data = NULL;
 
   *result = 0;
 
