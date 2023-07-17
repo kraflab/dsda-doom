@@ -5608,7 +5608,7 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
     // lax activation checks, monsters can also activate certain lines
     // even without them being marked as monster activate-able. This is
     // the default for non-Hexen maps in Hexen format.
-    if (!map_format.lax_monster_activation)
+    if (!(map_info.flags & MI_LAX_MONSTER_ACTIVATION))
     {
       return false;
     }

@@ -40,7 +40,6 @@ typedef struct {
   dboolean animdefs;
   dboolean doublesky;
   dboolean map99;
-  dboolean lax_monster_activation;
   short generalized_mask;
   line_activation_t switch_activation;
   void (*init_sector_special)(sector_t*, int);
