@@ -4,7 +4,7 @@ This page tracks support for the MAPINFO lump, as seen in ZDoom. This is all a w
 
 ### Current Status
 
-You can enable MAPINFO parsing via the `-mapinfo` command line option. There is *very limited* support currently and crashing is possible.
+You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Support is currently experimental and various errors are present.
 
 ### Legend
 
@@ -17,9 +17,14 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 
 | Key           | Status             |
 | ------------- | ------------------ |
+| cluster       | :telescope:        |
+| clearepisodes | :telescope:        |
+| episode       | :telescope:        |
 | map           | :heavy_check_mark: |
 | defaultmap    | :heavy_check_mark: |
 | adddefaultmap | :heavy_check_mark: |
+| clearskills   | :telescope:        |
+| skill         | :telescope:        |
 
 ### Map Properties
 
