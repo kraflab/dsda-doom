@@ -214,6 +214,9 @@ int dsda_DoomStartFinale(void) {
     return false;
 
   // TODO: cluster end text
+  finaletext = NULL;
+  finalepatch = NULL;
+  finaleflat = NULL;
 
   return true;
 }
@@ -246,6 +249,7 @@ int dsda_DoomFTicker(void) {
       float speed = demo_compatibility ? TEXTSPEED : Get_TextSpeed();
 
       if (
+        !finaletext ||
         finalecount > strlen(finaletext) * speed + (midstage ? NEWTEXTWAIT : TEXTWAIT) ||
         (midstage && acceleratestage)
       )
