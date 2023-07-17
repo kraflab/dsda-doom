@@ -54,8 +54,8 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 | MissilesActivateImpactLines        | :heavy_check_mark: |
 | FilterStarts                       | :heavy_check_mark: |
 | AllowRespawn                       | :heavy_check_mark: |
-| NoJump                             | :telescope:     |
-| AllowJump                          | :telescope:     |
+| NoJump                             | :heavy_check_mark: |
+| AllowJump                          | :heavy_check_mark: |
 | CheckSwitchRange                   | :heavy_check_mark: |
 | NoCheckSwitchRange                 | :heavy_check_mark: |
 | ResetHealth                        | :heavy_check_mark: |

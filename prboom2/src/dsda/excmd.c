@@ -21,6 +21,7 @@
 #include "doomstat.h"
 
 #include "dsda/configuration.h"
+#include "dsda/mapinfo.h"
 
 #include "excmd.h"
 
@@ -54,6 +55,7 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
 
 dboolean dsda_AllowJumping(void) {
   return (allow_incompatibility && dsda_IntConfig(dsda_config_allow_jumping))
+         || map_info.flags & MI_ALLOW_JUMP
          || dsda_AllowCasualExCmdFeatures();
 }
 
