@@ -15,16 +15,16 @@ You can enable MAPINFO parsing via the `-mapinfo` command line option. There is 
 
 ### Top Level Keys
 
-| Key           | Status          |
-| ------------- | --------------- |
-| map           | :telescope:     |
-| defaultmap    | :telescope:     |
-| adddefaultmap | :telescope:     |
+| Key           | Status             |
+| ------------- | ------------------ |
+| map           | :heavy_check_mark: |
+| defaultmap    | :heavy_check_mark: |
+| adddefaultmap | :heavy_check_mark: |
 
 ### Map Properties
 
-| Key                                | Status          |
-| ---------------------------------- | --------------- |
+| Key                                | Status             |
+| ---------------------------------- | ------------------ |
 | LevelNum                           | :heavy_check_mark: |
 | Next                               | :heavy_check_mark: |
 | SecretNext                         | :heavy_check_mark: |
