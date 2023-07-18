@@ -107,6 +107,7 @@
 #include "dsda/options.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
+#include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
@@ -3037,7 +3038,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
   automap_active = false;
-  gameskill = skill;
+  dsda_UpdateGameSkill(skill);
   dsda_UpdateGameMap(episode, map);
 
   totalleveltimes = 0; // cph
