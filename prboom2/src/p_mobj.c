@@ -2176,11 +2176,11 @@ static dboolean P_ShouldSpawnMapThing(int options)
 
   // check for appropriate skill level
   if (
-    gameskill == sk_baby   ? !(options & MTF_SKILL1) :
-    gameskill == sk_easy   ? !(options & MTF_SKILL2) :
-    gameskill == sk_medium ? !(options & MTF_SKILL3) :
-    gameskill == sk_hard   ? !(options & MTF_SKILL4) :
-                             !(options & MTF_SKILL5)
+    skill_info.spawn_filter == 1 ? !(options & MTF_SKILL1) :
+    skill_info.spawn_filter == 2 ? !(options & MTF_SKILL2) :
+    skill_info.spawn_filter == 3 ? !(options & MTF_SKILL3) :
+    skill_info.spawn_filter == 4 ? !(options & MTF_SKILL4) :
+                                   !(options & MTF_SKILL5)
   )
     return false;
 
