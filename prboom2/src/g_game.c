@@ -3026,7 +3026,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
 
   M_ClearRandom();
 
-  respawnmonsters = (!raven && skill == sk_nightmare) || respawnparm;
+  respawnmonsters = skill_infos[skill].respawn_time > 0 || respawnparm;
 
   // force players to be initialized upon first level load
   for (i = 0; i < g_maxplayers; i++)
