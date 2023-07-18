@@ -2947,8 +2947,8 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     S_ResumeSound();
   }
 
-  if (skill > sk_nightmare)
-    skill = sk_nightmare;
+  if (skill > num_skills)
+    skill = num_skills;
 
   if (episode < 1)
     episode = 1;
