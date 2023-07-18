@@ -56,6 +56,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
+#include "dsda/skill_info.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -162,11 +163,8 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
   else
     num = clipammo[ammo]/2;
 
-  // give double ammo in trainer mode, you'll need in nightmare
-  if (gameskill == sk_baby || gameskill == sk_nightmare) {
-    if (heretic) num += num >> 1;
-    else num <<= 1;
-  }
+  if (skill_info.ammo_factor)
+    num = num * skill_info.ammo_factor / FRACUNIT;
 
   oldammo = player->ammo[ammo];
   player->ammo[ammo] += num;
@@ -2716,9 +2714,9 @@ dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
     {
         return (false);
     }
-    if (gameskill == sk_baby || gameskill == sk_nightmare)
-    {                           // extra mana in baby mode and nightmare mode
-        count += count >> 1;
+    if (skill_info.ammo_factor)
+    {
+        count = count * skill_info.ammo_factor / FRACUNIT;
     }
     prevMana = player->ammo[mana];
 
