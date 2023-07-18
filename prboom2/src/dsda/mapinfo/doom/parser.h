@@ -89,10 +89,45 @@ typedef struct {
   doom_mapinfo_map_flags_t flags;
 } doom_mapinfo_map_t;
 
+#define DSI_SPAWN_MULTI      0x0001
+#define DSI_FAST_MONSTERS    0x0002
+#define DSI_INSTANT_REACTION 0x0004
+#define DSI_DISABLE_CHEATS   0x0008
+#define DSI_NO_PAIN          0x0010
+#define DSI_DEFAULT_SKILL    0x0020
+#define DSI_NO_MENU          0x0040
+#define DSI_PLAYER_RESPAWN   0x0080
+#define DSI_EASY_BOSS_BRAIN  0x0100
+#define DSI_MUST_CONFIRM     0x0200
+#define DSI_AUTO_USE_HEALTH  0x0400 // not applicable to doom
+
+typedef uint16_t doom_mapinfo_skill_flags_t;
+
+typedef struct {
+  char* unique_id;
+  char* ammo_factor;
+  char* damage_factor;
+  char* armor_factor;
+  char* health_factor;
+  char* monster_health_factor;
+  char* friend_health_factor;
+  int respawn_time;
+  int spawn_filter;
+  char key;
+  char* must_confirm;
+  char* name;
+  char* pic_name;
+  char* text_color;
+  doom_mapinfo_skill_flags_t flags;
+} doom_mapinfo_skill_t;
+
 typedef struct {
   size_t num_maps;
   doom_mapinfo_map_t* maps;
+  size_t num_skills;
+  doom_mapinfo_skill_t* skills;
   int loaded;
+  int skills_cleared;
 } doom_mapinfo_t;
 
 extern doom_mapinfo_t doom_mapinfo;

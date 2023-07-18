@@ -34,6 +34,8 @@ extern "C" {
 static std::vector<doom_mapinfo_map_t> doom_mapinfo_maps;
 static doom_mapinfo_map_t default_map;
 
+static std::vector<doom_mapinfo_skill_t> doom_mapinfo_skills;
+
 static void dsda_SkipValue(Scanner &scanner) {
   if (scanner.CheckToken('=')) {
     do {
@@ -495,6 +497,105 @@ static void dsda_ParseDoomMapInfoAddDefaultMap(Scanner &scanner) {
   dsda_ParseDoomMapInfoMapBlock(scanner, default_map, special_actions);
 }
 
+static void dsda_FreeSkill(doom_mapinfo_skill_t &skill) {
+  Z_Free(skill.unique_id);
+  Z_Free(skill.ammo_factor);
+  Z_Free(skill.damage_factor);
+  Z_Free(skill.armor_factor);
+  Z_Free(skill.health_factor);
+  Z_Free(skill.monster_health_factor);
+  Z_Free(skill.friend_health_factor);
+  Z_Free(skill.must_confirm);
+  Z_Free(skill.name);
+  Z_Free(skill.pic_name);
+  Z_Free(skill.text_color);
+}
+
+static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
+  doom_mapinfo_skill_t skill = { 0 };
+
+  scanner.MustGetToken(TK_StringConst);
+  STR_DUP(skill.unique_id);
+
+  // TODO: check unique id uniqueness
+
+  scanner.MustGetToken('{');
+  while (!scanner.CheckToken('}')) {
+    scanner.MustGetToken(TK_Identifier);
+
+    if (!stricmp(scanner.string, "AmmoFactor")) {
+      SCAN_FLOAT_STRING(skill.ammo_factor);
+    }
+    else if (!stricmp(scanner.string, "DamageFactor")) {
+      SCAN_FLOAT_STRING(skill.damage_factor);
+    }
+    else if (!stricmp(scanner.string, "ArmorFactor")) {
+      SCAN_FLOAT_STRING(skill.armor_factor);
+    }
+    else if (!stricmp(scanner.string, "HealthFactor")) {
+      SCAN_FLOAT_STRING(skill.health_factor);
+    }
+    else if (!stricmp(scanner.string, "MonsterHealth")) {
+      SCAN_FLOAT_STRING(skill.monster_health_factor);
+    }
+    else if (!stricmp(scanner.string, "FriendlyHealth")) {
+      SCAN_FLOAT_STRING(skill.friend_health_factor);
+    }
+    else if (!stricmp(scanner.string, "RespawnTime")) {
+      SCAN_INT(skill.respawn_time);
+    }
+    else if (!stricmp(scanner.string, "SpawnFilter")) {
+      SCAN_INT(skill.spawn_filter);
+    }
+    else if (!stricmp(scanner.string, "Key")) {
+      scanner.MustGetToken(TK_StringConst);
+      skill.key = scanner.string[0];
+    }
+    else if (!stricmp(scanner.string, "MustConfirm")) {
+      // TODO: accept as flag as well
+      SCAN_STRING(skill.must_confirm);
+    }
+    else if (!stricmp(scanner.string, "Name")) {
+      SCAN_STRING(skill.name);
+    }
+    else if (!stricmp(scanner.string, "PicName")) {
+      SCAN_STRING(skill.pic_name);
+    }
+    else if (!stricmp(scanner.string, "TextColor")) {
+      SCAN_STRING(skill.text_color);
+    }
+    else if (!stricmp(scanner.string, "SpawnMulti")) {
+      skill.flags |= DSI_SPAWN_MULTI;
+    }
+    else if (!stricmp(scanner.string, "FastMonsters")) {
+      skill.flags |= DSI_FAST_MONSTERS;
+    }
+    else if (!stricmp(scanner.string, "InstantReaction")) {
+      skill.flags |= DSI_INSTANT_REACTION;
+    }
+    else if (!stricmp(scanner.string, "DisableCheats")) {
+      skill.flags |= DSI_DISABLE_CHEATS;
+    }
+    else if (!stricmp(scanner.string, "NoPain")) {
+      skill.flags |= DSI_NO_PAIN;
+    }
+    else if (!stricmp(scanner.string, "DefaultSkill")) {
+      skill.flags |= DSI_DEFAULT_SKILL;
+    }
+    else if (!stricmp(scanner.string, "NoMenu")) {
+      skill.flags |= DSI_NO_MENU;
+    }
+    else if (!stricmp(scanner.string, "PlayerRespawn")) {
+      skill.flags |= DSI_PLAYER_RESPAWN;
+    }
+    else if (!stricmp(scanner.string, "EasyBossBrain")) {
+      skill.flags |= DSI_EASY_BOSS_BRAIN;
+    }
+  }
+
+  doom_mapinfo_skills.push_back(skill);
+}
+
 static void dsda_ParseDoomMapInfoIdentifier(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
 
@@ -506,6 +607,15 @@ static void dsda_ParseDoomMapInfoIdentifier(Scanner &scanner) {
   }
   else if (!stricmp(scanner.string, "adddefaultmap")) {
     dsda_ParseDoomMapInfoAddDefaultMap(scanner);
+  }
+  else if (!stricmp(scanner.string, "skill")) {
+    dsda_ParseDoomMapInfoSkill(scanner);
+  }
+  else if (!stricmp(scanner.string, "clearskills")) {
+    for (auto &skill : doom_mapinfo_skills)
+      dsda_FreeSkill(skill);
+    doom_mapinfo_skills.clear();
+    doom_mapinfo.skills_cleared = true;
   }
   else {
     dsda_SkipValue(scanner);
@@ -528,6 +638,9 @@ void dsda_ParseDoomMapInfo(const unsigned char* buffer, size_t length, doom_mapi
 
   doom_mapinfo.maps = &doom_mapinfo_maps[0];
   doom_mapinfo.num_maps = doom_mapinfo_maps.size();
+
+  doom_mapinfo.skills = &doom_mapinfo_skills[0];
+  doom_mapinfo.num_skills = doom_mapinfo_skills.size();
 
   doom_mapinfo.loaded = true;
 }
