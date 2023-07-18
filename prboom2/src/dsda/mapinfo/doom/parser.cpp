@@ -573,9 +573,6 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
     else if (!stricmp(scanner.string, "InstantReaction")) {
       skill.flags |= DSI_INSTANT_REACTION;
     }
-    else if (!stricmp(scanner.string, "DisableCheats")) {
-      skill.flags |= DSI_DISABLE_CHEATS;
-    }
     else if (!stricmp(scanner.string, "NoPain")) {
       skill.flags |= DSI_NO_PAIN;
     }

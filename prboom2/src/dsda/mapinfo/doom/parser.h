@@ -92,7 +92,6 @@ typedef struct {
 #define DSI_SPAWN_MULTI      0x0001
 #define DSI_FAST_MONSTERS    0x0002
 #define DSI_INSTANT_REACTION 0x0004
-#define DSI_DISABLE_CHEATS   0x0008
 #define DSI_NO_PAIN          0x0010
 #define DSI_DEFAULT_SKILL    0x0020
 #define DSI_NO_MENU          0x0040
