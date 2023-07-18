@@ -68,3 +68,30 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | UsePlayerStartZ                    | :heavy_check_mark: |
 | NoPassover                         | :heavy_check_mark: |
 | Passover                           | :heavy_check_mark: |
+
+### Skill Properties
+
+| Key             | Status             |
+| --------------- | ------------------ |
+| AmmoFactor      | :telescope: |
+| DamageFactor    | :telescope: |
+| ArmorFactor     | :telescope: |
+| HealthFactor    | :telescope: |
+| MonsterHealth   | :telescope: |
+| FriendlyHealth  | :telescope: |
+| RespawnTime     | :telescope: |
+| SpawnFilter     | :telescope: |
+| Key             | :telescope: |
+| MustConfirm     | :telescope: |
+| Name            | :telescope: |
+| PicName         | :telescope: |
+| TextColor       | :telescope: |
+| SpawnMulti      | :telescope: |
+| FastMonsters    | :telescope: |
+| InstantReaction | :telescope: |
+| DisableCheats   | :telescope: |
+| NoPain          | :telescope: |
+| DefaultSkill    | :telescope: |
+| NoMenu          | :telescope: |
+| PlayerRespawn   | :telescope: |
+| EasyBossBrain   | :telescope: |
