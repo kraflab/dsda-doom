@@ -1250,8 +1250,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   }
 
   player = target->player;
-  if (player && gameskill == sk_baby)
-    damage >>= 1;   // take half damage in trainer mode
+  if (player && skill_info.damage_factor)
+    damage = damage * skill_info.damage_factor / FRACUNIT;
 
   // Special damage types
   if (raven && inflictor)
@@ -2648,10 +2648,9 @@ void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
     {                           // mobj is invulnerable
         return;
     }
-    if (gameskill == sk_baby)
+    if (skill_info.damage_factor)
     {
-        // Take half damage in trainer mode
-        damage >>= 1;
+        damage = damage * skill_info.damage_factor / FRACUNIT;
     }
     if (damage < 1000 && ((player->cheats & CF_GODMODE)
                           || player->powers[pw_invulnerability]))
