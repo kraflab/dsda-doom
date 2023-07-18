@@ -3022,7 +3022,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     dsda_startmap = map;
   }
 
-  G_SetFastParms(fastparm || skill == sk_nightmare);  // killough 4/10/98
+  G_SetFastParms(fastparm || skill_infos[skill].flags & SI_FAST_MONSTERS);  // killough 4/10/98
 
   M_ClearRandom();
 
