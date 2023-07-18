@@ -58,6 +58,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/settings.h"
+#include "dsda/skill_info.h"
 #include "dsda/spawn_number.h"
 #include "dsda/thing_id.h"
 #include "dsda/tranmap.h"
@@ -1678,7 +1679,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
 
   mobj->health = info->spawnhealth;
 
-  if (gameskill != sk_nightmare)
+  if (!(skill_info.flags & SI_INSTANT_REACTION))
     mobj->reactiontime = info->reactiontime;
 
   mobj->lastlook = P_Random (pr_lastlook) % g_maxplayers;
