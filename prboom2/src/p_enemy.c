@@ -57,6 +57,7 @@
 #include "dsda/id_list.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/skill_info.h"
 
 static mobj_t *current_actor;
 
@@ -2884,7 +2885,7 @@ void A_BrainSpit(mobj_t *mo)
     return;
 
   brain.easy ^= 1;          // killough 3/26/98: use brain struct
-  if (gameskill <= sk_easy && !brain.easy)
+  if (skill_info.flags & SI_EASY_BOSS_BRAIN && !brain.easy)
     return;
 
   // shoot a cube at current target
