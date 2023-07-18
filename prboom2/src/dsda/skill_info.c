@@ -21,128 +21,98 @@
 
 skill_info_t skill_info;
 
-static const skill_info_t doom_sk1_info = {
-  .ammo_factor = FRACUNIT * 2,
-  .damage_factor = FRACUNIT / 2,
-  .spawn_filter = 1,
-  .key = 'i',
-  .name = "I'm too young to die.",
-  .pic_name = "M_JKILL",
-  .flags = SI_EASY_BOSS_BRAIN
-};
-
-static const skill_info_t doom_sk2_info = {
-  .spawn_filter = 2,
-  .key = 'h',
-  .name = "Hey, not too rough.",
-  .pic_name = "M_ROUGH",
-  .flags = SI_EASY_BOSS_BRAIN
-};
-
-static const skill_info_t doom_sk3_info = {
-  .spawn_filter = 3,
-  .key = 'h',
-  .name = "Hurt me plenty.",
-  .pic_name = "M_HURT",
-  .flags = SI_DEFAULT_SKILL
-};
-
-static const skill_info_t doom_sk4_info = {
-  .spawn_filter = 4,
-  .key = 'u',
-  .name = "Ultra-Violence.",
-  .pic_name = "M_ULTRA",
-  .flags = 0
-};
-
-static const skill_info_t doom_sk5_info = {
-  .ammo_factor = FRACUNIT * 2,
-  .spawn_filter = 5,
-  .key = 'n',
-  .name = "Nightmare!",
-  .pic_name = "M_NMARE",
-  .respawn_time = 12,
-  .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION | SI_MUST_CONFIRM
-};
-
-static const skill_info_t heretic_sk1_info = {
-  .ammo_factor = FRACUNIT * 3 / 2,
-  .damage_factor = FRACUNIT / 2,
-  .spawn_filter = 1,
-  .flags = SI_AUTO_USE_HEALTH
-};
-
-static const skill_info_t heretic_sk2_info = {
-  .spawn_filter = 2,
-  .flags = 0
-};
-
-static const skill_info_t heretic_sk3_info = {
-  .spawn_filter = 3,
-  .flags = SI_DEFAULT_SKILL
-};
-
-static const skill_info_t heretic_sk4_info = {
-  .spawn_filter = 4,
-  .flags = 0
-};
-
-static const skill_info_t heretic_sk5_info = {
-  .ammo_factor = FRACUNIT * 3 / 2,
-  .spawn_filter = 5,
-  .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION
-};
-
-static const skill_info_t hexen_sk1_info = {
-  .ammo_factor = FRACUNIT * 3 / 2,
-  .damage_factor = FRACUNIT / 2,
-  .spawn_filter = 1,
-  .flags = SI_AUTO_USE_HEALTH
-};
-
-static const skill_info_t hexen_sk2_info = {
-  .spawn_filter = 2,
-  .flags = 0
-};
-
-static const skill_info_t hexen_sk3_info = {
-  .spawn_filter = 3,
-  .flags = SI_DEFAULT_SKILL
-};
-
-static const skill_info_t hexen_sk4_info = {
-  .spawn_filter = 4,
-  .flags = 0
-};
-
-static const skill_info_t hexen_sk5_info = {
-  .ammo_factor = FRACUNIT * 3 / 2,
-  .spawn_filter = 5,
-  .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION
-};
-
 const skill_info_t doom_skill_infos[5] = {
-  doom_sk1_info,
-  doom_sk2_info,
-  doom_sk3_info,
-  doom_sk4_info,
-  doom_sk5_info,
+  {
+    .ammo_factor = FRACUNIT * 2,
+    .damage_factor = FRACUNIT / 2,
+    .spawn_filter = 1,
+    .key = 'i',
+    .name = "I'm too young to die.",
+    .pic_name = "M_JKILL",
+    .flags = SI_EASY_BOSS_BRAIN
+  },
+  {
+    .spawn_filter = 2,
+    .key = 'h',
+    .name = "Hey, not too rough.",
+    .pic_name = "M_ROUGH",
+    .flags = SI_EASY_BOSS_BRAIN
+  },
+  {
+    .spawn_filter = 3,
+    .key = 'h',
+    .name = "Hurt me plenty.",
+    .pic_name = "M_HURT",
+    .flags = SI_DEFAULT_SKILL
+  },
+  {
+    .spawn_filter = 4,
+    .key = 'u',
+    .name = "Ultra-Violence.",
+    .pic_name = "M_ULTRA",
+    .flags = 0
+  },
+  {
+    .ammo_factor = FRACUNIT * 2,
+    .spawn_filter = 5,
+    .key = 'n',
+    .name = "Nightmare!",
+    .pic_name = "M_NMARE",
+    .respawn_time = 12,
+    .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION | SI_MUST_CONFIRM
+  },
 };
 
 const skill_info_t heretic_skill_infos[5] = {
-  heretic_sk1_info,
-  heretic_sk2_info,
-  heretic_sk3_info,
-  heretic_sk4_info,
-  heretic_sk5_info,
+  {
+    .ammo_factor = FRACUNIT * 3 / 2,
+    .damage_factor = FRACUNIT / 2,
+    .spawn_filter = 1,
+    .flags = SI_AUTO_USE_HEALTH
+  },
+  {
+    .spawn_filter = 2,
+    .flags = 0
+  },
+  {
+    .spawn_filter = 3,
+    .flags = SI_DEFAULT_SKILL
+  },
+  {
+    .spawn_filter = 4,
+    .flags = 0
+  },
+  {
+    .ammo_factor = FRACUNIT * 3 / 2,
+    .spawn_filter = 5,
+    .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION
+  },
 };
 
 const skill_info_t hexen_skill_infos[5] = {
-  hexen_sk1_info,
-  hexen_sk2_info,
-  hexen_sk3_info,
-  hexen_sk4_info,
-  hexen_sk5_info,
+  {
+    .ammo_factor = FRACUNIT * 3 / 2,
+    .damage_factor = FRACUNIT / 2,
+    .spawn_filter = 1,
+    .flags = SI_AUTO_USE_HEALTH
+  },
+  {
+    .spawn_filter = 2,
+    .flags = 0
+  },
+  {
+    .spawn_filter = 3,
+    .flags = SI_DEFAULT_SKILL
+  },
+  {
+    .spawn_filter = 4,
+    .flags = 0
+  },
+  {
+    .ammo_factor = FRACUNIT * 3 / 2,
+    .spawn_filter = 5,
+    .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION
+  },
 };
 
 const skill_info_t* skill_infos;
