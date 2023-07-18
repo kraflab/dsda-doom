@@ -263,6 +263,8 @@ void dsda_WadStatsEnterMap(void) {
 void dsda_WadStatsExitMap(int missed_monsters) {
   int skill;
 
+  // TODO: remap 5 -> num_skills and 4 -> num_skills - 1
+
   if (!current_map_stats || demoplayback)
     return;
 
