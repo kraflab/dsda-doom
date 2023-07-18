@@ -2174,7 +2174,7 @@ static dboolean P_ShouldSpawnMapThing(int options)
       return false;
   }
 
-  // check for apropriate skill level
+  // check for appropriate skill level
   if (
     gameskill == sk_baby   ? !(options & MTF_SKILL1) :
     gameskill == sk_easy   ? !(options & MTF_SKILL2) :
