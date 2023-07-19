@@ -3022,11 +3022,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     dsda_startmap = map;
   }
 
-  G_SetFastParms(fastparm || skill_infos[skill].flags & SI_FAST_MONSTERS);  // killough 4/10/98
-
   M_ClearRandom();
-
-  respawnmonsters = skill_infos[skill].respawn_time > 0 || respawnparm;
 
   // force players to be initialized upon first level load
   for (i = 0; i < g_maxplayers; i++)
@@ -3040,6 +3036,10 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   automap_active = false;
   dsda_UpdateGameSkill(skill);
   dsda_UpdateGameMap(episode, map);
+
+  G_SetFastParms(fastparm || skill_info.flags & SI_FAST_MONSTERS);  // killough 4/10/98
+
+  respawnmonsters = skill_info.respawn_time > 0 || respawnparm;
 
   totalleveltimes = 0; // cph
   levels_completed = 0;
