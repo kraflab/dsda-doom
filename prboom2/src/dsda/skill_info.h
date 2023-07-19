@@ -18,6 +18,9 @@
 #ifndef __DSDA_SKILL_INFO__
 #define __DSDA_SKILL_INFO__
 
+#include "doomdef.h"
+#include "m_fixed.h"
+
 #define SI_SPAWN_MULTI      0x0001
 #define SI_FAST_MONSTERS    0x0002
 #define SI_INSTANT_REACTION 0x0004
