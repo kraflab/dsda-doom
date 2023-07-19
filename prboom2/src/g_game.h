@@ -61,7 +61,7 @@ void G_EndGame(void); /* cph - make m_menu.c call a G_* function for this */
 void G_Ticker(void);
 void G_ScreenShot(void);
 void G_ReloadDefaults(void);     // killough 3/1/98: loads game defaults
-void G_SetFastParms(int);        // killough 4/10/98: sets -fast parameters
+void G_RefreshFastMonsters(void); // killough 4/10/98: sets -fast parameters
 void G_DoNewGame(void);
 void G_DoReborn(int playernum);
 void G_StartDemoPlayback(const byte *buffer, int length, int behaviour);

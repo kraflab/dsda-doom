@@ -2842,10 +2842,13 @@ void G_DoNewGame (void)
 // killough 4/10/98: New function to fix bug which caused Doom
 // lockups when idclev was used in conjunction with -fast.
 
-void G_SetFastParms(int fast_pending)
+void G_RefreshFastMonsters(void)
 {
   static int fast = 0;            // remembers fast state
   int i;
+  int fast_pending;
+
+  fast_pending = !!(skill_info.flags & SI_FAST_MONSTERS);
 
   if (hexen)
   {
@@ -3035,8 +3038,6 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   automap_active = false;
   dsda_UpdateGameSkill(skill);
   dsda_UpdateGameMap(episode, map);
-
-  G_SetFastParms(fastparm || skill_info.flags & SI_FAST_MONSTERS);  // killough 4/10/98
 
   totalleveltimes = 0; // cph
   levels_completed = 0;

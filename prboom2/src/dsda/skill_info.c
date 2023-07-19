@@ -119,10 +119,21 @@ const skill_info_t* skill_infos;
 
 int num_skills = 5;
 
-void dsda_UpdateGameSkill(skill_t skill) {
-  gameskill = skill;
-  skill_info = skill_infos[skill];
+void dsda_RefreshGameSkill(void) {
+  void G_RefreshFastMonsters(void);
+
+  skill_info = skill_infos[gameskill];
 
   if (respawnparm && !skill_info.respawn_time)
     skill_info.respawn_time = 12;
+
+  if (fastparm)
+    skill_info.flags |= SI_FAST_MONSTERS;
+
+  G_RefreshFastMonsters();
+}
+
+void dsda_UpdateGameSkill(skill_t skill) {
+  gameskill = skill;
+  dsda_RefreshGameSkill();
 }

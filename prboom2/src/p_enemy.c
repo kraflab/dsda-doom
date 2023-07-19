@@ -1268,7 +1268,7 @@ void A_Chase(mobj_t *actor)
   if (actor->flags & MF_JUSTATTACKED)
   {
     actor->flags &= ~MF_JUSTATTACKED;
-    if (!(skill_info.flags & SI_FAST_MONSTERS) && !fastparm)
+    if (!(skill_info.flags & SI_FAST_MONSTERS))
       P_NewChaseDir(actor);
     return;
   }
@@ -1288,7 +1288,7 @@ void A_Chase(mobj_t *actor)
 
   // check for missile attack
   if (actor->info->missilestate)
-    if (!(!(skill_info.flags & SI_FAST_MONSTERS) && !fastparm && actor->movecount))
+    if (!(!(skill_info.flags & SI_FAST_MONSTERS) && actor->movecount))
       if (P_CheckMissileRange(actor))
       {
         P_SetMobjState(actor, actor->info->missilestate);
