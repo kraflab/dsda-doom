@@ -149,7 +149,6 @@ gameaction_t    gameaction;
 gamestate_t     gamestate;
 dboolean        in_game;
 skill_t         gameskill;
-dboolean         respawnmonsters;
 int             gameepisode;
 int             gamemap;
 // CPhipps - moved *_loadgame vars here
@@ -3038,8 +3037,6 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dsda_UpdateGameMap(episode, map);
 
   G_SetFastParms(fastparm || skill_info.flags & SI_FAST_MONSTERS);  // killough 4/10/98
-
-  respawnmonsters = skill_info.respawn_time > 0 || respawnparm;
 
   totalleveltimes = 0; // cph
   levels_completed = 0;

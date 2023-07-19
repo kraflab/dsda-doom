@@ -122,4 +122,7 @@ int num_skills = 5;
 void dsda_UpdateGameSkill(skill_t skill) {
   gameskill = skill;
   skill_info = skill_infos[skill];
+
+  if (respawnparm && !skill_info.respawn_time)
+    skill_info.respawn_time = 12;
 }

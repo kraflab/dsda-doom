@@ -24,6 +24,7 @@
 #include "z_zone.h"
 
 #include "dsda/data_organizer.h"
+#include "dsda/skill_info.h"
 #include "dsda/utility.h"
 
 #include "wad_stats.h"
@@ -292,7 +293,7 @@ void dsda_WadStatsExitMap(int missed_monsters) {
       current_map_stats->max_items = totalitems;
       current_map_stats->max_secrets = totalsecret;
 
-      if (!respawnmonsters) {
+      if (!skill_info.respawn_time) {
         if (totalkills - missed_monsters > current_map_stats->best_kills)
           current_map_stats->best_kills = totalkills - missed_monsters;
 

@@ -15,6 +15,8 @@
 //	DSDA Map Totals HUD Component
 //
 
+#include "dsda/skill_info.h"
+
 #include "base.h"
 
 #include "map_totals.h"
@@ -52,7 +54,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     }
   }
 
-  if (respawnmonsters) {
+  if (skill_info.respawn_time) {
     fullkillcount = kill_percent_count;
     max_kill_requirement = totalkills;
   }

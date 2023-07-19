@@ -1409,7 +1409,7 @@ void P_MobjThinker (mobj_t* mobj)
     if (! (mobj->flags & MF_COUNTKILL) )
       return;
 
-    if (!respawnmonsters)
+    if (!skill_info.respawn_time)
       return;
 
     mobj->movecount++;

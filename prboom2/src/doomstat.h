@@ -162,9 +162,6 @@ extern leave_data_t leave_data;
 #define LF_SET_ANGLE 0x01
 #define LEAVE_VICTORY -1
 
-// Nightmare mode flag, single player.
-extern  dboolean         respawnmonsters;
-
 // Netgame? Only true if >1 player.
 extern  dboolean netgame;
 
