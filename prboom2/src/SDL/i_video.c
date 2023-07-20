@@ -1427,14 +1427,26 @@ void I_UpdateVideoMode(void)
   src_rect.h = SCREENHEIGHT;
 }
 
+static void SetMouseToCenter(void)
+{
+  int window_width, window_height;
+   // Get the window size
+  SDL_GetWindowSize(sdl_window, &window_width, &window_height);
+
+  // Move the mouse to the center of the window
+  SDL_WarpMouseInWindow(sdl_window, window_width / 2, window_height / 2);
+}
+
 static void ActivateMouse(void)
 {
+  SetMouseToCenter();
   SDL_SetRelativeMouseMode(SDL_TRUE);
   SDL_GetRelativeMouseState(NULL, NULL);
 }
 
 static void DeactivateMouse(void)
 {
+  SetMouseToCenter();
   SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
