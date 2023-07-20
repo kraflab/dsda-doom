@@ -1429,7 +1429,7 @@ void I_UpdateVideoMode(void)
 
 static void SetMouseToCenter(void)
 {
-  int window_width, window_height;
+  unsigned int window_width, window_height;
    // Get the window size
   SDL_GetWindowSize(sdl_window, &window_width, &window_height);
 
