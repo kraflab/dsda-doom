@@ -1429,8 +1429,8 @@ void I_UpdateVideoMode(void)
 
 static void ActivateMouse(void)
 {
-  //move the mouse inside the window
-  SDL_WarpMouseInWindow(sdl_window, 0, 0);
+  //move the mouse in center. Bitshift to right to faster half the screen size.
+  SDL_WarpMouseInWindow(sdl_window, SCREENWIDTH >> 1, SCREENHEIGHT >> 1);
 
   SDL_SetRelativeMouseMode(SDL_TRUE);
   SDL_GetRelativeMouseState(NULL, NULL);
