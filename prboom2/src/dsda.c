@@ -518,7 +518,7 @@ static void dsda_ResetTracking(void) {
   dsda_pacifist_note_shown = false;
 }
 
-void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
+void dsda_WatchDeferredInitNew(int skill, int episode, int map) {
   if (!demorecording) return;
 
   ++dsda_session_attempts;

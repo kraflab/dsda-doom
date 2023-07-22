@@ -139,13 +139,13 @@ extern  Language_t   language;
 //
 
 // Defaults for menu, methinks.
-extern  skill_t   startskill;
+extern  int   startskill;
 extern  int             startepisode;
 
 extern  dboolean   autostart;
 
 // Selected by user.
-extern  skill_t         gameskill;
+extern  int   gameskill;
 extern  int   gameepisode;
 extern  int   gamemap;
 
@@ -161,9 +161,6 @@ extern leave_data_t leave_data;
 
 #define LF_SET_ANGLE 0x01
 #define LEAVE_VICTORY -1
-
-// Nightmare mode flag, single player.
-extern  dboolean         respawnmonsters;
 
 // Netgame? Only true if >1 player.
 extern  dboolean netgame;

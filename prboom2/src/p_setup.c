@@ -3677,7 +3677,7 @@ void P_MustRebuildBlockmap(void)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
+void P_SetupLevel(int episode, int map, int playermask, int skill)
 {
   int   i;
   char  lumpname[9];
