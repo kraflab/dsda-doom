@@ -133,7 +133,7 @@ void dsda_RefreshGameSkill(void) {
   G_RefreshFastMonsters();
 }
 
-void dsda_UpdateGameSkill(skill_t skill) {
+void dsda_UpdateGameSkill(int skill) {
   gameskill = skill;
   dsda_RefreshGameSkill();
 }

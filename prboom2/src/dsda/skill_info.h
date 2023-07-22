@@ -62,6 +62,6 @@ extern const skill_info_t hexen_skill_infos[5];
 extern int num_skills;
 
 void dsda_RefreshGameSkill(void);
-void dsda_UpdateGameSkill(skill_t skill);
+void dsda_UpdateGameSkill(int skill);
 
 #endif

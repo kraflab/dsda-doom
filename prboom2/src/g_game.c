@@ -148,7 +148,7 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 gameaction_t    gameaction;
 gamestate_t     gamestate;
 dboolean        in_game;
-skill_t         gameskill;
+int             gameskill;
 int             gameepisode;
 int             gamemap;
 // CPhipps - moved *_loadgame vars here
@@ -2563,11 +2563,11 @@ static void G_DoSaveGame(dboolean via_cmd)
   Z_Free(name);
 }
 
-static skill_t d_skill;
+static int     d_skill;
 static int     d_episode;
 static int     d_map;
 
-void G_DeferedInitNew(skill_t skill, int episode, int map)
+void G_DeferedInitNew(int skill, int episode, int map)
 {
   d_skill = skill;
   d_episode = episode;
@@ -2756,11 +2756,6 @@ void G_ReloadDefaults(void)
   fastparm = clfastparm;
   nomonsters = clnomonsters;
 
-  //jff 3/24/98 set startskill from defaultskill in config file, unless
-  // it has already been set by a -skill parameter
-  if (startskill == sk_none)
-    startskill = (skill_t)(dsda_IntConfig(dsda_config_default_skill) - 1);
-
   dsda_ClearPlaybackStream();
 
   // killough 2/21/98:
@@ -2925,7 +2920,7 @@ int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
 
 extern int EpiCustom;
 
-void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
+void G_InitNew(int skill, int episode, int map, dboolean prepare)
 {
   int i;
 
@@ -3538,7 +3533,7 @@ static dboolean CheckForOverrun(const byte *start_p, const byte *current_p, size
 
 const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int params)
 {
-  skill_t skill;
+  int skill;
   int i, episode = 1, map = 0;
 
   // e6y
