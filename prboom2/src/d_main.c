@@ -142,7 +142,7 @@ dboolean nomusicparm;
 extern dboolean inhelpscreens;
 extern dboolean BorderNeedRefresh;
 
-skill_t startskill;
+int     startskill;
 int     startepisode;
 int     startmap;
 dboolean autostart;
@@ -1676,7 +1676,7 @@ static void D_DoomMainSetup(void)
 
   // get skill / episode / map from parms
 
-  startskill = sk_none; // jff 3/24/98 was sk_medium, just note not picked
+  startskill = dsda_IntConfig(dsda_config_default_skill) - 1;
   startepisode = 1;
   startmap = 1;
   autostart = false;

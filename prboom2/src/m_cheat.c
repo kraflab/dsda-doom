@@ -64,6 +64,7 @@
 #include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
 #include "dsda/settings.h"
+#include "dsda/skill_info.h"
 
 #define plyr (players+consoleplayer)     /* the console player */
 
@@ -721,7 +722,7 @@ static void cheat_hom()
 static void cheat_fast()
 {
   dsda_AddMessage((fastparm = !fastparm) ? "Fast Monsters On" : "Fast Monsters Off");
-  G_SetFastParms(fastparm); // killough 4/10/98: set -fast parameter correctly
+  dsda_RefreshGameSkill(); // refresh fast monsters
 }
 
 // killough 2/16/98: keycard/skullkey cheat functions

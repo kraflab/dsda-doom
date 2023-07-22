@@ -190,15 +190,6 @@ typedef enum {
 #define MTF_SKILL4  0x00080000
 #define MTF_SKILL5  0x00100000
 
-typedef enum {
-  sk_none=-1, //jff 3/24/98 create unpicked skill setting
-  sk_baby=0,
-  sk_easy,
-  sk_medium,
-  sk_hard,
-  sk_nightmare
-} skill_t;
-
 //
 // Key cards.
 //

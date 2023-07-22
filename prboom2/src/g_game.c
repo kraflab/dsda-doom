@@ -107,6 +107,7 @@
 #include "dsda/options.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
+#include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/split_tracker.h"
@@ -147,8 +148,7 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 gameaction_t    gameaction;
 gamestate_t     gamestate;
 dboolean        in_game;
-skill_t         gameskill;
-dboolean         respawnmonsters;
+int             gameskill;
 int             gameepisode;
 int             gamemap;
 // CPhipps - moved *_loadgame vars here
@@ -2563,11 +2563,11 @@ static void G_DoSaveGame(dboolean via_cmd)
   Z_Free(name);
 }
 
-static skill_t d_skill;
+static int     d_skill;
 static int     d_episode;
 static int     d_map;
 
-void G_DeferedInitNew(skill_t skill, int episode, int map)
+void G_DeferedInitNew(int skill, int episode, int map)
 {
   d_skill = skill;
   d_episode = episode;
@@ -2756,11 +2756,6 @@ void G_ReloadDefaults(void)
   fastparm = clfastparm;
   nomonsters = clnomonsters;
 
-  //jff 3/24/98 set startskill from defaultskill in config file, unless
-  // it has already been set by a -skill parameter
-  if (startskill == sk_none)
-    startskill = (skill_t)(dsda_IntConfig(dsda_config_default_skill) - 1);
-
   dsda_ClearPlaybackStream();
 
   // killough 2/21/98:
@@ -2842,10 +2837,13 @@ void G_DoNewGame (void)
 // killough 4/10/98: New function to fix bug which caused Doom
 // lockups when idclev was used in conjunction with -fast.
 
-void G_SetFastParms(int fast_pending)
+void G_RefreshFastMonsters(void)
 {
   static int fast = 0;            // remembers fast state
   int i;
+  int fast_pending;
+
+  fast_pending = !!(skill_info.flags & SI_FAST_MONSTERS);
 
   if (hexen)
   {
@@ -2922,7 +2920,7 @@ int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
 
 extern int EpiCustom;
 
-void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
+void G_InitNew(int skill, int episode, int map, dboolean prepare)
 {
   int i;
 
@@ -2946,8 +2944,8 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     S_ResumeSound();
   }
 
-  if (skill > sk_nightmare)
-    skill = sk_nightmare;
+  if (skill > num_skills)
+    skill = num_skills;
 
   if (episode < 1)
     episode = 1;
@@ -3021,11 +3019,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     dsda_startmap = map;
   }
 
-  G_SetFastParms(fastparm || skill == sk_nightmare);  // killough 4/10/98
-
   M_ClearRandom();
-
-  respawnmonsters = (!raven && skill == sk_nightmare) || respawnparm;
 
   // force players to be initialized upon first level load
   for (i = 0; i < g_maxplayers; i++)
@@ -3037,7 +3031,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
   automap_active = false;
-  gameskill = skill;
+  dsda_UpdateGameSkill(skill);
   dsda_UpdateGameMap(episode, map);
 
   totalleveltimes = 0; // cph
@@ -3539,7 +3533,7 @@ static dboolean CheckForOverrun(const byte *start_p, const byte *current_p, size
 
 const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int params)
 {
-  skill_t skill;
+  int skill;
   int i, episode = 1, map = 0;
 
   // e6y

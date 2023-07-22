@@ -36,6 +36,7 @@
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
 #include "dsda/sfx.h"
+#include "dsda/skill_info.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
 
@@ -151,6 +152,8 @@ static void dsda_InitDoom(void) {
   demostates = doom_demostates;
 
   weaponinfo = doom_weaponinfo;
+
+  skill_infos = doom_skill_infos;
 
   g_maxplayers = 4;
   g_viewheight = 41 * FRACUNIT;
@@ -290,6 +293,8 @@ static void dsda_InitHeretic(void) {
   demostates = heretic_demostates;
 
   weaponinfo = wpnlev1info;
+
+  skill_infos = heretic_skill_infos;
 
   g_maxplayers = 4;
   g_viewheight = 41 * FRACUNIT;
@@ -447,6 +452,8 @@ static void dsda_InitHexen(void) {
   demostates = hexen_demostates;
 
   // weaponinfo = wpnlev1info;
+
+  skill_infos = hexen_skill_infos;
 
   g_maxplayers = 8;
   g_viewheight = 48 * FRACUNIT;

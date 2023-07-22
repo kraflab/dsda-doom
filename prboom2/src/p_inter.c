@@ -56,6 +56,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
+#include "dsda/skill_info.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -162,11 +163,8 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
   else
     num = clipammo[ammo]/2;
 
-  // give double ammo in trainer mode, you'll need in nightmare
-  if (gameskill == sk_baby || gameskill == sk_nightmare) {
-    if (heretic) num += num >> 1;
-    else num <<= 1;
-  }
+  if (skill_info.ammo_factor)
+    num = num * skill_info.ammo_factor / FRACUNIT;
 
   oldammo = player->ammo[ammo];
   player->ammo[ammo] += num;
@@ -1252,8 +1250,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   }
 
   player = target->player;
-  if (player && gameskill == sk_baby)
-    damage >>= 1;   // take half damage in trainer mode
+  if (player && skill_info.damage_factor)
+    damage = damage * skill_info.damage_factor / FRACUNIT;
 
   // Special damage types
   if (raven && inflictor)
@@ -1562,7 +1560,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     if (
       raven &&
       damage >= player->health &&
-      (gameskill == sk_baby || deathmatch) &&
+      (skill_info.flags & SI_AUTO_USE_HEALTH || deathmatch) &&
       !player->chickenTics && !player->morphTics
     )
     {                       // Try to use some inventory health
@@ -2499,7 +2497,7 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
             superCount = player->inventory[i].count;
         }
     }
-    if ((gameskill == sk_baby) && (normalCount * 25 >= saveHealth))
+    if (skill_info.flags & SI_AUTO_USE_HEALTH && (normalCount * 25 >= saveHealth))
     {                           // Use quartz flasks
         count = (saveHealth + 24) / 25;
         for (i = 0; i < count; i++)
@@ -2517,7 +2515,7 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
             P_PlayerRemoveArtifact(player, superSlot);
         }
     }
-    else if ((gameskill == sk_baby)
+    else if (skill_info.flags & SI_AUTO_USE_HEALTH
              && (superCount * 100 + normalCount * 25 >= saveHealth))
     {                           // Use mystic urns and quartz flasks
         count = (saveHealth + 24) / 25;
@@ -2650,10 +2648,9 @@ void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
     {                           // mobj is invulnerable
         return;
     }
-    if (gameskill == sk_baby)
+    if (skill_info.damage_factor)
     {
-        // Take half damage in trainer mode
-        damage >>= 1;
+        damage = damage * skill_info.damage_factor / FRACUNIT;
     }
     if (damage < 1000 && ((player->cheats & CF_GODMODE)
                           || player->powers[pw_invulnerability]))
@@ -2661,7 +2658,7 @@ void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
         return;
     }
     if (damage >= player->health
-        && ((gameskill == sk_baby) || deathmatch) && !player->morphTics)
+        && (skill_info.flags & SI_AUTO_USE_HEALTH || deathmatch) && !player->morphTics)
     {                           // Try to use some inventory health
         P_AutoUseHealth(player, damage - player->health + 1);
     }
@@ -2716,9 +2713,9 @@ dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
     {
         return (false);
     }
-    if (gameskill == sk_baby || gameskill == sk_nightmare)
-    {                           // extra mana in baby mode and nightmare mode
-        count += count >> 1;
+    if (skill_info.ammo_factor)
+    {
+        count = count * skill_info.ammo_factor / FRACUNIT;
     }
     prevMana = player->ammo[mana];
 

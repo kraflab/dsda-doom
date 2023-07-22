@@ -115,6 +115,9 @@ void dsda_WriteAnalysis(void) {
   return;
 }
 
+#define SKILL4 3
+#define SKILL5 4
+
 const char* dsda_DetectCategory(void) {
   dboolean satisfies_max;
   dboolean satisfies_respawn;
@@ -153,7 +156,7 @@ const char* dsda_DetectCategory(void) {
   if (solo_net) return "Other";
   if (dsda_reborn) return "Other";
 
-  if (gameskill == sk_hard) {
+  if (gameskill == SKILL4) {
     if (dsda_nomo && !dsda_respawn && !dsda_fast) {
       if (satisfies_100s) return "NoMo 100S";
 
@@ -181,7 +184,7 @@ const char* dsda_DetectCategory(void) {
 
     return "UV Speed";
   }
-  else if (gameskill == sk_nightmare) {
+  else if (gameskill == SKILL5) {
     if (nomonsters) return "Other";
     if (satisfies_100s) return "NM 100S";
 

@@ -36,7 +36,7 @@
 
 #include "p_mobj.h"
 
-void P_SetupLevel(int episode, int map, int playermask, skill_t skill);
+void P_SetupLevel(int episode, int map, int playermask, int skill);
 void P_Init(void);               /* Called by startup code. */
 
 extern const byte *rejectmatrix;   /* for fast sight rejection -  cph - const* */
