@@ -514,7 +514,7 @@ static void dsda_FreeSkill(doom_mapinfo_skill_t &skill) {
 static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
   doom_mapinfo_skill_t skill = { 0 };
 
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetToken(TK_Identifier);
   STR_DUP(skill.unique_id);
 
   // TODO: check unique id uniqueness
