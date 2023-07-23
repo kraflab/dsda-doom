@@ -156,3 +156,34 @@ void dsda_LoadTextColor(void) {
   Z_Free(lines);
   Z_Free(lump);
 }
+
+static const char* color_name_to_index[CR_LIMIT] = {
+  "",
+  "brick",
+  "tan",
+  "gray",
+  "green",
+  "brown",
+  "gold",
+  "red",
+  "blue",
+  "orange",
+  "yellow",
+  "light blue",
+  "black",
+  "purple",
+  "white",
+};
+
+int dsda_ColorNameToIndex(const char* name) {
+  int i;
+
+  if (!name)
+    return CR_DEFAULT;
+
+  for (i = CR_DEFAULT + 1; i < CR_LIMIT; ++i)
+    if (!stricmp(color_name_to_index[i], name))
+      return i;
+
+  return CR_DEFAULT;
+}
