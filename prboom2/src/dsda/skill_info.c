@@ -189,6 +189,9 @@ void dsda_RefreshGameSkill(void) {
 }
 
 void dsda_UpdateGameSkill(int skill) {
+  if (skill > num_skills - 1)
+    skill = num_skills - 1;
+
   gameskill = skill;
   dsda_RefreshGameSkill();
 }
