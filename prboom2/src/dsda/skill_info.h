@@ -53,14 +53,10 @@ typedef struct {
 } skill_info_t;
 
 extern skill_info_t skill_info;
-extern const skill_info_t* skill_infos;
-
-extern const skill_info_t doom_skill_infos[5];
-extern const skill_info_t heretic_skill_infos[5];
-extern const skill_info_t hexen_skill_infos[5];
 
 extern int num_skills;
 
+void dsda_InitSkills(void);
 void dsda_RefreshGameSkill(void);
 void dsda_UpdateGameSkill(int skill);
 

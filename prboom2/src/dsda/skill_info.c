@@ -17,6 +17,10 @@
 
 #include "doomstat.h"
 
+#include "dsda/mapinfo/doom/parser.h"
+#include "dsda/text_color.h"
+#include "dsda/utility.h"
+
 #include "skill_info.h"
 
 skill_info_t skill_info;
@@ -115,9 +119,60 @@ const skill_info_t hexen_skill_infos[5] = {
   },
 };
 
-const skill_info_t* skill_infos;
+int num_skills;
+static skill_info_t* skill_infos;
 
-int num_skills = 5;
+void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
+  skill_infos[i].ammo_factor = dsda_StringToFixed(info->ammo_factor);
+  skill_infos[i].damage_factor = dsda_StringToFixed(info->damage_factor);
+  skill_infos[i].armor_factor = dsda_StringToFixed(info->armor_factor);
+  skill_infos[i].health_factor = dsda_StringToFixed(info->health_factor);
+  skill_infos[i].monster_health_factor = dsda_StringToFixed(info->monster_health_factor);
+  skill_infos[i].friend_health_factor = dsda_StringToFixed(info->friend_health_factor);
+  skill_infos[i].respawn_time = info->respawn_time;
+  skill_infos[i].spawn_filter = info->spawn_filter;
+  skill_infos[i].key = info->key;
+
+  if (info->must_confirm)
+    skill_infos[i].must_confirm = Z_Strdup(info->must_confirm);
+
+  if (info->name)
+    skill_infos[i].name = Z_Strdup(info->name);
+
+  if (info->pic_name)
+    skill_infos[i].pic_name = Z_Strdup(info->pic_name);
+
+  if (info->text_color)
+    skill_infos[i].text_color = dsda_ColorNameToIndex(info->text_color);
+
+  skill_infos[i].flags = info->flags;
+}
+
+void dsda_InitSkills(void) {
+  int i = 0;
+  int j;
+  dboolean clear_skills;
+
+  clear_skills = (doom_mapinfo.num_skills && doom_mapinfo.skills_cleared);
+
+  num_skills = (clear_skills ? 0 : 5) + doom_mapinfo.num_skills;
+
+  skill_infos = Z_Calloc(num_skills, sizeof(*skill_infos));
+
+  if (!clear_skills) {
+    const skill_info_t* original_skill_infos;
+
+    original_skill_infos = hexen   ? hexen_skill_infos   :
+                           heretic ? heretic_skill_infos :
+                                     doom_skill_infos;
+
+    for (i = 0; i < 5; ++i)
+      skill_infos[i] = original_skill_infos[i];
+  }
+
+  for (j = 0; j < doom_mapinfo.num_skills; ++j)
+    dsda_CopySkillInfo(i + j, &doom_mapinfo.skills[j]);
+}
 
 void dsda_RefreshGameSkill(void) {
   void G_RefreshFastMonsters(void);

@@ -100,6 +100,7 @@
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
+#include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
@@ -1937,6 +1938,7 @@ static void D_DoomMainSetup(void)
   R_Init();
 
   dsda_LoadMapInfo();
+  dsda_InitSkills();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "\nP_Init: Init Playloop state.\n");
