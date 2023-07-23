@@ -1414,7 +1414,7 @@ void P_MobjThinker (mobj_t* mobj)
 
     mobj->movecount++;
 
-    if (mobj->movecount < 12 * 35)
+    if (mobj->movecount < skill_info.respawn_time * 35)
       return;
 
     if (leveltime & 31)

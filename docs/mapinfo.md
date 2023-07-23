@@ -79,7 +79,7 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | HealthFactor    | :telescope: |
 | MonsterHealth   | :telescope: |
 | FriendlyHealth  | :telescope: |
-| RespawnTime     | :telescope: |
+| RespawnTime     | :heavy_check_mark: |
 | SpawnFilter     | :telescope: |
 | Key             | :telescope: |
 | MustConfirm     | :telescope: |
