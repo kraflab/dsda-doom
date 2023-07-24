@@ -279,6 +279,14 @@ dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
   return gaveweapon || gaveammo;
 }
 
+int P_PlayerHealthIncrease(int value)
+{
+  if (skill_info.health_factor)
+    value = value * skill_info.health_factor / FRACUNIT;
+
+  return value;
+}
+
 int P_PlayerArmorIncrease(int value)
 {
   if (skill_info.armor_factor)
@@ -309,7 +317,7 @@ dboolean P_GiveBody(player_t * player, int num)
     {
         return (false);
     }
-    player->health += num;
+    player->health += P_PlayerHealthIncrease(num);
     if (player->health > max)
     {
         player->health = max;
@@ -483,7 +491,8 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
         // bonus items
     case SPR_BON1:
-      player->health++;               // can go over 100%
+      // can go over 100%
+      player->health += P_PlayerHealthIncrease(1);
       if (player->health > (maxhealthbonus))//e6y
         player->health = (maxhealthbonus);//e6y
       player->mo->health = player->health;
@@ -513,7 +522,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       break;
 
     case SPR_SOUL:
-      player->health += soul_health;
+      player->health += P_PlayerHealthIncrease(soul_health);
       if (player->health > max_soul)
         player->health = max_soul;
       player->mo->health = player->health;
@@ -2511,7 +2520,7 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
         count = (saveHealth + 24) / 25;
         for (i = 0; i < count; i++)
         {
-            player->health += 25;
+            player->health += P_PlayerHealthIncrease(25);
             P_PlayerRemoveArtifact(player, normalSlot);
         }
     }
@@ -2520,7 +2529,7 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
         count = (saveHealth + 99) / 100;
         for (i = 0; i < count; i++)
         {
-            player->health += 100;
+            player->health += P_PlayerHealthIncrease(100);
             P_PlayerRemoveArtifact(player, superSlot);
         }
     }
@@ -2531,13 +2540,13 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
         saveHealth -= count * 25;
         for (i = 0; i < count; i++)
         {
-            player->health += 25;
+            player->health += P_PlayerHealthIncrease(25);
             P_PlayerRemoveArtifact(player, normalSlot);
         }
         count = (saveHealth + 99) / 100;
         for (i = 0; i < count; i++)
         {
-            player->health += 100;
+            player->health += P_PlayerHealthIncrease(100);
             P_PlayerRemoveArtifact(player, normalSlot);
         }
     }

@@ -7105,7 +7105,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
 
         if (mo->health < max)
         {
-          mo->health += args[0];
+          mo->health += P_PlayerHealthIncrease(args[0]);
           if (mo->health > max && max > 0)
           {
             mo->health = max;
