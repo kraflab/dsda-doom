@@ -279,6 +279,14 @@ dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
   return gaveweapon || gaveammo;
 }
 
+int P_PlayerArmorIncrease(int value)
+{
+  if (skill_info.armor_factor)
+    value = value * skill_info.armor_factor / FRACUNIT;
+
+  return value;
+}
+
 //
 // P_GiveBody
 // Returns false if the body isn't needed at all
@@ -340,7 +348,7 @@ void P_HealMobj(mobj_t *mo, int num)
 
 static dboolean P_GiveArmor(player_t *player, int armortype)
 {
-  int hits = armortype*100;
+  int hits = P_PlayerArmorIncrease(armortype * 100);
   if (player->armorpoints[ARMOR_ARMOR] >= hits)
     return false;   // don't pick up
   player->armortype = armortype;
@@ -483,7 +491,8 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       break;
 
     case SPR_BON2:
-      player->armorpoints[ARMOR_ARMOR]++;          // can go over 100%
+      // can go over 100%
+      player->armorpoints[ARMOR_ARMOR] += P_PlayerArmorIncrease(1);
       // e6y
       // Doom 1.2 does not do check of armor points on overflow.
       // If you set the "IDKFA Armor" to MAX_INT (DWORD at 0x00064B5A -> FFFFFF7F)
