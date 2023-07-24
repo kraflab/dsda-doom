@@ -122,13 +122,24 @@ const skill_info_t hexen_skill_infos[5] = {
 int num_skills;
 static skill_info_t* skill_infos;
 
+static void dsda_CopyFactor(fixed_t* dest, const char* source) {
+  // We will compute integers with these,
+  // and common human values (i.e., not powers of 2) are rounded down.
+  // Add 1 (= 1/2^16) to yield expected results.
+  // Otherwise, 0.2 * 15 would be 2 instead of 3.
+
+  if (source)
+    *dest = dsda_StringToFixed(source) + 1;
+}
+
 void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
-  skill_infos[i].ammo_factor = dsda_StringToFixed(info->ammo_factor);
-  skill_infos[i].damage_factor = dsda_StringToFixed(info->damage_factor);
-  skill_infos[i].armor_factor = dsda_StringToFixed(info->armor_factor);
-  skill_infos[i].health_factor = dsda_StringToFixed(info->health_factor);
-  skill_infos[i].monster_health_factor = dsda_StringToFixed(info->monster_health_factor);
-  skill_infos[i].friend_health_factor = dsda_StringToFixed(info->friend_health_factor);
+  dsda_CopyFactor(&skill_infos[i].ammo_factor, info->ammo_factor);
+  dsda_CopyFactor(&skill_infos[i].damage_factor, info->damage_factor);
+  dsda_CopyFactor(&skill_infos[i].armor_factor, info->armor_factor);
+  dsda_CopyFactor(&skill_infos[i].health_factor, info->health_factor);
+  dsda_CopyFactor(&skill_infos[i].monster_health_factor, info->monster_health_factor);
+  dsda_CopyFactor(&skill_infos[i].friend_health_factor, info->friend_health_factor);
+
   skill_infos[i].respawn_time = info->respawn_time;
   skill_infos[i].spawn_filter = info->spawn_filter;
   skill_infos[i].key = info->key;
