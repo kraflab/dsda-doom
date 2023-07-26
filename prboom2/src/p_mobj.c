@@ -2520,11 +2520,9 @@ spawnit:
   if (mthing->health != FRACUNIT)
   {
     if (mthing->health < 0)
-      mobj->health = -mthing->health;
+      mobj->health = -mthing->health >> FRACBITS;
     else
-      mobj->health *= mthing->health;
-
-    mobj->health >>= FRACBITS;
+      mobj->health = FixedMul(mobj->health, mthing->health);
   }
 
   if (mthing->gravity != FRACUNIT)

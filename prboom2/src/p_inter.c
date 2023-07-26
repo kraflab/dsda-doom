@@ -164,7 +164,7 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
     num = clipammo[ammo]/2;
 
   if (skill_info.ammo_factor)
-    num = num * skill_info.ammo_factor / FRACUNIT;
+    num = FixedMul(num, skill_info.ammo_factor);
 
   oldammo = player->ammo[ammo];
   player->ammo[ammo] += num;
@@ -282,7 +282,7 @@ dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
 int P_PlayerHealthIncrease(int value)
 {
   if (skill_info.health_factor)
-    value = value * skill_info.health_factor / FRACUNIT;
+    value = FixedMul(value, skill_info.health_factor);
 
   return value;
 }
@@ -290,7 +290,7 @@ int P_PlayerHealthIncrease(int value)
 int P_PlayerArmorIncrease(int value)
 {
   if (skill_info.armor_factor)
-    value = value * skill_info.armor_factor / FRACUNIT;
+    value = FixedMul(value, skill_info.armor_factor);
 
   return value;
 }
@@ -1269,7 +1269,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
   player = target->player;
   if (player && skill_info.damage_factor)
-    damage = damage * skill_info.damage_factor / FRACUNIT;
+    damage = FixedMul(damage, skill_info.damage_factor);
 
   // Special damage types
   if (raven && inflictor)
@@ -2668,7 +2668,7 @@ void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
     }
     if (skill_info.damage_factor)
     {
-        damage = damage * skill_info.damage_factor / FRACUNIT;
+        damage = FixedMul(damage, skill_info.damage_factor);
     }
     if (damage < 1000 && ((player->cheats & CF_GODMODE)
                           || player->powers[pw_invulnerability]))
@@ -2733,7 +2733,7 @@ dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
     }
     if (skill_info.ammo_factor)
     {
-        count = count * skill_info.ammo_factor / FRACUNIT;
+        count = FixedMul(count, skill_info.ammo_factor);
     }
     prevMana = player->ammo[mana];
 
