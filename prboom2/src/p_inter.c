@@ -340,7 +340,7 @@ void P_HealMobj(mobj_t *mo, int num)
   }
   else
   {
-    int max = mobjinfo[mo->type].spawnhealth;
+    int max = P_MobjSpawnHealth(mo);
 
     mo->health += num;
     if (mo->health > max)
@@ -1114,7 +1114,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     {
       target->height = 24 * FRACUNIT;
     }
-    if (target->health < -(target->info->spawnhealth >> 1)
+    if (target->health < -(P_MobjSpawnHealth(target) >> 1)
         && target->info->xdeathstate)
     {                           // Extreme death
       P_SetMobjState(target, target->info->xdeathstate);
@@ -1136,7 +1136,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   }
   else
   {
-    xdeath_limit = heretic ? (target->info->spawnhealth >> 1) : target->info->spawnhealth;
+    xdeath_limit = heretic ? (P_MobjSpawnHealth(target) >> 1) : P_MobjSpawnHealth(target);
     if (target->health < -xdeath_limit && target->info->xdeathstate)
       P_SetMobjState (target, target->info->xdeathstate);
     else
@@ -1680,7 +1680,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
      * This will slightly increase the chances that enemies will choose to
      * "finish it off", but its main purpose is to alert friends of danger.
      */
-    if (target->health*2 < target->info->spawnhealth)
+    if (target->health*2 < P_MobjSpawnHealth(target))
     {
       thinker_t *cap = &thinkerclasscap[target->flags & MF_FRIEND ?
                th_friends : th_enemies];

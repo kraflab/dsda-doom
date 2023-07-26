@@ -822,7 +822,7 @@ static dboolean PIT_FindTarget(mobj_t *mo)
     if (targ && targ->target == mo &&
   P_Random(pr_skiptarget) > 100 &&
   (targ->flags ^ mo->flags) & MF_FRIEND &&
-  targ->health*2 >= targ->info->spawnhealth)
+  targ->health*2 >= P_MobjSpawnHealth(targ))
       return true;
   }
 
@@ -1053,7 +1053,7 @@ static dboolean P_HelpFriend(mobj_t *actor)
   thinker_t *cap, *th;
 
   // If less than 33% health, self-preservation rules
-  if (actor->health*3 < actor->info->spawnhealth)
+  if (actor->health*3 < P_MobjSpawnHealth(actor))
     return false;
 
   current_actor = actor;
@@ -1063,7 +1063,7 @@ static dboolean P_HelpFriend(mobj_t *actor)
   cap = &thinkerclasscap[actor->flags & MF_FRIEND ? th_friends : th_enemies];
 
   for (th = cap->cnext; th != cap; th = th->cnext)
-    if (((mobj_t *) th)->health*2 >= ((mobj_t *) th)->info->spawnhealth)
+    if (((mobj_t *) th)->health*2 >= P_MobjSpawnHealth((mobj_t *) th))
       {
   if (P_Random(pr_helpfriend) < 180)
     break;
@@ -1902,7 +1902,7 @@ dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
   if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
     totallive++;
 
-  corpse->health = info->spawnhealth;
+  corpse->health = P_MobjSpawnHealth(corpse);
   corpse->color = 0;
   P_SetTarget(&corpse->target, NULL);
   P_SetTarget(&corpse->lastenemy, NULL);
@@ -1981,7 +1981,7 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
           if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
             totallive++;
 
-          corpsehit->health = info->spawnhealth;
+          corpsehit->health = P_MobjSpawnHealth(corpsehit);
           corpsehit->color = 0;
           P_SetTarget(&corpsehit->target, NULL);  // killough 11/98
 
@@ -4022,7 +4022,7 @@ void A_Srcr1Attack(mobj_t * actor)
         P_DamageMobj(actor->target, actor, actor, HITDICE(8));
         return;
     }
-    if (actor->health > (actor->info->spawnhealth / 3) * 2)
+    if (actor->health > (P_MobjSpawnHealth(actor) / 3) * 2)
     {                           // Spit one fireball
         P_SpawnMissile(actor, actor->target, HERETIC_MT_SRCRFX1);
     }
@@ -4036,7 +4036,7 @@ void A_Srcr1Attack(mobj_t * actor)
             P_SpawnMissileAngle(actor, HERETIC_MT_SRCRFX1, angle - ANG1_X * 3, momz);
             P_SpawnMissileAngle(actor, HERETIC_MT_SRCRFX1, angle + ANG1_X * 3, momz);
         }
-        if (actor->health < actor->info->spawnhealth / 3)
+        if (actor->health < P_MobjSpawnHealth(actor) / 3)
         {                       // Maybe attack again
             if (actor->special1.i)
             {                   // Just attacked, so don't attack again
@@ -4110,7 +4110,7 @@ void A_Srcr2Decide(mobj_t * actor)
     {                           // No spots
         return;
     }
-    if (P_Random(pr_heretic) < chance[actor->health / (actor->info->spawnhealth / 8)])
+    if (P_Random(pr_heretic) < chance[actor->health / (P_MobjSpawnHealth(actor) / 8)])
     {
         P_DSparilTeleport(actor);
     }
@@ -4130,7 +4130,7 @@ void A_Srcr2Attack(mobj_t * actor)
         P_DamageMobj(actor->target, actor, actor, HITDICE(20));
         return;
     }
-    chance = actor->health < actor->info->spawnhealth / 2 ? 96 : 48;
+    chance = actor->health < P_MobjSpawnHealth(actor) / 2 ? 96 : 48;
     if (P_Random(pr_heretic) < chance)
     {                           // Wizard spawners
         P_SpawnMissileAngle(actor, HERETIC_MT_SOR2FX2,
@@ -7642,7 +7642,7 @@ void A_StopBalls(mobj_t * actor)
     {
         actor->special2.i = HEXEN_MT_SORCBALL2; // Blue
     }
-    else if ((actor->health < (actor->info->spawnhealth >> 1)) &&
+    else if ((actor->health < (P_MobjSpawnHealth(actor) >> 1)) &&
              (chance < 200))
     {
         actor->special2.i = HEXEN_MT_SORCBALL3; // Green
@@ -7725,7 +7725,7 @@ void A_CastSorcererSpell(mobj_t * actor)
         case HEXEN_MT_SORCBALL3:     // Reinforcements
             ang1 = actor->angle - ANG45;
             ang2 = actor->angle + ANG45;
-            if (actor->health < (actor->info->spawnhealth / 3))
+            if (actor->health < (P_MobjSpawnHealth(actor) / 3))
             {                   // Spawn 2 at a time
                 mo = P_SpawnMissileAngle(parent, HEXEN_MT_SORCFX3, ang1,
                                          4 * FRACUNIT);
@@ -8231,7 +8231,7 @@ void A_KoraxChase(mobj_t * actor)
     byte args[3] = {0, 0, 0};
 
     if ((!actor->special2.i) &&
-        (actor->health <= (actor->info->spawnhealth / 2)))
+        (actor->health <= (P_MobjSpawnHealth(actor) / 2)))
     {
         lastfound = 0;
         spot = P_FindMobjFromTID(KORAX_FIRST_TELEPORT_TID, &lastfound);
@@ -8259,7 +8259,7 @@ void A_KoraxChase(mobj_t * actor)
     }
 
     // Teleport away
-    if (actor->health < (actor->info->spawnhealth >> 1))
+    if (actor->health < (P_MobjSpawnHealth(actor) >> 1))
     {
         if (P_Random(pr_hexen) < 10)
         {
@@ -8422,7 +8422,7 @@ void A_KoraxCommand(mobj_t * actor)
 
     args[0] = args[1] = args[2] = args[3] = args[4] = 0;
 
-    if (actor->health <= (actor->info->spawnhealth >> 1))
+    if (actor->health <= (P_MobjSpawnHealth(actor) >> 1))
     {
         numcommands = 5;
     }

@@ -2036,7 +2036,7 @@ static void gld_AddHealthBar(mobj_t* thing, GLSprite *sprite)
   if (((thing->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL) && (thing->health > 0))
   {
     GLHealthBar hbar;
-    int health_percent = thing->health * 100 / thing->info->spawnhealth;
+    int health_percent = thing->health * 100 / P_MobjSpawnHealth(thing);
 
     hbar.color = health_bar_null;
     if (health_percent <= 50)

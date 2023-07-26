@@ -1645,6 +1645,11 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
   return success;
 }
 
+int P_MobjSpawnHealth(const mobj_t* mobj)
+{
+  return mobj->info->spawnhealth;
+}
+
 //
 // P_SpawnMobj
 //
@@ -1677,7 +1682,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   if (map_info.flags & MI_PASSOVER && mobj->flags & MF_SOLID)
     mobj->flags2 |= MF2_PASSMOBJ;
 
-  mobj->health = info->spawnhealth;
+  mobj->health = P_MobjSpawnHealth(mobj);
 
   if (!(skill_info.flags & SI_INSTANT_REACTION))
     mobj->reactiontime = info->reactiontime;
