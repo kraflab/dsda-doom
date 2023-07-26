@@ -77,8 +77,8 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | DamageFactor    | :heavy_check_mark: |
 | ArmorFactor     | :heavy_check_mark: |
 | HealthFactor    | :heavy_check_mark: |
-| MonsterHealth   | :telescope: |
-| FriendlyHealth  | :telescope: |
+| MonsterHealth   | :heavy_check_mark: |
+| FriendlyHealth  | :heavy_check_mark: |
 | RespawnTime     | :heavy_check_mark: |
 | SpawnFilter     | :telescope: |
 | Key             | :telescope: |

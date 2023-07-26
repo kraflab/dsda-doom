@@ -1647,6 +1647,27 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
 
 int P_MobjSpawnHealth(const mobj_t* mobj)
 {
+  int result;
+
+  if (mobj->type == MT_SKULL || mobj->flags & MF_COUNTKILL)
+  {
+    if (mobj->flags & MF_FRIEND)
+    {
+      if (skill_info.friend_health_factor)
+      {
+        result = FixedMul(mobj->info->spawnhealth, skill_info.friend_health_factor);
+
+        return result > 0 ? result : 1;
+      }
+    }
+    else if (skill_info.monster_health_factor)
+    {
+      result = FixedMul(mobj->info->spawnhealth, skill_info.monster_health_factor);
+
+      return result > 0 ? result : 1;
+    }
+  }
+
   return mobj->info->spawnhealth;
 }
 
@@ -2485,6 +2506,17 @@ spawnit:
 
   mobj = P_SpawnMobj (x, y, z, i);
 
+  if (!(mobj->flags & MF_FRIEND) &&
+      options & (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND) &&
+      mbf_features)
+  {
+    mobj->flags |= MF_FRIEND;            // killough 10/98:
+    P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
+
+    // Friends can have a different spawn health
+    mobj->health = P_MobjSpawnHealth(mobj);
+  }
+
   if (mthing->health != FRACUNIT)
   {
     if (mthing->health < 0)
@@ -2540,14 +2572,6 @@ spawnit:
 
   if (mobj->tics > 0)
     mobj->tics = 1 + (P_Random(pr_spawnthing) % mobj->tics);
-
-  if (!(mobj->flags & MF_FRIEND) &&
-      options & (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND) &&
-      mbf_features)
-  {
-    mobj->flags |= MF_FRIEND;            // killough 10/98:
-    P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
-  }
 
   if (map_format.zdoom)
   {
