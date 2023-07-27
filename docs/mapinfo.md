@@ -89,7 +89,7 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | SpawnMulti      | :heavy_check_mark: |
 | FastMonsters    | :heavy_check_mark: |
 | InstantReaction | :heavy_check_mark: |
-| NoPain          | :telescope: |
+| NoPain          | :heavy_check_mark: |
 | DefaultSkill    | :telescope: |
 | NoMenu          | :telescope: |
 | PlayerRespawn   | :telescope: |

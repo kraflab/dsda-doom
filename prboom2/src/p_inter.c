@@ -1691,7 +1691,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     }
   }
 
-  if (P_Random (pr_painchance) < target->info->painchance &&
+  if (!(skill_info.flags & SI_NO_PAIN) &&
+      P_Random(pr_painchance) < target->info->painchance &&
       !(target->flags & MF_SKULLFLY)) //killough 11/98: see below
   {
     if (hexen && inflictor && inflictor->type >= HEXEN_MT_LIGHTNING_FLOOR &&
