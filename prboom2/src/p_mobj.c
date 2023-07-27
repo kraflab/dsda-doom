@@ -2163,6 +2163,9 @@ static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
 static dboolean P_ShouldSpawnMapThing(int options)
 {
   unsigned int spawnMask;
+  dboolean spawn_multi;
+
+  spawn_multi = skill_info.flags & SI_SPAWN_MULTI;
 
   if (map_format.hexen)
   {
@@ -2170,6 +2173,9 @@ static dboolean P_ShouldSpawnMapThing(int options)
     if (netgame == false)
     {
       spawnMask = MTF_GSINGLE;
+
+      if (spawn_multi)
+        spawnMask |= MTF_GCOOP;
     }
     else if (deathmatch)
     {
@@ -2188,7 +2194,7 @@ static dboolean P_ShouldSpawnMapThing(int options)
   else
   {
     /* jff "not single" thing flag */
-    if (!coop_spawns && !netgame && options & MTF_NOTSINGLE)
+    if (!spawn_multi && !netgame && options & MTF_NOTSINGLE)
       return false;
 
     //jff 3/30/98 implement "not deathmatch" thing flag
@@ -2196,7 +2202,7 @@ static dboolean P_ShouldSpawnMapThing(int options)
       return false;
 
     //jff 3/30/98 implement "not cooperative" thing flag
-    if ((coop_spawns || netgame) && !deathmatch && options & MTF_NOTCOOP)
+    if ((spawn_multi || netgame) && !deathmatch && options & MTF_NOTCOOP)
       return false;
   }
 

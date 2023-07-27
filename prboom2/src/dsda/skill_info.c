@@ -196,6 +196,9 @@ void dsda_RefreshGameSkill(void) {
   if (fastparm)
     skill_info.flags |= SI_FAST_MONSTERS;
 
+  if (coop_spawns)
+    skill_info.flags |= SI_SPAWN_MULTI;
+
   G_RefreshFastMonsters();
 }
 

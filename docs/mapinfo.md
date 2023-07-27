@@ -86,7 +86,7 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | Name            | :telescope: |
 | PicName         | :telescope: |
 | TextColor       | :telescope: |
-| SpawnMulti      | :telescope: |
+| SpawnMulti      | :heavy_check_mark: |
 | FastMonsters    | :heavy_check_mark: |
 | InstantReaction | :heavy_check_mark: |
 | NoPain          | :telescope: |
