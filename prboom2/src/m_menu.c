@@ -257,7 +257,7 @@ void M_QuickLoad(void);
 void M_DrawMainMenu(void);
 void M_DrawReadThis1(void);
 void M_DrawReadThis2(void);
-void M_DrawNewGame(void);
+void M_DrawSkillMenu(void);
 void M_DrawEpisode(void);
 void M_DrawOptions(void);
 void M_DrawSound(void);
@@ -310,7 +310,7 @@ void M_ChangeVideoMode(void);
 void M_ChangeUseGLSurface(void);
 void M_ChangeApplyPalette(void);
 
-menu_t NewDef;                                              // phares 5/04/98
+menu_t SkillDef;                                              // phares 5/04/98
 
 // end of prototypes added to support Setup Menus and Extended HELP screens
 
@@ -646,7 +646,7 @@ void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char 
   if (!EpiCustom)
   {
     EpiCustom = true;
-    NewDef.prevMenu = &EpiDef;
+    SkillDef.prevMenu = &EpiDef;
 
     if (gamemode == commercial || gamemission == chex)
       EpiDef.numitems = 0;
@@ -703,15 +703,15 @@ void M_Episode(int choice)
   epiChoice = choice;
   if (hexen) // hack hexen class as "episode menu"
     MN_UpdateClass(epiChoice);
-  M_SetupNextMenu(&NewDef);
+  M_SetupNextMenu(&SkillDef);
 }
 
 /////////////////////////////
 //
-// NEW GAME
+// SKILL SELECT
 //
 
-// numerical values for the New Game menu items
+// numerical values for the Skill Select menu items
 
 enum
 {
@@ -720,12 +720,12 @@ enum
   hurtme,
   violence,
   nightmare,
-  newg_end
-} newgame_e;
+  skill_end
+} skill_e;
 
-// The definitions of the New Game menu
+// The definitions of the Skill Select menu
 
-menuitem_t NewGameMenu[]=
+menuitem_t SkillMenu[]=
 {
   {1,"M_JKILL", M_ChooseSkill, 'i'},
   {1,"M_ROUGH", M_ChooseSkill, 'h'},
@@ -734,12 +734,12 @@ menuitem_t NewGameMenu[]=
   {1,"M_NMARE", M_ChooseSkill, 'n'}
 };
 
-menu_t NewDef =
+menu_t SkillDef =
 {
-  newg_end,       // # of menu items
+  skill_end,       // # of menu items
   &EpiDef,        // previous menu
-  NewGameMenu,    // menuitem_t ->
-  M_DrawNewGame,  // drawing routine ->
+  SkillMenu,    // menuitem_t ->
+  M_DrawSkillMenu,  // drawing routine ->
   48,63,          // x,y
   hurtme          // lastOn
 };
@@ -748,7 +748,7 @@ menu_t NewDef =
 // M_NewGame
 //
 
-void M_DrawNewGame(void)
+void M_DrawSkillMenu(void)
 {
   if (raven) return MN_DrawSkillMenu();
 
@@ -768,7 +768,7 @@ void M_NewGame(int choice)
 
   // Chex Quest disabled the episode select screen, as did Doom II.
   if ((((gamemode == commercial && !hexen) || gamemission == chex) && !EpiCustom) || EpiDef.numitems == 1)
-    M_SetupNextMenu(&NewDef);
+    M_SetupNextMenu(&SkillDef);
   else
   {
     epiChoice = 0;
@@ -5594,7 +5594,7 @@ void M_StartControlPanel (void)
   if (menuactive)
     return;
 
-  NewDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
+  SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
 
   // e6y
   // We need to remove the fourth episode for pre-ultimate complevels.
@@ -6031,7 +6031,7 @@ void M_Init(void)
       MainDef.numitems--;
       MainDef.y += 8;
       if (!EpiCustom)
-        NewDef.prevMenu = &MainDef;
+        SkillDef.prevMenu = &MainDef;
       ReadDef1.routine = M_DrawReadThis1;
       ReadDef1.x = 330;
       ReadDef1.y = 165;
