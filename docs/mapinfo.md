@@ -92,5 +92,5 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | NoPain          | :heavy_check_mark: |
 | DefaultSkill    | :telescope: |
 | NoMenu          | :telescope: |
-| PlayerRespawn   | :telescope: |
+| PlayerRespawn   | :heavy_check_mark: |
 | EasyBossBrain   | :heavy_check_mark: |

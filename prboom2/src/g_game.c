@@ -2026,7 +2026,7 @@ void G_DoReborn (int playernum)
   if (hexen)
     return Hexen_G_DoReborn(playernum);
 
-  if (!netgame && !(map_info.flags & MI_ALLOW_RESPAWN))
+  if (!netgame && !(map_info.flags & MI_ALLOW_RESPAWN) && !(skill_info.flags & SI_PLAYER_RESPAWN))
     gameaction = ga_loadlevel;      // reload the level from scratch
   else
     {                               // respawn at the start
