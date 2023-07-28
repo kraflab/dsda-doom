@@ -5600,6 +5600,9 @@ static void M_InitializeSkillMenu(void)
 
       SkillDef.menuitems[i].routine = M_ChooseSkill;
       SkillDef.menuitems[i].alphaKey = skill_infos[i].key;
+
+      if (skill_infos[i].flags & SI_DEFAULT_SKILL)
+        SkillDef.lastOn = i;
     }
 
     if (SkillDef.lastOn >= num_skills)

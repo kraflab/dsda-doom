@@ -47,7 +47,7 @@ const skill_info_t doom_skill_infos[5] = {
     .key = 'h',
     .name = "Hurt me plenty.",
     .pic_name = "M_HURT",
-    .flags = SI_DEFAULT_SKILL
+    .flags = 0
   },
   {
     .spawn_filter = 4,
@@ -83,7 +83,7 @@ const skill_info_t heretic_skill_infos[5] = {
   {
     .spawn_filter = 3,
     .name = "BRINGEST THEM ONETH",
-    .flags = SI_DEFAULT_SKILL
+    .flags = 0
   },
   {
     .spawn_filter = 4,
@@ -111,7 +111,7 @@ const skill_info_t hexen_skill_infos[5] = {
   },
   {
     .spawn_filter = 3,
-    .flags = SI_DEFAULT_SKILL
+    .flags = 0
   },
   {
     .spawn_filter = 4,
