@@ -5683,8 +5683,8 @@ void M_Drawer (void)
   }
   else if (menuactive)
   {
-    int x,y,max,i;
-    int lumps_missing = 0;
+    int x, y, max, i;
+    int lumps_missing;
 
     M_ChangeMenu(NULL, mnact_float);
 
@@ -5703,26 +5703,29 @@ void M_Drawer (void)
     x = currentMenu->x;
     y = currentMenu->y;
     max = currentMenu->numitems;
+    lumps_missing = 0;
 
     for (i = 0; i < max; i++)
-      if (currentMenu->menuitems[i].name[0])
-        if (!W_LumpNameExists(currentMenu->menuitems[i].name))
-          lumps_missing++;
+      if (!currentMenu->menuitems[i].name[0] || !W_LumpNameExists(currentMenu->menuitems[i].name))
+        ++lumps_missing;
 
-    if (lumps_missing == 0)
-      for (i=0;i<max;i++)
+    if (!lumps_missing)
+      for (i = 0; i < max; i++)
       {
-        if (currentMenu->menuitems[i].name[0])
-          V_DrawNamePatch(x,y,0,currentMenu->menuitems[i].name,
-              CR_DEFAULT, VPT_STRETCH);
+        V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
+                        currentMenu->menuitems[i].color, VPT_STRETCH);
+
         y += LINEHEIGHT;
       }
     else
       for (i = 0; i < max; i++)
       {
         const char *alttext = currentMenu->menuitems[i].alttext;
+
         if (alttext)
-          M_WriteText(x, y+8-(M_StringHeight(alttext)/2), alttext, CR_DEFAULT);
+          M_WriteText(x, y + 8 - (M_StringHeight(alttext) / 2),
+                      alttext, currentMenu->menuitems[i].color);
+
         y += LINEHEIGHT;
       }
 
