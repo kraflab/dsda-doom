@@ -23,8 +23,8 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | map           | :heavy_check_mark: |
 | defaultmap    | :heavy_check_mark: |
 | adddefaultmap | :heavy_check_mark: |
-| clearskills   | :telescope:        |
-| skill         | :telescope:        |
+| clearskills   | :heavy_check_mark: |
+| skill         | :heavy_check_mark: |
 
 ### Map Properties
 
@@ -81,15 +81,15 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | FriendlyHealth  | :heavy_check_mark: |
 | RespawnTime     | :heavy_check_mark: |
 | SpawnFilter     | :heavy_check_mark: |
-| Key             | :telescope: |
-| MustConfirm     | :telescope: |
-| Name            | :telescope: |
-| PicName         | :telescope: |
-| TextColor       | :telescope: |
+| Key             | :heavy_check_mark: |
+| MustConfirm     | :heavy_check_mark: |
+| Name            | :heavy_check_mark: |
+| PicName         | :heavy_check_mark: |
+| TextColor       | :heavy_check_mark: |
 | SpawnMulti      | :heavy_check_mark: |
 | FastMonsters    | :heavy_check_mark: |
 | InstantReaction | :heavy_check_mark: |
 | NoPain          | :heavy_check_mark: |
-| DefaultSkill    | :telescope: |
+| DefaultSkill    | :heavy_check_mark: |
 | PlayerRespawn   | :heavy_check_mark: |
 | EasyBossBrain   | :heavy_check_mark: |
