@@ -548,6 +548,7 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
       SCAN_INT(skill.spawn_filter);
     }
     else if (!stricmp(scanner.string, "Key")) {
+      scanner.MustGetToken('=');
       scanner.MustGetToken(TK_StringConst);
       skill.key = scanner.string[0];
     }
