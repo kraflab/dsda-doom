@@ -164,7 +164,7 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
     num = clipammo[ammo]/2;
 
   if (skill_info.ammo_factor)
-    num = num * skill_info.ammo_factor / FRACUNIT;
+    num = FixedMul(num, skill_info.ammo_factor);
 
   oldammo = player->ammo[ammo];
   player->ammo[ammo] += num;
@@ -279,6 +279,22 @@ dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
   return gaveweapon || gaveammo;
 }
 
+int P_PlayerHealthIncrease(int value)
+{
+  if (skill_info.health_factor)
+    value = FixedMul(value, skill_info.health_factor);
+
+  return value;
+}
+
+int P_PlayerArmorIncrease(int value)
+{
+  if (skill_info.armor_factor)
+    value = FixedMul(value, skill_info.armor_factor);
+
+  return value;
+}
+
 //
 // P_GiveBody
 // Returns false if the body isn't needed at all
@@ -301,7 +317,7 @@ dboolean P_GiveBody(player_t * player, int num)
     {
         return (false);
     }
-    player->health += num;
+    player->health += P_PlayerHealthIncrease(num);
     if (player->health > max)
     {
         player->health = max;
@@ -324,7 +340,7 @@ void P_HealMobj(mobj_t *mo, int num)
   }
   else
   {
-    int max = mobjinfo[mo->type].spawnhealth;
+    int max = P_MobjSpawnHealth(mo);
 
     mo->health += num;
     if (mo->health > max)
@@ -340,7 +356,7 @@ void P_HealMobj(mobj_t *mo, int num)
 
 static dboolean P_GiveArmor(player_t *player, int armortype)
 {
-  int hits = armortype*100;
+  int hits = P_PlayerArmorIncrease(armortype * 100);
   if (player->armorpoints[ARMOR_ARMOR] >= hits)
     return false;   // don't pick up
   player->armortype = armortype;
@@ -475,7 +491,8 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
 
         // bonus items
     case SPR_BON1:
-      player->health++;               // can go over 100%
+      // can go over 100%
+      player->health += P_PlayerHealthIncrease(1);
       if (player->health > (maxhealthbonus))//e6y
         player->health = (maxhealthbonus);//e6y
       player->mo->health = player->health;
@@ -483,7 +500,8 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       break;
 
     case SPR_BON2:
-      player->armorpoints[ARMOR_ARMOR]++;          // can go over 100%
+      // can go over 100%
+      player->armorpoints[ARMOR_ARMOR] += P_PlayerArmorIncrease(1);
       // e6y
       // Doom 1.2 does not do check of armor points on overflow.
       // If you set the "IDKFA Armor" to MAX_INT (DWORD at 0x00064B5A -> FFFFFF7F)
@@ -504,7 +522,7 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       break;
 
     case SPR_SOUL:
-      player->health += soul_health;
+      player->health += P_PlayerHealthIncrease(soul_health);
       if (player->health > max_soul)
         player->health = max_soul;
       player->mo->health = player->health;
@@ -1096,7 +1114,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     {
       target->height = 24 * FRACUNIT;
     }
-    if (target->health < -(target->info->spawnhealth >> 1)
+    if (target->health < -(P_MobjSpawnHealth(target) >> 1)
         && target->info->xdeathstate)
     {                           // Extreme death
       P_SetMobjState(target, target->info->xdeathstate);
@@ -1118,7 +1136,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   }
   else
   {
-    xdeath_limit = heretic ? (target->info->spawnhealth >> 1) : target->info->spawnhealth;
+    xdeath_limit = heretic ? (P_MobjSpawnHealth(target) >> 1) : P_MobjSpawnHealth(target);
     if (target->health < -xdeath_limit && target->info->xdeathstate)
       P_SetMobjState (target, target->info->xdeathstate);
     else
@@ -1251,7 +1269,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
 
   player = target->player;
   if (player && skill_info.damage_factor)
-    damage = damage * skill_info.damage_factor / FRACUNIT;
+    damage = FixedMul(damage, skill_info.damage_factor);
 
   // Special damage types
   if (raven && inflictor)
@@ -1662,7 +1680,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
      * This will slightly increase the chances that enemies will choose to
      * "finish it off", but its main purpose is to alert friends of danger.
      */
-    if (target->health*2 < target->info->spawnhealth)
+    if (target->health*2 < P_MobjSpawnHealth(target))
     {
       thinker_t *cap = &thinkerclasscap[target->flags & MF_FRIEND ?
                th_friends : th_enemies];
@@ -1673,7 +1691,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     }
   }
 
-  if (P_Random (pr_painchance) < target->info->painchance &&
+  if (!(skill_info.flags & SI_NO_PAIN) &&
+      P_Random(pr_painchance) < target->info->painchance &&
       !(target->flags & MF_SKULLFLY)) //killough 11/98: see below
   {
     if (hexen && inflictor && inflictor->type >= HEXEN_MT_LIGHTNING_FLOOR &&
@@ -2502,7 +2521,7 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
         count = (saveHealth + 24) / 25;
         for (i = 0; i < count; i++)
         {
-            player->health += 25;
+            player->health += P_PlayerHealthIncrease(25);
             P_PlayerRemoveArtifact(player, normalSlot);
         }
     }
@@ -2511,7 +2530,7 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
         count = (saveHealth + 99) / 100;
         for (i = 0; i < count; i++)
         {
-            player->health += 100;
+            player->health += P_PlayerHealthIncrease(100);
             P_PlayerRemoveArtifact(player, superSlot);
         }
     }
@@ -2522,13 +2541,13 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
         saveHealth -= count * 25;
         for (i = 0; i < count; i++)
         {
-            player->health += 25;
+            player->health += P_PlayerHealthIncrease(25);
             P_PlayerRemoveArtifact(player, normalSlot);
         }
         count = (saveHealth + 99) / 100;
         for (i = 0; i < count; i++)
         {
-            player->health += 100;
+            player->health += P_PlayerHealthIncrease(100);
             P_PlayerRemoveArtifact(player, normalSlot);
         }
     }
@@ -2650,7 +2669,7 @@ void P_PoisonDamage(player_t * player, mobj_t * source, int damage,
     }
     if (skill_info.damage_factor)
     {
-        damage = damage * skill_info.damage_factor / FRACUNIT;
+        damage = FixedMul(damage, skill_info.damage_factor);
     }
     if (damage < 1000 && ((player->cheats & CF_GODMODE)
                           || player->powers[pw_invulnerability]))
@@ -2715,7 +2734,7 @@ dboolean P_GiveMana(player_t * player, manatype_t mana, int count)
     }
     if (skill_info.ammo_factor)
     {
-        count = count * skill_info.ammo_factor / FRACUNIT;
+        count = FixedMul(count, skill_info.ammo_factor);
     }
     prevMana = player->ammo[mana];
 

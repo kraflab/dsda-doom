@@ -94,7 +94,6 @@ typedef struct {
 #define DSI_INSTANT_REACTION 0x0004
 #define DSI_NO_PAIN          0x0010
 #define DSI_DEFAULT_SKILL    0x0020
-#define DSI_NO_MENU          0x0040
 #define DSI_PLAYER_RESPAWN   0x0080
 #define DSI_EASY_BOSS_BRAIN  0x0100
 #define DSI_MUST_CONFIRM     0x0200

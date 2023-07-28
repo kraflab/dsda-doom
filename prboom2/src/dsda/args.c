@@ -111,7 +111,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
   [dsda_arg_skill] = {
     "-skill", NULL, NULL,
     "sets the skill level",
-    arg_int, 1, 5,
+    arg_int, 1, 255,
   },
   [dsda_arg_episode] = {
     "-episode", NULL, NULL,

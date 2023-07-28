@@ -17,6 +17,10 @@
 
 #include "doomstat.h"
 
+#include "dsda/mapinfo/doom/parser.h"
+#include "dsda/text_color.h"
+#include "dsda/utility.h"
+
 #include "skill_info.h"
 
 skill_info_t skill_info;
@@ -43,7 +47,7 @@ const skill_info_t doom_skill_infos[5] = {
     .key = 'h',
     .name = "Hurt me plenty.",
     .pic_name = "M_HURT",
-    .flags = SI_DEFAULT_SKILL
+    .flags = 0
   },
   {
     .spawn_filter = 4,
@@ -68,23 +72,28 @@ const skill_info_t heretic_skill_infos[5] = {
     .ammo_factor = FRACUNIT * 3 / 2,
     .damage_factor = FRACUNIT / 2,
     .spawn_filter = 1,
+    .name = "THOU NEEDETH A WET-NURSE",
     .flags = SI_AUTO_USE_HEALTH
   },
   {
     .spawn_filter = 2,
+    .name = "YELLOWBELLIES-R-US",
     .flags = 0
   },
   {
     .spawn_filter = 3,
-    .flags = SI_DEFAULT_SKILL
+    .name = "BRINGEST THEM ONETH",
+    .flags = 0
   },
   {
     .spawn_filter = 4,
+    .name = "THOU ART A SMITE-MEISTER",
     .flags = 0
   },
   {
     .ammo_factor = FRACUNIT * 3 / 2,
     .spawn_filter = 5,
+    .name = "BLACK PLAGUE POSSESSES THEE",
     .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION
   },
 };
@@ -102,7 +111,7 @@ const skill_info_t hexen_skill_infos[5] = {
   },
   {
     .spawn_filter = 3,
-    .flags = SI_DEFAULT_SKILL
+    .flags = 0
   },
   {
     .spawn_filter = 4,
@@ -115,9 +124,71 @@ const skill_info_t hexen_skill_infos[5] = {
   },
 };
 
-const skill_info_t* skill_infos;
+int num_skills;
+skill_info_t* skill_infos;
 
-int num_skills = 5;
+static void dsda_CopyFactor(fixed_t* dest, const char* source) {
+  // We will compute integers with these,
+  // and common human values (i.e., not powers of 2) are rounded down.
+  // Add 1 (= 1/2^16) to yield expected results.
+  // Otherwise, 0.2 * 15 would be 2 instead of 3.
+
+  if (source)
+    *dest = dsda_StringToFixed(source) + 1;
+}
+
+void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
+  dsda_CopyFactor(&skill_infos[i].ammo_factor, info->ammo_factor);
+  dsda_CopyFactor(&skill_infos[i].damage_factor, info->damage_factor);
+  dsda_CopyFactor(&skill_infos[i].armor_factor, info->armor_factor);
+  dsda_CopyFactor(&skill_infos[i].health_factor, info->health_factor);
+  dsda_CopyFactor(&skill_infos[i].monster_health_factor, info->monster_health_factor);
+  dsda_CopyFactor(&skill_infos[i].friend_health_factor, info->friend_health_factor);
+
+  skill_infos[i].respawn_time = info->respawn_time;
+  skill_infos[i].spawn_filter = info->spawn_filter;
+  skill_infos[i].key = info->key;
+
+  if (info->must_confirm)
+    skill_infos[i].must_confirm = Z_Strdup(info->must_confirm);
+
+  if (info->name)
+    skill_infos[i].name = Z_Strdup(info->name);
+
+  if (info->pic_name)
+    skill_infos[i].pic_name = Z_Strdup(info->pic_name);
+
+  if (info->text_color)
+    skill_infos[i].text_color = dsda_ColorNameToIndex(info->text_color);
+
+  skill_infos[i].flags = info->flags;
+}
+
+void dsda_InitSkills(void) {
+  int i = 0;
+  int j;
+  dboolean clear_skills;
+
+  clear_skills = (doom_mapinfo.num_skills && doom_mapinfo.skills_cleared);
+
+  num_skills = (clear_skills ? 0 : 5) + doom_mapinfo.num_skills;
+
+  skill_infos = Z_Calloc(num_skills, sizeof(*skill_infos));
+
+  if (!clear_skills) {
+    const skill_info_t* original_skill_infos;
+
+    original_skill_infos = hexen   ? hexen_skill_infos   :
+                           heretic ? heretic_skill_infos :
+                                     doom_skill_infos;
+
+    for (i = 0; i < 5; ++i)
+      skill_infos[i] = original_skill_infos[i];
+  }
+
+  for (j = 0; j < doom_mapinfo.num_skills; ++j)
+    dsda_CopySkillInfo(i + j, &doom_mapinfo.skills[j]);
+}
 
 void dsda_RefreshGameSkill(void) {
   void G_RefreshFastMonsters(void);
@@ -130,10 +201,16 @@ void dsda_RefreshGameSkill(void) {
   if (fastparm)
     skill_info.flags |= SI_FAST_MONSTERS;
 
+  if (coop_spawns)
+    skill_info.flags |= SI_SPAWN_MULTI;
+
   G_RefreshFastMonsters();
 }
 
 void dsda_UpdateGameSkill(int skill) {
+  if (skill > num_skills - 1)
+    skill = num_skills - 1;
+
   gameskill = skill;
   dsda_RefreshGameSkill();
 }

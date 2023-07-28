@@ -22,6 +22,7 @@
 #include "dsda/configuration.h"
 #include "dsda/mapinfo.h"
 #include "dsda/save.h"
+#include "dsda/skill_info.h"
 
 #include "death.h"
 
@@ -38,7 +39,10 @@ typedef enum {
 
 static int dsda_DeathUseAction(void)
 {
-  if (demorecording || demoplayback || map_info.flags & MI_ALLOW_RESPAWN)
+  if (demorecording ||
+      demoplayback ||
+      map_info.flags & MI_ALLOW_RESPAWN ||
+      skill_info.flags & SI_PLAYER_RESPAWN)
     return death_use_default;
 
   return dsda_IntConfig(dsda_config_death_use_action);

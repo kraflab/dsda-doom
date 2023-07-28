@@ -1,6 +1,6 @@
 ## MAPINFO
 
-This page tracks support for the MAPINFO lump, as seen in ZDoom. This is all a work in progress - the status of any feature (including whether or not it is planned) is subject to change.
+This page tracks support for the MAPINFO lump, as seen in ZDoom. This is all a work in progress - the status of any feature (including whether or not it is planned) is subject to change. Only the "new" format of mapinfo is valid in dsda-doom (the curly braces).
 
 ### Current Status
 
@@ -23,8 +23,8 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | map           | :heavy_check_mark: |
 | defaultmap    | :heavy_check_mark: |
 | adddefaultmap | :heavy_check_mark: |
-| clearskills   | :telescope:        |
-| skill         | :telescope:        |
+| clearskills   | :heavy_check_mark: |
+| skill         | :heavy_check_mark: |
 
 ### Map Properties
 
@@ -69,28 +69,35 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | NoPassover                         | :heavy_check_mark: |
 | Passover                           | :heavy_check_mark: |
 
+#### Notes
+
+The `Passover` and `NoPassover` fields are new. ZDoom has different defaults and expectations, where this behavior can be adjusted using zdoom's specific compatibility flags when _necessary_. In dsda-doom this is considered a feature rather than a compatibility and must be turned on explicitly by the author.
+
 ### Skill Properties
 
 | Key             | Status             |
 | --------------- | ------------------ |
-| AmmoFactor      | :telescope: |
-| DamageFactor    | :telescope: |
-| ArmorFactor     | :telescope: |
-| HealthFactor    | :telescope: |
-| MonsterHealth   | :telescope: |
-| FriendlyHealth  | :telescope: |
-| RespawnTime     | :telescope: |
-| SpawnFilter     | :telescope: |
-| Key             | :telescope: |
-| MustConfirm     | :telescope: |
-| Name            | :telescope: |
-| PicName         | :telescope: |
-| TextColor       | :telescope: |
-| SpawnMulti      | :telescope: |
-| FastMonsters    | :telescope: |
-| InstantReaction | :telescope: |
-| NoPain          | :telescope: |
-| DefaultSkill    | :telescope: |
-| NoMenu          | :telescope: |
-| PlayerRespawn   | :telescope: |
-| EasyBossBrain   | :telescope: |
+| AmmoFactor      | :heavy_check_mark: |
+| DamageFactor    | :heavy_check_mark: |
+| ArmorFactor     | :heavy_check_mark: |
+| HealthFactor    | :heavy_check_mark: |
+| MonsterHealth   | :heavy_check_mark: |
+| FriendlyHealth  | :heavy_check_mark: |
+| RespawnTime     | :heavy_check_mark: |
+| SpawnFilter     | :heavy_check_mark: |
+| Key             | :heavy_check_mark: |
+| MustConfirm     | :heavy_check_mark: |
+| Name            | :heavy_check_mark: |
+| PicName         | :heavy_check_mark: |
+| TextColor       | :heavy_check_mark: |
+| SpawnMulti      | :heavy_check_mark: |
+| FastMonsters    | :heavy_check_mark: |
+| InstantReaction | :heavy_check_mark: |
+| NoPain          | :heavy_check_mark: |
+| DefaultSkill    | :heavy_check_mark: |
+| PlayerRespawn   | :heavy_check_mark: |
+| EasyBossBrain   | :heavy_check_mark: |
+
+#### Notes
+
+The `SpawnFilter` field only takes numbers, not names.

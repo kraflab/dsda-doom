@@ -514,7 +514,7 @@ static void dsda_FreeSkill(doom_mapinfo_skill_t &skill) {
 static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
   doom_mapinfo_skill_t skill = { 0 };
 
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetToken(TK_Identifier);
   STR_DUP(skill.unique_id);
 
   // TODO: check unique id uniqueness
@@ -548,12 +548,17 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
       SCAN_INT(skill.spawn_filter);
     }
     else if (!stricmp(scanner.string, "Key")) {
+      scanner.MustGetToken('=');
       scanner.MustGetToken(TK_StringConst);
       skill.key = scanner.string[0];
     }
     else if (!stricmp(scanner.string, "MustConfirm")) {
-      // TODO: accept as flag as well
-      SCAN_STRING(skill.must_confirm);
+      if (scanner.CheckToken('=')) {
+        scanner.MustGetToken(TK_StringConst);
+        STR_DUP(skill.must_confirm);
+      }
+
+      skill.flags |= DSI_MUST_CONFIRM;
     }
     else if (!stricmp(scanner.string, "Name")) {
       SCAN_STRING(skill.name);
@@ -578,9 +583,6 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "DefaultSkill")) {
       skill.flags |= DSI_DEFAULT_SKILL;
-    }
-    else if (!stricmp(scanner.string, "NoMenu")) {
-      skill.flags |= DSI_NO_MENU;
     }
     else if (!stricmp(scanner.string, "PlayerRespawn")) {
       skill.flags |= DSI_PLAYER_RESPAWN;

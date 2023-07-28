@@ -1414,7 +1414,7 @@ void P_MobjThinker (mobj_t* mobj)
 
     mobj->movecount++;
 
-    if (mobj->movecount < 12 * 35)
+    if (mobj->movecount < skill_info.respawn_time * 35)
       return;
 
     if (leveltime & 31)
@@ -1645,6 +1645,32 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
   return success;
 }
 
+int P_MobjSpawnHealth(const mobj_t* mobj)
+{
+  int result;
+
+  if (mobj->type == MT_SKULL || mobj->flags & MF_COUNTKILL)
+  {
+    if (mobj->flags & MF_FRIEND)
+    {
+      if (skill_info.friend_health_factor)
+      {
+        result = FixedMul(mobj->info->spawnhealth, skill_info.friend_health_factor);
+
+        return result > 0 ? result : 1;
+      }
+    }
+    else if (skill_info.monster_health_factor)
+    {
+      result = FixedMul(mobj->info->spawnhealth, skill_info.monster_health_factor);
+
+      return result > 0 ? result : 1;
+    }
+  }
+
+  return mobj->info->spawnhealth;
+}
+
 //
 // P_SpawnMobj
 //
@@ -1677,7 +1703,7 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   if (map_info.flags & MI_PASSOVER && mobj->flags & MF_SOLID)
     mobj->flags2 |= MF2_PASSMOBJ;
 
-  mobj->health = info->spawnhealth;
+  mobj->health = P_MobjSpawnHealth(mobj);
 
   if (!(skill_info.flags & SI_INSTANT_REACTION))
     mobj->reactiontime = info->reactiontime;
@@ -2137,6 +2163,9 @@ static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
 static dboolean P_ShouldSpawnMapThing(int options)
 {
   unsigned int spawnMask;
+  dboolean spawn_multi;
+
+  spawn_multi = skill_info.flags & SI_SPAWN_MULTI;
 
   if (map_format.hexen)
   {
@@ -2144,6 +2173,9 @@ static dboolean P_ShouldSpawnMapThing(int options)
     if (netgame == false)
     {
       spawnMask = MTF_GSINGLE;
+
+      if (spawn_multi)
+        spawnMask |= MTF_GCOOP;
     }
     else if (deathmatch)
     {
@@ -2162,7 +2194,7 @@ static dboolean P_ShouldSpawnMapThing(int options)
   else
   {
     /* jff "not single" thing flag */
-    if (!coop_spawns && !netgame && options & MTF_NOTSINGLE)
+    if (!spawn_multi && !netgame && options & MTF_NOTSINGLE)
       return false;
 
     //jff 3/30/98 implement "not deathmatch" thing flag
@@ -2170,7 +2202,7 @@ static dboolean P_ShouldSpawnMapThing(int options)
       return false;
 
     //jff 3/30/98 implement "not cooperative" thing flag
-    if ((coop_spawns || netgame) && !deathmatch && options & MTF_NOTCOOP)
+    if ((spawn_multi || netgame) && !deathmatch && options & MTF_NOTCOOP)
       return false;
   }
 
@@ -2480,14 +2512,23 @@ spawnit:
 
   mobj = P_SpawnMobj (x, y, z, i);
 
+  if (!(mobj->flags & MF_FRIEND) &&
+      options & (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND) &&
+      mbf_features)
+  {
+    mobj->flags |= MF_FRIEND;            // killough 10/98:
+    P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
+
+    // Friends can have a different spawn health
+    mobj->health = P_MobjSpawnHealth(mobj);
+  }
+
   if (mthing->health != FRACUNIT)
   {
     if (mthing->health < 0)
-      mobj->health = -mthing->health;
+      mobj->health = -mthing->health >> FRACBITS;
     else
-      mobj->health *= mthing->health;
-
-    mobj->health >>= FRACBITS;
+      mobj->health = FixedMul(mobj->health, mthing->health);
   }
 
   if (mthing->gravity != FRACUNIT)
@@ -2535,14 +2576,6 @@ spawnit:
 
   if (mobj->tics > 0)
     mobj->tics = 1 + (P_Random(pr_spawnthing) % mobj->tics);
-
-  if (!(mobj->flags & MF_FRIEND) &&
-      options & (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND) &&
-      mbf_features)
-  {
-    mobj->flags |= MF_FRIEND;            // killough 10/98:
-    P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
-  }
 
   if (map_format.zdoom)
   {

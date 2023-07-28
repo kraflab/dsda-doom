@@ -27,7 +27,6 @@
 #define SI_DISABLE_CHEATS   0x0008
 #define SI_NO_PAIN          0x0010
 #define SI_DEFAULT_SKILL    0x0020
-#define SI_NO_MENU          0x0040
 #define SI_PLAYER_RESPAWN   0x0080
 #define SI_EASY_BOSS_BRAIN  0x0100
 #define SI_MUST_CONFIRM     0x0200
@@ -53,14 +52,10 @@ typedef struct {
 } skill_info_t;
 
 extern skill_info_t skill_info;
-extern const skill_info_t* skill_infos;
-
-extern const skill_info_t doom_skill_infos[5];
-extern const skill_info_t heretic_skill_infos[5];
-extern const skill_info_t hexen_skill_infos[5];
 
 extern int num_skills;
 
+void dsda_InitSkills(void);
 void dsda_RefreshGameSkill(void);
 void dsda_UpdateGameSkill(int skill);
 

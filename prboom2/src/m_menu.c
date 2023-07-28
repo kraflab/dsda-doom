@@ -90,6 +90,7 @@
 #include "dsda/input.h"
 #include "dsda/palette.h"
 #include "dsda/save.h"
+#include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/console.h"
@@ -257,7 +258,7 @@ void M_QuickLoad(void);
 void M_DrawMainMenu(void);
 void M_DrawReadThis1(void);
 void M_DrawReadThis2(void);
-void M_DrawNewGame(void);
+void M_DrawSkillMenu(void);
 void M_DrawEpisode(void);
 void M_DrawOptions(void);
 void M_DrawSound(void);
@@ -310,7 +311,7 @@ void M_ChangeVideoMode(void);
 void M_ChangeUseGLSurface(void);
 void M_ChangeApplyPalette(void);
 
-menu_t NewDef;                                              // phares 5/04/98
+menu_t SkillDef;                                              // phares 5/04/98
 
 // end of prototypes added to support Setup Menus and Extended HELP screens
 
@@ -646,7 +647,7 @@ void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char 
   if (!EpiCustom)
   {
     EpiCustom = true;
-    NewDef.prevMenu = &EpiDef;
+    SkillDef.prevMenu = &EpiDef;
 
     if (gamemode == commercial || gamemission == chex)
       EpiDef.numitems = 0;
@@ -703,52 +704,29 @@ void M_Episode(int choice)
   epiChoice = choice;
   if (hexen) // hack hexen class as "episode menu"
     MN_UpdateClass(epiChoice);
-  M_SetupNextMenu(&NewDef);
+  M_SetupNextMenu(&SkillDef);
 }
 
 /////////////////////////////
 //
-// NEW GAME
+// SKILL SELECT
 //
 
-// numerical values for the New Game menu items
+// The definitions of the Skill Select menu
 
-enum
+menu_t SkillDef =
 {
-  killthings,
-  toorough,
-  hurtme,
-  violence,
-  nightmare,
-  newg_end
-} newgame_e;
-
-// The definitions of the New Game menu
-
-menuitem_t NewGameMenu[]=
-{
-  {1,"M_JKILL", M_ChooseSkill, 'i'},
-  {1,"M_ROUGH", M_ChooseSkill, 'h'},
-  {1,"M_HURT",  M_ChooseSkill, 'h'},
-  {1,"M_ULTRA", M_ChooseSkill, 'u'},
-  {1,"M_NMARE", M_ChooseSkill, 'n'}
-};
-
-menu_t NewDef =
-{
-  newg_end,       // # of menu items
-  &EpiDef,        // previous menu
-  NewGameMenu,    // menuitem_t ->
-  M_DrawNewGame,  // drawing routine ->
-  48,63,          // x,y
-  hurtme          // lastOn
+  .prevMenu = &EpiDef,
+  .routine = M_DrawSkillMenu,
+  .x = 48,
+  .y = 63,
 };
 
 //
 // M_NewGame
 //
 
-void M_DrawNewGame(void)
+void M_DrawSkillMenu(void)
 {
   if (raven) return MN_DrawSkillMenu();
 
@@ -768,7 +746,7 @@ void M_NewGame(int choice)
 
   // Chex Quest disabled the episode select screen, as did Doom II.
   if ((((gamemode == commercial && !hexen) || gamemission == chex) && !EpiCustom) || EpiDef.numitems == 1)
-    M_SetupNextMenu(&NewDef);
+    M_SetupNextMenu(&SkillDef);
   else
   {
     epiChoice = 0;
@@ -776,26 +754,44 @@ void M_NewGame(int choice)
   }
 }
 
+static int chosen_skill;
+
 // CPhipps - static
-static void M_VerifyNightmare(int ch)
+static void M_VerifySkill(int ch)
 {
   if (ch != 'y')
     return;
 
-  G_DeferedInitNew(nightmare,EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
+  G_DeferedInitNew(chosen_skill, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
+
   if (hexen)
     SB_SetClassData();
+
   M_ClearMenus ();
 }
 
 void M_ChooseSkill(int choice)
 {
-  if (choice == nightmare)
-    {   // Ty 03/27/98 - externalized
-      M_StartMessage(s_NIGHTMARE,M_VerifyNightmare,true);
-      return;
-    }
-  if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1) return;  // There is no map to start here.
+  extern skill_info_t *skill_infos;
+
+  if (choice < num_skills && skill_infos[choice].flags & SI_MUST_CONFIRM)
+  {
+    const char* message;
+
+    if (skill_infos[choice].must_confirm)
+      message = skill_infos[choice].must_confirm;
+    else
+      message = s_NIGHTMARE; // Ty 03/27/98 - externalized
+
+    chosen_skill = choice;
+
+    M_StartMessage(message, M_VerifySkill, true);
+
+    return;
+  }
+
+  if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1)
+    return;  // There is no map to start here.
 
   G_DeferedInitNew(choice, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
   if (hexen)
@@ -5587,6 +5583,39 @@ dboolean M_Responder (event_t* ev) {
 // Plus a variety of routines that control the Big Font menu display.
 // Plus some initialization for game-dependant situations.
 
+static void M_InitializeSkillMenu(void)
+{
+  DO_ONCE
+    extern skill_info_t *skill_infos;
+    int i;
+
+    SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
+
+    SkillDef.numitems = num_skills;
+    SkillDef.menuitems = Z_Calloc(num_skills, sizeof(*SkillDef.menuitems));
+
+    for (i = 0; i < num_skills; ++i)
+    {
+      SkillDef.menuitems[i].status = 1;
+
+      if (skill_infos[i].pic_name)
+        strncpy(SkillDef.menuitems[i].name, skill_infos[i].pic_name, 8);
+
+      SkillDef.menuitems[i].alttext = skill_infos[i].name;
+      SkillDef.menuitems[i].color = skill_infos[i].text_color;
+
+      SkillDef.menuitems[i].routine = M_ChooseSkill;
+      SkillDef.menuitems[i].alphaKey = skill_infos[i].key;
+
+      if (skill_infos[i].flags & SI_DEFAULT_SKILL)
+        SkillDef.lastOn = i;
+    }
+
+    if (SkillDef.lastOn >= num_skills)
+      SkillDef.lastOn = num_skills - 1;
+  END_ONCE
+}
+
 void M_StartControlPanel (void)
 {
   // intro might call this repeatedly
@@ -5594,7 +5623,7 @@ void M_StartControlPanel (void)
   if (menuactive)
     return;
 
-  NewDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
+  M_InitializeSkillMenu();
 
   // e6y
   // We need to remove the fourth episode for pre-ultimate complevels.
@@ -5663,8 +5692,8 @@ void M_Drawer (void)
   }
   else if (menuactive)
   {
-    int x,y,max,i;
-    int lumps_missing = 0;
+    int x, y, max, i;
+    int lumps_missing;
 
     M_ChangeMenu(NULL, mnact_float);
 
@@ -5683,26 +5712,29 @@ void M_Drawer (void)
     x = currentMenu->x;
     y = currentMenu->y;
     max = currentMenu->numitems;
+    lumps_missing = 0;
 
     for (i = 0; i < max; i++)
-      if (currentMenu->menuitems[i].name[0])
-        if (!W_LumpNameExists(currentMenu->menuitems[i].name))
-          lumps_missing++;
+      if (!currentMenu->menuitems[i].name[0] || !W_LumpNameExists(currentMenu->menuitems[i].name))
+        ++lumps_missing;
 
-    if (lumps_missing == 0)
-      for (i=0;i<max;i++)
+    if (!lumps_missing)
+      for (i = 0; i < max; i++)
       {
-        if (currentMenu->menuitems[i].name[0])
-          V_DrawNamePatch(x,y,0,currentMenu->menuitems[i].name,
-              CR_DEFAULT, VPT_STRETCH);
+        V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
+                        currentMenu->menuitems[i].color, VPT_STRETCH);
+
         y += LINEHEIGHT;
       }
     else
       for (i = 0; i < max; i++)
       {
         const char *alttext = currentMenu->menuitems[i].alttext;
+
         if (alttext)
-          M_WriteText(x, y+8-(M_StringHeight(alttext)/2), alttext, CR_DEFAULT);
+          M_WriteText(x, y + 8 - (M_StringHeight(alttext) / 2),
+                      alttext, currentMenu->menuitems[i].color);
+
         y += LINEHEIGHT;
       }
 
@@ -6031,7 +6063,7 @@ void M_Init(void)
       MainDef.numitems--;
       MainDef.y += 8;
       if (!EpiCustom)
-        NewDef.prevMenu = &MainDef;
+        SkillDef.prevMenu = &MainDef;
       ReadDef1.routine = M_DrawReadThis1;
       ReadDef1.x = 330;
       ReadDef1.y = 165;
