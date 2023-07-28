@@ -712,18 +712,6 @@ void M_Episode(int choice)
 // SKILL SELECT
 //
 
-// numerical values for the Skill Select menu items
-
-enum
-{
-  killthings,
-  toorough,
-  hurtme,
-  violence,
-  nightmare,
-  skill_end
-} skill_e;
-
 // The definitions of the Skill Select menu
 
 menu_t SkillDef =
@@ -766,26 +754,44 @@ void M_NewGame(int choice)
   }
 }
 
+static int chosen_skill;
+
 // CPhipps - static
-static void M_VerifyNightmare(int ch)
+static void M_VerifySkill(int ch)
 {
   if (ch != 'y')
     return;
 
-  G_DeferedInitNew(nightmare,EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
+  G_DeferedInitNew(chosen_skill, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
+
   if (hexen)
     SB_SetClassData();
+
   M_ClearMenus ();
 }
 
 void M_ChooseSkill(int choice)
 {
-  if (choice == nightmare)
-    {   // Ty 03/27/98 - externalized
-      M_StartMessage(s_NIGHTMARE,M_VerifyNightmare,true);
-      return;
-    }
-  if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1) return;  // There is no map to start here.
+  extern skill_info_t *skill_infos;
+
+  if (choice < num_skills && skill_infos[choice].flags & SI_MUST_CONFIRM)
+  {
+    const char* message;
+
+    if (skill_infos[choice].must_confirm)
+      message = skill_infos[choice].must_confirm;
+    else
+      message = s_NIGHTMARE; // Ty 03/27/98 - externalized
+
+    chosen_skill = choice;
+
+    M_StartMessage(message, M_VerifySkill, true);
+
+    return;
+  }
+
+  if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1)
+    return;  // There is no map to start here.
 
   G_DeferedInitNew(choice, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
   if (hexen)
