@@ -579,9 +579,6 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
     else if (!stricmp(scanner.string, "DefaultSkill")) {
       skill.flags |= DSI_DEFAULT_SKILL;
     }
-    else if (!stricmp(scanner.string, "NoMenu")) {
-      skill.flags |= DSI_NO_MENU;
-    }
     else if (!stricmp(scanner.string, "PlayerRespawn")) {
       skill.flags |= DSI_PLAYER_RESPAWN;
     }

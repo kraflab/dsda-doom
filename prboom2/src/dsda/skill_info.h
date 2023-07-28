@@ -27,7 +27,6 @@
 #define SI_DISABLE_CHEATS   0x0008
 #define SI_NO_PAIN          0x0010
 #define SI_DEFAULT_SKILL    0x0020
-#define SI_NO_MENU          0x0040
 #define SI_PLAYER_RESPAWN   0x0080
 #define SI_EASY_BOSS_BRAIN  0x0100
 #define SI_MUST_CONFIRM     0x0200
