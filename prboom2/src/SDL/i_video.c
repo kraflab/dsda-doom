@@ -1430,8 +1430,9 @@ void I_UpdateVideoMode(void)
 static void ActivateMouse(void)
 {
   //move the mouse in center. Bitshift to right to faster half the screen size.
+  #if defined(__APPLE__)
   SDL_WarpMouseInWindow(sdl_window, SCREENWIDTH >> 1, SCREENHEIGHT >> 1);
-
+  #endif
   SDL_SetRelativeMouseMode(SDL_TRUE);
   SDL_GetRelativeMouseState(NULL, NULL);
 }
