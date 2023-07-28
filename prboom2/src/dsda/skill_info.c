@@ -72,23 +72,28 @@ const skill_info_t heretic_skill_infos[5] = {
     .ammo_factor = FRACUNIT * 3 / 2,
     .damage_factor = FRACUNIT / 2,
     .spawn_filter = 1,
+    .name = "THOU NEEDETH A WET-NURSE",
     .flags = SI_AUTO_USE_HEALTH
   },
   {
     .spawn_filter = 2,
+    .name = "YELLOWBELLIES-R-US",
     .flags = 0
   },
   {
     .spawn_filter = 3,
+    .name = "BRINGEST THEM ONETH",
     .flags = SI_DEFAULT_SKILL
   },
   {
     .spawn_filter = 4,
+    .name = "THOU ART A SMITE-MEISTER",
     .flags = 0
   },
   {
     .ammo_factor = FRACUNIT * 3 / 2,
     .spawn_filter = 5,
+    .name = "BLACK PLAGUE POSSESSES THEE",
     .flags = SI_FAST_MONSTERS | SI_INSTANT_REACTION
   },
 };
@@ -120,7 +125,7 @@ const skill_info_t hexen_skill_infos[5] = {
 };
 
 int num_skills;
-static skill_info_t* skill_infos;
+skill_info_t* skill_infos;
 
 static void dsda_CopyFactor(fixed_t* dest, const char* source) {
   // We will compute integers with these,

@@ -55,7 +55,6 @@ extern menu_t SoundDef;
 extern menu_t LoadDef;
 extern menu_t SaveDef;
 extern menuitem_t EpisodeMenu[];
-extern menuitem_t SkillMenu[];
 extern menuitem_t SoundMenu[];
 extern short EpiMenuMap[];
 extern short EpiMenuEpi[];
@@ -108,12 +107,6 @@ void MN_Init(void)
     EpisodeMenu[3].alttext = "THE OSSUARY";
     EpisodeMenu[4].alttext = "THE STAGNANT DEMESNE";
 
-    SkillMenu[0].alttext = "THOU NEEDETH A WET-NURSE";
-    SkillMenu[1].alttext = "YELLOWBELLIES-R-US";
-    SkillMenu[2].alttext = "BRINGEST THEM ONETH";
-    SkillMenu[3].alttext = "THOU ART A SMITE-MEISTER";
-    SkillMenu[4].alttext = "BLACK PLAGUE POSSESSES THEE";
-
     if (gamemode == retail)
     {
       EpiMenuEpi[3] = 4;
@@ -162,27 +155,27 @@ void MN_UpdateClass(int choice)
   {
     case PCLASS_FIGHTER:
       SkillDef.x = 120;
-      SkillMenu[0].alttext = "SQUIRE";
-      SkillMenu[1].alttext = "KNIGHT";
-      SkillMenu[2].alttext = "WARRIOR";
-      SkillMenu[3].alttext = "BERSERKER";
-      SkillMenu[4].alttext = "TITAN";
+      SkillDef.menuitems[0].alttext = "SQUIRE";
+      SkillDef.menuitems[1].alttext = "KNIGHT";
+      SkillDef.menuitems[2].alttext = "WARRIOR";
+      SkillDef.menuitems[3].alttext = "BERSERKER";
+      SkillDef.menuitems[4].alttext = "TITAN";
       break;
     case PCLASS_CLERIC:
       SkillDef.x = 116;
-      SkillMenu[0].alttext = "ALTAR BOY";
-      SkillMenu[1].alttext = "ACOLYTE";
-      SkillMenu[2].alttext = "PRIEST";
-      SkillMenu[3].alttext = "CARDINAL";
-      SkillMenu[4].alttext = "POPE";
+      SkillDef.menuitems[0].alttext = "ALTAR BOY";
+      SkillDef.menuitems[1].alttext = "ACOLYTE";
+      SkillDef.menuitems[2].alttext = "PRIEST";
+      SkillDef.menuitems[3].alttext = "CARDINAL";
+      SkillDef.menuitems[4].alttext = "POPE";
       break;
     case PCLASS_MAGE:
       SkillDef.x = 112;
-      SkillMenu[0].alttext = "APPRENTICE";
-      SkillMenu[1].alttext = "ENCHANTER";
-      SkillMenu[2].alttext = "SORCERER";
-      SkillMenu[3].alttext = "WARLOCK";
-      SkillMenu[4].alttext = "ARCHIMAGE";
+      SkillDef.menuitems[0].alttext = "APPRENTICE";
+      SkillDef.menuitems[1].alttext = "ENCHANTER";
+      SkillDef.menuitems[2].alttext = "SORCERER";
+      SkillDef.menuitems[3].alttext = "WARLOCK";
+      SkillDef.menuitems[4].alttext = "ARCHIMAGE";
       break;
   }
 }

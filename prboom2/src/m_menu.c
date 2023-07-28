@@ -90,6 +90,7 @@
 #include "dsda/input.h"
 #include "dsda/palette.h"
 #include "dsda/save.h"
+#include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/console.h"
@@ -725,23 +726,12 @@ enum
 
 // The definitions of the Skill Select menu
 
-menuitem_t SkillMenu[]=
-{
-  {1,"M_JKILL", M_ChooseSkill, 'i'},
-  {1,"M_ROUGH", M_ChooseSkill, 'h'},
-  {1,"M_HURT",  M_ChooseSkill, 'h'},
-  {1,"M_ULTRA", M_ChooseSkill, 'u'},
-  {1,"M_NMARE", M_ChooseSkill, 'n'}
-};
-
 menu_t SkillDef =
 {
-  skill_end,       // # of menu items
-  &EpiDef,        // previous menu
-  SkillMenu,    // menuitem_t ->
-  M_DrawSkillMenu,  // drawing routine ->
-  48,63,          // x,y
-  hurtme          // lastOn
+  .prevMenu = &EpiDef,
+  .routine = M_DrawSkillMenu,
+  .x = 48,
+  .y = 63,
 };
 
 //
@@ -5587,6 +5577,35 @@ dboolean M_Responder (event_t* ev) {
 // Plus a variety of routines that control the Big Font menu display.
 // Plus some initialization for game-dependant situations.
 
+static void M_InitializeSkillMenu(void)
+{
+  DO_ONCE
+    extern skill_info_t *skill_infos;
+    int i;
+
+    SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
+
+    SkillDef.numitems = num_skills;
+    SkillDef.menuitems = Z_Calloc(num_skills, sizeof(*SkillDef.menuitems));
+
+    for (i = 0; i < num_skills; ++i)
+    {
+      SkillDef.menuitems[i].status = 1;
+
+      if (skill_infos[i].pic_name)
+        strncpy(SkillDef.menuitems[i].name, skill_infos[i].pic_name, 8);
+
+      SkillDef.menuitems[i].alttext = skill_infos[i].name;
+
+      SkillDef.menuitems[i].routine = M_ChooseSkill;
+      SkillDef.menuitems[i].alphaKey = skill_infos[i].key;
+    }
+
+    if (SkillDef.lastOn >= num_skills)
+      SkillDef.lastOn = num_skills - 1;
+  END_ONCE
+}
+
 void M_StartControlPanel (void)
 {
   // intro might call this repeatedly
@@ -5594,7 +5613,7 @@ void M_StartControlPanel (void)
   if (menuactive)
     return;
 
-  SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
+  M_InitializeSkillMenu();
 
   // e6y
   // We need to remove the fourth episode for pre-ultimate complevels.
