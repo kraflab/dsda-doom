@@ -136,6 +136,7 @@ typedef struct
   void  (*routine)(int choice);
   char  alphaKey; // hotkey in menu
   const char *alttext;
+  int color;
 } menuitem_t;
 
 #define MENUF_TEXTINPUT 0x01

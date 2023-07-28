@@ -5596,6 +5596,7 @@ static void M_InitializeSkillMenu(void)
         strncpy(SkillDef.menuitems[i].name, skill_infos[i].pic_name, 8);
 
       SkillDef.menuitems[i].alttext = skill_infos[i].name;
+      SkillDef.menuitems[i].color = skill_infos[i].text_color;
 
       SkillDef.menuitems[i].routine = M_ChooseSkill;
       SkillDef.menuitems[i].alphaKey = skill_infos[i].key;
