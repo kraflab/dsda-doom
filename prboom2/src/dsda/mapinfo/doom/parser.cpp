@@ -553,8 +553,12 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
       skill.key = scanner.string[0];
     }
     else if (!stricmp(scanner.string, "MustConfirm")) {
-      // TODO: accept as flag as well
-      SCAN_STRING(skill.must_confirm);
+      if (scanner.CheckToken('=')) {
+        scanner.MustGetToken(TK_StringConst);
+        STR_DUP(skill.must_confirm);
+      }
+
+      skill.flags |= DSI_MUST_CONFIRM;
     }
     else if (!stricmp(scanner.string, "Name")) {
       SCAN_STRING(skill.name);
