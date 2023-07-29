@@ -235,13 +235,36 @@ extern int midstage;
 // TODO: use end_game everywhere and collapse all the finale implementations
 
 int dsda_DoomStartFinale(void) {
+  const doom_mapinfo_cluster_t* finale_cluster;
+
   if (!current_map)
     return false;
 
-  // TODO: cluster end text
-  finaletext = NULL;
-  finalepatch = NULL;
-  finaleflat = NULL;
+  if (next_cluster && next_cluster->enter_text) {
+    finale_cluster = next_cluster;
+    finaletext = finale_cluster->enter_text;
+  }
+  else if (current_cluster && current_cluster->exit_text) {
+    finale_cluster = current_cluster;
+    finaletext = finale_cluster->exit_text;
+  }
+  else {
+    finaletext = NULL;
+    finalepatch = NULL;
+    finaleflat = NULL;
+
+    return true;
+  }
+
+  if (finale_cluster->flat)
+    finaleflat = finale_cluster->flat;
+  else
+    finaleflat = "FLOOR4_8";
+
+  if (finale_cluster->pic)
+    finalepatch = finale_cluster->pic;
+  else
+    finalepatch = NULL;
 
   return true;
 }
@@ -446,7 +469,12 @@ int dsda_DoomPrepareFinale(int* result) {
   if (!current_map)
     return false;
 
-  // TODO: check cluster finish text
+  if (current_cluster != next_cluster)
+    if ((next_cluster && next_cluster->enter_text) ||
+        (current_cluster && current_cluster->exit_text)) {
+      *result = WD_START_FINALE;
+      return true;
+    }
 
   if (end_data)
     *result = WD_VICTORY;
