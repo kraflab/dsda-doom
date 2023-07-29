@@ -73,6 +73,16 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 
 The `Passover` and `NoPassover` fields are new. ZDoom has different defaults and expectations, where this behavior can be adjusted using zdoom's specific compatibility flags when _necessary_. In dsda-doom this is considered a feature rather than a compatibility and must be turned on explicitly by the author.
 
+### Cluster Properties
+
+| Key               | Status             |
+| ----------------- | ------------------ |
+| EnterText         | :telescope: |
+| ExitText          | :telescope: |
+| Music             | :telescope: |
+| Flat              | :telescope: |
+| Pic               | :telescope: |
+
 ### Skill Properties
 
 | Key             | Status             |
