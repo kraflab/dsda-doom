@@ -307,6 +307,9 @@ void dsda_IntermissionMusic(int* music_index, int* music_lump) {
 }
 
 void dsda_InterMusic(int* music_index, int* music_lump) {
+  if (dsda_DoomInterMusic(music_index, music_lump))
+    return;
+
   if (dsda_HexenInterMusic(music_index, music_lump))
     return;
 

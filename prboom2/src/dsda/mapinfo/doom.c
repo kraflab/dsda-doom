@@ -224,7 +224,27 @@ int dsda_DoomIntermissionMusic(int* music_index, int* music_lump) {
 }
 
 int dsda_DoomInterMusic(int* music_index, int* music_lump) {
-  return false; // TODO
+  int lump = LUMP_NOT_FOUND;
+
+  if (!current_map)
+    return false;
+
+  if (next_cluster && next_cluster->enter_text) {
+    if (next_cluster->music)
+      lump = W_CheckNumForName(next_cluster->music);
+  }
+  else if (current_cluster && current_cluster->exit_text) {
+    if (current_cluster->music)
+      lump = W_CheckNumForName(current_cluster->music);
+  }
+
+  if (lump == LUMP_NOT_FOUND)
+    return false;
+
+  *music_index = -1;
+  *music_lump = lump;
+
+  return true;
 }
 
 extern int finalestage;
