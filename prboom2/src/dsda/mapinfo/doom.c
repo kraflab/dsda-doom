@@ -35,11 +35,24 @@
 static const doom_mapinfo_map_t* last_map;
 static const doom_mapinfo_map_t* next_map;
 static const doom_mapinfo_map_t* current_map;
+static doom_mapinfo_cluster_t* last_cluster;
+static doom_mapinfo_cluster_t* next_cluster;
+static doom_mapinfo_cluster_t* current_cluster;
 static const doom_mapinfo_map_next_t* end_data;
 
 static doom_mapinfo_map_next_t default_end_data = {
   .end = dmi_end_game_cast
 };
+
+static doom_mapinfo_cluster_t* dsda_DoomClusterEntry(int id) {
+  int i;
+
+  for (i = 0; i < doom_mapinfo.num_clusters; ++i)
+    if (id == doom_mapinfo.clusters[i].id)
+      return &doom_mapinfo.clusters[i];
+
+  return NULL;
+}
 
 static doom_mapinfo_map_t* dsda_DoomMapEntry(int gamemap) {
   int i;
@@ -138,15 +151,27 @@ int dsda_DoomSkipDrawShowNextLoc(int* skip) {
 
 void dsda_DoomUpdateMapInfo(void) {
   current_map = dsda_DoomMapEntry(gamemap);
+
+  if (current_map && current_map->cluster)
+    current_cluster = dsda_DoomClusterEntry(current_map->cluster);
+  else
+    current_cluster = NULL;
 }
 
 void dsda_DoomUpdateLastMapInfo(void) {
   last_map = current_map;
+  last_cluster = current_cluster;
   next_map = NULL;
+  next_cluster = NULL;
 }
 
 void dsda_DoomUpdateNextMapInfo(void) {
   next_map = dsda_DoomMapEntry(wminfo.next + 1);
+
+  if (next_map && next_map->cluster)
+    next_cluster = dsda_DoomClusterEntry(next_map->cluster);
+  else
+    next_cluster = NULL;
 }
 
 int dsda_DoomResolveCLEV(int* clev, int* episode, int* map) {
