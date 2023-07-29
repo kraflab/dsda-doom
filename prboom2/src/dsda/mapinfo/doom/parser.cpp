@@ -18,6 +18,7 @@
 #include <cstring>
 #include <cstdio>
 #include <vector>
+#include <string>
 
 extern "C" {
 #include "doomstat.h"
@@ -35,6 +36,7 @@ static std::vector<doom_mapinfo_map_t> doom_mapinfo_maps;
 static doom_mapinfo_map_t default_map;
 
 static std::vector<doom_mapinfo_skill_t> doom_mapinfo_skills;
+static std::vector<doom_mapinfo_cluster_t> doom_mapinfo_clusters;
 
 static void dsda_SkipValue(Scanner &scanner) {
   if (scanner.CheckToken('=')) {
@@ -98,6 +100,21 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
 #define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
                                scanner.MustGetFloat(); \
                                dsda_FloatString(scanner, x); }
+
+static void dsda_ParseDoomMapInfoMultiString(Scanner &scanner, char* &str) {
+  scanner.MustGetToken('=');
+  scanner.MustGetToken(TK_StringConst);
+  std::string multi_str(scanner.string);
+
+  while (scanner.CheckToken(',')) {
+    scanner.MustGetToken(TK_StringConst);
+    multi_str += "\n";
+    multi_str += scanner.string;
+  }
+
+  Z_Free(str);
+  str = Z_Strdup(multi_str.c_str());
+}
 
 static void dsda_ResetMap(doom_mapinfo_map_t &map) {
   Z_Free(map.lump_name);
@@ -595,6 +612,51 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
   doom_mapinfo_skills.push_back(skill);
 }
 
+static void dsda_FreeCluster(doom_mapinfo_cluster_t &cluster) {
+  Z_Free(cluster.enter_text);
+  Z_Free(cluster.exit_text);
+  Z_Free(cluster.music);
+  Z_Free(cluster.flat);
+  Z_Free(cluster.pic);
+}
+
+static void dsda_ParseDoomMapInfoCluster(Scanner &scanner) {
+  doom_mapinfo_cluster_t cluster = { 0 };
+
+  scanner.MustGetInteger();
+  cluster.id = scanner.number;
+
+  scanner.MustGetToken('{');
+  while (!scanner.CheckToken('}')) {
+    scanner.MustGetToken(TK_Identifier);
+
+    if (!stricmp(scanner.string, "EnterText")) {
+      dsda_ParseDoomMapInfoMultiString(scanner, cluster.enter_text);
+    }
+    else if (!stricmp(scanner.string, "ExitText")) {
+      dsda_ParseDoomMapInfoMultiString(scanner, cluster.exit_text);
+    }
+    else if (!stricmp(scanner.string, "Music")) {
+      SCAN_STRING(cluster.music);
+    }
+    else if (!stricmp(scanner.string, "Flat")) {
+      SCAN_STRING(cluster.flat);
+    }
+    else if (!stricmp(scanner.string, "Pic")) {
+      SCAN_STRING(cluster.pic);
+    }
+  }
+
+  for (auto &old_cluster : doom_mapinfo_clusters)
+    if (old_cluster.id == cluster.id) {
+      dsda_FreeCluster(old_cluster);
+      old_cluster = cluster;
+      return;
+    }
+
+  doom_mapinfo_clusters.push_back(cluster);
+}
+
 static void dsda_ParseDoomMapInfoIdentifier(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
 
@@ -606,6 +668,9 @@ static void dsda_ParseDoomMapInfoIdentifier(Scanner &scanner) {
   }
   else if (!stricmp(scanner.string, "adddefaultmap")) {
     dsda_ParseDoomMapInfoAddDefaultMap(scanner);
+  }
+  else if (!stricmp(scanner.string, "cluster")) {
+    dsda_ParseDoomMapInfoCluster(scanner);
   }
   else if (!stricmp(scanner.string, "skill")) {
     dsda_ParseDoomMapInfoSkill(scanner);
@@ -640,6 +705,9 @@ void dsda_ParseDoomMapInfo(const unsigned char* buffer, size_t length, doom_mapi
 
   doom_mapinfo.skills = &doom_mapinfo_skills[0];
   doom_mapinfo.num_skills = doom_mapinfo_skills.size();
+
+  doom_mapinfo.clusters = &doom_mapinfo_clusters[0];
+  doom_mapinfo.num_clusters = doom_mapinfo_clusters.size();
 
   doom_mapinfo.loaded = true;
 }

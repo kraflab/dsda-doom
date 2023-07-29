@@ -120,10 +120,21 @@ typedef struct {
 } doom_mapinfo_skill_t;
 
 typedef struct {
+  int id;
+  char* enter_text;
+  char* exit_text;
+  char* music;
+  char* flat;
+  char* pic;
+} doom_mapinfo_cluster_t;
+
+typedef struct {
   size_t num_maps;
   doom_mapinfo_map_t* maps;
   size_t num_skills;
   doom_mapinfo_skill_t* skills;
+  size_t num_clusters;
+  doom_mapinfo_cluster_t* clusters;
   int loaded;
   int skills_cleared;
 } doom_mapinfo_t;
