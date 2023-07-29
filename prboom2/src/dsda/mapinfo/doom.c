@@ -166,7 +166,10 @@ void dsda_DoomUpdateLastMapInfo(void) {
 }
 
 void dsda_DoomUpdateNextMapInfo(void) {
-  next_map = dsda_DoomMapEntry(wminfo.next + 1);
+  if (end_data)
+    next_map = NULL;
+  else
+    next_map = dsda_DoomMapEntry(wminfo.next + 1);
 
   if (next_map && next_map->cluster)
     next_cluster = dsda_DoomClusterEntry(next_map->cluster);
