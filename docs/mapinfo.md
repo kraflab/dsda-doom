@@ -83,6 +83,14 @@ The `Passover` and `NoPassover` fields are new. ZDoom has different defaults and
 | Flat              | :heavy_check_mark: |
 | Pic               | :heavy_check_mark: |
 
+### Episode Properties
+
+| Key               | Status             |
+| ----------------- | ------------------ |
+| Name              | :telescope: |
+| PicName           | :telescope: |
+| Key               | :telescope: |
+
 ### Skill Properties
 
 | Key             | Status             |
