@@ -37,6 +37,7 @@ static doom_mapinfo_map_t default_map;
 
 static std::vector<doom_mapinfo_skill_t> doom_mapinfo_skills;
 static std::vector<doom_mapinfo_cluster_t> doom_mapinfo_clusters;
+static std::vector<doom_mapinfo_episode_t> doom_mapinfo_episodes;
 
 static void dsda_SkipValue(Scanner &scanner) {
   if (scanner.CheckToken('=')) {
@@ -657,6 +658,41 @@ static void dsda_ParseDoomMapInfoCluster(Scanner &scanner) {
   doom_mapinfo_clusters.push_back(cluster);
 }
 
+static void dsda_FreeEpisode(doom_mapinfo_episode_t &episode) {
+  Z_Free(episode.map_lump);
+  Z_Free(episode.name);
+  Z_Free(episode.pic_name);
+}
+
+static void dsda_ParseDoomMapInfoEpisode(Scanner &scanner) {
+  doom_mapinfo_episode_t episode = { 0 };
+
+  scanner.MustGetToken(TK_Identifier);
+  STR_DUP(episode.map_lump);
+
+  if (episode.map_lump[0] == '&')
+    scanner.ErrorF("Invalid episode map lump %s", episode.map_lump);
+
+  scanner.MustGetToken('{');
+  while (!scanner.CheckToken('}')) {
+    scanner.MustGetToken(TK_Identifier);
+
+    if (!stricmp(scanner.string, "Name")) {
+      SCAN_STRING(episode.name);
+    }
+    else if (!stricmp(scanner.string, "PicName")) {
+      SCAN_STRING(episode.pic_name);
+    }
+    else if (!stricmp(scanner.string, "Key")) {
+      scanner.MustGetToken('=');
+      scanner.MustGetToken(TK_StringConst);
+      episode.key = scanner.string[0];
+    }
+  }
+
+  doom_mapinfo_episodes.push_back(episode);
+}
+
 static void dsda_ParseDoomMapInfoIdentifier(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
 
@@ -671,6 +707,15 @@ static void dsda_ParseDoomMapInfoIdentifier(Scanner &scanner) {
   }
   else if (!stricmp(scanner.string, "cluster")) {
     dsda_ParseDoomMapInfoCluster(scanner);
+  }
+  else if (!stricmp(scanner.string, "episode")) {
+    dsda_ParseDoomMapInfoEpisode(scanner);
+  }
+  else if (!stricmp(scanner.string, "clearepisodes")) {
+    for (auto &episode : doom_mapinfo_episodes)
+      dsda_FreeEpisode(episode);
+    doom_mapinfo_episodes.clear();
+    doom_mapinfo.episodes_cleared = true;
   }
   else if (!stricmp(scanner.string, "skill")) {
     dsda_ParseDoomMapInfoSkill(scanner);
@@ -708,6 +753,9 @@ void dsda_ParseDoomMapInfo(const unsigned char* buffer, size_t length, doom_mapi
 
   doom_mapinfo.clusters = &doom_mapinfo_clusters[0];
   doom_mapinfo.num_clusters = doom_mapinfo_clusters.size();
+
+  doom_mapinfo.episodes = &doom_mapinfo_episodes[0];
+  doom_mapinfo.num_episodes = doom_mapinfo_episodes.size();
 
   doom_mapinfo.loaded = true;
 }

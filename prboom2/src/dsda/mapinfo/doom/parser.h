@@ -129,14 +129,24 @@ typedef struct {
 } doom_mapinfo_cluster_t;
 
 typedef struct {
+  char* map_lump;
+  char* name;
+  char* pic_name;
+  char key;
+} doom_mapinfo_episode_t;
+
+typedef struct {
   size_t num_maps;
   doom_mapinfo_map_t* maps;
   size_t num_skills;
   doom_mapinfo_skill_t* skills;
   size_t num_clusters;
   doom_mapinfo_cluster_t* clusters;
+  size_t num_episodes;
+  doom_mapinfo_episode_t* episodes;
   int loaded;
   int skills_cleared;
+  int episodes_cleared;
 } doom_mapinfo_t;
 
 extern doom_mapinfo_t doom_mapinfo;
