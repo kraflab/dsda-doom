@@ -22,6 +22,7 @@
 #include "m_misc.h"
 
 #include "dsda/args.h"
+#include "dsda/episode.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo/doom.h"
 #include "dsda/mapinfo/hexen.h"
@@ -495,10 +496,14 @@ void dsda_PrepareFinale(int* behaviour) {
 }
 
 void dsda_LoadMapInfo(void) {
+  dsda_AddOriginalEpisodes();
+
   dsda_DoomLoadMapInfo();
   dsda_HexenLoadMapInfo();
   dsda_ULoadMapInfo();
   dsda_LegacyLoadMapInfo();
+
+  dsda_AddCustomEpisodes();
 }
 
 const char* dsda_ExitPic(void) {

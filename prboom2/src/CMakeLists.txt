@@ -39,6 +39,8 @@ set(COMMON_SRC
     dsda/destructible.h
     dsda/endoom.c
     dsda/endoom.h
+    dsda/episode.c
+    dsda/episode.h
     dsda/excmd.c
     dsda/excmd.h
     dsda/exdemo.c

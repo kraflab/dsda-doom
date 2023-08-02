@@ -31,10 +31,8 @@ extern "C"
 #include "doomdef.h"
 #include "doomstat.h"
 
+#include "dsda/episode.h"
 #include "dsda/name.h"
-
-void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char *alpha);
-void M_ClearEpisodes(void);
 
 MapList Maps;
 }
@@ -277,7 +275,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		if (scanner.CheckToken(TK_Identifier))
 		{
-			if (!stricmp(scanner.string, "clear")) M_ClearEpisodes();
+			if (!stricmp(scanner.string, "clear")) dsda_ClearEpisodes();
 			else
 			{
 				scanner.ErrorF("Either 'clear' or string constant expected");
@@ -288,7 +286,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		{
 			char lumpname[9] = {0};
 			char *alttext = NULL;
-			char *key = NULL;
+			char key = 0;
 
 			ParseLumpName(scanner, lumpname);
 			if (scanner.CheckToken(','))
@@ -298,15 +296,13 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 				if (scanner.CheckToken(','))
 				{
 					scanner.MustGetToken(TK_StringConst);
-					key = Z_Strdup(scanner.string);
-					key[0] = tolower(key[0]);
+					key = tolower(scanner.string[0]);
 				}
 			}
 
-			M_AddEpisode(mape->mapname, lumpname, alttext, key);
+			dsda_AddEpisode(mape->mapname, alttext, lumpname, key, false);
 
 			if (alttext) Z_Free(alttext);
-			if (key) Z_Free(key);
 		}
 	}
 	else if (!stricmp(pname, "bossaction"))

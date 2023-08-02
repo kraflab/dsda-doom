@@ -78,6 +78,7 @@
 #include "f_finale.h"
 #include "e6y.h"//e6y
 
+#include "dsda/episode.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/font.h"
@@ -589,91 +590,21 @@ void M_DrawReadThis2(void)
 // EPISODE SELECT
 //
 
-//
-// episodes_e provides numbers for the episode menu items. The default is
-// 4, to accomodate Ultimate Doom. If the user is running anything else,
-// this is accounted for in the code.
-//
-
-enum
-{
-  ep1,
-  ep2,
-  ep3,
-  ep4,
-  ep_end
-} episodes_e;
-
 // The definitions of the Episodes menu
-
-menuitem_t EpisodeMenu[]=  // added a few free entries for UMAPINFO
-{
-  {1,"M_EPI1", M_Episode,'k'},
-  {1,"M_EPI2", M_Episode,'t'},
-  {1,"M_EPI3", M_Episode,'i'},
-  {1,"M_EPI4", M_Episode,'t'},
-  {1,"", M_Episode,'0'},
-  {1,"", M_Episode,'0'},
-  {1,"", M_Episode,'0'},
-  {1,"", M_Episode,'0'}
-};
 
 menu_t EpiDef =
 {
-  ep_end,        // # of menu items
-  &MainDef,      // previous menu
-  EpisodeMenu,   // menuitem_t ->
-  M_DrawEpisode, // drawing routine ->
-  48,63,         // x,y
-  ep1            // lastOn
+  .prevMenu = &MainDef,
+  .routine = M_DrawEpisode,
+  .x = 48,
+  .y = 63,
 };
-
-// This is for customized episode menus
-int EpiCustom;
-short EpiMenuMap[8] = { 1, 1, 1, 1, -1, -1, -1, -1 }, EpiMenuEpi[8] = { 1,2,3,4,-1,-1,-1,-1 };
 
 //
 //    M_Episode
 //
-int epiChoice;
 
-void M_ClearEpisodes(void)
-{
-  EpiDef.numitems = 0;
-}
-
-void M_AddEpisode(const char *map, const char *gfx, const char *txt, const char *alpha)
-{
-  if (!EpiCustom)
-  {
-    EpiCustom = true;
-    SkillDef.prevMenu = &EpiDef;
-
-    if (gamemode == commercial || gamemission == chex)
-      EpiDef.numitems = 0;
-  }
-
-  {
-    int epi, mapnum;
-    if (EpiDef.numitems >= 8) return;
-    G_ValidateMapName(map, &epi, &mapnum);
-    EpiMenuEpi[EpiDef.numitems] = epi;
-    EpiMenuMap[EpiDef.numitems] = mapnum;
-    strncpy(EpisodeMenu[EpiDef.numitems].name, gfx, 8);
-    EpisodeMenu[EpiDef.numitems].name[8] = 0;
-    EpisodeMenu[EpiDef.numitems].alttext = txt ? Z_Strdup(txt) : NULL;
-    EpisodeMenu[EpiDef.numitems].alphaKey = alpha ? *alpha : 0;
-    EpiDef.numitems++;
-  }
-  if (EpiDef.numitems <= 4)
-  {
-    EpiDef.y = 63;
-  }
-  else
-  {
-    EpiDef.y = 63 - (EpiDef.numitems - 4) * (LINEHEIGHT / 2);
-  }
-}
+static int chosen_episode;
 
 void M_DrawEpisode(void)
 {
@@ -685,25 +616,17 @@ void M_DrawEpisode(void)
 
 void M_Episode(int choice)
 {
-  if (!EpiCustom)
-  {
-    if ((gamemode == shareware) && choice) {
-      M_StartMessage(s_SWSTRING, NULL, false); // Ty 03/27/98 - externalized
-      M_SetupNextMenu(&ReadDef1);
-      return;
-    }
-
-    // Yet another hack...
-    if ((gamemode == registered) && (choice > 2) && !EpiCustom)
-    {
-      lprintf(LO_WARN,
-        "M_Episode: 4th episode requires UltimateDOOM\n");
-      choice = 0;
-    }
+  if (gamemode == shareware && choice && !episodes[choice].vanilla) {
+    M_StartMessage(s_SWSTRING, NULL, false); // Ty 03/27/98 - externalized
+    M_SetupNextMenu(&ReadDef1);
+    return;
   }
-  epiChoice = choice;
+
+  chosen_episode = choice;
+
   if (hexen) // hack hexen class as "episode menu"
-    MN_UpdateClass(epiChoice);
+    MN_UpdateClass(chosen_episode);
+
   M_SetupNextMenu(&SkillDef);
 }
 
@@ -745,16 +668,36 @@ void M_NewGame(int choice)
   }
 
   // Chex Quest disabled the episode select screen, as did Doom II.
-  if ((((gamemode == commercial && !hexen) || gamemission == chex) && !EpiCustom) || EpiDef.numitems == 1)
+  if (num_episodes <= 1 && !hexen)
     M_SetupNextMenu(&SkillDef);
   else
-  {
-    epiChoice = 0;
     M_SetupNextMenu(&EpiDef);
-  }
 }
 
 static int chosen_skill;
+
+static void M_FinishGameSelection(void)
+{
+  int episode, map;
+
+  if (num_episodes)
+  {
+    episode = episodes[chosen_episode].start_episode;
+    map = episodes[chosen_episode].start_map;
+  }
+  else
+  {
+    episode = 1;
+    map = 1;
+  }
+
+  G_DeferedInitNew(chosen_skill, episode, map);
+
+  if (hexen)
+    SB_SetClassData();
+
+  M_ClearMenus();
+}
 
 // CPhipps - static
 static void M_VerifySkill(int ch)
@@ -762,17 +705,14 @@ static void M_VerifySkill(int ch)
   if (ch != 'y')
     return;
 
-  G_DeferedInitNew(chosen_skill, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
-
-  if (hexen)
-    SB_SetClassData();
-
-  M_ClearMenus ();
+  M_FinishGameSelection();
 }
 
 void M_ChooseSkill(int choice)
 {
   extern skill_info_t *skill_infos;
+
+  chosen_skill = choice;
 
   if (choice < num_skills && skill_infos[choice].flags & SI_MUST_CONFIRM)
   {
@@ -783,20 +723,12 @@ void M_ChooseSkill(int choice)
     else
       message = s_NIGHTMARE; // Ty 03/27/98 - externalized
 
-    chosen_skill = choice;
-
     M_StartMessage(message, M_VerifySkill, true);
 
     return;
   }
 
-  if (EpiMenuEpi[epiChoice] == -1 || EpiMenuMap[epiChoice] == -1)
-    return;  // There is no map to start here.
-
-  G_DeferedInitNew(choice, EpiMenuEpi[epiChoice], EpiMenuMap[epiChoice]);
-  if (hexen)
-    SB_SetClassData();
-  M_ClearMenus ();
+  M_FinishGameSelection();
 }
 
 /////////////////////////////
@@ -5585,35 +5517,71 @@ dboolean M_Responder (event_t* ev) {
 
 static void M_InitializeSkillMenu(void)
 {
-  DO_ONCE
-    extern skill_info_t *skill_infos;
-    int i;
+  extern skill_info_t *skill_infos;
+  int i;
 
-    SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
+  SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
 
-    SkillDef.numitems = num_skills;
-    SkillDef.menuitems = Z_Calloc(num_skills, sizeof(*SkillDef.menuitems));
+  SkillDef.numitems = num_skills;
+  SkillDef.menuitems = Z_Calloc(num_skills, sizeof(*SkillDef.menuitems));
 
-    for (i = 0; i < num_skills; ++i)
+  for (i = 0; i < num_skills; ++i)
+  {
+    SkillDef.menuitems[i].status = 1;
+
+    if (skill_infos[i].pic_name)
+      strncpy(SkillDef.menuitems[i].name, skill_infos[i].pic_name, 8);
+
+    SkillDef.menuitems[i].alttext = skill_infos[i].name;
+    SkillDef.menuitems[i].color = skill_infos[i].text_color;
+
+    SkillDef.menuitems[i].routine = M_ChooseSkill;
+    SkillDef.menuitems[i].alphaKey = skill_infos[i].key;
+
+    if (skill_infos[i].flags & SI_DEFAULT_SKILL)
+      SkillDef.lastOn = i;
+  }
+
+  if (SkillDef.lastOn >= num_skills)
+    SkillDef.lastOn = num_skills - 1;
+}
+
+static void M_InitializeEpisodeMenu(void)
+{
+  int i;
+
+  EpiDef.numitems = num_episodes;
+  EpiDef.menuitems = Z_Calloc(num_episodes, sizeof(*EpiDef.menuitems));
+
+  for (i = 0; i < num_episodes; ++i)
+  {
+    EpiDef.menuitems[i].status = 1;
+
+    if (episodes[i].pic_name)
+      strncpy(EpiDef.menuitems[i].name, episodes[i].pic_name, 8);
+
+    EpiDef.menuitems[i].alttext = episodes[i].name;
+
+    EpiDef.menuitems[i].routine = M_Episode;
+    EpiDef.menuitems[i].alphaKey = episodes[i].key;
+  }
+
+  if (!raven)
+  {
+    if (EpiDef.numitems <= 4)
     {
-      SkillDef.menuitems[i].status = 1;
-
-      if (skill_infos[i].pic_name)
-        strncpy(SkillDef.menuitems[i].name, skill_infos[i].pic_name, 8);
-
-      SkillDef.menuitems[i].alttext = skill_infos[i].name;
-      SkillDef.menuitems[i].color = skill_infos[i].text_color;
-
-      SkillDef.menuitems[i].routine = M_ChooseSkill;
-      SkillDef.menuitems[i].alphaKey = skill_infos[i].key;
-
-      if (skill_infos[i].flags & SI_DEFAULT_SKILL)
-        SkillDef.lastOn = i;
+      EpiDef.y = 63;
     }
+    else
+    {
+      EpiDef.y = 63 - (EpiDef.numitems - 4) * (LINEHEIGHT / 2);
+    }
+  }
 
-    if (SkillDef.lastOn >= num_skills)
-      SkillDef.lastOn = num_skills - 1;
-  END_ONCE
+  if (num_episodes > 1)
+    SkillDef.prevMenu = &EpiDef;
+  else
+    SkillDef.prevMenu = &MainDef;
 }
 
 void M_StartControlPanel (void)
@@ -5623,21 +5591,10 @@ void M_StartControlPanel (void)
   if (menuactive)
     return;
 
-  M_InitializeSkillMenu();
-
-  // e6y
-  // We need to remove the fourth episode for pre-ultimate complevels.
-  // It is located here instead of M_Init() because of TNTCOMP cheat.
-  if (!raven && !EpiCustom)
-  {
-    EpiDef.numitems = ep_end;
-    if (gamemode != commercial
-      && (compatibility_level < ultdoom_compatibility
-        || !W_LumpNameExists(EpiDef.menuitems[ep4].name)))
-    {
-      EpiDef.numitems--;
-    }
-  }
+  DO_ONCE
+    M_InitializeSkillMenu();
+    M_InitializeEpisodeMenu();
+  END_ONCE
 
   M_ChangeMenu(&MainDef, mnact_float);
   itemOn = currentMenu->lastOn;   // JDC
@@ -6054,7 +6011,7 @@ void M_Init(void)
   //  like HELP1/2, and four episodes.
 
   switch(gamemode)
-    {
+  {
     case commercial:
       // This is used because DOOM 2 had only one HELP
       //  page. I use CREDIT as second page now, but
@@ -6062,8 +6019,6 @@ void M_Init(void)
       MainMenu[readthis] = MainMenu[quitdoom];
       MainDef.numitems--;
       MainDef.y += 8;
-      if (!EpiCustom)
-        SkillDef.prevMenu = &MainDef;
       ReadDef1.routine = M_DrawReadThis1;
       ReadDef1.x = 330;
       ReadDef1.y = 165;
@@ -6076,17 +6031,12 @@ void M_Init(void)
       // killough 2/21/98: Fix registered Doom help screen
       // killough 10/98: moved to second screen, moved up to the top
       ReadDef2.y = 15;
-      // fallthrough
-
-    case shareware:
-      // We need to remove the fourth episode.
-      EpiDef.numitems--;
       break;
+    case shareware:
     case retail:
-      // We are fine.
     default:
       break;
-    }
+  }
 
   M_InitHelpScreen();   // init the help screen       // phares 4/08/98
   M_InitExtendedHelp(); // init extended help screens // phares 3/30/98

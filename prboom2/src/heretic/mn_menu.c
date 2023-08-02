@@ -54,10 +54,7 @@ extern menu_t OptionsDef;
 extern menu_t SoundDef;
 extern menu_t LoadDef;
 extern menu_t SaveDef;
-extern menuitem_t EpisodeMenu[];
 extern menuitem_t SoundMenu[];
-extern short EpiMenuMap[];
-extern short EpiMenuEpi[];
 
 void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 
@@ -101,28 +98,9 @@ void MN_Init(void)
     SkillDef.x = 38;
     SkillDef.y = 30;
 
-    EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
-    EpisodeMenu[1].alttext = "HELL'S MAW";
-    EpisodeMenu[2].alttext = "THE DOME OF D'SPARIL";
-    EpisodeMenu[3].alttext = "THE OSSUARY";
-    EpisodeMenu[4].alttext = "THE STAGNANT DEMESNE";
-
     if (gamemode == retail)
     {
-      EpiMenuEpi[3] = 4;
-      EpiMenuEpi[4] = 5;
-      EpiMenuMap[3] = 1;
-      EpiMenuMap[4] = 1;
-      EpiDef.numitems = 5;
       EpiDef.y -= ITEM_HEIGHT;
-    }
-    else
-    {
-      EpiMenuEpi[3] = -1;
-      EpiMenuEpi[4] = -1;
-      EpiMenuMap[3] = -1;
-      EpiMenuMap[4] = -1;
-      EpiDef.numitems = 3;
     }
   }
   else
@@ -132,15 +110,6 @@ void MN_Init(void)
 
     SkillDef.x = 120;
     SkillDef.y = 44;
-
-    EpisodeMenu[0].alttext = "FIGHTER";
-    EpisodeMenu[1].alttext = "CLERIC";
-    EpisodeMenu[2].alttext = "MAGE";
-
-    EpiMenuEpi[1] = 1;
-    EpiMenuEpi[2] = 1;
-
-    EpiDef.numitems = 3;
   }
 
   SoundMenu[0].alttext = "SFX VOLUME";

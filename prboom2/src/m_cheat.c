@@ -478,8 +478,6 @@ static void cheat_behold()
   dsda_AddMessage(s_STSTR_BEHOLD);
 }
 
-extern int EpiCustom;
-
 // 'clev' change-level cheat
 static void cheat_clev(char buf[3])
 {
