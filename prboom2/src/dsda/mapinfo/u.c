@@ -53,6 +53,10 @@ static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
   return NULL;
 }
 
+int dsda_UNameToMap(int* found, const char* name, int* episode, int* map) {
+  return false;
+}
+
 int dsda_UFirstMap(int* episode, int* map) {
   return false;
 }

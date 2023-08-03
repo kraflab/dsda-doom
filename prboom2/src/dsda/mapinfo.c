@@ -34,32 +34,20 @@
 map_info_t map_info;
 
 int dsda_NameToMap(const char* name, int* episode, int* map) {
-  char name_upper[9];
-  int episode_from_name = -1;
-  int map_from_name = -1;
+  int found;
 
-  if (strlen(name) > 8)
-    return false;
+  if (dsda_DoomNameToMap(&found, name, episode, map))
+    return found;
 
-  strncpy(name_upper, name, 8);
-  name_upper[8] = 0;
-  M_Strupr(name_upper);
+  if (dsda_HexenNameToMap(&found, name, episode, map))
+    return found;
 
-  if (gamemode != commercial) {
-    if (sscanf(name_upper, "E%dM%d", &episode_from_name, &map_from_name) != 2)
-      return false;
-  }
-  else {
-    if (sscanf(name_upper, "MAP%d", &map_from_name) != 1)
-      return false;
+  if (dsda_UNameToMap(&found, name, episode, map))
+    return found;
 
-    episode_from_name = 1;
-  }
+  dsda_LegacyNameToMap(&found, name, episode, map);
 
-  *episode = episode_from_name;
-  *map = map_from_name;
-
-  return true;
+  return found;
 }
 
 void dsda_FirstMap(int* episode, int* map) {

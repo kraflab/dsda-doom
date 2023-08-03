@@ -23,6 +23,7 @@
 #include "dsda/mapinfo.h"
 #include "dsda/utility.h"
 
+int dsda_DoomNameToMap(int* found, const char* name, int* episode, int* map);
 int dsda_DoomFirstMap(int* episode, int* map);
 int dsda_DoomNewGameMap(int* episode, int* map);
 int dsda_DoomResolveWarp(int* args, int arg_count, int* episode, int* map);

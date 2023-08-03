@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "m_misc.h"
 #include "p_setup.h"
 #include "r_data.h"
 #include "s_sound.h"
@@ -27,6 +28,46 @@
 #include "dsda/mapinfo.h"
 
 #include "legacy.h"
+
+int dsda_LegacyNameToMap(int* found, const char* name, int* episode, int* map) {
+  char name_upper[9];
+  int episode_from_name = -1;
+  int map_from_name = -1;
+
+  if (strlen(name) > 8) {
+    *found = false;
+
+    return true;
+  }
+
+  strncpy(name_upper, name, 8);
+  name_upper[8] = 0;
+  M_Strupr(name_upper);
+
+  if (gamemode != commercial) {
+    if (sscanf(name_upper, "E%dM%d", &episode_from_name, &map_from_name) != 2) {
+      *found = false;
+
+      return true;
+    }
+  }
+  else {
+    if (sscanf(name_upper, "MAP%d", &map_from_name) != 1) {
+      *found = false;
+
+      return true;
+    }
+
+    episode_from_name = 1;
+  }
+
+  *found = true;
+
+  *episode = episode_from_name;
+  *map = map_from_name;
+
+  return true;
+}
 
 int dsda_LegacyFirstMap(int* episode, int* map) {
   int i, j, lump;

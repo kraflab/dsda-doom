@@ -74,6 +74,26 @@ static doom_mapinfo_map_t* dsda_DoomMapEntryByName(const char* name) {
   return NULL;
 }
 
+int dsda_DoomNameToMap(int* found, const char* name, int* episode, int* map) {
+  const doom_mapinfo_map_t* entry;
+
+  if (!doom_mapinfo.loaded)
+    return false;
+
+  entry = dsda_DoomMapEntryByName(name);
+
+  if (!entry)
+    *found = false;
+  else {
+    *found = true;
+
+    *episode = 1;
+    *map = entry->level_num;
+  }
+
+  return true;
+}
+
 int dsda_DoomFirstMap(int* episode, int* map) {
   return false; // TODO
 }

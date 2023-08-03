@@ -128,6 +128,10 @@ static int P_TranslateMap(int map) {
   return -1;
 }
 
+int dsda_HexenNameToMap(int* found, const char* name, int* episode, int* map) {
+  return false;
+}
+
 int dsda_HexenFirstMap(int* episode, int* map) {
   if (!hexen)
     return false;

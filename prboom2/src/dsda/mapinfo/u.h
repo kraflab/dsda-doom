@@ -23,6 +23,7 @@
 #include "dsda/mapinfo.h"
 #include "dsda/utility.h"
 
+int dsda_UNameToMap(int* found, const char* name, int* episode, int* map);
 int dsda_UFirstMap(int* episode, int* map);
 int dsda_UNewGameMap(int* episode, int* map);
 int dsda_UResolveWarp(int* args, int arg_count, int* episode, int* map);
