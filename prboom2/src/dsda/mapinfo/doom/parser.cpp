@@ -568,7 +568,7 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
     else if (!stricmp(scanner.string, "Key")) {
       scanner.MustGetToken('=');
       scanner.MustGetToken(TK_StringConst);
-      skill.key = scanner.string[0];
+      skill.key = tolower(scanner.string[0]);
     }
     else if (!stricmp(scanner.string, "MustConfirm")) {
       if (scanner.CheckToken('=')) {
@@ -692,7 +692,7 @@ static void dsda_ParseDoomMapInfoEpisode(Scanner &scanner) {
     else if (!stricmp(scanner.string, "Key")) {
       scanner.MustGetToken('=');
       scanner.MustGetToken(TK_StringConst);
-      episode.key = scanner.string[0];
+      episode.key = tolower(scanner.string[0]);
     }
     else {
       dsda_SkipValue(scanner);
