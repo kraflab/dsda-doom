@@ -608,6 +608,9 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
     else if (!stricmp(scanner.string, "EasyBossBrain")) {
       skill.flags |= DSI_EASY_BOSS_BRAIN;
     }
+    else {
+      dsda_SkipValue(scanner);
+    }
   }
 
   doom_mapinfo_skills.push_back(skill);
@@ -645,6 +648,9 @@ static void dsda_ParseDoomMapInfoCluster(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "Pic")) {
       SCAN_STRING(cluster.pic);
+    }
+    else {
+      dsda_SkipValue(scanner);
     }
   }
 
@@ -687,6 +693,9 @@ static void dsda_ParseDoomMapInfoEpisode(Scanner &scanner) {
       scanner.MustGetToken('=');
       scanner.MustGetToken(TK_StringConst);
       episode.key = scanner.string[0];
+    }
+    else {
+      dsda_SkipValue(scanner);
     }
   }
 
