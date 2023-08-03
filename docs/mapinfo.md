@@ -18,8 +18,8 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | Key           | Status             |
 | ------------- | ------------------ |
 | cluster       | :heavy_check_mark: |
-| clearepisodes | :telescope:        |
-| episode       | :telescope:        |
+| clearepisodes | :heavy_check_mark: |
+| episode       | :heavy_check_mark: |
 | map           | :heavy_check_mark: |
 | defaultmap    | :heavy_check_mark: |
 | adddefaultmap | :heavy_check_mark: |
@@ -87,9 +87,9 @@ The `Passover` and `NoPassover` fields are new. ZDoom has different defaults and
 
 | Key               | Status             |
 | ----------------- | ------------------ |
-| Name              | :telescope: |
-| PicName           | :telescope: |
-| Key               | :telescope: |
+| Name              | :heavy_check_mark: |
+| PicName           | :heavy_check_mark: |
+| Key               | :heavy_check_mark: |
 
 ### Skill Properties
 
