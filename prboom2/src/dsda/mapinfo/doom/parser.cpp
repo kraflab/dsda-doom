@@ -457,8 +457,6 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
   STR_DUP(map.lump_name);
 
-  // TODO: see if map is already defined and replace it
-
   // Lookup via a separate lump is not supported, so use the key instead
   if (scanner.CheckToken(TK_Identifier)) {
     if (!stricmp(scanner.string, "lookup"))
@@ -478,6 +476,14 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
   for (auto &old_map : doom_mapinfo_maps)
     if (old_map.level_num == map.level_num)
       old_map.level_num = 0;
+
+  for (auto &old_map : doom_mapinfo_maps)
+    if (!stricmp(old_map.lump_name, map.lump_name)) {
+      dsda_ResetMap(old_map);
+      old_map = map;
+
+      return;
+    }
 
   doom_mapinfo_maps.push_back(map);
 }
@@ -534,8 +540,6 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
 
   scanner.MustGetToken(TK_Identifier);
   STR_DUP(skill.unique_id);
-
-  // TODO: check unique id uniqueness
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
@@ -612,6 +616,14 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
       dsda_SkipValue(scanner);
     }
   }
+
+  for (auto &old_skill : doom_mapinfo_skills)
+    if (!stricmp(old_skill.unique_id, skill.unique_id)) {
+      dsda_FreeSkill(old_skill);
+      old_skill = skill;
+
+      return;
+    }
 
   doom_mapinfo_skills.push_back(skill);
 }
