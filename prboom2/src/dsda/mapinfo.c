@@ -51,6 +51,9 @@ int dsda_NameToMap(const char* name, int* episode, int* map) {
 }
 
 void dsda_FirstMap(int* episode, int* map) {
+  if (dsda_DoomFirstMap(episode, map))
+    return;
+
   if (dsda_HexenFirstMap(episode, map))
     return;
 

@@ -26,6 +26,7 @@
 #include "w_wad.h"
 
 #include "dsda/args.h"
+#include "dsda/episode.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/mapinfo/doom/parser.h"
@@ -95,7 +96,17 @@ int dsda_DoomNameToMap(int* found, const char* name, int* episode, int* map) {
 }
 
 int dsda_DoomFirstMap(int* episode, int* map) {
-  return false; // TODO
+  if (!doom_mapinfo.loaded)
+    return false;
+
+  if (num_episodes)
+    *map = episodes[0].start_map;
+  else
+    *map = 1;
+
+  *episode = 1;
+
+  return true;
 }
 
 int dsda_DoomNewGameMap(int* episode, int* map) {
