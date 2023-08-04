@@ -64,6 +64,9 @@ void dsda_FirstMap(int* episode, int* map) {
 }
 
 void dsda_NewGameMap(int* episode, int* map) {
+  if (dsda_DoomNewGameMap(episode, map))
+    return;
+
   if (dsda_HexenNewGameMap(episode, map))
     return;
 
@@ -247,6 +250,9 @@ int dsda_ResolveCLEV(int* episode, int* map) {
 int dsda_ResolveINIT(void) {
   int init;
 
+  if (dsda_DoomResolveINIT(&init))
+    return init;
+
   if (dsda_HexenResolveINIT(&init))
     return init;
 
@@ -260,6 +266,9 @@ int dsda_ResolveINIT(void) {
 
 int dsda_MusicIndexToLumpNum(int music_index) {
   int lump;
+
+  if (dsda_DoomMusicIndexToLumpNum(&lump, music_index))
+    return lump;
 
   if (dsda_HexenMusicIndexToLumpNum(&lump, music_index))
     return lump;
@@ -451,6 +460,9 @@ int dsda_SkyTexture(void) {
 }
 
 void dsda_PrepareInitNew(void) {
+  if (dsda_DoomPrepareInitNew())
+    return;
+
   if (dsda_HexenPrepareInitNew())
     return;
 
@@ -574,6 +586,9 @@ void dsda_PrepareFinished(void) {
 int dsda_MapLightning(void) {
   int lightning;
 
+  if (dsda_DoomMapLightning(&lightning))
+    return lightning;
+
   if (dsda_HexenMapLightning(&lightning))
     return lightning;
 
@@ -586,6 +601,9 @@ int dsda_MapLightning(void) {
 }
 
 void dsda_ApplyFadeTable(void) {
+  if (dsda_DoomApplyFadeTable())
+    return;
+
   if (dsda_HexenApplyFadeTable())
     return;
 
@@ -597,6 +615,9 @@ void dsda_ApplyFadeTable(void) {
 
 int dsda_MapCluster(int map) {
   int cluster;
+
+  if (dsda_DoomMapCluster(&cluster, map))
+    return cluster;
 
   if (dsda_HexenMapCluster(&cluster, map))
     return cluster;
@@ -612,6 +633,9 @@ int dsda_MapCluster(int map) {
 short dsda_Sky1Texture(void) {
   short texture;
 
+  if (dsda_DoomSky1Texture(&texture))
+    return texture;
+
   if (dsda_HexenSky1Texture(&texture))
     return texture;
 
@@ -626,6 +650,9 @@ short dsda_Sky1Texture(void) {
 short dsda_Sky2Texture(void) {
   short texture;
 
+  if (dsda_DoomSky2Texture(&texture))
+    return texture;
+
   if (dsda_HexenSky2Texture(&texture))
     return texture;
 
@@ -638,6 +665,9 @@ short dsda_Sky2Texture(void) {
 }
 
 void dsda_InitSky(void) {
+  if (dsda_DoomInitSky())
+    return;
+
   if (dsda_HexenInitSky())
     return;
 
