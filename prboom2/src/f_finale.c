@@ -71,7 +71,6 @@ const char*   finalepatch;
 // Ty 03/22/98 - ... the new s_WHATEVER extern variables are used
 // in the code below instead.
 
-void    F_StartCast (void);
 void    F_CastTicker (void);
 dboolean F_CastResponder (event_t *ev);
 void    F_CastDrawer (void);
@@ -338,7 +337,7 @@ void F_Ticker(void)
             {
             next_level:
               if (F_ShowCast())
-                F_StartCast();              // cast of Doom 2 characters
+                F_StartCast(NULL, NULL, true); // cast of Doom 2 characters
               else
                 gameaction = ga_worlddone;  // next level, e.g. MAP07
             }
@@ -454,7 +453,7 @@ dboolean         castattacking;
 // F_StartCast
 //
 
-void F_StartCast (void)
+void F_StartCast (const char* background, const char* music, dboolean loop_music)
 {
   wipegamestate = -1;         // force a screen wipe
   castnum = 0;

@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "f_finale.h"
 #include "g_game.h"
 #include "lprintf.h"
 #include "p_enemy.h"
@@ -351,7 +352,6 @@ int dsda_DoomStartFinale(void) {
 int dsda_DoomFTicker(void) {
   void WI_checkForAccelerate(void);
   float Get_TextSpeed(void);
-  void F_StartCast (void);
 
   int next_level = false;
   const int TEXTSPEED = 3;
@@ -387,7 +387,7 @@ int dsda_DoomFTicker(void) {
   if (next_level) {
     if (end_data) {
       if (end_data->end == dmi_end_game_cast) {
-        F_StartCast(); // TODO: need to support cast in doom 1
+        F_StartCast(end_data->end_pic, end_data->music, end_data->loop_music);
         return false; // let go of finale ownership
       }
       else {

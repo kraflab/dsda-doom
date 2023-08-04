@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "f_finale.h"
 #include "g_game.h"
 #include "lprintf.h"
 #include "p_enemy.h"
@@ -228,7 +229,6 @@ int dsda_UStartFinale(void) {
 int dsda_UFTicker(void) {
   void WI_checkForAccelerate(void);
   float Get_TextSpeed(void);
-  void F_StartCast (void);
 
   int next_level = false;
   const int TEXTSPEED = 3;
@@ -263,7 +263,7 @@ int dsda_UFTicker(void) {
   if (next_level) {
     if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0)) {
       if (!stricmp(gamemapinfo->endpic, "$CAST")) {
-        F_StartCast();
+        F_StartCast(NULL, NULL, true);
         return false; // let go of finale ownership
       }
       else {
