@@ -209,7 +209,32 @@ void dsda_DoomUpdateNextMapInfo(void) {
 }
 
 int dsda_DoomResolveCLEV(int* clev, int* episode, int* map) {
-  return false; // TODO
+  const doom_mapinfo_map_t* entry;
+  int level_num;
+
+  if (!doom_mapinfo.loaded)
+    return false;
+
+  if (gamemode == commercial)
+    level_num = *map;
+  else
+    level_num = *map + *episode * 10;
+
+  entry = dsda_DoomMapEntry(level_num);
+
+  if (!entry || !W_LumpNameExists(entry->lump_name)) {
+    *clev = false;
+
+    doom_printf("IDCLEV target not found: %d", level_num);
+  }
+  else {
+    *clev = true;
+
+    *map = entry->level_num;
+    *episode = 1;
+  }
+
+  return true;
 }
 
 int dsda_DoomResolveINIT(int* init) {
