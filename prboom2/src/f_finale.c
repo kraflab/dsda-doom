@@ -440,6 +440,20 @@ static const castinfo_t castorder[] = { // CPhipps - static const, initialised h
   { NULL,         0}
   };
 
+// static const castinfo_t castorder_d1[] = {
+//   { &s_CC_ZOMBIE,  MT_POSSESSED },
+//   { &s_CC_SHOTGUN, MT_SHOTGUY },
+//   { &s_CC_IMP,     MT_TROOP },
+//   { &s_CC_DEMON,   MT_SERGEANT },
+//   { &s_CC_LOST,    MT_SKULL },
+//   { &s_CC_CACO,    MT_HEAD },
+//   { &s_CC_BARON,   MT_BRUISER },
+//   { &s_CC_SPIDER,  MT_SPIDER },
+//   { &s_CC_CYBER,   MT_CYBORG },
+//   { &s_CC_HERO,    MT_PLAYER },
+//   { NULL,         0}
+//   };
+
 int             castnum;
 int             casttics;
 state_t*        caststate;
