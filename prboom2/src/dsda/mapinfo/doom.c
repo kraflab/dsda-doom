@@ -99,7 +99,7 @@ int dsda_DoomFirstMap(int* episode, int* map) {
 }
 
 int dsda_DoomNewGameMap(int* episode, int* map) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomResolveWarp(int* args, int arg_count, int* episode, int* map) {
@@ -114,7 +114,7 @@ int dsda_DoomResolveWarp(int* args, int arg_count, int* episode, int* map) {
     return false;
 
   *map = entry->level_num;
-  *episode = 1; // TODO: warp episode
+  *episode = 1;
 
   return true;
 }
@@ -142,7 +142,7 @@ int dsda_DoomNextMap(int* episode, int* map) {
   }
   else {
     *map = entry->level_num;
-    *episode = 1; // TODO: next map episode
+    *episode = 1;
   }
 
   return true;
@@ -202,11 +202,11 @@ int dsda_DoomResolveCLEV(int* clev, int* episode, int* map) {
 }
 
 int dsda_DoomResolveINIT(int* init) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomMusicIndexToLumpNum(int* lump, int music_index) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomMapMusic(int* music_index, int* music_lump) {
@@ -447,7 +447,7 @@ int dsda_DoomSkyTexture(int* sky) {
 }
 
 int dsda_DoomPrepareInitNew(void) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomPrepareIntermission(int* result) {
@@ -477,7 +477,7 @@ int dsda_DoomPrepareIntermission(int* result) {
 
   if (map) {
     wminfo.next = map->level_num - 1;
-    wminfo.nextep = 0; // TODO: next ep
+    wminfo.nextep = 0;
   }
   else {
     wminfo.next = 0;
@@ -612,11 +612,11 @@ int dsda_DoomPrepareFinished(void) {
 }
 
 int dsda_DoomMapLightning(int* lightning) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomApplyFadeTable(void) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomMapCluster(int* cluster, int map) {
@@ -629,11 +629,11 @@ int dsda_DoomMapCluster(int* cluster, int map) {
 }
 
 int dsda_DoomSky1Texture(short* texture) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomSky2Texture(short* texture) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomGravity(fixed_t* gravity) {
@@ -655,7 +655,7 @@ int dsda_DoomAirControl(fixed_t* air_control) {
 }
 
 int dsda_DoomInitSky(void) {
-  return false; // TODO
+  return false;
 }
 
 int dsda_DoomMapFlags(map_info_flags_t* flags) {
