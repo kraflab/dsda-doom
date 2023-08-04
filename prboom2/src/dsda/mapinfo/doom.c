@@ -105,10 +105,10 @@ int dsda_DoomNewGameMap(int* episode, int* map) {
 int dsda_DoomResolveWarp(int* args, int arg_count, int* episode, int* map) {
   const doom_mapinfo_map_t* entry;
 
-  if (!doom_mapinfo.loaded)
+  if (!doom_mapinfo.loaded || !arg_count)
     return false;
 
-  entry = dsda_DoomMapEntry(*map);
+  entry = dsda_DoomMapEntry(args[0]);
 
   if (!entry)
     return false;
