@@ -33,6 +33,9 @@ typedef enum {
 typedef struct {
   char* map;
   char* end_pic;
+  char* end_pic_b;
+  char* music;
+  dboolean loop_music;
   dmi_end_t end;
 } doom_mapinfo_map_next_t;
 
