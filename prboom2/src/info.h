@@ -194,7 +194,7 @@ typedef enum
   SPR_BON3, // killough 7/11/98: evil sceptre in beta version
   SPR_BON4, // killough 7/11/98: unholy bible in beta version
   SPR_BLD2, // blood splats from Doom Retro, unsused in PrBoom+
-  DOOM_NUMSPRITES = SPR_BLD2 + 100,  /* counter of how many there are */
+  DOOM_NUMSPRITES = SPR_BLD2 + 101,  /* counter of how many there are */
 
   // heretic
   HERETIC_SPR_IMPX = 0,
