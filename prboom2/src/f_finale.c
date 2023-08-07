@@ -35,6 +35,7 @@
 #include "doomstat.h"
 #include "d_event.h"
 #include "g_game.h"
+#include "lprintf.h"
 #include "v_video.h"
 #include "w_wad.h"
 #include "s_sound.h"
@@ -419,7 +420,7 @@ typedef struct
   mobjtype_t   type;
 } castinfo_t;
 
-static const castinfo_t castorder[] = { // CPhipps - static const, initialised here
+static const castinfo_t castorder_d2[] = {
   { &s_CC_ZOMBIE,  MT_POSSESSED },
   { &s_CC_SHOTGUN, MT_SHOTGUY },
   { &s_CC_HEAVY,   MT_CHAINGUY },
@@ -437,38 +438,70 @@ static const castinfo_t castorder[] = { // CPhipps - static const, initialised h
   { &s_CC_SPIDER,  MT_SPIDER },
   { &s_CC_CYBER,   MT_CYBORG },
   { &s_CC_HERO,    MT_PLAYER },
-  { NULL,         0}
-  };
+  { NULL,          0 }
+};
 
-// static const castinfo_t castorder_d1[] = {
-//   { &s_CC_ZOMBIE,  MT_POSSESSED },
-//   { &s_CC_SHOTGUN, MT_SHOTGUY },
-//   { &s_CC_IMP,     MT_TROOP },
-//   { &s_CC_DEMON,   MT_SERGEANT },
-//   { &s_CC_LOST,    MT_SKULL },
-//   { &s_CC_CACO,    MT_HEAD },
-//   { &s_CC_BARON,   MT_BRUISER },
-//   { &s_CC_SPIDER,  MT_SPIDER },
-//   { &s_CC_CYBER,   MT_CYBORG },
-//   { &s_CC_HERO,    MT_PLAYER },
-//   { NULL,         0}
-//   };
+static const castinfo_t castorder_d1[] = {
+  { &s_CC_ZOMBIE,  MT_POSSESSED },
+  { &s_CC_SHOTGUN, MT_SHOTGUY },
+  { &s_CC_IMP,     MT_TROOP },
+  { &s_CC_DEMON,   MT_SERGEANT },
+  { &s_CC_LOST,    MT_SKULL },
+  { &s_CC_CACO,    MT_HEAD },
+  { &s_CC_BARON,   MT_BRUISER },
+  { &s_CC_SPIDER,  MT_SPIDER },
+  { &s_CC_CYBER,   MT_CYBORG },
+  { &s_CC_HERO,    MT_PLAYER },
+  { NULL,          0 }
+};
 
-int             castnum;
-int             casttics;
-state_t*        caststate;
-dboolean         castdeath;
-int             castframes;
-int             castonmelee;
-dboolean         castattacking;
+static const castinfo_t *castorder = castorder_d2;
 
+static int castnum;
+static int casttics;
+static state_t* caststate;
+static dboolean castdeath;
+static int castframes;
+static int castonmelee;
+static dboolean castattacking;
+static const char *castbackground;
 
 //
 // F_StartCast
 //
 
+static void F_StartCastMusic(const char* music, dboolean loop_music)
+{
+  if (music)
+  {
+    int lump = W_CheckNumForName(music);
+
+    if (lump != LUMP_NOT_FOUND)
+    {
+      S_ChangeMusInfoMusic(lump, loop_music);
+    }
+    else
+    {
+      lprintf(LO_WARN, "Finale cast music not found: %s\n", music);
+      S_StopMusic();
+    }
+  }
+  else if (gamemode == commercial)
+  {
+    S_ChangeMusic(mus_evil, loop_music);
+  }
+  else
+  {
+    lprintf(LO_WARN, "Finale cast music unspecified");
+    S_StopMusic();
+  }
+}
+
 void F_StartCast (const char* background, const char* music, dboolean loop_music)
 {
+  castorder = (gamemode == commercial ? castorder_d2 : castorder_d1);
+  castbackground = (background ? background : bgcastcall);
+
   wipegamestate = -1;         // force a screen wipe
   castnum = 0;
   caststate = &states[mobjinfo[castorder[castnum].type].seestate];
@@ -478,7 +511,8 @@ void F_StartCast (const char* background, const char* music, dboolean loop_music
   castframes = 0;
   castonmelee = 0;
   castattacking = false;
-  S_ChangeMusic(mus_evil, true);
+
+  F_StartCastMusic(music, loop_music);
 }
 
 
@@ -679,7 +713,7 @@ void F_CastDrawer (void)
   V_ClearBorder();
   // erase the entire screen to a background
   // CPhipps - patch drawing updated
-  V_DrawNamePatch(0,0,0, bgcastcall, CR_DEFAULT, VPT_STRETCH); // Ty 03/30/98 bg texture extern
+  V_DrawNamePatch(0,0,0, castbackground, CR_DEFAULT, VPT_STRETCH); // Ty 03/30/98 bg texture extern
 
   F_CastPrint (*(castorder[castnum].name));
 
