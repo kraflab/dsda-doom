@@ -533,7 +533,7 @@ int dsda_DoomPrepareIntermission(int* result) {
   if (!map) {
     end_data = next;
 
-    if (!end_data)
+    if (!end_data->end_pic && !end_data->end)
       end_data = &default_end_data;
   }
   else
