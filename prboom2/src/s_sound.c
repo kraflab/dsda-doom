@@ -593,6 +593,20 @@ void S_StartMusic(int m_id)
   S_ChangeMusic(m_id, false);
 }
 
+dboolean S_ChangeMusicByName(const char *name, dboolean looping)
+{
+  int lump = W_CheckNumForName(name);
+
+  if (lump == LUMP_NOT_FOUND)
+  {
+    S_StopMusic();
+    return false;
+  }
+
+  S_ChangeMusInfoMusic(lump, looping);
+  return true;
+}
+
 void S_ChangeMusic(int musicnum, int looping)
 {
   musicinfo_t *music;
