@@ -490,12 +490,14 @@ int PUREFUNC R_TextureNumForName(const char *name)  // const added -- killough
   int i = R_CheckTextureNumForName(name);
   if (i == -1)
   {
-    int lump = W_GetNumForName("TEXTURE1");
-    const lumpinfo_t* info = W_GetLumpInfoByNum(lump);
-    lprintf(LO_INFO, "R_TextureNumForName: The file %s seems to be incompatible with \"%s\".\n",
-      info->wadfile->name,
-      (doomverstr ? doomverstr : "DOOM"));
-    I_Error("R_TextureNumForName: %.8s not found", name);
+    int lump;
+    const lumpinfo_t* info;
+
+    lump = W_GetNumForName("TEXTURE1");
+    info = W_GetLumpInfoByNum(lump);
+
+    I_Error("Texture not found: %.8s!\n%s seems to be incompatible with %s.\nAre you using the right IWAD?",
+            name, dsda_BaseName(info->wadfile->name), doomverstr);
   }
   return i;
 }
