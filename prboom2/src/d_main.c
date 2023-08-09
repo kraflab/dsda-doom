@@ -1551,7 +1551,7 @@ static void HandlePlayback(void)
   dsda_LoadExDemo(file);
 }
 
-const char* doomverstr = NULL;
+const char* doomverstr = "Unknown";
 
 static void EvaluateDoomVerStr(void)
 {
