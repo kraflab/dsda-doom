@@ -492,7 +492,7 @@ static void F_StartCastMusic(const char* music, dboolean loop_music)
   }
   else
   {
-    lprintf(LO_WARN, "Finale cast music unspecified");
+    lprintf(LO_WARN, "Finale cast music unspecified\n");
     S_StopMusic();
   }
 }
