@@ -147,11 +147,8 @@ int dsda_DoomNextMap(int* episode, int* map) {
   if (next)
     entry = dsda_DoomMapEntryByName(next);
 
-  // TODO: next map default
-  if (!entry) {
-    *episode = 1;
-    *map = 1;
-  }
+  if (!entry)
+    dsda_DoomFirstMap(episode, map);
   else {
     *map = entry->level_num;
     *episode = 1;
