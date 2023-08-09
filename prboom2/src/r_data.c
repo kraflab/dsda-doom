@@ -47,6 +47,7 @@
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/map_format.h"
+#include "dsda/utility.h"
 
 //
 // Graphics.
@@ -304,15 +305,13 @@ static void R_InitTextures (void)
 
   if (errors)
   {
-    const lumpinfo_t* info = W_GetLumpInfoByNum(names_lump);
-    lprintf(LO_ERROR, "\nR_InitTextures: The file %s seems to be incompatible with \"%s\".\n",
-      info->wadfile->name,
-      (doomverstr ? doomverstr : "DOOM"));
-    I_Error("R_InitTextures: %d errors", errors);
-  }
+    const lumpinfo_t* info;
 
-  if (errors)
-    I_Error("R_InitTextures: %d errors", errors);
+    info = W_GetLumpInfoByNum(names_lump);
+
+    I_Error("Texture errors: %d!\n%s seems to be incompatible with %s.\nAre you using the right IWAD?",
+            errors, dsda_BaseName(info->wadfile->name), doomverstr);
+  }
 
   // Create translation table for global animation.
   // killough 4/9/98: make column offsets 32-bit;
