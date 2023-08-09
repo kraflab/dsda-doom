@@ -474,17 +474,8 @@ static void F_StartCastMusic(const char* music, dboolean loop_music)
 {
   if (music)
   {
-    int lump = W_CheckNumForName(music);
-
-    if (lump != LUMP_NOT_FOUND)
-    {
-      S_ChangeMusInfoMusic(lump, loop_music);
-    }
-    else
-    {
+    if (!S_ChangeMusicByName(music, loop_music))
       lprintf(LO_WARN, "Finale cast music not found: %s\n", music);
-      S_StopMusic();
-    }
   }
   else if (gamemode == commercial)
   {
