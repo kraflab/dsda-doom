@@ -506,6 +506,32 @@ void F_StartCast (const char* background, const char* music, dboolean loop_music
   F_StartCastMusic(music, loop_music);
 }
 
+static const char* scrollpic1;
+static const char* scrollpic2;
+
+static void F_StartScrollMusic(const char* music, dboolean loop_music)
+{
+  if (music) {
+    if (!S_ChangeMusicByName(music, loop_music))
+      lprintf(LO_WARN, "Finale scroll music not found: %s\n", music);
+  }
+  else if (gamemode != commercial)
+    S_ChangeMusic(mus_bunny, loop_music);
+  else {
+    lprintf(LO_WARN, "Finale scroll music unspecified\n");
+    S_StopMusic();
+  }
+}
+
+void F_StartScroll (const char* right, const char* left, const char* music, dboolean loop_music)
+{
+  wipegamestate = -1; // force a wipe
+  scrollpic1 = right;
+  scrollpic2 = left;
+  finalestage = 1;
+
+  F_StartScrollMusic(music, loop_music);
+}
 
 //
 // F_CastTicker

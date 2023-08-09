@@ -387,12 +387,16 @@ int dsda_DoomFTicker(void) {
         F_StartCast(end_data->end_pic, end_data->music, end_data->loop_music);
         return false; // let go of finale ownership
       }
+      else if (end_data->end == dmi_end_game_scroll) {
+        F_StartScroll(end_data->end_pic, end_data->end_pic_b,
+                      end_data->music, end_data->loop_music);
+        return true; // keep finale ownership (TODO: why?)
+      }
       else {
         finalecount = 0;
         finalestage = 1;
         wipegamestate = -1; // force a wipe
-        if (end_data->end == dmi_end_game_scroll && gamemode != commercial)
-          S_StartMusic(mus_bunny); // TODO: what music in doom 2?
+
         return true; // keep finale ownership
       }
     }
