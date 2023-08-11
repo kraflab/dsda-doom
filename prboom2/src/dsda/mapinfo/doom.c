@@ -496,7 +496,8 @@ int dsda_DoomPrepareIntermission(int* result) {
   else {
     if (secretexit)
       next = &current_map->secret_next;
-    else // TODO: check default for secret exit without SecretNext data
+
+    if (!next || (!next->map && !next->end))
       next = &current_map->next;
 
     if (next->map)
