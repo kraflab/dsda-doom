@@ -7164,6 +7164,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
 
           flags = args[2] ? LF_SET_ANGLE : 0;
 
+          // TODO: this crashes if the map doesn't exist (gzdoom does a no-op)
           G_Completed(args[0], args[1], flags, mo->angle);
           buttonSuccess = 1;
         }

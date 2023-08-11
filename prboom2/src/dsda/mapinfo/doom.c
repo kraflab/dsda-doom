@@ -492,7 +492,7 @@ int dsda_DoomPrepareIntermission(int* result) {
     return false;
 
   if (leave_data.map > 0)
-    map = dsda_DoomMapEntry(leave_data.map); // TODO: what if this map doesn't exist?
+    map = dsda_DoomMapEntry(leave_data.map);
   else {
     if (secretexit)
       next = &current_map->secret_next;
