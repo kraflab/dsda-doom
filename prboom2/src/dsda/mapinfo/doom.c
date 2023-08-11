@@ -390,11 +390,11 @@ int dsda_DoomFTicker(void) {
       else if (end_data->end == dmi_end_game_scroll) {
         F_StartScroll(end_data->end_pic, end_data->end_pic_b,
                       end_data->music, end_data->loop_music);
-        return true; // keep finale ownership (TODO: why?)
+        return true; // keep finale ownership (legacy has game assumptions)
       }
       else {
         F_StartPostFinale();
-        return true; // keep finale ownership (TODO: why?)
+        return true; // keep finale ownership (legacy has game assumptions)
       }
     }
     else
