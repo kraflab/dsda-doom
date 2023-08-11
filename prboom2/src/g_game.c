@@ -4269,12 +4269,6 @@ void G_Completed(int map, int position, int flags, angle_t angle)
     dsda_UpdateLeaveData(map, position, flags, angle);
 }
 
-void G_TeleportNewMap(int map, int position)
-{
-    gameaction = ga_leavemap;
-    dsda_UpdateLeaveData(map, position, 0, 0);
-}
-
 void G_DoTeleportNewMap(void)
 {
     SV_MapTeleport(leave_data.map, leave_data.position);
