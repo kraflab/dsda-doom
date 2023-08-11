@@ -327,11 +327,10 @@ void F_Ticker(void)
           (midstage && acceleratestage)) {
         if (gamemode != commercial)       // Doom 1 / Ultimate Doom episode end
           {                               // with enough time, it's automatic
-            finalecount = 0;
-            finalestage = 1;
-            wipegamestate = -1;         // force a wipe
             if (gameepisode == 3)
-              S_StartMusic(mus_bunny);
+              F_StartScroll(NULL, NULL, NULL, true);
+            else
+              F_StartPostFinale();
           }
         else   // you must press a button to continue in Doom 2
           if (!demo_compatibility && midstage)
@@ -504,33 +503,6 @@ void F_StartCast (const char* background, const char* music, dboolean loop_music
   castattacking = false;
 
   F_StartCastMusic(music, loop_music);
-}
-
-static const char* scrollpic1;
-static const char* scrollpic2;
-
-static void F_StartScrollMusic(const char* music, dboolean loop_music)
-{
-  if (music) {
-    if (!S_ChangeMusicByName(music, loop_music))
-      lprintf(LO_WARN, "Finale scroll music not found: %s\n", music);
-  }
-  else if (gamemode != commercial)
-    S_ChangeMusic(mus_bunny, loop_music);
-  else {
-    lprintf(LO_WARN, "Finale scroll music unspecified\n");
-    S_StopMusic();
-  }
-}
-
-void F_StartScroll (const char* right, const char* left, const char* music, dboolean loop_music)
-{
-  wipegamestate = -1; // force a wipe
-  scrollpic1 = right;
-  scrollpic2 = left;
-  finalestage = 1;
-
-  F_StartScrollMusic(music, loop_music);
 }
 
 //
@@ -748,8 +720,36 @@ void F_CastDrawer (void)
 //
 // F_BunnyScroll
 //
-static const char pfub2[] = { "PFUB2" };
-static const char pfub1[] = { "PFUB1" };
+static const char* pfub1 = "PFUB1";
+static const char* pfub2 = "PFUB2";
+
+static const char* scrollpic1;
+static const char* scrollpic2;
+
+static void F_StartScrollMusic(const char* music, dboolean loop_music)
+{
+  if (music) {
+    if (!S_ChangeMusicByName(music, loop_music))
+      lprintf(LO_WARN, "Finale scroll music not found: %s\n", music);
+  }
+  else if (gamemode != commercial)
+    S_ChangeMusic(mus_bunny, loop_music);
+  else {
+    lprintf(LO_WARN, "Finale scroll music unspecified\n");
+    S_StopMusic();
+  }
+}
+
+void F_StartScroll (const char* right, const char* left, const char* music, dboolean loop_music)
+{
+  wipegamestate = -1; // force a wipe
+  scrollpic1 = right ? right : pfub1;
+  scrollpic2 = left ? left : pfub2;
+  finalecount = 0;
+  finalestage = 1;
+
+  F_StartScrollMusic(music, loop_music);
+}
 
 void F_BunnyScroll (void)
 {
@@ -817,6 +817,12 @@ void F_BunnyScroll (void)
   V_DrawNamePatch((320-13*8)/2, (200-8*8)/2, 0, name, CR_DEFAULT, VPT_STRETCH);
 }
 
+void F_StartPostFinale (void)
+{
+  finalecount = 0;
+  finalestage = 1;
+  wipegamestate = -1; // force a wipe
+}
 
 //
 // F_Drawer

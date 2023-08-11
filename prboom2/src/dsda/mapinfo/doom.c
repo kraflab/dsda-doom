@@ -393,11 +393,8 @@ int dsda_DoomFTicker(void) {
         return true; // keep finale ownership (TODO: why?)
       }
       else {
-        finalecount = 0;
-        finalestage = 1;
-        wipegamestate = -1; // force a wipe
-
-        return true; // keep finale ownership
+        F_StartPostFinale();
+        return true; // keep finale ownership (TODO: why?)
       }
     }
     else
