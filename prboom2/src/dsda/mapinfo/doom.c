@@ -411,7 +411,7 @@ void dsda_DoomFDrawer(void) {
   if (!finalestage || !end_data)
     F_TextWrite();
   else if (end_data->end == dmi_end_game_scroll)
-    F_BunnyScroll(); // TODO: need to support bunny in doom 2
+    F_BunnyScroll();
   else {
     // e6y: wide-res
     V_ClearBorder();
