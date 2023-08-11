@@ -761,8 +761,8 @@ void F_BunnyScroll (void)
   if (finalecount == 0)
   {
     const rpatch_t *p1, *p2;
-    p1 = R_PatchByName(pfub1);
-    p2 = R_PatchByName(pfub2);
+    p1 = R_PatchByName(scrollpic1);
+    p2 = R_PatchByName(scrollpic2);
 
     p2width = p2->width;
     if (p1->width == 320)
@@ -780,18 +780,21 @@ void F_BunnyScroll (void)
   {
     int scrolled = 320 - (finalecount-230)/2;
     if (scrolled <= 0) {
-      V_DrawNamePatch(0, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(0, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
     } else if (scrolled >= 320) {
-      V_DrawNamePatch(p1offset, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(p1offset, 0, 0, scrollpic1, CR_DEFAULT, VPT_STRETCH);
       if (p1offset > 0)
-        V_DrawNamePatch(-320, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNamePatch(-320, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
     } else {
-      V_DrawNamePatch(p1offset + 320 - scrolled, 0, 0, pfub1, CR_DEFAULT, VPT_STRETCH);
-      V_DrawNamePatch(-scrolled, 0, 0, pfub2, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(p1offset + 320 - scrolled, 0, 0, scrollpic1, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(-scrolled, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
     }
     if (p2width == 320)
       V_ClearBorder();
   }
+
+  if (gamemode == commercial)
+    return;
 
   if (finalecount < 1130)
     return;
