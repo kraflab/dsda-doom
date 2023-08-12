@@ -26,48 +26,63 @@ You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Sup
 | clearskills   | :heavy_check_mark: |
 | skill         | :heavy_check_mark: |
 
-### Map Properties
+### Map
 
-| Key                                | Status             |
-| ---------------------------------- | ------------------ |
-| LevelNum                           | :heavy_check_mark: |
-| Next                               | :heavy_check_mark: |
-| SecretNext                         | :heavy_check_mark: |
-| Cluster                            | :heavy_check_mark: |
-| Sky1                               | :heavy_check_mark: |
-| TitlePatch                         | :heavy_check_mark: |
-| Par                                | :heavy_check_mark: |
-| Music                              | :heavy_check_mark: |
-| ExitPic                            | :heavy_check_mark: |
-| EnterPic                           | :heavy_check_mark: |
-| InterMusic                         | :heavy_check_mark: |
-| BorderTexture                      | :heavy_check_mark: |
-| Gravity                            | :heavy_check_mark: |
-| AirControl                         | :heavy_check_mark: |
-| Author                             | :heavy_check_mark: |
-| SpecialAction                      | :heavy_check_mark: |
-| Intermission                       | :heavy_check_mark: |
-| NoIntermission                     | :heavy_check_mark: |
-| EvenLighting                       | :heavy_check_mark: |
-| SmoothLighting                     | :heavy_check_mark: |
-| AllowMonsterTelefrags              | :heavy_check_mark: |
-| ActivateOwnDeathSpecials           | :heavy_check_mark: |
-| KillerActivatesDeathSpecials       | :heavy_check_mark: |
-| StrictMonsterActivation            | :heavy_check_mark: |
-| LaxMonsterActivation               | :heavy_check_mark: |
-| MissileShootersActivateImpactLines | :heavy_check_mark: |
-| MissilesActivateImpactLines        | :heavy_check_mark: |
-| FilterStarts                       | :heavy_check_mark: |
-| AllowRespawn                       | :heavy_check_mark: |
-| NoJump                             | :heavy_check_mark: |
-| AllowJump                          | :heavy_check_mark: |
-| CheckSwitchRange                   | :heavy_check_mark: |
-| NoCheckSwitchRange                 | :heavy_check_mark: |
-| ResetHealth                        | :heavy_check_mark: |
-| ResetInventory                     | :heavy_check_mark: |
-| UsePlayerStartZ                    | :heavy_check_mark: |
-| NoPassover                         | :heavy_check_mark: |
-| Passover                           | :heavy_check_mark: |
+**map** **\<MapLump\>** **"\<NiceName\>" { _properties_ }**
+
+Defines a single map.
+The **MapLump** is the name of the marker lump for the map (e.g., E1M1).
+The **NiceName** is used on the automap and anywhere else to refer to the map in-game.
+
+```c
+// Example
+map MAP01 "My first map" {
+  property = value
+}
+```
+
+#### Map Properties
+
+| Key | Description |
+| --- | --- |
+| **LevelNum** | The number used in the **Teleport_NewMap** special and for warping (e.g., to record a demo). The default is based on the **MapLump** (e.g., MAP23 yields 23 and E1M8 yields 8). If multiple maps use the same **LevelNum**, only the last map will keep it. |
+| **Next** | The behavior when the normal exit is triggered. The following options are supported: <ul> <li>**"\<MapLump\>":** Enter the given map.</li> <li>**EndPic, "\<Lump\>":** End the game, displaying the given lump as an image.</li> <li>**"EndGame1":** End the game, displaying the image from Doom E1.</li>  <li>**"EndGame2":** End the game, displaying the image from Doom E2.</li>  <li>**"EndGame3":** End the game, displaying the horizontal scroller from Doom E3.</li>  <li>**"EndGame4":** End the game, displaying the image from Doom E4.</li>  <li>**"EndGameC":** End the game, displaying the cast from Doom 2.</li>  <li>**EndGame { _properties_ }:** End the game with custom properties: <ul> <li>**Pic = "\<Lump\>":** Display the given lump as an image. If combined with **Cast**, sets the cast background.</li> <li>**HScroll = "\<RightLump\>", "\<LeftLump\>":** Display the horizontal scroller using the given lumps as images.</li> <li>**Cast:** Display the cast.</li> <li>**Music = "\<Lump\>"[, \<Loop\>]:** Play the given lump as music. Optionally set whether the music should loop (1) or not (0). Music loops by default.</li> </ul> If multiple of **Pic**, **HScroll**, and **Cast** are used, only the last one will be used to decide the end game version. </li> </ul> |
+| **SecretNext** | The behavior when the secret exit is triggered. See the description of **Next** for options. |
+| **Cluster** | todo |
+| **Sky1** | todo |
+| **TitlePatch** | todo |
+| **Par** | todo |
+| **Music** | todo |
+| **ExitPic** | todo |
+| **EnterPic** | todo |
+| **InterMusic** | todo |
+| **BorderTexture** | todo |
+| **Gravity** | todo |
+| **AirControl** | todo |
+| **Author** | todo |
+| **SpecialAction** | todo |
+| **Intermission** | todo |
+| **NoIntermission** | todo |
+| **EvenLighting** | todo |
+| **SmoothLighting** | todo |
+| **AllowMonsterTelefrags** | todo |
+| **ActivateOwnDeathSpecials** | todo |
+| **KillerActivatesDeathSpecials** | todo |
+| **StrictMonsterActivation** | todo |
+| **LaxMonsterActivation** | todo |
+| **MissileShootersActivateImpactLines** | todo |
+| **MissilesActivateImpactLines** | todo |
+| **FilterStarts** | todo |
+| **AllowRespawn** | todo |
+| **NoJump** | todo |
+| **AllowJump** | todo |
+| **CheckSwitchRange** | todo |
+| **NoCheckSwitchRange** | todo |
+| **ResetHealth** | todo |
+| **ResetInventory** | todo |
+| **UsePlayerStartZ** | todo |
+| **NoPassover** | todo |
+| **Passover** | todo |
 
 #### Notes
 
