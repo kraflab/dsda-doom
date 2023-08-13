@@ -1,30 +1,10 @@
 ## MAPINFO
 
-This page tracks support for the MAPINFO lump, as seen in ZDoom. This is all a work in progress - the status of any feature (including whether or not it is planned) is subject to change. Only the "new" format of mapinfo is valid in dsda-doom (the curly braces).
+MAPINFO is a lump that allows authors to configure various properties of maps, clusters, episodes, and skills. DSDA-Doom supports a subset of the MAPINFO options that are supported by other ports - if a lump works in dsda-doom, it should also work fine in gzdoom, but not necessarily vice-versa. Only the "new" format of mapinfo is valid in dsda-doom (the curly braces). MAPINFO gives access to many features and flags of particular importance to UDMF maps, including its set of special actions and activation rules, jumping, gravity, and air control.
 
-### Current Status
+## Usage
 
-You can enable MAPINFO parsing via the `-debug_mapinfo` command line option. Support is currently experimental and various errors are present.
-
-### Legend
-
-| Symbol             | Meaning                        |
-| ------------------ | ------------------------------ |
-| :heavy_check_mark: | Feature is supported           |
-| :telescope:        | Feature is planned             |
-
-### Top Level Keys
-
-| Key           | Status             |
-| ------------- | ------------------ |
-| cluster       | :heavy_check_mark: |
-| clearepisodes | :heavy_check_mark: |
-| episode       | :heavy_check_mark: |
-| map           | :heavy_check_mark: |
-| defaultmap    | :heavy_check_mark: |
-| adddefaultmap | :heavy_check_mark: |
-| clearskills   | :heavy_check_mark: |
-| skill         | :heavy_check_mark: |
+By default, dsda-doom does not read MAPINFO. This is done for compatibility purposes, since the MAPINFO lump has been assumed to not be consumed by vanilla-compatible ports. For quick testing, you can temporarily enable MAPINFO parsing via the `-debug_mapinfo` command line option. To enable automatic MAPINFO parsing in your pwad, add a `DSDAPREF` lump containing the line `use_mapinfo` (plain text). See the full specification below.
 
 ### Map
 
@@ -59,7 +39,7 @@ Appends properties to the default map.
 
 #### Map Properties
 
-| Key | Description |
+| Property | Description |
 | --- | --- |
 | **LevelNum = \<Int\>** | The number used in the **Teleport_NewMap** special and for warping (e.g., to record a demo). The default is based on the **MapLump** (e.g., MAP23 yields 23 and E1M8 yields 8). If multiple maps use the same **LevelNum**, only the last map will keep it. |
 | **Next = _various_** | The behavior when the normal exit is triggered. The following options are supported: <ul> <li>**"\<MapLump\>":** Enter the given map.</li> <li>**EndPic, "\<Lump\>":** End the game, displaying the given lump as an image.</li> <li>**"EndGame1":** End the game, displaying the image from Doom E1.</li>  <li>**"EndGame2":** End the game, displaying the image from Doom E2.</li>  <li>**"EndGame3":** End the game, displaying the horizontal scroller from Doom E3.</li>  <li>**"EndGame4":** End the game, displaying the image from Doom E4.</li>  <li>**"EndGameC":** End the game, displaying the cast from Doom 2.</li>  <li>**EndGame { _properties_ }:** End the game with custom properties: <ul> <li>**Pic = "\<Lump\>":** Display the given lump as an image. If combined with **Cast**, sets the cast background.</li> <li>**HScroll = "\<RightLump\>", "\<LeftLump\>":** Display the horizontal scroller using the given lumps as images.</li> <li>**Cast:** Display the cast.</li> <li>**Music = "\<Lump\>"[, \<Loop\>]:** Play the given lump as music. Optionally set whether the music should loop (1) or not (0). Music loops by default.</li> </ul> If multiple of **Pic**, **HScroll**, and **Cast** are used, only the last one will be used to decide the end game version. </li> </ul> |
@@ -150,7 +130,7 @@ Defines a new skill level. The **ID** does not show up anywhere in-game. If two 
 
 #### Skill Properties
 
-| Key | Description |
+| Property | Description |
 | --- | --- |
 | **AmmoFactor = \<Float\>** | Sets the ammo pickup multiplier (2.0 means double ammo). |
 | **DamageFactor = \<Float\>** | Sets the player damage received multiplier (2.0 means double damage). |
