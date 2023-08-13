@@ -18,3 +18,5 @@ The value can be ommitted (assumed to be `1`).
 - `prefer_opengl`
   - Shows an alert for users in software rendering mode
   - Use this if your wad relies on opengl rendering tricks
+- `use_mapinfo`
+  - Turns on MAPINFO support

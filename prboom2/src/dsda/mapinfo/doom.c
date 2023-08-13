@@ -31,6 +31,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/mapinfo/doom/parser.h"
+#include "dsda/preferences.h"
 
 #include "doom.h"
 
@@ -564,7 +565,7 @@ int dsda_DoomPrepareFinale(int* result) {
 void dsda_DoomLoadMapInfo(void) {
   int p;
 
-  if (!dsda_Flag(dsda_arg_debug_mapinfo))
+  if (!dsda_Flag(dsda_arg_debug_mapinfo) && !dsda_UseMapinfo())
     return;
 
   p = -1;

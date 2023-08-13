@@ -27,6 +27,7 @@
 typedef struct {
   dboolean opengl;
   dboolean software;
+  dboolean mapinfo;
 } preferences_t;
 
 static preferences_t map_preferences;
@@ -61,6 +62,8 @@ void dsda_LoadWadPreferences(void) {
       wad_preferences.opengl = !!value;
     else if (!strcasecmp(key, "prefer_software"))
       wad_preferences.software = !!value;
+    else if (!strcasecmp(key, "use_mapinfo"))
+      wad_preferences.mapinfo = !!value;
     else
       lprintf(LO_WARN, "Unknown DSDAPREF key: %s\n", key);
   }
@@ -97,4 +100,8 @@ void dsda_PreferOpenGL(void) {
 
 void dsda_PreferSoftware(void) {
   map_preferences.software = true;
+}
+
+dboolean dsda_UseMapinfo(void) {
+  return wad_preferences.mapinfo;
 }
