@@ -262,10 +262,10 @@ static void dsda_ParseDoomMapInfoMapSky(Scanner &scanner, doom_mapinfo_sky_t &sk
   STR_DUP(sky.lump);
   if (scanner.CheckToken(',')) {
     scanner.MustGetFloat();
-    sky.scrollspeed = scanner.decimal;
+    // sky.scrollspeed = scanner.decimal;
   }
   else {
-    sky.scrollspeed = 0.0;
+    // sky.scrollspeed = 0.0;
   }
 }
 

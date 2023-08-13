@@ -41,7 +41,7 @@ typedef struct {
 
 typedef struct {
   char* lump;
-  float scrollspeed;
+  // float scrollspeed;
 } doom_mapinfo_sky_t;
 
 typedef struct {
