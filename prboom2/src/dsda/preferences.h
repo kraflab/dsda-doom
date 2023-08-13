@@ -18,6 +18,7 @@
 #ifndef __DSDA_PREFERENCES__
 #define __DSDA_PREFERENCES__
 
+void dsda_LoadWadPreferences(void);
 void dsda_HandleMapPreferences(void);
 void dsda_PreferOpenGL(void);
 void dsda_PreferSoftware(void);

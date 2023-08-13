@@ -69,10 +69,8 @@ void dsda_LoadWadPreferences(void) {
   Z_Free(lump);
 }
 
-void dsda_HandleWadPreferences(void) {
+static void dsda_HandleWadPreferences(void) {
   DO_ONCE
-    dsda_LoadWadPreferences();
-
     if (wad_preferences.opengl && V_IsSoftwareMode())
       dsda_AddAlert("This wad may have rendering errors\nin software mode!");
 

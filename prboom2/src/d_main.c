@@ -97,6 +97,7 @@
 #include "dsda/options.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
+#include "dsda/preferences.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
@@ -1937,6 +1938,7 @@ static void D_DoomMainSetup(void)
   lprintf(LO_DEBUG, "R_Init: Init DOOM refresh daemon - ");
   R_Init();
 
+  dsda_LoadWadPreferences();
   dsda_LoadMapInfo();
   dsda_InitSkills();
 
