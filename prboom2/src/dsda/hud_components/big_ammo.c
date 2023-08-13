@@ -31,6 +31,9 @@ static void dsda_DrawComponent(void) {
   player_t* player;
   ammotype_t ammo_type;
   int ammo;
+  int cm;
+  int ammopct = 0;
+  int max_ammo;
 
   if (hexen)
     return;
@@ -42,9 +45,24 @@ static void dsda_DrawComponent(void) {
     return;
 
   ammo = player->ammo[ammo_type];
+  max_ammo = player->maxammo[weaponinfo[player->readyweapon].ammo];
+
+  if (ammo == max_ammo)
+    cm = CR_LIGHTBLUE;
+  else {
+    if (max_ammo)
+        ammopct = (ammo * 100) / max_ammo;
+    if (ammopct < hud_ammo_red)
+      cm = CR_RED;
+    else
+      if (ammopct < hud_ammo_yellow)
+        cm = CR_GOLD;
+      else
+        cm = CR_GREEN;
+  }
 
   dsda_DrawBigNumber(local->component.x, local->component.y, PATCH_DELTA_X, 0,
-                     CR_DEFAULT, local->component.vpt, 3, ammo);
+                     cm, local->component.vpt, 3, ammo);
 }
 
 void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
