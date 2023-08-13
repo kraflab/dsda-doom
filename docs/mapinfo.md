@@ -104,23 +104,39 @@ Appends properties to the default map.
 
 The `Passover` and `NoPassover` fields are new. ZDoom has different defaults and expectations, where this behavior can be adjusted using zdoom's specific compatibility flags when _necessary_. In dsda-doom this is considered a feature rather than a compatibility and must be turned on explicitly by the author.
 
-### Cluster Properties
+### Cluster
 
-| Key               | Status             |
-| ----------------- | ------------------ |
-| EnterText         | :heavy_check_mark: |
-| ExitText          | :heavy_check_mark: |
-| Music             | :heavy_check_mark: |
-| Flat              | :heavy_check_mark: |
-| Pic               | :heavy_check_mark: |
+**cluster \<Number\> { _properties_ }**
 
-### Episode Properties
+Defines a cluster with the given number (used in the map definition). If two cluster definitions use the same **Number**, the second definition will overwrite the first.
 
-| Key               | Status             |
-| ----------------- | ------------------ |
-| Name              | :heavy_check_mark: |
-| PicName           | :heavy_check_mark: |
-| Key               | :heavy_check_mark: |
+#### Cluster Properties
+
+| Property | Description |
+| --- | --- |
+| **EnterText = "\<Message\>"** | Sets the message to display to the user when they exit another cluster and enter this one. Comma-separated values will create multi-line messages. |
+| **ExitText = "\<Message\>"** | Sets the message to display to the user when they exit this cluster and enter another one. Comma-separated values will create multi-line messages. **When leaving a cluster with an exit text and entering a cluster with an enter text, only the enter text is shown**. |
+| **Music = "\<Lump\>"** | Sets the music that plays during the text screen. |
+| **Flat = "\<Lump\>"** | Sets the background flat used during the text screen. |
+| **Pic = "\<Lump\>"** | Sets the background graphic used during the text screen (overrides the **Flat**). |
+
+### Episode
+
+**clearepisodes**
+
+Removes the existing episodes.
+
+**episode \<MapLump\> { _properties_ }**
+
+Defines an episode that starts on the given **MapLump**.
+
+#### Episode Properties
+
+| Property | Description |
+| --- | --- |
+| **Name = "\<String\>"** | The name of the episode in the menu. |
+| **PicName = "\<Lump\>"** | The graphic used for the episode in the menu (replaces the **Name** if every episode has a valid graphic). |
+| **Key = "\<Char\>"** | Sets the menu hotkey. |
 
 ### Skill
 
