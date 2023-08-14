@@ -191,6 +191,9 @@ void dsda_TrackConfigFeatures(void) {
 
   if (dsda_IntConfig(dsda_config_show_alive_monsters))
     dsda_TrackFeature(uf_showalive);
+
+  if (dsda_IntConfig(dsda_config_map_textured) || dsda_IntConfig(dsda_config_show_minimap))
+    dsda_TrackFeature(uf_advanced_map);
 }
 
 // TODO: migrate all kinds of stuff from M_Init
@@ -205,6 +208,7 @@ void dsda_UpdateStrictMode(void) {
   M_ChangeApplyPalette();
   dsda_RefreshExHudCoordinateDisplay();
   dsda_RefreshExHudCommandDisplay();
+  dsda_RefreshExHudMinimap();
   dsda_TrackConfigFeatures();
 }
 
@@ -341,7 +345,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_show_minimap] = {
     "dsda_show_minimap", dsda_config_show_minimap,
-    CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshExHudMinimap
+    CONF_BOOL(0), NULL, STRICT_INT(0), dsda_RefreshExHudMinimap
   },
   [dsda_config_show_level_splits] = {
     "dsda_show_level_splits", dsda_config_show_level_splits,
@@ -1030,7 +1034,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_map_textured] = {
     "map_textured", dsda_config_map_textured,
-    CONF_BOOL(1), NULL, NOT_STRICT, M_ChangeMapTextured
+    CONF_BOOL(1), NULL, STRICT_INT(0), M_ChangeMapTextured
   },
   [dsda_config_map_textured_trans] = {
     "map_textured_trans", dsda_config_map_textured_trans,

@@ -64,6 +64,7 @@ static const char* feature_names[64] = {
   [uf_join] = "Join",
   [uf_mouse_and_controller] = "Mouse and Controller",
   [uf_ghost] = "Ghost",
+  [uf_advanced_map] = "Advanced Map",
 };
 
 #define FEATURE_BIT(x) ((uint64_t) 1 << x)
