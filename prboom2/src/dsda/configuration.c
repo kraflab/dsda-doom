@@ -131,20 +131,6 @@ void dsda_InitExHud(void);
 void dsda_UpdateFreeText(void);
 void dsda_ResetAirControl(void);
 
-// TODO: migrate all kinds of stuff from M_Init
-
-// TODO: automatically go through strict list
-void dsda_UpdateStrictMode(void) {
-  I_Init2(); // side effect of realtic clock rate
-  M_ChangeSpeed(); // side effect of always sr50
-  dsda_InitKeyFrame();
-  M_ChangeSkyMode(); // affected by mouselook setting
-  HU_InitCrosshair();
-  M_ChangeApplyPalette();
-  dsda_RefreshExHudCoordinateDisplay();
-  dsda_RefreshExHudCommandDisplay();
-}
-
 void dsda_TrackConfigFeatures(void) {
   if (!demorecording)
     return;
@@ -205,6 +191,21 @@ void dsda_TrackConfigFeatures(void) {
 
   if (dsda_IntConfig(dsda_config_show_alive_monsters))
     dsda_TrackFeature(uf_showalive);
+}
+
+// TODO: migrate all kinds of stuff from M_Init
+
+// TODO: automatically go through strict list
+void dsda_UpdateStrictMode(void) {
+  I_Init2(); // side effect of realtic clock rate
+  M_ChangeSpeed(); // side effect of always sr50
+  dsda_InitKeyFrame();
+  M_ChangeSkyMode(); // affected by mouselook setting
+  HU_InitCrosshair();
+  M_ChangeApplyPalette();
+  dsda_RefreshExHudCoordinateDisplay();
+  dsda_RefreshExHudCommandDisplay();
+  dsda_TrackConfigFeatures();
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
