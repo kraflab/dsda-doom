@@ -138,6 +138,8 @@ static void dsda_CopyFactor(fixed_t* dest, const char* source) {
 }
 
 void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
+  memset(&skill_infos[i], 0, sizeof(skill_infos[i]));
+
   dsda_CopyFactor(&skill_infos[i].ammo_factor, info->ammo_factor);
   dsda_CopyFactor(&skill_infos[i].damage_factor, info->damage_factor);
   dsda_CopyFactor(&skill_infos[i].armor_factor, info->armor_factor);
@@ -186,8 +188,35 @@ void dsda_InitSkills(void) {
       skill_infos[i] = original_skill_infos[i];
   }
 
-  for (j = 0; j < doom_mapinfo.num_skills; ++j)
-    dsda_CopySkillInfo(i + j, &doom_mapinfo.skills[j]);
+  for (j = 0; j < doom_mapinfo.num_skills; ++j) {
+    if (!stricmp(doom_mapinfo.skills[j].unique_id, "baby")) {
+      dsda_CopySkillInfo(0, &doom_mapinfo.skills[j]);
+      --i;
+      --num_skills;
+    }
+    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "easy")) {
+      dsda_CopySkillInfo(1, &doom_mapinfo.skills[j]);
+      --i;
+      --num_skills;
+    }
+    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "normal")) {
+      dsda_CopySkillInfo(2, &doom_mapinfo.skills[j]);
+      --i;
+      --num_skills;
+    }
+    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "hard")) {
+      dsda_CopySkillInfo(3, &doom_mapinfo.skills[j]);
+      --i;
+      --num_skills;
+    }
+    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "nightmare")) {
+      dsda_CopySkillInfo(4, &doom_mapinfo.skills[j]);
+      --i;
+      --num_skills;
+    }
+    else
+      dsda_CopySkillInfo(i + j, &doom_mapinfo.skills[j]);
+  }
 }
 
 void dsda_RefreshGameSkill(void) {

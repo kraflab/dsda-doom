@@ -126,7 +126,7 @@ Removes the existing skill levels.
 
 **skill \<ID\> { _properties_ }**
 
-Defines a new skill level. The **ID** does not show up anywhere in-game. If two definitions use the same **ID**, the second definition will overwrite the first.
+Defines a new skill level. The **ID** does not show up anywhere in-game. If two definitions use the same **ID**, the second definition will overwrite the first. The default skill level IDs are **baby**, **easy**, **normal**, **hard**, and **nightmare**.
 
 #### Skill Properties
 
