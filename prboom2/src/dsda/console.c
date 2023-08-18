@@ -921,13 +921,13 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       char attr_s[4] = { 0 };
       char oper_s[5] = { 0 };
 
-      if (sscanf(conditions[i], "skip %i", &value) == 1) {
+      if (sscanf(conditions[i], " skip %i", &value) == 1) {
         if (value >= numlines || value < 0)
           return false;
 
         dsda_AddMiscBruteForceCondition(dsda_bf_line_skip, value);
       }
-      else if (sscanf(conditions[i], "act %i", &value) == 1) {
+      else if (sscanf(conditions[i], " act %i", &value) == 1) {
         if (value >= numlines || value < 0)
           return false;
 
@@ -964,7 +964,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_AddBruteForceCondition(attr_i, oper_i, value);
       }
-      else if (sscanf(conditions[i], "%3s %4s", attr_s, oper_s) == 2) {
+      else if (sscanf(conditions[i], " %3s %4s", attr_s, oper_s) == 2) {
         int attr_i, oper_i;
 
         for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
