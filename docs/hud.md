@@ -45,6 +45,8 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
 
 ### Components
 
+Unless otherwise specified, argument values are integers. For toggles, a 1 means on and a 0 means off. For example, `stat_totals 2 8 bottom_left 1 0 1` would turn off items but keep kills and secrets enabled.
+
 - `stat_totals`: shows the kills / secrets / items on the current map
   - Supports 4 arguments: `show_kills show_items show_secrets vertical`
   - `show_kills`: shows kills in the component
