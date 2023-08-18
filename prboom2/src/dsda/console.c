@@ -951,7 +951,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
             break;
 
         if (oper_i != dsda_bf_limit_trio_max) {
-          dsda_SetBruteForceTarget(attr_i, oper_i, value);
+          dsda_SetBruteForceTarget(attr_i, oper_i, value, true);
           continue;
         }
 
@@ -981,7 +981,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
         if (oper_i == dsda_bf_limit_duo_max)
           return false;
 
-        dsda_SetBruteForceTarget(attr_i, oper_i, 0);
+        dsda_SetBruteForceTarget(attr_i, oper_i, 0, false);
       }
       else {
         return false;

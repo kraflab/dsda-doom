@@ -446,17 +446,22 @@ void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
 }
 
 void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
-                              dsda_bf_limit_t limit, fixed_t value) {
+                              dsda_bf_limit_t limit, fixed_t value, dboolean has_value) {
   bf_target.attribute = attribute;
   bf_target.limit = limit;
   bf_target.value = value;
   bf_target.best_value = dsda_BFAttribute(attribute);
   bf_target.enabled = true;
 
-  lprintf(LO_INFO, "Set brute force target: %s %s %d\n",
-                   dsda_bf_attribute_names[attribute],
-                   dsda_bf_limit_names[limit],
-                   value);
+  if (has_value)
+    lprintf(LO_INFO, "Set brute force target: %s %s %d\n",
+                    dsda_bf_attribute_names[attribute],
+                    dsda_bf_limit_names[limit],
+                    value);
+  else
+    lprintf(LO_INFO, "Set brute force target: %s %s\n",
+                    dsda_bf_attribute_names[attribute],
+                    dsda_bf_limit_names[limit]);
 }
 
 static void dsda_SortIntPair(int* a, int* b) {
