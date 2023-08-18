@@ -330,7 +330,7 @@ fixed_t dsda_StringToFixed(const char* x)
   result = 0;
 
   sscanf(x, "%d.%3s", &result, frac);
-  negative = (result < 0);
+  negative = (x && x[0] == '-');
   result = abs(result);
   result <<= FRACBITS;
 
