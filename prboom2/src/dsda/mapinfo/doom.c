@@ -463,6 +463,15 @@ int dsda_DoomMapLumpName(const char** name, int episode, int map) {
   return true;
 }
 
+int dsda_DoomMapAuthor(const char** author) {
+  if (!current_map)
+    return false;
+
+  *author = current_map->author;
+
+  return true;
+}
+
 int dsda_DoomHUTitle(dsda_string_t* str) {
   if (!current_map)
     return false;

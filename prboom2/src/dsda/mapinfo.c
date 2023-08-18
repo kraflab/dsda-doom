@@ -445,6 +445,23 @@ void dsda_HUTitle(dsda_string_t* str) {
   dsda_LegacyHUTitle(str);
 }
 
+const char* dsda_MapAuthor(void) {
+  const char* author;
+
+  if (dsda_DoomMapAuthor(&author))
+    return author;
+
+  if (dsda_HexenMapAuthor(&author))
+    return author;
+
+  if (dsda_UMapAuthor(&author))
+    return author;
+
+  dsda_LegacyMapAuthor(&author);
+
+  return author;
+}
+
 int dsda_SkyTexture(void) {
   int sky;
 

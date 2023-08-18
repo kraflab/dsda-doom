@@ -82,6 +82,7 @@ int dsda_FTicker(void);
 int dsda_FDrawer(void);
 int dsda_BossAction(mobj_t* mo);
 const char* dsda_MapLumpName(int episode, int map);
+const char* dsda_MapAuthor(void);
 void dsda_HUTitle(dsda_string_t* str);
 int dsda_SkyTexture(void);
 void dsda_PrepareInitNew(void);

@@ -383,6 +383,12 @@ int dsda_LegacyMapLumpName(const char** name, int episode, int map) {
   return true;
 }
 
+int dsda_LegacyMapAuthor(const char** author) {
+  *author = NULL;
+
+  return true;
+}
+
 int dsda_LegacyHUTitle(dsda_string_t* str) {
   extern char** mapnames[];
   extern char** mapnames2[];

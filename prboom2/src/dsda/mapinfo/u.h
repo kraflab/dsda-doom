@@ -44,6 +44,7 @@ int dsda_UFTicker(void);
 void dsda_UFDrawer(void);
 int dsda_UBossAction(mobj_t* mo);
 int dsda_UMapLumpName(const char** name, int episode, int map);
+int dsda_UMapAuthor(const char** author);
 int dsda_UHUTitle(dsda_string_t* str);
 int dsda_USkyTexture(int* sky);
 int dsda_UPrepareInitNew(void);

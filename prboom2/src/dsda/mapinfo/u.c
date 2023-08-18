@@ -340,6 +340,15 @@ int dsda_UMapLumpName(const char** name, int episode, int map) {
   return false;
 }
 
+int dsda_UMapAuthor(const char** author) {
+  if (!gamemapinfo)
+    return false;
+
+  *author = gamemapinfo->author;
+
+  return true;
+}
+
 int dsda_UHUTitle(dsda_string_t* str) {
   const char* s;
 
