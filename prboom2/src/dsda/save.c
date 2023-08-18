@@ -38,29 +38,17 @@
 static char* dsda_base_save_dir;
 static char* dsda_wad_save_dir;
 
-#define TRACKING_SIZE sizeof(int)
+extern int dsda_max_kill_requirement;
+extern int player_damage_last_tic;
 
 static void dsda_ArchiveInternal(void) {
-  extern int dsda_max_kill_requirement;
-  int internal_size = sizeof(dsda_max_kill_requirement);
-
-  P_SAVE_X(internal_size);
   P_SAVE_X(dsda_max_kill_requirement);
+  P_SAVE_X(player_damage_last_tic);
 }
 
 static void dsda_UnArchiveInternal(void) {
-  extern int dsda_max_kill_requirement;
-  int internal_size;
-
-  P_LOAD_X(internal_size);
-
-  if (internal_size > 0)
-    P_LOAD_X(dsda_max_kill_requirement);
-
-  if (internal_size > TRACKING_SIZE)
-  {
-    save_p += internal_size - TRACKING_SIZE;
-  }
+  P_LOAD_X(dsda_max_kill_requirement);
+  P_LOAD_X(player_damage_last_tic);
 }
 
 static void dsda_ArchiveContext(void) {

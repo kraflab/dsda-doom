@@ -428,6 +428,8 @@ void dsda_WatchAfterLevelSetup(void) {
   dsda_ResetTrackers();
   dsda_ResetLineActivationTracker();
   dsda_WadStatsEnterMap();
+  player_damage_last_tic = 0;
+  player_damage_leveltime = 0;
 }
 
 void dsda_WatchNewLevel(void) {
