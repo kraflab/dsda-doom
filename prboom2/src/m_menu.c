@@ -700,9 +700,9 @@ static void M_FinishGameSelection(void)
 }
 
 // CPhipps - static
-static void M_VerifySkill(int ch)
+static void M_VerifySkill(dboolean affirmative)
 {
-  if (ch != 'y')
+  if (!affirmative)
     return;
 
   M_FinishGameSelection();
@@ -1152,9 +1152,9 @@ int quitsounds2[8] =
   sfx_sgtatk
 };
 
-static void M_QuitResponse(int ch)
+static void M_QuitResponse(dboolean affirmative)
 {
-  if (ch != 'y')
+  if (!affirmative)
     return;
 
   //e6y: I_SafeExit instead of exit - prevent recursive exits
@@ -1174,7 +1174,7 @@ void M_QuitDOOM(int choice)
     sprintf(endstring,"%s\n\n%s", endmsg[gametic%(NUM_QUITMESSAGES-1)+1], s_DOSY);
 
   if (dsda_SkipQuitPrompt())
-    M_QuitResponse('y');
+    M_QuitResponse(true);
   else
     M_StartMessage(endstring,M_QuitResponse,true);
 }
@@ -1334,9 +1334,9 @@ void M_QuickLoad(void)
 // M_EndGame
 //
 
-static void M_EndGameResponse(int ch)
+static void M_EndGameResponse(dboolean affirmative)
 {
-  if (ch != 'y')
+  if (!affirmative)
     return;
 
   // killough 5/26/98: make endgame quit if recording or playing back demo
@@ -5032,14 +5032,22 @@ dboolean M_Responder (event_t* ev) {
   // Take care of any messages that need input
 
   if (messageToPrint && ch != MENU_NULL) {
-    if (messageNeedsInput == true &&
-        !(ch == ' ' || ch == 'n' || ch == 'y' || ch == KEYD_ESCAPE)) // phares
-      return false;
+    dboolean affirmative = false;
+
+    if (messageNeedsInput == true)
+    { // phares
+      if (ch == 'y' || (!ch && action == MENU_ENTER))
+        affirmative = true;
+      else if (ch == ' ' || ch == KEYD_ESCAPE || ch == 'n' || (!ch && action == MENU_BACKSPACE))
+        affirmative = false;
+      else
+        return false;
+    }
 
     M_ChangeMenu(NULL, messageLastMenuActive);
     messageToPrint = 0;
     if (messageRoutine)
-      messageRoutine(ch);
+      messageRoutine(affirmative);
 
     M_ChangeMenu(NULL, mnact_inactive);
     S_StartVoidSound(g_sfx_swtchx);
