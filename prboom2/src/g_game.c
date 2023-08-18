@@ -110,6 +110,7 @@
 #include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
+#include "dsda/tracker.h"
 #include "dsda/split_tracker.h"
 #include "dsda/utility.h"
 
@@ -2380,6 +2381,8 @@ void RecalculateDrawnSubsectors(void)
 void G_AfterLoad(void)
 {
   extern int BorderNeedRefresh;
+
+  dsda_ResetTrackers();
 
   R_ActivateSectorInterpolations(); //e6y
   R_SmoothPlaying_Reset(NULL); // e6y
