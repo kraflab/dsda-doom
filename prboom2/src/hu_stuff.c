@@ -326,10 +326,24 @@ void HU_AnnounceMap(void)
 
     if (gamemap != last_gamemap || gameepisode != last_gameepisode)
     {
+      const char *author;
+
       last_gamemap = gamemap;
       last_gameepisode = gameepisode;
 
-      dsda_AddAlert(hud_title.string);
+      author = dsda_MapAuthor();
+      if (author && author[0])
+      {
+        dsda_string_t message;
+
+        dsda_StringPrintF(&message, "%s by %s", hud_title.string, author);
+        dsda_AddAlert(message.string);
+        dsda_FreeString(&message);
+      }
+      else
+      {
+        dsda_AddAlert(hud_title.string);
+      }
     }
   }
 }
