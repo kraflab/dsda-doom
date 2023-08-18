@@ -64,8 +64,10 @@ unsigned long long dsda_ElapsedTime(int timer) {
 
   clock_gettime(CLOCK_MONOTONIC, &now);
 
-  return (now.tv_nsec - dsda_time[timer].tv_nsec) / 1000 +
-         (now.tv_sec - dsda_time[timer].tv_sec) * 1000000;
+  return (unsigned long long) (
+           (signed long long) (now.tv_nsec - dsda_time[timer].tv_nsec) / 1000 +
+           (signed long long) (now.tv_sec - dsda_time[timer].tv_sec) * 1000000
+         );
 }
 
 unsigned long long dsda_ElapsedTimeMS(int timer) {
