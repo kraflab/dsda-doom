@@ -542,15 +542,12 @@ int dsda_KeepBruteForceFrame(int i) {
 
   brute_force[i].forwardmove.min = cmd.forwardmove;
   brute_force[i].forwardmove.max = cmd.forwardmove;
-  brute_force[i].forwardmove.i = cmd.forwardmove;
 
   brute_force[i].sidemove.min = cmd.sidemove;
   brute_force[i].sidemove.max = cmd.sidemove;
-  brute_force[i].sidemove.i = cmd.sidemove;
 
   brute_force[i].angleturn.min = cmd.angleturn >> 8;
   brute_force[i].angleturn.max = cmd.angleturn >> 8;
-  brute_force[i].angleturn.i = cmd.angleturn >> 8;
 
   brute_force[i].buttons = cmd.buttons;
 
@@ -571,15 +568,12 @@ int dsda_AddBruteForceFrame(int i,
 
   brute_force[i].forwardmove.min = forwardmove_min;
   brute_force[i].forwardmove.max = forwardmove_max;
-  brute_force[i].forwardmove.i = forwardmove_min;
 
   brute_force[i].sidemove.min = sidemove_min;
   brute_force[i].sidemove.max = sidemove_max;
-  brute_force[i].sidemove.i = sidemove_min;
 
   brute_force[i].angleturn.min = angleturn_min;
   brute_force[i].angleturn.max = angleturn_max;
-  brute_force[i].angleturn.i = angleturn_min;
 
   brute_force[i].buttons = buttons;
 
@@ -611,6 +605,10 @@ dboolean dsda_StartBruteForce(int depth) {
     bf_volume_max *= (brute_force[i].forwardmove.max - brute_force[i].forwardmove.min + 1) *
                      (brute_force[i].sidemove.max - brute_force[i].sidemove.min + 1) *
                      (brute_force[i].angleturn.max - brute_force[i].angleturn.min + 1);
+
+    brute_force[i].forwardmove.i = brute_force[i].forwardmove.min;
+    brute_force[i].sidemove.i = brute_force[i].sidemove.min;
+    brute_force[i].angleturn.i = brute_force[i].angleturn.min;
   }
 
   lprintf(LO_INFO, "Testing %lld sequences with depth %d\n\n", bf_volume_max, bf_depth);
