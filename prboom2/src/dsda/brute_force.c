@@ -103,6 +103,7 @@ const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
 const char* dsda_bf_misc_names[dsda_bf_misc_max] = {
   "line skip",
   "line activation",
+  "have item",
 };
 
 const char* dsda_bf_operator_names[dsda_bf_operator_max] = {
@@ -118,6 +119,25 @@ const char* dsda_bf_limit_names[dsda_bf_limit_max] = {
   "acap",
   "max",
   "min",
+};
+
+const char* dsda_bf_item_names[dsda_bf_item_max] = {
+  [dsda_bf_red_key_card] = "rkc",
+  [dsda_bf_yellow_key_card] = "ykc",
+  [dsda_bf_blue_key_card] = "bkc",
+  [dsda_bf_red_skull_key] = "rsk",
+  [dsda_bf_yellow_skull_key] = "ysk",
+  [dsda_bf_blue_skull_key] = "bsk",
+
+  [dsda_bf_fist] = "f",
+  [dsda_bf_pistol] = "p",
+  [dsda_bf_shotgun] = "sg",
+  [dsda_bf_chaingun] = "cg",
+  [dsda_bf_rocket_launcher] = "rl",
+  [dsda_bf_plasma_gun] = "pg",
+  [dsda_bf_bfg] = "bfg",
+  [dsda_bf_chainsaw] = "cs",
+  [dsda_bf_super_shotgun] = "ssg",
 };
 
 static dboolean fixed_point_attribute[dsda_bf_attribute_max] = {
@@ -286,11 +306,50 @@ static fixed_t dsda_BFAttribute(int attribute) {
 }
 
 static dboolean dsda_BFMiscConditionReached(int i) {
+  player_t* player;
+
+  player = &players[displayplayer];
+
   switch (bf_condition[i].attribute) {
     case dsda_bf_line_skip:
       return lines[bf_condition[i].value].player_activations == bf_condition[i].secondary_value;
     case dsda_bf_line_activation:
       return lines[bf_condition[i].value].player_activations > bf_condition[i].secondary_value;
+    case dsda_bf_have_item:
+      switch (bf_condition[i].value) {
+        case dsda_bf_red_key_card:
+          return player->cards[it_redcard];
+        case dsda_bf_yellow_key_card:
+          return player->cards[it_yellowcard];
+        case dsda_bf_blue_key_card:
+          return player->cards[it_bluecard];
+        case dsda_bf_red_skull_key:
+          return player->cards[it_redskull];
+        case dsda_bf_yellow_skull_key:
+          return player->cards[it_yellowskull];
+        case dsda_bf_blue_skull_key:
+          return player->cards[it_blueskull];
+        case dsda_bf_fist:
+          return player->weaponowned[wp_fist];
+        case dsda_bf_pistol:
+          return player->weaponowned[wp_pistol];
+        case dsda_bf_shotgun:
+          return player->weaponowned[wp_shotgun];
+        case dsda_bf_chaingun:
+          return player->weaponowned[wp_chaingun];
+        case dsda_bf_rocket_launcher:
+          return player->weaponowned[wp_missile];
+        case dsda_bf_plasma_gun:
+          return player->weaponowned[wp_plasma];
+        case dsda_bf_bfg:
+          return player->weaponowned[wp_bfg];
+        case dsda_bf_chainsaw:
+          return player->weaponowned[wp_chainsaw];
+        case dsda_bf_super_shotgun:
+          return player->weaponowned[wp_supershotgun];
+        default:
+          return false;
+      }
     default:
       return false;
   }

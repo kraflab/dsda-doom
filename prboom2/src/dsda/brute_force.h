@@ -39,6 +39,7 @@ typedef enum {
 
   dsda_bf_line_skip = 0,
   dsda_bf_line_activation,
+  dsda_bf_have_item,
   dsda_bf_misc_max,
 } dsda_bf_attribute_t;
 
@@ -55,6 +56,25 @@ typedef enum {
 } dsda_bf_operator_t;
 
 typedef enum {
+  dsda_bf_red_key_card,
+  dsda_bf_yellow_key_card,
+  dsda_bf_blue_key_card,
+  dsda_bf_red_skull_key,
+  dsda_bf_yellow_skull_key,
+  dsda_bf_blue_skull_key,
+  dsda_bf_fist,
+  dsda_bf_pistol,
+  dsda_bf_shotgun,
+  dsda_bf_chaingun,
+  dsda_bf_rocket_launcher,
+  dsda_bf_plasma_gun,
+  dsda_bf_bfg,
+  dsda_bf_chainsaw,
+  dsda_bf_super_shotgun,
+  dsda_bf_item_max,
+} dsda_bf_item_t;
+
+typedef enum {
   dsda_bf_limit_trio_zero,
   dsda_bf_acap = dsda_bf_limit_trio_zero,
   dsda_bf_limit_trio_max,
@@ -69,6 +89,7 @@ typedef enum {
 
 extern const char* dsda_bf_attribute_names[dsda_bf_attribute_max];
 extern const char* dsda_bf_operator_names[dsda_bf_operator_max];
+extern const char* dsda_bf_item_names[dsda_bf_item_max];
 extern const char* dsda_bf_limit_names[dsda_bf_limit_max];
 
 dboolean dsda_BruteForce(void);
