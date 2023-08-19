@@ -431,7 +431,7 @@ void dsda_ReadBuildCmd(ticcmd_t* cmd) {
     build_cmd_tic = -1;
   }
   else
-    dsda_CopyPendingCmd(cmd);
+    dsda_CopyPendingCmd(cmd, 0);
 
   dsda_JoinDemoCmd(cmd);
 }
@@ -516,7 +516,7 @@ dboolean dsda_BuildResponder(event_t* ev) {
     if (build_cmd.buttons & BT_CHANGE)
       build_cmd.buttons &= ~(BT_CHANGE | BT_WEAPONMASK);
 
-    if (dsda_CopyPendingCmd(&overwritten_cmd)) {
+    if (dsda_CopyPendingCmd(&overwritten_cmd, 0)) {
        if (!replace_source)
           build_cmd = overwritten_cmd;
     }
