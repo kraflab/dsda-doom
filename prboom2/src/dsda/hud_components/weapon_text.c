@@ -22,7 +22,6 @@
 typedef struct {
   dsda_text_t component;
   dboolean grid;
-  dboolean show_wpn;
   char label_w[5];
   char label_p[5];
   char label_n[5];
@@ -83,16 +82,18 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 }
 
 void dsda_InitWeaponTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  dboolean show_wpn;
+
   *data = Z_Calloc(1, sizeof(local_component_t));
   local = *data;
 
   local->grid = args[0];
   if (arg_count > 1)
-    local->show_wpn = args[1];
+    show_wpn = args[1];
   else
-    local->show_wpn = true;
+    show_wpn = true;
 
-  if (local->show_wpn) {
+  if (show_wpn) {
     snprintf(local->label_w, sizeof(local->label_w), "%sW ", dsda_TextColor(dsda_tc_exhud_weapon_label));
     snprintf(local->label_p, sizeof(local->label_p), "%sP ", dsda_TextColor(dsda_tc_exhud_weapon_label));
     snprintf(local->label_n, sizeof(local->label_n), "%sN ", dsda_TextColor(dsda_tc_exhud_weapon_label));
