@@ -25,6 +25,7 @@
 #include "r_state.h"
 
 #include "dsda/build.h"
+#include "dsda/demo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
@@ -472,6 +473,29 @@ static void dsda_SortIntPair(int* a, int* b) {
     *a = *b;
     *b = temp;
   }
+}
+
+int dsda_KeepBruteForceFrame(int i) {
+  ticcmd_t cmd;
+
+  if (!dsda_CopyPendingCmd(&cmd, i))
+    return false;
+
+  brute_force[i].forwardmove.min = cmd.forwardmove;
+  brute_force[i].forwardmove.max = cmd.forwardmove;
+  brute_force[i].forwardmove.i = cmd.forwardmove;
+
+  brute_force[i].sidemove.min = cmd.sidemove;
+  brute_force[i].sidemove.max = cmd.sidemove;
+  brute_force[i].sidemove.i = cmd.sidemove;
+
+  brute_force[i].angleturn.min = cmd.angleturn >> 8;
+  brute_force[i].angleturn.max = cmd.angleturn >> 8;
+  brute_force[i].angleturn.i = cmd.angleturn >> 8;
+
+  brute_force[i].buttons = cmd.buttons;
+
+  return true;
 }
 
 int dsda_AddBruteForceFrame(int i,

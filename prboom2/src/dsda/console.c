@@ -821,6 +821,15 @@ static dboolean console_BuildUA(const char* command, const char* args) {
   return sscanf(args, "%i", &x) && dsda_BuildUA(x);
 }
 
+static dboolean console_BruteForceKeep(const char* command, const char* args) {
+  int frame;
+
+  if (!sscanf(args, "%d", &frame))
+    return false;
+
+  return dsda_KeepBruteForceFrame(frame);
+}
+
 static dboolean console_BruteForceFrame(const char* command, const char* args) {
   int frame;
   int forwardmove_min, forwardmove_max;
@@ -2350,6 +2359,8 @@ static console_command_entry_t console_commands[] = {
   { "bf.start", console_BruteForceStart, CF_DEMO },
   { "brute_force.frame", console_BruteForceFrame, CF_DEMO },
   { "bf.frame", console_BruteForceFrame, CF_DEMO },
+  { "brute_force.keep", console_BruteForceKeep, CF_DEMO },
+  { "bf.keep", console_BruteForceKeep, CF_DEMO },
   { "build.turbo", console_BuildTurbo, CF_DEMO },
   { "b.turbo", console_BuildTurbo, CF_DEMO },
   { "mf", console_BuildMF, CF_DEMO },

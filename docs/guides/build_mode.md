@@ -51,6 +51,8 @@ Brute force is a technique in built tases where you automatically apply differen
   - `turn_range` is the same as `forward_range`, but for turn values.
   - `buttons` is any combination of `a`, `u`, and `c` (attack, use, change weapon).
   - `weapon` is the number for the weapon to change to if `c` is given as a button.
+- `brute_force.keep / bf.keep frame`
+  - Keeps the existing command on the given frame
 - `brute_force.start / bf.start depth [forward_range strafe_range turn_range] conditions`
   - Ranges are optional and will override frame-specific instructions
   - `depth` is the number of tics you want to brute force (limit 35)
