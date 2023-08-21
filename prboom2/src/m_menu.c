@@ -5680,14 +5680,19 @@ void M_Drawer (void)
     lumps_missing = 0;
 
     for (i = 0; i < max; i++)
-      if (!currentMenu->menuitems[i].name[0] || !W_LumpNameExists(currentMenu->menuitems[i].name))
+      if (
+        currentMenu->menuitems[i].status != -1 && (
+          !currentMenu->menuitems[i].name[0] || !W_LumpNameExists(currentMenu->menuitems[i].name)
+        )
+      )
         ++lumps_missing;
 
     if (!lumps_missing)
       for (i = 0; i < max; i++)
       {
-        V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
-                        currentMenu->menuitems[i].color, VPT_STRETCH);
+        if (currentMenu->menuitems[i].name[0])
+          V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
+                          currentMenu->menuitems[i].color, VPT_STRETCH);
 
         y += LINEHEIGHT;
       }
