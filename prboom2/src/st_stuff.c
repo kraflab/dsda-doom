@@ -52,6 +52,7 @@
 
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
+#include "dsda/text_color.h"
 
 #include "heretic/sb_bar.h"
 
@@ -359,11 +360,30 @@ static int      st_randomnumber;
 
 extern char     *mapnames[];
 
+static int cr_health_bad;
+static int cr_health_warning;
+static int cr_health_ok;
+static int cr_health_super;
+static int cr_armor_zero;
+static int cr_armor_one;
+static int cr_armor_two;
+
 //
 // STATUS BAR CODE
 //
 
 static void ST_Stop(void);
+
+static void ST_LoadTextColors(void)
+{
+  cr_health_bad = dsda_TextCR(dsda_tc_stbar_health_bad);
+  cr_health_warning = dsda_TextCR(dsda_tc_stbar_health_warning);
+  cr_health_ok = dsda_TextCR(dsda_tc_stbar_health_ok);
+  cr_health_super = dsda_TextCR(dsda_tc_stbar_health_super);
+  cr_armor_zero = dsda_TextCR(dsda_tc_stbar_armor_zero);
+  cr_armor_one = dsda_TextCR(dsda_tc_stbar_armor_one);
+  cr_armor_two = dsda_TextCR(dsda_tc_stbar_armor_two);
+}
 
 // [FG] support widescreen status bar backgrounds
 
@@ -818,21 +838,21 @@ static void ST_drawWidgets(dboolean refresh)
 
   //jff 2/16/98 make color of health depend on amount
   if (*w_health.n.num < hud_health_red)
-    STlib_updatePercent(&w_health, CR_RED, refresh);
+    STlib_updatePercent(&w_health, cr_health_bad, refresh);
   else if (*w_health.n.num < hud_health_yellow)
-    STlib_updatePercent(&w_health, CR_GOLD, refresh);
+    STlib_updatePercent(&w_health, cr_health_warning, refresh);
   else if (*w_health.n.num <= hud_health_green)
-    STlib_updatePercent(&w_health, CR_GREEN, refresh);
+    STlib_updatePercent(&w_health, cr_health_ok, refresh);
   else
-    STlib_updatePercent(&w_health, CR_BLUE, refresh); //killough 2/28/98
+    STlib_updatePercent(&w_health, cr_health_super, refresh); //killough 2/28/98
 
   // armor color dictated by type (Status Bar)
   if (plyr->armortype >= 2)
-    STlib_updatePercent(&w_armor, CR_BLUE, refresh);
+    STlib_updatePercent(&w_armor, cr_armor_two, refresh);
   else if (plyr->armortype == 1)
-    STlib_updatePercent(&w_armor, CR_GREEN, refresh);
+    STlib_updatePercent(&w_armor, cr_armor_one, refresh);
   else if (plyr->armortype == 0)
-    STlib_updatePercent(&w_armor, CR_RED, refresh);
+    STlib_updatePercent(&w_armor, cr_armor_zero, refresh);
 
   for (i=0;i<6;i++)
     STlib_updateMultIcon(&w_arms[i], refresh);
@@ -982,6 +1002,8 @@ static void ST_loadGraphics(void)
 
   // [FG] support widescreen status bar backgrounds
   ST_SetScaledWidth();
+
+  ST_LoadTextColors();
 }
 
 static void ST_initData(void)

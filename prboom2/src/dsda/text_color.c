@@ -105,6 +105,13 @@ dsda_text_color_t dsda_text_colors[] = {
   [dsda_tc_menu_info_highlight] = { "menu_info_highlight", CR_BRICK },
   [dsda_tc_menu_info_edit] = { "menu_info_edit", CR_GRAY },
   [dsda_tc_menu_warning] = { "menu_warning", CR_RED },
+  [dsda_tc_stbar_health_bad] = { "stbar_health_bad", CR_RED },
+  [dsda_tc_stbar_health_warning] = { "stbar_health_warning", CR_GOLD },
+  [dsda_tc_stbar_health_ok] = { "stbar_health_ok", CR_GREEN },
+  [dsda_tc_stbar_health_super] = { "stbar_health_super", CR_BLUE },
+  [dsda_tc_stbar_armor_zero] = { "stbar_armor_zero", CR_GRAY },
+  [dsda_tc_stbar_armor_one] = { "stbar_armor_one", CR_GREEN },
+  [dsda_tc_stbar_armor_two] = { "stbar_armor_two", CR_BLUE },
   { NULL },
 };
 

@@ -92,6 +92,13 @@ typedef enum {
   dsda_tc_menu_info_highlight,
   dsda_tc_menu_info_edit,
   dsda_tc_menu_warning,
+  dsda_tc_stbar_health_bad,
+  dsda_tc_stbar_health_warning,
+  dsda_tc_stbar_health_ok,
+  dsda_tc_stbar_health_super,
+  dsda_tc_stbar_armor_zero,
+  dsda_tc_stbar_armor_one,
+  dsda_tc_stbar_armor_two,
 } dsda_text_color_index_t;
 
 void dsda_LoadTextColor(void);

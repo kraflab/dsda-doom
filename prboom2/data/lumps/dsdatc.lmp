@@ -87,3 +87,10 @@ menu_value_edit 3
 menu_info_highlight 1
 menu_info_edit 3
 menu_warning 7
+stbar_health_bad 7
+stbar_health_warning 6
+stbar_health_ok 4
+stbar_health_super 8
+stbar_armor_zero 3
+stbar_armor_one 4
+stbar_armor_two 8
