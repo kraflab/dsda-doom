@@ -36,16 +36,16 @@ static void dsda_DrawComponent(void) {
 
   if (hexen) {
     armor = dsda_HexenArmor(player);
-    cm = CR_GRAY;
+    cm = dsda_TextCR(dsda_tc_exhud_armor_zero);
   }
   else {
     armor = player->armorpoints[ARMOR_ARMOR];
     if (armor <= 0)
-      cm = CR_RED;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_zero);
     else if (player->armortype < 2)
-      cm = CR_GREEN;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_one);
     else
-      cm = CR_LIGHTBLUE;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_two);
   }
 
   dsda_DrawBigNumber(local->component.x, local->component.y, patch_delta_x, 0,

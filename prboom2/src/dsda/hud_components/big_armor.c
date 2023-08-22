@@ -44,21 +44,21 @@ static void dsda_DrawComponent(void) {
 
   if (hexen) {
     armor = dsda_HexenArmor(player);
-    cm = CR_GRAY;
+    cm = dsda_TextCR(dsda_tc_exhud_armor_zero);
     lump = armor_lump_green;
   }
   else {
     armor = player->armorpoints[ARMOR_ARMOR];
     if (armor <= 0) {
-      cm = CR_RED;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_zero);
       lump = armor_lump_green;
     }
     else if (player->armortype < 2) {
-      cm = CR_GREEN;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_one);
       lump = armor_lump_green;
     }
     else {
-      cm = CR_LIGHTBLUE;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_two);
       lump = armor_lump_blue;
     }
   }
