@@ -118,7 +118,7 @@ static void gld_InitProgressUpdate(void)
     16,
     186,
     &hud_font,
-    CR_RED,
+    CR_DEFAULT,
     VPT_ALIGN_LEFT_BOTTOM
   );
 }
