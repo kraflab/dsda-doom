@@ -47,6 +47,7 @@
 #include "s_sound.h"
 #include "sounds.h"
 #include "dstrings.h"
+#include "p_pspr.h"
 #include "r_draw.h"
 #include "e6y.h"//e6y
 
@@ -828,7 +829,6 @@ int ST_HealthColor(int health)
 static void ST_drawWidgets(dboolean refresh)
 {
   int i;
-  int ammopct = 0;
 
   // used by w_arms[] widgets
   st_armson = st_statusbaron && !deathmatch;
@@ -840,8 +840,7 @@ static void ST_drawWidgets(dboolean refresh)
   if (*w_ready.num == plyr->maxammo[weaponinfo[w_ready.data].ammo])
     STlib_updateNum(&w_ready, cr_ammo_full, refresh);
   else {
-    if (plyr->maxammo[weaponinfo[w_ready.data].ammo])
-      ammopct = (*w_ready.num*100) / plyr->maxammo[weaponinfo[w_ready.data].ammo];
+    int ammopct = P_AmmoPercent(plyr, w_ready.data);
 
     if (ammopct < hud_ammo_red)
       STlib_updateNum(&w_ready, cr_ammo_bad, refresh);

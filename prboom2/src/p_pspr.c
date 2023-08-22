@@ -366,6 +366,16 @@ int P_WeaponPreferred(int w1, int w2)
    ))))))))))))))));
 }
 
+int P_AmmoPercent(player_t *player, int weapon)
+{
+  int ammo_i = weaponinfo[weapon].ammo;
+
+  if (!player->maxammo[ammo_i])
+    return 0;
+
+  return player->ammo[ammo_i] * 100 / player->maxammo[ammo_i];
+}
+
 //
 // P_CheckAmmo
 // Returns true if there is enough ammo to shoot.
