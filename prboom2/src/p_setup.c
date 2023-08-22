@@ -343,6 +343,9 @@ static void P_GetNodesVersion(void)
         CheckForIdentifier(level_components.ssectors, "XGL", 3))
       level_components.znodes = level_components.ssectors;
 
+    if (dsda_Flag(dsda_arg_force_old_zdoom_nodes) && demoplayback)
+      level_components.znodes = LUMP_NOT_FOUND;
+
     if (CheckForIdentifier(level_components.znodes, "XGLN", 4))
     {
       nodesVersion = ZDOOM_XGLN_NODES;

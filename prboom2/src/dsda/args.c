@@ -418,6 +418,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "force classic bsp nodes",
     arg_null,
   },
+  [dsda_arg_force_old_zdoom_nodes] = {
+    "-force_old_zdoom_nodes", NULL, NULL,
+    "force extended (non-gl) zdoom nodes",
+    arg_null,
+  },
   [dsda_arg_sigsegv] = {
     "-sigsegv", NULL, NULL,
     "disable the SIGSEGV signal handler",
