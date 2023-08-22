@@ -99,6 +99,10 @@ typedef enum {
   dsda_tc_stbar_armor_zero,
   dsda_tc_stbar_armor_one,
   dsda_tc_stbar_armor_two,
+  dsda_tc_stbar_ammo_bad,
+  dsda_tc_stbar_ammo_warning,
+  dsda_tc_stbar_ammo_ok,
+  dsda_tc_stbar_ammo_full,
 } dsda_text_color_index_t;
 
 void dsda_LoadTextColor(void);

@@ -94,3 +94,7 @@ stbar_health_super 8
 stbar_armor_zero 3
 stbar_armor_one 4
 stbar_armor_two 8
+stbar_ammo_bad 7
+stbar_ammo_warning 6
+stbar_ammo_ok 4
+stbar_ammo_full 8

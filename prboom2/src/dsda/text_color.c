@@ -112,6 +112,10 @@ dsda_text_color_t dsda_text_colors[] = {
   [dsda_tc_stbar_armor_zero] = { "stbar_armor_zero", CR_GRAY },
   [dsda_tc_stbar_armor_one] = { "stbar_armor_one", CR_GREEN },
   [dsda_tc_stbar_armor_two] = { "stbar_armor_two", CR_BLUE },
+  [dsda_tc_stbar_ammo_bad] = { "stbar_ammo_bad", CR_RED },
+  [dsda_tc_stbar_ammo_warning] = { "stbar_ammo_warning", CR_GOLD },
+  [dsda_tc_stbar_ammo_ok] = { "stbar_ammo_ok", CR_GREEN },
+  [dsda_tc_stbar_ammo_full] = { "stbar_ammo_full", CR_BLUE },
   { NULL },
 };
 

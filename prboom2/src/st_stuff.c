@@ -367,6 +367,10 @@ static int cr_health_super;
 static int cr_armor_zero;
 static int cr_armor_one;
 static int cr_armor_two;
+static int cr_ammo_bad;
+static int cr_ammo_warning;
+static int cr_ammo_ok;
+static int cr_ammo_full;
 
 //
 // STATUS BAR CODE
@@ -383,6 +387,10 @@ static void ST_LoadTextColors(void)
   cr_armor_zero = dsda_TextCR(dsda_tc_stbar_armor_zero);
   cr_armor_one = dsda_TextCR(dsda_tc_stbar_armor_one);
   cr_armor_two = dsda_TextCR(dsda_tc_stbar_armor_two);
+  cr_ammo_bad = dsda_TextCR(dsda_tc_stbar_ammo_bad);
+  cr_ammo_warning = dsda_TextCR(dsda_tc_stbar_ammo_warning);
+  cr_ammo_ok = dsda_TextCR(dsda_tc_stbar_ammo_ok);
+  cr_ammo_full = dsda_TextCR(dsda_tc_stbar_ammo_full);
 }
 
 // [FG] support widescreen status bar backgrounds
@@ -818,23 +826,23 @@ static void ST_drawWidgets(dboolean refresh)
 
   //jff 2/16/98 make color of ammo depend on amount
   if (*w_ready.num == plyr->maxammo[weaponinfo[w_ready.data].ammo])
-    STlib_updateNum(&w_ready, CR_BLUE, refresh);
+    STlib_updateNum(&w_ready, cr_ammo_full, refresh);
   else {
     if (plyr->maxammo[weaponinfo[w_ready.data].ammo])
-      ammopct = (*w_ready.num*100)/plyr->maxammo[weaponinfo[w_ready.data].ammo];
+      ammopct = (*w_ready.num*100) / plyr->maxammo[weaponinfo[w_ready.data].ammo];
+
     if (ammopct < hud_ammo_red)
-      STlib_updateNum(&w_ready, CR_RED, refresh);
+      STlib_updateNum(&w_ready, cr_ammo_bad, refresh);
+    else if (ammopct < hud_ammo_yellow)
+      STlib_updateNum(&w_ready, cr_ammo_warning, refresh);
     else
-      if (ammopct < hud_ammo_yellow)
-        STlib_updateNum(&w_ready, CR_GOLD, refresh);
-      else
-        STlib_updateNum(&w_ready, CR_GREEN, refresh);
+      STlib_updateNum(&w_ready, cr_ammo_ok, refresh);
   }
   for (i=0;i<4;i++)
-    {
-      STlib_updateNum(&w_ammo[i], CR_DEFAULT, refresh);   //jff 2/16/98 no xlation
-      STlib_updateNum(&w_maxammo[i], CR_DEFAULT, refresh);
-    }
+  {
+    STlib_updateNum(&w_ammo[i], CR_DEFAULT, refresh);   //jff 2/16/98 no xlation
+    STlib_updateNum(&w_maxammo[i], CR_DEFAULT, refresh);
+  }
 
   //jff 2/16/98 make color of health depend on amount
   if (*w_health.n.num < hud_health_red)
