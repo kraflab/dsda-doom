@@ -48,7 +48,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     else
       snprintf(str, max_size, "%sAMM %s%3d",
                dsda_TextColor(dsda_tc_exhud_ammo_label),
-               dsda_TextColor(dsda_tc_exhud_ammo_value), player->ammo[ammo_type]);
+               dsda_TextColor(dsda_AmmoColor(player)), player->ammo[ammo_type]);
   }
 }
 

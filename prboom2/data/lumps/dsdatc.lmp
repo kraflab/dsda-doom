@@ -45,6 +45,10 @@ exhud_ammo_label 3
 exhud_ammo_mana1 11
 exhud_ammo_mana2 4
 exhud_ammo_value 3
+exhud_ammo_bad 7
+exhud_ammo_warning 6
+exhud_ammo_ok 4
+exhud_ammo_full 11
 exhud_render_label 3
 exhud_render_good 6
 exhud_render_bad 7
