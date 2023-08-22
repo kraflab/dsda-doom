@@ -433,6 +433,13 @@ void I_StartFrame (void)
 {
 }
 
+static void I_FlushMousePosition(void)
+{
+  int x, y;
+
+  SDL_GetRelativeMouseState(&x, &y);
+}
+
 void I_InitMouse(void)
 {
   static Uint8 empty_cursor_data = 0;
@@ -446,6 +453,8 @@ void I_InitMouse(void)
   cursors[0] = SDL_GetCursor();
   // Create an empty cursor
   cursors[1] = SDL_CreateCursor(&empty_cursor_data, &empty_cursor_data, 8, 1, 0, 0);
+
+  I_FlushMousePosition();
 }
 
 //
