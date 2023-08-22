@@ -813,6 +813,18 @@ void M_ChangeApplyPalette(void)
     V_SetPalette(0);
 }
 
+int ST_HealthColor(int health)
+{
+  if (health < hud_health_red)
+    return cr_health_bad;
+  else if (health < hud_health_yellow)
+    return cr_health_warning;
+  else if (health <= hud_health_green)
+    return cr_health_ok;
+  else
+    return cr_health_super;
+}
+
 static void ST_drawWidgets(dboolean refresh)
 {
   int i;
@@ -845,14 +857,7 @@ static void ST_drawWidgets(dboolean refresh)
   }
 
   //jff 2/16/98 make color of health depend on amount
-  if (*w_health.n.num < hud_health_red)
-    STlib_updatePercent(&w_health, cr_health_bad, refresh);
-  else if (*w_health.n.num < hud_health_yellow)
-    STlib_updatePercent(&w_health, cr_health_warning, refresh);
-  else if (*w_health.n.num <= hud_health_green)
-    STlib_updatePercent(&w_health, cr_health_ok, refresh);
-  else
-    STlib_updatePercent(&w_health, cr_health_super, refresh); //killough 2/28/98
+  STlib_updatePercent(&w_health, ST_HealthColor(*w_health.n.num), refresh);
 
   // armor color dictated by type (Status Bar)
   if (plyr->armortype >= 2)

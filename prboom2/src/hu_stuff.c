@@ -115,22 +115,6 @@ static void HU_InitPlayer(void)
   plr = &players[displayplayer];
 }
 
-int HU_GetHealthColor(int health, int def)
-{
-  int result;
-
-  if (health < hud_health_red)
-    result = CR_RED;
-  else if (health < hud_health_yellow)
-    result = CR_GOLD;
-  else if (health <= hud_health_green)
-    result = CR_GREEN;
-  else
-    result = def;
-
-  return result;
-}
-
 typedef struct crosshair_s
 {
   int lump;
@@ -265,7 +249,7 @@ void HU_DrawCrosshair(void)
   }
 
   if (hudadd_crosshair_health)
-    cm = HU_GetHealthColor(plr->health, CR_LIGHTBLUE);
+    cm = ST_HealthColor(plr->health);
   else
     cm = dsda_IntConfig(dsda_config_hudadd_crosshair_color);
 
