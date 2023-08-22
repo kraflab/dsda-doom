@@ -412,6 +412,42 @@ void WI_levelNameLump(int epis, int map, char* buf)
   }
 }
 
+static int WI_killPercent(int i)
+{
+  return wbs->maxkills ? (plrs[i].skills * 100) / wbs->maxkills
+                       : MAX(1, plrs[i].skills) * 100;
+}
+
+static int WI_killLimit(int i)
+{
+  return wbs->maxkills ? (plrs[i].skills * 100) / wbs->maxkills
+                       : (plrs[i].skills * 100);
+
+}
+
+static int WI_itemPercent(int i)
+{
+  return wbs->maxitems ? (plrs[i].sitems * 100) / wbs->maxitems : 100;
+}
+
+static int WI_itemLimit(int i)
+{
+  return wbs->maxitems ? (plrs[i].sitems * 100) / wbs->maxitems
+                       : (plrs[i].sitems * 100);
+
+}
+
+static int WI_secretPercent(int i)
+{
+  return wbs->maxsecret ? (plrs[i].skills * 100) / wbs->maxkills : 100;
+}
+
+static int WI_secretLimit(int i)
+{
+  return wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret
+                        : compatibility_level < lxdoom_1_compatibility ? 0 : 100;
+}
+
 // ====================================================================
 // WI_slamBackground
 // Purpose: Put the full-screen background up prior to patches
@@ -1411,23 +1447,6 @@ void WI_drawDeathmatchStats(void)
 // Note: The term "Netgame" means a coop game
 //
 
-// e6y
-// 'short' => 'int' for cnt_kills, cnt_items and cnt_secret
-//
-// Original sources use 'int' type for cnt_kills instead of 'short'
-// I don't know who have made change of type, but this change
-// leads to desynch  if 'kills' percentage is more than 32767.
-// Actually PrBoom will be in an infinite cycle at calculation of
-// percentage if the player will not press <Use> for acceleration, because
-// the condition (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
-// will be always false in this case.
-//
-// If you will kill 800 monsters on MAP30 on Ultra-Violence skill and
-// will not press <Use>, vanilla will count up to 80000%, but PrBoom
-// will be in infinite cycle of counting:
-// (0, 1, 2, ..., 32766, 32767, -32768, -32767, ..., -1, 0, 1, ...)
-// Negative numbers will not be displayed.
-
 static int *cnt_kills;
 static int *cnt_items;
 static int *cnt_secret;
@@ -1506,12 +1525,10 @@ void WI_updateNetgameStats(void)
       if (!playeringame[i])
         continue;
 
-      cnt_kills[i] = (plrs[i].skills * 100) / wbs->maxkills;
-      cnt_items[i] = (plrs[i].sitems * 100) / wbs->maxitems;
+      cnt_kills[i] = WI_killPercent(i);
+      cnt_items[i] = WI_itemPercent(i);
+      cnt_secret[i] = WI_secretPercent(i);
 
-      // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-      cnt_secret[i] = wbs->maxsecret ?
-                      (plrs[i].ssecret * 100) / wbs->maxsecret : 100;
       if (dofrags)
         cnt_frags[i] = WI_fragSum(i);  // we had frags
     }
@@ -1533,8 +1550,8 @@ void WI_updateNetgameStats(void)
 
       cnt_kills[i] += 2;
 
-      if (cnt_kills[i] >= (plrs[i].skills * 100) / wbs->maxkills)
-        cnt_kills[i] = (plrs[i].skills * 100) / wbs->maxkills;
+      if (cnt_kills[i] >= WI_killLimit(i))
+        cnt_kills[i] = WI_killPercent(i);
       else
         stillticking = true; // still got stuff to tally
     }
@@ -1558,8 +1575,8 @@ void WI_updateNetgameStats(void)
         continue;
 
       cnt_items[i] += 2;
-      if (cnt_items[i] >= (plrs[i].sitems * 100) / wbs->maxitems)
-        cnt_items[i] = (plrs[i].sitems * 100) / wbs->maxitems;
+      if (cnt_items[i] >= WI_itemLimit(i))
+        cnt_items[i] = WI_itemPercent(i);
       else
         stillticking = true;
     }
@@ -1584,10 +1601,8 @@ void WI_updateNetgameStats(void)
 
       cnt_secret[i] += 2;
 
-      // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-
-      if (cnt_secret[i] >= (wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret : compatibility_level < lxdoom_1_compatibility ? 0 : 100))
-        cnt_secret[i] = wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret : 100;
+      if (cnt_secret[i] >= WI_secretLimit(i))
+        cnt_secret[i] = WI_secretPercent(i);
       else
         stillticking = true;
     }
@@ -1764,12 +1779,9 @@ void WI_updateStats(void)
   if (acceleratestage && sp_state != 10)
   {
     acceleratestage = 0;
-    cnt_kills[0] = (plrs[me].skills * 100) / wbs->maxkills;
-    cnt_items[0] = (plrs[me].sitems * 100) / wbs->maxitems;
-
-    // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-    cnt_secret[0] = (wbs->maxsecret ?
-      (plrs[me].ssecret * 100) / wbs->maxsecret : 100);
+    cnt_kills[0] = WI_killPercent(me);
+    cnt_items[0] = WI_itemPercent(me);
+    cnt_secret[0] = WI_secretPercent(me);
 
     cnt_total_time = wbs->totaltimes / TICRATE;
     cnt_time = plrs[me].stime / TICRATE;
@@ -1785,9 +1797,9 @@ void WI_updateStats(void)
     if (!(bcnt&3))
       S_StartVoidSound(sfx_pistol);
 
-    if (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
+    if (cnt_kills[0] >= WI_killLimit(me))
     {
-      cnt_kills[0] = (plrs[me].skills * 100) / wbs->maxkills;
+      cnt_kills[0] = WI_killPercent(me);
       S_StartVoidSound(sfx_barexp);
       sp_state++;
     }
@@ -1799,9 +1811,9 @@ void WI_updateStats(void)
     if (!(bcnt&3))
       S_StartVoidSound(sfx_pistol);
 
-    if (cnt_items[0] >= (plrs[me].sitems * 100) / wbs->maxitems)
+    if (cnt_items[0] >= WI_itemLimit(me))
     {
-      cnt_items[0] = (plrs[me].sitems * 100) / wbs->maxitems;
+      cnt_items[0] = WI_itemPercent(me);
       S_StartVoidSound(sfx_barexp);
       sp_state++;
     }
@@ -1813,13 +1825,9 @@ void WI_updateStats(void)
     if (!(bcnt&3))
       S_StartVoidSound(sfx_pistol);
 
-    // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-    if ((!wbs->maxsecret && compatibility_level < lxdoom_1_compatibility) ||
-  cnt_secret[0] >= (wbs->maxsecret ?
-      (plrs[me].ssecret * 100) / wbs->maxsecret : 100))
+    if (cnt_secret[0] >= WI_secretLimit(me))
     {
-      cnt_secret[0] = (wbs->maxsecret ?
-        (plrs[me].ssecret * 100) / wbs->maxsecret : 100);
+      cnt_secret[0] = WI_secretPercent(me);
       S_StartVoidSound(sfx_barexp);
       sp_state++;
     }
@@ -2147,12 +2155,6 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
   firstrefresh = 1;
   me = wbs->pnum;
   plrs = wbs->plyr;
-
-  if (!wbs->maxkills)
-    wbs->maxkills = 1;  // probably only useful in MAP30
-
-  if (!wbs->maxitems)
-    wbs->maxitems = 1;
 
   if ( gamemode != retail )
     if (wbs->epsd > 2)
