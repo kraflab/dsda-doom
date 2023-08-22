@@ -1393,8 +1393,11 @@ void M_SizeDisplay(int choice)
         dsda_UpdateIntConfig(dsda_config_screenblocks, 11, true);
         dsda_UpdateIntConfig(dsda_config_hud_displayed, true, true);
       }
-      else
+      else {
         dsda_ToggleConfig(dsda_config_hud_displayed, true);
+        if (dsda_IntConfig(dsda_config_hud_displayed))
+          dsda_DecrementIntConfig(dsda_config_screenblocks, true);
+      }
       break;
   }
 }
