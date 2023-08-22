@@ -850,7 +850,8 @@ static void ST_drawWidgets(dboolean refresh)
     else
       STlib_updateNum(&w_ready, cr_ammo_ok, refresh);
   }
-  for (i=0;i<4;i++)
+
+  for (i = 0; i < 4; i++)
   {
     STlib_updateNum(&w_ammo[i], CR_DEFAULT, refresh);   //jff 2/16/98 no xlation
     STlib_updateNum(&w_maxammo[i], CR_DEFAULT, refresh);
