@@ -1448,7 +1448,7 @@ void P_PlayerCollectSecret(player_t *player)
   {
     int sfx_id = raven ? g_sfx_secret :
                  I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
-    SetCustomMessage(player - players, "A secret is revealed!", 2 * TICRATE, CR_GOLD, sfx_id);
+    SetCustomMessage(player - players, "A secret is revealed!", 2 * TICRATE, sfx_id);
   }
 }
 
