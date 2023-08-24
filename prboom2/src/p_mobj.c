@@ -1911,6 +1911,31 @@ void P_RemoveMobj (mobj_t* mobj)
   P_RemoveThinker (&mobj->thinker);
 }
 
+void P_RemoveMonsters(void)
+{
+  thinker_t *th;
+  mobj_t *mobj;
+
+  for (th = thinkercap.next; th != &thinkercap; th = th->next)
+  {
+    if (th->function != P_MobjThinker)
+      continue;
+
+    mobj = (mobj_t *) th;
+    if (mobj->player)
+      continue;
+
+    if (
+      mobj->type == MT_SKULL ||
+      mobj->flags & MF_COUNTKILL ||
+      (mobj->target && !mobj->target->player)
+    )
+      P_RemoveMobj(mobj);
+  }
+
+  P_CleanThinkers();
+}
+
 //
 // P_RespawnSpecials
 //
