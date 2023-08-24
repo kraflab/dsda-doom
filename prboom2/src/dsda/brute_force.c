@@ -596,6 +596,11 @@ void dsda_BruteForceWithMonsters(void) {
 dboolean dsda_StartBruteForce(int depth) {
   int i;
 
+  if (!dsda_BuildMode()) {
+    lprintf(LO_WARN, "You cannot start brute force outside of build mode!\n");
+    return false;
+  }
+
   if (depth <= 0 || depth > MAX_BF_DEPTH)
     return false;
 
