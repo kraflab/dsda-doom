@@ -17,6 +17,7 @@
 exhud_time_label 3
 exhud_level_time 4
 exhud_total_time 6
+exhud_demo_length 5
 exhud_armor_zero 3
 exhud_armor_one 4
 exhud_armor_two 11

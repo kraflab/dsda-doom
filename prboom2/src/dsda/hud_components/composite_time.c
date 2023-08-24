@@ -27,14 +27,17 @@ typedef struct {
 static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
+  extern dboolean dsda_reborn;
+
   int total_time;
+  int length;
 
   total_time = hexen ?
                players[consoleplayer].worldTimer :
                totalleveltimes + leveltime;
 
   if (total_time != leveltime)
-    snprintf(
+    length = snprintf(
       str,
       max_size,
       "%s%s%d:%02d %s%d:%05.2f ",
@@ -47,7 +50,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       (float) (leveltime % (60 * 35)) / 35
     );
   else
-    snprintf(
+    length = snprintf(
       str,
       max_size,
       "%s%s%d:%05.2f ",
@@ -56,6 +59,19 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
     );
+
+  if (dsda_reborn && (demorecording || demoplayback)) {
+    int demo_tic = dsda_DemoTic();
+
+    snprintf(
+      str + length,
+      max_size - length,
+      "%s%d:%02d ",
+      dsda_TextColor(dsda_tc_exhud_demo_length),
+      demo_tic / 35 / 60,
+      (demo_tic % (60 * 35)) / 35
+    );
+  }
 }
 
 void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {

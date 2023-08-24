@@ -35,6 +35,7 @@ dsda_text_color_t dsda_text_colors[] = {
   [dsda_tc_exhud_time_label] = { "exhud_time_label", CR_GRAY },
   [dsda_tc_exhud_level_time] = { "exhud_level_time", CR_GREEN },
   [dsda_tc_exhud_total_time] = { "exhud_total_time", CR_GOLD },
+  [dsda_tc_exhud_demo_length] = { "exhud_demo_length", CR_BROWN },
   [dsda_tc_exhud_armor_zero] = { "exhud_armor_zero", CR_GRAY },
   [dsda_tc_exhud_armor_one] = { "exhud_armor_one", CR_GREEN },
   [dsda_tc_exhud_armor_two] = { "exhud_armor_two", CR_LIGHTBLUE },

@@ -22,6 +22,7 @@ typedef enum {
   dsda_tc_exhud_time_label,
   dsda_tc_exhud_level_time,
   dsda_tc_exhud_total_time,
+  dsda_tc_exhud_demo_length,
   dsda_tc_exhud_armor_zero,
   dsda_tc_exhud_armor_one,
   dsda_tc_exhud_armor_two,

@@ -38,6 +38,7 @@
 #include "w_wad.h"
 
 #include "dsda.h"
+#include "dsda/demo.h"
 #include "dsda/exhud.h"
 #include "dsda/font.h"
 #include "dsda/global.h"
