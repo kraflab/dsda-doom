@@ -2584,7 +2584,7 @@ void dsda_UpdateConsoleHistory(void) {
   console_entry = console_history_head;
 }
 
-void dsda_InterpretConsoleCommands(const char* str, dboolean noise) {
+void dsda_InterpretConsoleCommands(const char* str, dboolean noise, dboolean raise_errors) {
   int line;
   char* entry;
   char** lines;
@@ -2592,7 +2592,8 @@ void dsda_InterpretConsoleCommands(const char* str, dboolean noise) {
   entry = Z_Strdup(str);
   lines = dsda_SplitString(entry, ";");
   for (line = 0; lines[line]; ++line)
-    dsda_ExecuteConsole(lines[line], noise);
+    if (!dsda_ExecuteConsole(lines[line], noise) && raise_errors)
+      I_Error("Console command failed: %s", lines[line]);
 
   Z_Free(lines);
   Z_Free(entry);
@@ -2610,7 +2611,7 @@ void dsda_UpdateConsole(int action) {
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
-    dsda_InterpretConsoleCommands(console_entry->text, true);
+    dsda_InterpretConsoleCommands(console_entry->text, true, false);
 
     dsda_UpdateConsoleHistory();
     dsda_ResetConsoleEntry();
