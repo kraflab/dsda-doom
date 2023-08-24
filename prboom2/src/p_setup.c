@@ -225,6 +225,7 @@ static int current_episode = -1;
 static int current_map = -1;
 static nodes_version_t current_nodesVersion = UNKNOWN_NODES;
 static int samelevel = false;
+static int inconsistent_nodes;
 
 typedef struct
 {
@@ -1494,8 +1495,16 @@ static void P_LoadZNodes(int lump, int glnodes)
         lines[i].v1 = lines[i].v1 - vertexes + newvertarray;
         lines[i].v2 = lines[i].v2 - vertexes + newvertarray;
       }
+
       Z_Free(vertexes);
       vertexes = newvertarray;
+
+      if (orgVerts + newVerts < numvertexes)
+      {
+        lprintf(LO_WARN, "Warning: inconsistent nodes detected\n");
+        inconsistent_nodes = true;
+      }
+
       numvertexes = orgVerts + newVerts;
     }
   }
@@ -3752,11 +3761,12 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
   // figgi 10/19/00 -- check for gl lumps and load them
   P_GetNodesVersion();
 
-  samelevel =
-    (map == current_map) &&
-    (episode == current_episode) &&
-    (nodesVersion == current_nodesVersion);
+  samelevel = !inconsistent_nodes &&
+              map == current_map &&
+              episode == current_episode &&
+              nodesVersion == current_nodesVersion;
 
+  inconsistent_nodes = false;
   current_episode = episode;
   current_map = map;
   current_nodesVersion = nodesVersion;
