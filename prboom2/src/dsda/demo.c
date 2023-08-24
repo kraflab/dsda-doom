@@ -78,6 +78,10 @@ static int bytes_per_tic;
 
 static dboolean use_demo_name_with_time;
 
+int dsda_DemoTic(void) {
+  return demo_tics;
+}
+
 const char* dsda_DemoNameBase(void) {
   return dsda_demo_name_base;
 }

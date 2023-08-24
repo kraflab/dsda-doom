@@ -29,6 +29,7 @@ const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p);
 void dsda_ExportDemo(const char* name);
 void dsda_MarkCompatibilityLevelUnspecified(void);
 int dsda_BytesPerTic(void);
+int dsda_DemoTic(void);
 void dsda_EvaluateBytesPerTic(void);
 void dsda_RestoreCommandHistory(void);
 void dsda_InitDemoRecording(void);
