@@ -53,6 +53,9 @@ Brute force is a technique in built tases where you automatically apply differen
   - `weapon` is the number for the weapon to change to if `c` is given as a button.
 - `brute_force.keep / bf.keep frame`
   - Keeps the existing command on the given frame
+- `brute_force.nomonsters / bf.nomo`
+  - Performs a faster brute force by ignoring monster activity (may desync)
+  - Use `brute_force.monsters` / `bf.mo` to reset to the regular brute force mode
 - `brute_force.start / bf.start depth [forward_range strafe_range turn_range] conditions`
   - Ranges are optional and will override frame-specific instructions
   - `depth` is the number of tics you want to brute force (limit 35)
