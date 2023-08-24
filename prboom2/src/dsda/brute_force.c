@@ -77,6 +77,8 @@ static bf_condition_t bf_condition[MAX_BF_CONDITIONS];
 static long long bf_volume;
 static long long bf_volume_max;
 static dboolean bf_mode;
+static dboolean bf_nomonsters;
+static dsda_key_frame_t nomo_key_frame;
 static bf_target_t bf_target;
 static ticcmd_t bf_result[MAX_BF_DEPTH];
 
@@ -244,7 +246,10 @@ static void dsda_EndBF(int result) {
   lprintf(LO_INFO, "Brute force complete (%s)!\n", bf_result_text[result]);
   dsda_PrintBFProgress();
 
-  dsda_RestoreBFKeyFrame(0);
+  if (bf_nomonsters)
+    dsda_RestoreKeyFrame(&nomo_key_frame, true);
+  else
+    dsda_RestoreBFKeyFrame(0);
 
   bf_mode = false;
 
@@ -580,6 +585,14 @@ int dsda_AddBruteForceFrame(int i,
   return true;
 }
 
+void dsda_BruteForceWithoutMonsters(void) {
+  bf_nomonsters = true;
+}
+
+void dsda_BruteForceWithMonsters(void) {
+  bf_nomonsters = false;
+}
+
 dboolean dsda_StartBruteForce(int depth) {
   int i;
 
@@ -614,6 +627,12 @@ dboolean dsda_StartBruteForce(int depth) {
   lprintf(LO_INFO, "Testing %lld sequences with depth %d\n\n", bf_volume_max, bf_depth);
 
   bf_mode = true;
+
+  if (bf_nomonsters) {
+    lprintf(LO_INFO, "Warning: ignoring monsters! The result may desync with monsters!\n");
+    dsda_StoreKeyFrame(&nomo_key_frame, true, false);
+    P_RemoveMonsters();
+  }
 
   dsda_EnterSkipMode();
 

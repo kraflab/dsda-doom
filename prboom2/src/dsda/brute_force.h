@@ -107,6 +107,8 @@ int dsda_AddBruteForceFrame(int i,
                             int sidemove_min, int sidemove_max,
                             int angleturn_min, int angleturn_max,
                             byte buttons);
+void dsda_BruteForceWithoutMonsters(void);
+void dsda_BruteForceWithMonsters(void);
 void dsda_UpdateBruteForce(void);
 void dsda_EvaluateBruteForce(void);
 void dsda_CopyBruteForceCommand(ticcmd_t* cmd);

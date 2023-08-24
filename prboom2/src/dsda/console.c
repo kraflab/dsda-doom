@@ -830,6 +830,18 @@ static dboolean console_BruteForceKeep(const char* command, const char* args) {
   return dsda_KeepBruteForceFrame(frame);
 }
 
+static dboolean console_BruteForceNoMonsters(const char* command, const char* args) {
+  dsda_BruteForceWithoutMonsters();
+
+  return true;
+}
+
+static dboolean console_BruteForceMonsters(const char* command, const char* args) {
+  dsda_BruteForceWithMonsters();
+
+  return true;
+}
+
 static dboolean console_BruteForceFrame(const char* command, const char* args) {
   int frame;
   int forwardmove_min, forwardmove_max;
@@ -2373,6 +2385,10 @@ static console_command_entry_t console_commands[] = {
   { "bf.frame", console_BruteForceFrame, CF_DEMO },
   { "brute_force.keep", console_BruteForceKeep, CF_DEMO },
   { "bf.keep", console_BruteForceKeep, CF_DEMO },
+  { "brute_force.nomonsters", console_BruteForceNoMonsters, CF_DEMO },
+  { "bf.nomo", console_BruteForceNoMonsters, CF_DEMO },
+  { "brute_force.monsters", console_BruteForceMonsters, CF_DEMO },
+  { "bf.mo", console_BruteForceMonsters, CF_DEMO },
   { "build.turbo", console_BuildTurbo, CF_DEMO },
   { "b.turbo", console_BuildTurbo, CF_DEMO },
   { "mf", console_BuildMF, CF_DEMO },
