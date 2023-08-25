@@ -70,7 +70,7 @@ void AM_Drawer (dboolean minimap);
 
 // Called to force the automap to quit
 // if the level is completed while it is up.
-void AM_Stop (void);
+void AM_Stop (dboolean minimap);
 
 // killough 2/22/98: for saving automap information in savegame:
 

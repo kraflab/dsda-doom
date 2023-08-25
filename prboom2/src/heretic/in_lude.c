@@ -21,6 +21,7 @@
 ========================
 */
 
+#include "am_map.h"
 #include "doomstat.h"
 #include "d_event.h"
 #include "s_sound.h"
@@ -220,8 +221,6 @@ static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
 //
 //========================================================================
 
-extern void AM_Stop(void);
-
 void IN_Start(wbstartstruct_t* wbstartstruct)
 {
     V_SetPalette(0);
@@ -233,7 +232,7 @@ void IN_Start(wbstartstruct_t* wbstartstruct)
     skipintermission = false;
     intertime = 0;
     oldintertime = 0;
-    AM_Stop();
+    AM_Stop(false);
     S_ChangeMusic(heretic_mus_intr, true);
 }
 

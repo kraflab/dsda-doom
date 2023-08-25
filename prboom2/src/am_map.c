@@ -846,9 +846,12 @@ void AM_ExchangeScales(int full_automap, int *last_full_automap)
 //
 // Passed nothing, returns nothing
 //
-void AM_Stop (void)
+void AM_Stop (dboolean minimap)
 {
   automap_active = false;
+
+  if (minimap && dsda_ShowMinimap())
+    AM_Start(false);
 }
 
 //
@@ -937,9 +940,7 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map))
   {
     bigstate = 0;
-    AM_Stop();
-    if (dsda_ShowMinimap())
-      AM_Start(false);
+    AM_Stop(true);
 
     return true;
   }

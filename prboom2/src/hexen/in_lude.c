@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 //
 
+#include "am_map.h"
 #include "doomstat.h"
 #include "d_event.h"
 #include "s_sound.h"
@@ -74,8 +75,6 @@ static char *HubText;
 
 extern dboolean BorderNeedRefresh;
 
-extern void AM_Stop(void);
-
 void Hexen_IN_Start(wbstartstruct_t* wbstartstruct)
 {
     V_SetPalette(0);
@@ -85,7 +84,7 @@ void Hexen_IN_Start(wbstartstruct_t* wbstartstruct)
     interstate = 0;
     skipintermission = false;
     intertime = 0;
-    AM_Stop();
+    AM_Stop(false);
     SN_StopAllSequences();
 }
 

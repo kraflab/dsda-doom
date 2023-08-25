@@ -2131,7 +2131,7 @@ void G_DoCompleted (void)
     if (playeringame[i])
       G_PlayerFinishLevel(i);        // take away cards and stuff
 
-  AM_Stop();
+  AM_Stop(false);
 
   e6y_G_DoCompleted();
   dsda_WatchLevelCompletion();
