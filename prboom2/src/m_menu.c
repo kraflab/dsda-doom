@@ -3160,6 +3160,7 @@ static setup_menu_t empty_line_template = EMPTY_LINE;
 
 #define INSERT_FINAL_LEVEL_TABLE_ENTRY { \
   level_table_page[page][base_i] = final_entry_template; \
+  level_table_page[page][base_i].m_x = level_table_cursor_position[page]; \
 }
 
 #define INSERT_LEVEL_TABLE_EMPTY_LINE { \
@@ -3259,6 +3260,8 @@ static void M_CalculateWadStatsSummary(void)
   }
 }
 
+static int level_table_cursor_position[LEVEL_TABLE_PAGES];
+
 static void M_ResetLevelTable(void)
 {
   int i, page;
@@ -3280,6 +3283,8 @@ static void M_ResetLevelTable(void)
             !(level_table_page[page][i].m_flags & (S_NEXT | S_PREV)))
           M_FreeMText(level_table_page[page][i].m_text);
       }
+
+      level_table_cursor_position[page] = level_table_page[page][i].m_x;
 
       memset(level_table_page[page], 0, page_count[page] * sizeof(*level_table_page[page]));
     }
