@@ -828,7 +828,7 @@ static void dsda_ParseUDMFIdentifier(Scanner &scanner) {
     scanner.MustGetToken('=');
     scanner.MustGetToken(TK_StringConst);
 
-    if (stricmp(scanner.string, "zdoom"))
+    if (stricmp(scanner.string, "zdoom") && stricmp(scanner.string, "dsda"))
       scanner.ErrorF("Unknown UDMF namespace \"%s\"", scanner.string);
 
     scanner.MustGetToken(';');
