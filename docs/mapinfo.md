@@ -139,7 +139,7 @@ Defines a new skill level. The **ID** does not show up anywhere in-game. If two 
 | **MonsterHealth = \<Float\>** | Sets the enemy spawn health multiplier (2.0 means double spawn health). |
 | **FriendlyHealth = \<Float\>** | Sets the friend spawn health multiplier (2.0 means double spawn health). |
 | **RespawnTime = \<Int\>** | Sets the minimum time in seconds before a monster can respawn (the default is 0, which disables respawning). |
-| **SpawnFilter = \<Int\>** | Sets which skill value to filter by when spawning monsters. For instance, if you want to create a new skill level that spawns the same monsters as UV, use 4. |
+| **SpawnFilter = \<Int\>** | Sets which skill value to filter by when spawning things. For instance, if you want to create a new skill level that spawns the same things as UV, use 4. |
 | **Key = "\<Char\>"** | Sets the menu hotkey. |
 | **MustConfirm [= "\<Message\>"]** | Prompts the player to confirm when selecting this skill level. Optionally set the message given to the player. |
 | **Name = "\<String\>"** | The name of the skill in the menu. |
