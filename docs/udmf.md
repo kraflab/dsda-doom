@@ -10,73 +10,67 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 ### Linedefs
 
-| Field              | Status             |
-| ------------------ | ------------------ |
-| id                 | :heavy_check_mark: |
-| v1                 | :heavy_check_mark: |
-| v2                 | :heavy_check_mark: |
-| blocking           | :heavy_check_mark: |
-| blockmonsters      | :heavy_check_mark: |
-| twosided           | :heavy_check_mark: |
-| dontpegtop         | :heavy_check_mark: |
-| dontpegbottom      | :heavy_check_mark: |
-| secret             | :heavy_check_mark: |
-| blocksound         | :heavy_check_mark: |
-| dontdraw           | :heavy_check_mark: |
-| mapped             | :heavy_check_mark: |
-| passuse            | :heavy_check_mark: |
-| translucent        | :heavy_check_mark: |
-| jumpover           | :heavy_check_mark: |
-| blockfloaters      | :heavy_check_mark: |
-| playercross        | :heavy_check_mark: |
-| playeruse          | :heavy_check_mark: |
-| monstercross       | :heavy_check_mark: |
-| monsteruse         | :heavy_check_mark: |
-| impact             | :heavy_check_mark: |
-| playerpush         | :heavy_check_mark: |
-| monsterpush        | :heavy_check_mark: |
-| missilecross       | :heavy_check_mark: |
-| repeatspecial      | :heavy_check_mark: |
-| special            | :heavy_check_mark: |
-| arg0               | :heavy_check_mark: |
-| arg1               | :heavy_check_mark: |
-| arg2               | :heavy_check_mark: |
-| arg3               | :heavy_check_mark: |
-| arg4               | :heavy_check_mark: |
-| sidefront          | :heavy_check_mark: |
-| sideback           | :heavy_check_mark: |
-| comment            | :x:                |
-| alpha              | :heavy_check_mark: |
-| renderstyle        | :x:                |
-| playeruseback      | :heavy_check_mark: |
-| anycross           | :heavy_check_mark: |
-| monsteractivate    | :heavy_check_mark: |
-| blockplayers       | :heavy_check_mark: |
-| blockeverything    | :heavy_check_mark: |
-| firstsideonly      | :heavy_check_mark: |
-| zoneboundary       | :x:                |
-| clipmidtex         | :heavy_check_mark: |
-| wrapmidtex         | :ice_cream:        |
-| midtex3d           | :heavy_check_mark: |
-| midtex3dimpassible | :heavy_check_mark: |
-| checkswitchrange   | :heavy_check_mark: |
-| blockprojectiles   | :heavy_check_mark: |
-| blockuse           | :heavy_check_mark: |
-| blocksight         | :heavy_check_mark: |
-| blockhitscan       | :heavy_check_mark: |
-| locknumber         | :heavy_check_mark: |
-| arg0str            | :x:                |
-| moreids            | :heavy_check_mark: |
-| transparent        | :heavy_check_mark: |
-| automapstyle       | :heavy_check_mark: |
-| revealed           | :heavy_check_mark: |
-| noskywalls         | :x:                |
-| drawfullheight     | :x:                |
-| health             | :heavy_check_mark: |
-| healthgroup        | :heavy_check_mark: |
-| damagespecial      | :heavy_check_mark: |
-| deathspecial       | :heavy_check_mark: |
-| blocklandmonsters  | :heavy_check_mark: |
+| Property | Description |
+| --- | --- |
+| id _integer_ | Line ID / tag (default -1). |
+| v1 _integer_ | Index of the first vertex. |
+| v2 _integer_ | Index of the second vertex. |
+| blocking _bool_ | Blocks things. |
+| blockmonsters _bool_ | Blocks monsters. |
+| blockplayers _bool_ | Blocks players. |
+| blockfloaters _bool_ | Blocks floaters. |
+| blocklandmonsters _bool_ | Block non-flying monsters. |
+| blockprojectiles _bool_ | Blocks projectiles. |
+| blockhitscan _bool_ | Blocks hitscan. |
+| blockuse _bool_ | Blocks use. |
+| blocksound _bool_ | Blocks sound. |
+| blocksight _bool_ | Blocks sight. |
+| blockeverything _bool_ | Blocks everything. |
+| twosided _bool_ | Line has two sides. |
+| dontpegtop _bool_ | Line upper texture is unpegged. |
+| dontpegbottom _bool_ | Line lower texture is unpegged. |
+| secret _bool_ | Line is drawn as one-sided on the map. |
+| dontdraw _bool_ | Line never shows on the map. |
+| mapped _bool_ | Line starts out mapped. |
+| revealed _bool_ | Line starts revealed on the map. |
+| jumpover _bool_ | Line is a strife-style railing. |
+| playercross _bool_ | Can be activated by player cross. |
+| playeruse _bool_ | Can be activated by player use. |
+| monstercross _bool_ | Can be activated by monster cross. |
+| monsteruse _bool_ | Can be activated by monster use. |
+| impact _bool_ | Can be activated by projectile impact. |
+| playerpush _bool_ | Can be activated by player push. |
+| monsterpush _bool_ | Can be activated by monster push. |
+| missilecross _bool_ | Can be activated by projectile cross. |
+| anycross _bool_ | Can be activated by any non-projectile cross. |
+| monsteractivate _bool_ | Can be activated by monsters. |
+| playeruseback _bool_ | Can be activated by player use from the back. |
+| firstsideonly _bool_ | Can only be activated from the front. |
+| passuse _bool_ | Use action passes through the line. |
+| checkswitchrange _bool_ | Switches can only be activated when vertically reachable. |
+| locknumber _integer_ | **TODO** |
+| repeatspecial _bool_ | Repeatable activation. |
+| special _integer_ | Special action. |
+| arg0 _integer_ | Special argument 0. |
+| arg1 _integer_ | Special argument 1. |
+| arg2 _integer_ | Special argument 2. |
+| arg3 _integer_ | Special argument 3. |
+| arg4 _integer_ | Special argument 4. |
+| sidefront _integer_ | Index of the first sidedef. |
+| sideback _integer_ | Index of the second sidedef. |
+| alpha _float_ | Translucency (default is 1.0). |
+| translucent _bool_ | Line is 75% opague. |
+| transparent _bool_ | Line is 25% opague. |
+| clipmidtex _bool_ | Midtextures are clipped by the floor and ceiling. |
+| * wrapmidtex _bool_ | Midtextures are wrapped. |
+| midtex3d _bool_ | Actors can walk on the midtexture. |
+| midtex3dimpassible _bool_ | The midtexture is impassible. |
+| moreids _string_ | Space-separated list of extra IDs. |
+| automapstyle _integer_ | **TODO** |
+| health _integer_ | Line health (for use with damage / death special). |
+| healthgroup _integer_ | Group ID of lines sharing health. |
+| damagespecial _bool_ | Special activated when receiving damage that does not reduce health to 0. |
+| deathspecial _bool_ | Special activated when health is reduced to 0. |
 
 ### Sidedefs
 
