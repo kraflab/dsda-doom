@@ -251,13 +251,6 @@ static void dsda_ParseDoomMapInfoMapSky(Scanner &scanner, doom_mapinfo_sky_t &sk
   scanner.MustGetString();
 
   STR_DUP(sky.lump);
-  if (scanner.CheckToken(',')) {
-    scanner.MustGetFloat();
-    // sky.scrollspeed = scanner.decimal;
-  }
-  else {
-    // sky.scrollspeed = 0.0;
-  }
 }
 
 static void dsda_ParseDoomMapInfoTitlePatch(Scanner &scanner, doom_mapinfo_map_t &map) {
