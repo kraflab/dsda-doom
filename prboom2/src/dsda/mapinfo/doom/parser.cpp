@@ -95,7 +95,7 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
                         x = scanner.decimal; }
 
 #define SCAN_STRING(x) { scanner.MustGetToken('='); \
-                         scanner.MustGetToken(TK_StringConst); \
+                         scanner.MustGetString(); \
                          STR_DUP(x); }
 
 #define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
@@ -104,11 +104,11 @@ static void dsda_FloatString(Scanner &scanner, char* &str) {
 
 static void dsda_ParseDoomMapInfoMultiString(Scanner &scanner, char* &str) {
   scanner.MustGetToken('=');
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetString();
   std::string multi_str(scanner.string);
 
   while (scanner.CheckToken(',')) {
-    scanner.MustGetToken(TK_StringConst);
+    scanner.MustGetString();
     multi_str += "\n";
     multi_str += scanner.string;
   }
@@ -214,7 +214,7 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
   else if (scanner.CheckToken(TK_Identifier)) {
     if (!stricmp(scanner.string, "EndPic")) {
       scanner.MustGetToken(',');
-      scanner.MustGetToken(TK_StringConst);
+      scanner.MustGetString();
       STR_DUP(next.end_pic);
     }
     else if (!stricmp(scanner.string, "endgame")) {
@@ -228,10 +228,10 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
         else if (!stricmp(scanner.string, "hscroll")) {
           next.end = dmi_end_game_scroll;
           scanner.MustGetToken('=');
-          scanner.MustGetToken(TK_StringConst);
+          scanner.MustGetString();
           STR_DUP(next.end_pic);
           scanner.MustGetToken(',');
-          scanner.MustGetToken(TK_StringConst);
+          scanner.MustGetString();
           STR_DUP(next.end_pic_b);
         }
         else if (!stricmp(scanner.string, "cast")) {
@@ -257,7 +257,7 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
 
 static void dsda_ParseDoomMapInfoMapSky(Scanner &scanner, doom_mapinfo_sky_t &sky) {
   scanner.MustGetToken('=');
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetString();
 
   STR_DUP(sky.lump);
   if (scanner.CheckToken(',')) {
@@ -271,7 +271,7 @@ static void dsda_ParseDoomMapInfoMapSky(Scanner &scanner, doom_mapinfo_sky_t &sk
 
 static void dsda_ParseDoomMapInfoTitlePatch(Scanner &scanner, doom_mapinfo_map_t &map) {
   scanner.MustGetToken('=');
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetString();
 
   STR_DUP(map.title_patch);
   if (scanner.CheckToken(',')) {
@@ -283,7 +283,7 @@ static void dsda_ParseDoomMapInfoTitlePatch(Scanner &scanner, doom_mapinfo_map_t
 
 static void dsda_ParseDoomMapInfoMusic(Scanner &scanner, doom_mapinfo_map_t &map) {
   scanner.MustGetToken('=');
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetString();
 
   if (strchr(scanner.string, ':'))
     return;
@@ -298,7 +298,7 @@ static void dsda_ParseDoomMapInfoMusic(Scanner &scanner, doom_mapinfo_map_t &map
 
 static void dsda_ParseDoomMapInfoIntermissionPic(Scanner &scanner, char* &pic) {
   scanner.MustGetToken('=');
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetString();
 
   if (scanner.string[0] == '$')
     return;
@@ -312,12 +312,12 @@ static void dsda_ParseDoomMapInfoMapSpecialAction(Scanner &scanner,
 
   scanner.MustGetToken('=');
 
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetString();
   special_action.monster_type = dsda_ActorNameToType(scanner.string);
 
   scanner.MustGetToken(',');
 
-  scanner.MustGetToken(TK_StringConst);
+  scanner.MustGetString();
   special_action.action_special = dsda_ActionNameToNumber(scanner.string);
 
   for (int i = 0; i < 5; ++i) {
@@ -493,18 +493,18 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
 
   dsda_CopyMap(map, default_map);
 
-  scanner.MustGetToken(TK_Identifier);
+  scanner.MustGetString();
   STR_DUP(map.lump_name);
 
   // Lookup via a separate lump is not supported, so use the key instead
   if (scanner.CheckToken(TK_Identifier)) {
     if (!stricmp(scanner.string, "lookup"))
-      scanner.MustGetToken(TK_Identifier);
+      scanner.MustGetString();
     else
       scanner.ErrorF("Unknown map declaration %s", scanner.string);
   }
   else
-    scanner.MustGetToken(TK_StringConst);
+    scanner.MustGetString();
 
   STR_DUP(map.nice_name);
 
@@ -577,7 +577,7 @@ static void dsda_FreeSkill(doom_mapinfo_skill_t &skill) {
 static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
   doom_mapinfo_skill_t skill = { 0 };
 
-  scanner.MustGetToken(TK_Identifier);
+  scanner.MustGetString();
   STR_DUP(skill.unique_id);
 
   scanner.MustGetToken('{');
@@ -610,12 +610,12 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "Key")) {
       scanner.MustGetToken('=');
-      scanner.MustGetToken(TK_StringConst);
+      scanner.MustGetString();
       skill.key = tolower(scanner.string[0]);
     }
     else if (!stricmp(scanner.string, "MustConfirm")) {
       if (scanner.CheckToken('=')) {
-        scanner.MustGetToken(TK_StringConst);
+        scanner.MustGetString();
         STR_DUP(skill.must_confirm);
       }
 
@@ -724,7 +724,7 @@ static void dsda_FreeEpisode(doom_mapinfo_episode_t &episode) {
 static void dsda_ParseDoomMapInfoEpisode(Scanner &scanner) {
   doom_mapinfo_episode_t episode = { 0 };
 
-  scanner.MustGetToken(TK_Identifier);
+  scanner.MustGetString();
   STR_DUP(episode.map_lump);
 
   if (episode.map_lump[0] == '&')
@@ -742,7 +742,7 @@ static void dsda_ParseDoomMapInfoEpisode(Scanner &scanner) {
     }
     else if (!stricmp(scanner.string, "Key")) {
       scanner.MustGetToken('=');
-      scanner.MustGetToken(TK_StringConst);
+      scanner.MustGetString();
       episode.key = tolower(scanner.string[0]);
     }
     else {
