@@ -100,6 +100,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
 
 void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   int i;
+  int y_delta;
 
   *data = Z_Calloc(1, sizeof(local_component_t));
   local = *data;
@@ -116,8 +117,10 @@ void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args, int arg
   else
     component_config = &doom_ammo;
 
+  y_delta = BOTTOM_ALIGNMENT(vpt & VPT_ALIGN_MASK) ? -8 : 8;
+
   for (i = 0; i < component_config->count; ++i)
-    dsda_InitTextHC(&local->component[i], x_offset, y_offset - i * 8, vpt);
+    dsda_InitTextHC(&local->component[i], x_offset, y_offset + i * y_delta, vpt);
 }
 
 void dsda_UpdateAmmoTextHC(void* data) {
