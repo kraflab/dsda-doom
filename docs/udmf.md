@@ -74,38 +74,38 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 ### Sidedefs
 
-| Field                 | Status             |
-| --------------------- | ------------------ |
-| offsetx               | :heavy_check_mark: |
-| offsety               | :heavy_check_mark: |
-| texturetop            | :heavy_check_mark: |
-| texturebottom         | :heavy_check_mark: |
-| texturemiddle         | :heavy_check_mark: |
-| sector                | :heavy_check_mark: |
-| scalex_top            | :ice_cream:        |
-| scaley_top            | :ice_cream:        |
-| scalex_mid            | :ice_cream:        |
-| scaley_mid            | :ice_cream:        |
-| scalex_bottom         | :ice_cream:        |
-| scaley_bottom         | :ice_cream:        |
-| offsetx_top           | :heavy_check_mark: |
-| offsety_top           | :heavy_check_mark: |
-| offsetx_mid           | :heavy_check_mark: |
-| offsety_mid           | :heavy_check_mark: |
-| offsetx_bottom        | :heavy_check_mark: |
-| offsety_bottom        | :heavy_check_mark: |
-| light                 | :heavy_check_mark: |
-| light_top             | :heavy_check_mark: |
-| light_mid             | :heavy_check_mark: |
-| light_bottom          | :heavy_check_mark: |
-| lightabsolute         | :heavy_check_mark: |
-| lightabsolute_top     | :heavy_check_mark: |
-| lightabsolute_mid     | :heavy_check_mark: |
-| lightabsolute_bottom  | :heavy_check_mark: |
-| nofakecontrast        | :heavy_check_mark: |
-| smoothlighting        | :heavy_check_mark: |
-| clipmidtex            | :heavy_check_mark: |
-| wrapmidtex            | :ice_cream:        |
+| Property | Description |
+| --- | --- |
+| offsetx _integer_ | X texture offset. |
+| offsety _integer_ | Y texture offset. |
+| texturetop _string_ | Upper texture. |
+| texturebottom _string_ | Lower texture. |
+| texturemiddle _string_ | Middle texture. |
+| sector _integer_ | Sector index. |
+| * scalex_top _float_ | X scale for upper texture (default is 1.0). |
+| * scaley_top _float_ | Y scale for upper texture (default is 1.0). |
+| * scalex_mid _float_ | X scale for middle texture (default is 1.0). |
+| * scaley_mid _float_ | Y scale for middle texture (default is 1.0). |
+| * scalex_bottom _float_ | X scale for bottom texture (default is 1.0). |
+| * scaley_bottom _float_ | Y scale for bottom texture (default is 1.0). |
+| offsetx_top _float_ | X offset for upper texture. |
+| offsety_top _float_ | Y offset for upper texture. |
+| offsetx_mid _float_ | X offset for middle texture. |
+| offsety_mid _float_ | Y offset for middle texture. |
+| offsetx_bottom _float_ | X offset for lower texture. |
+| offsety_bottom _float_ | Y offset for lower texture. |
+| light _integer_ | Light level. |
+| light_top _integer_ | Upper texture light level. |
+| light_mid _integer_ | Middle texture light level. |
+| light_bottom _integer_ | Lower texture light level. |
+| lightabsolute _bool_ | Light is absolute rather than relative to the owning sector. |
+| lightabsolute_top _bool_ | Upper texture light is absolute rather than relative to the sidedef light level. |
+| lightabsolute_mid _bool_ | Middle texture light is absolute rather than relative to the sidedef light level. |
+| lightabsolute_bottom _bool_ | Lower texture light is absolute rather than relative to the sidedef light level. |
+| nofakecontrast _bool_ | Disables fake contrast on this sidedef. |
+| smoothlighting _bool_ | Enables smooth fake contrast on this sidedef. |
+| clipmidtex _bool_ | Middle textures are clipped by the floor and ceiling. |
+| * wrapmidtex _bool_ | Middle textures are wrapped. |
 
 ### Vertices
 
