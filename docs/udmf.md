@@ -109,10 +109,10 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 ### Vertices
 
-| Field    | Status             |
-| -------- | ------------------ |
-| x        | :heavy_check_mark: |
-| y        | :heavy_check_mark: |
+| Property | Description |
+| --- | --- |
+| x _float_ | X coordinate. |
+| y _float_ | Y coordinate. |
 
 ### Sectors
 
