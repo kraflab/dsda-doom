@@ -665,6 +665,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
           cmd->arti = hexen_arti_invulnerability;
         }
         else if (dsda_InputTickActivated(dsda_input_arti_quartz) &&
+                 players[consoleplayer].mo &&
                  players[consoleplayer].mo->health < MAXHEALTH)
         {
           cmd->arti = hexen_arti_health;
@@ -730,8 +731,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       {
         cmd->arti = arti_tomeofpower;
       }
-      else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti
-          && (players[consoleplayer].mo->health < MAXHEALTH))
+      else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti &&
+               players[consoleplayer].mo &&
+               players[consoleplayer].mo->health < MAXHEALTH)
       {
         cmd->arti = arti_health;
       }
