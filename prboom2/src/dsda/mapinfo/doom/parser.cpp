@@ -187,71 +187,62 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
   next.loop_music = true;
   next.end = dmi_end_null;
 
-  if (scanner.CheckToken(TK_StringConst)) {
-    if (!stricmp(scanner.string, "EndGame1")) {
-      next.end_pic = Z_Strdup(gamemode == retail ? "CREDIT" : "HELP2");
-      return;
-    }
-    else if (!stricmp(scanner.string, "EndGame2")) {
-      next.end_pic = Z_Strdup("VICTORY2");
-      return;
-    }
-    else if (!stricmp(scanner.string, "EndGame4")) {
-      next.end_pic = Z_Strdup("ENDPIC");
-      return;
-    }
-    else if (!stricmp(scanner.string, "EndGame3")) {
-      next.end = dmi_end_game_scroll;
-      return;
-    }
-    else if (!stricmp(scanner.string, "EndGameC")) {
-      next.end = dmi_end_game_cast;
-      return;
-    }
+  scanner.MustGetString();
 
-    STR_DUP(next.map);
+  if (!stricmp(scanner.string, "EndGame1")) {
+    next.end_pic = Z_Strdup(gamemode == retail ? "CREDIT" : "HELP2");
   }
-  else if (scanner.CheckToken(TK_Identifier)) {
-    if (!stricmp(scanner.string, "EndPic")) {
+  else if (!stricmp(scanner.string, "EndGame2")) {
+    next.end_pic = Z_Strdup("VICTORY2");
+  }
+  else if (!stricmp(scanner.string, "EndGame4")) {
+    next.end_pic = Z_Strdup("ENDPIC");
+  }
+  else if (!stricmp(scanner.string, "EndGame3")) {
+    next.end = dmi_end_game_scroll;
+  }
+  else if (!stricmp(scanner.string, "EndGameC")) {
+    next.end = dmi_end_game_cast;
+  }
+  else if (!stricmp(scanner.string, "EndPic")) {
       scanner.MustGetToken(',');
       scanner.MustGetString();
       STR_DUP(next.end_pic);
-    }
-    else if (!stricmp(scanner.string, "endgame")) {
-      scanner.MustGetToken('{');
-      while (!scanner.CheckToken('}')) {
-        scanner.MustGetToken(TK_Identifier);
+  }
+  else if (!stricmp(scanner.string, "endgame")) {
+    scanner.MustGetToken('{');
+    while (!scanner.CheckToken('}')) {
+      scanner.MustGetToken(TK_Identifier);
 
-        if (!stricmp(scanner.string, "pic")) {
-          SCAN_STRING(next.end_pic);
-        }
-        else if (!stricmp(scanner.string, "hscroll")) {
-          next.end = dmi_end_game_scroll;
-          scanner.MustGetToken('=');
-          scanner.MustGetString();
-          STR_DUP(next.end_pic);
-          scanner.MustGetToken(',');
-          scanner.MustGetString();
-          STR_DUP(next.end_pic_b);
-        }
-        else if (!stricmp(scanner.string, "cast")) {
-          next.end = dmi_end_game_cast;
-        }
-        else if (!stricmp(scanner.string, "music")) {
-          SCAN_STRING(next.music);
-          if (scanner.CheckToken(',')) {
-            scanner.MustGetInteger();
-            next.loop_music = !!scanner.number;
-          }
-        }
-        else {
-          dsda_SkipValue(scanner);
+      if (!stricmp(scanner.string, "pic")) {
+        SCAN_STRING(next.end_pic);
+      }
+      else if (!stricmp(scanner.string, "hscroll")) {
+        next.end = dmi_end_game_scroll;
+        scanner.MustGetToken('=');
+        scanner.MustGetString();
+        STR_DUP(next.end_pic);
+        scanner.MustGetToken(',');
+        scanner.MustGetString();
+        STR_DUP(next.end_pic_b);
+      }
+      else if (!stricmp(scanner.string, "cast")) {
+        next.end = dmi_end_game_cast;
+      }
+      else if (!stricmp(scanner.string, "music")) {
+        SCAN_STRING(next.music);
+        if (scanner.CheckToken(',')) {
+          scanner.MustGetInteger();
+          next.loop_music = !!scanner.number;
         }
       }
+      else {
+        dsda_SkipValue(scanner);
+      }
     }
-    else {
-      dsda_SkipValue(scanner);
-    }
+  }
+  else {
+    STR_DUP(next.map);
   }
 }
 
