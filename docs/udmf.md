@@ -1,39 +1,12 @@
 ## UDMF (Universal Doom Map Format)
 
-This page tracks support for the universal doom map format, as seen in ZDoom. See the [Doom in Hexen docs](./doom_in_hexen.md) for more information about which specials and thing types are supported.
+This page defines the `dsda` udmf namespace. The features of this namespace form a subset of the `zdoom` namespace - map features understood by dsda-doom should also be understood by gzdoom, but not necessarily vice versa. See the [Doom in Hexen docs](./doom_in_hexen.md) for more information about which specials and thing types are supported.
 
 In principle, udmf features supported in dsda-doom should work the same as they do in gzdoom. However, there may be maps that do not work in one port or the other due to differences in the underlying physics, similar to other map formats. Significant deviation in behaviour is likely a bug.
 
-Known differences (to be fixed):
-- dsda-doom acts as if ActivateOwnDeathSpecials is set to 1 by default (hexen behaviour)
-  - If you use death specials, add a MAPINFO lump that sets this flag to ensure your project works in other ports (and future versions of dsda-doom)
-- dsda-doom does not support finite monster height
+It's strongly recommended to configure defaults with [MAPINFO](./mapinfo.md) for cross-port consistency.
 
-### Legend
-
-| Symbol             | Meaning                      |
-| ------------------ | ---------------------------- |
-| :heavy_check_mark: | Feature is supported         |
-| :ice_cream:        | Feature only works in opengl |
-| :x:                | Feature is not planned       |
-
-### Namespaces
-
-| Name       | Status             |
-| ---------- | ------------------ |
-| doom       | :x:                |
-| heretic    | :x:                |
-| hexen      | :x:                |
-| strife     | :x:                |
-| zdoom 1.33 | :heavy_check_mark: |
-
-### Nodes
-
-| Name          | Status             |
-| ------------- | ------------------ |
-| ZDBSP X/Z GLN | :heavy_check_mark: |
-| ZDBSP X/Z GL2 | :heavy_check_mark: |
-| ZDBSP X/Z GL3 | :heavy_check_mark: |
+DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl nodes gln, gl2, and gl3.
 
 ### Linedefs
 
