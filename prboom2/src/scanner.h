@@ -82,6 +82,7 @@ class Scanner
 		bool		CheckFloat();
 		void		MustGetInteger();
 		void		MustGetFloat();
+		void		MustGetString();
 		void		ExpandState();
 		int			GetLine() const { return tokenLine; }
 		int			GetLinePos() const { return tokenLinePosition; }

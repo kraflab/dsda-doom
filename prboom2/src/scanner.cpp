@@ -601,6 +601,14 @@ void Scanner::MustGetFloat()
 	if (!ScanFloat()) Error(TK_FloatConst);
 }
 
+void Scanner::MustGetString()
+{
+	if (!CheckToken(TK_StringConst) && !CheckToken(TK_Identifier))
+	{
+		Error(TK_StringConst);
+		return;
+	}
+}
 
 bool Scanner::TokensLeft() const
 {
