@@ -3442,15 +3442,23 @@ static void P_UpdateMapFormat()
 
     dsda_ApplyZDoomMapFormat();
   }
-  else if (has_behavior && !hexen)
-  {
-    if (heretic)
-      I_Error("Hexen format maps are not supported in Heretic yet");
-
-    dsda_ApplyZDoomMapFormat();
-  }
   else
-    dsda_ApplyDefaultMapFormat();
+  {
+    if (dsda_Flag(dsda_arg_debug_mapinfo) || dsda_UseMapinfo())
+      I_Error("Non-UDMF maps are not supported alongside MAPINFO");
+
+    if (has_behavior && !hexen)
+    {
+      if (heretic)
+        I_Error("Hexen format maps are not supported in Heretic yet");
+
+      dsda_ApplyZDoomMapFormat();
+    }
+    else
+    {
+      dsda_ApplyDefaultMapFormat();
+    }
+  }
 }
 
 static void P_UpdateLevelComponents(int lumpnum, int gl_lumpnum) {

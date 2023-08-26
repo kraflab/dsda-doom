@@ -1,6 +1,6 @@
 ## MAPINFO
 
-MAPINFO is a lump that allows authors to configure various properties of maps, clusters, episodes, and skills. DSDA-Doom supports a subset of the MAPINFO options that are supported by other ports - if a lump works in dsda-doom, it should also work fine in gzdoom, but not necessarily vice-versa. Only the "new" format of mapinfo is valid in dsda-doom (the curly braces). MAPINFO gives access to many features and flags of particular importance to UDMF maps, including its set of special actions and activation rules, jumping, gravity, and air control.
+MAPINFO is a lump that allows authors to configure various properties of maps, clusters, episodes, and skills. DSDA-Doom supports a subset of the MAPINFO options that are supported by other ports - if a lump works in dsda-doom, it should also work fine in gzdoom, but not necessarily vice-versa. Only the "new" format of mapinfo is valid in dsda-doom (the curly braces). MAPINFO gives access to many features and flags of particular importance to UDMF maps, including its set of special actions and activation rules, jumping, gravity, and air control. Only UDMF maps can be loaded alongside MAPINFO in dsda-doom.
 
 ## Usage
 
