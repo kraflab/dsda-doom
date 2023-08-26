@@ -116,69 +116,69 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 ### Sectors
 
-| Field                    | Status             |
-| ------------------------ | ------------------ |
-| heightfloor              | :heavy_check_mark: |
-| heightceiling            | :heavy_check_mark: |
-| texturefloor             | :heavy_check_mark: |
-| textureceiling           | :heavy_check_mark: |
-| lightlevel               | :heavy_check_mark: |
-| special                  | :heavy_check_mark: |
-| id                       | :heavy_check_mark: |
-| xpanningfloor            | :heavy_check_mark: |
-| ypanningfloor            | :heavy_check_mark: |
-| xpanningceiling          | :heavy_check_mark: |
-| ypanningceiling          | :heavy_check_mark: |
-| xscalefloor              | :heavy_check_mark: |
-| yscalefloor              | :heavy_check_mark: |
-| xscaleceiling            | :heavy_check_mark: |
-| yscaleceiling            | :heavy_check_mark: |
-| rotationfloor            | :heavy_check_mark: |
-| rotationceiling          | :heavy_check_mark: |
-| lightfloor               | :heavy_check_mark: |
-| lightceiling             | :heavy_check_mark: |
-| lightfloorabsolute       | :heavy_check_mark: |
-| lightceilingabsolute     | :heavy_check_mark: |
-| gravity                  | :heavy_check_mark: |
-| silent                   | :heavy_check_mark: |
-| noattack                 | :heavy_check_mark: |
-| hidden                   | :heavy_check_mark: |
-| moreids                  | :heavy_check_mark: |
-| damageamount             | :heavy_check_mark: |
-| damageinterval           | :heavy_check_mark: |
-| leakiness                | :heavy_check_mark: |
-| damagehazard             | :heavy_check_mark: |
+| Property | Description |
+| --- | --- |
+| heightfloor _integer_ | **TODO** |
+| heightceiling _integer_ | **TODO** |
+| texturefloor _string_ | **TODO** |
+| textureceiling _string_ | **TODO** |
+| lightlevel _integer_ | **TODO** |
+| special _integer_ | **TODO** |
+| id _integer_ | **TODO** |
+| xpanningfloor _float_ | **TODO** |
+| ypanningfloor _float_ | **TODO** |
+| xpanningceiling _float_ | **TODO** |
+| ypanningceiling _float_ | **TODO** |
+| xscalefloor _float_ | **TODO** |
+| yscalefloor _float_ | **TODO** |
+| xscaleceiling _float_ | **TODO** |
+| yscaleceiling _float_ | **TODO** |
+| rotationfloor _float_ | **TODO** |
+| rotationceiling _float_ | **TODO** |
+| lightfloor _integer_ | **TODO** |
+| lightceiling _integer_ | **TODO** |
+| lightfloorabsolute _bool_ | **TODO** |
+| lightceilingabsolute _bool_ | **TODO** |
+| gravity _float_ | **TODO** |
+| silent _bool_ | **TODO** |
+| noattack _bool_ | **TODO** |
+| hidden _bool_ | **TODO** |
+| moreids _string_ | **TODO** |
+| damageamount _integer_ | **TODO** |
+| damageinterval _integer_ | **TODO** |
+| leakiness _integer_ | **TODO** |
+| damagehazard _bool_ | **TODO** |
 
 ### Things
 
-| Field         | Status             |
-| ------------- | ------------------ |
-| id            | :heavy_check_mark: |
-| x             | :heavy_check_mark: |
-| y             | :heavy_check_mark: |
-| height        | :heavy_check_mark: |
-| angle         | :heavy_check_mark: |
-| type          | :heavy_check_mark: |
-| skill1        | :heavy_check_mark: |
-| skill2        | :heavy_check_mark: |
-| skill3        | :heavy_check_mark: |
-| skill4        | :heavy_check_mark: |
-| skill5        | :heavy_check_mark: |
-| ambush        | :heavy_check_mark: |
-| single        | :heavy_check_mark: |
-| dm            | :heavy_check_mark: |
-| coop          | :heavy_check_mark: |
-| friend        | :heavy_check_mark: |
-| dormant       | :heavy_check_mark: |
-| translucent   | :heavy_check_mark: |
-| invisible     | :heavy_check_mark: |
-| special       | :heavy_check_mark: |
-| arg0          | :heavy_check_mark: |
-| arg1          | :heavy_check_mark: |
-| arg2          | :heavy_check_mark: |
-| arg3          | :heavy_check_mark: |
-| arg4          | :heavy_check_mark: |
-| countsecret   | :heavy_check_mark: |
-| gravity       | :heavy_check_mark: |
-| health        | :heavy_check_mark: |
-| alpha         | :heavy_check_mark: |
+| Property | Description |
+| --- | --- |
+| id _integer_ | **TODO** |
+| x _float_ | **TODO** |
+| y _float_ | **TODO** |
+| height _float_ | **TODO** |
+| angle _integer_ | **TODO** |
+| type _integer_ | **TODO** |
+| skill1 _bool_ | **TODO** |
+| skill2 _bool_ | **TODO** |
+| skill3 _bool_ | **TODO** |
+| skill4 _bool_ | **TODO** |
+| skill5 _bool_ | **TODO** |
+| ambush _bool_ | **TODO** |
+| single _bool_ | **TODO** |
+| dm _bool_ | **TODO** |
+| coop _bool_ | **TODO** |
+| friend _bool_ | **TODO** |
+| dormant _bool_ | **TODO** |
+| translucent _bool_ | **TODO** |
+| invisible _bool_ | **TODO** |
+| special _integer_ | **TODO** |
+| arg0 _integer_ | **TODO** |
+| arg1 _integer_ | **TODO** |
+| arg2 _integer_ | **TODO** |
+| arg3 _integer_ | **TODO** |
+| arg4 _integer_ | **TODO** |
+| countsecret _bool_ | **TODO** |
+| gravity _float_ | **TODO** |
+| health _float_ | **TODO** |
+| alpha _float_ | **TODO** |
