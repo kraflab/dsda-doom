@@ -605,7 +605,7 @@ void Scanner::MustGetString()
 {
 	if (!CheckToken(TK_StringConst) && !CheckToken(TK_Identifier))
 	{
-		Error(TK_StringConst);
+		ErrorF("Expected String Constant or Identifier");
 		return;
 	}
 }
