@@ -496,16 +496,7 @@ static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
   scanner.MustGetString();
   STR_DUP(map.lump_name);
 
-  // Lookup via a separate lump is not supported, so use the key instead
-  if (scanner.CheckToken(TK_Identifier)) {
-    if (!stricmp(scanner.string, "lookup"))
-      scanner.MustGetString();
-    else
-      scanner.ErrorF("Unknown map declaration %s", scanner.string);
-  }
-  else
-    scanner.MustGetString();
-
+  scanner.MustGetString();
   STR_DUP(map.nice_name);
 
   dsda_GuessLevelNum(map);
