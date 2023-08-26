@@ -475,7 +475,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
   },
   [dsda_arg_nomapinfo] = {
     "-nomapinfo", NULL, NULL,
-    "skip UMAPINFO lumps",
+    "skip *MAPINFO lumps",
     arg_null,
   },
   [dsda_arg_noautoload] = {
