@@ -33,6 +33,7 @@
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/preferences.h"
 
 #include "u.h"
 
@@ -469,7 +470,9 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
-  if (dsda_Flag(dsda_arg_nomapinfo))
+  if (dsda_Flag(dsda_arg_nomapinfo) ||
+      dsda_Flag(dsda_arg_debug_mapinfo) ||
+      dsda_UseMapinfo())
     return;
 
   p = -1;
