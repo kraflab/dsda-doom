@@ -6,7 +6,7 @@ In principle, udmf features supported in dsda-doom should work the same as they 
 
 It's strongly recommended to configure defaults with [MAPINFO](./mapinfo.md) for cross-port consistency.
 
-DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl nodes gln, gl2, and gl3.
+DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl nodes gln, gl2, and gl3. Properties marked with a `*` are only supported by the opengl renderer.
 
 ### Linedefs
 
