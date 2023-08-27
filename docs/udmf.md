@@ -153,32 +153,32 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 | Property | Description |
 | --- | --- |
-| id _integer_ | **TODO** |
-| x _float_ | **TODO** |
-| y _float_ | **TODO** |
-| height _float_ | **TODO** |
-| angle _integer_ | **TODO** |
-| type _integer_ | **TODO** |
-| skill1 _bool_ | **TODO** |
-| skill2 _bool_ | **TODO** |
-| skill3 _bool_ | **TODO** |
-| skill4 _bool_ | **TODO** |
-| skill5 _bool_ | **TODO** |
-| ambush _bool_ | **TODO** |
-| single _bool_ | **TODO** |
-| dm _bool_ | **TODO** |
-| coop _bool_ | **TODO** |
-| friend _bool_ | **TODO** |
-| dormant _bool_ | **TODO** |
-| translucent _bool_ | **TODO** |
-| invisible _bool_ | **TODO** |
-| special _integer_ | **TODO** |
-| arg0 _integer_ | **TODO** |
-| arg1 _integer_ | **TODO** |
-| arg2 _integer_ | **TODO** |
-| arg3 _integer_ | **TODO** |
-| arg4 _integer_ | **TODO** |
-| countsecret _bool_ | **TODO** |
-| gravity _float_ | **TODO** |
-| health _float_ | **TODO** |
-| alpha _float_ | **TODO** |
+| id _integer_ | Thing ID / tag. |
+| x _float_ | X coordinate. |
+| y _float_ | Y coordinate. |
+| height _float_ | Z displacement relative to the floor (or ceiling for SPAWNCEILING things). |
+| angle _integer_ | Facing angle in degrees. |
+| type _integer_ | DoomEdNum. |
+| skill1 _bool_ | Spawn in skill 1. |
+| skill2 _bool_ | Spawn in skill 2. |
+| skill3 _bool_ | Spawn in skill 3. |
+| skill4 _bool_ | Spawn in skill 4. |
+| skill5 _bool_ | Spawn in skill 5. |
+| ambush _bool_ | Thing is deaf. |
+| single _bool_ | Spawn in single-player mode. |
+| dm _bool_ | Spawn in deathmatch mode. |
+| coop _bool_ | Spawn in coop mode. |
+| friend _bool_ | Spawn as a friend. |
+| dormant _bool_ | Spawn dormant. |
+| alpha _float_ | Translucency (default is 1.0). |
+| translucent _bool_ | Thing is 66% opague. |
+| invisible _bool_ | Thing is invisible. |
+| special _integer_ | Special action. |
+| arg0 _integer_ | Special argument 0. |
+| arg1 _integer_ | Special argument 1. |
+| arg2 _integer_ | Special argument 2. |
+| arg3 _integer_ | Special argument 3. |
+| arg4 _integer_ | Special argument 4. |
+| countsecret _bool_ | Picking this thing up counts as a secret. |
+| gravity _float_ | Thing gravity. Positive values are multiplicative and negative values are absolute (default is 1.0). |
+| health _float_ | Thing health. Positive values are multiplicative and negative values are absolute (default is 1.0). |
