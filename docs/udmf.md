@@ -118,36 +118,36 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 | Property | Description |
 | --- | --- |
-| heightfloor _integer_ | **TODO** |
-| heightceiling _integer_ | **TODO** |
-| texturefloor _string_ | **TODO** |
-| textureceiling _string_ | **TODO** |
-| lightlevel _integer_ | **TODO** |
-| special _integer_ | **TODO** |
-| id _integer_ | **TODO** |
-| xpanningfloor _float_ | **TODO** |
-| ypanningfloor _float_ | **TODO** |
-| xpanningceiling _float_ | **TODO** |
-| ypanningceiling _float_ | **TODO** |
-| xscalefloor _float_ | **TODO** |
-| yscalefloor _float_ | **TODO** |
-| xscaleceiling _float_ | **TODO** |
-| yscaleceiling _float_ | **TODO** |
-| rotationfloor _float_ | **TODO** |
-| rotationceiling _float_ | **TODO** |
-| lightfloor _integer_ | **TODO** |
-| lightceiling _integer_ | **TODO** |
-| lightfloorabsolute _bool_ | **TODO** |
-| lightceilingabsolute _bool_ | **TODO** |
-| gravity _float_ | **TODO** |
-| silent _bool_ | **TODO** |
-| noattack _bool_ | **TODO** |
-| hidden _bool_ | **TODO** |
-| moreids _string_ | **TODO** |
-| damageamount _integer_ | **TODO** |
-| damageinterval _integer_ | **TODO** |
-| leakiness _integer_ | **TODO** |
-| damagehazard _bool_ | **TODO** |
+| heightfloor _integer_ | Floor height. |
+| heightceiling _integer_ | Ceiling height. |
+| texturefloor _string_ | Floor texture (flat). |
+| textureceiling _string_ | Ceiling texture (flat). |
+| lightlevel _integer_ | Light level. |
+| special _integer_ | Sector special. |
+| id _integer_ | Sector ID / tag. |
+| xpanningfloor _float_ | X offset for floor texture. |
+| ypanningfloor _float_ | Y offset for floor texture. |
+| xpanningceiling _float_ | X offset for ceiling texture. |
+| ypanningceiling _float_ | Y offset for ceiling texture. |
+| xscalefloor _float_ | X scale for floor texture. |
+| yscalefloor _float_ | Y scale for floor texture. |
+| xscaleceiling _float_ | X scale for ceiling texture. |
+| yscaleceiling _float_ | Y scale for ceiling texture. |
+| rotationfloor _float_ | Rotation of floor texture in degrees. |
+| rotationceiling _float_ | Rotation of ceiling texture in degrees. |
+| lightfloor _integer_ | Floor light level. |
+| lightceiling _integer_ | Ceiling light level. |
+| lightfloorabsolute _bool_ | Floor light is absolute rather than relative to the sector level. |
+| lightceilingabsolute _bool_ | Ceiling light is absolute rather than relative to the sector level. |
+| gravity _float_ | Sector gravity (default is 1.0). |
+| silent _bool_ | Actors in the sector make no sound. |
+| noattack _bool_ | Monsters in the sector do not attack. |
+| hidden _bool_ | Sector will not be drawn on the map. |
+| moreids _string_ | Space-separated list of extra IDs. |
+| damageamount _integer_ | Damage inflicted by the sector. Negative numbers heal. |
+| damageinterval _integer_ | Interval between damage applications (in tics, default is 32). |
+| leakiness _integer_ | Probability of damage leaking through radiation suit (0 = never, 256 = always). |
+| damagehazard _bool_ | Use strife-style delayed damage behavior. |
 
 ### Things
 
