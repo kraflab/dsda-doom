@@ -19,7 +19,7 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | Poly Objects            | :heavy_check_mark: |
 | Thing Specials          | :heavy_check_mark: |
 | ACS                     | :comet:            |
-| [MAPINFO](./mapinfo.md) | :comet:            |
+| [MAPINFO](./mapinfo.md) | :heavy_check_mark: |
 | SNDINFO                 | :comet:            |
 | SNDSEQ                  | :comet:            |
 | ANIMDEFS                | :comet:            |
