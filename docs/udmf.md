@@ -118,13 +118,13 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 | Property | Description |
 | --- | --- |
+| **id** _integer_ | Sector ID / tag. |
 | **heightfloor** _integer_ | Floor height. |
 | **heightceiling** _integer_ | Ceiling height. |
 | **texturefloor** _string_ | Floor texture (flat). |
 | **textureceiling** _string_ | Ceiling texture (flat). |
 | **lightlevel** _integer_ | Light level. |
 | **special** _integer_ | Sector special. |
-| **id** _integer_ | Sector ID / tag. |
 | **xpanningfloor** _float_ | X offset for floor texture. |
 | **ypanningfloor** _float_ | Y offset for floor texture. |
 | **xpanningceiling** _float_ | X offset for ceiling texture. |
