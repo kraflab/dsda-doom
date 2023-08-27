@@ -48,7 +48,7 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | firstsideonly _bool_ | Can only be activated from the front. |
 | passuse _bool_ | Use action passes through the line. |
 | checkswitchrange _bool_ | Switches can only be activated when vertically reachable. |
-| locknumber _integer_ | **TODO** |
+| locknumber _integer_ | <ul> <li> 0: No lock. </li> <li> 1: Red key card. </li> <li> 2: Blue key card. </li> <li> 3: Yellow key card. </li> <li> 4: Red skull key. </li> <li> 5: Blue skull key. </li> <li> 6: Yellow skull key. </li> <li> 100: Any key. </li> <li> 101: All 6 keys. </li> <li> 129: Any red key. </li> <li> 130: Any blue key. </li> <li> 131: Any yellow key. </li> <li> 132: Red card or skull. </li> <li> 133: Blue card or skull. </li> <li> 134: Yellow card or skull. </li> <li> 229: Any key of each color. </li> </ul> |
 | repeatspecial _bool_ | Repeatable activation. |
 | special _integer_ | Special action. |
 | arg0 _integer_ | Special argument 0. |
@@ -66,7 +66,7 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | midtex3d _bool_ | Actors can walk on the midtexture. |
 | midtex3dimpassible _bool_ | The midtexture is impassible. |
 | moreids _string_ | Space-separated list of extra IDs. |
-| automapstyle _integer_ | **TODO** |
+| automapstyle _integer_ | <ul> <li> 0: Automatic (based on properties). </li> <li> 1: One-sided. </li> <li> 2: Two-sided. </li> <li> 3: Different floor levels. </li> <li> 4: Different ceiling levels. </li> <li> 5: Reserved / unused (3D floor border). </li> <li> 6: Wall with special non-door action. </li> <li> 7: Secret. </li> <li> 8: Unseen. </li> <li> 9: Locked. </li> <li> 10: Intra-level teleporter. </li> <li> 11: Map exit. </li> <li> 12: Unseen secret. </li> <li> 13: Reserved / unused (portal). </li> </ul> |
 | health _integer_ | Line health (for use with damage / death special). |
 | healthgroup _integer_ | Group ID of lines sharing health. |
 | damagespecial _bool_ | Special activated when receiving damage that does not reduce health to 0. |
