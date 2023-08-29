@@ -285,52 +285,40 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 
 ### Sector Specials
 
-| Value   | Name                     | Status             |
-| ------- | ------------------------ | ------------------ |
-| *       | Generalized Effects      | :heavy_check_mark: |
-| 1       | Light_Phased             | :heavy_check_mark: |
-| 2-4     | LightSequence*           | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 26-27   | Stairs_Special*          | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 40-51   | Wind*                    | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 65      | dLight_Flicker           | :heavy_check_mark: |
-| 66      | dLight_StrobeFast        | :heavy_check_mark: |
-| 67      | dLight_StrobeSlow        | :heavy_check_mark: |
-| 68      | dLight_Strobe_Hurt       | :heavy_check_mark: |
-| 69      | dDamage_Hellslime        | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 71      | dDamage_Nukage           | :heavy_check_mark: |
-| 72      | dLight_Glow              | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 74      | dSector_DoorCloseIn30    | :heavy_check_mark: |
-| 75      | dDamage_End              | :heavy_check_mark: |
-| 76      | dLight_StrobeSlowSync    | :heavy_check_mark: |
-| 77      | dLight_StrobeFastSync    | :heavy_check_mark: |
-| 78      | dSector_DoorRaiseIn5Mins | :heavy_check_mark: |
-| 79      | dFriction_Low            | :heavy_check_mark: |
-| 80      | dDamage_SuperHellslime   | :heavy_check_mark: |
-| 81      | dLight_FireFlicker       | :heavy_check_mark: |
-| 82      | dDamage_LavaWimpy        | :heavy_check_mark: |
-| 83      | dDamage_LavaHefty        | :heavy_check_mark: |
-| 84      | dScroll_EastLavaDamage   | :heavy_check_mark: |
-| 85      | hDamage_Sludge           | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 104     | sLight_Strobe_Hurt       | :heavy_check_mark: |
-| 105     | sDamage_Hellslime        | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 115     | Damage_InstantDeath      | :heavy_check_mark: |
-| 116     | sDamage_SuperHellslime   | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 118     | Scroll_StrifeCurrent     | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 195     | Sector_Hidden            | :heavy_check_mark: |
-| 196     | Sector_Heal              | :heavy_check_mark: |
-| -       | -                        | -                  |
-| 201-224 | Scroll*                  | :heavy_check_mark: |
-| 225-244 | Carry*                   | :heavy_check_mark: |
+Many sector specials are legacy effects from the original formats. More control can be obtained from sector properties in UDMF and the above line actions. DSDA-Doom has no concept of "terrain effects" (lava doesn't splash).
 
-#### Notes
-
-- Terrain effects (e.g., from lava specials) don't exist.
+| Number | Name | Description |
+| --- | --- | --- |
+| * | Generalized Effects | Boom's generalized effects. |
+| 1 | Light_Phased | Manual phased lighting (set index via lightlevel 0-63). |
+| 2-4 | LightSequence* | Automatic phased lighting. |
+| 26-27 | Stairs_Special* | Special stair building markers for Stairs_BuildUp* and Stairs_BuildDown*. |
+| 40-51 | Wind* | Heretic's wind specials (only affects player). |
+| 65 | dLight_Flicker | Random blinking light. |
+| 66 | dLight_StrobeFast | Fast strobe. |
+| 67 | dLight_StrobeSlow | Slow strobe. |
+| 68 | dLight_Strobe_Hurt | Strobe + 20% damage. |
+| 69 | dDamage_Hellslime | 10% damage. |
+| 71 | dDamage_Nukage | 5% damage. |
+| 72 | dLight_Glow | Glowing light. |
+| 74 | dSector_DoorCloseIn30 | Door close in 30s. |
+| 75 | dDamage_End | Unblockable 20% damage + end level. |
+| 76 | dLight_StrobeSlowSync | Slow strobe sync. |
+| 77 | dLight_StrobeFastSync | Fast strobe sync. |
+| 78 | dSector_DoorRaiseIn5Mins | Door raise in 5m. |
+| 79 | dFriction_Low | Low friction (ice). |
+| 80 | dDamage_SuperHellslime | 20% damage. |
+| 81 | dLight_FireFlicker | Random flickering light. |
+| 82 | dDamage_LavaWimpy | Unblockable 5% damage. |
+| 83 | dDamage_LavaHefty | Unblockable 8% damage. |
+| 84 | dScroll_EastLavaDamage | East scroller + unblockable 5% damage. |
+| 85 | hDamage_Sludge | 4% damage. |
+| 104 | sLight_Strobe_Hurt | Strobe + 5% damage. |
+| 105 | sDamage_Hellslime | 2% hazard (delayed damage). |
+| 115 | Damage_InstantDeath | Instant kill. |
+| 116 | sDamage_SuperHellslime | 4% hazard (delayed damage). |
+| 118 | Scroll_StrifeCurrent | Scroll direction by tag (only affects player). |
+| 195 | Sector_Hidden | Hides the sector texture on the textured automap. |
+| 196 | Sector_Heal | Slowly heals the player up to 100% health. |
+| 201-224 | Scroll* | Carry items on the floor and scroll textures. |
+| 225-244 | Carry* | Carry items on the floor (only the east variant scrolls textures). |
