@@ -20,7 +20,6 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 | 9303 | PolyObject Start Spot (harmful) | Polyobject that deals damage on touch. |
 | 14001-14064 | AmbientSound | Not yet supported! |
 | 14065 | Custom AmbientSound | Not yet supported! |
-| 14067 | AmbientSoundNoGravity | Not yet supported! |
 | 14100-14164 | MusicChanger | Changes music via DoomEdNum (0 to 64). |
 | 14165 | Custom MusicChanger | Changes music via special argument (0 to 64). |
 
