@@ -316,29 +316,36 @@ fixed_t dsda_FloatToFixed(float x)
   return (fixed_t) (x * FRACUNIT);
 }
 
+static int pow10[8] = {
+  10,
+  100,
+  1000,
+  10000,
+  100000,
+  1000000,
+  10000000,
+  100000000,
+};
+
 // Scanning a float is a lossy process, so we must go directly from string to fixed
 fixed_t dsda_StringToFixed(const char* x)
 {
-  int i;
   dboolean negative;
   fixed_t result;
-  char frac[4] = { 0 };
+  char frac[9] = { 0 };
 
   if (!x)
     return 0;
 
   result = 0;
 
-  sscanf(x, "%d.%3s", &result, frac);
+  sscanf(x, "%d.%8s", &result, frac);
   negative = (x && x[0] == '-');
   result = abs(result);
   result <<= FRACBITS;
 
-  for (i = 0; i < 3; ++i)
-    if (!frac[i])
-      frac[i] = '0';
-
-  result += (fixed_t) ((int64_t) atoi(frac) * FRACUNIT / 1000);
+  if (frac[0])
+    result += (fixed_t) ((int64_t) atoi(frac) * FRACUNIT / pow10[strlen(frac) - 1]);
 
   return negative ? -result : result;
 }
