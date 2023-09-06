@@ -53,6 +53,9 @@ void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
   float seconds;
   dsda_split_state_t* split_state;
 
+  if (!local)
+    return;
+
   split_state = &dsda_split_state[split_class];
 
   if (split_state->delay > 0) {
