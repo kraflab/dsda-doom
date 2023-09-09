@@ -45,7 +45,7 @@ const char* dsda_SndInfoMapSongLumpName(int map) {
 void dsda_LoadSndInfo(void) {
   int i;
 
-  if (!map_format.sndinfo)
+  if (!hexen)
     return;
 
   SC_OpenLump("sndinfo");

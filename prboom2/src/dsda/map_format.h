@@ -36,7 +36,6 @@ typedef struct {
   dboolean acs;
   dboolean thing_id;
   dboolean sndseq;
-  dboolean sndinfo;
   dboolean animdefs;
   dboolean doublesky;
   dboolean map99;
