@@ -591,6 +591,11 @@ bool Scanner::CheckFloat()
 	return res;
 }
 
+bool Scanner::CheckString()
+{
+	return CheckToken(TK_StringConst) || CheckToken(TK_Identifier);
+}
+
 void Scanner::MustGetInteger()
 {
 	if (!ScanInteger()) Error(TK_IntConst);
@@ -603,7 +608,7 @@ void Scanner::MustGetFloat()
 
 void Scanner::MustGetString()
 {
-	if (!CheckToken(TK_StringConst) && !CheckToken(TK_Identifier))
+	if (!CheckString())
 	{
 		ErrorF("Expected String Constant or Identifier");
 		return;

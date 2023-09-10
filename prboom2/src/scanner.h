@@ -80,6 +80,7 @@ class Scanner
 		bool		CheckToken(char token);
 		bool		CheckInteger();
 		bool		CheckFloat();
+		bool		CheckString();
 		void		MustGetInteger();
 		void		MustGetFloat();
 		void		MustGetString();
