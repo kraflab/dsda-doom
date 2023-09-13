@@ -2345,7 +2345,7 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
     else if (!deh_strcasecmp(key, "Zero 2"))
       deh_sfx->pitch = (int)value;
     else if (!deh_strcasecmp(key, "Zero 3"))
-      deh_sfx->volume = (int)value;
+      ;
     else if (!deh_strcasecmp(key, "Zero 4"))
       ; // ignored
     else if (!deh_strcasecmp(key, "Neg. One 1"))

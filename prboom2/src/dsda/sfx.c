@@ -37,7 +37,6 @@ static void dsda_ResetSFX(int from, int to) {
   for (i = from; i < to; ++i) {
     S_sfx[i].priority = 127;
     S_sfx[i].pitch = -1;
-    S_sfx[i].volume = -1;
   }
 }
 

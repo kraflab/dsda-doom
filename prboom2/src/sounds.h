@@ -75,9 +75,6 @@ struct sfxinfo_struct {
   // pitch if a link
   int pitch;
 
-  // volume if a link
-  int volume;
-
   // sound data
   void *data;
 
