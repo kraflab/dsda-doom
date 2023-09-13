@@ -672,10 +672,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "startup_delay_ms", dsda_config_startup_delay_ms,
     dsda_config_int, 0, 1000, { 0 }
   },
-  [dsda_config_snd_pcspeaker] = {
-    "snd_pcspeaker", dsda_config_snd_pcspeaker,
-    CONF_BOOL(0), NULL, NOT_STRICT, I_InitSoundParams
-  },
   [dsda_config_pitched_sounds] = {
     "pitched_sounds", dsda_config_pitched_sounds,
     CONF_BOOL(0), NULL, NOT_STRICT, I_InitSoundParams

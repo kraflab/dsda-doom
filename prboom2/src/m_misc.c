@@ -108,7 +108,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_movement_shorttics),
 
   SETTING_HEADING("Sound settings"),
-  MIGRATED_SETTING(dsda_config_snd_pcspeaker),
   MIGRATED_SETTING(dsda_config_pitched_sounds),
   MIGRATED_SETTING(dsda_config_full_sounds),
   MIGRATED_SETTING(dsda_config_snd_samplerate),

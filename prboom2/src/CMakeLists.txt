@@ -308,8 +308,6 @@ set(COMMON_SRC
     i_glob.c
     i_glob.h
     i_main.h
-    i_pcsound.c
-    i_pcsound.h
     i_sound.h
     i_system.h
     i_video.h
@@ -445,14 +443,6 @@ set(SDLDOOM_SOURCES
     SDL/i_video.c
 )
 
-set(PCSOUND_SOURCES
-    PCSOUND/pcsound.c
-    PCSOUND/pcsound.h
-    PCSOUND/pcsound_linux.c
-    PCSOUND/pcsound_sdl.c
-    PCSOUND/pcsound_win32.c
-)
-
 set(DOOMMUSIC_SOURCES
     MUSIC/dumbplayer.c
     MUSIC/dumbplayer.h
@@ -481,7 +471,6 @@ set(DSDA_SOURCES
     ${WAD_SRC}
     ${MUS2MID_SRC}
     ${SDLDOOM_SOURCES}
-    ${PCSOUND_SOURCES}
     ${DOOMMUSIC_SOURCES}
     ${EXTRA_FILES}
 )

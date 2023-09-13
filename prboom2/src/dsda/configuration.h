@@ -139,7 +139,6 @@ typedef enum {
   dsda_config_movement_shorttics,
   dsda_config_screenshot_dir,
   dsda_config_startup_delay_ms,
-  dsda_config_snd_pcspeaker,
   dsda_config_pitched_sounds,
   dsda_config_full_sounds,
   dsda_config_snd_samplerate,

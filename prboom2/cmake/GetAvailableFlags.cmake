@@ -83,10 +83,6 @@ endfunction()
 function(get_compile_definitions outvar)
   set(_required_definitions "HAVE_CONFIG_H")
 
-  if(WIN32)
-    list(APPEND _required_definitions "USE_WIN32_PCSOUND_DRIVER")
-  endif()
-
   if(NOT HAVE_STRICMP)
     list(APPEND _required_definitions "stricmp=strcasecmp")
   endif()
