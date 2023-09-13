@@ -62,6 +62,7 @@
 #include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
+#include "dsda/utility.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -175,6 +176,15 @@ static int dehfseek(DEHFILE *fp, long offset)
     fp->size = total - offset;
     return 0;
   }
+}
+
+static char *deh_sfx_name(const char *name)
+{
+  dsda_string_t str;
+
+  dsda_StringPrintF(&str, "ds%s", name);
+
+  return str.string;
 }
 
 // haleyjd 9/22/99
@@ -2822,7 +2832,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
       deh_log("Changing name of sfx from %s to %*s\n",
               S_sfx[i].name, usedlen, &inbuffer[fromlen]);
 
-      S_sfx[i].name = Z_Strdup(&inbuffer[fromlen]);
+      S_sfx[i].name = deh_sfx_name(&inbuffer[fromlen]);
 
       found = TRUE;
     }
@@ -3131,7 +3141,7 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for sound '%s'\n", candidate, key);
-      S_sfx[match].name = Z_Strdup(candidate);
+      S_sfx[match].name = deh_sfx_name(candidate);
     }
   }
 }

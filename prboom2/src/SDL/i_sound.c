@@ -429,17 +429,13 @@ void I_SetChannels(void)
 //
 int I_GetSfxLumpNum(sfxinfo_t *sfx)
 {
-  char namebuf[9];
-  const char* format;
-
   if (sfx->link)
     sfx = sfx->link;
 
-  // Different prefix for PC speaker sound effects for doom.
-  format = raven ? "%s" : "ds%s";
+  if (!sfx->name)
+    return LUMP_NOT_FOUND;
 
-  sprintf(namebuf, format, sfx->name);
-  return W_CheckNumForName(namebuf); //e6y: make missing sounds non-fatal
+  return W_CheckNumForName(sfx->name); //e6y: make missing sounds non-fatal
 }
 
 //
