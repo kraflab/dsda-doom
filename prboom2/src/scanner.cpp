@@ -454,6 +454,11 @@ void Scanner::IncrementLine()
 	lineStart = scanPos;
 }
 
+void Scanner::SkipLine()
+{
+	while (tokenLine == line && GetNextToken());
+}
+
 void Scanner::Error(int token)
 {
 	if (token < TK_NumSpecialTokens && this->token >= TK_Identifier && this->token < TK_NumSpecialTokens)

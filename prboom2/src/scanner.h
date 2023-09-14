@@ -85,6 +85,7 @@ class Scanner
 		void		MustGetFloat();
 		void		MustGetString();
 		void		ExpandState();
+		void		SkipLine();
 		int			GetLine() const { return tokenLine; }
 		int			GetLinePos() const { return tokenLinePosition; }
 		bool		GetNextToken(bool expandState=true);
