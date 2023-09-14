@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2021 by Ryan Krafnick
+// Copyright(C) 2023 by Ryan Krafnick
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,20 +12,30 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA SFX
+//	DSDA Ambient
 //
 
-#ifndef __DSDA_SFX__
-#define __DSDA_SFX__
+#ifndef __DSDA_AMBIENT__
+#define __DSDA_AMBIENT__
 
-#include "sounds.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-int dsda_GetDehSFXIndex(const char* key, size_t length);
-int dsda_GetOriginalSFXIndex(const char* key);
-sfxinfo_t* dsda_GetDehSFX(int index);
-sfxinfo_t* dsda_NewSFX(int* index);
-void dsda_InitializeSFX(sfxinfo_t* source, int count);
-void dsda_FreeDehSFX(void);
-dboolean dsda_BlockSFX(sfxinfo_t *sfx);
+typedef struct {
+  char* sound_name;
+  int sfx_id;
+  float attenuation;
+  float volume;
+  int min_tics;
+  int max_tics;
+} ambient_sfx_t;
+
+ambient_sfx_t* dsda_AmbientSFX(int id);
+void dsda_LoadAmbientSndInfo(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

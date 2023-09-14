@@ -30,6 +30,7 @@ int num_sfx;
 static int deh_soundnames_size;
 static char** deh_soundnames;
 static byte* sfx_state;
+static int highest_index;
 
 static void dsda_ResetSFX(int from, int to) {
   int i;
@@ -63,9 +64,11 @@ static void dsda_EnsureCapacity(int limit) {
     S_sfx = realloc(S_sfx, num_sfx * sizeof(*S_sfx));
     memset(S_sfx + old_num_sfx, 0, (num_sfx - old_num_sfx) * sizeof(*S_sfx));
 
-    sfx_state = realloc(sfx_state, num_sfx * sizeof(*sfx_state));
-    memset(sfx_state + old_num_sfx, 0,
-      (num_sfx - old_num_sfx) * sizeof(*sfx_state));
+    if (sfx_state) {
+      sfx_state = realloc(sfx_state, num_sfx * sizeof(*sfx_state));
+      memset(sfx_state + old_num_sfx, 0,
+        (num_sfx - old_num_sfx) * sizeof(*sfx_state));
+    }
 
     dsda_ResetSFX(old_num_sfx, num_sfx);
   }
@@ -108,10 +111,23 @@ int dsda_GetOriginalSFXIndex(const char* key) {
   return i;
 }
 
-sfxinfo_t* dsda_GetDehSFX(int index) {
+static sfxinfo_t* dsda_SFXAtIndex(int index) {
   dsda_EnsureCapacity(index);
 
+  if (index > highest_index)
+    highest_index = index;
+
   return &S_sfx[index];
+}
+
+sfxinfo_t* dsda_GetDehSFX(int index) {
+  return dsda_SFXAtIndex(index);
+}
+
+sfxinfo_t* dsda_NewSFX(int* index) {
+  *index = highest_index + 1;
+
+  return dsda_SFXAtIndex(*index);
 }
 
 void dsda_InitializeSFX(sfxinfo_t* source, int count) {
@@ -119,6 +135,7 @@ void dsda_InitializeSFX(sfxinfo_t* source, int count) {
   extern int raven;
 
   num_sfx = count;
+  highest_index = count - 1;
   deh_soundnames_size = num_sfx + 1;
 
   S_sfx = source;
@@ -147,6 +164,9 @@ void dsda_FreeDehSFX(void) {
 
   free(deh_soundnames);
   free(sfx_state);
+
+  deh_soundnames = NULL;
+  sfx_state = NULL;
 }
 
 static int dsda_parallel_sfx_limit;
