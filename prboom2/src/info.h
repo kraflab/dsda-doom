@@ -6687,5 +6687,6 @@ extern int ZMT_MAPSPOT;
 extern int ZMT_MAPSPOT_GRAVITY;
 extern int ZMT_TELEPORTDEST2;
 extern int ZMT_TELEPORTDEST3;
+extern int ZMT_AMBIENTSOUND;
 
 #endif
