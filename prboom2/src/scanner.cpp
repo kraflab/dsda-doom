@@ -249,7 +249,7 @@ bool Scanner::GetNextToken(bool expandState)
 
 	char cur = data[scanPos++];
 	// Determine by first character
-	if(cur == '_' || (cur >= 'A' && cur <= 'Z') || (cur >= 'a' && cur <= 'z'))
+	if(cur == '_' || cur == '$' || (cur >= 'A' && cur <= 'Z') || (cur >= 'a' && cur <= 'z'))
 		nextState.token = TK_Identifier;
 	else if(cur >= '0' && cur <= '9')
 	{
