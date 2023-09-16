@@ -496,6 +496,18 @@ static dboolean console_PlayerSetZ(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &target_player.mo->z);
 }
 
+static dboolean console_PlayerSetVX(const char* command, const char* args) {
+  return console_PlayerSetCoordinate(args, &target_player.mo->momx);
+}
+
+static dboolean console_PlayerSetVY(const char* command, const char* args) {
+  return console_PlayerSetCoordinate(args, &target_player.mo->momy);
+}
+
+static dboolean console_PlayerSetVZ(const char* command, const char* args) {
+  return console_PlayerSetCoordinate(args, &target_player.mo->momz);
+}
+
 static void console_PlayerRoundCoordinate(int* x) {
   int bits = *x & 0xffff;
 
@@ -2251,6 +2263,9 @@ static console_command_entry_t console_commands[] = {
   { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
   { "player.set_angle", console_PlayerSetAngle, CF_NEVER },
   { "player.round_angle", console_PlayerRoundAngle, CF_NEVER },
+  { "player.set_vx", console_PlayerSetVX, CF_NEVER },
+  { "player.set_vy", console_PlayerSetVY, CF_NEVER },
+  { "player.set_vz", console_PlayerSetVZ, CF_NEVER },
 
   { "music.restart", console_MusicRestart, CF_ALWAYS },
 

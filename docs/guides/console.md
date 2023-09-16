@@ -24,6 +24,9 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `player.round_xy`
 - `player.set_angle <angle>`
 - `player.round_angle`
+- `player.set_vx <velocity>`
+- `player.set_vy <velocity>`
+- `player.set_vz <velocity>`
 
 #### Miscellaneous
 - `script.run <script>`
