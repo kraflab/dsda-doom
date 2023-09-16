@@ -81,10 +81,15 @@ void T_AmbientSound(ambient_source_t* source) {
 
 void dsda_SpawnAmbientSource(mobj_t* mobj) {
   ambient_source_t* source;
+  ambient_sfx_t* data;
+
+  data = dsda_AmbientSFX(mobj->iden_nums);
+  if (!data)
+    return;
 
   source = (ambient_source_t*) Z_MallocLevel(sizeof(*source));
   source->mobj = mobj;
-  source->data = dsda_AmbientSFX(mobj->iden_nums);
+  source->data = data;
   source->wait_tics = 0;
   source->thinker.function = (think_t) T_AmbientSound;
   P_AddThinker(&source->thinker);
