@@ -498,20 +498,14 @@ static dboolean console_PlayerSetZ(const char* command, const char* args) {
 
 static void console_PlayerRoundCoordinate(int* x) {
   int bits = *x & 0xffff;
-  if (!bits) return;
 
-  if (*x > 0) {
-    if (bits >= 0x8000)
-      *x = (*x & ~0xffff) + FRACUNIT;
-    else
-      *x = *x & ~0xffff;
-  }
-  else {
-    if (bits < 0x8000)
-      *x = (*x & ~0xffff) - FRACUNIT;
-    else
-      *x = *x & ~0xffff;
-  }
+  if (!bits)
+    return;
+
+  if (bits >= 0x8000)
+    *x = (*x & ~0xffff) + FRACUNIT;
+  else
+    *x = *x & ~0xffff;
 }
 
 static dboolean console_PlayerRoundX(const char* command, const char* args) {
