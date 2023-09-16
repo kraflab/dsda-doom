@@ -1040,7 +1040,7 @@ floater:
       return;
     }
   }
-  else if (mo->flags2 & MF2_LOGRAV || (mo->type == MT_GIBDTH && allow_incompatibility))
+  else if (mo->flags2 & MF2_LOGRAV)
   {
     if (mo->momz == 0)
       mo->momz = -(gravity >> 3) * 2;

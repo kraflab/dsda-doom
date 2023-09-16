@@ -2418,15 +2418,6 @@ void A_SkullPop(mobj_t *actor)
 {
   mobj_t *mo;
   player_t *player;
-  int sfx_id;
-
-  if (!raven && (demorecording || demoplayback))
-    return;
-
-  if (!raven) {
-    sfx_id = (I_GetSfxLumpNum(&S_sfx[sfx_gibdth]) < 0 ? sfx_pldeth : sfx_gibdth);
-    S_StartMobjSound(actor, sfx_id);
-  }
 
   if (hexen && !actor->player)
   {

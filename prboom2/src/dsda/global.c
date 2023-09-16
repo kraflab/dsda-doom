@@ -159,7 +159,7 @@ static void dsda_InitDoom(void) {
   g_mt_player = MT_PLAYER;
   g_mt_tfog = MT_TFOG;
   g_mt_blood = MT_BLOOD;
-  g_skullpop_mt = MT_GIBDTH;
+  g_skullpop_mt = MT_NULL;
 
   g_wp_fist = wp_fist;
   g_wp_chainsaw = wp_chainsaw;

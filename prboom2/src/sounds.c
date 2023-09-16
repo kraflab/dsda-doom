@@ -245,7 +245,6 @@ sfxinfo_t doom_S_sfx[] = {
 
   //e6y
   { "dssecret", 60, 0, -1, 0, 0, 0, "" },
-  { "dsgibdth", 60, 0, -1, 0, 0, 0, "" },
   // Everything from here up to 500 is reserved for future use.
 
   // Free slots for DEHEXTRA. Priorities should be overridden by user.
