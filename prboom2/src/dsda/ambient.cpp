@@ -20,6 +20,7 @@
 #include <unordered_map>
 
 extern "C" {
+#include "m_random.h"
 #include "lprintf.h"
 #include "p_tick.h"
 #include "s_sound.h"
@@ -62,6 +63,10 @@ static ambient_sfx_t* dsda_AmbientSFX(int id) {
   return id_to_ambient_sfx[id].sfx_id ? &id_to_ambient_sfx[id] : NULL;
 }
 
+static int dsda_AmbientWaitTime(ambient_sfx_t* amb_sfx) {
+  return amb_sfx->min_tics + M_Random() * (amb_sfx->max_tics - amb_sfx->min_tics) / 255;
+}
+
 void T_AmbientSound(ambient_source_t* source) {
   if (source->wait_tics > 0) {
     --source->wait_tics;
@@ -77,6 +82,14 @@ void T_AmbientSound(ambient_source_t* source) {
     else
       S_LoopMobjSound(source->mobj, source->data->sfx_id, source->wait_tics + 1);
   }
+  else {
+    source->wait_tics = dsda_AmbientWaitTime(source->data);
+
+    if (!source->data->attenuation)
+      S_StartVoidSound(source->data->sfx_id);
+    else
+      S_StartMobjSound(source->mobj, source->data->sfx_id);
+  }
 }
 
 void dsda_SpawnAmbientSource(mobj_t* mobj) {
@@ -90,7 +103,7 @@ void dsda_SpawnAmbientSource(mobj_t* mobj) {
   source = (ambient_source_t*) Z_MallocLevel(sizeof(*source));
   source->mobj = mobj;
   source->data = data;
-  source->wait_tics = 0;
+  source->wait_tics = dsda_AmbientWaitTime(data);
   source->thinker.function = (think_t) T_AmbientSound;
   P_AddThinker(&source->thinker);
 }
