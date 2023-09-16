@@ -396,6 +396,9 @@ bool Scanner::GetNextToken(bool expandState)
 			else
 				break;
 		}
+
+		if (start == end && scanPos == length)
+			end = scanPos;
 	}
 
 	if(end-start > 0 || stringFinished)
