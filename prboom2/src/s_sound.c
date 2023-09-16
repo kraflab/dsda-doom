@@ -413,9 +413,22 @@ void S_StartMobjSound(mobj_t *mobj, int sfx_id)
   S_StartSound(mobj, sfx_id);
 }
 
+void S_LoopMobjSound(mobj_t *mobj, int sfx_id, int timeout)
+{
+  if (mobj && mobj->subsector && mobj->subsector->sector->flags & SECF_SILENT)
+    return;
+
+  S_LoopSound(mobj, sfx_id, timeout);
+}
+
 void S_StartVoidSound(int sfx_id)
 {
   S_StartSound(NULL, sfx_id);
+}
+
+void S_LoopVoidSound(int sfx_id, int timeout)
+{
+  S_LoopSound(NULL, sfx_id, timeout);
 }
 
 void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id)

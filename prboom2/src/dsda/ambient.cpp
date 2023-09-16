@@ -22,6 +22,7 @@
 extern "C" {
 #include "lprintf.h"
 #include "p_tick.h"
+#include "s_sound.h"
 #include "sounds.h"
 #include "w_wad.h"
 #include "z_zone.h"
@@ -51,6 +52,7 @@ typedef struct {
   thinker_t thinker;
   mobj_t* mobj;
   ambient_sfx_t* data;
+  int wait_tics;
 } ambient_source_t;
 
 std::unordered_map<std::string, named_sfx_t> name_to_sfx;
@@ -61,7 +63,20 @@ static ambient_sfx_t* dsda_AmbientSFX(int id) {
 }
 
 void T_AmbientSound(ambient_source_t* source) {
+  if (source->wait_tics > 0) {
+    --source->wait_tics;
+    return;
+  }
 
+  // looping
+  if (source->data->min_tics < 0) {
+    source->wait_tics = 35;
+
+    if (!source->data->attenuation)
+      S_LoopVoidSound(source->data->sfx_id, source->wait_tics + 1);
+    else
+      S_LoopMobjSound(source->mobj, source->data->sfx_id, source->wait_tics + 1);
+  }
 }
 
 void dsda_SpawnAmbientSource(mobj_t* mobj) {
@@ -70,6 +85,7 @@ void dsda_SpawnAmbientSource(mobj_t* mobj) {
   source = (ambient_source_t*) Z_MallocLevel(sizeof(*source));
   source->mobj = mobj;
   source->data = dsda_AmbientSFX(mobj->iden_nums);
+  source->wait_tics = 0;
   source->thinker.function = (think_t) T_AmbientSound;
   P_AddThinker(&source->thinker);
 }
