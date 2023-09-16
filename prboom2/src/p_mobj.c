@@ -55,6 +55,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/ambient.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/settings.h"
@@ -2656,6 +2657,11 @@ spawnit:
         P_SetMobjState(mobj, HEXEN_S_ICEGUY_DORMANT);
       }
       mobj->tics = -1;
+  }
+
+  if (!raven && thingtype == 14064)
+  {
+    dsda_SpawnAmbientSource(mobj);
   }
 
   return mobj;

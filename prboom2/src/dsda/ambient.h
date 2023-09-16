@@ -22,16 +22,9 @@
 extern "C" {
 #endif
 
-typedef struct {
-  char* sound_name;
-  int sfx_id;
-  float attenuation;
-  float volume;
-  int min_tics;
-  int max_tics;
-} ambient_sfx_t;
+#include "p_mobj.h"
 
-ambient_sfx_t* dsda_AmbientSFX(int id);
+void dsda_SpawnAmbientSource(mobj_t* mobj);
 void dsda_LoadAmbientSndInfo(void);
 
 #ifdef __cplusplus

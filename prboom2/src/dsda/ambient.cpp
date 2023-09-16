@@ -21,6 +21,7 @@
 
 extern "C" {
 #include "lprintf.h"
+#include "p_tick.h"
 #include "sounds.h"
 #include "w_wad.h"
 #include "z_zone.h"
@@ -33,12 +34,45 @@ extern "C" {
 #include "ambient.h"
 
 typedef struct {
+  char* sound_name;
+  int sfx_id;
+  float attenuation;
+  float volume;
+  int min_tics;
+  int max_tics;
+} ambient_sfx_t;
+
+typedef struct {
   char* lump_name;
   int sfx_id;
 } named_sfx_t;
 
+typedef struct {
+  thinker_t thinker;
+  mobj_t* mobj;
+  ambient_sfx_t* data;
+} ambient_source_t;
+
 std::unordered_map<std::string, named_sfx_t> name_to_sfx;
 std::unordered_map<int, ambient_sfx_t> id_to_ambient_sfx;
+
+static ambient_sfx_t* dsda_AmbientSFX(int id) {
+  return id_to_ambient_sfx[id].sfx_id ? &id_to_ambient_sfx[id] : NULL;
+}
+
+void T_AmbientSound(ambient_source_t* source) {
+
+}
+
+void dsda_SpawnAmbientSource(mobj_t* mobj) {
+  ambient_source_t* source;
+
+  source = (ambient_source_t*) Z_MallocLevel(sizeof(*source));
+  source->mobj = mobj;
+  source->data = dsda_AmbientSFX(mobj->iden_nums);
+  source->thinker.function = (think_t) T_AmbientSound;
+  P_AddThinker(&source->thinker);
+}
 
 static void dsda_ParseAmbient(Scanner &scanner) {
   ambient_sfx_t amb_sfx = { 0 };
@@ -151,10 +185,6 @@ static void dsda_ResolveAmbientSounds(void) {
                      amb_sfx.second.max_tics,
                      amb_sfx.second.sfx_id);
   }
-}
-
-ambient_sfx_t* dsda_AmbientSFX(int id) {
-  return id_to_ambient_sfx[id].sfx_id ? &id_to_ambient_sfx[id] : NULL;
 }
 
 void dsda_LoadAmbientSndInfo(void) {
