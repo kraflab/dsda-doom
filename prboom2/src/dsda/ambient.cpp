@@ -149,6 +149,8 @@ static void dsda_ParseAmbient(Scanner &scanner) {
 
   scanner.MustGetFloat();
   amb_sfx.volume = BETWEEN(0.0, 1.0, scanner.decimal);
+  if (amb_sfx.attenuation < 0)
+    amb_sfx.attenuation = 1;
 
   if (!amb_sfx.min_tics && !amb_sfx.max_tics) {
     lprintf(LO_WARN, "Ambient sound %d has invalid parameters\n", id);
