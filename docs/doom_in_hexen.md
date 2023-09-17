@@ -123,10 +123,10 @@ This page tracks support for the "Doom in Hexen" map format and related features
 | 9998        | SecActEnter             | :x:                |
 | 9999        | SecActHitFloor          | :x:                |
 | -           | -                       | -                  |
-| 14001-14064 | AmbientSound            | :comet:            |
+| 14001-14064 | AmbientSound            | :heavy_check_mark: |
 | 14065       | Custom AmbientSound     | :comet:            |
 | 14066       | SoundSequence           | :comet:            |
-| 14067       | AmbientSoundNoGravity   | :comet:            |
+| 14067       | AmbientSoundNoGravity   | :x:                |
 | -           | -                       | -                  |
 | 14101-14164 | MusicChanger            | :heavy_check_mark: |
 | 14165       | Custom MusicChanger     | :warning:          |
