@@ -48,6 +48,8 @@ typedef struct {
   int pitch;
   int priority;
   dboolean ambient;
+  float attenuation;
+  float volume_factor;
   dboolean loop;
   int loop_timeout;
   sfx_class_t sfx_class;

@@ -105,6 +105,10 @@ void S_StopMusic(void);
 void S_PauseSound(void);
 void S_ResumeSound(void);
 
+void S_AdjustAttenuation(float attenuation);
+void S_AdjustVolume(float volume);
+void S_ResetAdjustments(void);
+
 //
 // Updates music & sounds
 //

@@ -85,6 +85,8 @@ typedef struct
 
   dboolean active;
   dboolean ambient;
+  float attenuation;
+  float volume_factor;
   dboolean loop;
   int loop_timeout;
   sfx_class_t sfx_class;
@@ -284,6 +286,22 @@ void S_Start(void)
   }
 }
 
+static float adjust_attenuation;
+static float adjust_volume;
+
+void S_AdjustAttenuation(float attenuation) {
+  adjust_attenuation = attenuation;
+}
+
+void S_AdjustVolume(float volume) {
+  adjust_volume = volume;
+}
+
+void S_ResetAdjustments(void) {
+  adjust_attenuation = 0;
+  adjust_volume = 0;
+}
+
 void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeout)
 {
   int cnum;
@@ -308,6 +326,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
     params.sfx_class = sfx_class_none;
 
   params.ambient = false;
+  params.attenuation = adjust_attenuation;
+  params.volume_factor = adjust_volume;
   params.loop = loop_timeout > 0;
   params.loop_timeout = loop_timeout;
 
@@ -382,6 +402,8 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
       channels[cnum].pitch = params.pitch;
       channels[cnum].priority = params.priority;
       channels[cnum].ambient = params.ambient;
+      channels[cnum].attenuation = params.attenuation;
+      channels[cnum].volume_factor = params.volume_factor;
       channels[cnum].loop = params.loop;
       channels[cnum].loop_timeout = params.loop_timeout;
       channels[cnum].active = true;
@@ -791,6 +813,8 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
   if (channel)
   {
     params->ambient = channel->ambient;
+    params->attenuation = channel->attenuation;
+    params->volume_factor = channel->volume_factor;
     params->loop = channel->loop;
     params->loop_timeout = channel->loop_timeout;
   }
@@ -810,6 +834,9 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
 
   approx_dist = P_AproxDistance(adx, ady);
   approx_dist >>= FRACBITS;
+
+  if (params->attenuation)
+    approx_dist *= params->attenuation;
 
   if (approx_dist >= max_snd_dist)
     return 0;
@@ -841,6 +868,11 @@ int S_AdjustSoundParams(mobj_t *listener, mobj_t *source, channel_t *channel, sf
   else
   {
     params->volume = (soundCurve[approx_dist] * sfx_volume * 8) >> 7;
+    if (params->volume_factor) {
+      params->volume *= params->volume_factor;
+      if (params->volume > 119)
+        params->volume = 119;
+    }
   }
 
   if (channel)
@@ -1119,6 +1151,8 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   sfx = &S_sfx[sound_id];
 
   params.ambient = heretic && sound_id >= heretic_sfx_wind;
+  params.attenuation = 0;
+  params.volume_factor = 0;
   params.loop = loop_timeout > 0;
   params.loop_timeout = loop_timeout;
 
@@ -1178,6 +1212,8 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   channels[cnum].priority = params.priority;
   channels[cnum].volume = volume; // original volume, not attenuated volume
   channels[cnum].ambient = params.ambient;
+  channels[cnum].attenuation = params.attenuation;
+  channels[cnum].volume_factor = params.volume_factor;
   channels[cnum].loop = params.loop;
   channels[cnum].loop_timeout = params.loop_timeout;
   channels[cnum].active = true;
@@ -1213,6 +1249,8 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   params.separation = 128;
   params.sfx_class = sfx_class_none;
   params.ambient = true;
+  params.attenuation = 0;
+  params.volume_factor = 0;
   params.loop = false;
   params.loop_timeout = 0;
 
@@ -1233,6 +1271,8 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   channels[i].sfxinfo = sfx;
   channels[i].priority = params.priority;
   channels[i].ambient = params.ambient;
+  channels[i].attenuation = params.attenuation;
+  channels[i].volume_factor = params.volume_factor;
   channels[i].loop = params.loop;
   channels[i].loop_timeout = params.loop_timeout;
   channels[i].active = true;
