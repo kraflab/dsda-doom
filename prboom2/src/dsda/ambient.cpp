@@ -77,18 +77,32 @@ void T_AmbientSound(ambient_source_t* source) {
   if (source->data->min_tics < 0) {
     source->wait_tics = 35;
 
-    if (!source->data->attenuation)
+    if (!source->data->attenuation) {
+      S_AdjustVolume(source->data->volume);
       S_LoopVoidSound(source->data->sfx_id, source->wait_tics + 1);
-    else
+      S_ResetAdjustments();
+    }
+    else {
+      S_AdjustAttenuation(source->data->attenuation);
+      S_AdjustVolume(source->data->volume);
       S_LoopMobjSound(source->mobj, source->data->sfx_id, source->wait_tics + 1);
+      S_ResetAdjustments();
+    }
   }
   else {
     source->wait_tics = dsda_AmbientWaitTime(source->data);
 
-    if (!source->data->attenuation)
+    if (!source->data->attenuation) {
+      S_AdjustVolume(source->data->volume);
       S_StartVoidSound(source->data->sfx_id);
-    else
+      S_ResetAdjustments();
+    }
+    else {
+      S_AdjustAttenuation(source->data->attenuation);
+      S_AdjustVolume(source->data->volume);
       S_StartMobjSound(source->mobj, source->data->sfx_id);
+      S_ResetAdjustments();
+    }
   }
 }
 
