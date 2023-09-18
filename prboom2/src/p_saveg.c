@@ -53,6 +53,7 @@
 #include "hexen/sn_sonix.h"
 #include "hexen/sv_save.h"
 
+#include "dsda/ambient.h"
 #include "dsda/map_format.h"
 #include "dsda/msecnode.h"
 #include "dsda/tranmap.h"
@@ -728,6 +729,7 @@ typedef enum {
   tc_true_poly_move,
   tc_true_poly_door,
   tc_true_quake,
+  tc_true_ambient_source,
   tc_true_end
 } true_thinkerclass_t;
 
@@ -976,6 +978,15 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
+    if (th->function == dsda_UpdateAmbientSource)
+    {
+      ambient_source_t *ambient_source;
+      P_SAVE_BYTE(tc_true_ambient_source);
+      P_SAVE_TYPE_REF(th, ambient_source, ambient_source_t);
+      P_ReplaceMobjWithIndex(&ambient_source->mobj);
+      continue;
+    }
+
     if (P_IsMobjThinker(th))
     {
       mobj_t *mobj;
@@ -1089,31 +1100,32 @@ void P_TrueUnArchiveThinkers(void) {
 
       if (tc == tc_true_mobj) mobj_count++;
       save_p +=
-        tc == tc_true_ceiling        ? sizeof(ceiling_t)       :
-        tc == tc_true_door           ? sizeof(vldoor_t)        :
-        tc == tc_true_floor          ? sizeof(floormove_t)     :
-        tc == tc_true_plat           ? sizeof(plat_t)          :
-        tc == tc_true_flash          ? sizeof(lightflash_t)    :
-        tc == tc_true_strobe         ? sizeof(strobe_t)        :
-        tc == tc_true_glow           ? sizeof(glow_t)          :
-        tc == tc_true_zdoom_glow     ? sizeof(zdoom_glow_t)    :
-        tc == tc_true_elevator       ? sizeof(elevator_t)      :
-        tc == tc_true_scroll         ? sizeof(scroll_t)        :
-        tc == tc_true_pusher         ? sizeof(pusher_t)        :
-        tc == tc_true_flicker        ? sizeof(fireflicker_t)   :
-        tc == tc_true_zdoom_flicker  ? sizeof(zdoom_flicker_t) :
-        tc == tc_true_friction       ? sizeof(friction_t)      :
-        tc == tc_true_light          ? sizeof(light_t)         :
-        tc == tc_true_phase          ? sizeof(phase_t)         :
-        tc == tc_true_acs            ? sizeof(acs_t)           :
-        tc == tc_true_pillar         ? sizeof(pillar_t)        :
-        tc == tc_true_floor_waggle   ? sizeof(planeWaggle_t)   :
-        tc == tc_true_ceiling_waggle ? sizeof(planeWaggle_t)   :
-        tc == tc_true_poly_rotate    ? sizeof(polyevent_t)     :
-        tc == tc_true_poly_move      ? sizeof(polyevent_t)     :
-        tc == tc_true_poly_door      ? sizeof(polydoor_t)      :
-        tc == tc_true_quake          ? sizeof(quake_t)         :
-        tc == tc_true_mobj           ? sizeof(mobj_t)          :
+        tc == tc_true_ceiling        ? sizeof(ceiling_t)        :
+        tc == tc_true_door           ? sizeof(vldoor_t)         :
+        tc == tc_true_floor          ? sizeof(floormove_t)      :
+        tc == tc_true_plat           ? sizeof(plat_t)           :
+        tc == tc_true_flash          ? sizeof(lightflash_t)     :
+        tc == tc_true_strobe         ? sizeof(strobe_t)         :
+        tc == tc_true_glow           ? sizeof(glow_t)           :
+        tc == tc_true_zdoom_glow     ? sizeof(zdoom_glow_t)     :
+        tc == tc_true_elevator       ? sizeof(elevator_t)       :
+        tc == tc_true_scroll         ? sizeof(scroll_t)         :
+        tc == tc_true_pusher         ? sizeof(pusher_t)         :
+        tc == tc_true_flicker        ? sizeof(fireflicker_t)    :
+        tc == tc_true_zdoom_flicker  ? sizeof(zdoom_flicker_t)  :
+        tc == tc_true_friction       ? sizeof(friction_t)       :
+        tc == tc_true_light          ? sizeof(light_t)          :
+        tc == tc_true_phase          ? sizeof(phase_t)          :
+        tc == tc_true_acs            ? sizeof(acs_t)            :
+        tc == tc_true_pillar         ? sizeof(pillar_t)         :
+        tc == tc_true_floor_waggle   ? sizeof(planeWaggle_t)    :
+        tc == tc_true_ceiling_waggle ? sizeof(planeWaggle_t)    :
+        tc == tc_true_poly_rotate    ? sizeof(polyevent_t)      :
+        tc == tc_true_poly_move      ? sizeof(polyevent_t)      :
+        tc == tc_true_poly_door      ? sizeof(polydoor_t)       :
+        tc == tc_true_quake          ? sizeof(quake_t)          :
+        tc == tc_true_ambient_source ? sizeof(ambient_source_t) :
+        tc == tc_true_mobj           ? sizeof(mobj_t)           :
       0;
     }
 
@@ -1397,6 +1409,15 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
+      case tc_true_ambient_source:
+        {
+          ambient_source_t *ambient_source = Z_MallocLevel(sizeof(*ambient_source));
+          P_LOAD_P(ambient_source);
+          ambient_source->thinker.function = dsda_UpdateAmbientSource;
+          P_AddThinker(&ambient_source->thinker);
+          break;
+        }
+
       case tc_true_mobj:
         {
           mobj_t *mobj = Z_MallocLevel(sizeof(mobj_t));
@@ -1468,6 +1489,10 @@ void P_TrueUnArchiveThinkers(void) {
     else if (th->function == dsda_UpdateQuake)
     {
       P_ReplaceIndexWithMobj(&((quake_t *) th)->location, mobj_p, mobj_count);
+    }
+    else if (th->function == dsda_UpdateAmbientSource)
+    {
+      P_ReplaceIndexWithMobj(&((ambient_source_t *) th)->mobj, mobj_p, mobj_count);
     }
     else if (P_IsMobjThinker(th))
     {
