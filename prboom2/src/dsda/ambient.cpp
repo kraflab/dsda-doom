@@ -36,25 +36,9 @@ extern "C" {
 #include "ambient.h"
 
 typedef struct {
-  char* sound_name;
-  int sfx_id;
-  float attenuation;
-  float volume;
-  int min_tics;
-  int max_tics;
-} ambient_sfx_t;
-
-typedef struct {
   char* lump_name;
   int sfx_id;
 } named_sfx_t;
-
-typedef struct {
-  thinker_t thinker;
-  mobj_t* mobj;
-  ambient_sfx_t* data;
-  int wait_tics;
-} ambient_source_t;
 
 std::unordered_map<std::string, named_sfx_t> name_to_sfx;
 std::unordered_map<int, ambient_sfx_t> id_to_ambient_sfx;
@@ -67,40 +51,40 @@ static int dsda_AmbientWaitTime(ambient_sfx_t* amb_sfx) {
   return amb_sfx->min_tics + M_Random() * (amb_sfx->max_tics - amb_sfx->min_tics) / 255;
 }
 
-void T_AmbientSound(ambient_source_t* source) {
+void dsda_UpdateAmbientSource(ambient_source_t* source) {
   if (source->wait_tics > 0) {
     --source->wait_tics;
     return;
   }
 
   // looping
-  if (source->data->min_tics < 0) {
+  if (source->data.min_tics < 0) {
     source->wait_tics = 35;
 
-    if (!source->data->attenuation) {
-      S_AdjustVolume(source->data->volume);
-      S_LoopVoidSound(source->data->sfx_id, source->wait_tics + 1);
+    if (!source->data.attenuation) {
+      S_AdjustVolume(source->data.volume);
+      S_LoopVoidSound(source->data.sfx_id, source->wait_tics + 1);
       S_ResetAdjustments();
     }
     else {
-      S_AdjustAttenuation(source->data->attenuation);
-      S_AdjustVolume(source->data->volume);
-      S_LoopMobjSound(source->mobj, source->data->sfx_id, source->wait_tics + 1);
+      S_AdjustAttenuation(source->data.attenuation);
+      S_AdjustVolume(source->data.volume);
+      S_LoopMobjSound(source->mobj, source->data.sfx_id, source->wait_tics + 1);
       S_ResetAdjustments();
     }
   }
   else {
-    source->wait_tics = dsda_AmbientWaitTime(source->data);
+    source->wait_tics = dsda_AmbientWaitTime(&source->data);
 
-    if (!source->data->attenuation) {
-      S_AdjustVolume(source->data->volume);
-      S_StartVoidSound(source->data->sfx_id);
+    if (!source->data.attenuation) {
+      S_AdjustVolume(source->data.volume);
+      S_StartVoidSound(source->data.sfx_id);
       S_ResetAdjustments();
     }
     else {
-      S_AdjustAttenuation(source->data->attenuation);
-      S_AdjustVolume(source->data->volume);
-      S_StartMobjSound(source->mobj, source->data->sfx_id);
+      S_AdjustAttenuation(source->data.attenuation);
+      S_AdjustVolume(source->data.volume);
+      S_StartMobjSound(source->mobj, source->data.sfx_id);
       S_ResetAdjustments();
     }
   }
@@ -115,10 +99,12 @@ void dsda_SpawnAmbientSource(mobj_t* mobj) {
     return;
 
   source = (ambient_source_t*) Z_MallocLevel(sizeof(*source));
-  source->mobj = mobj;
-  source->data = data;
+  source->mobj = NULL;
+  P_SetTarget(&source->mobj, mobj);
+  source->data = *data;
+  source->data.sound_name = NULL;
   source->wait_tics = dsda_AmbientWaitTime(data);
-  source->thinker.function = (think_t) T_AmbientSound;
+  source->thinker.function = (think_t) dsda_UpdateAmbientSource;
   P_AddThinker(&source->thinker);
 }
 

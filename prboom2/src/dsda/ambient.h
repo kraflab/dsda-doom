@@ -24,6 +24,23 @@ extern "C" {
 
 #include "p_mobj.h"
 
+typedef struct {
+  char* sound_name;
+  int sfx_id;
+  float attenuation;
+  float volume;
+  int min_tics;
+  int max_tics;
+} ambient_sfx_t;
+
+typedef struct {
+  thinker_t thinker;
+  mobj_t* mobj;
+  ambient_sfx_t data;
+  int wait_tics;
+} ambient_source_t;
+
+void dsda_UpdateAmbientSource(ambient_source_t* source);
 void dsda_SpawnAmbientSource(mobj_t* mobj);
 void dsda_LoadAmbientSndInfo(void);
 
