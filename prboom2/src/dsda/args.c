@@ -90,7 +90,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
   },
   [dsda_arg_record] = {
     "-record", NULL, NULL,
-    "records a demo to the give file",
+    "records a demo to the given file",
     arg_string,
   },
   [dsda_arg_recordfromto] = {
