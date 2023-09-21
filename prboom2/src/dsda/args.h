@@ -33,6 +33,8 @@ typedef enum {
   dsda_arg_from_key_frame,
   dsda_arg_warp,
   dsda_arg_skill,
+  dsda_arg_uv,
+  dsda_arg_nm,
   dsda_arg_episode,
   dsda_arg_complevel,
   dsda_arg_fast,
