@@ -268,7 +268,11 @@ void dsda_InitDemoRecording(void) {
 
   if (compatibility_level_unspecified)
     I_Error("You must specify a compatibility level when recording a demo!\n"
-            "Example: dsda-doom -iwad DOOM -complevel 3 -record demo");
+            "Example: dsda-doom -iwad DOOM -complevel 3 -skill 4 -record demo");
+
+  if (!dsda_Flag(dsda_arg_skill))
+    I_Error("You must specify a skill level when recording a demo!\n"
+            "Example: dsda-doom -iwad DOOM -complevel 3 -skill 4 -record demo");
 
   demorecording = true;
 
