@@ -185,7 +185,7 @@ dboolean dsda_SkipQuitPrompt(void) {
 }
 
 dboolean dsda_TrackSplits(void) {
-  return demorecording;
+  return demorecording || (demoplayback && dsda_Flag(dsda_arg_track_playback));
 }
 
 dboolean dsda_ShowSplitData(void) {

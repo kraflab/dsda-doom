@@ -328,6 +328,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "export a dsda-format text file template",
     arg_null,
   },
+  [dsda_arg_track_playback] = {
+    "-track_playback", NULL, NULL,
+    "treat demo playback as an attempt for the given split file base",
+    arg_string,
+  },
   [dsda_arg_export_ghost] = {
     "-export_ghost", NULL, NULL,
     "exports a ghost file",

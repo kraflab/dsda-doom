@@ -3938,6 +3938,9 @@ void G_DoPlayDemo(void)
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_NORMAL);
 
+    if (dsda_Flag(dsda_arg_track_playback))
+      dsda_ResetSplits();
+
     lprintf(LO_INFO, "Playing demo:\n  Name: %s\n  Compatibility: %s\n",
                      defdemoname, comp_lev_str[compatibility_level]);
 

@@ -23,6 +23,7 @@
 #include "lprintf.h"
 #include "e6y.h"
 
+#include "dsda/args.h"
 #include "dsda/demo.h"
 #include "dsda/settings.h"
 #include "dsda/data_organizer.h"
@@ -48,6 +49,16 @@ static char* dsda_SplitTrackerDir(void) {
   return dsda_split_tracker_dir;
 }
 
+const char* dsda_SplitFileBase(void) {
+  dsda_arg_t* arg;
+
+  arg = dsda_Arg(dsda_arg_track_playback);
+  if (arg->found)
+    return arg->value.v_string;
+
+  return dsda_DemoNameBase();
+}
+
 static char* dsda_SplitTrackerPath(void) {
   if (!dsda_split_tracker_path) {
     int length;
@@ -55,7 +66,7 @@ static char* dsda_SplitTrackerPath(void) {
     char* dir;
     char params[4];
 
-    name_base = dsda_DemoNameBase();
+    name_base = dsda_SplitFileBase();
     if (!name_base)
       return NULL;
 
