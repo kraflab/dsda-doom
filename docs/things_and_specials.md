@@ -1,7 +1,5 @@
 ## Things and Specials
 
-WORK IN PROGRESS
-
 This page documents the new thing types and special actions available in advanced map formats in dsda-doom. DSDA-Doom supports both Doom-in-Hexen and UDMF maps. See the [UDMF documentation](./udmf.md) for complete details about the `dsda` namespace.
 
 ### Thing Types
@@ -28,8 +26,11 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 - Poly objects have no sound.
 - Poly objects may have visual errors in software mode.
 
-
 ### Line Specials
+
+You can refer to the zdoom wiki for information on these line specials. Note that the hexen format only supports up to special 255, and argument values from 0 to 255. UDMF does not have these limits. Special behavior matches zdoom except where noted below, and under the following constraint:
+
+- Line flags coming from arguments are ignored (e.g., the _moreflags_ argument in **TranslucentLine**).
 
 **1: Polyobj_StartLine**
 **2: Polyobj_RotateLeft**
@@ -75,8 +76,14 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 **47: Ceiling_MoveToValue**
 **52: Scroll_Wall**
 **53: Line_SetTextureOffset**
+
 **54: Sector_ChangeFlags**
+- Silent, friction, and push are the only flags supported in hexen format.
+- UDMF additionally supports endgodmode, endlevel, hazard, and noattack.
+
 **55: Line_SetBlocking**
+- Hexen format does not support sight, hitscan, sound, and landmonsters.
+
 **56: Line_SetTextureScale**
 **58: Sector_CopyScroller**
 **59: Polyobj_OR_MoveToSpot**
@@ -92,7 +99,10 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 **69: Ceiling_MoveToValueTimes8**
 **70: Teleport**
 **71: Teleport_NoFog**
+
 **72: ThrustThing**
+- The thrust limit cannot be removed with the 3rd argument (it is ignored).
+
 **73: DamageThing**
 **74: Teleport_NewMap**
 **75: Teleport_EndGame**
@@ -149,16 +159,25 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 **170: Sector_SetCeilingScale2**
 **171: Sector_SetFloorScale2**
 **172: Plat_UpNearestWaitDownStay**
+
 **173: NoiseAlert**
+- Noise alerts only support the default behavior (the activator is both the target and the emitter).
+
 **176: Thing_ChangeTID**
+
 **177: Thing_Hate**
+- Hate can only be applied to a specific actor (type 0).
+
 **178: Thing_ProjectileAimed**
 **185: Sector_SetRotation**
 **186: Sector_SetCeilingPanning**
 **187: Sector_SetFloorPanning**
 **188: Sector_SetCeilingScale**
 **189: Sector_SetFloorScale**
+
 **190: Static_Init**
+- The static init supports damage, gravity, and skies only.
+
 **192: Ceiling_LowerToHighestFloor**
 **193: Ceiling_LowerInstant**
 **194: Ceiling_RaiseInstant**
@@ -175,7 +194,10 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 **205: Generic_Crusher**
 **206: Plat_DownWaitUpStayLip**
 **207: Plat_PerpetualRaiseLip**
+
 **208: TranslucentLine**
+- Translucent lines do not support additive translucency.
+
 **209: Transfer_Heights**
 **210: Transfer_FloorLight**
 **211: Transfer_CeilingLight**
@@ -242,22 +264,6 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 **280: Ceiling_MoveToValueAndCrush**
 **281: Line_SetAutomapFlags**
 **282: Line_SetAutomapStyle**
-
-#### Notes
-
-- Specials above 255 are not accessible in hexen format.
-- The static init supports damage, gravity, and skies only.
-- Teleporting to a specific map currently...
-  - Always triggers the intermission screen
-  - Does not know about clusters (e.g., you can't bring keys through the exit)
-- Line flags coming from extra arguments are ignored.
-- TranslucentLine does not support additive translucency.
-- Line_SetBlocking sight, hitscan, and sound are not possible in hexen format.
-- Sector_ChangeFlags only supports silent, friction, and push in hexen format.
-  - UDMF additionally supports endgodmode, endlevel, hazard, and noattack.
-- NoiseAlert only works with the default arguments.
-- Thing_Hate only supports 0 for the third argument ("target only").
-- ThrustThing has an implicit speed limit.
 
 ### Sector Specials
 
