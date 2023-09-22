@@ -119,11 +119,11 @@ static void dsda_ParseAmbient(Scanner &scanner) {
   amb_sfx.sound_name = Z_Strdup(scanner.string);
 
   scanner.MustGetString();
-  if (!stricmp(scanner.string, "point")) {
+  if (scanner.StringMatch("point")) {
     amb_sfx.attenuation = scanner.CheckFloat() ? scanner.decimal : 1.0;
     scanner.MustGetString();
   }
-  else if (!stricmp(scanner.string, "world") || !stricmp(scanner.string, "surround")) {
+  else if (scanner.StringMatch("world") || scanner.StringMatch("surround")) {
     amb_sfx.attenuation = 0;
     scanner.MustGetString();
   }
@@ -131,17 +131,17 @@ static void dsda_ParseAmbient(Scanner &scanner) {
     amb_sfx.attenuation = 0;
   }
 
-  if (!stricmp(scanner.string, "continuous")) {
+  if (scanner.StringMatch("continuous")) {
     amb_sfx.min_tics = -1;
     amb_sfx.max_tics = -1;
   }
-  else if (!stricmp(scanner.string, "random")) {
+  else if (scanner.StringMatch("random")) {
     scanner.MustGetFloat();
     amb_sfx.min_tics = 35 * scanner.decimal;
     scanner.MustGetFloat();
     amb_sfx.max_tics = 35 * scanner.decimal;
   }
-  else if (!stricmp(scanner.string, "periodic")) {
+  else if (scanner.StringMatch("periodic")) {
     scanner.MustGetFloat();
     amb_sfx.min_tics = 35 * scanner.decimal;
     amb_sfx.max_tics = amb_sfx.min_tics;

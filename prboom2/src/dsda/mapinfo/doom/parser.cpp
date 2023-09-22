@@ -189,35 +189,35 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
 
   scanner.MustGetString();
 
-  if (!stricmp(scanner.string, "EndGame1")) {
+  if (scanner.StringMatch("EndGame1")) {
     next.end_pic = Z_Strdup(gamemode == retail ? "CREDIT" : "HELP2");
   }
-  else if (!stricmp(scanner.string, "EndGame2")) {
+  else if (scanner.StringMatch("EndGame2")) {
     next.end_pic = Z_Strdup("VICTORY2");
   }
-  else if (!stricmp(scanner.string, "EndGame4")) {
+  else if (scanner.StringMatch("EndGame4")) {
     next.end_pic = Z_Strdup("ENDPIC");
   }
-  else if (!stricmp(scanner.string, "EndGame3")) {
+  else if (scanner.StringMatch("EndGame3")) {
     next.end = dmi_end_game_scroll;
   }
-  else if (!stricmp(scanner.string, "EndGameC")) {
+  else if (scanner.StringMatch("EndGameC")) {
     next.end = dmi_end_game_cast;
   }
-  else if (!stricmp(scanner.string, "EndPic")) {
+  else if (scanner.StringMatch("EndPic")) {
       scanner.MustGetToken(',');
       scanner.MustGetString();
       STR_DUP(next.end_pic);
   }
-  else if (!stricmp(scanner.string, "endgame")) {
+  else if (scanner.StringMatch("endgame")) {
     scanner.MustGetToken('{');
     while (!scanner.CheckToken('}')) {
       scanner.MustGetToken(TK_Identifier);
 
-      if (!stricmp(scanner.string, "pic")) {
+      if (scanner.StringMatch("pic")) {
         SCAN_STRING(next.end_pic);
       }
-      else if (!stricmp(scanner.string, "hscroll")) {
+      else if (scanner.StringMatch("hscroll")) {
         next.end = dmi_end_game_scroll;
         scanner.MustGetToken('=');
         scanner.MustGetString();
@@ -226,10 +226,10 @@ static void dsda_ParseDoomMapInfoMapNext(Scanner &scanner, doom_mapinfo_map_next
         scanner.MustGetString();
         STR_DUP(next.end_pic_b);
       }
-      else if (!stricmp(scanner.string, "cast")) {
+      else if (scanner.StringMatch("cast")) {
         next.end = dmi_end_game_cast;
       }
-      else if (!stricmp(scanner.string, "music")) {
+      else if (scanner.StringMatch("music")) {
         SCAN_STRING(next.music);
         if (scanner.CheckToken(',')) {
           scanner.MustGetInteger();
@@ -338,120 +338,120 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "LevelNum")) {
+    if (scanner.StringMatch("LevelNum")) {
       SCAN_INT(map.level_num);
     }
-    else if (!stricmp(scanner.string, "Next")) {
+    else if (scanner.StringMatch("Next")) {
       dsda_ParseDoomMapInfoMapNext(scanner, map.next);
     }
-    else if (!stricmp(scanner.string, "SecretNext")) {
+    else if (scanner.StringMatch("SecretNext")) {
       dsda_ParseDoomMapInfoMapNext(scanner, map.secret_next);
     }
-    else if (!stricmp(scanner.string, "Cluster")) {
+    else if (scanner.StringMatch("Cluster")) {
       SCAN_INT(map.cluster);
     }
-    else if (!stricmp(scanner.string, "Sky1")) {
+    else if (scanner.StringMatch("Sky1")) {
       dsda_ParseDoomMapInfoMapSky(scanner, map.sky1);
     }
-    else if (!stricmp(scanner.string, "TitlePatch")) {
+    else if (scanner.StringMatch("TitlePatch")) {
       dsda_ParseDoomMapInfoTitlePatch(scanner, map);
     }
-    else if (!stricmp(scanner.string, "Par")) {
+    else if (scanner.StringMatch("Par")) {
       SCAN_INT(map.par);
     }
-    else if (!stricmp(scanner.string, "NoIntermission")) {
+    else if (scanner.StringMatch("NoIntermission")) {
       map.flags &= ~DMI_INTERMISSION;
     }
-    else if (!stricmp(scanner.string, "Intermission")) {
+    else if (scanner.StringMatch("Intermission")) {
       map.flags |= DMI_INTERMISSION;
     }
-    else if (!stricmp(scanner.string, "Music")) {
+    else if (scanner.StringMatch("Music")) {
       dsda_ParseDoomMapInfoMusic(scanner, map);
     }
-    else if (!stricmp(scanner.string, "ExitPic")) {
+    else if (scanner.StringMatch("ExitPic")) {
       dsda_ParseDoomMapInfoIntermissionPic(scanner, map.exit_pic);
     }
-    else if (!stricmp(scanner.string, "EnterPic")) {
+    else if (scanner.StringMatch("EnterPic")) {
       dsda_ParseDoomMapInfoIntermissionPic(scanner, map.enter_pic);
     }
-    else if (!stricmp(scanner.string, "InterMusic")) {
+    else if (scanner.StringMatch("InterMusic")) {
       SCAN_STRING(map.inter_music);
     }
-    else if (!stricmp(scanner.string, "BorderTexture")) {
+    else if (scanner.StringMatch("BorderTexture")) {
       SCAN_STRING(map.border_texture);
     }
-    else if (!stricmp(scanner.string, "EvenLighting")) {
+    else if (scanner.StringMatch("EvenLighting")) {
       map.flags |= DMI_EVEN_LIGHTING;
       map.flags &= ~DMI_SMOOTH_LIGHTING;
     }
-    else if (!stricmp(scanner.string, "SmoothLighting")) {
+    else if (scanner.StringMatch("SmoothLighting")) {
       map.flags |= DMI_SMOOTH_LIGHTING;
       map.flags &= ~DMI_EVEN_LIGHTING;
     }
-    else if (!stricmp(scanner.string, "Gravity")) {
+    else if (scanner.StringMatch("Gravity")) {
       SCAN_FLOAT_STRING(map.gravity);
     }
-    else if (!stricmp(scanner.string, "AirControl")) {
+    else if (scanner.StringMatch("AirControl")) {
       SCAN_FLOAT_STRING(map.air_control);
     }
-    else if (!stricmp(scanner.string, "AllowMonsterTelefrags")) {
+    else if (scanner.StringMatch("AllowMonsterTelefrags")) {
       map.flags |= DMI_ALLOW_MONSTER_TELEFRAGS;
     }
-    else if (!stricmp(scanner.string, "KillerActivatesDeathSpecials")) {
+    else if (scanner.StringMatch("KillerActivatesDeathSpecials")) {
       map.flags &= ~DMI_ACTIVATE_OWN_DEATH_SPECIALS;
     }
-    else if (!stricmp(scanner.string, "ActivateOwnDeathSpecials")) {
+    else if (scanner.StringMatch("ActivateOwnDeathSpecials")) {
       map.flags |= DMI_ACTIVATE_OWN_DEATH_SPECIALS;
     }
-    else if (!stricmp(scanner.string, "SpecialAction")) {
+    else if (scanner.StringMatch("SpecialAction")) {
       dsda_ParseDoomMapInfoMapSpecialAction(scanner, special_actions);
     }
-    else if (!stricmp(scanner.string, "StrictMonsterActivation")) {
+    else if (scanner.StringMatch("StrictMonsterActivation")) {
       map.flags &= ~DMI_LAX_MONSTER_ACTIVATION;
     }
-    else if (!stricmp(scanner.string, "LaxMonsterActivation")) {
+    else if (scanner.StringMatch("LaxMonsterActivation")) {
       map.flags |= DMI_LAX_MONSTER_ACTIVATION;
     }
-    else if (!stricmp(scanner.string, "MissileShootersActivateImpactLines")) {
+    else if (scanner.StringMatch("MissileShootersActivateImpactLines")) {
       map.flags &= ~DMI_MISSILES_ACTIVATE_IMPACT_LINES;
     }
-    else if (!stricmp(scanner.string, "MissilesActivateImpactLines")) {
+    else if (scanner.StringMatch("MissilesActivateImpactLines")) {
       map.flags |= DMI_MISSILES_ACTIVATE_IMPACT_LINES;
     }
-    else if (!stricmp(scanner.string, "FilterStarts")) {
+    else if (scanner.StringMatch("FilterStarts")) {
       map.flags |= DMI_FILTER_STARTS;
     }
-    else if (!stricmp(scanner.string, "AllowRespawn")) {
+    else if (scanner.StringMatch("AllowRespawn")) {
       map.flags |= DMI_ALLOW_RESPAWN;
     }
-    else if (!stricmp(scanner.string, "NoJump")) {
+    else if (scanner.StringMatch("NoJump")) {
       map.flags &= ~DMI_ALLOW_JUMP;
     }
-    else if (!stricmp(scanner.string, "AllowJump")) {
+    else if (scanner.StringMatch("AllowJump")) {
       map.flags |= DMI_ALLOW_JUMP;
     }
-    else if (!stricmp(scanner.string, "NoCheckSwitchRange")) {
+    else if (scanner.StringMatch("NoCheckSwitchRange")) {
       map.flags &= ~DMI_CHECK_SWITCH_RANGE;
     }
-    else if (!stricmp(scanner.string, "CheckSwitchRange")) {
+    else if (scanner.StringMatch("CheckSwitchRange")) {
       map.flags |= DMI_CHECK_SWITCH_RANGE;
     }
-    else if (!stricmp(scanner.string, "ResetHealth")) {
+    else if (scanner.StringMatch("ResetHealth")) {
       map.flags |= DMI_RESET_HEALTH;
     }
-    else if (!stricmp(scanner.string, "ResetInventory")) {
+    else if (scanner.StringMatch("ResetInventory")) {
       map.flags |= DMI_RESET_INVENTORY;
     }
-    else if (!stricmp(scanner.string, "NoPassover")) {
+    else if (scanner.StringMatch("NoPassover")) {
       map.flags &= ~DMI_PASSOVER;
     }
-    else if (!stricmp(scanner.string, "Passover")) {
+    else if (scanner.StringMatch("Passover")) {
       map.flags |= DMI_PASSOVER;
     }
-    else if (!stricmp(scanner.string, "UsePlayerStartZ")) {
+    else if (scanner.StringMatch("UsePlayerStartZ")) {
       map.flags |= DMI_USE_PLAYER_START_Z;
     }
-    else if (!stricmp(scanner.string, "Author")) {
+    else if (scanner.StringMatch("Author")) {
       SCAN_STRING(map.author);
     }
     else {
@@ -559,36 +559,36 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "AmmoFactor")) {
+    if (scanner.StringMatch("AmmoFactor")) {
       SCAN_FLOAT_STRING(skill.ammo_factor);
     }
-    else if (!stricmp(scanner.string, "DamageFactor")) {
+    else if (scanner.StringMatch("DamageFactor")) {
       SCAN_FLOAT_STRING(skill.damage_factor);
     }
-    else if (!stricmp(scanner.string, "ArmorFactor")) {
+    else if (scanner.StringMatch("ArmorFactor")) {
       SCAN_FLOAT_STRING(skill.armor_factor);
     }
-    else if (!stricmp(scanner.string, "HealthFactor")) {
+    else if (scanner.StringMatch("HealthFactor")) {
       SCAN_FLOAT_STRING(skill.health_factor);
     }
-    else if (!stricmp(scanner.string, "MonsterHealth")) {
+    else if (scanner.StringMatch("MonsterHealth")) {
       SCAN_FLOAT_STRING(skill.monster_health_factor);
     }
-    else if (!stricmp(scanner.string, "FriendlyHealth")) {
+    else if (scanner.StringMatch("FriendlyHealth")) {
       SCAN_FLOAT_STRING(skill.friend_health_factor);
     }
-    else if (!stricmp(scanner.string, "RespawnTime")) {
+    else if (scanner.StringMatch("RespawnTime")) {
       SCAN_INT(skill.respawn_time);
     }
-    else if (!stricmp(scanner.string, "SpawnFilter")) {
+    else if (scanner.StringMatch("SpawnFilter")) {
       SCAN_INT(skill.spawn_filter);
     }
-    else if (!stricmp(scanner.string, "Key")) {
+    else if (scanner.StringMatch("Key")) {
       scanner.MustGetToken('=');
       scanner.MustGetString();
       skill.key = tolower(scanner.string[0]);
     }
-    else if (!stricmp(scanner.string, "MustConfirm")) {
+    else if (scanner.StringMatch("MustConfirm")) {
       if (scanner.CheckToken('=')) {
         scanner.MustGetString();
         STR_DUP(skill.must_confirm);
@@ -596,34 +596,34 @@ static void dsda_ParseDoomMapInfoSkill(Scanner &scanner) {
 
       skill.flags |= DSI_MUST_CONFIRM;
     }
-    else if (!stricmp(scanner.string, "Name")) {
+    else if (scanner.StringMatch("Name")) {
       SCAN_STRING(skill.name);
     }
-    else if (!stricmp(scanner.string, "PicName")) {
+    else if (scanner.StringMatch("PicName")) {
       SCAN_STRING(skill.pic_name);
     }
-    else if (!stricmp(scanner.string, "TextColor")) {
+    else if (scanner.StringMatch("TextColor")) {
       SCAN_STRING(skill.text_color);
     }
-    else if (!stricmp(scanner.string, "SpawnMulti")) {
+    else if (scanner.StringMatch("SpawnMulti")) {
       skill.flags |= DSI_SPAWN_MULTI;
     }
-    else if (!stricmp(scanner.string, "FastMonsters")) {
+    else if (scanner.StringMatch("FastMonsters")) {
       skill.flags |= DSI_FAST_MONSTERS;
     }
-    else if (!stricmp(scanner.string, "InstantReaction")) {
+    else if (scanner.StringMatch("InstantReaction")) {
       skill.flags |= DSI_INSTANT_REACTION;
     }
-    else if (!stricmp(scanner.string, "NoPain")) {
+    else if (scanner.StringMatch("NoPain")) {
       skill.flags |= DSI_NO_PAIN;
     }
-    else if (!stricmp(scanner.string, "DefaultSkill")) {
+    else if (scanner.StringMatch("DefaultSkill")) {
       skill.flags |= DSI_DEFAULT_SKILL;
     }
-    else if (!stricmp(scanner.string, "PlayerRespawn")) {
+    else if (scanner.StringMatch("PlayerRespawn")) {
       skill.flags |= DSI_PLAYER_RESPAWN;
     }
-    else if (!stricmp(scanner.string, "EasyBossBrain")) {
+    else if (scanner.StringMatch("EasyBossBrain")) {
       skill.flags |= DSI_EASY_BOSS_BRAIN;
     }
     else {
@@ -660,19 +660,19 @@ static void dsda_ParseDoomMapInfoCluster(Scanner &scanner) {
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "EnterText")) {
+    if (scanner.StringMatch("EnterText")) {
       dsda_ParseDoomMapInfoMultiString(scanner, cluster.enter_text);
     }
-    else if (!stricmp(scanner.string, "ExitText")) {
+    else if (scanner.StringMatch("ExitText")) {
       dsda_ParseDoomMapInfoMultiString(scanner, cluster.exit_text);
     }
-    else if (!stricmp(scanner.string, "Music")) {
+    else if (scanner.StringMatch("Music")) {
       SCAN_STRING(cluster.music);
     }
-    else if (!stricmp(scanner.string, "Flat")) {
+    else if (scanner.StringMatch("Flat")) {
       SCAN_STRING(cluster.flat);
     }
-    else if (!stricmp(scanner.string, "Pic")) {
+    else if (scanner.StringMatch("Pic")) {
       SCAN_STRING(cluster.pic);
     }
     else {
@@ -709,13 +709,13 @@ static void dsda_ParseDoomMapInfoEpisode(Scanner &scanner) {
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "Name")) {
+    if (scanner.StringMatch("Name")) {
       SCAN_STRING(episode.name);
     }
-    else if (!stricmp(scanner.string, "PicName")) {
+    else if (scanner.StringMatch("PicName")) {
       SCAN_STRING(episode.pic_name);
     }
-    else if (!stricmp(scanner.string, "Key")) {
+    else if (scanner.StringMatch("Key")) {
       scanner.MustGetToken('=');
       scanner.MustGetString();
       episode.key = tolower(scanner.string[0]);
@@ -731,31 +731,31 @@ static void dsda_ParseDoomMapInfoEpisode(Scanner &scanner) {
 static void dsda_ParseDoomMapInfoIdentifier(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
 
-  if (!stricmp(scanner.string, "map")) {
+  if (scanner.StringMatch("map")) {
     dsda_ParseDoomMapInfoMap(scanner);
   }
-  else if (!stricmp(scanner.string, "defaultmap")) {
+  else if (scanner.StringMatch("defaultmap")) {
     dsda_ParseDoomMapInfoDefaultMap(scanner);
   }
-  else if (!stricmp(scanner.string, "adddefaultmap")) {
+  else if (scanner.StringMatch("adddefaultmap")) {
     dsda_ParseDoomMapInfoAddDefaultMap(scanner);
   }
-  else if (!stricmp(scanner.string, "cluster")) {
+  else if (scanner.StringMatch("cluster")) {
     dsda_ParseDoomMapInfoCluster(scanner);
   }
-  else if (!stricmp(scanner.string, "episode")) {
+  else if (scanner.StringMatch("episode")) {
     dsda_ParseDoomMapInfoEpisode(scanner);
   }
-  else if (!stricmp(scanner.string, "clearepisodes")) {
+  else if (scanner.StringMatch("clearepisodes")) {
     for (auto &episode : doom_mapinfo_episodes)
       dsda_FreeEpisode(episode);
     doom_mapinfo_episodes.clear();
     doom_mapinfo.episodes_cleared = true;
   }
-  else if (!stricmp(scanner.string, "skill")) {
+  else if (scanner.StringMatch("skill")) {
     dsda_ParseDoomMapInfoSkill(scanner);
   }
-  else if (!stricmp(scanner.string, "clearskills")) {
+  else if (scanner.StringMatch("clearskills")) {
     for (auto &skill : doom_mapinfo_skills)
       dsda_FreeSkill(skill);
     doom_mapinfo_skills.clear();

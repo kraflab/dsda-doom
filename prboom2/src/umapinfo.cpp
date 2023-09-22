@@ -90,7 +90,7 @@ static char *ParseMultiString(Scanner &scanner, int error)
 
 	if (scanner.CheckToken(TK_Identifier))
 	{
-		if (!stricmp(scanner.string, "clear"))
+		if (scanner.StringMatch("clear"))
 		{
 			return Z_Strdup("-");	// this was explicitly deleted to override the default.
 		}
@@ -161,7 +161,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		if (scanner.CheckToken(TK_Identifier))
 		{
-			if (!stricmp(scanner.string, "clear")) ReplaceString(&mape->label, "-");
+			if (scanner.StringMatch("clear")) ReplaceString(&mape->label, "-");
 			else
 			{
 				scanner.ErrorF("Either 'clear' or string constant expected");
@@ -275,7 +275,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		if (scanner.CheckToken(TK_Identifier))
 		{
-			if (!stricmp(scanner.string, "clear")) dsda_ClearEpisodes();
+			if (scanner.StringMatch("clear")) dsda_ClearEpisodes();
 			else
 			{
 				scanner.ErrorF("Either 'clear' or string constant expected");
@@ -309,7 +309,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		scanner.MustGetToken(TK_Identifier);
 		int special, tag;
-		if (!stricmp(scanner.string, "clear"))
+		if (scanner.StringMatch("clear"))
 		{
 			// mark level free of boss actions
 			special = tag = -1;
