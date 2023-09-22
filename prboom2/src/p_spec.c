@@ -6596,6 +6596,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
           ML_BLOCKSIGHT,
           ML_BLOCKHITSCAN,
           ML_SOUNDBLOCK,
+          ML_BLOCKLANDMONSTERS,
           -1
         };
 
