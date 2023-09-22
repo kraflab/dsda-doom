@@ -1,6 +1,6 @@
 ## UDMF (Universal Doom Map Format)
 
-This page defines the `dsda` udmf namespace. The features of this namespace form a subset of the `zdoom` namespace - map features understood by dsda-doom should also be understood by gzdoom, but not necessarily vice versa. See the [Doom in Hexen docs](./doom_in_hexen.md) for more information about which specials and thing types are supported.
+This page defines the `dsda` udmf namespace. The features of this namespace form a subset of the `zdoom` namespace - map features understood by dsda-doom should also be understood by gzdoom, but not necessarily vice versa. See the [things and specials doc](./things_and_specials.md) for more information about which specials and thing types are supported.
 
 In principle, udmf features supported in dsda-doom should work the same as they do in gzdoom. However, there may be maps that do not work in one port or the other due to differences in the underlying physics, similar to other map formats. Significant deviation in behaviour is likely a bug.
 
