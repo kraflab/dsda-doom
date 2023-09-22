@@ -444,7 +444,6 @@ This page tracks support for the "Doom in Hexen" map format and related features
 - Teleporting to a specific map currently...
   - Always triggers the intermission screen
   - Does not know about clusters (e.g., you can't bring keys through the exit)
-- There may be undefined behaviour when combining new exit specials with UMAPINFO
 - Line flags coming from extra arguments are ignored.
 - TranslucentLine does not support additive translucency.
 - Line_SetBlocking sight, hitscan, and sound are not possible in hexen format.

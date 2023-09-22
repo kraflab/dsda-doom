@@ -250,7 +250,6 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 - Teleporting to a specific map currently...
   - Always triggers the intermission screen
   - Does not know about clusters (e.g., you can't bring keys through the exit)
-- There may be undefined behaviour when combining new exit specials with UMAPINFO
 - Line flags coming from extra arguments are ignored.
 - TranslucentLine does not support additive translucency.
 - Line_SetBlocking sight, hitscan, and sound are not possible in hexen format.
