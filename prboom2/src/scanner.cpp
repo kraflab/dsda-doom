@@ -604,6 +604,11 @@ bool Scanner::CheckString()
 	return CheckToken(TK_StringConst) || CheckToken(TK_Identifier);
 }
 
+bool Scanner::StringMatch(const char *target)
+{
+	return !strcmpnocase(string, target);
+}
+
 void Scanner::MustGetInteger()
 {
 	if (!ScanInteger()) Error(TK_IntConst);

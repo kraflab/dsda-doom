@@ -81,6 +81,7 @@ class Scanner
 		bool		CheckInteger();
 		bool		CheckFloat();
 		bool		CheckString();
+		bool		StringMatch(const char *target);
 		void		MustGetInteger();
 		void		MustGetFloat();
 		void		MustGetString();
