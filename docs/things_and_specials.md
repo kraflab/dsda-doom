@@ -33,48 +33,91 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 - Line flags coming from arguments are ignored (e.g., the _moreflags_ argument in **TranslucentLine**).
 
 **1: Polyobj_StartLine**
+
 **2: Polyobj_RotateLeft**
+
 **3: Polyobj_RotateRight**
+
 **4: Polyobj_Move**
+
 **5: Polyobj_ExplicitLine**
+
 **6: Polyobj_MoveTimes8**
+
 **7: Polyobj_DoorSwing**
+
 **8: Polyobj_DoorSlide**
+
 **10: Door_Close**
+
 **11: Door_Open**
+
 **12: Door_Raise**
+
 **13: Door_LockedRaise**
+
 **17: Thing_Raise**
+
 **19: Thing_Stop**
+
 **20: Floor_LowerByValue**
+
 **21: Floor_LowerToLowest**
+
 **22: Floor_LowerToNearest**
+
 **23: Floor_RaiseByValue**
+
 **24: Floor_RaiseToHighest**
+
 **25: Floor_RaiseToNearest**
+
 **26: Stairs_BuildDown**
+
 **27: Stairs_BuildUp**
+
 **28: Floor_RaiseAndCrush**
+
 **29: Pillar_Build**
+
 **30: Pillar_Open**
+
 **31: Stairs_BuildDownSync**
+
 **32: Stairs_BuildUpSync**
+
 **33: ForceField**
+
 **34: ClearForceField**
+
 **35: Floor_RaiseByValueTimes8**
+
 **36: Floor_LowerByValueTimes8**
+
 **37: Floor_MoveToValue**
+
 **38: Ceiling_Waggle**
+
 **39: Teleport_ZombieChanger**
+
 **40: Ceiling_LowerByValue**
+
 **41: Ceiling_RaiseByValue**
+
 **42: Ceiling_CrushAndRaise**
+
 **43: Ceiling_LowerAndCrush**
+
 **44: Ceiling_CrushStop**
+
 **45: Ceiling_CrushRaiseAndStay**
+
 **46: Floor_CrushStop**
+
 **47: Ceiling_MoveToValue**
+
 **52: Scroll_Wall**
+
 **53: Line_SetTextureOffset**
 
 **54: Sector_ChangeFlags**
@@ -85,79 +128,148 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 - Hexen format does not support sight, hitscan, sound, and landmonsters.
 
 **56: Line_SetTextureScale**
+
 **58: Sector_CopyScroller**
+
 **59: Polyobj_OR_MoveToSpot**
+
 **60: Plat_PerpetualRaise**
+
 **61: Plat_Stop**
+
 **62: Plat_DownWaitUpStay**
+
 **63: Plat_DownByValue**
+
 **64: Plat_UpWaitDownStay**
+
 **65: Plat_UpByValue**
+
 **66: Floor_LowerInstant**
+
 **67: Floor_RaiseInstant**
+
 **68: Floor_MoveToValueTimes8**
+
 **69: Ceiling_MoveToValueTimes8**
+
 **70: Teleport**
+
 **71: Teleport_NoFog**
 
 **72: ThrustThing**
 - The thrust limit cannot be removed with the 3rd argument (it is ignored).
 
 **73: DamageThing**
+
 **74: Teleport_NewMap**
+
 **75: Teleport_EndGame**
+
 **76: TeleportOther**
+
 **77: TeleportGroup**
+
 **78: TeleportInSector**
+
 **86: Polyobj_MoveToSpot**
+
 **87: Polyobj_Stop**
+
 **88: Polyobj_MoveTo**
+
 **89: Polyobj_OR_MoveTo**
+
 **90: Polyobj_OR_RotateLeft**
+
 **91: Polyobj_OR_RotateRight**
+
 **92: Polyobj_OR_Move**
+
 **93: Polyobj_OR_MoveTimes8**
+
 **94: Pillar_BuildAndCrush**
+
 **95: FloorAndCeiling_LowerByValue**
+
 **96: FloorAndCeiling_RaiseByValue**
+
 **97: Ceiling_LowerAndCrushDist**
+
 **99: Floor_RaiseAndCrushDoom**
+
 **100: Scroll_Texture_Left**
+
 **101: Scroll_Texture_Right**
+
 **102: Scroll_Texture_Up**
+
 **103: Scroll_Texture_Down**
+
 **104: Ceiling_CrushAndRaiseSilentDist**
+
 **105: Door_WaitRaise**
+
 **106: Door_WaitClose**
+
 **110: Light_RaiseByValue**
+
 **111: Light_LowerByValue**
+
 **112: Light_ChangeToValue**
+
 **113: Light_Fade**
+
 **114: Light_Glow**
+
 **115: Light_Flicker**
+
 **116: Light_Strobe**
+
 **117: Light_Stop**
+
 **119: Thing_Damage**
+
 **120: Radius_Quake**
+
 **121: Line_SetIdentification**
+
 **125: Thing_Move**
+
 **127: Thing_SetSpecial**
+
 **128: ThrustThingZ**
+
 **130: Thing_Activate**
+
 **131: Thing_Deactivate**
+
 **132: Thing_Remove**
+
 **133: Thing_Destroy**
+
 **134: Thing_Projectile**
+
 **135: Thing_Spawn**
+
 **136: Thing_ProjectileGravity**
+
 **137: Thing_SpawnNoFog**
+
 **138: Floor_Waggle**
+
 **139: Thing_SpawnFacing**
+
 **154: Teleport_NoStop**
+
 **168: Ceiling_CrushAndRaiseDist**
+
 **169: Generic_Crusher2**
+
 **170: Sector_SetCeilingScale2**
+
 **171: Sector_SetFloorScale2**
+
 **172: Plat_UpNearestWaitDownStay**
 
 **173: NoiseAlert**
@@ -169,100 +281,185 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 - Hate can only be applied to a specific actor (type 0).
 
 **178: Thing_ProjectileAimed**
+
 **185: Sector_SetRotation**
+
 **186: Sector_SetCeilingPanning**
+
 **187: Sector_SetFloorPanning**
+
 **188: Sector_SetCeilingScale**
+
 **189: Sector_SetFloorScale**
 
 **190: Static_Init**
 - The static init supports damage, gravity, and skies only.
 
 **192: Ceiling_LowerToHighestFloor**
+
 **193: Ceiling_LowerInstant**
+
 **194: Ceiling_RaiseInstant**
+
 **195: Ceiling_CrushRaiseAndStayA**
+
 **196: Ceiling_CrushAndRaiseA**
+
 **197: Ceiling_CrushAndRaiseSilentA**
+
 **198: Ceiling_RaiseByValueTimes8**
+
 **199: Ceiling_LowerByValueTimes8**
+
 **200: Generic_Floor**
+
 **201: Generic_Ceiling**
+
 **202: Generic_Door**
+
 **203: Generic_Lift**
+
 **204: Generic_Stairs**
+
 **205: Generic_Crusher**
+
 **206: Plat_DownWaitUpStayLip**
+
 **207: Plat_PerpetualRaiseLip**
 
 **208: TranslucentLine**
 - Translucent lines do not support additive translucency.
 
 **209: Transfer_Heights**
+
 **210: Transfer_FloorLight**
+
 **211: Transfer_CeilingLight**
+
 **214: Sector_SetDamage**
+
 **215: Teleport_Line**
+
 **216: Sector_SetGravity**
+
 **217: Stairs_BuildUpDoom**
+
 **218: Sector_SetWind**
+
 **219: Sector_SetFriction**
+
 **220: Sector_SetCurrent**
+
 **221: Scroll_Texture_Both**
+
 **222: Scroll_Texture_Model**
+
 **223: Scroll_Floor**
+
 **224: Scroll_Ceiling**
+
 **225: Scroll_Texture_Offsets**
+
 **227: PointPush_SetForce**
+
 **228: Plat_RaiseAndStayTx0**
+
 **230: Plat_UpByValueStayTx**
+
 **231: Plat_ToggleCeiling**
+
 **232: Light_StrobeDoom**
+
 **233: Light_MinNeighbor**
+
 **234: Light_MaxNeighbor**
+
 **235: Floor_TransferTrigger**
+
 **236: Floor_TransferNumeric**
+
 **238: Floor_RaiseToLowestCeiling**
+
 **239: Floor_RaiseByValueTxTy**
+
 **240: Floor_RaiseByTexture**
+
 **241: Floor_LowerToLowestTxTy**
+
 **242: Floor_LowerToHighest**
+
 **243: Exit_Normal**
+
 **244: Exit_Secret**
+
 **245: Elevator_RaiseToNearest**
+
 **246: Elevator_MoveToFloor**
+
 **247: Elevator_LowerToNearest**
+
 **248: HealThing**
+
 **249: Door_CloseWaitOpen**
+
 **250: Floor_Donut**
+
 **251: FloorAndCeiling_LowerRaise**
+
 **252: Ceiling_RaiseToNearest**
+
 **253: Ceiling_LowerToLowest**
+
 **254: Ceiling_LowerToFloor**
+
 **255: Ceiling_CrushRaiseAndStaySilA**
+
 **256: Floor_LowerToHighestEE**
+
 **257: Floor_RaiseToLowest**
+
 **258: Floor_LowerToLowestCeiling**
+
 **259: Floor_RaiseToCeiling**
+
 **260: Floor_ToCeilingInstant**
+
 **261: Floor_LowerByTexture**
+
 **262: Ceiling_RaiseToHighest**
+
 **263: Ceiling_ToHighestInstant**
+
 **264: Ceiling_LowerToNearest**
+
 **265: Ceiling_RaiseToLowest**
+
 **266: Ceiling_RaiseToHighestFloor**
+
 **267: Ceiling_ToFloorInstant**
+
 **268: Ceiling_RaiseByTexture**
+
 **269: Ceiling_LowerByTexture**
+
 **270: Stairs_BuildDownDoom**
+
 **271: Stairs_BuildUpDoomSync**
+
 **272: Stairs_BuildDownDoomSync**
+
 **273: Stairs_BuildUpDoomCrush**
+
 **275: Floor_Stop**
+
 **276: Ceiling_Stop**
+
 **279: Floor_MoveToValueAndCrush**
+
 **280: Ceiling_MoveToValueAndCrush**
+
 **281: Line_SetAutomapFlags**
+
 **282: Line_SetAutomapStyle**
 
 ### Sector Specials
