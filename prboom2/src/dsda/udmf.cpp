@@ -391,6 +391,30 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
     else if (scanner.StringMatch("offsetx_bottom")) {
       SCAN_FLOAT(side.offsetx_bottom);
     }
+    else if (scanner.StringMatch("xscroll")) {
+      SCAN_FLOAT(side.xscroll);
+    }
+    else if (scanner.StringMatch("yscroll")) {
+      SCAN_FLOAT(side.yscroll);
+    }
+    else if (scanner.StringMatch("xscrolltop")) {
+      SCAN_FLOAT(side.xscrolltop);
+    }
+    else if (scanner.StringMatch("yscrolltop")) {
+      SCAN_FLOAT(side.yscrolltop);
+    }
+    else if (scanner.StringMatch("xscrollmid")) {
+      SCAN_FLOAT(side.xscrollmid);
+    }
+    else if (scanner.StringMatch("yscrollmid")) {
+      SCAN_FLOAT(side.yscrollmid);
+    }
+    else if (scanner.StringMatch("xscrollbottom")) {
+      SCAN_FLOAT(side.xscrollbottom);
+    }
+    else if (scanner.StringMatch("yscrollbottom")) {
+      SCAN_FLOAT(side.yscrollbottom);
+    }
     else if (scanner.StringMatch("offsety_bottom")) {
       SCAN_FLOAT(side.offsety_bottom);
     }
@@ -568,6 +592,33 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
     }
     else if (scanner.StringMatch("rotationceiling")) {
       SCAN_FLOAT(sector.rotationceiling);
+    }
+    else if (scanner.StringMatch("xscrollfloor")) {
+      SCAN_FLOAT(sector.xscrollfloor);
+    }
+    else if (scanner.StringMatch("yscrollfloor")) {
+      SCAN_FLOAT(sector.yscrollfloor);
+    }
+    else if (scanner.StringMatch("scrollfloormode")) {
+      SCAN_INT(sector.scrollfloormode);
+    }
+    else if (scanner.StringMatch("xscrollceiling")) {
+      SCAN_FLOAT(sector.xscrollceiling);
+    }
+    else if (scanner.StringMatch("yscrollceiling")) {
+      SCAN_FLOAT(sector.yscrollceiling);
+    }
+    else if (scanner.StringMatch("scrollceilingmode")) {
+      SCAN_INT(sector.scrollceilingmode);
+    }
+    else if (scanner.StringMatch("xthrust")) {
+      SCAN_FLOAT(sector.xthrust);
+    }
+    else if (scanner.StringMatch("ythrust")) {
+      SCAN_FLOAT(sector.ythrust);
+    }
+    else if (scanner.StringMatch("thrustmode")) {
+      SCAN_INT(sector.thrustmode);
     }
     else if (scanner.StringMatch("gravity")) {
       SCAN_FLOAT_STRING(sector.gravity);
