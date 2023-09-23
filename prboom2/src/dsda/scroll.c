@@ -180,6 +180,119 @@ void dsda_UpdateFloorCarryScroller(scroll_t* s) {
   dsda_UpdateFloorScrollerPosition(s, s->dx, s->dy);
 }
 
+void dsda_UpdateZDoomFloorScroller(scroll_t* s) {
+  sector_t* sec;
+
+  if (!s->dx && !s->dy)
+    return;
+
+  sec = sectors + s->affectee;
+
+  if (s->flags & SCROLL_TEXTURE) {
+    sec->floor_xoffs -= s->dx;
+    sec->floor_yoffs += s->dy;
+  }
+
+  if (s->flags & (SCROLL_STATIC | SCROLL_PLAYER | SCROLL_MONSTER)) {
+    fixed_t height;
+    fixed_t waterheight;
+    msecnode_t* node;
+    mobj_t* thing;
+
+    height = sec->floorheight;
+    waterheight = sec->heightsec != -1 &&
+      sectors[sec->heightsec].floorheight > height ?
+      sectors[sec->heightsec].floorheight : INT_MIN;
+
+    for (node = sec->touching_thinglist; node; node = node->m_snext) {
+      thing = node->m_thing;
+
+      // Move objects only if on floor or underwater, non-floating, and clipped
+      if (
+        !(thing->flags & MF_NOCLIP) && (
+          !(thing->flags & MF_NOGRAVITY || thing->z > height) ||
+          thing->z < waterheight
+        )
+      ) {
+        dboolean scroll_it;
+
+        scroll_it = false;
+        if (thing->type == MT_SKULL || thing->flags & MF_COUNTKILL) {
+          if (s->flags & SCROLL_MONSTER)
+            scroll_it = true;
+        }
+        else if (thing->player) {
+          if (s->flags & SCROLL_PLAYER)
+            scroll_it = true;
+        }
+        else {
+          if (s->flags & SCROLL_STATIC)
+            scroll_it = true;
+        }
+
+        if (scroll_it) {
+          thing->momx += s->dx * 3 / 32;
+          thing->momy += s->dy * 3 / 32;
+          thing->intflags |= MIF_SCROLLING;
+        }
+      }
+    }
+  }
+}
+
+void dsda_UpdateZDoomCeilingScroller(scroll_t* s) {
+  sector_t* sec;
+
+  if (!s->dx && !s->dy)
+    return;
+
+  sec = sectors + s->affectee;
+
+  if (s->flags & SCROLL_TEXTURE) {
+    sec->ceiling_xoffs -= s->dx;
+    sec->ceiling_yoffs += s->dy;
+  }
+
+  if (s->flags & (SCROLL_STATIC | SCROLL_PLAYER | SCROLL_MONSTER)) {
+    msecnode_t* node;
+    mobj_t* thing;
+
+    for (node = sec->touching_thinglist; node; node = node->m_snext) {
+      thing = node->m_thing;
+
+      // Move objects only if on floor or underwater, non-floating, and clipped
+      if (
+        !(thing->flags & MF_NOCLIP) &&
+        thing->flags & MF_SPAWNCEILING &&
+        thing->flags & MF_NOGRAVITY &&
+        thing->z + thing->height == sec->ceilingheight
+      ) {
+        dboolean scroll_it;
+
+        scroll_it = false;
+        if (thing->type == MT_SKULL || thing->flags & MF_COUNTKILL) {
+          if (s->flags & SCROLL_MONSTER)
+            scroll_it = true;
+        }
+        else if (thing->player) {
+          if (s->flags & SCROLL_PLAYER)
+            scroll_it = true;
+        }
+        else {
+          if (s->flags & SCROLL_STATIC)
+            scroll_it = true;
+        }
+
+        if (scroll_it) {
+          thing->momx = s->dx;
+          thing->momy = s->dy;
+          thing->intflags |= MIF_SCROLLING;
+        }
+      }
+    }
+  }
+}
+
 static void dsda_InitScroller(scroll_t* scroll, fixed_t dx, fixed_t dy, int affectee, int flags) {
   scroll->dx = dx;
   scroll->dy = dy;
@@ -276,4 +389,22 @@ void dsda_AddControlFloorCarryScroller(fixed_t dx, fixed_t dy,
   dsda_InitScroller(&scroll->scroll, dx, dy, affectee, flags);
   dsda_InitControlScroller(scroll, control, accel);
   P_AddThinker(&scroll->scroll.thinker);
+}
+
+void dsda_AddZDoomFloorScroller(fixed_t dx, fixed_t dy, int affectee, int flags) {
+  scroll_t* scroll;
+
+  scroll = Z_MallocLevel(sizeof(*scroll));
+  scroll->thinker.function = dsda_UpdateZDoomFloorScroller;
+  dsda_InitScroller(scroll, dx, dy, affectee, flags);
+  P_AddThinker(&scroll->thinker);
+}
+
+void dsda_AddZDoomCeilingScroller(fixed_t dx, fixed_t dy, int affectee, int flags) {
+  scroll_t* scroll;
+
+  scroll = Z_MallocLevel(sizeof(*scroll));
+  scroll->thinker.function = dsda_UpdateZDoomCeilingScroller;
+  dsda_InitScroller(scroll, dx, dy, affectee, flags);
+  P_AddThinker(&scroll->thinker);
 }

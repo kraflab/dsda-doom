@@ -1016,6 +1016,14 @@ static void P_LoadUDMFSectors(int lump)
     ss->damage.leakrate = ms->leakiness;
     ss->damage.interval = ms->damageinterval;
 
+    if ((ms->xscrollfloor || ms->yscrollfloor) && ms->scrollfloormode)
+      dsda_AddZDoomFloorScroller(dsda_FloatToFixed(ms->xscrollfloor),
+                                 dsda_FloatToFixed(ms->yscrollfloor), i, ms->scrollfloormode);
+
+    if ((ms->xscrollceiling || ms->yscrollceiling) && ms->scrollceilingmode)
+      dsda_AddZDoomCeilingScroller(dsda_FloatToFixed(ms->xscrollceiling),
+                                   dsda_FloatToFixed(ms->yscrollceiling), i, ms->scrollceilingmode);
+
     if (ms->flags & UDMF_SECF_DAMAGEHAZARD)
       ss->flags |= SECF_HAZARD;
 
