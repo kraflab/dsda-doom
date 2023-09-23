@@ -106,6 +106,14 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **smoothlighting** _bool_ | Enables smooth fake contrast on this sidedef. |
 | **clipmidtex** _bool_ | Middle textures are clipped by the floor and ceiling. |
 | * **wrapmidtex** _bool_ | Middle textures are wrapped. |
+| **xscroll** _float_ | X units per frame to scroll line textures. |
+| **yscroll** _float_ | Y units per frame to scroll line textures. |
+| **xscrolltop** _float_ | X units per frame to scroll upper texture. |
+| **yscrolltop** _float_ | Y units per frame to scroll upper texture. |
+| **xscrollmid** _float_ | X units per frame to scroll middle texture. |
+| **yscrollmid** _float_ | Y units per frame to scroll middle texture. |
+| **xscrollbottom** _float_ | X units per frame to scroll lower texture. |
+| **yscrollbottom** _float_ | Y units per frame to scroll lower texture. |
 
 ### Vertices
 
@@ -148,6 +156,37 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **damageinterval** _integer_ | Interval between damage applications (in tics, default is 32). |
 | **leakiness** _integer_ | Probability of damage leaking through radiation suit (0 = never, 256 = always). |
 | **damagehazard** _bool_ | Use strife-style delayed damage behavior. |
+| **xscrollfloor** _float_ | X units per frame to scroll the floor. |
+| **yscrollfloor** _float_ | Y units per frame to scroll the floor. |
+| **scrollfloormode** _integer_ | Floor scroll mode (see table below). |
+| **xscrollceiling** _float_ | X map units per frame to scroll the ceiling. |
+| **yscrollceiling** _float_ | Y map units per frame to scroll the ceiling. |
+| **scrollceilingmode** _integer_ | Ceiling scroll mode (see table below). |
+| **xthrust** _float_ | X thrust magnitude (map units per frame^2). |
+| **ythrust** _float_ | Y thrust magnitude (map units per frame^2). |
+| **thrustmode** _integer_ | Thrust mode (see table below). |
+
+#### Scroll Mode
+
+| Flag | Meaning                |
+| ---- | ---------------------- |
+| 1    | Affect textures        |
+| 2    | Affect static objects  |
+| 4    | Affect players         |
+| 8    | Affect monsters        |
+
+#### Thrust Mode
+
+| Flag | Meaning                  |
+| ---- | ------------------------ |
+| 1    | Affect static objects    |
+| 2    | Affect players           |
+| 4    | Affect monsters          |
+| 8    | Affect projectiles       |
+| 16   | Affect grounded actors   |
+| 32   | Affect airborne actors   |
+| 64   | Affect ceiling actors    |
+| 128  | Affect WINDTHRUST actors |
 
 ### Things
 
