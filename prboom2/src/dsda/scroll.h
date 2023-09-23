@@ -68,6 +68,7 @@ void dsda_UpdateControlFloorCarryScroller(control_scroll_t* s);
 void dsda_UpdateFloorCarryScroller(scroll_t* s);
 void dsda_UpdateZDoomFloorScroller(scroll_t* s);
 void dsda_UpdateZDoomCeilingScroller(scroll_t* s);
+void dsda_UpdateThruster(scroll_t* s);
 
 void dsda_AddSideScroller(fixed_t dx, fixed_t dy, int affectee, int flags);
 void dsda_AddControlSideScroller(fixed_t dx, fixed_t dy,
@@ -83,5 +84,6 @@ void dsda_AddControlFloorCarryScroller(fixed_t dx, fixed_t dy,
                                        int control, int affectee, int accel, int flags);
 void dsda_AddZDoomFloorScroller(fixed_t dx, fixed_t dy, int affectee, int flags);
 void dsda_AddZDoomCeilingScroller(fixed_t dx, fixed_t dy, int affectee, int flags);
+void dsda_AddThruster(fixed_t dx, fixed_t dy, int affectee, int flags);
 
 #endif

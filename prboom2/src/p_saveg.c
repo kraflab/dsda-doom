@@ -725,6 +725,7 @@ typedef enum {
   tc_true_scroll_floor_carry_control,
   tc_true_zdoom_scroll_floor,
   tc_true_zdoom_scroll_ceiling,
+  tc_true_thrust,
   tc_true_pusher,
   tc_true_flicker,
   tc_true_zdoom_flicker,
@@ -916,6 +917,13 @@ void P_TrueArchiveThinkers(void) {
     if (th->function == dsda_UpdateZDoomCeilingScroller)
     {
       P_SAVE_BYTE(tc_true_zdoom_scroll_ceiling);
+      P_SAVE_TYPE(th, scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateThruster)
+    {
+      P_SAVE_BYTE(tc_true_thrust);
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -1187,6 +1195,7 @@ void P_TrueUnArchiveThinkers(void) {
         tc == tc_true_scroll_floor_carry         ? sizeof(scroll_t)         :
         tc == tc_true_zdoom_scroll_floor         ? sizeof(scroll_t)         :
         tc == tc_true_zdoom_scroll_ceiling       ? sizeof(scroll_t)         :
+        tc == tc_true_thrust                     ? sizeof(scroll_t)         :
         tc == tc_true_scroll_side_control        ? sizeof(control_scroll_t) :
         tc == tc_true_scroll_floor_control       ? sizeof(control_scroll_t) :
         tc == tc_true_scroll_ceiling_control     ? sizeof(control_scroll_t) :
@@ -1412,6 +1421,15 @@ void P_TrueUnArchiveThinkers(void) {
           scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
           P_LOAD_P(scroll);
           scroll->thinker.function = dsda_UpdateZDoomCeilingScroller;
+          P_AddThinker(&scroll->thinker);
+          break;
+        }
+
+      case tc_true_thrust:
+        {
+          scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->thinker.function = dsda_UpdateThruster;
           P_AddThinker(&scroll->thinker);
           break;
         }

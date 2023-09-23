@@ -292,6 +292,71 @@ void dsda_UpdateZDoomCeilingScroller(scroll_t* s) {
   }
 }
 
+void dsda_UpdateThruster(scroll_t* s) {
+  sector_t* sec;
+  msecnode_t* node;
+  mobj_t* thing;
+
+  if (!s->dx && !s->dy)
+    return;
+
+  sec = sectors + s->affectee;
+
+  for (node = sec->touching_thinglist; node; node = node->m_snext) {
+    dboolean thrust_it;
+
+    thrust_it = false;
+    thing = node->m_thing;
+
+    if (thing->flags & MF_NOCLIP)
+      continue;
+
+    if (!(thing->flags & MF_NOGRAVITY) && thing->z <= thing->floorz) {
+      if (s->flags & THRUST_GROUNDED)
+        thrust_it = true;
+    }
+    else if (thing->z > sec->floorheight && thing->z + thing->height < sec->ceilingheight) {
+      if (s->flags & THRUST_AIRBORNE)
+        thrust_it = true;
+    }
+    else if (thing->flags & MF_SPAWNCEILING &&
+             thing->flags & MF_NOGRAVITY &&
+             thing->z + thing->height == sec->ceilingheight) {
+      if (s->flags & THRUST_CEILING)
+        thrust_it = true;
+    }
+
+    if (thrust_it) {
+      thrust_it = false;
+
+      if (thing->flags2 & MF2_WINDTHRUST && s->flags & THRUST_WINDTHRUST)
+        thrust_it = true;
+      else if (thing->type == MT_SKULL || thing->flags & MF_COUNTKILL) {
+        if (s->flags & THRUST_MONSTER)
+          thrust_it = true;
+      }
+      else if (thing->player) {
+        if (s->flags & THRUST_PLAYER)
+          thrust_it = true;
+      }
+      else if (thing->flags & MF_MISSILE) {
+        if (s->flags & THRUST_PROJECTILE)
+          thrust_it = true;
+      }
+      else {
+        if (s->flags & THRUST_STATIC)
+          thrust_it = true;
+      }
+
+      if (thrust_it) {
+        thing->momx += s->dx;
+        thing->momy += s->dy;
+        thing->intflags |= MIF_SCROLLING;
+      }
+    }
+  }
+}
+
 static void dsda_InitScroller(scroll_t* scroll, fixed_t dx, fixed_t dy, int affectee, int flags) {
   scroll->dx = dx;
   scroll->dy = dy;
@@ -404,6 +469,15 @@ void dsda_AddZDoomCeilingScroller(fixed_t dx, fixed_t dy, int affectee, int flag
 
   scroll = Z_MallocLevel(sizeof(*scroll));
   scroll->thinker.function = dsda_UpdateZDoomCeilingScroller;
+  dsda_InitScroller(scroll, dx, dy, affectee, flags);
+  P_AddThinker(&scroll->thinker);
+}
+
+void dsda_AddThruster(fixed_t dx, fixed_t dy, int affectee, int flags) {
+  scroll_t* scroll;
+
+  scroll = Z_MallocLevel(sizeof(*scroll));
+  scroll->thinker.function = dsda_UpdateThruster;
   dsda_InitScroller(scroll, dx, dy, affectee, flags);
   P_AddThinker(&scroll->thinker);
 }

@@ -1024,6 +1024,10 @@ static void P_LoadUDMFSectors(int lump)
       dsda_AddZDoomCeilingScroller(dsda_FloatToFixed(ms->xscrollceiling),
                                    dsda_FloatToFixed(ms->yscrollceiling), i, ms->scrollceilingmode);
 
+    if ((ms->xthrust || ms->ythrust) && ms->thrustgroup && ms->thrustlocation)
+      dsda_AddThruster(dsda_FloatToFixed(ms->xthrust), dsda_FloatToFixed(ms->ythrust),
+                       i, ms->thrustgroup + (ms->thrustlocation << THRUST_LOCATION_SHIFT));
+
     if (ms->flags & UDMF_SECF_DAMAGEHAZARD)
       ss->flags |= SECF_HAZARD;
 
