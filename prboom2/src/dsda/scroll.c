@@ -260,7 +260,6 @@ void dsda_UpdateZDoomCeilingScroller(scroll_t* s) {
     for (node = sec->touching_thinglist; node; node = node->m_snext) {
       thing = node->m_thing;
 
-      // Move objects only if on floor or underwater, non-floating, and clipped
       if (
         !(thing->flags & MF_NOCLIP) &&
         thing->flags & MF_SPAWNCEILING &&
