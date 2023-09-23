@@ -177,15 +177,16 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 
 #### Thrust Mode
 
-| Flag | Meaning                |
-| ---- | ---------------------- |
-| 1    | Affect static objects  |
-| 2    | Affect players         |
-| 4    | Affect monsters        |
-| 8    | Affect projectiles     |
-| 16   | Affect grounded actors |
-| 32   | Affect airborne actors |
-| 64   | Affect ceiling actors  |
+| Flag | Meaning                  |
+| ---- | ------------------------ |
+| 1    | Affect static objects    |
+| 2    | Affect players           |
+| 4    | Affect monsters          |
+| 8    | Affect projectiles       |
+| 16   | Affect grounded actors   |
+| 32   | Affect airborne actors   |
+| 64   | Affect ceiling actors    |
+| 128  | Affect WINDTHRUST actors |
 
 ### Things
 
