@@ -56,6 +56,7 @@
 #include "dsda/ambient.h"
 #include "dsda/map_format.h"
 #include "dsda/msecnode.h"
+#include "dsda/scroll.h"
 #include "dsda/tranmap.h"
 #include "dsda/utility.h"
 
@@ -714,7 +715,14 @@ typedef enum {
   tc_true_glow,
   tc_true_zdoom_glow,
   tc_true_elevator,
-  tc_true_scroll,
+  tc_true_scroll_side,
+  tc_true_scroll_side_control,
+  tc_true_scroll_floor,
+  tc_true_scroll_floor_control,
+  tc_true_scroll_ceiling,
+  tc_true_scroll_ceiling_control,
+  tc_true_scroll_floor_carry,
+  tc_true_scroll_floor_carry_control,
   tc_true_pusher,
   tc_true_flicker,
   tc_true_zdoom_flicker,
@@ -868,11 +876,59 @@ void P_TrueArchiveThinkers(void) {
       continue;
     }
 
-    // killough 3/7/98: Scroll effect thinkers
-    if (th->function == T_Scroll)
+    if (th->function == dsda_UpdateSideScroller)
     {
-      P_SAVE_BYTE(tc_true_scroll);
+      P_SAVE_BYTE(tc_true_scroll_side);
       P_SAVE_TYPE(th, scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateFloorScroller)
+    {
+      P_SAVE_BYTE(tc_true_scroll_floor);
+      P_SAVE_TYPE(th, scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateCeilingScroller)
+    {
+      P_SAVE_BYTE(tc_true_scroll_ceiling);
+      P_SAVE_TYPE(th, scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateFloorCarryScroller)
+    {
+      P_SAVE_BYTE(tc_true_scroll_floor_carry);
+      P_SAVE_TYPE(th, scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateControlSideScroller)
+    {
+      P_SAVE_BYTE(tc_true_scroll_side_control);
+      P_SAVE_TYPE(th, control_scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateControlFloorScroller)
+    {
+      P_SAVE_BYTE(tc_true_scroll_floor_control);
+      P_SAVE_TYPE(th, control_scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateControlCeilingScroller)
+    {
+      P_SAVE_BYTE(tc_true_scroll_ceiling_control);
+      P_SAVE_TYPE(th, control_scroll_t);
+      continue;
+    }
+
+    if (th->function == dsda_UpdateControlFloorCarryScroller)
+    {
+      P_SAVE_BYTE(tc_true_scroll_floor_carry_control);
+      P_SAVE_TYPE(th, control_scroll_t);
       continue;
     }
 
@@ -1109,7 +1165,14 @@ void P_TrueUnArchiveThinkers(void) {
         tc == tc_true_glow           ? sizeof(glow_t)           :
         tc == tc_true_zdoom_glow     ? sizeof(zdoom_glow_t)     :
         tc == tc_true_elevator       ? sizeof(elevator_t)       :
-        tc == tc_true_scroll         ? sizeof(scroll_t)         :
+        tc == tc_true_scroll_side                ? sizeof(scroll_t)         :
+        tc == tc_true_scroll_floor               ? sizeof(scroll_t)         :
+        tc == tc_true_scroll_ceiling             ? sizeof(scroll_t)         :
+        tc == tc_true_scroll_floor_carry         ? sizeof(scroll_t)         :
+        tc == tc_true_scroll_side_control        ? sizeof(control_scroll_t) :
+        tc == tc_true_scroll_floor_control       ? sizeof(control_scroll_t) :
+        tc == tc_true_scroll_ceiling_control     ? sizeof(control_scroll_t) :
+        tc == tc_true_scroll_floor_carry_control ? sizeof(control_scroll_t) :
         tc == tc_true_pusher         ? sizeof(pusher_t)         :
         tc == tc_true_flicker        ? sizeof(fireflicker_t)    :
         tc == tc_true_zdoom_flicker  ? sizeof(zdoom_flicker_t)  :
@@ -1281,12 +1344,75 @@ void P_TrueUnArchiveThinkers(void) {
           break;
         }
 
-      case tc_true_scroll:       // killough 3/7/98: scroll effect thinkers
+      case tc_true_scroll_side:
         {
-          scroll_t *scroll = Z_MallocLevel (sizeof(scroll_t));
+          scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
           P_LOAD_P(scroll);
-          scroll->thinker.function = T_Scroll;
+          scroll->thinker.function = dsda_UpdateSideScroller;
           P_AddThinker(&scroll->thinker);
+          break;
+        }
+
+      case tc_true_scroll_floor:
+        {
+          scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->thinker.function = dsda_UpdateFloorScroller;
+          P_AddThinker(&scroll->thinker);
+          break;
+        }
+
+      case tc_true_scroll_ceiling:
+        {
+          scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->thinker.function = dsda_UpdateCeilingScroller;
+          P_AddThinker(&scroll->thinker);
+          break;
+        }
+
+      case tc_true_scroll_floor_carry:
+        {
+          scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->thinker.function = dsda_UpdateFloorCarryScroller;
+          P_AddThinker(&scroll->thinker);
+          break;
+        }
+
+      case tc_true_scroll_side_control:
+        {
+          control_scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->scroll.thinker.function = dsda_UpdateControlSideScroller;
+          P_AddThinker(&scroll->scroll.thinker);
+          break;
+        }
+
+      case tc_true_scroll_floor_control:
+        {
+          control_scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->scroll.thinker.function = dsda_UpdateControlFloorScroller;
+          P_AddThinker(&scroll->scroll.thinker);
+          break;
+        }
+
+      case tc_true_scroll_ceiling_control:
+        {
+          control_scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->scroll.thinker.function = dsda_UpdateControlCeilingScroller;
+          P_AddThinker(&scroll->scroll.thinker);
+          break;
+        }
+
+      case tc_true_scroll_floor_carry_control:
+        {
+          control_scroll_t *scroll = Z_MallocLevel (sizeof(*scroll));
+          P_LOAD_P(scroll);
+          scroll->scroll.thinker.function = dsda_UpdateControlFloorCarryScroller;
+          P_AddThinker(&scroll->scroll.thinker);
           break;
         }
 

@@ -46,6 +46,7 @@
 #include "dsda/build.h"
 #include "dsda/configuration.h"
 #include "dsda/pause.h"
+#include "dsda/scroll.h"
 #include "dsda/settings.h"
 
 #include "hexen/a_action.h"
@@ -577,24 +578,22 @@ static void R_InterpolationGetData(thinker_t *th,
     *posptr2 = ((elevator_t *)th)->sector;
   }
   else
-  if (th->function == T_Scroll)
+  if (th->function == dsda_UpdateSideScroller || th->function == dsda_UpdateControlSideScroller)
   {
-    switch (((scroll_t *)th)->type)
-    {
-      case sc_side:
-        *type1 = INTERP_WallPanning;
-        *posptr1 = sides + ((scroll_t *)th)->affectee;
-        break;
-      case sc_floor:
-        *type1 = INTERP_FloorPanning;
-        *posptr1 = sectors + ((scroll_t *)th)->affectee;
-        break;
-      case sc_ceiling:
-        *type1 = INTERP_CeilingPanning;
-        *posptr1 = sectors + ((scroll_t *)th)->affectee;
-        break;
-      default: ;
-    }
+    *type1 = INTERP_WallPanning;
+    *posptr1 = sides + ((scroll_t *)th)->affectee;
+  }
+  else
+  if (th->function == dsda_UpdateFloorScroller || th->function == dsda_UpdateControlFloorScroller)
+  {
+    *type1 = INTERP_FloorPanning;
+    *posptr1 = sectors + ((scroll_t *)th)->affectee;
+  }
+  else
+  if (th->function == dsda_UpdateCeilingScroller || th->function == dsda_UpdateControlCeilingScroller)
+  {
+    *type1 = INTERP_CeilingPanning;
+    *posptr1 = sectors + ((scroll_t *)th)->affectee;
   }
 }
 

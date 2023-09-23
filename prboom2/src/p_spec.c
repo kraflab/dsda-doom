@@ -72,6 +72,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
+#include "dsda/scroll.h"
 #include "dsda/thing_id.h"
 #include "dsda/utility.h"
 
@@ -3124,42 +3125,6 @@ void P_UpdateSpecials (void)
 //////////////////////////////////////////////////////////////////////
 
 //
-// Add_Scroller()
-//
-// Add a generalized scroller to the thinker list.
-//
-// type: the enumerated type of scrolling: floor, ceiling, floor carrier,
-//   wall, floor carrier & scroller
-//
-// (dx,dy): the direction and speed of the scrolling or its acceleration
-//
-// control: the sector whose heights control this scroller's effect
-//   remotely, or -1 if no control sector
-//
-// affectee: the index of the affected object (sector or sidedef)
-//
-// accel: non-zero if this is an accelerative effect
-//
-
-static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
-                         int control, int affectee, int accel, int flags)
-{
-  scroll_t *s = Z_MallocLevel(sizeof *s);
-  s->thinker.function = T_Scroll;
-  s->type = type;
-  s->dx = dx;
-  s->dy = dy;
-  s->accel = accel;
-  s->flags = flags;
-  s->vdx = s->vdy = 0;
-  if ((s->control = control) != -1)
-    s->last_height =
-      sectors[control].floorheight + sectors[control].ceilingheight;
-  s->affectee = affectee;
-  P_AddThinker(&s->thinker);
-}
-
-//
 // P_SpawnSpecials
 // After the map has been loaded,
 //  scan for specials that spawn thinkers
@@ -3341,7 +3306,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   switch (sector->special)
   {
     case zs_d_scroll_east_lava_damage:
-      Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0, 0);
+      dsda_AddFloorScroller(-4, 0, sector - sectors, 0);
       P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
       break;
     case zs_s_light_strobe_hurt:
@@ -3433,14 +3398,14 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
         i = sector->special - zs_scroll_north_slow;
         dx = FixedDiv(hexenScrollies[i][0] << FRACBITS, 2);
         dy = FixedDiv(hexenScrollies[i][1] << FRACBITS, 2);
-        Add_Scroller(sc_floor, dx, dy, -1, sector - sectors, 0, 0);
+        dsda_AddFloorScroller(dx, dy, sector - sectors, 0);
       }
       else if (sector->special >= zs_carry_east5 &&
             sector->special <= zs_carry_east35)
       { // Heretic scroll special
         // Only east scrollers also scroll the texture
         fixed_t dx = FixedDiv((1 << (sector->special - zs_carry_east5)) << FRACBITS, 2);
-        Add_Scroller(sc_floor, dx, 0, -1, sector - sectors, 0, 0);
+        dsda_AddFloorScroller(dx, 0, sector - sectors, 0);
       }
       break;
   }
@@ -3686,129 +3651,6 @@ void P_SpawnSpecials (void)
   // MAP_FORMAT_TODO: Start "Open" scripts
 }
 
-// killough 2/28/98:
-//
-// This function, with the help of r_plane.c and r_bsp.c, supports generalized
-// scrolling floors and walls, with optional mobj-carrying properties, e.g.
-// conveyor belts, rivers, etc. A linedef with a special type affects all
-// tagged sectors the same way, by creating scrolling and/or object-carrying
-// properties. Multiple linedefs may be used on the same sector and are
-// cumulative, although the special case of scrolling a floor and carrying
-// things on it, requires only one linedef. The linedef's direction determines
-// the scrolling direction, and the linedef's length determines the scrolling
-// speed. This was designed so that an edge around the sector could be used to
-// control the direction of the sector's scrolling, which is usually what is
-// desired.
-//
-// Process the active scrollers.
-//
-// This is the main scrolling code
-// killough 3/7/98
-
-void T_Scroll(scroll_t *s)
-{
-  fixed_t dx = s->dx, dy = s->dy;
-
-  if (s->control != -1)
-    {   // compute scroll amounts based on a sector's height changes
-      fixed_t height = sectors[s->control].floorheight +
-        sectors[s->control].ceilingheight;
-      fixed_t delta = height - s->last_height;
-      s->last_height = height;
-      dx = FixedMul(dx, delta);
-      dy = FixedMul(dy, delta);
-    }
-
-  // killough 3/14/98: Add acceleration
-  if (s->accel)
-    {
-      s->vdx = dx += s->vdx;
-      s->vdy = dy += s->vdy;
-    }
-
-  if (!(dx | dy))                   // no-op if both (x,y) offsets 0
-    return;
-
-  switch (s->type)
-    {
-      side_t *side;
-      sector_t *sec;
-      fixed_t height, waterheight;  // killough 4/4/98: add waterheight
-      msecnode_t *node;
-      mobj_t *thing;
-
-    case sc_side:                   // killough 3/7/98: Scroll wall texture
-        side = sides + s->affectee;
-        if (!s->flags)
-        {
-          side->textureoffset += dx;
-          side->rowoffset += dy;
-        }
-        else
-        {
-          if (s->flags & SCROLL_TOP)
-          {
-            side->textureoffset_top += dx;
-            side->rowoffset_top += dy;
-          }
-
-          if (s->flags & SCROLL_MID)
-          {
-            side->textureoffset_mid += dx;
-            side->rowoffset_mid += dy;
-          }
-
-          if (s->flags & SCROLL_BOTTOM)
-          {
-            side->textureoffset_bottom += dx;
-            side->rowoffset_bottom += dy;
-          }
-        }
-        break;
-
-    case sc_floor:                  // killough 3/7/98: Scroll floor texture
-        sec = sectors + s->affectee;
-        sec->floor_xoffs += dx;
-        sec->floor_yoffs += dy;
-        break;
-
-    case sc_ceiling:               // killough 3/7/98: Scroll ceiling texture
-        sec = sectors + s->affectee;
-        sec->ceiling_xoffs += dx;
-        sec->ceiling_yoffs += dy;
-        break;
-
-    case sc_carry:
-
-      // killough 3/7/98: Carry things on floor
-      // killough 3/20/98: use new sector list which reflects true members
-      // killough 3/27/98: fix carrier bug
-      // killough 4/4/98: Underwater, carry things even w/o gravity
-
-      sec = sectors + s->affectee;
-      height = sec->floorheight;
-      waterheight = sec->heightsec != -1 &&
-        sectors[sec->heightsec].floorheight > height ?
-        sectors[sec->heightsec].floorheight : INT_MIN;
-
-      for (node = sec->touching_thinglist; node; node = node->m_snext)
-        if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
-            (!(thing->flags & MF_NOGRAVITY || thing->z > height) ||
-             thing->z < waterheight))
-          {
-            // Move objects only if on floor or underwater,
-            // non-floating, and clipped.
-            thing->momx += dx;
-            thing->momy += dy;
-            thing->intflags |= MIF_SCROLLING;
-          }
-      break;
-
-    case sc_carry_ceiling:       // to be added later
-      break;
-    }
-}
-
 // Adds wall scroller. Scroll amount is rotated with respect to wall's
 // linedef first, so that scrolling towards the wall in a perpendicular
 // direction is translated into vertical motion, while scrolling along
@@ -3822,21 +3664,28 @@ void T_Scroll(scroll_t *s)
 static void Add_WallScroller(fixed_t dx, fixed_t dy, const line_t *l,
                              int control, int accel)
 {
-  fixed_t x = D_abs(l->dx), y = D_abs(l->dy), d;
+  fixed_t x = D_abs(l->dx);
+  fixed_t y = D_abs(l->dy);
+  fixed_t d;
+
   if (y > x)
     d = x, x = y, y = d;
-  d = FixedDiv(x, finesine[(tantoangle[FixedDiv(y,x) >> DBITS] + ANG90)
-                          >> ANGLETOFINESHIFT]);
+
+  d = FixedDiv(x, finesine[(tantoangle[FixedDiv(y,x) >> DBITS] + ANG90) >> ANGLETOFINESHIFT]);
 
   // CPhipps - Import scroller calc overflow fix, compatibility optioned
-  if (compatibility_level >= lxdoom_1_compatibility) {
-    x = (fixed_t)(((int64_t)dy * -(int64_t)l->dy - (int64_t)dx * (int64_t)l->dx) / (int64_t)d);  // killough 10/98:
-    y = (fixed_t)(((int64_t)dy * (int64_t)l->dx - (int64_t)dx * (int64_t)l->dy) / (int64_t)d);   // Use long long arithmetic
-  } else {
+  if (compatibility_level >= lxdoom_1_compatibility)
+  {
+    x = (fixed_t) (((int64_t) dy * -l->dy - (int64_t) dx * l->dx) / d);
+    y = (fixed_t) (((int64_t) dy * l->dx - (int64_t) dx * l->dy) / d);
+  }
+  else
+  {
     x = -FixedDiv(FixedMul(dy, l->dy) + FixedMul(dx, l->dx), d);
     y = -FixedDiv(FixedMul(dx, l->dy) - FixedMul(dy, l->dx), d);
   }
-  Add_Scroller(sc_side, x, y, control, *l->sidenum, accel, 0);
+
+  dsda_AddControlSideScroller(x, y, control, *l->sidenum, accel, 0);
 }
 
 // Amount (dx,dy) vector linedef is shifted right to get scroll amount
@@ -3882,13 +3731,13 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
 
     case 250:   // scroll effect ceiling
       FIND_SECTORS(id_p, l->tag)
-        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel, 0);
+        dsda_AddControlCeilingScroller(-dx, dy, control, *id_p, accel, 0);
       break;
 
     case 251:   // scroll effect floor
     case 253:   // scroll and carry objects on floor
       FIND_SECTORS(id_p, l->tag)
-        Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel, 0);
+        dsda_AddControlFloorScroller(-dx, dy, control, *id_p, accel, 0);
       if (special != 253)
         break;
       // fallthrough
@@ -3897,7 +3746,7 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       dx = FixedMul(dx, CARRYFACTOR);
       dy = FixedMul(dy, CARRYFACTOR);
       FIND_SECTORS(id_p, l->tag)
-        Add_Scroller(sc_carry, dx, dy, control, *id_p, accel, 0);
+        dsda_AddControlFloorCarryScroller(dx, dy, control, *id_p, accel, 0);
       break;
 
       // killough 3/1/98: scroll wall according to linedef
@@ -3910,8 +3759,7 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
 
     case 255:    // killough 3/2/98: scroll according to sidedef offsets
       side = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[side].textureoffset,
-                   sides[side].rowoffset, -1, side, accel, 0);
+      dsda_AddSideScroller(-sides[side].textureoffset, sides[side].rowoffset, side, 0);
       break;
 
     case 1024: // special 255 with tag control
@@ -3931,16 +3779,16 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       dy = sides[side].rowoffset / 8;
       for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
         if (*id_p != i)
-          Add_Scroller(sc_side, dx, dy, control, lines[*id_p].sidenum[0], accel, 0);
+          dsda_AddControlSideScroller(dx, dy, control, lines[*id_p].sidenum[0], accel, 0);
 
       break;
 
     case 48:                  // scroll first side
-      Add_Scroller(sc_side,  FRACUNIT, 0, -1, lines[i].sidenum[0], accel, 0);
+      dsda_AddSideScroller(FRACUNIT, 0, lines[i].sidenum[0], 0);
       break;
 
     case 85:                  // jff 1/30/98 2-way scroll
-      Add_Scroller(sc_side, -FRACUNIT, 0, -1, lines[i].sidenum[0], accel, 0);
+      dsda_AddSideScroller(-FRACUNIT, 0, lines[i].sidenum[0], 0);
       break;
   }
 }
@@ -4031,14 +3879,14 @@ void P_SpawnZDoomScroller(line_t *l, int i)
 
     case zl_scroll_ceiling:
       FIND_SECTORS(id_p, l->special_args[0])
-        Add_Scroller(sc_ceiling, -dx, dy, control, *id_p, accel, 0);
+        dsda_AddControlCeilingScroller(-dx, dy, control, *id_p, accel, 0);
 
       for (j = 0; j < copyscroller_count; ++j)
       {
         line_t *cs = copyscrollers[j];
 
         if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 1)
-          Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel, 0);
+          dsda_AddControlCeilingScroller(-dx, dy, control, cs->frontsector->iSectorID, accel, 0);
       }
 
       l->special = 0;
@@ -4047,14 +3895,14 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       if (l->special_args[2] != 1)
       { // scroll the floor texture
         FIND_SECTORS(id_p, l->special_args[0])
-          Add_Scroller(sc_floor, -dx, dy, control, *id_p, accel, 0);
+          dsda_AddControlFloorScroller(-dx, dy, control, *id_p, accel, 0);
 
         for (j = 0; j < copyscroller_count; ++j)
         {
           line_t *cs = copyscrollers[j];
 
           if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 2)
-            Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel, 0);
+            dsda_AddControlFloorScroller(-dx, dy, control, cs->frontsector->iSectorID, accel, 0);
         }
       }
 
@@ -4063,14 +3911,14 @@ void P_SpawnZDoomScroller(line_t *l, int i)
         dx = FixedMul(dx, CARRYFACTOR);
         dy = FixedMul(dy, CARRYFACTOR);
         FIND_SECTORS(id_p, l->special_args[0])
-          Add_Scroller(sc_carry, dx, dy, control, *id_p, accel, 0);
+          dsda_AddControlFloorCarryScroller(dx, dy, control, *id_p, accel, 0);
 
         for (j = 0; j < copyscroller_count; ++j)
         {
           line_t *cs = copyscrollers[j];
 
           if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 4)
-            Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel, 0);
+            dsda_AddControlFloorCarryScroller(dx, dy, control, cs->frontsector->iSectorID, accel, 0);
         }
       }
 
@@ -4088,24 +3936,24 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_texture_offsets:
       // killough 3/2/98: scroll according to sidedef offsets
       j = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[j].textureoffset, sides[j].rowoffset, -1, j, accel, l->special_args[0]);
+      dsda_AddSideScroller(-sides[j].textureoffset, sides[j].rowoffset, j, l->special_args[0]);
       l->special = 0;
       break;
     case zl_scroll_texture_left:
       j = lines[i].sidenum[0];
-      Add_Scroller(sc_side, FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel, l->special_args[1]);
+      dsda_AddSideScroller(FRACUNIT * l->special_args[0] / 64, 0, j, l->special_args[1]);
       break;
     case zl_scroll_texture_right:
       j = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -FRACUNIT * l->special_args[0] / 64, 0, -1, j, accel, l->special_args[1]);
+      dsda_AddSideScroller(-FRACUNIT * l->special_args[0] / 64, 0, j, l->special_args[1]);
       break;
     case zl_scroll_texture_up:
       j = lines[i].sidenum[0];
-      Add_Scroller(sc_side, 0, FRACUNIT * l->special_args[0] / 64, -1, j, accel, l->special_args[1]);
+      dsda_AddSideScroller(0, FRACUNIT * l->special_args[0] / 64, j, l->special_args[1]);
       break;
     case zl_scroll_texture_down:
       j = lines[i].sidenum[0];
-      Add_Scroller(sc_side, 0, -FRACUNIT * l->special_args[0] / 64, -1, j, accel, l->special_args[1]);
+      dsda_AddSideScroller(0, -FRACUNIT * l->special_args[0] / 64, j, l->special_args[1]);
       break;
     case zl_scroll_texture_both:
       j = lines[i].sidenum[0];
@@ -4113,7 +3961,7 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       if (l->special_args[0] == 0) {
         dx = FRACUNIT * (l->special_args[1] - l->special_args[2]) / 64;
         dy = FRACUNIT * (l->special_args[4] - l->special_args[3]) / 64;
-        Add_Scroller(sc_side, dx, dy, -1, j, accel, 0);
+        dsda_AddSideScroller(dx, dy, j, 0);
       }
 
       l->special = 0;
@@ -6706,7 +6554,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
 
         for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          Add_Scroller(sc_side, args[1], args[2], -1, lines[*id_p].sidenum[side], 0, args[4]);
+          dsda_AddSideScroller(args[1], args[2], lines[*id_p].sidenum[side], args[4]);
         }
 
         buttonSuccess = 1;
