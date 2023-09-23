@@ -560,6 +560,7 @@ static void P_XYMovement (mobj_t* mo)
   if (
     mo->momx > -STOPSPEED && mo->momx < STOPSPEED &&
     mo->momy > -STOPSPEED && mo->momy < STOPSPEED &&
+    !(map_format.zdoom && mo->intflags & MIF_SCROLLING) &&
     (
       !player ||
       !(player->cmd.forwardmove | player->cmd.sidemove) ||
