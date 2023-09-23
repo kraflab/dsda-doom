@@ -66,6 +66,7 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/preferences.h"
+#include "dsda/scroll.h"
 #include "dsda/settings.h"
 #include "dsda/skip.h"
 #include "dsda/tranmap.h"
@@ -2559,6 +2560,23 @@ static void P_LoadUDMFSideDefs(int lump)
     sd->lightlevel_top = msd->light_top;
     sd->lightlevel_mid = msd->light_mid;
     sd->lightlevel_bottom = msd->light_bottom;
+
+    if (msd->xscroll || msd->yscroll)
+      dsda_AddSideScroller(dsda_FloatToFixed(msd->xscroll),
+                           dsda_FloatToFixed(msd->yscroll), i, 0);
+
+    if (msd->xscrolltop || msd->yscrolltop)
+      dsda_AddSideScroller(dsda_FloatToFixed(msd->xscrolltop),
+                           dsda_FloatToFixed(msd->yscrolltop), i, SCROLL_TOP);
+
+    if (msd->xscrollmid || msd->yscrollmid)
+      dsda_AddSideScroller(dsda_FloatToFixed(msd->xscrollmid),
+                           dsda_FloatToFixed(msd->yscrollmid), i, SCROLL_MID);
+
+    if (msd->xscrollbottom || msd->yscrollbottom)
+      dsda_AddSideScroller(dsda_FloatToFixed(msd->xscrollbottom),
+                           dsda_FloatToFixed(msd->yscrollbottom), i, SCROLL_BOTTOM);
+
     sd->flags = msd->flags;
 
     if (msd->sector >= numsectors)
