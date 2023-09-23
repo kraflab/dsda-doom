@@ -196,6 +196,8 @@ set(COMMON_SRC
     dsda/render_stats.h
     dsda/save.c
     dsda/save.h
+    dsda/scroll.c
+    dsda/scroll.h
     dsda/settings.c
     dsda/settings.h
     dsda/sfx.c
