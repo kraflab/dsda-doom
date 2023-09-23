@@ -164,7 +164,8 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **scrollceilingmode** _integer_ | Ceiling scroll mode (see table below). |
 | **xthrust** _float_ | X thrust magnitude (map units per frame^2). |
 | **ythrust** _float_ | Y thrust magnitude (map units per frame^2). |
-| **thrustmode** _integer_ | Thrust mode (see table below). |
+| **thrustgroup** _integer_ | Thrust group (see table below). |
+| **thrustlocation** _integer_ | Thrust location (see table below). |
 
 #### Scroll Mode
 
@@ -175,7 +176,7 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | 4    | Affect players         |
 | 8    | Affect monsters        |
 
-#### Thrust Mode
+#### Thrust Group
 
 | Flag | Meaning                  |
 | ---- | ------------------------ |
@@ -183,10 +184,15 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | 2    | Affect players           |
 | 4    | Affect monsters          |
 | 8    | Affect projectiles       |
-| 16   | Affect grounded actors   |
-| 32   | Affect airborne actors   |
-| 64   | Affect ceiling actors    |
-| 128  | Affect WINDTHRUST actors |
+| 16   | Affect WINDTHRUST actors |
+
+#### Thrust Location
+
+| Flag | Meaning                |
+| ---- | ---------------------- |
+| 1    | Affect grounded actors |
+| 2    | Affect airborne actors |
+| 4    | Affect ceiling actors  |
 
 ### Things
 

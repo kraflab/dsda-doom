@@ -206,7 +206,8 @@ typedef struct {
   int scrollceilingmode;
   float xthrust;
   float ythrust;
-  int thrustmode;
+  int thrustgroup;
+  int thrustlocation;
   udmf_sector_flags_t flags;
 } udmf_sector_t;
 

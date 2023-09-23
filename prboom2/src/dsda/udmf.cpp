@@ -617,8 +617,11 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
     else if (scanner.StringMatch("ythrust")) {
       SCAN_FLOAT(sector.ythrust);
     }
-    else if (scanner.StringMatch("thrustmode")) {
-      SCAN_INT(sector.thrustmode);
+    else if (scanner.StringMatch("thrustgroup")) {
+      SCAN_INT(sector.thrustgroup);
+    }
+    else if (scanner.StringMatch("thrustlocation")) {
+      SCAN_INT(sector.thrustlocation);
     }
     else if (scanner.StringMatch("gravity")) {
       SCAN_FLOAT_STRING(sector.gravity);

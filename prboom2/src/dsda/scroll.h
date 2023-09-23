@@ -33,10 +33,13 @@
 #define THRUST_PLAYER     0x02
 #define THRUST_MONSTER    0x04
 #define THRUST_PROJECTILE 0x08
-#define THRUST_GROUNDED   0x10
-#define THRUST_AIRBORNE   0x20
-#define THRUST_CEILING    0x40
-#define THRUST_WINDTHRUST 0x80
+#define THRUST_WINDTHRUST 0x10
+
+#define THRUST_GROUNDED 0x20
+#define THRUST_AIRBORNE 0x40
+#define THRUST_CEILING  0x80
+
+#define THRUST_LOCATION_SHIFT 5
 
 typedef struct {
   thinker_t thinker;
