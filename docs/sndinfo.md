@@ -18,7 +18,7 @@ Once you have defined a sound effect, you can define ambient sound effects like 
 
 `$ambient <index> <sound_name> [type] <mode> <volume>`
 
-The `index` is used when placing ambient sounds in a map and can range from 1 to 64. The `sound_name` is described above. You **can** define multiple ambient sounds that use the same `sound_name` with different properties. The optional `type` is either `point <attenuation>` or `world` (default). If using a `point` sound, you can define the `attenuation` rate, which determines how fast the volume drops off with distance (default `1.0`). The `mode` can be `continuous` (looping), `periodic <seconds>`, or `random <min_seconds> <max_seconds>`. Finally, the `volume` sets the volume, ranging from `0.0` to `1.0` (default). All numerical arguments are floating points.
+The `index` is used when placing ambient sounds in a map. The `sound_name` is described above. You **can** define multiple ambient sounds that use the same `sound_name` with different properties. The optional `type` is either `point <attenuation>` or `world` (default). If using a `point` sound, you can define the `attenuation` rate, which determines how fast the volume drops off with distance (default `1.0`). The `mode` can be `continuous` (looping), `periodic <seconds>`, or `random <min_seconds> <max_seconds>`. Finally, the `volume` sets the volume, ranging from `0.0` to `1.0` (default). All numerical arguments are floating points.
 
 Example:
 
@@ -40,4 +40,4 @@ In this file, we define three sounds: a wolf, a waterfall, and a bell. Then we d
 
 ### Placing ambient sounds in maps
 
-You can place an ambient sound in a map using DoomEdNum 14001 to 14064, where the associated index ranges from 1 to 64.
+You can place an ambient sound in a map using DoomEdNum 14001 to 14064, where the associated index ranges from 1 to 64. Optionally, you can use DoomEdNum 14065 and set the first special argument to the ambient sound index.
