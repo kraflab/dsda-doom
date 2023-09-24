@@ -2480,6 +2480,12 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     thingtype = 14064; // ZMT_AMBIENTSOUND
   }
 
+  if (!raven && thingtype == 14065)
+  {
+    iden_num = mthing->special_args[0]; // Ambient sound id
+    thingtype = 14064; // ZMT_AMBIENTSOUND
+  }
+
   if (!raven && thingtype >= 14100 && thingtype <= 14164)
   {
     iden_num = thingtype - 14100; // Mus change

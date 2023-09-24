@@ -17,7 +17,7 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 | 9302 | PolyObject Start Spot (crushing) | Polyobject that crushes. |
 | 9303 | PolyObject Start Spot (harmful) | Polyobject that deals damage on touch. |
 | 14001-14064 | AmbientSound | Places an ambient sound effect source. |
-| 14065 | Custom AmbientSound | Not yet supported! |
+| 14065 | Custom AmbientSound | Places an ambient sound effect source via special argument. |
 | 14100-14164 | MusicChanger | Changes music via DoomEdNum (0 to 64). |
 | 14165 | Custom MusicChanger | Changes music via special argument (0 to 64). |
 
@@ -25,6 +25,7 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 
 - Poly objects have no sound.
 - Poly objects may have visual errors in software mode.
+- The custom ambient sound object only supports the ID argument.
 
 ### Line Specials
 
