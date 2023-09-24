@@ -315,14 +315,16 @@ void dsda_UpdateThruster(scroll_t* s) {
       if (s->flags & THRUST_GROUNDED)
         thrust_it = true;
     }
-    else if (thing->z > sec->floorheight && thing->z + thing->height < sec->ceilingheight) {
-      if (s->flags & THRUST_AIRBORNE)
+    else if (
+      thing->flags & MF_SPAWNCEILING &&
+      thing->flags & MF_NOGRAVITY &&
+      thing->z + thing->height == sec->ceilingheight
+    ) {
+      if (s->flags & THRUST_CEILING)
         thrust_it = true;
     }
-    else if (thing->flags & MF_SPAWNCEILING &&
-             thing->flags & MF_NOGRAVITY &&
-             thing->z + thing->height == sec->ceilingheight) {
-      if (s->flags & THRUST_CEILING)
+    else if (thing->flags & MF_NOGRAVITY || thing->z > thing->floorz) {
+      if (s->flags & THRUST_AIRBORNE)
         thrust_it = true;
     }
 
