@@ -192,6 +192,10 @@ static void dsda_UpdateMapInfo(void) {
   map_info.flags = dsda_MapFlags();
   map_info.gravity = dsda_Gravity();
   map_info.air_control = dsda_AirControl();
+  // This formula is based on 256 -> 65536 (no friction) and 65536 -> 0xe800 (normal friction)
+  map_info.air_friction = map_info.air_control > 256 ?
+                          65560 - FixedMul(map_info.air_control, 6168) :
+                          FRACUNIT;
 }
 
 void dsda_UpdateGameMap(int episode, int map) {

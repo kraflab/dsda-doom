@@ -53,6 +53,7 @@ typedef uint32_t map_info_flags_t;
 typedef struct {
   fixed_t gravity;
   fixed_t air_control;
+  fixed_t air_friction;
   map_info_flags_t flags;
 } map_info_t;
 
