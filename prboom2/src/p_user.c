@@ -433,13 +433,21 @@ void P_MovePlayer (player_t* player)
       }
       else if (map_info.air_control)
       {
+        int friction, movefactor = P_GetMoveFactor(mo, &friction);
+
+        movefactor = FixedMul(movefactor, map_info.air_control);
+
         if (cmd->forwardmove)
-          P_Thrust(player, player->mo->angle,
-                   cmd->forwardmove > 0 ? map_info.air_control : -map_info.air_control);
+        {
+          P_Bob(player, mo->angle, cmd->forwardmove * movefactor);
+          P_Thrust(player, player->mo->angle, cmd->forwardmove * movefactor);
+        }
 
         if (cmd->sidemove)
-          P_Thrust(player, player->mo->angle - ANG90,
-                   cmd->sidemove > 0 ? map_info.air_control : -map_info.air_control);
+        {
+          P_Bob(player, mo->angle - ANG90, cmd->sidemove * movefactor);
+          P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * movefactor);
+        }
       }
       if (mo->state == states+S_PLAY)
         P_SetMobjState(mo,S_PLAY_RUN1);

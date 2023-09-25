@@ -526,6 +526,19 @@ static void P_XYMovement (mobj_t* mo)
   if (mo->flags & (MF_MISSILE | MF_SKULLFLY))
     return;
 
+  if (
+    mo->z > mo->floorz && !(mo->flags2 & MF2_ONMOBJ) && !(mo->flags & MF_FLY) &&
+    player && mo->player && map_info.air_control > 256
+  )
+  {
+    mo->momx = FixedMul(mo->momx, map_info.air_friction);
+    mo->momy = FixedMul(mo->momy, map_info.air_friction);
+
+    player->momx = FixedMul(player->momx, map_info.air_friction);
+    player->momy = FixedMul(player->momy, map_info.air_friction);
+    return;
+  }
+
   if (mo->z > mo->floorz &&
       !(mo->flags & MF_FLY) &&
       !(mo->flags2 & MF2_FLY) &&
