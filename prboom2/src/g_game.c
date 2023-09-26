@@ -3945,7 +3945,7 @@ void G_DoPlayDemo(void)
     lprintf(LO_INFO, "Playing demo:\n  Name: %s\n  Compatibility: %s\n",
                      defdemoname, comp_lev_str[compatibility_level]);
 
-	can_save = false;   // Disable save game when in a default demo playback
+    can_save = false;   // Disable save game when in a default demo playback
 
     gameaction = ga_nothing;
   }

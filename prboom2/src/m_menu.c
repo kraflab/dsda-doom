@@ -1324,7 +1324,7 @@ void M_QuickLoad(void)
   {
     G_LoadGame(QUICKSAVESLOT);
     doom_printf("quickload");
-	can_save = true;
+    can_save = true;
   }
   else
   {
