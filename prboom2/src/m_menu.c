@@ -158,6 +158,8 @@
 
 extern dboolean  message_dontfuckwithme;
 
+extern dboolean can_save;
+
 extern const char* g_menu_flat;
 extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
@@ -697,6 +699,7 @@ static void M_FinishGameSelection(void)
     SB_SetClassData();
 
   M_ClearMenus();
+  can_save = true;
 }
 
 // CPhipps - static
@@ -905,6 +908,7 @@ void M_LoadGame (int choice)
 
   M_SetupNextMenu(&LoadDef);
   M_ReadSaveStrings();
+  can_save = true;
 }
 
 /////////////////////////////
@@ -1057,7 +1061,7 @@ void M_SaveGame (int choice)
 {
   delete_verify = false;
 
-  if (gamestate != GS_LEVEL)
+  if (gamestate != GS_LEVEL || !can_save)
     return;
 
   M_SetupNextMenu(&SaveDef);
@@ -1280,7 +1284,7 @@ void M_MusicVol(int choice)
 
 void M_QuickSave(void)
 {
-  if (gamestate != GS_LEVEL)
+  if (gamestate != GS_LEVEL || !can_save)
     return;
 
   G_SaveGame(QUICKSAVESLOT, "quicksave");
@@ -1320,6 +1324,7 @@ void M_QuickLoad(void)
   {
     G_LoadGame(QUICKSAVESLOT);
     doom_printf("quickload");
+	can_save = true;
   }
   else
   {

@@ -149,6 +149,7 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 gameaction_t    gameaction;
 gamestate_t     gamestate;
 dboolean        in_game;
+dboolean        can_save;
 int             gameskill;
 int             gameepisode;
 int             gamemap;
@@ -3943,6 +3944,8 @@ void G_DoPlayDemo(void)
 
     lprintf(LO_INFO, "Playing demo:\n  Name: %s\n  Compatibility: %s\n",
                      defdemoname, comp_lev_str[compatibility_level]);
+
+	can_save = false;   // Disable save game when in a default demo playback
 
     gameaction = ga_nothing;
   }
