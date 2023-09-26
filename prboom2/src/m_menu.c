@@ -867,6 +867,7 @@ void M_LoadSelect(int choice)
   // killough 3/16/98, 5/15/98: add slot, cmd
   G_LoadGame(choice + save_page * g_menu_save_page_size);
   M_ClearMenus();
+  can_save = true;
 }
 
 //
@@ -908,7 +909,6 @@ void M_LoadGame (int choice)
 
   M_SetupNextMenu(&LoadDef);
   M_ReadSaveStrings();
-  can_save = true;
 }
 
 /////////////////////////////
