@@ -142,7 +142,7 @@ void dsda_ArchiveAll(void) {
   P_ThinkerToIndex();
   P_ArchiveWorld();
   P_ArchivePolyobjs();
-  P_TrueArchiveThinkers();
+  P_ArchiveThinkers();
   P_ArchiveScripts();
   P_ArchiveSounds();
   P_ArchiveAmbientSound();
@@ -162,7 +162,7 @@ void dsda_UnArchiveAll(void) {
   P_UnArchivePlayers();
   P_UnArchiveWorld();
   P_UnArchivePolyobjs();
-  P_TrueUnArchiveThinkers();
+  P_UnArchiveThinkers();
   P_UnArchiveScripts();
   P_UnArchiveSounds();
   P_UnArchiveAmbientSound();
