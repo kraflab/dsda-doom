@@ -1653,7 +1653,7 @@ static int C_DECL dicmp_sprite_by_pos(const void *a, const void *b)
 
   int res = GETXY(m2) - GETXY(m1);
   no_overlapped_sprites = no_overlapped_sprites && res;
-  return res;
+  return res ? res : m2->index - m1->index;
 }
 
 /*
@@ -1684,29 +1684,13 @@ static void P_PostProcessThings(int mobjcount, mobj_t **mobjlist)
     qsort(mobjlist, mobjcount, sizeof(mobjlist[0]), dicmp_sprite_by_pos);
     if (!no_overlapped_sprites)
     {
-      i = 1;
-      while (i < mobjcount)
+      for (i = 1; i < mobjcount; ++i)
       {
-        mobj_t *m1 = mobjlist[i - 1];
-        mobj_t *m2 = mobjlist[i - 0];
+        mobj_t *m_ref;
+        uint64_t counter = 0;
 
-        if (GETXY(m1) == GETXY(m2))
-        {
-          mobj_t *mo = (m1->index < m2->index ? m1 : m2);
-          i++;
-          while (i < mobjcount && GETXY(mobjlist[i]) == GETXY(m1))
-          {
-            if (mobjlist[i]->index < mo->index)
-            {
-              mo = mobjlist[i];
-            }
-            i++;
-          }
-
-          // 'nearest'
-          mo->flags |= MF_FOREGROUND;
-        }
-        i++;
+        for (m_ref = mobjlist[i - 1]; i < mobjcount && GETXY(mobjlist[i]) == GETXY(m_ref); ++i)
+          mobjlist[i]->flags |= (((++counter) & 0xf) << MF_FOREGROUND_SHIFT);
       }
     }
   }

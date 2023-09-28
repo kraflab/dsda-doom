@@ -220,7 +220,7 @@
 
 #define MF_RESSURECTED     0x0000001000000000ull
 #define MF_NO_DEPTH_TEST   0x0000002000000000ull
-#define MF_FOREGROUND      0x0000004000000000ull
+
 #define MF_PLAYERSPRITE    0x0000008000000000ull
 
 // This actor not targetted when it hurts something else
@@ -231,6 +231,9 @@
 // hexen
 #define	MF_ALTSHADOW	0x0000040000000000ull // alternate translucent draw
 #define	MF_ICECORPSE	0x0000080000000000ull // a frozen corpse (for blasting)
+
+#define MF_FOREGROUND 0xf000000000000000ull
+#define MF_FOREGROUND_SHIFT 60
 
 // hexen_note: MF_TRANSLATION covers doom's (MF_TRANSLATION | MF_UNUSED2)
 

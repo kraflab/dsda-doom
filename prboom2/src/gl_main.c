@@ -2468,9 +2468,10 @@ static void gld_DrawItemsSortSprites(GLDrawItemType itemtype)
       GLSprite *sprite = gld_drawinfo.items[itemtype][i].item.sprite;
       if (sprite->flags & MF_FOREGROUND)
       {
+        float delta_fraction = (float) ((sprite->flags & MF_FOREGROUND) >> MF_FOREGROUND_SHIFT) / 0xf;
         sprite->index = gl_spriteindex;
-        sprite->x -= delta * sin_inv_yaw;
-        sprite->z -= delta * cos_inv_yaw;
+        sprite->x -= delta * delta_fraction * sin_inv_yaw;
+        sprite->z -= delta * delta_fraction * cos_inv_yaw;
       }
     }
   }
