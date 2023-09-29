@@ -643,8 +643,11 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
 
   // Sometimes this bit is not available
   if (
-    (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
-    (cmd->buttons & BT_CHANGE) == 0
+    (!demo_compatibility || gamestate != GS_FINALE) &&
+    (
+      (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
+      (cmd->buttons & BT_CHANGE) == 0
+    )
   )
     cmd->buttons |= BT_JOIN;
   else
