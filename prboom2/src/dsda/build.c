@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 
+#include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
@@ -48,7 +49,9 @@ static dboolean replace_source = true;
 static build_cmd_queue_t cmd_queue;
 
 static signed char forward50(void) {
-  return pclass[players[consoleplayer].pclass].forwardmove[1];
+  return dsda_Flag(dsda_arg_stroller) ?
+         pclass[players[consoleplayer].pclass].forwardmove[0] :
+         pclass[players[consoleplayer].pclass].forwardmove[1];
 }
 
 static signed char strafe40(void) {
@@ -56,7 +59,7 @@ static signed char strafe40(void) {
 }
 
 static signed char strafe50(void) {
-  return forward50();
+  return dsda_Flag(dsda_arg_stroller) ? 0 : forward50();
 }
 
 static signed short shortTic(void) {
