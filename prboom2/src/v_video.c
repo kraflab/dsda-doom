@@ -660,6 +660,11 @@ static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
 
 static int currentPaletteIndex = 0;
 
+void V_TouchPalette(void)
+{
+  V_SetPalette(currentPaletteIndex);
+}
+
 //
 // V_SetPalette
 //

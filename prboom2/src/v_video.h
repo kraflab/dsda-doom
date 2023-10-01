@@ -214,6 +214,7 @@ typedef void (*V_DrawBackground_f)(const char* flatname, int scrn);
 extern V_DrawBackground_f V_DrawBackground;
 
 // CPhipps - function to set the palette to palette number pal.
+void V_TouchPalette(void);
 void V_SetPalette(int pal);
 void V_SetPlayPal(int playpal_index);
 
