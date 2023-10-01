@@ -561,7 +561,7 @@ static void gld_AddColormapToTexture(GLTexture *gltexture, unsigned char *buffer
   // figure out which palette variant to use
   // (e.g. normal, pain flash, item flash, etc).
   playpal = V_GetPlaypal() + (palette_index*PALETTE_SIZE);
-  colormap = fullcolormap;
+  colormap = fixedcolormap ? fixedcolormap : fullcolormap;
 
   // fallback in case the current colormap hasn't been set
   // yet; this occurs when rendering the main menu for the
