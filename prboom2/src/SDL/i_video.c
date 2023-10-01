@@ -1561,11 +1561,7 @@ static void UpdateFocus(void)
   // after switching to OS and back
   if (desired_fullscreen && window_focused)
   {
-    // currentPaletteIndex?
-    if (st_palette < 0)
-      st_palette = 0;
-
-    V_SetPalette(st_palette);
+    V_TouchPalette();
   }
 
   // Should the screen be grabbed?
