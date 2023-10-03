@@ -1016,6 +1016,16 @@ static void P_LoadUDMFSectors(int lump)
     ss->damage.leakrate = ms->leakiness;
     ss->damage.interval = ms->damageinterval;
 
+    if (ms->colormap)
+    {
+      ss->colormap = R_ColormapNumForName(ms->colormap);
+      if (ss->colormap < 0)
+      {
+        lprintf(LO_WARN, "Unknown colormap %s in sector %d.\n", ms->colormap, i);
+        ss->colormap = 0;
+      }
+    }
+
     if ((ms->xscrollfloor || ms->yscrollfloor) && ms->scrollfloormode)
       dsda_AddZDoomFloorScroller(dsda_FloatToFixed(ms->xscrollfloor),
                                  dsda_FloatToFixed(ms->yscrollfloor), i, ms->scrollfloormode);

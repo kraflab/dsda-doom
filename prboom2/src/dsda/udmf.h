@@ -181,6 +181,7 @@ typedef struct {
   int lightlevel;
   int special;
   int id;
+  char* colormap;
   char* moreids;
   float xpanningfloor;
   float ypanningfloor;

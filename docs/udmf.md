@@ -166,6 +166,7 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **ythrust** _float_ | Y thrust magnitude (map units per frame^2). |
 | **thrustgroup** _integer_ | Thrust group (see table below). |
 | **thrustlocation** _integer_ | Thrust location (see table below). |
+| **colormap** _string_ | Sector colormap. |
 
 #### Scroll Mode
 
