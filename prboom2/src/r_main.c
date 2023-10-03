@@ -64,6 +64,7 @@
 #include "dsda/configuration.h"
 #include "dsda/exhud.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
@@ -890,7 +891,7 @@ static void R_SetupFrame (player_t *player)
         cm = 0;
     }
   else
-    cm = 0;
+    cm = map_info.default_colormap;
 
   //e6y: save previous and current colormap
   boom_cm = cm;

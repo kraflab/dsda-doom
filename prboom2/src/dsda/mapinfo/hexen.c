@@ -609,3 +609,7 @@ int dsda_HexenMapFlags(map_info_flags_t* flags) {
 
   return true;
 }
+
+int dsda_HexenMapColorMap(int* colormap) {
+  return false;
+}

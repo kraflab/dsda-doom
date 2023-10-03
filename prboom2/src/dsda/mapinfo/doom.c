@@ -710,3 +710,15 @@ int dsda_DoomMapFlags(map_info_flags_t* flags) {
 
   return true;
 }
+
+int dsda_DoomMapColorMap(int* colormap) {
+  if (!current_map || !current_map->colormap)
+    return false;
+
+  *colormap = R_ColormapNumForName(current_map->colormap);
+
+  if (*colormap < 0)
+    *colormap = 0;
+
+  return true;
+}

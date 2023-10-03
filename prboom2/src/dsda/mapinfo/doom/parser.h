@@ -87,6 +87,7 @@ typedef struct {
   int par;
   char* gravity;
   char* air_control;
+  char* colormap;
   size_t num_special_actions;
   doom_mapinfo_special_action_t* special_actions;
   doom_mapinfo_map_flags_t flags;

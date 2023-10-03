@@ -65,5 +65,6 @@ int dsda_UGravity(fixed_t* gravity);
 int dsda_UAirControl(fixed_t* air_control);
 int dsda_UInitSky(void);
 int dsda_UMapFlags(map_info_flags_t* flags);
+int dsda_UMapColorMap(int* colormap);
 
 #endif

@@ -56,6 +56,7 @@ Appends properties to the default map.
 | **Gravity = \<Float\>** | The strength of gravity in the map (default 800). |
 | **AirControl = \<Float\>** | The amount of control a player has while airborne. A value of 1 means complete control (as if the player was on the ground). If jumping is disabled, the default is 0. When jumping is enabled, the default is 0.00390625 (just enough to jump onto ledges). |
 | **Author = "\<Name\>"** | The map author name, which may be used on the intermission screen and in other places. |
+| **ColorMap = "\<Lump\>"** | The default colormap for the map (if not **COLORMAP**). |
 | **SpecialAction = "\<MonsterType\>", "\<ActionSpecial\>"[, \<arg1\>, \<arg2\>, \<arg3\>, \<arg4\>, \<arg5\>]** | Assigns an action to the given monster type that is executed when all monsters of that type are dead, with the associated arguments. The monster must call **A_BossDeath** to trigger the action. You can define as many special actions as you want, including multiple actions for a single monster type. |
 | **Intermission** | Shows the intermission when exiting the map (default). |
 | **NoIntermission** | Disables the intermission when exiting the map. |

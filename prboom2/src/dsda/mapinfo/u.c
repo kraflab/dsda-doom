@@ -597,3 +597,7 @@ int dsda_UInitSky(void) {
 int dsda_UMapFlags(map_info_flags_t* flags) {
   return false;
 }
+
+int dsda_UMapColorMap(int* colormap) {
+  return false;
+}

@@ -129,6 +129,7 @@ static void dsda_ResetMap(doom_mapinfo_map_t &map) {
   Z_Free(map.gravity);
   Z_Free(map.air_control);
   Z_Free(map.author);
+  Z_Free(map.colormap);
   Z_Free(map.special_actions);
 
   Z_Free(map.next.map);
@@ -161,6 +162,7 @@ static void dsda_CopyMap(doom_mapinfo_map_t &dest, doom_mapinfo_map_t &source) {
   REPLACE_WITH_COPY(dest.gravity);
   REPLACE_WITH_COPY(dest.air_control);
   REPLACE_WITH_COPY(dest.author);
+  REPLACE_WITH_COPY(dest.colormap);
 
   REPLACE_WITH_COPY(dest.next.map);
   REPLACE_WITH_COPY(dest.next.end_pic);
@@ -453,6 +455,9 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     }
     else if (scanner.StringMatch("Author")) {
       SCAN_STRING(map.author);
+    }
+    else if (scanner.StringMatch("ColorMap")) {
+      SCAN_STRING(map.colormap);
     }
     else {
       dsda_SkipValue(scanner);

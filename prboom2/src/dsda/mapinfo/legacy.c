@@ -720,3 +720,9 @@ int dsda_LegacyMapFlags(map_info_flags_t* flags) {
 
   return true;
 }
+
+int dsda_LegacyMapColorMap(int* colormap) {
+  *colormap = 0;
+
+  return true;
+}

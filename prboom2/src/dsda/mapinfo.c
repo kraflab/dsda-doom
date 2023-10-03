@@ -183,6 +183,23 @@ static map_info_flags_t dsda_MapFlags(void) {
   return flags;
 }
 
+static int dsda_MapColorMap(void) {
+  int colormap;
+
+  if (dsda_DoomMapColorMap(&colormap))
+    return colormap;
+
+  if (dsda_HexenMapColorMap(&colormap))
+    return colormap;
+
+  if (dsda_UMapColorMap(&colormap))
+    return colormap;
+
+  dsda_LegacyMapColorMap(&colormap);
+
+  return colormap;
+}
+
 static void dsda_UpdateMapInfo(void) {
   dsda_DoomUpdateMapInfo();
   dsda_HexenUpdateMapInfo();
@@ -190,6 +207,7 @@ static void dsda_UpdateMapInfo(void) {
   dsda_LegacyUpdateMapInfo();
 
   map_info.flags = dsda_MapFlags();
+  map_info.default_colormap = dsda_MapColorMap();
   map_info.gravity = dsda_Gravity();
   map_info.air_control = dsda_AirControl();
   // This formula is based on 256 -> 65536 (no friction) and 65536 -> 0xe800 (normal friction)

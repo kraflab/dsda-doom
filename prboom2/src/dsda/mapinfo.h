@@ -54,6 +54,7 @@ typedef struct {
   fixed_t gravity;
   fixed_t air_control;
   fixed_t air_friction;
+  int default_colormap;
   map_info_flags_t flags;
 } map_info_t;
 

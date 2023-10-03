@@ -65,5 +65,6 @@ int dsda_DoomGravity(fixed_t* gravity);
 int dsda_DoomAirControl(fixed_t* air_control);
 int dsda_DoomInitSky(void);
 int dsda_DoomMapFlags(map_info_flags_t* flags);
+int dsda_DoomMapColorMap(int* colormap);
 
 #endif

@@ -65,5 +65,6 @@ int dsda_HexenGravity(fixed_t* gravity);
 int dsda_HexenAirControl(fixed_t* air_control);
 int dsda_HexenInitSky(void);
 int dsda_HexenMapFlags(map_info_flags_t* flags);
+int dsda_HexenMapColorMap(int* colormap);
 
 #endif
