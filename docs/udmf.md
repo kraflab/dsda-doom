@@ -1,8 +1,8 @@
 ## UDMF (Universal Doom Map Format)
 
-This page defines the `dsda` udmf namespace. The features of this namespace form a subset of the `zdoom` namespace - map features understood by dsda-doom should also be understood by gzdoom, but not necessarily vice versa. See the [things and specials doc](./things_and_specials.md) for more information about which specials and thing types are supported.
+This page defines the `dsda` udmf namespace. Most features of this namespace form a subset of the `zdoom` namespace - they will be understood by both dsda-doom and gzdoom. Some new additions, marked with a :duck:, fill in some gaps. See the [things and specials doc](./things_and_specials.md) for more information about which specials and thing types are supported.
 
-In principle, udmf features supported in dsda-doom should work the same as they do in gzdoom. However, there may be maps that do not work in one port or the other due to differences in the underlying physics, similar to other map formats. Significant deviation in behaviour is likely a bug.
+In principle, udmf features supported by both dsda-doom and gzdoom should work the same in each. However, there may be maps that do not work in one port or the other due to differences in the underlying physics, similar to other map formats. Significant deviation in behaviour is likely a bug.
 
 It's strongly recommended to configure defaults with [MAPINFO](./mapinfo.md) for cross-port consistency.
 
@@ -106,14 +106,14 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **smoothlighting** _bool_ | Enables smooth fake contrast on this sidedef. |
 | **clipmidtex** _bool_ | Middle textures are clipped by the floor and ceiling. |
 | * **wrapmidtex** _bool_ | Middle textures are wrapped. |
-| **xscroll** _float_ | X units per frame to scroll line textures. |
-| **yscroll** _float_ | Y units per frame to scroll line textures. |
-| **xscrolltop** _float_ | X units per frame to scroll upper texture. |
-| **yscrolltop** _float_ | Y units per frame to scroll upper texture. |
-| **xscrollmid** _float_ | X units per frame to scroll middle texture. |
-| **yscrollmid** _float_ | Y units per frame to scroll middle texture. |
-| **xscrollbottom** _float_ | X units per frame to scroll lower texture. |
-| **yscrollbottom** _float_ | Y units per frame to scroll lower texture. |
+| :duck: **xscroll** _float_ | X units per frame to scroll line textures. |
+| :duck: **yscroll** _float_ | Y units per frame to scroll line textures. |
+| :duck: **xscrolltop** _float_ | X units per frame to scroll upper texture. |
+| :duck: **yscrolltop** _float_ | Y units per frame to scroll upper texture. |
+| :duck: **xscrollmid** _float_ | X units per frame to scroll middle texture. |
+| :duck: **yscrollmid** _float_ | Y units per frame to scroll middle texture. |
+| :duck: **xscrollbottom** _float_ | X units per frame to scroll lower texture. |
+| :duck: **yscrollbottom** _float_ | Y units per frame to scroll lower texture. |
 
 ### Vertices
 
@@ -156,17 +156,17 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **damageinterval** _integer_ | Interval between damage applications (in tics, default is 32). |
 | **leakiness** _integer_ | Probability of damage leaking through radiation suit (0 = never, 256 = always). |
 | **damagehazard** _bool_ | Use strife-style delayed damage behavior. |
-| **xscrollfloor** _float_ | X units per frame to scroll the floor. |
-| **yscrollfloor** _float_ | Y units per frame to scroll the floor. |
-| **scrollfloormode** _integer_ | Floor scroll mode (see table below). |
-| **xscrollceiling** _float_ | X map units per frame to scroll the ceiling. |
-| **yscrollceiling** _float_ | Y map units per frame to scroll the ceiling. |
-| **scrollceilingmode** _integer_ | Ceiling scroll mode (see table below). |
-| **xthrust** _float_ | X thrust magnitude (map units per frame^2). |
-| **ythrust** _float_ | Y thrust magnitude (map units per frame^2). |
-| **thrustgroup** _integer_ | Thrust group (see table below). |
-| **thrustlocation** _integer_ | Thrust location (see table below). |
-| **colormap** _string_ | Sector colormap. |
+| :duck: **xscrollfloor** _float_ | X units per frame to scroll the floor. |
+| :duck: **yscrollfloor** _float_ | Y units per frame to scroll the floor. |
+| :duck: **scrollfloormode** _integer_ | Floor scroll mode (see table below). |
+| :duck: **xscrollceiling** _float_ | X map units per frame to scroll the ceiling. |
+| :duck: **yscrollceiling** _float_ | Y map units per frame to scroll the ceiling. |
+| :duck: **scrollceilingmode** _integer_ | Ceiling scroll mode (see table below). |
+| :duck: **xthrust** _float_ | X thrust magnitude (map units per frame^2). |
+| :duck: **ythrust** _float_ | Y thrust magnitude (map units per frame^2). |
+| :duck: **thrustgroup** _integer_ | Thrust group (see table below). |
+| :duck: **thrustlocation** _integer_ | Thrust location (see table below). |
+| :duck: **colormap** _string_ | Sector colormap. |
 
 #### Scroll Mode
 

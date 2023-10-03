@@ -1,6 +1,6 @@
 ## MAPINFO
 
-MAPINFO is a lump that allows authors to configure various properties of maps, clusters, episodes, and skills. DSDA-Doom supports a subset of the MAPINFO options that are supported by other ports - if a lump works in dsda-doom, it should also work fine in gzdoom, but not necessarily vice-versa. Only the "new" format of mapinfo is valid in dsda-doom (the curly braces). MAPINFO gives access to many features and flags of particular importance to UDMF maps, including its set of special actions and activation rules, jumping, gravity, and air control. Only UDMF maps can be loaded alongside MAPINFO in dsda-doom.
+MAPINFO is a lump that allows authors to configure various properties of maps, clusters, episodes, and skills. Most features listed here form a subset of gzdoom's MAPINFO specification - they will be understood by both dsda-doom and gzdoom. Some new additions, marked with a :duck:, fill in some gaps. Only the "new" format of mapinfo is valid in dsda-doom (the curly braces). MAPINFO gives access to many features and flags of particular importance to UDMF maps, including its set of special actions and activation rules, jumping, gravity, and air control. Only UDMF maps can be loaded alongside MAPINFO in dsda-doom.
 
 ## Usage
 
@@ -56,7 +56,6 @@ Appends properties to the default map.
 | **Gravity = \<Float\>** | The strength of gravity in the map (default 800). |
 | **AirControl = \<Float\>** | The amount of control a player has while airborne. A value of 1 means complete control (as if the player was on the ground). If jumping is disabled, the default is 0. When jumping is enabled, the default is 0.00390625 (just enough to jump onto ledges). |
 | **Author = "\<Name\>"** | The map author name, which may be used on the intermission screen and in other places. |
-| **ColorMap = "\<Lump\>"** | The default colormap for the map (if not **COLORMAP**). |
 | **SpecialAction = "\<MonsterType\>", "\<ActionSpecial\>"[, \<arg1\>, \<arg2\>, \<arg3\>, \<arg4\>, \<arg5\>]** | Assigns an action to the given monster type that is executed when all monsters of that type are dead, with the associated arguments. The monster must call **A_BossDeath** to trigger the action. You can define as many special actions as you want, including multiple actions for a single monster type. |
 | **Intermission** | Shows the intermission when exiting the map (default). |
 | **NoIntermission** | Disables the intermission when exiting the map. |
@@ -78,12 +77,9 @@ Appends properties to the default map.
 | **ResetHealth** | Reset player health when entering the map. |
 | **ResetInventory** | Reset player inventory when entering the map. |
 | **UsePlayerStartZ** | Spawn the player at the player start z height (by default, the player spawns on the floor). |
-| **NoPassover** | Turns on infinite thing height (objects cannot move over one another). This is the default. |
-| **Passover** | Turns off infinite thing height (objects can move over one another). |
-
-#### Notes
-
-The `Passover` and `NoPassover` fields are new. ZDoom has different defaults and expectations, where this behavior can be adjusted using zdoom's specific compatibility flags when _necessary_. In dsda-doom this is considered a feature rather than a compatibility and must be turned on explicitly by the author.
+| :duck: **NoPassover** | Turns on infinite thing height (objects cannot move over one another). This is the default. |
+| :duck: **Passover** | Turns off infinite thing height (objects can move over one another). |
+| :duck: **ColorMap = "\<Lump\>"** | The default colormap for the map (if not **COLORMAP**). |
 
 ### Cluster
 
