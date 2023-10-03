@@ -156,7 +156,11 @@ typedef struct sector_s
   // killough 3/7/98: support flat heights drawn at another sector's heights
   int heightsec;    // other sector, or -1 if no other sector
 
-  int bottommap, midmap, topmap; // killough 4/4/98: dynamic colormaps
+  // killough 4/4/98: dynamic colormaps
+  short bottommap;
+  short midmap;
+  short topmap;
+  short colormap;
 
   // list of mobjs that are at least partially in the sector
   // thinglist is a subset of touching_thinglist
