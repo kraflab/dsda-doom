@@ -668,6 +668,12 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
     else if (scanner.StringMatch("colormap")) {
       SCAN_STRING(sector.colormap);
     }
+    else if (scanner.StringMatch("skyfloor")) {
+      SCAN_STRING(sector.skyfloor);
+    }
+    else if (scanner.StringMatch("skyceiling")) {
+      SCAN_STRING(sector.skyceiling);
+    }
     else if (scanner.StringMatch("moreids")) {
       SCAN_STRING(sector.moreids);
     }

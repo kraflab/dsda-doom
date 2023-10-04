@@ -167,6 +167,8 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | :duck: **thrustgroup** _integer_ | Thrust group (see table below). |
 | :duck: **thrustlocation** _integer_ | Thrust location (see table below). |
 | :duck: **colormap** _string_ | Sector colormap. |
+| :duck: **skyfloor** _string_ | Floor sky texture. |
+| :duck: **skyceiling** _string_ | Ceiling sky texture. |
 
 #### Scroll Mode
 

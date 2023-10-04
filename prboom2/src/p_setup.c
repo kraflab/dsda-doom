@@ -53,6 +53,7 @@
 #include "v_video.h"
 #include "smooth.h"
 #include "r_fps.h"
+#include "r_plane.h"
 #include "g_overflow.h"
 #include "am_map.h"
 #include "e6y.h"//e6y
@@ -1024,6 +1025,16 @@ static void P_LoadUDMFSectors(int lump)
         lprintf(LO_WARN, "Unknown colormap %s in sector %d.\n", ms->colormap, i);
         ss->colormap = 0;
       }
+    }
+
+    if (ms->skyfloor)
+    {
+      ss->floorsky = R_TextureNumForName(ms->skyfloor) | PL_SKYFLAT_SECTOR;
+    }
+
+    if (ms->skyceiling)
+    {
+      ss->ceilingsky = R_TextureNumForName(ms->skyceiling) | PL_SKYFLAT_SECTOR;
     }
 
     if ((ms->xscrollfloor || ms->yscrollfloor) && ms->scrollfloormode)
