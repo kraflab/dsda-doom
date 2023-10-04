@@ -925,8 +925,8 @@ static void P_InitializeSectorDefaults(sector_t *ss)
   // killough 4/4/98: colormaps:
   ss->bottommap = ss->midmap = ss->topmap = ss->colormap = 0;
 
-  // killough 10/98: sky textures coming from sidedefs:
-  ss->sky = 0;
+  ss->floorsky = 0;
+  ss->ceilingsky = 0;
 
   // [kb] For R_WiggleFix
   ss->cachedheight = 0;

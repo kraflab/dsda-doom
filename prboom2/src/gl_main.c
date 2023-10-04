@@ -1289,13 +1289,13 @@ void gld_AddWall(seg_t *seg)
     {
       wall.ytop=MAXCOORD;
       wall.ybottom=(float)frontsector->ceilingheight/MAP_SCALE;
-      gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_CEILING);
+      gld_AddSkyTexture(&wall, frontsector->ceilingsky, frontsector->ceilingsky, SKY_CEILING);
     }
     if (frontsector->floorpic==skyflatnum)
     {
       wall.ytop=(float)frontsector->floorheight/MAP_SCALE;
       wall.ybottom=-MAXCOORD;
-      gld_AddSkyTexture(&wall, frontsector->sky, frontsector->sky, SKY_FLOOR);
+      gld_AddSkyTexture(&wall, frontsector->floorsky, frontsector->floorsky, SKY_FLOOR);
     }
     temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, true, false);
     if (temptex && frontsector->ceilingheight > frontsector->floorheight)
@@ -1387,7 +1387,7 @@ void gld_AddWall(seg_t *seg)
         // Old code: wall.ybottom=(float)backsector->floorheight/MAP_SCALE;
         wall.ybottom=((float)(backsector->floorheight +
           (specific_rowoffset > 0 ? specific_rowoffset : 0)))/MAP_SCALE;
-        gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+        gld_AddSkyTexture(&wall, frontsector->ceilingsky, backsector->ceilingsky, SKY_CEILING);
       }
       else
       {
@@ -1399,7 +1399,7 @@ void gld_AddWall(seg_t *seg)
           {
             fix_sky_bleed = true;
           }
-          gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+          gld_AddSkyTexture(&wall, frontsector->ceilingsky, backsector->ceilingsky, SKY_CEILING);
         }
         else
         {
@@ -1416,7 +1416,7 @@ void gld_AddWall(seg_t *seg)
             {
               wall.ybottom=(float)max_ceiling/MAP_SCALE;
             }
-            gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+            gld_AddSkyTexture(&wall, frontsector->ceilingsky, backsector->ceilingsky, SKY_CEILING);
           }
         }
       }
@@ -1608,14 +1608,14 @@ bottomtexture:
          )
       {
         wall.ytop=(float)backsector->floorheight/MAP_SCALE;
-        gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_FLOOR);
+        gld_AddSkyTexture(&wall, frontsector->floorsky, backsector->floorsky, SKY_FLOOR);
       }
       else
       {
         if (bottomtexture == NO_TEXTURE && midtexture == NO_TEXTURE)
         {
           wall.ytop=(float)max_floor/MAP_SCALE;
-          gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_CEILING);
+          gld_AddSkyTexture(&wall, frontsector->floorsky, backsector->floorsky, SKY_CEILING);
         }
         else
         {
@@ -1624,7 +1624,7 @@ bottomtexture:
             backsector->floorheight >= frontsector->ceilingheight)
           {
             wall.ytop=(float)min_floor/MAP_SCALE;
-            gld_AddSkyTexture(&wall, frontsector->sky, backsector->sky, SKY_FLOOR);
+            gld_AddSkyTexture(&wall, frontsector->floorsky, backsector->floorsky, SKY_FLOOR);
           }
         }
       }

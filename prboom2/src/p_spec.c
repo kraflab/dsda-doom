@@ -3421,7 +3421,10 @@ static void P_SpawnVanillaExtras(void)
         case 271:   // Regular sky
         case 272:   // Same, only flipped
           FIND_SECTORS(id_p, lines[i].tag)
-            sectors[*id_p].sky = i | PL_SKYFLAT;
+          {
+            sectors[*id_p].floorsky = i | PL_SKYFLAT;
+            sectors[*id_p].ceilingsky = i | PL_SKYFLAT;
+          }
         break;
       }
 }
@@ -3469,7 +3472,10 @@ void P_SpawnCompatibleExtra(line_t *l, int i)
     case 271:   // Regular sky
     case 272:   // Same, only flipped
       FIND_SECTORS(id_p, lines[i].tag)
-        sectors[*id_p].sky = i | PL_SKYFLAT;
+      {
+        sectors[*id_p].floorsky = i | PL_SKYFLAT;
+        sectors[*id_p].ceilingsky = i | PL_SKYFLAT;
+      }
       break;
   }
 }
@@ -3560,7 +3566,10 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         // or ceiling texture, to distinguish floor and ceiling sky.
         case zi_init_transfer_sky:
           FIND_SECTORS(id_p, l->special_args[0])
-            sectors[*id_p].sky = i | PL_SKYFLAT;
+          {
+            sectors[*id_p].floorsky = i | PL_SKYFLAT;
+            sectors[*id_p].ceilingsky = i | PL_SKYFLAT;
+          }
           break;
       }
       break;

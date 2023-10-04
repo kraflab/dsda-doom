@@ -748,7 +748,7 @@ static void R_UpdateGlobalPlanes(sector_t *sector, int *floorlightlevel, int *ce
       sectors[frontsector->heightsec].ceilingpic == skyflatnum) ?
     R_FindPlane(frontsector->floorheight,
                 frontsector->floorpic == skyflatnum &&  // kilough 10/98
-                frontsector->sky & PL_SKYFLAT ? frontsector->sky :
+                frontsector->floorsky & PL_SKYFLAT ? frontsector->floorsky :
                 frontsector->floorpic,
                 *floorlightlevel,               // killough 3/16/98
                 frontsector->special,
@@ -765,7 +765,7 @@ static void R_UpdateGlobalPlanes(sector_t *sector, int *floorlightlevel, int *ce
       sectors[frontsector->heightsec].floorpic == skyflatnum) ?
     R_FindPlane(frontsector->ceilingheight,     // killough 3/8/98
                 frontsector->ceilingpic == skyflatnum &&  // kilough 10/98
-                frontsector->sky & PL_SKYFLAT ? frontsector->sky :
+                frontsector->ceilingsky & PL_SKYFLAT ? frontsector->ceilingsky :
                 frontsector->ceilingpic,
                 *ceilinglightlevel,             // killough 4/11/98
                 0,
