@@ -36,8 +36,9 @@
 
 #include "r_data.h"
 
-/* killough 10/98: special mask indicates sky flat comes from sidedef */
-#define PL_SKYFLAT (0x80000000)
+#define PL_SKYFLAT_LINE (0x80000000)
+#define PL_SKYFLAT_SECTOR (0x40000000)
+#define PL_SKYFLAT (PL_SKYFLAT_LINE|PL_SKYFLAT_SECTOR)
 
 /* Visplane related. */
 extern int *lastopening; // dropoff overflow

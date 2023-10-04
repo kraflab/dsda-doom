@@ -139,19 +139,26 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
 {
   side_t *s = NULL;
   line_t *l = NULL;
+  int sky = skytexture;
 
   wall->gltexture = NULL;
 
-  if ((sky1) & PL_SKYFLAT)
+  if (sky1 & PL_SKYFLAT_LINE)
   {
-    l = &lines[sky1 & ~PL_SKYFLAT];
+    l = &lines[sky1 & ~PL_SKYFLAT_LINE];
   }
-  else
+  else if (sky2 & PL_SKYFLAT_LINE)
   {
-    if ((sky2) & PL_SKYFLAT)
-    {
-      l = &lines[sky2 & ~PL_SKYFLAT];
-    }
+    l = &lines[sky2 & ~PL_SKYFLAT_LINE];
+  }
+
+  if (sky1 & PL_SKYFLAT_SECTOR)
+  {
+    sky = sky1 & ~PL_SKYFLAT_SECTOR;
+  }
+  else if (sky2 & PL_SKYFLAT_SECTOR)
+  {
+    sky = sky2 & ~PL_SKYFLAT_SECTOR;
   }
 
   if (l)
@@ -171,7 +178,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
   }
   else
   {
-    wall->gltexture = gld_RegisterSkyTexture(skytexture, true);
+    wall->gltexture = gld_RegisterSkyTexture(sky, true);
     if (wall->gltexture)
     {
       int h = wall->gltexture->buffer_height;

@@ -527,10 +527,10 @@ static void R_DoDrawPlane(visplane_t *pl)
 
       an = viewangle;
 
-      if (pl->picnum & PL_SKYFLAT)
+      if (pl->picnum & PL_SKYFLAT_LINE)
       {
         // Sky Linedef
-        const line_t *l = &lines[pl->picnum & ~PL_SKYFLAT];
+        const line_t *l = &lines[pl->picnum & ~PL_SKYFLAT_LINE];
 
         // Sky transferred from first sidedef
         const side_t *s = *l->sidenum + sides;
@@ -562,6 +562,12 @@ static void R_DoDrawPlane(visplane_t *pl)
           int skyheight = textureheight[texture]>>FRACBITS;
           dcvars.texturemid = (int)((int64_t)dcvars.texturemid * skyheight / SKYSTRETCH_HEIGHT);
         }
+      }
+      else if (pl->picnum & PL_SKYFLAT_SECTOR)
+      {
+        dcvars.texturemid = skytexturemid;
+        texture = pl->picnum & ~PL_SKYFLAT_SECTOR;
+        flip = 0;
       }
       else
       {    // Normal Doom sky, only one allowed per level
