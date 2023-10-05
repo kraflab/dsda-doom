@@ -169,6 +169,7 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | :duck: **colormap** _string_ | Sector colormap. |
 | :duck: **skyfloor** _string_ | Floor sky texture. |
 | :duck: **skyceiling** _string_ | Ceiling sky texture. |
+| :duck: **frictionfactor** _float_ | Friction factor. Ranges from 0 to 1 (default is 0.90625). |
 
 #### Scroll Mode
 

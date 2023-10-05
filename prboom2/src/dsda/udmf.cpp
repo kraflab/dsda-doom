@@ -626,6 +626,9 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
     else if (scanner.StringMatch("gravity")) {
       SCAN_FLOAT_STRING(sector.gravity);
     }
+    else if (scanner.StringMatch("frictionfactor")) {
+      SCAN_FLOAT_STRING(sector.frictionfactor);
+    }
     else if (scanner.StringMatch("lightfloorabsolute")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_LIGHTFLOORABSOLUTE);
     }

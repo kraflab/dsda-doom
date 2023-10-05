@@ -211,6 +211,7 @@ typedef struct {
   float ythrust;
   int thrustgroup;
   int thrustlocation;
+  char* frictionfactor;
   udmf_sector_flags_t flags;
 } udmf_sector_t;
 

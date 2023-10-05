@@ -4116,6 +4116,26 @@ void T_Friction(friction_t *f)
 //
 // Initialize the sectors where friction is increased or decreased
 
+void P_ResolveFrictionFactor(fixed_t friction_factor, sector_t *sec)
+{
+  sec->friction = friction_factor;
+
+  if (sec->friction > FRACUNIT)
+    sec->friction = FRACUNIT;
+  else if (sec->friction < 0)
+    sec->friction = 0;
+
+  if (sec->friction > ORIG_FRICTION) // ice
+    sec->movefactor = ((0x10092 - sec->friction) * (0x70)) / 0x158;
+  else
+    sec->movefactor = ((sec->friction - 0xDB34) * (0xA)) / 0x80;
+
+  if (sec->movefactor < 32)
+    sec->movefactor = 32;
+
+  sec->flags |= SECF_FRICTION;
+}
+
 static void P_ApplySectorFriction(int tag, int value, int use_thinker)
 {
   const int *id_p;

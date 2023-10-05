@@ -1658,6 +1658,7 @@ void EV_StopLightEffect(int tag);
 void T_ZDoom_Glow(zdoom_glow_t *g);
 void T_ZDoom_Flicker(zdoom_flicker_t *g);
 int P_ConvertHexenCrush(int crush);
+void P_ResolveFrictionFactor(fixed_t friction_factor, sector_t *sec);
 
 int EV_TeleportGroup(short group_tid, mobj_t *thing, short source_tid, short dest_tid,
                      dboolean move_source, dboolean fog);

@@ -1013,6 +1013,11 @@ static void P_LoadUDMFSectors(int lump)
     ss->ceiling_yscale = dsda_FloatToFixed(ms->yscaleceiling);
     ss->gravity = dsda_StringToFixed(ms->gravity);
 
+    if (ms->frictionfactor)
+    {
+      P_ResolveFrictionFactor(dsda_StringToFixed(ms->frictionfactor), ss);
+    }
+
     ss->damage.amount = ms->damageamount;
     ss->damage.leakrate = ms->leakiness;
     ss->damage.interval = ms->damageinterval;
