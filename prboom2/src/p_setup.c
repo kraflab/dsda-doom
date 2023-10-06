@@ -1021,6 +1021,7 @@ static void P_LoadUDMFSectors(int lump)
     if (ms->movefactor)
     {
       ss->movefactor = dsda_StringToFixed(ms->movefactor);
+      ss->flags |= SECF_FRICTION;
     }
 
     ss->damage.amount = ms->damageamount;
