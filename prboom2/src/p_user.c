@@ -419,6 +419,9 @@ void P_MovePlayer (player_t* player)
         int bobfactor =
           friction < ORIG_FRICTION ? movefactor : ORIG_FRICTION_FACTOR;
 
+        if (map_format.zdoom && !movefactor)
+          bobfactor = movefactor;
+
         if (cmd->forwardmove)
         {
           P_Bob(player,mo->angle,cmd->forwardmove*bobfactor);

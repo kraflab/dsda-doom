@@ -1018,6 +1018,11 @@ static void P_LoadUDMFSectors(int lump)
       P_ResolveFrictionFactor(dsda_StringToFixed(ms->frictionfactor), ss);
     }
 
+    if (ms->movefactor)
+    {
+      ss->movefactor = dsda_StringToFixed(ms->movefactor);
+    }
+
     ss->damage.amount = ms->damageamount;
     ss->damage.leakrate = ms->leakiness;
     ss->damage.interval = ms->damageinterval;
