@@ -439,7 +439,7 @@ static int WI_itemLimit(int i)
 
 static int WI_secretPercent(int i)
 {
-  return wbs->maxsecret ? (plrs[i].skills * 100) / wbs->maxsecret : 100;
+  return wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret : 100;
 }
 
 static int WI_secretLimit(int i)
