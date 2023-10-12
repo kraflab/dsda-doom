@@ -199,14 +199,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **99: Floor_RaiseAndCrushDoom**
 
-**100: Scroll_Texture_Left**
-
-**101: Scroll_Texture_Right**
-
-**102: Scroll_Texture_Up**
-
-**103: Scroll_Texture_Down**
-
 **104: Ceiling_CrushAndRaiseSilentDist**
 
 **105: Door_WaitRaise**
@@ -293,9 +285,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **189: Sector_SetFloorScale**
 
-**190: Static_Init**
-- The static init supports damage, gravity, and skies only.
-
 **192: Ceiling_LowerToHighestFloor**
 
 **193: Ceiling_LowerInstant**
@@ -333,10 +322,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **209: Transfer_Heights**
 
-**210: Transfer_FloorLight**
-
-**211: Transfer_CeilingLight**
-
 **214: Sector_SetDamage**
 
 **215: Teleport_Line**
@@ -351,15 +336,11 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **220: Sector_SetCurrent**
 
-**221: Scroll_Texture_Both**
-
 **222: Scroll_Texture_Model**
 
 **223: Scroll_Floor**
 
 **224: Scroll_Ceiling**
-
-**225: Scroll_Texture_Offsets**
 
 **227: PointPush_SetForce**
 
@@ -462,6 +443,37 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 **281: Line_SetAutomapFlags**
 
 **282: Line_SetAutomapStyle**
+
+#### Obsolete Line Specials
+
+The following lines are obsolete in udmf.
+
+**100: Scroll_Texture_Left** \[Obsolete\]
+- Use the sidedef scroll properties directly.
+
+**101: Scroll_Texture_Right** \[Obsolete\]
+- Use the sidedef scroll properties directly.
+
+**102: Scroll_Texture_Up** \[Obsolete\]
+- Use the sidedef scroll properties directly.
+
+**103: Scroll_Texture_Down** \[Obsolete\]
+- Use the sidedef scroll properties directly.
+
+**190: Static_Init** \[Obsolete\]
+- Use the sector gravity, floor sky, ceiling sky, and damage properties directly.
+
+**210: Transfer_FloorLight** \[Obsolete\]
+- Use the sector floor light property directly.
+
+**211: Transfer_CeilingLight** \[Obsolete\]
+- Use the sector ceiling light property directly.
+
+**221: Scroll_Texture_Both** \[Obsolete\]
+- Use the sidedef scroll properties directly.
+
+**225: Scroll_Texture_Offsets** \[Obsolete\]
+- Use the sidedef scroll properties directly.
 
 ### Sector Specials
 
