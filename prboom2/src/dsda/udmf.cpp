@@ -309,10 +309,6 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
       SCAN_STRING(line.moreids);
     }
     else {
-      // known ignored fields:
-      // comment
-      // renderstyle
-      // arg0str
       dsda_SkipValue(scanner);
     }
   }
@@ -458,35 +454,6 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
       SCAN_STRING_N(side.texturemiddle, 8);
     }
     else {
-      // known ignored fields:
-      // comment
-      // nogradient_top
-      // flipgradient_top
-      // clampgradient_top
-      // useowncolors_top
-      // uppercolor_top
-      // lowercolor_top
-      // nogradient_mid
-      // flipgradient_mid
-      // clampgradient_mid
-      // useowncolors_mid
-      // uppercolor_mid
-      // lowercolor_mid
-      // nogradient_bottom
-      // flipgradient_bottom
-      // clampgradient_bottom
-      // useowncolors_bottom
-      // uppercolor_bottom
-      // lowercolor_bottom
-      // useowncoloradd_top
-      // useowncoloradd_mid
-      // useowncoloradd_bottom
-      // coloradd_top
-      // coloradd_mid
-      // coloradd_bottom
-      // colorization_top
-      // colorization_mid
-      // colorization_bottom
       dsda_SkipValue(scanner);
     }
   }
@@ -508,9 +475,6 @@ static void dsda_ParseUDMFVertex(Scanner &scanner) {
       SCAN_FLOAT_STRING(vertex.y);
     }
     else {
-      // known ignored fields:
-      // zfloor
-      // zceiling
       dsda_SkipValue(scanner);
     }
   }
@@ -684,60 +648,6 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       SCAN_STRING(sector.moreids);
     }
     else {
-      // known ignored fields:
-      // comment
-      // ceilingplane_a
-      // ceilingplane_b
-      // ceilingplane_c
-      // ceilingplane_d
-      // floorplane_a
-      // floorplane_b
-      // floorplane_c
-      // floorplane_d
-      // alphafloor
-      // alphaceiling
-      // renderstylefloor
-      // renderstyleceiling
-      // lightcolor
-      // fadecolor
-      // desaturation
-      // soundsequence
-      // damagetype
-      // floorterrain
-      // ceilingterrain
-      // portal_ceil_blocksound
-      // portal_ceil_disabled
-      // portal_ceil_nopass
-      // portal_ceil_norender
-      // portal_ceil_overlaytype
-      // portal_floor_blocksound
-      // portal_floor_disabled
-      // portal_floor_nopass
-      // portal_floor_norender
-      // portal_floor_overlaytype
-      // floor_reflect
-      // ceiling_reflect
-      // fogdensity
-      // floorglowcolor
-      // floorglowheight
-      // ceilingglowcolor
-      // ceilingglowheight
-      // color_floor
-      // color_ceiling
-      // color_walltop
-      // color_wallbottom
-      // color_sprites
-      // coloradd_floor
-      // coloradd_ceiling
-      // coloradd_sprites
-      // coloradd_walls
-      // colorization_floor
-      // colorization_ceiling
-      // noskywalls
-      // healthfloor
-      // healthfloorgroup
-      // healthceiling
-      // healthceilinggroup
       dsda_SkipValue(scanner);
     }
   }
@@ -872,17 +782,6 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
       SCAN_FLAG(thing.flags, UDMF_TF_COUNTSECRET);
     }
     else {
-      // known ignored fields:
-      // comment
-      // skill6-16
-      // class4-16
-      // conversation
-      // arg0str
-      // renderstyle
-      // fillcolor
-      // score
-      // pitch
-      // roll
       dsda_SkipValue(scanner);
     }
   }
