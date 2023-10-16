@@ -308,6 +308,9 @@ static void dsda_ParseUDMFLineDef(Scanner &scanner) {
     else if (scanner.StringMatch("moreids")) {
       SCAN_STRING(line.moreids);
     }
+    else if (scanner.StringMatch("arg0str")) {
+      SCAN_STRING(line.arg0str);
+    }
     else {
       dsda_SkipValue(scanner);
     }
@@ -780,6 +783,9 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
     }
     else if (scanner.StringMatch("countsecret")) {
       SCAN_FLAG(thing.flags, UDMF_TF_COUNTSECRET);
+    }
+    else if (scanner.StringMatch("arg0str")) {
+      SCAN_STRING(thing.arg0str);
     }
     else {
       dsda_SkipValue(scanner);

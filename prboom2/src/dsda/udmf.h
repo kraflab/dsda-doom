@@ -83,6 +83,7 @@ typedef struct {
   int arg2;
   int arg3;
   int arg4;
+  char* arg0str;
   int sidefront;
   int sideback;
   float alpha;
@@ -251,6 +252,7 @@ typedef struct {
   int arg2;
   int arg3;
   int arg4;
+  char* arg0str;
   const char* gravity;
   const char* health;
   float scalex;

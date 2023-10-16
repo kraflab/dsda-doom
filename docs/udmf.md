@@ -56,6 +56,7 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **arg2** _integer_ | Special argument 2. |
 | **arg3** _integer_ | Special argument 3. |
 | **arg4** _integer_ | Special argument 4. |
+| **arg0str** _string_ | Special argument 0 as a string (for certain actions). |
 | **sidefront** _integer_ | Index of the first sidedef. |
 | **sideback** _integer_ | Index of the second sidedef. |
 | **alpha** _float_ | Translucency (default is 1.0). |
@@ -229,6 +230,7 @@ DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl n
 | **arg2** _integer_ | Special argument 2. |
 | **arg3** _integer_ | Special argument 3. |
 | **arg4** _integer_ | Special argument 4. |
+| **arg0str** _string_ | Special argument 0 as a string (for certain actions). |
 | **countsecret** _bool_ | Picking this thing up counts as a secret. |
 | **gravity** _float_ | Thing gravity. Positive values are multiplicative and negative values are absolute (default is 1.0). |
 | **health** _float_ | Thing health. Positive values are multiplicative and negative values are absolute (default is 1.0). |
