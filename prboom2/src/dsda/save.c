@@ -87,6 +87,8 @@ static void dsda_ArchiveContext(void) {
 
   P_SAVE_X(leave_data);
 
+  P_SAVE_X(map_info.default_colormap);
+
   P_SAVE_X(leveltime);
   P_SAVE_X(totalleveltimes);
   P_SAVE_X(levels_completed);
@@ -126,6 +128,8 @@ static void dsda_UnArchiveContext(void) {
   P_LOAD_X(leave_data);
 
   G_InitNew(gameskill, gameepisode, gamemap, false);
+
+  P_LOAD_X(map_info.default_colormap);
 
   P_LOAD_X(leveltime);
   P_LOAD_X(totalleveltimes);
