@@ -1880,6 +1880,20 @@ static void P_LoadUDMFThings(int lump)
     mt.health = dsda_StringToFixed(dmt->health);
     mt.alpha = dmt->alpha;
 
+    if (mt.special == zl_sector_set_colormap || mt.special == zl_map_set_colormap)
+    {
+      if (dmt->arg0str)
+        mt.special_args[0] = R_ColormapNumForName(dmt->arg0str);
+      else
+        mt.special_args[0] = -1;
+
+      if (mt.special_args[0] < 0)
+      {
+        lprintf(LO_WARN, "Unknown colormap in thing %d action.\n", i);
+        mt.special = 0;
+      }
+    }
+
     if (dmt->flags & UDMF_TF_SKILL1)
       mt.options |= MTF_SKILL1;
 
@@ -2238,6 +2252,20 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->automap_style = mld->automapstyle;
     ld->health = mld->health;
     ld->healthgroup = mld->healthgroup;
+
+    if (ld->special == zl_sector_set_colormap || ld->special == zl_map_set_colormap)
+    {
+      if (mld->arg0str)
+        ld->special_args[0] = R_ColormapNumForName(mld->arg0str);
+      else
+        ld->special_args[0] = -1;
+
+      if (ld->special_args[0] < 0)
+      {
+        lprintf(LO_WARN, "Unknown colormap in line %d action.\n", i);
+        ld->special = 0;
+      }
+    }
 
     if (mld->flags & UDMF_ML_PLAYERCROSS)
       ld->activation |= SPAC_CROSS;

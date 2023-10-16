@@ -297,6 +297,9 @@ typedef enum {
   zl_line_set_automap_style = 282,
   zl_polyobj_stop_sound = 283,
 
+  zl_map_set_colormap = 2701,
+  zl_sector_set_colormap = 2702,
+
   zl_linespecial_max
 } zl_linespecial_id_t;
 

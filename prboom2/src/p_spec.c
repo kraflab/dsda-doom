@@ -7659,6 +7659,23 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       }
       buttonSuccess = 1;
       break;
+    case zl_map_set_colormap:
+      if (args[0] >= 0)
+      {
+        map_info.default_colormap = args[0];
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_colormap:
+      if (args[0] >= 0 && args[1])
+      {
+        const int *id_p;
+
+        FIND_SECTORS(id_p, args[1])
+          sectors[*id_p].colormap = args[0];
+      }
+      buttonSuccess = 1;
+      break;
     default:
       break;
   }
