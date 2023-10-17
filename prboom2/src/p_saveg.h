@@ -36,7 +36,7 @@
 
 #include "doomtype.h"
 
-#define SAVEVERSION 4
+#define SAVEVERSION 5
 
 /* Persistent storage/archiving.
  * These are the load / save game routines. */
