@@ -20,6 +20,7 @@
 #include "v_video.h"
 
 #include "dsda/configuration.h"
+#include "dsda/excmd.h"
 #include "dsda/mapinfo.h"
 #include "dsda/save.h"
 #include "dsda/skill_info.h"
@@ -84,11 +85,10 @@ void dsda_DeathUse(player_t* player) {
       break;
     case death_use_reload:
       {
-        extern void G_LoadGame(int slot);
         int slot = dsda_LastSaveSlot();
 
         if (slot >= 0)
-          G_LoadGame(slot);
+          dsda_QueueExCmdLoad(slot);
       }
       break;
   }
