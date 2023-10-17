@@ -168,7 +168,7 @@ extern int g_menu_font_spacing;
 
 int hide_setup=1; // killough 5/15/98
 
-#define QUICKSAVESLOT 999
+#define QUICKSAVESLOT 255
 
 int messageToPrint;  // 1 = message to be printed
 
