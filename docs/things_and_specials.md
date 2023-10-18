@@ -1,8 +1,8 @@
-## Things and Specials
+# Things and Specials
 
 This page documents the new thing types and special actions available in advanced map formats in dsda-doom. DSDA-Doom supports both Doom-in-Hexen and UDMF maps. See the [UDMF documentation](./udmf.md) for complete details about the `dsda` namespace.
 
-### Thing Types
+## Thing Types
 
 All Vanilla, Boom, and MBF thing types are supported in advanced map formats. This table defines the new entries.
 
@@ -21,13 +21,13 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 | 14100-14164 | MusicChanger | Changes music via DoomEdNum (0 to 64). |
 | 14165 | Custom MusicChanger | Changes music via special argument (0 to 64). |
 
-#### Notes
+### Notes
 
 - Poly objects have no sound.
 - Poly objects may have visual errors in software mode.
 - The custom ambient sound object only supports the ID argument.
 
-### Line Specials
+## Line Specials
 
 You can refer to the zdoom wiki for information on these line specials. Note that the hexen format only supports up to special 255, and argument values from 0 to 255. UDMF does not have these limits. Special behavior matches zdoom except where noted below, and under the following constraint:
 
@@ -444,7 +444,7 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **282: Line_SetAutomapStyle**
 
-#### New Line Specials
+### New Line Specials
 
 **2701: Map_SetColormap(colormap)**
 Sets the map colormap.
@@ -455,7 +455,7 @@ Sets the colormap for tagged sectors.
 - _colormap_: the colormap (string argument).
 - _tag_: The tag of the sector(s) to affect.
 
-#### Obsolete Line Specials
+### Obsolete Line Specials
 
 The following lines are obsolete in udmf.
 
@@ -486,7 +486,7 @@ The following lines are obsolete in udmf.
 **225: Scroll_Texture_Offsets** \[Obsolete\]
 - Use the sidedef scroll properties directly.
 
-### Sector Specials
+## Sector Specials
 
 Many sector specials are legacy effects from the original formats. More control can be obtained from sector properties in UDMF and the above line actions. DSDA-Doom has no concept of "terrain effects" (lava doesn't splash).
 
