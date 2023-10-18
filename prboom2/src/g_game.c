@@ -3838,6 +3838,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     }
   }
 
+  displayplayer = consoleplayer;
+
   if (playeringame[1])
   {
     netgame = true;
