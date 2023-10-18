@@ -444,6 +444,8 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **282: Line_SetAutomapStyle**
 
+---
+
 ### New Line Specials
 
 **2701: Map_SetColormap(colormap)**
@@ -454,6 +456,8 @@ Sets the map colormap.
 Sets the colormap for tagged sectors.
 - _colormap_: the colormap (string argument).
 - _tag_: The tag of the sector(s) to affect.
+
+---
 
 ### Obsolete Line Specials
 
