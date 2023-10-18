@@ -58,7 +58,6 @@ typedef enum
 {
   INTERP_SectorFloor,
   INTERP_SectorCeiling,
-  INTERP_Vertex,
   INTERP_WallPanning,
   INTERP_FloorPanning,
   INTERP_CeilingPanning
@@ -236,10 +235,6 @@ static void R_CopyInterpToOld (int i)
   case INTERP_SectorCeiling:
     oldipos[i][0] = ((sector_t*)curipos[i].address)->ceilingheight;
     break;
-  case INTERP_Vertex:
-    oldipos[i][0] = ((vertex_t*)curipos[i].address)->x;
-    oldipos[i][1] = ((vertex_t*)curipos[i].address)->y;
-    break;
   case INTERP_WallPanning:
     oldipos[i][0] = ((side_t*)curipos[i].address)->rowoffset;
     oldipos[i][1] = ((side_t*)curipos[i].address)->textureoffset;
@@ -264,10 +259,6 @@ static void R_CopyBakToInterp (int i)
     break;
   case INTERP_SectorCeiling:
     ((sector_t*)curipos[i].address)->ceilingheight = bakipos[i][0];
-    break;
-  case INTERP_Vertex:
-    ((vertex_t*)curipos[i].address)->x = bakipos[i][0];
-    ((vertex_t*)curipos[i].address)->y = bakipos[i][1];
     break;
   case INTERP_WallPanning:
     ((side_t*)curipos[i].address)->rowoffset = bakipos[i][0];
@@ -297,10 +288,6 @@ static void R_DoAnInterpolation (int i, fixed_t smoothratio)
     break;
   case INTERP_SectorCeiling:
     adr1 = &((sector_t*)curipos[i].address)->ceilingheight;
-    break;
-  case INTERP_Vertex:
-    adr1 = &((vertex_t*)curipos[i].address)->x;
-////    adr2 = &((vertex_t*)curipos[i].Address)->y;
     break;
   case INTERP_WallPanning:
     adr1 = &((side_t*)curipos[i].address)->rowoffset;
