@@ -797,7 +797,7 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
       I_Error("Experimental formats require the -baddemo option to record.");
 
     if (!mbf21)
-      I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
+      I_Error("You must use complevel 21 when recording in advanced formats.");
 
     use_dsda_format = true;
   }
