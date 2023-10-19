@@ -577,9 +577,7 @@ int dsda_DoomPrepareFinale(int* result) {
 void dsda_DoomLoadMapInfo(void) {
   int p;
 
-  if (dsda_Flag(dsda_arg_nomapinfo) ||
-      (!dsda_Flag(dsda_arg_debug_mapinfo) && !dsda_UseMapinfo()) ||
-      raven)
+  if (dsda_Flag(dsda_arg_nomapinfo) || !dsda_UseMapinfo() || raven)
     return;
 
   p = -1;

@@ -19,6 +19,7 @@
 #include "w_wad.h"
 #include "v_video.h"
 
+#include "dsda/args.h"
 #include "dsda/messenger.h"
 #include "dsda/utility.h"
 
@@ -103,5 +104,5 @@ void dsda_PreferSoftware(void) {
 }
 
 dboolean dsda_UseMapinfo(void) {
-  return wad_preferences.mapinfo;
+  return dsda_Flag(dsda_arg_debug_mapinfo) || wad_preferences.mapinfo;
 }
