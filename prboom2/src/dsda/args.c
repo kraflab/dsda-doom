@@ -178,11 +178,6 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets a random player class in hexen deathmatch",
     arg_null,
   },
-  [dsda_arg_baddemo] = {
-    "-baddemo", NULL, NULL,
-    "allows recording in experimental map formats",
-    arg_null,
-  },
   [dsda_arg_dsdademo] = {
     "-dsdademo", NULL, NULL,
     "turns on extended demo format (for testing)",

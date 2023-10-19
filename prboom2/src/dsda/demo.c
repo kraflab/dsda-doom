@@ -793,9 +793,6 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
 
   if (map_format.zdoom)
   {
-    if (!dsda_Flag(dsda_arg_baddemo))
-      I_Error("Experimental formats require the -baddemo option to record.");
-
     if (!mbf21)
       I_Error("You must use complevel 21 when recording in advanced formats.");
 
