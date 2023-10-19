@@ -582,5 +582,11 @@ int dsda_ActionNameToNumber(const char* name) {
     if (action_names[i][0] && !stricmp(name, action_names[i]))
       return i;
 
+  if (!stricmp(name, "Map_SetColormap"))
+    return 2701;
+
+  if (!stricmp(name, "Sector_SetColormap"))
+    return 2702;
+
   return NAME_NOT_FOUND;
 }
