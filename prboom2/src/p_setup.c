@@ -3535,7 +3535,7 @@ static void P_UpdateMapFormat()
   else
   {
     if (dsda_UseMapinfo())
-      I_Error("Non-UDMF maps are not supported alongside MAPINFO");
+      lprintf(LO_WARN, "Some features of MAPINFO may not work with non-udmf maps!\n");
 
     if (has_behavior && !hexen)
     {
