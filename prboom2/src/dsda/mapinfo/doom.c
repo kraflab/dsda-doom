@@ -436,6 +436,9 @@ int dsda_DoomBossAction(mobj_t* mo) {
   if (!P_CheckBossDeath(mo))
     return true;
 
+  if (!map_format.zdoom)
+    I_Error("MAPINFO boss actions are incompatible with this map format (use UMAPINFO)");
+
   for (i = 0; i < current_map->num_special_actions; ++i)
     if (current_map->special_actions[i].monster_type == mo->type)
       map_format.execute_line_special(
