@@ -29,9 +29,7 @@ All Vanilla, Boom, and MBF thing types are supported in advanced map formats. Th
 
 ## Line Specials
 
-You can refer to the zdoom wiki for information on these line specials. Note that the hexen format only supports up to special 255, and argument values from 0 to 255. UDMF does not have these limits. Special behavior matches zdoom except where noted below, and under the following constraint:
-
-- Line flags coming from arguments are ignored (e.g., the _moreflags_ argument in **TranslucentLine**).
+You can refer to the zdoom wiki for information on these line specials. Note that the hexen format only supports up to special 255, and argument values from 0 to 255. UDMF does not have these limits. Special behavior matches zdoom except where noted below.
 
 **1: Polyobj_StartLine**
 
@@ -317,9 +315,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **207: Plat_PerpetualRaiseLip**
 
-**208: TranslucentLine**
-- Translucent lines do not support additive translucency.
-
 **209: Transfer_Heights**
 
 **214: Sector_SetDamage**
@@ -477,6 +472,9 @@ The following lines are obsolete in udmf.
 
 **190: Static_Init** \[Obsolete\]
 - Use the sector gravity, floor sky, ceiling sky, and damage properties directly.
+
+**208: TranslucentLine** \[Obsolete\]
+- Use the linedef alpha property directly.
 
 **210: Transfer_FloorLight** \[Obsolete\]
 - Use the sector floor light property directly.
