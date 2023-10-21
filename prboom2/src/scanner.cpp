@@ -325,7 +325,7 @@ bool Scanner::GetNextToken(bool expandState)
 				default:
 					break;
 				case TK_Identifier:
-					if(cur != '_' && (cur < 'A' || cur > 'Z') && (cur < 'a' || cur > 'z') && (cur < '0' || cur > '9') && cur != '/')
+					if(cur != '_' && (cur < 'A' || cur > 'Z') && (cur < 'a' || cur > 'z') && (cur < '0' || cur > '9') && cur != '/' && cur != '\\')
 						end = scanPos;
 					break;
 				case TK_IntConst:
