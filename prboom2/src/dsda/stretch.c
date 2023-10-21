@@ -61,6 +61,15 @@ static void GenLookup(short* lookup1, short* lookup2, int size, int max, int ste
 
   lastfrac = frac = 0;
 
+  // lookup1[0] = 0;
+  // for (i = 1; i < max; ++i) {
+  //   lookup1[i] = (float) i * size / max;
+  //   lookup2[i - 1] = lookup1[i] - 1;
+  // }
+
+  // lookup2[max - 1] = size - 1;
+  // lookup1[max] = lookup2[max] = size;
+
   for(i = 0; i < size; i++) {
     if(frac >> FRACBITS > lastfrac >> FRACBITS) {
       lookup1[frac >> FRACBITS] = i;
