@@ -1723,7 +1723,8 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   if (!(skill_info.flags & SI_INSTANT_REACTION))
     mobj->reactiontime = info->reactiontime;
 
-  mobj->lastlook = P_Random (pr_lastlook) % g_maxplayers;
+  if (type != ZMT_AMBIENTSOUND)
+    mobj->lastlook = P_Random (pr_lastlook) % g_maxplayers;
 
   // do not set the state with P_SetMobjState,
   // because action routines can not be called yet
