@@ -41,8 +41,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **5: Polyobj_ExplicitLine**
 
-**6: Polyobj_MoveTimes8**
-
 **7: Polyobj_DoorSwing**
 
 **8: Polyobj_DoorSlide**
@@ -88,10 +86,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 **33: ForceField**
 
 **34: ClearForceField**
-
-**35: Floor_RaiseByValueTimes8**
-
-**36: Floor_LowerByValueTimes8**
 
 **37: Floor_MoveToValue**
 
@@ -148,10 +142,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 
 **67: Floor_RaiseInstant**
 
-**68: Floor_MoveToValueTimes8**
-
-**69: Ceiling_MoveToValueTimes8**
-
 **70: Teleport**
 
 **71: Teleport_NoFog**
@@ -184,8 +174,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 **91: Polyobj_OR_RotateRight**
 
 **92: Polyobj_OR_Move**
-
-**93: Polyobj_OR_MoveTimes8**
 
 **94: Pillar_BuildAndCrush**
 
@@ -294,10 +282,6 @@ You can refer to the zdoom wiki for information on these line specials. Note tha
 **196: Ceiling_CrushAndRaiseA**
 
 **197: Ceiling_CrushAndRaiseSilentA**
-
-**198: Ceiling_RaiseByValueTimes8**
-
-**199: Ceiling_LowerByValueTimes8**
 
 **200: Generic_Floor**
 
@@ -458,6 +442,24 @@ Sets the colormap for tagged sectors.
 
 The following lines are obsolete in udmf.
 
+**6: Polyobj_MoveTimes8**
+- Use 4: Polyobj_Move
+
+**35: Floor_RaiseByValueTimes8**
+- Use 23: Floor_RaiseByValue
+
+**36: Floor_LowerByValueTimes8**
+- Use 20: Floor_LowerByValue
+
+**68: Floor_MoveToValueTimes8**
+- Use 37: Floor_MoveToValue
+
+**69: Ceiling_MoveToValueTimes8**
+- Use 47: Ceiling_MoveToValue
+
+**93: Polyobj_OR_MoveTimes8**
+- Use 92: Polyobj_OR_Move
+
 **100: Scroll_Texture_Left** \[Obsolete\]
 - Use the sidedef scroll properties directly.
 
@@ -472,6 +474,12 @@ The following lines are obsolete in udmf.
 
 **190: Static_Init** \[Obsolete\]
 - Use the sector gravity, floor sky, ceiling sky, and damage properties directly.
+
+**198: Ceiling_RaiseByValueTimes8**
+- Use 41: Ceiling_RaiseByValue
+
+**199: Ceiling_LowerByValueTimes8**
+- Use 40: Ceiling_LowerByValue
 
 **208: TranslucentLine** \[Obsolete\]
 - Use the linedef alpha property directly.
