@@ -1,6 +1,6 @@
 # dsda-doom v0.26.2
-This is a fork of prboom+ with many new features, including:
-- Heretic, Hexen, MBF21, Doom-in-Hexen, and UDMF support
+This is a successor of prboom+ with many new features, including:
+- Heretic, Hexen, MBF21, Doom-in-Hexen, UDMF, and MAPINFO support
 - In-game console and scripting
 - Full controller support
 - Palette-based opengl renderer
@@ -25,6 +25,9 @@ There is a dedicated launcher for this port available [here](https://github.com/
 
 ### UDMF Support
 - [Full details](./docs/udmf.md)
+
+### MAPINFO Support
+- [Full details](./docs/mapinfo.md)
 
 ### Hexen Support
 - DSDA-Doom includes demo-compatible support for hexen.
