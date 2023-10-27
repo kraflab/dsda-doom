@@ -13,9 +13,9 @@ This is a successor of prboom+ with many new features, including:
 Download windows releases [here](https://drive.google.com/drive/folders/1KMU1dY0HZrY5h2EyPzxxXuyH8DunAJV_?usp=sharing).
 
 ### Patch Notes
+- [v0.27](./patch_notes/v0.27.md)
 - [v0.26](./patch_notes/v0.26.md)
 - [v0.25](./patch_notes/v0.25.md)
-- [v0.24](./patch_notes/v0.24.md)
 
 ### Launcher
 There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
