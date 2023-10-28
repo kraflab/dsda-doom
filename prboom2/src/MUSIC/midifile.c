@@ -28,8 +28,14 @@
 #include <string.h>
 #include <assert.h>
 
+#ifndef TEST
 #include "doomdef.h"
 #include "doomtype.h"
+#else
+typedef enum {false, true} dboolean;
+typedef unsigned char byte;
+#define PACKEDATTR __attribute__((packed))
+#endif
 #include "lprintf.h"
 #include "midifile.h"
 
@@ -1029,3 +1035,237 @@ double MIDI_spmc (const midi_file_t *file, const midi_event_t *ev, unsigned sndr
 
   return compute_spmc_normal (headerval, tempo, sndrate);
 }
+
+/*
+The timing system used by the OPL driver is very interesting. But there are too many edge cases
+in multitrack (type 1) midi tempo changes that it simply can't handle without a major rework.
+The alternative is that we recook the file into a single track file with no tempo changes at
+load time.
+*/
+
+midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf)
+{
+  midi_event_t **flatlist;
+  midi_file_t *base = MIDI_LoadFile (mf);
+  midi_file_t *ret;
+
+  double opi;
+
+  int epos = 0;
+
+  if (!base)
+    return NULL;
+
+  flatlist = MIDI_GenerateFlatList (base);
+  if (!flatlist)
+  {
+    MIDI_FreeFile (base);
+    return NULL;
+  }
+
+  ret = (midi_file_t*)Z_Malloc (sizeof (midi_file_t));
+
+  ret->header.format_type = 0;
+  ret->header.num_tracks = 1;
+  ret->header.time_division = 10000;
+  ret->num_tracks = 1;
+  ret->buffer_size = 0;
+  ret->buffer = NULL;
+  ret->tracks = (midi_track_t*)Z_Malloc (sizeof (midi_track_t));
+
+  ret->tracks->num_events = 0;
+  ret->tracks->num_event_mem = 0;
+  ret->tracks->events = NULL;
+
+  opi = MIDI_spmc (base, NULL, 20000);
+
+
+  while (1)
+  {
+    midi_event_t *oldev;
+    midi_event_t *nextev;
+
+    if (ret->tracks->num_events == ret->tracks->num_event_mem)
+    {
+      ret->tracks->num_event_mem += 100;
+      ret->tracks->events = (midi_event_t*)Z_Realloc (ret->tracks->events, sizeof (midi_event_t) * ret->tracks->num_event_mem);
+    }
+
+    oldev = flatlist[epos];
+    nextev = ret->tracks->events + ret->tracks->num_events;
+
+
+    // figure delta time
+    nextev->delta_time = (unsigned int)(opi * oldev->delta_time);
+
+    if (oldev->event_type == MIDI_EVENT_SYSEX ||
+        oldev->event_type == MIDI_EVENT_SYSEX_SPLIT)
+      // opl player can't process any sysex...
+    {
+      epos++;
+      continue;
+    }
+
+    if (oldev->event_type == MIDI_EVENT_META)
+    {
+      if (oldev->data.meta.type == MIDI_META_SET_TEMPO)
+      { // adjust future tempo scaling
+        opi = MIDI_spmc (base, oldev, 20000);
+        // insert event as dummy
+        nextev->event_type = MIDI_EVENT_META;
+        nextev->data.meta.type = MIDI_META_TEXT;
+        nextev->data.meta.length = 0;
+        nextev->data.meta.data = (byte*)Z_Malloc (4);
+        epos++;
+        ret->tracks->num_events++;
+        continue;
+      }
+      if (oldev->data.meta.type == MIDI_META_END_OF_TRACK)
+      { // reproduce event and break
+        nextev->event_type = MIDI_EVENT_META;
+        nextev->data.meta.type = MIDI_META_END_OF_TRACK;
+        nextev->data.meta.length = 0;
+        nextev->data.meta.data = (byte*)Z_Malloc (4);
+        epos++;
+        ret->tracks->num_events++;
+        break;
+      }
+      // other meta events not needed
+      epos++;
+      continue;
+    }
+    // non meta events can simply be copied (excluding delta time)
+    memcpy (&nextev->event_type, &oldev->event_type, sizeof (midi_event_t) - sizeof (unsigned));
+    epos++;
+    ret->tracks->num_events++;
+  }
+
+  MIDI_DestroyFlatList (flatlist);
+  MIDI_FreeFile (base);
+  return ret;
+}
+
+
+
+#ifdef TEST
+
+static char *MIDI_EventTypeToString(midi_event_type_t event_type)
+{
+    switch (event_type)
+    {
+        case MIDI_EVENT_NOTE_OFF:
+            return "MIDI_EVENT_NOTE_OFF";
+        case MIDI_EVENT_NOTE_ON:
+            return "MIDI_EVENT_NOTE_ON";
+        case MIDI_EVENT_AFTERTOUCH:
+            return "MIDI_EVENT_AFTERTOUCH";
+        case MIDI_EVENT_CONTROLLER:
+            return "MIDI_EVENT_CONTROLLER";
+        case MIDI_EVENT_PROGRAM_CHANGE:
+            return "MIDI_EVENT_PROGRAM_CHANGE";
+        case MIDI_EVENT_CHAN_AFTERTOUCH:
+            return "MIDI_EVENT_CHAN_AFTERTOUCH";
+        case MIDI_EVENT_PITCH_BEND:
+            return "MIDI_EVENT_PITCH_BEND";
+        case MIDI_EVENT_SYSEX:
+            return "MIDI_EVENT_SYSEX";
+        case MIDI_EVENT_SYSEX_SPLIT:
+            return "MIDI_EVENT_SYSEX_SPLIT";
+        case MIDI_EVENT_META:
+            return "MIDI_EVENT_META";
+
+        default:
+            return "(unknown)";
+    }
+}
+
+void PrintTrack (midi_track_t *track)
+{
+    midi_event_t *event;
+    unsigned int i;
+
+    for (i=0; i<track->num_events; ++i)
+    {
+        event = &track->events[i];
+
+        if (event->delta_time > 0)
+        {
+            printf("Delay: %i ticks\n", event->delta_time);
+        }
+
+        printf("Event type: %s (%i)\n",
+               MIDI_EventTypeToString(event->event_type),
+               event->event_type);
+
+        switch(event->event_type)
+        {
+            case MIDI_EVENT_NOTE_OFF:
+            case MIDI_EVENT_NOTE_ON:
+            case MIDI_EVENT_AFTERTOUCH:
+            case MIDI_EVENT_CONTROLLER:
+            case MIDI_EVENT_PROGRAM_CHANGE:
+            case MIDI_EVENT_CHAN_AFTERTOUCH:
+            case MIDI_EVENT_PITCH_BEND:
+                printf("\tChannel: %i\n", event->data.channel.channel);
+                printf("\tParameter 1: %i\n", event->data.channel.param1);
+                printf("\tParameter 2: %i\n", event->data.channel.param2);
+                break;
+
+            case MIDI_EVENT_SYSEX:
+            case MIDI_EVENT_SYSEX_SPLIT:
+                printf("\tLength: %i\n", event->data.sysex.length);
+                break;
+
+            case MIDI_EVENT_META:
+                printf("\tMeta type: %i\n", event->data.meta.type);
+                printf("\tLength: %i\n", event->data.meta.length);
+                break;
+        }
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    FILE *f;
+    midimem_t mf;
+    midi_file_t *file;
+    unsigned int i;
+
+    if (argc < 2)
+    {
+        printf("Usage: %s <filename>\n", argv[0]);
+        exit(1);
+    }
+    f = fopen (argv[1], "rb");
+    if (!f)
+    {
+        fprintf(stderr, "Failed to open %s\n", argv[1]);
+        exit(1);
+    }
+    fseek (f, 0, SEEK_END);
+    mf.len = ftell (f);
+    mf.pos = 0;
+    rewind (f);
+    mf.data = Z_Malloc (mf.len);
+    fread (mf.data, 1, mf.len, f);
+    fclose (f);
+
+    file = MIDI_LoadFile (&mf);
+
+    if (file == NULL)
+    {
+        fprintf(stderr, "Failed to open %s\n", argv[1]);
+        exit(1);
+    }
+
+    for (i=0; i<file->num_tracks; ++i)
+    {
+        printf("\n== Track %i ==\n\n", i);
+
+        PrintTrack(&file->tracks[i]);
+    }
+
+    return 0;
+}
+
+#endif

@@ -159,6 +159,7 @@ typedef enum {
   dsda_config_mus_fluidsynth_reverb_level,
   dsda_config_mus_fluidsynth_reverb_width,
   dsda_config_mus_fluidsynth_reverb_room_size,
+  dsda_config_mus_opl_gain,
   dsda_config_mus_portmidi_reset_type,
   dsda_config_mus_portmidi_reset_delay,
   dsda_config_mus_portmidi_filter_sysex,

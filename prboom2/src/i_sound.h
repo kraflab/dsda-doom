@@ -124,6 +124,7 @@ extern int snd_samplerate;
 typedef enum
 {
   midi_player_fluidsynth,
+  midi_player_opl2,
   midi_player_portmidi,
 
   midi_player_last

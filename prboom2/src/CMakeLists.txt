@@ -448,6 +448,8 @@ set(SDLDOOM_SOURCES
 )
 
 set(DOOMMUSIC_SOURCES
+    MUSIC/dbopl.c
+    MUSIC/dbopl.h
     MUSIC/dumbplayer.c
     MUSIC/dumbplayer.h
     MUSIC/flplayer.c
@@ -457,6 +459,12 @@ set(DOOMMUSIC_SOURCES
     MUSIC/midifile.c
     MUSIC/midifile.h
     MUSIC/musicplayer.h
+    MUSIC/opl.c
+    MUSIC/opl.h
+    MUSIC/oplplayer.c
+    MUSIC/oplplayer.h
+    MUSIC/opl_queue.c
+    MUSIC/opl_queue.h
     MUSIC/portmidiplayer.c
     MUSIC/portmidiplayer.h
     MUSIC/vorbisplayer.c
