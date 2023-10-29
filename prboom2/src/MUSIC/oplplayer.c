@@ -1722,7 +1722,7 @@ int I_OPL_InitMusic(int samplerate)
 
 const char *I_OPL_SynthName (void)
 {
-  return "opl2 synth player";
+  return "opl synth player";
 }
 
 void I_OPL_RenderSamples (void *dest, unsigned nsamp)
