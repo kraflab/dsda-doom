@@ -32,7 +32,8 @@ typedef void (*opl_callback_t)(void *data);
 typedef enum
 {
     OPL_REGISTER_PORT = 0,
-    OPL_DATA_PORT = 1
+    OPL_DATA_PORT = 1,
+    OPL_REGISTER_PORT_OPL3 = 2
 } opl_port_t;
 
 #define OPL_NUM_OPERATORS   21
@@ -43,6 +44,7 @@ typedef enum
 #define OPL_REG_TIMER2            0x03
 #define OPL_REG_TIMER_CTRL        0x04
 #define OPL_REG_FM_MODE           0x08
+#define OPL_REG_NEW               0x105
 
 // Operator registers (21 of each):
 
@@ -57,6 +59,10 @@ typedef enum
 #define OPL_REGS_FREQ_1           0xA0
 #define OPL_REGS_FREQ_2           0xB0
 #define OPL_REGS_FEEDBACK         0xC0
+
+// Times
+
+#define OPL_SECOND ((uint64_t) 1000 * 1000)
 
 //
 // Low-level functions.
@@ -98,7 +104,7 @@ int OPL_Detect(void);
 
 // Initialize all registers, performed on startup.
 
-void OPL_InitRegisters(void);
+void OPL_InitRegisters(int opl3);
 
 
 // Block until the specified number of milliseconds have elapsed.
