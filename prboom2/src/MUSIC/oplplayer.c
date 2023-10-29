@@ -332,8 +332,8 @@ static int current_music_volume;
 
 // GENMIDI lump instrument data:
 
-static genmidi_instr_t *main_instrs;
-static genmidi_instr_t *percussion_instrs;
+static const genmidi_instr_t *main_instrs;
+static const genmidi_instr_t *percussion_instrs;
 static char (*main_instr_names)[32];
 static char (*percussion_names)[32];
 
@@ -386,9 +386,14 @@ static dboolean LoadInstrumentTable(void)
 
     main_instrs = (const genmidi_instr_t *) (lump + strlen(GENMIDI_HEADER));
     percussion_instrs = main_instrs + GENMIDI_NUM_INSTRS;
+
+    // There's no way for c to define a const array
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-qual"
     main_instr_names =
         (char (*)[32]) (percussion_instrs + GENMIDI_NUM_PERCUSSION);
     percussion_names = main_instr_names + GENMIDI_NUM_INSTRS;
+    #pragma GCC diagnostic pop
 
     return true;
 }
@@ -611,7 +616,7 @@ static void SetVoiceVolume(opl_voice_t *voice, unsigned int volume)
 
 static void SetVoicePan(opl_voice_t *voice, unsigned int pan)
 {
-    genmidi_voice_t *opl_voice;
+    const genmidi_voice_t *opl_voice;
 
     voice->reg_pan = pan;
     opl_voice = &voice->current_instr->voices[voice->current_instr_voice];;
@@ -920,7 +925,7 @@ static void UpdateVoiceFrequency(opl_voice_t *voice)
 // key on event.
 
 static void VoiceKeyOn(opl_channel_data_t *channel,
-                       genmidi_instr_t *instrument,
+                       const genmidi_instr_t *instrument,
                        unsigned int instrument_voice,
                        unsigned int note,
                        unsigned int key,
@@ -975,7 +980,7 @@ static void VoiceKeyOn(opl_channel_data_t *channel,
 
 static void KeyOnEvent(opl_track_data_t *track, midi_event_t *event)
 {
-    genmidi_instr_t *instrument;
+    const genmidi_instr_t *instrument;
     opl_channel_data_t *channel;
     unsigned int note, key, volume, voicenum;
     dboolean double_voice;
@@ -1185,7 +1190,7 @@ static void AllNotesOff(opl_channel_data_t *channel, unsigned int param)
             // Finished with this voice now.
 
             ReleaseVoice(i);
-            
+
             i--;
         }
     }
