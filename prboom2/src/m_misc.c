@@ -128,6 +128,8 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb_level),
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb_width),
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb_room_size),
+  MIGRATED_SETTING(dsda_config_mus_opl_gain),
+  MIGRATED_SETTING(dsda_config_mus_opl_opl3mode),
   MIGRATED_SETTING(dsda_config_mus_portmidi_reset_type),
   MIGRATED_SETTING(dsda_config_mus_portmidi_reset_delay),
   MIGRATED_SETTING(dsda_config_mus_portmidi_filter_sysex),

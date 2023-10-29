@@ -752,6 +752,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mus_fluidsynth_reverb_room_size", dsda_config_mus_fluidsynth_reverb_room_size,
     dsda_config_int, 0, 1000, { 60 }
   },
+  [dsda_config_mus_opl_gain] = {
+    "mus_opl_gain", dsda_config_mus_opl_gain,
+    dsda_config_int, 0, 1000, { 50 }
+  },
+  [dsda_config_mus_opl_opl3mode] = {
+    "mus_opl_opl3mode", dsda_config_mus_opl_opl3mode,
+    CONF_BOOL(1)
+  },
   [dsda_config_mus_portmidi_reset_type] = {
     "mus_portmidi_reset_type", dsda_config_mus_portmidi_reset_type,
     CONF_STRING("gm") // none, gs, gm, gm2, xg

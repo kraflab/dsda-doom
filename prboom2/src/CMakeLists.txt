@@ -457,6 +457,14 @@ set(DOOMMUSIC_SOURCES
     MUSIC/midifile.c
     MUSIC/midifile.h
     MUSIC/musicplayer.h
+    MUSIC/opl.c
+    MUSIC/opl.h
+    MUSIC/opl3.c
+    MUSIC/opl3.h
+    MUSIC/oplplayer.c
+    MUSIC/oplplayer.h
+    MUSIC/opl_queue.c
+    MUSIC/opl_queue.h
     MUSIC/portmidiplayer.c
     MUSIC/portmidiplayer.h
     MUSIC/vorbisplayer.c
