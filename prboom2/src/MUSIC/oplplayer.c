@@ -361,7 +361,7 @@ static dboolean song_looping;
 // Tempo control variables
 
 static unsigned int ticks_per_beat;
-static unsigned int ms_per_beat;
+static unsigned int us_per_beat;
 
 // If true, OPL sound channels are reversed to their correct arrangement
 // (as intended by the MIDI standard) rather than the backwards one
@@ -1276,8 +1276,8 @@ static void PitchBendEvent(opl_track_data_t *track, midi_event_t *event)
 
 static void MetaSetTempo(unsigned int tempo)
 {
-    // OPL_AdjustCallbacks((float) us_per_beat / tempo);
-    // us_per_beat = tempo;
+    OPL_AdjustCallbacks((float) us_per_beat / tempo);
+    us_per_beat = tempo;
 }
 
 // Process a meta event.
@@ -1445,17 +1445,17 @@ static void TrackTimerCallback(void *arg)
 static void ScheduleTrack(opl_track_data_t *track)
 {
     unsigned int nticks;
-    unsigned int ms;
+    uint64_t us;
 
     // Get the number of milliseconds until the next event.
 
     nticks = MIDI_GetDeltaTime(track->iter);
-    ms = (nticks * ms_per_beat) / ticks_per_beat;
+    us = ((uint64_t) nticks * us_per_beat) / ticks_per_beat;
 
     // Set a timer to be invoked when the next event is
     // ready to play.
 
-    OPL_SetCallback(ms, TrackTimerCallback, track);
+    OPL_SetCallback(us, TrackTimerCallback, track);
 }
 
 // Initialize a channel.
@@ -1520,7 +1520,7 @@ static void I_OPL_PlaySong(const void *handle, int looping)
     // Default is 120 bpm.
     // TODO: this is wrong
 
-    ms_per_beat = 500;
+    us_per_beat = 500 * 1000;
 
     start_music_volume = current_music_volume = snd_MusicVolume * 127 / 15;
 

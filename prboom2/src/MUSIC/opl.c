@@ -45,21 +45,21 @@ typedef struct
     unsigned int rate;        // Number of times the timer is advanced per sec.
     unsigned int enabled;     // Non-zero if timer is enabled.
     unsigned int value;       // Last value that was set.
-    unsigned int expire_time; // Calculated time that timer will expire.
+    uint64_t expire_time;     // Calculated time that timer will expire.
 } opl_timer_t;
 
 // Queue of callbacks waiting to be invoked.
 static opl_callback_queue_t *callback_queue;
 
-// Current time, in number of samples since startup:
-static unsigned int current_time;
+// Current time, in us since startup:
+static uint64_t current_time;
 
 // If non-zero, playback is currently paused.
 static int opl_paused;
 
-// Time offset (in samples) due to the fact that callbacks
+// Time offset (in us) due to the fact that callbacks
 // were previously paused.
-static unsigned int pause_offset;
+static uint64_t pause_offset;
 
 // OPL software emulator structure.
 static opl3_chip opl_chip;
@@ -108,12 +108,12 @@ void OPL_Shutdown(void)
     }
 }
 
-void OPL_SetCallback(unsigned int ms,
+void OPL_SetCallback(uint64_t us,
                      opl_callback_t callback,
                      void *data)
 {
     OPL_Queue_Push(callback_queue, callback, data,
-                   current_time - pause_offset + (ms * opl_sample_rate) / 1000);
+                   current_time - pause_offset + us);
 }
 
 void OPL_ClearCallbacks(void)
@@ -131,7 +131,7 @@ static void OPLTimer_CalculateEndTime(opl_timer_t *timer)
     {
         tics = 0x100 - timer->value;
         timer->expire_time = current_time
-                           + (tics * opl_sample_rate) / timer->rate;
+                           + ((uint64_t) tics * OPL_SECOND) / timer->rate;
     }
 }
 
@@ -185,13 +185,15 @@ static void OPL_AdvanceTime(unsigned int nsamples)
 {
     opl_callback_t callback;
     void *callback_data;
+    uint64_t us;
 
     // Advance time.
-    current_time += nsamples;
+    us = ((uint64_t) nsamples * OPL_SECOND) / opl_sample_rate;
+    current_time += us;
 
     if (opl_paused)
     {
-        pause_offset += nsamples;
+        pause_offset += us;
     }
 
     // Are there callbacks to invoke now?  Keep invoking them
@@ -209,6 +211,11 @@ static void OPL_AdvanceTime(unsigned int nsamples)
     }
 }
 
+void OPL_AdjustCallbacks(float factor)
+{
+    OPL_Queue_AdjustCallbacks(callback_queue, current_time, factor);
+}
+
 void OPL_Render_Samples (void *dest, unsigned buffer_len)
 {
     unsigned int filled = 0;
@@ -218,8 +225,8 @@ void OPL_Render_Samples (void *dest, unsigned buffer_len)
     // full.
     while (filled < buffer_len)
     {
-        unsigned int next_callback_time;
-        unsigned int nsamples;
+        uint64_t next_callback_time;
+        uint64_t nsamples;
 
         // Work out the time until the next callback waiting in
         // the callback queue must be invoked.  We can then fill the
@@ -232,7 +239,8 @@ void OPL_Render_Samples (void *dest, unsigned buffer_len)
         {
             next_callback_time = OPL_Queue_Peek(callback_queue) + pause_offset;
 
-            nsamples = next_callback_time - current_time;
+            nsamples = (next_callback_time - current_time) * opl_sample_rate;
+            nsamples = (nsamples + OPL_SECOND - 1) / OPL_SECOND;
 
             if (nsamples > buffer_len - filled)
             {

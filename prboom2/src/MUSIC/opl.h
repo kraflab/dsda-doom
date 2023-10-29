@@ -121,8 +121,10 @@ extern unsigned int opl_sample_rate;
 void OPL_Render_Samples (void *dest, unsigned nsamp);
 
 
-void OPL_SetCallback(unsigned int ms, opl_callback_t callback, void *data);
+void OPL_SetCallback(uint64_t us, opl_callback_t callback, void *data);
 
 void OPL_ClearCallbacks(void);
+
+void OPL_AdjustCallbacks(float tempo);
 
 #endif
