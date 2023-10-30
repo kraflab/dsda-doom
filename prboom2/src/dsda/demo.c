@@ -37,6 +37,7 @@
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
+#include "dsda/preferences.h"
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/utility.h"
@@ -796,6 +797,10 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
     if (!mbf21)
       I_Error("You must use complevel 21 when recording in advanced formats.");
 
+    use_dsda_format = true;
+  }
+  else if (dsda_UseMapinfo())
+  {
     use_dsda_format = true;
   }
 
