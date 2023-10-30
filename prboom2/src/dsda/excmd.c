@@ -46,7 +46,11 @@ dboolean dsda_ExCmdDemo(void) {
 }
 
 void dsda_EnableCasualExCmdFeatures(void) {
+  void dsda_ResetAirControl(void);
+
   casual_excmd_features = true;
+
+  dsda_ResetAirControl();
 }
 
 dboolean dsda_AllowCasualExCmdFeatures(void) {
