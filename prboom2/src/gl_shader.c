@@ -55,6 +55,7 @@
 #include "r_things.h"
 #include "doomdef.h"
 #include "dsda/configuration.h"
+#include "dsda/gl/render_scale.h"
 
 #include "dsda/utility/string_view.h"
 
@@ -573,7 +574,8 @@ enum
   MAIN_UNIF_TEX,
   MAIN_UNIF_COLORMAP,
   MAIN_UNIF_LIGHTLEVEL,
-  MAIN_UNIF_FADE_MODE
+  MAIN_UNIF_FADE_MODE,
+  MAIN_UNIF_DSCALE
 };
 
 enum
@@ -586,8 +588,16 @@ enum
   FUZZ_UNIF_SEED
 };
 
+enum
+{
+  SB_UNIF_TEX,
+  SB_UNIF_TEX_D,
+  SB_UNIF_SCALE
+};
+
 static shader_t *sh_main = NULL;
 static shader_t *sh_fuzz = NULL;
+static shader_t *sh_sb = NULL;
 
 static const shader_info_t main_info =
 {
@@ -598,6 +608,7 @@ static const shader_info_t main_info =
     UNIF(MAIN_UNIF_COLORMAP, "colormap", UNIF_TEX2),
     UNIF(MAIN_UNIF_LIGHTLEVEL, "lightlevel", UNIF_1F),
     UNIF(MAIN_UNIF_FADE_MODE, "fade_mode", UNIF_1I),
+    UNIF(MAIN_UNIF_DSCALE, "dscale", UNIF_1F),
     UNIF_END
   }
 };
@@ -617,10 +628,23 @@ static const shader_info_t fuzz_info =
   }
 };
 
+static const shader_info_t sb_info =
+{
+  .name = "gls_sb",
+  .unifs =
+  {
+    UNIF(SB_UNIF_TEX, "tex", UNIF_TEX0),
+    UNIF(SB_UNIF_TEX_D, "tex_d", UNIF_TEX0D),
+    UNIF(SB_UNIF_SCALE, "scale", UNIF_2F),
+    UNIF_END
+  }
+};
+
 void glsl_Init(void)
 {
   sh_main = glsl_ShaderLoad(&main_info, NULL);
   sh_fuzz = glsl_ShaderLoad(&fuzz_info, NULL);
+  sh_sb = glsl_ShaderLoad(&sb_info, NULL);
 }
 
 void glsl_PushNullShader(void)
@@ -636,9 +660,11 @@ void glsl_PopNullShader(void)
 void glsl_PushMainShader(void)
 {
   int mode = dsda_IntConfig(dsda_config_gl_fade_mode);
+  float dscale = MAX(1, dsda_IntConfig(dsda_config_gl_dither_scale));
 
   glsl_ShaderPush(sh_main,
                   MAIN_UNIF_FADE_MODE, mode,
+                  MAIN_UNIF_DSCALE, dscale,
                   UNIF_VAL_END);
 }
 
@@ -674,4 +700,29 @@ void glsl_PushFuzzShader(int tic, int sprite, float ratio)
 void glsl_PopFuzzShader(void)
 {
   glsl_ShaderPop(sh_fuzz);
+}
+
+void glsl_PushSharpBilinearShader(void)
+{
+  if (trunc(gl_scale_x) == gl_scale_x && trunc(gl_scale_y) == gl_scale_y)
+  {
+    // Not necessary for integral scales
+    glsl_PushNullShader();
+    return;
+  }
+
+  glsl_ShaderPush(sh_sb,
+    SB_UNIF_SCALE, gl_scale_x, gl_scale_y,
+    UNIF_VAL_END);
+}
+
+void glsl_PopSharpBilinearShader(void)
+{
+  if (trunc(gl_scale_x) == gl_scale_x && trunc(gl_scale_y) == gl_scale_y)
+  {
+    glsl_PopNullShader();
+    return;
+  }
+
+  glsl_ShaderPop(sh_sb);
 }

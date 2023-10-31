@@ -171,6 +171,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_gl_health_bar),
   MIGRATED_SETTING(dsda_config_gl_usevbo),
   MIGRATED_SETTING(dsda_config_gl_fade_mode),
+  MIGRATED_SETTING(dsda_config_gl_dither_scale),
 
   SETTING_HEADING("Mouse settings"),
   MIGRATED_SETTING(dsda_config_use_mouse),

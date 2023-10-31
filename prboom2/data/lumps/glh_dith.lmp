@@ -1,0 +1,35 @@
+float bayer2(vec2 p)
+{
+  // Equivalent to indexing by (x mod 2, y mod 2) into the Bayer matrix:
+  // [ 0.0   0.5
+  //   0.75  0.25 ]
+  // This avoids dynamic array indexing, which can be expensive on old GPUs
+  return fract(0.5 * p.x + 0.75 * p.y * p.y);
+}
+
+// Larger Bayer sizes can be defined by recurrence
+
+float bayer4(vec2 p)
+{
+  return bayer2(floor(0.5 * p)) * 0.25 + bayer2(p);
+}
+
+float bayer8(vec2 p)
+{
+  return bayer4(floor(0.5 * p)) * 0.25 + bayer2(p);
+}
+
+float bayer16(vec2 p)
+{
+  return bayer8(floor(0.5 * p)) * 0.25 + bayer2(p);
+}
+
+float dither8(vec2 p)
+{
+  return bayer8(floor(p)) - 0.5;
+}
+
+float dither16(vec2 p)
+{
+  return bayer16(floor(p)) - 0.5;
+}

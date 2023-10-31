@@ -501,6 +501,8 @@ void glsl_PushMainShader(void);
 void glsl_PopMainShader(void);
 void glsl_PushFuzzShader(int tic, int sprite, float ratio);
 void glsl_PopFuzzShader(void);
+void glsl_PushSharpBilinearShader(void);
+void glsl_PopSharpBilinearShader(void);
 void glsl_SetLightLevel(float lightlevel);
 
 #endif // _GL_INTERN_H

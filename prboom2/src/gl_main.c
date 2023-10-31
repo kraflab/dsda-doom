@@ -1064,6 +1064,7 @@ void gld_EndDrawScene(void)
     GLEXT_glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
     glBindTexture(GL_TEXTURE_2D, glSceneImageTextureFBOTexID);
+    glsl_SetTextureDims(0, SCREENWIDTH, SCREENHEIGHT);
 
     // Setup blender
     glColor3f(1.0f, 1.0f, 1.0f);
@@ -1073,6 +1074,7 @@ void gld_EndDrawScene(void)
     dsda_GLSetRenderViewport();
     // elim - Prevent undrawn parts of game scene texture being rendered into the viewport
     dsda_GLSetRenderSceneScissor();
+    glsl_PushSharpBilinearShader();
     glBegin(GL_TRIANGLE_STRIP);
     {
       glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
@@ -1084,6 +1086,8 @@ void gld_EndDrawScene(void)
 
     // elim - Set the scissor back to the full viewport so post-scene draws can happen (ie StatusBar)
     dsda_GLSetRenderViewportScissor();
+
+    glsl_PopSharpBilinearShader();
 
     gld_Set2DMode();
 

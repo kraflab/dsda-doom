@@ -12,9 +12,11 @@ void main()
 
 #ifdef FRAGMENT
 #include "glh_idx.lmp"
+#include "glh_dith.lmp"
 
 uniform sampler2D tex;
 uniform int fade_mode;
+uniform float dscale;
 
 void main()
 {
@@ -24,10 +26,25 @@ void main()
   float li = indexLight(gl_FragCoord.z);
   vec3 color;
 
-  if (fade_mode == 1)
+  if (fade_mode == 2)
+  {
+    // Dithered fade mode.
+    // Compute which dither macro-pixel we're in
+    vec2 dp = gl_FragCoord.xy / dscale;
+    // Compute adjustments to light index based on gradient across
+    // macro-pixel, so light level within a macro-pixel is consistent.
+    // (This essentially "pixelates" light levels to match dither scale)
+    float didx = dFdx(li) * fract(dp.x) * dscale;
+    float didy = dFdy(li) * fract(dp.y) * dscale;
+    color = indexRGB(ci, li - didx - didy + dither8(dp));
+  }
+  else if (fade_mode == 1)
   {
     // Smooth fade mode.
-    color = mix(indexRGB(ci, floor(li)), indexRGB(ci, floor(li + 1.0)), fract(li));
+    // Apply fine dither to alleviate quantization artifacts when floating point
+    // color value is converted to a normalized integer
+    float d = dither16(gl_FragCoord.xy);
+    color = mix(indexRGB(ci, floor(li)), indexRGB(ci, floor(li + 1.0)), fract(li)) + d / 127.5;
   }
   else
   {

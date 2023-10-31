@@ -121,6 +121,7 @@ typedef enum {
   dsda_config_gl_health_bar,
   dsda_config_gl_usevbo,
   dsda_config_gl_fade_mode,
+  dsda_config_gl_dither_scale,
   dsda_config_use_mouse,
   dsda_config_mouse_sensitivity_horiz,
   dsda_config_mouse_sensitivity_vert,
