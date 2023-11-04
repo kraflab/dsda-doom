@@ -1,15 +1,5 @@
 #version 110
 
-#ifdef VERTEX
-void main()
-{
-  gl_FrontColor = gl_Color;
-  gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
-  gl_Position = ftransform();
-}
-#endif
-
-#ifdef FRAGMENT
 // Sprite texture
 uniform sampler2D tex;
 // Fuzz lookup texture
@@ -54,4 +44,3 @@ void main()
   // pass in a non-black gl_color for pain/gamma support in indexed lightmode
   gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, gl_TexCoord[0].xy).g * darkness(c));
 }
-#endif

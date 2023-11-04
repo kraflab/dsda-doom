@@ -285,16 +285,6 @@ static void glsl_ShaderSrcLoad(shader_source_t* src, const char* name,
 static shader_t* glsl_ShaderLoad(const shader_info_t* info,
                                  const shader_define_t* userdefs)
 {
-  static const shader_define_t vpdefs[] =
-  {
-    {"VERTEX", "1"},
-    {NULL, NULL},
-  };
-  static const shader_define_t fpdefs[] =
-  {
-    {"FRAGMENT", "1"},
-    {NULL, NULL},
-  };
   shader_source_t src;
   int status;
   char buffer[2048];
@@ -310,7 +300,7 @@ static shader_t* glsl_ShaderLoad(const shader_info_t* info,
     shader->texds[i] = -1;
 
   shader->hVertProg = GLEXT_glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-  glsl_ShaderSrcLoad(&src, info->name, vpdefs, userdefs);
+  glsl_ShaderSrcLoad(&src, "gls_v", NULL, userdefs);
   GLEXT_glShaderSourceARB(shader->hVertProg, src.size, src.strs, src.lens);
   glsl_ShaderSrcDestroy(&src);
 
@@ -326,7 +316,7 @@ static shader_t* glsl_ShaderLoad(const shader_info_t* info,
             info->name, buffer);
 
   shader->hFragProg = GLEXT_glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-  glsl_ShaderSrcLoad(&src, info->name, fpdefs, userdefs);
+  glsl_ShaderSrcLoad(&src, info->name, NULL, userdefs);
   GLEXT_glShaderSourceARB(shader->hFragProg, src.size, src.strs, src.lens);
   glsl_ShaderSrcDestroy(&src);
 
