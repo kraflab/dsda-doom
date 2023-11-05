@@ -40,22 +40,22 @@ const char *const endmsg[]=
 {
   // DOOM1
   QUITMSG,
-  "please don't leave, there's more\ndemons to toast!",
-  "let's beat it -- this is turning\ninto a bloodbath!",
-  "i wouldn't leave if i were you.\ndos is much worse.",
-  "you're trying to say you like dos\nbetter than me, right?",
-  "don't leave yet -- there's a\ndemon around that corner!",
-  "ya know, next time you come in here\ni'm gonna toast ya.",
-  "go ahead and leave. see if i care.",  // 1/15/98 killough
+  QUITMSG1,  // "please don't leave, there's more\ndemons to toast!",
+  QUITMSG2,  // "let's beat it -- this is turning\ninto a bloodbath!",
+  QUITMSG3,  // "i wouldn't leave if i were you.\ndos is much worse.",
+  QUITMSG4,  // "you're trying to say you like dos\nbetter than me, right?",
+  QUITMSG5,  // "don't leave yet -- there's a\ndemon around that corner!",
+  QUITMSG6,  // "ya know, next time you come in here\ni'm gonna toast ya.",
+  QUITMSG7,  // "go ahead and leave. see if i care.",  // 1/15/98 killough
 
   // QuitDOOM II messages
-  "you want to quit?\nthen, thou hast lost an eighth!",
-  "don't go now, there's a \ndimensional shambler waiting\nat the dos prompt!",
-  "get outta here and go back\nto your boring programs.",
-  "if i were your boss, i'd \n deathmatch ya in a minute!",
-  "look, bud. you leave now\nand you forfeit your body count!",
-  "just leave. when you come\nback, i'll be waiting with a bat.",
-  "you're lucky i don't smack\nyou for thinking about leaving.",  // 1/15/98 killough
+  QUITMSG8,  // "you want to quit?\nthen, thou hast lost an eighth!",
+  QUITMSG9,  // "don't go now, there's a \ndimensional shambler waiting\nat the dos prompt!",
+  QUITMSG10, // "get outta here and go back\nto your boring programs.",
+  QUITMSG11, // "if i were your boss, i'd \n deathmatch ya in a minute!",
+  QUITMSG12, // "look, bud. you leave now\nand you forfeit your body count!",
+  QUITMSG13, // "just leave. when you come\nback, i'll be waiting with a bat.",
+  QUITMSG14, // "you're lucky i don't smack\nyou for thinking about leaving.",  // 1/15/98 killough
 
   // FinalDOOM?
 
