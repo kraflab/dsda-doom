@@ -190,6 +190,4 @@ void MIDI_DestroyFlatList (midi_event_t **evs);
 // NSM: timing calculator
 double MIDI_spmc (const midi_file_t *file, const midi_event_t *ev, unsigned sndrate);
 
-midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf);
-
 #endif /* #ifndef MIDIFILE_H */
