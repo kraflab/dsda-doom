@@ -40,6 +40,20 @@
 #define PRESSKEY    "press a key."
 #define PRESSYN     "press y or n."
 #define QUITMSG     "are you sure you want to\nquit this great game?"
+#define QUITMSG1    "please don't leave, there's more\ndemons to toast!"
+#define QUITMSG2    "let's beat it -- this is turning\ninto a bloodbath!"
+#define QUITMSG3    "i wouldn't leave if i were you.\ndos is much worse."
+#define QUITMSG4    "you're trying to say you like dos\nbetter than me, right?"
+#define QUITMSG5    "don't leave yet -- there's a\ndemon around that corner!"
+#define QUITMSG6    "ya know, next time you come in here\ni'm gonna toast ya."
+#define QUITMSG7    "go ahead and leave. see if i care."
+#define QUITMSG8    "you want to quit?\nthen, thou hast lost an eighth!"
+#define QUITMSG9    "don't go now, there's a \ndimensional shambler waiting\nat the dos prompt!"
+#define QUITMSG10   "get outta here and go back\nto your boring programs."
+#define QUITMSG11   "if i were your boss, i'd \n deathmatch ya in a minute!"
+#define QUITMSG12   "look, bud. you leave now\nand you forfeit your body count!"
+#define QUITMSG13   "just leave. when you come\nback, i'll be waiting with a bat."
+#define QUITMSG14   "you're lucky i don't smack\nyou for thinking about leaving."
 #define LOADNET     "you can't do load while in a net game!\n\n"PRESSKEY
 #define QLOADNET    "you can't quickload during a netgame!\n\n"PRESSKEY
 #define QSAVESPOT   "you haven't picked a quicksave slot yet!\n\n"PRESSKEY

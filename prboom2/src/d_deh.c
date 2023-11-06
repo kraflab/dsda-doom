@@ -207,6 +207,20 @@ dboolean deh_pars = FALSE; // in wi_stuff to allow pars in modified games
 const char *s_PRESSKEY    = PRESSKEY;
 const char *s_PRESSYN     = PRESSYN;
 const char *s_QUITMSG     = QUITMSG;
+const char *s_QUITMSG1    = QUITMSG1;
+const char *s_QUITMSG2    = QUITMSG2;
+const char *s_QUITMSG3    = QUITMSG3;
+const char *s_QUITMSG4    = QUITMSG4;
+const char *s_QUITMSG5    = QUITMSG5;
+const char *s_QUITMSG6    = QUITMSG6;
+const char *s_QUITMSG7    = QUITMSG7;
+const char *s_QUITMSG8    = QUITMSG8;
+const char *s_QUITMSG9    = QUITMSG9;
+const char *s_QUITMSG10   = QUITMSG10;
+const char *s_QUITMSG11   = QUITMSG11;
+const char *s_QUITMSG12   = QUITMSG12;
+const char *s_QUITMSG13   = QUITMSG13;
+const char *s_QUITMSG14   = QUITMSG14;
 const char *s_QSAVESPOT   = QSAVESPOT; // PRESSKEY;
 const char *s_SAVEDEAD    = SAVEDEAD;  // PRESSKEY; // remove duplicate y/n
 const char *s_NEWGAME     = NEWGAME;   // PRESSKEY;
@@ -521,6 +535,20 @@ static deh_strs deh_strlookup[] = {
   {&s_PRESSKEY,"PRESSKEY"},
   {&s_PRESSYN,"PRESSYN"},
   {&s_QUITMSG,"QUITMSG"},
+  {&s_QUITMSG1,"QUITMSG1"},
+  {&s_QUITMSG2,"QUITMSG2"},
+  {&s_QUITMSG3,"QUITMSG3"},
+  {&s_QUITMSG4,"QUITMSG4"},
+  {&s_QUITMSG5,"QUITMSG5"},
+  {&s_QUITMSG6,"QUITMSG6"},
+  {&s_QUITMSG7,"QUITMSG7"},
+  {&s_QUITMSG8,"QUITMSG8"},
+  {&s_QUITMSG9,"QUITMSG9"},
+  {&s_QUITMSG10,"QUITMSG10"},
+  {&s_QUITMSG11,"QUITMSG11"},
+  {&s_QUITMSG12,"QUITMSG12"},
+  {&s_QUITMSG13,"QUITMSG13"},
+  {&s_QUITMSG14,"QUITMSG14"},
   {&s_QSAVESPOT,"QSAVESPOT"},
   {&s_SAVEDEAD,"SAVEDEAD"},
   {&s_NEWGAME,"NEWGAME"},
