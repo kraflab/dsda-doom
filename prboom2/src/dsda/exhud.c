@@ -451,15 +451,15 @@ static int dsda_ParseHUDConfig(char** hud_config, int line_i) {
       if (!strncmp(command, components[i].name, sizeof(command))) {
         int x, y;
         int vpt;
-        int component_args[5] = { 0 };
+        int component_args[6] = { 0 };
         char alignment[16];
 
         found = true;
 
-        count = sscanf(args, "%d %d %15s %d %d %d %d %d", &x, &y, alignment,
+        count = sscanf(args, "%d %d %15s %d %d %d %d %d %d", &x, &y, alignment,
                         &component_args[0], &component_args[1],
                         &component_args[2], &component_args[3],
-                        &component_args[4]);
+                        &component_args[4], &component_args[5]);
         if (count < 3)
           I_Error("Invalid hud component args \"%s\"", line);
 
