@@ -24,6 +24,7 @@
 typedef struct {
   dsda_text_t component;
   dboolean include_kills, include_items, include_secrets;
+  dboolean hide_totals;
 } local_component_t;
 
 static local_component_t* local;
@@ -67,33 +68,60 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
                                              dsda_TextColor(dsda_tc_map_totals_value));
 
   if (local->include_kills) {
-    length += snprintf(
-      str,
-      max_size,
-      "%sMonsters: %s%d/%d\n",
-      dsda_TextColor(dsda_tc_map_totals_label),
-      killcolor, fullkillcount, max_kill_requirement
-    );
+    if (!local->hide_totals || fullkillcount >= max_kill_requirement)
+      length += snprintf(
+        str,
+        max_size,
+        "%sMonsters: %s%d/%d\n",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        killcolor, fullkillcount, max_kill_requirement
+      );
+    else
+      length += snprintf(
+        str,
+        max_size,
+        "%sMonsters: %s%d\n",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        killcolor, fullkillcount
+      );
   }
 
   if (local->include_secrets) {
-    length += snprintf(
-      str + length,
-      max_size - length,
-      "%sSecrets: %s%d/%d\n",
-      dsda_TextColor(dsda_tc_map_totals_label),
-      secretcolor, fullsecretcount, totalsecret
-    );
+    if (!local->hide_totals || fullsecretcount >= totalsecret)
+      length += snprintf(
+        str + length,
+        max_size - length,
+        "%sSecrets: %s%d/%d\n",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        secretcolor, fullsecretcount, totalsecret
+      );
+    else
+      length += snprintf(
+        str + length,
+        max_size - length,
+        "%sSecrets: %s%d\n",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        secretcolor, fullsecretcount
+      );
   }
 
   if (local->include_items) {
-    snprintf(
-      str + length,
-      max_size - length,
-      "%sItems: %s%d/%d",
-      dsda_TextColor(dsda_tc_map_totals_label),
-      itemcolor, players[displayplayer].itemcount, totalitems
-    );
+    if (!local->hide_totals || fullitemcount >= totalitems)
+      snprintf(
+        str + length,
+        max_size - length,
+        "%sItems: %s%d/%d",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        itemcolor, fullitemcount, totalitems
+      );
+    else
+      snprintf(
+        str + length,
+        max_size - length,
+        "%sItems: %s%d",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        itemcolor, fullitemcount
+      );
   }
 }
 
@@ -104,6 +132,8 @@ void dsda_InitMapTotalsHC(int x_offset, int y_offset, int vpt, int* args, int ar
   local->include_kills = args[0];
   local->include_items = args[1];
   local->include_secrets = args[2];
+
+  local->hide_totals = args[3];
 
   if (!local->include_kills && !local->include_items && !local->include_secrets)
     local->include_kills = local->include_items = local->include_secrets = true;
