@@ -35,6 +35,7 @@
 #include "dstrings.h"
 #include "d_deh.h"
 
+static const char* debug_quit_msg = "THIS IS NO MESSAGE!\nPage intentionally left blank.";
 
 // killough 1/18/98: remove hardcoded limit, add const:
 const char** endmsg[]=
@@ -61,7 +62,7 @@ const char** endmsg[]=
   // FinalDOOM?
 
   // Internal debug. Different style, too.
-  "THIS IS NO MESSAGE!\nPage intentionally left blank.",  // 1/15/98 killough
+  &debug_quit_msg,  // 1/15/98 killough
 };
 
 // killough 1/18/98: remove hardcoded limit and replace with var (silly hack):
