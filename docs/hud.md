@@ -48,11 +48,12 @@ You can find the current default configuration [here](../prboom2/data/lumps/dsda
 Unless otherwise specified, argument values are integers. For toggles, a 1 means on and a 0 means off. For example, `stat_totals 2 8 bottom_left 1 0 1` would turn off items but keep kills and secrets enabled.
 
 - `stat_totals`: shows the kills / secrets / items on the current map
-  - Supports 4 arguments: `show_kills show_items show_secrets vertical`
+  - Supports 5 arguments: `show_kills show_items show_secrets vertical hide_totals`
   - `show_kills`: shows kills in the component
   - `show_items`: shows items in the component
   - `show_secrets`: shows secrets in the component
   - `vertical`: displays the stats vertically rather than horizontally
+  - `hide_totals`: hides the total counts until they are reached
 - `composite_time`: shows the current level time and the total time
   - Supports 1 argument: `show_label`
   - `show_label`: shows the "time" label
@@ -101,10 +102,11 @@ Unless otherwise specified, argument values are integers. For toggles, a 1 means
   - Use `\cXY` to change to color `XY`
 - `map_totals`: shows the kills / secrets / items on the current map
   - Uses the message font with word labels
-  - Supports 3 arguments: `show_kills show_items show_secrets`
+  - Supports 4 arguments: `show_kills show_items show_secrets hide_totals`
   - `show_kills`: shows kills in the component
   - `show_items`: shows items in the component
   - `show_secrets`: shows secrets in the component
+  - `hide_totals`: hides the total counts until they are reached
 - `map_time`: shows the level / total time
   - Uses the message font
 - `map_coordinates`: shows the player's position
