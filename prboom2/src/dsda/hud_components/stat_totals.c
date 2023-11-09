@@ -89,7 +89,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       "%s%s%s%d/%d%s",
       dsda_TextColor(dsda_tc_exhud_totals_label),
       local->label_i,
-      itemcolor, players[displayplayer].itemcount, totalitems,
+      itemcolor, fullitemcount, totalitems,
       local->stat_separator
     );
   }
