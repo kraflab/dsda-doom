@@ -24,9 +24,10 @@
 typedef struct {
   dsda_text_t component;
   dboolean include_kills, include_items, include_secrets;
-  const char* kills_format;
-  const char* items_format;
-  const char* secrets_format;
+  const char* label_k;
+  const char* label_i;
+  const char* label_s;
+  const char* stat_separator;
 } local_component_t;
 
 static local_component_t* local;
@@ -73,9 +74,11 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     length += snprintf(
       str,
       max_size,
-      local->kills_format,
+      "%s%s%s%d/%d%s",
       dsda_TextColor(dsda_tc_exhud_totals_label),
-      killcolor, fullkillcount, max_kill_requirement
+      local->label_k,
+      killcolor, fullkillcount, max_kill_requirement,
+      local->stat_separator
     );
   }
 
@@ -83,9 +86,11 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     length += snprintf(
       str + length,
       max_size - length,
-      local->items_format,
+      "%s%s%s%d/%d%s",
       dsda_TextColor(dsda_tc_exhud_totals_label),
-      itemcolor, players[displayplayer].itemcount, totalitems
+      local->label_i,
+      itemcolor, players[displayplayer].itemcount, totalitems,
+      local->stat_separator
     );
   }
 
@@ -93,8 +98,9 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str + length,
       max_size - length,
-      local->secrets_format,
+      "%s%s%s%d/%d",
       dsda_TextColor(dsda_tc_exhud_totals_label),
+      local->label_s,
       secretcolor, fullsecretcount, totalsecret
     );
   }
@@ -109,15 +115,17 @@ void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int a
   local->include_secrets = args[2];
 
   // vertical orientation
-  if (args[3]) {
-    local->kills_format = "%sK %s%d/%d\n";
-    local->items_format = "%sI %s%d/%d\n";
-    local->secrets_format = "%sS %s%d/%d";
+  local->stat_separator = args[3] ? "\n" : " ";
+  
+  if (arg_count < 5 || args[4]) {
+    local->label_k = "K ";
+    local->label_i = "I ";
+    local->label_s = "S ";
   }
   else {
-    local->kills_format = "%sK %s%d/%d ";
-    local->items_format = "%sI %s%d/%d ";
-    local->secrets_format = "%sS %s%d/%d";
+    local->label_k = "";
+    local->label_i = "";
+    local->label_s = "";
   }
 
   if (!local->include_kills && !local->include_items && !local->include_secrets) {
