@@ -116,7 +116,7 @@ void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int a
 
   // vertical orientation
   local->stat_separator = args[3] ? "\n" : " ";
-  
+
   if (arg_count < 5 || args[4]) {
     local->label_k = "K ";
     local->label_i = "I ";
