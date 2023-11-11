@@ -431,6 +431,17 @@ static const char *I_GetBasePath(void)
 #define PATH_SEPARATOR ":"
 #endif
 
+// Reference for XDG directories:
+// <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
+static const char *I_GetXDGDataDirs(void)
+{
+  const char *datadirs = M_getenv("XDG_DATA_DIRS");
+
+  if (!datadirs || !*datadirs)
+    return "/usr/local/share/"PATH_SEPARATOR"/usr/share/";
+  return datadirs;
+}
+
 char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
 {
   // lookup table of directories to search
@@ -452,10 +463,6 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL, "../share/games/doom", NULL, I_GetBasePath}, // AppImage
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
-    {"/usr/local/share/games/doom"},
-    {"/usr/share/games/doom"},
-    {"/usr/local/share/doom"},
-    {"/usr/share/doom"},
   }, *search;
 
   static size_t num_search;
@@ -472,9 +479,15 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
   if (!num_search)
   {
     int extra = 0;
-    char *dwp;
+    int datadirs = 0;
+    const char *dwp;
 
     // calculate how many extra entries we need to add to the table
+    dwp = I_GetXDGDataDirs();
+    datadirs++;
+    while ((dwp = strchr(dwp, *PATH_SEPARATOR)))
+      dwp++, datadirs++;
+    extra += datadirs * 2; // two entries for each datadir
     if ((dwp = M_getenv("DOOMWADPATH")))
     {
       extra++;
@@ -488,6 +501,24 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     memcpy(search, search0, num_search * sizeof(*search));
     memset(&search[num_search], 0, extra * sizeof(*search));
 
+    // add $XDG_DATA_DIRS/games/doom and $XDG_DATA_DIRS/doom
+    {
+      char *ptr, *dup_dwp;
+
+      dup_dwp = Z_Strdup(I_GetXDGDataDirs());
+      ptr = strtok(dup_dwp, PATH_SEPARATOR);
+      while (ptr)
+      {
+        search[num_search].dir = Z_Strdup(ptr);
+        search[num_search].sub = "games/doom";
+        search[num_search + datadirs].dir = Z_Strdup(ptr);
+        search[num_search + datadirs].sub = "doom";
+        num_search++;
+        ptr = strtok(NULL, PATH_SEPARATOR);
+      }
+      Z_Free(dup_dwp);
+      num_search += datadirs;
+    }
     // add each directory from the $DOOMWADPATH environment variable
     if ((dwp = M_getenv("DOOMWADPATH")))
     {
