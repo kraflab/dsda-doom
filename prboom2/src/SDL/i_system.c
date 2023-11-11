@@ -426,9 +426,9 @@ static const char *I_GetBasePath(void)
  */
 
 #ifdef _WIN32
-#define PATH_SEPARATOR ';'
+#define PATH_SEPARATOR ";"
 #else
-#define PATH_SEPARATOR ':'
+#define PATH_SEPARATOR ":"
 #endif
 
 char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
@@ -471,46 +471,36 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
 
   if (!num_search)
   {
+    int extra = 0;
     char *dwp;
+
+    // calculate how many extra entries we need to add to the table
+    if ((dwp = M_getenv("DOOMWADPATH")))
+    {
+      extra++;
+      while ((dwp = strchr(dwp, *PATH_SEPARATOR)))
+        dwp++, extra++;
+    }
 
     // initialize with the static lookup table
     num_search = sizeof(search0)/sizeof(*search0);
-    search = Z_Malloc(num_search * sizeof(*search));
+    search = Z_Malloc((num_search + extra) * sizeof(*search));
     memcpy(search, search0, num_search * sizeof(*search));
+    memset(&search[num_search], 0, extra * sizeof(*search));
 
     // add each directory from the $DOOMWADPATH environment variable
     if ((dwp = M_getenv("DOOMWADPATH")))
     {
-      char *left, *ptr, *dup_dwp;
+      char *ptr, *dup_dwp;
 
       dup_dwp = Z_Strdup(dwp);
-      left = dup_dwp;
-
-      for (;;)
+      ptr = strtok(dup_dwp, PATH_SEPARATOR);
+      while (ptr)
       {
-          ptr = strchr(left, PATH_SEPARATOR);
-          if (ptr != NULL)
-          {
-              *ptr = '\0';
-
-              num_search++;
-              search = Z_Realloc(search, num_search * sizeof(*search));
-              memset(&search[num_search-1], 0, sizeof(*search));
-              search[num_search-1].dir = Z_Strdup(left);
-
-              left = ptr + 1;
-          }
-          else
-          {
-              break;
-          }
+        search[num_search].dir = Z_Strdup(ptr);
+        num_search++;
+        ptr = strtok(NULL, PATH_SEPARATOR);
       }
-
-      num_search++;
-      search = Z_Realloc(search, num_search * sizeof(*search));
-      memset(&search[num_search-1], 0, sizeof(*search));
-      search[num_search-1].dir = Z_Strdup(left);
-
       Z_Free(dup_dwp);
     }
   }
