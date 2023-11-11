@@ -433,6 +433,31 @@ static const char *I_GetBasePath(void)
 
 // Reference for XDG directories:
 // <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
+static const char *I_GetXDGDataHome(void)
+{
+  static char *datahome = 0;
+
+  if (!datahome)
+  {
+    const char *xdgdatahome = M_getenv("XDG_DATA_HOME");
+
+    if (!xdgdatahome || !*xdgdatahome)
+    {
+      const char *home = M_getenv("HOME");
+
+      if (!home)
+        home = "/";
+      datahome = Z_Malloc(strlen(home) + 1 + sizeof(".local/share"));
+      sprintf(datahome, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
+    }
+    else
+    {
+      datahome = Z_Strdup(xdgdatahome);
+    }
+  }
+  return datahome;
+}
+
 static const char *I_GetXDGDataDirs(void)
 {
   const char *datadirs = M_getenv("XDG_DATA_DIRS");
@@ -463,6 +488,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL, "../share/games/doom", NULL, I_GetBasePath}, // AppImage
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
+    {NULL, "games/doom", NULL, I_GetXDGDataHome}, // $HOME/.local/share/games/doom
   }, *search;
 
   static size_t num_search;
