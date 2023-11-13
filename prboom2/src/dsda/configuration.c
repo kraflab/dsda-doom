@@ -206,6 +206,7 @@ void dsda_UpdateStrictMode(void) {
   M_ChangeSkyMode(); // affected by mouselook setting
   HU_InitCrosshair();
   M_ChangeApplyPalette();
+  M_ChangeMapTextured();
   dsda_RefreshExHudCoordinateDisplay();
   dsda_RefreshExHudCommandDisplay();
   dsda_RefreshExHudMinimap();
