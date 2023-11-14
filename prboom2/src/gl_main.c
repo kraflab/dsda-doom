@@ -930,6 +930,7 @@ void gld_InitDrawScene(void)
 void gld_Finish(void)
 {
   gld_Set2DMode();
+  I_HandleCapture();
   SDL_GL_SwapWindow(sdl_window);
 }
 

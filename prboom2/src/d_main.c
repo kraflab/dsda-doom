@@ -281,12 +281,13 @@ static void D_Wipe(void)
     }
 
     M_Drawer();                   // menu is drawn even on top of wipes
-    I_FinishUpdate();             // page flip or blit buffer
 
     if (capturing_video && !dsda_SkipMode() && cap_wipescreen)
     {
-      I_CaptureFrame();
+      I_QueueFrameCapture();
     }
+
+    I_FinishUpdate();             // page flip or blit buffer
   }
   while (!done);
 
@@ -580,9 +581,9 @@ static void D_DoomLoop(void)
         {
           isExtraDDisplay = !first;
           first = false;
+          I_QueueFrameCapture();
           D_Display(cap_frac);
           isExtraDDisplay = false;
-          I_CaptureFrame();
           cap_frac += cap_step;
         }
         cap_frac -= FRACUNIT + cap_step;

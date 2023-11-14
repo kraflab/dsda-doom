@@ -5065,7 +5065,7 @@ dboolean M_Responder (event_t* ev) {
   // killough 2/22/98: add support for screenshot key:
   if (dsda_InputActivated(dsda_input_screenshot))
   {
-    G_ScreenShot ();
+    I_QueueScreenshot();
     // Don't eat the keypress in this case. See sf bug #1843280.
   }
 

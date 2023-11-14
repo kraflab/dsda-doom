@@ -535,6 +535,34 @@ void I_ShutdownGraphics(void)
   DeactivateMouse();
 }
 
+static dboolean queue_frame_capture;
+static dboolean queue_screenshot;
+
+void I_QueueFrameCapture(void)
+{
+  queue_frame_capture = true;
+}
+
+void I_QueueScreenshot(void)
+{
+  queue_screenshot = true;
+}
+
+void I_HandleCapture(void)
+{
+  if (queue_frame_capture)
+  {
+    I_CaptureFrame();
+    queue_frame_capture = false;
+  }
+
+  if (queue_screenshot)
+  {
+    M_ScreenShot();
+    queue_screenshot = false;
+  }
+}
+
 //
 // I_FinishUpdate
 //
@@ -599,6 +627,8 @@ void I_FinishUpdate (void)
   SDL_RenderClear(sdl_renderer);
 
   SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, NULL);
+
+  I_HandleCapture();
 
   // Draw!
   SDL_RenderPresent(sdl_renderer);
