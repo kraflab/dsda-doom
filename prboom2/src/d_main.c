@@ -581,8 +581,14 @@ static void D_DoomLoop(void)
         {
           isExtraDDisplay = !first;
           first = false;
-          I_QueueFrameCapture();
+
+          if (gamestate != wipegamestate || cap_wipescreen)
+          {
+            I_QueueFrameCapture();
+          }
+
           D_Display(cap_frac);
+
           isExtraDDisplay = false;
           cap_frac += cap_step;
         }
