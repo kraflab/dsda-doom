@@ -121,7 +121,7 @@ void TryRunTics (void)
     FakeNetUpdate();
     runtics = maketic - gametic;
     if (!runtics) {
-      if (!movement_smooth || !window_focused) {
+      if (!movement_smooth) {
           I_uSleep(ms_to_next_tick*1000);
       }
       if (dsda_GetTick() - entertime > 10) {

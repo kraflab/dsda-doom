@@ -514,7 +514,7 @@ void D_Display (fixed_t frac)
 
   // e6y
   // Don't thrash cpu during pausing or if the window doesnt have focus
-  if (dsda_CameraPaused() || !window_focused) {
+  if (dsda_CameraPaused()) {
     I_uSleep(5000);
   }
 

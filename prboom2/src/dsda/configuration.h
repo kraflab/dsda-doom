@@ -242,6 +242,7 @@ typedef enum {
   dsda_config_render_vsync,
   dsda_config_uncapped_framerate,
   dsda_config_fps_limit,
+  dsda_config_background_fps_limit,
   dsda_config_usegamma,
   dsda_config_screenblocks,
   dsda_config_sdl_video_window_pos,
