@@ -82,7 +82,6 @@ typedef enum
   ga_completed,
   ga_victory,
   ga_worlddone,
-  ga_screenshot,
 
   // hexen
   ga_leavemap
