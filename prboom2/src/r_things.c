@@ -708,7 +708,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
   tx = -(gyt+gxt);
 
   // too far off the side?
-  if (D_abs(tx)>(tz<<2))
+  if (D_abs(tx) > ((int64_t) tz << 2))
     return;
 
     // decide which patch to use for sprite relative to player

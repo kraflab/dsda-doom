@@ -2176,7 +2176,7 @@ void gld_ProjectSprite(mobj_t* thing, int lightlevel)
   else
   {
     // too far off the side?
-    if (D_abs(tx) > (tz << 2))
+    if (D_abs(tx) > ((int64_t) tz << 2))
       return;
   }
 
