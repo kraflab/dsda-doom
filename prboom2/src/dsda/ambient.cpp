@@ -181,7 +181,14 @@ static void dsda_ParseSndInfoLine(Scanner &scanner) {
     std::string name(scanner.string);
 
     scanner.CheckToken('='); // Optional
-    scanner.MustGetString();
+
+    if (!scanner.CheckString()) {
+      lprintf(LO_WARN, "Invalid SNDINFO: name \"%s\" expects string sound lump\n", name.c_str());
+
+      scanner.GetNextToken();
+      scanner.SkipLine();
+      return;
+    }
 
     if (!W_LumpNameExists(scanner.string)) {
       lprintf(LO_WARN, "Sound lump \"%s\" does not exist\n", scanner.string);
