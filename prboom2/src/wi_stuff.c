@@ -612,6 +612,10 @@ void WI_drawEL(void)
     if (!W_LumpNameExists(lname))
       return;
 
+    // fullscreen cwilv graphic
+    if (V_NamePatchHeight(lname) == 200)
+      y = WI_TITLEY;
+
     // CPhipps - patch drawing updated
     // draw level
     V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y, FB,
