@@ -1384,6 +1384,8 @@ static void RestartSong(void)
 
     running_tracks = num_tracks;
 
+    start_music_volume = current_music_volume;
+
     // fix buggy songs that forget to terminate notes held over loop point
     // sdl_mixer does this as well
     for (i=0; i<OPL_NUM_VOICES; ++i)
