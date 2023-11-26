@@ -272,7 +272,7 @@ int dsda_UFTicker(void) {
         finalestage = 1;
         wipegamestate = -1; // force a wipe
         if (!stricmp(gamemapinfo->endpic, "$BUNNY"))
-          S_StartMusic(mus_bunny);
+          F_StartScroll(NULL, NULL, NULL, true);
         else if (!stricmp(gamemapinfo->endpic, "!"))
           return false; // let go of finale ownership
       }
