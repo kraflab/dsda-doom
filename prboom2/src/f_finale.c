@@ -732,7 +732,7 @@ static void F_StartScrollMusic(const char* music, dboolean loop_music)
     if (!S_ChangeMusicByName(music, loop_music))
       lprintf(LO_WARN, "Finale scroll music not found: %s\n", music);
   }
-  else if (gamemode != commercial)
+  else if (W_LumpNameExists("D_BUNNY"))
     S_ChangeMusic(mus_bunny, loop_music);
   else {
     lprintf(LO_WARN, "Finale scroll music unspecified\n");
