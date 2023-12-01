@@ -545,16 +545,18 @@ static void dsda_LoadHUDConfig(void) {
     if (arg->found)
       length = M_ReadFileToString(arg->value.v_string, &hud_config);
 
-    lump = W_GetNumForName("DSDAHUD");
-
-    if (lump != -1) {
-      if (!hud_config)
+    lump = -1;
+    while ((lump = W_FindNumFromName("DSDAHUD", lump)) >= 0) {
+      if (!hud_config) {
         hud_config = W_ReadLumpToString(lump);
+        length = W_LumpLength(lump);
+      }
       else {
         hud_config = Z_Realloc(hud_config, length + W_LumpLength(lump) + 2);
         hud_config[length++] = '\n'; // in case the file didn't end in a new line
         W_ReadLump(lump, hud_config + length);
-        hud_config[length + W_LumpLength(lump)] = '\0';
+        length += W_LumpLength(lump);
+        hud_config[length] = '\0';
       }
     }
 
