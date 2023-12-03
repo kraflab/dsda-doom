@@ -1,4 +1,4 @@
-# dsda-doom v0.27.4
+# dsda-doom v0.27.5
 This is a successor of prboom+ with many new features, including:
 - Heretic, Hexen, MBF21, Doom-in-Hexen, UDMF, and MAPINFO support
 - In-game console and scripting
