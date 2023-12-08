@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "i_system.h"
+#include "lprintf.h"
 #include "p_saveg.h"
 #include "w_wad.h"
 
@@ -37,6 +38,7 @@ static int playback_behaviour;
 static int playback_tics;
 
 static dsda_arg_t* playdemo_arg;
+static dsda_arg_t* playlump_arg;
 static dsda_arg_t* fastdemo_arg;
 static dsda_arg_t* timedemo_arg;
 static dsda_arg_t* recordfromto_arg;
@@ -90,6 +92,13 @@ void dsda_ExecutePlaybackOptions(void) {
     G_DeferedPlayDemo(playback_name);
     userdemo = true;
   }
+  else if (playlump_arg) {
+    if (W_CheckNumForName(playback_name) == LUMP_NOT_FOUND)
+      I_Error("Unable to find required internal demo lump \"%s\"", playback_name);
+
+    G_DeferedPlayDemo(playback_name);
+    userdemo = true;
+  }
   else if (fastdemo_arg) {
     G_DeferedPlayDemo(playback_name);
     fastdemo = true;
@@ -109,7 +118,7 @@ void dsda_ExecutePlaybackOptions(void) {
   }
 }
 
-static void dsda_UpdatePlaybackName(const char* name) {
+static void dsda_UpdatePlaybackName(const char* name, dboolean require_file) {
   if (playback_name)
     Z_Free(playback_name);
 
@@ -117,7 +126,11 @@ static void dsda_UpdatePlaybackName(const char* name) {
     Z_Free(playback_filename);
 
   playback_name = Z_Strdup(name);
-  playback_filename = I_RequireFile(playback_name, ".lmp");
+
+  if (require_file)
+    playback_filename = I_RequireFile(playback_name, ".lmp");
+  else
+    playback_filename = NULL;
 }
 
 const char* dsda_ParsePlaybackOptions(void) {
@@ -126,7 +139,14 @@ const char* dsda_ParsePlaybackOptions(void) {
   arg = dsda_Arg(dsda_arg_playdemo);
   if (arg->found) {
     playdemo_arg = arg;
-    dsda_UpdatePlaybackName(arg->value.v_string);
+    dsda_UpdatePlaybackName(arg->value.v_string, true);
+    return playback_filename;
+  }
+
+  arg = dsda_Arg(dsda_arg_playlump);
+  if (arg->found) {
+    playlump_arg = arg;
+    dsda_UpdatePlaybackName(arg->value.v_string, false);
     return playback_filename;
   }
 
@@ -134,14 +154,14 @@ const char* dsda_ParsePlaybackOptions(void) {
   if (arg->found) {
     fastdemo_arg = arg;
     fastdemo = true;
-    dsda_UpdatePlaybackName(arg->value.v_string);
+    dsda_UpdatePlaybackName(arg->value.v_string, true);
     return playback_filename;
   }
 
   arg = dsda_Arg(dsda_arg_timedemo);
   if (arg->found) {
     timedemo_arg = arg;
-    dsda_UpdatePlaybackName(arg->value.v_string);
+    dsda_UpdatePlaybackName(arg->value.v_string, true);
     return playback_filename;
   }
 
@@ -149,7 +169,7 @@ const char* dsda_ParsePlaybackOptions(void) {
   if (arg->found) {
     recordfromto_arg = arg;
     dsda_SetDemoBaseName(arg->value.v_string_array[1]);
-    dsda_UpdatePlaybackName(arg->value.v_string_array[0]);
+    dsda_UpdatePlaybackName(arg->value.v_string_array[0], true);
     return playback_filename;
   }
 
