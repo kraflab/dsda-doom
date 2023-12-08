@@ -450,6 +450,9 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (scanner.StringMatch("Passover")) {
       map.flags |= DMI_PASSOVER;
     }
+    else if (scanner.StringMatch("NoGravity")) {
+      map.gravity = Z_Strdup("0");
+    }
     else if (scanner.StringMatch("UsePlayerStartZ")) {
       map.flags |= DMI_USE_PLAYER_START_Z;
     }

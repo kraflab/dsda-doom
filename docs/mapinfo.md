@@ -79,6 +79,7 @@ Appends properties to the default map.
 | **UsePlayerStartZ** | Spawn the player at the player start z height (by default, the player spawns on the floor). |
 | :duck: **NoPassover** | Turns on infinite thing height (objects cannot move over one another). This is the default. |
 | :duck: **Passover** | Turns off infinite thing height (objects can move over one another). |
+| :duck: **NoGravity** | Turns off gravity ("Gravity = 0" is not cross-port compatible). |
 | :duck: **ColorMap = "\<Lump\>"** | The default colormap for the map (if not **COLORMAP**). |
 
 ### Cluster
