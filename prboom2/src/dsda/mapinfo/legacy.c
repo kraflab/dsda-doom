@@ -456,21 +456,15 @@ int dsda_LegacySkyTexture(int* sky) {
         *sky = R_TextureNumForName ("SKY2");
   }
   else {
-    switch (gameepisode) {
-      case 1:
-        *sky = R_TextureNumForName ("SKY1");
-        break;
-      case 2:
-        *sky = R_TextureNumForName ("SKY2");
-        break;
-      case 3:
-        *sky = R_TextureNumForName ("SKY3");
-        break;
-      case 4: // Special Edition sky
-        *sky = R_TextureNumForName ("SKY4");
-        break;
-    }
+    // Use sky based on episode number.
+    char skyname[16]; // Enough space even if gameepisode is spurious.
+    snprintf(skyname, sizeof(skyname), "SKY%d", gameepisode);
+    *sky = R_CheckTextureNumForName (skyname);
   }
+
+  // Fallback if no sky was loaded.
+  if (*sky == NO_TEXTURE)
+    *sky = R_TextureNumForName ("SKY1");
 
   return true;
 }
