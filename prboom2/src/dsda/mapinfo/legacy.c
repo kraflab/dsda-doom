@@ -469,6 +469,9 @@ int dsda_LegacySkyTexture(int* sky) {
       case 4: // Special Edition sky
         *sky = R_TextureNumForName ("SKY4");
         break;
+      default:
+        *sky = R_TextureNumForName ("SKY1");
+        break;
     }
   }
 
