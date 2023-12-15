@@ -5752,7 +5752,10 @@ static angle_t P_ArgToAngle(angle_t arg)
 
 dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo)
 {
+  byte bargs[5];
   dboolean buttonSuccess = false;
+
+  COLLAPSE_SPECIAL_ARGS(bargs, args);
 
   switch (special)
   {
@@ -7139,6 +7142,35 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
           buttonSuccess = 1;
         }
       }
+      break;
+    case zl_acs_execute:
+      buttonSuccess = P_StartACS(bargs[0], bargs[1], &bargs[2], mo, line, side);
+      break;
+    case zl_acs_suspend:
+      buttonSuccess = P_SuspendACS(bargs[0], bargs[1]);
+      break;
+    case zl_acs_terminate:
+      buttonSuccess = P_TerminateACS(bargs[0], bargs[1]);
+      break;
+    case zl_acs_locked_execute:
+      if (bargs[4] && !P_CheckKeys(mo, bargs[4], true))
+        buttonSuccess = 0;
+      else
+        buttonSuccess = P_StartACS(bargs[0], bargs[1], &bargs[2], mo, line, side);
+      break;
+    case zl_acs_execute_with_result:
+      // Not fully implemented. Needs Extended ACS.
+      buttonSuccess = P_StartACS(bargs[0], bargs[1], &bargs[2], mo, line, side);
+      break;
+    case zl_acs_locked_execute_door:
+      if (bargs[4] && !P_CheckKeys(mo, bargs[4], false))
+        buttonSuccess = 0;
+      else
+        buttonSuccess = P_StartACS(bargs[0], bargs[1], &bargs[2], mo, line, side);
+      break;
+    case zl_acs_execute_always:
+      // Currently no difference between this and normal execute. May be incorrect.
+      buttonSuccess = P_StartACS(bargs[0], bargs[1], &bargs[2], mo, line, side);
       break;
     case zl_thing_move:
       {

@@ -196,6 +196,10 @@ static const char **ACStrings;
 static char PrintBuffer[PRINT_BUFFER_SIZE];
 static acs_t *NewScript;
 
+// If not in Hexen mode but a new game starts, this allows us to conditionally
+// run game setup when ACS scripts are first loaded
+static dboolean newgame = false;
+
 static int (*PCodeCmds[]) (void) =
 {
         CmdNOP,
@@ -383,6 +387,12 @@ void P_LoadACScripts(int lump)
     int i, offset;
     const acsHeader_t *header;
     acsInfo_t *info;
+
+    if (newgame)
+    {
+        P_ACSInitNewGame();
+        newgame = false;
+    }
 
     ActionCodeBase = W_LumpByNum(lump);
     ActionCodeSize = W_LumpLength(lump);
@@ -631,6 +641,11 @@ dboolean P_SuspendACS(int number, int map)
     }
     ACSInfo[infoIndex].state = ASTE_SUSPENDED;
     return true;
+}
+
+void P_ACSFlagNewGame(void)
+{
+    newgame = true;
 }
 
 void P_ACSInitNewGame(void)
