@@ -295,8 +295,14 @@ const char *I_DoomExeDir(void)
   static char *base;
   if (!base)        // cache multiple requests
   {
-    char *home = M_getenv("HOME");
-    size_t len = strlen(home);
+    char *home;
+    size_t len;
+    // check if we're in Flatpak
+    if (access("/.flatpak-info", F_OK) == 0)
+      home = M_getenv("XDG_DATA_HOME");
+    else
+      home = M_getenv("HOME");
+    len = strlen(home);
 
     base = Z_Malloc(len + strlen(prboom_dir) + 1);
     strcpy(base, home);
