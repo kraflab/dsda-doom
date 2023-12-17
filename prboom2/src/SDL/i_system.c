@@ -285,30 +285,32 @@ const char* I_GetTempDir(void)
 }
 
 #else
-// cph - V.Aguilar (5/30/99) suggested return ~/.lxdoom/, creating
-//  if non-existant
-// cph 2006/07/23 - give prboom+ its own dir
-static const char prboom_dir[] = {"/.dsda-doom"}; // Mead rem extra slash 8/21/03
 
 const char *I_DoomExeDir(void)
 {
+  static char buffer[PATH_MAX];
   static char *base;
   if (!base)        // cache multiple requests
   {
-    char *home;
+    char *home = M_getenv("HOME");
     size_t len;
-    // check if we're in Flatpak
-    if (access("/.flatpak-info", F_OK) == 0)
-      home = M_getenv("XDG_DATA_HOME");
-    else
-      home = M_getenv("HOME");
-    len = strlen(home);
-
-    base = Z_Malloc(len + strlen(prboom_dir) + 1);
-    strcpy(base, home);
+    // First, try legacy directory.
+    snprintf(buffer, sizeof(buffer), "%s/.dsda-doom", home);
+    if (access(buffer, F_OK) != 0)
+    {
+      // Legacy directory is not accessible. Use XDG directory.
+      char *xdg_data_home = M_getenv("XDG_DATA_HOME");
+      if (xdg_data_home != NULL)
+        snprintf(buffer, sizeof(buffer), "%s/dsda-doom", xdg_data_home);
+      else
+        // $XDG_DATA_HOME should be $HOME/.local/share if not defined.
+        snprintf(buffer, sizeof(buffer), "%s/.local/share/dsda-doom", home);
+    }
+    // Set base to point to path buffer.
+    base = buffer;
+    len = strlen(base);
     // I've had trouble with trailing slashes before...
     if (base[len-1] == '/') base[len-1] = 0;
-    strcat(base, prboom_dir);
     M_MakeDir(base, true); // Make sure it exists
   }
   return base;
