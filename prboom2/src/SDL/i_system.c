@@ -286,31 +286,40 @@ const char* I_GetTempDir(void)
 
 #else
 
-const char *I_DoomExeDir(void)
+static char *I_ConcatDir(const char *var, const char *subdir)
 {
   static char buffer[PATH_MAX];
+  size_t len;
+
+  // Remove trailing slashes to be safe.
+  strncpy(buffer, var, sizeof(buffer));
+  len = strlen(buffer);
+  while (len > 0 && buffer[len - 1] == '/')
+    buffer[--len] = 0;
+  // Append subdirectory.
+  strncpy(&buffer[len], subdir, sizeof(buffer) - len);
+
+  return buffer;
+}
+
+const char *I_DoomExeDir(void)
+{
   static char *base;
   if (!base)        // cache multiple requests
   {
     char *home = M_getenv("HOME");
-    size_t len;
     // First, try legacy directory.
-    snprintf(buffer, sizeof(buffer), "%s/.dsda-doom", home);
-    if (access(buffer, F_OK) != 0)
+    base = I_ConcatDir(home, "/.dsda-doom");
+    if (access(base, F_OK) != 0)
     {
       // Legacy directory is not accessible. Use XDG directory.
       char *xdg_data_home = M_getenv("XDG_DATA_HOME");
       if (xdg_data_home != NULL)
-        snprintf(buffer, sizeof(buffer), "%s/dsda-doom", xdg_data_home);
+        base = I_ConcatDir(xdg_data_home, "/dsda-doom");
       else
         // $XDG_DATA_HOME should be $HOME/.local/share if not defined.
-        snprintf(buffer, sizeof(buffer), "%s/.local/share/dsda-doom", home);
+        base = I_ConcatDir(home, "/.local/share/dsda-doom");
     }
-    // Set base to point to path buffer.
-    base = buffer;
-    len = strlen(base);
-    // I've had trouble with trailing slashes before...
-    if (base[len-1] == '/') base[len-1] = 0;
     M_MakeDir(base, true); // Make sure it exists
   }
   return base;
