@@ -64,10 +64,6 @@ void S_ParseMusInfo(const char *mapid)
     int num, lumpnum;
     int inMap = false;
     int load_muslump = -1;
-    /* musinfo item zero is initialized
-     * before we reach the parser and it must be
-     * saved and restored */
-    int itemzero = musinfo.items[0];
 
     /* don't restart music that is already playing */
     if (mus_playing &&
@@ -76,7 +72,7 @@ void S_ParseMusInfo(const char *mapid)
     }
 
     memset(&musinfo, 0, sizeof(musinfo));
-    musinfo.items[0] = itemzero;
+    musinfo.items[0] = -1;
     musinfo.current_item = load_muslump;
     S_music[mus_musinfo].lumpnum = load_muslump;
 
@@ -99,7 +95,7 @@ void S_ParseMusInfo(const char *mapid)
         }
 
         // Check number in range
-        if (M_StrToInt(sc_String, &num) && num > 0 && num < MAX_MUS_ENTRIES)
+        if (M_StrToInt(sc_String, &num) && num >= 0 && num < MAX_MUS_ENTRIES)
         {
           if (SC_GetString())
           {
@@ -117,12 +113,16 @@ void S_ParseMusInfo(const char *mapid)
         }
         else
         {
-          lprintf(LO_ERROR, "S_ParseMusInfo: Number not in range 1 to %d", MAX_MUS_ENTRIES - 1);
+          lprintf(LO_ERROR, "S_ParseMusInfo: Number not in range 0 to %d", MAX_MUS_ENTRIES - 1);
         }
       }
     }
 
     SC_Close();
+  }
+  else
+  {
+    musinfo.items[0] = -1;
   }
 }
 

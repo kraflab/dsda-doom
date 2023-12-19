@@ -272,15 +272,15 @@ void S_Start(void)
   if (muslump >= 0)
   {
     musinfo.items[0] = muslump;
+  }
 
+  if (musinfo.items[0] != -1)
+  {
     if (!dsda_StartQueuedMusic())
-      S_ChangeMusInfoMusic(muslump, true);
+      S_ChangeMusInfoMusic(musinfo.items[0], true);
   }
   else
   {
-    memset(&musinfo, 0, sizeof(musinfo));
-    musinfo.items[0] = -1;
-
     if (!dsda_StartQueuedMusic())
       S_ChangeMusic(mnum, true);
   }
