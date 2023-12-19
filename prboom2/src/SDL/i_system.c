@@ -286,18 +286,22 @@ const char* I_GetTempDir(void)
 
 #else
 
-static char *I_ConcatDir(const char *var, const char *subdir)
+static char *I_ConcatDir(const char *basedir, const char *subdir)
 {
-  static char buffer[PATH_MAX];
-  size_t len;
+  char *buffer;
+  size_t len, sublen;
 
   // Remove trailing slashes to be safe.
-  strncpy(buffer, var, sizeof(buffer));
-  len = strlen(buffer);
-  while (len > 0 && buffer[len - 1] == '/')
-    buffer[--len] = 0;
-  // Append subdirectory.
-  strncpy(&buffer[len], subdir, sizeof(buffer) - len);
+  len = strlen(basedir);
+  while (len > 0 && basedir[len - 1] == '/')
+    --len;
+  sublen = strlen(subdir);
+
+  buffer = Z_Malloc(len + sublen + 2);
+  memcpy(buffer, basedir, len);
+  buffer[len] = '/';
+  memcpy(&buffer[len + 1], subdir, sublen);
+  buffer[len + sublen + 1] = 0;
 
   return buffer;
 }
@@ -309,16 +313,18 @@ const char *I_DoomExeDir(void)
   {
     char *home = M_getenv("HOME");
     // First, try legacy directory.
-    base = I_ConcatDir(home, "/.dsda-doom");
+    base = I_ConcatDir(home, ".dsda-doom");
     if (access(base, F_OK) != 0)
     {
       // Legacy directory is not accessible. Use XDG directory.
-      char *xdg_data_home = M_getenv("XDG_DATA_HOME");
+      char *xdg_data_home;
+      Z_Free(base);
+      xdg_data_home = M_getenv("XDG_DATA_HOME");
       if (xdg_data_home != NULL)
-        base = I_ConcatDir(xdg_data_home, "/dsda-doom");
+        base = I_ConcatDir(xdg_data_home, "dsda-doom");
       else
         // $XDG_DATA_HOME should be $HOME/.local/share if not defined.
-        base = I_ConcatDir(home, "/.local/share/dsda-doom");
+        base = I_ConcatDir(home, ".local/share/dsda-doom");
     }
     M_MakeDir(base, true); // Make sure it exists
   }
