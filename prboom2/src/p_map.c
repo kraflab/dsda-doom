@@ -2274,7 +2274,45 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     // hit line
     // position a bit closer
 
-    frac = in->frac - FixedDiv (4*FRACUNIT,attackrange);
+    if (map_format.zdoom)
+    {
+      int side = P_PointOnLineSide(trace.x, trace.y, li);
+      sector_t *sec = side ? li->backsector : li->frontsector;
+
+      z = shootz + FixedMul(aimslope, FixedMul(in->frac, attackrange));
+
+      if (sec && sec->floorheight > z)
+      {
+        fixed_t dist;
+
+        if (sec->floorpic == skyflatnum)
+          return false;
+
+        dist = FixedDiv(sec->floorheight - shootz, aimslope);
+        frac = FixedDiv(dist, attackrange);
+      }
+      else if (sec && sec->ceilingheight < z)
+      {
+        fixed_t dist;
+
+        if (sec->ceilingpic == skyflatnum)
+          return false;
+
+        // TODO: ceiling puffs get pushed down and look off
+        dist = FixedDiv(sec->ceilingheight - shootz, aimslope);
+        frac = FixedDiv(dist, attackrange);
+      }
+      else
+      {
+        frac = in->frac;
+      }
+    }
+    else
+    {
+      frac = in->frac;
+    }
+
+    frac -= FixedDiv(4 * FRACUNIT, attackrange);
     x = trace.x + FixedMul (trace.dx, frac);
     y = trace.y + FixedMul (trace.dy, frac);
     z = shootz + FixedMul (aimslope, FixedMul(frac, attackrange));
