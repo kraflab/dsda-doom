@@ -2771,11 +2771,41 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   dx = D_abs(thing->x - bombspot->x);
   dy = D_abs(thing->y - bombspot->y);
 
-  dist = dx>dy ? dx : dy;
-  dist = (dist - thing->radius) >> FRACBITS;
+  dist = dx > dy ? dx : dy;
 
-  if (dist < 0)
-    dist = 0;
+  if (map_format.zdoom && (bombspot->z < thing->z || bombspot->z >= thing->z + thing->height))
+  {
+    fixed_t dz;
+
+    // TODO: bombspot position is wrong for floor / ceiling shots
+    if (bombspot->z > thing->z)
+    {
+      dz = bombspot->z - thing->z - thing->height;
+    }
+    else
+    {
+      dz = thing->z - bombspot->z;
+    }
+
+    if (dist <= thing->radius)
+    {
+      dist = dz;
+    }
+    else
+    {
+      dist -= thing->radius;
+      dist = P_AproxDistance(dist, dz);
+    }
+  }
+  else
+  {
+    dist -= thing->radius;
+
+    if (dist < 0)
+      dist = 0;
+  }
+
+  dist >>= FRACBITS;
 
   if (dist >= bombdistance)
     return true;  // out of range
