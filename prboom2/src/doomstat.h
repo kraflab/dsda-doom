@@ -351,6 +351,4 @@ extern int monkeys;
 
 extern int HelperThing;          // type of thing to use for helper
 
-extern dboolean forceOldBsp;
-
 #endif

@@ -428,11 +428,6 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "reset gamma and exit",
     arg_null,
   },
-  [dsda_arg_forceoldbsp] = {
-    "-forceoldbsp", NULL, NULL,
-    "force classic bsp nodes",
-    arg_null,
-  },
   [dsda_arg_force_old_zdoom_nodes] = {
     "-force_old_zdoom_nodes", NULL, NULL,
     "force extended (non-gl) zdoom nodes",

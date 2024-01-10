@@ -3200,7 +3200,8 @@ byte *G_WriteOptions(byte *demo_p)
       *demo_p++ = comp[i] != 0;
   }
 
-  *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
+  // unused forceOldBsp
+  *demo_p++ = 0;
 
   //----------------
   // Padding at end
@@ -3292,7 +3293,8 @@ const byte *G_ReadOptions(const byte *demo_p)
         comp[i] = *demo_p++;
     }
 
-    forceOldBsp = *demo_p++; // cph 2002/07/20
+    // unused forceOldBsp
+    demo_p++;
   }
   else  /* defaults for versions <= 2.02 */
   {
