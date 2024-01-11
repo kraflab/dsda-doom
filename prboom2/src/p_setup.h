@@ -70,13 +70,13 @@ void P_RestoreOriginalBlockMap(void);
 
 typedef struct
 {
-  void (*load_vertexes)(int lump, int gllump);
+  void (*load_vertexes)(int lump);
   void (*load_sectors)(int lump);
   void (*load_things)(int lump);
   void (*load_linedefs)(int lump);
   void (*allocate_sidedefs)(int lump);
   void (*load_sidedefs)(int lump);
-  void (*update_level_components)(int lumpnum, int gl_lumpnum);
+  void (*update_level_components)(int lumpnum);
   void (*po_load_things)(int lump);
 } map_loader_t;
 
