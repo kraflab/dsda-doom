@@ -2822,6 +2822,21 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
     }
 
     P_DamageMobj (thing, bombspot, bombsource, damage);
+
+    if (map_format.zdoom)
+    {
+      fixed_t thrust;
+      fixed_t direction;
+
+      thrust = damage * (FRACUNIT >> 3) * g_thrust_factor / thing->info->mass;
+      direction = thing->z + thing->height / 2 - bombspot->z;
+
+      thrust = direction > 0 ?  thrust :
+               direction < 0 ? -thrust :
+               0;
+
+      thing->momz += thrust;
+    }
   }
 
   return true;
