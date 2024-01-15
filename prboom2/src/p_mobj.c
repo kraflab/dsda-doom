@@ -2964,9 +2964,22 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
 
   P_SetTarget(&th->target, source);
   th->angle = an;
-  th->momx = FixedMul(th->info->speed, finecosine[an>>ANGLETOFINESHIFT]);
-  th->momy = FixedMul(th->info->speed, finesine[an>>ANGLETOFINESHIFT]);
-  th->momz = FixedMul(th->info->speed, slope);
+
+  if (!comperr(comperr_freeaim))
+  {
+    th->momx = FixedMul(th->info->speed, finecosine[an>>ANGLETOFINESHIFT]);
+    th->momy = FixedMul(th->info->speed, finesine[an>>ANGLETOFINESHIFT]);
+    th->momz = FixedMul(th->info->speed, slope);
+  }
+  else
+  {
+    fixed_t horizontal_speed;
+
+    horizontal_speed = FixedMul(th->info->speed, finecosine[source->pitch >> ANGLETOFINESHIFT]);
+    th->momx = FixedMul(horizontal_speed, finecosine[an >> ANGLETOFINESHIFT]);
+    th->momy = FixedMul(horizontal_speed, finesine[an >> ANGLETOFINESHIFT]);
+    th->momz = FixedMul(th->info->speed, -finesine[source->pitch >> ANGLETOFINESHIFT]);
+  }
 
   if (hexen)
   {
