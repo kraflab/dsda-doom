@@ -2777,7 +2777,6 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   {
     fixed_t dz;
 
-    // TODO: bombspot position is wrong for floor / ceiling shots
     if (bombspot->z > thing->z)
     {
       dz = bombspot->z - thing->z - thing->height;
