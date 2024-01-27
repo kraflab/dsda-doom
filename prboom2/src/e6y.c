@@ -756,7 +756,7 @@ int HU_DrawDemoProgress(int force)
 
   prev_len = len;
 
-  V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, 4);
+  V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, (dsda_Flag(dsda_arg_heretic) || dsda_Flag(dsda_arg_hexen)) ? 255 : 4);
   if (len > 4)
     V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, 0);
 
