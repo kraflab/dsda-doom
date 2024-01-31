@@ -53,7 +53,7 @@ jobs:
             }
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Dependencies (MSYS2)
         if: matrix.config.shell == 'msys2 {0}'
