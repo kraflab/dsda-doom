@@ -52,6 +52,18 @@
 //e6y
 #define STAIRS_UNINITIALIZED_CRUSH_FIELD_VALUE -2
 
+#define BF_DAMAGESOURCE 0x01
+#define BF_HORIZONTAL   0x02
+
+typedef struct
+{
+  mobj_t *source;
+  mobj_t *spot;
+  int damage;
+  int distance;
+  int flags;
+} bomb_t;
+
 // killough 3/15/98: add fourth argument to P_TryMove
 dboolean P_TryMove(mobj_t *thing, fixed_t x, fixed_t y, dboolean dropoff);
 
@@ -74,7 +86,7 @@ fixed_t P_AimLineAttack(mobj_t *t1,angle_t angle,fixed_t distance, uint64_t mask
 
 void    P_LineAttack(mobj_t *t1, angle_t angle, fixed_t distance,
                      fixed_t slope, int damage );
-void P_RadiusAttack(mobj_t *spot, mobj_t *source, int damage, int distance, dboolean damageSource);
+void P_RadiusAttack(mobj_t *spot, mobj_t *source, int damage, int distance, int flags);
 dboolean P_CheckPosition(mobj_t *thing, fixed_t x, fixed_t y);
 
 typedef struct
