@@ -2825,16 +2825,16 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
     if (map_format.zdoom)
     {
       fixed_t thrust;
-      fixed_t direction;
+      fixed_t dxy, dz;
+      angle_t an;
+
+      dxy = P_AproxDistance(dx, dy);
+      dz = thing->z + thing->height / 2 - bombspot->z;
+      an = R_PointToAngle2(0, 0, dxy, dz);
 
       thrust = damage * (FRACUNIT >> 3) * g_thrust_factor / thing->info->mass;
-      direction = thing->z + thing->height / 2 - bombspot->z;
 
-      thrust = direction > 0 ?  thrust :
-               direction < 0 ? -thrust :
-               0;
-
-      thing->momz += thrust;
+      thing->momz += FixedMul(thrust, finesine[an >> ANGLETOFINESHIFT]);
     }
   }
 
