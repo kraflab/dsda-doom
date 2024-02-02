@@ -2689,19 +2689,12 @@ void P_UseLines (player_t*  player)
 // RADIUS ATTACK
 //
 
-//e6y static
-mobj_t *bombsource, *bombspot;
-//e6y static
-int bombdamage;
-int bombdistance;
-
-// hexen
-dboolean DamageSource;
+bomb_t bomb;
 
 //
 // PIT_RadiusAttack
-// "bombsource" is the creature
-// that caused the explosion at "bombspot".
+// "bomb.source" is the creature
+// that caused the explosion at "bomb.spot".
 //
 
 static dboolean P_SplashImmune(mobj_t *target, mobj_t *spot)
@@ -2717,10 +2710,10 @@ int P_SplashDamage(fixed_t dist)
 
   // [XA] independent damage/distance calculation.
   //      same formula as eternity; thanks Quas :P
-  if (!hexen && bombdamage == bombdistance)
-    damage = bombdamage - dist;
+  if (!hexen && bomb.damage == bomb.distance)
+    damage = bomb.damage - dist;
   else
-    damage = (bombdamage * (bombdistance - dist) / bombdistance) + 1;
+    damage = (bomb.damage * (bomb.distance - dist) / bomb.distance) + 1;
 
   return damage;
 }
@@ -2739,16 +2732,16 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
   if (!(thing->flags & (MF_SHOOTABLE | MF_BOUNCES)))
     return true;
 
-  if (P_SplashImmune(thing, bombspot))
+  if (P_SplashImmune(thing, bomb.spot))
     return true;
 
   if (hexen)
   {
-    if (!DamageSource && thing == bombsource)
+    if (!(bomb.flags & BF_DAMAGESOURCE) && thing == bomb.source)
     {                           // don't damage the source of the explosion
       return true;
     }
-    if (D_abs((thing->z - bombspot->z) >> FRACBITS) > 2 * bombdistance)
+    if (D_abs((thing->z - bomb.spot->z) >> FRACBITS) > 2 * bomb.distance)
     {                           // too high/low
       return true;
     }
@@ -2761,29 +2754,29 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
     // killough 8/10/98: allow grenades to hurt anyone, unless
     // fired by Cyberdemons, in which case it won't hurt Cybers.
 
-    if (bombspot->flags & MF_BOUNCES ?
-        thing->type == MT_CYBORG && bombsource->type == MT_CYBORG :
+    if (bomb.spot->flags & MF_BOUNCES ?
+        thing->type == MT_CYBORG && bomb.source->type == MT_CYBORG :
         thing->flags2 & (MF2_NORADIUSDMG | MF2_BOSS) &&
-        !(bombspot->flags2 & MF2_FORCERADIUSDMG))
+        !(bomb.spot->flags2 & MF2_FORCERADIUSDMG))
       return true;
   }
 
-  dx = D_abs(thing->x - bombspot->x);
-  dy = D_abs(thing->y - bombspot->y);
+  dx = D_abs(thing->x - bomb.spot->x);
+  dy = D_abs(thing->y - bomb.spot->y);
 
   dist = dx > dy ? dx : dy;
 
-  if (map_format.zdoom && (bombspot->z < thing->z || bombspot->z >= thing->z + thing->height))
+  if (map_format.zdoom && (bomb.spot->z < thing->z || bomb.spot->z >= thing->z + thing->height))
   {
     fixed_t dz;
 
-    if (bombspot->z > thing->z)
+    if (bomb.spot->z > thing->z)
     {
-      dz = bombspot->z - thing->z - thing->height;
+      dz = bomb.spot->z - thing->z - thing->height;
     }
     else
     {
-      dz = thing->z - bombspot->z;
+      dz = thing->z - bomb.spot->z;
     }
 
     if (dist <= thing->radius)
@@ -2806,10 +2799,10 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
   dist >>= FRACBITS;
 
-  if (dist >= bombdistance)
+  if (dist >= bomb.distance)
     return true;  // out of range
 
-  if ( P_CheckSight (thing, bombspot) )
+  if ( P_CheckSight (thing, bomb.spot) )
   {
     // must be in direct path
 
@@ -2820,16 +2813,16 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
       damage >>= 2;
     }
 
-    P_DamageMobj (thing, bombspot, bombsource, damage);
+    P_DamageMobj (thing, bomb.spot, bomb.source, damage);
 
-    if (map_format.zdoom)
+    if (map_format.zdoom && !(bomb.flags & BF_HORIZONTAL))
     {
       fixed_t thrust;
       fixed_t dxy, dz;
       angle_t an;
 
       dxy = P_AproxDistance(dx, dy);
-      dz = thing->z + thing->height / 2 - bombspot->z;
+      dz = thing->z + thing->height / 2 - bomb.spot->z;
       an = R_PointToAngle2(0, 0, dxy, dz);
 
       thrust = damage * (FRACUNIT >> 3) * g_thrust_factor / thing->info->mass;
@@ -2845,7 +2838,7 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 // P_RadiusAttack
 // Source is the creature that caused the explosion at spot.
 //
-void P_RadiusAttack(mobj_t* spot,mobj_t* source, int damage, int distance, dboolean damageSource)
+void P_RadiusAttack(mobj_t* spot,mobj_t* source, int damage, int distance, int flags)
 {
   int x;
   int y;
@@ -2862,18 +2855,20 @@ void P_RadiusAttack(mobj_t* spot,mobj_t* source, int damage, int distance, dbool
   yl = P_GetSafeBlockY(spot->y - dist - bmaporgy);
   xh = P_GetSafeBlockX(spot->x + dist - bmaporgx);
   xl = P_GetSafeBlockX(spot->x - dist - bmaporgx);
-  bombspot = spot;
+
+  bomb.spot = spot;
   if (heretic && spot->type == HERETIC_MT_POD && spot->target)
   {
-    bombsource = spot->target;
+    bomb.source = spot->target;
   }
   else
   {
-    bombsource = source;
+    bomb.source = source;
   }
-  bombdamage = damage;
-  bombdistance = distance;
-  DamageSource = damageSource;
+  bomb.damage = damage;
+  bomb.distance = distance;
+  bomb.flags = flags;
+
   for (y=yl ; y<=yh ; y++)
     for (x=xl ; x<=xh ; x++)
       P_BlockThingsIterator (x, y, PIT_RadiusAttack );

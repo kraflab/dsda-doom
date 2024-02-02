@@ -23,10 +23,7 @@
 
 #include "dsda/utility.h"
 
-extern mobj_t* bombsource;
-extern mobj_t* bombspot;
-extern int bombdamage;
-extern int bombdistance;
+extern bomb_t bomb;
 
 typedef struct {
   int health;
@@ -133,27 +130,27 @@ static dboolean dsda_RadiusAttackLine(line_t *line) {
   if (!line->health)
     return true;
 
-  bombside = P_PointOnLineSide(bombspot->x, bombspot->y, line);
+  bombside = P_PointOnLineSide(bomb.spot->x, bomb.spot->y, line);
   if (line->sidenum[bombside] == NO_INDEX)
     return true;
 
   dist = dsda_FixedDistancePointToLine(line->v1->x, line->v1->y,
                                        line->v2->x, line->v2->y,
-                                       bombspot->x, bombspot->y,
+                                       bomb.spot->x, bomb.spot->y,
                                        &target.x, &target.y);
   dist = (dist >> FRACBITS);
-  if (dist >= bombdistance)
+  if (dist >= bomb.distance)
     return true;
 
   // The target is currently "on the line"
   // Move it towards the bomb slightly to make sure it's on the right side
-  if (bombspot->x - target.x > fudge)
+  if (bomb.spot->x - target.x > fudge)
     target.x += fudge;
-  if (target.x - bombspot->x > fudge)
+  if (target.x - bomb.spot->x > fudge)
     target.x -= fudge;
-  if (bombspot->y - target.y > fudge)
+  if (bomb.spot->y - target.y > fudge)
     target.y += fudge;
-  if (target.y - bombspot->y > fudge)
+  if (target.y - bomb.spot->y > fudge)
     target.y -= fudge;
 
   // P_CheckSight needs subsector
@@ -172,7 +169,7 @@ static dboolean dsda_RadiusAttackLine(line_t *line) {
       target.z = frontsector->floorheight;
       target.height = frontsector->ceilingheight - frontsector->floorheight;
 
-      sighted = P_CheckSight(&target, bombspot);
+      sighted = P_CheckSight(&target, bomb.spot);
     }
   }
   else {
@@ -187,14 +184,14 @@ static dboolean dsda_RadiusAttackLine(line_t *line) {
       target.z = back_top;
       target.height = front_top - back_top;
 
-      sighted = P_CheckSight(&target, bombspot);
+      sighted = P_CheckSight(&target, bomb.spot);
     }
 
     if (!sighted && front_bottom < back_bottom) {
       target.z = front_bottom;
       target.height = back_bottom - front_bottom;
 
-      sighted = P_CheckSight(&target, bombspot);
+      sighted = P_CheckSight(&target, bomb.spot);
     }
   }
 
@@ -203,7 +200,7 @@ static dboolean dsda_RadiusAttackLine(line_t *line) {
 
     damage = P_SplashDamage(dist);
 
-    dsda_DamageLinedef(line, bombsource, damage);
+    dsda_DamageLinedef(line, bomb.source, damage);
   }
 
   return true;
