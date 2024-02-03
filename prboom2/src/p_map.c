@@ -2274,7 +2274,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     // hit line
     // position a bit closer
 
-    if (map_format.zdoom)
+    if (comperr(comperr_freeaim))
     {
       int side = P_PointOnLineSide(trace.x, trace.y, li);
       sector_t *sec = side ? li->backsector : li->frontsector;
