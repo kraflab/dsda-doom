@@ -43,6 +43,8 @@
 #define MI_RESET_HEALTH                   0x00000400ul
 #define MI_RESET_INVENTORY                0x00000800ul
 #define MI_USE_PLAYER_START_Z             0x00001000ul
+#define MI_VERTICAL_EXPLOSION_THRUST      0x00002000ul
+#define MI_EXPLODE_IN_3D                  0x00004000ul
 #define MI_SHOW_AUTHOR                    0x00008000ul
 #define MI_PASSOVER                       0x00010000ul
 #define MI_EVEN_LIGHTING                  0x00020000ul
