@@ -84,6 +84,11 @@ inline static CONSTFUNC fixed_t FixedMul(fixed_t a, fixed_t b)
   return (fixed_t)((int64_t) a*b >> FRACBITS);
 }
 
+inline static CONSTFUNC int64_t FixedMul64(int64_t a, int64_t b)
+{
+  return a * b >> FRACBITS;
+}
+
 /*
  * Fixed Point Division
  */
