@@ -2276,10 +2276,14 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
     if (comperr(comperr_freeaim))
     {
+      int64_t real_z;
       int side = P_PointOnLineSide(trace.x, trace.y, li);
       sector_t *sec = side ? li->backsector : li->frontsector;
 
-      z = shootz + FixedMul(aimslope, FixedMul(in->frac, attackrange));
+      real_z = (int64_t) shootz + FixedMul64(aimslope, FixedMul(in->frac, attackrange));
+      z = real_z > INT_MAX ? INT_MAX :
+          real_z < INT_MIN ? INT_MIN :
+          real_z;
 
       if (sec && sec->floorheight > z)
       {
@@ -2288,7 +2292,8 @@ dboolean PTR_ShootTraverse (intercept_t* in)
         if (sec->floorpic == skyflatnum)
           return false;
 
-        dist = FixedDiv(sec->floorheight - shootz, aimslope);
+        z = sec->floorheight;
+        dist = FixedDiv(z - shootz, aimslope);
         frac = FixedDiv(dist, attackrange);
       }
       else if (sec && sec->ceilingheight < z)
@@ -2298,42 +2303,43 @@ dboolean PTR_ShootTraverse (intercept_t* in)
         if (sec->ceilingpic == skyflatnum)
           return false;
 
-        // TODO: ceiling puffs get pushed down and look off
-        dist = FixedDiv(sec->ceilingheight - shootz, aimslope);
+        // puff spawn height is +/- (255 << 10)
+        z = sec->ceilingheight - mobjinfo[MT_PUFF].height - (255 << 10);
+        dist = FixedDiv(z - shootz, aimslope);
         frac = FixedDiv(dist, attackrange);
       }
       else
       {
-        frac = in->frac;
+        frac = in->frac - FixedDiv(4 * FRACUNIT, attackrange);
+        z = shootz + FixedMul (aimslope, FixedMul(frac, attackrange));
       }
     }
     else
     {
-      frac = in->frac;
+      frac = in->frac - FixedDiv(4 * FRACUNIT, attackrange);
+      z = shootz + FixedMul (aimslope, FixedMul(frac, attackrange));
+
+      if (li->frontsector->ceilingpic == skyflatnum)
+      {
+        // don't shoot the sky!
+
+        if (z > li->frontsector->ceilingheight)
+          return false;
+
+        // it's a sky hack wall
+
+        if  (li->backsector && li->backsector->ceilingpic == skyflatnum)
+
+          // fix bullet-eaters -- killough:
+          // WARNING: Almost all demos will lose sync without this
+          // demo_compatibility flag check!!! killough 1/18/98
+          if (demo_compatibility || li->backsector->ceilingheight < z)
+            return false;
+      }
     }
 
-    frac -= FixedDiv(4 * FRACUNIT, attackrange);
     x = trace.x + FixedMul (trace.dx, frac);
     y = trace.y + FixedMul (trace.dy, frac);
-    z = shootz + FixedMul (aimslope, FixedMul(frac, attackrange));
-
-    if (li->frontsector->ceilingpic == skyflatnum)
-    {
-      // don't shoot the sky!
-
-      if (z > li->frontsector->ceilingheight)
-        return false;
-
-      // it's a sky hack wall
-
-      if  (li->backsector && li->backsector->ceilingpic == skyflatnum)
-
-        // fix bullet-eaters -- killough:
-        // WARNING: Almost all demos will lose sync without this
-        // demo_compatibility flag check!!! killough 1/18/98
-        if (demo_compatibility || li->backsector->ceilingheight < z)
-          return false;
-    }
 
     if (li->health)
     {
