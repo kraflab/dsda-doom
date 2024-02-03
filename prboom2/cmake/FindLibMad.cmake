@@ -59,13 +59,13 @@ select_dll_configurations(LibMad)
 find_library(
   LibMad_LIBRARY_RELEASE
   NAMES mad
-  PATH_SUFFIXES ../../lib
+  PATH_SUFFIXES ${CMAKE_CURRENT_BINARY_DIR}/../../lib
 )
 
 find_library(
   LibMad_LIBRARY_DEBUG
   NAMES mad
-  PATH_SUFFIXES ../debug/lib
+  PATH_SUFFIXES ${CMAKE_CURRENT_BINARY_DIR}/../debug/lib
 )
 
 include(SelectLibraryConfigurations)
