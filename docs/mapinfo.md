@@ -81,6 +81,10 @@ Appends properties to the default map.
 | :duck: **Passover** | Turns off infinite thing height (objects can move over one another). |
 | :duck: **NoGravity** | Turns off gravity ("Gravity = 0" is not cross-port compatible). |
 | :duck: **ColorMap = "\<Lump\>"** | The default colormap for the map (if not **COLORMAP**). |
+| :duck: **NoVerticalExplosionThrust** | Turns off vertical explosion thrust. This is the default. |
+| :duck: **VerticalExplosionThrust** | Turns on vertical explosion thrust. |
+| :duck: **ExplodeIn2D** | Explosion damage is based on x and y coordinates. This is the default. |
+| :duck: **ExplodeIn3D** | Explosion damage is based on x, y, and z coordinates. |
 
 ### Cluster
 
