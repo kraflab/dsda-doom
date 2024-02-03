@@ -1,5 +1,18 @@
 cmake_minimum_required(VERSION 3.9)
 
+function(AssureOutOfSourceBuilds)
+    get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+    get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+    # disallow in-source builds
+    if ("${srcdir}" STREQUAL "${bindir}")
+        message("dsda-doom should not be configured and built in the source directory.")
+        message("You must run cmake in a build directory. E.g. mkdir obj; cd obj; cmake ..")
+        message(FATAL_ERROR "Quitting configuration")
+    endif()
+endfunction()
+
+AssureOutOfSourceBuilds()
+
 option(WITH_DUMB "Use DUMB if available" ON)
 if(WITH_DUMB)
     list(APPEND VCPKG_MANIFEST_FEATURES "dumb")
