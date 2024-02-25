@@ -63,6 +63,12 @@ dboolean dsda_AllowJumping(void) {
          || dsda_AllowCasualExCmdFeatures();
 }
 
+dboolean dsda_AllowFreeLook(void) {
+  return (allow_incompatibility && dsda_IntConfig(dsda_config_freelook))
+         || map_info.flags & MI_ALLOW_FREE_LOOK
+         || dsda_AllowCasualExCmdFeatures();
+}
+
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
   const byte* demo_p = *p;
 
@@ -104,6 +110,11 @@ void dsda_PopExCmdQueue(ticcmd_t* cmd) {
 
 void dsda_QueueExCmdJump(void) {
   excmd_queue.actions |= XC_JUMP;
+}
+
+void dsda_QueueExCmdLook(short look) {
+  excmd_queue.actions |= XC_LOOK;
+  excmd_queue.look = look;
 }
 
 void dsda_QueueExCmdSave(int slot) {
