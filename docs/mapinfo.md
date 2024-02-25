@@ -72,6 +72,8 @@ Appends properties to the default map.
 | **AllowRespawn** | Allow the player to respawn in a single-player game without resetting the map. |
 | **NoJump** | Disable jumping (this is the default). |
 | **AllowJump** | Enable jumping. |
+| **NoFreelook** | Disable freelook and manual vertical aiming (this is the default). |
+| **AllowFreelook** | Enable freelook and manual vertical aiming. |
 | **CheckSwitchRange** | Check vertical reachability of switches. |
 | **NoCheckSwitchRange** | Do not check vertical reachability of switches (this is the default). |
 | **ResetHealth** | Reset player health when entering the map. |
