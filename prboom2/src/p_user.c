@@ -321,63 +321,46 @@ void P_CalcHeight (player_t* player)
 }
 
 //
-// P_SetPitch
-// Mouse Look Stuff
-//
-void P_SetPitch(player_t *player)
-{
-  mobj_t *mo = player->mo;
-
-  if (player == &players[consoleplayer])
-  {
-    if (!demoplayback)
-    {
-      if (dsda_MouseLook())
-      {
-        if (!mo->reactiontime && automap_off)
-        {
-          if (raven && !demorecording)
-          {
-            player->lookdir += ANGLE_T_TO_LOOKDIR(mlooky << 16);
-            if (player->lookdir > 90)
-              player->lookdir = 90;
-            if (player->lookdir < -110)
-              player->lookdir = -110;
-          }
-          else
-          {
-            mo->pitch += (mlooky << 16);
-            CheckPitch((signed int *)&mo->pitch);
-          }
-        }
-      }
-      else
-      {
-        mo->pitch = 0;
-      }
-    }
-    else
-    {
-      mo->pitch = 0;
-    }
-  }
-  else
-  {
-    mo->pitch = 0;
-  }
-}
-
-//
 // P_MovePlayer
 //
 // Adds momentum if the player is not in the air
 //
 // killough 10/98: simplified
 
+void P_HandleExCmdLook(player_t* player)
+{
+  int look;
+
+  look = player->cmd.ex.look;
+  if (look)
+  {
+    if (raven)
+    {
+      player->lookdir += ANGLE_T_TO_LOOKDIR(look << 16);
+      if (player->lookdir > 90)
+        player->lookdir = 90;
+      if (player->lookdir < -110)
+        player->lookdir = -110;
+    }
+    else
+    {
+      if (look == XC_LOOK_RESET)
+        player->mo->pitch = 0;
+      else
+      {
+        player->mo->pitch += look << 16;
+        CheckPitch((signed int *) &player->mo->pitch);
+      }
+    }
+  }
+}
+
 void P_MovePlayer (player_t* player)
 {
   ticcmd_t *cmd;
   mobj_t *mo;
+
+  P_HandleExCmdLook(player);
 
   if (raven) return Raven_P_MovePlayer(player);
 
@@ -736,8 +719,6 @@ void P_PlayerThink (player_t* player)
       }
     }
   }
-
-  P_SetPitch(player);
 
   P_CalcHeight (player); // Determines view height and bobbing
 
