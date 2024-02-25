@@ -794,6 +794,25 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     }
   }
 
+  if (players[consoleplayer].mo->pitch && !dsda_MouseLook())
+    dsda_QueueExCmdLook(XC_LOOK_RESET);
+
+  if (dsda_AllowFreeLook())
+  {
+    short look;
+
+    look = mlooky;
+
+    // TODO: look keybinds
+
+    // TODO: need to restrict input relative to software mode here (for demo compatibility)
+
+    if (look)
+    {
+      dsda_QueueExCmdLook(look);
+    }
+  }
+
   if (dsda_InputActive(dsda_input_fire))
     cmd->buttons |= BT_ATTACK;
 
