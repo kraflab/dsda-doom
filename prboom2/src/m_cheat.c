@@ -94,6 +94,9 @@ static void cheat_ddt();
 static void cheat_reveal_secret();
 static void cheat_reveal_kill();
 static void cheat_reveal_item();
+static void cheat_exit_msg();
+static void cheat_exit_normal();
+static void cheat_exit_secret();
 static void cheat_hom();
 static void cheat_fast();
 static void cheat_tntkey();
@@ -173,6 +176,10 @@ cheatseq_t cheat[] = {
   CHEAT("iddst",      NULL,               cht_always, cheat_reveal_secret, 0, true),
   CHEAT("iddkt",      NULL,               cht_always, cheat_reveal_kill, 0, true),
   CHEAT("iddit",      NULL,               cht_always, cheat_reveal_item, 0, true),
+  // [XA] cheat codes to trigger the map's normal/secret exit -- useful for testing mapinfos
+  CHEAT("idexit",    "EXIT menu",         not_demo, cheat_exit_msg, 0, false),
+  CHEAT("idexitn",   "Exit Normal",       not_demo, cheat_exit_normal, 0, false),
+  CHEAT("idexits",   "Exit Secret",       not_demo, cheat_exit_secret, 0, false),
   // killough 2/07/98: HOM autodetector
   CHEAT("tnthom",     NULL,               cht_always, cheat_hom, 0, false),
   // killough 2/16/98: generalized key cheats
@@ -709,6 +716,21 @@ static void cheat_reveal_item()
 
     cheat_cycle_mobj(&last_mobj, &last_count, MF_COUNTITEM, false);
   }
+}
+
+static void cheat_exit_msg()
+{
+  doom_printf("EXIT cheat: 'n' for normal, 's' for secret!");
+}
+
+static void cheat_exit_normal()
+{
+  G_ExitLevel(0);
+}
+
+static void cheat_exit_secret()
+{
+  G_SecretExitLevel(0);
 }
 
 // killough 2/7/98: HOM autodetection
