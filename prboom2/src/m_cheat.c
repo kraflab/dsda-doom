@@ -1014,6 +1014,8 @@ static cheat_input_t cheat_input[] = {
   { dsda_input_chicken, not_demo, cheat_chicken, 0 },
   { dsda_input_notarget, not_demo, cheat_notarget, 0 },
   { dsda_input_freeze, not_demo, cheat_freeze, 0 },
+  { dsda_input_exit_normal, not_demo, cheat_exit_normal, 0 },
+  { dsda_input_exit_secret, not_demo, cheat_exit_secret, 0 },
   { 0 }
 };
 
