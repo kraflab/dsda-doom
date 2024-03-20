@@ -18,7 +18,7 @@
 #ifndef __DSDA_GAME_CONTROLLER__
 #define __DSDA_GAME_CONTROLLER__
 
-// Matches SDL
+// Must match SDL
 typedef enum {
   DSDA_CONTROLLER_BUTTON_A,
   DSDA_CONTROLLER_BUTTON_B,

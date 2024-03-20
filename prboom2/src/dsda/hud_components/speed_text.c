@@ -19,38 +19,51 @@
 
 #include "speed_text.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+  char label[9];
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int speed;
 
-  speed = dsda_RealticClockRate();
+  speed = dsda_GameSpeed();
 
   snprintf(
     str,
     max_size,
-    "\x1b%cSPEED \x1b%c%d%%",
-    HUlib_Color(CR_GRAY),
-    speed < 100 ? HUlib_Color(CR_GOLD)
-                : speed == 100 ? HUlib_Color(CR_GREEN)
-                               : HUlib_Color(CR_BLUE),
+    "%s%s%d%%",
+    local->label,
+    speed < 100 ? dsda_TextColor(dsda_tc_exhud_speed_slow)
+                : speed == 100 ? dsda_TextColor(dsda_tc_exhud_speed_normal)
+                               : dsda_TextColor(dsda_tc_exhud_speed_fast),
     speed
   );
 }
 
-void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitSpeedTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  if (arg_count < 1 || args[0])
+    snprintf(local->label, sizeof(local->label), "%sSPEED ", dsda_TextColor(dsda_tc_exhud_speed_label));
+  else
+    local->label[0] = '\0';
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateSpeedTextHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateSpeedTextHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawSpeedTextHC(void) {
-  dsda_DrawBasicText(&component);
-}
+void dsda_DrawSpeedTextHC(void* data) {
+  local = data;
 
-void dsda_EraseSpeedTextHC(void) {
-  HUlib_eraseTextLine(&component.text);
+  dsda_DrawBasicText(&local->component);
 }

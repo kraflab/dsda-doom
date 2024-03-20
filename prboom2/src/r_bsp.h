@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -34,10 +34,6 @@
 #ifndef __R_BSP__
 #define __R_BSP__
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern seg_t    *curline;
 extern side_t   *sidedef;
 extern line_t   *linedef;
@@ -58,6 +54,7 @@ extern drawseg_t *ds_p;
 void R_ClearClipSegs(void);
 void R_ClearDrawSegs(void);
 void R_RenderBSPNode(int bspnum);
+void R_ForceRenderPolyObjs(void);
 
 /* killough 4/13/98: fake floors/ceilings for deep water / fake ceilings: */
 sector_t *R_FakeFlat(sector_t *, sector_t *, int *, int *, dboolean);

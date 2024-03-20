@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -44,9 +44,6 @@
 #include "p_enemy.h"
 #include "p_pspr.h"
 
-#ifdef __GNUG__
-#pragma implementation "info.h"
-#endif
 #include "info.h"
 
 void A_BetaSkullAttack(); // killough 10/98: beta lost souls attacked different
@@ -1194,17 +1191,6 @@ state_t doom_states[DOOM_NUMSTATES] = {
 
   // killough 10/98: mushroom effect
   {SPR_MISL,32769,8,A_Mushroom,S_EXPLODE2},  // S_MUSHROOM
-
-  {SPR_PLAY,14,5,NULL,S_PLAY_GDIE2,0,0},        // S_PLAY_GDIE1
-  {SPR_PLAY,15,5,A_SkullPop,S_PLAY_GDIE3,0,0},  // S_PLAY_GDIE2
-  {SPR_PLAY,16,5,A_Fall,S_PLAY_GDIE4,0,0},      // S_PLAY_GDIE3
-  {SPR_PLAY,17,5,NULL,S_PLAY_GDIE5,0,0},        // S_PLAY_GDIE4
-  {SPR_PLAY,18,5,NULL,S_PLAY_GDIE6,0,0},        // S_PLAY_GDIE5
-  {SPR_PLAY,19,5,NULL,S_PLAY_GDIE7,0,0},        // S_PLAY_GDIE6
-  {SPR_PLAY,20,5,NULL,S_PLAY_GDIE8,0,0},        // S_PLAY_GDIE7
-  {SPR_PLAY,21,5,NULL,S_PLAY_GDIE9,0,0},        // S_PLAY_GDIE8
-  {SPR_PLAY,22,-1,NULL,S_NULL,0,0},             // S_PLAY_GDIE9
-
 };
 
 // ********************************************************************
@@ -5008,32 +4994,6 @@ doom_mobjinfo_t doom_mobjinfo[DOOM_NUMMOBJTYPES] = {
     0,              // damage
     sfx_None,       // activesound
     MF_NOBLOCKMAP,  // flags
-    S_NULL          // raisestate
-  },
-
-  {   // MT_GIBDTH
-    -1,             // doomednum
-    S_TNT1,         // spawnstate
-    1000,           // spawnhealth
-    S_NULL,         // seestate
-    sfx_None,       // seesound
-    8,              // reactiontime
-    sfx_None,       // attacksound
-    S_NULL,         // painstate
-    0,              // painchance
-    sfx_None,       // painsound
-    S_NULL,         // meleestate
-    S_NULL,         // missilestate
-    S_NULL,         // deathstate
-    S_NULL,         // xdeathstate
-    sfx_None,       // deathsound
-    0,              // speed
-    4*FRACUNIT,     // radius
-    4*FRACUNIT,     // height
-    100,            // mass
-    0,              // damage
-    sfx_None,       // activesound
-    MF_NOBLOCKMAP|MF_DROPOFF, // flags
     S_NULL          // raisestate
   },
 

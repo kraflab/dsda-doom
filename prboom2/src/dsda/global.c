@@ -67,6 +67,7 @@ int g_wp_pistol;
 int g_telefog_height;
 int g_thrust_factor;
 int g_fuzzy_aim_shift;
+int g_jump;
 
 int g_s_null;
 
@@ -129,24 +130,14 @@ int g_mf_translucent;
 int g_mf_shadow;
 
 const char* g_menu_flat;
-patchnum_t* g_menu_font;
 int g_menu_save_page_size;
 int g_menu_font_spacing;
-int g_menu_cr_title;
-int g_menu_cr_set;
-int g_menu_cr_item;
-int g_menu_cr_hilite;
-int g_menu_cr_select;
-int g_menu_cr_disable;
 
 const char* g_skyflatname;
 
 dboolean hexen = false;
 dboolean heretic = false;
 dboolean raven = false;
-
-extern patchnum_t hu_font[HU_FONTSIZE];
-extern patchnum_t hu_font2[HU_FONTSIZE];
 
 static void dsda_InitDoom(void) {
   int i;
@@ -169,7 +160,7 @@ static void dsda_InitDoom(void) {
   g_mt_player = MT_PLAYER;
   g_mt_tfog = MT_TFOG;
   g_mt_blood = MT_BLOOD;
-  g_skullpop_mt = MT_GIBDTH;
+  g_skullpop_mt = MT_NULL;
 
   g_wp_fist = wp_fist;
   g_wp_chainsaw = wp_chainsaw;
@@ -178,6 +169,7 @@ static void dsda_InitDoom(void) {
   g_telefog_height = 0;
   g_thrust_factor = 100;
   g_fuzzy_aim_shift = 20;
+  g_jump = 8;
 
   g_s_null = S_NULL;
 
@@ -210,15 +202,8 @@ static void dsda_InitDoom(void) {
   g_mf_shadow = MF_SHADOW;
 
   g_menu_flat = "FLOOR4_6";
-  g_menu_font = hu_font;
   g_menu_save_page_size = 7;
   g_menu_font_spacing = -1;
-  g_menu_cr_title = CR_GOLD;
-  g_menu_cr_set = CR_GREEN;
-  g_menu_cr_item = CR_RED;
-  g_menu_cr_hilite = CR_ORANGE;
-  g_menu_cr_select = CR_GRAY;
-  g_menu_cr_disable = CR_GRAY;
 
   g_skyflatname = "F_SKY1";
 
@@ -327,6 +312,7 @@ static void dsda_InitHeretic(void) {
   g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
+  g_jump = 8;
 
   g_s_null = HERETIC_S_NULL;
 
@@ -389,15 +375,8 @@ static void dsda_InitHeretic(void) {
   g_mf_shadow = 0; // doesn't exist in heretic
 
   g_menu_flat = "FLOOR30";
-  g_menu_font = hu_font2;
   g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
-  g_menu_cr_title = CR_GOLD;
-  g_menu_cr_set = CR_GREEN;
-  g_menu_cr_item = CR_RED;
-  g_menu_cr_hilite = CR_ORANGE;
-  g_menu_cr_select = CR_GRAY;
-  g_menu_cr_disable = CR_GRAY;
 
   g_skyflatname = "F_SKY1";
 
@@ -491,6 +470,7 @@ static void dsda_InitHexen(void) {
   g_telefog_height = TELEFOGHEIGHT;
   g_thrust_factor = 150;
   g_fuzzy_aim_shift = 21;
+  g_jump = 9;
 
   g_s_null = HEXEN_S_NULL;
 
@@ -545,15 +525,8 @@ static void dsda_InitHexen(void) {
   g_mf_shadow = 0; // doesn't exist in hexen
 
   g_menu_flat = "F_032";
-  g_menu_font = hu_font2;
   g_menu_save_page_size = 5;
   g_menu_font_spacing = 0;
-  g_menu_cr_title = CR_GOLD;
-  g_menu_cr_set = CR_GREEN;
-  g_menu_cr_item = CR_RED;
-  g_menu_cr_hilite = CR_ORANGE;
-  g_menu_cr_select = CR_GRAY;
-  g_menu_cr_disable = CR_GRAY;
 
   g_skyflatname = "F_SKY";
 
@@ -612,7 +585,7 @@ static void dsda_InitHexen(void) {
 static dboolean dsda_AutoDetectHeretic(void)
 {
   dsda_arg_t* arg;
-  int i, length;
+  int length;
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found) {
     length = strlen(arg->value.v_string);
@@ -626,7 +599,7 @@ static dboolean dsda_AutoDetectHeretic(void)
 static dboolean dsda_AutoDetectHexen(void)
 {
   dsda_arg_t* arg;
-  int i, length;
+  int length;
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found) {
     length = strlen(arg->value.v_string);

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -81,6 +81,8 @@
 #include "dsda/split_tracker.h"
 #include "dsda/text_file.h"
 #include "dsda/time.h"
+#include "dsda/wad_stats.h"
+#include "dsda/zipfile.h"
 
 /* Most of the following has been rewritten by Lee Killough
  *
@@ -104,6 +106,13 @@ void I_Init2(void)
 
 int signal_context;
 
+static volatile sig_atomic_t interrupted = 0;
+
+dboolean I_Interrupted(void)
+{
+  return interrupted;
+}
+
 static void I_SignalHandler(int s)
 {
   char buf[2048];
@@ -119,6 +128,11 @@ static void I_SignalHandler(int s)
   I_Error("The game has crashed!\n"
           "Please report the following information: %s (0x%04x)",
           buf, signal_context);
+}
+
+static void I_IntHandler(int s)
+{
+  interrupted = 1;
 }
 
 static void PrintVer(void)
@@ -192,6 +206,13 @@ static void I_EssentialQuit (void)
   dsda_ExportTextFile();
   dsda_WriteAnalysis();
   dsda_WriteSplits();
+  dsda_SaveWadStats();
+  // We need to close out all wad handles/memory mappings before we can remove
+  // temporary wads on Windows
+  // Read Endoom before dumping the wads!
+  dsda_CacheEndoom();
+  W_Shutdown();
+  dsda_CleanZipTempDirs();
 }
 
 static void I_Quit (void)
@@ -262,7 +283,7 @@ int main(int argc, char **argv)
   // e6y: Check for conflicts.
   // Conflicting command-line parameters could cause the engine to be confused
   // in some cases. Added checks to prevent this.
-  // Example: glboom.exe -record mydemo -playdemo demoname
+  // Example: dsda-doom.exe -record mydemo -playdemo demoname
   ParamsMatchingCheck();
 
   // e6y: was moved from D_DoomMainSetup
@@ -294,15 +315,16 @@ int main(int argc, char **argv)
   I_AtExit(I_EssentialQuit, true, "I_EssentialQuit", exit_priority_first);
   I_AtExit(I_Quit, false, "I_Quit", exit_priority_last);
 #ifndef PRBOOM_DEBUG
-  if (!dsda_Flag(dsda_arg_devparm))
+  if (!dsda_Flag(dsda_arg_sigsegv))
   {
     signal(SIGSEGV, I_SignalHandler);
   }
-  signal(SIGTERM, I_SignalHandler);
   signal(SIGFPE,  I_SignalHandler);
   signal(SIGILL,  I_SignalHandler);
-  signal(SIGINT,  I_SignalHandler);  /* killough 3/6/98: allow CTRL-BRK during init */
   signal(SIGABRT, I_SignalHandler);
+
+  signal(SIGTERM, I_IntHandler);
+  signal(SIGINT,  I_IntHandler);
 #endif
 
   // Priority class for the prboom-plus process

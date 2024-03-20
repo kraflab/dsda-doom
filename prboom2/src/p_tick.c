@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -263,6 +263,17 @@ static void P_RunThinkers (void)
 
   // Dedicated thinkers
   T_MAPMusic();
+}
+
+void P_CleanThinkers (void)
+{
+  for (currentthinker = thinkercap.next;
+       currentthinker != &thinkercap;
+       currentthinker = currentthinker->next)
+  {
+    if (currentthinker->function == P_RemoveThinkerDelayed)
+      currentthinker->function(currentthinker);
+  }
 }
 
 static void P_FrozenTicker (void)

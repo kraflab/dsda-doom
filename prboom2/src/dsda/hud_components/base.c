@@ -22,61 +22,61 @@
 static char digit_lump[9];
 static const char* digit_lump_format;
 
-void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
-  int x, y, vpt_align;
+int dsda_HudComponentY(int y_offset, int vpt, double ratio) {
+  int dsda_ExHudVerticalOffset(void);
 
-  x = 0;
-  y = 0;
+  int y = 0;
+  int vpt_align;
+
+  if (ratio)
+    y_offset *= ratio;
 
   vpt_align = vpt & VPT_ALIGN_MASK;
-  if (
-    vpt_align == VPT_ALIGN_BOTTOM ||
-    vpt_align == VPT_ALIGN_LEFT_BOTTOM ||
-    vpt_align == VPT_ALIGN_RIGHT_BOTTOM
-  ) {
+  if (BOTTOM_ALIGNMENT(vpt_align)) {
     y = 200;
     y_offset = -y_offset;
 
-    if (R_PartialView())
-      y -= g_st_height;
+    y -= dsda_ExHudVerticalOffset();
   }
 
-  x += x_offset;
-  y += y_offset;
+  return y + y_offset;
+}
 
-  HUlib_initTextLine(
-    &component->text,
-    x, y,
-    hu_font2,
-    HU_FONTSTART,
-    CR_GRAY,
-    vpt
-  );
+void dsda_InitTextHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
+  static double ratio;
+  int x, y;
 
-  component->text.space_width = 5;
+  DO_ONCE
+    if (exhud_font.line_height != 8)
+      ratio = (double) exhud_font.line_height / 8.0;
+  END_ONCE
+
+  x = x_offset;
+  y = dsda_HudComponentY(y_offset, vpt, ratio);
+
+  HUlib_initTextLine(&component->text, x, y, &exhud_font, CR_GRAY, vpt);
+}
+
+void dsda_InitBlockyHC(dsda_text_t* component, int x_offset, int y_offset, int vpt) {
+  static double ratio;
+  int x, y;
+
+  DO_ONCE
+    if (hud_font.line_height != 8)
+      ratio = (double) hud_font.line_height / 8.0;
+  END_ONCE
+
+  x = x_offset;
+  y = dsda_HudComponentY(y_offset, vpt, ratio);
+
+  HUlib_initTextLine(&component->text, x, y, &hud_font, CR_GRAY, vpt);
 }
 
 void dsda_InitPatchHC(dsda_patch_component_t* component, int x_offset, int y_offset, int vpt) {
-  int x, y, vpt_align;
+  int x, y;
 
-  x = 0;
-  y = 0;
-
-  vpt_align = vpt & VPT_ALIGN_MASK;
-  if (
-    vpt_align == VPT_ALIGN_BOTTOM ||
-    vpt_align == VPT_ALIGN_LEFT_BOTTOM ||
-    vpt_align == VPT_ALIGN_RIGHT_BOTTOM
-  ) {
-    y = 200;
-    y_offset = -y_offset;
-
-    if (R_PartialView())
-      y -= g_st_height;
-  }
-
-  x += x_offset;
-  y += y_offset;
+  x = x_offset;
+  y = dsda_HudComponentY(y_offset, vpt, 0);
 
   component->x = x;
   component->y = y;
@@ -128,20 +128,7 @@ void dsda_DrawBigNumber(int x, int y, int delta_x, int delta_y, int cm, int vpt,
 }
 
 void dsda_DrawBasicText(dsda_text_t* component) {
-  int offset;
-  int flags;
-
-  flags = component->text.flags & VPT_ALIGN_MASK;
-
-  if (
-    (flags == VPT_ALIGN_TOP || flags == VPT_ALIGN_LEFT_TOP || flags == VPT_ALIGN_RIGHT_TOP) &&
-    M_ConsoleOpen()
-  )
-    offset = M_ConsoleOpen() ? 2 * DSDA_CHAR_HEIGHT : 0;
-  else
-    offset = 0;
-
-  HUlib_drawOffsetTextLine(&component->text, offset);
+  HUlib_drawTextLine(&component->text, false);
 }
 
 void dsda_RefreshHudText(dsda_text_t* component) {

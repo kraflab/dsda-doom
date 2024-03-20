@@ -15,7 +15,6 @@
 //	DSDA Data Organizer
 //
 
-#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,13 +22,14 @@
 
 #include "doomtype.h"
 #include "lprintf.h"
+#include "m_file.h"
 #include "w_wad.h"
 #include "i_system.h"
 #include "z_zone.h"
 #include "e6y.h"
 
 #include "dsda/args.h"
-#include "dsda/mkdir.h"
+#include "dsda/utility.h"
 
 #include "data_organizer.h"
 
@@ -62,18 +62,17 @@ static void dsda_NormalizeSlashes(char *str)
 
 char* dsda_DetectDirectory(const char* env_key, int arg_id) {
   dsda_arg_t* arg;
-  struct stat sbuf;
   char* result = NULL;
   const char* default_directory;
 
-  default_directory = getenv(env_key);
+  default_directory = M_getenv(env_key);
 
   if (!default_directory)
     default_directory = I_DoomExeDir();
 
   arg = dsda_Arg(arg_id);
   if (arg->found) {
-    if (!stat(arg->value.v_string, &sbuf) && S_ISDIR(sbuf.st_mode)) {
+    if (M_IsDir(arg->value.v_string)) {
       if (result) Z_Free(result);
       result = Z_Strdup(arg->value.v_string);
     }
@@ -91,21 +90,29 @@ char* dsda_DetectDirectory(const char* env_key, int arg_id) {
 }
 
 void dsda_InitDataDir(void) {
-  dsda_base_data_dir = dsda_DetectDirectory("DOOMDATADIR", dsda_arg_data);
+  char* parent_directory;
+  dsda_string_t str;
+
+  parent_directory = dsda_DetectDirectory("DOOMDATADIR", dsda_arg_data);
+
+  dsda_StringPrintF(&str, "%s/%s", parent_directory, dsda_data_root);
+
+  dsda_base_data_dir = str.string;
+  M_MakeDir(dsda_base_data_dir, true);
+
+  Z_Free(parent_directory);
 }
 
 static void dsda_InitWadDataDir(void) {
   int i;
-  int length = 0;
-  const int iwad_index = 1;
-  int pwad_index = 2;
-  struct stat sbuf;
-
-  dsda_data_dir_strings[0] = Z_Strdup(dsda_data_root);
+  const int iwad_index = 0;
+  int pwad_index = 1;
+  dsda_string_t str;
 
   for (i = 0; i < numwadfiles; ++i) {
     const char* start;
     char* result;
+    int length;
 
     start = PathFindFileName(wadfiles[i].name);
 
@@ -135,24 +142,15 @@ static void dsda_InitWadDataDir(void) {
     }
   }
 
-  length = strlen(dsda_base_data_dir);
-  for (i = 0; i < DATA_DIR_LIMIT; ++i) {
-    if (dsda_data_dir_strings[i])
-      length += strlen(dsda_data_dir_strings[i]) + 1; // "/"
-  }
+  dsda_InitString(&str, dsda_base_data_dir);
 
-  dsda_wad_data_dir = Z_Calloc(length + 1, 1); // "\0"
-
-  strcat(dsda_wad_data_dir, dsda_base_data_dir);
-
-  for (i = 0; i < DATA_DIR_LIMIT; ++i) {
+  for (i = 0; i < DATA_DIR_LIMIT; ++i)
     if (dsda_data_dir_strings[i]) {
-      strcat(dsda_wad_data_dir, "/");
-      strcat(dsda_wad_data_dir, dsda_data_dir_strings[i]);
-
-      dsda_MkDir(dsda_wad_data_dir, true);
+      dsda_StringCatF(&str, "/%s", dsda_data_dir_strings[i]);
+      M_MakeDir(str.string, true);
     }
-  }
+
+  dsda_wad_data_dir = str.string;
 
   lprintf(LO_INFO, "Using data file directory: %s\n", dsda_wad_data_dir);
 }
@@ -162,4 +160,8 @@ char* dsda_DataDir(void) {
     dsda_InitWadDataDir();
 
   return dsda_wad_data_dir;
+}
+
+const char* dsda_DataRoot(void) {
+  return dsda_base_data_dir;
 }

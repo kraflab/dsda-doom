@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -39,51 +39,37 @@
 #endif
 
 #include <stdio.h>
-
 #include <stdarg.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
 #include <signal.h>
 #include <string.h>
-#ifdef _MSC_VER
-#define    F_OK    0    /* Check for file existence */
-#define    W_OK    2    /* Check for write permission */
-#define    R_OK    4    /* Check for read permission */
-#include <io.h>
-#include <direct.h>
-#else
-#include <unistd.h>
-#endif
 #include <sys/stat.h>
+#include <errno.h>
 
 #include "SDL.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+
 #ifdef _MSC_VER
 #include <io.h>
 #endif
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <errno.h>
 
 #include "lprintf.h"
+#include "m_file.h"
 #include "doomtype.h"
 #include "doomdef.h"
 #include "d_player.h"
 #include "m_fixed.h"
 #include "r_fps.h"
 #include "e6y.h"
-#include "i_system.h"
-
-#ifdef __GNUG__
-#pragma implementation "i_system.h"
-#endif
 #include "i_system.h"
 
 #ifdef HAVE_CONFIG_H
@@ -182,52 +168,6 @@ const char* I_SigString(char* buf, size_t sz, int signum)
   return buf;
 }
 
-dboolean I_FileToBuffer(const char *filename, byte **data, int *size)
-{
-  FILE *hfile;
-
-  dboolean result = false;
-  byte *buffer = NULL;
-  size_t filesize = 0;
-
-  hfile = fopen(filename, "rb");
-  if (hfile)
-  {
-    fseek(hfile, 0, SEEK_END);
-    filesize = ftell(hfile);
-    fseek(hfile, 0, SEEK_SET);
-
-    buffer = (byte*)Z_Malloc(filesize);
-    if (buffer)
-    {
-      if (fread(buffer, filesize, 1, hfile) == 1)
-      {
-        result = true;
-
-        if (data)
-        {
-          *data = buffer;
-        }
-
-        if (size)
-        {
-          *size = filesize;
-        }
-      }
-    }
-
-    fclose(hfile);
-  }
-
-  if (!result)
-  {
-    Z_Free(buffer);
-    buffer = NULL;
-  }
-
-  return result;
-}
-
 /*
  * I_Read
  *
@@ -301,11 +241,11 @@ const char *I_DoomExeDir(void)
         *p--=0;
       if (*p=='/' || *p=='\\')
         *p--=0;
-      if (strlen(base)<2 || access(base, W_OK) != 0)
+      if (strlen(base) < 2 || !M_WriteAccess(base))
       {
         Z_Free(base);
         base = (char*)Z_Malloc(1024);
-        if (!getcwd(base,1024) || access(base, W_OK) != 0)
+        if (!M_getcwd(base, 1024) || !M_WriteAccess(base))
           strcpy(base, current_dir_dummy);
       }
     }
@@ -314,11 +254,19 @@ const char *I_DoomExeDir(void)
 
 const char* I_GetTempDir(void)
 {
-  static char tmp_path[PATH_MAX] = {0};
+  static const char* tmp_path;
 
-  if (tmp_path[0] == 0)
+  if (!tmp_path)
   {
-    GetTempPath(sizeof(tmp_path), tmp_path);
+    wchar_t wpath[PATH_MAX];
+    DWORD result;
+
+    result = GetTempPathW(PATH_MAX, wpath);
+
+    if (result == 0 || result > MAX_PATH)
+      I_Error("I_GetTempDir: GetTempPathW failed");
+    else
+      tmp_path = ConvertWideToUtf8(wpath);
   }
 
   return tmp_path;
@@ -346,17 +294,17 @@ const char *I_DoomExeDir(void)
 {
   static char *base;
   if (!base)        // cache multiple requests
-    {
-      char *home = getenv("HOME");
-      size_t len = strlen(home);
+  {
+    char *home = M_getenv("HOME");
+    size_t len = strlen(home);
 
-      base = Z_Malloc(len + strlen(prboom_dir) + 1);
-      strcpy(base, home);
-      // I've had trouble with trailing slashes before...
-      if (base[len-1] == '/') base[len-1] = 0;
-      strcat(base, prboom_dir);
-      mkdir(base, S_IRUSR | S_IWUSR | S_IXUSR); // Make sure it exists
-    }
+    base = Z_Malloc(len + strlen(prboom_dir) + 1);
+    strcpy(base, home);
+    // I've had trouble with trailing slashes before...
+    if (base[len-1] == '/') base[len-1] = 0;
+    strcat(base, prboom_dir);
+    M_MakeDir(base, true); // Make sure it exists
+  }
   return base;
 }
 
@@ -383,6 +331,15 @@ dboolean HasTrailingSlash(const char* dn)
         || (dn[strlen(dn)-1] == ':')
 #endif
           );
+}
+
+static const char *I_GetBasePath(void)
+{
+  static char *executable_dir;
+  /* SDL_GetBasePath is an expensive call */
+  if (!executable_dir)
+    executable_dir = SDL_GetBasePath();
+  return executable_dir;
 }
 
 /*
@@ -415,7 +372,8 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL}, // current working directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
     {DOOMWADDIR}, // build-time configured DOOMWADDIR
-    {DSDAPWADDIR}, // build-time configured location of dsda-doom.wad
+    {DSDA_ABSOLUTE_PWAD_PATH}, // build-time configured absolute path to dsda-doom.wad
+    {NULL, NULL, NULL, I_GetBasePath}, // search the base path provided by SDL
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
     {"/usr/local/share/games/doom"},
@@ -445,7 +403,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     memcpy(search, search0, num_search * sizeof(*search));
 
     // add each directory from the $DOOMWADPATH environment variable
-    if ((dwp = getenv("DOOMWADPATH")))
+    if ((dwp = M_getenv("DOOMWADPATH")))
     {
       char *left, *ptr, *dup_dwp;
 
@@ -491,7 +449,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
      * and optionally s to a subdirectory of d */
     // switch replaced with lookup table
     if (search[i].env) {
-      if (!(d = getenv(search[i].env)))
+      if (!(d = M_getenv(search[i].env)))
         continue;
     } else if (search[i].func)
       d = search[i].func();
@@ -505,9 +463,9 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
                              s ? s : "", (s && !HasTrailingSlash(s)) ? "/" : "",
                              wfname);
 
-    if (ext && access(p,F_OK))
+    if (ext && !M_FileExists(p))
       strcat(p, ext);
-    if (!access(p,F_OK)) {
+    if (M_FileExists(p)) {
       if (!isStatic)
         lprintf(LO_DEBUG, " found %s\n", p);
       return p;
@@ -535,6 +493,20 @@ char* I_FindFile(const char* wfname, const char* ext)
 const char* I_FindFile2(const char* wfname, const char* ext)
 {
   return (const char*) I_FindFileInternal(wfname, ext, true);
+}
+
+char* I_RequireAnyFile(const char* wfname, const char** ext)
+{
+  char* result = NULL;
+
+  for (; *ext; ext++)
+  {
+    result = I_FindFile(wfname, *ext);
+    if (result)
+      return result;
+  }
+
+  I_Error("Unable to find required file \"%s\"", wfname);
 }
 
 char* I_RequireWad(const char* wfname)
@@ -567,4 +539,14 @@ char* I_FindDeh(const char* wfname)
     return result;
 
   return I_FindFile(wfname, ".deh");
+}
+
+char* I_RequireZip(const char* wfname)
+{
+  return I_RequireFile(wfname, ".zip");
+}
+
+char* I_FindZip(const char* wfname)
+{
+  return I_FindFile(wfname, ".zip");
 }

@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "i_system.h"
+#include "lprintf.h"
 
 #include "dsda/configuration.h"
 
@@ -63,12 +64,21 @@ unsigned long long dsda_ElapsedTime(int timer) {
 
   clock_gettime(CLOCK_MONOTONIC, &now);
 
-  return (now.tv_nsec - dsda_time[timer].tv_nsec) / 1000 +
-         (now.tv_sec - dsda_time[timer].tv_sec) * 1000000;
+  return (unsigned long long) (
+           (signed long long) (now.tv_nsec - dsda_time[timer].tv_nsec) / 1000 +
+           (signed long long) (now.tv_sec - dsda_time[timer].tv_sec) * 1000000
+         );
 }
 
 unsigned long long dsda_ElapsedTimeMS(int timer) {
   return dsda_ElapsedTime(timer) / 1000;
+}
+
+void dsda_PrintElapsedTime(int timer, const char* message) {
+  unsigned long long result;
+
+  result = dsda_ElapsedTime(timer);
+  lprintf(LO_INFO, "%s: %lf\n", message, (double) result / 1000);
 }
 
 static void dsda_Throttle(int timer, unsigned long long target_time) {
@@ -92,12 +102,16 @@ static void dsda_Throttle(int timer, unsigned long long target_time) {
 
 void dsda_LimitFPS(void) {
   extern int movement_smooth;
+  extern int window_focused;
 
+  int allow_limit;
   int fps_limit;
 
-  fps_limit = dsda_IntConfig(dsda_config_fps_limit);
+  allow_limit = movement_smooth || !window_focused;
+  fps_limit = window_focused ? dsda_IntConfig(dsda_config_fps_limit)
+                             : dsda_IntConfig(dsda_config_background_fps_limit);
 
-  if (movement_smooth && fps_limit) {
+  if (allow_limit && fps_limit) {
     unsigned long long target_time;
 
     target_time = 1000000 / fps_limit;
@@ -108,7 +122,7 @@ void dsda_LimitFPS(void) {
 
 #define TICRATE 35
 
-int dsda_RealticClockRate(void);
+int dsda_GameSpeed(void);
 
 static unsigned long long dsda_RealTime(void) {
   static dboolean started = false;
@@ -123,7 +137,7 @@ static unsigned long long dsda_RealTime(void) {
 }
 
 static unsigned long long dsda_ScaledTime(void) {
-  return dsda_RealTime() * dsda_RealticClockRate() / 100;
+  return dsda_RealTime() * dsda_GameSpeed() / 100;
 }
 
 extern int ms_to_next_tick;
@@ -149,7 +163,7 @@ int dsda_GetTickRealTime(void) {
 }
 
 static int dsda_TickMS(int n) {
-  return n * 1000 * 100 / dsda_RealticClockRate() / TICRATE;
+  return n * 1000 * 100 / dsda_GameSpeed() / TICRATE;
 }
 
 static int dsda_GetTickScaledTime(void) {
@@ -158,7 +172,7 @@ static int dsda_GetTickScaledTime(void) {
 
   t = dsda_RealTime();
 
-  i = t * TICRATE * dsda_RealticClockRate() / 100 / 1000000;
+  i = t * TICRATE * dsda_GameSpeed() / 100 / 1000000;
   ms_to_next_tick = dsda_TickMS(i + 1) - t / 1000;
   if (ms_to_next_tick > dsda_TickMS(1)) ms_to_next_tick = 1;
   if (ms_to_next_tick < 1) ms_to_next_tick = 0;
@@ -190,7 +204,7 @@ void dsda_ResetTimeFunctions(int fastdemo) {
     dsda_GetTick = dsda_GetTickFastDemo;
     dsda_TickElapsedTime = dsda_TickElapsedTimeFastDemo;
   }
-  else if (dsda_RealticClockRate() != 100) {
+  else if (dsda_GameSpeed() != 100) {
     dsda_GetTick = dsda_GetTickScaledTime;
     dsda_TickElapsedTime = dsda_TickElapsedScaledTime;
   }

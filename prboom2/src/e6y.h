@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -38,16 +38,6 @@
 
 #include "hu_lib.h"
 
-#define HU_HUDADDX (HU_HUDX)
-#define HU_HUDADDY (HU_HUDY+(-1)*HU_GAPY)
-#define HU_CENTERMSGX (320/2)
-#define HU_CENTERMSGY ((200-ST_HEIGHT)/2 - 1 - LittleShort(hu_font[0].height))
-
-#define HU_HUDADDX_D (HU_HUDX_LL)
-#define HU_HUDADDY_D (HU_HUDY_LL+(-1)*HU_GAPY)
-
-#define STSTR_SECRETFOUND   "A secret is revealed!"
-
 #define GL_COMBINE_ARB                    0x8570
 #define GL_RGB_SCALE_ARB                  0x8573
 
@@ -56,12 +46,12 @@
 
 typedef struct camera_s
 {
-  long x;
-  long y;
-  long z;
-  long PrevX;
-  long PrevY;
-  long PrevZ;
+  fixed_t x;
+  fixed_t y;
+  fixed_t z;
+  fixed_t PrevX;
+  fixed_t PrevY;
+  fixed_t PrevZ;
   angle_t angle;
   angle_t pitch;
   angle_t PrevAngle;
@@ -98,15 +88,6 @@ extern float skyUpAngle;
 extern float skyUpShift;
 extern float skyXShift;
 extern float skyYShift;
-extern dboolean mlook_or_fov;
-
-extern hu_textline_t  w_hudadd;
-extern hu_textline_t  w_centermsg;
-extern hu_textline_t  w_precache;
-extern char hud_add[80];
-extern char hud_centermsg[80];
-
-void e6y_assert(const char *format, ...);
 
 void ParamsMatchingCheck();
 void e6y_HandleSkip(void);
@@ -129,9 +110,6 @@ void M_ChangeMaxViewPitch(void);
 
 void M_ChangeFOV(void);
 
-void M_ChangeAllowBoomColormaps(void);
-void M_ChangeTextureUseHires(void);
-void M_ChangeAllowFog(void);
 void M_ChangeSpeed(void);
 void M_ChangeScreenMultipleFactor(void);
 void M_ChangeInterlacedScanning(void);
@@ -142,9 +120,6 @@ void CheckPitch(signed int *pitch);
 dboolean HaveMouseLook(void);
 
 extern float viewPitch;
-
-void R_ClearClipSegs (void);
-void R_RenderBSPNode(int bspnum);
 
 typedef struct prboom_comp_s
 {
@@ -237,14 +212,7 @@ extern int mlooky;
 
 void e6y_G_Compatibility(void);
 
-extern dboolean zerotag_manual;
-
-dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum);
-
 const char* PathFindFileName(const char* pPath);
-void NormalizeSlashes2(char *str);
-unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax);
-void AbbreviateName(char* lpszCanon, int cchMax, int bAtLeastName);
 
 //extern int viewMaxY;
 
@@ -279,7 +247,5 @@ void I_vWarning(const char *message, va_list argList);
 #define PRB_IDYES               6
 #define PRB_IDNO                7
 int I_MessageBox(const char* text, unsigned int type);
-
-dboolean SmoothEdges(unsigned char * buffer,int w, int h);
 
 #endif

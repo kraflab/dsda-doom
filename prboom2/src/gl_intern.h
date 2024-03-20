@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -53,26 +53,16 @@ typedef enum
 
 typedef enum
 {
-  MIP_TEXTURE,
-  MIP_SPRITE,
-  MIP_PATCH,
-  MIP_INDEXED,
-
-  MIP_COUNT
-} GLMipType;
-
-typedef enum
-{
   GLTEXTURE_SPRITE    = 0x00000002,
   GLTEXTURE_HASHOLES  = 0x00000004,
   GLTEXTURE_SKY       = 0x00000008,
-  GLTEXTURE_HIRES     = 0x00000010,
-  GLTEXTURE_HASNOHIRES= 0x00000020,
+
+
   GLTEXTURE_CLAMPX    = 0x00000040,
   GLTEXTURE_CLAMPY    = 0x00000080,
   GLTEXTURE_CLAMPXY   = (GLTEXTURE_CLAMPX | GLTEXTURE_CLAMPY),
-  GLTEXTURE_MIPMAP    = 0x00000100,
-  GLTEXTURE_INDEXED   = 0x00000200,
+  GLTEXTURE_INDEXED   = 0x00000100,
+  GLTEXTURE_SKYHACK   = 0x00000200,
 } GLTexture_flag_t;
 
 typedef struct gl_strip_coords_s
@@ -82,7 +72,7 @@ typedef struct gl_strip_coords_s
   GLfloat t[4][2];
 } gl_strip_coords_t;
 
-#define PLAYERCOLORMAP_COUNT (3)
+#define PLAYERCOLORMAP_COUNT (9)
 
 typedef struct detail_s
 {
@@ -102,6 +92,7 @@ typedef struct color_rgb_s
 typedef struct
 {
   int index;
+  int patch_index;
   int width,height;
   int leftoffset,topoffset;
   int tex_width,tex_height;
@@ -121,10 +112,6 @@ typedef struct
   GLTexType textype;
   unsigned int flags;
   float scalexfac, scaleyfac; //e6y: right/bottom UV coordinates for patch drawing
-
-  //detail
-  detail_t *detail;
-  float detail_width, detail_height;
 } GLTexture;
 
 typedef struct
@@ -140,10 +127,13 @@ typedef struct
   float ytop,ybottom;
   float ul,ur,vt,vb;
   float light;
-  float fogdensity;
   float alpha;
-  float skyymid;
+  float skypitch;
   float skyyaw;
+  float skyoffset;
+  float xscale;
+  float yscale;
+  dboolean anchor_vb;
   GLTexture *gltexture;
   byte flag;
   seg_t *seg;
@@ -152,7 +142,7 @@ typedef struct
 typedef enum
 {
   GLFLAT_CEILING      = 0x00000001,
-  GLFLAT_HAVE_OFFSET  = 0x00000002,
+  GLFLAT_HAVE_TRANSFORM  = 0x00000002,
 } GLFlat_flag_t;
 
 typedef struct
@@ -161,6 +151,9 @@ typedef struct
   float light; // the lightlevel of the flat
   float fogdensity;
   float uoffs,voffs; // the texture coordinates
+  float rotation;
+  float xscale;
+  float yscale;
   float z; // the z position of the flat (height)
   GLTexture *gltexture;
   unsigned int flags;
@@ -220,9 +213,16 @@ typedef struct
   float light;
 } GLShadow;
 
+typedef enum
+{
+  health_bar_null,
+  health_bar_red,
+  health_bar_yellow,
+} health_bar_color_t;
+
 typedef struct
 {
-  int cm;
+  health_bar_color_t color;
 
   float x1, x2, x3;
   float z1, z2, z3;
@@ -250,11 +250,12 @@ typedef struct
   float x1,y1;
   float x2,y2;
   float light;
-  float fogdensity;
+  float alpha;
   fixed_t scale;
   GLTexture *gltexture;
   uint64_t flags;
   int index;
+  int id;
   int xy;
   fixed_t fx,fy;
 } GLSprite;
@@ -323,7 +324,6 @@ typedef struct
 void gld_AddDrawItem(GLDrawItemType itemtype, void *itemdata);
 
 void gld_DrawTriangleStrip(GLWall *wall, gl_strip_coords_t *c);
-void gld_DrawTriangleStripARB(GLWall *wall, gl_strip_coords_t *c1, gl_strip_coords_t *c2);
 
 extern float roll;
 extern float yaw;
@@ -339,10 +339,7 @@ void gld_ResetDrawInfo(void);
 extern GLSector *sectorloops;
 extern GLMapSubsector *subsectorloops;
 
-extern int gl_tex_format;
 extern GLfloat gl_texture_filter_anisotropic;
-extern int transparent_pal_index;
-extern unsigned char gld_palmap[256];
 void gld_SetTexFilters(GLTexture *gltexture);
 
 extern float xCamera,yCamera,zCamera;
@@ -352,30 +349,12 @@ extern float xCamera,yCamera,zCamera;
 //
 
 void gld_InitDetail(void);
-void gld_InitFrameDetails(void);
-void gld_ParseDetail(void);
-void gld_SetTexDetail(GLTexture *gltexture);
 
 void gld_PreprocessDetail(void);
-void gld_DrawDetail_NoARB(void);
-void gld_EnableDetail(int enable);
-void gld_DrawWallWithDetail(GLWall *wall);
-void gld_BindDetail(GLTexture *gltexture, int enable);
-void gld_BindDetailARB(GLTexture *gltexture, int enable);
-void gld_DrawItemsSortByDetail(GLDrawItemType itemtype);
-void gld_DrawWallDetail_NoARB(GLWall *wall);
-
-extern int render_usedetail;
-extern int scene_has_details;
-extern detail_t *details;
-extern int details_count;
-
-extern int scene_has_wall_details;
-extern int scene_has_flat_details;
 
 extern GLuint* last_glTexID;
-GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed);
-void gld_BindTexture(GLTexture *gltexture, unsigned int flags);
+GLTexture *gld_RegisterTexture(int texture_num, dboolean mipmap, dboolean force, dboolean indexed, dboolean sky);
+void gld_BindTexture(GLTexture *gltexture, unsigned int flags, dboolean sky);
 GLTexture *gld_RegisterPatch(int lump, int cm, dboolean is_sprite, dboolean indexed);
 void gld_BindPatch(GLTexture *gltexture, int cm);
 GLTexture *gld_RegisterRaw(int lump, int width, int height, dboolean mipmap, dboolean indexed);
@@ -389,20 +368,16 @@ void gld_BindSkyTexture(GLTexture *gltexture);
 GLTexture *gld_RegisterColormapTexture(int palette_index, int gamma_level, dboolean fullbright);
 void gld_BindColormapTexture(GLTexture *gltexture, int palette_index, int gamma_level, dboolean fullbright);
 void gld_InitColormapTextures(dboolean fullbright);
-void gld_InitPalettedTextures(void);
+void gld_InitFuzzTexture(void);
 int gld_GetTexDimension(int value);
-void gld_SetTexturePalette(GLenum target);
 void gld_SetIndexedPalette(int palette_index);
 void gld_Precache(void);
 
 void SetFrameTextureMode(void);
 
-//gamma
-void gld_ResetGammaRamp(void);
-
 //gl_vertex
-void gld_SplitLeftEdge(const GLWall *wall, dboolean detail);
-void gld_SplitRightEdge(const GLWall *wall, dboolean detail);
+void gld_SplitLeftEdge(const GLWall *wall);
+void gld_SplitRightEdge(const GLWall *wall);
 void gld_RecalcVertexHeights(const vertex_t *v);
 
 //e6y
@@ -413,25 +388,18 @@ unsigned char* gld_GetTextureBuffer(GLuint texid, int miplevel, int *width, int 
 
 int gld_BuildTexture(GLTexture *gltexture, void *data, dboolean readonly, int width, int height);
 
-//hires
-extern unsigned int gl_has_hires;
-int gld_HiRes_BuildTables(void);
-void gld_InitHiRes(void);
-int gld_LoadHiresTex(GLTexture *gltexture, int cm);
-void gld_GetTextureTexID(GLTexture *gltexture, int cm);
 GLuint CaptureScreenAsTexID(void);
+
+//progress
 void gld_ProgressUpdate(const char * text, int progress, int total);
 int gld_ProgressStart(void);
 int gld_ProgressEnd(void);
 
 //FBO
-#define INVUL_CM         0x00000001
-#define INVUL_INV        0x00000002
-#define INVUL_BW         0x00000004
 extern GLuint glSceneImageFBOTexID;
 extern GLuint glSceneImageTextureFBOTexID;
 
-extern unsigned int invul_method;
+extern dboolean invul_cm;
 extern float bw_red;
 extern float bw_green;
 extern float bw_blue;
@@ -452,23 +420,13 @@ void gld_SetupFloodedPlaneCoords(GLWall *wall, gl_strip_coords_t *c);
 void gld_SetupFloodedPlaneLight(GLWall *wall);
 
 //light
-extern int gl_rellight;
 void gld_StaticLightAlpha(float light, float alpha);
 #define gld_StaticLight(light) gld_StaticLightAlpha(light, 1.0f)
 void gld_InitLightTable(void);
-typedef float (*gld_CalcLightLevel_f)(int lightlevel);
-typedef float (*gld_Calc2DLightLevel_f)(int lightlevel);
-extern gld_CalcLightLevel_f gld_CalcLightLevel;
-extern gld_Calc2DLightLevel_f gld_Calc2DLightLevel;
 int gld_GetGunFlashLight(void);
 
-//fog
-extern int gl_fog;
-extern int gl_use_fog;
-void gl_EnableFog(int on);
-void gld_SetFog(float fogdensity);
-typedef float (*gld_CalcFogDensity_f)(sector_t *sector, int lightlevel, GLDrawItemType type);
-extern gld_CalcFogDensity_f gld_CalcFogDensity;
+float gld_CalcLightLevel(int lightlevel);
+float gld_Calc2DLightLevel(int lightlevel);
 
 // SkyBox
 #define SKY_NONE    0
@@ -483,13 +441,10 @@ typedef struct SkyBoxParams_s
   int index;
   unsigned int type;
   GLWall wall;
-  float x_scale, y_scale;
   float x_offset, y_offset;
   // 0 - no colormap; 1 - INVUL inverse colormap
   PalEntry_t FloorSkyColor[2];
   PalEntry_t CeilingSkyColor[2];
-  // for BoxSkybox
-  side_t *side;
 } SkyBoxParams_t;
 extern SkyBoxParams_t SkyBox;
 extern GLfloat gl_whitecolor[];
@@ -502,7 +457,6 @@ void gld_DrawScreenSkybox(void);
 void gld_GetScreenSkyScale(GLWall *wall, float *scale_x, float *scale_y);
 void gld_DrawDomeSkyBox(void);
 void gld_DrawSkyCaps(void);
-int gld_DrawBoxSkyBox(void);
 
 // VBO
 typedef struct vbo_vertex_s
@@ -533,43 +487,20 @@ typedef struct vbo_xy_uv_rgba_s
   unsigned char r, g, b, a;
 } PACKEDATTR vbo_xy_uv_rgba_t;
 
-//BoxSkybox
-typedef struct box_skybox_s
-{
-  char name[9];
-  int fliptop;
-  char faces[6][9];
-  GLTexture texture[6];
-} box_skybox_t;
-box_skybox_t* R_GetBoxSkybox(int index);
-void gld_ParseSkybox(void);
-extern box_skybox_t *BoxSkybox_default;
-
 // preprocessing
 extern byte *segrendered; // true if sector rendered (only here for malloc)
-extern byte *linerendered[2]; // true if linedef rendered (only here for malloc)
+extern int *linerendered[2]; // true if linedef rendered (only here for malloc)
+extern int rendermarker;
 extern GLuint flats_vbo_id;
 
-typedef struct GLShader_s
-{
-  char name[256];
-  GLhandleARB hShader;
-  GLhandleARB hVertProg;
-  GLhandleARB hFragProg;
-} GLShader;
-
-int glsl_Init(void);
-void glsl_SetActiveShader(GLShader *shader);
-void glsl_SuspendActiveShader(void);
-void glsl_ResumeActiveShader(void);
-void glsl_SetMainShaderActive();
-void glsl_SetFuzzShaderActive();
-void glsl_SetFuzzShaderInactive();
+void glsl_Init(void);
+void glsl_SetTextureDims(int unit, unsigned int width, unsigned int height);
+void glsl_PushNullShader(void);
+void glsl_PopNullShader(void);
+void glsl_PushMainShader(void);
+void glsl_PopMainShader(void);
+void glsl_PushFuzzShader(int tic, int sprite, float ratio);
+void glsl_PopFuzzShader(void);
 void glsl_SetLightLevel(float lightlevel);
-void glsl_SetFuzzTime(int time);
-void glsl_SetFuzzScreenResolution(float screenwidth, float screenheight);
-void glsl_SetFuzzTextureDimensions(float texwidth, float texheight);
-int glsl_IsActive(void);
-dboolean glsl_UseFuzzShader(void);
 
 #endif // _GL_INTERN_H

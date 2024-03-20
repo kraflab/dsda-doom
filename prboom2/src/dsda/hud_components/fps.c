@@ -19,7 +19,11 @@
 
 #include "fps.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   extern int dsda_render_stats_fps;
@@ -27,25 +31,29 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "\x1b%c%4d",
-    dsda_render_stats_fps < 35 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GRAY),
+    "%s%4d",
+    dsda_render_stats_fps < 35 ? dsda_TextColor(dsda_tc_exhud_fps_bad) :
+                                 dsda_TextColor(dsda_tc_exhud_fps_fine),
     dsda_render_stats_fps
   );
 }
 
-void dsda_InitFPSHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitFPSHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateFPSHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateFPSHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawFPSHC(void) {
-  dsda_DrawBasicText(&component);
-}
+void dsda_DrawFPSHC(void* data) {
+  local = data;
 
-void dsda_EraseFPSHC(void) {
-  HUlib_eraseTextLine(&component.text);
+  dsda_DrawBasicText(&local->component);
 }

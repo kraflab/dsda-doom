@@ -20,12 +20,16 @@
 #include <ctype.h>
 
 #include "doomtype.h"
+#include "p_saveg.h"
+#include "s_advsound.h"
+#include "s_sound.h"
 
 #include "music.h"
 
 musicinfo_t* S_music;
 int num_music;
 int mus_musinfo;
+static int deh_musicnames_size;
 static char** deh_musicnames;
 static byte* music_state;
 
@@ -63,7 +67,7 @@ int dsda_GetDehMusicIndex(const char* key, size_t length) {
 
 int dsda_GetOriginalMusicIndex(const char* key) {
   int i;
-  const char* c;
+  // const char* c;
 
   for (i = 1; deh_musicnames[i]; ++i)
     if (!strncasecmp(deh_musicnames[i], key, 6))
@@ -87,6 +91,7 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
   extern int raven;
 
   num_music = count;
+  deh_musicnames_size = num_music + 1;
   mus_musinfo = num_music - 1;
 
   S_music = source;
@@ -96,7 +101,7 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
 
   if (raven) return;
 
-  deh_musicnames = malloc((num_music + 1) * sizeof(*deh_musicnames));
+  deh_musicnames = malloc(deh_musicnames_size * sizeof(*deh_musicnames));
   for (i = 1; i < num_music; i++)
     if (S_music[i].name != NULL)
       deh_musicnames[i] = strdup(S_music[i].name);
@@ -109,6 +114,33 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
 }
 
 void dsda_FreeDehMusic(void) {
+  int i;
+
+  if (deh_musicnames)
+    for (i = 0; i < deh_musicnames_size; i++)
+      if (deh_musicnames[i])
+        free(deh_musicnames[i]);
+
   free(deh_musicnames);
   free(music_state);
+}
+
+static int music_queue = -1;
+
+void dsda_ArchiveMusic(void) {
+  P_SAVE_X(musinfo.current_item);
+}
+
+void dsda_UnArchiveMusic(void) {
+  P_LOAD_X(music_queue);
+}
+
+dboolean dsda_StartQueuedMusic(void) {
+  if (music_queue == -1)
+    return false;
+
+  S_ChangeMusInfoMusic(music_queue, true);
+  music_queue = -1;
+
+  return true;
 }

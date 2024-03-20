@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -43,20 +43,19 @@
 #include <stddef.h>
 #include <io.h>
 #endif
-#include <fcntl.h>
 
 #include "doomstat.h"
 #include "d_net.h"
 #include "doomtype.h"
 #include "i_system.h"
+#include "m_file.h"
 #include "r_main.h"
 
-#ifdef __GNUG__
-#pragma implementation "w_wad.h"
-#endif
 #include "w_wad.h"
 #include "lprintf.h"
 #include "e6y.h"
+
+#include "dsda/utility.h"
 
 //
 // GLOBALS
@@ -85,8 +84,7 @@ void ExtractFileBase (const char *path, char *dest)
 
   while ((*src) && (*src != '.') && (++length<9))
   {
-    *dest++ = toupper(*src);
-    *src++;
+    *dest++ = toupper(*src++);
   }
   /* cph - length check removed, just truncate at 8 chars.
    * If there are 8 or more chars, we'll copy 8, and no zero termination
@@ -153,16 +151,13 @@ static void W_AddFile(wadfile_info_t *wadfile)
 
   // open the file and add to directory
 
-  wadfile->handle = open(wadfile->name,O_RDONLY | O_BINARY);
+  wadfile->handle = M_OpenRB(wadfile->name);
   if (wadfile->handle == -1)
-    {
-      if (  strlen(wadfile->name)<=4 ||      // add error check -- killough
-	         (strcasecmp(wadfile->name+strlen(wadfile->name)-4 , ".lmp" ) &&
-	          strcasecmp(wadfile->name+strlen(wadfile->name)-4 , ".gwa" ) )
-         )
-	I_Error("W_AddFile: couldn't open %s",wadfile->name);
-      return;
-    }
+  {
+    if (!dsda_HasFileExt(wadfile->name, ".lmp"))
+      I_Error("W_AddFile: couldn't open %s",wadfile->name);
+    return;
+  }
 
   //jff 8/3/98 use logical output routine
   lprintf (LO_INFO," adding %s\n",wadfile->name);
@@ -182,12 +177,7 @@ static void W_AddFile(wadfile_info_t *wadfile)
     }
   }
 
-  if (  strlen(wadfile->name)<=4 ||
-	      (
-          strcasecmp(wadfile->name+strlen(wadfile->name)-4,".wad") &&
-	        strcasecmp(wadfile->name+strlen(wadfile->name)-4,".gwa")
-        )
-     )
+  if (!dsda_HasFileExt(wadfile->name, ".wad"))
     {
       // single lump file
       fileinfo = &singleinfo;
@@ -517,7 +507,7 @@ void W_Init(void)
   W_CoalesceMarkedResource("F_START", "F_END", ns_flats);
   W_CoalesceMarkedResource("C_START", "C_END", ns_colormaps);
   W_CoalesceMarkedResource("B_START", "B_END", ns_prboom);
-  r_have_internal_hires = ( 0 < W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires));
+  W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires);
 
   // killough 1/31/98: initialize lump hash table
   W_HashLumps();
@@ -538,6 +528,16 @@ int W_LumpLength (int lump)
   if (lump >= numlumps)
     I_Error ("W_LumpLength: %i >= numlumps",lump);
   return lumpinfo[lump].size;
+}
+
+int W_SafeLumpLength (int lump)
+{
+  return W_LumpNumExists(lump) ? lumpinfo[lump].size : 0;
+}
+
+const char *W_LumpName(int lump)
+{
+  return W_LumpNumExists(lump) ? lumpinfo[lump].name : NULL;
 }
 
 //
@@ -592,6 +592,16 @@ int W_LumpNumInPortWad(int lump) {
          !strcmp(info->wadfile->name + name_length - default_name_length, WAD_DATA);
 }
 
+const void *W_SafeLumpByNum(int lump)
+{
+  return W_LumpNumExists(lump) ? W_LumpByNum(lump) : NULL;
+}
+
+int W_LumpNumExists(int lump)
+{
+  return lump != LUMP_NOT_FOUND && lump < numlumps;
+}
+
 int W_LumpNameExists(const char *name)
 {
   return W_CheckNumForName(name) != LUMP_NOT_FOUND;
@@ -600,4 +610,20 @@ int W_LumpNameExists(const char *name)
 int W_LumpNameExists2(const char *name, int ns)
 {
   return W_CheckNumForName2(name, ns) != LUMP_NOT_FOUND;
+}
+
+void W_Shutdown(void)
+{
+  int i;
+
+  W_DoneCache();
+
+  for (i = 0; i < numwadfiles; ++i)
+  {
+    if (wadfiles[i].handle > 0)
+    {
+      close(wadfiles[i].handle);
+      wadfiles[i].handle = -1;
+    }
+  }
 }

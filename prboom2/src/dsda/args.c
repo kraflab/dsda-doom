@@ -69,13 +69,18 @@ static arg_config_t arg_config[dsda_arg_count] = {
     arg_string_array, AT_LEAST_ONE_STRING,
   },
   [dsda_arg_deh] = {
-    "-deh", NULL, NULL,
+    "-deh", "-bex", NULL,
     "loads additional deh files",
     arg_string_array, AT_LEAST_ONE_STRING,
   },
   [dsda_arg_playdemo] = {
     "-playdemo", NULL, NULL,
     "plays the given demo file",
+    arg_string,
+  },
+  [dsda_arg_playlump] = {
+    "-playlump", NULL, NULL,
+    "plays the given internal demo lump (e.g., DEMO1)",
     arg_string,
   },
   [dsda_arg_timedemo] = {
@@ -90,7 +95,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
   },
   [dsda_arg_record] = {
     "-record", NULL, NULL,
-    "records a demo to the give file",
+    "records a demo to the given file",
     arg_string,
   },
   [dsda_arg_recordfromto] = {
@@ -111,7 +116,17 @@ static arg_config_t arg_config[dsda_arg_count] = {
   [dsda_arg_skill] = {
     "-skill", NULL, NULL,
     "sets the skill level",
-    arg_int, 1, 5,
+    arg_int, 1, 255,
+  },
+  [dsda_arg_uv] = {
+    "-uv", NULL, NULL,
+    "sets the skill level to 4",
+    arg_null,
+  },
+  [dsda_arg_nm] = {
+    "-nm", NULL, NULL,
+    "sets the skill level to 5",
+    arg_null,
   },
   [dsda_arg_episode] = {
     "-episode", NULL, NULL,
@@ -168,11 +183,6 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets a random player class in hexen deathmatch",
     arg_null,
   },
-  [dsda_arg_baddemo] = {
-    "-baddemo", NULL, NULL,
-    "allows recording in experimental map formats",
-    arg_null,
-  },
   [dsda_arg_dsdademo] = {
     "-dsdademo", NULL, NULL,
     "turns on extended demo format (for testing)",
@@ -193,6 +203,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "automatically pistol start each map",
     arg_null,
   },
+  [dsda_arg_chain_episodes] = {
+    "-chain_episodes", NULL, NULL,
+    "completing one episode leads to the next without interruption",
+    arg_null,
+  },
   [dsda_arg_stroller] = {
     "-stroller", NULL, NULL,
     "applies stroller category limitations",
@@ -202,6 +217,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "-turbo", NULL, "255",
     "sets player speed percent",
     arg_int, 10, 255,
+  },
+  [dsda_arg_game_speed] = {
+    "-game_speed", NULL, NULL,
+    "sets game speed percent",
+    arg_int, 10, 10000,
   },
   [dsda_arg_tas] = {
     "-tas", NULL, NULL,
@@ -213,10 +233,20 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "starts in build mode",
     arg_null,
   },
+  [dsda_arg_quit_after_brute_force] = {
+    "-quit_after_brute_force", NULL, NULL,
+    "quits the game when brute force ends",
+    arg_null,
+  },
   [dsda_arg_first_input] = {
     "-first_input", NULL, NULL,
     "builds the first frame F S T",
     arg_int_array, -128, 127, 3, 3
+  },
+  [dsda_arg_command] = {
+    "-command", NULL, NULL,
+    "runs a console command",
+    arg_string
   },
   [dsda_arg_skipsec] = {
     "-skipsec", NULL, NULL,
@@ -308,6 +338,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "export a dsda-format text file template",
     arg_null,
   },
+  [dsda_arg_track_playback] = {
+    "-track_playback", NULL, NULL,
+    "treat demo playback as an attempt for the given split file base",
+    arg_string,
+  },
   [dsda_arg_export_ghost] = {
     "-export_ghost", NULL, NULL,
     "exports a ghost file",
@@ -332,11 +367,6 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "-setmem", NULL, NULL,
     "sets a magic block of memory for certain overrun demos",
     arg_string_array, 0, 0, 1, 10,
-  },
-  [dsda_arg_mapinfo] = {
-    "-mapinfo", NULL, NULL,
-    "turn on (partial) MAPINFO support",
-    arg_null,
   },
   [dsda_arg_data] = {
     "-data", NULL, NULL,
@@ -398,14 +428,14 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "reset gamma and exit",
     arg_null,
   },
-  [dsda_arg_forceoldbsp] = {
-    "-forceoldbsp", NULL, NULL,
-    "force classic bsp nodes",
+  [dsda_arg_force_old_zdoom_nodes] = {
+    "-force_old_zdoom_nodes", NULL, NULL,
+    "force extended (non-gl) zdoom nodes",
     arg_null,
   },
-  [dsda_arg_devparm] = {
-    "-devparm", NULL, NULL,
-    "turn on old development mode",
+  [dsda_arg_sigsegv] = {
+    "-sigsegv", NULL, NULL,
+    "disable the SIGSEGV signal handler",
     arg_null,
   },
   [dsda_arg_deathmatch] = {
@@ -455,7 +485,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
   },
   [dsda_arg_nomapinfo] = {
     "-nomapinfo", NULL, NULL,
-    "skip UMAPINFO lumps",
+    "skip *MAPINFO lumps",
     arg_null,
   },
   [dsda_arg_noautoload] = {
@@ -653,6 +683,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "sets a special flag to compensate for sync errors in certain demos",
     arg_null,
   },
+  [dsda_arg_debug_mapinfo] = {
+    "-debug_mapinfo", NULL, NULL,
+    "turns on mapinfo parsing in doom (temporary arg for testing)",
+    arg_null,
+  },
 };
 
 static dsda_arg_t arg_value[dsda_arg_count];
@@ -813,6 +848,12 @@ void dsda_ParseCommandLineArgs(int argc, char** argv) {
         I_Error("Unknown command line option %s\n", dsda_argv[argv_i]);
     }
   }
+
+  if (dsda_Flag(dsda_arg_uv))
+    dsda_UpdateIntArg(dsda_arg_skill, "4");
+
+  if (dsda_Flag(dsda_arg_nm))
+    dsda_UpdateIntArg(dsda_arg_skill, "5");
 }
 
 void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param) {
@@ -822,6 +863,7 @@ void dsda_UpdateIntArg(dsda_arg_identifier_t id, const char* param) {
 }
 
 void dsda_UpdateStringArg(dsda_arg_identifier_t id, const char* param) {
+  param = Z_Strdup(param);
   arg_value[id].count = 1;
   arg_value[id].found = true;
   dsda_ParseStringArg(&arg_config[id], &arg_value[id].value.v_string, param);
@@ -830,6 +872,8 @@ void dsda_UpdateStringArg(dsda_arg_identifier_t id, const char* param) {
 void dsda_AppendStringArg(dsda_arg_identifier_t id, const char* param) {
   if (arg_config[id].type == arg_string)
     return dsda_UpdateStringArg(id, param);
+
+  param = Z_Strdup(param);
 
   ++arg_value[id].count;
   arg_value[id].found = true;

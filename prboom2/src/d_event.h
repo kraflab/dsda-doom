@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -82,7 +82,6 @@ typedef enum
   ga_completed,
   ga_victory,
   ga_worlddone,
-  ga_screenshot,
 
   // hexen
   ga_leavemap

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -35,10 +35,6 @@
 #define __D_NET__
 
 #include "d_player.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 // Create any new ticcmds
 void FakeNetUpdate (void);

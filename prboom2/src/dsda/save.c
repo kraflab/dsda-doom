@@ -29,7 +29,9 @@
 #include "dsda/configuration.h"
 #include "dsda/data_organizer.h"
 #include "dsda/excmd.h"
+#include "dsda/features.h"
 #include "dsda/mapinfo.h"
+#include "dsda/music.h"
 #include "dsda/options.h"
 
 #include "save.h"
@@ -37,34 +39,33 @@
 static char* dsda_base_save_dir;
 static char* dsda_wad_save_dir;
 
-#define TRACKING_SIZE sizeof(int)
+extern int dsda_max_kill_requirement;
+extern int player_damage_last_tic;
 
 static void dsda_ArchiveInternal(void) {
-  extern int dsda_max_kill_requirement;
-  int internal_size = sizeof(dsda_max_kill_requirement);
+  uint64_t features;
 
-  P_SAVE_X(internal_size);
   P_SAVE_X(dsda_max_kill_requirement);
+  P_SAVE_X(player_damage_last_tic);
+
+  features = dsda_UsedFeatures();
+  P_SAVE_X(features);
 }
 
 static void dsda_UnArchiveInternal(void) {
-  extern int dsda_max_kill_requirement;
-  int internal_size;
+  uint64_t features;
 
-  P_LOAD_X(internal_size);
+  P_LOAD_X(dsda_max_kill_requirement);
+  P_LOAD_X(player_damage_last_tic);
 
-  if (internal_size > 0)
-    P_LOAD_X(dsda_max_kill_requirement);
-
-  if (internal_size > TRACKING_SIZE)
-  {
-    save_p += internal_size - TRACKING_SIZE;
-  }
+  P_LOAD_X(features);
+  dsda_MergeFeatures(features);
 }
 
 static void dsda_ArchiveContext(void) {
   int i;
-  int logictic_value;
+  int boom_logictic_value;
+  int true_logictic_value;
 
   P_SAVE_BYTE(compatibility_level);
   P_SAVE_BYTE(gameskill);
@@ -79,20 +80,31 @@ static void dsda_ArchiveContext(void) {
 
   P_SAVE_BYTE(idmusnum);
 
+  dsda_ArchiveMusic();
+
   CheckSaveGame(dsda_GameOptionSize());
   save_p = G_WriteOptions(save_p);
 
+  P_SAVE_X(leave_data);
+
+  P_SAVE_X(map_info.default_colormap);
+
   P_SAVE_X(leveltime);
   P_SAVE_X(totalleveltimes);
+  P_SAVE_X(levels_completed);
 
-  logictic_value = logictic;
-  P_SAVE_X(logictic_value);
+  boom_logictic_value = boom_logictic;
+  P_SAVE_X(boom_logictic_value);
+
+  true_logictic_value = true_logictic;
+  P_SAVE_X(true_logictic_value);
 }
 
 static void dsda_UnArchiveContext(void) {
   int i;
   int epi, map;
-  int logictic_value;
+  int boom_logictic_value;
+  int true_logictic_value;
 
   P_LOAD_BYTE(compatibility_level);
   P_LOAD_BYTE(gameskill);
@@ -109,15 +121,25 @@ static void dsda_UnArchiveContext(void) {
   if (idmusnum == 255)
     idmusnum = -1;
 
+  dsda_UnArchiveMusic();
+
   save_p += (G_ReadOptions(save_p) - save_p);
+
+  P_LOAD_X(leave_data);
 
   G_InitNew(gameskill, gameepisode, gamemap, false);
 
+  P_LOAD_X(map_info.default_colormap);
+
   P_LOAD_X(leveltime);
   P_LOAD_X(totalleveltimes);
+  P_LOAD_X(levels_completed);
 
-  P_LOAD_X(logictic_value);
-  basetic = gametic - logictic_value;
+  P_LOAD_X(boom_logictic_value);
+  boom_basetic = gametic - boom_logictic_value;
+
+  P_LOAD_X(true_logictic_value);
+  true_basetic = gametic - true_logictic_value;
 }
 
 void dsda_ArchiveAll(void) {
@@ -128,7 +150,7 @@ void dsda_ArchiveAll(void) {
   P_ThinkerToIndex();
   P_ArchiveWorld();
   P_ArchivePolyobjs();
-  P_TrueArchiveThinkers();
+  P_ArchiveThinkers();
   P_ArchiveScripts();
   P_ArchiveSounds();
   P_ArchiveAmbientSound();
@@ -148,7 +170,7 @@ void dsda_UnArchiveAll(void) {
   P_UnArchivePlayers();
   P_UnArchiveWorld();
   P_UnArchivePolyobjs();
-  P_TrueUnArchiveThinkers();
+  P_UnArchiveThinkers();
   P_UnArchiveScripts();
   P_UnArchiveSounds();
   P_UnArchiveAmbientSound();

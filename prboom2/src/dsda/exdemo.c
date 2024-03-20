@@ -23,7 +23,7 @@
 #include "i_system.h"
 #include "lprintf.h"
 #include "m_argv.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "wadtbl.h"
 #include "z_zone.h"
 #include "e6y.h"
@@ -134,8 +134,10 @@ static void DemoEx_GetParams(const wadinfo_t* header) {
 
             if (files[i].source == source_iwad)
               AddIWAD(filename);
-            else
-              D_AddFile(filename, files[i].source);
+            else if (files[i].source == source_pwad)
+              dsda_AppendStringArg(dsda_arg_file, filename);
+            else if (files[i].source == source_deh)
+              dsda_AppendStringArg(dsda_arg_deh, filename);
 
             Z_Free(filename);
           }
@@ -161,6 +163,13 @@ static void DemoEx_GetParams(const wadinfo_t* header) {
       p = M_CheckParmEx("-coop_spawns", params, paramscount);
       if (p >= 0)
         dsda_UpdateFlag(dsda_arg_coop_spawns, true);
+    }
+
+    //for recording multiple episodes in one demo
+    if (!dsda_Flag(dsda_arg_chain_episodes)) {
+      p = M_CheckParmEx("-chain_episodes", params, paramscount);
+      if (p >= 0)
+        dsda_UpdateFlag(dsda_arg_chain_episodes, true);
     }
 
     if (!dsda_Flag(dsda_arg_emulate)) {
@@ -229,7 +238,6 @@ static void DemoEx_GetParams(const wadinfo_t* header) {
 static void DemoEx_AddParams(wadtbl_t* wadtbl) {
   dsda_arg_t* arg;
   size_t i;
-  int p;
   char buf[200];
 
   const char* filename_p;
@@ -319,6 +327,12 @@ static void DemoEx_AddParams(wadtbl_t* wadtbl) {
     dsda_StringCat(&files, buf);
   }
 
+  // for recording multiple episodes in one demo
+  if (dsda_Flag(dsda_arg_chain_episodes)) {
+    sprintf(buf, "-chain_episodes ");
+    dsda_StringCat(&files, buf);
+  }
+
   arg = dsda_Arg(dsda_arg_emulate);
   if (arg->found) {
     sprintf(buf, "-emulate %s", arg->value.v_string);
@@ -352,7 +366,7 @@ static void DemoEx_AddParams(wadtbl_t* wadtbl) {
   {
     overrun_list_t overflow;
     for (overflow = 0; overflow < OVERFLOW_MAX; overflow++) {
-      if (overflows[overflow].shit_happens) {
+      if (overflows[overflow].happened) {
         sprintf(buf, "-set %s=%d ", overflow_cfgname[overflow], overflows[overflow].emulate);
         dsda_StringCat(&files, buf);
       }
@@ -395,7 +409,7 @@ static void DemoEx_GetFeatures(const wadinfo_t* header) {
   if (!str)
     return;
 
-  if (sscanf(str, "%*[^\n]\n%llx-%32s", &exdemo.features, signature) == 2) {
+  if (sscanf(str, "%*[^\n]\n%" PRIx64 "-%32s", &exdemo.features, signature) == 2) {
     byte features[FEATURE_SIZE];
     dsda_cksum_t cksum;
 
@@ -429,7 +443,7 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   buffer_length = strlen(cksum.string) + strlen(description) + 24;
   buffer = Z_Calloc(buffer_length, 1);
 
-  snprintf(buffer, buffer_length, "%s\n0x%016llx-%s", description, features, cksum.string);
+  snprintf(buffer, buffer_length, "%s\n0x%016" PRIx64 "-%s", description, features, cksum.string);
 
   AddPWADTableLump(wadtbl, DEMOEX_FEATURE_LUMPNAME, buffer, buffer_length);
 

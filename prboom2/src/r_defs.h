@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -47,10 +47,6 @@
 
 // SECTORS do store MObjs anyway.
 #include "p_mobj.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 // Silhouette, needed for clipping Segs (mainly)
 // and sprites representing things.
@@ -111,6 +107,10 @@ typedef struct
 #define SECF_DMGUNBLOCKABLE        0x00002000
 #define SECF_FRICTION              0x00004000
 #define SECF_PUSH                  0x00008000
+#define SECF_NOATTACK              0x00010000
+#define SECF_SILENT                0x00020000
+#define SECF_LIGHTFLOORABSOLUTE    0x00040000
+#define SECF_LIGHTCEILINGABSOLUTE  0x00080000
 #define SECF_DAMAGEFLAGS (SECF_ENDGODMODE|SECF_ENDLEVEL|SECF_DMGTERRAINFX|SECF_HAZARD|SECF_DMGUNBLOCKABLE)
 #define SECF_TRANSFERMASK (SECF_SECRET|SECF_WASSECRET|SECF_DAMAGEFLAGS|SECF_FRICTION|SECF_PUSH)
 
@@ -121,19 +121,20 @@ typedef struct
   byte interval;
 } damage_t;
 
-typedef struct
+typedef struct sector_s
 {
   int iSectorID; // proff 04/05/2000: needed for OpenGL and used in debugmode by the HUD to draw sectornum
   unsigned int flags;    //e6y: instead of .no_toptextures and .no_bottomtextures
   fixed_t floorheight;
   fixed_t ceilingheight;
-  int nexttag,firsttag;  // killough 1/30/98: improves searches for tags.
   byte soundtraversed;   // 0 = untraversed, 1,2 = sndlines-1
   mobj_t *soundtarget;   // thing that made a sound (or null)
   int blockbox[4];       // mapblock bounding box for height changes
   int bbox[4];           // bounding box in map units
   degenmobj_t soundorg;  // origin for any sounds played by the sector
   int validcount;        // if == validcount, already checked
+  // Needed by GL path to register flats in sector for rendering only once
+  int gl_validcount;
   mobj_t *thinglist;     // list of mobjs in sector
 
   /* killough 8/28/98: friction is a sector property, not an mobj property.
@@ -155,7 +156,11 @@ typedef struct
   // killough 3/7/98: support flat heights drawn at another sector's heights
   int heightsec;    // other sector, or -1 if no other sector
 
-  int bottommap, midmap, topmap; // killough 4/4/98: dynamic colormaps
+  // killough 4/4/98: dynamic colormaps
+  short bottommap;
+  short midmap;
+  short topmap;
+  short colormap;
 
   // list of mobjs that are at least partially in the sector
   // thinglist is a subset of touching_thinglist
@@ -164,14 +169,8 @@ typedef struct
   int linecount;
   struct line_s **lines;
 
-  // killough 10/98: support skies coming from sidedefs. Allows scrolling
-  // skies and other effects. No "level info" kind of lump is needed,
-  // because you can use an arbitrary number of skies per level with this
-  // method. This field only applies when skyflatnum is used for floorpic
-  // or ceilingpic, because the rest of Doom needs to know which is sky
-  // and which isn't, etc.
-
-  int sky;
+  int floorsky;
+  int ceilingsky;
 
   // killough 3/7/98: floor and ceiling texture offsets
   fixed_t   floor_xoffs,   floor_yoffs;
@@ -203,11 +202,30 @@ typedef struct
   // zdoom
   fixed_t gravity;
   damage_t damage;
+  short lightlevel_floor;
+  short lightlevel_ceiling;
+  angle_t floor_rotation;
+  angle_t ceiling_rotation;
+  fixed_t floor_xscale;
+  fixed_t floor_yscale;
+  fixed_t ceiling_xscale;
+  fixed_t ceiling_yscale;
 } sector_t;
 
 //
 // The SideDef.
 //
+
+#define SF_LIGHTABSOLUTE       0x0001
+// #define SF_LIGHTFOG            0x0002
+#define SF_NOFAKECONTRAST      0x0004
+#define SF_SMOOTHLIGHTING      0x0008
+#define SF_CLIPMIDTEX          0x0010
+#define SF_WRAPMIDTEX          0x0020
+// #define SF_NODECALS            0x0040
+#define SF_LIGHTABSOLUTETOP    0x0080
+#define SF_LIGHTABSOLUTEMID    0x0100
+#define SF_LIGHTABSOLUTEBOTTOM 0x0200
 
 typedef struct
 {
@@ -225,7 +243,26 @@ typedef struct
   int special;
 
   int INTERP_WallPanning;
-  int skybox_index;
+
+  fixed_t textureoffset_top;
+  fixed_t textureoffset_mid;
+  fixed_t textureoffset_bottom;
+  fixed_t rowoffset_top;
+  fixed_t rowoffset_mid;
+  fixed_t rowoffset_bottom;
+
+  fixed_t scalex_top;
+  fixed_t scaley_top;
+  fixed_t scalex_mid;
+  fixed_t scaley_mid;
+  fixed_t scalex_bottom;
+  fixed_t scaley_bottom;
+
+  int lightlevel;
+  int lightlevel_top;
+  int lightlevel_mid;
+  int lightlevel_bottom;
+  unsigned short flags;
 } side_t;
 
 //
@@ -247,13 +284,38 @@ typedef byte r_flags_t;
 #define RF_CLOSED   0x10 // Line blocks view
 #define RF_ISOLATED 0x20 // Isolated line
 
+typedef enum
+{
+  ams_default,
+  ams_one_sided,
+  ams_two_sided,
+  ams_floor_diff,
+  ams_ceiling_diff,
+  ams_extra_floor,
+  ams_special,
+  ams_secret,
+  ams_unseen,
+  ams_locked,
+  ams_teleport,
+  ams_exit,
+  ams_unseen_secret,
+  ams_portal,
+
+  ams_invisible,
+  ams_revealed_secret,
+  ams_closed_door,
+} automap_style_t;
+
+typedef unsigned short line_activation_t;
+typedef unsigned int line_flags_t;
+
 typedef struct line_s
 {
   int iLineID;           // proff 04/05/2000: needed for OpenGL
   vertex_t *v1, *v2;     // Vertices, from v1 to v2.
   fixed_t dx, dy;        // Precalculated v2 - v1 for side checking.
   float texel_length;
-  unsigned int flags;           // Animation related.
+  line_flags_t flags;           // Animation related.
   short special;
   short tag;
   unsigned short sidenum[2];        // Visual appearance: SideDefs.
@@ -264,8 +326,6 @@ typedef struct line_s
   int validcount;        // if == validcount, already checked
   int validcount2;
   void *specialdata;     // thinker_t for reversable actions
-  int tranlump;          // killough 4/11/98: translucency filter, -1 == none
-  int firsttag,nexttag;  // killough 4/17/98: improves searches for tags.
   int r_validcount;      // cph: if == gametic, r_flags already done
   r_flags_t r_flags;     // cph
   degenmobj_t soundorg;  // sound origin for switches/buttons
@@ -274,14 +334,25 @@ typedef struct line_s
   byte player_activations;
 
   // hexen
-  byte arg1;
-  byte arg2;
-  byte arg3;
-  byte arg4;
-  byte arg5;
+  int special_args[5];
+
+  // zdoom
+  line_activation_t activation;
+  byte locknumber;
+  automap_style_t automap_style;
+  int health;
+  int healthgroup;
+  const byte* tranmap;
+  float alpha;
 } line_t;
 
 #define LINE_ARG_COUNT 5
+#define SPECIAL_ARGS_SIZE (5 * sizeof(int))
+#define COLLAPSE_SPECIAL_ARGS(dest, source) { dest[0] = source[0]; \
+                                              dest[1] = source[1]; \
+                                              dest[2] = source[2]; \
+                                              dest[3] = source[3]; \
+                                              dest[4] = source[4]; }
 
 // phares 3/14/98
 //
@@ -316,23 +387,17 @@ typedef struct msecnode_s
 typedef struct
 {
   vertex_t *v1, *v2;
-  fixed_t offset;
-  angle_t angle;
-  angle_t pangle; // re-calculated angle used for rendering
-  int64_t length; // fix long wall wobble
   side_t* sidedef;
   line_t* linedef;
-
-  // figgi -- needed for glnodes
-  dboolean   miniseg;
-
-
   // Sector references.
   // Could be retrieved from linedef, too
   // (but that would be slower -- killough)
   // backsector is NULL for one sided lines
-
   sector_t *frontsector, *backsector;
+  fixed_t offset;
+  angle_t angle;
+  angle_t pangle; // re-calculated angle used for rendering
+  uint32_t halflength; // fix long wall wobble
 } seg_t;
 
 typedef struct ssline_s
@@ -402,9 +467,6 @@ typedef struct drawseg_s
   fixed_t bsilheight;                   // do not clip sprites above this
   fixed_t tsilheight;                   // do not clip sprites below this
 
-  // Added for filtering (fractional texture u coord) support - POPE
-  fixed_t rw_offset, rw_distance, rw_centerangle;
-
   // Pointers to lists for sprite clipping,
   // all three adjusted so [x1] is first value.
 
@@ -445,6 +507,9 @@ typedef struct vissprite_s
   // hexen
   int pclass;                  // player class (used in translation)
   fixed_t floorclip;
+
+  // zdoom
+  const byte* tranmap;
 
   // misc
   int color;
@@ -505,12 +570,18 @@ typedef struct visplane
   int special; // heretic
   fixed_t height;
   fixed_t xoffs, yoffs;         // killough 2/28/98: Support scrolling flats
+  angle_t rotation;
+  fixed_t xscale;
+  fixed_t yscale;
   // e6y: resolution limitation is removed
   // bottom and top arrays are dynamically
   // allocated immediately after the visplane
   unsigned short *bottom;
   unsigned short pad1;          // leave pads for [minx-1]/[maxx+1]
   unsigned short top[3];
+
+  // NEW FIELDS MUST BE ADDED **ABOVE** `unsigned short *bottom;`
+
 } visplane_t;
 
 // hexen

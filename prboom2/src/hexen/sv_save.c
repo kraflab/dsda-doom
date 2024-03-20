@@ -215,11 +215,6 @@ static uint64_t SV_ReadFlags(void)
     return result;
 }
 
-static void *SV_ReadPtr(void)
-{
-    return (void *) (intptr_t) SV_ReadLong();
-}
-
 static void SV_Write(const void *buffer, size_t size)
 {
     CheckBuffer(size);
@@ -245,18 +240,6 @@ static void SV_WriteLong(unsigned int val)
 static void SV_WriteFlags(uint64_t val)
 {
     SV_Write(&val, sizeof(uint64_t));
-}
-
-static void SV_WritePtr(void *val)
-{
-    unsigned int ptr;
-
-    // Write a pointer value. In Vanilla Hexen pointers are 32-bit but
-    // nowadays they might be larger. Whatever value we write here isn't
-    // going to be much use when we reload the game.
-
-    ptr = (unsigned int)(intptr_t) val;
-    SV_WriteLong(ptr & 0xffffffff);
 }
 
 static void SV_OpenRead(int map)
@@ -333,9 +316,7 @@ static void StreamIn_mobj_t(mobj_t *str)
 
     // struct mobj_s *snext, *sprev;
     // Pointer values are discarded:
-    str->snext = SV_ReadPtr();
     str->snext = NULL;
-    str->sprev = SV_ReadPtr();
     str->sprev = NULL;
 
     // angle_t angle;
@@ -350,14 +331,11 @@ static void StreamIn_mobj_t(mobj_t *str)
     // struct mobj_s *bnext, *bprev;
     // Values are read but discarded; this will be restored when the thing's
     // position is set.
-    str->bnext = SV_ReadPtr();
     str->bnext = NULL;
-    str->bprev = SV_ReadPtr();
     str->bprev = NULL;
 
     // struct subsector_s *subsector;
     // Read but discard: pointer will be restored when thing position is set.
-    str->subsector = SV_ReadPtr();
     str->subsector = NULL;
 
     // fixed_t floorz, ceilingz;
@@ -384,7 +362,6 @@ static void StreamIn_mobj_t(mobj_t *str)
 
     // mobjinfo_t *info;
     // Pointer value is read but discarded.
-    str->info = SV_ReadPtr();
     str->info = NULL;
 
     // int tics;
@@ -454,16 +431,18 @@ static void StreamIn_mobj_t(mobj_t *str)
     // short tid;
     str->tid = SV_ReadWord();
 
-    // byte special;
-    str->special = SV_ReadByte();
+    // int special;
+    str->special = SV_ReadLong();
 
-    // byte args[5];
+    // int args[5];
     for (i=0; i<5; ++i)
     {
-        str->args[i] = SV_ReadByte();
+        str->special_args[i] = SV_ReadLong();
     }
 
     str->friction = ORIG_FRICTION;
+    str->gravity = FRACUNIT;
+    str->alpha = 1.f;
 }
 
 static void StreamOutMobjSpecials(mobj_t *mobj)
@@ -490,10 +469,6 @@ static void StreamOut_mobj_t(mobj_t *str)
     SV_WriteLong(str->y);
     SV_WriteLong(str->z);
 
-    // struct mobj_s *snext, *sprev;
-    SV_WritePtr(str->snext);
-    SV_WritePtr(str->sprev);
-
     // angle_t angle;
     SV_WriteLong(str->angle);
 
@@ -502,13 +477,6 @@ static void StreamOut_mobj_t(mobj_t *str)
 
     // int frame;
     SV_WriteLong(str->frame);
-
-    // struct mobj_s *bnext, *bprev;
-    SV_WritePtr(str->bnext);
-    SV_WritePtr(str->bprev);
-
-    // struct subsector_s *subsector;
-    SV_WritePtr(str->subsector);
 
     // fixed_t floorz, ceilingz;
     SV_WriteLong(str->floorz);
@@ -531,9 +499,6 @@ static void StreamOut_mobj_t(mobj_t *str)
 
     // mobjtype_t type;
     SV_WriteLong(str->type);
-
-    // mobjinfo_t *info;
-    SV_WritePtr(str->info);
 
     // int tics;
     SV_WriteLong(str->tics);
@@ -604,13 +569,13 @@ static void StreamOut_mobj_t(mobj_t *str)
     // short tid;
     SV_WriteWord(str->tid);
 
-    // byte special;
-    SV_WriteByte(str->special);
+    // int special;
+    SV_WriteLong(str->special);
 
-    // byte args[5];
+    // int args[5];
     for (i=0; i<5; ++i)
     {
-        SV_WriteByte(str->args[i]);
+        SV_WriteLong(str->special_args[i]);
     }
 }
 
@@ -1349,12 +1314,13 @@ static void ArchiveWorld(void)
     for (i = 0, li = lines; i < numlines; i++, li++)
     {
         SV_WriteLong(li->flags);
+        // TODO: how does this work? it's a short
         SV_WriteByte(li->special);
-        SV_WriteByte(li->arg1);
-        SV_WriteByte(li->arg2);
-        SV_WriteByte(li->arg3);
-        SV_WriteByte(li->arg4);
-        SV_WriteByte(li->arg5);
+        SV_WriteLong(li->special_args[0]);
+        SV_WriteLong(li->special_args[1]);
+        SV_WriteLong(li->special_args[2]);
+        SV_WriteLong(li->special_args[3]);
+        SV_WriteLong(li->special_args[4]);
         for (j = 0; j < 2; j++)
         {
             if (li->sidenum[j] == NO_INDEX)
@@ -1399,11 +1365,11 @@ static void UnarchiveWorld(void)
     {
         li->flags = SV_ReadLong();
         li->special = SV_ReadByte();
-        li->arg1 = SV_ReadByte();
-        li->arg2 = SV_ReadByte();
-        li->arg3 = SV_ReadByte();
-        li->arg4 = SV_ReadByte();
-        li->arg5 = SV_ReadByte();
+        li->special_args[0] = SV_ReadLong();
+        li->special_args[1] = SV_ReadLong();
+        li->special_args[2] = SV_ReadLong();
+        li->special_args[3] = SV_ReadLong();
+        li->special_args[4] = SV_ReadLong();
         for (j = 0; j < 2; j++)
         {
             if (li->sidenum[j] == NO_INDEX)
@@ -2048,7 +2014,6 @@ void SV_MapTeleport(int map, int position)
             continue;
         }
         players[i] = playerBackup[i];
-        ClearMessage();
         players[i].attacker = NULL;
         players[i].poisoner = NULL;
 
@@ -2073,8 +2038,8 @@ void SV_MapTeleport(int map, int position)
         if (deathmatch)
         {
             memset(players[i].frags, 0, sizeof(players[i].frags));
-            mobj = P_SpawnMobj(playerstarts[0][i].x << 16,
-                               playerstarts[0][i].y << 16, 0,
+            mobj = P_SpawnMobj(playerstarts[0][i].x,
+                               playerstarts[0][i].y, 0,
                                HEXEN_MT_PLAYER_FIGHTER);
             players[i].mo = mobj;
             G_DeathMatchSpawnPlayer(i);

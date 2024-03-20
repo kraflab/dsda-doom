@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -632,6 +632,7 @@ typedef enum
 
 #define STAIR_USE_SPECIALS 1
 #define STAIR_SYNC         2
+#define STAIR_CRUSH        4
 
 typedef enum
 {
@@ -698,7 +699,7 @@ typedef struct
   bwhere_e where;
   int   btexture;
   int   btimer;
-  mobj_t* soundorg;
+  degenmobj_t* soundorg;
 
 } button_t;
 
@@ -904,26 +905,6 @@ typedef struct
 
 // p_spec
 
-// killough 3/7/98: Add generalized scroll effects
-
-typedef struct {
-  thinker_t thinker;   // Thinker structure for scrolling
-  fixed_t dx, dy;      // (dx,dy) scroll speeds
-  int affectee;        // Number of affected sidedef, sector, tag, or whatever
-  int control;         // Control sector (-1 if none) used to control scrolling
-  fixed_t last_height; // Last known height of control sector
-  fixed_t vdx, vdy;    // Accumulated velocity if accelerative
-  int accel;           // Whether it's accelerative
-  enum
-  {
-    sc_side,
-    sc_floor,
-    sc_ceiling,
-    sc_carry,
-    sc_carry_ceiling,  // killough 4/11/98: carry objects hanging on ceilings
-  } type;              // Type of scroll effect
-} scroll_t;
-
 // phares 3/12/98: added new model of friction for ice/sludge effects
 
 typedef struct {
@@ -1029,14 +1010,6 @@ sector_t* P_FindModelCeilingSector
 ( fixed_t ceildestheight,
   int secnum ); //jff 02/04/98
 
-int P_FindSectorFromLineTag
-( const line_t *line,
-  int start ); // killough 4/17/98
-
-int P_FindLineFromLineTag
-( const line_t *line,
-  int start );   // killough 4/17/98
-
 int P_FindMinSurroundingLight
 ( sector_t* sector,
   int max );
@@ -1056,6 +1029,11 @@ dboolean PUREFUNC P_PlaneActive(const sector_t *sec);
 dboolean PUREFUNC P_CeilingActive(const sector_t *sec);
 dboolean PUREFUNC P_FloorActive(const sector_t *sec);
 dboolean PUREFUNC P_LightingActive(const sector_t *sec);
+
+short P_FloorLightLevel(const sector_t *sec);
+short P_CeilingLightLevel(const sector_t *sec);
+dboolean P_FloorPlanesDiffer(const sector_t *sec, const sector_t *other);
+dboolean P_CeilingPlanesDiffer(const sector_t *sec, const sector_t *other);
 
 dboolean PUREFUNC P_IsSecret
 ( const sector_t *sec );
@@ -1123,9 +1101,6 @@ void T_MoveElevator
 ( elevator_t* elevator );
 
 // p_spec
-
-void T_Scroll
-( scroll_t * );      // killough 3/7/98: scroll effect thinker
 
 void T_Friction
 ( friction_t * );    // phares 3/12/98: friction thinker
@@ -1499,12 +1474,9 @@ void dsda_SpawnQuake(mobj_t* location, int intensity, int duration,
 
 //
 
-dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activationType);
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t activationType);
 void P_PlayerOnSpecialFlat(player_t * player, int floorType);
 line_t *P_FindLine(int lineTag, int *searchPosition);
-int P_FindSectorFromTag(int tag, int start);
-int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start);
-int P_FindLineFromTag(int tag, int start);
 
 dboolean P_IsSpecialSector(sector_t *sector);
 void P_CopySectorSpecial(sector_t *dest, sector_t *source);
@@ -1648,15 +1620,20 @@ typedef enum {
   zk_each_color   = 229,
 } zdoom_lock_t;
 
-dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock);
-int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, byte tag, byte speed_byte, int topwait,
-                   zdoom_lock_t lock, byte lightTag, dboolean boomgen, int topcountdown);
-int EV_DoZDoomFloor(floor_e floortype, line_t *line, byte tag, fixed_t speed, fixed_t height,
+void P_AddMobjSecret(mobj_t *mobj);
+void P_PlayerCollectSecret(player_t *player);
+dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy);
+dboolean P_CheckSwitchRange(line_t *line, mobj_t *mo, int sideno);
+int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, int tag, fixed_t speed, int topwait,
+                   zdoom_lock_t lock, int lightTag, dboolean boomgen, int topcountdown);
+int EV_DoZDoomFloor(floor_e floortype, line_t *line, int tag, fixed_t speed, fixed_t height,
                    int crush, int change, dboolean hexencrush, dboolean hereticlower);
+int EV_ZDoomFloorStop(int tag, line_t *line);
 int EV_ZDoomFloorCrushStop(int tag);
 int EV_DoZDoomDonut(int tag, line_t *line, fixed_t pillarspeed, fixed_t slimespeed);
-int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
+int EV_DoZDoomCeiling(ceiling_e type, line_t *line, int tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode);
+int EV_ZDoomCeilingStop(int tag, line_t *line);
 int EV_ZDoomCeilingCrushStop(int tag, dboolean remove);
 int EV_DoZDoomPlat(int tag, line_t *line, plattype_e type, fixed_t height,
                    fixed_t speed, int delay, fixed_t lip, int change);
@@ -1672,15 +1649,16 @@ void EV_LightChange(int tag, short change);
 void EV_LightSet(int tag, short level);
 void EV_LightSetMinNeighbor(int tag);
 void EV_LightSetMaxNeighbor(int tag);
-void EV_StartLightFading(int tag, byte level, byte tics);
-void EV_StartLightGlowing(int tag, byte upper, byte lower, byte tics);
-void EV_StartLightFlickering(int tag, byte upper, byte lower);
+void EV_StartLightFading(int tag, short level, short tics);
+void EV_StartLightGlowing(int tag, short upper, short lower, short tics);
+void EV_StartLightFlickering(int tag, short upper, short lower);
 void EV_StartZDoomLightStrobing(int tag, int upper, int lower, int brighttime, int darktime);
 void EV_StartZDoomLightStrobingDoom(int tag, int brighttime, int darktime);
 void EV_StopLightEffect(int tag);
 void T_ZDoom_Glow(zdoom_glow_t *g);
 void T_ZDoom_Flicker(zdoom_flicker_t *g);
 int P_ConvertHexenCrush(int crush);
+void P_ResolveFrictionFactor(fixed_t friction_factor, sector_t *sec);
 
 int EV_TeleportGroup(short group_tid, mobj_t *thing, short source_tid, short dest_tid,
                      dboolean move_source, dboolean fog);

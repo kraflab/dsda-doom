@@ -46,6 +46,7 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe);
 void dsda_InitKeyFrame(void);
 void dsda_ContinueKeyFrame(void);
 int dsda_KeyFrameRestored(void);
+void dsda_StoreTempKeyFrame(void);
 void dsda_StoreQuickKeyFrame(void);
 void dsda_RestoreQuickKeyFrame(void);
 dboolean dsda_RestoreClosestKeyFrame(int tic);

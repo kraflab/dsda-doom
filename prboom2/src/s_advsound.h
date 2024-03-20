@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -36,10 +36,6 @@
 
 #include "p_mobj.h"
 #include "sounds.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 //
 //MUSINFO lump

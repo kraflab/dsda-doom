@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -38,6 +38,7 @@
 
 void I_Init(void);
 void I_Init2(void);
-void I_SafeExit(int rc);
+dboolean I_Interrupted(void);
+NORETURNC11 void I_SafeExit(int rc) NORETURN;
 
 #endif

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -37,10 +37,6 @@
 #include "d_player.h"
 #include "r_data.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern int r_frame_count;
 
 //
@@ -53,8 +49,6 @@ extern fixed_t  viewtancos;
 extern fixed_t  viewtansin;
 extern int      viewwidth;
 extern int      viewheight;
-extern int      viewwindowx;
-extern int      viewwindowy;
 extern int      centerx;
 extern int      centery;
 extern fixed_t  globaluclip;
@@ -100,9 +94,6 @@ extern int LIGHTLEVELS;
 #define MAXLIGHTZ        128
 #define LIGHTZSHIFT       20
 
-/* cph - allow crappy fake contrast to be disabled */
-extern int fake_contrast;
-
 // killough 3/20/98: Allow colormaps to be dynamic (e.g. underwater)
 extern const lighttable_t *(*scalelight)[MAXLIGHTSCALE];
 extern const lighttable_t *(*c_zlight)[LIGHTLEVELS_MAX][MAXLIGHTZ];
@@ -131,8 +122,14 @@ extern const lighttable_t *fixedcolormap;
 // Utility functions.
 //
 
-PUREFUNC int R_PointOnSide(fixed_t x, fixed_t y, const node_t *node);
-PUREFUNC int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line);
+PUREFUNC int R_CompatiblePointOnSide(fixed_t x, fixed_t y, const node_t *node);
+PUREFUNC int R_ZDoomPointOnSide(fixed_t x, fixed_t y, const node_t *node);
+extern int (*R_PointOnSide)(fixed_t x, fixed_t y, const node_t *node);
+
+PUREFUNC int R_CompatiblePointOnSegSide(fixed_t x, fixed_t y, const seg_t *line);
+PUREFUNC int R_ZDoomPointOnSegSide(fixed_t x, fixed_t y, const seg_t *line);
+extern int (*R_PointOnSegSide)(fixed_t x, fixed_t y, const seg_t *line);
+
 angle_t R_PointToAngle2(fixed_t x1, fixed_t y1, fixed_t x, fixed_t y);
 subsector_t *R_PointInSubsector(fixed_t x, fixed_t y);
 
@@ -141,19 +138,18 @@ angle_t R_PointToAngleEx(fixed_t x, fixed_t y);
 angle_t R_PointToAngleEx2(fixed_t x1, fixed_t y1, fixed_t x, fixed_t y);
 angle_t R_PointToPseudoAngle(fixed_t x, fixed_t y);
 
-extern int r_have_internal_hires;
-
 //
 // REFRESH - the actual rendering functions.
 //
 
+void R_ResetColorMap(void);
 void R_RenderPlayerView(player_t *player);   // Called by G_Drawer.
 void R_Init(void);                           // Called by startup code.
-int R_ViewSize(void);
 void R_SetViewSize(void);              // Called by M_Responder.
 void R_ExecuteSetViewSize(void);             // cph - called by D_Display to complete a view resize
 dboolean R_FullView(void);
 dboolean R_PartialView(void);
+dboolean R_StatusBarVisible(void);
 
 #define Pi 3.14159265358979323846f
 #define DEG2RAD(a) ((a * Pi) / 180.0f)

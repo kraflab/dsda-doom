@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -36,6 +36,7 @@
 
 #include <stdarg.h>
 #include <stddef.h>
+#include "doomtype.h"
 
 typedef enum
 {
@@ -45,7 +46,7 @@ typedef enum
   LO_DEBUG=8,
 } OutputLevels;
 
-#ifndef __GNUC__
+#if !defined(__GNUC__) && !defined(__clang__)
 #define __attribute__(x)
 #endif
 
@@ -58,7 +59,7 @@ void I_DisableMessageBoxes(void);
 /* killough 3/20/98: add const
  * killough 4/25/98: add gcc attributes
  * cphipps 01/11- moved from i_system.h */
-void I_Error(const char *error, ...) __attribute__((format(printf,1,2)));
+NORETURNC11 void I_Error(const char *error, ...) __attribute__((format(printf,1,2))) NORETURN;
 void I_Warn(const char *error, ...) __attribute__((format(printf,1,2)));
 
 #endif

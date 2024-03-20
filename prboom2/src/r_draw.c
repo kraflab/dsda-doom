@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -39,7 +39,6 @@
 #include "w_wad.h"
 #include "r_main.h"
 #include "r_draw.h"
-#include "r_filter.h"
 #include "v_video.h"
 #include "st_stuff.h"
 #include "g_game.h"
@@ -59,10 +58,7 @@
 
 byte *viewimage;
 int  viewwidth;
-int  scaledviewwidth;
 int  viewheight;
-int  viewwindowx;
-int  viewwindowy;
 
 // Color tables for different players,
 //  translate a limited part to another
@@ -146,6 +142,11 @@ dboolean R_FullView(void)
 dboolean R_PartialView(void)
 {
   return viewheight != SCREENHEIGHT;
+}
+
+dboolean R_StatusBarVisible(void)
+{
+  return R_PartialView() || automap_on;
 }
 
 //
@@ -336,10 +337,10 @@ R_DrawColumn_f R_GetDrawColumnFunc(enum column_pipeline_e type, enum draw_filter
 }
 
 void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars) {
-  dcvars->x = dcvars->yl = dcvars->yh = dcvars->z = 0;
-  dcvars->iscale = dcvars->texturemid = dcvars->texheight = dcvars->texu = 0;
+  dcvars->x = dcvars->yl = dcvars->yh = 0;
+  dcvars->iscale = dcvars->texturemid = dcvars->texheight = 0;
   dcvars->source = dcvars->prevsource = dcvars->nextsource = NULL;
-  dcvars->colormap = dcvars->nextcolormap = colormaps[0];
+  dcvars->colormap = colormaps[0];
   dcvars->translation = NULL;
   dcvars->edgeslope = dcvars->drawingmasked = 0;
   dcvars->flags = 0;
@@ -474,18 +475,9 @@ void R_InitBuffersRes(void)
 
 void R_InitBuffer(int width, int height)
 {
-  int i=0;
-  // Handle resize,
-  //  e.g. smaller view windows
-  //  with border and/or status bar.
+  int i;
 
-  viewwindowx = (SCREENWIDTH-width) >> 1;
-
-  // Same with base row offset.
-
-  viewwindowy = width==SCREENWIDTH ? 0 : (SCREENHEIGHT-ST_SCALED_HEIGHT-height)>>1;
-
-  drawvars.topleft = screens[0].data + viewwindowy*screens[0].pitch + viewwindowx;
+  drawvars.topleft = screens[0].data;
   drawvars.pitch = screens[0].pitch;
 
   for (i=0; i<FUZZTABLE; i++)
@@ -513,35 +505,25 @@ void R_FillBackScreen (void)
   if (ratio_multiplier != ratio_scale || wide_offsety)
   {
     int only_stbar;
-    int screenblocks;
 
-    screenblocks = R_ViewSize();
-
-    if (V_IsOpenGLMode())
-    {
-      only_stbar = (automap ? screenblocks >= 10 : screenblocks == 10);
-    }
-    else
-    {
-      only_stbar = screenblocks >= 10;
-    }
+    only_stbar = V_IsSoftwareMode() || automap || R_PartialView();
 
     if (only_stbar && ST_SCALED_OFFSETX > 0)
     {
       int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
 
       if (V_IsOpenGLMode())
-        V_FillFlat(grnrock.lumpnum, 1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, VPT_NONE);
+        V_FillFlat(grnrock.lumpnum, 1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, VPT_STRETCH);
       else
       {
         V_FillFlat(grnrock.lumpnum, 1,
-          0, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
+          0, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_STRETCH);
         V_FillFlat(grnrock.lumpnum, 1,
-          SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
+          SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_STRETCH);
 
         // For custom huds, need to put the backfill inside the bar area (in the copy buffer)
         V_FillFlat(grnrock.lumpnum, 0,
-          ST_SCALED_OFFSETX, stbar_top, SCREENWIDTH - 2 * ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_NONE);
+          ST_SCALED_OFFSETX, stbar_top, SCREENWIDTH - 2 * ST_SCALED_OFFSETX, ST_SCALED_HEIGHT, VPT_STRETCH);
       }
 
       // heretic_note: I think this looks bad, so I'm skipping it...
@@ -551,43 +533,8 @@ void R_FillBackScreen (void)
         V_FillPatch(brdr_b.lumpnum, 1, 0, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
         V_FillPatch(brdr_b.lumpnum, 1, SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
       }
-
-      V_EndUIDraw();
-      return;
     }
   }
-
-  if (scaledviewwidth == SCREENWIDTH)
-  {
-    V_EndUIDraw();
-    return;
-  }
-
-  V_FillFlat(grnrock.lumpnum, 1, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
-
-  // line between view and status bar
-  if ((ratio_multiplier != ratio_scale || wide_offsety) &&
-      (automap || scaledviewwidth == SCREENWIDTH))
-  {
-    V_FillPatch(brdr_b.lumpnum, 1, 0, SCREENHEIGHT - ST_SCALED_HEIGHT, SCREENWIDTH, brdr_b.height, VPT_NONE);
-  }
-
-  V_FillPatch(brdr_t.lumpnum, 1, viewwindowx, viewwindowy - g_border_offset, scaledviewwidth, brdr_t.height, VPT_NONE);
-
-  V_FillPatch(brdr_b.lumpnum, 1, viewwindowx, viewwindowy + viewheight, scaledviewwidth, brdr_b.height, VPT_NONE);
-
-  V_FillPatch(brdr_l.lumpnum, 1, viewwindowx - g_border_offset, viewwindowy, brdr_l.width, viewheight, VPT_NONE);
-
-  V_FillPatch(brdr_r.lumpnum, 1, viewwindowx + scaledviewwidth, viewwindowy, brdr_r.width, viewheight, VPT_NONE);
-
-  // Draw beveled edge.
-  V_DrawNumPatch(viewwindowx - g_border_offset, viewwindowy - g_border_offset, 1, brdr_tl.lumpnum, CR_DEFAULT, VPT_NONE);
-
-  V_DrawNumPatch(viewwindowx + scaledviewwidth, viewwindowy - g_border_offset, 1, brdr_tr.lumpnum, CR_DEFAULT, VPT_NONE);
-
-  V_DrawNumPatch(viewwindowx - g_border_offset, viewwindowy + viewheight, 1, brdr_bl.lumpnum, CR_DEFAULT, VPT_NONE);
-
-  V_DrawNumPatch(viewwindowx + scaledviewwidth, viewwindowy + viewheight, 1, brdr_br.lumpnum, CR_DEFAULT, VPT_NONE);
 
   V_EndUIDraw();
 }
@@ -596,7 +543,7 @@ void R_FillBackScreen (void)
 // Copy a screen buffer.
 //
 
-void R_VideoErase(int x, int y, int count)
+static void R_CopyScreenBufferSection(int x, int y, int count)
 {
   if (V_IsSoftwareMode())
     memcpy(screens[0].data+y*screens[0].pitch+x,
@@ -612,7 +559,7 @@ void R_VideoErase(int x, int y, int count)
 
 void R_DrawViewBorder(void)
 {
-  int top, side, i;
+  int i;
 
   if (V_IsOpenGLMode()) {
     // proff 11/99: we don't have a backscreen in OpenGL from where we can copy this
@@ -621,35 +568,14 @@ void R_DrawViewBorder(void)
   }
 
   // e6y: wide-res
-  if ((ratio_multiplier != ratio_scale || wide_offsety) &&
-     (R_PartialView() || automap_on))
+  if ((ratio_multiplier != ratio_scale || wide_offsety) && R_StatusBarVisible())
   {
-    for (i = (SCREENHEIGHT - ST_SCALED_HEIGHT); i < SCREENHEIGHT; i++)
+    for (i = SCREENHEIGHT - ST_SCALED_HEIGHT; i < SCREENHEIGHT; i++)
     {
-      R_VideoErase (0, i, ST_SCALED_OFFSETX);
-      R_VideoErase (SCREENWIDTH - ST_SCALED_OFFSETX, i, ST_SCALED_OFFSETX);
+      R_CopyScreenBufferSection(0, i, ST_SCALED_OFFSETX);
+      R_CopyScreenBufferSection(SCREENWIDTH - ST_SCALED_OFFSETX, i, ST_SCALED_OFFSETX);
     }
   }
-
-  if ( viewheight >= ( SCREENHEIGHT - ST_SCALED_HEIGHT ))
-    return; // if high-res, don't go any further!
-
-  top = ((SCREENHEIGHT-ST_SCALED_HEIGHT)-viewheight)/2;
-  side = (SCREENWIDTH-scaledviewwidth)/2;
-
-  // copy top
-  for (i = 0; i < top; i++)
-    R_VideoErase (0, i, SCREENWIDTH);
-
-  // copy sides
-  for (i = top; i < (top+viewheight); i++) {
-    R_VideoErase (0, i, side);
-    R_VideoErase (viewwidth+side, i, side);
-  }
-
-  // copy bottom
-  for (i = top+viewheight; i < (SCREENHEIGHT - ST_SCALED_HEIGHT); i++)
-    R_VideoErase (0, i, SCREENWIDTH);
 }
 
 void R_SetFuzzPos(int fp)

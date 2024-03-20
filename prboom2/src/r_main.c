@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -63,6 +63,8 @@
 
 #include "dsda/configuration.h"
 #include "dsda/exhud.h"
+#include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
@@ -79,8 +81,6 @@ int LIGHTSEGSHIFT = 3;
 int LIGHTBRIGHT   = 2;
 
 int r_frame_count;
-
-int r_have_internal_hires = false;
 
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW 2048
@@ -120,7 +120,6 @@ float modelMatrix[16];
 float projMatrix[16];
 
 extern const lighttable_t **walllights;
-extern const lighttable_t **walllightsnext;
 
 //
 // precalculated math tables
@@ -152,8 +151,6 @@ const lighttable_t *(*scalelight)[MAXLIGHTSCALE];
 const lighttable_t *(*zlight)[MAXLIGHTZ];
 const lighttable_t *fullcolormap;
 const lighttable_t **colormaps;
-/* cph - allow crappy fake contrast to be disabled */
-int fake_contrast;
 
 // killough 3/20/98, 4/4/98: end dynamic colormaps
 
@@ -176,9 +173,9 @@ int extralight;                           // bumped light from gun blasts
 // Workaround for optimization bug in clang
 // fixes desync in competn/doom/fp2-3655.lmp and in dmnsns.wad dmn01m909.lmp
 #if defined(__clang__)
-PUREFUNC int R_PointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
+PUREFUNC int R_CompatiblePointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
 #else
-PUREFUNC int R_PointOnSide(fixed_t x, fixed_t y, const node_t *node)
+PUREFUNC int R_CompatiblePointOnSide(fixed_t x, fixed_t y, const node_t *node)
 #endif
 {
   if (!node->dx)
@@ -196,9 +193,32 @@ PUREFUNC int R_PointOnSide(fixed_t x, fixed_t y, const node_t *node)
   return FixedMul(y, node->dx>>FRACBITS) >= FixedMul(node->dy>>FRACBITS, x);
 }
 
+#if defined(__clang__)
+PUREFUNC int R_ZDoomPointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
+#else
+PUREFUNC int R_ZDoomPointOnSide(fixed_t x, fixed_t y, const node_t *node)
+#endif
+{
+  if (!node->dx)
+    return x <= node->x ? node->dy > 0 : node->dy < 0;
+
+  if (!node->dy)
+    return y <= node->y ? node->dx < 0 : node->dx > 0;
+
+  x -= node->x;
+  y -= node->y;
+
+  // Try to quickly decide by looking at sign bits.
+  if ((node->dy ^ node->dx ^ x ^ y) < 0)
+    return (node->dy ^ x) < 0;  // (left is negative)
+  return (long long) y * node->dx >= (long long) x * node->dy;
+}
+
+int (*R_PointOnSide)(fixed_t x, fixed_t y, const node_t *node);
+
 // killough 5/2/98: reformatted
 
-PUREFUNC int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
+PUREFUNC int R_CompatiblePointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
 {
   fixed_t lx = line->v1->x;
   fixed_t ly = line->v1->y;
@@ -219,6 +239,30 @@ PUREFUNC int R_PointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
     return (ldy ^ x) < 0;          // (left is negative)
   return FixedMul(y, ldx>>FRACBITS) >= FixedMul(ldy>>FRACBITS, x);
 }
+
+PUREFUNC int R_ZDoomPointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
+{
+  fixed_t lx = line->v1->x;
+  fixed_t ly = line->v1->y;
+  fixed_t ldx = line->v2->x - lx;
+  fixed_t ldy = line->v2->y - ly;
+
+  if (!ldx)
+    return x <= lx ? ldy > 0 : ldy < 0;
+
+  if (!ldy)
+    return y <= ly ? ldx < 0 : ldx > 0;
+
+  x -= lx;
+  y -= ly;
+
+  // Try to quickly decide by looking at sign bits.
+  if ((ldy ^ ldx ^ x ^ y) < 0)
+    return (ldy ^ x) < 0;          // (left is negative)
+  return (long long) y * ldx >= (long long) x * ldy;
+}
+
+int (*R_PointOnSegSide)(fixed_t x, fixed_t y, const seg_t *line);
 
 //
 // R_PointToAngle
@@ -447,11 +491,6 @@ static void R_InitLightTables (void)
 dboolean setsizeneeded;
 static int setblocks;
 
-int R_ViewSize(void)
-{
-  return setblocks;
-}
-
 void R_SetViewSize(void)
 {
   setsizeneeded = true;
@@ -510,22 +549,10 @@ int R_Project(float objx, float objy, float objz, float *winx, float *winy, floa
 
 void R_SetupViewport(void)
 {
-  int screenblocks;
-  int height;
-
-  screenblocks = R_ViewSize();
-
-  if (screenblocks == 11)
-    height = SCREENHEIGHT;
-  else if (screenblocks == 10)
-    height = SCREENHEIGHT;
-  else
-    height = (screenblocks*SCREENHEIGHT/10) & ~7;
-
-  viewport[0] = viewwindowx;
-  viewport[1] = SCREENHEIGHT-(height+viewwindowy-((height-viewheight)/2));
+  viewport[0] = 0;
+  viewport[1] = (SCREENHEIGHT - viewheight) / 2;
   viewport[2] = viewwidth;
-  viewport[3] = height;
+  viewport[3] = SCREENHEIGHT;
 }
 
 void R_SetupPerspective(float fovy, float aspect, float znear)
@@ -616,27 +643,18 @@ void R_ExecuteSetViewSize (void)
   SetRatio(SCREENWIDTH, SCREENHEIGHT);
 
   if (setblocks == 11)
-    {
-      scaledviewwidth = SCREENWIDTH;
-      viewheight = SCREENHEIGHT;
-      freelookviewheight = viewheight;
-    }
-// proff 09/24/98: Added for high-res
-  else if (setblocks == 10)
-    {
-      scaledviewwidth = SCREENWIDTH;
-      viewheight = SCREENHEIGHT-ST_SCALED_HEIGHT;
-      freelookviewheight = SCREENHEIGHT;
-    }
+  {
+    viewheight = SCREENHEIGHT;
+    freelookviewheight = viewheight;
+  }
+  // proff 09/24/98: Added for high-res
   else
-    {
-// proff 08/17/98: Changed for high-res
-      scaledviewwidth = setblocks*SCREENWIDTH/10;
-      viewheight = (setblocks*(SCREENHEIGHT-ST_SCALED_HEIGHT)/10) & ~7;
-      freelookviewheight = setblocks*SCREENHEIGHT/10;
-    }
+  {
+    viewheight = SCREENHEIGHT - ST_SCALED_HEIGHT;
+    freelookviewheight = SCREENHEIGHT;
+  }
 
-  viewwidth = scaledviewwidth;
+  viewwidth = SCREENWIDTH;
 
   viewheightfrac = viewheight<<FRACBITS;//e6y
 
@@ -667,7 +685,7 @@ void R_ExecuteSetViewSize (void)
 
   dsda_SetupStretchParams();
 
-  R_InitBuffer (scaledviewwidth, viewheight);
+  R_InitBuffer (SCREENWIDTH, viewheight);
 
   R_InitTextureMapping();
 
@@ -676,7 +694,7 @@ void R_ExecuteSetViewSize (void)
   // proff 11/06/98: Added for high-res
   // e6y: wide-res
   pspritexscale = (wide_centerx << FRACBITS) / 160;
-  pspriteyscale = (((cheight*viewwidth)/SCREENWIDTH) << FRACBITS) / 200;
+  pspriteyscale = (cheight << FRACBITS) / 200;
   pspriteiscale = FixedDiv (FRACUNIT, pspritexscale);
   // [FG] make sure that the product of the weapon sprite scale factor
   //      and its reciprocal is always at least FRACUNIT to
@@ -687,9 +705,9 @@ void R_ExecuteSetViewSize (void)
 
   //e6y: added for GL
   pspritexscale_f = (float)wide_centerx/160.0f;
-  pspriteyscale_f = (((float)cheight*viewwidth)/(float)SCREENWIDTH) / 200.0f;
+  pspriteyscale_f = (float)cheight / 200.0f;
 
-  skyiscale = (fixed_t)(((uint64_t)FRACUNIT * SCREENWIDTH * 200) / (viewwidth * SCREENHEIGHT));
+  skyiscale = (200 << FRACBITS) / SCREENHEIGHT;
 
 	// [RH] Sky height fix for screens not 200 (or 240) pixels tall
 	R_InitSkyMap();
@@ -714,7 +732,7 @@ void R_ExecuteSetViewSize (void)
     int j, startmap = ((LIGHTLEVELS-LIGHTBRIGHT-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
     for (j=0 ; j<MAXLIGHTSCALE ; j++)
     {
-      int t, level = startmap - j/**320/viewwidth*//DISTMAP;
+      int t, level = startmap - j/DISTMAP;
 
       if (level < 0)
         level = 0;
@@ -832,6 +850,12 @@ void R_SetupMatrix(void)
   R_BuildModelViewMatrix();
 }
 
+void R_ResetColorMap(void)
+{
+  fullcolormap = colormaps[0];
+  fixedcolormap = 0;
+}
+
 //
 // R_SetupFrame
 //
@@ -858,16 +882,19 @@ static void R_SetupFrame (player_t *player)
 
   // killough 3/20/98, 4/4/98: select colormap based on player status
 
-  if (player->mo->subsector->sector->heightsec != -1)
-    {
-      const sector_t *s = player->mo->subsector->sector->heightsec + sectors;
-      cm = viewz < s->floorheight ? s->bottommap : viewz > s->ceilingheight ?
-        s->topmap : s->midmap;
-      if (cm < 0 || cm > numcolormaps)
-        cm = 0;
-    }
+  if (player->mo->subsector->sector->colormap)
+    cm = player->mo->subsector->sector->colormap;
+  else if (player->mo->subsector->sector->heightsec != -1)
+  {
+    const sector_t *s = player->mo->subsector->sector->heightsec + sectors;
+    cm = viewz < s->floorheight ? s->bottommap :
+         viewz > s->ceilingheight ? s->topmap :
+         s->midmap;
+    if (cm < 0 || cm > numcolormaps)
+      cm = 0;
+  }
   else
-    cm = 0;
+    cm = map_info.default_colormap;
 
   //e6y: save previous and current colormap
   boom_cm = cm;
@@ -892,7 +919,6 @@ static void R_SetupFrame (player_t *player)
         + player->fixedcolormap*256*sizeof(lighttable_t);
 
       walllights = scalelightfixed;
-      walllightsnext = scalelightfixed;
 
       for (i=0 ; i<MAXLIGHTSCALE ; i++)
         scalelightfixed[i] = fixedcolormap;
@@ -928,7 +954,7 @@ static void R_InitDrawScene(void)
     if (dsda_IntConfig(dsda_config_flashing_hom))
     { // killough 2/10/98: add flashing red HOM indicators
       unsigned char color=(gametic % 20) < 9 ? 0xb0 : 0;
-      V_FillRect(0, viewwindowx, viewwindowy, viewwidth, viewheight, color);
+      V_FillRect(0, 0, 0, viewwidth, viewheight, color);
       R_DrawViewBorder();
     }
 
@@ -958,6 +984,11 @@ static void R_RenderBSPNodes(void)
   {
     // The head node is the last node output.
     R_RenderBSPNode(numnodes - 1);
+  }
+
+  if (map_format.zdoom && V_IsOpenGLMode())
+  {
+    R_ForceRenderPolyObjs();
   }
 }
 

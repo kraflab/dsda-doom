@@ -16,8 +16,10 @@
 //
 
 #include "doomstat.h"
+#include "f_finale.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "p_enemy.h"
 #include "p_spec.h"
 #include "p_tick.h"
 #include "r_state.h"
@@ -31,6 +33,7 @@
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/preferences.h"
 
 #include "u.h"
 
@@ -43,13 +46,17 @@ static struct MapEntry* dsda_UMapEntry(int gameepisode, int gamemap)
   char lumpname[9];
   unsigned i;
 
-  snprintf(lumpname, sizeof(lumpname), "%s", MAPNAME(gameepisode, gamemap));
+  snprintf(lumpname, sizeof(lumpname), "%s", VANILLA_MAP_LUMP_NAME(gameepisode, gamemap));
 
   for (i = 0; i < Maps.mapcount; i++)
     if (!stricmp(lumpname, Maps.maps[i].mapname))
       return &Maps.maps[i];
 
   return NULL;
+}
+
+int dsda_UNameToMap(int* found, const char* name, int* episode, int* map) {
+  return false;
 }
 
 int dsda_UFirstMap(int* episode, int* map) {
@@ -160,6 +167,10 @@ int dsda_UMapMusic(int* music_index, int* music_lump) {
   return true;
 }
 
+int dsda_UIntermissionMusic(int* music_index, int* music_lump) {
+  return false;
+}
+
 int dsda_UInterMusic(int* music_index, int* music_lump) {
   int lump;
 
@@ -219,7 +230,6 @@ int dsda_UStartFinale(void) {
 int dsda_UFTicker(void) {
   void WI_checkForAccelerate(void);
   float Get_TextSpeed(void);
-  void F_StartCast (void);
 
   int next_level = false;
   const int TEXTSPEED = 3;
@@ -254,7 +264,7 @@ int dsda_UFTicker(void) {
   if (next_level) {
     if (gamemapinfo->endpic[0] && (strcmp(gamemapinfo->endpic, "-") != 0)) {
       if (!stricmp(gamemapinfo->endpic, "$CAST")) {
-        F_StartCast();
+        F_StartCast(NULL, NULL, true);
         return false; // let go of finale ownership
       }
       else {
@@ -262,7 +272,7 @@ int dsda_UFTicker(void) {
         finalestage = 1;
         wipegamestate = -1; // force a wipe
         if (!stricmp(gamemapinfo->endpic, "$BUNNY"))
-          S_StartMusic(mus_bunny);
+          F_StartScroll(NULL, NULL, NULL, true);
         else if (!stricmp(gamemapinfo->endpic, "!"))
           return false; // let go of finale ownership
       }
@@ -284,7 +294,7 @@ void dsda_UFDrawer(void) {
     F_BunnyScroll();
   else {
     // e6y: wide-res
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, gamemapinfo->endpic, CR_DEFAULT, VPT_STRETCH);
   }
 }
@@ -295,21 +305,12 @@ void dsda_UFDrawer(void) {
 int dsda_UBossAction(mobj_t* mo) {
   int i;
   line_t junk;
-  thinker_t* th;
 
   if (!gamemapinfo || !gamemapinfo->numbossactions)
     return false;
 
   if (gamemapinfo->numbossactions < 0)
     return true;
-
-  // make sure there is a player alive for victory
-  for (i = 0; i < g_maxplayers; i++)
-    if (playeringame[i] && players[i].health > 0)
-      break;
-
-  if (i == g_maxplayers)
-    return true; // no one left alive, so do not end game
 
   for (i = 0; i < gamemapinfo->numbossactions; i++)
     if (gamemapinfo->bossactions[i].type == mo->type)
@@ -318,15 +319,11 @@ int dsda_UBossAction(mobj_t* mo) {
   if (i >= gamemapinfo->numbossactions)
     return true; // no matches found
 
-  // scan the remaining thinkers to see
-  // if all bosses are dead
-  for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
-    if (th->function == P_MobjThinker) {
-      mobj_t* mo2 = (mobj_t*) th;
+  if (!P_CheckBossDeath(mo))
+    return true;
 
-      if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
-        return true; // other boss not dead
-    }
+  if (map_format.zdoom)
+    I_Error("UMAPINFO boss actions are incompatible with this map format (use MAPINFO)");
 
   for (i = 0; i < gamemapinfo->numbossactions; i++) {
     if (gamemapinfo->bossactions[i].type == mo->type) {
@@ -343,9 +340,20 @@ int dsda_UBossAction(mobj_t* mo) {
   return true;
 }
 
-int dsda_UHUTitle(const char** title) {
-  void HU_AddCharToTitle(char s);
+int dsda_UMapLumpName(const char** name, int episode, int map) {
+  return false;
+}
 
+int dsda_UMapAuthor(const char** author) {
+  if (!gamemapinfo)
+    return false;
+
+  *author = gamemapinfo->author;
+
+  return true;
+}
+
+int dsda_UHUTitle(dsda_string_t* str) {
   const char* s;
 
   if (!gamemapinfo || !gamemapinfo->levelname)
@@ -356,15 +364,10 @@ int dsda_UHUTitle(const char** title) {
   else
     s = gamemapinfo->mapname;
 
-  if (s == gamemapinfo->mapname || strcmp(s, "-") != 0) {
-    while (*s)
-      HU_AddCharToTitle(*(s++));
-
-    HU_AddCharToTitle(':');
-    HU_AddCharToTitle(' ');
-  }
-
-  *title = gamemapinfo->levelname;
+  if (s == gamemapinfo->mapname || strcmp(s, "-") != 0)
+    dsda_StringPrintF(str, "%s: %s",s, gamemapinfo->levelname);
+  else
+    dsda_StringPrintF(str, "%s", gamemapinfo->levelname);
 
   return true;
 }
@@ -405,6 +408,9 @@ int dsda_UPrepareIntermission(int* result) {
 
     dsda_LegacyParTime(&wminfo.fake_partime, &wminfo.modified_partime);
   }
+
+  if (map_format.zdoom && leave_data.map > 0)
+    I_Error("UMAPINFO maps are incompatible with this exit (use MAPINFO)");
 
   if (secretexit)
     next = gamemapinfo->nextsecret;
@@ -470,7 +476,7 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
-  if (dsda_Flag(dsda_arg_nomapinfo))
+  if (dsda_Flag(dsda_arg_nomapinfo) || dsda_UseMapinfo() || raven)
     return;
 
   p = -1;
@@ -498,9 +504,14 @@ int dsda_UEnterPic(const char** enter_pic) {
   return true;
 }
 
+int dsda_UBorderTexture(const char** border_texture) {
+  return false;
+}
+
 int dsda_UPrepareEntering(void) {
   extern const char *el_levelname;
   extern const char *el_levelpic;
+  extern const char *el_author;
 
   if (!nextmapinfo)
     return false;
@@ -508,12 +519,14 @@ int dsda_UPrepareEntering(void) {
   if (nextmapinfo->levelname && nextmapinfo->levelpic[0] == 0) {
     el_levelname = nextmapinfo->levelname;
     el_levelpic = NULL;
+    el_author = nextmapinfo->author;
 
     return true;
   }
   else if (nextmapinfo->levelpic[0]) {
     el_levelname = NULL;
     el_levelpic = nextmapinfo->levelpic;
+    el_author = NULL;
 
     return true;
   }
@@ -524,6 +537,7 @@ int dsda_UPrepareEntering(void) {
 int dsda_UPrepareFinished(void) {
   extern const char *lf_levelname;
   extern const char *lf_levelpic;
+  extern const char *lf_author;
 
   if (!lastmapinfo)
     return false;
@@ -531,12 +545,14 @@ int dsda_UPrepareFinished(void) {
   if (lastmapinfo->levelname && lastmapinfo->levelpic[0] == 0) {
     lf_levelname = lastmapinfo->levelname;
     lf_levelpic = NULL;
+    lf_author = lastmapinfo->author;
 
     return true;
   }
   else if (lastmapinfo->levelpic[0]) {
     lf_levelname = NULL;
     lf_levelpic = lastmapinfo->levelpic;
+    lf_author = NULL;
 
     return true;
   }
@@ -564,6 +580,22 @@ int dsda_USky2Texture(short* texture) {
   return false;
 }
 
+int dsda_UGravity(fixed_t* gravity) {
+  return false;
+}
+
+int dsda_UAirControl(fixed_t* air_control) {
+  return false;
+}
+
 int dsda_UInitSky(void) {
+  return false;
+}
+
+int dsda_UMapFlags(map_info_flags_t* flags) {
+  return false;
+}
+
+int dsda_UMapColorMap(int* colormap) {
   return false;
 }

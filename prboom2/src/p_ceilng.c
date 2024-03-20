@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -43,6 +43,7 @@
 #include "hexen/p_acs.h"
 #include "hexen/sn_sonix.h"
 
+#include "dsda/id_list.h"
 #include "dsda/map_format.h"
 
 // the list of ceilings moving currently, including crushers
@@ -187,7 +188,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 
       // if not silent, make moving sound
       if (!(leveltime & 7) && !ceiling->silent)
-        S_LoopSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov, 8);
+        S_LoopSectorSound(ceiling->sector, g_sfx_stnmov, 8);
 
       // handle reaching destination height
       if (res == pastdest)
@@ -212,7 +213,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 
           // crushers reverse direction at the top
           case silentCrushAndRaise:
-            S_StartSound((mobj_t *)&ceiling->sector->soundorg,sfx_pstop);
+            S_StartSectorSound(ceiling->sector, sfx_pstop);
             // fallthrough
           case genSilentCrusher:
           case genCrusher:
@@ -225,7 +226,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
             ceiling->direction = -1;
             ceiling->speed = ceiling->oldspeed;
             if (ceiling->silent == 1)
-              S_StartSound((mobj_t *) &ceiling->sector->soundorg, sfx_pstop);
+              S_StartSectorSound(ceiling->sector, sfx_pstop);
             break;
 
           default:
@@ -250,7 +251,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
 
       // if not silent, make moving sound
       if (!(leveltime & 7) && !ceiling->silent)
-        S_LoopSound((mobj_t *) &ceiling->sector->soundorg, g_sfx_stnmov, 8);
+        S_LoopSectorSound(ceiling->sector, g_sfx_stnmov, 8);
 
       // handle reaching destination height
       if (res == pastdest)
@@ -269,7 +270,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
           // make platform stop at bottom of all crusher strokes
           // except generalized ones, reset speed, start back up
           case silentCrushAndRaise:
-            S_StartSound((mobj_t *)&ceiling->sector->soundorg,sfx_pstop);
+            S_StartSectorSound(ceiling->sector, sfx_pstop);
             // fallthrough
           case crushAndRaise:
             ceiling->speed = CEILSPEED;
@@ -303,7 +304,7 @@ void T_MoveCompatibleCeiling(ceiling_t * ceiling)
             ceiling->speed = ceiling->speed2;
             ceiling->direction = 1;
             if (ceiling->silent == 1)
-              S_StartSound((mobj_t *) &ceiling->sector->soundorg, sfx_pstop);
+              S_StartSectorSound(ceiling->sector, sfx_pstop);
             break;
 
           default:
@@ -427,15 +428,13 @@ int EV_DoCeiling
 ( line_t* line,
   ceiling_e type )
 {
-  int   secnum;
+  const int *id_p;
   int   rtn;
   sector_t* sec;
   ceiling_t*  ceiling;
 
-  secnum = -1;
   rtn = 0;
 
-  if (ProcessNoTagLines(line, &sec, &secnum)) {if (zerotag_manual) goto manual_ceiling; else {return rtn;}};//e6y
   // Reactivate in-stasis ceilings...for certain types.
   // This restarts a crusher after it has been stopped
   switch(type)
@@ -450,14 +449,13 @@ int EV_DoCeiling
   }
 
   // affects all sectors with the same tag as the linedef
-  while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
+  FIND_SECTORS(id_p, line->tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
 
-manual_ceiling://e6y
     // if ceiling already moving, don't start a second function on it
-    if (P_CeilingActive(sec)) { //jff 2/22/98
-      if (!zerotag_manual) continue; else {return rtn;}};//e6y
+    if (P_CeilingActive(sec)) //jff 2/22/98
+      continue;
 
     // create a new ceiling thinker
     rtn = 1;
@@ -521,7 +519,6 @@ manual_ceiling://e6y
     ceiling->tag = sec->tag;
     ceiling->type = type;
     P_AddActiveCeiling(ceiling);
-    if (zerotag_manual) return rtn; //e6y
   }
   return rtn;
 }
@@ -568,6 +565,36 @@ int P_ActivateInStasisCeiling(int tag)
     }
   }
   return rtn;
+}
+
+// TODO: without reflection, we don't know if the ceilingdata needs special handling
+int EV_ZDoomCeilingStop(int tag, line_t *line)
+{
+  const int *id_p;
+  ceilinglist_t *cl;
+
+  for (cl = activeceilings; cl; cl = cl->next)
+  {
+    ceiling_t *ceiling = cl->ceiling;
+    if (ceiling->tag == tag)
+    {
+      P_RemoveActiveCeiling(ceiling);
+    }
+  }
+
+  FIND_SECTORS2(id_p, tag, line)
+  {
+    sector_t *sec = &sectors[*id_p];
+    ceiling_t *ceiling = (ceiling_t *) sec->ceilingdata;
+
+    if (ceiling)
+    {
+      sec->ceilingdata = NULL;
+      P_RemoveThinker(&ceiling->thinker);
+    }
+  }
+
+  return true;
 }
 
 int EV_ZDoomCeilingCrushStop(int tag, dboolean remove)
@@ -908,11 +935,11 @@ static void P_SpawnZDoomCeiling(sector_t *sec, ceiling_e type, line_t *line, int
   return;
 }
 
-int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fixed_t speed2,
+int EV_DoZDoomCeiling(ceiling_e type, line_t *line, int tag, fixed_t speed, fixed_t speed2,
                       fixed_t height, int crush, byte silent, int change, crushmode_e crushmode)
 {
   sector_t *sec;
-  int secnum = -1;
+  const int *id_p;
   int retcode = 0;
 
   height *= FRACUNIT;
@@ -920,6 +947,8 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
   // check if a manual trigger, if so do just the sector on the backside
   if (tag == 0)
   {
+    int secnum;
+
     if (!line || !(sec = line->backsector))
       return 0;
 
@@ -943,9 +972,9 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
     P_ActivateInStasisCeiling(tag);
   }
 
-  while ((secnum = P_FindSectorFromTag(tag, secnum)) >= 0)
+  FIND_SECTORS(id_p, tag)
   {
-    sec = &sectors[secnum];
+    sec = &sectors[*id_p];
     if (sec->ceilingdata)
     {
       continue;
@@ -960,16 +989,16 @@ int EV_DoZDoomCeiling(ceiling_e type, line_t *line, byte tag, fixed_t speed, fix
 
 int Hexen_EV_DoCeiling(line_t * line, byte * arg, ceiling_e type)
 {
-    int secnum, rtn;
+    const int *id_p;
+    int rtn;
     sector_t *sec;
     ceiling_t *ceiling;
 
-    secnum = -1;
     rtn = 0;
 
-    while ((secnum = P_FindSectorFromTag(arg[0], secnum)) >= 0)
+    FIND_SECTORS(id_p, arg[0])
     {
-        sec = &sectors[secnum];
+        sec = &sectors[*id_p];
         if (sec->floordata || sec->ceilingdata)
             continue;
 

@@ -14,6 +14,7 @@
 // GNU General Public License for more details.
 //
 
+#include "am_map.h"
 #include "doomstat.h"
 #include "d_event.h"
 #include "s_sound.h"
@@ -74,11 +75,8 @@ static char *HubText;
 
 extern dboolean BorderNeedRefresh;
 
-extern void AM_Stop(void);
-
 void Hexen_IN_Start(wbstartstruct_t* wbstartstruct)
 {
-    int i;
     V_SetPalette(0);
     InitStats();
     LoadPics();
@@ -86,7 +84,7 @@ void Hexen_IN_Start(wbstartstruct_t* wbstartstruct)
     interstate = 0;
     skipintermission = false;
     intertime = 0;
-    AM_Stop();
+    AM_Stop(false);
     SN_StopAllSequences();
 }
 
@@ -120,7 +118,6 @@ static void InitStats(void)
     int j;
     int oldCluster;
     signed int slaughterfrags;
-    int posnum;
     int slaughtercount;
     int playercount;
     const char *msgLumpName;
@@ -156,7 +153,6 @@ static void InitStats(void)
         gametype = DEATHMATCH;
         slaughterboy = 0;
         slaughterfrags = -9999;
-        posnum = 0;
         playercount = 0;
         slaughtercount = 0;
         for (i = 0; i < g_maxplayers; i++)
@@ -172,7 +168,6 @@ static void InitStats(void)
                         totalFrags[i] += players[i].frags[j];
                     }
                 }
-                posnum++;
             }
             if (totalFrags[i] > slaughterfrags)
             {
@@ -196,8 +191,6 @@ static void InitStats(void)
 
 static void LoadPics(void)
 {
-    int i;
-
     if (HubCount || gametype == DEATHMATCH)
     {
         FontABaseLump = W_GetNumForName("FONTA_S") + 1;
@@ -356,7 +349,7 @@ static void DrDeathTally(void)
     if (intertime >= TALLY_EFFECT_TICKS && showTotals == false)
     {
         showTotals = true;
-        S_StartSound(NULL, hexen_sfx_platform_stop);
+        S_StartVoidSound(hexen_sfx_platform_stop);
     }
     y = yPos >> FRACBITS;
     for (i = 0; i < g_maxplayers; i++)

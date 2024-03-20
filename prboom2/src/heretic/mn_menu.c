@@ -49,16 +49,12 @@ static void MN_InitFonts(void)
 
 extern menu_t MainDef;
 extern menu_t EpiDef;
-extern menu_t NewDef;
+extern menu_t SkillDef;
 extern menu_t OptionsDef;
 extern menu_t SoundDef;
 extern menu_t LoadDef;
 extern menu_t SaveDef;
-extern menuitem_t EpisodeMenu[];
-extern menuitem_t NewGameMenu[];
 extern menuitem_t SoundMenu[];
-extern short EpiMenuMap[];
-extern short EpiMenuEpi[];
 
 void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 
@@ -99,37 +95,12 @@ void MN_Init(void)
     EpiDef.x = 80;
     EpiDef.y = 50;
 
-    NewDef.x = 38;
-    NewDef.y = 30;
-
-    EpisodeMenu[0].alttext = "CITY OF THE DAMNED";
-    EpisodeMenu[1].alttext = "HELL'S MAW";
-    EpisodeMenu[2].alttext = "THE DOME OF D'SPARIL";
-    EpisodeMenu[3].alttext = "THE OSSUARY";
-    EpisodeMenu[4].alttext = "THE STAGNANT DEMESNE";
-
-    NewGameMenu[0].alttext = "THOU NEEDETH A WET-NURSE";
-    NewGameMenu[1].alttext = "YELLOWBELLIES-R-US";
-    NewGameMenu[2].alttext = "BRINGEST THEM ONETH";
-    NewGameMenu[3].alttext = "THOU ART A SMITE-MEISTER";
-    NewGameMenu[4].alttext = "BLACK PLAGUE POSSESSES THEE";
+    SkillDef.x = 38;
+    SkillDef.y = 30;
 
     if (gamemode == retail)
     {
-      EpiMenuEpi[3] = 4;
-      EpiMenuEpi[4] = 5;
-      EpiMenuMap[3] = 1;
-      EpiMenuMap[4] = 1;
-      EpiDef.numitems = 5;
       EpiDef.y -= ITEM_HEIGHT;
-    }
-    else
-    {
-      EpiMenuEpi[3] = -1;
-      EpiMenuEpi[4] = -1;
-      EpiMenuMap[3] = -1;
-      EpiMenuMap[4] = -1;
-      EpiDef.numitems = 3;
     }
   }
   else
@@ -137,17 +108,8 @@ void MN_Init(void)
     EpiDef.x = 66;
     EpiDef.y = 66;
 
-    NewDef.x = 120;
-    NewDef.y = 44;
-
-    EpisodeMenu[0].alttext = "FIGHTER";
-    EpisodeMenu[1].alttext = "CLERIC";
-    EpisodeMenu[2].alttext = "MAGE";
-
-    EpiMenuEpi[1] = 1;
-    EpiMenuEpi[2] = 1;
-
-    EpiDef.numitems = 3;
+    SkillDef.x = 120;
+    SkillDef.y = 44;
   }
 
   SoundMenu[0].alttext = "SFX VOLUME";
@@ -161,28 +123,28 @@ void MN_UpdateClass(int choice)
   switch (PlayerClass[consoleplayer])
   {
     case PCLASS_FIGHTER:
-      NewDef.x = 120;
-      NewGameMenu[0].alttext = "SQUIRE";
-      NewGameMenu[1].alttext = "KNIGHT";
-      NewGameMenu[2].alttext = "WARRIOR";
-      NewGameMenu[3].alttext = "BERSERKER";
-      NewGameMenu[4].alttext = "TITAN";
+      SkillDef.x = 120;
+      SkillDef.menuitems[0].alttext = "SQUIRE";
+      SkillDef.menuitems[1].alttext = "KNIGHT";
+      SkillDef.menuitems[2].alttext = "WARRIOR";
+      SkillDef.menuitems[3].alttext = "BERSERKER";
+      SkillDef.menuitems[4].alttext = "TITAN";
       break;
     case PCLASS_CLERIC:
-      NewDef.x = 116;
-      NewGameMenu[0].alttext = "ALTAR BOY";
-      NewGameMenu[1].alttext = "ACOLYTE";
-      NewGameMenu[2].alttext = "PRIEST";
-      NewGameMenu[3].alttext = "CARDINAL";
-      NewGameMenu[4].alttext = "POPE";
+      SkillDef.x = 116;
+      SkillDef.menuitems[0].alttext = "ALTAR BOY";
+      SkillDef.menuitems[1].alttext = "ACOLYTE";
+      SkillDef.menuitems[2].alttext = "PRIEST";
+      SkillDef.menuitems[3].alttext = "CARDINAL";
+      SkillDef.menuitems[4].alttext = "POPE";
       break;
     case PCLASS_MAGE:
-      NewDef.x = 112;
-      NewGameMenu[0].alttext = "APPRENTICE";
-      NewGameMenu[1].alttext = "ENCHANTER";
-      NewGameMenu[2].alttext = "SORCERER";
-      NewGameMenu[3].alttext = "WARLOCK";
-      NewGameMenu[4].alttext = "ARCHIMAGE";
+      SkillDef.x = 112;
+      SkillDef.menuitems[0].alttext = "APPRENTICE";
+      SkillDef.menuitems[1].alttext = "ENCHANTER";
+      SkillDef.menuitems[2].alttext = "SORCERER";
+      SkillDef.menuitems[3].alttext = "WARLOCK";
+      SkillDef.menuitems[4].alttext = "ARCHIMAGE";
       break;
   }
 }

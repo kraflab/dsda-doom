@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -38,15 +38,6 @@
 #endif
 
 #include <stdio.h>
-#include <errno.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef _MSC_VER
-#include <io.h>
-#endif
-#include <fcntl.h>
-#include <sys/stat.h>
 
 #include "doomstat.h"
 #include "g_game.h"
@@ -55,6 +46,7 @@
 #include "i_video.h"
 #include "s_sound.h"
 #include "lprintf.h"
+#include "m_file.h"
 #include "d_main.h"
 
 #include "m_misc.h"
@@ -83,89 +75,6 @@ typedef struct
 #define INPUT_SETTING(str, id, k, m, j) { str, id, { k, m, j } }
 #define MIGRATED_SETTING(id) { NULL, id }
 
-/*
- * M_WriteFile
- *
- * killough 9/98: rewritten to use stdio and to flash disk icon
- */
-
-dboolean M_WriteFile(char const *name, const void *source, size_t length)
-{
-  FILE *fp;
-
-  errno = 0;
-
-  if (!(fp = fopen(name, "wb")))       // Try opening file
-    return 0;                          // Could not open file for writing
-
-  length = fwrite(source, 1, length, fp) == (size_t)length;   // Write data
-  fclose(fp);
-
-  if (!length)                         // Remove partially written file
-    remove(name);
-
-  return length;
-}
-
-/*
- * M_ReadFile
- *
- * killough 9/98: rewritten to use stdio and to flash disk icon
- */
-
-int M_ReadFile(char const *name, byte **buffer)
-{
-  FILE *fp;
-
-  if ((fp = fopen(name, "rb")))
-    {
-      size_t length;
-
-      fseek(fp, 0, SEEK_END);
-      length = ftell(fp);
-      fseek(fp, 0, SEEK_SET);
-      *buffer = Z_Malloc(length);
-      if (fread(*buffer, 1, length, fp) == length)
-        {
-          fclose(fp);
-          return length;
-        }
-      fclose(fp);
-    }
-
-  /* cph 2002/08/10 - this used to return 0 on error, but that's ambiguous,
-   * because we could have a legit 0-length file. So make it -1. */
-  return -1;
-}
-
-// Same as above, but add null terminator
-int M_ReadFileToString(char const *name, char **buffer) {
-  FILE *fp;
-
-  if ((fp = fopen(name, "rb")))
-  {
-    size_t length;
-
-    fseek(fp, 0, SEEK_END);
-    length = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    *buffer = Z_Malloc(length + 1);
-    if (fread(*buffer, 1, length, fp) == length)
-    {
-      fclose(fp);
-      (*buffer)[length] = '\0';
-      return length;
-    }
-    Z_Free(*buffer);
-    *buffer = NULL;
-    fclose(fp);
-  }
-
-  /* cph 2002/08/10 - this used to return 0 on error, but that's ambiguous,
-   * because we could have a legit 0-length file. So make it -1. */
-  return -1;
-}
-
 cfg_def_t cfg_defs[] =
 {
   //e6y
@@ -174,7 +83,6 @@ cfg_def_t cfg_defs[] =
 
   SETTING_HEADING("Misc settings"),
   MIGRATED_SETTING(dsda_config_vanilla_keymap),
-  MIGRATED_SETTING(dsda_config_realtic_clock_rate),
   MIGRATED_SETTING(dsda_config_menu_background),
   MIGRATED_SETTING(dsda_config_max_player_corpse),
   MIGRATED_SETTING(dsda_config_flashing_hom),
@@ -183,6 +91,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_screenshot_dir),
   MIGRATED_SETTING(dsda_config_startup_delay_ms),
   MIGRATED_SETTING(dsda_config_ansi_endoom),
+  MIGRATED_SETTING(dsda_config_announce_map),
 
   SETTING_HEADING("Game settings"),
   MIGRATED_SETTING(dsda_config_default_complevel),
@@ -199,7 +108,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_movement_shorttics),
 
   SETTING_HEADING("Sound settings"),
-  MIGRATED_SETTING(dsda_config_snd_pcspeaker),
   MIGRATED_SETTING(dsda_config_pitched_sounds),
   MIGRATED_SETTING(dsda_config_full_sounds),
   MIGRATED_SETTING(dsda_config_snd_samplerate),
@@ -214,7 +122,14 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_chorus),
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb),
   MIGRATED_SETTING(dsda_config_mus_fluidsynth_gain),
+  MIGRATED_SETTING(dsda_config_mus_fluidsynth_chorus_depth),
+  MIGRATED_SETTING(dsda_config_mus_fluidsynth_chorus_level),
+  MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb_damp),
+  MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb_level),
+  MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb_width),
+  MIGRATED_SETTING(dsda_config_mus_fluidsynth_reverb_room_size),
   MIGRATED_SETTING(dsda_config_mus_opl_gain),
+  MIGRATED_SETTING(dsda_config_mus_opl_opl3mode),
   MIGRATED_SETTING(dsda_config_mus_portmidi_reset_type),
   MIGRATED_SETTING(dsda_config_mus_portmidi_reset_delay),
   MIGRATED_SETTING(dsda_config_mus_portmidi_filter_sysex),
@@ -233,6 +148,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_screenblocks),
   MIGRATED_SETTING(dsda_config_usegamma),
   MIGRATED_SETTING(dsda_config_fps_limit),
+  MIGRATED_SETTING(dsda_config_background_fps_limit),
   MIGRATED_SETTING(dsda_config_sdl_video_window_pos),
   MIGRATED_SETTING(dsda_config_palette_ondamage),
   MIGRATED_SETTING(dsda_config_palette_onbonus),
@@ -242,7 +158,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_integer_scaling),
   MIGRATED_SETTING(dsda_config_render_aspect),
   MIGRATED_SETTING(dsda_config_render_doom_lightmaps),
-  MIGRATED_SETTING(dsda_config_fake_contrast),
+  MIGRATED_SETTING(dsda_config_fake_contrast_mode),
   MIGRATED_SETTING(dsda_config_render_stretch_hud),
   MIGRATED_SETTING(dsda_config_render_patches_scalex),
   MIGRATED_SETTING(dsda_config_render_patches_scaley),
@@ -250,15 +166,12 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_freelook),
 
   SETTING_HEADING("OpenGL settings"),
-  MIGRATED_SETTING(dsda_config_gl_fog),
-  MIGRATED_SETTING(dsda_config_gl_blend_animations),
-  MIGRATED_SETTING(dsda_config_gl_tex_format_string),
   MIGRATED_SETTING(dsda_config_gl_render_multisampling),
   MIGRATED_SETTING(dsda_config_gl_render_fov),
-  MIGRATED_SETTING(dsda_config_gl_lightmode),
   MIGRATED_SETTING(dsda_config_gl_skymode),
-  MIGRATED_SETTING(dsda_config_gl_usegamma),
   MIGRATED_SETTING(dsda_config_gl_health_bar),
+  MIGRATED_SETTING(dsda_config_gl_usevbo),
+  MIGRATED_SETTING(dsda_config_gl_fade_mode),
 
   SETTING_HEADING("Mouse settings"),
   MIGRATED_SETTING(dsda_config_use_mouse),
@@ -314,9 +227,12 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_mapcolor_me),
   MIGRATED_SETTING(dsda_config_mapcolor_enemy),
   MIGRATED_SETTING(dsda_config_mapcolor_frnd),
+  MIGRATED_SETTING(dsda_config_map_blinking_locks),
   MIGRATED_SETTING(dsda_config_map_secret_after),
-  MIGRATED_SETTING(dsda_config_map_point_coord),
-  MIGRATED_SETTING(dsda_config_map_level_stat),
+  MIGRATED_SETTING(dsda_config_map_coordinates),
+  MIGRATED_SETTING(dsda_config_map_totals),
+  MIGRATED_SETTING(dsda_config_map_time),
+  MIGRATED_SETTING(dsda_config_map_title),
   MIGRATED_SETTING(dsda_config_automap_overlay),
   MIGRATED_SETTING(dsda_config_automap_rotate),
   MIGRATED_SETTING(dsda_config_automap_follow),
@@ -337,7 +253,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_hud_health_green),
   MIGRATED_SETTING(dsda_config_hud_ammo_red),
   MIGRATED_SETTING(dsda_config_hud_ammo_yellow),
-  MIGRATED_SETTING(dsda_config_hud_armor_color_by_class),
   MIGRATED_SETTING(dsda_config_hud_displayed),
   MIGRATED_SETTING(dsda_config_hudadd_secretarea),
   MIGRATED_SETTING(dsda_config_hudadd_demoprogressbar),
@@ -356,7 +271,9 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_auto_key_frame_depth),
   MIGRATED_SETTING(dsda_config_auto_key_frame_timeout),
   MIGRATED_SETTING(dsda_config_exhud),
-  MIGRATED_SETTING(dsda_config_ex_text_scale),
+  MIGRATED_SETTING(dsda_config_ex_text_scale_x),
+  MIGRATED_SETTING(dsda_config_ex_text_ratio_y),
+  MIGRATED_SETTING(dsda_config_free_text),
   MIGRATED_SETTING(dsda_config_wipe_at_full_speed),
   MIGRATED_SETTING(dsda_config_show_demo_attempts),
   MIGRATED_SETTING(dsda_config_hide_horns),
@@ -367,6 +284,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_hide_empty_commands),
   MIGRATED_SETTING(dsda_config_coordinate_display),
   MIGRATED_SETTING(dsda_config_show_fps),
+  MIGRATED_SETTING(dsda_config_show_minimap),
   MIGRATED_SETTING(dsda_config_show_level_splits),
   MIGRATED_SETTING(dsda_config_skip_quit_prompt),
   MIGRATED_SETTING(dsda_config_show_split_data),
@@ -379,10 +297,12 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_allow_jumping),
   MIGRATED_SETTING(dsda_config_parallel_sfx_limit),
   MIGRATED_SETTING(dsda_config_parallel_sfx_window),
+  MIGRATED_SETTING(dsda_config_movement_toggle_sfx),
   MIGRATED_SETTING(dsda_config_switch_when_ammo_runs_out),
   MIGRATED_SETTING(dsda_config_viewbob),
   MIGRATED_SETTING(dsda_config_weaponbob),
   MIGRATED_SETTING(dsda_config_quake_intensity),
+  MIGRATED_SETTING(dsda_config_organize_failed_demos),
 
   SETTING_HEADING("Scripts"),
   MIGRATED_SETTING(dsda_config_script_0),
@@ -422,7 +342,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_overrun_missedbackside_emulate),
 
   SETTING_HEADING("Mapping error compatibility settings"),
-  MIGRATED_SETTING(dsda_config_comperr_zerotag),
   MIGRATED_SETTING(dsda_config_comperr_passuse),
   MIGRATED_SETTING(dsda_config_comperr_hangsolid),
   MIGRATED_SETTING(dsda_config_comperr_blockmap),
@@ -638,13 +557,28 @@ static int def_count = sizeof(cfg_defs) / sizeof(cfg_defs[0]);
 
 static char* defaultfile; // CPhipps - static, const
 
+static dboolean forget_config_file;
+
+void M_ForgetCurrentConfig(void)
+{
+  forget_config_file = true;
+}
+
+void M_RememberCurrentConfig(void)
+{
+  forget_config_file = false;
+}
+
 void M_SaveDefaults (void)
 {
   int   i;
   FILE* f;
   int maxlen;
 
-  f = fopen (defaultfile, "w");
+  if (forget_config_file)
+    return;
+
+  f = M_OpenFile(defaultfile, "w");
   if (!f)
     return; // can't write the file, but don't complain
 
@@ -769,13 +703,17 @@ void M_LoadDefaults (void)
 
   // read the file in, overriding any set defaults
 
-  f = fopen (defaultfile, "r");
+  f = M_OpenFile(defaultfile, "r");
   if (f)
   {
     while (!feof(f))
     {
       parm = 0;
-      fgets(cfgline, CFG_BUFFERMAX, f);
+
+      cfgline = fgets(cfgline, CFG_BUFFERMAX, f);
+      if (!cfgline)
+        break;
+
       if (sscanf (cfgline, "%79s %[^\n]\n", def, strparm) == 2)
       {
         newstring = NULL;
@@ -926,7 +864,8 @@ const char* M_CheckWritableDir(const char *dir)
 
     if (base[len - 1] != '\\' && base[len - 1] != '/')
       strcat(base, "/");
-    if (!access(base, O_RDWR))
+
+    if (M_ReadWriteAccess(base))
     {
       base[strlen(base) - 1] = 0;
       result = base;
@@ -954,7 +893,7 @@ void M_ScreenShot(void)
 #ifdef _WIN32
     shot_dir = M_CheckWritableDir(I_DoomExeDir());
 #else
-    shot_dir = (!access(SCREENSHOT_DIR, 2) ? SCREENSHOT_DIR : NULL);
+    shot_dir = (M_WriteAccess(SCREENSHOT_DIR) ? SCREENSHOT_DIR : NULL);
 #endif
 
   if (shot_dir)
@@ -966,11 +905,11 @@ void M_ScreenShot(void)
       lbmname = Z_Realloc(lbmname, size+1);
       snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
-    } while (!access(lbmname,0) && (shot != startshot) && (shot < 10000));
+    } while (M_FileExists(lbmname) && (shot != startshot) && (shot < 10000));
 
-    if (access(lbmname,0))
+    if (!M_FileExists(lbmname))
     {
-      S_StartSound(NULL,gamemode==commercial ? sfx_radio : sfx_tink);
+      S_StartVoidSound(gamemode==commercial ? sfx_radio : sfx_tink);
       M_DoScreenShot(lbmname); // cph
       success = 1;
     }

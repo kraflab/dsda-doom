@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -43,7 +43,6 @@
 #else
 #include <unistd.h>
 #endif
-#include <fcntl.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -52,6 +51,7 @@
 #include "doomstat.h"
 #include "d_net.h"
 #include "f_finale.h"
+#include "m_file.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "m_cheat.h"
@@ -90,11 +90,14 @@
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
 #include "dsda/configuration.h"
+#include "dsda/console.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
+#include "dsda/mapinfo.h"
+#include "dsda/messenger.h"
 #include "dsda/save.h"
 #include "dsda/settings.h"
 #include "dsda/input.h"
@@ -104,9 +107,12 @@
 #include "dsda/options.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
+#include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/time.h"
+#include "dsda/tracker.h"
 #include "dsda/split_tracker.h"
+#include "dsda/utility.h"
 
 struct
 {
@@ -143,8 +149,7 @@ static int demolength; // check for overrun (missing DEMOMARKER)
 gameaction_t    gameaction;
 gamestate_t     gamestate;
 dboolean        in_game;
-skill_t         gameskill;
-dboolean         respawnmonsters;
+int             gameskill;
 int             gameepisode;
 int             gamemap;
 // CPhipps - moved *_loadgame vars here
@@ -164,12 +169,14 @@ int             upmove;
 int             consoleplayer; // player taking events and displaying
 int             displayplayer; // view being displayed
 int             gametic;
-int             basetic;       /* killough 9/29/98: for demo sync */
+int             boom_basetic;       /* killough 9/29/98: for demo sync */
+int             true_basetic;
 int             totalkills, totallive, totalitems, totalsecret;    // for intermission
 dboolean         demorecording;
 wbstartstruct_t wminfo;               // parms for world map / intermission
 dboolean         haswolflevels = false;// jff 4/18/98 wolf levels present
 int             totalleveltimes;      // CPhipps - total time for all completed levels
+int             levels_completed;
 int             longtics;
 
 dboolean coop_spawns;
@@ -223,21 +230,21 @@ static const struct
 };
 
 // HERETIC_TODO: dynamically set these
-static const struct
-{
-    weapontype_t weapon;
-    weapontype_t weapon_num;
-} heretic_weapon_order_table[] = {
-    { wp_staff,       wp_staff },
-    { wp_gauntlets,   wp_staff },
-    { wp_goldwand,    wp_goldwand },
-    { wp_crossbow,    wp_crossbow },
-    { wp_blaster,     wp_blaster },
-    { wp_skullrod,    wp_skullrod },
-    { wp_phoenixrod,  wp_phoenixrod },
-    { wp_mace,        wp_mace },
-    { wp_beak,        wp_beak },
-};
+// static const struct
+// {
+//     weapontype_t weapon;
+//     weapontype_t weapon_num;
+// } heretic_weapon_order_table[] = {
+//     { wp_staff,       wp_staff },
+//     { wp_gauntlets,   wp_staff },
+//     { wp_goldwand,    wp_goldwand },
+//     { wp_crossbow,    wp_crossbow },
+//     { wp_blaster,     wp_blaster },
+//     { wp_skullrod,    wp_skullrod },
+//     { wp_phoenixrod,  wp_phoenixrod },
+//     { wp_mace,        wp_mace },
+//     { wp_beak,        wp_beak },
+// };
 
 // mouse values are used once
 static int   mousex;
@@ -326,7 +333,6 @@ static inline signed char fudgef(signed char b)
 
 void G_SetSpeed(dboolean reset)
 {
-  int p;
   dsda_pclass_t *player_class;
   static dsda_pclass_t *last_player_class = NULL;
 
@@ -496,8 +502,11 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   int forward;
   int side;
   int newweapon;                                          // phares
+  dboolean strict_input;
 
   dsda_pclass_t *player_class = &pclass[players[consoleplayer].pclass];
+
+  strict_input = dsda_StrictMode();
 
   G_SetSpeed(false);
   dsda_EvaluateSkipModeBuildTiccmd();
@@ -527,13 +536,16 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   else
     tspeed = speed;
 
-  // turn 180 degrees in one keystroke?                           // phares
-                                                                  //    |
-  if (dsda_InputTickActivated(dsda_input_reverse))                    //    V
-    {
-      if (!strafe)
-        cmd->angleturn += QUICKREVERSE;                           //    ^
-    }                                                             // phares
+  // turn 180 degrees in one keystroke?
+  if (dsda_InputTickActivated(dsda_input_reverse))
+  {
+    if (!strafe) {
+      if (strict_input)
+        doom_printf("180 key disabled by strict mode");
+      else
+        cmd->angleturn += QUICKREVERSE;
+    }
+  }
 
   // let movement keys cancel each other out
 
@@ -653,6 +665,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
           cmd->arti = hexen_arti_invulnerability;
         }
         else if (dsda_InputTickActivated(dsda_input_arti_quartz) &&
+                 players[consoleplayer].mo &&
                  players[consoleplayer].mo->health < MAXHEALTH)
         {
           cmd->arti = hexen_arti_health;
@@ -718,8 +731,9 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       {
         cmd->arti = arti_tomeofpower;
       }
-      else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti
-          && (players[consoleplayer].mo->health < MAXHEALTH))
+      else if (dsda_InputTickActivated(dsda_input_arti_quartz) && !cmd->arti &&
+               players[consoleplayer].mo &&
+               players[consoleplayer].mo->health < MAXHEALTH)
       {
         cmd->arti = arti_health;
       }
@@ -1082,6 +1096,54 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   }
 }
 
+static void G_SetInitialHealth(player_t *p)
+{
+  p->health = initial_health;  // Ty 03/12/98 - use dehacked values
+}
+
+static void G_SetInitialInventory(player_t *p)
+{
+  int i;
+
+  if (hexen)
+  {
+    p->readyweapon = p->pendingweapon = wp_first;
+    p->weaponowned[wp_first] = true;
+  }
+  else
+  {
+    p->readyweapon = p->pendingweapon = g_wp_pistol;
+    p->weaponowned[g_wp_fist] = true;
+    p->weaponowned[g_wp_pistol] = true;
+    if (heretic)
+      p->ammo[am_goldwand] = 50;
+    else
+      p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
+  }
+
+  for (i = 0; i < NUMAMMO; i++)
+    p->maxammo[i] = maxammo[i];
+}
+
+static void G_ResetHealth(player_t *p)
+{
+  G_SetInitialHealth(p);
+}
+
+static void G_ResetInventory(player_t *p)
+{
+  memset(p->armorpoints, 0, sizeof(p->armorpoints));
+  p->armortype = 0;
+  memset(p->powers, 0, sizeof(p->powers));
+  memset(p->cards, 0, sizeof(p->cards));
+  p->backpack = false;
+  memset(p->weaponowned, 0, sizeof(p->weaponowned));
+  memset(p->ammo, 0, sizeof(p->ammo));
+
+  // readyweapon, pendingweapon, maxammo handled here
+  G_SetInitialInventory(p);
+}
+
 //
 // G_DoLoadLevel
 //
@@ -1098,16 +1160,17 @@ static void G_DoLoadLevel (void)
 
   skyflatnum = R_FlatNumForName(g_skyflatname);
   skytexture = dsda_SkyTexture();
+  R_SetFloorNum(&grnrock, dsda_BorderTexture());
 
   // [RH] Set up details about sky rendering
   R_InitSkyMap ();
 
-  R_SetBoxSkybox(skytexture);
+  dsda_InitMessenger();
 
   levelstarttic = gametic;        // for time calculation
 
   if (!demo_compatibility && !mbf_features)   // killough 9/29/98
-    basetic = gametic;
+    boom_basetic = gametic;
 
   if (wipegamestate == GS_LEVEL)
     wipegamestate = -1;             // force a wipe
@@ -1116,15 +1179,26 @@ static void G_DoLoadLevel (void)
 
   for (i = 0; i < g_maxplayers; i++)
   {
-    if (playeringame[i] && players[i].playerstate == PST_DEAD)
-      players[i].playerstate = PST_REBORN;
+    if (playeringame[i])
+    {
+      if (players[i].playerstate == PST_DEAD)
+        players[i].playerstate = PST_REBORN;
+      else
+      {
+        if (map_info.flags & MI_RESET_HEALTH)
+          G_ResetHealth(&players[i]);
+
+        if (map_info.flags & MI_RESET_INVENTORY)
+          G_ResetInventory(&players[i]);
+      }
+    }
     memset(players[i].frags, 0, sizeof(players[i].frags));
   }
 
   // automatic pistol start when advancing from one level to the next
   if (pistolstart)
   {
-    if (singleplayer)
+    if (allow_incompatibility)
     {
       G_PlayerReborn(0);
     }
@@ -1171,6 +1245,19 @@ static void G_DoLoadLevel (void)
   // killough 5/13/98: in case netdemo has consoleplayer other than green
   ST_Start();
   HU_Start();
+
+  // The border texture can change between maps, which must queue a backscreen fill
+  {
+    void D_MustFillBackScreen();
+
+    static int old_grnrock = -1;
+
+    if (old_grnrock != grnrock.lumpnum)
+    {
+      old_grnrock = grnrock.lumpnum;
+      D_MustFillBackScreen();
+    }
+  }
 
   // killough: make -timedemo work on multilevel demos
   // Move to end of function to minimize noise -- killough 2/22/98:
@@ -1352,7 +1439,6 @@ void G_Ticker (void)
   // CPhipps - player colour changing
   if (!demoplayback && mapcolor_plyr[consoleplayer] != mapcolor_me) {
     // Changed my multiplayer colour - Inform the whole game
-    int net_cl = LittleLong(mapcolor_me);
     G_ChangedPlayerColour(consoleplayer, mapcolor_me);
   }
   P_MapStart();
@@ -1392,10 +1478,6 @@ void G_Ticker (void)
       case ga_worlddone:
         G_DoWorldDone();
         break;
-      case ga_screenshot:
-        M_ScreenShot();
-        gameaction = ga_nothing;
-        break;
       case ga_leavemap:
         G_DoTeleportNewMap();
         break;
@@ -1406,17 +1488,40 @@ void G_Ticker (void)
 
   dsda_EvaluateSkipModeGTicker();
 
+  if (!dsda_SkipMode() && gamestate == GS_LEVEL)
+  {
+    DO_ONCE
+      dsda_arg_t *arg;
+
+      arg = dsda_Arg(dsda_arg_command);
+      if (arg->found)
+        dsda_InterpretConsoleCommands(arg->value.v_string, false, true);
+    END_ONCE
+  }
+
   if (dsda_BruteForce())
     dsda_EvaluateBruteForce();
+
+  if (dsda_BuildMode())
+    dsda_RefreshBuildMode();
 
   if (dsda_AdvanceFrame())
   {
     advance_frame = true;
     pause_mask = dsda_MaskPause();
   }
+  else if (dsda_BuildMode() &&
+           dsda_BruteForceEnded() &&
+           dsda_Flag(dsda_arg_quit_after_brute_force))
+  {
+    I_SafeExit(0);
+  }
 
   if (dsda_PausedOutsideDemo())
-    basetic++;  // For revenant tracers and RNG -- we must maintain sync
+  {
+    boom_basetic++;  // For revenant tracers and RNG -- we must maintain sync
+    true_basetic++;
+  }
   else {
     int buf = gametic % BACKUPTICS;
 
@@ -1717,7 +1822,6 @@ void G_ChangedPlayerColour(int pn, int cl)
 void G_PlayerReborn (int player)
 {
   player_t *p;
-  int i;
   int frags[MAX_MAXPLAYERS];
   int killcount;
   int itemcount;
@@ -1751,23 +1855,9 @@ void G_PlayerReborn (int player)
 
   p->usedown = p->attackdown = true;  // don't do anything immediately
   p->playerstate = PST_LIVE;
-  p->health = initial_health;  // Ty 03/12/98 - use dehacked values
 
-  if (hexen)
-  {
-    p->readyweapon = p->pendingweapon = wp_first;
-    p->weaponowned[wp_first] = true;
-  }
-  else
-  {
-    p->readyweapon = p->pendingweapon = g_wp_pistol;
-    p->weaponowned[g_wp_fist] = true;
-    p->weaponowned[g_wp_pistol] = true;
-    if (heretic)
-      p->ammo[am_goldwand] = 50;
-    else
-      p->ammo[am_clip] = initial_bullets; // Ty 03/12/98 - use dehacked values
-  }
+  G_SetInitialHealth(p);
+  G_SetInitialInventory(p);
 
   p->lookdir = 0;
   localQuakeHappening[player] = false;
@@ -1778,8 +1868,7 @@ void G_PlayerReborn (int player)
     curpos = 0;
   }
 
-  for (i=0 ; i<NUMAMMO ; i++)
-    p->maxammo[i] = maxammo[i];
+  levels_completed = 0;
 }
 
 //
@@ -1799,14 +1888,13 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     {
       // first spawn of level, before corpses
       for (i=0 ; i<playernum ; i++)
-        if (players[i].mo->x == mthing->x << FRACBITS
-            && players[i].mo->y == mthing->y << FRACBITS)
+        if (players[i].mo->x == mthing->x && players[i].mo->y == mthing->y)
           return false;
       return true;
     }
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   if (raven)
   {
@@ -1829,7 +1917,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
                      ss->sector->floorheight + TELEFOGHEIGHT, g_mt_tfog);
 
     if (players[consoleplayer].viewz != 1)
-      S_StartSound(mo, g_sfx_telept);   // don't start sound on first frame
+      S_StartMobjSound(mo, g_sfx_telept);   // don't start sound on first frame
 
     return true;
   }
@@ -1892,7 +1980,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     mo = P_SpawnMobj(x+20*xa, y+20*ya, ss->sector->floorheight, MT_TFOG);
 
     if (players[consoleplayer].viewz != 1)
-      S_StartSound(mo, sfx_telept);  // don't start sound on first frame
+      S_StartMobjSound(mo, sfx_telept);  // don't start sound on first frame
   }
 
   return true;
@@ -1937,7 +2025,7 @@ void G_DoReborn (int playernum)
   if (hexen)
     return Hexen_G_DoReborn(playernum);
 
-  if (!netgame)
+  if (!netgame && !(map_info.flags & MI_ALLOW_RESPAWN) && !(skill_info.flags & SI_PLAYER_RESPAWN))
     gameaction = ga_loadlevel;      // reload the level from scratch
   else
     {                               // respawn at the start
@@ -1971,11 +2059,6 @@ void G_DoReborn (int playernum)
         }
       P_SpawnPlayer (playernum, &playerstarts[0][playernum]);
     }
-}
-
-void G_ScreenShot (void)
-{
-  gameaction = ga_screenshot;
 }
 
 // DOOM Par Times
@@ -2027,10 +2110,13 @@ void G_DoCompleted (void)
   int i;
   int completed_behaviour;
 
+  R_ResetColorMap();
+
   if (hexen)
     totalleveltimes = players[consoleplayer].worldTimer;
   else
     totalleveltimes += leveltime - leveltime % 35;
+  ++levels_completed;
 
   gameaction = ga_nothing;
 
@@ -2038,8 +2124,7 @@ void G_DoCompleted (void)
     if (playeringame[i])
       G_PlayerFinishLevel(i);        // take away cards and stuff
 
-  if (automap_active)
-    AM_Stop();
+  AM_Stop(false);
 
   e6y_G_DoCompleted();
   dsda_WatchLevelCompletion();
@@ -2083,9 +2168,16 @@ void G_DoCompleted (void)
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
   if (nodrawers && (demoplayback || timingdemo))
-    lprintf(LO_INFO, "FINISHED: %s\n", MAPNAME(gameepisode, gamemap));
+    lprintf(LO_INFO, "FINISHED: %s\n", dsda_MapLumpName(gameepisode, gamemap));
 
-  WI_Start (&wminfo);
+  if (!(map_info.flags & MI_INTERMISSION))
+  {
+    G_WorldDone();
+  }
+  else
+  {
+    WI_Start (&wminfo);
+  }
 }
 
 //
@@ -2105,6 +2197,27 @@ void G_WorldDone (void)
 
   if (done_behaviour & WD_VICTORY)
   {
+    if (dsda_Flag(dsda_arg_chain_episodes))
+    {
+      int epi, map;
+
+      dsda_NextMap(&epi, &map);
+
+      if (epi != 1 || map != 1)
+      {
+        int i;
+
+        for (i = 0; i < g_maxplayers; ++i)
+          if (playeringame[i])
+            players[i].playerstate = PST_DEAD;
+
+        wminfo.nextep = epi - 1;
+        wminfo.next = map - 1;
+
+        return;
+      }
+    }
+
     gameaction = ga_victory;
 
     return;
@@ -2158,19 +2271,18 @@ static uint64_t G_Signature(void)
 {
   static uint64_t s = 0;
   static dboolean computed = false;
-  char name[9];
   int episode, map;
 
   if (!computed) {
    computed = true;
    if (gamemode == commercial)
     for (map = haswolflevels ? 32 : 30; map; map--)
-      sprintf(name, "map%02d", map), s = G_UpdateSignature(s, name);
+      s = G_UpdateSignature(s, dsda_MapLumpName(1, map));
    else
     for (episode = gamemode==retail ? 4 :
      gamemode==shareware ? 1 : 3; episode; episode--)
       for (map = 9; map; map--)
-        sprintf(name, "E%dM%d", episode, map), s = G_UpdateSignature(s, name);
+        s = G_UpdateSignature(s, dsda_MapLumpName(episode, map));
   }
   return s;
 }
@@ -2263,13 +2375,10 @@ void G_AfterLoad(void)
 {
   extern int BorderNeedRefresh;
 
+  dsda_ResetTrackers();
+
   R_ActivateSectorInterpolations(); //e6y
   R_SmoothPlaying_Reset(NULL); // e6y
-
-  if (musinfo.current_item != -1)
-  {
-    S_ChangeMusInfoMusic(musinfo.current_item, true);
-  }
 
   RecalculateDrawnSubsectors();
 
@@ -2294,13 +2403,10 @@ void G_AfterLoad(void)
 
 void G_DoLoadGame(void)
 {
-  int  length, i;
+  int  length;
   // CPhipps - do savegame filename stuff here
   char *name;                // killough 3/22/98
   int saveversion;
-  int savegame_compatibility = -1;
-  const char *maplump;
-  int time, ttime;
 
   dsda_SetLastLoadSlot(savegameslot);
 
@@ -2393,7 +2499,6 @@ static void G_DoSaveGame(dboolean via_cmd)
   char *description;
   int saveversion;
   uint64_t checksum;
-  int  i;
   const char *maplump;
   int time, ttime;
 
@@ -2440,7 +2545,7 @@ static void G_DoSaveGame(dboolean via_cmd)
          : "Game save failed!"); // CPhipps - not externalised
 
   /* Print some information about the save game */
-  maplump = MAPNAME(gameepisode, gamemap);
+  maplump = dsda_MapLumpName(gameepisode, gamemap);
   time = leveltime / TICRATE;
   ttime = (totalleveltimes + leveltime) / TICRATE;
 
@@ -2454,11 +2559,11 @@ static void G_DoSaveGame(dboolean via_cmd)
   Z_Free(name);
 }
 
-static skill_t d_skill;
+static int     d_skill;
 static int     d_episode;
 static int     d_map;
 
-void G_DeferedInitNew(skill_t skill, int episode, int map)
+void G_DeferedInitNew(int skill, int episode, int map)
 {
   d_skill = skill;
   d_episode = episode;
@@ -2647,11 +2752,6 @@ void G_ReloadDefaults(void)
   fastparm = clfastparm;
   nomonsters = clnomonsters;
 
-  //jff 3/24/98 set startskill from defaultskill in config file, unless
-  // it has already been set by a -skill parameter
-  if (startskill == sk_none)
-    startskill = (skill_t)(dsda_IntConfig(dsda_config_default_skill) - 1);
-
   dsda_ClearPlaybackStream();
 
   // killough 2/21/98:
@@ -2733,10 +2833,13 @@ void G_DoNewGame (void)
 // killough 4/10/98: New function to fix bug which caused Doom
 // lockups when idclev was used in conjunction with -fast.
 
-void G_SetFastParms(int fast_pending)
+void G_RefreshFastMonsters(void)
 {
   static int fast = 0;            // remembers fast state
   int i;
+  int fast_pending;
+
+  fast_pending = !!(skill_info.flags & SI_FAST_MONSTERS);
 
   if (hexen)
   {
@@ -2813,7 +2916,7 @@ int G_ValidateMapName(const char *mapname, int *pEpi, int *pMap)
 
 extern int EpiCustom;
 
-void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
+void G_InitNew(int skill, int episode, int map, dboolean prepare)
 {
   int i;
 
@@ -2837,14 +2940,10 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     S_ResumeSound();
   }
 
-  if (skill > sk_nightmare)
-    skill = sk_nightmare;
-
   if (episode < 1)
     episode = 1;
 
-  // Disable all sanity checks if there are custom episode definitions. They do not make sense in this case.
-  if (!EpiCustom && !W_LumpNameExists(MAPNAME(episode, map)))
+  if (!W_LumpNameExists(dsda_MapLumpName(episode, map)))
   {
     if (heretic)
     {
@@ -2912,11 +3011,7 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
     dsda_startmap = map;
   }
 
-  G_SetFastParms(fastparm || skill == sk_nightmare);  // killough 4/10/98
-
   M_ClearRandom();
-
-  respawnmonsters = (!raven && skill == sk_nightmare) || respawnparm;
 
   // force players to be initialized upon first level load
   for (i = 0; i < g_maxplayers; i++)
@@ -2928,10 +3023,11 @@ void G_InitNew(skill_t skill, int episode, int map, dboolean prepare)
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
   automap_active = false;
-  gameskill = skill;
+  dsda_UpdateGameSkill(skill);
   dsda_UpdateGameMap(episode, map);
 
   totalleveltimes = 0; // cph
+  levels_completed = 0;
 
   dsda_EvaluateSkipModeInitNew();
 
@@ -3104,7 +3200,8 @@ byte *G_WriteOptions(byte *demo_p)
       *demo_p++ = comp[i] != 0;
   }
 
-  *demo_p++ = (compatibility_level >= prboom_2_compatibility) && forceOldBsp; // cph 2002/07/20
+  // unused forceOldBsp
+  *demo_p++ = 0;
 
   //----------------
   // Padding at end
@@ -3196,7 +3293,8 @@ const byte *G_ReadOptions(const byte *demo_p)
         comp[i] = *demo_p++;
     }
 
-    forceOldBsp = *demo_p++; // cph 2002/07/20
+    // unused forceOldBsp
+    demo_p++;
   }
   else  /* defaults for versions <= 2.02 */
   {
@@ -3429,7 +3527,7 @@ static dboolean CheckForOverrun(const byte *start_p, const byte *current_p, size
 
 const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int params)
 {
-  skill_t skill;
+  int skill;
   int i, episode = 1, map = 0;
 
   // e6y
@@ -3439,7 +3537,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
 
   dboolean failonerror = (params&RDH_SAFE);
 
-  basetic = gametic;  // killough 9/29/98
+  boom_basetic = gametic;  // killough 9/29/98
+  true_basetic = gametic;
 
   // killough 2/22/98, 2/28/98: autodetect old demos and act accordingly.
   // Old demos turn on demo_compatibility => compatibility; new demos load
@@ -3732,6 +3831,8 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     }
   }
 
+  displayplayer = consoleplayer;
+
   if (playeringame[1])
   {
     netgame = true;
@@ -3782,6 +3883,7 @@ void G_StartDemoPlayback(const byte *buffer, int length, int behaviour)
 {
   const byte *demo_p;
 
+  dsda_InitDemoPlayback();
   demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
   dsda_AttachPlaybackStream(demo_p, demolength, behaviour);
 
@@ -3830,6 +3932,9 @@ void G_DoPlayDemo(void)
   if (LoadDemo(defdemoname, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_NORMAL);
+
+    if (dsda_Flag(dsda_arg_track_playback))
+      dsda_ResetSplits();
 
     lprintf(LO_INFO, "Playing demo:\n  Name: %s\n  Compatibility: %s\n",
                      defdemoname, comp_lev_str[compatibility_level]);
@@ -3911,7 +4016,8 @@ void doom_printf(const char *s, ...)
   va_start(v,s);
   vsnprintf(msg,sizeof(msg),s,v);   /* print message in buffer */
   va_end(v);
-  players[consoleplayer].message = msg;  // set new message
+
+  dsda_AddMessage(msg);
 }
 
 //e6y
@@ -4063,8 +4169,6 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
 //e6y
 void G_ContinueDemo(const char *playback_name)
 {
-  const byte *demo_p;
-
   if (LoadDemo(playback_name, &demobuffer, &demolength))
   {
     G_StartDemoPlayback(demobuffer, demolength, PLAYBACK_JOIN_ON_END);
@@ -4159,19 +4263,13 @@ void G_Completed(int map, int position, int flags, angle_t angle)
     if (hexen && gamemode == shareware && map > 4)
     {
         P_SetMessage(&players[consoleplayer], "ACCESS DENIED -- DEMO", true);
-        S_StartSound(NULL, hexen_sfx_chat);
+        S_StartVoidSound(hexen_sfx_chat);
         return;
     }
 
     secretexit = false;
     gameaction = ga_completed;
     dsda_UpdateLeaveData(map, position, flags, angle);
-}
-
-void G_TeleportNewMap(int map, int position)
-{
-    gameaction = ga_leavemap;
-    dsda_UpdateLeaveData(map, position, 0, 0);
 }
 
 void G_DoTeleportNewMap(void)

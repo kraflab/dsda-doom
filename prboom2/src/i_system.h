@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -43,10 +43,6 @@
 
 #include "m_fixed.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #ifdef _MSC_VER
 #define    F_OK    0    /* Check for file existence */
 #define    W_OK    2    /* Check for write permission */
@@ -85,8 +81,8 @@ const char *I_DoomExeDir(void); // killough 2/16/98: path to executable's dir
 dboolean HasTrailingSlash(const char* dn);
 char* I_RequireFile(const char* wfname, const char* ext);
 char* I_FindFile(const char* wfname, const char* ext);
-char* I_FindFileEx(const char* wfname, const char* ext);
 const char* I_FindFile2(const char* wfname, const char* ext);
+char* I_RequireAnyFile(const char* wfname, const char** ext);
 
 char* I_RequireWad(const char* wfname);
 char* I_FindWad(const char* wfname);
@@ -94,7 +90,8 @@ char* I_FindWad(const char* wfname);
 char* I_RequireDeh(const char* wfname);
 char* I_FindDeh(const char* wfname);
 
-dboolean I_FileToBuffer(const char *filename, byte **data, int *size);
+char* I_RequireZip(const char* wfname);
+char* I_FindZip(const char* wfname);
 
 /* cph 2001/11/18 - wrapper for read(2) which deals with partial reads */
 void I_Read(int fd, void* buf, size_t sz);

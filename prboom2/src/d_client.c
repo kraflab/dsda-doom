@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -99,8 +99,8 @@ void FakeNetUpdate(void)
 
       // e6y
       // Eliminating the sudden jump of six frames(BACKUPTICS/2)
-      // after change of realtic_clock_rate.
-      if (maketic - gametic && gametic <= force_singletics_to && dsda_RealticClockRate() < 200) break;
+      // after change of game_speed.
+      if (maketic - gametic && gametic <= force_singletics_to && dsda_GameSpeed() < 200) break;
 
       G_BuildTiccmd(&local_cmds[0][maketic%BACKUPTICS]);
       maketic++;
@@ -121,7 +121,7 @@ void TryRunTics (void)
     FakeNetUpdate();
     runtics = maketic - gametic;
     if (!runtics) {
-      if (!movement_smooth || !window_focused) {
+      if (!movement_smooth) {
           I_uSleep(ms_to_next_tick*1000);
       }
       if (dsda_GetTick() - entertime > 10) {

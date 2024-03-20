@@ -17,13 +17,15 @@
 //
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
 
+#include "doomtype.h"
 #include "i_glob.h"
+#include "z_zone.h"
 #include "m_misc.h"
+#include "m_file.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -32,10 +34,6 @@
 #if defined(_MSC_VER)
 // For Visual C++, we need to include the win_opendir module.
 #include "win_opendir.h"
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#include <sys/stat.h>
-#define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
 #elif defined(HAVE_DIRENT_H)
 #include <dirent.h>
 #include <sys/stat.h>
@@ -63,21 +61,15 @@ static dboolean IsDirectory(char *dir, struct dirent *de)
 #endif
     {
         char *filename;
-        struct stat sb;
-        int result;
+        dboolean result;
 
         int len = snprintf(NULL, 0, "%s/%s", dir, de->d_name);
-        filename = malloc(len+1);
+        filename = Z_Malloc(len+1);
         snprintf(filename, len+1, "%s/%s", dir, de->d_name);
-        result = stat(filename, &sb);
-        free(filename);
+        result = M_IsDir(filename);
+        Z_Free(filename);
 
-        if (result != 0)
-        {
-            return false;
-        }
-
-        return S_ISDIR(sb.st_mode);
+        return result;
     }
 }
 
@@ -100,9 +92,9 @@ static void FreeStringList(char **globs, int num_globs)
     int i;
     for (i = 0; i < num_globs; ++i)
     {
-        free(globs[i]);
+        Z_Free(globs[i]);
     }
-    free(globs);
+    Z_Free(globs);
 }
 
 glob_t *I_StartMultiGlob(const char *directory, int flags,
@@ -112,13 +104,14 @@ glob_t *I_StartMultiGlob(const char *directory, int flags,
     int num_globs;
     glob_t *result;
     va_list args;
+    char *directory_native;
 
-    globs = malloc(sizeof(char *));
+    globs = Z_Malloc(sizeof(char *));
     if (globs == NULL)
     {
         return NULL;
     }
-    globs[0] = strdup(glob);
+    globs[0] = Z_Strdup(glob);
     num_globs = 1;
 
     va_start(args, glob);
@@ -132,33 +125,36 @@ glob_t *I_StartMultiGlob(const char *directory, int flags,
             break;
         }
 
-        new_globs = realloc(globs, sizeof(char *) * (num_globs + 1));
+        new_globs = Z_Realloc(globs, sizeof(char *) * (num_globs + 1));
         if (new_globs == NULL)
         {
             FreeStringList(globs, num_globs);
         }
         globs = new_globs;
-        globs[num_globs] = strdup(arg);
+        globs[num_globs] = Z_Strdup(arg);
         ++num_globs;
     }
     va_end(args);
 
-    result = malloc(sizeof(glob_t));
+    result = Z_Malloc(sizeof(glob_t));
     if (result == NULL)
     {
         FreeStringList(globs, num_globs);
         return NULL;
     }
 
-    result->dir = opendir(directory);
+    directory_native = ConvertUtf8ToSysNativeMB(directory);
+
+    result->dir = opendir(directory_native);
     if (result->dir == NULL)
     {
         FreeStringList(globs, num_globs);
-        free(result);
+        Z_Free(result);
+        Z_Free(directory_native);
         return NULL;
     }
 
-    result->directory = strdup(directory);
+    result->directory = directory_native;
     result->globs = globs;
     result->num_globs = num_globs;
     result->flags = flags;
@@ -184,10 +180,10 @@ void I_EndGlob(glob_t *glob)
     FreeStringList(glob->globs, glob->num_globs);
     FreeStringList(glob->filenames, glob->filenames_len);
 
-    free(glob->directory);
-    free(glob->last_filename);
+    Z_Free(glob->directory);
+    Z_Free(glob->last_filename);
     (void) closedir(glob->dir);
-    free(glob);
+    Z_Free(glob);
 }
 
 static dboolean MatchesGlob(const char *name, const char *glob, int flags)
@@ -253,7 +249,7 @@ static char *NextGlob(glob_t *glob)
 {
     struct dirent *de;
     int len;
-    char *ret;
+    char *temp, *ret;
 
     do
     {
@@ -267,8 +263,9 @@ static char *NextGlob(glob_t *glob)
 
     // Return the fully-qualified path, not just the bare filename.
     len = snprintf(NULL, 0, "%s/%s", glob->directory, de->d_name);
-    ret = malloc(len+1);
-    snprintf(ret, len+1, "%s/%s", glob->directory, de->d_name);
+    temp = Z_Malloc(len+1);
+    snprintf(temp, len+1, "%s/%s", glob->directory, de->d_name);
+    ret = ConvertSysNativeMBToUtf8(temp);
     return ret;
 }
 
@@ -287,7 +284,7 @@ static void ReadAllFilenames(glob_t *glob)
         {
             break;
         }
-        glob->filenames = realloc(glob->filenames,
+        glob->filenames = Z_Realloc(glob->filenames,
                                   (glob->filenames_len + 1) * sizeof(char *));
         glob->filenames[glob->filenames_len] = name;
         ++glob->filenames_len;
@@ -344,7 +341,7 @@ const char *I_NextGlob(glob_t *glob)
     // them back from the system API.
     if ((glob->flags & GLOB_FLAG_SORTED) == 0)
     {
-        free(glob->last_filename);
+        Z_Free(glob->last_filename);
         glob->last_filename = NextGlob(glob);
         return glob->last_filename;
     }

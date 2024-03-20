@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -39,6 +39,7 @@
 // The most basic types we use, portability.
 #include "config.h"
 #include "doomtype.h"
+#include "m_fixed.h"
 
 //
 // Map level types.
@@ -161,7 +162,7 @@ typedef struct {
 
 // Reserved by EE
 // SoM 9/02/02: 3D Middletexture flag!
-#define ML_3DMIDTEX 0x0400
+#define ML_ETERNITY 0x0400
 
 // haleyjd 05/02/06: Although it was believed until now that a reserved line
 // flag was unnecessary, a problem with Ultimate DOOM E2M7 has disproven this
@@ -175,20 +176,30 @@ typedef struct {
 #define ML_BLOCKLANDMONSTERS 0x1000
 #define ML_BLOCKPLAYERS      0x2000
 
+#define ML_VANILLA 0x01ff
+#define ML_BOOM    0x03ff
+#define ML_MBF21   0x3fff
+
 // extensions
 #define ML_MONSTERSCANACTIVATE 0x4000 // zdoom
 #define ML_BLOCKEVERYTHING     0x8000 // zdoom
 
 #define ML_REPEATSPECIAL       0x00010000 // hexen
 
-#define ML_SPAC_CROSS          0x00020000 // hexen activation
-#define ML_SPAC_USE            0x00040000 // hexen activation
-#define ML_SPAC_MCROSS         0x00080000 // hexen activation
-#define ML_SPAC_IMPACT         0x00100000 // hexen activation
-#define ML_SPAC_PUSH           0x00200000 // hexen activation
-#define ML_SPAC_PCROSS         0x00400000 // hexen activation
-
-#define ML_SPAC_MASK (ML_SPAC_CROSS|ML_SPAC_USE|ML_SPAC_MCROSS|ML_SPAC_IMPACT|ML_SPAC_PUSH|ML_SPAC_PCROSS)
+// udmf
+#define ML_CLIPMIDTEX          0x00020000
+#define ML_BLOCKSIGHT          0x00040000
+#define ML_BLOCKHITSCAN        0x00080000
+#define ML_BLOCKPROJECTILES    0x00100000
+#define ML_BLOCKUSE            0x00200000
+#define ML_BLOCKFLOATERS       0x00400000
+#define ML_JUMPOVER            0x00800000
+#define ML_3DMIDTEX            0x01000000
+#define ML_3DMIDTEXIMPASSIBLE  0x02000000
+#define ML_FIRSTSIDEONLY       0x04000000
+#define ML_REVEALED            0x08000000
+#define ML_CHECKSWITCHRANGE    0x10000000
+#define ML_WRAPMIDTEX          0x20000000
 
 // Sector definition, from editing.
 typedef struct {
@@ -242,6 +253,11 @@ typedef struct {
   unsigned char side;
 } PACKEDATTR mapseg_znod_t;
 
+typedef struct {
+  unsigned int v1, v2;
+  unsigned int linedef;
+  unsigned char side;
+} PACKEDATTR mapseg_znod2_t;
 
 // BSP node structure.
 
@@ -282,8 +298,34 @@ typedef struct {
   int children[2];
 } PACKEDATTR mapnode_znod_t;
 
+typedef struct {
+  int x;  // Partition line from (x,y) to x+dx,y+dy)
+  int y;
+  int dx;
+  int dy;
+  // Bounding box for each child, clip against view frustum.
+  short bbox[2][4];
+  // If NF_SUBSECTOR its a subsector, else it's a node of another subtree.
+  int children[2];
+} PACKEDATTR mapnode_znod2_t;
+
 // Thing definition, position, orientation and type,
 // plus skill/visibility flags and attributes.
+
+typedef struct {
+  short tid;
+  fixed_t x;
+  fixed_t y;
+  fixed_t height;
+  short angle;
+  short type;
+  int options;
+  int special;
+  int special_args[5];
+  fixed_t gravity;
+  fixed_t health;
+  float alpha;
+} mapthing_t;
 
 typedef struct {
   short tid;
@@ -299,7 +341,7 @@ typedef struct {
   byte arg3;
   byte arg4;
   byte arg5;
-} PACKEDATTR mapthing_t;
+} PACKEDATTR hexen_mapthing_t;
 
 typedef struct {
   short x;
@@ -313,12 +355,27 @@ typedef struct {
 #define HML_REPEATSPECIAL 0x0200  // special is repeatable
 #define HML_SPAC_SHIFT 10
 #define HML_SPAC_MASK 0x1c00
-#define GET_SPAC(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
+#define GET_SPAC_INDEX(flags) ((flags&HML_SPAC_MASK)>>HML_SPAC_SHIFT)
 
 // zdoom
 #define ZML_MONSTERSCANACTIVATE 0x2000 // Monsters and players can activate
 #define ZML_BLOCKPLAYERS        0x4000 // Blocks players
 #define ZML_BLOCKEVERYTHING     0x8000 // Blocks everything
+
+// line activation
+#define SPAC_NONE     0x0000
+#define SPAC_CROSS    0x0001
+#define SPAC_USE      0x0002
+#define SPAC_MCROSS   0x0004
+#define SPAC_IMPACT   0x0008
+#define SPAC_PUSH     0x0010
+#define SPAC_PCROSS   0x0020
+#define SPAC_USEBACK  0x0040
+#define SPAC_MPUSH    0x0080
+#define SPAC_MUSE     0x0100
+#define SPAC_ANYCROSS 0x0200
+#define SPAC_DAMAGE   0x0400
+#define SPAC_DEATH    0x0800
 
 #ifdef _MSC_VER
 #pragma pack(pop)

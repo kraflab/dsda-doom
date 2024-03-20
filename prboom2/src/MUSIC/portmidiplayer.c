@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -109,7 +109,7 @@ static int mus_portmidi_chorus_level; // portmidi chorus send level
 // so the messages appear in the future.  ~46-47ms is the nominal length if i_sound.c gets its way
 #define DRIVER_LATENCY 80 // ms
 // driver event buffer needs to be big enough to hold however many events occur in latency time
-#define DRIVER_BUFFER 100 // events
+#define DRIVER_BUFFER 1024 // events
 
 static const char *pm_name (void)
 {
@@ -134,7 +134,8 @@ static byte gm2_system_on[] = {0xf0, 0x7e, 0x7f, 0x09, 0x03, 0xf7};
 static byte xg_system_on[] = {0xf0, 0x43, 0x10, 0x4c, 0x00, 0x00, 0x7e, 0x00, 0xf7};
 static PmEvent event_notes_off[16];
 static PmEvent event_sound_off[16];
-static PmEvent event_reset[16 * 12];
+static PmEvent event_reset[16 * 6];
+static PmEvent event_pbs[16 * 6];
 static PmEvent event_reverb[16];
 static PmEvent event_chorus[16];
 
@@ -142,13 +143,19 @@ static void reset_device (void)
 {
   Pm_Write(pm_stream, event_notes_off, 16);
   Pm_Write(pm_stream, event_sound_off, 16);
-  Pm_Write(pm_stream, event_reset, 16 * 12);
 
-  if (sysex_reset != NULL)
+  if (sysex_reset == NULL)
+    Pm_Write(pm_stream, event_reset, 16 * 6);
+  else
     Pm_WriteSysEx(pm_stream, 0, sysex_reset);
 
-  Pm_Write(pm_stream, event_reverb, 16);
-  Pm_Write(pm_stream, event_chorus, 16);
+  Pm_Write(pm_stream, event_pbs, 16 * 6);
+
+  if (mus_portmidi_reverb_level > -1 || sysex_reset == NULL)
+    Pm_Write(pm_stream, event_reverb, 16);
+
+  if (mus_portmidi_chorus_level > -1 || sysex_reset == NULL)
+    Pm_Write(pm_stream, event_chorus, 16);
 
   use_reset_delay = mus_portmidi_reset_delay > 0;
 }
@@ -156,28 +163,31 @@ static void reset_device (void)
 static void init_reset_buffer (void)
 {
   int i;
-  PmEvent *event = event_reset;
+  PmEvent *reset = event_reset;
+  PmEvent *pbs = event_pbs;
+  int reverb = mus_portmidi_reverb_level;
+  int chorus = mus_portmidi_chorus_level;
+
   for (i = 0; i < 16; ++i)
   {
     event_notes_off[i].message = Pm_Message(0xB0 | i, 0x7B, 0x00);
     event_sound_off[i].message = Pm_Message(0xB0 | i, 0x78, 0x00);
 
-    event[0].message = Pm_Message(0xB0 | i, 0x79, 0x00); // reset all controllers
-    event[1].message = Pm_Message(0xB0 | i, 0x64, 0x00); // pitch bend sens RPN LSB
-    event[2].message = Pm_Message(0xB0 | i, 0x65, 0x00); // pitch bend sens RPN MSB
-    event[3].message = Pm_Message(0xB0 | i, 0x06, 0x02); // data entry MSB
-    event[4].message = Pm_Message(0xB0 | i, 0x26, 0x00); // data entry LSB
-    event[5].message = Pm_Message(0xB0 | i, 0x64, 0x7F); // null RPN LSB
-    event[6].message = Pm_Message(0xB0 | i, 0x65, 0x7F); // null RPN MSB
-    event[7].message = Pm_Message(0xB0 | i, 0x07, 0x64); // channel volume
-    event[8].message = Pm_Message(0xB0 | i, 0x0A, 0x40); // pan
-    event[9].message = Pm_Message(0xB0 | i, 0x00, 0x00); // bank select msb
-    event[10].message = Pm_Message(0xB0 | i, 0x20, 0x00); // bank select lsb
-    event[11].message = Pm_Message(0xC0 | i, 0x00, 0x00); // program change
-    event += 12;
+    reset[0].message = Pm_Message(0xB0 | i, 0x79, 0x00); // reset all controllers
+    reset[1].message = Pm_Message(0xB0 | i, 0x07, 0x64); // channel volume
+    reset[2].message = Pm_Message(0xB0 | i, 0x0A, 0x40); // pan
+    reset[3].message = Pm_Message(0xB0 | i, 0x00, 0x00); // bank select msb
+    reset[4].message = Pm_Message(0xB0 | i, 0x20, 0x00); // bank select lsb
+    reset[5].message = Pm_Message(0xC0 | i, 0x00, 0x00); // program change
+    reset += 6;
 
-    event_reverb[i].message = Pm_Message(0xB0 | i, 0x5B, mus_portmidi_reverb_level);
-    event_chorus[i].message = Pm_Message(0xB0 | i, 0x5D, mus_portmidi_chorus_level);
+    pbs[0].message = Pm_Message(0xB0 | i, 0x64, 0x00); // pitch bend sens RPN LSB
+    pbs[1].message = Pm_Message(0xB0 | i, 0x65, 0x00); // pitch bend sens RPN MSB
+    pbs[2].message = Pm_Message(0xB0 | i, 0x06, 0x02); // data entry MSB
+    pbs[3].message = Pm_Message(0xB0 | i, 0x26, 0x00); // data entry LSB
+    pbs[4].message = Pm_Message(0xB0 | i, 0x64, 0x7F); // null RPN LSB
+    pbs[5].message = Pm_Message(0xB0 | i, 0x65, 0x7F); // null RPN MSB
+    pbs += 6;
   }
 
   if (!strcasecmp(mus_portmidi_reset_type, "gs"))
@@ -190,6 +200,26 @@ static void init_reset_buffer (void)
     sysex_reset = xg_system_on;
   else
     sysex_reset = NULL;
+
+  // if no reverb specified and no SysEx reset selected, then use GM default
+  if (reverb == -1 && sysex_reset == NULL)
+    reverb = 40;
+
+  if (reverb > -1)
+  {
+    for (i = 0; i < 16; ++i)
+      event_reverb[i].message = Pm_Message(0xB0 | i, 0x5B, reverb);
+  }
+
+  // if no chorus specified and no SysEx reset selected, then use GM default
+  if (chorus == -1 && sysex_reset == NULL)
+    chorus = 0;
+
+  if (chorus > -1)
+  {
+    for (i = 0; i < 16; ++i)
+      event_chorus[i].message = Pm_Message(0xB0 | i, 0x5D, chorus);
+  }
 }
 
 static int pm_init (int samplerate)
@@ -618,7 +648,10 @@ static void pm_render (void *vdest, unsigned bufflen)
               eventpos = 0;
               // prevent hanging notes (doom2.wad MAP14, MAP22)
               for (int i = 0; i < 16; i++)
+              {
                 writeevent (when, 0xB0, i, 0x7B, 0x00); // all notes off
+                writeevent (when, 0xB0, i, 0x79, 0x00); // reset all controllers
+              }
               continue;
             }
             pm_stop();
@@ -629,6 +662,12 @@ static void pm_render (void *vdest, unsigned bufflen)
         if (currevent->data.channel.param1 == MIDI_CONTROLLER_MAIN_VOLUME)
         {
           write_volume (when, currevent->data.channel.channel, currevent->data.channel.param2);
+          break;
+        }
+        else if (currevent->data.channel.param1 == 0x79)
+        {
+          // ms gs synth resets volume if "reset all controllers" value isn't zero
+          writeevent (when, 0xB0, currevent->data.channel.channel, 0x79, 0x00);
           break;
         }
         // fall through

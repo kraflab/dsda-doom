@@ -21,6 +21,7 @@
 ========================
 */
 
+#include "am_map.h"
 #include "doomstat.h"
 #include "d_event.h"
 #include "s_sound.h"
@@ -153,7 +154,7 @@ static yahpt_t YAHspot[3][9] = {
 static const char *NameForMap(int map)
 {
     const char *name = LevelNames[(gameepisode - 1) * 9 + map - 1];
-    name = name;
+
     if (strlen(name) < 7)
     {
         return "";
@@ -170,7 +171,7 @@ static void IN_DrawInterpic(void)
   snprintf(name, sizeof(name), "MAPE%d", gameepisode);
 
   // e6y: wide-res
-  V_FillBorder(-1, 0);
+  V_ClearBorder();
   V_DrawNamePatch(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
 }
 
@@ -220,8 +221,6 @@ static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
 //
 //========================================================================
 
-extern void AM_Stop(void);
-
 void IN_Start(wbstartstruct_t* wbstartstruct)
 {
     V_SetPalette(0);
@@ -233,7 +232,7 @@ void IN_Start(wbstartstruct_t* wbstartstruct)
     skipintermission = false;
     intertime = 0;
     oldintertime = 0;
-    AM_Stop();
+    AM_Stop(false);
     S_ChangeMusic(heretic_mus_intr, true);
 }
 
@@ -446,13 +445,13 @@ void IN_Ticker(void)
         {
             interstate = 2;
             skipintermission = false;
-            S_StartSound(NULL, heretic_sfx_dorcls);
+            S_StartVoidSound(heretic_sfx_dorcls);
             return;
         }
         interstate = 3;
         cnt = 10;
         skipintermission = false;
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
     }
 }
 
@@ -521,11 +520,12 @@ void IN_Drawer(void)
 
     if (oldinterstate != 2 && interstate == 2)
     {
-        S_StartSound(NULL, heretic_sfx_pstop);
+        S_StartVoidSound(heretic_sfx_pstop);
     }
     oldinterstate = interstate;
     switch (interstate)
     {
+        case -1:
         case 0:                // draw stats
             IN_DrawStatBack();
             switch (gametype)
@@ -576,7 +576,7 @@ void IN_Drawer(void)
 void IN_DrawStatBack(void)
 {
     // e6y: wide-res
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawBackground("FLOOR16", 0);
 }
 
@@ -698,7 +698,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 1 && intertime >= 30)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].killcount, 200, 65 - yoffset, 3);
@@ -710,7 +710,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 2 && intertime >= 60)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].itemcount, 200, 90 - yoffset, 3);
@@ -722,7 +722,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 3 && intertime >= 90)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     IN_DrawNumber(players[consoleplayer].secretcount, 200, 115 - yoffset, 3);
@@ -734,7 +734,7 @@ void IN_DrawSingleStats(void)
     }
     if (sounds < 4 && intertime >= 150)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
 
@@ -803,7 +803,7 @@ void IN_DrawCoopStats(void)
             }
             else if (intertime >= 40 && sounds < 1)
             {
-                S_StartSound(NULL, heretic_sfx_dorcls);
+                S_StartVoidSound(heretic_sfx_dorcls);
                 sounds++;
             }
             IN_DrawNumber(killPercent[i], 85, ypos + 10, 3);
@@ -865,12 +865,12 @@ void IN_DrawDMStats(void)
     }
     if (intertime >= 20 && sounds < 1)
     {
-        S_StartSound(NULL, heretic_sfx_dorcls);
+        S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
     if (intertime >= 100 && slaughterboy && sounds < 2)
     {
-        S_StartSound(NULL, heretic_sfx_wpnup);
+        S_StartVoidSound(heretic_sfx_wpnup);
         sounds++;
     }
     for (i = 0; i < g_maxplayers; i++)

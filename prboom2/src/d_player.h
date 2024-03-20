@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -52,11 +52,6 @@
 // is buffered within the player data struct,
 // as commands per game tick.
 #include "d_ticcmd.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 
 //
 // Player states.
@@ -199,9 +194,6 @@ typedef struct player_s
   int                 killcount;
   int                 itemcount;
   int                 secretcount;
-
-  // Hint messages. // CPhipps - const
-  const char*         message;
 
   // For screen flashing (red or bright).
   int                 damagecount;

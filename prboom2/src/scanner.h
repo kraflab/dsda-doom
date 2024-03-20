@@ -80,9 +80,13 @@ class Scanner
 		bool		CheckToken(char token);
 		bool		CheckInteger();
 		bool		CheckFloat();
+		bool		CheckString();
+		bool		StringMatch(const char *target);
 		void		MustGetInteger();
 		void		MustGetFloat();
+		void		MustGetString();
 		void		ExpandState();
+		void		SkipLine();
 		int			GetLine() const { return tokenLine; }
 		int			GetLinePos() const { return tokenLinePosition; }
 		bool		GetNextToken(bool expandState=true);

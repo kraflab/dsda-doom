@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -42,10 +42,6 @@
 // We need the playr data structure as well.
 #include "d_player.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 // ------------------------
 // Command line parameters.
 //
@@ -62,7 +58,7 @@ extern GameMode_t gamemode;
 extern GameMission_t  gamemission;
 extern const char *doomverstr;
 
-extern char *MAPNAME(int e, int m);
+extern char *VANILLA_MAP_LUMP_NAME(int e, int m);
 
 // Set if homebrew PWAD stuff has been added.
 extern  dboolean modifiedgame;
@@ -123,7 +119,6 @@ enum {
 };
 
 enum {
-  comperr_zerotag,
   comperr_passuse,
   comperr_hangsolid,
   comperr_blockmap,
@@ -144,13 +139,13 @@ extern  Language_t   language;
 //
 
 // Defaults for menu, methinks.
-extern  skill_t   startskill;
+extern  int   startskill;
 extern  int             startepisode;
 
 extern  dboolean   autostart;
 
 // Selected by user.
-extern  skill_t         gameskill;
+extern  int   gameskill;
 extern  int   gameepisode;
 extern  int   gamemap;
 
@@ -166,9 +161,6 @@ extern leave_data_t leave_data;
 
 #define LF_SET_ANGLE 0x01
 #define LEAVE_VICTORY -1
-
-// Nightmare mode flag, single player.
-extern  dboolean         respawnmonsters;
 
 // Netgame? Only true if >1 player.
 extern  dboolean netgame;
@@ -206,7 +198,9 @@ extern int automap_follow;
 extern int automap_grid;
 
 #define automap_on (automap_active && !automap_overlay)
-#define automap_off (!automap_active || automap_overlay)
+#define automap_off (!automap_on)
+#define automap_input (automap_active)
+#define automap_hud (automap_active && !automap_overlay)
 
 typedef enum {
   mnact_nochange = -1,
@@ -230,9 +224,11 @@ extern  int totalkills, totallive;
 extern  int totalitems;
 extern  int totalsecret;
 
-extern  int basetic;
+extern  int boom_basetic;
+extern  int true_basetic;
 extern  int leveltime;       // level time in tics
 extern  int totalleveltimes; // sum of intermission times in tics at second resolution
+extern  int levels_completed;
 
 // --------------------------------------
 // DEMO playback/recording related stuff.
@@ -240,6 +236,9 @@ extern  int totalleveltimes; // sum of intermission times in tics at second reso
 extern  dboolean demoplayback;
 extern  dboolean demorecording;
 extern  int demover;
+
+#define allow_incompatibility (!demorecording && !demoplayback)
+#define comperr(i) (default_comperr[i] && allow_incompatibility)
 
 extern  dboolean userdemo;
 #define userplayback (demoplayback && userdemo)
@@ -261,7 +260,8 @@ extern  dboolean     in_game;
 
 extern  int   gametic;
 
-#define logictic (gametic - basetic)
+#define boom_logictic (gametic - boom_basetic)
+#define true_logictic (gametic - true_basetic)
 
 //e6y
 extern  dboolean realframe;
@@ -350,7 +350,5 @@ extern int monster_infighting;
 extern int monkeys;
 
 extern int HelperThing;          // type of thing to use for helper
-
-extern dboolean forceOldBsp;
 
 #endif

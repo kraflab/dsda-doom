@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -126,6 +126,16 @@ void R_InitSpritesRes(void)
 
   clipbot = Z_Calloc(1, 2 * SCREENWIDTH * sizeof(*clipbot));
   cliptop = clipbot + SCREENWIDTH;
+}
+
+void R_UpdateVisSpriteTranMap(vissprite_t *vis, mobj_t *thing)
+{
+  if (thing && thing->tranmap)
+    vis->tranmap = thing->tranmap;
+  else if (vis->mobjflags & g_mf_translucent)
+    vis->tranmap = main_tranmap;
+  else
+    vis->tranmap = NULL;
 }
 
 //
@@ -516,7 +526,6 @@ static void R_DrawVisSprite(vissprite_t *vis)
   R_SetDefaultDrawColumnVars(&dcvars);
 
   dcvars.colormap = vis->colormap;
-  dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
 
   // hexen_note: colfunc: No idea how to merge this right now...
   // if (vis->mobjflags & (MF_SHADOW | MF_ALTSHADOW))
@@ -564,10 +573,10 @@ static void R_DrawVisSprite(vissprite_t *vis)
     dcvars.translation = translationtables - 256 +
       ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
   }
-  else if (vis->mobjflags & g_mf_translucent) // phares
+  else if (vis->tranmap) // phares
   {
     colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_TRANSLUCENT, RDRAW_FILTER_POINT);
-    tranmap = main_tranmap;       // killough 4/11/98
+    tranmap = vis->tranmap;
   }
   else
   {
@@ -599,7 +608,6 @@ static void R_DrawVisSprite(vissprite_t *vis)
   for (dcvars.x=vis->x1 ; dcvars.x<=vis->x2 ; dcvars.x++, frac += vis->xiscale)
     {
       texturecolumn = frac>>FRACBITS;
-      dcvars.texu = frac;
 
       R_DrawMaskedColumn(
         patch,
@@ -700,7 +708,7 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
   tx = -(gyt+gxt);
 
   // too far off the side?
-  if (D_abs(tx)>(tz<<2))
+  if (D_abs(tx) > ((int64_t) tz << 2))
     return;
 
     // decide which patch to use for sprite relative to player
@@ -895,6 +903,8 @@ static void R_ProjectSprite (mobj_t* thing, int lightlevel)
         index = MAXLIGHTSCALE - 1;
       vis->colormap = spritelights[index];
     }
+
+  R_UpdateVisSpriteTranMap(vis, thing);
 }
 
 //
@@ -1186,6 +1196,8 @@ static void R_DrawPSprite (pspdef_t *psp)
     // e6y: original code is restored
     vis->colormap = spritelights[MAXLIGHTSCALE-1];  // local light
 
+  R_UpdateVisSpriteTranMap(vis, NULL);
+
   //e6y: interpolation for weapon bobbing
   if (movement_smooth)
   {
@@ -1246,8 +1258,6 @@ static void R_DrawPSprite (pspdef_t *psp)
       R_FakeFlat( viewplayer->mo->subsector->sector, &tmpsec,
                   &floorlightlevel, &ceilinglightlevel, false);
       lightlevel = ((floorlightlevel+ceilinglightlevel) >> 1) + (extralight << LIGHTSEGSHIFT);
-      if (!gl_hardware_gamma && !V_IsWorldLightmodeIndexed())
-        lightlevel += usegamma * 16;
 
       if (lightlevel < 0)
         lightlevel = 0;

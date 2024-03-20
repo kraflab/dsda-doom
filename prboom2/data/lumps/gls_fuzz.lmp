@@ -1,0 +1,46 @@
+#version 110
+
+// Sprite texture
+uniform sampler2D tex;
+// Fuzz lookup texture
+uniform sampler2D fuzz;
+// Texture dimensions
+uniform vec2 tex_d;
+// Fuzz texture dimensions
+uniform vec2 fuzz_d;
+// Fuzz macro-pixel ratio in terms of window coordinates
+// If 0, use texture coordinates instead
+uniform float ratio;
+// Random seed
+uniform float seed;
+
+float random(vec2 n)
+{
+  return fract(sin(dot(n, vec2(12.9898, 78.233))) * 143758.5453);
+}
+
+float darkness(vec2 c)
+{
+  // Compute random offset based on seed and x coordinate
+  float r = random(vec2(seed, c.x));
+  // Sample fuzz lookup texture at y coordinate plus random offset modulo size
+  return texture2D(fuzz, vec2(fract(c.y / fuzz_d.x + r), 0)).r;
+}
+
+void main()
+{
+  // Ensure fuzz coordinate is identical for each fragment in fuzz macro-pixel
+  vec2 c;
+
+  // Use window coordinates if ratio is non-zero
+  if (ratio != 0.0)
+    // Invert y coordinate since GL convention is opposite Doom's
+    c = floor(vec2(gl_FragCoord.x / ratio, -gl_FragCoord.y / ratio));
+  else
+    // Use texture coordinates
+    c = floor(gl_TexCoord[0].xy * tex_d);
+
+  // [XA] new for 0.25: use darkness as an alpha value so the game can
+  // pass in a non-black gl_color for pain/gamma support in indexed lightmode
+  gl_FragColor = vec4(gl_Color.rgb, texture2D(tex, gl_TexCoord[0].xy).g * darkness(c));
+}

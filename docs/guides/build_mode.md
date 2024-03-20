@@ -10,7 +10,7 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 - Advance Frame: moves forward one frame, using the pending command.
 - Reverse Frame: go back one frame.
 - Reset Command: sets the pending command empty (a wait tic). If your command source is an existing buffer, this will not change the command that gets executed.
-- Toggle Source: by default, the command you edit in build mode is the one that gets sent to the game when you advance a frame. You can toggle the source to play back commands from the demo buffer instead. If you are past the end of any existing demo buffer, wait tics will be played.
+- Toggle Source: switches between editing the command and replaying the existing command.
 - Fine Movement: adjusts movement commands by 1 unit.
 - Turn values and the use action are reset every time the frame advances. Other values are kept.
 - Use `build.turbo` / `b.turbo` in the console to toggle turbo on and off (or launch with `-turbo`).
@@ -44,11 +44,21 @@ Building is the process of editing a demo frame-by-frame, in order to make highl
 
 Brute force is a technique in built tases where you automatically apply different sequences of commands until you reach a desired outcome. A common use case is for performing glides. You can activate brute force from the console.
 
-- `brute_force.start / bf.start depth forward_range strafe_range turn_range conditions`
-  - `depth` is the number of tics you want to brute force (limit 5)
+- `brute_force.frame / bf.frame frame forward_range strafe_range turn_range [buttons weapon]`
+  - `frame` is the frame number from the start of brute force (0, 1, 2...)
   - `forward_range` is the range of values for forwardmove. Format: `40:50`, `-50:-40`, etc.
   - `strafe_range` is the same as `forward_range`, but for strafe values.
   - `turn_range` is the same as `forward_range`, but for turn values.
+  - `buttons` is any combination of `a`, `u`, and `c` (attack, use, change weapon).
+  - `weapon` is the number for the weapon to change to if `c` is given as a button.
+- `brute_force.keep / bf.keep frame`
+  - Keeps the existing command on the given frame
+- `brute_force.nomonsters / bf.nomo`
+  - Performs a faster brute force by ignoring monster activity (may desync)
+  - Use `brute_force.monsters` / `bf.mo` to reset to the regular brute force mode
+- `brute_force.start / bf.start depth [forward_range strafe_range turn_range] conditions`
+  - Ranges are optional and will override frame-specific instructions
+  - `depth` is the number of tics you want to brute force (limit 35)
   - `conditions` are comma separated. Format: `attribute operator value`.
     - `attribute` has the following options:
       - `x` (player x position)
@@ -59,6 +69,15 @@ Brute force is a technique in built tases where you automatically apply differen
       - `spd` (player speed)
       - `dmg` (single frame player damage dealt)
       - `rng` (rng index)
+      - `arm` (player armor)
+      - `hp` (player health)
+      - `am0` (player bullets / crystals / blue mana)
+      - `am1` (player shells / bolts / green mana)
+      - `am2` (player cells / claw orbs)
+      - `am3` (player rockets / runes)
+      - `am4` (player flame orbs)
+      - `am5` (player spheres)
+      - `bmw` (blockmap width)
     - `operator` has the following options:
       - `<` (less than)
       - `<=` (less than or equal to)
@@ -78,5 +97,16 @@ Brute force is a technique in built tases where you automatically apply differen
   - There are additional conditions that do not follow the above pattern:
     - `skip X` (skip line X)
     - `act X` (activate line X)
-  - Full example: `bf.start 2 40:50 40:50 -2:2 x < 1056, vx > 5` is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
+    - `have X` (have item X)
+      - `rkc`, `bkc`, `ykc`, `rsk`, `bsk`, `ysk` (keys)
+      - `sg`, `cg`, `rl`, `pg`, `bfg`, `cs`, `ssg` (weapons)
+  - Basic example: `bf.start 2 40:50 40:50 -2:2 x < 1056, vx > 5`
+    - This is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
+  - Frame-specific example (different ranges on different frames):
+    ```c
+    bf.frame 0 40:50 40:50 -2:2
+    bf.frame 1 50:50 50:50 -10:10
+    bf.frame 2 40:50 40:50 -2:2
+    bf.start 3 x < 1056, vx > 5
+    ```
 - Brute force metadata gets printed to the console (conditions, progress, etc).

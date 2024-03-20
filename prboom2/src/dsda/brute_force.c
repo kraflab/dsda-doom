@@ -25,6 +25,7 @@
 #include "r_state.h"
 
 #include "dsda/build.h"
+#include "dsda/demo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/skip.h"
@@ -33,7 +34,7 @@
 
 #include "brute_force.h"
 
-#define MAX_BF_DEPTH 5
+#define MAX_BF_DEPTH 35
 #define MAX_BF_CONDITIONS 16
 
 typedef struct {
@@ -47,6 +48,7 @@ typedef struct {
   bf_range_t forwardmove;
   bf_range_t sidemove;
   bf_range_t angleturn;
+  byte buttons;
 } bf_t;
 
 typedef struct {
@@ -75,6 +77,8 @@ static bf_condition_t bf_condition[MAX_BF_CONDITIONS];
 static long long bf_volume;
 static long long bf_volume_max;
 static dboolean bf_mode;
+static dboolean bf_nomonsters;
+static dsda_key_frame_t nomo_key_frame;
 static bf_target_t bf_target;
 static ticcmd_t bf_result[MAX_BF_DEPTH];
 
@@ -87,11 +91,21 @@ const char* dsda_bf_attribute_names[dsda_bf_attribute_max] = {
   [dsda_bf_speed] = "spd",
   [dsda_bf_damage] = "dmg",
   [dsda_bf_rng] = "rng",
+  [dsda_bf_arm] = "arm",
+  [dsda_bf_hp] = "hp",
+  [dsda_bf_ammo_0] = "am0",
+  [dsda_bf_ammo_1] = "am1",
+  [dsda_bf_ammo_2] = "am2",
+  [dsda_bf_ammo_3] = "am3",
+  [dsda_bf_ammo_4] = "am4",
+  [dsda_bf_ammo_5] = "am5",
+  [dsda_bf_bmapwidth] = "bmw",
 };
 
 const char* dsda_bf_misc_names[dsda_bf_misc_max] = {
   "line skip",
   "line activation",
+  "have item",
 };
 
 const char* dsda_bf_operator_names[dsda_bf_operator_max] = {
@@ -109,6 +123,25 @@ const char* dsda_bf_limit_names[dsda_bf_limit_max] = {
   "min",
 };
 
+const char* dsda_bf_item_names[dsda_bf_item_max] = {
+  [dsda_bf_red_key_card] = "rkc",
+  [dsda_bf_yellow_key_card] = "ykc",
+  [dsda_bf_blue_key_card] = "bkc",
+  [dsda_bf_red_skull_key] = "rsk",
+  [dsda_bf_yellow_skull_key] = "ysk",
+  [dsda_bf_blue_skull_key] = "bsk",
+
+  [dsda_bf_fist] = "f",
+  [dsda_bf_pistol] = "p",
+  [dsda_bf_shotgun] = "sg",
+  [dsda_bf_chaingun] = "cg",
+  [dsda_bf_rocket_launcher] = "rl",
+  [dsda_bf_plasma_gun] = "pg",
+  [dsda_bf_bfg] = "bfg",
+  [dsda_bf_chainsaw] = "cs",
+  [dsda_bf_super_shotgun] = "ssg",
+};
+
 static dboolean fixed_point_attribute[dsda_bf_attribute_max] = {
   [dsda_bf_x] = true,
   [dsda_bf_y] = true,
@@ -118,6 +151,15 @@ static dboolean fixed_point_attribute[dsda_bf_attribute_max] = {
   [dsda_bf_speed] = true,
   [dsda_bf_damage] = true,
   [dsda_bf_rng] = false,
+  [dsda_bf_arm] = false,
+  [dsda_bf_hp] = false,
+  [dsda_bf_ammo_0] = false,
+  [dsda_bf_ammo_1] = false,
+  [dsda_bf_ammo_2] = false,
+  [dsda_bf_ammo_3] = false,
+  [dsda_bf_ammo_4] = false,
+  [dsda_bf_ammo_5] = false,
+  [dsda_bf_bmapwidth] = false,
 };
 
 static dboolean dsda_AdvanceBFRange(bf_range_t* range) {
@@ -156,6 +198,7 @@ static void dsda_CopyBFCommandDepth(ticcmd_t* cmd, bf_t* bf) {
   cmd->angleturn = bf->angleturn.i << 8;
   cmd->forwardmove = bf->forwardmove.i;
   cmd->sidemove = bf->sidemove.i;
+  cmd->buttons = bf->buttons;
 }
 
 static void dsda_CopyBFResult(bf_t* bf, int depth) {
@@ -191,16 +234,22 @@ static void dsda_PrintBFProgress(void) {
 #define BF_SUCCESS 1
 
 static const char* bf_result_text[2] = { "FAILURE", "SUCCESS" };
+static dboolean brute_force_ended;
+
+dboolean dsda_BruteForceEnded(void) {
+  return brute_force_ended;
+}
 
 static void dsda_EndBF(int result) {
-  int percent;
-
-  percent = 100 * bf_volume / bf_volume_max;
+  brute_force_ended = true;
 
   lprintf(LO_INFO, "Brute force complete (%s)!\n", bf_result_text[result]);
   dsda_PrintBFProgress();
 
-  dsda_RestoreBFKeyFrame(0);
+  if (bf_nomonsters)
+    dsda_RestoreKeyFrame(&nomo_key_frame, true);
+  else
+    dsda_RestoreBFKeyFrame(0);
 
   bf_mode = false;
 
@@ -211,6 +260,8 @@ static void dsda_EndBF(int result) {
 }
 
 static fixed_t dsda_BFAttribute(int attribute) {
+  extern int bmapwidth;
+
   player_t* player;
 
   player = &players[displayplayer];
@@ -236,17 +287,74 @@ static fixed_t dsda_BFAttribute(int attribute) {
       }
     case dsda_bf_rng:
       return rng.rndindex;
+    case dsda_bf_arm:
+      return player->armorpoints[ARMOR_ARMOR];
+    case dsda_bf_hp:
+      return player->health;
+    case dsda_bf_ammo_0:
+      return player->ammo[0];
+    case dsda_bf_ammo_1:
+      return player->ammo[1];
+    case dsda_bf_ammo_2:
+      return player->ammo[2];
+    case dsda_bf_ammo_3:
+      return player->ammo[3];
+    case dsda_bf_ammo_4:
+      return player->ammo[4];
+    case dsda_bf_ammo_5:
+      return player->ammo[5];
+    case dsda_bf_bmapwidth:
+      return bmapwidth;
     default:
       return 0;
   }
 }
 
 static dboolean dsda_BFMiscConditionReached(int i) {
+  player_t* player;
+
+  player = &players[displayplayer];
+
   switch (bf_condition[i].attribute) {
     case dsda_bf_line_skip:
       return lines[bf_condition[i].value].player_activations == bf_condition[i].secondary_value;
     case dsda_bf_line_activation:
       return lines[bf_condition[i].value].player_activations > bf_condition[i].secondary_value;
+    case dsda_bf_have_item:
+      switch (bf_condition[i].value) {
+        case dsda_bf_red_key_card:
+          return player->cards[it_redcard];
+        case dsda_bf_yellow_key_card:
+          return player->cards[it_yellowcard];
+        case dsda_bf_blue_key_card:
+          return player->cards[it_bluecard];
+        case dsda_bf_red_skull_key:
+          return player->cards[it_redskull];
+        case dsda_bf_yellow_skull_key:
+          return player->cards[it_yellowskull];
+        case dsda_bf_blue_skull_key:
+          return player->cards[it_blueskull];
+        case dsda_bf_fist:
+          return player->weaponowned[wp_fist];
+        case dsda_bf_pistol:
+          return player->weaponowned[wp_pistol];
+        case dsda_bf_shotgun:
+          return player->weaponowned[wp_shotgun];
+        case dsda_bf_chaingun:
+          return player->weaponowned[wp_chaingun];
+        case dsda_bf_rocket_launcher:
+          return player->weaponowned[wp_missile];
+        case dsda_bf_plasma_gun:
+          return player->weaponowned[wp_plasma];
+        case dsda_bf_bfg:
+          return player->weaponowned[wp_bfg];
+        case dsda_bf_chainsaw:
+          return player->weaponowned[wp_chainsaw];
+        case dsda_bf_super_shotgun:
+          return player->weaponowned[wp_supershotgun];
+        default:
+          return false;
+      }
     default:
       return false;
   }
@@ -285,7 +393,7 @@ static void dsda_BFUpdateBestResult(fixed_t value) {
 
   bf_target.evaluated = true;
   bf_target.best_value = value;
-  bf_target.best_depth = logictic - bf_logictic;
+  bf_target.best_depth = true_logictic - bf_logictic;
 
   for (i = 0; i < bf_target.best_depth; ++i)
     bf_target.best_bf[i] = brute_force[i];
@@ -403,17 +511,22 @@ void dsda_AddBruteForceCondition(dsda_bf_attribute_t attribute,
 }
 
 void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
-                              dsda_bf_limit_t limit, fixed_t value) {
+                              dsda_bf_limit_t limit, fixed_t value, dboolean has_value) {
   bf_target.attribute = attribute;
   bf_target.limit = limit;
   bf_target.value = value;
   bf_target.best_value = dsda_BFAttribute(attribute);
   bf_target.enabled = true;
 
-  lprintf(LO_INFO, "Set brute force target: %s %s %d\n",
-                   dsda_bf_attribute_names[attribute],
-                   dsda_bf_limit_names[limit],
-                   value);
+  if (has_value)
+    lprintf(LO_INFO, "Set brute force target: %s %s %d\n",
+                    dsda_bf_attribute_names[attribute],
+                    dsda_bf_limit_names[limit],
+                    value);
+  else
+    lprintf(LO_INFO, "Set brute force target: %s %s\n",
+                    dsda_bf_attribute_names[attribute],
+                    dsda_bf_limit_names[limit]);
 }
 
 static void dsda_SortIntPair(int* a, int* b) {
@@ -426,53 +539,109 @@ static void dsda_SortIntPair(int* a, int* b) {
   }
 }
 
-dboolean dsda_StartBruteForce(int depth,
-                              int forwardmove_min, int forwardmove_max,
-                              int sidemove_min, int sidemove_max,
-                              int angleturn_min, int angleturn_max) {
+int dsda_KeepBruteForceFrame(int i) {
+  ticcmd_t cmd;
+
+  if (!dsda_CopyPendingCmd(&cmd, i))
+    return false;
+
+  brute_force[i].forwardmove.min = cmd.forwardmove;
+  brute_force[i].forwardmove.max = cmd.forwardmove;
+
+  brute_force[i].sidemove.min = cmd.sidemove;
+  brute_force[i].sidemove.max = cmd.sidemove;
+
+  brute_force[i].angleturn.min = cmd.angleturn >> 8;
+  brute_force[i].angleturn.max = cmd.angleturn >> 8;
+
+  brute_force[i].buttons = cmd.buttons;
+
+  return true;
+}
+
+int dsda_AddBruteForceFrame(int i,
+                            int forwardmove_min, int forwardmove_max,
+                            int sidemove_min, int sidemove_max,
+                            int angleturn_min, int angleturn_max,
+                            byte buttons) {
+  if (i < 0 || i >= MAX_BF_DEPTH)
+    return false;
+
+  dsda_SortIntPair(&forwardmove_min, &forwardmove_max);
+  dsda_SortIntPair(&sidemove_min, &sidemove_max);
+  dsda_SortIntPair(&angleturn_min, &angleturn_max);
+
+  brute_force[i].forwardmove.min = forwardmove_min;
+  brute_force[i].forwardmove.max = forwardmove_max;
+
+  brute_force[i].sidemove.min = sidemove_min;
+  brute_force[i].sidemove.max = sidemove_max;
+
+  brute_force[i].angleturn.min = angleturn_min;
+  brute_force[i].angleturn.max = angleturn_max;
+
+  brute_force[i].buttons = buttons;
+
+  return true;
+}
+
+void dsda_BruteForceWithoutMonsters(void) {
+  bf_nomonsters = true;
+}
+
+void dsda_BruteForceWithMonsters(void) {
+  bf_nomonsters = false;
+}
+
+dboolean dsda_StartBruteForce(int depth) {
   int i;
+
+  if (!dsda_BuildMode()) {
+    lprintf(LO_WARN, "You cannot start brute force outside of build mode!\n");
+    return false;
+  }
 
   if (depth <= 0 || depth > MAX_BF_DEPTH)
     return false;
 
   dsda_TrackFeature(uf_bruteforce);
 
-  dsda_SortIntPair(&forwardmove_min, &forwardmove_max);
-  dsda_SortIntPair(&sidemove_min, &sidemove_max);
-  dsda_SortIntPair(&angleturn_min, &angleturn_max);
+  lprintf(LO_INFO, "Brute force starting:\n");
 
   bf_depth = depth;
-  bf_logictic = logictic;
+  bf_logictic = true_logictic;
   bf_volume = 0;
-  bf_volume_max = pow((forwardmove_max - forwardmove_min + 1) *
-                      (sidemove_max - sidemove_min + 1) *
-                      (angleturn_max - angleturn_min + 1), depth);
+  bf_volume_max = 1;
 
   for (i = 0; i < bf_depth; ++i) {
-    brute_force[i].forwardmove.min = forwardmove_min;
-    brute_force[i].forwardmove.max = forwardmove_max;
-    brute_force[i].forwardmove.i = forwardmove_min;
+    lprintf(LO_INFO, "  %d: F %d:%d S %d:%d T %d:%d B %d\n", i,
+            brute_force[i].forwardmove.min, brute_force[i].forwardmove.max,
+            brute_force[i].sidemove.min, brute_force[i].sidemove.max,
+            brute_force[i].angleturn.min, brute_force[i].angleturn.max,
+            brute_force[i].buttons);
 
-    brute_force[i].sidemove.min = sidemove_min;
-    brute_force[i].sidemove.max = sidemove_max;
-    brute_force[i].sidemove.i = sidemove_min;
+    bf_volume_max *= (brute_force[i].forwardmove.max - brute_force[i].forwardmove.min + 1) *
+                     (brute_force[i].sidemove.max - brute_force[i].sidemove.min + 1) *
+                     (brute_force[i].angleturn.max - brute_force[i].angleturn.min + 1);
 
-    brute_force[i].angleturn.min = angleturn_min;
-    brute_force[i].angleturn.max = angleturn_max;
-    brute_force[i].angleturn.i = angleturn_min;
+    brute_force[i].forwardmove.i = brute_force[i].forwardmove.min;
+    brute_force[i].sidemove.i = brute_force[i].sidemove.min;
+    brute_force[i].angleturn.i = brute_force[i].angleturn.min;
   }
 
-  dsda_StartTimer(dsda_timer_brute_force);
-
-  lprintf(LO_INFO, "Brute force starting:\n");
-  lprintf(LO_INFO, "  F %d:%d S %d:%d T %d:%d\n", forwardmove_min, forwardmove_max,
-                                                  sidemove_min, sidemove_max,
-                                                  angleturn_min, angleturn_max);
   lprintf(LO_INFO, "Testing %lld sequences with depth %d\n\n", bf_volume_max, bf_depth);
 
   bf_mode = true;
 
+  if (bf_nomonsters) {
+    lprintf(LO_INFO, "Warning: ignoring monsters! The result may desync with monsters!\n");
+    dsda_StoreKeyFrame(&nomo_key_frame, true, false);
+    P_RemoveMonsters();
+  }
+
   dsda_EnterSkipMode();
+
+  dsda_StartTimer(dsda_timer_brute_force);
 
   return true;
 }
@@ -480,7 +649,7 @@ dboolean dsda_StartBruteForce(int depth,
 void dsda_UpdateBruteForce(void) {
   int frame;
 
-  frame = logictic - bf_logictic;
+  frame = true_logictic - bf_logictic;
 
   if (frame == bf_depth) {
     if (bf_volume % 10000 == 0)
@@ -496,7 +665,7 @@ void dsda_UpdateBruteForce(void) {
 }
 
 void dsda_EvaluateBruteForce(void) {
-  if (logictic - bf_logictic != bf_depth)
+  if (true_logictic - bf_logictic != bf_depth)
     return;
 
   ++bf_volume;
@@ -516,7 +685,7 @@ void dsda_EvaluateBruteForce(void) {
 void dsda_CopyBruteForceCommand(ticcmd_t* cmd) {
   int depth;
 
-  depth = logictic - bf_logictic;
+  depth = true_logictic - bf_logictic;
 
   if (depth >= bf_depth) {
     memset(cmd, 0, sizeof(*cmd));

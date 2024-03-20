@@ -25,12 +25,14 @@
 #include "gl_struct.h"
 #include "lprintf.h"
 #include "r_main.h"
+#include "r_segs.h"
 #include "s_sound.h"
 #include "smooth.h"
 #include "v_video.h"
 #include "z_zone.h"
 
 #include "dsda/args.h"
+#include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/input.h"
 #include "dsda/stretch.h"
@@ -85,7 +87,6 @@ extern int sts_always_red;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 extern int full_sounds;
-extern int fake_contrast;
 
 void I_Init2(void);
 void M_ChangeDemoSmoothTurns(void);
@@ -93,16 +94,10 @@ void M_ChangeSkyMode(void);
 void M_ChangeMessages(void);
 void S_ResetSfxVolume(void);
 void I_ResetMusicVolume(void);
-void dsda_RefreshExHudFPS(void);
-void dsda_RefreshExHudLevelSplits(void);
-void dsda_RefreshExHudCoordinateDisplay(void);
-void dsda_RefreshExHudCommandDisplay(void);
 void M_ChangeAllowFog(void);
 void gld_ResetShadowParameters(void);
-void M_ChangeTextureParams(void);
 void gld_MultisamplingInit(void);
 void M_ChangeFOV(void);
-void M_ChangeLightMode(void);
 void I_InitMouse(void);
 void AccelChanging(void);
 void G_UpdateMouseSensitivity(void);
@@ -112,7 +107,7 @@ void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
 void S_Init(void);
 void M_ChangeMIDIPlayer(void);
-void HU_init_crosshair(void);
+void HU_InitCrosshair(void);
 void HU_InitThresholds(void);
 void dsda_InitKeyFrame(void);
 void dsda_SetupStretchParams(void);
@@ -133,20 +128,8 @@ void M_ChangeAspectRatio(void);
 void deh_changeCompTranslucency(void);
 void dsda_InitGameControllerParameters(void);
 void dsda_InitExHud(void);
-
-// TODO: migrate all kinds of stuff from M_Init
-
-// TODO: automatically go through strict list
-void dsda_UpdateStrictMode(void) {
-  I_Init2(); // side effect of realtic clock rate
-  M_ChangeSpeed(); // side effect of always sr50
-  dsda_InitKeyFrame();
-  M_ChangeSkyMode(); // affected by mouselook setting
-  HU_init_crosshair();
-  M_ChangeApplyPalette();
-  dsda_RefreshExHudCoordinateDisplay();
-  dsda_RefreshExHudCommandDisplay();
-}
+void dsda_UpdateFreeText(void);
+void dsda_ResetAirControl(void);
 
 void dsda_TrackConfigFeatures(void) {
   if (!demorecording)
@@ -158,13 +141,13 @@ void dsda_TrackConfigFeatures(void) {
   if (R_FullView() && dsda_IntConfig(dsda_config_hud_displayed))
     dsda_TrackFeature(uf_advhud);
 
-  if (dsda_IntConfig(dsda_config_realtic_clock_rate) > 100)
+  if (dsda_IntConfig(dsda_config_game_speed) > 100)
     dsda_TrackFeature(uf_speedup);
 
-  if (dsda_IntConfig(dsda_config_realtic_clock_rate) < 100)
+  if (dsda_IntConfig(dsda_config_game_speed) < 100)
     dsda_TrackFeature(uf_slowdown);
 
-  if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_point_coord))
+  if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_coordinates))
     dsda_TrackFeature(uf_coordinates);
 
   if (dsda_IntConfig(dsda_config_freelook))
@@ -208,11 +191,31 @@ void dsda_TrackConfigFeatures(void) {
 
   if (dsda_IntConfig(dsda_config_show_alive_monsters))
     dsda_TrackFeature(uf_showalive);
+
+  if (dsda_IntConfig(dsda_config_map_textured) || dsda_IntConfig(dsda_config_show_minimap))
+    dsda_TrackFeature(uf_advanced_map);
+}
+
+// TODO: migrate all kinds of stuff from M_Init
+
+// TODO: automatically go through strict list
+void dsda_UpdateStrictMode(void) {
+  I_Init2(); // side effect of realtic clock rate
+  M_ChangeSpeed(); // side effect of always sr50
+  dsda_InitKeyFrame();
+  M_ChangeSkyMode(); // affected by mouselook setting
+  HU_InitCrosshair();
+  M_ChangeApplyPalette();
+  M_ChangeMapTextured();
+  dsda_RefreshExHudCoordinateDisplay();
+  dsda_RefreshExHudCommandDisplay();
+  dsda_RefreshExHudMinimap();
+  dsda_TrackConfigFeatures();
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
-  [dsda_config_realtic_clock_rate] = {
-    "realtic_clock_rate", dsda_config_realtic_clock_rate,
+  [dsda_config_game_speed] = {
+    "game_speed", dsda_config_game_speed,
     dsda_config_int, 3, 10000, { 100 }, NULL, STRICT_INT(100), I_Init2
   },
   [dsda_config_default_complevel] = {
@@ -341,6 +344,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_show_fps", dsda_config_show_fps,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshExHudFPS
   },
+  [dsda_config_show_minimap] = {
+    "dsda_show_minimap", dsda_config_show_minimap,
+    CONF_BOOL(0), NULL, STRICT_INT(0), dsda_RefreshExHudMinimap
+  },
   [dsda_config_show_level_splits] = {
     "dsda_show_level_splits", dsda_config_show_level_splits,
     CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshExHudLevelSplits
@@ -348,6 +355,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_exhud] = {
     "dsda_exhud", dsda_config_exhud,
     CONF_BOOL(0), NULL, CONF_FEATURE | NOT_STRICT, dsda_InitExHud
+  },
+  [dsda_config_free_text] = {
+    "dsda_free_text", dsda_config_free_text,
+    CONF_STRING(""), NULL, NOT_STRICT, dsda_UpdateFreeText
   },
   [dsda_config_mute_sfx] = {
     "dsda_mute_sfx", dsda_config_mute_sfx,
@@ -360,6 +371,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_cheat_codes] = {
     "dsda_cheat_codes", dsda_config_cheat_codes,
     CONF_BOOL(1)
+  },
+  [dsda_config_organize_failed_demos] = {
+    "dsda_organize_failed_demos", dsda_config_organize_failed_demos,
+    CONF_BOOL(0)
   },
   [dsda_config_script_0] = {
     "dsda_script_0", dsda_config_script_0,
@@ -448,10 +463,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_overrun_missedbackside_emulate] = {
     "overrun_missedbackside_emulate", dsda_config_overrun_missedbackside_emulate,
     CONF_BOOL(0), &overflows[OVERFLOW_MISSEDBACKSIDE].emulate
-  },
-  [dsda_config_comperr_zerotag] = {
-    "comperr_zerotag", dsda_config_comperr_zerotag,
-    CONF_BOOL(0), &default_comperr[comperr_zerotag]
   },
   [dsda_config_comperr_passuse] = {
     "comperr_passuse", dsda_config_comperr_passuse,
@@ -569,27 +580,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mapcolor_frnd", dsda_config_mapcolor_frnd,
     CONF_COLOR(112), &mapcolor_frnd
   },
-  [dsda_config_gl_fog] = {
-    "gl_fog", dsda_config_gl_fog,
-    CONF_BOOL(1), &gl_fog, NOT_STRICT, M_ChangeAllowFog
-  },
-  [dsda_config_gl_blend_animations] = {
-    "gl_blend_animations", dsda_config_gl_blend_animations,
-    CONF_BOOL(0), &gl_blend_animations
-  },
-  [dsda_config_gl_usegamma] = {
-    "gl_usegamma", dsda_config_gl_usegamma,
-    dsda_config_int, 0, MAX_GLGAMMA, { 0 }, &gl_usegamma
-  },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
     NOT_STRICT, M_ChangeSkyMode
-  },
-  [dsda_config_gl_tex_format_string] = {
-    "gl_tex_format_string", dsda_config_gl_tex_format_string,
-    CONF_STRING("GL_RGBA"),
-    NULL, NOT_STRICT, M_ChangeTextureParams
   },
   [dsda_config_gl_render_multisampling] = {
     "gl_render_multisampling", dsda_config_gl_render_multisampling,
@@ -599,14 +593,13 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "gl_render_fov", dsda_config_gl_render_fov,
     dsda_config_int, 20, 160, { 90 }, &gl_render_fov, NOT_STRICT, M_ChangeFOV
   },
-  [dsda_config_gl_lightmode] = {
-    "gl_lightmode", dsda_config_gl_lightmode,
-    dsda_config_int, gl_lightmode_glboom, gl_lightmode_last - 1, { gl_lightmode_indexed },
-    NULL, NOT_STRICT, M_ChangeLightMode
-  },
   [dsda_config_gl_health_bar] = {
     "gl_health_bar", dsda_config_gl_health_bar,
     CONF_BOOL(0), NULL, STRICT_INT(0)
+  },
+  [dsda_config_gl_usevbo] = {
+    "gl_usevbo", dsda_config_gl_usevbo,
+    CONF_BOOL(1), NULL, NOT_STRICT
   },
   [dsda_config_use_mouse] = {
     "use_mouse", dsda_config_use_mouse,
@@ -680,10 +673,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "startup_delay_ms", dsda_config_startup_delay_ms,
     dsda_config_int, 0, 1000, { 0 }
   },
-  [dsda_config_snd_pcspeaker] = {
-    "snd_pcspeaker", dsda_config_snd_pcspeaker,
-    CONF_BOOL(0), NULL, NOT_STRICT, I_InitSoundParams
-  },
   [dsda_config_pitched_sounds] = {
     "pitched_sounds", dsda_config_pitched_sounds,
     CONF_BOOL(0), NULL, NOT_STRICT, I_InitSoundParams
@@ -740,9 +729,37 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mus_fluidsynth_gain", dsda_config_mus_fluidsynth_gain,
     dsda_config_int, 0, 1000, { 50 }
   },
+  [dsda_config_mus_fluidsynth_chorus_depth] = {
+    "mus_fluidsynth_chorus_depth", dsda_config_mus_fluidsynth_chorus_depth,
+    dsda_config_int, 0, 10000, { 500 }
+  },
+  [dsda_config_mus_fluidsynth_chorus_level] = {
+    "mus_fluidsynth_chorus_level", dsda_config_mus_fluidsynth_chorus_level,
+    dsda_config_int, 0, 1000, { 35 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_damp] = {
+    "mus_fluidsynth_reverb_damp", dsda_config_mus_fluidsynth_reverb_damp,
+    dsda_config_int, 0, 1000, { 40 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_level] = {
+    "mus_fluidsynth_reverb_level", dsda_config_mus_fluidsynth_reverb_level,
+    dsda_config_int, 0, 1000, { 15 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_width] = {
+    "mus_fluidsynth_reverb_width", dsda_config_mus_fluidsynth_reverb_width,
+    dsda_config_int, 0, 10000, { 400 }
+  },
+  [dsda_config_mus_fluidsynth_reverb_room_size] = {
+    "mus_fluidsynth_reverb_room_size", dsda_config_mus_fluidsynth_reverb_room_size,
+    dsda_config_int, 0, 1000, { 60 }
+  },
   [dsda_config_mus_opl_gain] = {
     "mus_opl_gain", dsda_config_mus_opl_gain,
     dsda_config_int, 0, 1000, { 50 }
+  },
+  [dsda_config_mus_opl_opl3mode] = {
+    "mus_opl_opl3mode", dsda_config_mus_opl_opl3mode,
+    CONF_BOOL(1)
   },
   [dsda_config_mus_portmidi_reset_type] = {
     "mus_portmidi_reset_type", dsda_config_mus_portmidi_reset_type,
@@ -758,11 +775,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mus_portmidi_reverb_level] = {
     "mus_portmidi_reverb_level", dsda_config_mus_portmidi_reverb_level,
-    dsda_config_int, 0, 127, { 40 }
+    dsda_config_int, -1, 127, { -1 }
   },
   [dsda_config_mus_portmidi_chorus_level] = {
     "mus_portmidi_chorus_level", dsda_config_mus_portmidi_chorus_level,
-    dsda_config_int, 0, 127, { 0 }
+    dsda_config_int, -1, 127, { -1 }
   },
   [dsda_config_cap_soundcommand] = {
     "cap_soundcommand", dsda_config_cap_soundcommand,
@@ -818,27 +835,23 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_hudadd_crosshair_scale] = {
     "hudadd_crosshair_scale", dsda_config_hudadd_crosshair_scale,
-    CONF_BOOL(0), NULL, NOT_STRICT, HU_init_crosshair
+    CONF_BOOL(0), NULL, NOT_STRICT, HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair_health] = {
     "hudadd_crosshair_health", dsda_config_hudadd_crosshair_health,
-    CONF_BOOL(0), NULL, NOT_STRICT, HU_init_crosshair
+    CONF_BOOL(0), NULL, NOT_STRICT, HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair_target] = {
     "hudadd_crosshair_target", dsda_config_hudadd_crosshair_target,
-    CONF_BOOL(0), NULL, STRICT_INT(0), HU_init_crosshair
+    CONF_BOOL(0), NULL, STRICT_INT(0), HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair_lock_target] = {
     "hudadd_crosshair_lock_target", dsda_config_hudadd_crosshair_lock_target,
-    CONF_BOOL(0), NULL, STRICT_INT(0), HU_init_crosshair
+    CONF_BOOL(0), NULL, STRICT_INT(0), HU_InitCrosshair
   },
   [dsda_config_hudadd_crosshair] = {
     "hudadd_crosshair", dsda_config_hudadd_crosshair,
-    dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, CONF_FEATURE | NOT_STRICT, HU_init_crosshair
-  },
-  [dsda_config_hud_armor_color_by_class] = {
-    "hud_armor_color_by_class", dsda_config_hud_armor_color_by_class,
-    dsda_config_int, 0, 1, { 1 }, NULL, NOT_STRICT, HU_InitThresholds
+    dsda_config_int, 0, HU_CROSSHAIRS - 1, { 0 }, NULL, CONF_FEATURE | NOT_STRICT, HU_InitCrosshair
   },
   [dsda_config_hud_health_red] = {
     "hud_health_red", dsda_config_hud_health_red,
@@ -876,9 +889,13 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_auto_key_frame_timeout", dsda_config_auto_key_frame_timeout,
     dsda_config_int, 0, 25, { 10 }, NULL, NOT_STRICT, dsda_InitKeyFrame
   },
-  [dsda_config_ex_text_scale] = {
-    "dsda_ex_text_scale", dsda_config_ex_text_scale,
-    dsda_config_int, 0, 16, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
+  [dsda_config_ex_text_scale_x] = {
+    "ex_text_scale_x", dsda_config_ex_text_scale_x,
+    dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
+  },
+  [dsda_config_ex_text_ratio_y] = {
+    "ex_text_ratio_y", dsda_config_ex_text_ratio_y,
+    dsda_config_int, 0, 200, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
   },
   [dsda_config_wipe_at_full_speed] = {
     "dsda_wipe_at_full_speed", dsda_config_wipe_at_full_speed,
@@ -930,7 +947,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_allow_jumping] = {
     "dsda_allow_jumping", dsda_config_allow_jumping,
-    CONF_BOOL(0)
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_ResetAirControl
   },
   [dsda_config_parallel_sfx_limit] = {
     "dsda_parallel_sfx_limit", dsda_config_parallel_sfx_limit,
@@ -939,6 +956,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_parallel_sfx_window] = {
     "dsda_parallel_sfx_window", dsda_config_parallel_sfx_window,
     dsda_config_int, 1, 32, { 1 }, NULL, NOT_STRICT, dsda_InitParallelSFXFilter
+  },
+  [dsda_config_movement_toggle_sfx] = {
+    "dsda_movement_toggle_sfx", dsda_config_movement_toggle_sfx,
+    CONF_BOOL(0)
   },
   [dsda_config_switch_when_ammo_runs_out] = {
     "dsda_switch_when_ammo_runs_out", dsda_config_switch_when_ammo_runs_out,
@@ -956,17 +977,29 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_quake_intensity", dsda_config_quake_intensity,
     dsda_config_int, 0, 100, { 100 }
   },
+  [dsda_config_map_blinking_locks] = {
+    "map_blinking_locks", dsda_config_map_blinking_locks,
+    CONF_BOOL(0), NULL, NOT_STRICT, AM_InitParams
+  },
   [dsda_config_map_secret_after] = {
     "map_secret_after", dsda_config_map_secret_after,
     CONF_BOOL(0), NULL, NOT_STRICT, AM_InitParams
   },
-  [dsda_config_map_point_coord] = {
-    "map_point_coord", dsda_config_map_point_coord,
-    CONF_BOOL(0), NULL, STRICT_INT(0)
+  [dsda_config_map_coordinates] = {
+    "map_coordinates", dsda_config_map_coordinates,
+    CONF_BOOL(1), NULL, STRICT_INT(0), dsda_RefreshMapCoordinates
   },
-  [dsda_config_map_level_stat] = {
-    "map_level_stat", dsda_config_map_level_stat,
-    CONF_BOOL(1)
+  [dsda_config_map_totals] = {
+    "map_totals", dsda_config_map_totals,
+    CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTotals
+  },
+  [dsda_config_map_time] = {
+    "map_time", dsda_config_map_time,
+    CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTime
+  },
+  [dsda_config_map_title] = {
+    "map_title", dsda_config_map_title,
+    CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTitle
   },
   [dsda_config_automap_overlay] = {
     "automap_overlay", dsda_config_automap_overlay,
@@ -1002,7 +1035,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_map_textured] = {
     "map_textured", dsda_config_map_textured,
-    CONF_BOOL(1), NULL, NOT_STRICT, M_ChangeMapTextured
+    CONF_BOOL(1), NULL, STRICT_INT(0), M_ChangeMapTextured
   },
   [dsda_config_map_textured_trans] = {
     "map_textured_trans", dsda_config_map_textured_trans,
@@ -1053,13 +1086,17 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_fps_limit", dsda_config_fps_limit,
     dsda_config_int, 0, 1000, { 0 }
   },
+  [dsda_config_background_fps_limit] = {
+    "dsda_background_fps_limit", dsda_config_background_fps_limit,
+    dsda_config_int, 0, 1000, { 35 }
+  },
   [dsda_config_usegamma] = {
     "usegamma", dsda_config_usegamma,
     dsda_config_int, 0, 4, { 0 }, &usegamma, NOT_STRICT, M_ChangeApplyPalette
   },
   [dsda_config_screenblocks] = {
     "screenblocks", dsda_config_screenblocks,
-    dsda_config_int, 3, 11, { 10 }, NULL, CONF_FEATURE | NOT_STRICT, R_SetViewSize
+    dsda_config_int, 10, 11, { 10 }, NULL, CONF_FEATURE | NOT_STRICT, R_SetViewSize
   },
   [dsda_config_sdl_video_window_pos] = {
     "sdl_video_window_pos", dsda_config_sdl_video_window_pos,
@@ -1097,9 +1134,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "render_doom_lightmaps", dsda_config_render_doom_lightmaps,
     CONF_BOOL(0)
   },
-  [dsda_config_fake_contrast] = {
-    "fake_contrast", dsda_config_fake_contrast,
-    CONF_BOOL(1), &fake_contrast
+  [dsda_config_fake_contrast_mode] = {
+    "fake_contrast_mode", dsda_config_fake_contrast_mode,
+    dsda_config_int, FAKE_CONTRAST_MODE_OFF, FAKE_CONTRAST_MODE_SMOOTH,
+    { FAKE_CONTRAST_MODE_ON }, (int*) &fake_contrast_mode
   },
   [dsda_config_render_stretch_hud] = {
     "render_stretch_hud", dsda_config_render_stretch_hud,
@@ -1117,6 +1155,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_render_stretchsky] = {
     "render_stretchsky", dsda_config_render_stretchsky,
     CONF_BOOL(1)
+  },
+  [dsda_config_gl_fade_mode] = {
+    "gl_fade_mode", dsda_config_gl_fade_mode,
+    dsda_config_int, 0, 1, { 0 }
   },
   [dsda_config_boom_translucent_sprites] = {
     "boom_translucent_sprites", dsda_config_boom_translucent_sprites,
@@ -1174,6 +1216,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "ansi_endoom", dsda_config_ansi_endoom,
     dsda_config_int, 0, 2, { 0 }
   },
+  [dsda_config_announce_map] = {
+    "announce_map", dsda_config_announce_map,
+    CONF_BOOL(0),
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {
@@ -1190,8 +1236,12 @@ static void dsda_PersistStringConfig(dsda_config_t* conf) {
 static void dsda_ConstrainIntConfig(dsda_config_t* conf) {
   if (conf->transient_value.v_int > conf->upper_limit)
     conf->transient_value.v_int = conf->upper_limit;
-  else if (conf->transient_value.v_int < conf->lower_limit)
-    conf->transient_value.v_int = conf->lower_limit;
+  else if (conf->transient_value.v_int < conf->lower_limit) {
+    if (conf->transient_value.v_int == -1)
+      conf->transient_value.v_int = conf->default_value.v_int;
+    else
+      conf->transient_value.v_int = conf->lower_limit;
+  }
 
   if (conf->flags & CONF_EVEN && (conf->transient_value.v_int % 2))
     conf->transient_value.v_int = conf->default_value.v_int;
@@ -1333,8 +1383,14 @@ static void dsda_ParseConfigArg(int arg_id, dboolean persist) {
 }
 
 void dsda_ApplyAdHocConfiguration(void) {
+  dsda_arg_t* arg;
+
   dsda_ParseConfigArg(dsda_arg_update, true);
   dsda_ParseConfigArg(dsda_arg_assign, false);
+
+  arg = dsda_Arg(dsda_arg_game_speed);
+  if (arg->found)
+    dsda_ReadConfig("game_speed", NULL, arg->value.v_int);
 }
 
 int dsda_ToggleConfig(dsda_config_identifier_t id, dboolean persist) {

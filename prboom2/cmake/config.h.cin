@@ -5,7 +5,7 @@
 #cmakedefine PACKAGE_STRING "@PACKAGE_STRING@"
 
 #cmakedefine DOOMWADDIR "@DOOMWADDIR@"
-#cmakedefine DSDAPWADDIR "@DSDAPWADDIR@"
+#cmakedefine DSDA_ABSOLUTE_PWAD_PATH "@DSDA_ABSOLUTE_PWAD_PATH@"
 
 #cmakedefine WORDS_BIGENDIAN
 
@@ -23,7 +23,6 @@
 #cmakedefine HAVE_LIBSDL2_IMAGE
 #cmakedefine HAVE_LIBSDL2_MIXER
 
-#cmakedefine HAVE_LIBZ
 #cmakedefine HAVE_LIBMAD
 #cmakedefine HAVE_LIBFLUIDSYNTH
 #cmakedefine HAVE_LIBDUMB

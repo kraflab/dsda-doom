@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -35,10 +35,6 @@
 #define __R_SKY__
 
 #include "m_fixed.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 /* The sky map is 256*128*4 maps. */
 #define ANGLETOSKYSHIFT         22

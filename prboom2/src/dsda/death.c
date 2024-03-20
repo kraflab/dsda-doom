@@ -20,7 +20,10 @@
 #include "v_video.h"
 
 #include "dsda/configuration.h"
+#include "dsda/excmd.h"
+#include "dsda/mapinfo.h"
 #include "dsda/save.h"
+#include "dsda/skill_info.h"
 
 #include "death.h"
 
@@ -35,11 +38,12 @@ typedef enum {
   death_use_reload,
 } death_use_action_t;
 
-static int dsda_death_use_action;
-
 static int dsda_DeathUseAction(void)
 {
-  if (demorecording || demoplayback)
+  if (demorecording ||
+      demoplayback ||
+      map_info.flags & MI_ALLOW_RESPAWN ||
+      skill_info.flags & SI_PLAYER_RESPAWN)
     return death_use_default;
 
   return dsda_IntConfig(dsda_config_death_use_action);
@@ -81,11 +85,13 @@ void dsda_DeathUse(player_t* player) {
       break;
     case death_use_reload:
       {
-        extern void G_LoadGame(int slot);
         int slot = dsda_LastSaveSlot();
+        static int last_load_tic;
 
-        if (slot >= 0)
-          G_LoadGame(slot);
+        if (slot >= 0 && gametic > last_load_tic + 1) {
+          last_load_tic = gametic;
+          dsda_QueueExCmdLoad(slot);
+        }
       }
       break;
   }

@@ -94,7 +94,7 @@ static int dsda_WadCompatibilityLevel(void) {
 }
 
 int dsda_CompatibilityLevel(void) {
-  int i, level;
+  int level;
   dsda_arg_t* complevel_arg;
 
   if (raven) return doom_12_compatibility;
@@ -185,7 +185,7 @@ dboolean dsda_SkipQuitPrompt(void) {
 }
 
 dboolean dsda_TrackSplits(void) {
-  return demorecording;
+  return demorecording || (demoplayback && dsda_Flag(dsda_arg_track_playback));
 }
 
 dboolean dsda_ShowSplitData(void) {
@@ -204,6 +204,10 @@ dboolean dsda_ShowFPS(void) {
   return dsda_IntConfig(dsda_config_show_fps);
 }
 
+dboolean dsda_ShowMinimap(void) {
+  return dsda_IntConfig(dsda_config_show_minimap);
+}
+
 dboolean dsda_ShowLevelSplits(void) {
   return dsda_IntConfig(dsda_config_show_level_splits);
 }
@@ -212,8 +216,20 @@ dboolean dsda_ShowDemoAttempts(void) {
   return dsda_IntConfig(dsda_config_show_demo_attempts) && demorecording;
 }
 
-dboolean dsda_MapPointCoordinates(void) {
-  return dsda_IntConfig(dsda_config_map_point_coord);
+dboolean dsda_MapCoordinates(void) {
+  return dsda_IntConfig(dsda_config_map_coordinates);
+}
+
+dboolean dsda_MapTotals(void) {
+  return dsda_IntConfig(dsda_config_map_totals);
+}
+
+dboolean dsda_MapTime(void) {
+  return dsda_IntConfig(dsda_config_map_time);
+}
+
+dboolean dsda_MapTitle(void) {
+  return dsda_IntConfig(dsda_config_map_title);
 }
 
 dboolean dsda_PainPalette(void) {
@@ -252,12 +268,12 @@ void dsda_ResetRevealMap(void) {
   dsda_reveal_map = 0;
 }
 
-int dsda_RealticClockRate(void) {
-  return dsda_IntConfig(dsda_config_realtic_clock_rate);
+int dsda_GameSpeed(void) {
+  return dsda_IntConfig(dsda_config_game_speed);
 }
 
-void dsda_UpdateRealticClockRate(int value) {
-  dsda_UpdateIntConfig(dsda_config_realtic_clock_rate, value, true);
+void dsda_UpdateGameSpeed(int value) {
+  dsda_UpdateIntConfig(dsda_config_game_speed, value, true);
 }
 
 void dsda_SkipNextWipe(void) {

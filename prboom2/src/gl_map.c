@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -44,6 +44,7 @@
 #include "m_misc.h"
 #include "am_map.h"
 #include "lprintf.h"
+#include "dsda/gl/render_scale.h"
 
 am_icon_t am_icons[am_icon_count + 1] =
 {
@@ -100,16 +101,8 @@ void gld_InitMapPics(void)
         glGenTextures(1, &am_icons[i].tex_id);
         glBindTexture(GL_TEXTURE_2D, am_icons[i].tex_id);
 
-        if (gl_arb_texture_non_power_of_two)
-        {
-          glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-          glTexImage2D(GL_TEXTURE_2D, 0, gl_tex_format, surf->w, surf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surf->pixels);
-        }
-        else
-        {
-          gluBuild2DMipmaps(GL_TEXTURE_2D, gl_tex_format, surf->w, surf->h, GL_RGBA, GL_UNSIGNED_BYTE, surf->pixels);
-        }
-
+        glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surf->w, surf->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surf->pixels);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -154,9 +147,8 @@ void gld_AddNiceThing(int type, float x, float y, float radius, float angle,
 void gld_DrawNiceThings(int fx, int fy, int fw, int fh)
 {
   int i;
-  int j;
 
-  glScissor(fx, SCREENHEIGHT - (fy + fh), fw, fh);
+  dsda_GLSetScreenSpaceScissor(fx, fy, fw, fh);
   glEnable(GL_SCISSOR_TEST);
 
   glDisable(GL_ALPHA_TEST);

@@ -19,7 +19,12 @@
 
 #include "big_health_text.h"
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
+
 static int patch_delta_x;
 
 static void dsda_DrawComponent(void) {
@@ -28,16 +33,19 @@ static void dsda_DrawComponent(void) {
 
   player = &players[displayplayer];
 
-  cm = player->health <= hud_health_red ? CR_RED :
-       player->health <= hud_health_yellow ? CR_GOLD :
-       player->health <= hud_health_green ? CR_GREEN :
-       CR_BLUE2;
+  cm = player->health <= hud_health_red ? dsda_TextCR(dsda_tc_exhud_health_bad) :
+       player->health <= hud_health_yellow ? dsda_TextCR(dsda_tc_exhud_health_warning) :
+       player->health <= hud_health_green ? dsda_TextCR(dsda_tc_exhud_health_ok) :
+       dsda_TextCR(dsda_tc_exhud_health_super);
 
-  dsda_DrawBigNumber(component.x, component.y, patch_delta_x, 0,
-                     cm, component.vpt, 3, player->health);
+  dsda_DrawBigNumber(local->component.x, local->component.y, patch_delta_x, 0,
+                     cm, local->component.vpt, 3, player->health);
 }
 
-void dsda_InitBigHealthTextHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitBigHealthTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   if (heretic)
     patch_delta_x = 10;
   else if (hexen)
@@ -45,17 +53,15 @@ void dsda_InitBigHealthTextHC(int x_offset, int y_offset, int vpt) {
   else
     patch_delta_x = 14;
 
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigHealthTextHC(void) {
-  return;
+void dsda_UpdateBigHealthTextHC(void* data) {
+  local = data;
 }
 
-void dsda_DrawBigHealthTextHC(void) {
+void dsda_DrawBigHealthTextHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
-}
-
-void dsda_EraseBigHealthTextHC(void) {
-  return;
 }

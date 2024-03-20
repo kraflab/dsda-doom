@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -41,6 +41,7 @@
 #define CALLBACK
 #endif
 
+#include <assert.h>
 #include <math.h>
 
 #include "gl_opengl.h"
@@ -75,6 +76,53 @@ static void gld_AddGlobalVertexes(int count)
     gld_max_vertexes+=count+1024;
     flats_vbo = Z_Realloc(flats_vbo, gld_max_vertexes * sizeof(flats_vbo[0]));
   }
+}
+
+static void gld_TurnOnSubsectorTriangulation(void)
+{
+  triangulate_subsectors = 1;
+}
+
+static void gld_TurnOffSubsectorTriangulation(void)
+{
+  triangulate_subsectors = 0;
+}
+
+static dboolean gld_TriangulateSubsector(subsector_t *ssec)
+{
+  return !(ssec->sector->flags & SECTOR_IS_CLOSED) ||
+         triangulate_subsectors;
+}
+
+static int gld_SubsectorLoopIndex(subsector_t *ssec)
+{
+  return ssec->sector->iSectorID;
+}
+
+static void gld_SetupSubsectorLoop(subsector_t *ssec, int iSubsectorID, int numedgepoints)
+{
+  GLLoopDef **loop;
+  int *loopcount;
+
+  if (triangulate_subsectors)
+  {
+    loop = &subsectorloops[ iSubsectorID ].loops;
+    loopcount = &subsectorloops[ iSubsectorID ].loopcount;
+  }
+  else
+  {
+    int loop_index = gld_SubsectorLoopIndex(ssec);
+
+    loop = &sectorloops[ loop_index ].loops;
+    loopcount = &sectorloops[ loop_index ].loopcount;
+  }
+
+  (*loopcount)++;
+  (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
+  ((*loop)[(*loopcount) - 1]).index = iSubsectorID;
+  ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
+  ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
+  ((*loop)[(*loopcount) - 1]).vertexindex = gld_num_vertexes;
 }
 
 /*****************************
@@ -233,36 +281,17 @@ static void gld_FlatConvexCarver(int ssidx, int num, divline_t *list)
 
   if(!numedgepoints)
   {
-    if (levelinfo) fprintf(levelinfo, "All carved away: subsector %lli - sector %i\n", ssec-subsectors, ssec->sector->iSectorID);
+    if (levelinfo) fprintf(levelinfo, "All carved away: subsector %lli - sector %i\n", (long long)(ssec-subsectors), ssec->sector->iSectorID);
   }
   else
   {
-    if(numedgepoints >= 3)
+    if (numedgepoints >= 3)
     {
       gld_AddGlobalVertexes(numedgepoints);
+
       if (flats_vbo)
       {
-        int currentsector=ssec->sector->iSectorID;
-        GLLoopDef **loop;
-        int *loopcount;
-
-        if (triangulate_subsectors)
-        {
-          loop = &subsectorloops[ ssidx ].loops;
-          loopcount = &subsectorloops[ ssidx ].loopcount;
-        }
-        else
-        {
-          loop = &sectorloops[ currentsector ].loops;
-          loopcount = &sectorloops[ currentsector ].loopcount;
-        }
-
-        (*loopcount)++;
-        (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
-        ((*loop)[(*loopcount) - 1]).index = ssidx;
-        ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
-        ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
-        ((*loop)[(*loopcount) - 1]).vertexindex = gld_num_vertexes;
+        gld_SetupSubsectorLoop(ssec, ssidx, numedgepoints);
 
         for(i = 0;  i < numedgepoints; i++)
         {
@@ -289,15 +318,16 @@ static void gld_CarveFlats(int bspnode, int numdivlines, divline_t *divlines)
 
   // If this is a subsector we are dealing with, begin carving with the
   // given list.
-  if(bspnode & NF_SUBSECTOR)
+  if (bspnode & NF_SUBSECTOR)
   {
     // We have arrived at a subsector. The divline list contains all
     // the partition lines that carve out the subsector.
     // special case for trivial maps (no nodes, single subsector)
     int ssidx = (numnodes != 0) ? bspnode & (~NF_SUBSECTOR) : 0;
 
-    if (!(subsectors[ssidx].sector->flags & SECTOR_IS_CLOSED) || triangulate_subsectors)
+    if (gld_TriangulateSubsector(&subsectors[ssidx]))
       gld_FlatConvexCarver(ssidx, numdivlines, divlines);
+
     return;
   }
 
@@ -489,11 +519,11 @@ static void gld_PrecalculateSector(int num)
     return;
   }
   // set callbacks
-  gluTessCallback(tess, GLU_TESS_BEGIN, ntessBegin);
-  gluTessCallback(tess, GLU_TESS_VERTEX, ntessVertex);
-  gluTessCallback(tess, GLU_TESS_ERROR, ntessError);
-  gluTessCallback(tess, GLU_TESS_COMBINE, ntessCombine);
-  gluTessCallback(tess, GLU_TESS_END, ntessEnd);
+  gluTessCallback(tess, GLU_TESS_BEGIN, (void(CALLBACK*)())ntessBegin);
+  gluTessCallback(tess, GLU_TESS_VERTEX, (void(CALLBACK*)())ntessVertex);
+  gluTessCallback(tess, GLU_TESS_ERROR, (void(CALLBACK*)())ntessError);
+  gluTessCallback(tess, GLU_TESS_COMBINE, (void(CALLBACK*)())ntessCombine);
+  gluTessCallback(tess, GLU_TESS_END, (void(CALLBACK*)())ntessEnd);
   if (levelinfo) fprintf(levelinfo, "sector %i, %i lines in sector\n", num, sectors[num].linecount);
   // remove any line which has both sides in the same sector (i.e. Doom2 Map01 Sector 1)
   for (i=0; i<sectors[num].linecount; i++)
@@ -708,13 +738,12 @@ static void gld_GetSubSectorVertices(void)
 {
   int      i, j;
   int      numedgepoints;
-  subsector_t* ssector;
 
   for(i = 0; i < numsubsectors; i++)
   {
-    ssector = &subsectors[i];
+    subsector_t* ssector = &subsectors[i];
 
-    if ((ssector->sector->flags & SECTOR_IS_CLOSED) && !triangulate_subsectors)
+    if (!gld_TriangulateSubsector(ssector))
       continue;
 
     numedgepoints  = ssector->numlines;
@@ -723,29 +752,9 @@ static void gld_GetSubSectorVertices(void)
 
     if (flats_vbo)
     {
-      int currentsector = ssector->sector->iSectorID;
-      GLLoopDef **loop;
-      int *loopcount;
+      gld_SetupSubsectorLoop(ssector, i, numedgepoints);
 
-      if (triangulate_subsectors)
-      {
-        loop = &subsectorloops[ i ].loops;
-        loopcount = &subsectorloops[ i ].loopcount;
-      }
-      else
-      {
-        loop = &sectorloops[ currentsector ].loops;
-        loopcount = &sectorloops[ currentsector ].loopcount;
-      }
-
-      (*loopcount)++;
-      (*loop) = Z_Realloc((*loop), sizeof(GLLoopDef)*(*loopcount));
-      ((*loop)[(*loopcount) - 1]).index = i;
-      ((*loop)[(*loopcount) - 1]).mode = GL_TRIANGLE_FAN;
-      ((*loop)[(*loopcount) - 1]).vertexcount = numedgepoints;
-      ((*loop)[(*loopcount) - 1]).vertexindex = gld_num_vertexes;
-
-      for(j = 0;  j < numedgepoints; j++)
+      for (j = 0; j < numedgepoints; j++)
       {
         flats_vbo[gld_num_vertexes].u =( (float)(segs[ssector->firstline + j].v1->x)/FRACUNIT)/64.0f;
         flats_vbo[gld_num_vertexes].v =(-(float)(segs[ssector->firstline + j].v1->y)/FRACUNIT)/64.0f;
@@ -852,14 +861,6 @@ static void gld_PreprocessSectors(void)
   int i;
   int j;
 
-#ifdef PRBOOM_DEBUG
-  levelinfo=fopen("levelinfo.txt","a");
-  if (levelinfo)
-  {
-    fprintf(levelinfo, MAPNAME(gameepisode, gamemap));
-  }
-#endif
-
   if (numsectors)
   {
     sectorloops=Z_Malloc(sizeof(GLSector)*numsectors);
@@ -885,8 +886,8 @@ static void gld_PreprocessSectors(void)
 
   if (numlines)
   {
-    linerendered[0]=Z_Calloc(numlines, sizeof(byte));
-    linerendered[1]=Z_Calloc(numlines, sizeof(byte));
+    linerendered[0]=Z_Calloc(numlines, sizeof(*linerendered[0]));
+    linerendered[1]=Z_Calloc(numlines, sizeof(*linerendered[1]));
     if (!linerendered[0] || !linerendered[1])
       I_Error("gld_PreprocessSectors: Not enough memory for array linerendered");
   }
@@ -917,28 +918,28 @@ static void gld_PreprocessSectors(void)
     memset(vertexcheck2,0,numvertexes*sizeof(vertexcheck2[0]));
     for (j=0; j<sectors[i].linecount; j++)
     {
-      v1num=((intptr_t)sectors[i].lines[j]->v1-(intptr_t)vertexes)/sizeof(vertex_t);
-      v2num=((intptr_t)sectors[i].lines[j]->v2-(intptr_t)vertexes)/sizeof(vertex_t);
-      if ((v1num>=numvertexes) || (v2num>=numvertexes))
-        continue;
+      line_t *l = sectors[i].lines[j];
+      v1num = l->v1 - vertexes;
+      v2num = l->v2 - vertexes;
 
       // e6y: for correct handling of missing textures.
       // We do not need to apply some algos for isolated lines.
       vertexcheck2[v1num]++;
       vertexcheck2[v2num]++;
 
-      if (sectors[i].lines[j]->sidenum[0]!=NO_INDEX)
-        if (sides[sectors[i].lines[j]->sidenum[0]].sector==&sectors[i])
-        {
-          vertexcheck[v1num]|=1;
-          vertexcheck[v2num]|=2;
-        }
-      if (sectors[i].lines[j]->sidenum[1]!=NO_INDEX)
-        if (sides[sectors[i].lines[j]->sidenum[1]].sector==&sectors[i])
-        {
-          vertexcheck[v1num]|=2;
-          vertexcheck[v2num]|=1;
-        }
+      if (l->frontsector == l->backsector)
+        continue;
+
+      if (l->frontsector == &sectors[i])
+      {
+        vertexcheck[v1num]|=1;
+        vertexcheck[v2num]|=2;
+      }
+      else
+      {
+        vertexcheck[v1num]|=2;
+        vertexcheck[v2num]|=1;
+      }
     }
     if (sectors[i].linecount<3)
     {
@@ -985,7 +986,7 @@ static void gld_PreprocessSectors(void)
   // figgi -- adapted for glnodes
   if (numnodes)
   {
-    if (nodesVersion == 0)
+    if (!use_gl_nodes)
       gld_CarveFlats(numnodes-1, 0, 0);
     else
       gld_GetSubSectorVertices();
@@ -1070,6 +1071,9 @@ void gld_PreprocessLevel(void)
     memset(linerendered[1], 0, numlines*sizeof(linerendered[1][0]));
   }
 
+  rendermarker = 0;
+
+  gld_ResetLastTexture();
   gld_ResetTexturedAutomap();
 
   gld_FreeDrawInfo();
@@ -1094,17 +1098,10 @@ void gld_PreprocessLevel(void)
 
       Z_Free(flats_vbo);
       flats_vbo = NULL;
-
-      // bind VBO in order to use
-      GLEXT_glBindBufferARB(GL_ARRAY_BUFFER, flats_vbo_id);
     }
-
-    glVertexPointer(3, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(flats_vbo[0]), flats_vbo_u);
   }
 
   //e6y
-  gld_PreprocessDetail();
   gld_InitVertexData();
 
   gl_preprocessed = true;
@@ -1118,15 +1115,15 @@ void gld_PreprocessLevel(void)
 
 void gld_ProcessTexturedMap(void)
 {
-  extern int map_textured;
-
-  if (map_textured && subsectorloops && subsectorloops[0].loops == NULL)
+  if (subsectorloops && subsectorloops[0].loops == NULL)
   {
-    triangulate_subsectors = 1;
-    if (nodesVersion == 0)
+    gld_TurnOnSubsectorTriangulation();
+
+    if (!use_gl_nodes)
       gld_CarveFlats(numnodes-1, 0, 0);
     else
       gld_GetSubSectorVertices();
-    triangulate_subsectors = 0;
+
+    gld_TurnOffSubsectorTriangulation();
   }
 }

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -39,11 +39,6 @@
 
 #include "dsda/configuration.h"
 #include "dsda/input.h"
-
-dboolean M_WriteFile (char const* name, const void* source, size_t length);
-
-int M_ReadFile (char const* name,byte** buffer);
-int M_ReadFileToString(char const *name, char **buffer);
 
 void M_ScreenShot (void);
 void M_DoScreenShot (const char*); // cph

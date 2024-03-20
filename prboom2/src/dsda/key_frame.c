@@ -27,7 +27,7 @@
 #include "r_fps.h"
 #include "r_main.h"
 #include "g_game.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "i_system.h"
 #include "lprintf.h"
 #include "e6y.h"
@@ -37,6 +37,7 @@
 #include "dsda.h"
 #include "dsda/args.h"
 #include "dsda/build.h"
+#include "dsda/configuration.h"
 #include "dsda/demo.h"
 #include "dsda/features.h"
 #include "dsda/mapinfo.h"
@@ -56,6 +57,7 @@ static int auto_kf_timeout_count;
 
 static dsda_key_frame_t first_kf;
 static dsda_key_frame_t quick_kf;
+static dsda_key_frame_t temp_kf;
 static auto_kf_t* auto_key_frames;
 static auto_kf_t* last_auto_kf;
 static int auto_kf_size;
@@ -143,6 +145,11 @@ static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
         }
   }
 
+  if (!demorecording && temp_kf.buffer)
+    if (temp_kf.game_tic_count <= target_tic_count)
+      if (!closest || temp_kf.game_tic_count > closest->game_tic_count)
+        closest = &temp_kf;
+
   if (!demorecording && quick_kf.buffer)
     if (quick_kf.game_tic_count <= target_tic_count)
       if (!closest || quick_kf.game_tic_count > closest->game_tic_count)
@@ -197,17 +204,14 @@ void dsda_InitKeyFrame(void) {
 
 void dsda_ExportKeyFrame(byte* buffer, int length) {
   char name[40];
-  FILE* fp = NULL;
   int timestamp;
 
   timestamp = totalleveltimes + leveltime;
 
   snprintf(name, sizeof(name), "backup-%010d.kf", timestamp);
 
-  if ((fp = fopen(name, "rb")) != NULL) {
-    fclose(fp);
-    snprintf(name, sizeof(name), "backup-%010d-%lld.kf", timestamp, time(NULL));
-  }
+  if (M_FileExists(name))
+    snprintf(name, sizeof(name), "backup-%010d-%lld.kf", timestamp, (long long) time(NULL));
 
   if (!M_WriteFile(name, buffer, length))
     I_Error("dsda_ExportKeyFrame: Failed to write key frame.");
@@ -215,9 +219,7 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
-  int i;
-
-  key_frame->game_tic_count = logictic;
+  key_frame->game_tic_count = true_logictic;
 
   P_InitSaveBuffer();
 
@@ -253,8 +255,6 @@ void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export)
 void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   void G_AfterLoad(void);
 
-  int demo_write_buffer_offset, i;
-  int epi, map;
   byte complete;
 
   if (key_frame->buffer == NULL) {
@@ -291,6 +291,10 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   dsda_ResolveParentKF(key_frame);
 
   doom_printf("Restored key frame");
+}
+
+void dsda_StoreTempKeyFrame(void) {
+  dsda_StoreKeyFrame(&temp_kf, true, true);
 }
 
 void dsda_StoreQuickKeyFrame(void) {

@@ -265,7 +265,7 @@ void SN_InitSequenceScript(void)
         }
         else
         {
-            SC_ScriptError("SN_InitSequenceScript:  Unknown commmand.\n");
+            SC_ScriptError("SN_InitSequenceScript:  Unknown command.\n");
         }
     }
 }

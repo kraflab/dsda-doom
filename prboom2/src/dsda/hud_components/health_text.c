@@ -19,7 +19,11 @@
 
 #include "health_text.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player_t* player;
@@ -29,28 +33,31 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "\x1b%cHEL %3d%%",
-    player->health <= hud_health_red ? HUlib_Color(CR_RED) :
-      player->health <= hud_health_yellow ? HUlib_Color(CR_GOLD) :
-      player->health <= hud_health_green ? HUlib_Color(CR_GREEN) :
-      HUlib_Color(CR_BLUE),
+    "%sHEL %3d%%",
+    player->health <= hud_health_red ? dsda_TextColor(dsda_tc_exhud_health_bad) :
+      player->health <= hud_health_yellow ? dsda_TextColor(dsda_tc_exhud_health_warning) :
+      player->health <= hud_health_green ? dsda_TextColor(dsda_tc_exhud_health_ok) :
+      dsda_TextColor(dsda_tc_exhud_health_super),
     player->health
   );
 }
 
-void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitHealthTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateHealthTextHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateHealthTextHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawHealthTextHC(void) {
-  dsda_DrawBasicText(&component);
-}
+void dsda_DrawHealthTextHC(void* data) {
+  local = data;
 
-void dsda_EraseHealthTextHC(void) {
-  HUlib_eraseTextLine(&component.text);
+  dsda_DrawBasicText(&local->component);
 }

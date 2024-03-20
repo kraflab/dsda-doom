@@ -14,6 +14,8 @@ if(NOT CMAKE_CROSSCOMPILING)
         rd_graphic.c
         rd_graphic.h
     )
+    target_compile_options(rdatawad PRIVATE ${SUPPORTED_WARNINGS})
+    target_compile_definitions(rdatawad PRIVATE ${DEPRECATION_SILENCING_DEFINITIONS})
     target_include_directories(rdatawad PRIVATE ${CMAKE_BINARY_DIR})
 
     set(CROSS_EXPORTS ${CROSS_EXPORTS} rdatawad PARENT_SCOPE)
@@ -28,25 +30,11 @@ set(PALETTE
 set(LUMPS
     lumps/switches.lmp
     lumps/animated.lmp
-    lumps/crbrick.lmp
-    lumps/crtan.lmp
-    lumps/crgray.lmp
-    lumps/crgreen.lmp
-    lumps/crbrown.lmp
-    lumps/crgold.lmp
-    lumps/crred.lmp
-    lumps/crblue.lmp
-    lumps/crblue2.lmp
-    lumps/crorange.lmp
-    lumps/cryellow.lmp
-    lumps/crblack.lmp
-    lumps/crpurple.lmp
-    lumps/crwhite.lmp
-    lumps/crheresy.lmp
-    lumps/crhexen.lmp
     lumps/sndcurve.lmp
     lumps/soundfont/sndfont.lmp
+    lumps/dsdacr.lmp
     lumps/dsdahud.lmp
+    lumps/dsdatc.lmp
 )
 
 set(COLORMAPS
@@ -62,10 +50,9 @@ set(TABLES
     lumps/bfgbex.lmp
     lumps/nervebex.lmp
     lumps/glshadow.lmp
-    lumps/glfp.lmp
-    lumps/glfp_fuzz.lmp
-    lumps/glfp_idx.lmp
-    lumps/glvp.lmp
+    lumps/gls_main.lmp
+    lumps/gls_fuzz.lmp
+    lumps/gls_v.lmp
     lumps/m_ammo.lmp
     lumps/m_armour.lmp
     lumps/m_arrow.lmp

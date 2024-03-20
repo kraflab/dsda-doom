@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -39,16 +39,10 @@
 #include "config.h"
 #endif
 
-#ifndef __BYTEBOOL__
-#define __BYTEBOOL__
-/* Fixed to use builtin bool type with C++. */
-#ifdef __cplusplus
-typedef bool dboolean;
-#else
-typedef enum {false, true} dboolean;
-#endif
+#include <stdbool.h>
+typedef int dboolean;
+
 typedef unsigned char byte;
-#endif
 
 //e6y
 #ifndef MAX
@@ -67,7 +61,6 @@ typedef unsigned char byte;
 #ifdef _MSC_VER
 #define strcasecmp _stricmp
 #define strncasecmp _strnicmp
-#define S_ISDIR(m)  (((m) & S_IFMT) == S_IFDIR)
 #endif
 
 #ifndef PATH_MAX
@@ -86,6 +79,12 @@ typedef unsigned char byte;
 #define CONSTFUNC
 #define PUREFUNC
 #define NORETURN
+#endif
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+  #define NORETURNC11 _Noreturn
+#else
+  #define NORETURNC11
 #endif
 
 // Definition of PACKEDATTR from Chocolate Doom
@@ -165,6 +164,16 @@ enum patch_translation_e {
   VPT_NOOFFSET = 1024,
   VPT_STRETCH_REAL       = 2048, // [XA] VPT_STRETCH in gld_fillRect means "tile", rather than "stretch"... these flags probably need a rename.
 };
+
+extern int global_patch_top_offset;
+
+#define BOTTOM_ALIGNMENT(x) ((x) == VPT_ALIGN_BOTTOM || \
+                             (x) == VPT_ALIGN_LEFT_BOTTOM || \
+                             (x) == VPT_ALIGN_RIGHT_BOTTOM)
+
+#define TOP_ALIGNMENT(x) ((x) == VPT_ALIGN_TOP || \
+                          (x) == VPT_ALIGN_LEFT_TOP || \
+                          (x) == VPT_ALIGN_RIGHT_TOP)
 
 #define arrlen(array) (sizeof(array) / sizeof(*array))
 

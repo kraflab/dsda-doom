@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -51,15 +51,16 @@
 #include "w_wad.h"   /* needed for color translation lump lookup */
 #include "v_video.h"
 #include "i_video.h"
-#include "r_filter.h"
 #include "lprintf.h"
 #include "st_stuff.h"
 #include "e6y.h"
 
 #include "dsda/configuration.h"
+#include "dsda/cr_table.h"
 #include "dsda/global.h"
 #include "dsda/palette.h"
 #include "dsda/stretch.h"
+#include "dsda/text_color.h"
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
@@ -79,46 +80,6 @@ const byte *colrngs[CR_LIMIT];
 
 int usegamma;
 
-/*
- * V_InitColorTranslation
- *
- * Loads the color translation tables from predefined lumps at game start
- * No return
- *
- * Used for translating text colors from the red palette range
- * to other colors. The first nine entries can be used to dynamically
- * switch the output of text color thru the HUlib_drawText routine
- * by embedding ESCn in the text to obtain color n. Symbols for n are
- * provided in v_video.h.
- *
- * cphipps - constness of crdef_t stuff fixed
- */
-
-typedef struct {
-  const char *name;
-  const byte **map;
-} crdef_t;
-
-// killough 5/2/98: table-driven approach
-static const crdef_t crdefs[] = {
-  {"CRBRICK",  &colrngs[CR_BRICK  ]},
-  {"CRTAN",    &colrngs[CR_TAN    ]},
-  {"CRGRAY",   &colrngs[CR_GRAY   ]},
-  {"CRGREEN",  &colrngs[CR_GREEN  ]},
-  {"CRBROWN",  &colrngs[CR_BROWN  ]},
-  {"CRGOLD",   &colrngs[CR_GOLD   ]},
-  {"CRRED",    &colrngs[CR_DEFAULT]},
-  {"CRBLUE",   &colrngs[CR_BLUE   ]},
-  {"CRORANGE", &colrngs[CR_ORANGE ]},
-  {"CRYELLOW", &colrngs[CR_YELLOW ]},
-  {"CRBLUE2",  &colrngs[CR_BLUE2  ]},
-  {"CRBLACK",  &colrngs[CR_BLACK  ]},
-  {"CRPURPLE", &colrngs[CR_PURPLE ]},
-  {"CRWHITE",  &colrngs[CR_WHITE  ]},
-  {"CRRED",    &colrngs[CR_RED    ]},
-  {NULL}
-};
-
 // [FG] translate between blood color value as per EE spec
 //      and actual color translation table index
 
@@ -126,7 +87,7 @@ static const int bloodcolor[] = {
   0,         // 0 - Red (normal)
   CR_GRAY,   // 1 - Grey
   CR_GREEN,  // 2 - Green
-  CR_BLUE2,  // 3 - Blue
+  CR_BLUE,   // 3 - Blue
   CR_YELLOW, // 4 - Yellow
   CR_BLACK,  // 5 - Black
   CR_PURPLE, // 6 - Purple
@@ -200,110 +161,17 @@ void V_InitFlexTranTable(void)
   }
 }
 
-// killough 5/2/98: tiny engine driven by table above
 void V_InitColorTranslation(void)
 {
-  register const crdef_t *p;
+  int i;
+  byte* full_table;
 
-  // {
-  //   //             DO  HR  HX
-  //   // CR_BRICK:   16 166 185
-  //   // CR_TAN:     48  94 121
-  //   // CR_GRAY:    80  34  32
-  //   // CR_GREEN:  112 224 216
-  //   // CR_BROWN:  128 110  96
-  //   // CR_GOLD:   160 144 230
-  //   // CR_RED:    176 160 181
-  //   // CR_BLUE:   196 202 162
-  //   // CR_ORANGE: 208 243 228
-  //   // CR_YELLOW: 224 144 230
-  //   // CR_BLUE2:  200 196 217
-  //   // CR_BLACK:  104   0   0
-  //   // CR_PURPLE: 251 175 237
-  //   // CR_WHITE:   80  35 255
-  //   int i, j;
-  //   byte* buffer = Z_Malloc(CR_LIMIT * 256);
-  //   for (i = 0; i < CR_LIMIT; ++i)
-  //     for (j = 0; j < 256; ++j)
-  //       buffer[i * 256 + j] = j;
-  //
-  //   buffer[CR_BRICK * 256 + 176] = 166;
-  //   buffer[CR_TAN * 256 + 176] = 94;
-  //   buffer[CR_GRAY * 256 + 176] = 34;
-  //   buffer[CR_GREEN * 256 + 176] = 224;
-  //   buffer[CR_BROWN * 256 + 176] = 110;
-  //   buffer[CR_GOLD * 256 + 176] = 144;
-  //   buffer[CR_RED * 256 + 176] = 160;
-  //   buffer[CR_BLUE * 256 + 176] = 202;
-  //   buffer[CR_ORANGE * 256 + 176] = 243;
-  //   buffer[CR_YELLOW * 256 + 176] = 144;
-  //   buffer[CR_BLUE2 * 256 + 176] = 196;
-  //   buffer[CR_BLACK * 256 + 176] = 0;
-  //   buffer[CR_PURPLE * 256 + 176] = 175;
-  //   buffer[CR_WHITE * 256 + 176] = 35;
-  //
-  //   M_WriteFile("crheresy.lmp", buffer, CR_LIMIT * 256);
-  //
-  //   buffer[CR_BRICK * 256 + 176] = 185;
-  //   buffer[CR_TAN * 256 + 176] = 121;
-  //   buffer[CR_GRAY * 256 + 176] = 32;
-  //   buffer[CR_GREEN * 256 + 176] = 216;
-  //   buffer[CR_BROWN * 256 + 176] = 96;
-  //   buffer[CR_GOLD * 256 + 176] = 230;
-  //   buffer[CR_RED * 256 + 176] = 181;
-  //   buffer[CR_BLUE * 256 + 176] = 162;
-  //   buffer[CR_ORANGE * 256 + 176] = 228;
-  //   buffer[CR_YELLOW * 256 + 176] = 230;
-  //   buffer[CR_BLUE2 * 256 + 176] = 217;
-  //   buffer[CR_BLACK * 256 + 176] = 0;
-  //   buffer[CR_PURPLE * 256 + 176] = 237;
-  //   buffer[CR_WHITE * 256 + 176] = 255;
-  //
-  //   M_WriteFile("crhexen.lmp", buffer, CR_LIMIT * 256);
-  // }
+  full_table = dsda_GenerateCRTable();
 
-  if (heretic)
-  {
-    const byte* source = W_LumpByName("CRHERESY");
+  for (i = 0; i < CR_LIMIT; ++i)
+    colrngs[i] = full_table + 256 * i;
 
-    for (p = crdefs; p->name; ++p)
-    {
-      *p->map = source;
-      source += 256;
-    }
-
-    return;
-  }
-
-  if (hexen)
-  {
-    const byte* source = W_LumpByName("CRHEXEN");
-
-    for (p = crdefs; p->name; ++p)
-    {
-      *p->map = source;
-      source += 256;
-    }
-
-    return;
-  }
-
-  for (p=crdefs; p->name; p++)
-  {
-    *p->map = W_LumpByName(p->name);
-    if (p - crdefs == CR_DEFAULT)
-      continue;
-    if (gamemission == chex || gamemission == hacx)
-    {
-      byte *temp = Z_Malloc(256);
-      memcpy (temp, *p->map, 256);
-      if (gamemission == chex)
-        memcpy (temp+112, *p->map+176, 16); // green range
-      else if (gamemission == hacx)
-        memcpy (temp+192, *p->map+176, 16); // blue range
-      *p->map = temp;
-    }
-  }
+  dsda_LoadTextColor();
 }
 
 //
@@ -409,39 +277,29 @@ static void FUNC_V_CopyRect(int srcscrn, int destscrn,
 
 static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int height, enum patch_translation_e flags)
 {
-  /* erase the entire screen to a tiled background */
   const byte *data;
-  int sx, sy, w, h;
-  int i, j, pitch;
+  byte *dest;
+  int sx, sy;
+  int pitch, src_x_offset, src_y_offset;
+  float ratio_x, ratio_y;
+  stretch_param_t* stretch;
 
-  lump += firstflat;
+  stretch = dsda_StretchParams(flags);
+  pitch = screens[scrn].pitch;
+  data = W_LumpByNum(lump + firstflat);
 
-  // killough 4/17/98:
-  data = W_LumpByNum(lump);
+  ratio_x = stretch->video->width / 320.f;
+  ratio_y = stretch->video->height / 200.f;
 
+  for (sy = y; sy < y + height; ++sy)
   {
-    const byte *src, *src_p;
-    byte *dest, *dest_p;
-    pitch = screens[scrn].pitch;
+    src_y_offset = 64 * ((int) ((sy - y) / ratio_y) % 64);
+    dest = screens[scrn].data + pitch * sy + x;
 
-    for (sy = y ; sy < y + height; sy += 64)
+    for (sx = x; sx < x + width; ++sx)
     {
-      h = (y + height - sy < 64 ? y + height - sy : 64);
-      dest = screens[scrn].data + pitch * sy + x;
-      src = data + 64 * ((sy - y) % 64);
-      for (sx = x; sx < x + width; sx += 64)
-      {
-        src_p = src;
-        dest_p = dest;
-        w = (x + width - sx < 64 ? x + width - sx : 64);
-        for (j = 0; j < h; j++)
-        {
-          memcpy (dest_p, src_p, w);
-          dest_p += pitch;
-          src_p += 64;
-        }
-        dest += 64;
-      }
+      src_x_offset = (int) ((sx - x) / ratio_x) % 64;
+      *dest++ = data[src_x_offset + src_y_offset];
     }
   }
 }
@@ -470,7 +328,7 @@ static void FUNC_V_FillPatch(int lump, int scrn, int x, int y, int width, int he
  */
 static void FUNC_V_DrawBackground(const char* flatname, int scrn)
 {
-  V_FillFlatName(flatname, scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
+  V_FillFlatName(flatname, scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_STRETCH);
 }
 
 //
@@ -513,10 +371,12 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
   stretch_param_t *params;
 
-  if (cm<CR_LIMIT)
-    trans=colrngs[cm];
+  if (cm == CR_DEFAULT)
+    trans = NULL;
+  else if (cm < CR_LIMIT)
+    trans = colrngs[cm];
   else
-    trans=translationtables + 256*((cm-CR_LIMIT)-1);
+    trans = translationtables + 256*((cm - CR_LIMIT) - 1);
 
   if (!(flags & VPT_NOOFFSET))
   {
@@ -630,6 +490,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     int   w = (patch->width << 16) - 1; // CPhipps - -1 for faster flipping
     int   left, right, top, bottom;
     int   DXI, DYI;
+    int   deltay1;
     R_DrawColumn_f colfunc;
     draw_column_vars_t dcvars;
     draw_vars_t olddrawvars = drawvars;
@@ -662,10 +523,15 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     else
       bottom = params->video->y2lookup[y + patch->height - 1];
 
+    deltay1 = params->deltay1;
+
+    if (TOP_ALIGNMENT(flags & VPT_STRETCH_MASK))
+      deltay1 += global_patch_top_offset;
+
     left   += params->deltax1;
     right  += params->deltax2;
-    top    += params->deltay1;
-    bottom += params->deltay1;
+    top    += deltay1;
+    bottom += deltay1;
 
     dcvars.texheight = patch->height;
     dcvars.iscale = DYI;
@@ -685,8 +551,6 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
         continue;
       if (dcvars.x >= SCREENWIDTH)
         break;
-
-      dcvars.texu = ((flags & VPT_FLIP) ? ((patch->width<<FRACBITS)-col) : col) % (patch->width<<FRACBITS);
 
       // step through the posts in a column
       for (i=0; i<column->numPosts; i++) {
@@ -710,15 +574,15 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 
           tmpy = y + post->topdelta;
           if (tmpy < 0 || tmpy > 200)
-            dcvars.yl = (tmpy * params->video->height) / 200 + params->deltay1;
+            dcvars.yl = (tmpy * params->video->height) / 200 + deltay1;
           else
-            dcvars.yl = params->video->y1lookup[tmpy] + params->deltay1;
+            dcvars.yl = params->video->y1lookup[tmpy] + deltay1;
 
           tmpy = y + post->topdelta + post->length - 1;
           if (tmpy < 0 || tmpy > 200)
-            dcvars.yh = (tmpy * params->video->height) / 200 + params->deltay1;
+            dcvars.yh = (tmpy * params->video->height) / 200 + deltay1;
           else
-            dcvars.yh = params->video->y2lookup[tmpy] + params->deltay1;
+            dcvars.yh = params->video->y2lookup[tmpy] + deltay1;
         }
         dcvars.edgeslope = post->slope;
 
@@ -754,7 +618,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
         dcvars.texturemid = -((dcvars.yl-centery)*dcvars.iscale);
 
         //e6y
-        dcvars.dy = params->deltay1;
+        dcvars.dy = deltay1;
         dcvars.flags |= DRAW_COLUMN_ISPATCH;
 
         colfunc(&dcvars);
@@ -785,6 +649,11 @@ static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
 }
 
 static int currentPaletteIndex = 0;
+
+void V_TouchPalette(void)
+{
+  V_SetPalette(currentPaletteIndex);
+}
 
 //
 // V_SetPalette
@@ -859,7 +728,7 @@ static void WRAP_gld_CopyRect(int srcscrn, int destscrn, int x, int y, int width
 }
 static void WRAP_gld_DrawBackground(const char *flatname, int n)
 {
-  gld_FillFlatName(flatname, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_NONE);
+  gld_FillFlatName(flatname, 0, 0, SCREENWIDTH, SCREENHEIGHT, VPT_STRETCH);
 }
 static void WRAP_gld_FillFlat(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags)
 {
@@ -876,9 +745,6 @@ static void WRAP_gld_DrawNumPatch(int x, int y, int scrn, int lump, int cm, enum
 static void WRAP_gld_DrawNumPatchPrecise(float x, float y, int scrn, int lump, int cm, enum patch_translation_e flags)
 {
   gld_DrawNumPatch_f(x,y,lump,cm,flags);
-}
-static void WRAP_gld_DrawBlock(int x, int y, int scrn, int width, int height, const byte *src, enum patch_translation_e flags)
-{
 }
 static void V_PlotPixelGL(int scrn, int x, int y, byte color) {
   gld_DrawLine(x-1, y, x+1, y, color);
@@ -903,7 +769,6 @@ static void NULL_FillPatch(int lump, int n, int x, int y, int width, int height,
 static void NULL_DrawBackground(const char *flatname, int n) {}
 static void NULL_DrawNumPatch(int x, int y, int scrn, int lump, int cm, enum patch_translation_e flags) {}
 static void NULL_DrawNumPatchPrecise(float x, float y, int scrn, int lump, int cm, enum patch_translation_e flags) {}
-static void NULL_DrawBlock(int x, int y, int scrn, int width, int height, const byte *src, enum patch_translation_e flags) {}
 static void NULL_PlotPixel(int scrn, int x, int y, byte color) {}
 static void NULL_PlotPixelWu(int scrn, int x, int y, byte color, int weight) {}
 static void NULL_DrawLine(fline_t* fl, int color) {}
@@ -971,7 +836,6 @@ void V_InitMode(video_mode_t mode) {
       current_videomode = VID_MODEGL;
       break;
   }
-  R_FilterInit();
 }
 
 dboolean V_IsSoftwareMode(void) {
@@ -980,10 +844,6 @@ dboolean V_IsSoftwareMode(void) {
 
 dboolean V_IsOpenGLMode(void) {
   return current_videomode == VID_MODEGL;
-}
-
-dboolean V_IsWorldLightmodeIndexed(void) {
-  return gl_lightmode == gl_lightmode_indexed;
 }
 
 dboolean V_IsUILightmodeIndexed(void) {
@@ -1293,7 +1153,7 @@ int V_GetPlaypalCount(void)
   return (dsda_PlayPalData()->length / PALETTE_SIZE);
 }
 
-void V_FillBorder(int lump, byte color)
+void V_ClearBorder(void)
 {
   int bordtop, bordbottom, bordleft, bordright;
 
@@ -1305,39 +1165,20 @@ void V_FillBorder(int lump, byte color)
   bordtop = wide_offsety;
   bordbottom = wide_offset2y - wide_offsety;
 
-  if (lump >= 0)
+  if (bordtop > 0)
   {
-    if (bordtop > 0)
-    {
-      // Top
-      V_FillFlat(lump, 0, 0, 0, SCREENWIDTH, bordtop, VPT_NONE);
-      // Bottom
-      V_FillFlat(lump, 0, 0, SCREENHEIGHT - bordbottom, SCREENWIDTH, bordbottom, VPT_NONE);
-    }
-    if (bordleft > 0)
-    {
-      // Left
-      V_FillFlat(lump, 0, 0, bordtop, bordleft, SCREENHEIGHT - bordbottom - bordtop, VPT_NONE);
-      // Right
-      V_FillFlat(lump, 0, SCREENWIDTH - bordright, bordtop, bordright, SCREENHEIGHT - bordbottom - bordtop, VPT_NONE);
-    }
+    // Top
+    V_FillRect(0, 0, 0, SCREENWIDTH, bordtop, 0);
+    // Bottom
+    V_FillRect(0, 0, SCREENHEIGHT - bordbottom, SCREENWIDTH, bordbottom, 0);
   }
-  else
+
+  if (bordleft > 0)
   {
-    if (bordtop > 0)
-    {
-      // Top
-      V_FillRect(0, 0, 0, SCREENWIDTH, bordtop, color);
-      // Bottom
-      V_FillRect(0, 0, SCREENHEIGHT - bordbottom, SCREENWIDTH, bordbottom, color);
-    }
-    if (bordleft > 0)
-    {
-      // Left
-      V_FillRect(0, 0, bordtop, bordleft, SCREENHEIGHT - bordbottom - bordtop, color);
-      // Right
-      V_FillRect(0, SCREENWIDTH - bordright, bordtop, bordright, SCREENHEIGHT - bordbottom - bordtop, color);
-    }
+    // Left
+    V_FillRect(0, 0, bordtop, bordleft, SCREENHEIGHT - bordbottom - bordtop, 0);
+    // Right
+    V_FillRect(0, SCREENWIDTH - bordright, bordtop, bordright, SCREENHEIGHT - bordbottom - bordtop, 0);
   }
 }
 
@@ -1562,7 +1403,7 @@ void V_FillRectVPT(int scrn, int x, int y, int width, int height, byte color, en
   V_FillRect(scrn, x, y, width, height, color);
 }
 
-void V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_translation_e flags)
+int V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_translation_e flags)
 {
   stretch_param_t *params = dsda_StretchParams(flags);
   int sy = y;
@@ -1571,6 +1412,8 @@ void V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_transla
   height = params->video->y2lookup[sy + height - 1] - y + 1;
   y += params->deltay1;
   V_FillRect(scrn, 0, y, SCREENWIDTH, height, color);
+
+  return height;
 }
 
 // heretic
@@ -1595,7 +1438,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
   // which causes the black bars on the edge of heretic E3's
   // bottom endscreen to overlap the top screen during scrolling.
   // this happens in both software and GL at the time of writing.
-  V_FillBorder(-1, 0);
+  V_ClearBorder();
 
   // custom widescreen assets are a different format
   {

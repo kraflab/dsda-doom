@@ -34,8 +34,6 @@ int gl_viewport_y;
 int gl_statusbar_height;
 int gl_scene_width;
 int gl_scene_height;
-int gl_scene_offset_x;
-int gl_scene_offset_y;
 float gl_scale_x;
 float gl_scale_y;
 int gl_letterbox_clear_required = 0;
@@ -44,7 +42,7 @@ static int gl_clear_box_width;
 static int gl_clear_box_height;
 
 void dsda_GLGetSDLWindowSize(SDL_Window* sdl_window) {
-  SDL_GetWindowSize(sdl_window, &gl_window_width, &gl_window_height);
+  SDL_GL_GetDrawableSize(sdl_window, &gl_window_width, &gl_window_height);
 }
 
 void dsda_GLSetRenderViewportParams() {
@@ -73,11 +71,8 @@ void dsda_GLSetRenderViewportParams() {
   // elim - This will be zero if no statusbar is being drawn
   gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
 
-  gl_scene_offset_x = (int)(viewwindowx * gl_scale_x);
-  gl_scene_offset_y = (int)(viewwindowy * gl_scale_y);
-
-  gl_scene_width = gl_viewport_width - (gl_scene_offset_x * 2);
-  gl_scene_height = gl_viewport_height - gl_statusbar_height - (gl_scene_offset_y * 2);
+  gl_scene_width = gl_viewport_width;
+  gl_scene_height = gl_viewport_height - gl_statusbar_height;
 
   // elim - If the viewport's x or y coordinate is indented from the window, we need to call glClear
   //        each frame to prevent artifacts smearing on undrawn framebuffer area
@@ -97,9 +92,17 @@ void dsda_GLSetRenderViewportScissor() {
 }
 
 void dsda_GLSetRenderSceneScissor() {
-  glScissor(gl_viewport_x + gl_scene_offset_x,
-            gl_viewport_y + gl_statusbar_height + gl_scene_offset_y,
+  glScissor(gl_viewport_x,
+            gl_viewport_y + gl_statusbar_height,
             gl_scene_width, gl_scene_height);
+}
+
+void dsda_GLSetScreenSpaceScissor(int x, int y, int w, int h)
+{
+  glScissor(gl_viewport_x + x * gl_scale_x,
+            gl_viewport_y + (SCREENHEIGHT - (y + h)) * gl_scale_y,
+            w * gl_scale_x,
+            h * gl_scale_y);
 }
 
 void dsda_GLUpdateStatusBarVisible() {
@@ -111,7 +114,7 @@ void dsda_GLUpdateStatusBarVisible() {
 
   if (saved_visible != current_visible) {
     gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
-    gl_scene_height = gl_viewport_height - gl_statusbar_height - (gl_scene_offset_y * 2);
+    gl_scene_height = gl_viewport_height - gl_statusbar_height;
   }
 }
 

@@ -19,53 +19,82 @@
 
 #include "composite_time.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+  char label[8];
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
+  extern dboolean dsda_reborn;
+
   int total_time;
+  int length;
 
   total_time = hexen ?
                players[consoleplayer].worldTimer :
                totalleveltimes + leveltime;
 
   if (total_time != leveltime)
-    snprintf(
+    length = snprintf(
       str,
       max_size,
-      "\x1b%ctime \x1b%c%d:%02d \x1b%c%d:%05.2f ",
-      HUlib_Color(CR_GRAY),
-      HUlib_Color(CR_GOLD),
+      "%s%s%d:%02d %s%d:%05.2f ",
+      local->label,
+      dsda_TextColor(dsda_tc_exhud_total_time),
       total_time / 35 / 60,
       (total_time % (60 * 35)) / 35,
-      HUlib_Color(CR_GREEN),
+      dsda_TextColor(dsda_tc_exhud_level_time),
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
     );
   else
-    snprintf(
+    length = snprintf(
       str,
       max_size,
-      "\x1b%ctime \x1b%c%d:%05.2f ",
-      HUlib_Color(CR_GRAY),
-      HUlib_Color(CR_GREEN),
+      "%s%s%d:%05.2f ",
+      local->label,
+      dsda_TextColor(dsda_tc_exhud_level_time),
       leveltime / 35 / 60,
       (float) (leveltime % (60 * 35)) / 35
     );
+
+  if (dsda_reborn && (demorecording || demoplayback)) {
+    int demo_tic = dsda_DemoTic();
+
+    snprintf(
+      str + length,
+      max_size - length,
+      "%s%d:%02d ",
+      dsda_TextColor(dsda_tc_exhud_demo_length),
+      demo_tic / 35 / 60,
+      (demo_tic % (60 * 35)) / 35
+    );
+  }
 }
 
-void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitCompositeTimeHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  if (arg_count < 1 || args[0])
+    snprintf(local->label, sizeof(local->label), "%stime ", dsda_TextColor(dsda_tc_exhud_time_label));
+  else
+    local->label[0] = '\0';
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateCompositeTimeHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateCompositeTimeHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawCompositeTimeHC(void) {
-  dsda_DrawBasicText(&component);
-}
+void dsda_DrawCompositeTimeHC(void* data) {
+  local = data;
 
-void dsda_EraseCompositeTimeHC(void) {
-  HUlib_eraseTextLine(&component.text);
+  dsda_DrawBasicText(&local->component);
 }

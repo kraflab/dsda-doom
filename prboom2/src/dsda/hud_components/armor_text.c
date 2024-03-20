@@ -19,7 +19,11 @@
 
 #include "armor_text.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player_t* player;
@@ -34,10 +38,10 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "\x1b%cARM %3d%%",
-      armor_percent == 0 ? HUlib_Color(CR_GRAY) :
-        armor_percent <= 50 ? HUlib_Color(CR_GREEN) :
-        HUlib_Color(CR_BLUE),
+      "%sARM %3d%%",
+      armor_percent == 0 ? dsda_TextColor(dsda_tc_exhud_armor_zero) :
+        armor_percent <= 50 ? dsda_TextColor(dsda_tc_exhud_armor_one) :
+        dsda_TextColor(dsda_tc_exhud_armor_two),
       armor_percent
     );
   }
@@ -45,28 +49,31 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "\x1b%cARM %3d%%",
-      (!hud_armor_color_by_class || player->armorpoints[ARMOR_ARMOR] <= 0) ? HUlib_Color(CR_GRAY) :
-        player->armortype == 1 ? HUlib_Color(CR_GREEN) :
-        HUlib_Color(CR_BLUE),
+      "%sARM %3d%%",
+      player->armorpoints[ARMOR_ARMOR] <= 0 ? dsda_TextColor(dsda_tc_exhud_armor_zero) :
+        player->armortype == 1 ? dsda_TextColor(dsda_tc_exhud_armor_one) :
+        dsda_TextColor(dsda_tc_exhud_armor_two),
       player->armorpoints[ARMOR_ARMOR]
     );
   }
 }
 
-void dsda_InitArmorTextHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitArmorTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateArmorTextHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateArmorTextHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawArmorTextHC(void) {
-  dsda_DrawBasicText(&component);
-}
+void dsda_DrawArmorTextHC(void* data) {
+  local = data;
 
-void dsda_EraseArmorTextHC(void) {
-  HUlib_eraseTextLine(&component.text);
+  dsda_DrawBasicText(&local->component);
 }

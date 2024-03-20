@@ -16,10 +16,13 @@
 //
 
 #include <math.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
+#include "p_maputl.h"
+#include "r_main.h"
 #include "z_zone.h"
 
 #include "utility.h"
@@ -37,16 +40,56 @@ void dsda_FreeString(dsda_string_t* dest) {
   dsda_InitString(dest, NULL);
 }
 
-void dsda_StringCat(dsda_string_t* dest, const char* source) {
-  if (!source || (!source[0] && dest->string))
-    return;
-
-  dest->size += strlen(source);
+static void dsda_ExpandString(dsda_string_t* dest, size_t size) {
+  dest->size += size;
   if (dest->string)
     dest->string = Z_Realloc(dest->string, dest->size);
   else
     dest->string = Z_Calloc(dest->size, 1);
+}
+
+void dsda_StringCat(dsda_string_t* dest, const char* source) {
+  if (!source || (!source[0] && dest->string))
+    return;
+
+  dsda_ExpandString(dest, strlen(source));
   strcat(dest->string, source);
+}
+
+void dsda_StringCatF(dsda_string_t* dest, const char* format, ...) {
+  size_t length;
+  va_list v;
+
+  va_start(v, format);
+  length = vsnprintf(NULL, 0, format, v);
+  va_end(v);
+
+  dsda_ExpandString(dest, length);
+
+  va_start(v, format);
+  vsnprintf(dest->string + dest->size - 1 - length, length + 1, format, v);
+  va_end(v);
+}
+
+void dsda_StringPrintF(dsda_string_t* dest, const char* format, ...) {
+  size_t length;
+  va_list v;
+
+  dsda_InitString(dest, NULL);
+
+  va_start(v, format);
+  length = vsnprintf(NULL, 0, format, v);
+  va_end(v);
+
+  dsda_ExpandString(dest, length);
+
+  va_start(v, format);
+  vsnprintf(dest->string + dest->size - 1 - length, length + 1, format, v);
+  va_end(v);
+}
+
+void dsda_UppercaseString(char* str) {
+  for (; *str; str++) *str = toupper(*str);
 }
 
 void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
@@ -161,6 +204,28 @@ void dsda_CutExtension(char* str) {
     }
 }
 
+const char* dsda_BaseName(const char* str)
+{
+  const char* p;
+
+  p = str + strlen(str);
+  while (p > str && *(p - 1) != '/' && *(p - 1) != '\\')
+    --p;
+
+  return p;
+}
+
+const char* dsda_FileExtension(const char* str)
+{
+  const char* p;
+
+  p = str + strlen(str);
+  while (p > str && *(p - 1) != '.')
+    --p;
+
+  return p == str ? NULL : p;
+}
+
 static double dsda_DistanceLF(double x1, double y1, double x2, double y2) {
   return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 }
@@ -191,4 +256,122 @@ double dsda_DistancePointToLine(fixed_t line_x1, fixed_t line_y1,
   intersect_y = y1 + intersect * dy;
 
   return dsda_DistanceLF(intersect_x, intersect_y, px, py);
+}
+
+angle_t dsda_IntersectionAngle(fixed_t x, fixed_t y,
+                               fixed_t x1, fixed_t y1,
+                               fixed_t x2, fixed_t y2) {
+  angle_t angle;
+
+  angle = R_PointToAngleEx2(x, y, x2, y2) - R_PointToAngleEx2(x, y, x1, y1);
+
+  return (angle > ANG180) ? (ANGLE_MAX - angle + 1) : angle;
+}
+
+fixed_t dsda_FixedDistancePointToLine(fixed_t line_x1, fixed_t line_y1,
+                                      fixed_t line_x2, fixed_t line_y2,
+                                      fixed_t point_x, fixed_t point_y,
+                                      fixed_t *closest_x, fixed_t *closest_y) {
+  angle_t angle;
+  fixed_t line_length;
+  fixed_t distance_to_v1;
+  fixed_t distance_to_v2;
+  fixed_t distance_along_line;
+  fixed_t distance_ratio;
+
+  line_length = P_AproxDistance(line_x2 - line_x1, line_y2 - line_y1);
+  distance_to_v1 = P_AproxDistance(point_x - line_x1, point_y - line_y1);
+
+  angle = dsda_IntersectionAngle(line_x1, line_y1, line_x2, line_y2, point_x, point_y);
+
+  if (angle > ANG90) {
+    *closest_x = line_x1;
+    *closest_y = line_y1;
+
+    return distance_to_v1;
+  }
+
+  distance_along_line = FixedMul(distance_to_v1, finecosine[angle >> ANGLETOFINESHIFT]);
+
+  if (distance_along_line > line_length)
+  {
+    distance_to_v2 = P_AproxDistance(point_x - line_x2, point_y - line_y2);
+
+    *closest_x = line_x2;
+    *closest_y = line_y2;
+
+    return distance_to_v2;
+  }
+
+  distance_ratio = FixedDiv(distance_along_line, line_length);
+
+  *closest_x = FixedMul(line_x2 - line_x1, distance_ratio) + line_x1;
+  *closest_y = FixedMul(line_y2 - line_y1, distance_ratio) + line_y1;
+
+  return P_AproxDistance(point_x - *closest_x, point_y - *closest_y);
+}
+
+fixed_t dsda_FloatToFixed(float x)
+{
+  return (fixed_t) (x * FRACUNIT);
+}
+
+static int pow10[8] = {
+  10,
+  100,
+  1000,
+  10000,
+  100000,
+  1000000,
+  10000000,
+  100000000,
+};
+
+// Scanning a float is a lossy process, so we must go directly from string to fixed
+fixed_t dsda_StringToFixed(const char* x)
+{
+  dboolean negative;
+  fixed_t result;
+  char frac[9] = { 0 };
+
+  if (!x)
+    return 0;
+
+  result = 0;
+
+  sscanf(x, "%d.%8s", &result, frac);
+  negative = (x && x[0] == '-');
+  result = abs(result);
+  result <<= FRACBITS;
+
+  if (frac[0])
+    result += (fixed_t) ((int64_t) atoi(frac) * FRACUNIT / pow10[strlen(frac) - 1]);
+
+  return negative ? -result : result;
+}
+
+byte dsda_FloatToPercent(float x)
+{
+  float flr;
+
+  if (x > 1.f)
+    x = 1.f;
+
+  if (x < 0.f)
+    x = 0.f;
+
+  flr = floorf(x * 100);
+
+  return (byte) flr;
+}
+
+int dsda_IntToFixed(int x)
+{
+  return (fixed_t) (x << FRACBITS);
+}
+
+// ANG1 is off by 256 / 360 due to rounding
+angle_t dsda_DegreesToAngle(float x)
+{
+  return ANG1 * x + 256 * x / 360;
 }

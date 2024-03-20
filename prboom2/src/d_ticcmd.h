@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -35,10 +35,6 @@
 #define __D_TICCMD__
 
 #include "doomtype.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 typedef struct {
   byte actions;

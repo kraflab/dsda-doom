@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -34,10 +34,6 @@
 
 #ifndef __W_WAD__
 #define __W_WAD__
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 #include <stddef.h>
 
@@ -99,6 +95,7 @@ extern size_t numwadfiles; // CPhipps - size of the wadfiles array
 void W_Init(void); // CPhipps - uses the above array
 void W_InitCache(void);
 void W_DoneCache(void);
+void W_Shutdown(void);
 
 typedef enum
 {
@@ -108,7 +105,7 @@ typedef enum
   ns_colormaps,
   ns_prboom,
   ns_demos,
-  ns_hires //e6y
+  ns_hires,
 } li_namespace_e; // haleyjd 05/21/02: renamed from "namespace"
 
 typedef struct
@@ -132,8 +129,7 @@ typedef struct
 
 // e6y: lump flags
 #define LUMP_STATIC 0x00000001 /* assigned gltexture should be static */
-#define LUMP_CM2RGB 0x00000002 /* for fake colormap for hires patches */
-#define LUMP_PRBOOM 0x00000004 /* from internal resource */
+#define LUMP_PRBOOM 0x00000002 /* from internal resource */
 
 extern lumpinfo_t *lumpinfo;
 extern int        numlumps;
@@ -157,12 +153,16 @@ int     W_ListNumFromName(const char *name, int lump);
 int     W_GetNumForName (const char* name);
 const lumpinfo_t* W_GetLumpInfoByNum(int lump);
 int     W_LumpLength (int lump);
+int     W_SafeLumpLength (int lump);
+const char *W_LumpName(int lump);
 void    W_ReadLump (int lump, void *dest);
 char*   W_ReadLumpToString (int lump);
 // CPhipps - modified for 'new' lump locking
+const void* W_SafeLumpByNum (int lump);
 const void* W_LumpByNum (int lump);
 const void* W_LockLumpNum(int lump);
 
+int W_LumpNumExists(int lump);
 int W_LumpNameExists(const char *name);
 int W_LumpNameExists2(const char *name, int ns);
 

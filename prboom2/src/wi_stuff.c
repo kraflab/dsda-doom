@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -46,6 +46,7 @@
 #include "hu_stuff.h"
 
 #include "dsda/exhud.h"
+#include "dsda/font.h"
 #include "dsda/mapinfo.h"
 
 #include "heretic/in_lude.h"
@@ -411,6 +412,42 @@ void WI_levelNameLump(int epis, int map, char* buf)
   }
 }
 
+static int WI_killPercent(int i)
+{
+  return wbs->maxkills ? (plrs[i].skills * 100) / wbs->maxkills
+                       : MAX(1, plrs[i].skills) * 100;
+}
+
+static int WI_killLimit(int i)
+{
+  return wbs->maxkills ? (plrs[i].skills * 100) / wbs->maxkills
+                       : (plrs[i].skills * 100);
+
+}
+
+static int WI_itemPercent(int i)
+{
+  return wbs->maxitems ? (plrs[i].sitems * 100) / wbs->maxitems : 100;
+}
+
+static int WI_itemLimit(int i)
+{
+  return wbs->maxitems ? (plrs[i].sitems * 100) / wbs->maxitems
+                       : (plrs[i].sitems * 100);
+
+}
+
+static int WI_secretPercent(int i)
+{
+  return wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret : 100;
+}
+
+static int WI_secretLimit(int i)
+{
+  return wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret
+                        : compatibility_level < lxdoom_1_compatibility ? 0 : 100;
+}
+
 // ====================================================================
 // WI_slamBackground
 // Purpose: Put the full-screen background up prior to patches
@@ -426,31 +463,16 @@ static void WI_slamBackground(void)
   else if (gamemode == commercial || wbs->epsd < 0 || (gamemode == retail && wbs->epsd >= 3))
     strcpy(name, "INTERPIC");
   else
-    sprintf(name, "WIMAP%d", wbs->epsd);
+    snprintf(name, sizeof(name), "WIMAP%d", wbs->epsd);
 
   // e6y: wide-res
-  V_FillBorder(-1, 0);
+  V_ClearBorder();
 
   // background
   V_DrawNamePatch(0, 0, FB, name, CR_DEFAULT, VPT_STRETCH);
 }
 
-
-// ====================================================================
-// WI_Responder
-// Purpose: Draw animations on intermission background screen
-// Args:    ev    -- event pointer, not actually used here.
-// Returns: False -- dummy routine
-//
-// The ticker is used to detect keys
-//  because of timing issues in netgames.
-dboolean WI_Responder(event_t* ev)
-{
-  return false;
-}
-
 #define SPACEWIDTH 4
-extern patchnum_t hu_font[HU_FONTSIZE];
 
 static void WI_DrawString(int cx, int cy, const char* ch)
 {
@@ -468,7 +490,7 @@ static void WI_DrawString(int cx, int cy, const char* ch)
       width += SPACEWIDTH;    // space
       continue;
     }
-    width += hu_font[c].width;
+    width += hud_font.font[c].width;
   }
   cx -= width / 2;
   if (cx < 0) cx = 0;
@@ -482,11 +504,11 @@ static void WI_DrawString(int cx, int cy, const char* ch)
       cx += SPACEWIDTH;    // space
       continue;
     }
-    w = hu_font[c].width;
+    w = hud_font.font[c].width;
     if (cx + w > 320)
       break;
 
-    V_DrawNumPatch(cx, cy, 0, hu_font[c].lumpnum, CR_GRAY, VPT_STRETCH | VPT_TRANS);
+    V_DrawNumPatch(cx, cy, 0, hud_font.font[c].lumpnum, CR_GRAY, VPT_STRETCH | VPT_TRANS);
     cx += w;
   }
 }
@@ -499,6 +521,7 @@ static void WI_DrawString(int cx, int cy, const char* ch)
 //
 const char *lf_levelname;
 const char *lf_levelpic;
+const char *lf_author;
 
 void WI_drawLF(void)
 {
@@ -511,7 +534,8 @@ void WI_drawLF(void)
   {
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, lf_levelname);
-    y += (5 * hu_font['A' - HU_FONTSTART].height / 4);
+
+    y += (5 * hud_font.height / 4);
   }
   else
   {
@@ -529,12 +553,18 @@ void WI_drawLF(void)
     V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y,
       FB, lname, CR_DEFAULT, VPT_STRETCH);
 
-    // draw "Finished!"
     y += (5 * V_NamePatchHeight(lname)) / 4;
   }
 
+  if (lf_author)
+  {
+    WI_DrawString(160, y, lf_author);
+
+    y += (5 * hud_font.height / 4);
+  }
 
   // CPhipps - patch drawing updated
+  // draw "Finished!"
   V_DrawNamePatch((320 - V_NamePatchWidth(finished))/2, y,
      FB, finished, CR_DEFAULT, VPT_STRETCH);
 }
@@ -548,6 +578,7 @@ void WI_drawLF(void)
 //
 const char *el_levelname;
 const char *el_levelpic;
+const char *el_author;
 
 void WI_drawEL(void)
 {
@@ -559,15 +590,16 @@ void WI_drawEL(void)
   V_DrawNamePatch((320 - V_NamePatchWidth(entering)) / 2,
     y, FB, entering, CR_DEFAULT, VPT_STRETCH);
 
+  y += (5 * V_NamePatchHeight(entering)) / 4;
 
   dsda_PrepareEntering();
 
   if (el_levelname)
   {
-    y += (5 * V_NamePatchHeight(entering)) / 4;
-
     // The level defines a new name but no texture for the name.
     WI_DrawString(160, y, el_levelname);
+
+    y += (5 * hud_font.height / 4);
   }
   else
   {
@@ -580,12 +612,23 @@ void WI_drawEL(void)
     if (!W_LumpNameExists(lname))
       return;
 
-    // draw level
-    y += (5 * V_NamePatchHeight(lname)) / 4;
+    // fullscreen cwilv graphic
+    if (V_NamePatchHeight(lname) == 200)
+      y = WI_TITLEY;
 
     // CPhipps - patch drawing updated
+    // draw level
     V_DrawNamePatch((320 - V_NamePatchWidth(lname)) / 2, y, FB,
       lname, CR_DEFAULT, VPT_STRETCH);
+
+    y += (5 * V_NamePatchHeight(lname)) / 4;
+  }
+
+  if (el_author)
+  {
+    WI_DrawString(160, y, el_author);
+
+    y += (5 * hud_font.height / 4);
   }
 }
 
@@ -951,7 +994,7 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
 
   if (
     !(modifiedgame && !wbs->modified_partime)
-    || (gamemission == pack_nerve && singleplayer)
+    || (gamemission == pack_nerve && allow_incompatibility)
   )
   {
     if (wbs->epsd < 4 || wbs->modified_partime)
@@ -1110,7 +1153,7 @@ void WI_drawShowNextLoc(void)
       WI_drawOnLnode(wbs->next, yah);
   }
 
-  if (gamemission == pack_nerve && singleplayer && wbs->last == 7)
+  if (gamemission == pack_nerve && allow_incompatibility && wbs->last == 7)
     return; // MAP08 end game
 
   // draws which level you are entering..
@@ -1248,7 +1291,7 @@ void WI_updateDeathmatchStats(void)
     }
 
 
-    S_StartSound(0, sfx_barexp);  // bang
+    S_StartVoidSound(sfx_barexp);  // bang
     dm_state = 4;  // we're done with all 4 (or all we have to do)
   }
 
@@ -1256,7 +1299,7 @@ void WI_updateDeathmatchStats(void)
   if (dm_state == 2)
   {
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);  // noise while counting
+      S_StartVoidSound(sfx_pistol);  // noise while counting
 
     stillticking = false;
 
@@ -1295,7 +1338,7 @@ void WI_updateDeathmatchStats(void)
 
     if (!stillticking)
     {
-      S_StartSound(0, sfx_barexp);
+      S_StartVoidSound(sfx_barexp);
       dm_state++;
     }
   }
@@ -1303,7 +1346,7 @@ void WI_updateDeathmatchStats(void)
   {
     if (acceleratestage)
     {
-      S_StartSound(0, sfx_slop);
+      S_StartVoidSound(sfx_slop);
 
       if ( gamemode == commercial)
         WI_initNoState();
@@ -1338,10 +1381,7 @@ void WI_drawDeathmatchStats(void)
   int   y;
   int   w;
 
-  int   lh; // line height
   int   halfface = V_NamePatchWidth(facebackp)/2;
-
-  lh = WI_SPACINGY;
 
   WI_slamBackground();
 
@@ -1410,23 +1450,6 @@ void WI_drawDeathmatchStats(void)
 //
 // Note: The term "Netgame" means a coop game
 //
-
-// e6y
-// 'short' => 'int' for cnt_kills, cnt_items and cnt_secret
-//
-// Original sources use 'int' type for cnt_kills instead of 'short'
-// I don't know who have made change of type, but this change
-// leads to desynch  if 'kills' percentage is more than 32767.
-// Actually PrBoom will be in an infinite cycle at calculation of
-// percentage if the player will not press <Use> for acceleration, because
-// the condition (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
-// will be always false in this case.
-//
-// If you will kill 800 monsters on MAP30 on Ultra-Violence skill and
-// will not press <Use>, vanilla will count up to 80000%, but PrBoom
-// will be in infinite cycle of counting:
-// (0, 1, 2, ..., 32766, 32767, -32768, -32767, ..., -1, 0, 1, ...)
-// Negative numbers will not be displayed.
 
 static int *cnt_kills;
 static int *cnt_items;
@@ -1506,23 +1529,21 @@ void WI_updateNetgameStats(void)
       if (!playeringame[i])
         continue;
 
-      cnt_kills[i] = (plrs[i].skills * 100) / wbs->maxkills;
-      cnt_items[i] = (plrs[i].sitems * 100) / wbs->maxitems;
+      cnt_kills[i] = WI_killPercent(i);
+      cnt_items[i] = WI_itemPercent(i);
+      cnt_secret[i] = WI_secretPercent(i);
 
-      // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-      cnt_secret[i] = wbs->maxsecret ?
-                      (plrs[i].ssecret * 100) / wbs->maxsecret : 100;
       if (dofrags)
         cnt_frags[i] = WI_fragSum(i);  // we had frags
     }
-    S_StartSound(0, sfx_barexp);  // bang
+    S_StartVoidSound(sfx_barexp);  // bang
     ng_state = 10;
   }
 
   if (ng_state == 2)
   {
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);  // pop
+      S_StartVoidSound(sfx_pistol);  // pop
 
     stillticking = false;
 
@@ -1533,22 +1554,22 @@ void WI_updateNetgameStats(void)
 
       cnt_kills[i] += 2;
 
-      if (cnt_kills[i] >= (plrs[i].skills * 100) / wbs->maxkills)
-        cnt_kills[i] = (plrs[i].skills * 100) / wbs->maxkills;
+      if (cnt_kills[i] >= WI_killLimit(i))
+        cnt_kills[i] = WI_killPercent(i);
       else
         stillticking = true; // still got stuff to tally
     }
 
     if (!stillticking)
     {
-      S_StartSound(0, sfx_barexp);
+      S_StartVoidSound(sfx_barexp);
       ng_state++;
     }
   }
   else if (ng_state == 4)
   {
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);
+      S_StartVoidSound(sfx_pistol);
 
     stillticking = false;
 
@@ -1558,22 +1579,22 @@ void WI_updateNetgameStats(void)
         continue;
 
       cnt_items[i] += 2;
-      if (cnt_items[i] >= (plrs[i].sitems * 100) / wbs->maxitems)
-        cnt_items[i] = (plrs[i].sitems * 100) / wbs->maxitems;
+      if (cnt_items[i] >= WI_itemLimit(i))
+        cnt_items[i] = WI_itemPercent(i);
       else
         stillticking = true;
     }
 
     if (!stillticking)
     {
-      S_StartSound(0, sfx_barexp);
+      S_StartVoidSound(sfx_barexp);
       ng_state++;
     }
   }
   else if (ng_state == 6)
   {
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);
+      S_StartVoidSound(sfx_pistol);
 
     stillticking = false;
 
@@ -1584,24 +1605,22 @@ void WI_updateNetgameStats(void)
 
       cnt_secret[i] += 2;
 
-      // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-
-      if (cnt_secret[i] >= (wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret : compatibility_level < lxdoom_1_compatibility ? 0 : 100))
-        cnt_secret[i] = wbs->maxsecret ? (plrs[i].ssecret * 100) / wbs->maxsecret : 100;
+      if (cnt_secret[i] >= WI_secretLimit(i))
+        cnt_secret[i] = WI_secretPercent(i);
       else
         stillticking = true;
     }
 
     if (!stillticking)
     {
-      S_StartSound(0, sfx_barexp);
+      S_StartVoidSound(sfx_barexp);
       ng_state += 1 + 2*!dofrags;
     }
   }
   else if (ng_state == 8)
   {
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);
+      S_StartVoidSound(sfx_pistol);
 
     stillticking = false;
 
@@ -1620,7 +1639,7 @@ void WI_updateNetgameStats(void)
 
     if (!stillticking)
     {
-      S_StartSound(0, sfx_pldeth);
+      S_StartVoidSound(sfx_pldeth);
       ng_state++;
     }
   }
@@ -1628,7 +1647,7 @@ void WI_updateNetgameStats(void)
   {
     if (acceleratestage)
     {
-      S_StartSound(0, sfx_sgcock);
+      S_StartVoidSound(sfx_sgcock);
       if ( gamemode == commercial )
         WI_initNoState();
       else
@@ -1764,17 +1783,14 @@ void WI_updateStats(void)
   if (acceleratestage && sp_state != 10)
   {
     acceleratestage = 0;
-    cnt_kills[0] = (plrs[me].skills * 100) / wbs->maxkills;
-    cnt_items[0] = (plrs[me].sitems * 100) / wbs->maxitems;
-
-    // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-    cnt_secret[0] = (wbs->maxsecret ?
-      (plrs[me].ssecret * 100) / wbs->maxsecret : 100);
+    cnt_kills[0] = WI_killPercent(me);
+    cnt_items[0] = WI_itemPercent(me);
+    cnt_secret[0] = WI_secretPercent(me);
 
     cnt_total_time = wbs->totaltimes / TICRATE;
     cnt_time = plrs[me].stime / TICRATE;
     cnt_par = wbs->partime / TICRATE;
-    S_StartSound(0, sfx_barexp);
+    S_StartVoidSound(sfx_barexp);
     sp_state = 10;
   }
 
@@ -1783,12 +1799,12 @@ void WI_updateStats(void)
     cnt_kills[0] += 2;
 
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);
+      S_StartVoidSound(sfx_pistol);
 
-    if (cnt_kills[0] >= (plrs[me].skills * 100) / wbs->maxkills)
+    if (cnt_kills[0] >= WI_killLimit(me))
     {
-      cnt_kills[0] = (plrs[me].skills * 100) / wbs->maxkills;
-      S_StartSound(0, sfx_barexp);
+      cnt_kills[0] = WI_killPercent(me);
+      S_StartVoidSound(sfx_barexp);
       sp_state++;
     }
   }
@@ -1797,12 +1813,12 @@ void WI_updateStats(void)
     cnt_items[0] += 2;
 
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);
+      S_StartVoidSound(sfx_pistol);
 
-    if (cnt_items[0] >= (plrs[me].sitems * 100) / wbs->maxitems)
+    if (cnt_items[0] >= WI_itemLimit(me))
     {
-      cnt_items[0] = (plrs[me].sitems * 100) / wbs->maxitems;
-      S_StartSound(0, sfx_barexp);
+      cnt_items[0] = WI_itemPercent(me);
+      S_StartVoidSound(sfx_barexp);
       sp_state++;
     }
   }
@@ -1811,23 +1827,19 @@ void WI_updateStats(void)
     cnt_secret[0] += 2;
 
     if (!(bcnt&3))
-      S_StartSound(0, sfx_pistol);
+      S_StartVoidSound(sfx_pistol);
 
-    // killough 2/22/98: Make secrets = 100% if maxsecret = 0:
-    if ((!wbs->maxsecret && compatibility_level < lxdoom_1_compatibility) ||
-  cnt_secret[0] >= (wbs->maxsecret ?
-      (plrs[me].ssecret * 100) / wbs->maxsecret : 100))
+    if (cnt_secret[0] >= WI_secretLimit(me))
     {
-      cnt_secret[0] = (wbs->maxsecret ?
-        (plrs[me].ssecret * 100) / wbs->maxsecret : 100);
-      S_StartSound(0, sfx_barexp);
+      cnt_secret[0] = WI_secretPercent(me);
+      S_StartVoidSound(sfx_barexp);
       sp_state++;
     }
   }
   else if (sp_state == 8)
   {
     if (!(bcnt&3) && play_early_explosion) //e6y: do not play count sound after explosion sound
-      S_StartSound(0, sfx_pistol);
+      S_StartVoidSound(sfx_pistol);
 
     cnt_time += 3;
 
@@ -1853,7 +1865,7 @@ void WI_updateStats(void)
         if (compatibility_level < lxdoom_1_compatibility)
           cnt_total_time = wbs->totaltimes / TICRATE;
 
-        S_StartSound(0, sfx_barexp);
+        S_StartVoidSound(sfx_barexp);
         play_early_explosion = false; // do not play it twice or more
       }
     }
@@ -1869,7 +1881,7 @@ void WI_updateStats(void)
           cnt_total_time = wbs->totaltimes / TICRATE;
 
         if (!modifiedgame) //e6y: do not play explosion sound if it was already played
-          S_StartSound(0, sfx_barexp);
+          S_StartVoidSound(sfx_barexp);
         sp_state++;
       }
     }
@@ -1878,7 +1890,7 @@ void WI_updateStats(void)
   {
     if (acceleratestage)
     {
-      S_StartSound(0, sfx_sgcock);
+      S_StartVoidSound(sfx_sgcock);
 
       if (gamemode == commercial)
         WI_initNoState();
@@ -1990,11 +2002,19 @@ void WI_Ticker(void)
 
   if (bcnt == 1)
   {
-    // intermission music
-    if ( gamemode == commercial )
-      S_ChangeMusic(mus_dm2int, true);
+    int mnum;
+    int muslump;
+
+    dsda_IntermissionMusic(&mnum, &muslump);
+
+    if (muslump >= 0)
+    {
+      S_ChangeMusInfoMusic(muslump, true);
+    }
     else
-      S_ChangeMusic(mus_inter, true);
+    {
+      S_ChangeMusic(mnum, true);
+    }
   }
 
   WI_checkForAccelerate();
@@ -2139,12 +2159,6 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
   firstrefresh = 1;
   me = wbs->pnum;
   plrs = wbs->plyr;
-
-  if (!wbs->maxkills)
-    wbs->maxkills = 1;  // probably only useful in MAP30
-
-  if (!wbs->maxitems)
-    wbs->maxitems = 1;
 
   if ( gamemode != retail )
     if (wbs->epsd > 2)

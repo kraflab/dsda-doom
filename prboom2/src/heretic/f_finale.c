@@ -135,7 +135,6 @@ void Heretic_F_Ticker(void)
 
 void Heretic_F_TextWrite(void)
 {
-  int x, y;
   int count;
   const char *ch;
   int c;
@@ -144,7 +143,7 @@ void Heretic_F_TextWrite(void)
   int width;
 
   // e6y: wide-res
-  V_FillBorder(-1, 0);
+  V_ClearBorder();
 
   //
   // erase the entire screen to a tiled background

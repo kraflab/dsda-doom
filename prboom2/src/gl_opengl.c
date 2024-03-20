@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -43,18 +43,15 @@
 #include "doomtype.h"
 #include "lprintf.h"
 
+#include "dsda/configuration.h"
+
 #define isExtensionSupported(ext) strstr(extensions, ext)
 
-int gl_version;
-
-int GLEXT_CLAMP_TO_EDGE = GL_CLAMP;
 int gl_max_texture_size = 0;
 
 SDL_PixelFormat RGBAFormat;
 
 dboolean gl_ext_texture_filter_anisotropic = false;
-dboolean gl_arb_texture_non_power_of_two = false;
-dboolean gl_arb_multitexture = false;
 dboolean gl_arb_texture_compression = false;
 dboolean gl_ext_framebuffer_object = false;
 dboolean gl_ext_packed_depth_stencil = false;
@@ -66,9 +63,6 @@ dboolean gl_arb_shader_objects = false;
 
 int active_texture_enabled[32];
 int clieant_active_texture_enabled[32];
-
-// obsolete?
-PFNGLCOLORTABLEEXTPROC              GLEXT_glColorTableEXT              = NULL;
 
 /* EXT_framebuffer_object */
 PFNGLBINDFRAMEBUFFEREXTPROC         GLEXT_glBindFramebufferEXT         = NULL;
@@ -130,33 +124,20 @@ PFNGLGETUNIFORMLOCATIONARBPROC   GLEXT_glGetUniformLocationARB = NULL;
 PFNGLGETACTIVEUNIFORMARBPROC     GLEXT_glGetActiveUniformARB = NULL;
 PFNGLGETUNIFORMFVARBPROC         GLEXT_glGetUniformfvARB = NULL;
 
+int gl_major_version;
+int gl_minor_version;
+
 void gld_InitOpenGLVersion(void)
 {
-  int MajorVersion, MinorVersion;
-  gl_version = OPENGL_VERSION_1_0;
-  if (sscanf((const char*)glGetString(GL_VERSION), "%d.%d", &MajorVersion, &MinorVersion) == 2)
-  {
-    if (MajorVersion > 1)
-    {
-      gl_version = OPENGL_VERSION_2_0;
-      if (MinorVersion > 0) gl_version = OPENGL_VERSION_2_1;
-    }
-    else
-    {
-      gl_version = OPENGL_VERSION_1_0;
-      if (MinorVersion > 0) gl_version = OPENGL_VERSION_1_1;
-      if (MinorVersion > 1) gl_version = OPENGL_VERSION_1_2;
-      if (MinorVersion > 2) gl_version = OPENGL_VERSION_1_3;
-      if (MinorVersion > 3) gl_version = OPENGL_VERSION_1_4;
-      if (MinorVersion > 4) gl_version = OPENGL_VERSION_1_5;
-    }
-  }
+  sscanf((const char*) glGetString(GL_VERSION), "%d.%d", &gl_major_version, &gl_minor_version);
 }
 
 void gld_InitOpenGL(void)
 {
   GLenum texture;
   const char *extensions = (const char*)glGetString(GL_EXTENSIONS);
+  dboolean gl_arb_multitexture = false;
+  dboolean gl_arb_texture_non_power_of_two = false;
 
   gld_InitOpenGLVersion();
 
@@ -166,8 +147,8 @@ void gld_InitOpenGL(void)
 
   // Any textures sizes are allowed
   gl_arb_texture_non_power_of_two = isExtensionSupported("GL_ARB_texture_non_power_of_two") != NULL;
-  if (gl_arb_texture_non_power_of_two)
-    lprintf(LO_DEBUG, "using GL_ARB_texture_non_power_of_two\n");
+  if (!gl_arb_texture_non_power_of_two)
+    I_Error("gld_InitOpenGL: OpenGL driver does not support GL_ARB_texture_non_power_of_two");
 
   //
   // ARB_multitexture command function pointers
@@ -185,8 +166,8 @@ void gld_InitOpenGL(void)
         !GLEXT_glMultiTexCoord2fARB || !GLEXT_glMultiTexCoord2fvARB)
       gl_arb_multitexture = false;
   }
-  if (gl_arb_multitexture)
-    lprintf(LO_DEBUG, "using GL_ARB_multitexture\n");
+  if (!gl_arb_multitexture)
+    I_Error("gld_InitOpenGL: OpenGL driver does not support GL_ARB_multitexture");
 
   //
   // ARB_texture_compression
@@ -251,24 +232,23 @@ void gld_InitOpenGL(void)
     lprintf(LO_DEBUG, "using GL_EXT_blend_color\n");
 
   // VBO
-#ifdef USE_VBO
-  gl_ext_arb_vertex_buffer_object = isExtensionSupported("GL_ARB_vertex_buffer_object") != NULL;
-  if (gl_ext_arb_vertex_buffer_object)
+  if (dsda_IntConfig(dsda_config_gl_usevbo))
   {
-    GLEXT_glGenBuffersARB = SDL_GL_GetProcAddress("glGenBuffersARB");
-    GLEXT_glDeleteBuffersARB = SDL_GL_GetProcAddress("glDeleteBuffersARB");
-    GLEXT_glBindBufferARB = SDL_GL_GetProcAddress("glBindBufferARB");
-    GLEXT_glBufferDataARB = SDL_GL_GetProcAddress("glBufferDataARB");
+    gl_ext_arb_vertex_buffer_object = isExtensionSupported("GL_ARB_vertex_buffer_object") != NULL;
+    if (gl_ext_arb_vertex_buffer_object)
+    {
+      GLEXT_glGenBuffersARB = SDL_GL_GetProcAddress("glGenBuffersARB");
+      GLEXT_glDeleteBuffersARB = SDL_GL_GetProcAddress("glDeleteBuffersARB");
+      GLEXT_glBindBufferARB = SDL_GL_GetProcAddress("glBindBufferARB");
+      GLEXT_glBufferDataARB = SDL_GL_GetProcAddress("glBufferDataARB");
 
-    if (!GLEXT_glGenBuffersARB || !GLEXT_glDeleteBuffersARB ||
-        !GLEXT_glBindBufferARB || !GLEXT_glBufferDataARB)
-      gl_ext_arb_vertex_buffer_object = false;
+      if (!GLEXT_glGenBuffersARB || !GLEXT_glDeleteBuffersARB ||
+          !GLEXT_glBindBufferARB || !GLEXT_glBufferDataARB)
+        gl_ext_arb_vertex_buffer_object = false;
+    }
+    if (gl_ext_arb_vertex_buffer_object)
+      lprintf(LO_DEBUG, "using GL_ARB_vertex_buffer_object\n");
   }
-  if (gl_ext_arb_vertex_buffer_object)
-    lprintf(LO_DEBUG, "using GL_ARB_vertex_buffer_object\n");
-#else
-  gl_ext_arb_vertex_buffer_object = false;
-#endif
 
   gl_arb_pixel_buffer_object = isExtensionSupported("GL_ARB_pixel_buffer_object") != NULL;
   if (gl_arb_pixel_buffer_object)
@@ -300,8 +280,7 @@ void gld_InitOpenGL(void)
   //
   // GL_ARB_shader_objects
   //
-  gl_arb_shader_objects = (gl_version >= OPENGL_VERSION_2_0) &&
-                          isExtensionSupported ("GL_ARB_shader_objects") &&
+  gl_arb_shader_objects = isExtensionSupported ("GL_ARB_shader_objects") &&
                           isExtensionSupported ("GL_ARB_vertex_shader") &&
                           isExtensionSupported ("GL_ARB_fragment_shader") &&
                           isExtensionSupported ("GL_ARB_shading_language_100");
@@ -345,43 +324,19 @@ void gld_InitOpenGL(void)
         !GLEXT_glGetUniformfvARB)
       gl_arb_shader_objects = false;
   }
-  if (gl_arb_shader_objects)
+
+  if (!gl_arb_shader_objects)
   {
-    lprintf(LO_DEBUG, "using GL_ARB_shader_objects\n");
-    lprintf(LO_DEBUG, "using GL_ARB_vertex_shader\n");
-    lprintf(LO_DEBUG, "using GL_ARB_fragment_shader\n");
-    lprintf(LO_DEBUG, "using GL_ARB_shading_language_100\n");
+    I_Error("gld_InitOpenGL: Insufficient support for shader objects");
   }
 
-  // GL_CLAMP_TO_EDGE
-  GLEXT_CLAMP_TO_EDGE = (gl_version >= OPENGL_VERSION_1_2 ? GL_CLAMP_TO_EDGE : GL_CLAMP);
+  lprintf(LO_DEBUG, "using GL_ARB_shader_objects\n");
+  lprintf(LO_DEBUG, "using GL_ARB_vertex_shader\n");
+  lprintf(LO_DEBUG, "using GL_ARB_fragment_shader\n");
+  lprintf(LO_DEBUG, "using GL_ARB_shading_language_100\n");
 
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_max_texture_size);
   lprintf(LO_DEBUG, "GL_MAX_TEXTURE_SIZE=%i\n", gl_max_texture_size);
-
-  // Additional checks
-  if (gl_version < OPENGL_VERSION_1_3)
-  {
-    gl_ext_framebuffer_object = false;
-    gl_ext_blend_color = false;
-  }
-
-  if (gl_version <= OPENGL_VERSION_1_1)
-  {
-    lprintf(LO_DEBUG, "gld_InitOpenGL: Compatibility mode is used.\n");
-    gl_arb_texture_non_power_of_two = false;
-    gl_arb_multitexture = false;
-    gl_arb_texture_compression = false;
-    gl_ext_framebuffer_object = false;
-    gl_ext_packed_depth_stencil = false;
-    gl_ext_blend_color = false;
-    gl_use_stencil = false;
-    gl_ext_arb_vertex_buffer_object = false;
-    gl_arb_pixel_buffer_object = false;
-    gl_arb_shader_objects = false;
-    GLEXT_CLAMP_TO_EDGE = GL_CLAMP;
-    gl_version = OPENGL_VERSION_1_1;
-  }
 
   //init states manager
   gld_EnableMultisample(true);
@@ -416,9 +371,6 @@ void gld_InitOpenGL(void)
 void gld_EnableTexture2D(GLenum texture, int enable)
 {
   int arb;
-
-  if (!gl_arb_multitexture && texture != GL_TEXTURE0_ARB)
-    return;
 
   arb = texture - GL_TEXTURE0_ARB;
 
@@ -466,9 +418,6 @@ void gld_EnableTexture2D(GLenum texture, int enable)
 void gld_EnableClientCoordArray(GLenum texture, int enable)
 {
   int arb;
-
-  if (!gl_arb_multitexture)
-    return;
 
   arb = texture - GL_TEXTURE0_ARB;
 

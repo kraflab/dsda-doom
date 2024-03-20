@@ -22,6 +22,11 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `player.round_x`
 - `player.round_y`
 - `player.round_xy`
+- `player.set_angle <angle>`
+- `player.round_angle`
+- `player.set_vx <velocity>`
+- `player.set_vy <velocity>`
+- `player.set_vz <velocity>`
 
 #### Miscellaneous
 - `script.run <script>`
@@ -35,8 +40,28 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - temporarily toggles a config value (will not be saved to config file)
 - `toggle_update <attribute>`
   - permanently toggles a config value (will be saved to config file)
+- `config.forget`
+  - do not overwrite the config file on exit
+- `config.remember`
+  - do overwrite the config file on exit
+- `wad_stats.forget`
+  - do not update wad stats on exit
+- `wad_stats.remember`
+  - do update wad stats on exit
+- `free_text.update <text>`
+  - update free text component
+- `free_text.clear`
+  - clear free text component
 - `music.restart`
   - restart the current music track
+- `level.exit`
+  - exit the current level (go to intermission screen)
+- `level.secret_exit`
+  - exit the current level via the secret exit (go to intermission screen)
+- `game.quit`
+  - quit the game immediately (no prompt)
+- `game.describe`
+  - show the level, skill, and monster params
 - `exit`
 - `quit`
 
@@ -143,10 +168,12 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `demo.export <name>`
 - `demo.start <name>`
 - `demo.stop`
+- `demo.join`
 
 #### Build Mode
 See the [build mode guide](./build_mode.md) for more info.
-- `brute_force.start / bf.start <depth> <forwardmove_range> <sidemove_range> <angleturn_range> <conditions>`
+- `brute_force.start / bf.start <depth> [<forwardmove_range> <sidemove_range> <angleturn_range>] <conditions>`
+- `brute_force.frame / bf.frame <frame> <forwardmove_range> <sidemove_range> <angleturn_range> [<buttons> <weapon>]`
 - `build.turbo / b.turbo`
 - `mf <value>`
 - `mb <value>`

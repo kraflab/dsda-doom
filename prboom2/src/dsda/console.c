@@ -20,9 +20,11 @@
 #include "g_game.h"
 #include "hu_lib.h"
 #include "hu_stuff.h"
+#include "i_main.h"
 #include "i_system.h"
 #include "lprintf.h"
 #include "m_cheat.h"
+#include "m_file.h"
 #include "m_menu.h"
 #include "m_misc.h"
 #include "p_inter.h"
@@ -32,7 +34,9 @@
 #include "p_setup.h"
 #include "p_spec.h"
 #include "p_tick.h"
+#include "p_user.h"
 #include "s_sound.h"
+#include "smooth.h"
 #include "v_video.h"
 
 #include "dsda.h"
@@ -42,8 +46,10 @@
 #include "dsda/demo.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
+#include "dsda/font.h"
 #include "dsda/global.h"
 #include "dsda/map_format.h"
+#include "dsda/messenger.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/playback.h"
 #include "dsda/settings.h"
@@ -52,8 +58,6 @@
 #include "dsda/utility.h"
 
 #include "console.h"
-
-extern patchnum_t hu_font2[HU_FONTSIZE];
 
 #define target_player players[consoleplayer]
 
@@ -81,8 +85,14 @@ static hu_textline_t hu_console_message;
 
 static char** dsda_console_script_lines[CONSOLE_SCRIPT_COUNT];
 
+static int console_height;
+
+int dsda_ConsoleHeight(void) {
+  return console_height;
+}
+
 static void dsda_DrawConsole(void) {
-  V_FillHeightVPT(0, 0, 16, 0, CONSOLE_TEXT_FLAGS);
+  console_height = V_FillHeightVPT(0, 0, 16, 0, CONSOLE_TEXT_FLAGS);
   HUlib_drawTextLine(&hu_console_prompt, false);
   HUlib_drawTextLine(&hu_console_message, false);
 }
@@ -96,7 +106,7 @@ menu_t dsda_ConsoleDef = {
   0, MENUF_TEXTINPUT
 };
 
-static dboolean dsda_ExecuteConsole(const char* command_line);
+static dboolean dsda_ExecuteConsole(const char* command_line, dboolean noise);
 
 static void dsda_UpdateConsoleDisplay(void) {
   const char* s;
@@ -134,8 +144,7 @@ dboolean dsda_OpenConsole(void) {
       &hu_console_prompt,
       0,
       8,
-      hu_font2,
-      HU_FONTSTART,
+      &exhud_font,
       CR_GRAY,
       CONSOLE_TEXT_FLAGS
     );
@@ -144,8 +153,7 @@ dboolean dsda_OpenConsole(void) {
       &hu_console_message,
       0,
       0,
-      hu_font2,
-      HU_FONTSTART,
+      &exhud_font,
       CR_GRAY,
       CONSOLE_TEXT_FLAGS
     );
@@ -159,6 +167,36 @@ dboolean dsda_OpenConsole(void) {
   M_StartControlPanel();
   M_SetupNextMenu(&dsda_ConsoleDef);
   dsda_ResetConsoleEntry();
+
+  return true;
+}
+
+static dboolean console_LevelExit(const char* command, const char* args) {
+  void G_ExitLevel(int position);
+
+  int position = 0;
+
+  if (hexen)
+    return false;
+
+  sscanf(args, "%d", &position);
+
+  G_ExitLevel(position);
+
+  return true;
+}
+
+static dboolean console_LevelSecretExit(const char* command, const char* args) {
+  void G_SecretExitLevel(int position);
+
+  int position = 0;
+
+  if (hexen)
+    return false;
+
+  sscanf(args, "%d", &position);
+
+  G_SecretExitLevel(position);
 
   return true;
 }
@@ -401,12 +439,7 @@ static dboolean console_PlayerRemovePower(const char* command, const char* args)
     else if (power == pw_invisibility)
       target_player.mo->flags &= ~MF_SHADOW;
     else if (power == pw_flight) {
-      if (target_player.mo->z != target_player.mo->floorz)
-      {
-        target_player.centering = true;
-      }
-      target_player.mo->flags2 &= ~MF2_FLY;
-      target_player.mo->flags &= ~MF_NOGRAVITY;
+      P_PlayerEndFlight(&target_player);
     }
     else if (power == pw_weaponlevel2 && heretic) {
       if ((target_player.readyweapon == wp_phoenixrod)
@@ -436,7 +469,6 @@ static dboolean console_PlayerRemovePower(const char* command, const char* args)
 
 static dboolean console_PlayerSetCoordinate(const char* args, int* dest) {
   int x, x_frac = 0;
-  double x_double;
 
   if (sscanf(args, "%i.%i", &x, &x_frac)) {
     *dest = FRACUNIT * x;
@@ -464,22 +496,28 @@ static dboolean console_PlayerSetZ(const char* command, const char* args) {
   return console_PlayerSetCoordinate(args, &target_player.mo->z);
 }
 
+static dboolean console_PlayerSetVX(const char* command, const char* args) {
+  return console_PlayerSetCoordinate(args, &target_player.mo->momx);
+}
+
+static dboolean console_PlayerSetVY(const char* command, const char* args) {
+  return console_PlayerSetCoordinate(args, &target_player.mo->momy);
+}
+
+static dboolean console_PlayerSetVZ(const char* command, const char* args) {
+  return console_PlayerSetCoordinate(args, &target_player.mo->momz);
+}
+
 static void console_PlayerRoundCoordinate(int* x) {
   int bits = *x & 0xffff;
-  if (!bits) return;
 
-  if (*x > 0) {
-    if (bits >= 0x8000)
-      *x = (*x & ~0xffff) + FRACUNIT;
-    else
-      *x = *x & ~0xffff;
-  }
-  else {
-    if (bits < 0x8000)
-      *x = (*x & ~0xffff) - FRACUNIT;
-    else
-      *x = *x & ~0xffff;
-  }
+  if (!bits)
+    return;
+
+  if (bits >= 0x8000)
+    *x = (*x & ~0xffff) + FRACUNIT;
+  else
+    *x = *x & ~0xffff;
 }
 
 static dboolean console_PlayerRoundX(const char* command, const char* args) {
@@ -497,6 +535,40 @@ static dboolean console_PlayerRoundY(const char* command, const char* args) {
 static dboolean console_PlayerRoundXY(const char* command, const char* args) {
   console_PlayerRoundCoordinate(&target_player.mo->x);
   console_PlayerRoundCoordinate(&target_player.mo->y);
+
+  return true;
+}
+
+static dboolean console_PlayerSetAngle(const char* command, const char* args) {
+  int a, a_frac = 0;
+
+  if (sscanf(args, "%d.%d", &a, &a_frac)) {
+    target_player.mo->angle = ((angle_t) a) << 24;
+
+    if (args[0] == '-')
+      target_player.mo->angle -= (a_frac << 16);
+    else
+      target_player.mo->angle += (a_frac << 16);
+
+    R_SmoothPlaying_Reset(&target_player);
+
+    return true;
+  }
+
+  return false;
+}
+
+static dboolean console_PlayerRoundAngle(const char* command, const char* args) {
+  int remainder;
+
+  remainder = (target_player.mo->angle >> 16) & 0xff;
+
+  target_player.mo->angle &= 0xff000000;
+
+  if (remainder >= 0x80)
+    target_player.mo->angle += 0x01000000;
+
+  R_SmoothPlaying_Reset(&target_player);
 
   return true;
 }
@@ -527,6 +599,41 @@ static dboolean console_DemoStop(const char* command, const char* args) {
 
   G_CheckDemoStatus();
   dsda_UpdateStrictMode();
+
+  return true;
+}
+
+static dboolean console_DemoJoin(const char* command, const char* args) {
+  if (!demoplayback)
+    return false;
+
+  dsda_JoinDemo(NULL);
+
+  return true;
+}
+
+static dboolean console_GameQuit(const char* command, const char* args) {
+  I_SafeExit(0);
+
+  return true;
+}
+
+static dboolean console_GameDescribe(const char* command, const char* args) {
+  extern dsda_string_t hud_title;
+
+  dsda_string_t str;
+
+  dsda_StringPrintF(&str, "%s\n"
+                          "Skill %d\n"
+                          "%s%s%s",
+                          hud_title.string, gameskill + 1,
+                          nomonsters ? "-nomo " : "",
+                          respawnparm ? "-respawn " : "",
+                          fastparm ? "-fast" : "");
+
+  dsda_AddAlert(str.string);
+
+  dsda_FreeString(&str);
 
   return true;
 }
@@ -636,7 +743,7 @@ static dboolean console_JumpByTic(const char* command, const char* args) {
   int tic;
 
   if (sscanf(args, "%i", &tic)) {
-    tic = logictic + tic;
+    tic = true_logictic + tic;
 
     dsda_JumpToLogicTic(tic);
 
@@ -720,6 +827,78 @@ static dboolean console_BuildUA(const char* command, const char* args) {
   return sscanf(args, "%i", &x) && dsda_BuildUA(x);
 }
 
+static dboolean console_BruteForceKeep(const char* command, const char* args) {
+  int frame;
+
+  if (!sscanf(args, "%d", &frame))
+    return false;
+
+  return dsda_KeepBruteForceFrame(frame);
+}
+
+static dboolean console_BruteForceNoMonsters(const char* command, const char* args) {
+  dsda_BruteForceWithoutMonsters();
+
+  return true;
+}
+
+static dboolean console_BruteForceMonsters(const char* command, const char* args) {
+  dsda_BruteForceWithMonsters();
+
+  return true;
+}
+
+static dboolean console_BruteForceFrame(const char* command, const char* args) {
+  int frame;
+  int forwardmove_min, forwardmove_max;
+  int sidemove_min, sidemove_max;
+  int angleturn_min, angleturn_max;
+  byte buttons = 0;
+  int weapon = 0;
+  char button_str[4] = { 0 };
+  int i, arg_count;
+
+  arg_count = sscanf(
+    args, "%i %i:%i %i:%i %i:%i %3s %d", &frame,
+    &forwardmove_min, &forwardmove_max,
+    &sidemove_min, &sidemove_max,
+    &angleturn_min, &angleturn_max,
+    button_str, &weapon
+  );
+
+  if (arg_count < 7)
+    return false;
+
+  if (arg_count > 7)
+    for (i = 0; i < 3; ++i)
+      switch (button_str[i]) {
+        case 'a':
+          buttons |= BT_ATTACK;
+          break;
+        case 'u':
+          buttons |= BT_USE;
+          break;
+        case 'c':
+          if (weapon > 0 && weapon < 16) {
+            buttons |= BT_CHANGE;
+            buttons |= (weapon << BT_WEAPONSHIFT);
+          }
+          else
+            return false;
+          break;
+        case '\0':
+          break;
+        default:
+          return false;
+      }
+
+  return dsda_AddBruteForceFrame(frame,
+                                 forwardmove_min, forwardmove_max,
+                                 sidemove_min, sidemove_max,
+                                 angleturn_min, angleturn_max,
+                                 buttons);
+}
+
 static dboolean console_BruteForceStart(const char* command, const char* args) {
   int depth;
   int forwardmove_min, forwardmove_max;
@@ -740,6 +919,23 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
   if (arg_count == 8) {
     int i;
+
+    for (i = 0; i < depth; ++i)
+      dsda_AddBruteForceFrame(i,
+                              forwardmove_min, forwardmove_max,
+                              sidemove_min, sidemove_max,
+                              angleturn_min, angleturn_max,
+                              0);
+  }
+  else {
+    arg_count = sscanf(args, "%i %[^;]", &depth, condition_args);
+
+    if (arg_count != 2)
+      return false;
+  }
+
+  {
+    int i;
     char** conditions;
 
     conditions = dsda_SplitString(condition_args, ",");
@@ -748,23 +944,33 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
       return false;
 
     for (i = 0; conditions[i]; ++i) {
-      dsda_bf_attribute_t attribute;
-      dsda_bf_operator_t operator;
       fixed_t value;
       char attr_s[4] = { 0 };
       char oper_s[5] = { 0 };
 
-      if (sscanf(conditions[i], "skip %i", &value) == 1) {
+      if (sscanf(conditions[i], " skip %i", &value) == 1) {
         if (value >= numlines || value < 0)
           return false;
 
         dsda_AddMiscBruteForceCondition(dsda_bf_line_skip, value);
       }
-      else if (sscanf(conditions[i], "act %i", &value) == 1) {
+      else if (sscanf(conditions[i], " act %i", &value) == 1) {
         if (value >= numlines || value < 0)
           return false;
 
         dsda_AddMiscBruteForceCondition(dsda_bf_line_activation, value);
+      }
+      else if (sscanf(conditions[i], " have %3[a-zA-Z]", attr_s) == 1) {
+        int attr_i;
+
+        for (attr_i = 0; attr_i < dsda_bf_item_max; ++attr_i)
+          if (!strcmp(attr_s, dsda_bf_item_names[attr_i]))
+            break;
+
+        if (attr_i == dsda_bf_item_max)
+          return false;
+
+        dsda_AddMiscBruteForceCondition(dsda_bf_have_item, attr_i);
       }
       else if (sscanf(conditions[i], " %3[a-zA-Z] %4[a-zA-Z><!=] %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
@@ -784,7 +990,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
             break;
 
         if (oper_i != dsda_bf_limit_trio_max) {
-          dsda_SetBruteForceTarget(attr_i, oper_i, value);
+          dsda_SetBruteForceTarget(attr_i, oper_i, value, true);
           continue;
         }
 
@@ -797,7 +1003,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_AddBruteForceCondition(attr_i, oper_i, value);
       }
-      else if (sscanf(conditions[i], "%3s %4s", attr_s, oper_s) == 2) {
+      else if (sscanf(conditions[i], " %3s %4s", attr_s, oper_s) == 2) {
         int attr_i, oper_i;
 
         for (attr_i = 0; attr_i < dsda_bf_attribute_max; ++attr_i)
@@ -814,7 +1020,7 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
         if (oper_i == dsda_bf_limit_duo_max)
           return false;
 
-        dsda_SetBruteForceTarget(attr_i, oper_i, 0);
+        dsda_SetBruteForceTarget(attr_i, oper_i, 0, false);
       }
       else {
         return false;
@@ -822,14 +1028,9 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
     }
 
     Z_Free(conditions);
-
-    return dsda_StartBruteForce(depth,
-                                forwardmove_min, forwardmove_max,
-                                sidemove_min, sidemove_max,
-                                angleturn_min, angleturn_max);
   }
 
-  return false;
+  return dsda_StartBruteForce(depth);
 }
 
 static dboolean console_BuildTurbo(const char* command, const char* args) {
@@ -848,6 +1049,12 @@ static dboolean console_Exit(const char* command, const char* args) {
 
 static dboolean console_BasicCheat(const char* command, const char* args) {
   return M_CheatEntered(command, args);
+}
+
+static dboolean console_IDDT(const char* command, const char* args) {
+  M_CheatIDDT();
+
+  return true;
 }
 
 static dboolean console_CheatFullClip(const char* command, const char* args) {
@@ -876,7 +1083,7 @@ static dboolean console_ScriptRunLine(const char* line) {
       return false;
     }
 
-    if (!dsda_ExecuteConsole(line)) {
+    if (!dsda_ExecuteConsole(line, false)) {
       lprintf(LO_ERROR, "Script line failed: \"%s\"\n", line);
       return false;
     }
@@ -946,7 +1153,6 @@ static dboolean console_Check(const char* command, const char* args) {
 static dboolean console_ChangeConfig(const char* command, const char* args, dboolean persist) {
   char name[CONSOLE_ENTRY_SIZE];
   char value_string[CONSOLE_ENTRY_SIZE];
-  int value_int;
 
   if (sscanf(args, "%s %s", name, value_string)) {
     int id;
@@ -984,8 +1190,6 @@ static dboolean console_Update(const char* command, const char* args) {
 
 static dboolean console_ToggleConfig(const char* command, const char* args, dboolean persist) {
   char name[CONSOLE_ENTRY_SIZE];
-  char value_string[CONSOLE_ENTRY_SIZE];
-  int value_int;
 
   if (sscanf(args, "%s", name)) {
     int id;
@@ -1011,6 +1215,50 @@ static dboolean console_ToggleAssign(const char* command, const char* args) {
 
 static dboolean console_ToggleUpdate(const char* command, const char* args) {
   return console_ToggleConfig(command, args, true);
+}
+
+static dboolean console_ConfigForget(const char* command, const char* args) {
+  void M_ForgetCurrentConfig(void);
+
+  M_ForgetCurrentConfig();
+
+  return true;
+}
+
+static dboolean console_ConfigRemember(const char* command, const char* args) {
+  void M_RememberCurrentConfig(void);
+
+  M_RememberCurrentConfig();
+
+  return true;
+}
+
+static dboolean console_WadStatsForget(const char* command, const char* args) {
+  void M_ForgetWadStats(void);
+
+  M_ForgetWadStats();
+
+  return true;
+}
+
+static dboolean console_WadStatsRemember(const char* command, const char* args) {
+  void M_RememberWadStats(void);
+
+  M_RememberWadStats();
+
+  return true;
+}
+
+static dboolean console_FreeTextUpdate(const char* command, const char* args) {
+  dsda_UpdateStringConfig(dsda_config_free_text, args, true);
+
+  return true;
+}
+
+static dboolean console_FreeTextClear(const char* command, const char* args) {
+  dsda_UpdateStringConfig(dsda_config_free_text, "", true);
+
+  return true;
 }
 
 static dboolean console_SetMobjState(mobj_t* mobj, statenum_t state) {
@@ -2013,8 +2261,16 @@ static console_command_entry_t console_commands[] = {
   { "player.round_x", console_PlayerRoundX, CF_NEVER },
   { "player.round_y", console_PlayerRoundY, CF_NEVER },
   { "player.round_xy", console_PlayerRoundXY, CF_NEVER },
+  { "player.set_angle", console_PlayerSetAngle, CF_NEVER },
+  { "player.round_angle", console_PlayerRoundAngle, CF_NEVER },
+  { "player.set_vx", console_PlayerSetVX, CF_NEVER },
+  { "player.set_vy", console_PlayerSetVY, CF_NEVER },
+  { "player.set_vz", console_PlayerSetVZ, CF_NEVER },
 
   { "music.restart", console_MusicRestart, CF_ALWAYS },
+
+  { "level.exit", console_LevelExit, CF_NEVER },
+  { "level.secret_exit", console_LevelSecretExit, CF_NEVER },
 
   { "script.run", console_ScriptRun, CF_ALWAYS },
   { "check", console_Check, CF_ALWAYS },
@@ -2022,6 +2278,12 @@ static console_command_entry_t console_commands[] = {
   { "update", console_Update, CF_ALWAYS },
   { "toggle_assign", console_ToggleAssign, CF_ALWAYS },
   { "toggle_update", console_ToggleUpdate, CF_ALWAYS },
+  { "config.forget", console_ConfigForget, CF_ALWAYS },
+  { "config.remember", console_ConfigRemember, CF_ALWAYS },
+  { "wad_stats.forget", console_WadStatsForget, CF_ALWAYS },
+  { "wad_stats.remember", console_WadStatsRemember, CF_ALWAYS },
+  { "free_text.update", console_FreeTextUpdate, CF_ALWAYS },
+  { "free_text.clear", console_FreeTextClear, CF_ALWAYS },
 
   // tracking
   { "tracker.add_line", console_TrackerAddLine, CF_DEMO },
@@ -2128,6 +2390,14 @@ static console_command_entry_t console_commands[] = {
   // build mode
   { "brute_force.start", console_BruteForceStart, CF_DEMO },
   { "bf.start", console_BruteForceStart, CF_DEMO },
+  { "brute_force.frame", console_BruteForceFrame, CF_DEMO },
+  { "bf.frame", console_BruteForceFrame, CF_DEMO },
+  { "brute_force.keep", console_BruteForceKeep, CF_DEMO },
+  { "bf.keep", console_BruteForceKeep, CF_DEMO },
+  { "brute_force.nomonsters", console_BruteForceNoMonsters, CF_DEMO },
+  { "bf.nomo", console_BruteForceNoMonsters, CF_DEMO },
+  { "brute_force.monsters", console_BruteForceMonsters, CF_DEMO },
+  { "bf.mo", console_BruteForceMonsters, CF_DEMO },
   { "build.turbo", console_BuildTurbo, CF_DEMO },
   { "b.turbo", console_BuildTurbo, CF_DEMO },
   { "mf", console_BuildMF, CF_DEMO },
@@ -2148,6 +2418,10 @@ static console_command_entry_t console_commands[] = {
   { "demo.export", console_DemoExport, CF_ALWAYS },
   { "demo.start", console_DemoStart, CF_NEVER },
   { "demo.stop", console_DemoStop, CF_ALWAYS },
+  { "demo.join", console_DemoJoin, CF_ALWAYS },
+
+  { "game.quit", console_GameQuit, CF_ALWAYS },
+  { "game.describe", console_GameDescribe, CF_ALWAYS },
 
   // cheats
   { "idchoppers", console_BasicCheat, CF_DEMO },
@@ -2158,7 +2432,7 @@ static console_command_entry_t console_commands[] = {
   { "idclip", console_BasicCheat, CF_DEMO },
   { "idmypos", console_BasicCheat, CF_DEMO },
   { "idrate", console_BasicCheat, CF_DEMO },
-  { "iddt", console_BasicCheat, CF_DEMO },
+  { "iddt", console_IDDT, CF_DEMO },
   { "iddst", console_BasicCheat, CF_DEMO },
   { "iddkt", console_BasicCheat, CF_DEMO },
   { "iddit", console_BasicCheat, CF_DEMO },
@@ -2189,7 +2463,7 @@ static console_command_entry_t console_commands[] = {
   { "rambo", console_BasicCheat, CF_DEMO },
   { "skel", console_BasicCheat, CF_DEMO },
   { "shazam", console_BasicCheat, CF_DEMO },
-  { "ravmap", console_BasicCheat, CF_DEMO },
+  { "ravmap", console_IDDT, CF_DEMO },
   { "cockadoodledoo", console_BasicCheat, CF_DEMO },
   { "gimme", console_BasicCheat, CF_DEMO },
   { "engage", console_BasicCheat, CF_DEMO },
@@ -2203,7 +2477,7 @@ static console_command_entry_t console_commands[] = {
   { "sherlock", console_BasicCheat, CF_DEMO },
   { "casper", console_BasicCheat, CF_DEMO },
   { "init", console_BasicCheat, CF_DEMO },
-  { "mapsco", console_BasicCheat, CF_DEMO },
+  { "mapsco", console_IDDT, CF_DEMO },
   { "deliverance", console_BasicCheat, CF_DEMO },
   { "shadowcaster", console_BasicCheat, CF_DEMO },
   { "visit", console_BasicCheat, CF_DEMO },
@@ -2230,10 +2504,15 @@ static dboolean dsda_AuthorizeCommand(console_command_entry_t* entry) {
     return false;
   }
 
+  if (gamestate != GS_LEVEL) {
+    dsda_AddConsoleMessage("command only allowed during levels");
+    return false;
+  }
+
   return true;
 }
 
-static dboolean dsda_ExecuteConsole(const char* command_line) {
+static dboolean dsda_ExecuteConsole(const char* command_line, dboolean noise) {
   char command[CONSOLE_ENTRY_SIZE];
   char args[CONSOLE_ENTRY_SIZE];
   int scan_count;
@@ -2251,17 +2530,23 @@ static dboolean dsda_ExecuteConsole(const char* command_line) {
         if (dsda_AuthorizeCommand(entry)) {
           if (entry->command(command, args)) {
             dsda_AddConsoleMessage("command executed");
-            S_StartSound(NULL, g_sfx_console);
+
+            if (noise)
+              S_StartVoidSound(g_sfx_console);
           }
           else {
             dsda_AddConsoleMessage("command invalid");
             ret = false;
-            S_StartSound(NULL, g_sfx_oof);
+
+            if (noise)
+              S_StartVoidSound(g_sfx_oof);
           }
         }
         else {
-          S_StartSound(NULL, g_sfx_oof);
           ret = false;
+
+          if (noise)
+            S_StartVoidSound(g_sfx_oof);
         }
 
         break;
@@ -2270,8 +2555,10 @@ static dboolean dsda_ExecuteConsole(const char* command_line) {
 
     if (!entry->command) {
       dsda_AddConsoleMessage("command unknown");
-      S_StartSound(NULL, g_sfx_oof);
       ret = false;
+
+      if (noise)
+        S_StartVoidSound(g_sfx_oof);
     }
   }
 
@@ -2322,6 +2609,21 @@ void dsda_UpdateConsoleHistory(void) {
   console_entry = console_history_head;
 }
 
+void dsda_InterpretConsoleCommands(const char* str, dboolean noise, dboolean raise_errors) {
+  int line;
+  char* entry;
+  char** lines;
+
+  entry = Z_Strdup(str);
+  lines = dsda_SplitString(entry, ";");
+  for (line = 0; lines[line]; ++line)
+    if (!dsda_ExecuteConsole(lines[line], noise) && raise_errors)
+      I_Error("Console command failed: %s", lines[line]);
+
+  Z_Free(lines);
+  Z_Free(entry);
+}
+
 void dsda_UpdateConsole(int action) {
   if (action == MENU_BACKSPACE && console_entry_index > 0) {
     int shift_i;
@@ -2334,20 +2636,10 @@ void dsda_UpdateConsole(int action) {
     dsda_UpdateConsoleDisplay();
   }
   else if (action == MENU_ENTER) {
-    int line;
-    char* entry;
-    char** lines;
-
-    entry = Z_Strdup(console_entry->text);
-    lines = dsda_SplitString(entry, ";");
-    for (line = 0; lines[line]; ++line)
-      dsda_ExecuteConsole(lines[line]);
+    dsda_InterpretConsoleCommands(console_entry->text, true, false);
 
     dsda_UpdateConsoleHistory();
     dsda_ResetConsoleEntry();
-
-    Z_Free(entry);
-    Z_Free(lines);
   }
   else if (action == MENU_UP) {
     if (console_entry->prev)

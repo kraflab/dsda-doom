@@ -4,7 +4,7 @@ module Utility
   def play_demo(lmp:, iwad: "DOOM2.WAD", pwad: nil, extra: nil)
     command = "./build/dsda-doom.exe -iwad spec/support/wads/#{iwad}"
     command << " -file spec/support/wads/#{pwad}" if pwad
-    command << " -fastdemo spec/support/lmps/#{lmp}"
+    command << " -fastdemo \"spec/support/lmps/#{lmp}\""
     command << " -nosound -nomusic -nodraw -levelstat -analysis"
     command << " #{extra}" if extra
 

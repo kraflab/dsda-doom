@@ -21,7 +21,26 @@
 
 #define PATCH_DELTA_X 14
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
+
+int dsda_AmmoColor(player_t* player) {
+  int ammo_percent;
+
+  ammo_percent = P_AmmoPercent(player, player->readyweapon);
+
+  if (ammo_percent < hud_ammo_red)
+    return dsda_tc_exhud_ammo_bad;
+  else if (ammo_percent < hud_ammo_yellow)
+    return dsda_tc_exhud_ammo_warning;
+  else if (ammo_percent < 100)
+    return dsda_tc_exhud_ammo_ok;
+  else
+    return dsda_tc_exhud_ammo_full;
+}
 
 static void dsda_DrawComponent(void) {
   player_t* player;
@@ -39,22 +58,23 @@ static void dsda_DrawComponent(void) {
 
   ammo = player->ammo[ammo_type];
 
-  dsda_DrawBigNumber(component.x, component.y, PATCH_DELTA_X, 0,
-                     CR_DEFAULT, component.vpt, 3, ammo);
+  dsda_DrawBigNumber(local->component.x, local->component.y, PATCH_DELTA_X, 0,
+                     dsda_TextCR(dsda_AmmoColor(player)), local->component.vpt, 3, ammo);
 }
 
-void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigAmmoHC(void) {
-  return;
+void dsda_UpdateBigAmmoHC(void* data) {
+  local = data;
 }
 
-void dsda_DrawBigAmmoHC(void) {
+void dsda_DrawBigAmmoHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
-}
-
-void dsda_EraseBigAmmoHC(void) {
-  return;
 }

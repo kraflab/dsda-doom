@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "lprintf.h"
 #include "p_spec.h"
+#include "r_main.h"
 #include "r_state.h"
 #include "w_wad.h"
 
@@ -38,6 +39,37 @@ typedef enum {
 
 int dsda_DoorType(int index) {
   int special = lines[index].special;
+
+  if (map_format.zdoom) {
+    int lock;
+
+    if (special == 13)
+      lock = lines[index].special_args[3];
+    else
+      lock = lines[index].locknumber;
+
+    switch (lock) {
+      case zk_none:
+        return door_type_none;
+      case zk_red_card:
+      case zk_red_skull:
+      case zk_red:
+      case zk_redx:
+        return door_type_red;
+      case zk_blue_card:
+      case zk_blue_skull:
+      case zk_blue:
+      case zk_bluex:
+        return door_type_blue;
+      case zk_yellow_card:
+      case zk_yellow_skull:
+      case zk_yellow:
+      case zk_yellowx:
+        return door_type_yellow;
+      default:
+        return door_type_unknown;
+    }
+  }
 
   if (map_format.hexen) {
     if (special == 13 || special == 83)
@@ -123,15 +155,15 @@ static void dsda_MigrateMobjInfo(void) {
 
     for (i = mobj_types_zero; i < num_mobj_types; ++i) {
       if (mobjinfo[i].flags & MF_COUNTKILL)
-        mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
+        mobjinfo[i].flags2 |= MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS;
 
       if (mobjinfo[i].flags & MF_MISSILE)
         mobjinfo[i].flags2 |= MF2_PCROSS | MF2_IMPACT;
     }
 
     if (!raven) {
-      mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL;
-      mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL;
+      mobjinfo[MT_SKULL].flags2 |= MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS;
+      mobjinfo[MT_PLAYER].flags2 |= MF2_WINDTHRUST | MF2_PUSHWALL | MF2_CANUSEWALLS;
     }
   }
   else if (!map_format.zdoom && migrated)
@@ -140,15 +172,15 @@ static void dsda_MigrateMobjInfo(void) {
 
     for (i = mobj_types_zero; i < num_mobj_types; ++i) {
       if (mobjinfo[i].flags & MF_COUNTKILL)
-        mobjinfo[i].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
+        mobjinfo[i].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS);
 
       if (mobjinfo[i].flags & MF_MISSILE)
         mobjinfo[i].flags2 &= ~(MF2_PCROSS | MF2_IMPACT);
     }
 
     if (!raven) {
-      mobjinfo[MT_SKULL].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL);
-      mobjinfo[MT_PLAYER].flags2 &= ~(MF2_WINDTHRUST | MF2_PUSHWALL);
+      mobjinfo[MT_SKULL].flags2 &= ~(MF2_MCROSS | MF2_PUSHWALL | MF2_CANUSEWALLS);
+      mobjinfo[MT_PLAYER].flags2 &= ~(MF2_WINDTHRUST | MF2_PUSHWALL | MF2_CANUSEWALLS);
     }
   }
 }
@@ -181,8 +213,8 @@ extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dbool
 extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
 extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
 
-extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned int activationType);
-extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned int activationType);
+extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
+extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
 
 extern void P_PostProcessCompatibleLineSpecial(line_t *ld);
 extern void P_PostProcessHereticLineSpecial(line_t *ld);
@@ -203,9 +235,9 @@ extern void P_CheckCompatibleImpact(mobj_t *);
 extern void P_CheckHereticImpact(mobj_t *);
 extern void P_CheckZDoomImpact(mobj_t *);
 
-extern void P_TranslateHexenLineFlags(unsigned int *);
-extern void P_TranslateZDoomLineFlags(unsigned int *);
-extern void P_TranslateCompatibleLineFlags(unsigned int *);
+extern void P_TranslateHexenLineFlags(unsigned int *, line_activation_t *);
+extern void P_TranslateZDoomLineFlags(unsigned int *, line_activation_t *);
+extern void P_TranslateCompatibleLineFlags(unsigned int *, line_activation_t *);
 
 extern void P_ApplyCompatibleSectorMovementSpecial(mobj_t *, int);
 extern void P_ApplyHereticSectorMovementSpecial(mobj_t *, int);
@@ -219,8 +251,8 @@ extern void P_CompatiblePlayerThrust(player_t* player, angle_t angle, fixed_t mo
 extern void P_HereticPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 extern void P_HexenPlayerThrust(player_t* player, angle_t angle, fixed_t move);
 
-extern dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
-extern dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo);
+extern dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
+extern dboolean P_ExecuteHexenLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
 
 extern void T_VerticalCompatibleDoor(vldoor_t *door);
 extern void T_VerticalHexenDoor(vldoor_t *door);
@@ -253,21 +285,18 @@ void dsda_RemoveMobjThingID(mobj_t* mo);
 void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
 void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
 
-static const map_format_t zdoom_in_hexen_map_format = {
+static const map_format_t zdoom_map_format = {
   .zdoom = true,
   .hexen = true,
   .polyobjs = true,
   .acs = false,
   .thing_id = true,
-  .mapinfo = false,
   .sndseq = false,
-  .sndinfo = false,
   .animdefs = false,
   .doublesky = false,
   .map99 = false,
-  .lax_monster_activation = true,
   .generalized_mask = ~0xff,
-  .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT | ML_SPAC_PUSH,
+  .switch_activation = SPAC_USE | SPAC_IMPACT | SPAC_PUSH,
   .init_sector_special = P_SpawnZDoomSectorSpecial,
   .player_in_special_sector = P_PlayerInZDoomSector,
   .mobj_in_special_sector = P_MobjInZDoomSector,
@@ -296,7 +325,11 @@ static const map_format_t zdoom_in_hexen_map_format = {
   .add_mobj_thing_id = dsda_AddMobjThingID,
   .remove_mobj_thing_id = dsda_RemoveMobjThingID,
   .iterate_spechit = P_IterateZDoomSpecHit,
-  .mapthing_size = sizeof(mapthing_t),
+  .point_on_side = R_ZDoomPointOnSide,
+  .point_on_seg_side = R_ZDoomPointOnSegSide,
+  .point_on_line_side = P_ZDoomPointOnLineSide,
+  .point_on_divline_side = P_ZDoomPointOnDivlineSide,
+  .mapthing_size = sizeof(hexen_mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = MT_PUSH,
   .mt_pull = MT_PULL,
@@ -313,15 +346,12 @@ static const map_format_t hexen_map_format = {
   .polyobjs = true,
   .acs = true,
   .thing_id = true,
-  .mapinfo = true,
   .sndseq = true,
-  .sndinfo = true,
   .animdefs = true,
   .doublesky = true,
   .map99 = true,
-  .lax_monster_activation = false,
   .generalized_mask = 0, // not used
-  .switch_activation = ML_SPAC_USE | ML_SPAC_IMPACT,
+  .switch_activation = SPAC_USE | SPAC_IMPACT,
   .init_sector_special = NULL, // not used
   .player_in_special_sector = P_PlayerInHexenSector,
   .mobj_in_special_sector = P_MobjInHexenSector,
@@ -350,7 +380,11 @@ static const map_format_t hexen_map_format = {
   .add_mobj_thing_id = P_InsertMobjIntoTIDList,
   .remove_mobj_thing_id = P_RemoveMobjFromTIDList,
   .iterate_spechit = NULL, // not used
-  .mapthing_size = sizeof(mapthing_t),
+  .point_on_side = R_CompatiblePointOnSide,
+  .point_on_seg_side = R_CompatiblePointOnSegSide,
+  .point_on_line_side = P_CompatiblePointOnLineSide,
+  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
+  .mapthing_size = sizeof(hexen_mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = -1,
   .mt_pull = -1,
@@ -367,13 +401,10 @@ static const map_format_t heretic_map_format = {
   .polyobjs = false,
   .acs = false,
   .thing_id = false,
-  .mapinfo = false,
   .sndseq = false,
-  .sndinfo = false,
   .animdefs = false,
   .doublesky = false,
   .map99 = false,
-  .lax_monster_activation = true,
   .generalized_mask = 0,
   .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
@@ -404,6 +435,10 @@ static const map_format_t heretic_map_format = {
   .add_mobj_thing_id = NULL, // not used
   .remove_mobj_thing_id = NULL, // not used
   .iterate_spechit = P_IterateCompatibleSpecHit,
+  .point_on_side = R_CompatiblePointOnSide,
+  .point_on_seg_side = R_CompatiblePointOnSegSide,
+  .point_on_line_side = P_CompatiblePointOnLineSide,
+  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = -1,
@@ -421,13 +456,10 @@ static const map_format_t doom_map_format = {
   .polyobjs = false,
   .acs = false,
   .thing_id = false,
-  .mapinfo = false,
   .sndseq = false,
-  .sndinfo = false,
   .animdefs = false,
   .doublesky = false,
   .map99 = false,
-  .lax_monster_activation = true,
   .generalized_mask = ~31,
   .switch_activation = 0, // not used
   .init_sector_special = P_SpawnCompatibleSectorSpecial,
@@ -458,6 +490,10 @@ static const map_format_t doom_map_format = {
   .add_mobj_thing_id = NULL, // not used
   .remove_mobj_thing_id = NULL, // not used
   .iterate_spechit = P_IterateCompatibleSpecHit,
+  .point_on_side = R_CompatiblePointOnSide,
+  .point_on_seg_side = R_CompatiblePointOnSegSide,
+  .point_on_line_side = P_CompatiblePointOnLineSide,
+  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = MT_PUSH,
@@ -469,12 +505,20 @@ static const map_format_t doom_map_format = {
   .visibility = VF_DOOM,
 };
 
+static void dsda_ApplyMapPrecision(void) {
+  R_PointOnSide = map_format.point_on_side;
+  R_PointOnSegSide = map_format.point_on_seg_side;
+  P_PointOnLineSide = map_format.point_on_line_side;
+  P_PointOnDivlineSide = map_format.point_on_divline_side;
+}
+
 void dsda_ApplyZDoomMapFormat(void) {
-  map_format = zdoom_in_hexen_map_format;
+  map_format = zdoom_map_format;
 
   if (!mbf21)
     I_Error("You must use complevel 21 when playing doom-in-hexen format maps.");
 
+  dsda_ApplyMapPrecision();
   dsda_MigrateMobjInfo();
 }
 
@@ -486,8 +530,6 @@ void dsda_ApplyDefaultMapFormat(void) {
   else
     map_format = doom_map_format;
 
-  if (dsda_Flag(dsda_arg_mapinfo) && !map_format.mapinfo)
-    map_format.mapinfo = W_LumpNameExists("MAPINFO");
-
+  dsda_ApplyMapPrecision();
   dsda_MigrateMobjInfo();
 }

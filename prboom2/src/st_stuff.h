@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -67,7 +67,7 @@ dboolean ST_Responder(event_t* ev);
 void ST_Ticker(void);
 
 // Called by main loop.
-void ST_Drawer(dboolean st_statusbaron, dboolean refresh, dboolean fullmenu);
+void ST_Drawer(dboolean refresh);
 
 // Called when the console player is spawned on each level.
 void ST_Start(void);
@@ -77,6 +77,10 @@ void ST_Init(void);
 
 // After changing videomode;
 void ST_SetResolution(void);
+
+void ST_Refresh(void);
+
+int ST_HealthColor(int health);
 
 // States for status bar code.
 typedef enum
@@ -89,7 +93,6 @@ extern int st_palette;    // cph 2006/04/06 - make palette visible
 
 // e6y: makes sense for wide resolutions
 extern patchnum_t grnrock;
-extern patchnum_t brdr_t, brdr_b, brdr_l, brdr_r;
-extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
+extern patchnum_t brdr_b;
 
 #endif

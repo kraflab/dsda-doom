@@ -19,7 +19,12 @@
 
 #include "ammo_text.h"
 
-static dsda_text_t component[6];
+typedef struct {
+  dsda_text_t component[6];
+  dboolean show_names;
+} local_component_t;
+
+static local_component_t* local;
 
 typedef struct {
   const char** ammo_name;
@@ -71,18 +76,39 @@ static void dsda_UpdateComponentText(char* str, size_t max_size, int i) {
   current_ammo = player->ammo[i];
   max_ammo = hexen ? MAX_MANA : player->maxammo[i];
 
-  snprintf(
-    str,
-    max_size,
-    "%s %3d\x1b\x01/\x1b\x01%3d",
-    name,
-    current_ammo,
-    max_ammo
-  );
+  if (local->show_names)
+    snprintf(
+      str,
+      max_size,
+      "%s%s %s%3d\x1b\x01/\x1b\x01%3d",
+      dsda_TextColor(dsda_tc_exhud_ammo_label),
+      name,
+      dsda_TextColor(dsda_tc_exhud_ammo_value),
+      current_ammo,
+      max_ammo
+    );
+  else
+    snprintf(
+      str,
+      max_size,
+      "%s%3d\x1b\x01/\x1b\x01%3d",
+      dsda_TextColor(dsda_tc_exhud_ammo_value),
+      current_ammo,
+      max_ammo
+    );
 }
 
-void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
   int i;
+  int y_delta;
+
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  if (arg_count > 0)
+    local->show_names = args[0];
+  else
+    local->show_names = true;
 
   if (heretic)
     component_config = &heretic_ammo;
@@ -91,29 +117,28 @@ void dsda_InitAmmoTextHC(int x_offset, int y_offset, int vpt) {
   else
     component_config = &doom_ammo;
 
+  y_delta = BOTTOM_ALIGNMENT(vpt & VPT_ALIGN_MASK) ? -8 : 8;
+
   for (i = 0; i < component_config->count; ++i)
-    dsda_InitTextHC(&component[i], x_offset, y_offset - i * 8, vpt);
+    dsda_InitTextHC(&local->component[i], x_offset, y_offset + i * y_delta, vpt);
 }
 
-void dsda_UpdateAmmoTextHC(void) {
+void dsda_UpdateAmmoTextHC(void* data) {
   int i;
 
+  local = data;
+
   for (i = 0; i < component_config->count; ++i) {
-    dsda_UpdateComponentText(component[i].msg, sizeof(component[i].msg), i);
-    dsda_RefreshHudText(&component[i]);
+    dsda_UpdateComponentText(local->component[i].msg, sizeof(local->component[i].msg), i);
+    dsda_RefreshHudText(&local->component[i]);
   }
 }
 
-void dsda_DrawAmmoTextHC(void) {
+void dsda_DrawAmmoTextHC(void* data) {
   int i;
 
-  for (i = 0; i < component_config->count; ++i)
-    dsda_DrawBasicText(&component[i]);
-}
-
-void dsda_EraseAmmoTextHC(void) {
-  int i;
+  local = data;
 
   for (i = 0; i < component_config->count; ++i)
-    HUlib_eraseTextLine(&component[i].text);
+    dsda_DrawBasicText(&local->component[i]);
 }

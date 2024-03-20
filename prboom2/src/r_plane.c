@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -104,14 +104,9 @@ static int *spanstart = NULL;                // killough 2/8/98
 // texture mapping
 //
 
-static const lighttable_t **planezlight;
-static fixed_t planeheight;
-
 // killough 2/8/98: make variables static
 
-static fixed_t basexscale, baseyscale;
 static fixed_t *cachedheight = NULL;
-static fixed_t xoffs,yoffs;    // killough 2/28/98: flat offsets
 
 // e6y: resolution limitation is removed
 fixed_t *yslope = NULL;
@@ -162,18 +157,6 @@ void R_InitPlanes (void)
 //
 // R_MapPlane
 //
-// Uses global vars:
-//  planeheight
-//  dsvars.source
-//  basexscale
-//  baseyscale
-//  viewx
-//  viewy
-//  xoffs
-//  yoffs
-//
-// BASIC PRIMITIVE
-//
 
 static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
 {
@@ -198,28 +181,33 @@ static void R_MapPlane(int y, int x1, int x2, draw_span_vars_t *dsvars)
   if (centery == y)
     return;
   den = (int64_t)FRACUNIT * FRACUNIT * D_abs(centery - y);
-  distance = FixedMul (planeheight, yslope[y]);
+  distance = FixedMul(dsvars->planeheight, yslope[y]);
 
-  dsvars->xstep = (fixed_t)((int64_t)viewsin * planeheight * viewfocratio / den);
-  dsvars->ystep = (fixed_t)((int64_t)viewcos * planeheight * viewfocratio / den);
+  dsvars->xstep = (fixed_t)((int64_t)dsvars->sine * dsvars->planeheight * viewfocratio / den);
+  dsvars->ystep = (fixed_t)((int64_t)dsvars->cosine * dsvars->planeheight * viewfocratio / den);
 
   // killough 2/28/98: Add offsets
-  dsvars->xfrac =  viewx + xoffs + FixedMul(viewcos, distance) + (x1 - centerx) * dsvars->xstep;
-  dsvars->yfrac = -viewy + yoffs - FixedMul(viewsin, distance) + (x1 - centerx) * dsvars->ystep;
+  dsvars->xfrac = dsvars->xoffs + FixedMul(dsvars->cosine, distance) + (x1 - centerx) * dsvars->xstep;
+  dsvars->yfrac = dsvars->yoffs - FixedMul(dsvars->sine, distance) + (x1 - centerx) * dsvars->ystep;
+
+  dsvars->xstep = FixedMul(dsvars->xstep, dsvars->xscale);
+  dsvars->ystep = FixedMul(dsvars->ystep, dsvars->yscale);
+
+  dsvars->xfrac = FixedMul(dsvars->xfrac, dsvars->xscale);
+  dsvars->yfrac = FixedMul(dsvars->yfrac, dsvars->yscale);
 
   if (!(dsvars->colormap = fixedcolormap))
-    {
-      dsvars->z = distance;
-      index = distance >> LIGHTZSHIFT;
-      if (index >= MAXLIGHTZ )
-        index = MAXLIGHTZ-1;
-      dsvars->colormap = planezlight[index];
-      dsvars->nextcolormap = planezlight[index+1 >= MAXLIGHTZ ? MAXLIGHTZ-1 : index+1];
-    }
+  {
+    dsvars->z = distance;
+    index = distance >> LIGHTZSHIFT;
+    if (index >= MAXLIGHTZ )
+      index = MAXLIGHTZ-1;
+    dsvars->colormap = dsvars->planezlight[index];
+  }
   else
-   {
-      dsvars->z = 0;
-   }
+  {
+    dsvars->z = 0;
+  }
 
   dsvars->y = y;
   dsvars->x1 = x1;
@@ -250,10 +238,6 @@ void R_ClearPlanes(void)
 
   // texture calculation
   memset (cachedheight, 0, SCREENHEIGHT * sizeof(*cachedheight));
-
-  // scale will be unit scale at SCREENWIDTH/2 distance
-  basexscale = FixedDiv (viewsin,projection);
-  baseyscale = FixedDiv (viewcos,projection);
 }
 
 // New function, by Lee Killough
@@ -292,6 +276,9 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
       new_pl->special = pl->special;
       new_pl->xoffs = pl->xoffs;           // killough 2/28/98
       new_pl->yoffs = pl->yoffs;
+      new_pl->rotation = pl->rotation;
+      new_pl->xscale = pl->xscale;
+      new_pl->yscale = pl->yscale;
       new_pl->minx = start;
       new_pl->maxx = stop;
       for (i = 0; i != SCREENWIDTH; i++)
@@ -304,7 +291,7 @@ visplane_t *R_DupPlane(const visplane_t *pl, int start, int stop)
 // killough 2/28/98: Add offsets
 
 visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
-                        fixed_t xoffs, fixed_t yoffs)
+                        fixed_t xoffs, fixed_t yoffs, angle_t rotation, fixed_t xscale, fixed_t yscale)
 {
   visplane_t *check;
   unsigned hash;                      // killough
@@ -326,7 +313,10 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
         lightlevel == check->lightlevel &&
         special == check->special &&
         xoffs == check->xoffs &&      // killough 2/28/98: Add offset checks
-        yoffs == check->yoffs)
+        yoffs == check->yoffs &&
+        rotation == check->rotation &&
+        xscale == check->xscale &&
+        yscale == check->yscale)
       return check;
 
   check = new_visplane(hash);         // killough
@@ -337,6 +327,9 @@ visplane_t *R_FindPlane(fixed_t height, int picnum, int lightlevel, int special,
   check->special = special;
   check->xoffs = xoffs;               // killough 2/28/98: Save offsets
   check->yoffs = yoffs;
+  check->rotation = rotation;
+  check->xscale = xscale;
+  check->yscale = yscale;
 
   if (V_IsSoftwareMode())
   {
@@ -394,6 +387,26 @@ static void R_MakeSpans(int x, unsigned int t1, unsigned int b1,
     spanstart[t2++] = x;
   while (b2 > b1 && b2 >= t2)
     spanstart[b2--] = x;
+}
+
+// heretic has a hack: sky textures are defined with 128 height, but the patches are 200
+// heretic textures with only one patch point their columns to the original patch data
+// when drawing skies, it used this to "overrun" into the lower patch pixels
+const rpatch_t *R_HackedSkyPatch(texture_t *texture)
+{
+  if (heretic && texture->patchcount == 1)
+  {
+    const rpatch_t *patch;
+
+    patch = (const rpatch_t*) R_PatchByNum(texture->patches[0].patch);
+
+    if (patch->height == 200)
+    {
+      return patch;
+    }
+  }
+
+  return NULL;
 }
 
 // New function, by Lee Killough
@@ -514,10 +527,10 @@ static void R_DoDrawPlane(visplane_t *pl)
 
       an = viewangle;
 
-      if (pl->picnum & PL_SKYFLAT)
+      if (pl->picnum & PL_SKYFLAT_LINE)
       {
         // Sky Linedef
-        const line_t *l = &lines[pl->picnum & ~PL_SKYFLAT];
+        const line_t *l = &lines[pl->picnum & ~PL_SKYFLAT_LINE];
 
         // Sky transferred from first sidedef
         const side_t *s = *l->sidenum + sides;
@@ -550,6 +563,12 @@ static void R_DoDrawPlane(visplane_t *pl)
           dcvars.texturemid = (int)((int64_t)dcvars.texturemid * skyheight / SKYSTRETCH_HEIGHT);
         }
       }
+      else if (pl->picnum & PL_SKYFLAT_SECTOR)
+      {
+        dcvars.texturemid = skytexturemid;
+        texture = pl->picnum & ~PL_SKYFLAT_SECTOR;
+        flip = 0;
+      }
       else
       {    // Normal Doom sky, only one allowed per level
         dcvars.texturemid = skytexturemid;    // Default y-offset
@@ -564,8 +583,6 @@ static void R_DoDrawPlane(visplane_t *pl)
       if (comp[comp_skymap] || !(dcvars.colormap = fixedcolormap))
         dcvars.colormap = fullcolormap;          // killough 3/20/98
 
-      dcvars.nextcolormap = dcvars.colormap; // for filtering -- POPE
-
       //dcvars.texturemid = skytexturemid;
       dcvars.texheight = textureheight[texture]>>FRACBITS; // killough
 
@@ -576,24 +593,72 @@ static void R_DoDrawPlane(visplane_t *pl)
       // old code: dcvars.iscale = FRACUNIT*200/viewheight;
       dcvars.iscale = skyiscale;
 
-      tex_patch = R_TextureCompositePatchByNum(texture);
+      {
+        const rpatch_t *patch;
 
-  // killough 10/98: Use sky scrolling offset, and possibly flip picture
-        for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)
-          if ((dcvars.yl = pl->top[x]) != SHRT_MAX && dcvars.yl <= (dcvars.yh = pl->bottom[x])) // dropoff overflow
+        patch = R_HackedSkyPatch(textures[texture]);
+
+        if (patch)
+        {
+          dcvars.texheight = patch->height;
+          dcvars.texturemid = 200 << FRACBITS;
+          dcvars.iscale = (200 << FRACBITS) / SCREENHEIGHT;
+
+          for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)
+            if ((dcvars.yl = pl->top[x]) != SHRT_MAX && dcvars.yl <= (dcvars.yh = pl->bottom[x])) // dropoff overflow
             {
-              dcvars.source = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x])^flip) >> ANGLETOSKYSHIFT);
-              dcvars.prevsource = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x-1])^flip) >> ANGLETOSKYSHIFT);
-              dcvars.nextsource = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x+1])^flip) >> ANGLETOSKYSHIFT);
+              dcvars.source = R_GetPatchColumn(patch, (an + xtoviewangle[x]) >> ANGLETOSKYSHIFT)->pixels;
+              dcvars.prevsource = R_GetPatchColumn(patch, (an + xtoviewangle[x-1]) >> ANGLETOSKYSHIFT)->pixels;
+              dcvars.nextsource = R_GetPatchColumn(patch, (an + xtoviewangle[x+1]) >> ANGLETOSKYSHIFT)->pixels;
               colfunc(&dcvars);
             }
 
-    } else {     // regular flat
+          return;
+        }
+      }
+
+      tex_patch = R_TextureCompositePatchByNum(texture);
+
+      // killough 10/98: Use sky scrolling offset, and possibly flip picture
+      for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)
+        if ((dcvars.yl = pl->top[x]) != SHRT_MAX && dcvars.yl <= (dcvars.yh = pl->bottom[x])) // dropoff overflow
+        {
+          dcvars.source = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x])^flip) >> ANGLETOSKYSHIFT);
+          dcvars.prevsource = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x-1])^flip) >> ANGLETOSKYSHIFT);
+          dcvars.nextsource = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x+1])^flip) >> ANGLETOSKYSHIFT);
+          colfunc(&dcvars);
+        }
+    }
+    else {     // regular flat
 
       int stop, light;
       draw_span_vars_t dsvars;
 
       dsvars.source = W_LumpByNum(firstflat + flattranslation[pl->picnum]);
+      dsvars.xoffs = pl->xoffs;
+      dsvars.yoffs = pl->yoffs;
+      dsvars.xscale = pl->xscale;
+      dsvars.yscale = pl->yscale;
+
+      if (pl->rotation)
+      {
+        fixed_t rotation_cos, rotation_sin;
+
+        rotation_cos = finecosine[pl->rotation >> ANGLETOFINESHIFT];
+        rotation_sin = finesine[pl->rotation >> ANGLETOFINESHIFT];
+
+        dsvars.xoffs += FixedMul(rotation_cos, viewx) - FixedMul(rotation_sin, viewy);
+        dsvars.yoffs -= FixedMul(rotation_sin, viewx) + FixedMul(rotation_cos, viewy);
+        dsvars.sine = finesine[(viewangle + pl->rotation) >> ANGLETOFINESHIFT];
+        dsvars.cosine = finecosine[(viewangle + pl->rotation) >> ANGLETOFINESHIFT];
+      }
+      else
+      {
+        dsvars.xoffs += viewx;
+        dsvars.yoffs -= viewy;
+        dsvars.sine = viewsin;
+        dsvars.cosine = viewcos;
+      }
 
       if (map_format.hexen)
       {
@@ -676,9 +741,7 @@ static void R_DoDrawPlane(visplane_t *pl)
         }
       }
 
-      xoffs = pl->xoffs;  // killough 2/28/98: Add offsets
-      yoffs = pl->yoffs;
-      planeheight = D_abs(pl->height-viewz);
+      dsvars.planeheight = D_abs(pl->height-viewz);
 
       // SoM 10/19/02: deep water colormap fix
       if(fixedcolormap)
@@ -693,7 +756,7 @@ static void R_DoDrawPlane(visplane_t *pl)
         light = 0;
 
       stop = pl->maxx + 1;
-      planezlight = zlight[light];
+      dsvars.planezlight = zlight[light];
       pl->top[pl->minx-1] = pl->top[stop] = SHRT_MAX; // dropoff overflow
 
       for (x = pl->minx ; x <= stop ; x++)

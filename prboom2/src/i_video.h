@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -44,10 +44,6 @@
 #include "v_video.h"
 #include "SDL.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern SDL_Window *sdl_window;
 extern SDL_Renderer *sdl_renderer;
 
@@ -65,6 +61,10 @@ void I_ShutdownGraphics(void);
 
 /* Takes full 8 bit values. */
 void I_SetPalette(int pal); /* CPhipps - pass down palette number */
+
+void I_QueueFrameCapture(void);
+void I_QueueScreenshot(void);
+void I_HandleCapture(void);
 
 void I_FinishUpdate (void);
 

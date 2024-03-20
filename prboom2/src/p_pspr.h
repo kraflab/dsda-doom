@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -49,10 +49,6 @@
 
 #include "info.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 /*
  * Frame flags:
  * handles maximum brightness (torches, muzzle flare, light sources)
@@ -100,6 +96,7 @@ void P_SubtractAmmo(struct player_s *player, int compat_amt);
 void P_SetupPsprites(struct player_s *curplayer);
 void P_MovePsprites(struct player_s *curplayer);
 void P_DropWeapon(struct player_s *player);
+int P_AmmoPercent(struct player_s *player, int weapon);
 
 void A_Light0();
 void A_WeaponReady();

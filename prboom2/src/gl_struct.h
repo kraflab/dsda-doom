@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -36,51 +36,36 @@
 
 #include <SDL_opengl.h>
 
-extern int nodesVersion;
+extern dboolean use_gl_nodes;
 
 typedef enum {
   skytype_auto,
   skytype_none,
   skytype_standard,
   skytype_skydome,
-  skytype_screen,
 
   skytype_count
 } skytype_t;
 
 #define MAX_GLGAMMA 32
-typedef enum
-{
-  gl_lightmode_glboom,
-  gl_lightmode_shaders,
-  gl_lightmode_indexed,
 
-  gl_lightmode_last
-} gl_lightmode_t;
+enum bleedtype {
+  BLEED_NONE = 0x0,
+  BLEED_CEILING = 0x1,
+  BLEED_OCCLUDE = 0x2
+};
 
 extern int gl_drawskys;
-extern int gl_hardware_gamma;
-extern gl_lightmode_t gl_lightmode;
-extern const char *gl_lightmodes[];
 extern dboolean gl_ui_lightmode_indexed;
 extern dboolean gl_automap_lightmode_indexed;
-extern int gl_usegamma;
-int gld_SetGammaRamp(int gamma);
-void gld_CheckHardwareGamma(void);
 void gld_FlushTextures(void);
-void gld_ApplyGammaRamp(byte *buf, int pitch, int width, int height);
-void M_ChangeLightMode(void);
 
 void gld_InitVertexData();
 void gld_CleanVertexData();
 void gld_UpdateSplitData(sector_t *sector);
 
-extern int gl_boom_colormaps;
-extern int gl_boom_colormaps_default;
-
 void gld_Init(int width, int height);
 void gld_InitCommandLine(void);
-void gld_InitTextureParams(void);
 
 void gld_BeginUIDraw(void);
 void gld_EndUIDraw(void);
@@ -122,11 +107,7 @@ void gld_AddWall(seg_t *seg);
 void gld_ProjectSprite(mobj_t* thing, int lightlevel);
 void gld_DrawScene(player_t *player);
 void gld_EndDrawScene(void);
-void gld_ProcessExtraAlpha(void);
 void gld_Finish();
-
-//blend animation from zdoomgl
-extern int gl_blend_animations;
 
 // wipe
 int gld_wipe_doMelt(int ticks, int *y_lookup);
@@ -143,13 +124,9 @@ dboolean gld_SphereInFrustum(float x, float y, float z, float radius);
 //missing flats (fake floors and ceilings)
 extern dboolean gl_use_stencil;
 sector_t* GetBestFake(sector_t *sector, int ceiling, int validcount);
-sector_t* GetBestBleedSector(sector_t* source, int ceiling);
+sector_t* GetBestBleedSector(sector_t* source, enum bleedtype type);
 
 void gld_DrawMapLines(void);
-
-//skybox
-int R_BoxSkyboxNumForName(const char *name);
-void R_SetBoxSkybox(int texture);
 
 //multisampling
 void gld_MultisamplingInit(void);
@@ -199,7 +176,6 @@ void gld_AddNiceThing(int type, float x, float y, float radius, float angle,
 void gld_DrawNiceThings(int fx, int fy, int fw, int fh);
 void gld_ClearNiceThings(void);
 
-extern int gl_fog;
 extern int gl_render_fov;
 
 #endif // _GL_STRUCT_H

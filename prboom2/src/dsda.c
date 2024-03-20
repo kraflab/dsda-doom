@@ -39,6 +39,7 @@
 #include "dsda/settings.h"
 #include "dsda/split_tracker.h"
 #include "dsda/tracker.h"
+#include "dsda/wad_stats.h"
 #include "dsda.h"
 
 #define TELEFRAG_DAMAGE 10000
@@ -224,7 +225,7 @@ void dsda_DecomposeMovieTime(dsda_movie_time_t* total_time) {
 }
 
 void dsda_DisplayNotification(const char* msg) {
-  S_StartSound(0, gamemode == commercial ? sfx_radio : sfx_itmbk);
+  S_StartVoidSound(gamemode == commercial ? sfx_radio : sfx_itmbk);
   doom_printf("%s", msg);
 }
 
@@ -269,7 +270,7 @@ void dsda_WatchDamage(mobj_t* target, mobj_t* inflictor, mobj_t* source, int dam
       player_damage_last_tic += damage;
     }
 
-    if (target->type == MT_BARREL)
+    if (target->type == MT_BARREL || (heretic && target->type == HERETIC_MT_POD))
       target->intflags |= MIF_PLAYER_DAMAGED_BARREL;
     else if (!target->player)
       dsda_pacifist = false;
@@ -296,10 +297,14 @@ void dsda_WatchDeath(mobj_t* thing) {
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
   if (target->intflags & MIF_SPAWNED_BY_ICON) player->maxkilldiscount++;
+  dsda_WadStatsKill();
 }
 
-void dsda_WatchResurrection(mobj_t* target) {
+void dsda_WatchResurrection(mobj_t* target, mobj_t* raiser) {
   int i;
+
+  if (raiser && raiser->intflags & MIF_SPAWNED_BY_ICON)
+    target->intflags |= MIF_SPAWNED_BY_ICON;
 
   if (
     (
@@ -422,6 +427,9 @@ void dsda_WatchAfterLevelSetup(void) {
   dsda_SpawnGhost();
   dsda_ResetTrackers();
   dsda_ResetLineActivationTracker();
+  dsda_WadStatsEnterMap();
+  player_damage_last_tic = 0;
+  player_damage_leveltime = 0;
 }
 
 void dsda_WatchNewLevel(void) {
@@ -434,6 +442,7 @@ void dsda_WatchLevelCompletion(void) {
   int i;
   int secret_count = 0;
   int kill_count = 0;
+  int missed_monsters = 0;
 
   for (th = thinkercap.next; th != &thinkercap; th = th->next) {
     if (th->function != P_MobjThinker) continue;
@@ -446,7 +455,7 @@ void dsda_WatchLevelCompletion(void) {
       && !(mobj->intflags & MIF_SPAWNED_BY_ICON) \
       && mobj->health > 0
     ) {
-      ++dsda_missed_monsters;
+      ++missed_monsters;
     }
 
     if (dsda_IsWeapon(mobj)) {
@@ -454,6 +463,8 @@ void dsda_WatchLevelCompletion(void) {
       dsda_weapon_collector = false;
     }
   }
+
+  dsda_missed_monsters += missed_monsters;
 
   for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i]) continue;
@@ -474,6 +485,7 @@ void dsda_WatchLevelCompletion(void) {
   dsda_any_map_completed = true;
 
   dsda_RecordSplit();
+  dsda_WadStatsExitMap(missed_monsters);
 }
 
 dboolean dsda_IsWeapon(mobj_t* thing) {
@@ -508,7 +520,7 @@ static void dsda_ResetTracking(void) {
   dsda_pacifist_note_shown = false;
 }
 
-void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
+void dsda_WatchDeferredInitNew(int skill, int episode, int map) {
   if (!demorecording) return;
 
   ++dsda_session_attempts;
@@ -525,7 +537,8 @@ void dsda_WatchDeferredInitNew(skill_t skill, int episode, int map) {
 
   dsda_InitDemoRecording();
 
-  basetic = gametic;
+  boom_basetic = gametic;
+  true_basetic = gametic;
 }
 
 void dsda_WatchNewGame(void) {

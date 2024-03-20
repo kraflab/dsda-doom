@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -46,8 +46,8 @@
 dboolean G_Responder(event_t *ev);
 dboolean G_CheckDemoStatus(void);
 void G_DeathMatchSpawnPlayer(int playernum);
-void G_InitNew(skill_t skill, int episode, int map, dboolean prepare);
-void G_DeferedInitNew(skill_t skill, int episode, int map);
+void G_InitNew(int skill, int episode, int map, dboolean prepare);
+void G_DeferedInitNew(int skill, int episode, int map);
 void G_DeferedPlayDemo(const char *demo); // CPhipps - const
 void G_LoadGame(int slot); // killough 5/15/98
 void G_ForcedLoadGame(void);           // killough 5/15/98: forced loadgames
@@ -59,9 +59,8 @@ void G_SecretExitLevel(int position);
 void G_WorldDone(void);
 void G_EndGame(void); /* cph - make m_menu.c call a G_* function for this */
 void G_Ticker(void);
-void G_ScreenShot(void);
 void G_ReloadDefaults(void);     // killough 3/1/98: loads game defaults
-void G_SetFastParms(int);        // killough 4/10/98: sets -fast parameters
+void G_RefreshFastMonsters(void); // killough 4/10/98: sets -fast parameters
 void G_DoNewGame(void);
 void G_DoReborn(int playernum);
 void G_StartDemoPlayback(const byte *buffer, int length, int behaviour);
@@ -125,12 +124,8 @@ extern int longtics;
 // automatic pistol start when advancing from one level to the next
 extern int pistolstart;
 
-#define singleplayer (!demorecording && !demoplayback && !netgame)
-#define comperr(i) (default_comperr[i] && singleplayer)
-
 // hexen
 
-void G_TeleportNewMap(int map, int position);
 void G_Completed(int map, int position, int flags, angle_t angle);
 
 #endif

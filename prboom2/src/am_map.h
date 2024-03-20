@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -58,11 +58,6 @@ extern array_t map_lines;
 #define MAPBITS 12
 #define FRACTOMAPBITS (FRACBITS-MAPBITS)
 
-// Used by ST StatusBar stuff.
-#define AM_MSGHEADER (('a'<<24)+('m'<<16))
-#define AM_MSGENTERED (AM_MSGHEADER | ('e'<<8))
-#define AM_MSGEXITED (AM_MSGHEADER | ('x'<<8))
-
 // Called by main loop.
 dboolean AM_Responder (event_t* ev);
 
@@ -71,15 +66,15 @@ void AM_Ticker (void);
 
 // Called by main loop,
 // called instead of view drawer if automap active.
-void AM_Drawer (void);
+void AM_Drawer (dboolean minimap);
 
 // Called to force the automap to quit
 // if the level is completed while it is up.
-void AM_Stop (void);
+void AM_Stop (dboolean minimap);
 
 // killough 2/22/98: for saving automap information in savegame:
 
-void AM_Start(void);
+void AM_Start(dboolean full_automap);
 
 //jff 4/16/98 make externally available
 

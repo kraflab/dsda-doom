@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*-
+// Emacs style mode select   -*- C -*-
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 2009 Simon Howard
@@ -66,7 +66,9 @@ typedef enum
     MIDI_CONTROLLER_DATA_ENTRY      = 0x5,
 
     MIDI_CONTROLLER_MAIN_VOLUME     = 0x7,
-    MIDI_CONTROLLER_PAN             = 0xa
+    MIDI_CONTROLLER_PAN             = 0xa,
+
+    MIDI_CONTROLLER_ALL_NOTES_OFF   = 0x7b
 } midi_controller_t;
 
 typedef enum
@@ -187,7 +189,5 @@ void MIDI_DestroyFlatList (midi_event_t **evs);
 
 // NSM: timing calculator
 double MIDI_spmc (const midi_file_t *file, const midi_event_t *ev, unsigned sndrate);
-
-midi_file_t *MIDI_LoadFileSpecial (midimem_t *mf);
 
 #endif /* #ifndef MIDIFILE_H */

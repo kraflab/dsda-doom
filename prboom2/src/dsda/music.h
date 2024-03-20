@@ -25,4 +25,8 @@ int dsda_GetOriginalMusicIndex(const char* key);
 void dsda_InitializeMusic(musicinfo_t* source, int count);
 void dsda_FreeDehMusic(void);
 
+void dsda_ArchiveMusic(void);
+void dsda_UnArchiveMusic(void);
+dboolean dsda_StartQueuedMusic(void);
+
 #endif

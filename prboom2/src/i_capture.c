@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -36,6 +36,7 @@
 #include "i_sound.h"
 #include "i_video.h"
 #include "lprintf.h"
+#include "m_file.h"
 #include "i_system.h"
 #include "i_capture.h"
 
@@ -453,7 +454,7 @@ static int threadstdoutproc (void *data)
 
   pipeinfo_t *p = (pipeinfo_t *) data;
 
-  FILE *f = fopen (p->stdoutdumpname, "w");
+  FILE *f = M_OpenFile(p->stdoutdumpname, "w");
 
   if (!f || !p->f_stdout)
     return 0;
@@ -473,7 +474,7 @@ static int threadstderrproc (void *data)
 
   pipeinfo_t *p = (pipeinfo_t *) data;
 
-  FILE *f = fopen (p->stderrdumpname, "w");
+  FILE *f = M_OpenFile(p->stderrdumpname, "w");
 
   if (!f || !p->f_stderr)
     return 0;
@@ -646,7 +647,7 @@ void I_CaptureFinish (void)
     cap_tempfile1 = dsda_StringConfig(dsda_config_cap_tempfile1);
     cap_tempfile2 = dsda_StringConfig(dsda_config_cap_tempfile2);
 
-    remove (cap_tempfile1);
-    remove (cap_tempfile2);
+    M_remove (cap_tempfile1);
+    M_remove (cap_tempfile2);
   }
 }

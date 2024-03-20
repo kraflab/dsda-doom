@@ -19,7 +19,6 @@
 #include "d_ticcmd.h"
 #include "tables.h"
 
-angle_t dsda_BuildModeViewAngleOffset(void);
 dboolean dsda_AllowBuilding(void);
 dboolean dsda_BuildMode(void);
 void dsda_QueueBuildCommands(ticcmd_t* cmds, int depth);
@@ -27,6 +26,7 @@ dboolean dsda_BuildPlayback(void);
 void dsda_CopyBuildCmd(ticcmd_t* cmd);
 void dsda_ReadBuildCmd(ticcmd_t* cmd);
 void dsda_EnterBuildMode(void);
+void dsda_RefreshBuildMode(void);
 dboolean dsda_BuildResponder(event_t *ev);
 void dsda_ToggleBuildTurbo(void);
 dboolean dsda_AdvanceFrame(void);

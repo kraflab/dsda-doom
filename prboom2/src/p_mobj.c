@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -55,9 +55,15 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/ambient.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
+#include "dsda/settings.h"
+#include "dsda/skill_info.h"
 #include "dsda/spawn_number.h"
 #include "dsda/thing_id.h"
+#include "dsda/tranmap.h"
+#include "dsda/utility.h"
 
 #include "heretic/def.h"
 #include "heretic/sb_bar.h"
@@ -166,7 +172,7 @@ void P_ExplodeMissile (mobj_t* mo)
   if (!hexen)
   {
     if (mo->info->deathsound)
-      S_StartSound(mo, mo->info->deathsound);
+      S_StartMobjSound(mo, mo->info->deathsound);
   }
   else
   {
@@ -175,14 +181,14 @@ void P_ExplodeMissile (mobj_t* mo)
       case HEXEN_MT_SORCBALL1:
       case HEXEN_MT_SORCBALL2:
       case HEXEN_MT_SORCBALL3:
-        S_StartSound(NULL, hexen_sfx_sorcerer_bigballexplode);
+        S_StartVoidSound(hexen_sfx_sorcerer_bigballexplode);
         break;
       case HEXEN_MT_SORCFX1:
-        S_StartSound(NULL, hexen_sfx_sorcerer_headscream);
+        S_StartVoidSound(hexen_sfx_sorcerer_headscream);
         break;
       default:
         if (mo->info->deathsound)
-          S_StartSound(mo, mo->info->deathsound);
+          S_StartMobjSound(mo, mo->info->deathsound);
         break;
     }
   }
@@ -366,7 +372,7 @@ static void P_XYMovement (mobj_t* mo)
       }
       else if (player || mo->flags2 & MF2_SLIDE) // try to slide along it
       {
-        if (BlockingMobj == NULL)
+        if (BlockingMobj == NULL || map_format.zdoom)
         {
           P_SlideMove(mo);
         }
@@ -408,7 +414,7 @@ static void P_XYMovement (mobj_t* mo)
               mo->momy = FixedMul(speed, finesine[angle]);
               if (mo->info->seesound)
               {
-                S_StartSound(mo, mo->info->seesound);
+                S_StartMobjSound(mo, mo->info->seesound);
               }
               return;
             }
@@ -430,7 +436,7 @@ static void P_XYMovement (mobj_t* mo)
               default:
                 if (mo->info->seesound)
                 {
-                  S_StartSound(mo, mo->info->seesound);
+                  S_StartMobjSound(mo, mo->info->seesound);
                 }
                 break;
             }
@@ -520,6 +526,19 @@ static void P_XYMovement (mobj_t* mo)
   if (mo->flags & (MF_MISSILE | MF_SKULLFLY))
     return;
 
+  if (
+    mo->z > mo->floorz && !(mo->flags2 & MF2_ONMOBJ) && !(mo->flags & MF_FLY) &&
+    player && mo->player && map_info.air_control > 256
+  )
+  {
+    mo->momx = FixedMul(mo->momx, map_info.air_friction);
+    mo->momy = FixedMul(mo->momy, map_info.air_friction);
+
+    player->momx = FixedMul(player->momx, map_info.air_friction);
+    player->momy = FixedMul(player->momy, map_info.air_friction);
+    return;
+  }
+
   if (mo->z > mo->floorz &&
       !(mo->flags & MF_FLY) &&
       !(mo->flags2 & MF2_FLY) &&
@@ -554,6 +573,7 @@ static void P_XYMovement (mobj_t* mo)
   if (
     mo->momx > -STOPSPEED && mo->momx < STOPSPEED &&
     mo->momy > -STOPSPEED && mo->momy < STOPSPEED &&
+    !(map_format.zdoom && mo->intflags & MIF_SCROLLING) &&
     (
       !player ||
       !(player->cmd.forwardmove | player->cmd.sidemove) ||
@@ -687,6 +707,20 @@ static void P_XYMovement (mobj_t* mo)
   }
 }
 
+fixed_t P_MobjGravity(mobj_t* mo)
+{
+  return FixedMul(mo->subsector->sector->gravity, mo->gravity);
+}
+
+void P_AutoCorrectLookDir(player_t* player)
+{
+  if (allow_incompatibility && dsda_MouseLook())
+  {
+    return;
+  }
+
+  player->centering = true;
+}
 
 //
 // P_ZMovement
@@ -695,7 +729,7 @@ static void P_XYMovement (mobj_t* mo)
 
 static void P_ZMovement (mobj_t* mo)
 {
-  fixed_t gravity = mo->subsector->sector->gravity;
+  fixed_t gravity = P_MobjGravity(mo);
 
   /* killough 7/11/98:
    * BFG fireballs bounced on floors and ceilings in Pre-Beta Doom
@@ -952,8 +986,8 @@ floater:
 
           if (heretic)
           {
-            S_StartSound(mo, heretic_sfx_plroof);
-            mo->player->centering = true;
+            S_StartMobjSound(mo, heretic_sfx_plroof);
+            P_AutoCorrectLookDir(mo->player);
           }
           else if (hexen)
           {
@@ -964,17 +998,17 @@ floater:
             }
             else if (mo->momz < -gravity * 12 && !mo->player->morphTics)
             {
-              S_StartSound(mo, hexen_sfx_player_land);
+              S_StartMobjSound(mo, hexen_sfx_player_land);
               switch (mo->player->pclass)
               {
                 case PCLASS_FIGHTER:
-                  S_StartSound(mo, hexen_sfx_player_fighter_grunt);
+                  S_StartMobjSound(mo, hexen_sfx_player_fighter_grunt);
                   break;
                 case PCLASS_CLERIC:
-                  S_StartSound(mo, hexen_sfx_player_cleric_grunt);
+                  S_StartMobjSound(mo, hexen_sfx_player_cleric_grunt);
                   break;
                 case PCLASS_MAGE:
-                  S_StartSound(mo, hexen_sfx_player_mage_grunt);
+                  S_StartMobjSound(mo, hexen_sfx_player_mage_grunt);
                   break;
                 default:
                   break;
@@ -982,9 +1016,9 @@ floater:
             }
             else if (P_GetThingFloorType(mo) < FLOOR_LIQUID && !mo->player->morphTics)
             {
-              S_StartSound(mo, hexen_sfx_player_land);
+              S_StartMobjSound(mo, hexen_sfx_player_land);
             }
-            mo->player->centering = true;
+            P_AutoCorrectLookDir(mo->player);
           }
           //e6y: compatibility optioned
           else if (comp[comp_sound] || (mo->health > 0)) /* cph - prevent "oof" when dead */
@@ -1021,7 +1055,7 @@ floater:
       return;
     }
   }
-  else if (mo->flags2 & MF2_LOGRAV || (mo->type == MT_GIBDTH && !demorecording && !demoplayback))
+  else if (mo->flags2 & MF2_LOGRAV)
   {
     if (mo->momz == 0)
       mo->momz = -(gravity >> 3) * 2;
@@ -1055,7 +1089,7 @@ floater:
     {
       if (mo->info->seesound)
       {
-        S_StartSound(mo, mo->info->seesound);
+        S_StartMobjSound(mo, mo->info->seesound);
       }
       return;
     }
@@ -1110,8 +1144,8 @@ static void P_NightmareRespawn(mobj_t* mobj)
   mobj_t*      mo;
   mapthing_t*  mthing;
 
-  x = mobj->spawnpoint.x << FRACBITS;
-  y = mobj->spawnpoint.y << FRACBITS;
+  x = mobj->spawnpoint.x;
+  y = mobj->spawnpoint.y;
 
   /* haleyjd: stupid nightmare respawning bug fix
    *
@@ -1263,7 +1297,14 @@ void P_MobjThinker (mobj_t* mobj)
       if (!(onmo = P_CheckOnmobj(mobj)))
       {
         P_ZMovement(mobj);
+
+        // This bug is part of the original source
         if (hexen && mobj->player && mobj->flags & MF2_ONMOBJ)
+        {
+          mobj->flags2 &= ~MF2_ONMOBJ;
+        }
+
+        if (map_format.zdoom)
         {
           mobj->flags2 &= ~MF2_ONMOBJ;
         }
@@ -1272,11 +1313,11 @@ void P_MobjThinker (mobj_t* mobj)
       {
         if (mobj->player)
         {
-          if (hexen)
+          if (map_format.hexen)
           {
-            fixed_t gravity = mobj->subsector->sector->gravity;
+            fixed_t gravity = P_MobjGravity(mobj);
 
-            if (mobj->momz < -gravity * 8 && !(mobj->flags2 & MF2_FLY))
+            if (hexen && mobj->momz < -gravity * 8 && !(mobj->flags2 & MF2_FLY))
             {
               PlayerLandedOnThing(mobj, onmo, gravity);
             }
@@ -1315,6 +1356,16 @@ void P_MobjThinker (mobj_t* mobj)
                 onmo->z = onmo->floorz;
               }
             }
+          }
+        }
+        else if (map_format.zdoom)
+        {
+          mobj->momz = 0;
+
+          if (onmo->z + onmo->height - mobj->z <= 24 * FRACUNIT)
+          {
+            mobj->z = onmo->z + onmo->height;
+            mobj->flags2 |= MF2_ONMOBJ;
           }
         }
       }
@@ -1373,12 +1424,12 @@ void P_MobjThinker (mobj_t* mobj)
     if (! (mobj->flags & MF_COUNTKILL) )
       return;
 
-    if (!respawnmonsters)
+    if (!skill_info.respawn_time)
       return;
 
     mobj->movecount++;
 
-    if (mobj->movecount < 12 * 35)
+    if (mobj->movecount < skill_info.respawn_time * 35)
       return;
 
     if (leveltime & 31)
@@ -1497,7 +1548,7 @@ dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_
 
           if (new_mobj->info->seesound)
           {
-            S_StartSound(new_mobj, new_mobj->info->seesound);
+            S_StartMobjSound(new_mobj, new_mobj->info->seesound);
           }
 
           if (gravity)
@@ -1597,7 +1648,7 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
         mobj_t *fog_mobj;
         fog_mobj = P_SpawnMobj(spawn_location->x, spawn_location->y,
                               spawn_location->z + TELEFOGHEIGHT, g_mt_tfog);
-        S_StartSound(fog_mobj, g_sfx_telept);
+        S_StartMobjSound(fog_mobj, g_sfx_telept);
       }
       if (new_thing_id)
         dsda_AddMobjThingID(new_mobj, new_thing_id);
@@ -1607,6 +1658,32 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
   }
 
   return success;
+}
+
+int P_MobjSpawnHealth(const mobj_t* mobj)
+{
+  int result;
+
+  if (mobj->type == MT_SKULL || mobj->flags & MF_COUNTKILL)
+  {
+    if (mobj->flags & MF_FRIEND)
+    {
+      if (skill_info.friend_health_factor)
+      {
+        result = FixedMul(mobj->info->spawnhealth, skill_info.friend_health_factor);
+
+        return result > 0 ? result : 1;
+      }
+    }
+    else if (skill_info.monster_health_factor)
+    {
+      result = FixedMul(mobj->info->spawnhealth, skill_info.monster_health_factor);
+
+      return result > 0 ? result : 1;
+    }
+  }
+
+  return mobj->info->spawnhealth;
 }
 
 //
@@ -1638,12 +1715,16 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
     if (type == g_mt_player)         // Except in old demos, players
       mobj->flags |= MF_FRIEND;    // are always friends.
 
-  mobj->health = info->spawnhealth;
+  if (map_info.flags & MI_PASSOVER && mobj->flags & MF_SOLID)
+    mobj->flags2 |= MF2_PASSMOBJ;
 
-  if (gameskill != sk_nightmare)
+  mobj->health = P_MobjSpawnHealth(mobj);
+
+  if (!(skill_info.flags & SI_INSTANT_REACTION))
     mobj->reactiontime = info->reactiontime;
 
-  mobj->lastlook = P_Random (pr_lastlook) % g_maxplayers;
+  if (type != ZMT_AMBIENTSOUND)
+    mobj->lastlook = P_Random (pr_lastlook) % g_maxplayers;
 
   // do not set the state with P_SetMobjState,
   // because action routines can not be called yet
@@ -1732,6 +1813,8 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
 
   //e6y
   mobj->friction = ORIG_FRICTION;                        // phares 3/17/98
+  mobj->gravity = map_info.gravity;
+  mobj->alpha = 1.f;
   mobj->index = -1;
 
   mobj->target = mobj->tracer = mobj->lastenemy = NULL;
@@ -1834,8 +1917,7 @@ void P_RemoveMobj (mobj_t* mobj)
   // CPhipps - only leave dead references in old demos; I hope lxdoom_1 level
   // demos are rare and don't rely on this. I hope.
 
-  if ((compatibility_level >= lxdoom_1_compatibility) ||
-      (!demorecording && !demoplayback)) {
+  if (compatibility_level >= lxdoom_1_compatibility || allow_incompatibility) {
     P_SetTarget(&mobj->target,    NULL);
     P_SetTarget(&mobj->tracer,    NULL);
     P_SetTarget(&mobj->lastenemy, NULL);
@@ -1843,6 +1925,31 @@ void P_RemoveMobj (mobj_t* mobj)
   // free block
 
   P_RemoveThinker (&mobj->thinker);
+}
+
+void P_RemoveMonsters(void)
+{
+  thinker_t *th;
+  mobj_t *mobj;
+
+  for (th = thinkercap.next; th != &thinkercap; th = th->next)
+  {
+    if (th->function != P_MobjThinker)
+      continue;
+
+    mobj = (mobj_t *) th;
+    if (mobj->player)
+      continue;
+
+    if (
+      mobj->type == MT_SKULL ||
+      mobj->flags & MF_COUNTKILL ||
+      (mobj->target && !mobj->target->player)
+    )
+      P_RemoveMobj(mobj);
+  }
+
+  P_CleanThinkers();
 }
 
 //
@@ -1876,8 +1983,8 @@ void P_RespawnSpecials (void)
 
   mthing = &itemrespawnque[iquetail];
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   // spawn a teleport fog at the new spot
 
@@ -1947,8 +2054,8 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   if (!mthing->options)
     I_Error("P_SpawnPlayer: attempt to spawn player at unavailable start point");
 
-  x    = mthing->x << FRACBITS;
-  y    = mthing->y << FRACBITS;
+  x    = mthing->x;
+  y    = mthing->y;
   z    = ONFLOORZ;
 
   if (hexen)
@@ -1986,6 +2093,9 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else
     mobj = P_SpawnMobj(x,y,z, g_mt_player);
 
+  if (map_info.flags & MI_USE_PLAYER_START_Z)
+    mobj->z += mthing->height;
+
   // set color translations for player sprites
   if (hexen)
   {
@@ -2018,7 +2128,6 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   p->mo            = mobj;
   p->playerstate   = PST_LIVE;
   p->refire        = 0;
-  p->message       = NULL;
   p->damagecount   = 0;
   p->bonuscount    = 0;
   p->poisoncount   = 0;
@@ -2047,12 +2156,6 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   }
   else if (p == &players[consoleplayer])
     playerkeys = 0;
-
-  if (mthing->type - 1 == consoleplayer)
-  {
-    ST_Start(); // wake up the status bar
-    HU_Start(); // wake up the heads up text
-  }
 
   R_SmoothPlaying_Reset(p); // e6y
 }
@@ -2093,14 +2196,139 @@ dboolean P_IsDoomnumAllowed(int doomnum)
 
 static dboolean P_ShouldSpawnPlayer(const mapthing_t* mthing)
 {
-  return !deathmatch &&
-         (map_format.zdoom ? mthing->arg1 == leave_data.position : !mthing->arg1);
+  return !deathmatch && (map_format.zdoom ?
+                         mthing->special_args[0] == leave_data.position :
+                         !mthing->special_args[0]);
+}
+
+static dboolean P_ShouldSpawnMapThing(int options)
+{
+  unsigned int spawnMask;
+  dboolean spawn_multi;
+
+  spawn_multi = skill_info.flags & SI_SPAWN_MULTI;
+
+  if (map_format.hexen)
+  {
+    // Check current game type with spawn flags
+    if (netgame == false)
+    {
+      spawnMask = MTF_GSINGLE;
+
+      if (spawn_multi)
+        spawnMask |= MTF_GCOOP;
+    }
+    else if (deathmatch)
+    {
+      spawnMask = MTF_GDEATHMATCH;
+    }
+    else
+    {
+      spawnMask = MTF_GCOOP;
+    }
+
+    if (!(options & spawnMask))
+    {
+      return false;
+    }
+  }
+  else
+  {
+    /* jff "not single" thing flag */
+    if (!spawn_multi && !netgame && options & MTF_NOTSINGLE)
+      return false;
+
+    //jff 3/30/98 implement "not deathmatch" thing flag
+    if (netgame && deathmatch && options & MTF_NOTDM)
+      return false;
+
+    //jff 3/30/98 implement "not cooperative" thing flag
+    if ((spawn_multi || netgame) && !deathmatch && options & MTF_NOTCOOP)
+      return false;
+  }
+
+  // check for appropriate skill level
+  if (
+    skill_info.spawn_filter == 1 ? !(options & MTF_SKILL1) :
+    skill_info.spawn_filter == 2 ? !(options & MTF_SKILL2) :
+    skill_info.spawn_filter == 3 ? !(options & MTF_SKILL3) :
+    skill_info.spawn_filter == 4 ? !(options & MTF_SKILL4) :
+                                   !(options & MTF_SKILL5)
+  )
+    return false;
+
+  if (hexen)
+  {
+    static unsigned int classFlags[] = {
+      0, // null class
+      MTF_FIGHTER,
+      MTF_CLERIC,
+      MTF_MAGE
+    };
+
+    int i;
+
+    // Check current character classes with spawn flags
+    if (netgame == false)
+    {                           // Single player
+      if ((options & classFlags[PlayerClass[0]]) == 0)
+      {                       // Not for current class
+        return false;
+      }
+    }
+    else if (deathmatch == false)
+    {                           // Cooperative
+      spawnMask = 0;
+      for (i = 0; i < g_maxplayers; i++)
+      {
+        if (playeringame[i])
+        {
+          spawnMask |= classFlags[PlayerClass[i]];
+        }
+      }
+      if ((options & spawnMask) == 0)
+      {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+void P_TrySpawnPlayer(const mapthing_t *mthing, int player)
+{
+  mapthing_t *player_start;
+
+  player_start = &playerstarts[mthing->special_args[0]][player];
+  *player_start = *mthing;
+  player_start->type = player + 1;
+
+  /* cph 2006/07/24 - use the otherwise-unused options field to flag that
+   * this start is present (so we know which elements of the array are filled
+   * in, in effect). Also note that the call below to P_SpawnPlayer must use
+   * the playerstarts version with this field set */
+  player_start->options = 1;
+
+  if (P_ShouldSpawnPlayer(mthing))
+    P_SpawnPlayer(player, player_start);
+}
+
+static int P_TypeToPlayer(int type)
+{
+  if (type <= 4 && type > 0)
+    return type - 1;
+
+  if (map_format.hexen && type >= 9100 && type <= 9103)
+    return 4 + type - 9100;
+
+  return -1;
 }
 
 mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 {
   int     i;
-  unsigned int spawnMask;
+  int player;
   mobj_t* mobj;
   fixed_t x;
   fixed_t y;
@@ -2108,12 +2336,6 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   int options = mthing->options; /* cph 2001/07/07 - make writable copy */
   short thingtype = mthing->type;
   int iden_num = 0;
-  static unsigned int classFlags[] = {
-    0, // null class
-    MTF_FIGHTER,
-    MTF_CLERIC,
-    MTF_MAGE
-  };
 
   // killough 2/26/98: Ignore type-0 things as NOPs
   // phares 5/14/98: Ignore Player 5-8 starts (for now)
@@ -2152,7 +2374,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   {
     if (!demo_compatibility) // cph - Add warning about bad thing flags
       lprintf(LO_WARN, "P_SpawnMapThing: correcting bad flags (%u) (thing type %d)\n", options, thingtype);
-    options &= MTF_EASY|MTF_NORMAL|MTF_HARD|MTF_AMBUSH|MTF_NOTSINGLE;
+    options &= MTF_SKILL1|MTF_SKILL2|MTF_SKILL3|MTF_SKILL4|MTF_SKILL5|MTF_AMBUSH|MTF_NOTSINGLE;
   }
 
   // count deathmatch start positions
@@ -2192,20 +2414,20 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   }
 
   // check for players specially
-
-  if (thingtype <= 4 && thingtype > 0)  // killough 2/26/98 -- fix crashes
+  if ((player = P_TypeToPlayer(thingtype)) >= 0)
   {
-    int start = 0;
+    if (map_info.flags & MI_FILTER_STARTS)
+      if (!P_ShouldSpawnMapThing(options))
+        return NULL;
 
     // killough 7/19/98: Marine's best friend :)
     if (
       !netgame &&
-      thingtype > 1 &&
-      thingtype <= dogs + 1 &&
-      !players[thingtype - 1].secretcount
+      player > 0 && player <= dogs &&
+      !players[player].secretcount
     )
     {  // use secretcount to avoid multiple dogs in case of multiple starts
-      players[thingtype - 1].secretcount = 1;
+      players[player].secretcount = 1;
 
       // killough 10/98: force it to be a friend
       options |= (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND);
@@ -2228,19 +2450,8 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
       goto spawnit;
     }
 
-    if (map_format.hexen)
-      start = mthing->arg1;
+    P_TrySpawnPlayer(mthing, player);
 
-    // save spots for respawning in coop games
-    playerstarts[start][thingtype - 1] = *mthing;
-    /* cph 2006/07/24 - use the otherwise-unused options field to flag that
-     * this start is present (so we know which elements of the array are filled
-     * in, in effect). Also note that the call below to P_SpawnPlayer must use
-     * the playerstarts version with this field set */
-    playerstarts[start][thingtype - 1].options = 1;
-
-    if (P_ShouldSpawnPlayer(mthing))
-      P_SpawnPlayer(thingtype - 1, &playerstarts[start][thingtype - 1]);
     return NULL;
   }
 
@@ -2257,7 +2468,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
     // Check for boss spots
     if (mthing->type == 56)     // Monster_BossSpot
     {
-      P_AddBossSpot(mthing->x << FRACBITS, mthing->y << FRACBITS,
+      P_AddBossSpot(mthing->x, mthing->y,
                     ANG45 * (mthing->angle / 45));
       return NULL;
     }
@@ -2265,118 +2476,40 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
   if (map_format.hexen)
   {
-    // Check for player starts 5 to 8
-    if (mthing->type >= 9100 && mthing->type <= 9103)
-    {
-      mapthing_t *player_start;
-      int player;
-
-      player = 4 + mthing->type - 9100;
-
-      player_start = &playerstarts[mthing->arg1][player];
-      memcpy(player_start, mthing, sizeof(mapthing_t));
-      player_start->type = player + 1;
-
-      if (P_ShouldSpawnPlayer(mthing))
-      {
-        P_SpawnPlayer(player_start->type - 1, player_start);
-      }
-      return NULL;
-    }
-
     if (mthing->type >= 1400 && mthing->type < 1410)
     {
       R_PointInSubsector(
-        mthing->x << FRACBITS,
-        mthing->y << FRACBITS
+        mthing->x, mthing->y
       )->sector->seqType = mthing->type - 1400;
       return NULL;
     }
-
-    // Check current game type with spawn flags
-    if (netgame == false)
-    {
-      spawnMask = MTF_GSINGLE;
-    }
-    else if (deathmatch)
-    {
-      spawnMask = MTF_GDEATHMATCH;
-    }
-    else
-    {
-      spawnMask = MTF_GCOOP;
-    }
-    if (!(options & spawnMask))
-    {
-      return NULL;
-    }
-  }
-  else
-  {
-    /* jff "not single" thing flag */
-    if (!coop_spawns && !netgame && options & MTF_NOTSINGLE)
-      return NULL;
-
-    //jff 3/30/98 implement "not deathmatch" thing flag
-
-    if (netgame && deathmatch && options & MTF_NOTDM)
-      return NULL;
-
-    //jff 3/30/98 implement "not cooperative" thing flag
-
-    if ((coop_spawns || netgame) && !deathmatch && options & MTF_NOTCOOP)
-      return NULL;
   }
 
-  // check for apropriate skill level
-
-  // killough 11/98: simplify
-  if (gameskill == sk_baby || gameskill == sk_easy ?
-      !(options & MTF_EASY) :
-      gameskill == sk_hard || gameskill == sk_nightmare ?
-      !(options & MTF_HARD) :
-      !(options & MTF_NORMAL))
+  if (!P_ShouldSpawnMapThing(options))
     return NULL;
+
+  if (!raven && thingtype >= 14001 && thingtype <= 14064)
+  {
+    iden_num = thingtype - 14000; // Ambient sound id
+    thingtype = 14064; // ZMT_AMBIENTSOUND
+  }
+
+  if (!raven && thingtype == 14065)
+  {
+    iden_num = mthing->special_args[0]; // Ambient sound id
+    thingtype = 14064; // ZMT_AMBIENTSOUND
+  }
 
   if (!raven && thingtype >= 14100 && thingtype <= 14164)
   {
-    // Use the ambient number
     iden_num = thingtype - 14100; // Mus change
     thingtype = 14164;            // MT_MUSICSOURCE
   }
 
   if (!raven && thingtype == 14165 && map_format.hexen)
   {
-    // Use the ambient number
-    iden_num = BETWEEN(0, 64, mthing->arg1); // Mus change
+    iden_num = BETWEEN(0, 64, mthing->special_args[0]); // Mus change
     thingtype = 14164;            // MT_MUSICSOURCE
-  }
-
-  if (hexen)
-  {
-    // Check current character classes with spawn flags
-    if (netgame == false)
-    {                           // Single player
-      if ((options & classFlags[PlayerClass[0]]) == 0)
-      {                       // Not for current class
-        return NULL;
-      }
-    }
-    else if (deathmatch == false)
-    {                           // Cooperative
-      spawnMask = 0;
-      for (i = 0; i < g_maxplayers; i++)
-      {
-        if (playeringame[i])
-        {
-          spawnMask |= classFlags[PlayerClass[i]];
-        }
-      }
-      if ((options & spawnMask) == 0)
-      {
-        return NULL;
-      }
-    }
   }
 
   // find which type to spawn
@@ -2413,15 +2546,15 @@ spawnit:
     return NULL;
   }
 
-  x = mthing->x << FRACBITS;
-  y = mthing->y << FRACBITS;
+  x = mthing->x;
+  y = mthing->y;
 
   if (mobjinfo[i].flags & MF_SPAWNCEILING)
     z = ONCEILINGZ;
   else if (mobjinfo[i].flags2 & MF2_SPAWNFLOAT)
     z = FLOATRANDZ;
   else if (hexen && mobjinfo[i].flags2 & MF2_FLOATBOB)
-    z = mthing->height << FRACBITS;
+    z = mthing->height;
   else
     z = ONFLOORZ;
 
@@ -2429,6 +2562,39 @@ spawnit:
     P_SpawnMobj(x, y, ONFLOORZ, HEXEN_MT_BLOODPOOL);
 
   mobj = P_SpawnMobj (x, y, z, i);
+
+  if (!(mobj->flags & MF_FRIEND) &&
+      options & (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND) &&
+      mbf_features)
+  {
+    mobj->flags |= MF_FRIEND;            // killough 10/98:
+    P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
+
+    // Friends can have a different spawn health
+    mobj->health = P_MobjSpawnHealth(mobj);
+  }
+
+  if (mthing->health != FRACUNIT)
+  {
+    if (mthing->health < 0)
+      mobj->health = -mthing->health >> FRACBITS;
+    else
+      mobj->health = FixedMul(mobj->health, mthing->health);
+  }
+
+  if (mthing->gravity != FRACUNIT)
+  {
+    if (mthing->gravity < 0)
+      mobj->gravity = -mthing->gravity;
+    else
+      mobj->gravity = FixedMul(map_info.gravity, mthing->gravity);
+  }
+
+  mobj->alpha = mthing->alpha;
+  if (mobj->alpha < 1.f)
+    mobj->tranmap = dsda_TranMap(dsda_FloatToPercent(mobj->alpha));
+  else
+    mobj->tranmap = NULL;
 
   mobj->spawnpoint = *mthing; // heretic_note: this is only done with totalkills++ in heretic
   mobj->index = index;//e6y
@@ -2438,37 +2604,29 @@ spawnit:
   {
     if (z == ONFLOORZ)
     {
-      mobj->z += mthing->height << FRACBITS;
+      mobj->z += mthing->height;
     }
     else if (z == ONCEILINGZ)
     {
-      mobj->z -= mthing->height << FRACBITS;
+      mobj->z -= mthing->height;
     }
     mobj->tid = mthing->tid;
     mobj->special = mthing->special;
-    mobj->args[0] = mthing->arg1;
-    mobj->args[1] = mthing->arg2;
-    mobj->args[2] = mthing->arg3;
-    mobj->args[3] = mthing->arg4;
-    mobj->args[4] = mthing->arg5;
+    mobj->special_args[0] = mthing->special_args[0];
+    mobj->special_args[1] = mthing->special_args[1];
+    mobj->special_args[2] = mthing->special_args[2];
+    mobj->special_args[3] = mthing->special_args[3];
+    mobj->special_args[4] = mthing->special_args[4];
   }
 
   if (mobj->flags2 & MF2_FLOATBOB)
   {                           // Seed random starting index for bobbing motion
     mobj->health = P_Random(pr_heretic);
-    if (hexen) mobj->special1.i = mthing->height << FRACBITS;
+    if (hexen) mobj->special1.i = mthing->height;
   }
 
   if (mobj->tics > 0)
     mobj->tics = 1 + (P_Random(pr_spawnthing) % mobj->tics);
-
-  if (!(mobj->flags & MF_FRIEND) &&
-      options & (map_format.zdoom ? MTF_FRIENDLY : MTF_FRIEND) &&
-      mbf_features)
-  {
-    mobj->flags |= MF_FRIEND;            // killough 10/98:
-    P_UpdateThinker(&mobj->thinker);     // transfer friendliness flag
-  }
 
   if (map_format.zdoom)
   {
@@ -2481,6 +2639,9 @@ spawnit:
       mobj->flags |= MF_NOSECTOR;
       P_SetThingPosition(mobj);
     }
+
+    if (options & MTF_COUNTSECRET)
+      P_AddMobjSecret(mobj);
   }
 
   /* killough 7/20/98: exclude friends */
@@ -2517,6 +2678,11 @@ spawnit:
         P_SetMobjState(mobj, HEXEN_S_ICEGUY_DORMANT);
       }
       mobj->tics = -1;
+  }
+
+  if (!raven && thingtype == 14064)
+  {
+    dsda_SpawnAmbientSource(mobj);
   }
 
   return mobj;
@@ -2680,7 +2846,7 @@ mobj_t* P_SpawnMissile(mobj_t* source,mobj_t* dest,mobjtype_t type)
   th = P_SpawnMobj(source->x, source->y, z, type);
 
   if (th->info->seesound)
-    S_StartSound(th, th->info->seesound);
+    S_StartMobjSound(th, th->info->seesound);
 
   P_SetTarget(&th->target, source);    // where it came from
   an = R_PointToAngle2(source->x, source->y, dest->x, dest->y);
@@ -2794,7 +2960,7 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
   MissileMobj = th = P_SpawnMobj(x, y, z, type);
 
   if (!hexen && th->info->seesound)
-    S_StartSound(th, th->info->seesound);
+    S_StartMobjSound(th, th->info->seesound);
 
   P_SetTarget(&th->target, source);
   th->angle = an;
@@ -2939,19 +3105,19 @@ void A_ContMobjSound(mobj_t * actor)
     switch (actor->type)
     {
         case HERETIC_MT_KNIGHTAXE:
-            S_StartSound(actor, heretic_sfx_kgtatk);
+            S_StartMobjSound(actor, heretic_sfx_kgtatk);
             break;
         case HERETIC_MT_MUMMYFX1:
-            S_StartSound(actor, heretic_sfx_mumhed);
+            S_StartMobjSound(actor, heretic_sfx_mumhed);
             break;
         case HEXEN_MT_SERPENTFX:
-            S_StartSound(actor, hexen_sfx_serpentfx_continuous);
+            S_StartMobjSound(actor, hexen_sfx_serpentfx_continuous);
             break;
         case HEXEN_MT_HAMMER_MISSILE:
-            S_StartSound(actor, hexen_sfx_fighter_hammer_continuous);
+            S_StartMobjSound(actor, hexen_sfx_fighter_hammer_continuous);
             break;
         case HEXEN_MT_QUAKE_FOCUS:
-            S_StartSound(actor, hexen_sfx_earthquake);
+            S_StartMobjSound(actor, hexen_sfx_earthquake);
             break;
         default:
             break;
@@ -2999,7 +3165,7 @@ mobj_t *P_SpawnMissileAngle(mobj_t * source, mobjtype_t type, angle_t angle, fix
     mo = P_SpawnMobj(source->x, source->y, z, type);
     if (mo->info->seesound)
     {
-        S_StartSound(mo, mo->info->seesound);
+        S_StartMobjSound(mo, mo->info->seesound);
     }
     P_SetTarget(&mo->target, source); // Originator
     mo->angle = angle;
@@ -3131,7 +3297,7 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     th = P_SpawnMobj(x, y, z, type);
     if (!hexen && th->info->seesound)
     {
-        S_StartSound(th, th->info->seesound);
+        S_StartMobjSound(th, th->info->seesound);
     }
     P_SetTarget(&th->target, source);
     th->angle = an;
@@ -3163,13 +3329,13 @@ int P_HitFloor(mobj_t * thing)
             mo->momx = P_SubRandom() << 8;
             mo->momy = P_SubRandom() << 8;
             mo->momz = 2 * FRACUNIT + (P_Random(pr_heretic) << 8);
-            S_StartSound(mo, heretic_sfx_gloop);
+            S_StartMobjSound(mo, heretic_sfx_gloop);
             return (FLOOR_WATER);
         case FLOOR_LAVA:
             P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASPLASH);
             mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_LAVASMOKE);
             mo->momz = FRACUNIT + (P_Random(pr_heretic) << 7);
-            S_StartSound(mo, heretic_sfx_burn);
+            S_StartMobjSound(mo, heretic_sfx_burn);
             return (FLOOR_LAVA);
         case FLOOR_SLUDGE:
             P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HERETIC_MT_SLUDGESPLASH);
@@ -3311,14 +3477,14 @@ void P_FloorBounceMissile(mobj_t * mo)
                 case HEXEN_MT_SORCBALL1:
                 case HEXEN_MT_SORCBALL2:
                 case HEXEN_MT_SORCBALL3:
-                    if (!mo->args[0])
-                        S_StartSound(mo, mo->info->seesound);
+                    if (!mo->special_args[0])
+                        S_StartMobjSound(mo, mo->info->seesound);
                     break;
                 default:
-                    S_StartSound(mo, mo->info->seesound);
+                    S_StartMobjSound(mo, mo->info->seesound);
                     break;
             }
-            S_StartSound(mo, mo->info->seesound);
+            S_StartMobjSound(mo, mo->info->seesound);
         }
     }
     else
@@ -3338,11 +3504,11 @@ void Raven_P_SpawnPuff(fixed_t x, fixed_t y, fixed_t z)
     puff = P_SpawnMobj(x, y, z, PuffType);
     if (hexen && linetarget && puff->info->seesound)
     {                           // Hit thing sound
-        S_StartSound(puff, puff->info->seesound);
+        S_StartMobjSound(puff, puff->info->seesound);
     }
     else if (puff->info->attacksound)
     {
-        S_StartSound(puff, puff->info->attacksound);
+        S_StartMobjSound(puff, puff->info->attacksound);
     }
     switch (PuffType)
     {
@@ -3463,17 +3629,17 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj, fixed_t gravity)
     }
     else if (mo->momz < -gravity * 12 && !mo->player->morphTics)
     {
-        S_StartSound(mo, hexen_sfx_player_land);
+        S_StartMobjSound(mo, hexen_sfx_player_land);
         switch (mo->player->pclass)
         {
             case PCLASS_FIGHTER:
-                S_StartSound(mo, hexen_sfx_player_fighter_grunt);
+                S_StartMobjSound(mo, hexen_sfx_player_fighter_grunt);
                 break;
             case PCLASS_CLERIC:
-                S_StartSound(mo, hexen_sfx_player_cleric_grunt);
+                S_StartMobjSound(mo, hexen_sfx_player_cleric_grunt);
                 break;
             case PCLASS_MAGE:
-                S_StartSound(mo, hexen_sfx_player_mage_grunt);
+                S_StartMobjSound(mo, hexen_sfx_player_mage_grunt);
                 break;
             default:
                 break;
@@ -3481,9 +3647,9 @@ static void PlayerLandedOnThing(mobj_t * mo, mobj_t * onmobj, fixed_t gravity)
     }
     else if (!mo->player->morphTics)
     {
-        S_StartSound(mo, hexen_sfx_player_land);
+        S_StartMobjSound(mo, hexen_sfx_player_land);
     }
-    mo->player->centering = true;
+    P_AutoCorrectLookDir(mo->player);
 }
 
 void P_CreateTIDList(void)
@@ -3625,7 +3791,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
                 if (mo)
                     mo->floorclip += SMALLSPLASHCLIP;
-                S_StartSound(mo, hexen_sfx_ambient10);        // small drip
+                S_StartMobjSound(mo, hexen_sfx_ambient10);        // small drip
             }
             else
             {
@@ -3637,7 +3803,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 mo = P_SpawnMobj(thing->x, thing->y, ONFLOORZ, HEXEN_MT_SPLASHBASE);
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
-                S_StartSound(mo, hexen_sfx_water_splash);
+                S_StartMobjSound(mo, hexen_sfx_water_splash);
             }
             return (FLOOR_WATER);
         case FLOOR_LAVA:
@@ -3655,7 +3821,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
             }
-            S_StartSound(mo, hexen_sfx_lava_sizzle);
+            S_StartMobjSound(mo, hexen_sfx_lava_sizzle);
             if (thing->player && leveltime & 31)
             {
                 P_DamageMobj(thing, &LavaInflictor, NULL, 5);
@@ -3682,7 +3848,7 @@ static int Hexen_P_HitFloor(mobj_t * thing)
                 if (thing->player)
                     P_NoiseAlert(thing, thing);
             }
-            S_StartSound(mo, hexen_sfx_sludge_gloop);
+            S_StartMobjSound(mo, hexen_sfx_sludge_gloop);
             return (FLOOR_SLUDGE);
     }
     return (FLOOR_SOLID);
@@ -3699,7 +3865,7 @@ mobj_t *P_SpawnMissileXYZ(fixed_t x, fixed_t y, fixed_t z,
     th = P_SpawnMobj(x, y, z, type);
     if (th->info->seesound)
     {
-        S_StartSound(th, th->info->seesound);
+        S_StartMobjSound(th, th->info->seesound);
     }
     P_SetTarget(&th->target, source); // Originator
     an = R_PointToAngle2(source->x, source->y, dest->x, dest->y);
@@ -3732,7 +3898,7 @@ mobj_t *P_SpawnKoraxMissile(fixed_t x, fixed_t y, fixed_t z,
     th = P_SpawnMobj(x, y, z, type);
     if (th->info->seesound)
     {
-        S_StartSound(th, th->info->seesound);
+        S_StartMobjSound(th, th->info->seesound);
     }
     P_SetTarget(&th->target, source); // Originator
     an = R_PointToAngle2(x, y, dest->x, dest->y);

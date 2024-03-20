@@ -13,7 +13,7 @@ On arm64 machines, brew will be installed in `/opt/homebrew`.
 ## Install Build Dependencies
 Install cmake, SDL2 and additional dependencies for DSDA-Doom:
 ```
-brew install cmake pcre sdl2 sdl2_image sdl2_mixer fluid-synth portmidi mad dumb libvorbis
+brew install cmake pkgconf dumb fluid-synth libvorbis libzip mad portmidi sdl2 sdl2_image sdl2_mixer
 ```
 ## Build DSDA-Doom
 Make a clone of the DSDA-Doom Git repository:
@@ -22,20 +22,16 @@ git clone https://github.com/kraflab/dsda-doom.git
 ```
 Prepare the build folder, generate the build system, and compile:
 ```
-cd dsda-doom/prboom2
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make
+cd dsda-doom
+cmake -Sprboom2 -Bbuild -DCMAKE_BUILD_TYPE=Release -DENABLE_LTO=ON
+cmake --build build
 ```
-Note: Instead of `make`, consider using `make -j4` or `make -j$(nproc)` to speed up compiling.
 
 The newly built binaries are located in the build folder.
 
 ## Collect DYLIB Files
 Create a release folder next to the build folder and copy the Binaries and .wad files to it:
 ```
-cd ..
 mkdir release
 cp ./build/dsda-doom ./release/dsda-doom
 cp ./build/*.wad ./release/

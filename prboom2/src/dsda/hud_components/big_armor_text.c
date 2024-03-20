@@ -19,7 +19,12 @@
 
 #include "big_armor_text.h"
 
-static dsda_patch_component_t component;
+typedef struct {
+  dsda_patch_component_t component;
+} local_component_t;
+
+static local_component_t* local;
+
 static int patch_delta_x;
 
 static void dsda_DrawComponent(void) {
@@ -31,23 +36,26 @@ static void dsda_DrawComponent(void) {
 
   if (hexen) {
     armor = dsda_HexenArmor(player);
-    cm = CR_GRAY;
+    cm = dsda_TextCR(dsda_tc_exhud_armor_zero);
   }
   else {
     armor = player->armorpoints[ARMOR_ARMOR];
-    if (!hud_armor_color_by_class || armor <= 0)
-      cm = CR_RED;
+    if (armor <= 0)
+      cm = dsda_TextCR(dsda_tc_exhud_armor_zero);
     else if (player->armortype < 2)
-      cm = CR_GREEN;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_one);
     else
-      cm = CR_BLUE2;
+      cm = dsda_TextCR(dsda_tc_exhud_armor_two);
   }
 
-  dsda_DrawBigNumber(component.x, component.y, patch_delta_x, 0,
-                     cm, component.vpt, 3, armor);
+  dsda_DrawBigNumber(local->component.x, local->component.y, patch_delta_x, 0,
+                     cm, local->component.vpt, 3, armor);
 }
 
-void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt) {
+void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
   if (heretic)
     patch_delta_x = 10;
   else if (hexen)
@@ -55,17 +63,15 @@ void dsda_InitBigArmorTextHC(int x_offset, int y_offset, int vpt) {
   else
     patch_delta_x = 14;
 
-  dsda_InitPatchHC(&component, x_offset, y_offset, vpt);
+  dsda_InitPatchHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateBigArmorTextHC(void) {
-  return;
+void dsda_UpdateBigArmorTextHC(void* data) {
+  local = data;
 }
 
-void dsda_DrawBigArmorTextHC(void) {
+void dsda_DrawBigArmorTextHC(void* data) {
+  local = data;
+
   dsda_DrawComponent();
-}
-
-void dsda_EraseBigArmorTextHC(void) {
-  return;
 }

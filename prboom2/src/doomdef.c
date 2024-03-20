@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -32,10 +32,6 @@
  *
  *-----------------------------------------------------------------------------
  */
-
-#ifdef __GNUG__
-#pragma implementation "doomdef.h"
-#endif
 
 #include "doomdef.h"
 

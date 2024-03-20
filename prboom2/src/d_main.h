@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -37,10 +37,6 @@
 #include "m_fixed.h"
 #include "d_event.h"
 #include "w_wad.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 /* CPhipps - removed wadfiles[] stuff to w_wad.h */
 

@@ -1,4 +1,4 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C -*- 
 //-----------------------------------------------------------------------------
 //
 // Copyright(C) 2009 Simon Howard
@@ -36,9 +36,11 @@ void OPL_Queue_Clear(opl_callback_queue_t *queue);
 void OPL_Queue_Destroy(opl_callback_queue_t *queue);
 void OPL_Queue_Push(opl_callback_queue_t *queue,
                     opl_callback_t callback, void *data,
-                    unsigned int time);
+                    uint64_t time);
 int OPL_Queue_Pop(opl_callback_queue_t *queue,
                   opl_callback_t *callback, void **data);
-unsigned int OPL_Queue_Peek(opl_callback_queue_t *queue);
+uint64_t OPL_Queue_Peek(opl_callback_queue_t *queue);
+void OPL_Queue_AdjustCallbacks(opl_callback_queue_t *queue,
+                               uint64_t time, float factor);
 
 #endif /* #ifndef OPL_QUEUE_H */

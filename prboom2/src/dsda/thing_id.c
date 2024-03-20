@@ -168,8 +168,6 @@ mobj_t* dsda_FindMobjFromThingID(short thing_id, thing_id_search_t* search) {
 }
 
 mobj_t* dsda_FindMobjFromThingIDOrMobj(short thing_id, mobj_t* mo, thing_id_search_t* search) {
-  thing_id_list_entry_t* p;
-
   if (search->done)
     return NULL;
 

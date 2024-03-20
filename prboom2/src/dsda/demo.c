@@ -22,7 +22,7 @@
 #include "doomtype.h"
 #include "doomstat.h"
 #include "g_game.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "md5.h"
 #include "lprintf.h"
 #include "e6y.h"
@@ -31,12 +31,15 @@
 #include "dsda.h"
 #include "dsda/args.h"
 #include "dsda/configuration.h"
+#include "dsda/data_organizer.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
+#include "dsda/preferences.h"
 #include "dsda/settings.h"
+#include "dsda/split_tracker.h"
 #include "dsda/utility.h"
 
 #include "demo.h"
@@ -52,22 +55,25 @@ static int largest_real_offset;
 static int demo_tics;
 static int compatibility_level_unspecified;
 
-#define DSDA_DEMO_VERSION 2
+#define DSDA_UDMF_VERSION 1
+#define DSDA_DEMO_VERSION 3
 #define DSDA_DEMO_HEADER_START_SIZE 8 // version + signature (6) + dsda version
 
-const int dsda_demo_header_data_size[DSDA_DEMO_VERSION + 1] = { 0, 8, 9 };
+const int dsda_demo_header_data_size[DSDA_DEMO_VERSION + 1] = { 0, 8, 9, 10 };
 
 typedef struct {
   int end_marker_location;
   int demo_tics;
   byte flags;
+  byte udmf_version;
 } dsda_demo_header_data_t;
 
 static dsda_demo_header_data_t dsda_demo_header_data;
 
 #define DEMOMARKER 0x80
 
-#define DF_FROM_KEYFRAME 0x01
+#define DF_FROM_KEYFRAME   0x01
+#define DF_CASUAL_FEATURES 0x02
 
 static dboolean join_queued;
 static int dsda_demo_version;
@@ -75,13 +81,16 @@ static int bytes_per_tic;
 
 static dboolean use_demo_name_with_time;
 
+int dsda_DemoTic(void) {
+  return demo_tics;
+}
+
 const char* dsda_DemoNameBase(void) {
   return dsda_demo_name_base;
 }
 
 void dsda_SetDemoBaseName(const char* name) {
   size_t base_size;
-  char* p;
 
   if (dsda_demo_name_base)
     Z_Free(dsda_demo_name_base);
@@ -103,7 +112,6 @@ void dsda_SetDemoBaseName(const char* name) {
 char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
   char* demo_name;
   size_t demo_name_size;
-  FILE* fp;
   int j;
 
   j = *counter;
@@ -111,23 +119,61 @@ char* dsda_GenerateDemoName(unsigned int* counter, const char* base_name) {
   demo_name = Z_Malloc(demo_name_size);
   snprintf(demo_name, demo_name_size, "%s.lmp", base_name);
 
-  for (; j <= 99999 && (fp = fopen(demo_name, "rb")) != NULL; j++) {
+  for (; j <= 99999 && M_FileExists(demo_name); j++)
     snprintf(demo_name, demo_name_size, "%s-%05d.lmp", base_name, j);
-    fclose (fp);
-  }
 
   *counter = j;
 
   return demo_name;
 }
 
+#define ADD_FILE_COUNTER static unsigned int counter; \
+                         DO_ONCE \
+                           counter = dsda_DemoAttempts(); \
+                           if (counter < 2) \
+                             counter = 2; \
+                         END_ONCE
+
+char* dsda_FallbackDemoName(void) {
+  ADD_FILE_COUNTER
+
+  dsda_SetDemoBaseName("fallback");
+
+  return dsda_GenerateDemoName(&counter, dsda_demo_name_base);
+}
+
 char* dsda_NewDemoName(void) {
-  static unsigned int counter = 2;
+  ADD_FILE_COUNTER
 
   if (!dsda_demo_name_base)
     dsda_SetDemoBaseName("null");
 
   return dsda_GenerateDemoName(&counter, dsda_demo_name_base);
+}
+
+static dboolean dsda_UseFailedDemoName(void) {
+  return dsda_IntConfig(dsda_config_organize_failed_demos) &&
+         !dsda_ILComplete() && !dsda_MovieComplete();
+}
+
+char* dsda_FailedDemoName(void) {
+  static char* dsda_failed_demo_name_base;
+  ADD_FILE_COUNTER
+
+  if (!dsda_demo_name_base)
+    dsda_SetDemoBaseName("null");
+
+  if (!dsda_failed_demo_name_base) {
+    dsda_string_t str;
+
+    dsda_StringPrintF(&str, "%s/failed_demos", dsda_DataDir());
+    M_MakeDir(str.string, false); // false: it's ok to fail here
+    dsda_StringCatF(&str, "/%s", dsda_BaseName(dsda_demo_name_base));
+
+    dsda_failed_demo_name_base = str.string;
+  }
+
+  return dsda_GenerateDemoName(&counter, dsda_failed_demo_name_base);
 }
 
 static int dsda_DemoBufferOffset(void) {
@@ -169,9 +215,24 @@ static void dsda_EnsureDemoBufferSpace(size_t length) {
   );
 }
 
-void dsda_CopyPendingCmd(ticcmd_t* cmd) {
-  if (demorecording && largest_real_offset - dsda_DemoBufferOffset() >= bytes_per_tic) {
-    const byte* p = dsda_demo_write_buffer_p;
+dboolean dsda_CopyPendingCmd(ticcmd_t* cmd, int delta) {
+  if (demorecording && largest_real_offset - dsda_DemoBufferOffset() >= (delta + 1) * bytes_per_tic) {
+    const byte* p = dsda_demo_write_buffer_p + delta * bytes_per_tic;
+
+    G_ReadOneTick(cmd, &p);
+
+    return true;
+  }
+  else {
+    memset(cmd, 0, sizeof(*cmd));
+
+    return false;
+  }
+}
+
+void dsda_CopyPriorCmd(ticcmd_t* cmd, int delta) {
+  if (demorecording && dsda_DemoBufferOffset() >= delta * bytes_per_tic) {
+    const byte* p = dsda_demo_write_buffer_p - delta * bytes_per_tic;
 
     G_ReadOneTick(cmd, &p);
   }
@@ -186,11 +247,11 @@ void dsda_RestoreCommandHistory(void) {
   ticcmd_t cmd = { 0 };
 
   // the dsda format has variable bytes_per_tic - ignoring these for now
-  if (demorecording && logictic && dsda_command_history_size && !dsda_demo_version) {
+  if (demorecording && true_logictic && dsda_command_history_size && !dsda_demo_version) {
     const byte* p;
     int count;
 
-    count = MIN(logictic, dsda_command_history_size);
+    count = MIN(true_logictic, dsda_command_history_size);
 
     p = dsda_demo_write_buffer_p - bytes_per_tic * count;
 
@@ -210,7 +271,11 @@ void dsda_InitDemoRecording(void) {
 
   if (compatibility_level_unspecified)
     I_Error("You must specify a compatibility level when recording a demo!\n"
-            "Example: dsda-doom -iwad DOOM -complevel 3 -record demo");
+            "Example: dsda-doom -iwad DOOM -complevel 3 -skill 4 -record demo");
+
+  if (!dsda_Flag(dsda_arg_skill))
+    I_Error("You must specify a skill level when recording a demo!\n"
+            "Example: dsda-doom -iwad DOOM -complevel 3 -skill 4 -record demo");
 
   demorecording = true;
 
@@ -261,14 +326,24 @@ static void dsda_SetDemoBufferOffset(int offset) {
   dsda_demo_write_buffer_p = dsda_demo_write_buffer + offset;
 }
 
-void dsda_WriteToDemo(void* buffer, size_t length) {
+void dsda_WriteToDemo(const void* buffer, size_t length) {
   dsda_EnsureDemoBufferSpace(length);
 
   memcpy(dsda_demo_write_buffer_p, buffer, length);
   dsda_demo_write_buffer_p += length;
 }
 
-void dsda_WriteTicToDemo(void* buffer, size_t length) {
+void dsda_WriteQueueToDemo(const void* buffer, size_t length) {
+  int old_offset;
+
+  old_offset = dsda_DemoBufferOffset();
+
+  dsda_WriteToDemo(buffer, length);
+
+  dsda_SetDemoBufferOffset(old_offset);
+}
+
+void dsda_WriteTicToDemo(const void* buffer, size_t length) {
   dsda_WriteToDemo(buffer, length);
   ++demo_tics;
 }
@@ -344,17 +419,18 @@ dboolean dsda_StartDemoSegment(const char* demo_name) {
 const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
   if (dsda_demo_version && dsda_demo_header_data.flags & DF_FROM_KEYFRAME) {
     dsda_key_frame_t key_frame;
+    union
+    {
+      const byte* cb;
+      byte* b;
+    } u = { demo_p };
 
     memset(&key_frame, 0, sizeof(key_frame));
 
     memcpy(&key_frame.buffer_length, demo_p, sizeof(key_frame.buffer_length));
     demo_p += sizeof(key_frame.buffer_length);
 
-    // Is it worth creating a redundant read-only version?
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdiscarded-qualifiers"
-    key_frame.buffer = demo_p;
-    #pragma GCC diagnostic pop
+    key_frame.buffer = u.b;
 
     dsda_RestoreKeyFrame(&key_frame, false);
     demo_p += key_frame.buffer_length;
@@ -400,8 +476,20 @@ static int dsda_ExportDemoToFile(const char* demo_name) {
 
   length = dsda_DemoBufferOffset();
 
-  if (!M_WriteFile(demo_name, dsda_demo_write_buffer, length))
-    I_Error("dsda_WriteDemoToFile: Failed to write demo file.");
+  if (!M_WriteFile(demo_name, dsda_demo_write_buffer, length)) {
+    char* fallback_file;
+
+    fallback_file = dsda_FallbackDemoName();
+
+    if (!M_WriteFile(fallback_file, dsda_demo_write_buffer, length))
+      I_Error("dsda_WriteDemoToFile: Failed to write demo file.");
+    else
+      I_Error("Bad demo file location: wrote to %s instead!", fallback_file);
+
+    Z_Free(fallback_file);
+  }
+
+  lprintf(LO_INFO, "Wrote demo: %s\n", demo_name);
 
   return end_marker_location;
 }
@@ -463,11 +551,15 @@ static char* dsda_DemoNameWithTime(void) {
 }
 
 void dsda_EndDemoRecording(void) {
+  void ResetOverruns(void);
+
   char* demo_name;
 
   demorecording = false;
 
-  if (dsda_UseDemoNameWithTime())
+  if (dsda_UseFailedDemoName())
+    demo_name = dsda_FailedDemoName();
+  else if (dsda_UseDemoNameWithTime())
     demo_name = dsda_DemoNameWithTime();
   else
     demo_name = dsda_NewDemoName();
@@ -478,7 +570,7 @@ void dsda_EndDemoRecording(void) {
 
   Z_Free(demo_name);
 
-  lprintf(LO_INFO, "Demo finished recording\n");
+  ResetOverruns();
 }
 
 void dsda_ExportDemo(const char* name) {
@@ -554,8 +646,11 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd) {
 
   // Sometimes this bit is not available
   if (
-    (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
-    (cmd->buttons & BT_CHANGE) == 0
+    (!demo_compatibility || gamestate != GS_FINALE) &&
+    (
+      (demo_compatibility && !prboom_comp[PC_ALLOW_SSG_DIRECT].state) ||
+      (cmd->buttons & BT_CHANGE) == 0
+    )
   )
     cmd->buttons |= BT_JOIN;
   else
@@ -599,8 +694,15 @@ static const byte* dsda_ReadDSDADemoHeader(const byte* demo_p, const byte* heade
   else
     dsda_demo_header_data.flags = 0;
 
+  if (dsda_demo_version >= 3)
+    dsda_demo_header_data.udmf_version = *demo_p++;
+  else
+    dsda_demo_header_data.udmf_version = 0;
+
   dsda_EnableExCmd();
-  dsda_EnableCasualExCmdFeatures();
+
+  if (dsda_demo_header_data.flags & DF_CASUAL_FEATURES)
+    dsda_EnableCasualExCmdFeatures();
 
   return demo_p;
 }
@@ -676,6 +778,12 @@ void dsda_WriteDSDADemoHeader(byte** p) {
   dsda_demo_version = DSDA_DEMO_VERSION;
   dsda_extra_demo_header_data_offset = demo_p - *p;
   memset(demo_p, 0, dsda_demo_header_data_size[dsda_demo_version]);
+
+  if (dsda_AllowCasualExCmdFeatures())
+    demo_p[8] |= DF_CASUAL_FEATURES;
+
+  demo_p[9] = DSDA_UDMF_VERSION;
+
   demo_p += dsda_demo_header_data_size[dsda_demo_version];
 
   *p = demo_p;
@@ -686,12 +794,13 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
 
   if (map_format.zdoom)
   {
-    if (!dsda_Flag(dsda_arg_baddemo))
-      I_Error("Experimental formats require the -baddemo option to record.");
-
     if (!mbf21)
-      I_Error("You must use complevel 21 when recording on doom-in-hexen format.");
+      I_Error("You must use complevel 21 when recording in advanced formats.");
 
+    use_dsda_format = true;
+  }
+  else if (dsda_UseMapinfo())
+  {
     use_dsda_format = true;
   }
 
@@ -730,8 +839,6 @@ const byte* dsda_DemoMarkerPosition(byte* buffer, size_t file_size) {
   p = G_ReadDemoHeaderEx(buffer, file_size, RDH_SKIP_HEADER);
 
   if (dsda_demo_version) {
-    int i;
-
     p = (const byte*) (buffer + dsda_demo_header_data.end_marker_location);
 
     if (*p != DEMOMARKER)

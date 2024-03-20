@@ -1,9 +1,9 @@
-# dsda-doom v0.25.2
-This is a fork of prboom+ with many new features, including:
-- Heretic, Hexen, MBF21, and Doom-in-Hexen support
+# dsda-doom v0.27.5
+This is a successor of prboom+ with many new features, including:
+- Heretic, Hexen, MBF21, Doom-in-Hexen, UDMF, and MAPINFO support
 - In-game console and scripting
 - Full controller support
-- Palette-based lightmode for opengl
+- Palette-based opengl renderer
 - Debugging features for testing
 - Strict mode for speedrunning
 - Various quality of life improvements
@@ -13,15 +13,21 @@ This is a fork of prboom+ with many new features, including:
 Download windows releases [here](https://drive.google.com/drive/folders/1KMU1dY0HZrY5h2EyPzxxXuyH8DunAJV_?usp=sharing).
 
 ### Patch Notes
+- [v0.27](./patch_notes/v0.27.md)
+- [v0.26](./patch_notes/v0.26.md)
 - [v0.25](./patch_notes/v0.25.md)
-- [v0.24](./patch_notes/v0.24.md)
-- [v0.23](./patch_notes/v0.23.md)
 
 ### Launcher
 There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
 
 ### Doom-in-Hexen Support
 - [Full details](./docs/doom_in_hexen.md)
+
+### UDMF Support
+- [Full details](./docs/udmf.md)
+
+### MAPINFO Support
+- [Full details](./docs/mapinfo.md)
 
 ### Hexen Support
 - DSDA-Doom includes demo-compatible support for hexen.
@@ -44,7 +50,7 @@ There is a dedicated launcher for this port available [here](https://github.com/
 ### Heretic Support
 - DSDA-Doom includes demo-compatible support for heretic (all the demos stored on dsda are in sync).
 - Heretic game logic should be set automatically if you use `HERETIC.WAD` as the iwad. If it doesn't work, please use the `-heretic` commandline option. This flips a switch in the engine that determines all the core game data.
-- You do not need to (and can't) set the complevel when playing heretic. It is implicitly set to `0`, since heretic is based on doom v1.2.
+- Don't need to supply complevel (heretic is complevel 0 by necessity)
 - Known issues
   - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for heretic (it will default instead to "Doom format").
   - The "Apply multisampling" automap option is disabled for heretic.
@@ -52,6 +58,10 @@ There is a dedicated launcher for this port available [here](https://github.com/
   - Some of the more advanced features are not implemented for heretic yet, and using them may cause crashes or other odd behaviour.
   - Dehacked support for heretic isn't implemented yet.
   - Some menus extend over the hud.
+
+### Other Standards
+- [MBF21 v1.4](https://github.com/kraflab/mbf21)
+- [UMAPINFO v2.2](https://github.com/kraflab/umapinfo)
 
 ### Credits
 - The DSDA-Doom icon was designed by Mal (129thVisplane). Thanks!

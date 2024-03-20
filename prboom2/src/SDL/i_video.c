@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -402,7 +402,7 @@ while (SDL_PollEvent(Event))
     break;
 
   case SDL_QUIT:
-    S_StartSound(NULL, sfx_swtchn);
+    S_StartVoidSound(sfx_swtchn);
     M_QuitDOOM(0);
 
   default:
@@ -433,6 +433,13 @@ void I_StartFrame (void)
 {
 }
 
+static void I_FlushMousePosition(void)
+{
+  int x, y;
+
+  SDL_GetRelativeMouseState(&x, &y);
+}
+
 void I_InitMouse(void)
 {
   static Uint8 empty_cursor_data = 0;
@@ -446,6 +453,8 @@ void I_InitMouse(void)
   cursors[0] = SDL_GetCursor();
   // Create an empty cursor
   cursors[1] = SDL_CreateCursor(&empty_cursor_data, &empty_cursor_data, 8, 1, 0, 0);
+
+  I_FlushMousePosition();
 }
 
 //
@@ -526,6 +535,34 @@ void I_ShutdownGraphics(void)
   DeactivateMouse();
 }
 
+static dboolean queue_frame_capture;
+static dboolean queue_screenshot;
+
+void I_QueueFrameCapture(void)
+{
+  queue_frame_capture = true;
+}
+
+void I_QueueScreenshot(void)
+{
+  queue_screenshot = true;
+}
+
+void I_HandleCapture(void)
+{
+  if (queue_frame_capture)
+  {
+    I_CaptureFrame();
+    queue_frame_capture = false;
+  }
+
+  if (queue_screenshot)
+  {
+    M_ScreenShot();
+    queue_screenshot = false;
+  }
+}
+
 //
 // I_FinishUpdate
 //
@@ -590,6 +627,8 @@ void I_FinishUpdate (void)
   SDL_RenderClear(sdl_renderer);
 
   SDL_RenderCopy(sdl_renderer, sdl_texture, &src_rect, NULL);
+
+  I_HandleCapture();
 
   // Draw!
   SDL_RenderPresent(sdl_renderer);
@@ -758,7 +797,7 @@ static void I_FillScreenResolutionsList(void)
 {
   int display_index = 0;
   SDL_DisplayMode mode;
-  int i, j, list_size, current_resolution_index, count;
+  int i, list_size, current_resolution_index, count;
   char desired_resolution[256];
 
   // do it only once
@@ -788,8 +827,6 @@ static void I_FillScreenResolutionsList(void)
 
     for(i = count - 1 + num_canonicals; i >= 0; i--)
     {
-      int in_list = false;
-
       // make sure the canonical resolutions are always available
       if (i > count - 1)
       {
@@ -1170,7 +1207,7 @@ void I_InitGraphics(void)
 
 void I_UpdateVideoMode(void)
 {
-  int init_flags = 0;
+  int init_flags = SDL_WINDOW_ALLOW_HIGHDPI;
   int screen_multiply;
   int actualheight;
   int render_vsync;
@@ -1194,7 +1231,6 @@ void I_UpdateVideoMode(void)
     if (V_IsOpenGLMode())
     {
       gld_CleanMemory();
-      // hires patches
       gld_CleanStaticMemory();
     }
 
@@ -1217,7 +1253,7 @@ void I_UpdateVideoMode(void)
 
   // Initialize SDL with this graphics mode
   if (V_IsOpenGLMode()) {
-    init_flags = SDL_WINDOW_OPENGL;
+    init_flags |= SDL_WINDOW_OPENGL;
   }
 
   if (desired_fullscreen)
@@ -1258,12 +1294,10 @@ void I_UpdateVideoMode(void)
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      SCREENWIDTH, SCREENHEIGHT,
+      SCREENWIDTH * screen_multiply, SCREENHEIGHT * screen_multiply,
       init_flags);
     sdl_glcontext = SDL_GL_CreateContext(sdl_window);
     SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, SCREENHEIGHT);
-
-    gld_CheckHardwareGamma();
   }
   else
   {
@@ -1378,9 +1412,6 @@ void I_UpdateVideoMode(void)
   V_SetPalette(0);
   I_UploadNewPalette(0, true);
 
-  ST_SetResolution();
-  AM_SetResolution();
-
   if (V_IsOpenGLMode())
   {
     int temp;
@@ -1416,6 +1447,9 @@ void I_UpdateVideoMode(void)
 
     gld_Init(SCREENWIDTH, SCREENHEIGHT);
   }
+
+  ST_SetResolution();
+  AM_SetResolution();
 
   if (V_IsOpenGLMode())
   {
@@ -1557,27 +1591,7 @@ static void UpdateFocus(void)
   // after switching to OS and back
   if (desired_fullscreen && window_focused)
   {
-    // currentPaletteIndex?
-    if (st_palette < 0)
-      st_palette = 0;
-
-    V_SetPalette(st_palette);
-  }
-
-  if (V_IsOpenGLMode())
-  {
-    if (gl_hardware_gamma)
-    {
-      if (!window_focused)
-      {
-        // e6y: Restore of startup gamma if window loses focus
-        gld_SetGammaRamp(-1);
-      }
-      else
-      {
-        gld_SetGammaRamp(gl_usegamma);
-      }
-    }
+    V_TouchPalette();
   }
 
   // Should the screen be grabbed?

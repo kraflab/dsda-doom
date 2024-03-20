@@ -21,7 +21,11 @@
 
 #include "render_stats.h"
 
-static dsda_text_t component[2];
+typedef struct {
+  dsda_text_t component[2];
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateCurrentComponentText(char* str, size_t max_size) {
   extern dsda_render_stats_t dsda_render_stats;
@@ -29,18 +33,22 @@ static void dsda_UpdateCurrentComponentText(char* str, size_t max_size) {
 
   snprintf(
     str, max_size,
-    "\x1b%cFPS \x1b%c%4d \x1b%cSEGS \x1b%c%4d \x1b%cPLANES \x1b%c%4d \x1b%cSPRITES \x1b%c%4d",
-    HUlib_Color(CR_GRAY),
-    dsda_render_stats_fps < 35 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GOLD),
+    "%sFPS %s%4d %sSEGS %s%4d %sPLANES %s%4d %sSPRITES %s%4d",
+    dsda_TextColor(dsda_tc_exhud_render_label),
+    dsda_render_stats_fps < 35 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                 dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats_fps,
-    HUlib_Color(CR_GRAY),
-    dsda_render_stats.drawsegs > 256 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GOLD),
+    dsda_TextColor(dsda_tc_exhud_render_label),
+    dsda_render_stats.drawsegs > 256 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                       dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats.drawsegs,
-    HUlib_Color(CR_GRAY),
-    dsda_render_stats.visplanes > 128 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GOLD),
+    dsda_TextColor(dsda_tc_exhud_render_label),
+    dsda_render_stats.visplanes > 128 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                        dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats.visplanes,
-    HUlib_Color(CR_GRAY),
-    dsda_render_stats.vissprites > 128 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GOLD),
+    dsda_TextColor(dsda_tc_exhud_render_label),
+    dsda_render_stats.vissprites > 128 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                         dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats.vissprites
   );
 }
@@ -50,37 +58,42 @@ static void dsda_UpdateMaxComponentText(char* str, size_t max_size) {
 
   snprintf(
     str, max_size,
-    "\x1b%cMAX      SEGS \x1b%c%4d \x1b%cPLANES \x1b%c%4d \x1b%cSPRITES \x1b%c%4d",
-    HUlib_Color(CR_GRAY),
-    dsda_render_stats_max.drawsegs > 256 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GOLD),
+    "%sMAX      SEGS %s%4d %sPLANES %s%4d %sSPRITES %s%4d",
+    dsda_TextColor(dsda_tc_exhud_render_label),
+    dsda_render_stats_max.drawsegs > 256 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                           dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats_max.drawsegs,
-    HUlib_Color(CR_GRAY),
-    dsda_render_stats_max.visplanes > 128 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GOLD),
+    dsda_TextColor(dsda_tc_exhud_render_label),
+    dsda_render_stats_max.visplanes > 128 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                            dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats_max.visplanes,
-    HUlib_Color(CR_GRAY),
-    dsda_render_stats_max.vissprites > 128 ? HUlib_Color(CR_RED) : HUlib_Color(CR_GOLD),
+    dsda_TextColor(dsda_tc_exhud_render_label),
+    dsda_render_stats_max.vissprites > 128 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                             dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats_max.vissprites
   );
 }
 
-void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&component[0], x_offset, y_offset, vpt);
-  dsda_InitTextHC(&component[1], x_offset, y_offset + 8, vpt);
+void dsda_InitRenderStatsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component[0], x_offset, y_offset, vpt);
+  dsda_InitTextHC(&local->component[1], x_offset, y_offset + 8, vpt);
 }
 
-void dsda_UpdateRenderStatsHC(void) {
-  dsda_UpdateCurrentComponentText(component[0].msg, sizeof(component[0].msg));
-  dsda_UpdateMaxComponentText(component[1].msg, sizeof(component[1].msg));
-  dsda_RefreshHudText(&component[0]);
-  dsda_RefreshHudText(&component[1]);
+void dsda_UpdateRenderStatsHC(void* data) {
+  local = data;
+
+  dsda_UpdateCurrentComponentText(local->component[0].msg, sizeof(local->component[0].msg));
+  dsda_UpdateMaxComponentText(local->component[1].msg, sizeof(local->component[1].msg));
+  dsda_RefreshHudText(&local->component[0]);
+  dsda_RefreshHudText(&local->component[1]);
 }
 
-void dsda_DrawRenderStatsHC(void) {
-  dsda_DrawBasicText(&component[0]);
-  dsda_DrawBasicText(&component[1]);
-}
+void dsda_DrawRenderStatsHC(void* data) {
+  local = data;
 
-void dsda_EraseRenderStatsHC(void) {
-  HUlib_eraseTextLine(&component[0].text);
-  HUlib_eraseTextLine(&component[1].text);
+  dsda_DrawBasicText(&local->component[0]);
+  dsda_DrawBasicText(&local->component[1]);
 }

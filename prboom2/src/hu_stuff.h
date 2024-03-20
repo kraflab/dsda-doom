@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -36,50 +36,27 @@
 #include "d_event.h"
 #include "d_think.h"
 #include "p_mobj.h"
-
-/*
- * Globally visible constants.
- */
-#define HU_FONTSTART    '!'     /* the first font characters */
-#define HU_FONTEND      (0x7f) /*jff 2/16/98 '_' the last font characters */
-
-/* Calculate # of glyphs in font. */
-#define HU_FONTSIZE     (HU_FONTEND - HU_FONTSTART + 1)
-
-#define HU_BROADCAST    5
-
-/*#define HU_MSGREFRESH   KEYD_ENTER                                phares */
-#define HU_MSGX         0
-#define HU_MSGY         0
-#define HU_MSGWIDTH     64      /* in characters */
-#define HU_MSGHEIGHT    1       /* in lines */
+#include "r_defs.h"
 
 #define HU_MSGTIMEOUT   (4*TICRATE)
 
 #define HU_CROSSHAIRS	8
 
-/*
- * Heads up text
- */
-void HU_Init(void);
 void HU_Start(void);
 
 dboolean HU_Responder(event_t* ev);
 
 void HU_Ticker(void);
 void HU_Drawer(void);
-void HU_Erase(void);
 
 mobj_t *HU_Target(void);
 
-int SetCustomMessage(int plr, const char *msg, int delay, int ticks, int cm, int sfx);
-void ClearMessage(void);
+int SetCustomMessage(int plr, const char *msg, int ticks, int sfx);
 
 extern int hud_health_red;    // health amount less than which status is red
 extern int hud_health_yellow; // health amount less than which status is yellow
 extern int hud_health_green;  // health amount above is blue, below is green
 extern int hud_ammo_red;      // ammo percent less than which status is red
 extern int hud_ammo_yellow;   // ammo percent less is yellow more green
-extern int hud_armor_color_by_class;
 
 #endif

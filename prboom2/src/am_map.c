@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -59,6 +59,7 @@
 
 #include "dsda/input.h"
 #include "dsda/map_format.h"
+#include "dsda/messenger.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
 
@@ -89,10 +90,10 @@ int mapcolor_hair;    // crosshair color
 int mapcolor_sngl;    // single player arrow color
 int mapcolor_plyr[4] = { 112, 96, 64, 176 }; // colors for player arrows in multiplayer
 
-static int heretic_mapcolor_back = 13 * 8 - 1;
+static int heretic_mapcolor_back = 0;
 static int heretic_mapcolor_grid = 5 * 8;
-static int heretic_mapcolor_wall = 14 * 8;
-static int heretic_mapcolor_fchg = 12 * 8;
+static int heretic_mapcolor_wall = 104;
+static int heretic_mapcolor_fchg = 88;
 static int heretic_mapcolor_cchg = 10 * 8;
 static int heretic_mapcolor_clsd;
 static int heretic_mapcolor_rkey = 220;
@@ -101,21 +102,21 @@ static int heretic_mapcolor_ykey = 144;
 static int heretic_mapcolor_rdor = 220;
 static int heretic_mapcolor_bdor = 197;
 static int heretic_mapcolor_ydor = 144;
-static int heretic_mapcolor_tele = 12 * 8;
-static int heretic_mapcolor_secr = 12 * 8;
-static int heretic_mapcolor_revsecr = 12 * 8;
+static int heretic_mapcolor_tele = 88;
+static int heretic_mapcolor_secr = 88;
+static int heretic_mapcolor_revsecr = 88;
 static int heretic_mapcolor_exit;
 static int heretic_mapcolor_unsn = 5 * 8 + 3;
 static int heretic_mapcolor_flat;
-static int heretic_mapcolor_sprt = 33 * 8;
-static int heretic_mapcolor_item = 33 * 8;
-static int heretic_mapcolor_frnd = 33 * 8;
-static int heretic_mapcolor_enemy = 33 * 8;
+static int heretic_mapcolor_sprt = 224;
+static int heretic_mapcolor_item = 144;
+static int heretic_mapcolor_frnd = 224;
+static int heretic_mapcolor_enemy = 160;
 static int heretic_mapcolor_hair = 5 * 8;
 static int heretic_mapcolor_sngl = 4 * 8;
 static int heretic_mapcolor_plyr[4] = { 220, 144, 150, 197 };
 
-static int hexen_mapcolor_back = 13 * 8 - 1;
+static int hexen_mapcolor_back = 0;
 static int hexen_mapcolor_grid = 5 * 8;
 static int hexen_mapcolor_wall = 12 * 8;
 static int hexen_mapcolor_fchg = 14 * 8;
@@ -133,10 +134,10 @@ static int hexen_mapcolor_revsecr;
 static int hexen_mapcolor_exit = 177;
 static int hexen_mapcolor_unsn = 5 * 8 + 3;
 static int hexen_mapcolor_flat;
-static int hexen_mapcolor_sprt = 33 * 8;
-static int hexen_mapcolor_item = 33 * 8;
-static int hexen_mapcolor_frnd = 33 * 8;
-static int hexen_mapcolor_enemy = 33 * 8;
+static int hexen_mapcolor_sprt = 216;
+static int hexen_mapcolor_item = 230;
+static int hexen_mapcolor_frnd = 216;
+static int hexen_mapcolor_enemy = 176;
 static int hexen_mapcolor_hair = 5 * 8;
 static int hexen_mapcolor_sngl = 4 * 8;
 static int hexen_mapcolor_plyr[8] = { 157, 177, 137, 198, 215, 32, 106, 234 };
@@ -255,6 +256,7 @@ static void AM_SetColors(void)
   }
 }
 
+static int map_blinking_locks;
 static int map_secret_after;
 static int map_grid_size;
 static int map_scroll_speed;
@@ -379,8 +381,6 @@ mline_t thintriangle_guy[] =
 #undef R
 #define NUMTHINTRIANGLEGUYLINES (sizeof(thintriangle_guy)/sizeof(mline_t))
 
-static int leveljuststarted = 1;       // kluge until AM_LevelInit() is called
-
 int automap_active;
 int automap_overlay;
 int automap_rotate;
@@ -441,8 +441,6 @@ static player_t *plr;           // the player represented by an arrow
 markpoint_t *markpoints = NULL;    // where the points are
 int markpointnum = 0; // next point to be assigned (also number of points now)
 int markpointnum_max = 0;       // killough 2/22/98
-
-static dboolean stopped = true;
 
 am_frame_t am_frame;
 
@@ -593,8 +591,6 @@ static void AM_addMark(void)
 static void AM_findMinMaxBoundaries(void)
 {
   int i;
-  fixed_t a;
-  fixed_t b;
 
   min_x = min_y =  INT_MAX;
   max_x = max_y = -INT_MAX;
@@ -614,12 +610,6 @@ static void AM_findMinMaxBoundaries(void)
 
   max_w = (max_x >>= FRACTOMAPBITS) - (min_x >>= FRACTOMAPBITS);//e6y
   max_h = (max_y >>= FRACTOMAPBITS) - (min_y >>= FRACTOMAPBITS);//e6y
-
-  a = FixedDiv(f_w<<FRACBITS, max_w);
-  b = FixedDiv(f_h<<FRACBITS, max_h);
-
-  min_scale_mtof = a < b ? a : b;
-  max_scale_mtof = FixedDiv(f_h<<FRACBITS, 2*PLAYERRADIUS);
 }
 
 void AM_SetMapCenter(fixed_t x, fixed_t y)
@@ -687,7 +677,19 @@ static void AM_changeWindowLoc(void)
 //
 void AM_SetScale(void)
 {
-  AM_findMinMaxBoundaries();
+  {
+    fixed_t a, b;
+    fixed_t scale_w, scale_h;
+
+    scale_w = SCREENWIDTH << FRACBITS;
+    scale_h = (SCREENHEIGHT - ST_SCALED_HEIGHT) << FRACBITS;
+
+    a = FixedDiv(scale_w, max_w);
+    b = FixedDiv(scale_h, max_h);
+    min_scale_mtof = a < b ? a : b;
+    max_scale_mtof = FixedDiv(scale_h, 2 * PLAYERRADIUS);
+  }
+
   scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7*FRACUNIT));
   if (scale_mtof > max_scale_mtof)
     scale_mtof = min_scale_mtof;
@@ -699,24 +701,25 @@ void AM_SetScale(void)
 //
 void AM_SetPosition(void)
 {
-  if (automap_overlay)
+  if (automap_active)
   {
-    f_x = 0;
-    f_y = 0;
-    f_w = SCREENWIDTH;
-    f_h = SCREENHEIGHT;
-
-    f_x = viewwindowx + f_x * viewwidth / SCREENWIDTH;
-    f_y = viewwindowy + f_y * viewheight / SCREENHEIGHT;
-    f_w = f_w * viewwidth / SCREENWIDTH;
-    f_h = f_h * viewheight / SCREENHEIGHT;
-  }
-  else
-  {
-    //default
     f_x = f_y = 0;
-    f_w = SCREENWIDTH;           // killough 2/7/98: get rid of finit_ vars
-    f_h = SCREENHEIGHT-ST_SCALED_HEIGHT;// to allow runtime setting of width/height
+    f_w = SCREENWIDTH;
+
+    if (automap_overlay)
+    {
+      f_h = viewheight;
+    }
+    else
+    {
+      f_h = SCREENHEIGHT - ST_SCALED_HEIGHT;
+    }
+  }
+  else if (dsda_ShowMinimap())
+  {
+    void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h);
+
+    dsda_CopyMinimapCoordinates(&f_x, &f_y, &f_w, &f_h);
   }
 }
 
@@ -732,7 +735,6 @@ void AM_SetPosition(void)
 static void AM_initVariables(void)
 {
   int pnum;
-  static event_t st_notify = { ev_keyup, { AM_MSGENTERED } };
 
   if (hexen)
   {
@@ -744,8 +746,6 @@ static void AM_initVariables(void)
     numplyrlines = NUMPLYRLINES;
     player_arrow = doom_player_arrow;
   }
-
-  automap_active = true;
 
   m_paninc.x = m_paninc.y = 0;
   ftom_zoommul = FRACUNIT;
@@ -775,29 +775,13 @@ static void AM_initVariables(void)
   old_m_h = m_h;
 
   // inform the status bar of the change
-  D_PostEvent(&st_notify);
+  ST_Refresh();
 }
 
 void AM_SetResolution(void)
 {
   AM_SetPosition();
   AM_SetScale();
-}
-
-//
-// AM_loadPics()
-//
-static void AM_loadPics(void)
-{
-  // cph - mark numbers no longer needed cached
-}
-
-//
-// AM_unloadPics()
-//
-static void AM_unloadPics(void)
-{
-  // cph - mark numbers no longer needed cached
 }
 
 //
@@ -815,6 +799,7 @@ void AM_clearMarks(void)
 
 void AM_InitParams(void)
 {
+  map_blinking_locks = dsda_IntConfig(dsda_config_map_blinking_locks);
   map_secret_after = dsda_IntConfig(dsda_config_map_secret_after);
   map_scroll_speed = dsda_IntConfig(dsda_config_map_scroll_speed);
   map_grid_size = dsda_IntConfig(dsda_config_map_grid_size);
@@ -822,22 +807,36 @@ void AM_InitParams(void)
   map_things_appearance = dsda_IntConfig(dsda_config_map_things_appearance);
 }
 
-//
-// AM_LevelInit()
-//
-// Initialize the automap at the start of a new level
-// should be called at the start of every level
-//
-// Passed nothing, returns nothing
-// Affects automap's global variables
-//
-// CPhipps - get status bar height from status bar code
-static void AM_LevelInit(void)
+void AM_ExchangeScales(int full_automap, int *last_full_automap)
 {
-  leveljuststarted = 0;
+  static int full_min_scale_mtof;
+  static int full_max_scale_mtof;
+  static int full_scale_mtof;
+  static int full_scale_ftom;
 
-  AM_SetPosition();
-  AM_SetScale();
+  if (*last_full_automap && !full_automap)
+  {
+    int dsda_MinimapScale(void);
+
+    full_min_scale_mtof = min_scale_mtof;
+    full_max_scale_mtof = max_scale_mtof;
+    full_scale_mtof = scale_mtof;
+    full_scale_ftom = scale_ftom;
+
+    min_scale_mtof =
+    max_scale_mtof =
+    scale_mtof = FixedDiv(f_w << FRACBITS, dsda_MinimapScale() << MAPBITS);
+    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+  }
+  else if (!*last_full_automap && full_automap)
+  {
+    min_scale_mtof = full_min_scale_mtof;
+    max_scale_mtof = full_max_scale_mtof;
+    scale_mtof = full_scale_mtof;
+    scale_ftom = full_scale_ftom;
+  }
+
+  *last_full_automap = full_automap;
 }
 
 //
@@ -847,14 +846,12 @@ static void AM_LevelInit(void)
 //
 // Passed nothing, returns nothing
 //
-void AM_Stop (void)
+void AM_Stop (dboolean minimap)
 {
-  static event_t st_notify = { ev_keyup, { AM_MSGEXITED } };
-
-  AM_unloadPics();
   automap_active = false;
-  D_PostEvent(&st_notify);
-  stopped = true;
+
+  if (minimap && dsda_ShowMinimap())
+    AM_Start(false);
 }
 
 //
@@ -867,24 +864,29 @@ void AM_Stop (void)
 //
 // Passed nothing, returns nothing
 //
-void AM_Start(void)
+void AM_Start(dboolean full_automap)
 {
   static int lastlevel = -1, lastepisode = -1;
+  static int last_full_automap;
 
   AM_InitParams();
 
-  if (!stopped)
-    AM_Stop();
-  stopped = false;
+  automap_active = full_automap;
+
+  AM_SetPosition();
+
   if (lastlevel != gamemap || lastepisode != gameepisode)
   {
-    AM_LevelInit();
+    AM_findMinMaxBoundaries();
+    AM_SetScale();
     lastlevel = gamemap;
     lastepisode = gameepisode;
+    last_full_automap = true;
   }
-  AM_SetPosition();
+
+  AM_ExchangeScales(full_automap, &last_full_automap);
+
   AM_initVariables();
-  AM_loadPics();
 }
 
 //
@@ -927,18 +929,18 @@ dboolean AM_Responder
 {
   static int bigstate=0;
 
-  if (!automap_active)
+  if (!automap_input)
   {
     if (dsda_InputActivated(dsda_input_map))
     {
-      AM_Start ();
+      AM_Start(true);
       return true;
     }
   }
   else if (dsda_InputActivated(dsda_input_map))
   {
     bigstate = 0;
-    AM_Stop ();
+    AM_Stop(true);
 
     return true;
   }
@@ -1034,16 +1036,14 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map_follow))
   {
     dsda_ToggleConfig(dsda_config_automap_follow, true);
-    // Ty 03/27/98 - externalized
-    plr->message = automap_follow ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF;
+    dsda_AddMessage(automap_follow ? s_AMSTR_FOLLOWON : s_AMSTR_FOLLOWOFF);
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_grid))
   {
     dsda_ToggleConfig(dsda_config_automap_grid, true);
-    // Ty 03/27/98 - *not* externalized
-    plr->message = automap_grid ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF;
+    dsda_AddMessage(automap_grid ? s_AMSTR_GRIDON : s_AMSTR_GRIDOFF);
 
     return true;
   }
@@ -1059,14 +1059,14 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map_clear))
   {
     AM_clearMarks();  // Ty 03/27/98 - *not* externalized
-    plr->message = s_AMSTR_MARKSCLEARED;
+    dsda_AddMessage(s_AMSTR_MARKSCLEARED);
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_rotate))
   {
     dsda_ToggleConfig(dsda_config_automap_rotate, true);
-    plr->message = automap_rotate ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF;
+    dsda_AddMessage(automap_rotate ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF);
 
     return true;
   }
@@ -1075,14 +1075,13 @@ dboolean AM_Responder
     dsda_ToggleConfig(dsda_config_automap_overlay, true);
     AM_SetPosition();
     AM_activateNewScale();
-    plr->message = automap_overlay ? s_AMSTR_OVERLAYON : s_AMSTR_OVERLAYOFF;
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_textured))
   {
     dsda_ToggleConfig(dsda_config_map_textured, true);
-    plr->message = (map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
+    dsda_AddMessage(map_textured ? s_AMSTR_TEXTUREDON : s_AMSTR_TEXTUREDOFF);
 
     return true;
   }
@@ -1540,10 +1539,125 @@ static dboolean AM_DrawRevealedSecrets(void)
 // jff 4/3/98 changed mapcolor_xxxx=0 as control to disable feature
 // jff 4/3/98 changed mapcolor_xxxx=-1 to disable drawing line completely
 //
+
+static automap_style_t AM_wallStyle(int i)
+{
+  switch (lines[i].automap_style)
+  {
+    case ams_default:
+      break;
+
+    // These styles have no corresponding colors in dsda-doom
+    case ams_extra_floor:
+    case ams_portal:
+    case ams_special:
+      if (!lines[i].backsector)
+        return ams_one_sided;
+      return ams_two_sided;
+
+    default:
+      return lines[i].automap_style;
+  }
+
+  // if line has been seen or IDDT has been used
+  if (dsda_RevealAutomap() || (lines[i].flags & ML_MAPPED))
+  {
+    if ((lines[i].flags & ML_DONTDRAW) && !dsda_RevealAutomap())
+      return ams_invisible;
+
+    if (
+      ((*mapcolor_bdor_p) || (*mapcolor_ydor_p) || (*mapcolor_rdor_p)) &&
+      !(lines[i].flags & ML_SECRET) && dsda_DoorType(i) != -1
+    )
+      return ams_locked;
+
+    if ((*mapcolor_exit_p) && dsda_IsExitLine(i))
+      return ams_exit;
+
+    if (!lines[i].backsector) // 1-sided
+    {
+      if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
+        return ams_secret;
+      else if (AM_DrawRevealedSecrets() && P_RevealedSecret(lines[i].frontsector))
+        return ams_revealed_secret;
+      else
+        return ams_one_sided;
+    }
+    else // 2-sided
+    {
+      if ((*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) && dsda_IsTeleportLine(i))
+      {
+        return ams_teleport;
+      }
+      else if (lines[i].flags & ML_SECRET)
+      {
+        return ams_one_sided;
+      }
+      else if (
+        (*mapcolor_clsd_p) &&
+        !(lines[i].flags & ML_SECRET) &&
+        ((lines[i].backsector->floorheight==lines[i].backsector->ceilingheight) ||
+        (lines[i].frontsector->floorheight==lines[i].frontsector->ceilingheight))
+      )
+      {
+        return ams_closed_door;
+      }
+      else if (
+        AM_DrawHiddenSecrets() &&
+        (P_IsSecret(lines[i].frontsector) || P_IsSecret(lines[i].backsector))
+      )
+      {
+        return ams_secret;
+      }
+      else if (
+        AM_DrawRevealedSecrets() &&
+        (P_RevealedSecret(lines[i].frontsector) || P_RevealedSecret(lines[i].backsector))
+      )
+      {
+        return ams_revealed_secret;
+      }
+      else if (lines[i].backsector->floorheight !=
+                lines[i].frontsector->floorheight)
+      {
+        return ams_floor_diff;
+      }
+      else if (lines[i].backsector->ceilingheight !=
+                lines[i].frontsector->ceilingheight)
+      {
+        return ams_ceiling_diff;
+      }
+      else if ((*mapcolor_flat_p) && dsda_RevealAutomap())
+      {
+        return ams_two_sided;
+      }
+    }
+  }
+  else if (plr->powers[pw_allmap] || (lines[i].flags & ML_REVEALED))
+  {
+    if (!(lines[i].flags & ML_DONTDRAW))
+    {
+      if
+      (
+        (*mapcolor_flat_p) ||
+        !lines[i].backsector ||
+        lines[i].backsector->floorheight != lines[i].frontsector->floorheight ||
+        lines[i].backsector->ceilingheight != lines[i].frontsector->ceilingheight
+      )
+        return ams_unseen;
+    }
+  }
+
+  return ams_invisible;
+}
+
 static void AM_drawWalls(void)
 {
   int i;
+  automap_style_t automap_style;
   static mline_t l;
+  int hide_locks;
+
+  hide_locks = map_blinking_locks && (gametic & 16);
 
   // draw the unclipped visible portions of all lines
   for (i=0;i<numlines;i++)
@@ -1572,132 +1686,76 @@ static void AM_drawWalls(void)
       AM_SetMPointFloatValue(&l.b);
     }
 
-    // if line has been seen or IDDT has been used
-    if (dsda_RevealAutomap() || (lines[i].flags & ML_MAPPED))
+    automap_style = AM_wallStyle(i);
+
+    switch (automap_style)
     {
-      if ((lines[i].flags & ML_DONTDRAW) && !dsda_RevealAutomap())
+      case ams_invisible:
         continue;
-      {
-        /* cph - show keyed doors and lines */
-        int amd;
-        if (((*mapcolor_bdor_p) || (*mapcolor_ydor_p) || (*mapcolor_rdor_p)) &&
-            !(lines[i].flags & ML_SECRET) &&    /* non-secret */
-          (amd = dsda_DoorType(i)) != -1
-        )
+
+      case ams_locked:
+        if (hide_locks)
         {
-          {
-            switch (amd) /* closed keyed door */
-            {
-              case 1:
-                /*bluekey*/
-                AM_drawMline(&l,
-                  (*mapcolor_bdor_p)? (*mapcolor_bdor_p) : (*mapcolor_cchg_p));
-                continue;
-              case 2:
-                /*yellowkey*/
-                AM_drawMline(&l,
-                  (*mapcolor_ydor_p)? (*mapcolor_ydor_p) : (*mapcolor_cchg_p));
-                continue;
-              case 0:
-                /*redkey*/
-                AM_drawMline(&l,
-                  (*mapcolor_rdor_p)? (*mapcolor_rdor_p) : (*mapcolor_cchg_p));
-                continue;
-              case 3:
-                /*any or all*/
-                AM_drawMline(&l,
-                  (*mapcolor_clsd_p)? (*mapcolor_clsd_p) : (*mapcolor_cchg_p));
-                continue;
-            }
-          }
+          AM_drawMline(&l, *mapcolor_grid_p);
+          continue;
         }
-      }
-      if ((*mapcolor_exit_p) && dsda_IsExitLine(i))
-      { /* jff 4/23/98 add exit lines to automap */
+
+        switch (dsda_DoorType(i))
+        {
+          case 0: // red
+            AM_drawMline(&l, (*mapcolor_rdor_p)? (*mapcolor_rdor_p) : (*mapcolor_cchg_p));
+            continue;
+          case 1: // blue
+            AM_drawMline(&l, (*mapcolor_bdor_p)? (*mapcolor_bdor_p) : (*mapcolor_cchg_p));
+            continue;
+          case 2: // yellow
+            AM_drawMline(&l, (*mapcolor_ydor_p)? (*mapcolor_ydor_p) : (*mapcolor_cchg_p));
+            continue;
+          default:
+            AM_drawMline(&l, (*mapcolor_clsd_p)? (*mapcolor_clsd_p) : (*mapcolor_cchg_p));
+            continue;
+        }
+
+      case ams_exit:
         AM_drawMline(&l, (*mapcolor_exit_p));
         continue;
-      }
 
-      if (!lines[i].backsector)
-      {
-        // jff 1/10/98 add new color for 1S secret sector boundary
-        if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
-          AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
-        else if (AM_DrawRevealedSecrets() && P_RevealedSecret(lines[i].frontsector))
-          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
-        else                               //jff 2/16/98 fixed bug
-          AM_drawMline(&l, (*mapcolor_wall_p)); // special was cleared
-      }
-      else /* now for 2S lines */
-      {
-        // jff 1/10/98 add color change for all teleporter types
-        if ((*mapcolor_tele_p) && !(lines[i].flags & ML_SECRET) && dsda_IsTeleportLine(i))
-        { // teleporters
-          AM_drawMline(&l, (*mapcolor_tele_p));
-        }
-        else if (lines[i].flags & ML_SECRET)    // secret door
-        {
-          AM_drawMline(&l, (*mapcolor_wall_p));      // wall color
-        }
-        else if
-        (
-            (*mapcolor_clsd_p) &&
-            !(lines[i].flags & ML_SECRET) &&    // non-secret closed door
-            ((lines[i].backsector->floorheight==lines[i].backsector->ceilingheight) ||
-            (lines[i].frontsector->floorheight==lines[i].frontsector->ceilingheight))
-        )
-        {
-          AM_drawMline(&l, (*mapcolor_clsd_p));      // non-secret closed door
-        } //jff 1/6/98 show secret sector 2S lines
-        else if (
-          AM_DrawHiddenSecrets() &&
-          (P_IsSecret(lines[i].frontsector) || P_IsSecret(lines[i].backsector))
-        )
-        {
-          AM_drawMline(&l, (*mapcolor_secr_p)); // line bounding secret sector
-        } //jff 1/6/98 end secret sector line change
-        else if
-        (
-          AM_DrawRevealedSecrets() &&
-          (P_RevealedSecret(lines[i].frontsector) || P_RevealedSecret(lines[i].backsector))
-        )
-        {
-          AM_drawMline(&l, (*mapcolor_revsecr_p)); // line bounding revealed secret sector
-        }
-        else if (lines[i].backsector->floorheight !=
-                  lines[i].frontsector->floorheight)
-        {
-          AM_drawMline(&l, (*mapcolor_fchg_p)); // floor level change
-        }
-        else if (lines[i].backsector->ceilingheight !=
-                  lines[i].frontsector->ceilingheight)
-        {
-          AM_drawMline(&l, (*mapcolor_cchg_p)); // ceiling level change
-        }
-        else if ((*mapcolor_flat_p) && dsda_RevealAutomap())
-        {
-          AM_drawMline(&l, (*mapcolor_flat_p)); //2S lines that appear only in IDDT
-        }
-      }
-    } // now draw the lines only visible because the player has computermap
-    else if (plr->powers[pw_allmap]) // computermap visible lines
-    {
-      if (!(lines[i].flags & ML_DONTDRAW)) // invisible flag lines do not show
-      {
-        if
-        (
-          (*mapcolor_flat_p)
-          ||
-          !lines[i].backsector
-          ||
-          lines[i].backsector->floorheight
-          != lines[i].frontsector->floorheight
-          ||
-          lines[i].backsector->ceilingheight
-          != lines[i].frontsector->ceilingheight
-        )
-          AM_drawMline(&l, (*mapcolor_unsn_p));
-      }
+      case ams_one_sided:
+        AM_drawMline(&l, (*mapcolor_wall_p));
+        continue;
+
+      case ams_secret:
+      case ams_unseen_secret:
+        AM_drawMline(&l, (*mapcolor_secr_p));
+        continue;
+
+      case ams_revealed_secret:
+        AM_drawMline(&l, (*mapcolor_revsecr_p));
+        continue;
+
+      case ams_teleport:
+        AM_drawMline(&l, (*mapcolor_tele_p));
+        continue;
+
+      case ams_closed_door:
+        AM_drawMline(&l, (*mapcolor_clsd_p));
+        continue;
+
+      case ams_floor_diff:
+        AM_drawMline(&l, (*mapcolor_fchg_p));
+        continue;
+
+      case ams_ceiling_diff:
+        AM_drawMline(&l, (*mapcolor_cchg_p));
+        continue;
+
+      case ams_two_sided:
+        AM_drawMline(&l, (*mapcolor_flat_p));
+        continue;
+
+      case ams_unseen:
+        AM_drawMline(&l, (*mapcolor_unsn_p));
+        continue;
     }
   }
 }
@@ -2481,9 +2539,9 @@ static void AM_setFrameVariables(void)
 // Passed nothing, returns nothing
 //
 
-void AM_Drawer (void)
+void AM_Drawer (dboolean minimap)
 {
-  if (!automap_active)
+  if (!automap_active && !minimap)
     return;
 
   V_BeginAutomapDraw();

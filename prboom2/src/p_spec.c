@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -67,9 +67,14 @@
 #include "dsda/args.h"
 #include "dsda/configuration.h"
 #include "dsda/global.h"
+#include "dsda/id_list.h"
 #include "dsda/line_special.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
+#include "dsda/messenger.h"
+#include "dsda/scroll.h"
 #include "dsda/thing_id.h"
+#include "dsda/utility.h"
 
 //
 //      source animation definition
@@ -869,90 +874,6 @@ sector_t *P_FindModelCeilingSector(fixed_t ceildestheight,int secnum)
   return NULL;
 }
 
-//
-// RETURN NEXT SECTOR # THAT LINE TAG REFERS TO
-//
-
-// Find the next sector with the same tag as a linedef.
-// Rewritten by Lee Killough to use chained hashing to improve speed
-
-int P_FindSectorFromLineTag(const line_t *line, int start)
-{
-  start = start >= 0 ? sectors[start].nexttag :
-    sectors[(unsigned) line->tag % (unsigned) numsectors].firsttag;
-  while (start >= 0 && sectors[start].tag != line->tag)
-    start = sectors[start].nexttag;
-  return start;
-}
-
-int P_FindSectorFromTag(int tag, int start)
-{
-  start = start >= 0 ? sectors[start].nexttag :
-    sectors[(unsigned) tag % (unsigned) numsectors].firsttag;
-  while (start >= 0 && sectors[start].tag != tag)
-    start = sectors[start].nexttag;
-  return start;
-}
-
-int P_FindSectorFromTagOrLine(int tag, const line_t *line, int start)
-{
-  if (tag == 0)
-  {
-    if (!line || !line->backsector || line->backsector->iSectorID == start)
-      return -1;
-
-    return line->backsector->iSectorID;
-  }
-  else
-    return P_FindSectorFromTag(tag, start);
-}
-
-// killough 4/16/98: Same thing, only for linedefs
-
-int P_FindLineFromLineTag(const line_t *line, int start)
-{
-  start = start >= 0 ? lines[start].nexttag :
-    lines[(unsigned) line->tag % (unsigned) numlines].firsttag;
-  while (start >= 0 && lines[start].tag != line->tag)
-    start = lines[start].nexttag;
-  return start;
-}
-
-int P_FindLineFromTag(int tag, int start)
-{
-  start = start >= 0 ? lines[start].nexttag :
-    lines[(unsigned) tag % (unsigned) numlines].firsttag;
-  while (start >= 0 && lines[start].tag != tag)
-    start = lines[start].nexttag;
-  return start;
-}
-
-// Hash the sector tags across the sectors and linedefs.
-static void P_InitTagLists(void)
-{
-  register int i;
-
-  for (i=numsectors; --i>=0; )        // Initially make all slots empty.
-    sectors[i].firsttag = -1;
-  for (i=numsectors; --i>=0; )        // Proceed from last to first sector
-    {                                 // so that lower sectors appear first
-      int j = (unsigned) sectors[i].tag % (unsigned) numsectors; // Hash func
-      sectors[i].nexttag = sectors[j].firsttag;   // Prepend sector to chain
-      sectors[j].firsttag = i;
-    }
-
-  // killough 4/17/98: same thing, only for linedefs
-
-  for (i=numlines; --i>=0; )        // Initially make all slots empty.
-    lines[i].firsttag = -1;
-  for (i=numlines; --i>=0; )        // Proceed from last to first linedef
-    {                               // so that lower linedefs appear first
-      int j = (unsigned) lines[i].tag % (unsigned) numlines; // Hash func
-      lines[i].nexttag = lines[j].firsttag;   // Prepend linedef to chain
-      lines[j].firsttag = i;
-    }
-}
-
 // Converts Hexen's 0 (meaning no crush) to the internal value
 int P_ConvertHexenCrush(int crush)
 {
@@ -1024,8 +945,8 @@ dboolean P_CanUnlockGenDoor
         !player->cards[it_yellowskull]
       )
       {
-        player->message = s_PD_ANY; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(s_PD_ANY, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1036,8 +957,8 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_redskull])
       )
       {
-        player->message = skulliscard? s_PD_REDK : s_PD_REDC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(skulliscard ? s_PD_REDK : s_PD_REDC, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1048,8 +969,8 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_blueskull])
       )
       {
-        player->message = skulliscard? s_PD_BLUEK : s_PD_BLUEC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(skulliscard ? s_PD_BLUEK : s_PD_BLUEC, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1060,8 +981,8 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_yellowskull])
       )
       {
-        player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWC; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(skulliscard ? s_PD_YELLOWK : s_PD_YELLOWC, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1072,8 +993,8 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_redcard])
       )
       {
-        player->message = skulliscard? s_PD_REDK : s_PD_REDS; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(skulliscard ? s_PD_REDK : s_PD_REDS, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1084,8 +1005,8 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_bluecard])
       )
       {
-        player->message = skulliscard? s_PD_BLUEK : s_PD_BLUES; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(skulliscard ? s_PD_BLUEK : s_PD_BLUES, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1096,8 +1017,8 @@ dboolean P_CanUnlockGenDoor
         (!skulliscard || !player->cards[it_yellowcard])
       )
       {
-        player->message = skulliscard? s_PD_YELLOWK : s_PD_YELLOWS; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(skulliscard ? s_PD_YELLOWK : s_PD_YELLOWS, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1115,8 +1036,8 @@ dboolean P_CanUnlockGenDoor
         )
       )
       {
-        player->message = s_PD_ALL6; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(s_PD_ALL6, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       if
@@ -1139,8 +1060,8 @@ dboolean P_CanUnlockGenDoor
         )
       )
       {
-        player->message = s_PD_ALL3; // Ty 03/27/98 - externalized
-        S_StartSound(player->mo,sfx_oof);             // killough 3/20/98
+        dsda_AddPlayerMessage(s_PD_ALL3, player);
+        S_StartMobjSound(player->mo,sfx_oof);             // killough 3/20/98
         return false;
       }
       break;
@@ -1148,10 +1069,17 @@ dboolean P_CanUnlockGenDoor
   return true;
 }
 
-dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
+dboolean P_CheckKeys(mobj_t *mo, zdoom_lock_t lock, dboolean legacy)
 {
-  if (!player)
+  player_t *player;
+  const char *message = NULL;
+  int sfx = sfx_None;
+  dboolean successful = true;
+
+  if (!mo || !mo->player)
     return false;
+
+  player = mo->player;
 
   switch (lock)
   {
@@ -1160,49 +1088,49 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
     case zk_red_card:
       if (!player->cards[it_redcard])
       {
-        player->message = s_PD_REDC;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_REDC : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_blue_card:
       if (!player->cards[it_bluecard])
       {
-        player->message = s_PD_BLUEC;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_BLUEC : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_yellow_card:
       if (!player->cards[it_yellowcard])
       {
-        player->message = s_PD_YELLOWC;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_YELLOWC : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_red_skull:
       if (!player->cards[it_redskull])
       {
-        player->message = s_PD_REDS;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_REDS : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_blue_skull:
       if (!player->cards[it_blueskull])
       {
-        player->message = s_PD_BLUES;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_BLUES : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_yellow_skull:
       if (!player->cards[it_yellowskull])
       {
-        player->message = s_PD_YELLOWS;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_YELLOWS : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_any:
@@ -1215,9 +1143,9 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
         !player->cards[it_yellowskull]
       )
       {
-        player->message = s_PD_ANY;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_ANY : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_all:
@@ -1230,36 +1158,36 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
         !player->cards[it_yellowskull]
       )
       {
-        player->message = s_PD_ALL6;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_ALL6 : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_red:
     case zk_redx:
       if (!player->cards[it_redcard] && !player->cards[it_redskull])
       {
-        player->message = s_PD_REDK;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_REDK : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_blue:
     case zk_bluex:
       if (!player->cards[it_bluecard] && !player->cards[it_blueskull])
       {
-        player->message = s_PD_BLUEK;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_BLUEK : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_yellow:
     case zk_yellowx:
       if (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
       {
-        player->message = s_PD_YELLOWK;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_YELLOWK : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
       break;
     case zk_each_color:
@@ -1269,15 +1197,25 @@ dboolean P_CanUnlockZDoomDoor(player_t *player, zdoom_lock_t lock)
         (!player->cards[it_yellowcard] && !player->cards[it_yellowskull])
       )
       {
-        player->message = s_PD_ALL3;
-        S_StartSound(player->mo, sfx_oof);
-        return false;
+        message = legacy ? s_PD_ALL3 : NULL;
+        sfx = legacy ? sfx_oof : sfx_None;
+        successful = false;
       }
     default:
       break;
   }
 
-  return true;
+  if (message)
+  {
+    dsda_AddPlayerMessage(message, player);
+  }
+
+  if (sfx != sfx_None)
+  {
+    S_StartMobjSound(mo, sfx);
+  }
+
+  return successful;
 }
 
 
@@ -1308,6 +1246,51 @@ dboolean PUREFUNC P_LightingActive(const sector_t *sec)
   return sec->lightingdata != NULL;
 }
 
+short P_FloorLightLevel(const sector_t *sec)
+{
+  return sec->lightlevel_floor + (
+    (sec->flags & SECF_LIGHTFLOORABSOLUTE) ? 0 : (
+      sec->floorlightsec == -1 ? sec->lightlevel
+                               : sectors[sec->floorlightsec].lightlevel
+    )
+  );
+}
+
+short P_CeilingLightLevel(const sector_t *sec)
+{
+  return sec->lightlevel_ceiling + (
+    (sec->flags & SECF_LIGHTCEILINGABSOLUTE) ? 0 : (
+      sec->ceilinglightsec == -1 ? sec->lightlevel
+                               : sectors[sec->ceilinglightsec].lightlevel
+    )
+  );
+}
+
+dboolean P_FloorPlanesDiffer(const sector_t *sec, const sector_t *other)
+{
+  return sec->floorpic != other->floorpic ||
+         sec->floor_xoffs != other->floor_xoffs ||
+         sec->floor_yoffs != other->floor_yoffs ||
+         sec->floor_rotation != other->floor_rotation ||
+         sec->floor_xscale != other->floor_xscale ||
+         sec->floor_yscale != other->floor_yscale ||
+         sec->special != other->special ||
+         sec->floorlightsec != other->floorlightsec ||
+         P_FloorLightLevel(sec) != P_FloorLightLevel(other);
+}
+
+dboolean P_CeilingPlanesDiffer(const sector_t *sec, const sector_t *other)
+{
+  return sec->ceilingpic != other->ceilingpic ||
+         sec->ceiling_xoffs != other->ceiling_xoffs ||
+         sec->ceiling_yoffs != other->ceiling_yoffs ||
+         sec->ceiling_rotation != other->ceiling_rotation ||
+         sec->ceiling_xscale != other->ceiling_xscale ||
+         sec->ceiling_yscale != other->ceiling_yscale ||
+         sec->ceilinglightsec != other->ceilinglightsec ||
+         P_CeilingLightLevel(sec) != P_CeilingLightLevel(other);
+}
+
 //
 // P_CheckTag()
 //
@@ -1324,7 +1307,7 @@ int P_CheckTag(line_t *line)
 {
   /* tag not zero, allowed, or
    * killough 11/98: compatibility option */
-  if (comp[comp_zerotags] || line->tag || comperr(comperr_zerotag))//e6y
+  if (comp[comp_zerotags] || line->tag)//e6y
     return 1;
 
   switch(line->special)
@@ -1454,17 +1437,29 @@ static void P_AddSectorSecret(sector_t *sector)
   sector->flags |= SECF_SECRET | SECF_WASSECRET;
 }
 
-static void P_CollectSecretCommon(sector_t *sector, player_t *player)
+void P_AddMobjSecret(mobj_t *mobj)
+{
+  totalsecret++;
+  mobj->flags2 |= MF2_COUNTSECRET;
+}
+
+void P_PlayerCollectSecret(player_t *player)
 {
   player->secretcount++;
-  sector->flags &= ~SECF_SECRET;
 
   if (dsda_IntConfig(dsda_config_hudadd_secretarea))
   {
     int sfx_id = raven ? g_sfx_secret :
                  I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
-    SetCustomMessage(player - players, STSTR_SECRETFOUND, 0, 2 * TICRATE, CR_GOLD, sfx_id);
+    SetCustomMessage(player - players, "A secret is revealed!", 2 * TICRATE, sfx_id);
   }
+}
+
+static void P_CollectSecretCommon(sector_t *sector, player_t *player)
+{
+  sector->flags &= ~SECF_SECRET;
+
+  P_PlayerCollectSecret(player);
 
   dsda_WatchSecret();
 }
@@ -1524,25 +1519,19 @@ dboolean PUREFUNC P_RevealedSecret(const sector_t *sec)
   return P_WasSecret(sec) && !P_IsSecret(sec);
 }
 
-// TODO: account for map / cluster info (zdoom: CheckIfExitIsGood)
-dboolean P_CanExit(mobj_t *mo)
-{
-  return !(mo && mo->player && mo->player->playerstate == PST_DEAD);
-}
-
 void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction)
 {
   if (thing->player)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_CROSS);
+    P_ActivateLine(line, thing, side, SPAC_CROSS);
   }
   else if (thing->flags2 & MF2_MCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
   }
   else if (thing->flags2 & MF2_PCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_PCROSS);
+    P_ActivateLine(line, thing, side, SPAC_PCROSS);
   }
 }
 
@@ -1621,7 +1610,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if ((line->special & FloorChange) || !(line->special & FloorModel))
           return;     // FloorModel is "Allow Monsters" if FloorChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenFloor;
     }
@@ -1630,7 +1619,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if ((line->special & CeilingChange) || !(line->special & CeilingModel))
           return;     // CeilingModel is "Allow Monsters" if CeilingChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenCeiling;
     }
@@ -1643,7 +1632,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
         if (line->flags & ML_SECRET) // they can't open secret doors either
           return;
       }
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //3/2/98 move outside the monster check
+      if (!line->tag) //3/2/98 move outside the monster check
         return;
       linefunc = EV_DoGenDoor;
     }
@@ -1665,7 +1654,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if (!(line->special & LiftMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenLift;
     }
@@ -1674,7 +1663,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenStairs;
     }
@@ -1685,7 +1674,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
       if (!thing->player && !bossaction)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all walk generalized types require tag
+      if (!line->tag) //jff 2/27/98 all walk generalized types require tag
         return;
       linefunc = EV_DoGenCrusher;
     }
@@ -2481,21 +2470,25 @@ void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bos
 {
   if (thing->player)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_CROSS);
+    P_ActivateLine(line, thing, side, SPAC_CROSS);
   }
   else if (thing->flags2 & MF2_MCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
   }
   else if (thing->flags2 & MF2_PCROSS)
   {
-    P_ActivateLine(line, thing, side, ML_SPAC_PCROSS);
+    P_ActivateLine(line, thing, side, SPAC_PCROSS);
   }
   else if (line->special == zl_teleport ||
            line->special == zl_teleport_no_fog ||
            line->special == zl_teleport_line)
   { // [RH] Just a little hack for BOOM compatibility
-    P_ActivateLine(line, thing, side, ML_SPAC_MCROSS);
+    P_ActivateLine(line, thing, side, SPAC_MCROSS);
+  }
+  else
+  {
+    P_ActivateLine(line, thing, side, SPAC_ANYCROSS);
   }
 }
 
@@ -2529,7 +2522,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if ((line->special & FloorChange) || !(line->special & FloorModel))
           return;   // FloorModel is "Allow Monsters" if FloorChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
 
       linefunc = EV_DoGenFloor;
@@ -2539,7 +2532,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if ((line->special & CeilingChange) || !(line->special & CeilingModel))
           return;   // CeilingModel is "Allow Monsters" if CeilingChange is 0
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenCeiling;
     }
@@ -2552,7 +2545,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
         if (line->flags & ML_SECRET) // they can't open secret doors either
           return;
       }
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 3/2/98 all gun generalized types require tag
+      if (!line->tag) //jff 3/2/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenDoor;
     }
@@ -2567,7 +2560,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       }
       else
         return;
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
 
       linefunc = EV_DoGenLockedDoor;
@@ -2584,7 +2577,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenStairs;
     }
@@ -2593,7 +2586,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
       if (!thing->player)
         if (!(line->special & StairMonster))
           return; // monsters disallowed
-      if (!comperr(comperr_zerotag) && !line->tag) //e6y //jff 2/27/98 all gun generalized types require tag
+      if (!line->tag) //jff 2/27/98 all gun generalized types require tag
         return;
       linefunc = EV_DoGenCrusher;
     }
@@ -2684,7 +2677,7 @@ void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line)
 
 void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line)
 {
-  P_ActivateLine(line, thing, 0, ML_SPAC_IMPACT);
+  P_ActivateLine(line, thing, 0, SPAC_IMPACT);
 }
 
 static void P_ApplySectorDamage(player_t *player, int damage, int leak)
@@ -3113,12 +3106,12 @@ void P_UpdateSpecials (void)
         {
           /* don't take the address of the switch's sound origin,
            * unless in a compatibility mode. */
-          mobj_t *so = (mobj_t *)buttonlist[i].soundorg;
+          degenmobj_t *so = buttonlist[i].soundorg;
           if (comp[comp_sound] || compatibility_level < prboom_6_compatibility)
             /* since the buttonlist array is usually zeroed out,
              * button popouts generally appear to come from (0,0) */
-            so = (mobj_t *)&buttonlist[i].soundorg;
-          S_StartSound(so, g_sfx_swtchn);
+            so = (degenmobj_t *) &buttonlist[i].soundorg;
+          S_StartLineSound(buttonlist[i].line, so, g_sfx_swtchn);
         }
         memset(&buttonlist[i],0,sizeof(button_t));
       }
@@ -3130,41 +3123,6 @@ void P_UpdateSpecials (void)
 // Sector and Line special thinker spawning at level startup
 //
 //////////////////////////////////////////////////////////////////////
-
-//
-// Add_Scroller()
-//
-// Add a generalized scroller to the thinker list.
-//
-// type: the enumerated type of scrolling: floor, ceiling, floor carrier,
-//   wall, floor carrier & scroller
-//
-// (dx,dy): the direction and speed of the scrolling or its acceleration
-//
-// control: the sector whose heights control this scroller's effect
-//   remotely, or -1 if no control sector
-//
-// affectee: the index of the affected object (sector or sidedef)
-//
-// accel: non-zero if this is an accelerative effect
-//
-
-static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
-                         int control, int affectee, int accel)
-{
-  scroll_t *s = Z_MallocLevel(sizeof *s);
-  s->thinker.function = T_Scroll;
-  s->type = type;
-  s->dx = dx;
-  s->dy = dy;
-  s->accel = accel;
-  s->vdx = s->vdy = 0;
-  if ((s->control = control) != -1)
-    s->last_height =
-      sectors[control].floorheight + sectors[control].ceilingheight;
-  s->affectee = affectee;
-  P_AddThinker(&s->thinker);
-}
 
 //
 // P_SpawnSpecials
@@ -3348,7 +3306,7 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
   switch (sector->special)
   {
     case zs_d_scroll_east_lava_damage:
-      Add_Scroller(sc_floor, -4, 0, -1, sector - sectors, 0);
+      dsda_AddFloorScroller(-4, 0, sector - sectors, 0);
       P_SetupSectorDamage(sector, 5, 32, 0, SECF_DMGTERRAINFX | SECF_DMGUNBLOCKABLE);
       break;
     case zs_s_light_strobe_hurt:
@@ -3414,10 +3372,6 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
       sector->flags |= SECF_HIDDEN;
       sector->special = 0;
       break;
-    case zs_sky2:
-      // sector->sky = PL_SKYFLAT;
-      sector->special = 0;
-      break;
     default:
       if (sector->special >= zs_scroll_north_slow &&
           sector->special <= zs_scroll_southwest_fast)
@@ -3440,28 +3394,17 @@ void P_SpawnZDoomSectorSpecial(sector_t *sector, int i)
         i = sector->special - zs_scroll_north_slow;
         dx = FixedDiv(hexenScrollies[i][0] << FRACBITS, 2);
         dy = FixedDiv(hexenScrollies[i][1] << FRACBITS, 2);
-        Add_Scroller(sc_floor, dx, dy, -1, sector - sectors, 0);
+        dsda_AddFloorScroller(dx, dy, sector - sectors, 0);
       }
       else if (sector->special >= zs_carry_east5 &&
             sector->special <= zs_carry_east35)
       { // Heretic scroll special
         // Only east scrollers also scroll the texture
         fixed_t dx = FixedDiv((1 << (sector->special - zs_carry_east5)) << FRACBITS, 2);
-        Add_Scroller(sc_floor, dx, 0, -1, sector - sectors, 0);
+        dsda_AddFloorScroller(dx, 0, sector - sectors, 0);
       }
       break;
   }
-}
-
-static void P_TransferLineArgs(line_t *l, byte *args)
-{
-  // Construct args[] array to contain the arguments from the line, as we
-  // cannot rely on struct field ordering and layout.
-  args[0] = l->arg1;
-  args[1] = l->arg2;
-  args[2] = l->arg3;
-  args[3] = l->arg4;
-  args[4] = l->arg5;
 }
 
 static void P_SpawnVanillaExtras(void)
@@ -3473,19 +3416,23 @@ static void P_SpawnVanillaExtras(void)
     for (i = 0; i < numlines; ++i)
       switch (lines[i].special)
       {
-        int s;
+        const int *id_p;
 
         case 271:   // Regular sky
         case 272:   // Same, only flipped
-          for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-            sectors[s].sky = i | PL_SKYFLAT;
+          FIND_SECTORS(id_p, lines[i].tag)
+          {
+            sectors[*id_p].floorsky = i | PL_SKYFLAT_LINE;
+            sectors[*id_p].ceilingsky = i | PL_SKYFLAT_LINE;
+          }
         break;
       }
 }
 
 void P_SpawnCompatibleExtra(line_t *l, int i)
 {
-  int s, sec;
+  const int *id_p;
+  int sec;
 
   switch (l->special)
   {
@@ -3493,24 +3440,24 @@ void P_SpawnCompatibleExtra(line_t *l, int i)
     // support for drawn heights coming from different sector
     case 242:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].heightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].heightsec = sec;
       break;
 
     // killough 3/16/98: Add support for setting
     // floor lighting independently (e.g. lava)
     case 213:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].floorlightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].floorlightsec = sec;
       break;
 
     // killough 4/11/98: Add support for setting
     // ceiling lighting independently
     case 261:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].ceilinglightsec = sec;
+      FIND_SECTORS(id_p, lines[i].tag)
+        sectors[*id_p].ceilinglightsec = sec;
       break;
 
       // killough 10/98:
@@ -3524,15 +3471,19 @@ void P_SpawnCompatibleExtra(line_t *l, int i)
 
     case 271:   // Regular sky
     case 272:   // Same, only flipped
-      for (s = -1; (s = P_FindSectorFromLineTag(lines + i, s)) >= 0;)
-        sectors[s].sky = i | PL_SKYFLAT;
+      FIND_SECTORS(id_p, lines[i].tag)
+      {
+        sectors[*id_p].floorsky = i | PL_SKYFLAT_LINE;
+        sectors[*id_p].ceilingsky = i | PL_SKYFLAT_LINE;
+      }
       break;
   }
 }
 
 void P_SpawnZDoomExtra(line_t *l, int i)
 {
-  int s, sec;
+  const int *id_p;
+  int sec;
 
   switch (l->special)
   {
@@ -3540,83 +3491,36 @@ void P_SpawnZDoomExtra(line_t *l, int i)
     // support for drawn heights coming from different sector
     case zl_transfer_heights:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].heightsec = sec;
+      FIND_SECTORS(id_p, l->special_args[0])
+        sectors[*id_p].heightsec = sec;
       break;
 
     // killough 3/16/98: Add support for setting
     // floor lighting independently (e.g. lava)
     case zl_transfer_floor_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].floorlightsec = sec;
+      FIND_SECTORS(id_p, l->special_args[0])
+        sectors[*id_p].floorlightsec = sec;
       break;
 
     // killough 4/11/98: Add support for setting
     // ceiling lighting independently
     case zl_transfer_ceiling_light:
       sec = sides[*l->sidenum].sector->iSectorID;
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        sectors[s].ceilinglightsec = sec;
-      break;
-
-    // [Graf Zahl] Add support for setting lighting
-    // per wall independently
-    case zl_transfer_wall_light:
-      // new DWallLightTransfer (lines[i].frontsector, lines[i].args[0], lines[i].args[1]);
-      break;
-
-    case zl_sector_attach_3d_midtex:
-      // P_Attach3dMidtexLinesToSector(lines[i].frontsector, lines[i].args[0], lines[i].args[1], !!lines[i].args[2]);
-      break;
-
-    case zl_sector_set_link:
-      // if (lines[i].args[0] == 0)
-      // {
-      //   P_AddSectorLinks(lines[i].frontsector, lines[i].args[1], lines[i].args[2], lines[i].args[3]);
-      // }
-      break;
-
-    case zl_sector_set_portal:
-      // arg 0 = sector tag
-      // arg 1 = type
-      //  - 0: normal (handled here)
-      //  - 1: copy (handled by the portal they copy)
-      //  - 2: EE-style skybox (handled by the camera object)
-      //  - 3: EE-style flat portal (GZDoom HW renderer only for now)
-      //  - 4: EE-style horizon portal (GZDoom HW renderer only for now)
-      //  - 5: copy portal to line (GZDoom HW renderer only for now)
-      //  - 6: linked portal
-      //  other values reserved for later use
-      // arg 2 = 0:floor, 1:ceiling, 2:both
-      // arg 3 = 0: anchor, 1: reference line
-      // arg 4 = for the anchor only: alpha
-      // if ((lines[i].args[1] == 0 || lines[i].args[1] == 6) && lines[i].args[3] == 0)
-      // {
-      //   P_SpawnPortal(&lines[i], lines[i].args[0], lines[i].args[2], lines[i].args[4], lines[i].args[1]);
-      // }
-      // else if (lines[i].args[1] == 3 || lines[i].args[1] == 4)
-      // {
-      //   line_t *line = &lines[i];
-      //   unsigned pnum = P_GetPortal(line->args[1] == 3 ? PORTS_PLANE : PORTS_HORIZON, line->args[2], line->frontsector, NULL, { 0,0 });
-      //   CopyPortal(line->args[0], line->args[2], pnum, 0, true);
-      // }
-      break;
-
-    case zl_line_set_portal:
-      // P_SpawnLinePortal(&lines[i]);
+      FIND_SECTORS(id_p, l->special_args[0])
+        sectors[*id_p].ceilinglightsec = sec;
       break;
 
     // [RH] ZDoom Static_Init settings
     case zl_static_init:
-      switch (l->arg2)
+      switch (l->special_args[1])
       {
         case zi_init_gravity:
         {
           fixed_t grav = FixedDiv(P_AproxDistance(l->dx, l->dy), 100 * FRACUNIT);
           sec = sides[*l->sidenum].sector->iSectorID;
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-            sectors[s].gravity = grav;
+          FIND_SECTORS(id_p, l->special_args[0])
+            sectors[*id_p].gravity = grav;
         }
         break;
 
@@ -3644,18 +3548,13 @@ void P_SpawnZDoomExtra(line_t *l, int i)
           }
 
           sec = sides[*l->sidenum].sector->iSectorID;
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+          FIND_SECTORS(id_p, l->special_args[0])
           {
-            sectors[s].damage = damage;
-            sectors[s].flags |= flags;
+            sectors[*id_p].damage = damage;
+            sectors[*id_p].flags |= flags;
           }
         }
         break;
-
-        case zi_init_sector_link:
-          // if (lines[i].args[3] == 0)
-          //   P_AddSectorLinksByID(lines[i].frontsector, lines[i].args[0], lines[i].args[2]);
-          break;
 
         // killough 10/98:
         //
@@ -3666,8 +3565,11 @@ void P_SpawnZDoomExtra(line_t *l, int i)
         // linedef). Still requires user to use F_SKY1 for the floor
         // or ceiling texture, to distinguish floor and ceiling sky.
         case zi_init_transfer_sky:
-          for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-            sectors[s].sky = i | PL_SKYFLAT;
+          FIND_SECTORS(id_p, l->special_args[0])
+          {
+            sectors[*id_p].floorsky = i | PL_SKYFLAT_LINE;
+            sectors[*id_p].ceilingsky = i | PL_SKYFLAT_LINE;
+          }
           break;
       }
       break;
@@ -3742,7 +3644,6 @@ void P_SpawnSpecials (void)
   P_RemoveAllActivePlats();     // killough
 
   P_InitButtons();
-  P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
   P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 
@@ -3753,106 +3654,6 @@ void P_SpawnSpecials (void)
   P_SpawnExtras();
 
   // MAP_FORMAT_TODO: Start "Open" scripts
-}
-
-// killough 2/28/98:
-//
-// This function, with the help of r_plane.c and r_bsp.c, supports generalized
-// scrolling floors and walls, with optional mobj-carrying properties, e.g.
-// conveyor belts, rivers, etc. A linedef with a special type affects all
-// tagged sectors the same way, by creating scrolling and/or object-carrying
-// properties. Multiple linedefs may be used on the same sector and are
-// cumulative, although the special case of scrolling a floor and carrying
-// things on it, requires only one linedef. The linedef's direction determines
-// the scrolling direction, and the linedef's length determines the scrolling
-// speed. This was designed so that an edge around the sector could be used to
-// control the direction of the sector's scrolling, which is usually what is
-// desired.
-//
-// Process the active scrollers.
-//
-// This is the main scrolling code
-// killough 3/7/98
-
-void T_Scroll(scroll_t *s)
-{
-  fixed_t dx = s->dx, dy = s->dy;
-
-  if (s->control != -1)
-    {   // compute scroll amounts based on a sector's height changes
-      fixed_t height = sectors[s->control].floorheight +
-        sectors[s->control].ceilingheight;
-      fixed_t delta = height - s->last_height;
-      s->last_height = height;
-      dx = FixedMul(dx, delta);
-      dy = FixedMul(dy, delta);
-    }
-
-  // killough 3/14/98: Add acceleration
-  if (s->accel)
-    {
-      s->vdx = dx += s->vdx;
-      s->vdy = dy += s->vdy;
-    }
-
-  if (!(dx | dy))                   // no-op if both (x,y) offsets 0
-    return;
-
-  switch (s->type)
-    {
-      side_t *side;
-      sector_t *sec;
-      fixed_t height, waterheight;  // killough 4/4/98: add waterheight
-      msecnode_t *node;
-      mobj_t *thing;
-
-    case sc_side:                   // killough 3/7/98: Scroll wall texture
-        side = sides + s->affectee;
-        side->textureoffset += dx;
-        side->rowoffset += dy;
-        break;
-
-    case sc_floor:                  // killough 3/7/98: Scroll floor texture
-        sec = sectors + s->affectee;
-        sec->floor_xoffs += dx;
-        sec->floor_yoffs += dy;
-        break;
-
-    case sc_ceiling:               // killough 3/7/98: Scroll ceiling texture
-        sec = sectors + s->affectee;
-        sec->ceiling_xoffs += dx;
-        sec->ceiling_yoffs += dy;
-        break;
-
-    case sc_carry:
-
-      // killough 3/7/98: Carry things on floor
-      // killough 3/20/98: use new sector list which reflects true members
-      // killough 3/27/98: fix carrier bug
-      // killough 4/4/98: Underwater, carry things even w/o gravity
-
-      sec = sectors + s->affectee;
-      height = sec->floorheight;
-      waterheight = sec->heightsec != -1 &&
-        sectors[sec->heightsec].floorheight > height ?
-        sectors[sec->heightsec].floorheight : INT_MIN;
-
-      for (node = sec->touching_thinglist; node; node = node->m_snext)
-        if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
-            (!(thing->flags & MF_NOGRAVITY || thing->z > height) ||
-             thing->z < waterheight))
-          {
-            // Move objects only if on floor or underwater,
-            // non-floating, and clipped.
-            thing->momx += dx;
-            thing->momy += dy;
-            thing->intflags |= MIF_SCROLLING;
-          }
-      break;
-
-    case sc_carry_ceiling:       // to be added later
-      break;
-    }
 }
 
 // Adds wall scroller. Scroll amount is rotated with respect to wall's
@@ -3868,21 +3669,28 @@ void T_Scroll(scroll_t *s)
 static void Add_WallScroller(fixed_t dx, fixed_t dy, const line_t *l,
                              int control, int accel)
 {
-  fixed_t x = D_abs(l->dx), y = D_abs(l->dy), d;
+  fixed_t x = D_abs(l->dx);
+  fixed_t y = D_abs(l->dy);
+  fixed_t d;
+
   if (y > x)
     d = x, x = y, y = d;
-  d = FixedDiv(x, finesine[(tantoangle[FixedDiv(y,x) >> DBITS] + ANG90)
-                          >> ANGLETOFINESHIFT]);
+
+  d = FixedDiv(x, finesine[(tantoangle[FixedDiv(y,x) >> DBITS] + ANG90) >> ANGLETOFINESHIFT]);
 
   // CPhipps - Import scroller calc overflow fix, compatibility optioned
-  if (compatibility_level >= lxdoom_1_compatibility) {
-    x = (fixed_t)(((int64_t)dy * -(int64_t)l->dy - (int64_t)dx * (int64_t)l->dx) / (int64_t)d);  // killough 10/98:
-    y = (fixed_t)(((int64_t)dy * (int64_t)l->dx - (int64_t)dx * (int64_t)l->dy) / (int64_t)d);   // Use long long arithmetic
-  } else {
+  if (compatibility_level >= lxdoom_1_compatibility)
+  {
+    x = (fixed_t) (((int64_t) dy * -l->dy - (int64_t) dx * l->dx) / d);
+    y = (fixed_t) (((int64_t) dy * l->dx - (int64_t) dx * l->dy) / d);
+  }
+  else
+  {
     x = -FixedDiv(FixedMul(dy, l->dy) + FixedMul(dx, l->dx), d);
     y = -FixedDiv(FixedMul(dx, l->dy) - FixedMul(dy, l->dx), d);
   }
-  Add_Scroller(sc_side, x, y, control, *l->sidenum, accel);
+
+  dsda_AddControlSideScroller(x, y, control, *l->sidenum, accel, 0);
 }
 
 // Amount (dx,dy) vector linedef is shifted right to get scroll amount
@@ -3923,17 +3731,18 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
 
   switch (special)
   {
-    register int s;
+    int side;
+    const int *id_p;
 
     case 250:   // scroll effect ceiling
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        dsda_AddControlCeilingScroller(-dx, dy, control, *id_p, accel, 0);
       break;
 
     case 251:   // scroll effect floor
     case 253:   // scroll and carry objects on floor
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        dsda_AddControlFloorScroller(-dx, dy, control, *id_p, accel, 0);
       if (special != 253)
         break;
       // fallthrough
@@ -3941,29 +3750,21 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
     case 252: // carry objects on floor
       dx = FixedMul(dx, CARRYFACTOR);
       dy = FixedMul(dy, CARRYFACTOR);
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Scroller(sc_carry, dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->tag)
+        dsda_AddControlFloorCarryScroller(dx, dy, control, *id_p, accel, 0);
       break;
 
       // killough 3/1/98: scroll wall according to linedef
       // (same direction and speed as scrolling floors)
     case 254:
-      if (l->tag == 0 && comperr(comperr_zerotag))
-      {
-        Add_WallScroller(dx, dy, l, control, accel);
-      }
-      else
-      {
-        for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
-          if (s != i)
-            Add_WallScroller(dx, dy, lines + s, control, accel);
-      }
+      for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          Add_WallScroller(dx, dy, lines + *id_p, control, accel);
       break;
 
     case 255:    // killough 3/2/98: scroll according to sidedef offsets
-      s = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[s].textureoffset,
-                   sides[s].rowoffset, -1, s, accel);
+      side = lines[i].sidenum[0];
+      dsda_AddSideScroller(-sides[side].textureoffset, sides[side].rowoffset, side, 0);
       break;
 
     case 1024: // special 255 with tag control
@@ -3978,21 +3779,21 @@ void P_SpawnCompatibleScroller(line_t *l, int i)
       if (special == 1026)
         accel = 1;
 
-      s = lines[i].sidenum[0];
-      dx = -sides[s].textureoffset / 8;
-      dy = sides[s].rowoffset / 8;
-      for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
-        if (s != i)
-          Add_Scroller(sc_side, dx, dy, control, lines[s].sidenum[0], accel);
+      side = lines[i].sidenum[0];
+      dx = -sides[side].textureoffset / 8;
+      dy = sides[side].rowoffset / 8;
+      for (id_p = dsda_FindLinesFromID(l->tag); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          dsda_AddControlSideScroller(dx, dy, control, lines[*id_p].sidenum[0], accel, 0);
 
       break;
 
     case 48:                  // scroll first side
-      Add_Scroller(sc_side,  FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
+      dsda_AddSideScroller(FRACUNIT, 0, lines[i].sidenum[0], 0);
       break;
 
     case 85:                  // jff 1/30/98 2-way scroll
-      Add_Scroller(sc_side, -FRACUNIT, 0, -1, lines[i].sidenum[0], accel);
+      dsda_AddSideScroller(-FRACUNIT, 0, lines[i].sidenum[0], 0);
       break;
   }
 }
@@ -4024,7 +3825,7 @@ static void P_InitCopyScrollers(void)
     {
       // don't allow copying the scroller if the sector has the same tag
       //   as it would just duplicate it.
-      if (l->frontsector->tag == l->arg1)
+      if (l->frontsector->tag == l->special_args[0])
         P_AddCopyScroller(l);
 
       l->special = 0;
@@ -4052,16 +3853,16 @@ void P_SpawnZDoomScroller(line_t *l, int i)
       special == zl_scroll_floor   ||
       special == zl_scroll_texture_model)
   {
-    if (l->arg2 & 3)
+    if (l->special_args[1] & 3)
     {
       // if 1, then displacement
       // if 2, then accelerative (also if 3)
       control = sides[*l->sidenum].sector->iSectorID;
-      if (l->arg2 & 2)
+      if (l->special_args[1] & 2)
         accel = 1;
     }
 
-    if (special == zl_scroll_texture_model || l->arg2 & 4)
+    if (special == zl_scroll_texture_model || l->special_args[1] & 4)
     {
       // The line housing the special controls the
       // direction and speed of scrolling.
@@ -4071,57 +3872,58 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     else
     {
       // The speed and direction are parameters to the special.
-      dx = (fixed_t) (l->arg4 - 128) * FRACUNIT / 32;
-      dy = (fixed_t) (l->arg5 - 128) * FRACUNIT / 32;
+      dx = (fixed_t) (l->special_args[3] - 128) * FRACUNIT / 32;
+      dy = (fixed_t) (l->special_args[4] - 128) * FRACUNIT / 32;
     }
   }
 
   switch (special)
   {
-    int s;
+    int j;
+    const int *id_p;
 
     case zl_scroll_ceiling:
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Scroller(sc_ceiling, -dx, dy, control, s, accel);
+      FIND_SECTORS(id_p, l->special_args[0])
+        dsda_AddControlCeilingScroller(-dx, dy, control, *id_p, accel, 0);
 
-      for (s = 0; s < copyscroller_count; ++s)
+      for (j = 0; j < copyscroller_count; ++j)
       {
-        line_t *cs = copyscrollers[s];
+        line_t *cs = copyscrollers[j];
 
-        if (cs->arg1 == l->arg1 && cs->arg2 & 1)
-          Add_Scroller(sc_ceiling, -dx, dy, control, cs->frontsector->iSectorID, accel);
+        if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 1)
+          dsda_AddControlCeilingScroller(-dx, dy, control, cs->frontsector->iSectorID, accel, 0);
       }
 
       l->special = 0;
       break;
     case zl_scroll_floor:
-      if (l->arg3 != 1)
+      if (l->special_args[2] != 1)
       { // scroll the floor texture
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-          Add_Scroller(sc_floor, -dx, dy, control, s, accel);
+        FIND_SECTORS(id_p, l->special_args[0])
+          dsda_AddControlFloorScroller(-dx, dy, control, *id_p, accel, 0);
 
-        for (s = 0; s < copyscroller_count; ++s)
+        for (j = 0; j < copyscroller_count; ++j)
         {
-          line_t *cs = copyscrollers[s];
+          line_t *cs = copyscrollers[j];
 
-          if (cs->arg1 == l->arg1 && cs->arg2 & 2)
-            Add_Scroller(sc_floor, -dx, dy, control, cs->frontsector->iSectorID, accel);
+          if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 2)
+            dsda_AddControlFloorScroller(-dx, dy, control, cs->frontsector->iSectorID, accel, 0);
         }
       }
 
-      if (l->arg3 > 0)
+      if (l->special_args[2] > 0)
       { // carry objects on the floor
         dx = FixedMul(dx, CARRYFACTOR);
         dy = FixedMul(dy, CARRYFACTOR);
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-          Add_Scroller(sc_carry, dx, dy, control, s, accel);
+        FIND_SECTORS(id_p, l->special_args[0])
+          dsda_AddControlFloorCarryScroller(dx, dy, control, *id_p, accel, 0);
 
-        for (s = 0; s < copyscroller_count; ++s)
+        for (j = 0; j < copyscroller_count; ++j)
         {
-          line_t *cs = copyscrollers[s];
+          line_t *cs = copyscrollers[j];
 
-          if (cs->arg1 == l->arg1 && cs->arg2 & 4)
-            Add_Scroller(sc_carry, dx, dy, control, cs->frontsector->iSectorID, accel);
+          if (cs->special_args[0] == l->special_args[0] && cs->special_args[1] & 4)
+            dsda_AddControlFloorCarryScroller(dx, dy, control, cs->frontsector->iSectorID, accel, 0);
         }
       }
 
@@ -4130,46 +3932,41 @@ void P_SpawnZDoomScroller(line_t *l, int i)
     case zl_scroll_texture_model:
       // killough 3/1/98: scroll wall according to linedef
       // (same direction and speed as scrolling floors)
-      for (s = -1; (s = P_FindLineFromTag(l->arg1, s)) >= 0;)
-        if (s != i)
-          Add_WallScroller(dx, dy, lines + s, control, accel);
+      for (id_p = dsda_FindLinesFromID(l->special_args[0]); *id_p >= 0; id_p++)
+        if (*id_p != i)
+          Add_WallScroller(dx, dy, lines + *id_p, control, accel);
 
       l->special = 0;
       break;
     case zl_scroll_texture_offsets:
       // killough 3/2/98: scroll according to sidedef offsets
-      // MAP_FORMAT_TODO: l->arg1 SCROLLTYPE
-      s = lines[i].sidenum[0];
-      Add_Scroller(sc_side, -sides[s].textureoffset, sides[s].rowoffset, -1, s, accel);
+      j = lines[i].sidenum[0];
+      dsda_AddSideScroller(-sides[j].textureoffset, sides[j].rowoffset, j, l->special_args[0]);
       l->special = 0;
       break;
     case zl_scroll_texture_left:
-      s = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, l->arg1 / 64, 0, -1, s, accel);
+      j = lines[i].sidenum[0];
+      dsda_AddSideScroller(FRACUNIT * l->special_args[0] / 64, 0, j, l->special_args[1]);
       break;
     case zl_scroll_texture_right:
-      s = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, -l->arg1 / 64, 0, -1, s, accel);
+      j = lines[i].sidenum[0];
+      dsda_AddSideScroller(-FRACUNIT * l->special_args[0] / 64, 0, j, l->special_args[1]);
       break;
     case zl_scroll_texture_up:
-      s = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, 0, l->arg1 / 64, -1, s, accel);
+      j = lines[i].sidenum[0];
+      dsda_AddSideScroller(0, FRACUNIT * l->special_args[0] / 64, j, l->special_args[1]);
       break;
     case zl_scroll_texture_down:
-      s = lines[i].sidenum[0];
-      // MAP_FORMAT_TODO: l->arg2 SCROLLTYPE
-      Add_Scroller(sc_side, 0, -l->arg1 / 64, -1, s, accel);
+      j = lines[i].sidenum[0];
+      dsda_AddSideScroller(0, -FRACUNIT * l->special_args[0] / 64, j, l->special_args[1]);
       break;
     case zl_scroll_texture_both:
-      s = lines[i].sidenum[0];
+      j = lines[i].sidenum[0];
 
-      if (l->arg1 == 0) {
-        dx = (l->arg2 - l->arg3) / 64;
-        dy = (l->arg5 - l->arg4) / 64;
-        Add_Scroller(sc_side, dx, dy, -1, s, accel);
+      if (l->special_args[0] == 0) {
+        dx = FRACUNIT * (l->special_args[1] - l->special_args[2]) / 64;
+        dy = FRACUNIT * (l->special_args[4] - l->special_args[3]) / 64;
+        dsda_AddSideScroller(dx, dy, j, 0);
       }
 
       l->special = 0;
@@ -4319,9 +4116,30 @@ void T_Friction(friction_t *f)
 //
 // Initialize the sectors where friction is increased or decreased
 
+void P_ResolveFrictionFactor(fixed_t friction_factor, sector_t *sec)
+{
+  sec->friction = friction_factor;
+
+  if (sec->friction > FRACUNIT)
+    sec->friction = FRACUNIT;
+  else if (sec->friction < 0)
+    sec->friction = 0;
+
+  if (sec->friction > ORIG_FRICTION) // ice
+    sec->movefactor = ((0x10092 - sec->friction) * (0x70)) / 0x158;
+  else
+    sec->movefactor = ((sec->friction - 0xDB34) * (0xA)) / 0x80;
+
+  if (sec->movefactor < 32)
+    sec->movefactor = 32;
+
+  sec->flags |= SECF_FRICTION;
+}
+
 static void P_ApplySectorFriction(int tag, int value, int use_thinker)
 {
-  int friction, movefactor, s;
+  const int *id_p;
+  int friction, movefactor;
 
   friction = (0x1EB8 * value) / 0x80 + 0xD000;
 
@@ -4344,7 +4162,7 @@ static void P_ApplySectorFriction(int tag, int value, int use_thinker)
       movefactor = 32;
   }
 
-  for (s = -1; (s = P_FindSectorFromTag(tag, s)) >= 0;)
+  FIND_SECTORS(id_p, tag)
   {
     // killough 8/28/98:
     //
@@ -4358,10 +4176,10 @@ static void P_ApplySectorFriction(int tag, int value, int use_thinker)
 
     //e6y: boom's friction code for boom compatibility
     if (use_thinker)
-      Add_Friction(friction, movefactor, s);
+      Add_Friction(friction, movefactor, *id_p);
 
-    sectors[s].friction = friction;
-    sectors[s].movefactor = movefactor;
+    sectors[*id_p].friction = friction;
+    sectors[*id_p].movefactor = movefactor;
   }
 }
 
@@ -4384,12 +4202,12 @@ void P_SpawnZDoomFriction(line_t *l)
   {
     int value;
 
-    if (l->arg2)
-      value = l->arg2 <= 200 ? l->arg2 : 200;
+    if (l->special_args[1])
+      value = l->special_args[1] <= 200 ? l->special_args[1] : 200;
     else
       value = P_AproxDistance(l->dx, l->dy) >> FRACBITS;
 
-    P_ApplySectorFriction(l->arg1, value, false);
+    P_ApplySectorFriction(l->special_args[0], value, false);
 
     l->special = 0;
   }
@@ -4702,25 +4520,25 @@ mobj_t* P_GetPushThing(int s)
 
 void P_SpawnCompatiblePusher(line_t *l)
 {
-  register int s;
+  const int *id_p;
   mobj_t* thing;
 
   switch(l->special)
   {
     case 224: // wind
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Pusher(p_wind, l->dx, l->dy, NULL, s);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Pusher(p_wind, l->dx, l->dy, NULL, *id_p);
       break;
     case 225: // current
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
-        Add_Pusher(p_current, l->dx, l->dy, NULL, s);
+      FIND_SECTORS(id_p, l->tag)
+        Add_Pusher(p_current, l->dx, l->dy, NULL, *id_p);
       break;
     case 226: // push/pull
-      for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)
+      FIND_SECTORS(id_p, l->tag)
       {
-        thing = P_GetPushThing(s);
+        thing = P_GetPushThing(*id_p);
         if (thing) // No MT_P* means no effect
-          Add_Pusher(p_push, l->dx, l->dy, thing, s);
+          Add_Pusher(p_push, l->dx, l->dy, thing, *id_p);
       }
       break;
   }
@@ -4728,7 +4546,7 @@ void P_SpawnCompatiblePusher(line_t *l)
 
 static void CalculatePushVector(line_t *l, int magnitude, int angle, fixed_t *dx, fixed_t *dy)
 {
-  if (l->arg4)
+  if (l->special_args[3])
   {
     *dx = l->dx;
     *dy = l->dy;
@@ -4745,42 +4563,44 @@ static void CalculatePushVector(line_t *l, int magnitude, int angle, fixed_t *dx
 
 void P_SpawnZDoomPusher(line_t *l)
 {
-  int s;
+  const int *id_p;
   mobj_t* thing;
   fixed_t dx, dy;
 
   switch (l->special)
   {
     case zl_sector_set_wind: // wind
-      CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Pusher(p_wind, dx, dy, NULL, s);
+      CalculatePushVector(l, l->special_args[1], l->special_args[2], &dx, &dy);
+      FIND_SECTORS(id_p, l->special_args[0])
+        Add_Pusher(p_wind, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_sector_set_current: // current
-      CalculatePushVector(l, l->arg2, l->arg3, &dx, &dy);
-      for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
-        Add_Pusher(p_current, dx, dy, NULL, s);
+      CalculatePushVector(l, l->special_args[1], l->special_args[2], &dx, &dy);
+      FIND_SECTORS(id_p, l->special_args[0])
+        Add_Pusher(p_current, dx, dy, NULL, *id_p);
       l->special = 0;
       break;
     case zl_point_push_set_force: // push/pull
-      CalculatePushVector(l, l->arg3, 0, &dx, &dy);
-      if (l->arg1)
+      CalculatePushVector(l, l->special_args[2], 0, &dx, &dy);
+      if (l->special_args[0])
       {  // [RH] Find thing by sector
-        for (s = -1; (s = P_FindSectorFromTag(l->arg1, s)) >= 0;)
+        FIND_SECTORS(id_p, l->special_args[0])
         {
-          thing = P_GetPushThing(s);
+          thing = P_GetPushThing(*id_p);
           if (thing) // No MT_P* means no effect
           {
             // [RH] Allow narrowing it down by tid
-            if (!l->arg2 || l->arg2 == thing->tid)
-              Add_Pusher(p_push, dx, dy, thing, s);
+            if (!l->special_args[1] || l->special_args[1] == thing->tid)
+              Add_Pusher(p_push, dx, dy, thing, *id_p);
           }
         }
       }
       else
       {  // [RH] Find thing by tid
-        for (s = -1; (thing = P_FindMobjFromTID(l->arg2, &s)) != NULL;)
+        int s;
+
+        for (s = -1; (thing = P_FindMobjFromTID(l->special_args[1], &s)) != NULL;)
           if (thing->type == map_format.mt_push || thing->type == map_format.mt_pull)
             Add_Pusher(p_push, dx, dy, thing, thing->subsector->sector->iSectorID);
       }
@@ -5471,7 +5291,7 @@ void P_PlayerOnSpecialFlat(player_t * player, int floorType)
             if (!(leveltime & 31))
             {
                 P_DamageMobj(player->mo, &LavaInflictor, NULL, 10);
-                S_StartSound(player->mo, hexen_sfx_lava_sizzle);
+                S_StartMobjSound(player->mo, hexen_sfx_lava_sizzle);
             }
             break;
         default:
@@ -5497,18 +5317,17 @@ line_t *P_FindLine(int lineTag, int *searchPosition)
 
 dboolean EV_SectorSoundChange(byte * args)
 {
-    int secNum;
+    const int *id_p;
     dboolean rtn;
 
     if (!args[0])
     {
         return false;
     }
-    secNum = -1;
     rtn = false;
-    while ((secNum = P_FindSectorFromTag(args[0], secNum)) >= 0)
+    FIND_SECTORS(id_p, args[0])
     {
-        sectors[secNum].seqType = args[1];
+        sectors[*id_p].seqType = args[1];
         rtn = true;
     }
     return rtn;
@@ -5533,7 +5352,7 @@ static dboolean CheckedLockedDoor(mobj_t * mo, byte lock)
         snprintf(LockedBuffer, sizeof(LockedBuffer),
                  "YOU NEED THE %s\n", TextKeyMessages[lock - 1]);
         P_SetMessage(mo->player, LockedBuffer, true);
-        S_StartSound(mo, hexen_sfx_door_locked);
+        S_StartMobjSound(mo, hexen_sfx_door_locked);
         return false;
     }
     return true;
@@ -5559,7 +5378,7 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
         type = arti - hexen_arti_firstpuzzitem;
         if (type < 0)
             continue;
-        if (type == line->arg1)
+        if (type == line->special_args[0])
         {
             // A puzzle item was found for the line
             if (P_UseArtifact(player, arti))
@@ -5570,11 +5389,11 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
                 {
                     if (arti < hexen_arti_firstpuzzitem)
                     {
-                        S_StartSound(NULL, hexen_sfx_artifact_use);
+                        S_StartVoidSound(hexen_sfx_artifact_use);
                     }
                     else
                     {
-                        S_StartSound(NULL, hexen_sfx_puzzle_success);
+                        S_StartVoidSound(hexen_sfx_puzzle_success);
                     }
                     ArtifactFlash = 4;
                 }
@@ -5585,35 +5404,70 @@ dboolean EV_LineSearchForPuzzleItem(line_t * line, byte * args, mobj_t * mo)
     return false;
 }
 
-dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned int activationType)
+dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType)
 {
-  unsigned int lineActivation;
+  line_activation_t lineActivation;
 
-  lineActivation = line->flags & ML_SPAC_MASK;
+  lineActivation = line->activation;
+
+  if (line->flags & ML_FIRSTSIDEONLY && side)
+  {
+    return false;
+  }
 
   if (
     line->special == zl_teleport &&
-    lineActivation & ML_SPAC_CROSS &&
-    activationType == ML_SPAC_PCROSS &&
+    lineActivation & SPAC_CROSS &&
+    activationType == SPAC_PCROSS &&
     mo && mo->flags & MF_MISSILE
   )
   { // Let missiles use regular player teleports
-    lineActivation |= ML_SPAC_PCROSS;
+    lineActivation |= SPAC_PCROSS;
+  }
+
+  if (activationType == SPAC_USE || activationType == SPAC_USEBACK)
+  {
+    if (
+      (line->flags & ML_CHECKSWITCHRANGE || map_info.flags & MI_CHECK_SWITCH_RANGE) &&
+      !P_CheckSwitchRange(line, mo, side)
+    )
+    {
+      return false;
+    }
+  }
+
+  if (activationType == SPAC_USE &&
+      lineActivation & SPAC_MUSE &&
+      mo && !mo->player && mo->flags2 & MF2_CANUSEWALLS)
+  {
+    return true;
+  }
+
+  if (activationType == SPAC_PUSH &&
+      lineActivation & SPAC_MPUSH &&
+      mo && !mo->player && mo->flags2 & MF2_PUSHWALL)
+  {
+    return true;
   }
 
   if (!(lineActivation & activationType))
   {
-    if (activationType != ML_SPAC_MCROSS || lineActivation != ML_SPAC_CROSS)
+    if (activationType != SPAC_MCROSS || lineActivation != SPAC_CROSS)
     {
       return false;
     }
+  }
+
+  if (activationType == SPAC_ANYCROSS)
+  {
+    return true;
   }
 
   if (
     mo && !mo->player &&
     !(mo->flags & MF_MISSILE) &&
     !(line->flags & ML_MONSTERSCANACTIVATE) &&
-    (activationType != ML_SPAC_MCROSS || !(lineActivation & ML_SPAC_MCROSS))
+    (activationType != SPAC_MCROSS || !(lineActivation & SPAC_MCROSS))
   )
   {
     dboolean noway = true;
@@ -5623,22 +5477,22 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
     // lax activation checks, monsters can also activate certain lines
     // even without them being marked as monster activate-able. This is
     // the default for non-Hexen maps in Hexen format.
-    if (!map_format.lax_monster_activation)
+    if (!(map_info.flags & MI_LAX_MONSTER_ACTIVATION))
     {
       return false;
     }
 
-    if ((activationType == ML_SPAC_USE || activationType == ML_SPAC_PUSH) && line->flags & ML_SECRET)
+    if ((activationType == SPAC_USE || activationType == SPAC_PUSH) && line->flags & ML_SECRET)
       return false;    // never open secret doors
 
     switch (activationType)
     {
-      case ML_SPAC_USE:
-      case ML_SPAC_PUSH:
+      case SPAC_USE:
+      case SPAC_PUSH:
         switch (line->special)
         {
           case zl_door_raise:
-            if (line->arg1 == 0 && line->arg2 < 64)
+            if (line->special_args[0] == 0 && line->special_args[1] < 64)
               noway = false;
             break;
           case zl_teleport:
@@ -5647,13 +5501,13 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
         }
         break;
 
-      case ML_SPAC_MCROSS:
-        if (!(lineActivation & ML_SPAC_MCROSS))
+      case SPAC_MCROSS:
+        if (!(lineActivation & SPAC_MCROSS))
         {
           switch (line->special)
           {
             case zl_door_raise:
-              if (line->arg2 >= 64)
+              if (line->special_args[1] >= 64)
                 break;
             case zl_teleport:
             case zl_teleport_no_fog:
@@ -5674,8 +5528,8 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
   }
 
   if (
-    activationType == ML_SPAC_MCROSS &&
-    !(lineActivation & ML_SPAC_MCROSS) &&
+    activationType == SPAC_MCROSS &&
+    !(lineActivation & SPAC_MCROSS) &&
     !(line->flags & ML_MONSTERSCANACTIVATE)
   )
   {
@@ -5685,11 +5539,11 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, unsigned in
   return true;
 }
 
-dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned int activationType)
+dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType)
 {
-  unsigned int lineActivation;
+  line_activation_t lineActivation;
 
-  lineActivation = line->flags & ML_SPAC_MASK;
+  lineActivation = line->activation;
 
   if (lineActivation != activationType)
   {
@@ -5698,7 +5552,7 @@ dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned in
 
   if (!mo->player && !(mo->flags & MF_MISSILE))
   {
-      if (lineActivation != ML_SPAC_MCROSS)
+      if (lineActivation != SPAC_MCROSS)
       {                       // currently, monsters can only activate the MCROSS activation type
           return false;
       }
@@ -5709,9 +5563,8 @@ dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, unsigned in
   return true;
 }
 
-dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activationType)
+dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, line_activation_t activationType)
 {
-  byte args[5];
   dboolean repeat;
   dboolean buttonSuccess;
 
@@ -5720,18 +5573,43 @@ dboolean P_ActivateLine(line_t * line, mobj_t * mo, int side, unsigned int activ
     return false;
   }
 
+  if (line->locknumber)
+  {
+    dboolean legacy;
+
+    switch (line->special)
+    {
+      case zl_door_close:
+      case zl_door_open:
+      case zl_door_raise:
+      case zl_door_locked_raise:
+      case zl_door_close_wait_open:
+      case zl_door_wait_raise:
+      case zl_door_wait_close:
+      case zl_generic_door:
+        legacy = true;
+        break;
+      default:
+        legacy = false;
+    }
+
+    if (!P_CheckKeys(mo, line->locknumber, legacy))
+    {
+      return false;
+    }
+  }
+
   repeat = (line->flags & ML_REPEATSPECIAL) != 0;
 
-  P_TransferLineArgs(line, args);
-
-  buttonSuccess = map_format.execute_line_special(line->special, args, line, side, mo);
+  buttonSuccess =
+    map_format.execute_line_special(line->special, line->special_args, line, side, mo);
 
   if (!repeat && buttonSuccess)
   {                           // clear the special on non-retriggerable lines
     line->special = 0;
   }
 
-  if (buttonSuccess && line->flags & map_format.switch_activation)
+  if (buttonSuccess && line->activation & map_format.switch_activation)
   {
     P_ChangeSwitchTexture(line, repeat);
   }
@@ -5831,12 +5709,12 @@ void P_PlayerInHexenSector(player_t * player, sector_t * sector)
 #include "hexen/p_acs.h"
 #include "hexen/po_man.h"
 
-static dboolean P_ArgToCrushType(byte arg)
+static dboolean P_ArgToCrushType(int arg)
 {
   return arg == 1 ? false : arg == 2 ? true : hexen;
 }
 
-static crushmode_e P_ArgToCrushMode(byte arg, dboolean slowdown)
+static crushmode_e P_ArgToCrushMode(int arg, dboolean slowdown)
 {
   static const crushmode_e map[] = { crushDoom, crushHexen, crushSlowdown };
 
@@ -5845,21 +5723,21 @@ static crushmode_e P_ArgToCrushMode(byte arg, dboolean slowdown)
   return hexen ? crushHexen : slowdown ? crushSlowdown : crushDoom;
 }
 
-static int P_ArgToCrush(byte arg)
+static int P_ArgToCrush(int arg)
 {
   return (arg > 0) ? arg : NO_CRUSH;
 }
 
-static byte P_ArgToChange(byte arg)
+static byte P_ArgToChange(int arg)
 {
   static const byte ChangeMap[8] = { 0, 1, 5, 3, 7, 2, 6, 0 };
 
-  return (arg < 8) ? ChangeMap[arg] : 0;
+  return (arg >= 0 && arg < 8) ? ChangeMap[arg] : 0;
 }
 
-static fixed_t P_ArgToSpeed(byte arg)
+static fixed_t P_ArgToSpeed(fixed_t arg)
 {
-  return (fixed_t) arg * FRACUNIT / 8;
+  return arg * FRACUNIT / 8;
 }
 
 static fixed_t P_ArgsToFixed(fixed_t arg_i, fixed_t arg_f)
@@ -5872,7 +5750,7 @@ static angle_t P_ArgToAngle(angle_t arg)
   return arg * (ANG180 / 128);
 }
 
-dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
+dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo)
 {
   dboolean buttonSuccess = false;
 
@@ -5896,7 +5774,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_door_close_wait_open:
       buttonSuccess = EV_DoZDoomDoor(genCdO, line, mo, args[0],
-                                     args[1], (int) args[2] * 35 / 8, 0, args[3], false, 0);
+                                     args[1], args[2] * 35 / 8, 0, args[3], false, 0);
       break;
     case zl_door_wait_raise:
       buttonSuccess = EV_DoZDoomDoor(waitRaiseDoor, line, mo, args[0],
@@ -5908,7 +5786,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_generic_door:
       {
-        byte tag, lightTag;
+        int tag, lightTag;
         vldoor_e type;
         dboolean boomgen = false;
 
@@ -5946,7 +5824,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         }
 
         buttonSuccess = EV_DoZDoomDoor(type, line, mo, tag, args[1],
-                                       (int) args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
+                                       args[3] * 35 / 8, args[4], lightTag, boomgen, 0);
       }
       break;
     case zl_pillar_build:
@@ -5991,7 +5869,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_floor_lower_to_highest:
       buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1],
-                                      (int) args[2] - 128, NO_CRUSH, 0, false, args[3] == 1);
+                                      args[2] - 128, NO_CRUSH, 0, false, args[3] == 1);
       break;
     case zl_floor_lower_to_highest_ee:
       buttonSuccess = EV_DoZDoomFloor(floorLowerToHighest, line, args[0], args[1], 0,
@@ -6026,19 +5904,19 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                       args[2], 0, P_ArgToCrushType(args[3]), false);
       break;
     case zl_floor_raise_by_value_times_8:
-      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseByValue, line, args[0], args[1], args[2] * 8,
                                       P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
       break;
     case zl_floor_lower_by_value_times_8:
-      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorLowerByValue, line, args[0], args[1], args[2] * 8,
                                       NO_CRUSH, P_ArgToChange(args[3]), false, false);
       break;
     case zl_floor_lower_instant:
-      buttonSuccess = EV_DoZDoomFloor(floorLowerInstant, line, args[0], 0, (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorLowerInstant, line, args[0], 0, args[2] * 8,
                                       NO_CRUSH, P_ArgToChange(args[3]), false, false);
       break;
     case zl_floor_raise_instant:
-      buttonSuccess = EV_DoZDoomFloor(floorRaiseInstant, line, args[0], 0, (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomFloor(floorRaiseInstant, line, args[0], 0, args[2] * 8,
                                       P_ArgToCrush(args[4]), P_ArgToChange(args[3]), true, false);
       break;
     case zl_floor_to_ceiling_instant:
@@ -6047,13 +5925,18 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_floor_move_to_value:
       buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
-                                      (int) args[2] * (args[3] ? -1 : 1),
+                                      args[2] * (args[3] ? -1 : 1),
                                       NO_CRUSH, P_ArgToChange(args[4]), false, false);
       break;
     case zl_floor_move_to_value_times_8:
       buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
-                                      (int) args[2] * 8 * (args[3] ? -1 : 1),
+                                      args[2] * 8 * (args[3] ? -1 : 1),
                                       NO_CRUSH, P_ArgToChange(args[4]), false, false);
+      break;
+    case zl_floor_move_to_value_and_crush:
+      buttonSuccess = EV_DoZDoomFloor(floorMoveToValue, line, args[0], args[1],
+                                      args[2], P_ArgToCrush(args[3]),
+                                      0, P_ArgToCrushType(args[4]), false);
       break;
     case zl_floor_raise_to_lowest_ceiling:
       buttonSuccess = EV_DoZDoomFloor(floorRaiseToLowestCeiling, line, args[0], args[1], 0,
@@ -6121,6 +6004,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_floor_crush_stop:
       buttonSuccess = EV_ZDoomFloorCrushStop(args[0]);
       break;
+    case zl_floor_stop:
+      buttonSuccess = EV_ZDoomFloorStop(args[0], line);
+      break;
     case zl_floor_donut:
       buttonSuccess = EV_DoZDoomDonut(args[0], line, P_ArgToSpeed(args[1]), P_ArgToSpeed(args[2]));
       break;
@@ -6139,13 +6025,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_ceiling_lower_by_value_times_8:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerByValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        args[2] * 8, NO_CRUSH, 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_raise_by_value_times_8:
       buttonSuccess = EV_DoZDoomCeiling(ceilRaiseByValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        args[2] * 8, NO_CRUSH, 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_crush_and_raise:
@@ -6175,14 +6061,20 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_ceiling_move_to_value_times_8:
       buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * 8 * (args[3] ? -1 : 1), NO_CRUSH, 0,
+                                        args[2] * 8 * (args[3] ? -1 : 1), NO_CRUSH, 0,
                                         P_ArgToChange(args[4]), false);
       break;
     case zl_ceiling_move_to_value:
       buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
                                         P_ArgToSpeed(args[1]), 0,
-                                        (int) args[2] * (args[3] ? -1 : 1), NO_CRUSH, 0,
+                                        args[2] * (args[3] ? -1 : 1), NO_CRUSH, 0,
                                         P_ArgToChange(args[4]), false);
+      break;
+    case zl_ceiling_move_to_value_and_crush:
+      buttonSuccess = EV_DoZDoomCeiling(ceilMoveToValue, line, args[0],
+                                        P_ArgToSpeed(args[1]), 0,
+                                        args[2], P_ArgToCrush(args[3]), 0,
+                                        0, P_ArgToCrushMode(args[4], args[1] == 8));
       break;
     case zl_ceiling_lower_to_highest_floor:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerToHighestFloor, line, args[0],
@@ -6193,13 +6085,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_ceiling_lower_instant:
       buttonSuccess = EV_DoZDoomCeiling(ceilLowerInstant, line, args[0],
                                         0, 0,
-                                        (int) args[2] * 8, P_ArgToCrush(args[4]), 0,
+                                        args[2] * 8, P_ArgToCrush(args[4]), 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_raise_instant:
       buttonSuccess = EV_DoZDoomCeiling(ceilRaiseInstant, line, args[0],
                                         0, 0,
-                                        (int) args[2] * 8, NO_CRUSH, 0,
+                                        args[2] * 8, NO_CRUSH, 0,
                                         P_ArgToChange(args[3]), false);
       break;
     case zl_ceiling_crush_raise_and_stay_a:
@@ -6310,7 +6202,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         dboolean raise_or_lower;
         byte index;
 
-        static floor_e ceiling_type[2][7] = {
+        static ceiling_e ceiling_type[2][7] = {
           {
             ceilLowerByValue,
             ceilLowerToHighest,
@@ -6360,6 +6252,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
 
         buttonSuccess = EV_ZDoomCeilingCrushStop(args[0], remove);
       }
+      break;
+    case zl_ceiling_stop:
+      buttonSuccess = EV_ZDoomCeilingStop(args[0], line);
       break;
     case zl_generic_crusher:
       buttonSuccess = EV_DoZDoomCeiling(ceilCrushAndRaise, line, args[0],
@@ -6425,9 +6320,14 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                           args[2], P_ArgToSpeed(args[1]), 0,
                                           args[3], 0, STAIR_SYNC);
       break;
+    case zl_stairs_build_up_doom_crush:
+      buttonSuccess = EV_BuildZDoomStairs(args[0], stairBuildUp, line,
+                                          args[2], P_ArgToSpeed(args[1]), args[3],
+                                          args[4], 0, STAIR_CRUSH);
+      break;
     case zl_generic_stairs:
       {
-        stairs_e type;
+        stair_e type;
 
         type = (args[3] & 1) ? stairBuildUp : stairBuildDown;
         buttonSuccess = EV_BuildZDoomStairs(args[0], type, line,
@@ -6439,7 +6339,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
             line->flags & ML_REPEATSPECIAL &&
             line->special == zl_generic_stairs)
         {
-          line->arg4 ^= 1; // args[3]
+          line->special_args[3] ^= 1;
         }
       }
       break;
@@ -6482,11 +6382,11 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
                                      P_ArgToSpeed(args[1]), args[2], args[3], 0);
       break;
     case zl_plat_down_by_value:
-      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownByValue, (int) args[3] * 8,
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platDownByValue, args[3] * 8,
                                      P_ArgToSpeed(args[1]), args[2], 0, 0);
       break;
     case zl_plat_up_by_value:
-      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValue, (int) args[3] * 8,
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValue, args[3] * 8,
                                      P_ArgToSpeed(args[1]), args[2], 0, 0);
       break;
     case zl_plat_up_wait_down_stay:
@@ -6518,7 +6418,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       }
       break;
     case zl_plat_up_by_value_stay_tx:
-      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValueStay, (int) args[2] * 8,
+      buttonSuccess = EV_DoZDoomPlat(args[0], line, platUpByValueStay, args[2] * 8,
                                      P_ArgToSpeed(args[1]), 0, 0, 2);
       break;
     case zl_plat_toggle_ceiling:
@@ -6547,27 +6447,29 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
             break;
         }
 
-        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, (int) args[4] * 8,
-                                       P_ArgToSpeed(args[1]), (int) args[2] * 35 / 8, 0, 0);
+        buttonSuccess = EV_DoZDoomPlat(args[0], line, type, args[4] * 8,
+                                       P_ArgToSpeed(args[1]), args[2] * 35 / 8, 0, 0);
       }
       break;
     case zl_line_set_blocking:
       if (args[0])
       {
-        int i, s;
+        int i;
+        const int *id_p;
         static const int flags[] =
         {
           ML_BLOCKING,
           ML_BLOCKMONSTERS,
           ML_BLOCKPLAYERS,
-          0, // block floaters (not supported)
-          0, // block projectiles (not supported)
+          ML_BLOCKFLOATERS,
+          ML_BLOCKPROJECTILES,
           ML_BLOCKEVERYTHING,
-          0, // railing (not supported)
-          0, // block use (not supported)
-          0, // block sight (not supported)
-          0, // block hitscan (not supported)
+          ML_JUMPOVER,
+          ML_BLOCKUSE,
+          ML_BLOCKSIGHT,
+          ML_BLOCKHITSCAN,
           ML_SOUNDBLOCK,
+          ML_BLOCKLANDMONSTERS,
           -1
         };
 
@@ -6580,9 +6482,90 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           if (args[2] & 1) clearflags |= flags[i];
         }
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          lines[s].flags = (lines[s].flags & ~clearflags) | setflags;
+          lines[*id_p].flags = (lines[*id_p].flags & ~clearflags) | setflags;
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_sector_change_flags:
+      if (args[0])
+      {
+        int i;
+        const int *id_p;
+        static const int flags[] =
+        {
+          SECF_SILENT,
+          0,
+          0,
+          0,
+          SECF_FRICTION,
+          SECF_PUSH,
+          0,
+          0,
+          SECF_ENDGODMODE,
+          SECF_ENDLEVEL,
+          SECF_HAZARD,
+          SECF_NOATTACK,
+          -1
+        };
+
+        int setflags = 0;
+        int clearflags = 0;
+
+        for (i = 0; flags[i] != -1; i++, args[1] >>= 1, args[2] >>= 1)
+        {
+          if (args[1] & 1) setflags |= flags[i];
+          if (args[2] & 1) clearflags |= flags[i];
+        }
+
+        FIND_SECTORS(id_p, args[0])
+          sectors[*id_p].flags = (sectors[*id_p].flags & ~clearflags) | setflags;
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_line_set_automap_flags:
+      if (args[0])
+      {
+        int i;
+        const int *id_p;
+        static const int flags[] =
+        {
+          ML_SECRET,
+          ML_DONTDRAW,
+          ML_MAPPED,
+          ML_REVEALED,
+          -1
+        };
+
+        int setflags = 0;
+        int clearflags = 0;
+
+        for (i = 0; flags[i] != -1; i++, args[1] >>= 1, args[2] >>= 1)
+        {
+          if (args[1] & 1) setflags |= flags[i];
+          if (args[2] & 1) clearflags |= flags[i];
+        }
+
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
+        {
+          lines[*id_p].flags = (lines[*id_p].flags & ~clearflags) | setflags;
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_line_set_automap_style:
+      if (args[1] >= 0 && args[1] <= ams_portal)
+      {
+        const int *id_p;
+
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
+        {
+          lines[*id_p].automap_style = args[1];
         }
 
         buttonSuccess = 1;
@@ -6591,28 +6574,154 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_scroll_wall:
       if (args[0])
       {
-        int s;
+        const int *id_p;
         int side = !!args[3];
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          Add_Scroller(sc_side, args[1], args[2], -1, lines[s].sidenum[side], 0);
+          dsda_AddSideScroller(args[1], args[2], lines[*id_p].sidenum[side], args[4]);
         }
 
         buttonSuccess = 1;
       }
       break;
     case zl_line_set_texture_offset:
-      if (args[0] && args[3] <= 1)
+      if (args[0])
       {
-        int s;
+        const int *id_p;
+        const int NO_CHANGE = 32767 << FRACBITS;
         int sidenum = !!args[3];
 
-        for (s = -1; (s = P_FindLineFromTag(args[0], s)) >= 0;)
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
         {
-          side_t *side = &sides[lines[s].sidenum[sidenum]];
-          side->textureoffset = args[1];
-          side->rowoffset = args[2];
+          side_t *side = &sides[lines[*id_p].sidenum[sidenum]];
+
+          if (args[4] & 8)
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->textureoffset_top += args[1];
+
+              if (args[4] & 2)
+                side->textureoffset_mid += args[1];
+
+              if (args[4] & 4)
+                side->textureoffset_bottom += args[1];
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->rowoffset_top += args[2];
+
+              if (args[4] & 2)
+                side->rowoffset_mid += args[2];
+
+              if (args[4] & 4)
+                side->rowoffset_bottom += args[2];
+            }
+          }
+          else
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->textureoffset_top = args[1];
+
+              if (args[4] & 2)
+                side->textureoffset_mid = args[1];
+
+              if (args[4] & 4)
+                side->textureoffset_bottom = args[1];
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->rowoffset_top = args[2];
+
+              if (args[4] & 2)
+                side->rowoffset_mid = args[2];
+
+              if (args[4] & 4)
+                side->rowoffset_bottom = args[2];
+            }
+          }
+        }
+
+        buttonSuccess = 1;
+      }
+      break;
+    case zl_line_set_texturescale:
+      if (args[0])
+      {
+        const int *id_p;
+        const int NO_CHANGE = 32767 << FRACBITS;
+        int sidenum = !!args[3];
+
+        if (!args[1])
+          args[1] = FRACUNIT;
+
+        if (!args[2])
+          args[2] = FRACUNIT;
+
+        for (id_p = dsda_FindLinesFromID(args[0]); *id_p >= 0; id_p++)
+        {
+          side_t *side = &sides[lines[*id_p].sidenum[sidenum]];
+
+          if (args[4] & 8)
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scalex_top = FixedMul(side->scalex_top, args[1]);
+
+              if (args[4] & 2)
+                side->scalex_mid = FixedMul(side->scalex_mid, args[1]);
+
+              if (args[4] & 4)
+                side->scalex_bottom = FixedMul(side->scalex_bottom, args[1]);
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scaley_top = FixedMul(side->scaley_top, args[2]);
+
+              if (args[4] & 2)
+                side->scaley_mid = FixedMul(side->scaley_mid, args[2]);
+
+              if (args[4] & 4)
+                side->scaley_bottom = FixedMul(side->scaley_bottom, args[2]);
+            }
+          }
+          else
+          {
+            if (args[1] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scalex_top = args[1];
+
+              if (args[4] & 2)
+                side->scalex_mid = args[1];
+
+              if (args[4] & 4)
+                side->scalex_bottom = args[1];
+            }
+
+            if (args[2] != NO_CHANGE)
+            {
+              if (args[4] & 1)
+                side->scaley_top = args[2];
+
+              if (args[4] & 2)
+                side->scaley_mid = args[2];
+
+              if (args[4] & 4)
+                side->scaley_bottom = args[2];
+            }
+          }
         }
 
         buttonSuccess = 1;
@@ -6655,21 +6764,21 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_sector_set_gravity:
       {
         fixed_t gravity;
-        int s = -1;
+        const int *id_p;
 
         if (args[2] > 99)
           args[2] = 99;
 
         gravity = P_ArgsToFixed(args[1], args[2]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
-          sectors[s].gravity = gravity;
+        FIND_SECTORS(id_p, args[0])
+          sectors[*id_p].gravity = gravity;
       }
       buttonSuccess = 1;
       break;
     case zl_sector_set_damage:
       {
-        int s = -1;
+        const int *id_p;
         dboolean unblockable = false;
 
         if (args[3] == 0)
@@ -6692,15 +6801,15 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
           }
         }
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].damage.amount = args[1];
-          sectors[s].damage.interval = args[3];
-          sectors[s].damage.leakrate = args[4];
+          sectors[*id_p].damage.amount = args[1];
+          sectors[*id_p].damage.interval = args[3];
+          sectors[*id_p].damage.leakrate = args[4];
           if (unblockable)
-            sectors[s].flags |= SECF_DMGUNBLOCKABLE;
+            sectors[*id_p].flags |= SECF_DMGUNBLOCKABLE;
           else
-            sectors[s].flags &= ~SECF_DMGUNBLOCKABLE;
+            sectors[*id_p].flags &= ~SECF_DMGUNBLOCKABLE;
         }
       }
       buttonSuccess = 1;
@@ -6713,32 +6822,136 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_sector_set_floor_panning:
       {
-        int s = -1;
+        const int *id_p;
         fixed_t xoffs, yoffs;
 
         xoffs = P_ArgsToFixed(args[1], args[2]);
         yoffs = P_ArgsToFixed(args[3], args[4]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].floor_xoffs = xoffs;
-          sectors[s].floor_yoffs = yoffs;
+          sectors[*id_p].floor_xoffs = xoffs;
+          sectors[*id_p].floor_yoffs = yoffs;
         }
       }
       buttonSuccess = 1;
       break;
     case zl_sector_set_ceiling_panning:
       {
-        int s = -1;
+        const int *id_p;
         fixed_t xoffs, yoffs;
 
         xoffs = P_ArgsToFixed(args[1], args[2]);
         yoffs = P_ArgsToFixed(args[3], args[4]);
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
-          sectors[s].ceiling_xoffs = xoffs;
-          sectors[s].ceiling_yoffs = yoffs;
+          sectors[*id_p].ceiling_xoffs = xoffs;
+          sectors[*id_p].ceiling_yoffs = yoffs;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_rotation:
+      {
+        const int *id_p;
+        angle_t floor, ceiling;
+
+        floor = dsda_DegreesToAngle(args[1]);
+        ceiling = dsda_DegreesToAngle(args[2]);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].floor_rotation = floor;
+          sectors[*id_p].ceiling_rotation = ceiling;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_floor_scale:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+        yscale = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].floor_xscale = xscale;
+          sectors[*id_p].floor_yscale = yscale;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_floor_scale2:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = args[1];
+        yscale = args[2];
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].floor_xscale = xscale;
+          sectors[*id_p].floor_yscale = yscale;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_ceiling_scale:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = (args[1] << FRACBITS) + (args[2] << FRACBITS) / 100;
+        yscale = (args[3] << FRACBITS) + (args[4] << FRACBITS) / 100;
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].ceiling_xscale = xscale;
+          sectors[*id_p].ceiling_yscale = yscale;
+        }
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_ceiling_scale2:
+      {
+        const int *id_p;
+        fixed_t xscale, yscale;
+
+        xscale = args[1];
+        yscale = args[2];
+
+        if (xscale)
+          xscale = FixedDiv(FRACUNIT, xscale);
+
+        if (yscale)
+          yscale = FixedDiv(FRACUNIT, yscale);
+
+        FIND_SECTORS(id_p, args[0])
+        {
+          sectors[*id_p].ceiling_xscale = xscale;
+          sectors[*id_p].ceiling_yscale = yscale;
         }
       }
       buttonSuccess = 1;
@@ -6762,7 +6975,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
 
         if (mo->health < max)
         {
-          mo->health += args[0];
+          mo->health += P_PlayerHealthIncrease(args[0]);
           if (mo->health > max && max > 0)
           {
             mo->health = max;
@@ -6781,18 +6994,17 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       break;
     case zl_clear_force_field:
       {
-        int s = -1;
+        const int *id_p;
 
-        while ((s = P_FindSectorFromTag(args[0], s)) >= 0)
+        FIND_SECTORS(id_p, args[0])
         {
           int i;
-          line_t *line;
 
           buttonSuccess = 1;
 
-          for (i = 0; i < sectors[s].linecount; i++)
+          for (i = 0; i < sectors[*id_p].linecount; i++)
           {
-            line_t *line = sectors[s].lines[i];
+            line_t *line = sectors[*id_p].lines[i];
 
             if (line->backsector && line->special == zl_force_field)
             {
@@ -6816,56 +7028,57 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_teleport_new_map:
       if (!side)
       {
-        if (P_CanExit(mo))
-        {
-          int flags;
+        int flags;
 
-          flags = args[2] ? LF_SET_ANGLE : 0;
+        flags = args[2] ? LF_SET_ANGLE : 0;
 
-          G_Completed(args[0], args[1], flags, mo->angle);
-          buttonSuccess = 1;
-        }
+        // TODO: this crashes if the map doesn't exist (gzdoom does a no-op)
+        G_Completed(args[0], args[1], flags, mo->angle);
+        buttonSuccess = 1;
       }
       break;
     case zl_teleport_end_game:
       if (!side)
       {
-        if (P_CanExit(mo))
-        {
-          G_Completed(LEAVE_VICTORY, LEAVE_VICTORY, 0, 0);
-          buttonSuccess = 1;
-        }
+        G_Completed(LEAVE_VICTORY, LEAVE_VICTORY, 0, 0);
+        buttonSuccess = 1;
       }
       break;
     case zl_polyobj_rotate_left:
-      buttonSuccess = EV_RotatePoly(line, args, 1, false);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], 1, false);
       break;
     case zl_polyobj_or_rotate_left:
-      buttonSuccess = EV_RotatePoly(line, args, 1, true);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], 1, true);
       break;
     case zl_polyobj_rotate_right:
-      buttonSuccess = EV_RotatePoly(line, args, -1, false);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], -1, false);
       break;
     case zl_polyobj_or_rotate_right:
-      buttonSuccess = EV_RotatePoly(line, args, -1, true);
+      buttonSuccess = EV_RotateZDoomPoly(line, args[0], args[1], args[2], -1, true);
       break;
     case zl_polyobj_move:
-      buttonSuccess = EV_MovePoly(line, args, false, false);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], false, false);
       break;
     case zl_polyobj_or_move:
-      buttonSuccess = EV_MovePoly(line, args, false, true);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], false, true);
       break;
     case zl_polyobj_move_times_8:
-      buttonSuccess = EV_MovePoly(line, args, true, false);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], true, false);
       break;
     case zl_polyobj_or_move_times_8:
-      buttonSuccess = EV_MovePoly(line, args, true, true);
+      buttonSuccess = EV_MoveZDoomPoly(line, args[0], args[1],
+                                       args[2], args[3], true, true);
       break;
     case zl_polyobj_door_swing:
-      buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SWING);
+      buttonSuccess = EV_OpenZDoomPolyDoor(line, args[0], args[1],
+                                           args[2], args[3], args[4], PODOOR_SWING);
       break;
     case zl_polyobj_door_slide:
-      buttonSuccess = EV_OpenPolyDoor(line, args, PODOOR_SLIDE);
+      buttonSuccess = EV_OpenZDoomPolyDoor(line, args[0], args[1],
+                                           args[2], args[3], args[4], PODOOR_SLIDE);
       break;
     case zl_polyobj_move_to:
       buttonSuccess = EV_MovePolyTo(line, args[0], P_ArgToSpeed(args[1]),
@@ -7082,9 +7295,9 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           target->special = args[1];
-          target->args[0] = args[2];
-          target->args[1] = args[3];
-          target->args[2] = args[4];
+          target->special_args[0] = args[2];
+          target->special_args[1] = args[3];
+          target->special_args[2] = args[4];
         }
       }
       buttonSuccess = 1;
@@ -7367,7 +7580,14 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
     case zl_damage_thing:
       if (mo)
       {
-        P_DamageMobj(mo, NULL, NULL, args[0] ? args[0] : 10000);
+        if (args[0] < 0)
+        {
+          P_HealMobj(mo, -args[0]);
+        }
+        else
+        {
+          P_DamageMobj(mo, NULL, NULL, args[0] ? args[0] : 10000);
+        }
         buttonSuccess = 1;
       }
       break;
@@ -7380,7 +7600,16 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
         while ((target = dsda_FindMobjFromThingIDOrMobj(args[0], mo, &search)))
         {
           if (target->flags & MF_SHOOTABLE)
-            P_DamageMobj(target, NULL, mo, args[1]);
+          {
+            if (args[1] > 0)
+            {
+              P_DamageMobj(target, NULL, mo, args[1]);
+            }
+            else
+            {
+              P_HealMobj(mo, -args[1]);
+            }
+          }
         }
       }
       buttonSuccess = 1;
@@ -7392,14 +7621,14 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       }
       else if (!args[0])
       {
-        int s = -1;
+        const int *id_p;
 
-        while ((s = P_FindSectorFromTag(args[2], s)) >= 0)
+        FIND_SECTORS(id_p, args[2])
         {
           msecnode_t *n;
           sector_t *sec;
 
-          sec = &sectors[s];
+          sec = &sectors[*id_p];
           for (n = sec->touching_thinglist; n;)
           {
             mobj_t *target = n->m_thing;
@@ -7430,6 +7659,23 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
       }
       buttonSuccess = 1;
       break;
+    case zl_map_set_colormap:
+      if (args[0] >= 0)
+      {
+        map_info.default_colormap = args[0];
+      }
+      buttonSuccess = 1;
+      break;
+    case zl_sector_set_colormap:
+      if (args[0] >= 0 && args[1])
+      {
+        const int *id_p;
+
+        FIND_SECTORS(id_p, args[1])
+          sectors[*id_p].colormap = args[0];
+      }
+      buttonSuccess = 1;
+      break;
     default:
       break;
   }
@@ -7437,11 +7683,13 @@ dboolean P_ExecuteZDoomLineSpecial(int special, byte * args, line_t * line, int 
   return buttonSuccess;
 }
 
-dboolean P_ExecuteHexenLineSpecial(int special, byte * args, line_t * line, int side, mobj_t * mo)
+dboolean P_ExecuteHexenLineSpecial(int special, int * special_args, line_t * line, int side, mobj_t * mo)
 {
-    dboolean buttonSuccess;
+    byte args[5];
+    dboolean buttonSuccess = false;
 
-    buttonSuccess = false;
+    COLLAPSE_SPECIAL_ARGS(args, special_args);
+
     switch (special)
     {
         case 1:                // Poly Start Line
@@ -7802,7 +8050,7 @@ static void Hexen_P_SpawnSpecials(void)
                 numlinespecials++;
                 break;
             case 121:          // Line_SetIdentification
-                if (lines[i].arg1)
+                if (lines[i].special_args[0])
                 {
                     if (TaggedLineCount == MAX_TAGGED_LINES)
                     {
@@ -7810,7 +8058,7 @@ static void Hexen_P_SpawnSpecials(void)
                                 "(%d) exceeded.", MAX_TAGGED_LINES);
                     }
                     TaggedLines[TaggedLineCount].line = &lines[i];
-                    TaggedLines[TaggedLineCount++].lineTag = lines[i].arg1;
+                    TaggedLines[TaggedLineCount++].lineTag = lines[i].special_args[0];
                 }
                 lines[i].special = 0;
                 break;
@@ -7824,8 +8072,6 @@ static void Hexen_P_SpawnSpecials(void)
     P_RemoveAllActivePlats();
     for (i = 0; i < MAXBUTTONS; i++)
         memset(&buttonlist[i], 0, sizeof(button_t));
-
-    P_InitTagLists();   // killough 1/30/98: Create xref tables for tags
 
     // Initialize flat and texture animations
     P_InitFTAnims();

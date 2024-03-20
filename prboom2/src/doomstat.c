@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -32,9 +32,6 @@
  *-----------------------------------------------------------------------------
  */
 
-#ifdef __GNUG__
-#pragma implementation "doomstat.h"
-#endif
 #include "doomstat.h"
 
 #include "dsda/map_format.h"
@@ -94,7 +91,7 @@ int help_friends;
 
 int monkeys;
 
-char *MAPNAME(int e, int m)
+char *VANILLA_MAP_LUMP_NAME(int e, int m)
 {
   static char name[9];
 

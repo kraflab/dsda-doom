@@ -128,8 +128,12 @@ static int P_TranslateMap(int map) {
   return -1;
 }
 
+int dsda_HexenNameToMap(int* found, const char* name, int* episode, int* map) {
+  return false;
+}
+
 int dsda_HexenFirstMap(int* episode, int* map) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *episode = 1;
@@ -142,7 +146,7 @@ int dsda_HexenFirstMap(int* episode, int* map) {
 }
 
 int dsda_HexenNewGameMap(int* episode, int* map) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *episode = 1;
@@ -155,7 +159,7 @@ int dsda_HexenNewGameMap(int* episode, int* map) {
 }
 
 int dsda_HexenResolveWarp(int* args, int arg_count, int* episode, int* map) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *episode = 1;
@@ -172,7 +176,7 @@ int dsda_HexenResolveWarp(int* args, int arg_count, int* episode, int* map) {
 }
 
 int dsda_HexenNextMap(int* episode, int* map) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *episode = 1;
@@ -204,11 +208,11 @@ void dsda_HexenUpdateNextMapInfo(void) {
 int dsda_HexenResolveCLEV(int* clev, int* episode, int* map) {
   char* next;
 
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   // Catch invalid maps
-  next = MAPNAME(*episode, P_TranslateMap(*map));
+  next = VANILLA_MAP_LUMP_NAME(*episode, P_TranslateMap(*map));
   if (!W_LumpNameExists(next)) {
     doom_printf("IDCLEV target not found: %s", next);
     *clev = false;
@@ -222,7 +226,7 @@ int dsda_HexenResolveCLEV(int* clev, int* episode, int* map) {
 dboolean partial_reset = false;
 
 int dsda_HexenResolveINIT(int* init) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   partial_reset = true;
@@ -237,16 +241,24 @@ int dsda_HexenResolveINIT(int* init) {
 int dsda_HexenMusicIndexToLumpNum(int* lump, int music_index) {
   const char* lump_name;
 
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   if (music_index >= hexen_mus_hub)
     return false;
 
-  if (!map_format.sndinfo)
-    return false;
-
   lump_name = dsda_SndInfoMapSongLumpName(music_index);
+  if (!*lump_name)
+    switch (music_index)
+    {
+    case hexen_mus_hexen:
+    case hexen_mus_hub:
+    case hexen_mus_hall:
+    case hexen_mus_orb:
+    case hexen_mus_chess:
+      lump_name = S_music[music_index].name;
+      break;
+    }
 
   if (!*lump_name)
     *lump = 0;
@@ -257,16 +269,17 @@ int dsda_HexenMusicIndexToLumpNum(int* lump, int music_index) {
 }
 
 int dsda_HexenMapMusic(int* music_index, int* music_lump) {
-  if (!map_format.mapinfo)
-    return false;
-
-  if (!map_format.sndinfo)
+  if (!hexen)
     return false;
 
   *music_lump = -1;
   *music_index = gamemap;
 
   return true;
+}
+
+int dsda_HexenIntermissionMusic(int* music_index, int* music_lump) {
+  return false; // TODO
 }
 
 int dsda_HexenInterMusic(int* music_index, int* music_lump) {
@@ -289,17 +302,25 @@ int dsda_HexenBossAction(mobj_t* mo) {
   return false; // TODO
 }
 
-int dsda_HexenHUTitle(const char** title) {
-  if (!map_format.mapinfo)
+int dsda_HexenMapLumpName(const char** name, int episode, int map) {
+  return false; // TODO
+}
+
+int dsda_HexenMapAuthor(const char** author) {
+  return false;
+}
+
+int dsda_HexenHUTitle(dsda_string_t* str) {
+  if (!hexen)
     return false;
 
-  *title = NULL;
+  dsda_InitString(str, NULL);
 
   if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0)
-    *title = CurrentMap->name;
+    dsda_StringCat(str, CurrentMap->name);
 
-  if (*title == NULL)
-    *title = MAPNAME(gameepisode, gamemap);
+  if (!str->string)
+    dsda_StringCat(str, VANILLA_MAP_LUMP_NAME(gameepisode, gamemap));
 
   return true;
 }
@@ -311,7 +332,7 @@ int dsda_HexenSkyTexture(int* sky) {
 int dsda_HexenPrepareInitNew(void) {
   extern int RebornPosition;
 
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   SV_Init();
@@ -331,7 +352,7 @@ int dsda_HexenPrepareInitNew(void) {
 }
 
 int dsda_HexenPrepareIntermission(int* result) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   if (leave_data.map == LEAVE_VICTORY && leave_data.position == LEAVE_VICTORY)
@@ -351,10 +372,9 @@ void dsda_HexenLoadMapInfo(void) {
   int mapMax;
   int mcmdValue;
   mapInfo_t* info;
-  char songMulch[10];
   const char* default_sky_name = DEFAULT_SKY_NAME;
 
-  if (!map_format.mapinfo)
+  if (!hexen)
     return;
 
   mapMax = 1;
@@ -473,6 +493,15 @@ int dsda_HexenEnterPic(const char** enter_pic) {
   return false; // TODO
 }
 
+int dsda_HexenBorderTexture(const char** border_texture) {
+  if (!hexen)
+    return false;
+
+  *border_texture = "F_022";
+
+  return true;
+}
+
 int dsda_HexenPrepareEntering(void) {
   return false; // TODO
 }
@@ -482,7 +511,7 @@ int dsda_HexenPrepareFinished(void) {
 }
 
 int dsda_HexenMapLightning(int* lightning) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *lightning = CurrentMap->lightning;
@@ -496,7 +525,7 @@ int dsda_HexenApplyFadeTable(void) {
 
   int fade_lump;
 
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   fade_lump = CurrentMap->fadetable;
@@ -512,7 +541,7 @@ int dsda_HexenApplyFadeTable(void) {
 }
 
 int dsda_HexenMapCluster(int* cluster, int map) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *cluster = MapInfo[QualifyMap(map)].cluster;
@@ -521,7 +550,7 @@ int dsda_HexenMapCluster(int* cluster, int map) {
 }
 
 int dsda_HexenSky1Texture(short* texture) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *texture = CurrentMap->sky1Texture;
@@ -530,10 +559,23 @@ int dsda_HexenSky1Texture(short* texture) {
 }
 
 int dsda_HexenSky2Texture(short* texture) {
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   *texture = CurrentMap->sky2Texture;
+
+  return true;
+}
+
+int dsda_HexenGravity(fixed_t* gravity) {
+  return false;
+}
+
+int dsda_HexenAirControl(fixed_t* air_control) {
+  if (!hexen)
+    return false;
+
+  *air_control = (FRACUNIT >> 8);
 
   return true;
 }
@@ -542,7 +584,7 @@ int dsda_HexenInitSky(void) {
   extern fixed_t Sky1ScrollDelta;
   extern fixed_t Sky2ScrollDelta;
 
-  if (!map_format.mapinfo)
+  if (!hexen)
     return false;
 
   Sky1Texture = CurrentMap->sky1Texture;
@@ -554,4 +596,20 @@ int dsda_HexenInitSky(void) {
   DoubleSky = CurrentMap->doubleSky;
 
   return true;
+}
+
+int dsda_HexenMapFlags(map_info_flags_t* flags) {
+  if (!hexen)
+    return false;
+
+  *flags = MI_INTERMISSION |
+           MI_ACTIVATE_OWN_DEATH_SPECIALS |
+           MI_MISSILES_ACTIVATE_IMPACT_LINES |
+           MI_SHOW_AUTHOR;
+
+  return true;
+}
+
+int dsda_HexenMapColorMap(int* colormap) {
+  return false;
 }

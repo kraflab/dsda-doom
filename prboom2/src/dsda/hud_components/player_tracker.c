@@ -25,9 +25,9 @@ void dsda_PlayerTrackerHC(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "\x1b%cp: %d",
-    player_damage_last_tic > 0 ? HUlib_Color(exhud_color_warning)
-                               : HUlib_Color(exhud_color_default),
+    "%sp: %d",
+    player_damage_last_tic > 0 ? dsda_TextColor(dsda_tc_exhud_player_damage)
+                               : dsda_TextColor(dsda_tc_exhud_player_neutral),
     player_damage_last_tic
   );
 }

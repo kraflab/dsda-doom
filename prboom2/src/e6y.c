@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -64,7 +64,7 @@
 #include "i_sound.h"
 #include "m_menu.h"
 #include "lprintf.h"
-#include "m_misc.h"
+#include "m_file.h"
 #include "i_system.h"
 #include "p_maputl.h"
 #include "p_map.h"
@@ -82,6 +82,7 @@
 #include "g_game.h"
 #include "d_deh.h"
 #include "e6y.h"
+#include "m_file.h"
 
 #include "dsda/args.h"
 #include "dsda/map_format.h"
@@ -102,12 +103,6 @@ int gl_render_fov = 90;
 
 camera_t walkcamera;
 
-hu_textline_t  w_hudadd;
-hu_textline_t  w_centermsg;
-hu_textline_t  w_precache;
-char hud_add[80];
-char hud_centermsg[80];
-
 angle_t viewpitch;
 float skyscale;
 float screen_skybox_zplane;
@@ -116,10 +111,6 @@ float skyUpAngle;
 float skyUpShift;
 float skyXShift;
 float skyYShift;
-dboolean mlook_or_fov;
-
-int maxViewPitch;
-int minViewPitch;
 
 #ifdef _WIN32
 const char* WINError(void)
@@ -151,22 +142,10 @@ const char* WINError(void)
 
 //--------------------------------------------------
 
-void e6y_assert(const char *format, ...)
-{
-  static FILE *f = NULL;
-  va_list argptr;
-  va_start(argptr,format);
-  //if (!f)
-    f = fopen("d:\\a.txt", "ab+");
-  vfprintf(f, format, argptr);
-  fclose(f);
-  va_end(argptr);
-}
-
 /* ParamsMatchingCheck
  * Conflicting command-line parameters could cause the engine to be confused
  * in some cases. Added checks to prevent this.
- * Example: glboom.exe -record mydemo -playdemo demoname
+ * Example: dsda-doom.exe -record mydemo -playdemo demoname
  */
 void ParamsMatchingCheck()
 {
@@ -232,8 +211,7 @@ int G_ReloadLevel(void)
   int result = false;
 
   if ((gamestate == GS_LEVEL || gamestate == GS_INTERMISSION) &&
-      !deathmatch && !netgame &&
-      !demorecording && !demoplayback &&
+      allow_incompatibility &&
       !menuactive)
   {
     G_DeferedInitNew(gameskill, gameepisode, gamemap);
@@ -259,8 +237,7 @@ int G_GotoNextLevel(void)
   dsda_NextMap(&epsd, &map);
 
   if ((gamestate == GS_LEVEL) &&
-    !deathmatch && !netgame &&
-    !demorecording && !demoplayback &&
+    allow_incompatibility &&
     !menuactive)
   {
     G_DeferedInitNew(gameskill, epsd, map);
@@ -285,38 +262,29 @@ void M_ChangeSkyMode(void)
 
   gl_skymode = dsda_IntConfig(dsda_config_gl_skymode);
 
-  // [XA] always force the standard (strips)
-  // sky for the indexed lightmode.
-  if (V_IsWorldLightmodeIndexed())
-    gl_drawskys = skytype_standard;
-  else if (gl_skymode == skytype_auto)
+  if (gl_skymode == skytype_auto)
     gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;
 }
 
+static int upViewPitchLimit;
+static int downViewPitchLimit;
+
 void M_ChangeMaxViewPitch(void)
 {
-  int max_up, max_dn, angle_up, angle_dn;
-
-  if (V_IsOpenGLMode())
+  if (raven || !V_IsOpenGLMode())
   {
-    max_up = 90;
-    max_dn = 90;
+    upViewPitchLimit = (int) raven_angle_up_limit;
+    downViewPitchLimit = (int) raven_angle_down_limit;
   }
   else
   {
-    max_up = 56;
-    max_dn = 32;
+    upViewPitchLimit = -ANG90 + (1 << ANGLETOFINESHIFT);
+    downViewPitchLimit = ANG90 - (1 << ANGLETOFINESHIFT);
   }
 
-  angle_up = (int)((float)max_up / 45.0f * ANG45);
-  angle_dn = (int)((float)max_dn / 45.0f * ANG45);
-
-  maxViewPitch = (+angle_up - (1<<ANGLETOFINESHIFT));
-  minViewPitch = (-angle_dn + (1<<ANGLETOFINESHIFT));
-
-  viewpitch = 0;
+  CheckPitch(&viewpitch);
 }
 
 void M_ChangeScreenMultipleFactor(void)
@@ -331,10 +299,11 @@ dboolean HaveMouseLook(void)
 
 void CheckPitch(signed int *pitch)
 {
-  if(*pitch > maxViewPitch)
-    *pitch = maxViewPitch;
-  if(*pitch < minViewPitch)
-    *pitch = minViewPitch;
+  if (*pitch < upViewPitchLimit)
+    *pitch = upViewPitchLimit;
+
+  if (*pitch > downViewPitchLimit)
+    *pitch = downViewPitchLimit;
 
   (*pitch) >>= 16;
   (*pitch) <<= 16;
@@ -407,42 +376,10 @@ void M_ChangeFOV(void)
   skyscale = 1.0f / (float)tan(DEG2RAD(gl_render_fov / 2));
 }
 
-void ResolveColormapsHiresConflict(dboolean prefer_colormap)
-{
-  gl_boom_colormaps = !r_have_internal_hires;
-}
-
-void M_ChangeAllowBoomColormaps(void)
-{
-  if (gl_boom_colormaps == -1)
-  {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
-  }
-  else
-  {
-    gl_boom_colormaps = gl_boom_colormaps_default;
-    ResolveColormapsHiresConflict(true);
-    gld_FlushTextures();
-    gld_Precache();
-  }
-}
-
-void M_ChangeTextureUseHires(void)
-{
-  ResolveColormapsHiresConflict(false);
-
-  gld_FlushTextures();
-  gld_Precache();
-}
-
 float viewPitch;
 
 int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
 {
-  static int prev_value = 0;
-  static int prev_direction = 0;
-
   int newvalue;
   int val = (direction > 0 ? value : value - 1);
 
@@ -465,12 +402,6 @@ int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
   if ((value < defval && newvalue > defval) || (value > defval && newvalue < defval))
     newvalue = defval;
 
-  if (newvalue != value)
-  {
-    prev_value = value;
-    prev_direction = direction;
-  }
-
   return newvalue;
 }
 
@@ -486,13 +417,17 @@ void I_vWarning(const char *message, va_list argList)
 
 int I_MessageBox(const char* text, unsigned int type)
 {
+#ifdef _WIN32
   int result = PRB_IDCANCEL;
 
-#ifdef _WIN32
   if (!dsda_Flag(dsda_arg_no_message_box))
   {
     HWND current_hwnd = GetForegroundWindow();
-    result = MessageBox(GetDesktopWindow(), text, PACKAGE_NAME, type|MB_TASKMODAL|MB_TOPMOST);
+    wchar_t *wtext = ConvertUtf8ToWide(text);
+    wchar_t *wpackage = ConvertUtf8ToWide(PACKAGE_NAME);
+    result = MessageBoxW(GetDesktopWindow(), wtext, wpackage, type|MB_TASKMODAL|MB_TOPMOST);
+    Z_Free(wtext);
+    Z_Free(wpackage);
     I_SwitchToWindow(current_hwnd);
     return result;
   }
@@ -524,7 +459,7 @@ void e6y_G_DoCompleted(void)
 
   memset(&stats[numlevels], 0, sizeof(timetable_t));
 
-  strcpy(stats[numlevels].map, MAPNAME(gameepisode, gamemap));
+  snprintf(stats[numlevels].map, sizeof(stats[numlevels].map), "%s", dsda_MapLumpName(gameepisode, gamemap));
 
   if (secretexit)
   {
@@ -575,7 +510,7 @@ void e6y_WriteStats(void)
   tmpdata_t *all;
   size_t allkills_len=0, allitems_len=0, allsecrets_len=0;
 
-  f = fopen("levelstat.txt", "wb");
+  f = M_OpenFile("levelstat.txt", "wb");
 
   if (f == NULL)
   {
@@ -615,9 +550,9 @@ void e6y_WriteStats(void)
       memset(&all[level], 0, sizeof(tmpdata_t));
     else
     {
-      sprintf(all[level].kill,   " (%s)", tmp.kill  );
-      sprintf(all[level].item,   " (%s)", tmp.item  );
-      sprintf(all[level].secret, " (%s)", tmp.secret);
+      snprintf(all[level].kill, sizeof(all[level].kill),  " (%s)", tmp.kill  );
+      snprintf(all[level].item, sizeof(all[level].item),   " (%s)", tmp.item  );
+      snprintf(all[level].secret, sizeof(all[level].secret), " (%s)", tmp.secret);
     }
 
     if (strlen(all[level].kill) > allkills_len)
@@ -765,22 +700,6 @@ void e6y_G_Compatibility(void)
   }
 }
 
-dboolean zerotag_manual;
-
-dboolean ProcessNoTagLines(line_t* line, sector_t **sec, int *secnum)
-{
-  zerotag_manual = false;
-  if (line->tag == 0 && comperr(comperr_zerotag))
-  {
-    if (!(*sec=line->backsector))
-      return true;
-    *secnum = (*sec)->iSectorID;
-    zerotag_manual = true;
-    return true;
-  }
-  return false;
-}
-
 const char* PathFindFileName(const char* pPath)
 {
   const char* pT = pPath;
@@ -796,88 +715,6 @@ const char* PathFindFileName(const char* pPath)
   }
 
   return pT;
-}
-
-void NormalizeSlashes2(char *str)
-{
-  size_t l;
-
-  if (!str || !(l = strlen(str)))
-    return;
-  if (str[--l]=='\\' || str[l]=='/')
-    str[l]=0;
-  while (l--)
-    if (str[l]=='/')
-      str[l]='\\';
-}
-
-unsigned int AfxGetFileName(const char* lpszPathName, char* lpszTitle, unsigned int nMax)
-{
-  const char* lpszTemp = PathFindFileName(lpszPathName);
-
-  if (lpszTitle == NULL)
-    return strlen(lpszTemp)+1;
-
-  strncpy(lpszTitle, lpszTemp, nMax-1);
-  return 0;
-}
-
-void AbbreviateName(char* lpszCanon, int cchMax, int bAtLeastName)
-{
-  int cchFullPath, cchFileName, cchVolName;
-  const char* lpszCur;
-  const char* lpszBase;
-  const char* lpszFileName;
-
-  lpszBase = lpszCanon;
-  cchFullPath = strlen(lpszCanon);
-
-  cchFileName = AfxGetFileName(lpszCanon, NULL, 0) - 1;
-  lpszFileName = lpszBase + (cchFullPath-cchFileName);
-
-  if (cchMax >= cchFullPath)
-    return;
-
-  if (cchMax < cchFileName)
-  {
-    strcpy(lpszCanon, (bAtLeastName) ? lpszFileName : "");
-    return;
-  }
-
-  lpszCur = lpszBase + 2;
-
-  if (lpszBase[0] == '\\' && lpszBase[1] == '\\')
-  {
-    while (*lpszCur != '\\')
-      lpszCur++;
-  }
-
-  if (cchFullPath - cchFileName > 3)
-  {
-    lpszCur++;
-    while (*lpszCur != '\\')
-      lpszCur++;
-  }
-
-  cchVolName = (int)(lpszCur - lpszBase);
-  if (cchMax < cchVolName + 5 + cchFileName)
-  {
-    strcpy(lpszCanon, lpszFileName);
-    return;
-  }
-
-  while (cchVolName + 4 + (int)strlen(lpszCur) > cchMax)
-  {
-    do
-    {
-      lpszCur++;
-    }
-    while (*lpszCur != '\\');
-  }
-
-  lpszCanon[cchVolName] = '\0';
-  strcat(lpszCanon, "\\...");
-  strcat(lpszCanon, lpszCur);
 }
 
 int levelstarttic;
@@ -938,12 +775,12 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
     switch(i)
     {
     case 0:
-      getcwd(dir, sizeof(dir));
+      M_getcwd(dir, sizeof(dir));
       break;
     case 1:
-      if (!getenv("DOOMWADDIR"))
+      if (!M_getenv("DOOMWADDIR"))
         continue;
-      strcpy(dir, getenv("DOOMWADDIR"));
+      strcpy(dir, M_getenv("DOOMWADDIR"));
       break;
     case 2:
       strcpy(dir, I_DoomExeDir());
@@ -958,100 +795,3 @@ int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t Buff
   return false;
 }
 #endif
-
-//Begin of GZDoom code
-/*
-**---------------------------------------------------------------------------
-** Copyright 2004-2005 Christoph Oelckers
-** All rights reserved.
-**
-** Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions
-** are met:
-**
-** 1. Redistributions of source code must retain the above copyright
-**    notice, this list of conditions and the following disclaimer.
-** 2. Redistributions in binary form must reproduce the above copyright
-**    notice, this list of conditions and the following disclaimer in the
-**    documentation and/or other materials provided with the distribution.
-** 3. The name of the author may not be used to endorse or promote products
-**    derived from this software without specific prior written permission.
-** 4. When not used as part of GZDoom or a GZDoom derivative, this code will be
-**    covered by the terms of the GNU Lesser General Public License as published
-**    by the Free Software Foundation; either version 2.1 of the License, or (at
-**    your option) any later version.
-*/
-
-//===========================================================================
-//
-// smooth the edges of transparent fields in the texture
-// returns false when nothing is manipulated to save the work on further
-// levels
-
-// 28/10/2003: major optimization: This function was far too pedantic.
-// taking the value of one of the neighboring pixels is fully sufficient
-//
-//===========================================================================
-
-#ifdef WORDS_BIGENDIAN
-#define MSB 0
-#define SOME_MASK 0xffffff00
-#else
-#define MSB 3
-#define SOME_MASK 0x00ffffff
-#endif
-
-#define CHKPIX(ofs) (l1[(ofs)*4+MSB]==255 ? (( ((unsigned int*)l1)[0] = ((unsigned int*)l1)[ofs]&SOME_MASK), trans=true ) : false)
-
-dboolean SmoothEdges(unsigned char * buffer,int w, int h)
-{
-  int x,y;
-  dboolean trans=buffer[MSB]==0; // If I set this to false here the code won't detect textures
-                                // that only contain transparent pixels.
-  unsigned char * l1;
-
-  // makes (a) no sense and (b) doesn't work with this code!
-  // if (h<=1 || w<=1)
-  // e6y: Do not smooth small patches.
-  // Makes sense for HUD small digits
-  // 2 and 7 still look ugly
-  if (h<=8 || w<=8)
-    return false;
-
-  l1=buffer;
-
-  if (l1[MSB]==0 && !CHKPIX(1)) CHKPIX(w);
-  l1+=4;
-  for(x=1;x<w-1;x++, l1+=4)
-  {
-    if (l1[MSB]==0 &&  !CHKPIX(-1) && !CHKPIX(1)) CHKPIX(w);
-  }
-  if (l1[MSB]==0 && !CHKPIX(-1)) CHKPIX(w);
-  l1+=4;
-
-  for(y=1;y<h-1;y++)
-  {
-    if (l1[MSB]==0 && !CHKPIX(-w) && !CHKPIX(1)) CHKPIX(w);
-    l1+=4;
-    for(x=1;x<w-1;x++, l1+=4)
-    {
-      if (l1[MSB]==0 &&  !CHKPIX(-w) && !CHKPIX(-1) && !CHKPIX(1)) CHKPIX(w);
-    }
-    if (l1[MSB]==0 && !CHKPIX(-w) && !CHKPIX(-1)) CHKPIX(w);
-    l1+=4;
-  }
-
-  if (l1[MSB]==0 && !CHKPIX(-w)) CHKPIX(1);
-  l1+=4;
-  for(x=1;x<w-1;x++, l1+=4)
-  {
-    if (l1[MSB]==0 &&  !CHKPIX(-w) && !CHKPIX(-1)) CHKPIX(1);
-  }
-  if (l1[MSB]==0 && !CHKPIX(-w)) CHKPIX(-1);
-
-  return trans;
-}
-
-#undef MSB
-#undef SOME_MASK
-//End of GZDoom code

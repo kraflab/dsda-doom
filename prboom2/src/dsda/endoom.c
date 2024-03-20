@@ -15,6 +15,11 @@
 //	DSDA Endoom
 //
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include "windows.h"
+#endif
+
 #include "doomdef.h"
 #include "doomtype.h"
 #include "lprintf.h"
@@ -304,10 +309,40 @@ typedef enum {
   format_utf8,
 } output_format_t;
 
-void dsda_DumpEndoom(void) {
+static byte* endoom;
+static output_format_t output_format;
+
+#ifdef _WIN32
+static HANDLE hConsole;
+static DWORD OldMode;
+static dboolean restore_mode = false;
+
+static void EnableVTMode(void) {
+  hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  if (hConsole == INVALID_HANDLE_VALUE)
+    return;
+
+  if (!GetConsoleMode(hConsole, &OldMode))
+    return;
+
+  if (!SetConsoleMode(hConsole, ENABLE_PROCESSED_OUTPUT |
+                                ENABLE_VIRTUAL_TERMINAL_PROCESSING)) {
+    return;
+  }
+
+  restore_mode = true;
+}
+
+static void RestoreOldMode(void) {
+  if (!restore_mode)
+    return;
+
+  SetConsoleMode(hConsole, OldMode);
+}
+#endif
+
+void dsda_CacheEndoom(void) {
   int lump;
-  const byte* endoom;
-  output_format_t output_format;
 
   output_format = dsda_IntConfig(dsda_config_ansi_endoom);
 
@@ -328,14 +363,21 @@ void dsda_DumpEndoom(void) {
   if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000)
     return;
 
-  endoom = W_LumpByNum(lump);
+  endoom = Z_Malloc(4000);
+  memcpy(endoom, W_LumpByNum(lump), 4000);
+}
 
+void dsda_DumpEndoom(void) {
   if (endoom) {
     int i;
     const char* color_lookup[] = {
       "0", "4", "2", "6", "1", "5", "3", "7",
       "0;1", "4;1", "2;1", "6;1", "1;1", "5;1", "3;1", "7;1",
     };
+
+#ifdef _WIN32
+    EnableVTMode();
+#endif
 
     for (i = 0; i < 2000; ++i) {
       byte character;
@@ -365,5 +407,12 @@ void dsda_DumpEndoom(void) {
     }
 
     lprintf(LO_INFO, "\n");
+
+    Z_Free(endoom);
+    endoom = NULL;
+
+#ifdef _WIN32
+    RestoreOldMode();
+#endif
   }
 }

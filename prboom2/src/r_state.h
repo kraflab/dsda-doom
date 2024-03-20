@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -39,11 +39,6 @@
 #include "d_player.h"
 #include "r_data.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
-
 //
 // Refresh internal data structures,
 //  for rendering.
@@ -51,8 +46,6 @@
 
 // needed for texture pegging
 extern fixed_t *textureheight;
-
-extern int scaledviewwidth;
 
 extern int firstflat, numflats;
 

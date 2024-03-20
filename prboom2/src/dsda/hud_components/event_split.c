@@ -20,11 +20,6 @@
 #include "event_split.h"
 
 typedef struct {
-  dsda_text_t component;
-  int ticks;
-} dsda_split_text_t;
-
-typedef struct {
   const char* msg;
   int default_delay;
   int delay;
@@ -38,17 +33,28 @@ static dsda_split_state_t dsda_split_state[DSDA_SPLIT_CLASS_COUNT] = {
   [DSDA_SPLIT_SECRET] = { "Secret", 0, 0 },
 };
 
-static dsda_split_text_t split;
+typedef struct {
+  dsda_text_t component;
+} local_component_t;
 
-void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&split.component, x_offset, y_offset, vpt);
+static local_component_t* local;
+
+static int ticks;
+
+void dsda_InitEventSplitHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
 void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
   int minutes;
   float seconds;
-  char* s;
   dsda_split_state_t* split_state;
+
+  if (!local)
+    return;
 
   split_state = &dsda_split_state[split_class];
 
@@ -59,35 +65,36 @@ void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
 
   split_state->delay = split_state->default_delay;
 
-  split.ticks = lifetime;
+  ticks = lifetime;
 
   // To match the timer, we use the leveltime value at the end of the frame
   minutes = (leveltime + 1) / 35 / 60;
   seconds = (float)((leveltime + 1) % (60 * 35)) / 35;
   snprintf(
-    split.component.msg, sizeof(split.component.msg), "%d:%05.2f - %s",
+    local->component.msg, sizeof(local->component.msg), "%s%d:%05.2f - %s",
+    dsda_TextColor(dsda_tc_exhud_event_split),
     minutes, seconds, split_state->msg
   );
 
-  dsda_RefreshHudText(&split.component);
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_UpdateEventSplitHC(void) {
+void dsda_UpdateEventSplitHC(void* data) {
   int i;
 
-  if (split.ticks > 0)
-    --split.ticks;
+  local = data;
+
+  if (ticks > 0)
+    --ticks;
 
   for (i = 0; i < DSDA_SPLIT_CLASS_COUNT; ++i)
     if (dsda_split_state[i].delay > 0)
       --dsda_split_state[i].delay;
 }
 
-void dsda_DrawEventSplitHC(void) {
-  if (split.ticks > 0)
-    dsda_DrawBasicText(&split.component);
-}
+void dsda_DrawEventSplitHC(void* data) {
+  local = data;
 
-void dsda_EraseEventSplitHC(void) {
-  HUlib_eraseTextLine(&split.component.text);
+  if (ticks > 0)
+    dsda_DrawBasicText(&local->component);
 }

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -37,10 +37,6 @@
 #include "d_player.h"
 #include "p_mobj.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 /* Ty 03/09/98 Moved to an int in p_inter.c for deh and externalization */
 #define MAXHEALTH maxhealth
 
@@ -53,6 +49,7 @@ dboolean P_GivePower(player_t *, int);
 void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher);
 void P_DamageMobj(mobj_t *target,mobj_t *inflictor,mobj_t *source,int damage);
 void P_HealMobj(mobj_t *mo, int num);
+int P_PlayerHealthIncrease(int value);
 
 /* killough 5/2/98: moved from d_deh.c, g_game.c, m_misc.c, others: */
 

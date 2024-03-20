@@ -21,22 +21,25 @@
 
 #include "level_splits.h"
 
-static dsda_text_t time_component;
-static dsda_text_t total_component;
+typedef struct {
+  dsda_text_t time_component;
+  dsda_text_t total_component;
+} local_component_t;
+
+static local_component_t* local;
 
 extern int leveltime, totalleveltimes;
 
 static int dsda_SplitComparisonDelta(dsda_split_time_t* split_time) {
-  return split_time->ref ? split_time->ref_delta : split_time->best_delta;
+  return split_time->ref != -1 ? split_time->ref_delta : split_time->best_delta;
 }
 
 static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
-  char* s;
-  char delta[16];
-  char color;
+  char delta[18];
+  const char* color;
 
   delta[0] = '\0';
-  color = HUlib_Color(CR_GRAY);
+  color = dsda_TextColor(dsda_tc_inter_split_normal);
 
   if (split && !split->first_time) {
     const char* sign;
@@ -44,7 +47,8 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
 
     diff = dsda_SplitComparisonDelta(&split->leveltime);
     sign = diff >= 0 ? "+" : "-";
-    color = diff >= 0 ? HUlib_Color(CR_GRAY) : HUlib_Color(CR_GREEN);
+    color = diff >= 0 ? dsda_TextColor(dsda_tc_inter_split_normal) :
+                        dsda_TextColor(dsda_tc_inter_split_good);
     diff = abs(diff);
 
     if (diff >= 2100) {
@@ -64,25 +68,24 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
   }
 
   snprintf(
-    time_component.msg,
-    sizeof(time_component.msg),
-    "\x1b%c%d:%05.2f",
+    local->time_component.msg,
+    sizeof(local->time_component.msg),
+    "%s%d:%05.2f",
     color, leveltime / 35 / 60,
     (float)(leveltime % (60 * 35)) / 35
   );
 
-  strcat(time_component.msg, delta);
+  strcat(local->time_component.msg, delta);
 
-  dsda_RefreshHudText(&time_component);
+  dsda_RefreshHudText(&local->time_component);
 }
 
 static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
-  char* s;
   char delta[16];
-  char color;
+  const char* color;
 
   delta[0] = '\0';
-  color = HUlib_Color(CR_GRAY);
+  color = dsda_TextColor(dsda_tc_inter_split_normal);
 
   if (split && !split->first_time) {
     const char* sign;
@@ -90,7 +93,8 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
 
     diff = dsda_SplitComparisonDelta(&split->totalleveltimes) / 35;
     sign = diff >= 0 ? "+" : "-";
-    color = diff >= 0 ? HUlib_Color(CR_GRAY) : HUlib_Color(CR_GREEN);
+    color = diff >= 0 ? dsda_TextColor(dsda_tc_inter_split_normal) :
+                        dsda_TextColor(dsda_tc_inter_split_good);
     diff = abs(diff);
 
     if (diff >= 60) {
@@ -110,41 +114,40 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
   }
 
   snprintf(
-    total_component.msg,
-    sizeof(total_component.msg),
-    "\x1b%c%d:%02d",
+    local->total_component.msg,
+    sizeof(local->total_component.msg),
+    "%s%d:%02d",
     color, totalleveltimes / 35 / 60,
     (totalleveltimes / 35) % 60
   );
 
-  strcat(total_component.msg, delta);
+  strcat(local->total_component.msg, delta);
 
-  dsda_RefreshHudText(&total_component);
+  dsda_RefreshHudText(&local->total_component);
 }
 
-void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&time_component, x_offset, y_offset, vpt);
-  dsda_InitTextHC(&total_component, x_offset, y_offset + 8, vpt);
+void dsda_InitLevelSplitsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->time_component, x_offset, y_offset, vpt);
+  dsda_InitTextHC(&local->total_component, x_offset, y_offset + 8, vpt);
 }
 
-void dsda_UpdateLevelSplitsHC(void) {
-  // nothing to do
+void dsda_UpdateLevelSplitsHC(void* data) {
+  local = data;
 }
 
-void dsda_DrawLevelSplitsHC(void) {
-  char* s;
+void dsda_DrawLevelSplitsHC(void* data) {
   dsda_split_t* split;
+
+  local = data;
 
   split = dsda_CurrentSplit();
 
   dsda_UpdateIntermissionTime(split);
   dsda_UpdateIntermissionTotal(split);
 
-  dsda_DrawBasicText(&time_component);
-  dsda_DrawBasicText(&total_component);
-}
-
-void dsda_EraseLevelSplitsHC(void) {
-  HUlib_eraseTextLine(&time_component.text);
-  HUlib_eraseTextLine(&total_component.text);
+  dsda_DrawBasicText(&local->time_component);
+  dsda_DrawBasicText(&local->total_component);
 }

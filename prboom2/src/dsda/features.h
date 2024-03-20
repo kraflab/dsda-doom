@@ -82,7 +82,7 @@ typedef enum {
   uf_join,
   uf_mouse_and_controller,
   uf_ghost,
-  // 62
+  uf_advanced_map,
   // 63
 } dsda_feature_flag_t;
 

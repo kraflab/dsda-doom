@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -34,13 +34,9 @@
 #ifndef __P_SAVEG__
 #define __P_SAVEG__
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "doomtype.h"
 
-#define SAVEVERSION 1
+#define SAVEVERSION 5
 
 /* Persistent storage/archiving.
  * These are the load / save game routines. */
@@ -60,8 +56,8 @@ void P_ArchiveMap(void);
 void P_UnArchiveMap(void);
 
 // dsda - fix save / load synchronization
-void P_TrueArchiveThinkers(void);
-void P_TrueUnArchiveThinkers(void);
+void P_ArchiveThinkers(void);
+void P_UnArchiveThinkers(void);
 
 extern byte *save_p;
 extern byte* savebuffer;

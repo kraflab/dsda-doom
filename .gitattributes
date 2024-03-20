@@ -156,20 +156,9 @@ prboom2/data/lumps/bfgbex.lmp -text
 prboom2/data/lumps/c_end.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/c_start.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/chexdeh.lmp -text
-prboom2/data/lumps/crblue.lmp -text
-prboom2/data/lumps/crblue2.lmp -text
-prboom2/data/lumps/crbrick.lmp -text
-prboom2/data/lumps/crbrown.lmp -text
-prboom2/data/lumps/crgold.lmp -text
-prboom2/data/lumps/crgray.lmp -text
-prboom2/data/lumps/crgreen.lmp -text
-prboom2/data/lumps/crheresy.lmp -text
-prboom2/data/lumps/crhexen.lmp -text
-prboom2/data/lumps/crorange.lmp -text
-prboom2/data/lumps/crred.lmp -text
-prboom2/data/lumps/crtan.lmp -text
-prboom2/data/lumps/cryellow.lmp -text
+prboom2/data/lumps/dsdacr.lmp -text
 prboom2/data/lumps/dsdahud.lmp -text
+prboom2/data/lumps/dsdatc.lmp -text
 prboom2/data/lumps/gammatbl.lmp -text svneol=unset#application/octet-stream
 prboom2/data/lumps/glfp.lmp -text
 prboom2/data/lumps/glshadow.lmp -text
@@ -383,7 +372,6 @@ prboom2/src/MUSIC/lib/libvorbis.lib -text
 prboom2/src/MUSIC/lib/libvorbisfile.lib -text
 prboom2/src/MUSIC/lib/portmidi.lib -text
 prboom2/src/Makefile.am eol=lf
-prboom2/src/PCSOUND/Makefile.am eol=lf
 prboom2/src/SDL/Makefile.am eol=lf
 prboom2/src/SDL/SDL_windows.h -text
 prboom2/src/SDL/SDL_windows_main.c -text
@@ -396,3 +384,4 @@ prboom2/tests/heightlist_overflow.wad -text
 prboom2/tests/missed_back_side.zip -text
 prboom2/tests/sky.wad -text
 prboom2/tests/weaponinfo.wad -text
+.vs/CMakeWorkspaceSettings.json text eol=crlf

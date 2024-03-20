@@ -24,7 +24,12 @@
 
 static void Heretic_D_DrawTitle(const char *_x)
 {
-  D_SetPage("TITLE", 350, heretic_mus_titl);
+  D_SetPage("TITLE", 210, heretic_mus_titl);
+}
+
+static void Heretic_D_DrawTitle2(const char *_x)
+{
+  D_SetPage("TITLE", 140, 0);
 }
 
 static void Heretic_D_DrawCredits(const char *_x)
@@ -44,6 +49,13 @@ const demostate_t heretic_demostates[][4] =
     { Heretic_D_DrawTitle, NULL },
     { Heretic_D_DrawTitle, NULL },
     { Heretic_D_DrawTitle, NULL },
+  },
+
+  {
+    { Heretic_D_DrawTitle2, NULL },
+    { Heretic_D_DrawTitle2, NULL },
+    { Heretic_D_DrawTitle2, NULL },
+    { Heretic_D_DrawTitle2, NULL },
   },
 
   {

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -62,28 +62,11 @@
 
 #define isExtensionSupported(ext) strstr(extensions, ext)
 
-//e6y: OpenGL version
-typedef enum {
-  OPENGL_VERSION_1_0,
-  OPENGL_VERSION_1_1,
-  OPENGL_VERSION_1_2,
-  OPENGL_VERSION_1_3,
-  OPENGL_VERSION_1_4,
-  OPENGL_VERSION_1_5,
-  OPENGL_VERSION_2_0,
-  OPENGL_VERSION_2_1,
-} glversion_t;
-
-extern int gl_version;
-
-extern int GLEXT_CLAMP_TO_EDGE;
 extern int gl_max_texture_size;
 
 extern SDL_PixelFormat RGBAFormat;
 
 extern dboolean gl_ext_texture_filter_anisotropic;
-extern dboolean gl_arb_texture_non_power_of_two;
-extern dboolean gl_arb_multitexture;
 extern dboolean gl_arb_texture_compression;
 extern dboolean gl_ext_framebuffer_object;
 extern dboolean gl_ext_packed_depth_stencil;
@@ -92,9 +75,6 @@ extern dboolean gl_use_stencil;
 extern dboolean gl_ext_arb_vertex_buffer_object;
 extern dboolean gl_arb_pixel_buffer_object;
 extern dboolean gl_arb_shader_objects;
-
-// obsolete?
-extern PFNGLCOLORTABLEEXTPROC              GLEXT_glColorTableEXT;
 
 extern PFNGLBINDFRAMEBUFFEREXTPROC         GLEXT_glBindFramebufferEXT;
 extern PFNGLGENFRAMEBUFFERSEXTPROC         GLEXT_glGenFramebuffersEXT;

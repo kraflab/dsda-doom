@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -67,22 +67,22 @@ extern const byte *colrngs[];
 // symbolic indices into color translation table pointer array
 typedef enum
 {
-  CR_BRICK,   //0
-  CR_TAN,     //1
-  CR_GRAY,    //2
-  CR_GREEN,   //3
-  CR_BROWN,   //4
-  CR_GOLD,    //5
-  CR_DEFAULT, //6
-  CR_BLUE,    //7
-  CR_ORANGE,  //8
-  CR_YELLOW,  //9
-  CR_BLUE2,   //10 // proff
-  CR_BLACK,   //11
-  CR_PURPLE,  //12
-  CR_WHITE,   //13
-  CR_RED,     //14
-  CR_LIMIT    //15 //jff 2/27/98 added for range check
+  CR_DEFAULT,
+  CR_BRICK,
+  CR_TAN,
+  CR_GRAY,
+  CR_GREEN,
+  CR_BROWN,
+  CR_GOLD,
+  CR_RED,
+  CR_BLUE,
+  CR_ORANGE,
+  CR_YELLOW,
+  CR_LIGHTBLUE,
+  CR_BLACK,
+  CR_PURPLE,
+  CR_WHITE,
+  CR_LIMIT,
 } crange_idx_e;
 //jff 1/16/98 end palette color range additions
 
@@ -130,7 +130,6 @@ dboolean V_IsSoftwareMode(void);
 dboolean V_IsOpenGLMode(void);
 
 // [XA] indexed lightmode query interface
-dboolean V_IsWorldLightmodeIndexed(void);
 dboolean V_IsUILightmodeIndexed(void);
 dboolean V_IsAutomapLightmodeIndexed(void);
 
@@ -215,6 +214,7 @@ typedef void (*V_DrawBackground_f)(const char* flatname, int scrn);
 extern V_DrawBackground_f V_DrawBackground;
 
 // CPhipps - function to set the palette to palette number pal.
+void V_TouchPalette(void);
 void V_SetPalette(int pal);
 void V_SetPlayPal(int playpal_index);
 
@@ -263,7 +263,7 @@ void V_FreePlaypal(void);
 int V_GetPlaypalCount(void);
 
 // e6y: wide-res
-void V_FillBorder(int lump, byte color);
+void V_ClearBorder(void);
 
 void V_GetWideRect(int *x, int *y, int *w, int *h, enum patch_translation_e flags);
 
@@ -275,7 +275,7 @@ int V_BloodColor(int blood);
 #include "gl_struct.h"
 
 void V_FillRectVPT(int scrn, int x, int y, int width, int height, byte color, enum patch_translation_e flags);
-void V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_translation_e flags);
+int V_FillHeightVPT(int scrn, int y, int height, byte color, enum patch_translation_e flags);
 
 // heretic
 

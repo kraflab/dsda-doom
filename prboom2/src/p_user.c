@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -53,6 +53,7 @@
 #include "dsda/death.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
+#include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 
 // heretic needs
@@ -335,8 +336,19 @@ void P_SetPitch(player_t *player)
       {
         if (!mo->reactiontime && automap_off)
         {
-          mo->pitch += (mlooky << 16);
-          CheckPitch((signed int *)&mo->pitch);
+          if (raven && !demorecording)
+          {
+            player->lookdir += ANGLE_T_TO_LOOKDIR(mlooky << 16);
+            if (player->lookdir > 90)
+              player->lookdir = 90;
+            if (player->lookdir < -110)
+              player->lookdir = -110;
+          }
+          else
+          {
+            mo->pitch += (mlooky << 16);
+            CheckPitch((signed int *)&mo->pitch);
+          }
         }
       }
       else
@@ -378,7 +390,7 @@ void P_MovePlayer (player_t* player)
     R_SmoothPlaying_Add(cmd->angleturn << 16);
   }
 
-  onground = mo->z <= mo->floorz;
+  onground = (mo->z <= mo->floorz || mo->flags2 & MF2_ONMOBJ);
 
   if ((player->mo->flags & MF_FLY) && player == &players[consoleplayer] && upmove != 0)
   {
@@ -407,6 +419,9 @@ void P_MovePlayer (player_t* player)
         int bobfactor =
           friction < ORIG_FRICTION ? movefactor : ORIG_FRICTION_FACTOR;
 
+        if (map_format.zdoom && !movefactor)
+          bobfactor = movefactor;
+
         if (cmd->forwardmove)
         {
           P_Bob(player,mo->angle,cmd->forwardmove*bobfactor);
@@ -419,13 +434,23 @@ void P_MovePlayer (player_t* player)
           P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
       }
-      else if (dsda_AllowJumping())
-      { // slight air control for jumping up ledges
+      else if (map_info.air_control)
+      {
+        int friction, movefactor = P_GetMoveFactor(mo, &friction);
+
+        movefactor = FixedMul(movefactor, map_info.air_control);
+
         if (cmd->forwardmove)
-          P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
+        {
+          P_Bob(player, mo->angle, cmd->forwardmove * movefactor);
+          P_Thrust(player, player->mo->angle, cmd->forwardmove * movefactor);
+        }
 
         if (cmd->sidemove)
-          P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+        {
+          P_Bob(player, mo->angle - ANG90, cmd->sidemove * movefactor);
+          P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * movefactor);
+        }
       }
       if (mo->state == states+S_PLAY)
         P_SetMobjState(mo,S_PLAY_RUN1);
@@ -578,6 +603,17 @@ void P_DeathThink (player_t* player)
   R_SmoothPlaying_Reset(player); // e6y
 }
 
+void P_PlayerEndFlight(player_t * player)
+{
+  if (player->mo->z != player->mo->floorz)
+  {
+    player->centering = true;
+  }
+
+  player->mo->flags2 &= ~MF2_FLY;
+  player->mo->flags &= ~MF_NOGRAVITY;
+}
+
 //
 // P_PlayerThink
 //
@@ -726,7 +762,7 @@ void P_PlayerThink (player_t* player)
             && !S_GetSoundPlayingInfo(player->mo,
                                       hexen_sfx_player_fighter_falling_scream))
         {
-          S_StartSound(player->mo, hexen_sfx_player_fighter_falling_scream);
+          S_StartMobjSound(player->mo, hexen_sfx_player_fighter_falling_scream);
         }
         break;
       case PCLASS_CLERIC:
@@ -735,7 +771,7 @@ void P_PlayerThink (player_t* player)
             && !S_GetSoundPlayingInfo(player->mo,
                                       hexen_sfx_player_cleric_falling_scream))
         {
-          S_StartSound(player->mo, hexen_sfx_player_cleric_falling_scream);
+          S_StartMobjSound(player->mo, hexen_sfx_player_cleric_falling_scream);
         }
         break;
       case PCLASS_MAGE:
@@ -744,7 +780,7 @@ void P_PlayerThink (player_t* player)
             && !S_GetSoundPlayingInfo(player->mo,
                                       hexen_sfx_player_mage_falling_scream))
         {
-          S_StartSound(player->mo, hexen_sfx_player_mage_falling_scream);
+          S_StartMobjSound(player->mo, hexen_sfx_player_mage_falling_scream);
         }
         break;
       default:
@@ -800,11 +836,12 @@ void P_PlayerThink (player_t* player)
     }
   }
 
-  if (dsda_AllowJumping())
+  if (dsda_AllowExCmd())
   {
     if (cmd->ex.actions & XC_JUMP && onground && !player->jumpTics)
     {
-      player->mo->momz = 9 * FRACUNIT;
+      player->mo->momz = g_jump * FRACUNIT;
+      player->mo->flags2 &= ~MF2_ONMOBJ;
       player->jumpTics = 18;
     }
   }
@@ -979,13 +1016,7 @@ void P_PlayerThink (player_t* player)
   {
     if (!--player->powers[pw_flight])
     {
-      if (player->mo->z != player->mo->floorz)
-      {
-          player->centering = true;
-      }
-
-      player->mo->flags2 &= ~MF2_FLY;
-      player->mo->flags &= ~MF_NOGRAVITY;
+      P_PlayerEndFlight(player);
     }
   }
 
@@ -1176,7 +1207,7 @@ dboolean P_UndoPlayerChicken(player_t * player)
     angle >>= ANGLETOFINESHIFT;
     fog = P_SpawnMobj(x + 20 * finecosine[angle],
                       y + 20 * finesine[angle], z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
-    S_StartSound(fog, heretic_sfx_telept);
+    S_StartMobjSound(fog, heretic_sfx_telept);
     P_PostChickenWeapon(player, weapon);
     return (true);
 }
@@ -1193,14 +1224,14 @@ void P_ArtiTele(player_t * player)
     {
         selections = deathmatch_p - deathmatchstarts;
         i = P_Random(pr_heretic) % selections;
-        destX = deathmatchstarts[i].x << FRACBITS;
-        destY = deathmatchstarts[i].y << FRACBITS;
+        destX = deathmatchstarts[i].x;
+        destY = deathmatchstarts[i].y;
         destAngle = ANG45 * (deathmatchstarts[i].angle / 45);
     }
     else
     {
-        destX = playerstarts[0][0].x << FRACBITS;
-        destY = playerstarts[0][0].y << FRACBITS;
+        destX = playerstarts[0][0].x;
+        destY = playerstarts[0][0].y;
         destAngle = ANG45 * (playerstarts[0][0].angle / 45);
     }
     P_Teleport(player->mo, destX, destY, destAngle, true);
@@ -1209,7 +1240,7 @@ void P_ArtiTele(player_t * player)
       P_UndoPlayerMorph(player);
     }
     if (heretic)
-      S_StartSound(NULL, heretic_sfx_wpnup);      // Full volume laugh
+      S_StartVoidSound(heretic_sfx_wpnup);      // Full volume laugh
 }
 
 void P_PlayerNextArtifact(player_t * player)
@@ -1295,16 +1326,16 @@ void P_PlayerUseArtifact(player_t * player, artitype_t arti)
                     {
                         if (arti < hexen_arti_firstpuzzitem)
                         {
-                            S_StartSound(NULL, hexen_sfx_artifact_use);
+                            S_StartVoidSound(hexen_sfx_artifact_use);
                         }
                         else
                         {
-                            S_StartSound(NULL, hexen_sfx_puzzle_success);
+                            S_StartVoidSound(hexen_sfx_puzzle_success);
                         }
                     }
                     else
                     {
-                        S_StartSound(NULL, heretic_sfx_artiuse);
+                        S_StartVoidSound(heretic_sfx_artiuse);
                     }
                     ArtifactFlash = 4;
                 }
@@ -1363,7 +1394,7 @@ dboolean P_UseArtifact(player_t * player, artitype_t arti)
                 else
                 {               // Succeeded
                     player->chickenTics = 0;
-                    S_StartSound(player->mo, heretic_sfx_wpnup);
+                    S_StartMobjSound(player->mo, heretic_sfx_wpnup);
                 }
             }
             else
@@ -1458,16 +1489,16 @@ void Raven_P_MovePlayer(player_t * player)
         {
           if (onground || player->mo->flags2 & MF2_FLY)
               P_ForwardThrust(player, player->mo->angle, cmd->forwardmove * 2048);
-          else if (hexen) // air control?
-              P_ForwardThrust(player, player->mo->angle, FRACUNIT >> 8);
+          else if (hexen)
+              P_ForwardThrust(player, player->mo->angle, map_info.air_control);
         }
 
         if (cmd->sidemove)
         {
           if (onground || player->mo->flags2 & MF2_FLY)
               P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * 2048);
-          else if (hexen) // air control?
-              P_Thrust(player, player->mo->angle, FRACUNIT >> 8);
+          else if (hexen)
+              P_Thrust(player, player->mo->angle, map_info.air_control);
         }
     }
 
@@ -1590,7 +1621,7 @@ void P_ChickenPlayerThink(player_t * player)
     }
     if (P_Random(pr_heretic) < 48)
     {                           // Just noise
-        S_StartSound(pmo, heretic_sfx_chicact);
+        S_StartMobjSound(pmo, heretic_sfx_chicact);
     }
 }
 
@@ -1703,7 +1734,7 @@ void P_BlastRadius(player_t * player)
     thinker_t *think;
     fixed_t dist;
 
-    S_StartSound(pmo, hexen_sfx_artifact_blast);
+    S_StartMobjSound(pmo, hexen_sfx_artifact_blast);
     P_NoiseAlert(player->mo, player->mo);
 
     for (think = thinkercap.next; think != &thinkercap; think = think->next)
@@ -1769,18 +1800,18 @@ void P_MorphPlayerThink(player_t * player)
     if (!(pmo->momx + pmo->momy) && P_Random(pr_hexen) < 64)
     {                           // Snout sniff
         P_SetPspriteNF(player, ps_weapon, HEXEN_S_SNOUTATK2);
-        S_StartSound(pmo, hexen_sfx_pig_active1);     // snort
+        S_StartMobjSound(pmo, hexen_sfx_pig_active1);     // snort
         return;
     }
     if (P_Random(pr_hexen) < 48)
     {
         if (P_Random(pr_hexen) < 128)
         {
-            S_StartSound(pmo, hexen_sfx_pig_active1);
+            S_StartMobjSound(pmo, hexen_sfx_pig_active1);
         }
         else
         {
-            S_StartSound(pmo, hexen_sfx_pig_active2);
+            S_StartMobjSound(pmo, hexen_sfx_pig_active2);
         }
     }
 }
@@ -1873,7 +1904,7 @@ dboolean P_UndoPlayerMorph(player_t * player)
     angle >>= ANGLETOFINESHIFT;
     fog = P_SpawnMobj(x + 20 * finecosine[angle],
                       y + 20 * finesine[angle], z + TELEFOGHEIGHT, HEXEN_MT_TFOG);
-    S_StartSound(fog, hexen_sfx_teleport);
+    S_StartMobjSound(fog, hexen_sfx_teleport);
     P_PostMorphWeapon(player, weapon);
     return (true);
 }
@@ -1903,8 +1934,8 @@ void P_TeleportToPlayerStarts(mobj_t * victim)
         selections++;
     }
     i = P_Random(pr_hexen) % selections;
-    destX = playerstarts[0][i].x << FRACBITS;
-    destY = playerstarts[0][i].y << FRACBITS;
+    destX = playerstarts[0][i].x;
+    destY = playerstarts[0][i].y;
     destAngle = ANG45 * (playerstarts[0][i].angle / 45);
     P_Teleport(victim, destX, destY, destAngle, true);
 }
@@ -1919,8 +1950,8 @@ void P_TeleportToDeathmatchStarts(mobj_t * victim)
     if (selections)
     {
         i = P_Random(pr_hexen) % selections;
-        destX = deathmatchstarts[i].x << FRACBITS;
-        destY = deathmatchstarts[i].y << FRACBITS;
+        destX = deathmatchstarts[i].x;
+        destY = deathmatchstarts[i].y;
         destAngle = ANG45 * (deathmatchstarts[i].angle / 45);
         P_Teleport(victim, destX, destY, destAngle, true);
     }
@@ -1945,7 +1976,7 @@ void P_TeleportOther(mobj_t * victim)
         if (victim->flags & MF_COUNTKILL && victim->special)
         {
             map_format.remove_mobj_thing_id(victim);
-            map_format.execute_line_special(victim->special, victim->args, NULL, 0, victim);
+            map_format.execute_line_special(victim->special, victim->special_args, NULL, 0, victim);
             victim->special = 0;
         }
 
@@ -1993,7 +2024,7 @@ dboolean P_HealRadius(player_t * player)
                     (Hexen_P_GiveArmor(mo->player, ARMOR_AMULET, 1)))
                 {
                     effective = true;
-                    S_StartSound(mo, hexen_sfx_mysticincant);
+                    S_StartMobjSound(mo, hexen_sfx_mysticincant);
                 }
                 break;
             case PCLASS_CLERIC:        // Radius heal
@@ -2001,7 +2032,7 @@ dboolean P_HealRadius(player_t * player)
                 if (P_GiveBody(mo->player, amount))
                 {
                     effective = true;
-                    S_StartSound(mo, hexen_sfx_mysticincant);
+                    S_StartMobjSound(mo, hexen_sfx_mysticincant);
                 }
                 break;
             case PCLASS_MAGE:  // Radius mana boost
@@ -2010,7 +2041,7 @@ dboolean P_HealRadius(player_t * player)
                     (P_GiveMana(mo->player, MANA_2, amount)))
                 {
                     effective = true;
-                    S_StartSound(mo, hexen_sfx_mysticincant);
+                    S_StartMobjSound(mo, hexen_sfx_mysticincant);
                 }
                 break;
             case PCLASS_PIG:

@@ -114,6 +114,7 @@ int ZMT_MAPSPOT = ZMT_UNDEFINED;
 int ZMT_MAPSPOT_GRAVITY = ZMT_UNDEFINED;
 int ZMT_TELEPORTDEST2 = ZMT_UNDEFINED;
 int ZMT_TELEPORTDEST3 = ZMT_UNDEFINED;
+int ZMT_AMBIENTSOUND = ZMT_UNDEFINED;
 
 static mobjinfo_t zmt_mapspot_info = {
   .doomednum = 9001,
@@ -263,6 +264,43 @@ static mobjinfo_t zmt_teleportdest3_info = {
   .visibility = VF_ZDOOM,
 };
 
+static mobjinfo_t zmt_ambient_sound = {
+  .doomednum = 14064,
+  .spawnstate = S_NULL,
+  .spawnhealth = 1000,
+  .seestate = S_NULL,
+  .seesound = sfx_None,
+  .reactiontime = 8,
+  .attacksound = sfx_None,
+  .painstate = S_NULL,
+  .painchance = 0,
+  .painsound = sfx_None,
+  .meleestate = S_NULL,
+  .missilestate = S_NULL,
+  .deathstate = S_NULL,
+  .xdeathstate = S_NULL,
+  .deathsound = sfx_None,
+  .speed = 0,
+  .radius = 20 * FRACUNIT,
+  .height = 16 * FRACUNIT,
+  .mass = 100,
+  .damage = 0,
+  .activesound = sfx_None,
+  .flags = MF_NOBLOCKMAP | MF_NOSECTOR,
+  .raisestate = S_NULL,
+  .droppeditem = MT_NULL,
+  .crashstate = S_NULL,
+  .flags2 = 0,
+  .infighting_group = IG_DEFAULT,
+  .projectile_group = PG_DEFAULT,
+  .splash_group = SG_DEFAULT,
+  .ripsound = sfx_None,
+  .altspeed = NO_ALTSPEED,
+  .meleerange = MELEERANGE,
+  .bloodcolor = 0,
+  .visibility = VF_DOOM,
+};
+
 typedef struct {
   int* index_p;
   mobjinfo_t* mobjinfo_p;
@@ -273,6 +311,7 @@ static append_mobjinfo_t append_mobjinfo[] = {
   { &ZMT_MAPSPOT_GRAVITY, &zmt_mapspot_gravity_info },
   { &ZMT_TELEPORTDEST2, &zmt_teleportdest2_info },
   { &ZMT_TELEPORTDEST3, &zmt_teleportdest3_info },
+  { &ZMT_AMBIENTSOUND, &zmt_ambient_sound },
 };
 
 static int append_mobjinfo_count = sizeof(append_mobjinfo) / sizeof(append_mobjinfo[0]);

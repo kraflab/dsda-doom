@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -34,11 +34,9 @@
 #ifndef __S_SOUND__
 #define __S_SOUND__
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #include "doomtype.h"
+#include "p_mobj.h"
+#include "r_defs.h"
 
 #define MAX_CHANNELS 32
 
@@ -66,6 +64,17 @@ void S_Start(void);
 void S_StartSound(void *origin, int sound_id);
 void S_LoopSound(void *origin, int sfx_id, int timeout);
 
+void S_StartSectorSound(sector_t *sector, int sfx_id);
+void S_LoopSectorSound(sector_t *sector, int sfx_id, int timeout);
+
+void S_StartMobjSound(mobj_t *mobj, int sfx_id);
+void S_LoopMobjSound(mobj_t *mobj, int sfx_id, int timeout);
+
+void S_StartVoidSound(int sfx_id);
+void S_LoopVoidSound(int sfx_id, int timeout);
+
+void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id);
+
 // Will start a sound at a given volume.
 void S_StartSoundAtVolume(void *origin, int sound_id, int volume, int loop_timeout);
 
@@ -86,6 +95,7 @@ void S_StartMusic(int music_id);
 // Start music using <music_id> from sounds.h, and set whether looping
 void S_ChangeMusic(int music_id, int looping);
 void S_ChangeMusInfoMusic(int lumpnum, int looping);
+dboolean S_ChangeMusicByName(const char *name, dboolean looping);
 void S_RestartMusic(void);
 
 // Stops the music fer sure.
@@ -94,6 +104,10 @@ void S_StopMusic(void);
 // Stop and resume music, during game PAUSE.
 void S_PauseSound(void);
 void S_ResumeSound(void);
+
+void S_AdjustAttenuation(float attenuation);
+void S_AdjustVolume(float volume);
+void S_ResetAdjustments(void);
 
 //
 // Updates music & sounds

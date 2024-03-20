@@ -11,6 +11,8 @@ set(COMMON_SRC
     doomtype.h
     dsda.c
     dsda.h
+    dsda/ambient.cpp
+    dsda/ambient.h
     dsda/analysis.c
     dsda/analysis.h
     dsda/args.c
@@ -25,6 +27,8 @@ set(COMMON_SRC
     dsda/configuration.h
     dsda/console.c
     dsda/console.h
+    dsda/cr_table.c
+    dsda/cr_table.h
     dsda/data_organizer.c
     dsda/data_organizer.h
     dsda/death.c
@@ -33,8 +37,12 @@ set(COMMON_SRC
     dsda/deh_hash.h
     dsda/demo.c
     dsda/demo.h
+    dsda/destructible.c
+    dsda/destructible.h
     dsda/endoom.c
     dsda/endoom.h
+    dsda/episode.c
+    dsda/episode.h
     dsda/excmd.c
     dsda/excmd.h
     dsda/exdemo.c
@@ -43,6 +51,8 @@ set(COMMON_SRC
     dsda/exhud.h
     dsda/features.c
     dsda/features.h
+    dsda/font.c
+    dsda/font.h
     dsda/game_controller.c
     dsda/game_controller.h
     dsda/ghost.c
@@ -72,6 +82,8 @@ set(COMMON_SRC
     dsda/hud_components/big_health.h
     dsda/hud_components/big_health_text.c
     dsda/hud_components/big_health_text.h
+    dsda/hud_components/color_test.c
+    dsda/hud_components/color_test.h
     dsda/hud_components/command_display.c
     dsda/hud_components/command_display.h
     dsda/hud_components/composite_time.c
@@ -82,6 +94,8 @@ set(COMMON_SRC
     dsda/hud_components/event_split.h
     dsda/hud_components/fps.c
     dsda/hud_components/fps.h
+    dsda/hud_components/free_text.c
+    dsda/hud_components/free_text.h
     dsda/hud_components/health_text.c
     dsda/hud_components/health_text.h
     dsda/hud_components/keys.c
@@ -96,6 +110,18 @@ set(COMMON_SRC
     dsda/hud_components/line_tracker.h
     dsda/hud_components/local_time.c
     dsda/hud_components/local_time.h
+    dsda/hud_components/map_coordinates.c
+    dsda/hud_components/map_coordinates.h
+    dsda/hud_components/map_time.c
+    dsda/hud_components/map_time.h
+    dsda/hud_components/map_title.c
+    dsda/hud_components/map_title.h
+    dsda/hud_components/map_totals.c
+    dsda/hud_components/map_totals.h
+    dsda/hud_components/message.c
+    dsda/hud_components/message.h
+    dsda/hud_components/minimap.c
+    dsda/hud_components/minimap.h
     dsda/hud_components/mobj_tracker.c
     dsda/hud_components/mobj_tracker.h
     dsda/hud_components/null.c
@@ -106,6 +132,8 @@ set(COMMON_SRC
     dsda/hud_components/ready_ammo_text.h
     dsda/hud_components/render_stats.c
     dsda/hud_components/render_stats.h
+    dsda/hud_components/secret_message.c
+    dsda/hud_components/secret_message.h
     dsda/hud_components/sector_tracker.c
     dsda/hud_components/sector_tracker.h
     dsda/hud_components/speed_text.c
@@ -116,6 +144,8 @@ set(COMMON_SRC
     dsda/hud_components/tracker.h
     dsda/hud_components/weapon_text.c
     dsda/hud_components/weapon_text.h
+    dsda/id_list.c
+    dsda/id_list.h
     dsda/input.c
     dsda/input.h
     dsda/key_frame.c
@@ -125,6 +155,10 @@ set(COMMON_SRC
     dsda/map_format.h
     dsda/mapinfo.c
     dsda/mapinfo.h
+    dsda/mapinfo/doom.c
+    dsda/mapinfo/doom.h
+    dsda/mapinfo/doom/parser.cpp
+    dsda/mapinfo/doom/parser.h
     dsda/mapinfo/hexen.c
     dsda/mapinfo/hexen.h
     dsda/mapinfo/legacy.c
@@ -133,8 +167,8 @@ set(COMMON_SRC
     dsda/mapinfo/u.h
     dsda/memory.c
     dsda/memory.h
-    dsda/mkdir.c
-    dsda/mkdir.h
+    dsda/messenger.c
+    dsda/messenger.h
     dsda/mobjinfo.c
     dsda/mobjinfo.h
     dsda/mouse.c
@@ -143,6 +177,8 @@ set(COMMON_SRC
     dsda/msecnode.h
     dsda/music.c
     dsda/music.h
+    dsda/name.c
+    dsda/name.h
     dsda/options.c
     dsda/options.h
     dsda/palette.c
@@ -153,16 +189,22 @@ set(COMMON_SRC
     dsda/pclass.h
     dsda/playback.c
     dsda/playback.h
+    dsda/preferences.c
+    dsda/preferences.h
     dsda/quake.c
     dsda/render_stats.c
     dsda/render_stats.h
     dsda/save.c
     dsda/save.h
+    dsda/scroll.c
+    dsda/scroll.h
     dsda/settings.c
     dsda/settings.h
     dsda/sfx.c
     dsda/sfx.h
     dsda/signal_context.h
+    dsda/skill_info.c
+    dsda/skill_info.h
     dsda/skip.c
     dsda/skip.h
     dsda/sndinfo.c
@@ -177,6 +219,8 @@ set(COMMON_SRC
     dsda/state.h
     dsda/stretch.c
     dsda/stretch.h
+    dsda/text_color.c
+    dsda/text_color.h
     dsda/text_file.c
     dsda/text_file.h
     dsda/thing_id.c
@@ -185,10 +229,18 @@ set(COMMON_SRC
     dsda/time.h
     dsda/tracker.c
     dsda/tracker.h
+    dsda/tranmap.c
+    dsda/tranmap.h
     dsda/udmf.cpp
     dsda/udmf.h
     dsda/utility.c
     dsda/utility.h
+    dsda/utility/string_view.c
+    dsda/utility/string_view.h
+    dsda/wad_stats.c
+    dsda/wad_stats.h
+    dsda/zipfile.c
+    dsda/zipfile.h
     dstrings.c
     dstrings.h
     d_deh.c
@@ -260,8 +312,6 @@ set(COMMON_SRC
     i_glob.c
     i_glob.h
     i_main.h
-    i_pcsound.c
-    i_pcsound.h
     i_sound.h
     i_system.h
     i_video.h
@@ -275,6 +325,8 @@ set(COMMON_SRC
     m_bbox.h
     m_cheat.c
     m_cheat.h
+    m_file.c
+    m_file.h
     m_fixed.h
     m_menu.c
     m_menu.h
@@ -321,8 +373,6 @@ set(COMMON_SRC
     r_defs.h
     r_draw.c
     r_draw.h
-    r_filter.c
-    r_filter.h
     r_fps.c
     r_fps.h
     r_main.c
@@ -397,17 +447,7 @@ set(SDLDOOM_SOURCES
     SDL/i_video.c
 )
 
-set(PCSOUND_SOURCES
-    PCSOUND/pcsound.c
-    PCSOUND/pcsound.h
-    PCSOUND/pcsound_linux.c
-    PCSOUND/pcsound_sdl.c
-    PCSOUND/pcsound_win32.c
-)
-
 set(DOOMMUSIC_SOURCES
-    MUSIC/dbopl.c
-    MUSIC/dbopl.h
     MUSIC/dumbplayer.c
     MUSIC/dumbplayer.h
     MUSIC/flplayer.c
@@ -419,6 +459,8 @@ set(DOOMMUSIC_SOURCES
     MUSIC/musicplayer.h
     MUSIC/opl.c
     MUSIC/opl.h
+    MUSIC/opl3.c
+    MUSIC/opl3.h
     MUSIC/oplplayer.c
     MUSIC/oplplayer.h
     MUSIC/opl_queue.c
@@ -435,13 +477,12 @@ set(EXTRA_FILES
     r_drawflush.inl
 )
 
-set(PRBOOM_PLUS_SOURCES
+set(DSDA_SOURCES
     ${COMMON_SRC}
     ${NET_CLIENT_SRC}
     ${WAD_SRC}
     ${MUS2MID_SRC}
     ${SDLDOOM_SOURCES}
-    ${PCSOUND_SOURCES}
     ${DOOMMUSIC_SOURCES}
     ${EXTRA_FILES}
 )
@@ -450,11 +491,8 @@ function(AddGameExecutable TARGET SOURCES)
     set(SOURCES
         ${SOURCES}
         gl_clipper.c
-        gl_detail.c
         gl_drawinfo.c
         gl_fbo.c
-        gl_gamma.c
-        gl_hires.c
         gl_intern.h
         gl_light.c
         gl_main.c
@@ -463,6 +501,7 @@ function(AddGameExecutable TARGET SOURCES)
         gl_opengl.c
         gl_opengl.h
         gl_preprocess.c
+        gl_progress.c
         gl_shader.c
         gl_sky.c
         gl_struct.h
@@ -472,11 +511,9 @@ function(AddGameExecutable TARGET SOURCES)
     )
 
     if(WIN32)
-        add_definitions("-DUSE_WIN32_PCSOUND_DRIVER")
         set(SOURCES
             ${SOURCES}
             ../ICONS/icons.rc
-            SDL/SDL_windows_main.c
         )
         if(MSVC)
             set(SOURCES
@@ -488,55 +525,67 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     add_executable(${TARGET} WIN32 ${SOURCES})
+
+    target_compile_options(${TARGET} PRIVATE
+        ${SUPPORTED_WARNINGS}
+        ${FAST_MATH_FLAG}
+    )
+
+    target_compile_definitions(${TARGET} PRIVATE
+        ${DEPRECATION_SILENCING_DEFINITIONS}
+        ${DSDA_COMPILE_DEFINITIONS}
+    )
+
     target_include_directories(${TARGET} PRIVATE
         ${SDL2_INCLUDE_DIRS}
         ${CMAKE_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
     )
+
     target_link_libraries(${TARGET} PRIVATE
+        libzip::zip
         ${SDL2_LIBRARIES}
+        SDL2_mixer::SDL2_mixer
+        ZLIB::ZLIB
     )
+
     if(WIN32)
         target_link_libraries(${TARGET} PRIVATE
             winmm
             comctl32
         )
     endif()
+
     set_target_properties(${TARGET} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY ${PRBOOM_OUTPUT_PATH}
+        RUNTIME_OUTPUT_DIRECTORY ${DSDA_OUTPUT_PATH}
+        INTERPROCEDURAL_OPTIMIZATION ${ENABLE_LTO}
+        C_STANDARD 99
     )
-    if(SDL2_IMAGE_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${SDL2_IMAGE_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${SDL2_IMAGE_LIBRARIES})
+
+    if(HAVE_LIBSDL2_IMAGE)
+        target_link_libraries(${TARGET} PRIVATE SDL2_image::SDL2_image)
     endif()
 
-    target_include_directories(${TARGET} PRIVATE ${SDL2_MIXER_INCLUDE_DIRS})
-    target_link_libraries(${TARGET} PRIVATE ${SDL2_MIXER_LIBRARIES})
+    if(HAVE_LIBMAD)
+        target_link_libraries(${TARGET} PRIVATE LibMad::libmad)
+    endif()
 
-    if(ZLIB_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${ZLIB_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${ZLIB_LIBRARIES})
+    if(HAVE_LIBFLUIDSYNTH)
+        target_link_libraries(${TARGET} PRIVATE FluidSynth::libfluidsynth)
     endif()
-    if(LIBMAD_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${LIBMAD_INCLUDE_DIRS})
-        target_link_libraries(${TARGET} PRIVATE ${LIBMAD_LIBRARIES})
+
+    if(HAVE_LIBDUMB)
+        target_link_libraries(${TARGET} PRIVATE DUMB::DUMB)
     endif()
-    if(FLUIDSYNTH_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${FLUIDSYNTH_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${FLUIDSYNTH_LIBRARIES})
+
+    if(HAVE_LIBVORBISFILE)
+        target_link_libraries(${TARGET} PRIVATE Vorbis::vorbisfile)
     endif()
-    if(DUMB_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${DUMB_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${DUMB_LIBRARY})
+
+    if(HAVE_LIBPORTMIDI)
+        target_link_libraries(${TARGET} PRIVATE PortMidi::portmidi)
     endif()
-    if(VORBIS_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${VORBIS_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${VORBISFILE_LIBRARY})
-    endif()
-    if(PortMidi_FOUND)
-        target_include_directories(${TARGET} PRIVATE ${PORTMIDI_INCLUDE_DIR})
-        target_link_libraries(${TARGET} PRIVATE ${PORTMIDI_LIBRARIES})
-    endif()
+
     add_dependencies(${TARGET} dsda-doom-wad)
 
     if(MSVC)
@@ -553,7 +602,25 @@ function(AddGameExecutable TARGET SOURCES)
         )
     endif()
 
-    install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+    if(WIN32)
+        set(DSDA_BINARY_INSTALL_DIR ".")
+    else()
+        set(DSDA_BINARY_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}")
+    endif()
+
+    if(CMAKE_VERSION VERSION_GREATER 3.20 AND NOT VCPKG_TOOLCHAIN AND WIN32)
+        install(
+            TARGETS ${TARGET}
+            RUNTIME_DEPENDENCIES
+                PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+                POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+                DIRECTORIES $<TARGET_FILE_DIR:${TARGET}> $ENV{PATH}
+            RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}"
+            COMPONENT "Game executable"
+        )
+    else()
+        install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
+    endif()
 
     target_link_libraries(${TARGET} PRIVATE
         ${OPENGL_gl_LIBRARY}
@@ -561,4 +628,4 @@ function(AddGameExecutable TARGET SOURCES)
     )
 endfunction()
 
-AddGameExecutable(dsda-doom "${PRBOOM_PLUS_SOURCES}")
+AddGameExecutable(dsda-doom "${DSDA_SOURCES}")

@@ -63,7 +63,6 @@ int playerkeys = 0;
 
 // Private Data
 
-static int DisplayTicker = 0;
 static int HealthMarker;
 static int ChainWiggle;
 static player_t *CPlayer;
@@ -206,9 +205,7 @@ void SB_Start(void)
 //---------------------------------------------------------------------------
 
 extern patchnum_t stbarbg;
-extern patchnum_t grnrock;
-extern patchnum_t brdr_t, brdr_b, brdr_l, brdr_r;
-extern patchnum_t brdr_tl, brdr_tr, brdr_bl, brdr_br;
+extern patchnum_t brdr_b;
 
 void SB_Init(void)
 {
@@ -240,15 +237,7 @@ void SB_Init(void)
     sb_full_inv_gem_xr = 269;
 
     // magic globals that ends up in the background
-    R_SetFloorNum(&grnrock, "FLOOR30");
-    R_SetPatchNum(&brdr_t, "bordt");
     R_SetPatchNum(&brdr_b, "bordb");
-    R_SetPatchNum(&brdr_l, "bordl");
-    R_SetPatchNum(&brdr_r, "bordr");
-    R_SetPatchNum(&brdr_tl, "bordtl");
-    R_SetPatchNum(&brdr_tr, "bordtr");
-    R_SetPatchNum(&brdr_bl, "bordbl");
-    R_SetPatchNum(&brdr_br, "bordbr");
     R_SetPatchNum(&stbarbg, "BARBACK");
 
     for (i = 0; i < 11; ++i)
@@ -275,7 +264,7 @@ void SB_Init(void)
     }
     else
     {
-        LumpLIFEGEM = W_GetNumForName("LIFEGEM0" + consoleplayer);
+        LumpLIFEGEM = W_GetNumForName("LIFEGEM0") + consoleplayer;
     }
     LumpLTFCTOP = W_GetNumForName("LTFCTOP");
     LumpRTFCTOP = W_GetNumForName("RTFCTOP");
@@ -921,33 +910,6 @@ void DrawArtifact(int x, int y, int vpt)
   }
 }
 
-//--------------------------------------------------------------------------
-//
-// FUNC SB_Responder
-//
-//--------------------------------------------------------------------------
-
-dboolean SB_Responder(event_t * ev)
-{
-  // Note to self: doom logic
-  // // Filter automap on/off.
-  // if (ev->type == ev_keyup && (ev->data1 & 0xffff0000) == AM_MSGHEADER)
-  //   {
-  //     switch(ev->data1)
-  //       {
-  //       case AM_MSGENTERED:
-  //         st_gamestate = AutomapState;
-  //         st_firsttime = true;
-  //         break;
-  //
-  //       case AM_MSGEXITED:
-  //         st_gamestate = FirstPersonState;
-  //         break;
-  //       }
-  //   }
-  return M_CheatResponder(ev);
-}
-
 // hexen
 
 static void Hexen_SB_Init(void)
@@ -978,15 +940,7 @@ static void Hexen_SB_Init(void)
     sb_full_inv_gem_xr = 268;
 
     // magic globals that ends up in the background
-    R_SetFloorNum(&grnrock, "F_022");
-    R_SetPatchNum(&brdr_t, "bordt");
     R_SetPatchNum(&brdr_b, "bordb");
-    R_SetPatchNum(&brdr_l, "bordl");
-    R_SetPatchNum(&brdr_r, "bordr");
-    R_SetPatchNum(&brdr_tl, "bordtl");
-    R_SetPatchNum(&brdr_tr, "bordtr");
-    R_SetPatchNum(&brdr_bl, "bordbl");
-    R_SetPatchNum(&brdr_br, "bordbr");
     R_SetPatchNum(&stbarbg, "H2BAR");
 
     for (i = 0; i < 33; ++i)
@@ -1329,7 +1283,7 @@ static void DrawWeaponPieces(void)
 
 static void Hexen_DrawMainBar(void)
 {
-    int i, j, k;
+    int i;
     int temp;
     int manaLump1, manaLump2;
     int manaVialLump1, manaVialLump2;

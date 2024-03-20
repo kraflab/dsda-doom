@@ -1,6 +1,7 @@
 doom ex
 stat_totals 2 8 bottom_left
 composite_time 2 16 bottom_left
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -9,10 +10,15 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 heretic ex
 stat_totals 2 8 bottom_left
 composite_time 2 16 bottom_left
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -21,10 +27,15 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 hexen ex
 stat_totals 2 8 bottom_left
 composite_time 2 16 bottom_left
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -33,8 +44,13 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 doom off
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -43,8 +59,13 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 heretic off
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -53,8 +74,13 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 hexen off
+free_text 2 24 bottom_left
 tracker 2 32 bottom_left
 render_stats 2 8 top_left
 coordinate_display 2 8 top_left
@@ -63,6 +89,10 @@ command_display 198 8 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 doom full
 ready_ammo_text 2 8 bottom_left
@@ -71,6 +101,7 @@ armor_text 52 16 bottom_left
 weapon_text 2 24 bottom_left
 stat_totals 2 32 bottom_left
 composite_time 2 40 bottom_left
+free_text 2 48 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 32 bottom_right
 keys 241 30 bottom_right
@@ -81,6 +112,10 @@ command_display 198 48 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 heretic full
 ready_ammo_text 2 8 bottom_left
@@ -89,6 +124,7 @@ armor_text 52 16 bottom_left
 weapon_text 2 24 bottom_left
 stat_totals 2 32 bottom_left
 composite_time 2 40 bottom_left
+free_text 2 48 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 48 bottom_right
 keys 241 30 bottom_right
@@ -100,6 +136,10 @@ command_display 198 64 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
 
 hexen full
 ready_ammo_text 2 8 bottom_left
@@ -108,6 +148,7 @@ armor_text 52 16 bottom_left
 weapon_text 2 24 bottom_left
 stat_totals 2 32 bottom_left
 composite_time 2 40 bottom_left
+free_text 2 48 bottom_left
 tracker 2 56 bottom_left
 ammo_text 256 24 bottom_right
 keys 102 30 bottom_left
@@ -119,3 +160,31 @@ command_display 198 40 bottom_right
 event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
+minimap 264 8 top_right 48 48 1024
+message 0 0 top_left
+secret_message 0 76 none
+add_offset 1 top_left
+
+doom map
+map_totals 2 8 top_left
+map_time 2 40 top_left
+map_coordinates 255 8 top_right
+map_title 2 8 bottom_left
+message 0 0 top_left
+secret_message 0 76 none
+
+heretic map
+map_totals 2 8 top_left
+map_time 2 40 top_left
+map_coordinates 255 8 top_right
+map_title 20 16 bottom_left
+message 0 0 top_left
+secret_message 0 76 none
+
+hexen map
+map_totals 2 8 top_left
+map_time 2 40 top_left
+map_coordinates 255 8 top_right
+map_title 24 20 bottom_left
+message 0 0 top_left
+secret_message 0 76 none

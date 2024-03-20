@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -36,10 +36,6 @@
 
 #include "r_defs.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 enum column_pipeline_e {
   RDC_PIPELINE_STANDARD,
   RDC_PIPELINE_TRANSLUCENT,
@@ -70,16 +66,13 @@ typedef struct draw_column_vars_s
   int                 yl;
   int                 yh;
   int                 dy;
-  fixed_t             z; // the current column z coord
   fixed_t             iscale;
   fixed_t             texturemid;
   int                 texheight;    // killough
-  fixed_t             texu; // the current column u coord
   const byte          *source; // first pixel in a column
   const byte          *prevsource; // first pixel in previous column
   const byte          *nextsource; // first pixel in next column
   const lighttable_t  *colormap;
-  const lighttable_t  *nextcolormap;
   const byte          *translation;
   int                 edgeslope; // OR'ed RDRAW_EDGESLOPE_*
   // 1 if R_DrawColumn* is currently drawing a masked column, otherwise 0
@@ -92,8 +85,6 @@ typedef struct draw_column_vars_s
 
 void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars);
 
-void R_VideoErase(int x, int y, int count);
-
 typedef struct {
   int                 y;
   int                 x1;
@@ -105,7 +96,15 @@ typedef struct {
   fixed_t             ystep;
   const byte          *source; // start of a 64*64 tile image
   const lighttable_t  *colormap;
-  const lighttable_t  *nextcolormap;
+
+  fixed_t xoffs;
+  fixed_t yoffs;
+  fixed_t xscale;
+  fixed_t yscale;
+  fixed_t sine;
+  fixed_t cosine;
+  fixed_t planeheight;
+  const lighttable_t **planezlight;
 } draw_span_vars_t;
 
 typedef struct {

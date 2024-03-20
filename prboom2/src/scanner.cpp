@@ -80,7 +80,7 @@ Scanner::Scanner(const char* data, int length) : line(1), lineStart(0), logicalP
 
 Scanner::~Scanner()
 {
-	if (string != NULL) delete[] string;
+	if (string != NULL) free(string);
 	delete[] data;
 }
 
@@ -204,7 +204,7 @@ void Scanner::SaveState(Scanner &savedstate)
 	// This saves the entire parser state except for the data pointer.
 	if (savedstate.string != NULL) free(savedstate.string);
 	if (savedstate.nextState.string != NULL) free(savedstate.nextState.string);
-	memcpy(&savedstate, this, sizeof(*this));
+	savedstate = *this;
 	savedstate.string = strdup(string);
 	savedstate.nextState.string = strdup(nextState.string);
 	savedstate.data = NULL;
@@ -249,7 +249,7 @@ bool Scanner::GetNextToken(bool expandState)
 
 	char cur = data[scanPos++];
 	// Determine by first character
-	if(cur == '_' || (cur >= 'A' && cur <= 'Z') || (cur >= 'a' && cur <= 'z'))
+	if(cur == '_' || cur == '$' || (cur >= 'A' && cur <= 'Z') || (cur >= 'a' && cur <= 'z'))
 		nextState.token = TK_Identifier;
 	else if(cur >= '0' && cur <= '9')
 	{
@@ -325,7 +325,7 @@ bool Scanner::GetNextToken(bool expandState)
 				default:
 					break;
 				case TK_Identifier:
-					if(cur != '_' && (cur < 'A' || cur > 'Z') && (cur < 'a' || cur > 'z') && (cur < '0' || cur > '9'))
+					if(cur != '_' && (cur < 'A' || cur > 'Z') && (cur < 'a' || cur > 'z') && (cur < '0' || cur > '9') && cur != '/' && cur != '\\')
 						end = scanPos;
 					break;
 				case TK_IntConst:
@@ -396,6 +396,9 @@ bool Scanner::GetNextToken(bool expandState)
 			else
 				break;
 		}
+
+		if (start == end && scanPos == length)
+			end = scanPos;
 	}
 
 	if(end-start > 0 || stringFinished)
@@ -454,16 +457,21 @@ void Scanner::IncrementLine()
 	lineStart = scanPos;
 }
 
+void Scanner::SkipLine()
+{
+	while (tokenLine == line && GetNextToken());
+}
+
 void Scanner::Error(int token)
 {
 	if (token < TK_NumSpecialTokens && this->token >= TK_Identifier && this->token < TK_NumSpecialTokens)
-		error("%d:%d:Expected '%s' but got '%s' instead.", GetLine(), GetLinePos(), TokenNames[token], TokenNames[this->token]);
+		error("%d:%d:Expected '%s' but got '%s' instead.", GetLine(), GetLinePos(), TokenNames[token], TokenNames[(unsigned char) this->token]);
 	else if (token < TK_NumSpecialTokens && this->token >= TK_NumSpecialTokens)
 		error("%d:%d:Expected '%s' but got '%c' instead.", GetLine(), GetLinePos(), TokenNames[token], this->token);
 	else if (token < TK_NumSpecialTokens && this->token == TK_NoToken)
 		error("%d:%d:Expected '%s'", GetLine(), GetLinePos(), TokenNames[token]);
 	else if (token >= TK_NumSpecialTokens && this->token >= TK_Identifier && this->token < TK_NumSpecialTokens)
-		error("%d:%d:Expected '%c' but got '%s' instead.", GetLine(), GetLinePos(), token, TokenNames[this->token]);
+		error("%d:%d:Expected '%c' but got '%s' instead.", GetLine(), GetLinePos(), token, TokenNames[(unsigned char) this->token]);
 	else
 		error("%d:%d:Expected '%c' but got '%c' instead.", GetLine(), GetLinePos(), token, this->token);
 }
@@ -471,7 +479,7 @@ void Scanner::Error(int token)
 void Scanner::Error(const char *mustget)
 {
 	if (token < TK_NumSpecialTokens && this->token < TK_NumSpecialTokens)
-		error("%d:%d:Expected '%s' but got '%s' instead.", GetLine(), GetLinePos(), mustget, TokenNames[this->token]);
+		error("%d:%d:Expected '%s' but got '%s' instead.", GetLine(), GetLinePos(), mustget, TokenNames[(unsigned char) this->token]);
 	else
 		error("%d:%d:Expected '%s' but got '%c' instead.", GetLine(), GetLinePos(), mustget, this->token);
 }
@@ -591,6 +599,16 @@ bool Scanner::CheckFloat()
 	return res;
 }
 
+bool Scanner::CheckString()
+{
+	return CheckToken(TK_StringConst) || CheckToken(TK_Identifier);
+}
+
+bool Scanner::StringMatch(const char *target)
+{
+	return !strcmpnocase(string, target);
+}
+
 void Scanner::MustGetInteger()
 {
 	if (!ScanInteger()) Error(TK_IntConst);
@@ -601,6 +619,14 @@ void Scanner::MustGetFloat()
 	if (!ScanFloat()) Error(TK_FloatConst);
 }
 
+void Scanner::MustGetString()
+{
+	if (!CheckString())
+	{
+		ErrorF("Expected String Constant or Identifier");
+		return;
+	}
+}
 
 bool Scanner::TokensLeft() const
 {
@@ -610,7 +636,6 @@ bool Scanner::TokensLeft() const
 // This is taken from ZDoom's strbin function which can do a lot more than just unescaping backslashes and quotation marks.
 void Scanner::Unescape(char *str)
 {
-	char *start = str;
 	char *p = str, c;
 	int i;
 

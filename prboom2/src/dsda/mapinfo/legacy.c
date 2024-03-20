@@ -17,6 +17,7 @@
 
 #include "doomstat.h"
 #include "g_game.h"
+#include "m_misc.h"
 #include "p_setup.h"
 #include "r_data.h"
 #include "s_sound.h"
@@ -28,6 +29,46 @@
 
 #include "legacy.h"
 
+int dsda_LegacyNameToMap(int* found, const char* name, int* episode, int* map) {
+  char name_upper[9];
+  int episode_from_name = -1;
+  int map_from_name = -1;
+
+  if (strlen(name) > 8) {
+    *found = false;
+
+    return true;
+  }
+
+  strncpy(name_upper, name, 8);
+  name_upper[8] = 0;
+  M_Strupr(name_upper);
+
+  if (gamemode != commercial) {
+    if (sscanf(name_upper, "E%dM%d", &episode_from_name, &map_from_name) != 2) {
+      *found = false;
+
+      return true;
+    }
+  }
+  else {
+    if (sscanf(name_upper, "MAP%d", &map_from_name) != 1) {
+      *found = false;
+
+      return true;
+    }
+
+    episode_from_name = 1;
+  }
+
+  *found = true;
+
+  *episode = episode_from_name;
+  *map = map_from_name;
+
+  return true;
+}
+
 int dsda_LegacyFirstMap(int* episode, int* map) {
   int i, j, lump;
 
@@ -36,7 +77,7 @@ int dsda_LegacyFirstMap(int* episode, int* map) {
 
   if (gamemode == commercial) {
     for (i = 1; i < 33; i++) {
-      lump = W_CheckNumForName(MAPNAME(1, i));
+      lump = W_CheckNumForName(VANILLA_MAP_LUMP_NAME(1, i));
 
       if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source == source_pwad) {
         *map = i;
@@ -48,7 +89,7 @@ int dsda_LegacyFirstMap(int* episode, int* map) {
   else
     for (i = 1; i < 5; i++)
       for (j = 1; j < 10; j++) {
-        lump = W_CheckNumForName(MAPNAME(i, j));
+        lump = W_CheckNumForName(VANILLA_MAP_LUMP_NAME(i, j));
 
         if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source == source_pwad) {
           *episode = i;
@@ -128,7 +169,7 @@ int dsda_LegacyNextMap(int* episode, int* map) {
     // secret level
     doom2_next[14] = (haswolflevels ? 31 : 16);
 
-    if (bfgedition && singleplayer) {
+    if (bfgedition && allow_incompatibility) {
       if (gamemission == pack_nerve) {
         doom2_next[3] = 9;
         doom2_next[7] = 1;
@@ -207,7 +248,7 @@ static int dsda_CannotCLEV(int episode, int map) {
   ) return true;
 
   // Catch invalid maps
-  next = MAPNAME(episode, map);
+  next = VANILLA_MAP_LUMP_NAME(episode, map);
   if (!W_LumpNameExists(next)) {
     doom_printf("IDCLEV target not found: %s", next);
     return true;
@@ -292,6 +333,17 @@ int dsda_LegacyMapMusic(int* music_index, int* music_lump) {
   return true;
 }
 
+int dsda_LegacyIntermissionMusic(int* music_index, int* music_lump) {
+  *music_lump = -1;
+
+  if (gamemode == commercial)
+    *music_index = mus_dm2int;
+  else
+    *music_index = mus_inter;
+
+  return true;
+}
+
 int dsda_LegacyInterMusic(int* music_index, int* music_lump) {
   *music_lump = -1;
 
@@ -325,19 +377,31 @@ int dsda_LegacyBossAction(mobj_t* mo) {
   return false;
 }
 
-int dsda_LegacyHUTitle(const char** title) {
+int dsda_LegacyMapLumpName(const char** name, int episode, int map) {
+  *name = VANILLA_MAP_LUMP_NAME(episode, map);
+
+  return true;
+}
+
+int dsda_LegacyMapAuthor(const char** author) {
+  *author = NULL;
+
+  return true;
+}
+
+int dsda_LegacyHUTitle(dsda_string_t* str) {
   extern char** mapnames[];
   extern char** mapnames2[];
   extern char** mapnamesp[];
   extern char** mapnamest[];
   extern const char* LevelNames[];
 
-  *title = NULL;
+  dsda_InitString(str, NULL);
 
   if (gamestate == GS_LEVEL && gamemap > 0 && gameepisode > 0) {
     if (heretic) {
       if (gameepisode < 6 && gamemap < 10)
-        *title = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
+        dsda_StringCat(str, LevelNames[(gameepisode - 1) * 9 + gamemap - 1]);
     }
     else {
       switch (gamemode) {
@@ -347,25 +411,25 @@ int dsda_LegacyHUTitle(const char** title) {
           // Chex.exe always uses the episode 1 level title
           // eg. E2M1 gives the title for E1M1
           if (gamemission == chex && gamemap < 10)
-            *title = *mapnames[gamemap - 1];
+            dsda_StringCat(str, *mapnames[gamemap - 1]);
           else if (gameepisode < 6 && gamemap < 10)
-            *title = *mapnames[(gameepisode - 1) * 9 + gamemap - 1];
+            dsda_StringCat(str, *mapnames[(gameepisode - 1) * 9 + gamemap - 1]);
           break;
 
         default:  // Ty 08/27/98 - modified to check mission for TNT/Plutonia
           if (gamemission == pack_tnt && gamemap < 33)
-            *title = *mapnamest[gamemap - 1];
+            dsda_StringCat(str, *mapnamest[gamemap - 1]);
           else if (gamemission == pack_plut && gamemap < 33)
-            *title = *mapnamesp[gamemap - 1];
+            dsda_StringCat(str, *mapnamesp[gamemap - 1]);
           else if (gamemap < 34)
-            *title = *mapnames2[gamemap - 1];
+            dsda_StringCat(str, *mapnames2[gamemap - 1]);
           break;
       }
     }
   }
 
-  if (*title == NULL)
-    *title = MAPNAME(gameepisode, gamemap);
+  if (!str->string)
+    dsda_StringCat(str, VANILLA_MAP_LUMP_NAME(gameepisode, gamemap));
 
   return true;
 }
@@ -404,6 +468,9 @@ int dsda_LegacySkyTexture(int* sky) {
         break;
       case 4: // Special Edition sky
         *sky = R_TextureNumForName ("SKY4");
+        break;
+      default:
+        *sky = R_TextureNumForName ("SKY1");
         break;
     }
   }
@@ -454,11 +521,11 @@ int dsda_LegacyPrepareIntermission(int* result) {
           wminfo.next = 31;
           break;
         case 2:
-          if (bfgedition && singleplayer)
+          if (bfgedition && allow_incompatibility)
             wminfo.next = 32;
           break;
         case 4:
-          if (gamemission == pack_nerve && singleplayer)
+          if (gamemission == pack_nerve && allow_incompatibility)
             wminfo.next = 8;
           break;
       }
@@ -469,7 +536,7 @@ int dsda_LegacyPrepareIntermission(int* result) {
           wminfo.next = 15;
           break;
         case 33:
-          if (bfgedition && singleplayer)
+          if (bfgedition && allow_incompatibility)
           {
             wminfo.next = 2;
             break;
@@ -479,7 +546,7 @@ int dsda_LegacyPrepareIntermission(int* result) {
           wminfo.next = gamemap;
       }
 
-    if (gamemission == pack_nerve && singleplayer && gamemap == 9)
+    if (gamemission == pack_nerve && allow_incompatibility && gamemap == 9)
       wminfo.next = 4;
   }
   else {
@@ -541,7 +608,7 @@ int dsda_LegacyPrepareFinale(int* result) {
         break;
     }
   }
-  else if (gamemission == pack_nerve && singleplayer && gamemap == 8)
+  else if (gamemission == pack_nerve && allow_incompatibility && gamemap == 8)
     *result = WD_START_FINALE;
   else if (gamemap == 8)
     *result = WD_VICTORY;
@@ -570,12 +637,21 @@ int dsda_LegacyEnterPic(const char** enter_pic) {
   return true;
 }
 
+int dsda_LegacyBorderTexture(const char** border_texture) {
+  *border_texture = heretic ? "FLOOR30" :
+                    gamemode == commercial ? "GRNROCK" : "FLOOR7_2";
+
+  return true;
+}
+
 int dsda_LegacyPrepareEntering(void) {
   extern const char *el_levelname;
   extern const char *el_levelpic;
+  extern const char *el_author;
 
   el_levelname = NULL;
   el_levelpic = NULL;
+  el_author = NULL;
 
   return true;
 }
@@ -583,9 +659,11 @@ int dsda_LegacyPrepareEntering(void) {
 int dsda_LegacyPrepareFinished(void) {
   extern const char *lf_levelname;
   extern const char *lf_levelpic;
+  extern const char *lf_author;
 
   lf_levelname = NULL;
   lf_levelpic = NULL;
+  lf_author = NULL;
 
   return true;
 }
@@ -618,6 +696,36 @@ int dsda_LegacySky2Texture(short* texture) {
   return true;
 }
 
+int dsda_LegacyGravity(fixed_t* gravity) {
+  *gravity = FRACUNIT;
+
+  return true;
+}
+
+int dsda_LegacyAirControl(fixed_t* air_control) {
+  dboolean dsda_AllowJumping(void);
+
+  *air_control = dsda_AllowJumping() ? (FRACUNIT >> 8) : 0;
+
+  return true;
+}
+
 int dsda_LegacyInitSky(void) {
+  return true;
+}
+
+int dsda_LegacyMapFlags(map_info_flags_t* flags) {
+  *flags = MI_INTERMISSION |
+           MI_ACTIVATE_OWN_DEATH_SPECIALS |
+           MI_LAX_MONSTER_ACTIVATION |
+           MI_MISSILES_ACTIVATE_IMPACT_LINES |
+           MI_SHOW_AUTHOR;
+
+  return true;
+}
+
+int dsda_LegacyMapColorMap(int* colormap) {
+  *colormap = 0;
+
   return true;
 }

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -41,7 +41,7 @@
 #endif
 
 // killough 4/25/98: Make gcc extensions mean nothing on other compilers
-#ifndef __GNUC__
+#if !defined(__GNUC__) && !defined(__clang__)
 #define __attribute__(x)
 #endif
 
@@ -53,11 +53,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
-
-// this should go here, not in makefile/configure.ac -- josh
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
 
 #include "m_swap.h"
 #include "doomtype.h"
@@ -188,15 +183,12 @@ typedef enum {
 #define MTF_INVISIBLE   0x1000
 #define MTF_FRIENDLY    0x2000
 #define MTF_STANDSTILL  0x4000
-
-typedef enum {
-  sk_none=-1, //jff 3/24/98 create unpicked skill setting
-  sk_baby=0,
-  sk_easy,
-  sk_medium,
-  sk_hard,
-  sk_nightmare
-} skill_t;
+#define MTF_COUNTSECRET 0x8000
+#define MTF_SKILL1  0x00010000
+#define MTF_SKILL2  0x00020000
+#define MTF_SKILL3  0x00040000
+#define MTF_SKILL4  0x00080000
+#define MTF_SKILL5  0x00100000
 
 //
 // Key cards.

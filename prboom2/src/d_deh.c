@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -48,6 +48,7 @@
 #include "g_game.h"
 #include "d_think.h"
 #include "w_wad.h"
+#include "m_file.h"
 #include "m_misc.h"
 #include "v_video.h"
 #include "e6y.h"//e6y
@@ -61,6 +62,7 @@
 #include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
+#include "dsda/utility.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -176,6 +178,15 @@ static int dehfseek(DEHFILE *fp, long offset)
   }
 }
 
+static char *deh_sfx_name(const char *name)
+{
+  dsda_string_t str;
+
+  dsda_StringPrintF(&str, "ds%s", name);
+
+  return str.string;
+}
+
 // haleyjd 9/22/99
 int HelperThing = -1;     // in P_SpawnMapThing to substitute helper thing
 
@@ -196,6 +207,20 @@ dboolean deh_pars = FALSE; // in wi_stuff to allow pars in modified games
 const char *s_PRESSKEY    = PRESSKEY;
 const char *s_PRESSYN     = PRESSYN;
 const char *s_QUITMSG     = QUITMSG;
+const char *s_QUITMSG1    = QUITMSG1;
+const char *s_QUITMSG2    = QUITMSG2;
+const char *s_QUITMSG3    = QUITMSG3;
+const char *s_QUITMSG4    = QUITMSG4;
+const char *s_QUITMSG5    = QUITMSG5;
+const char *s_QUITMSG6    = QUITMSG6;
+const char *s_QUITMSG7    = QUITMSG7;
+const char *s_QUITMSG8    = QUITMSG8;
+const char *s_QUITMSG9    = QUITMSG9;
+const char *s_QUITMSG10   = QUITMSG10;
+const char *s_QUITMSG11   = QUITMSG11;
+const char *s_QUITMSG12   = QUITMSG12;
+const char *s_QUITMSG13   = QUITMSG13;
+const char *s_QUITMSG14   = QUITMSG14;
 const char *s_QSAVESPOT   = QSAVESPOT; // PRESSKEY;
 const char *s_SAVEDEAD    = SAVEDEAD;  // PRESSKEY; // remove duplicate y/n
 const char *s_NEWGAME     = NEWGAME;   // PRESSKEY;
@@ -510,6 +535,20 @@ static deh_strs deh_strlookup[] = {
   {&s_PRESSKEY,"PRESSKEY"},
   {&s_PRESSYN,"PRESSYN"},
   {&s_QUITMSG,"QUITMSG"},
+  {&s_QUITMSG1,"QUITMSG1"},
+  {&s_QUITMSG2,"QUITMSG2"},
+  {&s_QUITMSG3,"QUITMSG3"},
+  {&s_QUITMSG4,"QUITMSG4"},
+  {&s_QUITMSG5,"QUITMSG5"},
+  {&s_QUITMSG6,"QUITMSG6"},
+  {&s_QUITMSG7,"QUITMSG7"},
+  {&s_QUITMSG8,"QUITMSG8"},
+  {&s_QUITMSG9,"QUITMSG9"},
+  {&s_QUITMSG10,"QUITMSG10"},
+  {&s_QUITMSG11,"QUITMSG11"},
+  {&s_QUITMSG12,"QUITMSG12"},
+  {&s_QUITMSG13,"QUITMSG13"},
+  {&s_QUITMSG14,"QUITMSG14"},
   {&s_QSAVESPOT,"QSAVESPOT"},
   {&s_SAVEDEAD,"SAVEDEAD"},
   {&s_NEWGAME,"NEWGAME"},
@@ -1620,7 +1659,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
     static dboolean firstfile = true; // to allow append to output log
     if (!strcmp(outfilename, "-"))
       deh_log_file = stdout;
-    else if (!(deh_log_file = fopen(outfilename, firstfile ? "wt" : "at")))
+    else if (!(deh_log_file = M_OpenFile(outfilename, firstfile ? "wt" : "at")))
     {
       lprintf(LO_WARN, "Could not open -dehout file %s\n... using stdout.\n", outfilename);
       deh_log_file = stdout;
@@ -1632,7 +1671,7 @@ void ProcessDehFile(const char *filename, const char *outfilename, int lumpnum)
 
   if (filename)
   {
-    if (!(infile.f = fopen(filename, "rt")))
+    if (!(infile.f = M_OpenFile(filename, "rt")))
     {
       lprintf(LO_WARN, "-deh file %s not found\n", filename);
       return;  // should be checked up front anyway
@@ -2344,7 +2383,7 @@ static void deh_procSounds(DEHFILE *fpin, char *line)
     else if (!deh_strcasecmp(key, "Zero 2"))
       deh_sfx->pitch = (int)value;
     else if (!deh_strcasecmp(key, "Zero 3"))
-      deh_sfx->volume = (int)value;
+      ;
     else if (!deh_strcasecmp(key, "Zero 4"))
       ; // ignored
     else if (!deh_strcasecmp(key, "Neg. One 1"))
@@ -2821,7 +2860,7 @@ static void deh_procText(DEHFILE *fpin, char *line)
       deh_log("Changing name of sfx from %s to %*s\n",
               S_sfx[i].name, usedlen, &inbuffer[fromlen]);
 
-      S_sfx[i].name = Z_Strdup(&inbuffer[fromlen]);
+      S_sfx[i].name = deh_sfx_name(&inbuffer[fromlen]);
 
       found = TRUE;
     }
@@ -3130,7 +3169,7 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for sound '%s'\n", candidate, key);
-      S_sfx[match].name = Z_Strdup(candidate);
+      S_sfx[match].name = deh_sfx_name(candidate);
     }
   }
 }

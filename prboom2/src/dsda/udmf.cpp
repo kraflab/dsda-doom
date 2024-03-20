@@ -18,6 +18,11 @@
 #include <cstring>
 #include <vector>
 
+extern "C" {
+char *Z_StrdupLevel(const char *s);
+void *Z_MallocLevel(size_t size);
+}
+
 #include "scanner.h"
 
 #include "udmf.h"
@@ -62,6 +67,19 @@ static void dsda_SkipValue(Scanner &scanner) {
   }
 }
 
+// The scanner drops the sign when scanning, and we need it back
+static char* dsda_FloatString(Scanner &scanner) {
+  if (scanner.decimal >= 0)
+    return Z_StrdupLevel(scanner.string);
+
+  char* buffer = (char*) Z_MallocLevel(strlen(scanner.string) + 2);
+  buffer[0] = '-';
+  buffer[1] = '\0';
+  strcat(buffer, scanner.string);
+
+  return buffer;
+}
+
 #define SCAN_INT(x)  { scanner.MustGetToken('='); \
                        scanner.MustGetInteger(); \
                        x = scanner.number; \
@@ -83,176 +101,217 @@ static void dsda_SkipValue(Scanner &scanner) {
                               strncpy(x, scanner.string, n); \
                               scanner.MustGetToken(';'); }
 
+#define SCAN_STRING(x) { scanner.MustGetToken('='); \
+                         scanner.MustGetToken(TK_StringConst); \
+                         x = Z_StrdupLevel(scanner.string); \
+                         scanner.MustGetToken(';'); }
+
+#define SCAN_FLOAT_STRING(x) { scanner.MustGetToken('='); \
+                               scanner.MustGetFloat(); \
+                               x = dsda_FloatString(scanner); \
+                               scanner.MustGetToken(';'); }
+
 static void dsda_ParseUDMFLineDef(Scanner &scanner) {
   udmf_line_t line = { 0 };
 
   line.id = -1;
   line.sideback = -1;
+  line.alpha = 1.0;
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "id")) {
+    if (scanner.StringMatch("id")) {
       SCAN_INT(line.id);
     }
-    else if (!stricmp(scanner.string, "v1")) {
+    else if (scanner.StringMatch("v1")) {
       SCAN_INT(line.v1);
     }
-    else if (!stricmp(scanner.string, "v2")) {
+    else if (scanner.StringMatch("v2")) {
       SCAN_INT(line.v2);
     }
-    else if (!stricmp(scanner.string, "special")) {
+    else if (scanner.StringMatch("special")) {
       SCAN_INT(line.special);
     }
-    else if (!stricmp(scanner.string, "arg0")) {
+    else if (scanner.StringMatch("arg0")) {
       SCAN_INT(line.arg0);
     }
-    else if (!stricmp(scanner.string, "arg1")) {
+    else if (scanner.StringMatch("arg1")) {
       SCAN_INT(line.arg1);
     }
-    else if (!stricmp(scanner.string, "arg2")) {
+    else if (scanner.StringMatch("arg2")) {
       SCAN_INT(line.arg2);
     }
-    else if (!stricmp(scanner.string, "arg3")) {
+    else if (scanner.StringMatch("arg3")) {
       SCAN_INT(line.arg3);
     }
-    else if (!stricmp(scanner.string, "arg4")) {
+    else if (scanner.StringMatch("arg4")) {
       SCAN_INT(line.arg4);
     }
-    else if (!stricmp(scanner.string, "sidefront")) {
+    else if (scanner.StringMatch("sidefront")) {
       SCAN_INT(line.sidefront);
     }
-    else if (!stricmp(scanner.string, "sideback")) {
+    else if (scanner.StringMatch("sideback")) {
       SCAN_INT(line.sideback);
     }
-    else if (!stricmp(scanner.string, "locknumber")) {
+    else if (scanner.StringMatch("locknumber")) {
       SCAN_INT(line.locknumber);
     }
-    else if (!stricmp(scanner.string, "blocking")) {
+    else if (scanner.StringMatch("automapstyle")) {
+      SCAN_INT(line.automapstyle);
+    }
+    else if (scanner.StringMatch("health")) {
+      SCAN_INT(line.health);
+    }
+    else if (scanner.StringMatch("healthgroup")) {
+      SCAN_INT(line.healthgroup);
+    }
+    else if (scanner.StringMatch("alpha")) {
+      SCAN_FLOAT(line.alpha);
+    }
+    else if (scanner.StringMatch("blocking")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKING);
     }
-    else if (!stricmp(scanner.string, "blockmonsters")) {
+    else if (scanner.StringMatch("blockmonsters")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKMONSTERS);
     }
-    else if (!stricmp(scanner.string, "twosided")) {
+    else if (scanner.StringMatch("twosided")) {
       SCAN_FLAG(line.flags, UDMF_ML_TWOSIDED);
     }
-    else if (!stricmp(scanner.string, "dontpegtop")) {
+    else if (scanner.StringMatch("dontpegtop")) {
       SCAN_FLAG(line.flags, UDMF_ML_DONTPEGTOP);
     }
-    else if (!stricmp(scanner.string, "dontpegbottom")) {
+    else if (scanner.StringMatch("dontpegbottom")) {
       SCAN_FLAG(line.flags, UDMF_ML_DONTPEGBOTTOM);
     }
-    else if (!stricmp(scanner.string, "secret")) {
+    else if (scanner.StringMatch("secret")) {
       SCAN_FLAG(line.flags, UDMF_ML_SECRET);
     }
-    else if (!stricmp(scanner.string, "blocksound")) {
+    else if (scanner.StringMatch("blocksound")) {
       SCAN_FLAG(line.flags, UDMF_ML_SOUNDBLOCK);
     }
-    else if (!stricmp(scanner.string, "dontdraw")) {
+    else if (scanner.StringMatch("dontdraw")) {
       SCAN_FLAG(line.flags, UDMF_ML_DONTDRAW);
     }
-    else if (!stricmp(scanner.string, "mapped")) {
+    else if (scanner.StringMatch("mapped")) {
       SCAN_FLAG(line.flags, UDMF_ML_MAPPED);
     }
-    else if (!stricmp(scanner.string, "passuse")) {
+    else if (scanner.StringMatch("passuse")) {
       SCAN_FLAG(line.flags, UDMF_ML_PASSUSE);
     }
-    else if (!stricmp(scanner.string, "translucent")) {
+    else if (scanner.StringMatch("translucent")) {
       SCAN_FLAG(line.flags, UDMF_ML_TRANSLUCENT);
     }
-    else if (!stricmp(scanner.string, "jumpover")) {
+    else if (scanner.StringMatch("jumpover")) {
       SCAN_FLAG(line.flags, UDMF_ML_JUMPOVER);
     }
-    else if (!stricmp(scanner.string, "blockfloaters")) {
+    else if (scanner.StringMatch("blockfloaters")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKFLOATERS);
     }
-    else if (!stricmp(scanner.string, "playercross")) {
+    else if (scanner.StringMatch("playercross")) {
       SCAN_FLAG(line.flags, UDMF_ML_PLAYERCROSS);
     }
-    else if (!stricmp(scanner.string, "playeruse")) {
+    else if (scanner.StringMatch("playeruse")) {
       SCAN_FLAG(line.flags, UDMF_ML_PLAYERUSE);
     }
-    else if (!stricmp(scanner.string, "monstercross")) {
+    else if (scanner.StringMatch("monstercross")) {
       SCAN_FLAG(line.flags, UDMF_ML_MONSTERCROSS);
     }
-    else if (!stricmp(scanner.string, "monsteruse")) {
+    else if (scanner.StringMatch("monsteruse")) {
       SCAN_FLAG(line.flags, UDMF_ML_MONSTERUSE);
     }
-    else if (!stricmp(scanner.string, "impact")) {
+    else if (scanner.StringMatch("impact")) {
       SCAN_FLAG(line.flags, UDMF_ML_IMPACT);
     }
-    else if (!stricmp(scanner.string, "playerpush")) {
+    else if (scanner.StringMatch("playerpush")) {
       SCAN_FLAG(line.flags, UDMF_ML_PLAYERPUSH);
     }
-    else if (!stricmp(scanner.string, "monsterpush")) {
+    else if (scanner.StringMatch("monsterpush")) {
       SCAN_FLAG(line.flags, UDMF_ML_MONSTERPUSH);
     }
-    else if (!stricmp(scanner.string, "missilecross")) {
+    else if (scanner.StringMatch("missilecross")) {
       SCAN_FLAG(line.flags, UDMF_ML_MISSILECROSS);
     }
-    else if (!stricmp(scanner.string, "repeatspecial")) {
+    else if (scanner.StringMatch("repeatspecial")) {
       SCAN_FLAG(line.flags, UDMF_ML_REPEATSPECIAL);
     }
-    else if (!stricmp(scanner.string, "playeruseback")) {
+    else if (scanner.StringMatch("playeruseback")) {
       SCAN_FLAG(line.flags, UDMF_ML_PLAYERUSEBACK);
     }
-    else if (!stricmp(scanner.string, "anycross")) {
+    else if (scanner.StringMatch("anycross")) {
       SCAN_FLAG(line.flags, UDMF_ML_ANYCROSS);
     }
-    else if (!stricmp(scanner.string, "monsteractivate")) {
+    else if (scanner.StringMatch("monsteractivate")) {
       SCAN_FLAG(line.flags, UDMF_ML_MONSTERACTIVATE);
     }
-    else if (!stricmp(scanner.string, "blockplayers")) {
+    else if (scanner.StringMatch("blockplayers")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKPLAYERS);
     }
-    else if (!stricmp(scanner.string, "blockeverything")) {
+    else if (scanner.StringMatch("blockeverything")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKEVERYTHING);
     }
-    else if (!stricmp(scanner.string, "firstsideonly")) {
+    else if (scanner.StringMatch("firstsideonly")) {
       SCAN_FLAG(line.flags, UDMF_ML_FIRSTSIDEONLY);
     }
-    else if (!stricmp(scanner.string, "zoneboundary")) {
+    else if (scanner.StringMatch("zoneboundary")) {
       SCAN_FLAG(line.flags, UDMF_ML_ZONEBOUNDARY);
     }
-    else if (!stricmp(scanner.string, "clipmidtex")) {
+    else if (scanner.StringMatch("clipmidtex")) {
       SCAN_FLAG(line.flags, UDMF_ML_CLIPMIDTEX);
     }
-    else if (!stricmp(scanner.string, "wrapmidtex")) {
+    else if (scanner.StringMatch("wrapmidtex")) {
       SCAN_FLAG(line.flags, UDMF_ML_WRAPMIDTEX);
     }
-    else if (!stricmp(scanner.string, "midtex3d")) {
+    else if (scanner.StringMatch("midtex3d")) {
       SCAN_FLAG(line.flags, UDMF_ML_MIDTEX3D);
     }
-    else if (!stricmp(scanner.string, "midtex3dimpassible")) {
+    else if (scanner.StringMatch("midtex3dimpassible")) {
       SCAN_FLAG(line.flags, UDMF_ML_MIDTEX3DIMPASSIBLE);
     }
-    else if (!stricmp(scanner.string, "checkswitchrange")) {
+    else if (scanner.StringMatch("checkswitchrange")) {
       SCAN_FLAG(line.flags, UDMF_ML_CHECKSWITCHRANGE);
     }
-    else if (!stricmp(scanner.string, "blockprojectiles")) {
+    else if (scanner.StringMatch("blockprojectiles")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKPROJECTILES);
     }
-    else if (!stricmp(scanner.string, "blockuse")) {
+    else if (scanner.StringMatch("blockuse")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKUSE);
     }
-    else if (!stricmp(scanner.string, "blocksight")) {
+    else if (scanner.StringMatch("blocksight")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKSIGHT);
     }
-    else if (!stricmp(scanner.string, "blockhitscan")) {
+    else if (scanner.StringMatch("blockhitscan")) {
       SCAN_FLAG(line.flags, UDMF_ML_BLOCKHITSCAN);
     }
-    else if (!stricmp(scanner.string, "transparent")) {
+    else if (scanner.StringMatch("transparent")) {
       SCAN_FLAG(line.flags, UDMF_ML_TRANSPARENT);
     }
+    else if (scanner.StringMatch("revealed")) {
+      SCAN_FLAG(line.flags, UDMF_ML_REVEALED);
+    }
+    else if (scanner.StringMatch("noskywalls")) {
+      SCAN_FLAG(line.flags, UDMF_ML_NOSKYWALLS);
+    }
+    else if (scanner.StringMatch("drawfullheight")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DRAWFULLHEIGHT);
+    }
+    else if (scanner.StringMatch("damagespecial")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DAMAGESPECIAL);
+    }
+    else if (scanner.StringMatch("deathspecial")) {
+      SCAN_FLAG(line.flags, UDMF_ML_DEATHSPECIAL);
+    }
+    else if (scanner.StringMatch("blocklandmonsters")) {
+      SCAN_FLAG(line.flags, UDMF_ML_BLOCKLANDMONSTERS);
+    }
+    else if (scanner.StringMatch("moreids")) {
+      SCAN_STRING(line.moreids);
+    }
+    else if (scanner.StringMatch("arg0str")) {
+      SCAN_STRING(line.arg0str);
+    }
     else {
-      // known ignored fields:
-      // comment
-      // alpha
-      // renderstyle
-      // arg0str
-      // moreids
       dsda_SkipValue(scanner);
     }
   }
@@ -277,87 +336,127 @@ static void dsda_ParseUDMFSideDef(Scanner &scanner) {
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "offsetx")) {
+    if (scanner.StringMatch("offsetx")) {
       SCAN_INT(side.offsetx);
     }
-    else if (!stricmp(scanner.string, "offsety")) {
+    else if (scanner.StringMatch("offsety")) {
       SCAN_INT(side.offsety);
     }
-    else if (!stricmp(scanner.string, "sector")) {
+    else if (scanner.StringMatch("sector")) {
       SCAN_INT(side.sector);
     }
-    else if (!stricmp(scanner.string, "light")) {
+    else if (scanner.StringMatch("light")) {
       SCAN_INT(side.light);
     }
-    else if (!stricmp(scanner.string, "scalex_top")) {
+    else if (scanner.StringMatch("light_top")) {
+      SCAN_INT(side.light_top);
+    }
+    else if (scanner.StringMatch("light_mid")) {
+      SCAN_INT(side.light_mid);
+    }
+    else if (scanner.StringMatch("light_bottom")) {
+      SCAN_INT(side.light_bottom);
+    }
+    else if (scanner.StringMatch("scalex_top")) {
       SCAN_FLOAT(side.scalex_top);
     }
-    else if (!stricmp(scanner.string, "scaley_top")) {
+    else if (scanner.StringMatch("scaley_top")) {
       SCAN_FLOAT(side.scaley_top);
     }
-    else if (!stricmp(scanner.string, "scalex_mid")) {
+    else if (scanner.StringMatch("scalex_mid")) {
       SCAN_FLOAT(side.scalex_mid);
     }
-    else if (!stricmp(scanner.string, "scaley_mid")) {
+    else if (scanner.StringMatch("scaley_mid")) {
       SCAN_FLOAT(side.scaley_mid);
     }
-    else if (!stricmp(scanner.string, "scalex_bottom")) {
+    else if (scanner.StringMatch("scalex_bottom")) {
       SCAN_FLOAT(side.scalex_bottom);
     }
-    else if (!stricmp(scanner.string, "scaley_bottom")) {
+    else if (scanner.StringMatch("scaley_bottom")) {
       SCAN_FLOAT(side.scaley_bottom);
     }
-    else if (!stricmp(scanner.string, "offsetx_top")) {
+    else if (scanner.StringMatch("offsetx_top")) {
       SCAN_FLOAT(side.offsetx_top);
     }
-    else if (!stricmp(scanner.string, "offsety_top")) {
+    else if (scanner.StringMatch("offsety_top")) {
       SCAN_FLOAT(side.offsety_top);
     }
-    else if (!stricmp(scanner.string, "offsetx_mid")) {
+    else if (scanner.StringMatch("offsetx_mid")) {
       SCAN_FLOAT(side.offsetx_mid);
     }
-    else if (!stricmp(scanner.string, "offsety_mid")) {
+    else if (scanner.StringMatch("offsety_mid")) {
       SCAN_FLOAT(side.offsety_mid);
     }
-    else if (!stricmp(scanner.string, "offsetx_bottom")) {
+    else if (scanner.StringMatch("offsetx_bottom")) {
       SCAN_FLOAT(side.offsetx_bottom);
     }
-    else if (!stricmp(scanner.string, "offsety_bottom")) {
+    else if (scanner.StringMatch("xscroll")) {
+      SCAN_FLOAT(side.xscroll);
+    }
+    else if (scanner.StringMatch("yscroll")) {
+      SCAN_FLOAT(side.yscroll);
+    }
+    else if (scanner.StringMatch("xscrolltop")) {
+      SCAN_FLOAT(side.xscrolltop);
+    }
+    else if (scanner.StringMatch("yscrolltop")) {
+      SCAN_FLOAT(side.yscrolltop);
+    }
+    else if (scanner.StringMatch("xscrollmid")) {
+      SCAN_FLOAT(side.xscrollmid);
+    }
+    else if (scanner.StringMatch("yscrollmid")) {
+      SCAN_FLOAT(side.yscrollmid);
+    }
+    else if (scanner.StringMatch("xscrollbottom")) {
+      SCAN_FLOAT(side.xscrollbottom);
+    }
+    else if (scanner.StringMatch("yscrollbottom")) {
+      SCAN_FLOAT(side.yscrollbottom);
+    }
+    else if (scanner.StringMatch("offsety_bottom")) {
       SCAN_FLOAT(side.offsety_bottom);
     }
-    else if (!stricmp(scanner.string, "lightabsolute")) {
+    else if (scanner.StringMatch("lightabsolute")) {
       SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTE);
     }
-    else if (!stricmp(scanner.string, "lightfog")) {
+    else if (scanner.StringMatch("lightfog")) {
       SCAN_FLAG(side.flags, UDMF_SF_LIGHTFOG);
     }
-    else if (!stricmp(scanner.string, "nofakecontrast")) {
+    else if (scanner.StringMatch("nofakecontrast")) {
       SCAN_FLAG(side.flags, UDMF_SF_NOFAKECONTRAST);
     }
-    else if (!stricmp(scanner.string, "smoothlighting")) {
+    else if (scanner.StringMatch("smoothlighting")) {
       SCAN_FLAG(side.flags, UDMF_SF_SMOOTHLIGHTING);
     }
-    else if (!stricmp(scanner.string, "clipmidtex")) {
+    else if (scanner.StringMatch("clipmidtex")) {
       SCAN_FLAG(side.flags, UDMF_SF_CLIPMIDTEX);
     }
-    else if (!stricmp(scanner.string, "wrapmidtex")) {
+    else if (scanner.StringMatch("wrapmidtex")) {
       SCAN_FLAG(side.flags, UDMF_SF_WRAPMIDTEX);
     }
-    else if (!stricmp(scanner.string, "nodecals")) {
+    else if (scanner.StringMatch("nodecals")) {
       SCAN_FLAG(side.flags, UDMF_SF_NODECALS);
     }
-    else if (!stricmp(scanner.string, "texturetop")) {
+    else if (scanner.StringMatch("lightabsolute_top")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTETOP);
+    }
+    else if (scanner.StringMatch("lightabsolute_mid")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTEMID);
+    }
+    else if (scanner.StringMatch("lightabsolute_bottom")) {
+      SCAN_FLAG(side.flags, UDMF_SF_LIGHTABSOLUTEBOTTOM);
+    }
+    else if (scanner.StringMatch("texturetop")) {
       SCAN_STRING_N(side.texturetop, 8);
     }
-    else if (!stricmp(scanner.string, "texturebottom")) {
+    else if (scanner.StringMatch("texturebottom")) {
       SCAN_STRING_N(side.texturebottom, 8);
     }
-    else if (!stricmp(scanner.string, "texturemiddle")) {
+    else if (scanner.StringMatch("texturemiddle")) {
       SCAN_STRING_N(side.texturemiddle, 8);
     }
     else {
-      // known ignored fields:
-      // comment
       dsda_SkipValue(scanner);
     }
   }
@@ -372,16 +471,13 @@ static void dsda_ParseUDMFVertex(Scanner &scanner) {
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "x")) {
-      SCAN_FLOAT(vertex.x);
+    if (scanner.StringMatch("x")) {
+      SCAN_FLOAT_STRING(vertex.x);
     }
-    else if (!stricmp(scanner.string, "y")) {
-      SCAN_FLOAT(vertex.y);
+    else if (scanner.StringMatch("y")) {
+      SCAN_FLOAT_STRING(vertex.y);
     }
     else {
-      // known ignored fields:
-      // zfloor
-      // zceiling
       dsda_SkipValue(scanner);
     }
   }
@@ -397,145 +493,164 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
   sector.yscalefloor = 1.f;
   sector.xscaleceiling = 1.f;
   sector.yscaleceiling = 1.f;
-  sector.gravity = 1.f;
+  sector.gravity = "1.0";
   sector.damageinterval = 32;
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "heightfloor")) {
+    if (scanner.StringMatch("heightfloor")) {
       SCAN_INT(sector.heightfloor);
     }
-    else if (!stricmp(scanner.string, "heightceiling")) {
+    else if (scanner.StringMatch("heightceiling")) {
       SCAN_INT(sector.heightceiling);
     }
-    else if (!stricmp(scanner.string, "lightlevel")) {
+    else if (scanner.StringMatch("lightlevel")) {
       SCAN_INT(sector.lightlevel);
     }
-    else if (!stricmp(scanner.string, "special")) {
+    else if (scanner.StringMatch("special")) {
       SCAN_INT(sector.special);
     }
-    else if (!stricmp(scanner.string, "id")) {
+    else if (scanner.StringMatch("id")) {
       SCAN_INT(sector.id);
     }
-    else if (!stricmp(scanner.string, "lightfloor")) {
+    else if (scanner.StringMatch("lightfloor")) {
       SCAN_INT(sector.lightfloor);
     }
-    else if (!stricmp(scanner.string, "lightceiling")) {
+    else if (scanner.StringMatch("lightceiling")) {
       SCAN_INT(sector.lightceiling);
     }
-    else if (!stricmp(scanner.string, "damageamount")) {
+    else if (scanner.StringMatch("damageamount")) {
       SCAN_INT(sector.damageamount);
     }
-    else if (!stricmp(scanner.string, "damageinterval")) {
+    else if (scanner.StringMatch("damageinterval")) {
       SCAN_INT(sector.damageinterval);
     }
-    else if (!stricmp(scanner.string, "leakiness")) {
+    else if (scanner.StringMatch("leakiness")) {
       SCAN_INT(sector.leakiness);
     }
-    else if (!stricmp(scanner.string, "xpanningfloor")) {
+    else if (scanner.StringMatch("xpanningfloor")) {
       SCAN_FLOAT(sector.xpanningfloor);
     }
-    else if (!stricmp(scanner.string, "ypanningfloor")) {
+    else if (scanner.StringMatch("ypanningfloor")) {
       SCAN_FLOAT(sector.ypanningfloor);
     }
-    else if (!stricmp(scanner.string, "xpanningceiling")) {
+    else if (scanner.StringMatch("xpanningceiling")) {
       SCAN_FLOAT(sector.xpanningceiling);
     }
-    else if (!stricmp(scanner.string, "ypanningceiling")) {
+    else if (scanner.StringMatch("ypanningceiling")) {
       SCAN_FLOAT(sector.ypanningceiling);
     }
-    else if (!stricmp(scanner.string, "xscalefloor")) {
+    else if (scanner.StringMatch("xscalefloor")) {
       SCAN_FLOAT(sector.xscalefloor);
     }
-    else if (!stricmp(scanner.string, "yscalefloor")) {
+    else if (scanner.StringMatch("yscalefloor")) {
       SCAN_FLOAT(sector.yscalefloor);
     }
-    else if (!stricmp(scanner.string, "xscaleceiling")) {
+    else if (scanner.StringMatch("xscaleceiling")) {
       SCAN_FLOAT(sector.xscaleceiling);
     }
-    else if (!stricmp(scanner.string, "yscaleceiling")) {
+    else if (scanner.StringMatch("yscaleceiling")) {
       SCAN_FLOAT(sector.yscaleceiling);
     }
-    else if (!stricmp(scanner.string, "rotationfloor")) {
+    else if (scanner.StringMatch("rotationfloor")) {
       SCAN_FLOAT(sector.rotationfloor);
     }
-    else if (!stricmp(scanner.string, "rotationceiling")) {
+    else if (scanner.StringMatch("rotationceiling")) {
       SCAN_FLOAT(sector.rotationceiling);
     }
-    else if (!stricmp(scanner.string, "gravity")) {
-      SCAN_FLOAT(sector.gravity);
+    else if (scanner.StringMatch("xscrollfloor")) {
+      SCAN_FLOAT(sector.xscrollfloor);
     }
-    else if (!stricmp(scanner.string, "lightfloorabsolute")) {
+    else if (scanner.StringMatch("yscrollfloor")) {
+      SCAN_FLOAT(sector.yscrollfloor);
+    }
+    else if (scanner.StringMatch("scrollfloormode")) {
+      SCAN_INT(sector.scrollfloormode);
+    }
+    else if (scanner.StringMatch("xscrollceiling")) {
+      SCAN_FLOAT(sector.xscrollceiling);
+    }
+    else if (scanner.StringMatch("yscrollceiling")) {
+      SCAN_FLOAT(sector.yscrollceiling);
+    }
+    else if (scanner.StringMatch("scrollceilingmode")) {
+      SCAN_INT(sector.scrollceilingmode);
+    }
+    else if (scanner.StringMatch("xthrust")) {
+      SCAN_FLOAT(sector.xthrust);
+    }
+    else if (scanner.StringMatch("ythrust")) {
+      SCAN_FLOAT(sector.ythrust);
+    }
+    else if (scanner.StringMatch("thrustgroup")) {
+      SCAN_INT(sector.thrustgroup);
+    }
+    else if (scanner.StringMatch("thrustlocation")) {
+      SCAN_INT(sector.thrustlocation);
+    }
+    else if (scanner.StringMatch("gravity")) {
+      SCAN_FLOAT_STRING(sector.gravity);
+    }
+    else if (scanner.StringMatch("frictionfactor")) {
+      SCAN_FLOAT_STRING(sector.frictionfactor);
+    }
+    else if (scanner.StringMatch("movefactor")) {
+      SCAN_FLOAT_STRING(sector.movefactor);
+    }
+    else if (scanner.StringMatch("lightfloorabsolute")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_LIGHTFLOORABSOLUTE);
     }
-    else if (!stricmp(scanner.string, "lightceilingabsolute")) {
+    else if (scanner.StringMatch("lightceilingabsolute")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_LIGHTCEILINGABSOLUTE);
     }
-    else if (!stricmp(scanner.string, "silent")) {
+    else if (scanner.StringMatch("silent")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_SILENT);
     }
-    else if (!stricmp(scanner.string, "nofallingdamage")) {
+    else if (scanner.StringMatch("nofallingdamage")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_NOFALLINGDAMAGE);
     }
-    else if (!stricmp(scanner.string, "dropactors")) {
+    else if (scanner.StringMatch("dropactors")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_DROPACTORS);
     }
-    else if (!stricmp(scanner.string, "norespawn")) {
+    else if (scanner.StringMatch("norespawn")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_NORESPAWN);
     }
-    else if (!stricmp(scanner.string, "hidden")) {
+    else if (scanner.StringMatch("hidden")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_HIDDEN);
     }
-    else if (!stricmp(scanner.string, "waterzone")) {
+    else if (scanner.StringMatch("waterzone")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_WATERZONE);
     }
-    else if (!stricmp(scanner.string, "damageterraineffect")) {
+    else if (scanner.StringMatch("damageterraineffect")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_DAMAGETERRAINEFFECT);
     }
-    else if (!stricmp(scanner.string, "damagehazard")) {
+    else if (scanner.StringMatch("damagehazard")) {
       SCAN_FLAG(sector.flags, UDMF_SECF_DAMAGEHAZARD);
     }
-    else if (!stricmp(scanner.string, "texturefloor")) {
+    else if (scanner.StringMatch("noattack")) {
+      SCAN_FLAG(sector.flags, UDMF_SECF_NOATTACK);
+    }
+    else if (scanner.StringMatch("texturefloor")) {
       SCAN_STRING_N(sector.texturefloor, 8);
     }
-    else if (!stricmp(scanner.string, "textureceiling")) {
+    else if (scanner.StringMatch("textureceiling")) {
       SCAN_STRING_N(sector.textureceiling, 8);
     }
+    else if (scanner.StringMatch("colormap")) {
+      SCAN_STRING(sector.colormap);
+    }
+    else if (scanner.StringMatch("skyfloor")) {
+      SCAN_STRING(sector.skyfloor);
+    }
+    else if (scanner.StringMatch("skyceiling")) {
+      SCAN_STRING(sector.skyceiling);
+    }
+    else if (scanner.StringMatch("moreids")) {
+      SCAN_STRING(sector.moreids);
+    }
     else {
-      // known ignored fields:
-      // comment
-      // ceilingplane_a
-      // ceilingplane_b
-      // ceilingplane_c
-      // ceilingplane_d
-      // floorplane_a
-      // floorplane_b
-      // floorplane_c
-      // floorplane_d
-      // alphafloor
-      // alphaceiling
-      // renderstylefloor
-      // renderstyleceiling
-      // lightcolor
-      // fadecolor
-      // desaturation
-      // soundsequence
-      // moreids
-      // damagetype
-      // floorterrain
-      // ceilingterrain
-      // portal_ceil_blocksound
-      // portal_ceil_disabled
-      // portal_ceil_nopass
-      // portal_ceil_norender
-      // portal_ceil_overlaytype
-      // portal_floor_blocksound
-      // portal_floor_disabled
-      // portal_floor_nopass
-      // portal_floor_norender
-      // portal_floor_overlaytype
       dsda_SkipValue(scanner);
     }
   }
@@ -546,138 +661,133 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
 static void dsda_ParseUDMFThing(Scanner &scanner) {
   udmf_thing_t thing = { 0 };
 
-  thing.gravity = 1.f;
-  thing.health = 1;
+  thing.gravity = "1.0";
+  thing.health = "1.0";
   thing.floatbobphase = -1;
+  thing.alpha = 1.0;
 
   scanner.MustGetToken('{');
   while (!scanner.CheckToken('}')) {
     scanner.MustGetToken(TK_Identifier);
 
-    if (!stricmp(scanner.string, "id")) {
+    if (scanner.StringMatch("id")) {
       SCAN_INT(thing.id);
     }
-    else if (!stricmp(scanner.string, "angle")) {
+    else if (scanner.StringMatch("angle")) {
       SCAN_INT(thing.angle);
     }
-    else if (!stricmp(scanner.string, "type")) {
+    else if (scanner.StringMatch("type")) {
       SCAN_INT(thing.type);
     }
-    else if (!stricmp(scanner.string, "special")) {
+    else if (scanner.StringMatch("special")) {
       SCAN_INT(thing.special);
     }
-    else if (!stricmp(scanner.string, "arg0")) {
+    else if (scanner.StringMatch("arg0")) {
       SCAN_INT(thing.arg0);
     }
-    else if (!stricmp(scanner.string, "arg1")) {
+    else if (scanner.StringMatch("arg1")) {
       SCAN_INT(thing.arg1);
     }
-    else if (!stricmp(scanner.string, "arg2")) {
+    else if (scanner.StringMatch("arg2")) {
       SCAN_INT(thing.arg2);
     }
-    else if (!stricmp(scanner.string, "arg3")) {
+    else if (scanner.StringMatch("arg3")) {
       SCAN_INT(thing.arg3);
     }
-    else if (!stricmp(scanner.string, "arg4")) {
+    else if (scanner.StringMatch("arg4")) {
       SCAN_INT(thing.arg4);
     }
-    else if (!stricmp(scanner.string, "health")) {
-      SCAN_INT(thing.health);
-    }
-    else if (!stricmp(scanner.string, "floatbobphase")) {
+    else if (scanner.StringMatch("floatbobphase")) {
       SCAN_INT(thing.floatbobphase);
     }
-    else if (!stricmp(scanner.string, "x")) {
-      SCAN_FLOAT(thing.x);
+    else if (scanner.StringMatch("x")) {
+      SCAN_FLOAT_STRING(thing.x);
     }
-    else if (!stricmp(scanner.string, "y")) {
-      SCAN_FLOAT(thing.y);
+    else if (scanner.StringMatch("y")) {
+      SCAN_FLOAT_STRING(thing.y);
     }
-    else if (!stricmp(scanner.string, "height")) {
-      SCAN_FLOAT(thing.height);
+    else if (scanner.StringMatch("height")) {
+      SCAN_FLOAT_STRING(thing.height);
     }
-    else if (!stricmp(scanner.string, "gravity")) {
-      SCAN_FLOAT(thing.gravity);
+    else if (scanner.StringMatch("gravity")) {
+      SCAN_FLOAT_STRING(thing.gravity);
     }
-    else if (!stricmp(scanner.string, "scalex")) {
+    else if (scanner.StringMatch("health")) {
+      SCAN_FLOAT_STRING(thing.health);
+    }
+    else if (scanner.StringMatch("scalex")) {
       SCAN_FLOAT(thing.scalex);
     }
-    else if (!stricmp(scanner.string, "scaley")) {
+    else if (scanner.StringMatch("scaley")) {
       SCAN_FLOAT(thing.scaley);
     }
-    else if (!stricmp(scanner.string, "scale")) {
+    else if (scanner.StringMatch("scale")) {
       SCAN_FLOAT(thing.scale);
     }
-    else if (!stricmp(scanner.string, "skill1")) {
+    else if (scanner.StringMatch("alpha")) {
+      SCAN_FLOAT(thing.alpha);
+    }
+    else if (scanner.StringMatch("skill1")) {
       SCAN_FLAG(thing.flags, UDMF_TF_SKILL1);
     }
-    else if (!stricmp(scanner.string, "skill2")) {
+    else if (scanner.StringMatch("skill2")) {
       SCAN_FLAG(thing.flags, UDMF_TF_SKILL2);
     }
-    else if (!stricmp(scanner.string, "skill3")) {
+    else if (scanner.StringMatch("skill3")) {
       SCAN_FLAG(thing.flags, UDMF_TF_SKILL3);
     }
-    else if (!stricmp(scanner.string, "skill4")) {
+    else if (scanner.StringMatch("skill4")) {
       SCAN_FLAG(thing.flags, UDMF_TF_SKILL4);
     }
-    else if (!stricmp(scanner.string, "skill5")) {
+    else if (scanner.StringMatch("skill5")) {
       SCAN_FLAG(thing.flags, UDMF_TF_SKILL5);
     }
-    else if (!stricmp(scanner.string, "ambush")) {
+    else if (scanner.StringMatch("ambush")) {
       SCAN_FLAG(thing.flags, UDMF_TF_AMBUSH);
     }
-    else if (!stricmp(scanner.string, "single")) {
+    else if (scanner.StringMatch("single")) {
       SCAN_FLAG(thing.flags, UDMF_TF_SINGLE);
     }
-    else if (!stricmp(scanner.string, "dm")) {
+    else if (scanner.StringMatch("dm")) {
       SCAN_FLAG(thing.flags, UDMF_TF_DM);
     }
-    else if (!stricmp(scanner.string, "coop")) {
+    else if (scanner.StringMatch("coop")) {
       SCAN_FLAG(thing.flags, UDMF_TF_COOP);
     }
-    else if (!stricmp(scanner.string, "friend")) {
+    else if (scanner.StringMatch("friend")) {
       SCAN_FLAG(thing.flags, UDMF_TF_FRIEND);
     }
-    else if (!stricmp(scanner.string, "dormant")) {
+    else if (scanner.StringMatch("dormant")) {
       SCAN_FLAG(thing.flags, UDMF_TF_DORMANT);
     }
-    else if (!stricmp(scanner.string, "class1")) {
+    else if (scanner.StringMatch("class1")) {
       SCAN_FLAG(thing.flags, UDMF_TF_CLASS1);
     }
-    else if (!stricmp(scanner.string, "class2")) {
+    else if (scanner.StringMatch("class2")) {
       SCAN_FLAG(thing.flags, UDMF_TF_CLASS2);
     }
-    else if (!stricmp(scanner.string, "class3")) {
+    else if (scanner.StringMatch("class3")) {
       SCAN_FLAG(thing.flags, UDMF_TF_CLASS3);
     }
-    else if (!stricmp(scanner.string, "standing")) {
+    else if (scanner.StringMatch("standing")) {
       SCAN_FLAG(thing.flags, UDMF_TF_STANDING);
     }
-    else if (!stricmp(scanner.string, "strifeally")) {
+    else if (scanner.StringMatch("strifeally")) {
       SCAN_FLAG(thing.flags, UDMF_TF_STRIFEALLY);
     }
-    else if (!stricmp(scanner.string, "translucent")) {
+    else if (scanner.StringMatch("translucent")) {
       SCAN_FLAG(thing.flags, UDMF_TF_TRANSLUCENT);
     }
-    else if (!stricmp(scanner.string, "invisible")) {
+    else if (scanner.StringMatch("invisible")) {
       SCAN_FLAG(thing.flags, UDMF_TF_INVISIBLE);
     }
-    else if (!stricmp(scanner.string, "countsecret")) {
+    else if (scanner.StringMatch("countsecret")) {
       SCAN_FLAG(thing.flags, UDMF_TF_COUNTSECRET);
     }
+    else if (scanner.StringMatch("arg0str")) {
+      SCAN_STRING(thing.arg0str);
+    }
     else {
-      // known ignored fields:
-      // comment
-      // skill6-16
-      // class4-16
-      // conversation
-      // arg0str
-      // renderstyle
-      // fillcolor
-      // alpha
-      // score
-      // pitch
-      // roll
       dsda_SkipValue(scanner);
     }
   }
@@ -688,28 +798,28 @@ static void dsda_ParseUDMFThing(Scanner &scanner) {
 static void dsda_ParseUDMFIdentifier(Scanner &scanner) {
   scanner.MustGetToken(TK_Identifier);
 
-  if (!stricmp(scanner.string, "namespace")) {
+  if (scanner.StringMatch("namespace")) {
     scanner.MustGetToken('=');
     scanner.MustGetToken(TK_StringConst);
 
-    if (stricmp(scanner.string, "zdoom"))
+    if (stricmp(scanner.string, "zdoom") && stricmp(scanner.string, "dsda"))
       scanner.ErrorF("Unknown UDMF namespace \"%s\"", scanner.string);
 
     scanner.MustGetToken(';');
   }
-  else if (!stricmp(scanner.string, "linedef")) {
+  else if (scanner.StringMatch("linedef")) {
     dsda_ParseUDMFLineDef(scanner);
   }
-  else if (!stricmp(scanner.string, "sidedef")) {
+  else if (scanner.StringMatch("sidedef")) {
     dsda_ParseUDMFSideDef(scanner);
   }
-  else if (!stricmp(scanner.string, "vertex")) {
+  else if (scanner.StringMatch("vertex")) {
     dsda_ParseUDMFVertex(scanner);
   }
-  else if (!stricmp(scanner.string, "sector")) {
+  else if (scanner.StringMatch("sector")) {
     dsda_ParseUDMFSector(scanner);
   }
-  else if (!stricmp(scanner.string, "thing")) {
+  else if (scanner.StringMatch("thing")) {
     dsda_ParseUDMFThing(scanner);
   }
   else {
@@ -743,8 +853,17 @@ void dsda_ParseUDMF(const unsigned char* buffer, size_t length, udmf_errorfunc e
     scanner.ErrorF("Insufficient UDMF data");
 
   udmf.lines = &udmf_lines[0];
+  udmf.num_lines = udmf_lines.size();
+
   udmf.sides = &udmf_sides[0];
+  udmf.num_sides = udmf_sides.size();
+
   udmf.vertices = &udmf_vertices[0];
+  udmf.num_vertices = udmf_vertices.size();
+
   udmf.sectors = &udmf_sectors[0];
+  udmf.num_sectors = udmf_sectors.size();
+
   udmf.things = &udmf_things[0];
+  udmf.num_things = udmf_things.size();
 }

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -36,10 +36,6 @@
 #define __D_ITEMS__
 
 #include "doomdef.h"
-
-#ifdef __GNUG__
-#pragma interface
-#endif
 
 //
 // Internal weapon flags

@@ -21,6 +21,7 @@
 #include "doomtype.h"
 #include "doomstat.h"
 #include "info.h"
+#include "m_file.h"
 #include "p_maputl.h"
 #include "p_tick.h"
 #include "sounds.h"
@@ -100,7 +101,7 @@ void dsda_InitGhostExport(const char* name) {
   filename = Z_Malloc(strlen(name) + 4 + 1);
   AddDefaultExtension(strcpy(filename, name), ".gst");
 
-  dsda_ghost_export = fopen(filename, "wb");
+  dsda_ghost_export = M_OpenFile(filename, "wb");
 
   if (dsda_ghost_export == NULL)
     I_Error("dsda_InitGhostExport: failed to open %s", name);
@@ -113,23 +114,31 @@ void dsda_InitGhostExport(const char* name) {
 
 static void dsda_OpenGhostFile(const char* ghost_name, dsda_ghost_file_t* ghost_file) {
   char* filename;
+  int read_result;
 
   memset(ghost_file, 0, sizeof(dsda_ghost_file_t));
 
   filename = Z_Malloc(strlen(ghost_name) + 4 + 1);
   AddDefaultExtension(strcpy(filename, ghost_name), ".gst");
 
-  ghost_file->fstream = fopen(filename, "rb");
+  ghost_file->fstream = M_OpenFile(filename, "rb");
 
   if (ghost_file->fstream == NULL)
     I_Error("dsda_OpenGhostImport: failed to open %s", ghost_name);
 
-  fread(&ghost_file->version, sizeof(int), 1, ghost_file->fstream);
-  if (ghost_file->version < DSDA_GHOST_MIN_VERSION || ghost_file->version > DSDA_GHOST_VERSION)
+  read_result = fread(&ghost_file->version, sizeof(int), 1, ghost_file->fstream);
+  if (ghost_file->version < DSDA_GHOST_MIN_VERSION ||
+      ghost_file->version > DSDA_GHOST_VERSION ||
+      read_result != 1)
     I_Error("dsda_OpenGhostImport: unsupported ghost version %s", ghost_name);
 
-  if (ghost_file->version == 1) ghost_file->count = 1;
-  else fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
+  if (ghost_file->version == 1)
+    ghost_file->count = 1;
+  else {
+    read_result = fread(&ghost_file->count, sizeof(int), 1, ghost_file->fstream);
+    if (read_result != 1)
+      I_Error("dsda_OpenGhostImport: error reading ghost count %s", ghost_name);
+  }
 
   Z_Free(filename);
 }
@@ -211,7 +220,6 @@ void dsda_SpawnGhost(void) {
   mobj_t* mobj;
   state_t* ghost_state;
   int ghost_i;
-  dboolean any_ghosts;
 
   if (dsda_StrictMode())
     return;

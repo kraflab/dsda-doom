@@ -21,7 +21,11 @@
 
 #include "attempts.h"
 
-static dsda_text_t component;
+typedef struct {
+  dsda_text_t component;
+} local_component_t;
+
+static local_component_t* local;
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   if (!demorecording)
@@ -30,25 +34,29 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
   snprintf(
     str,
     max_size,
-    "%d/%d",
+    "%s%d/%d",
+    dsda_TextColor(dsda_tc_exhud_attempts),
     dsda_SessionAttempts(),
     dsda_DemoAttempts()
   );
 }
 
-void dsda_InitAttemptsHC(int x_offset, int y_offset, int vpt) {
-  dsda_InitTextHC(&component, x_offset, y_offset, vpt);
+void dsda_InitAttemptsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  dsda_InitTextHC(&local->component, x_offset, y_offset, vpt);
 }
 
-void dsda_UpdateAttemptsHC(void) {
-  dsda_UpdateComponentText(component.msg, sizeof(component.msg));
-  dsda_RefreshHudText(&component);
+void dsda_UpdateAttemptsHC(void* data) {
+  local = data;
+
+  dsda_UpdateComponentText(local->component.msg, sizeof(local->component.msg));
+  dsda_RefreshHudText(&local->component);
 }
 
-void dsda_DrawAttemptsHC(void) {
-  dsda_DrawBasicText(&component);
-}
+void dsda_DrawAttemptsHC(void* data) {
+  local = data;
 
-void dsda_EraseAttemptsHC(void) {
-  HUlib_eraseTextLine(&component.text);
+  dsda_DrawBasicText(&local->component);
 }

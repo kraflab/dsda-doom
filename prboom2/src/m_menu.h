@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -75,12 +75,6 @@ void M_ResetMenu(void);      // killough 11/98: reset main menu ordering
 
 void M_DrawCredits(void);    // killough 11/98
 
-/* killough 8/15/98: warn about changes not being committed until next game */
-#define warn_about_changes(x) (warning_about_changes=(x), \
-             print_warning_about_changes = 2)
-
-extern int warning_about_changes, print_warning_about_changes;
-
 /****************************
  *
  * The setup_group enum is used to show which 'groups' keys fall into so
@@ -121,7 +115,6 @@ typedef struct setup_menu_s
   int         m_flags;  /* phares 4/17/98: flag bits S_* (defined above) */
   setup_group m_group;  /* Group */
   short       m_x;      /* screen x position (left is 0) */
-  short       m_y;      /* screen y position (top is 0) */
   dsda_config_identifier_t config_id;
   int input; // composite input identifier
   const char **selectstrings; /* list of strings for choice value */
@@ -143,6 +136,7 @@ typedef struct
   void  (*routine)(int choice);
   char  alphaKey; // hotkey in menu
   const char *alttext;
+  int color;
 } menuitem_t;
 
 #define MENUF_TEXTINPUT 0x01

@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -48,6 +48,8 @@ typedef struct {
   int pitch;
   int priority;
   dboolean ambient;
+  float attenuation;
+  float volume_factor;
   dboolean loop;
   int loop_timeout;
   sfx_class_t sfx_class;
@@ -74,9 +76,6 @@ struct sfxinfo_struct {
 
   // pitch if a link
   int pitch;
-
-  // volume if a link
-  int volume;
 
   // sound data
   void *data;
@@ -386,7 +385,6 @@ typedef enum {
 
   //e6y
   sfx_secret,
-  sfx_gibdth,
   // Everything from here to 500 is reserved
 
   /* Free sound effect slots for DEHEXTRA. Offset agreed upon with Eternity devs. -SH */

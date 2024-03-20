@@ -1,4 +1,4 @@
-/* Emacs style mode select   -*- C++ -*-
+/* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
  *
  *
@@ -48,8 +48,6 @@
 #include <unistd.h>
 #endif
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #include "doomdef.h"
 #include "doomtype.h"
@@ -63,6 +61,7 @@
 #include "v_video.h"
 #include "f_finale.h"
 #include "f_wipe.h"
+#include "m_file.h"
 #include "m_misc.h"
 #include "m_menu.h"
 #include "i_main.h"
@@ -90,7 +89,6 @@
 #include "dsda/exdemo.h"
 #include "dsda/features.h"
 #include "dsda/global.h"
-#include "dsda/mkdir.h"
 #include "dsda/save.h"
 #include "dsda/data_organizer.h"
 #include "dsda/map_format.h"
@@ -99,13 +97,17 @@
 #include "dsda/options.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
+#include "dsda/preferences.h"
 #include "dsda/render_stats.h"
 #include "dsda/settings.h"
 #include "dsda/signal_context.h"
+#include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
 #include "dsda/time.h"
 #include "dsda/utility.h"
+#include "dsda/wad_stats.h"
+#include "dsda/zipfile.h"
 #include "dsda/gl/render_scale.h"
 
 #include "heretic/mn_menu.h"
@@ -142,7 +144,7 @@ dboolean nomusicparm;
 extern dboolean inhelpscreens;
 extern dboolean BorderNeedRefresh;
 
-skill_t startskill;
+int     startskill;
 int     startepisode;
 int     startmap;
 dboolean autostart;
@@ -230,7 +232,7 @@ static void D_Wipe(void)
 {
   dboolean done;
   int wipestart;
-  int old_realtic_clock_rate = 0;
+  int old_game_speed = 0;
 
   //e6y
   if (!dsda_RenderWipeScreen() || dsda_SkipWipe())
@@ -243,10 +245,10 @@ static void D_Wipe(void)
     return;
   }
 
-  if (dsda_RealticClockRate() != 100 && dsda_WipeAtFullSpeed())
+  if (dsda_GameSpeed() != 100 && dsda_WipeAtFullSpeed())
   {
-    old_realtic_clock_rate = dsda_RealticClockRate();
-    dsda_UpdateRealticClockRate(100);
+    old_game_speed = dsda_GameSpeed();
+    dsda_UpdateGameSpeed(100);
   }
 
   wipestart = dsda_GetTick() - 1;
@@ -279,18 +281,19 @@ static void D_Wipe(void)
     }
 
     M_Drawer();                   // menu is drawn even on top of wipes
-    I_FinishUpdate();             // page flip or blit buffer
 
     if (capturing_video && !dsda_SkipMode() && cap_wipescreen)
     {
-      I_CaptureFrame();
+      I_QueueFrameCapture();
     }
+
+    I_FinishUpdate();             // page flip or blit buffer
   }
   while (!done);
 
-  if (old_realtic_clock_rate)
+  if (old_game_speed)
   {
-    dsda_UpdateRealticClockRate(old_realtic_clock_rate);
+    dsda_UpdateGameSpeed(old_game_speed);
   }
 
   force_singletics_to = gametic + BACKUPTICS;
@@ -316,7 +319,7 @@ static void D_DrawPause(void)
   {
     if (!netgame)
     {
-      V_DrawNamePatch(160, viewwindowy + 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(160, 5, 0, "PAUSED", CR_DEFAULT, VPT_STRETCH);
     }
     else
     {
@@ -329,6 +332,13 @@ static void D_DrawPause(void)
     V_DrawNamePatch((320 - V_NamePatchWidth("M_PAUSE")) / 2, 4, 0, "M_PAUSE", CR_DEFAULT, VPT_STRETCH);
 
   V_EndUIDraw();
+}
+
+static dboolean must_fill_back_screen;
+
+void D_MustFillBackScreen(void)
+{
+  must_fill_back_screen = true;
 }
 
 void D_Display (fixed_t frac)
@@ -403,13 +413,12 @@ void D_Display (fixed_t frac)
   else { // In a level
     dboolean redrawborderstuff;
 
-    HU_Erase();
-
     // Work out if the player view is visible, and if there is a border
     viewactive = automap_off && !inhelpscreens;
     isborder = viewactive ? R_PartialView() : (!inhelpscreens && automap_active);
 
-    if (oldgamestate != GS_LEVEL) {
+    if (oldgamestate != GS_LEVEL || must_fill_back_screen) {
+      must_fill_back_screen = false;
       R_FillBackScreen ();    // draw the pattern into the back screen
       redrawborderstuff = isborder;
     } else {
@@ -462,16 +471,13 @@ void D_Display (fixed_t frac)
 
     if (automap_active)
     {
-      AM_Drawer();
+      AM_Drawer(false);
     }
 
     R_RestoreInterpolations();
 
     DSDA_ADD_CONTEXT(sf_status_bar);
-    ST_Drawer(
-        (R_PartialView() || automap_on),
-        redrawborderstuff || BorderNeedRefresh,
-        (menuactive == mnact_full));
+    ST_Drawer(redrawborderstuff || BorderNeedRefresh);
     DSDA_REMOVE_CONTEXT(sf_status_bar);
 
     BorderNeedRefresh = false;
@@ -481,9 +487,6 @@ void D_Display (fixed_t frac)
     DSDA_ADD_CONTEXT(sf_hud);
     HU_Drawer();
     DSDA_REMOVE_CONTEXT(sf_hud);
-
-    if (V_IsOpenGLMode())
-      gld_ProcessExtraAlpha();
   }
 
   isborderstate      = isborder;
@@ -512,7 +515,7 @@ void D_Display (fixed_t frac)
 
   // e6y
   // Don't thrash cpu during pausing or if the window doesnt have focus
-  if (dsda_CameraPaused() || !window_focused) {
+  if (dsda_CameraPaused()) {
     I_uSleep(5000);
   }
 
@@ -539,6 +542,9 @@ static void D_DoomLoop(void)
 
   for (;;)
   {
+    if (I_Interrupted())
+      I_SafeExit(0);
+
     WasRenderedInTryRunTics = false;
     // frame syncronous IO operations
     I_StartFrame ();
@@ -575,9 +581,15 @@ static void D_DoomLoop(void)
         {
           isExtraDDisplay = !first;
           first = false;
+
+          if (gamestate == wipegamestate || cap_wipescreen)
+          {
+            I_QueueFrameCapture();
+          }
+
           D_Display(cap_frac);
+
           isExtraDDisplay = false;
-          I_CaptureFrame();
           cap_frac += cap_step;
         }
         cap_frac -= FRACUNIT + cap_step;
@@ -617,7 +629,7 @@ static void D_PageDrawer(void)
   if (raven)
   {
     V_DrawRawScreen(pagename);
-    if (hexen && demosequence == 1)
+    if (demosequence == 1)
     {
       V_DrawNamePatch(4, 160, 0, "ADVISOR", CR_DEFAULT, VPT_STRETCH);
     }
@@ -630,7 +642,7 @@ static void D_PageDrawer(void)
   if (pagename)
   {
     // e6y: wide-res
-    V_FillBorder(-1, 0);
+    V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
   }
   else
@@ -802,7 +814,6 @@ void D_StartTitle (void)
 //         - modified to allocate & use new wadfiles array
 void D_AddFile (const char *file, wad_source_t source)
 {
-  char *gwa_filename=NULL;
   int len;
 
   // There can only be one iwad source!
@@ -827,20 +838,6 @@ void D_AddFile (const char *file, wad_source_t source)
     gamemission = pack_nerve;
 
   numwadfiles++;
-  // proff: automatically try to add the gwa files
-  // proff - moved from w_wad.c
-  gwa_filename=AddDefaultExtension(strcpy(Z_Malloc(strlen(file)+5), file), ".wad");
-  if (dsda_HasFileExt(gwa_filename, ".wad"))
-  {
-    char *ext;
-    ext = &gwa_filename[strlen(gwa_filename)-4];
-    ext[1] = 'g'; ext[2] = 'w'; ext[3] = 'a';
-    wadfiles = Z_Realloc(wadfiles, sizeof(*wadfiles)*(numwadfiles+1));
-    wadfiles[numwadfiles].name = gwa_filename;
-    wadfiles[numwadfiles].src = source_pwad; // Ty 08/29/98
-    wadfiles[numwadfiles].handle = 0;
-    numwadfiles++;
-  }
 }
 
 // killough 10/98: support -dehout filename
@@ -871,13 +868,13 @@ const char *D_dehout(void)
 //e6y static
 void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
 {
-  if ( !access (iwadname,R_OK) )
+  if (M_ReadAccess(iwadname))
   {
     int ud=0,rg=0,sw=0,cm=0,sc=0,hx=0;
     FILE* fp;
 
     // Identify IWAD correctly
-    if ((fp = fopen(iwadname, "rb")))
+    if ((fp = M_OpenFile(iwadname, "rb")))
     {
       wadinfo_t header;
 
@@ -1130,19 +1127,6 @@ static void IdentifyVersion (void)
 
   iwad = FindIWADFile();
 
-#if defined(PRBOOM_DEBUG)
-  // proff 11/99: used for debugging
-  {
-    FILE *f;
-    f=fopen("levelinfo.txt","w");
-    if (f)
-    {
-      fprintf(f,"%s\n",iwad);
-      fclose(f);
-    }
-  }
-#endif
-
   if (iwad && *iwad)
   {
     AddIWAD(iwad);
@@ -1179,6 +1163,7 @@ static void DoLooseFiles(void)
     dsda_arg_identifier_t arg_id;
   } looses[] = {
     { ".wad", dsda_arg_file },
+    { ".zip", dsda_arg_file },
     { ".lmp", dsda_arg_playdemo },
     { ".deh", dsda_arg_deh },
     { ".bex", dsda_arg_deh },
@@ -1239,7 +1224,7 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
         snprintf(autoload_path, len+1, "%s/autoload", exedir);
     }
 
-    dsda_MkDir(autoload_path, false);
+    M_MakeDir(autoload_path, false);
 
     len = snprintf(NULL, 0, "%s/%s", autoload_path, iwadname);
     result = Z_Malloc(len+1);
@@ -1247,24 +1232,10 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 
     if (createdir)
     {
-      dsda_MkDir(result, false);
+      M_MakeDir(result, false);
     }
 
     return result;
-}
-
-static const char *BaseName(const char *filename)
-{
-  const char *basename;
-
-  basename = filename + strlen(filename) - 1;
-
-  while (basename > filename && *basename != '/' && *basename != '\\')
-    basename--;
-  if (*basename == '/' || *basename == '\\')
-    basename++;
-
-  return basename;
 }
 
 const char *IWADBaseName(void)
@@ -1280,12 +1251,59 @@ const char *IWADBaseName(void)
   if (i == numwadfiles)
     I_Error("IWADBaseName: IWAD not found\n");
 
-  return BaseName(wadfiles[i].name);
+  return dsda_BaseName(wadfiles[i].name);
+}
+
+typedef struct {
+  char **list;
+  int count;
+  int allocated_count;
+} deh_queue_t;
+
+static deh_queue_t autoload_deh_all_queue;
+static deh_queue_t autoload_deh_game_queue;
+static deh_queue_t autoload_deh_iwad_queue;
+static deh_queue_t *autoload_deh_pwad_queue;
+static int autoload_deh_pwad_count;
+
+static void D_QueueAutoloadDeh(deh_queue_t *queue, const char *name)
+{
+  int old_count;
+
+  old_count = queue->count;
+  ++queue->count;
+
+  if (queue->count > queue->allocated_count)
+  {
+    if (!queue->allocated_count)
+      queue->allocated_count = 4;
+
+    while (queue->count > queue->allocated_count)
+      queue->allocated_count *= 2;
+
+    queue->list = Z_Realloc(queue->list, queue->allocated_count * sizeof(*queue->list));
+    memset(&queue->list[old_count], 0, (queue->allocated_count - old_count) * sizeof(*queue->list));
+  }
+
+  queue->list[queue->count - 1] = Z_Strdup(name);
+}
+
+static void D_ProcessDehAutoloadQueue(deh_queue_t *queue)
+{
+  int i;
+
+  for (i = 0; i < queue->count; ++i)
+  {
+    ProcessDehFile(queue->list[i], D_dehout(), 0);
+    Z_Free(queue->list[i]);
+  }
+
+  Z_Free(queue->list);
 }
 
 // Load all WAD files from the given directory.
 
-static void AutoLoadWADs(const char *path)
+static void LoadWADsAtPath(const char *path, wad_source_t source)
 {
     glob_t *glob;
     const char *filename;
@@ -1299,7 +1317,73 @@ static void AutoLoadWADs(const char *path)
         {
             break;
         }
-        D_AddFile(filename,source_auto_load);
+        D_AddFile(filename, source);
+    }
+
+    I_EndGlob(glob);
+}
+
+static void LoadDehackedFilesAtPath(const char *path, dboolean defer_loading, deh_queue_t *deh_queue)
+{
+    const char *filename;
+    glob_t *glob;
+
+    glob = I_StartMultiGlob(path, GLOB_FLAG_NOCASE|GLOB_FLAG_SORTED,
+                            "*.deh", "*.bex", NULL);
+    for (;;)
+    {
+        filename = I_NextGlob(glob);
+        if (filename == NULL)
+        {
+            break;
+        }
+
+        if (deh_queue)
+        {
+            D_QueueAutoloadDeh(deh_queue, filename);
+        }
+        else if (defer_loading)
+        {
+            dsda_AppendStringArg(dsda_arg_deh, filename);
+        }
+        else
+        {
+            ProcessDehFile(filename, D_dehout(), 0);
+        }
+    }
+
+    I_EndGlob(glob);
+}
+
+static void D_AddZip(const char* zipped_file_name, wad_source_t source, deh_queue_t *deh_queue)
+{
+  char* full_zip_path;
+  const char* temporary_directory;
+
+  full_zip_path = I_RequireZip(zipped_file_name);
+  temporary_directory = dsda_UnzipFile(full_zip_path);
+
+  LoadWADsAtPath(temporary_directory, source);
+  LoadDehackedFilesAtPath(temporary_directory, true, deh_queue);
+
+  Z_Free(full_zip_path);
+}
+
+static void LoadZIPsAtPath(const char *path, wad_source_t source, deh_queue_t *deh_queue)
+{
+    glob_t *glob;
+    const char *filename;
+
+    glob = I_StartMultiGlob(path, GLOB_FLAG_NOCASE|GLOB_FLAG_SORTED,
+                            "*.zip", NULL);
+    for (;;)
+    {
+        filename = I_NextGlob(glob);
+        if (filename == NULL)
+        {
+            break;
+        }
+        D_AddZip(filename, source, deh_queue);
     }
 
     I_EndGlob(glob);
@@ -1322,53 +1406,39 @@ void D_AutoloadIWadDir()
 
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
+  LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_all_queue);
   Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
+  LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_game_queue);
   Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
-  AutoLoadWADs(autoload_dir);
+  LoadWADsAtPath(autoload_dir, source_auto_load);
+  LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_iwad_queue);
   Z_Free(autoload_dir);
 }
 
 static void D_AutoloadPWadDir()
 {
   int i;
+
+  autoload_deh_pwad_count = numwadfiles;
+  autoload_deh_pwad_queue = Z_Calloc(autoload_deh_pwad_count, sizeof(*autoload_deh_pwad_queue));
+
   for (i = 0; i < numwadfiles; ++i)
     if (wadfiles[i].src == source_pwad)
     {
       char *autoload_dir;
-      autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
-      AutoLoadWADs(autoload_dir);
+      autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
+      LoadWADsAtPath(autoload_dir, source_auto_load);
+      LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_pwad_queue[i]);
       Z_Free(autoload_dir);
     }
-}
-
-// Load all dehacked patches from the given directory.
-
-static void AutoLoadPatches(const char *path)
-{
-    const char *filename;
-    glob_t *glob;
-
-    glob = I_StartMultiGlob(path, GLOB_FLAG_NOCASE|GLOB_FLAG_SORTED,
-                            "*.deh", "*.bex", NULL);
-    for (;;)
-    {
-        filename = I_NextGlob(glob);
-        if (filename == NULL)
-        {
-            break;
-        }
-        ProcessDehFile(filename, D_dehout(), 0);
-    }
-
-    I_EndGlob(glob);
 }
 
 // auto-loading of .deh files.
@@ -1379,17 +1449,20 @@ static void D_AutoloadDehIWadDir()
 
   // common auto-loaded files for all games
   autoload_dir = GetAutoloadDir(ALL_AUTOLOAD, true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false, NULL);
+  D_ProcessDehAutoloadQueue(&autoload_deh_all_queue);
   Z_Free(autoload_dir);
 
   // common auto-loaded files for the game
   autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false, NULL);
+  D_ProcessDehAutoloadQueue(&autoload_deh_game_queue);
   Z_Free(autoload_dir);
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
-  AutoLoadPatches(autoload_dir);
+  LoadDehackedFilesAtPath(autoload_dir, false, NULL);
+  D_ProcessDehAutoloadQueue(&autoload_deh_iwad_queue);
   Z_Free(autoload_dir);
 }
 
@@ -1400,10 +1473,14 @@ static void D_AutoloadDehPWadDir()
     if (wadfiles[i].src == source_pwad)
     {
       char *autoload_dir;
-      autoload_dir = GetAutoloadDir(BaseName(wadfiles[i].name), false);
-      AutoLoadPatches(autoload_dir);
+      autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
+      LoadDehackedFilesAtPath(autoload_dir, false, NULL);
+      if (i < autoload_deh_pwad_count)
+        D_ProcessDehAutoloadQueue(&autoload_deh_pwad_queue[i]);
       Z_Free(autoload_dir);
     }
+
+  Z_Free(autoload_deh_pwad_queue);
 }
 
 int warpepisode = -1;
@@ -1467,7 +1544,7 @@ static void HandlePlayback(void)
   dsda_LoadExDemo(file);
 }
 
-const char* doomverstr = NULL;
+const char* doomverstr = "Unknown";
 
 static void EvaluateDoomVerStr(void)
 {
@@ -1564,10 +1641,6 @@ static void D_DoomMainSetup(void)
     I_SafeExit(0);
   }
 
-  // figgi 09/18/00-- added switch to force classic bsp nodes
-  if (dsda_Flag(dsda_arg_forceoldbsp))
-    forceOldBsp = true;
-
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
 
   IdentifyVersion();
@@ -1593,7 +1666,7 @@ static void D_DoomMainSetup(void)
 
   // get skill / episode / map from parms
 
-  startskill = sk_none; // jff 3/24/98 was sk_medium, just note not picked
+  startskill = dsda_IntConfig(dsda_config_default_skill) - 1;
   startepisode = 1;
   startmap = 1;
   autostart = false;
@@ -1681,20 +1754,38 @@ static void D_DoomMainSetup(void)
     for (file_i = 0; file_i < arg->count; ++file_i)
     {
       const char* file_name;
-      char *file;
+      char *file = NULL;
 
       file_name = arg->value.v_string_array[file_i];
+
+      if (!dsda_FileExtension(file_name))
+      {
+        const char *extensions[] = { ".wad", ".lmp", ".zip", ".deh", ".bex", NULL };
+
+        file = I_RequireAnyFile(file_name, extensions);
+        file_name = file;
+      }
+
       if (dsda_HasFileExt(file_name, ".deh") || dsda_HasFileExt(file_name, ".bex"))
       {
         dsda_AppendStringArg(dsda_arg_deh, file_name);
-        continue;
+      }
+      else if (dsda_HasFileExt(file_name, ".zip"))
+      {
+        D_AddZip(file_name, source_pwad, NULL);
+      }
+      else if (dsda_HasFileExt(file_name, ".wad") || dsda_HasFileExt(file_name, ".lmp"))
+      {
+        if (!file)
+          file = I_RequireWad(file_name);
+
+        D_AddFile(file, source_pwad);
+      }
+      else
+      {
+        I_Error("File type \"%s\" is not supported", dsda_FileExtension(file_name));
       }
 
-      // e6y
-      // reorganization of the code for looking for wads
-      // in all standard dirs (%DOOMWADDIR%, etc)
-      file = I_RequireWad(file_name);
-      D_AddFile(file,source_pwad);
       Z_Free(file);
     }
   }
@@ -1722,7 +1813,6 @@ static void D_DoomMainSetup(void)
       I_Error("The Hexen v1.0 IWAD is not supported.");
     }
   }
-
 
   lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
   dsda_ParseOptionsLump();
@@ -1814,6 +1904,9 @@ static void D_DoomMainSetup(void)
   dsda_AppendZDoomMobjInfo();
   dsda_ApplyDefaultMapFormat();
 
+  lprintf(LO_DEBUG, "dsda_InitWadStats: Setting up wad stats.\n");
+  dsda_InitWadStats();
+
   lprintf(LO_INFO, "\n"); // Separator after file loading
 
   V_InitColorTranslation(); //jff 4/24/98 load color translation lumps
@@ -1833,7 +1926,9 @@ static void D_DoomMainSetup(void)
   lprintf(LO_DEBUG, "R_Init: Init DOOM refresh daemon - ");
   R_Init();
 
+  dsda_LoadWadPreferences();
   dsda_LoadMapInfo();
+  dsda_InitSkills();
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "\nP_Init: Init Playloop state.\n");
@@ -1854,8 +1949,8 @@ static void D_DoomMainSetup(void)
   S_Init();
 
   //jff 9/3/98 use logical output routine
-  lprintf(LO_DEBUG, "HU_Init: Setting up heads up display.\n");
-  HU_Init();
+  lprintf(LO_DEBUG, "dsda_InitFont: Loading the hud fonts.\n");
+  dsda_InitFont();
 
   if (!(dsda_Flag(dsda_arg_nodraw) && dsda_Flag(dsda_arg_nosound)))
     I_InitGraphics();
