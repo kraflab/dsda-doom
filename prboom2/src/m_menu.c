@@ -2324,6 +2324,17 @@ setup_menu_t keys_settings7[] =
   { "Freeze", S_INPUT, m_scrn, KB_X, 0, dsda_input_freeze },
 
   PREV_PAGE(keys_settings6),
+  NEXT_PAGE(keys_settings8),
+  FINAL_ENTRY
+};
+
+setup_menu_t keys_settings8[] =
+{
+  { "MORE CHEATS", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Exit Normal", S_INPUT, m_scrn, KB_X, 0, dsda_input_exit_normal },
+  { "Exit Secret", S_INPUT, m_scrn, KB_X, 0, dsda_input_exit_secret },
+
+  PREV_PAGE(keys_settings7),
   NEXT_PAGE(raven_keys_settings),
   FINAL_ENTRY
 };
@@ -2338,7 +2349,7 @@ setup_menu_t raven_keys_settings[] = {
   { "FLY CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_flycenter },
   { "JUMP", S_INPUT, m_scrn, KB_X, 0, dsda_input_jump },
 
-  PREV_PAGE(keys_settings7),
+  PREV_PAGE(keys_settings8),
   NEXT_PAGE(heretic_keys_settings),
   FINAL_ENTRY
 };
