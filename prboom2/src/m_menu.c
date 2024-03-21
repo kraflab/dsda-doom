@@ -3028,7 +3028,6 @@ setup_menu_t mapping_settings[] = {
   { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, dsda_config_comperr_passuse },
   { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, dsda_config_comperr_hangsolid },
   { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, dsda_config_comperr_blockmap },
-  { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, dsda_config_comperr_freeaim },
 
   PREV_PAGE(display_settings),
   NEXT_PAGE(demo_settings),

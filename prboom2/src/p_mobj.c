@@ -56,6 +56,7 @@
 
 #include "dsda.h"
 #include "dsda/ambient.h"
+#include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/settings.h"
@@ -2895,8 +2896,7 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
 
   angle_t an = source->angle;
 
-  // killough 7/19/98: autoaiming was not in original beta
-  if (comperr(comperr_freeaim))
+  if (dsda_FreeAim())
     slope = finetangent[(ANG90 - source->pitch) >> ANGLETOFINESHIFT];
   else
   {
@@ -2965,7 +2965,7 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
   P_SetTarget(&th->target, source);
   th->angle = an;
 
-  if (comperr(comperr_freeaim))
+  if (dsda_FreeAim())
   {
     fixed_t horizontal_speed;
 

@@ -47,7 +47,9 @@
 #include "g_game.h"
 #include "lprintf.h"
 #include "e6y.h"//e6y
+
 #include "dsda.h"
+#include "dsda/excmd.h"
 
 #define LOWERSPEED   (FRACUNIT*6)
 #define RAISESPEED   (FRACUNIT*6)
@@ -1009,7 +1011,7 @@ static void P_BulletSlope(mobj_t *mo)
 {
   angle_t an = mo->angle;    // see which target is to be aimed at
 
-  if (comperr(comperr_freeaim))
+  if (dsda_FreeAim())
     bulletslope = finetangent[(ANG90 - mo->pitch) >> ANGLETOFINESHIFT];
   else
   {

@@ -52,6 +52,7 @@
 
 #include "dsda.h"
 #include "dsda/destructible.h"
+#include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 
@@ -2274,7 +2275,7 @@ dboolean PTR_ShootTraverse (intercept_t* in)
     // hit line
     // position a bit closer
 
-    if (comperr(comperr_freeaim))
+    if (dsda_FreeAim())
     {
       int64_t real_z;
       int side = P_PointOnLineSide(trace.x, trace.y, li);
