@@ -89,7 +89,7 @@ fixed_t P_PlayerSpeed(player_t* player)
 
 angle_t P_PlayerPitch(player_t* player)
 {
-  return player->mo->pitch - (angle_t)(player->lookdir * ANG1 / M_PI);
+  return dsda_FreeAim() ? player->mo->pitch : -(angle_t)(player->lookdir * ANG1 / M_PI);
 }
 
 //
@@ -334,23 +334,14 @@ void P_HandleExCmdLook(player_t* player)
   look = player->cmd.ex.look;
   if (look)
   {
-    if (raven)
+    if (look == XC_LOOK_RESET)
     {
-      player->lookdir += ANGLE_T_TO_LOOKDIR(look << 16);
-      if (player->lookdir > 90)
-        player->lookdir = 90;
-      if (player->lookdir < -110)
-        player->lookdir = -110;
+      player->mo->pitch = 0;
     }
     else
     {
-      if (look == XC_LOOK_RESET)
-        player->mo->pitch = 0;
-      else
-      {
-        player->mo->pitch += look << 16;
-        CheckPitch((signed int *) &player->mo->pitch);
-      }
+      player->mo->pitch += look << 16;
+      CheckPitch((signed int *) &player->mo->pitch);
     }
   }
 }
