@@ -345,7 +345,6 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_comperr_passuse),
   MIGRATED_SETTING(dsda_config_comperr_hangsolid),
   MIGRATED_SETTING(dsda_config_comperr_blockmap),
-  MIGRATED_SETTING(dsda_config_comperr_freeaim),
 
   SETTING_HEADING("Weapon preferences"),
   MIGRATED_SETTING(dsda_config_weapon_choice_1),

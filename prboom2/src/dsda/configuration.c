@@ -476,10 +476,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "comperr_blockmap", dsda_config_comperr_blockmap,
     CONF_BOOL(0), &default_comperr[comperr_blockmap]
   },
-  [dsda_config_comperr_freeaim] = {
-    "comperr_freeaim", dsda_config_comperr_freeaim,
-    CONF_BOOL(0), &default_comperr[comperr_freeaim]
-  },
   [dsda_config_mapcolor_back] = {
     "mapcolor_back", dsda_config_mapcolor_back,
     CONF_COLOR(247), &mapcolor_back

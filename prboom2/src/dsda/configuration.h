@@ -89,7 +89,6 @@ typedef enum {
   dsda_config_comperr_passuse,
   dsda_config_comperr_hangsolid,
   dsda_config_comperr_blockmap,
-  dsda_config_comperr_freeaim,
   dsda_config_mapcolor_back,
   dsda_config_mapcolor_grid,
   dsda_config_mapcolor_wall,

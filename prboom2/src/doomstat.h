@@ -122,7 +122,6 @@ enum {
   comperr_passuse,
   comperr_hangsolid,
   comperr_blockmap,
-  comperr_freeaim,
 
   COMPERR_NUM
 };
