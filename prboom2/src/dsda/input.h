@@ -167,6 +167,8 @@ typedef enum {
   dsda_input_cheat_codes,
   dsda_input_notarget,
   dsda_input_freeze,
+  dsda_input_exit_normal,
+  dsda_input_exit_secret,
   dsda_input_build,
   dsda_input_build_advance_frame,
   dsda_input_build_reverse_frame,
