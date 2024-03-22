@@ -285,10 +285,26 @@ const char* I_GetTempDir(void)
 }
 
 #else
-// cph - V.Aguilar (5/30/99) suggested return ~/.lxdoom/, creating
-//  if non-existant
-// cph 2006/07/23 - give prboom+ its own dir
-static const char prboom_dir[] = {"/.dsda-doom"}; // Mead rem extra slash 8/21/03
+
+static char *I_ConcatDir(const char *basedir, const char *subdir)
+{
+  char *buffer;
+  size_t len, sublen;
+
+  // Remove trailing slashes to be safe.
+  len = strlen(basedir);
+  while (len > 0 && basedir[len - 1] == '/')
+    --len;
+  sublen = strlen(subdir);
+
+  buffer = Z_Malloc(len + sublen + 2);
+  memcpy(buffer, basedir, len);
+  buffer[len] = '/';
+  memcpy(&buffer[len + 1], subdir, sublen);
+  buffer[len + sublen + 1] = 0;
+
+  return buffer;
+}
 
 const char *I_DoomExeDir(void)
 {
@@ -296,13 +312,20 @@ const char *I_DoomExeDir(void)
   if (!base)        // cache multiple requests
   {
     char *home = M_getenv("HOME");
-    size_t len = strlen(home);
-
-    base = Z_Malloc(len + strlen(prboom_dir) + 1);
-    strcpy(base, home);
-    // I've had trouble with trailing slashes before...
-    if (base[len-1] == '/') base[len-1] = 0;
-    strcat(base, prboom_dir);
+    // First, try legacy directory.
+    base = I_ConcatDir(home, ".dsda-doom");
+    if (access(base, F_OK) != 0)
+    {
+      // Legacy directory is not accessible. Use XDG directory.
+      char *xdg_data_home;
+      Z_Free(base);
+      xdg_data_home = M_getenv("XDG_DATA_HOME");
+      if (xdg_data_home != NULL)
+        base = I_ConcatDir(xdg_data_home, "dsda-doom");
+      else
+        // $XDG_DATA_HOME should be $HOME/.local/share if not defined.
+        base = I_ConcatDir(home, ".local/share/dsda-doom");
+    }
     M_MakeDir(base, true); // Make sure it exists
   }
   return base;
