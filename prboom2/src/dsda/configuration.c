@@ -322,7 +322,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_freelook] = {
     "allow_freelook", dsda_config_freelook,
-    CONF_BOOL(0), NULL, STRICT_INT(0), M_ChangeSkyMode
+    CONF_BOOL(0), NULL, NOT_STRICT, M_ChangeSkyMode
   },
   [dsda_config_autorun] = {
     "autorun", dsda_config_autorun,

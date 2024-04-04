@@ -83,6 +83,13 @@ void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
   if (cmd->ex.actions & XC_LOAD)
     cmd->ex.load_slot = *demo_p++;
 
+  if (cmd->ex.actions & XC_LOOK) {
+    signed short lowbyte = *demo_p++;
+    cmd->ex.look = ((signed short) (*demo_p++) << 8) + lowbyte;
+  }
+  else
+    cmd->ex.look = 0;
+
   *p = demo_p;
 }
 
@@ -96,6 +103,11 @@ void dsda_WriteExCmd(char** p, ticcmd_t* cmd) {
     *demo_p++ = cmd->ex.save_slot;
   if (cmd->ex.actions & XC_LOAD)
     *demo_p++ = cmd->ex.load_slot;
+
+  if (cmd->ex.actions & XC_LOOK) {
+    *demo_p++ = cmd->ex.look & 0xff;
+    *demo_p++ = (cmd->ex.look >> 8) & 0xff;
+  }
 
   *p = demo_p;
 }
