@@ -37,6 +37,7 @@
 #include "p_map.h"
 #include "p_inter.h"
 #include "p_pspr.h"
+#include "p_user.h"
 #include "p_enemy.h"
 #include "p_tick.h"
 #include "m_random.h"
@@ -1009,27 +1010,11 @@ fixed_t bulletslope;
 
 static void P_BulletSlope(mobj_t *mo)
 {
-  angle_t an = mo->angle;    // see which target is to be aimed at
+  aim_t aim;
 
-  if (dsda_FreeAim())
-    bulletslope = finetangent[(ANG90 - mo->pitch) >> ANGLETOFINESHIFT];
-  else
-  {
-    /* killough 8/2/98: make autoaiming prefer enemies */
-    uint64_t mask = mbf_features ? MF_FRIEND : 0;
+  P_PlayerAim(mo, mo->angle, &aim, mbf_features ? MF_FRIEND : 0);
 
-    do
-    {
-      bulletslope = P_AimLineAttack(mo, an, 16*64*FRACUNIT, mask);
-      if (!linetarget)
-        bulletslope = P_AimLineAttack(mo, an += 1<<26, 16*64*FRACUNIT, mask);
-      if (!linetarget)
-        bulletslope = P_AimLineAttack(mo, an -= 2<<26, 16*64*FRACUNIT, mask);
-      if (heretic && !linetarget)
-        bulletslope = (mo->player->lookdir << FRACBITS) / 173;
-    }
-    while (mask && (mask=0, !linetarget));  /* killough 8/2/98 */
-  }
+  bulletslope = aim.slope;
 }
 
 //
@@ -2299,12 +2284,12 @@ void A_FirePhoenixPL2(player_t * player, pspdef_t * psp)
     angle = pmo->angle;
     x = pmo->x + (P_SubRandom() << 9);
     y = pmo->y + (P_SubRandom() << 9);
-    z = pmo->z + 26 * FRACUNIT + ((player->lookdir) << FRACBITS) / 173;
+    z = pmo->z + 26 * FRACUNIT + P_PlayerSlope(player);
     if (pmo->flags2 & MF2_FEETARECLIPPED)
     {
         z -= FOOTCLIPSIZE;
     }
-    slope = ((player->lookdir) << FRACBITS) / 173 + (FRACUNIT / 10);
+    slope = P_PlayerSlope(player) + (FRACUNIT / 10);
     mo = P_SpawnMobj(x, y, z, HERETIC_MT_PHOENIXFX2);
     P_SetTarget(&mo->target, pmo);
     mo->angle = angle;
