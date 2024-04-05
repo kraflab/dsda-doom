@@ -150,9 +150,6 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_coordinates))
     dsda_TrackFeature(uf_coordinates);
 
-  if (dsda_IntConfig(dsda_config_freelook))
-    dsda_TrackFeature(uf_mouselook);
-
   if (dsda_IntConfig(dsda_config_weapon_attack_alignment))
     dsda_TrackFeature(uf_weaponalignment);
 
