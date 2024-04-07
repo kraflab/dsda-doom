@@ -3899,7 +3899,11 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
   }
 
   //e6y
-  P_SyncWalkcam(true, true);
+  if (!samelevel)
+  {
+    P_SyncWalkcam(true, true);
+  }
+
   R_SmoothPlaying_Reset(NULL);
 
   P_InitLightning();
