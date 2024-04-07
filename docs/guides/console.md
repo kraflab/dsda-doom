@@ -204,6 +204,12 @@ See the [build mode guide](./build_mode.md) for more info.
 - `iddit`
 - `idclev <map>`
 - `idmus <map>`
+- `idbeholdv`
+- `idbeholds`
+- `idbeholdi`
+- `idbeholdr`
+- `idbeholda`
+- `idbeholdl`
 - `tntcomp`
 - `tntem`
 - `tnthom`
