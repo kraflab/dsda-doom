@@ -772,7 +772,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
     }
 
-    if (players[consoleplayer].playerstate == PST_LIVE)
+    if (players[consoleplayer].playerstate == PST_LIVE && !dsda_FreeAim())
     {
         if (look < 0)
         {
