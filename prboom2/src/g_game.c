@@ -806,10 +806,19 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     // TODO: look keybinds
 
-    // TODO: need to restrict input relative to software mode here (for demo compatibility)
-
     if (look)
     {
+      if (!V_IsOpenGLMode())
+      {
+        int target_look = players[consoleplayer].mo->pitch + (look << 16);
+
+        if (target_look < (int) raven_angle_up_limit)
+          look = (raven_angle_up_limit - players[consoleplayer].mo->pitch) >> 16;
+
+        if (target_look > (int) raven_angle_down_limit)
+          look = (raven_angle_down_limit - players[consoleplayer].mo->pitch) >> 16;
+      }
+
       dsda_QueueExCmdLook(look);
     }
   }

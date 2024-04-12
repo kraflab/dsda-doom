@@ -86,7 +86,6 @@ typedef unsigned angle_t;
 // precomputed to avoid compiler-dependent floating point operation!
 static const angle_t raven_angle_down_limit = 0x18e70000; // (angle_t) (int) (110 * ANG1 / M_PI);
 static const angle_t raven_angle_up_limit   = 0xeba00000; // (angle_t) (int) (-90 * ANG1 / M_PI);
-#define RAVEN_PITCH_UP_LIMIT ANGLE_T_TO_PITCH_F(raven_angle_up_limit)
 
 // Load trig tables if needed
 void R_LoadTrigTables(void);
