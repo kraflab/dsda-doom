@@ -55,6 +55,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/aim.h"
 #include "dsda/ambient.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
@@ -2894,7 +2895,7 @@ mobj_t* P_SpawnPlayerMissile(mobj_t* source, mobjtype_t type)
   aim_t aim;
 
   // see which target is to be aimed at
-  P_PlayerAim(source, source->angle, &aim, mbf_features ? MF_FRIEND : 0);
+  dsda_PlayerAim(source, source->angle, &aim, mbf_features ? MF_FRIEND : 0);
 
   x = source->x;
   y = source->y;
@@ -3252,7 +3253,7 @@ mobj_t *P_SPMAngle(mobj_t * source, mobjtype_t type, angle_t angle)
     //
     // see which target is to be aimed at
     //
-    P_PlayerAim(source, angle, &aim, 0);
+    dsda_PlayerAim(source, angle, &aim, 0);
 
     x = source->x;
     y = source->y;
@@ -3561,7 +3562,7 @@ mobj_t *P_SPMAngleXYZ(mobj_t * source, fixed_t x, fixed_t y,
     //
     // see which target is to be aimed at
     //
-    P_PlayerAim(source, angle, &aim, 0);
+    dsda_PlayerAim(source, angle, &aim, 0);
 
     z += 4 * 8 * FRACUNIT + aim.z_offset;
     z -= source->floorclip;

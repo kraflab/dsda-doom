@@ -50,6 +50,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/aim.h"
 #include "dsda/excmd.h"
 
 #define LOWERSPEED   (FRACUNIT*6)
@@ -1012,7 +1013,7 @@ static void P_BulletSlope(mobj_t *mo)
 {
   aim_t aim;
 
-  P_PlayerAim(mo, mo->angle, &aim, mbf_features ? MF_FRIEND : 0);
+  dsda_PlayerAim(mo, mo->angle, &aim, mbf_features ? MF_FRIEND : 0);
 
   bulletslope = aim.slope;
 }
@@ -1792,11 +1793,11 @@ void A_FireMacePL1B(player_t * player, pspdef_t * psp)
     ball = P_SpawnMobj(pmo->x, pmo->y, pmo->z + 28 * FRACUNIT
                        - FOOTCLIPSIZE * (pmo->flags2 & 1), HERETIC_MT_MACEFX2);
 
-    ball->momz = 2 * FRACUNIT + (P_PlayerLookDir(player) << (FRACBITS - 5));
+    ball->momz = 2 * FRACUNIT + (dsda_PlayerLookDir(player) << (FRACBITS - 5));
     angle = pmo->angle;
     P_SetTarget(&ball->target, pmo);
     ball->angle = angle;
-    ball->z += P_PlayerLookDir(player) << (FRACBITS - 4);
+    ball->z += dsda_PlayerLookDir(player) << (FRACBITS - 4);
     angle >>= ANGLETOFINESHIFT;
     ball->momx = (pmo->momx >> 1)
         + FixedMul(ball->info->speed, finecosine[angle]);
@@ -1932,7 +1933,7 @@ void A_FireMacePL2(player_t * player, pspdef_t * psp)
     {
         mo->momx += player->mo->momx;
         mo->momy += player->mo->momy;
-        mo->momz = 2 * FRACUNIT + (P_PlayerLookDir(player) << (FRACBITS - 5));
+        mo->momz = 2 * FRACUNIT + (dsda_PlayerLookDir(player) << (FRACBITS - 5));
         if (linetarget)
         {
             P_SetTarget(&mo->special1.m, linetarget);
@@ -2284,12 +2285,12 @@ void A_FirePhoenixPL2(player_t * player, pspdef_t * psp)
     angle = pmo->angle;
     x = pmo->x + (P_SubRandom() << 9);
     y = pmo->y + (P_SubRandom() << 9);
-    z = pmo->z + 26 * FRACUNIT + P_PlayerSlope(player);
+    z = pmo->z + 26 * FRACUNIT + dsda_PlayerSlope(player);
     if (pmo->flags2 & MF2_FEETARECLIPPED)
     {
         z -= FOOTCLIPSIZE;
     }
-    slope = P_PlayerSlope(player) + (FRACUNIT / 10);
+    slope = dsda_PlayerSlope(player) + (FRACUNIT / 10);
     mo = P_SpawnMobj(x, y, z, HERETIC_MT_PHOENIXFX2);
     P_SetTarget(&mo->target, pmo);
     mo->angle = angle;

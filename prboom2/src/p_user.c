@@ -50,6 +50,7 @@
 #include "p_tick.h"
 #include "e6y.h"//e6y
 
+#include "dsda/aim.h"
 #include "dsda/death.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
@@ -85,71 +86,6 @@ fixed_t P_PlayerSpeed(player_t* player)
   vy = (double) player->mo->momy / FRACUNIT;
 
   return (fixed_t) (sqrt(vx * vx + vy * vy) * FRACUNIT);
-}
-
-angle_t P_PlayerPitch(player_t* player)
-{
-  return dsda_FreeAim() ? player->mo->pitch : -(angle_t)(player->lookdir * ANG1 / M_PI);
-}
-
-fixed_t P_PlayerSlope(player_t* player)
-{
-  return dsda_FreeAim() ? finetangent[(ANG90 - player->mo->pitch) >> ANGLETOFINESHIFT] :
-         raven ? ((player->lookdir) << FRACBITS) / 173 :
-         0;
-}
-
-int P_PitchToLookDir(angle_t pitch)
-{
-  return -(int) ((((uint64_t) pitch * FIXED_PI) >> FRACBITS) / ANG1);
-}
-
-angle_t P_LookDirToPitch(int lookdir)
-{
-  return (angle_t) -FixedDiv(lookdir * ANG1, FIXED_PI);
-}
-
-int P_PlayerLookDir(player_t* player)
-{
-  return dsda_FreeAim() ? P_PitchToLookDir(player->mo->pitch) : player->lookdir;
-}
-
-void P_PlayerAim(mobj_t* source, angle_t angle, aim_t* aim, uint64_t target_mask)
-{
-  aim->angle = angle;
-
-  if (dsda_FreeAim())
-  {
-    aim->slope = finetangent[(ANG90 - source->pitch) >> ANGLETOFINESHIFT];
-    aim->z_offset = raven ? aim->slope : 0; // TODO: use aim->slope in doom?
-  }
-  else
-  {
-    do
-    {
-      aim->slope = P_AimLineAttack(source, aim->angle, 16 * 64 * FRACUNIT, target_mask);
-
-      if (!linetarget)
-      {
-        aim->angle += 1 << 26;
-        aim->slope = P_AimLineAttack(source, aim->angle, 16 * 64 * FRACUNIT, target_mask);
-      }
-
-      if (!linetarget)
-      {
-        aim->angle -= 2 << 26;
-        aim->slope = P_AimLineAttack(source, aim->angle, 16 * 64 * FRACUNIT, target_mask);
-      }
-
-      if (!linetarget) {
-        aim->angle = angle;
-        aim->slope = raven ? ((source->player->lookdir) << FRACBITS) / 173 : 0;
-      }
-    }
-    while (target_mask && (target_mask = 0, !linetarget));  // killough 8/2/98
-
-    aim->z_offset = raven ? ((source->player->lookdir) << FRACBITS) / 173 : 0;
-  }
 }
 
 //
@@ -552,7 +488,7 @@ void P_DeathThink (player_t* player)
 
     if (dsda_FreeAim())
     {
-      const int delta = P_LookDirToPitch(6);
+      const int delta = dsda_LookDirToPitch(6);
 
       if ((int) player->mo->pitch > 0)
       {
@@ -684,7 +620,7 @@ void P_PlayerThink (player_t* player)
   {
     player->prev_viewz = player->viewz;
     player->prev_viewangle = R_SmoothPlaying_Get(player);
-    player->prev_viewpitch = P_PlayerPitch(player);
+    player->prev_viewpitch = dsda_PlayerPitch(player);
 
     if (&players[displayplayer] == player)
     {
@@ -2210,8 +2146,8 @@ static dboolean Hexen_P_UseArtifact(player_t * player, artitype_t arti)
                     mo->angle =
                         player->mo->angle + (((P_Random(pr_hexen) & 7) - 4) << 24);
                     mo->momz =
-                        4 * FRACUNIT + (P_PlayerLookDir(player) << (FRACBITS - 4));
-                    mo->z += P_PlayerLookDir(player) << (FRACBITS - 4);
+                        4 * FRACUNIT + (dsda_PlayerLookDir(player) << (FRACBITS - 4));
+                    mo->z += dsda_PlayerLookDir(player) << (FRACBITS - 4);
                     P_ThrustMobj(mo, mo->angle, mo->info->speed);
                     mo->momx += player->mo->momx >> 1;
                     mo->momy += player->mo->momy >> 1;

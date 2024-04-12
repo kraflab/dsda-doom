@@ -86,6 +86,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/aim.h"
 #include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
@@ -4124,7 +4125,7 @@ void P_WalkTicker()
     walkcamera.x = players[0].mo->x;
     walkcamera.y = players[0].mo->y;
     walkcamera.angle = players[0].mo->angle;
-    walkcamera.pitch = P_PlayerPitch(&players[0]);
+    walkcamera.pitch = dsda_PlayerPitch(&players[0]);
   }
 
   if (forward > MAXPLMOVE)
@@ -4179,7 +4180,7 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
     if (sync_sight)
     {
       walkcamera.angle = players[displayplayer].mo->angle;
-      walkcamera.pitch = P_PlayerPitch(&players[displayplayer]);
+      walkcamera.pitch = dsda_PlayerPitch(&players[displayplayer]);
     }
 
     if(sync_coords)

@@ -11,6 +11,8 @@ set(COMMON_SRC
     doomtype.h
     dsda.c
     dsda.h
+    dsda/aim.c
+    dsda/aim.h
     dsda/ambient.cpp
     dsda/ambient.h
     dsda/analysis.c
