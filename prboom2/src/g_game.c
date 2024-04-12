@@ -1627,7 +1627,7 @@ void G_Ticker (void)
             M_CheatNoClip();
           }
 
-          if (ex->actions & XC_LOOK && !dsda_MouseLook())
+          if (ex->actions & XC_LOOK && ex->look != XC_LOOK_RESET && !dsda_MouseLook())
           {
             dsda_UpdateIntConfig(dsda_config_freelook, 1, false);
           }
