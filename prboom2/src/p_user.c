@@ -99,6 +99,21 @@ fixed_t P_PlayerSlope(player_t* player)
          0;
 }
 
+int P_PitchToLookDir(angle_t pitch)
+{
+  return -(int) ((((uint64_t) pitch * FIXED_PI) >> FRACBITS) / ANG1);
+}
+
+angle_t P_LookDirToPitch(int lookdir)
+{
+  return (angle_t) -FixedDiv(lookdir * ANG1, FIXED_PI);
+}
+
+int P_PlayerLookDir(player_t* player)
+{
+  return dsda_FreeAim() ? P_PitchToLookDir(player->mo->pitch) : player->lookdir;
+}
+
 void P_PlayerAim(mobj_t* source, angle_t angle, aim_t* aim, uint64_t target_mask)
 {
   aim->angle = angle;
@@ -501,7 +516,7 @@ void P_DeathThink (player_t* player)
     player->deltaviewheight = 0;
     if (onground)
     {
-      if (raven)
+      if (raven && !dsda_FreeAim())
       {
         if (player->lookdir < 60)
         {
@@ -535,17 +550,37 @@ void P_DeathThink (player_t* player)
 
     player->deltaviewheight = 0;
 
-    if (player->lookdir > 0)
+    if (dsda_FreeAim())
     {
-        player->lookdir -= 6;
+      const int delta = P_LookDirToPitch(6);
+
+      if ((int) player->mo->pitch > 0)
+      {
+         player->mo->pitch -= delta;
+      }
+      else if ((int) player->mo->pitch < 0)
+      {
+         player->mo->pitch += delta;
+      }
+      else if (abs((int) player->mo->pitch) < delta)
+      {
+         player->mo->pitch = 0;
+      }
     }
-    else if (player->lookdir < 0)
+    else
     {
-        player->lookdir += 6;
-    }
-    if (abs(player->lookdir) < 6)
-    {
-        player->lookdir = 0;
+      if (player->lookdir > 0)
+      {
+          player->lookdir -= 6;
+      }
+      else if (player->lookdir < 0)
+      {
+          player->lookdir += 6;
+      }
+      if (abs(player->lookdir) < 6)
+      {
+          player->lookdir = 0;
+      }
     }
   }
 
@@ -2175,8 +2210,8 @@ static dboolean Hexen_P_UseArtifact(player_t * player, artitype_t arti)
                     mo->angle =
                         player->mo->angle + (((P_Random(pr_hexen) & 7) - 4) << 24);
                     mo->momz =
-                        4 * FRACUNIT + ((player->lookdir) << (FRACBITS - 4));
-                    mo->z += player->lookdir << (FRACBITS - 4);
+                        4 * FRACUNIT + (P_PlayerLookDir(player) << (FRACBITS - 4));
+                    mo->z += P_PlayerLookDir(player) << (FRACBITS - 4);
                     P_ThrustMobj(mo, mo->angle, mo->info->speed);
                     mo->momx += player->mo->momx >> 1;
                     mo->momy += player->mo->momy >> 1;

@@ -1792,11 +1792,11 @@ void A_FireMacePL1B(player_t * player, pspdef_t * psp)
     ball = P_SpawnMobj(pmo->x, pmo->y, pmo->z + 28 * FRACUNIT
                        - FOOTCLIPSIZE * (pmo->flags2 & 1), HERETIC_MT_MACEFX2);
 
-    ball->momz = 2 * FRACUNIT + ((player->lookdir) << (FRACBITS - 5));
+    ball->momz = 2 * FRACUNIT + (P_PlayerLookDir(player) << (FRACBITS - 5));
     angle = pmo->angle;
     P_SetTarget(&ball->target, pmo);
     ball->angle = angle;
-    ball->z += (player->lookdir) << (FRACBITS - 4);
+    ball->z += P_PlayerLookDir(player) << (FRACBITS - 4);
     angle >>= ANGLETOFINESHIFT;
     ball->momx = (pmo->momx >> 1)
         + FixedMul(ball->info->speed, finecosine[angle]);
@@ -1932,7 +1932,7 @@ void A_FireMacePL2(player_t * player, pspdef_t * psp)
     {
         mo->momx += player->mo->momx;
         mo->momy += player->mo->momy;
-        mo->momz = 2 * FRACUNIT + ((player->lookdir) << (FRACBITS - 5));
+        mo->momz = 2 * FRACUNIT + (P_PlayerLookDir(player) << (FRACBITS - 5));
         if (linetarget)
         {
             P_SetTarget(&mo->special1.m, linetarget);

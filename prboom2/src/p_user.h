@@ -55,6 +55,7 @@ typedef struct {
 
 fixed_t P_PlayerSlope(player_t* player);
 void P_PlayerAim(mobj_t* source, angle_t angle, aim_t* aim, uint64_t target_mask);
+int P_PlayerLookDir(player_t* player);
 
 // heretic
 

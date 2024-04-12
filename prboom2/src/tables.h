@@ -70,6 +70,8 @@
 #define M_PI    3.14159265358979323846
 #endif
 
+#define FIXED_PI 205887
+
 #define SLOPERANGE 2048
 #define SLOPEBITS    11
 #define DBITS      (FRACBITS-SLOPEBITS)
