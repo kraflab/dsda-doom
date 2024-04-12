@@ -56,7 +56,7 @@ void dsda_PlayerAim(mobj_t* source, angle_t angle, aim_t* aim, uint64_t target_m
   if (dsda_FreeAim())
   {
     aim->slope = finetangent[(ANG90 - source->pitch) >> ANGLETOFINESHIFT];
-    aim->z_offset = raven ? aim->slope : 0; // TODO: use aim->slope in doom?
+    aim->z_offset = 0;
   }
   else
   {
