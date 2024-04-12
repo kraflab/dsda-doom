@@ -488,7 +488,7 @@ void P_DeathThink (player_t* player)
 
     if (dsda_FreeAim())
     {
-      const int delta = dsda_LookDirToPitch(6);
+      const int delta = dsda_LookDirToPitch(-6);
 
       if ((int) player->mo->pitch > 0)
       {
@@ -498,7 +498,8 @@ void P_DeathThink (player_t* player)
       {
          player->mo->pitch += delta;
       }
-      else if (abs((int) player->mo->pitch) < delta)
+
+      if (abs((int) player->mo->pitch) < delta)
       {
          player->mo->pitch = 0;
       }
