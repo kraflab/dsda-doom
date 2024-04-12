@@ -804,8 +804,6 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     look = mlooky;
 
-    // TODO: look keybinds
-
     if (look)
     {
       if (!V_IsOpenGLMode())
