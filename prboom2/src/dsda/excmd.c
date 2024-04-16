@@ -63,6 +63,15 @@ dboolean dsda_AllowJumping(void) {
          || dsda_AllowCasualExCmdFeatures();
 }
 
+dboolean dsda_FreeAim(void) {
+  return (allow_incompatibility && dsda_IntConfig(dsda_config_freelook))
+         || map_info.flags & MI_ALLOW_FREE_LOOK;
+}
+
+dboolean dsda_AllowFreeLook(void) {
+  return dsda_FreeAim() || dsda_AllowCasualExCmdFeatures();
+}
+
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
   const byte* demo_p = *p;
 
@@ -73,6 +82,13 @@ void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
     cmd->ex.save_slot = *demo_p++;
   if (cmd->ex.actions & XC_LOAD)
     cmd->ex.load_slot = *demo_p++;
+
+  if (cmd->ex.actions & XC_LOOK) {
+    signed short lowbyte = *demo_p++;
+    cmd->ex.look = ((signed short) (*demo_p++) << 8) + lowbyte;
+  }
+  else
+    cmd->ex.look = 0;
 
   *p = demo_p;
 }
@@ -87,6 +103,11 @@ void dsda_WriteExCmd(char** p, ticcmd_t* cmd) {
     *demo_p++ = cmd->ex.save_slot;
   if (cmd->ex.actions & XC_LOAD)
     *demo_p++ = cmd->ex.load_slot;
+
+  if (cmd->ex.actions & XC_LOOK) {
+    *demo_p++ = cmd->ex.look & 0xff;
+    *demo_p++ = (cmd->ex.look >> 8) & 0xff;
+  }
 
   *p = demo_p;
 }
@@ -104,6 +125,11 @@ void dsda_PopExCmdQueue(ticcmd_t* cmd) {
 
 void dsda_QueueExCmdJump(void) {
   excmd_queue.actions |= XC_JUMP;
+}
+
+void dsda_QueueExCmdLook(short look) {
+  excmd_queue.actions |= XC_LOOK;
+  excmd_queue.look = look;
 }
 
 void dsda_QueueExCmdSave(int slot) {

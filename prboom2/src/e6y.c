@@ -268,24 +268,8 @@ void M_ChangeSkyMode(void)
     gl_drawskys = gl_skymode;
 }
 
-static int upViewPitchLimit;
-static int downViewPitchLimit;
-
-void M_ChangeMaxViewPitch(void)
-{
-  if (raven || !V_IsOpenGLMode())
-  {
-    upViewPitchLimit = (int) raven_angle_up_limit;
-    downViewPitchLimit = (int) raven_angle_down_limit;
-  }
-  else
-  {
-    upViewPitchLimit = -ANG90 + (1 << ANGLETOFINESHIFT);
-    downViewPitchLimit = ANG90 - (1 << ANGLETOFINESHIFT);
-  }
-
-  CheckPitch(&viewpitch);
-}
+static const int upViewPitchLimit = -ANG90 + (1 << ANGLETOFINESHIFT);
+static const int downViewPitchLimit = ANG90 - (1 << ANGLETOFINESHIFT);
 
 void M_ChangeScreenMultipleFactor(void)
 {

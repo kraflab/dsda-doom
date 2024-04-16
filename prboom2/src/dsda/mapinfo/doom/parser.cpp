@@ -432,6 +432,12 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (scanner.StringMatch("AllowJump")) {
       map.flags |= DMI_ALLOW_JUMP;
     }
+    else if (scanner.StringMatch("NoFreelook")) {
+      map.flags &= ~DMI_ALLOW_FREE_LOOK;
+    }
+    else if (scanner.StringMatch("AllowFreelook")) {
+      map.flags |= DMI_ALLOW_FREE_LOOK;
+    }
     else if (scanner.StringMatch("NoCheckSwitchRange")) {
       map.flags &= ~DMI_CHECK_SWITCH_RANGE;
     }
@@ -455,6 +461,18 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     }
     else if (scanner.StringMatch("UsePlayerStartZ")) {
       map.flags |= DMI_USE_PLAYER_START_Z;
+    }
+    else if (scanner.StringMatch("NoVerticalExplosionThrust")) {
+      map.flags &= ~DMI_VERTICAL_EXPLOSION_THRUST;
+    }
+    else if (scanner.StringMatch("VerticalExplosionThrust")) {
+      map.flags |= DMI_VERTICAL_EXPLOSION_THRUST;
+    }
+    else if (scanner.StringMatch("ExplodeIn2D")) {
+      map.flags &= ~DMI_EXPLODE_IN_3D;
+    }
+    else if (scanner.StringMatch("ExplodeIn3D")) {
+      map.flags |= DMI_EXPLODE_IN_3D;
     }
     else if (scanner.StringMatch("Author")) {
       SCAN_STRING(map.author);

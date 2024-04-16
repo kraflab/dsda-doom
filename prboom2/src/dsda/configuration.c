@@ -150,9 +150,6 @@ void dsda_TrackConfigFeatures(void) {
   if (dsda_IntConfig(dsda_config_coordinate_display) || dsda_IntConfig(dsda_config_map_coordinates))
     dsda_TrackFeature(uf_coordinates);
 
-  if (dsda_IntConfig(dsda_config_freelook))
-    dsda_TrackFeature(uf_mouselook);
-
   if (dsda_IntConfig(dsda_config_weapon_attack_alignment))
     dsda_TrackFeature(uf_weaponalignment);
 
@@ -322,7 +319,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_freelook] = {
     "allow_freelook", dsda_config_freelook,
-    CONF_BOOL(0), NULL, STRICT_INT(0), M_ChangeSkyMode
+    CONF_BOOL(0), NULL, NOT_STRICT, M_ChangeSkyMode
   },
   [dsda_config_autorun] = {
     "autorun", dsda_config_autorun,
@@ -475,10 +472,6 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_comperr_blockmap] = {
     "comperr_blockmap", dsda_config_comperr_blockmap,
     CONF_BOOL(0), &default_comperr[comperr_blockmap]
-  },
-  [dsda_config_comperr_freeaim] = {
-    "comperr_freeaim", dsda_config_comperr_freeaim,
-    CONF_BOOL(0), &default_comperr[comperr_freeaim]
   },
   [dsda_config_mapcolor_back] = {
     "mapcolor_back", dsda_config_mapcolor_back,

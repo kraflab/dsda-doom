@@ -70,6 +70,8 @@
 #define M_PI    3.14159265358979323846
 #endif
 
+#define FIXED_PI 205887
+
 #define SLOPERANGE 2048
 #define SLOPEBITS    11
 #define DBITS      (FRACBITS-SLOPEBITS)
@@ -81,9 +83,9 @@ typedef unsigned angle_t;
 
 // lookdir range is -110 (down) to 90 (up)
 // pitch is -lookdir * ang1 / pi
-static const angle_t raven_angle_down_limit = (angle_t) (int) (110 * ANG1 / M_PI);
-static const angle_t raven_angle_up_limit = (angle_t) (int) (-90 * ANG1 / M_PI);
-#define RAVEN_PITCH_UP_LIMIT ANGLE_T_TO_PITCH_F(raven_angle_up_limit)
+// precomputed to avoid compiler-dependent floating point operation!
+static const angle_t raven_angle_down_limit = 0x18e70000; // (angle_t) (int) (110 * ANG1 / M_PI);
+static const angle_t raven_angle_up_limit   = 0xeba00000; // (angle_t) (int) (-90 * ANG1 / M_PI);
 
 // Load trig tables if needed
 void R_LoadTrigTables(void);

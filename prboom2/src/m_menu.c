@@ -3028,7 +3028,6 @@ setup_menu_t mapping_settings[] = {
   { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, dsda_config_comperr_passuse },
   { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, dsda_config_comperr_hangsolid },
   { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, dsda_config_comperr_blockmap },
-  { "ALLOW VERTICAL AIMING", S_YESNO, m_conf, G_X, dsda_config_comperr_freeaim },
 
   PREV_PAGE(display_settings),
   NEXT_PAGE(demo_settings),
@@ -3086,7 +3085,6 @@ void M_ChangeFullScreen(void)
 void M_ChangeVideoMode(void)
 {
   V_ChangeScreenResolution();
-  M_ChangeMaxViewPitch();
 }
 
 void M_ChangeUseGLSurface(void)
@@ -6064,7 +6062,6 @@ void M_Init(void)
 
   //e6y
   M_ChangeSpeed();
-  M_ChangeMaxViewPitch();
   M_ChangeSkyMode();
   M_ChangeFOV();
 

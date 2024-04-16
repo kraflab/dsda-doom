@@ -50,6 +50,7 @@
 #include "p_tick.h"
 #include "e6y.h"//e6y
 
+#include "dsda/aim.h"
 #include "dsda/death.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
@@ -85,11 +86,6 @@ fixed_t P_PlayerSpeed(player_t* player)
   vy = (double) player->mo->momy / FRACUNIT;
 
   return (fixed_t) (sqrt(vx * vx + vy * vy) * FRACUNIT);
-}
-
-angle_t P_PlayerPitch(player_t* player)
-{
-  return player->mo->pitch - (angle_t)(player->lookdir * ANG1 / M_PI);
 }
 
 //
@@ -321,63 +317,37 @@ void P_CalcHeight (player_t* player)
 }
 
 //
-// P_SetPitch
-// Mouse Look Stuff
-//
-void P_SetPitch(player_t *player)
-{
-  mobj_t *mo = player->mo;
-
-  if (player == &players[consoleplayer])
-  {
-    if (!demoplayback)
-    {
-      if (dsda_MouseLook())
-      {
-        if (!mo->reactiontime && automap_off)
-        {
-          if (raven && !demorecording)
-          {
-            player->lookdir += ANGLE_T_TO_LOOKDIR(mlooky << 16);
-            if (player->lookdir > 90)
-              player->lookdir = 90;
-            if (player->lookdir < -110)
-              player->lookdir = -110;
-          }
-          else
-          {
-            mo->pitch += (mlooky << 16);
-            CheckPitch((signed int *)&mo->pitch);
-          }
-        }
-      }
-      else
-      {
-        mo->pitch = 0;
-      }
-    }
-    else
-    {
-      mo->pitch = 0;
-    }
-  }
-  else
-  {
-    mo->pitch = 0;
-  }
-}
-
-//
 // P_MovePlayer
 //
 // Adds momentum if the player is not in the air
 //
 // killough 10/98: simplified
 
+void P_HandleExCmdLook(player_t* player)
+{
+  int look;
+
+  look = player->cmd.ex.look;
+  if (look)
+  {
+    if (look == XC_LOOK_RESET)
+    {
+      player->mo->pitch = 0;
+    }
+    else
+    {
+      player->mo->pitch += look << 16;
+      CheckPitch((signed int *) &player->mo->pitch);
+    }
+  }
+}
+
 void P_MovePlayer (player_t* player)
 {
   ticcmd_t *cmd;
   mobj_t *mo;
+
+  P_HandleExCmdLook(player);
 
   if (raven) return Raven_P_MovePlayer(player);
 
@@ -482,7 +452,7 @@ void P_DeathThink (player_t* player)
     player->deltaviewheight = 0;
     if (onground)
     {
-      if (raven)
+      if (raven && !dsda_FreeAim())
       {
         if (player->lookdir < 60)
         {
@@ -516,17 +486,38 @@ void P_DeathThink (player_t* player)
 
     player->deltaviewheight = 0;
 
-    if (player->lookdir > 0)
+    if (dsda_FreeAim())
     {
-        player->lookdir -= 6;
+      const int delta = dsda_LookDirToPitch(-6);
+
+      if ((int) player->mo->pitch > 0)
+      {
+         player->mo->pitch -= delta;
+      }
+      else if ((int) player->mo->pitch < 0)
+      {
+         player->mo->pitch += delta;
+      }
+
+      if (abs((int) player->mo->pitch) < delta)
+      {
+         player->mo->pitch = 0;
+      }
     }
-    else if (player->lookdir < 0)
+    else
     {
-        player->lookdir += 6;
-    }
-    if (abs(player->lookdir) < 6)
-    {
-        player->lookdir = 0;
+      if (player->lookdir > 0)
+      {
+          player->lookdir -= 6;
+      }
+      else if (player->lookdir < 0)
+      {
+          player->lookdir += 6;
+      }
+      if (abs(player->lookdir) < 6)
+      {
+          player->lookdir = 0;
+      }
     }
   }
 
@@ -630,7 +621,7 @@ void P_PlayerThink (player_t* player)
   {
     player->prev_viewz = player->viewz;
     player->prev_viewangle = R_SmoothPlaying_Get(player);
-    player->prev_viewpitch = P_PlayerPitch(player);
+    player->prev_viewpitch = dsda_PlayerPitch(player);
 
     if (&players[displayplayer] == player)
     {
@@ -736,8 +727,6 @@ void P_PlayerThink (player_t* player)
       }
     }
   }
-
-  P_SetPitch(player);
 
   P_CalcHeight (player); // Determines view height and bobbing
 
@@ -2158,8 +2147,8 @@ static dboolean Hexen_P_UseArtifact(player_t * player, artitype_t arti)
                     mo->angle =
                         player->mo->angle + (((P_Random(pr_hexen) & 7) - 4) << 24);
                     mo->momz =
-                        4 * FRACUNIT + ((player->lookdir) << (FRACBITS - 4));
-                    mo->z += player->lookdir << (FRACBITS - 4);
+                        4 * FRACUNIT + (dsda_PlayerLookDir(player) << (FRACBITS - 4));
+                    mo->z += dsda_PlayerLookDir(player) << (FRACBITS - 4);
                     P_ThrustMobj(mo, mo->angle, mo->info->speed);
                     mo->momx += player->mo->momx >> 1;
                     mo->momy += player->mo->momy >> 1;

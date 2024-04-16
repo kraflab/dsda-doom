@@ -86,6 +86,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/aim.h"
 #include "dsda/args.h"
 #include "dsda/brute_force.h"
 #include "dsda/build.h"
@@ -771,7 +772,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       }
     }
 
-    if (players[consoleplayer].playerstate == PST_LIVE)
+    if (players[consoleplayer].playerstate == PST_LIVE && !dsda_FreeAim())
     {
         if (look < 0)
         {
@@ -791,6 +792,32 @@ void G_BuildTiccmd(ticcmd_t* cmd)
     if (!hexen && dsda_InputActive(dsda_input_jump))
     {
       dsda_QueueExCmdJump();
+    }
+  }
+
+  if (players[consoleplayer].mo && players[consoleplayer].mo->pitch && !dsda_MouseLook())
+    dsda_QueueExCmdLook(XC_LOOK_RESET);
+
+  if (dsda_AllowFreeLook())
+  {
+    short look;
+
+    look = mlooky;
+
+    if (look)
+    {
+      if (!V_IsOpenGLMode())
+      {
+        int target_look = players[consoleplayer].mo->pitch + (look << 16);
+
+        if (target_look < (int) raven_angle_up_limit)
+          look = (raven_angle_up_limit - players[consoleplayer].mo->pitch) >> 16;
+
+        if (target_look > (int) raven_angle_down_limit)
+          look = (raven_angle_down_limit - players[consoleplayer].mo->pitch) >> 16;
+      }
+
+      dsda_QueueExCmdLook(look);
     }
   }
 
@@ -1605,6 +1632,11 @@ void G_Ticker (void)
           if (ex->actions & XC_NOCLIP)
           {
             M_CheatNoClip();
+          }
+
+          if (ex->actions & XC_LOOK && ex->look != XC_LOOK_RESET && !dsda_MouseLook())
+          {
+            dsda_UpdateIntConfig(dsda_config_freelook, 1, false);
           }
         }
       }
@@ -4100,7 +4132,7 @@ void P_WalkTicker()
     walkcamera.x = players[0].mo->x;
     walkcamera.y = players[0].mo->y;
     walkcamera.angle = players[0].mo->angle;
-    walkcamera.pitch = P_PlayerPitch(&players[0]);
+    walkcamera.pitch = dsda_PlayerPitch(&players[0]);
   }
 
   if (forward > MAXPLMOVE)
@@ -4155,7 +4187,7 @@ void P_SyncWalkcam(dboolean sync_coords, dboolean sync_sight)
     if (sync_sight)
     {
       walkcamera.angle = players[displayplayer].mo->angle;
-      walkcamera.pitch = P_PlayerPitch(&players[displayplayer]);
+      walkcamera.pitch = dsda_PlayerPitch(&players[displayplayer]);
     }
 
     if(sync_coords)
