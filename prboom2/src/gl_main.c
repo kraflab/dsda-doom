@@ -1175,8 +1175,8 @@ static void gld_DrawWall(GLWall *wall)
 static void gld_CalculateWallY(GLWall *wall, float *lineheight,
                                fixed_t floor_height, fixed_t ceiling_height)
 {
-  wall->ytop = (float) ceiling_height / (float) MAP_SCALE + SMALLDELTA;
-  wall->ybottom = (float) floor_height / (float) MAP_SCALE - SMALLDELTA;
+  wall->ytop = (float) ceiling_height / (float) MAP_SCALE;
+  wall->ybottom = (float) floor_height / (float) MAP_SCALE;
   *lineheight = (float) fabs((float) (ceiling_height - floor_height) / FRACUNIT);
 }
 
@@ -1431,8 +1431,8 @@ void gld_AddWall(seg_t *seg)
           !(backsector->flags & NULL_SECTOR) &&
           backsector->floorheight < backsector->ceilingheight)
         {
-          wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
-          wall.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
+          wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE);
+          wall.ybottom=((float)(floor_height)/(float)MAP_SCALE);
           if (wall.ybottom >= zCamera)
           {
             wall.flag=GLDWF_TOPFLUD;
@@ -1637,8 +1637,8 @@ bottomtexture:
         !(backsector->flags & NULL_SECTOR) &&
         backsector->floorheight < backsector->ceilingheight)
       {
-        wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE)+SMALLDELTA;
-        wall.ybottom=((float)(floor_height)/(float)MAP_SCALE)-SMALLDELTA;
+        wall.ytop=((float)(ceiling_height)/(float)MAP_SCALE);
+        wall.ybottom=((float)(floor_height)/(float)MAP_SCALE);
         if (wall.ytop <= zCamera)
         {
           wall.flag = GLDWF_BOTFLUD;

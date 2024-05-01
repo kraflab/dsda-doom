@@ -211,9 +211,9 @@ void gld_RecalcVertexHeights(const vertex_t *v)
     for(j = 0; j < 2; j++)
     {
       if (j == 0)
-        height = (float)vi->sectors[i]->ceilingheight/MAP_SCALE+SMALLDELTA;
+        height = (float)vi->sectors[i]->ceilingheight/MAP_SCALE;
       else
-        height = (float)vi->sectors[i]->floorheight/MAP_SCALE-SMALLDELTA;
+        height = (float)vi->sectors[i]->floorheight/MAP_SCALE;
 
       for(k = 0; k < vi->numheights; k++)
       {
