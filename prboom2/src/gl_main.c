@@ -1286,14 +1286,14 @@ void gld_AddWall(seg_t *seg)
 
     if (frontsector->ceilingpic==skyflatnum)
     {
-      wall.ytop=MAXCOORD;
+      wall.ytop=MAXCOORD*2; // Simply using MAXCOORD would result in HOM when the floor is at a height close to the limit
       wall.ybottom=(float)frontsector->ceilingheight/MAP_SCALE;
       gld_AddSkyTexture(&wall, frontsector->ceilingsky, frontsector->ceilingsky, SKY_CEILING);
     }
     if (frontsector->floorpic==skyflatnum)
     {
       wall.ytop=(float)frontsector->floorheight/MAP_SCALE;
-      wall.ybottom=-MAXCOORD;
+      wall.ybottom=-MAXCOORD*2;  // Simply using MAXCOORD would result in HOM when the ceiling is at a height close to the limit
       gld_AddSkyTexture(&wall, frontsector->floorsky, frontsector->floorsky, SKY_FLOOR);
     }
     temptex=gld_RegisterTexture(texturetranslation[seg->sidedef->midtexture], true, false, true, false);
@@ -1366,7 +1366,7 @@ void gld_AddWall(seg_t *seg)
     wall.yscale = (float) seg->sidedef->scaley_top / FRACUNIT;
     if (frontsector->ceilingpic==skyflatnum)// || backsector->ceilingpic==skyflatnum)
     {
-      wall.ytop= MAXCOORD;
+      wall.ytop= MAXCOORD*2;
       if (
           // e6y
           // There is no more HOM in the starting area on Memento Mori map29 and on map30.
@@ -1600,7 +1600,7 @@ bottomtexture:
     wall.yscale = (float) seg->sidedef->scaley_bottom / FRACUNIT;
     if (frontsector->floorpic==skyflatnum)
     {
-      wall.ybottom=-MAXCOORD;
+      wall.ybottom=-MAXCOORD*2;
       if (
           (backsector->ceilingheight==backsector->floorheight) &&
           (backsector->floorpic==skyflatnum)
