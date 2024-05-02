@@ -1505,6 +1505,8 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
       tmfloorz - thing->z > 24*FRACUNIT
     )
     {
+      dsda_WatchLedgeImpact(thing, tmfloorz);
+
       map_format.check_impact(thing);
       return tmunstuck
         && !(ceilingline && untouched(ceilingline))

@@ -416,6 +416,25 @@ void dsda_WatchCommand(void) {
   dsda_ExportGhostFrame();
 }
 
+void dsda_WatchLedgeImpact(mobj_t* thing, int target_z) {
+  static int old_gametic;
+
+  if (
+    thing->player &&
+    gametic - old_gametic > 17 &&
+    thing->z > thing->floorz &&
+    target_z - thing->z < 32 * FRACUNIT
+  ) {
+    old_gametic = gametic;
+
+    if (dsda_CoordinateDisplay())
+      doom_printf(
+        "Missed ledge by %d\n",
+        ((target_z - thing->z) >> FRACBITS) - 24
+      );
+  }
+}
+
 void dsda_WatchBeforeLevelSetup(void) {
   dsda_100k_on_map = false;
   dsda_kills_on_map = 0;
