@@ -123,6 +123,8 @@ fixed_t I_GetTimeFrac (void)
   }
   else
   {
+    static fixed_t last_frac;
+    static int last_gametic;
     unsigned long long tic_time;
     const double tics_per_usec = TICRATE / 1000000.0f;
 
@@ -130,6 +132,14 @@ fixed_t I_GetTimeFrac (void)
 
     frac = (fixed_t) (tic_time * FRACUNIT * tics_per_usec);
     frac = BETWEEN(0, FRACUNIT, frac);
+
+    if (frac < last_frac && last_gametic == gametic)
+    {
+      frac = FRACUNIT;
+    }
+
+    last_frac = frac;
+    last_gametic = gametic;
   }
 
   return frac;
