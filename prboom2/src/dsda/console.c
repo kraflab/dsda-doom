@@ -70,7 +70,7 @@
 #define CF_ALWAYS (CF_DEMO|CF_STRICT)
 
 typedef struct console_entry_s {
-  char text[CONSOLE_ENTRY_SIZE + 1];
+  char text[CONSOLE_ENTRY_SIZE];
   struct console_entry_s* prev;
   struct console_entry_s* next;
 } console_entry_t;
@@ -78,7 +78,7 @@ typedef struct console_entry_s {
 static console_entry_t* console_history_head;
 static console_entry_t* console_entry;
 static int console_entry_index;
-static char console_message[CONSOLE_ENTRY_SIZE + 3] = { ' ', ' ' };
+static char console_message[CONSOLE_ENTRY_SIZE + 2] = { ' ', ' ' };
 static char* console_message_entry = console_message + 2;
 static hu_textline_t hu_console_prompt;
 static hu_textline_t hu_console_message;
@@ -2496,7 +2496,7 @@ static console_command_entry_t console_commands[] = {
 };
 
 static void dsda_AddConsoleMessage(const char* message) {
-  strncpy(console_message_entry, message, CONSOLE_ENTRY_SIZE);
+  strncpy(console_message_entry, message, CONSOLE_ENTRY_SIZE - 1);
 }
 
 static dboolean dsda_AuthorizeCommand(console_command_entry_t* entry) {
@@ -2583,11 +2583,11 @@ void dsda_UpdateConsoleText(char* text) {
     if (text[i] < 32 || text[i] > 126)
       continue;
 
-    for (shift_i = strlen(console_entry->text); shift_i > console_entry_index; --shift_i)
+    for (shift_i = strlen(console_entry->text) - 1; shift_i > console_entry_index; --shift_i)
       console_entry->text[shift_i] = console_entry->text[shift_i - 1];
 
     console_entry->text[console_entry_index] = tolower(text[i]);
-    if (console_entry_index < CONSOLE_ENTRY_SIZE)
+    if (console_entry_index < CONSOLE_ENTRY_SIZE - 2)
       ++console_entry_index;
   }
 
