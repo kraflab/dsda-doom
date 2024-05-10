@@ -518,7 +518,7 @@ int dsda_DoomPrepareIntermission(int* result) {
   }
 
   if (current_map->par) {
-    wminfo.partime = current_map->par;
+    wminfo.partime = current_map->par * TICRATE;
     wminfo.modified_partime = true;
   }
 
