@@ -177,27 +177,39 @@ static void R_RecalcLineFlags(line_t *linedef)
   }
 
   /* cph - I'm too lazy to try and work with offsets in this */
-  if (curline->sidedef->rowoffset) return;
+  if (curline->sidedef->rowoffset)
+    return;
 
   /* Now decide on texture tiling */
   if (linedef->flags & ML_TWOSIDED) {
     int c;
 
     /* Does top texture need tiling */
-    if ((c = frontsector->ceilingheight - backsector->ceilingheight) > 0 &&
-   (textureheight[texturetranslation[curline->sidedef->toptexture]] > c))
-      linedef->r_flags |= RF_TOP_TILE;
+    if (!curline->sidedef->rowoffset_top)
+      if (
+        (c = frontsector->ceilingheight - backsector->ceilingheight) > 0 &&
+        (textureheight[texturetranslation[curline->sidedef->toptexture]] > c)
+      )
+        linedef->r_flags |= RF_TOP_TILE;
 
     /* Does bottom texture need tiling */
-    if ((c = frontsector->floorheight - backsector->floorheight) > 0 &&
-   (textureheight[texturetranslation[curline->sidedef->bottomtexture]] > c))
-      linedef->r_flags |= RF_BOT_TILE;
-  } else {
+    if (!curline->sidedef->rowoffset_bottom)
+      if (
+        (c = frontsector->floorheight - backsector->floorheight) > 0 &&
+        (textureheight[texturetranslation[curline->sidedef->bottomtexture]] > c)
+      )
+        linedef->r_flags |= RF_BOT_TILE;
+  }
+  else {
     int c;
+
     /* Does middle texture need tiling */
-    if ((c = frontsector->ceilingheight - frontsector->floorheight) > 0 &&
-   (textureheight[texturetranslation[curline->sidedef->midtexture]] > c))
-      linedef->r_flags |= RF_MID_TILE;
+    if (!curline->sidedef->rowoffset_mid)
+      if (
+        (c = frontsector->ceilingheight - frontsector->floorheight) > 0 &&
+        (textureheight[texturetranslation[curline->sidedef->midtexture]] > c)
+      )
+        linedef->r_flags |= RF_MID_TILE;
   }
 }
 
