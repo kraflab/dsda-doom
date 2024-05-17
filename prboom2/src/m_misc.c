@@ -407,6 +407,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_loadgame", dsda_input_loadgame, KEYD_F3, -1, -1),
   INPUT_SETTING("input_quicksave", dsda_input_quicksave, KEYD_F6, -1, -1),
   INPUT_SETTING("input_quickload", dsda_input_quickload, KEYD_F9, -1, -1),
+  INPUT_SETTING("input_loadgame", dsda_input_level_table, 0, -1, -1),
   INPUT_SETTING("input_endgame", dsda_input_endgame, KEYD_F7, -1, -1),
   INPUT_SETTING("input_quit", dsda_input_quit, KEYD_F10, -1, -1),
 

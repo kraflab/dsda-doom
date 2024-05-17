@@ -88,6 +88,7 @@ typedef enum {
   dsda_input_loadgame,
   dsda_input_quicksave,
   dsda_input_quickload,
+  dsda_input_level_table,
   dsda_input_endgame,
   dsda_input_quit,
   dsda_input_store_quick_key_frame,

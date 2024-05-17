@@ -2200,6 +2200,7 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_loadgame},
   {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quicksave},
   {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quickload},
+  {"LEVEL TABLE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_level_table},
   {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_endgame},
   {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quit},
 
@@ -5096,6 +5097,14 @@ dboolean M_Responder (event_t* ev) {
       M_StartControlPanel();
       S_StartVoidSound(g_sfx_swtchn);
       M_LoadGame(0);
+      return true;
+    }
+
+    if (dsda_InputActivated(dsda_input_level_table))
+    {
+      M_StartControlPanel();
+      S_StartVoidSound(g_sfx_swtchn);
+      M_LevelTable(0);
       return true;
     }
 
