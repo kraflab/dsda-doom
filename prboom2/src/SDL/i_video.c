@@ -1574,17 +1574,17 @@ static dboolean MouseShouldBeGrabbed()
 // and we dont move the mouse around if we aren't focused either.
 static void UpdateFocus(void)
 {
-  Uint32 flags = 0;
+  // Uint32 flags = 0;
 
-  window_focused = false;
-  if(sdl_window)
-  {
-    flags = SDL_GetWindowFlags(sdl_window);
-    if ((flags & SDL_WINDOW_SHOWN) && !(flags & SDL_WINDOW_MINIMIZED) && (flags & SDL_WINDOW_INPUT_FOCUS))
-    {
+  // window_focused = false;
+  // if(sdl_window)
+  // {
+  //   flags = SDL_GetWindowFlags(sdl_window);
+  //   if ((flags & SDL_WINDOW_SHOWN) && !(flags & SDL_WINDOW_MINIMIZED) && (flags & SDL_WINDOW_INPUT_FOCUS))
+  //   {
       window_focused = true;
-    }
-  }
+  //   }
+  // }
 
   // e6y
   // Reuse of a current palette to avoid black screen at software fullscreen modes
