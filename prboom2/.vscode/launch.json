@@ -1,0 +1,39 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/dsda-doom",
+            "args": [
+                // "-iwad","/home/zom-b/Resources/Doom/iwad/The Ultimate Doom/DOOMU.WAD",
+                "-iwad","/home/zom-b/Resources/Doom/iwad/Doom2 1.9/DOOM2.WAD",
+                // "-file","/home/zom-b/Projects/C-VSCode/dsda-doom/prboom2/build/dsda-doom.wad",
+                "-file","/home/zom-b/Resources/Doom/pwad/Download/oku2v31.wad",
+                        // "/home/zom-b/Resources/Doom/pwad/Download/Sunder 2407.wad",
+                        // "/home/zom-b/Resources/Doom/pwad/other/WEAPON.wad",
+                "-skill", "1",
+                // "-fast",
+                // "-warp", "1",
+                "-playdemo","/home/zom-b/Resources/Doom/demos/pwad/oku-2-segments-00005.lmp",
+                "-complevel", "9"],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
