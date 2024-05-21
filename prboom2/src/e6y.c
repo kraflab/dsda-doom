@@ -362,33 +362,6 @@ void M_ChangeFOV(void)
 
 float viewPitch;
 
-int StepwiseSum(int value, int direction, int minval, int maxval, int defval)
-{
-  int newvalue;
-  int val = (direction > 0 ? value : value - 1);
-
-  if (direction == 0)
-    return defval;
-
-  direction = (direction > 0 ? 1 : -1);
-
-  {
-    int exp = 1;
-    while (exp * 10 <= val)
-      exp *= 10;
-    newvalue = direction * (val < exp * 5 && exp > 1 ? exp / 2 : exp);
-    newvalue = (value + newvalue) / newvalue * newvalue;
-  }
-
-  if (newvalue > maxval) newvalue = maxval;
-  if (newvalue < minval) newvalue = minval;
-
-  if ((value < defval && newvalue > defval) || (value > defval && newvalue < defval))
-    newvalue = defval;
-
-  return newvalue;
-}
-
 void I_vWarning(const char *message, va_list argList)
 {
   char msg[1024];

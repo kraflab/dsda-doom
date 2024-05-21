@@ -5198,15 +5198,14 @@ dboolean M_Responder (event_t* ev) {
     //e6y
     if (dsda_InputActivated(dsda_input_speed_default) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_GameSpeed(), 0, 3, 10000, 100);
-      dsda_UpdateGameSpeed(value);
-      doom_printf("Game Speed %d", value);
+      dsda_UpdateGameSpeed(100);
+      doom_printf("Game Speed 100");
       // Don't eat the keypress in this case.
       // return true;
     }
     if (dsda_InputActivated(dsda_input_speed_up) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_GameSpeed(), 1, 3, 10000, 100);
+      int value = MIN(dsda_GameSpeed() * 2, 10000);
       dsda_UpdateGameSpeed(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.
@@ -5214,7 +5213,7 @@ dboolean M_Responder (event_t* ev) {
     }
     if (dsda_InputActivated(dsda_input_speed_down) && !dsda_StrictMode())
     {
-      int value = StepwiseSum(dsda_GameSpeed(), -1, 3, 10000, 100);
+      int value = MAX(dsda_GameSpeed() / 2, 10);
       dsda_UpdateGameSpeed(value);
       doom_printf("Game Speed %d", value);
       // Don't eat the keypress in this case.

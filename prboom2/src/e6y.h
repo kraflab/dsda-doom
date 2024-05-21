@@ -159,8 +159,6 @@ enum
 
 extern prboom_comp_t prboom_comp[];
 
-int StepwiseSum(int value, int direction, int minval, int maxval, int defval);
-
 enum
 {
   TT_ALLKILL,
