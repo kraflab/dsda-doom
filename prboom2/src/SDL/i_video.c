@@ -1220,7 +1220,7 @@ void I_UpdateVideoMode(void)
                          I_DesiredVideoMode() == VID_MODESW;
   render_vsync = dsda_IntConfig(dsda_config_render_vsync) && !novsync;
   sdl_video_window_pos = dsda_StringConfig(dsda_config_sdl_video_window_pos);
-  screen_multiply = dsda_IntConfig(dsda_config_render_screen_multiply);
+  screen_multiply = 1;//dsda_IntConfig(dsda_config_render_screen_multiply);
   integer_scaling = dsda_IntConfig(dsda_config_integer_scaling);
 
   if(sdl_window)
