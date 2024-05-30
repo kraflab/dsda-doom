@@ -691,10 +691,10 @@ void M_LoadDefaults (void)
   }
   else
   {
-    const char* exedir = I_DoomExeDir();
-    int len = snprintf(NULL, 0, "%s/dsda-doom.cfg", exedir);
+    const char* doomdir = I_DoomDir();
+    int len = snprintf(NULL, 0, "%s/dsda-doom.cfg", doomdir);
     defaultfile = Z_Malloc(len + 1);
-    snprintf(defaultfile, len + 1, "%s/dsda-doom.cfg", exedir);
+    snprintf(defaultfile, len + 1, "%s/dsda-doom.cfg", doomdir);
   }
 
   lprintf(LO_DEBUG, " default file: %s\n", defaultfile);
@@ -889,7 +889,7 @@ void M_ScreenShot(void)
     shot_dir = M_CheckWritableDir(dsda_StringConfig(dsda_config_screenshot_dir));
   if (!shot_dir)
 #ifdef _WIN32
-    shot_dir = M_CheckWritableDir(I_DoomExeDir());
+    shot_dir = M_CheckWritableDir(I_DoomDir());
 #else
     shot_dir = (M_WriteAccess(SCREENSHOT_DIR) ? SCREENSHOT_DIR : NULL);
 #endif
