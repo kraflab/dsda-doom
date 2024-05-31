@@ -236,7 +236,7 @@ void I_SwitchToWindow(HWND hwnd)
   }
 }
 
-const char *I_DoomDir(void)
+const char *I_ConfigDir(void)
 {
   return I_ExeDir();
 }
@@ -289,7 +289,7 @@ const char* I_GetTempDir(void)
 
 #elif defined(AMIGA)
 
-const char *I_DoomDir(void)
+const char *I_ConfigDir(void)
 {
   return "PROGDIR:";
 }
@@ -310,7 +310,7 @@ const char* I_GetTempDir(void)
 // cph 2006/07/23 - give prboom+ its own dir
 static const char prboom_dir[] = {"/.dsda-doom"}; // Mead rem extra slash 8/21/03
 
-const char *I_DoomDir(void)
+const char *I_ConfigDir(void)
 {
   static char *base;
   if (!base)        // cache multiple requests
@@ -416,7 +416,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
   } search0[] = {
     {NULL, NULL, NULL, I_ExeDir}, // executable directory
 #ifndef _WIN32
-    {NULL, NULL, NULL, I_DoomDir}, // config and autoload directory. on windows, this is the same as I_ExeDir
+    {NULL, NULL, NULL, I_ConfigDir}, // config and autoload directory. on windows, this is the same as I_ExeDir
 #endif
     {NULL}, // current working directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
