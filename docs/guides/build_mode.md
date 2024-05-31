@@ -100,6 +100,9 @@ Brute force is a technique in built tases where you automatically apply differen
     - `have X` (have item X)
       - `rkc`, `bkc`, `ykc`, `rsk`, `bsk`, `ysk` (keys)
       - `sg`, `cg`, `rl`, `pg`, `bfg`, `cs`, `ssg` (weapons)
+    - `lack X` (do not have item X)
+      - `rkc`, `bkc`, `ykc`, `rsk`, `bsk`, `ysk` (keys)
+      - `sg`, `cg`, `rl`, `pg`, `bfg`, `cs`, `ssg` (weapons)
   - Basic example: `bf.start 2 40:50 40:50 -2:2 x < 1056, vx > 5`
     - This is a depth 2 brute force, with possible forward and strafe values ranging from 40 to 50, possible turn values ranging from -2 to 2, and with the condition that x is less than 1056 and x velocity is greater than 5.
   - Frame-specific example (different ranges on different frames):

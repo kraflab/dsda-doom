@@ -359,6 +359,8 @@ static dboolean dsda_BFMiscConditionReached(int i) {
       return lines[bf_condition[i].value].player_activations > bf_condition[i].secondary_value;
     case dsda_bf_have_item:
       return dsda_BFHaveItem(bf_condition[i].value);
+    case dsda_bf_lack_item:
+      return !dsda_BFHaveItem(bf_condition[i].value);
     default:
       return false;
   }

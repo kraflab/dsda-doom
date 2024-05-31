@@ -972,6 +972,18 @@ static dboolean console_BruteForceStart(const char* command, const char* args) {
 
         dsda_AddMiscBruteForceCondition(dsda_bf_have_item, attr_i);
       }
+      else if (sscanf(conditions[i], " lack %3[a-zA-Z]", attr_s) == 1) {
+        int attr_i;
+
+        for (attr_i = 0; attr_i < dsda_bf_item_max; ++attr_i)
+          if (!strcmp(attr_s, dsda_bf_item_names[attr_i]))
+            break;
+
+        if (attr_i == dsda_bf_item_max)
+          return false;
+
+        dsda_AddMiscBruteForceCondition(dsda_bf_lack_item, attr_i);
+      }
       else if (sscanf(conditions[i], " %3[a-zA-Z] %4[a-zA-Z><!=] %i", attr_s, oper_s, &value) == 3) {
         int attr_i, oper_i;
 
