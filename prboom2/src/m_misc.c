@@ -437,6 +437,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_join_demo", dsda_input_join_demo, 0, -1, -1),
   INPUT_SETTING("input_restart", dsda_input_restart, KEYD_HOME, -1, -1),
   INPUT_SETTING("input_nextlevel", dsda_input_nextlevel, KEYD_PAGEDOWN, -1, -1),
+  INPUT_SETTING("input_prevlevel", dsda_input_prevlevel, KEYD_PAGEUP, -1, -1),
   INPUT_SETTING("input_showalive", dsda_input_showalive, 0, -1, -1),
 
   INPUT_SETTING("input_menu_down", dsda_input_menu_down, KEYD_DOWNARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_DOWN),

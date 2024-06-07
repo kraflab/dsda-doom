@@ -117,6 +117,7 @@ typedef enum {
   dsda_input_walkcamera,
   dsda_input_restart,
   dsda_input_nextlevel,
+  dsda_input_prevlevel,
   dsda_input_showalive,
   dsda_input_menu_down,
   dsda_input_menu_up,

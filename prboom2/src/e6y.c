@@ -247,6 +247,24 @@ int G_GotoNextLevel(void)
   return changed;
 }
 
+int G_GotoPrevLevel(void)
+{
+  int epsd, map;
+  int changed = false;
+
+  dsda_PrevMap(&epsd, &map);
+
+  if ((gamestate == GS_LEVEL) &&
+    allow_incompatibility &&
+    !menuactive)
+  {
+    G_DeferedInitNew(gameskill, epsd, map);
+    changed = true;
+  }
+
+  return changed;
+}
+
 void M_ChangeSpeed(void)
 {
   G_SetSpeed(true);
