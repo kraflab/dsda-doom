@@ -245,7 +245,6 @@ const char *I_ExeDir(void)
 {
   extern char **dsda_argv;
 
-  static const char current_dir_dummy[] = {"."}; // proff - rem extra slash 8/21/03
   static char *base;
   if (!base)        // cache multiple requests
     {
@@ -261,7 +260,7 @@ const char *I_ExeDir(void)
         Z_Free(base);
         base = (char*)Z_Malloc(1024);
         if (!M_getcwd(base, 1024) || !M_WriteAccess(base))
-          strcpy(base, current_dir_dummy);
+          strcpy(base, ".");
       }
     }
   return base;
@@ -332,7 +331,6 @@ const char *I_ExeDir(void)
 {
   extern char **dsda_argv;
 
-  static const char current_dir_dummy[] = {"."}; // proff - rem extra slash 8/21/03
   static char *base;
   if (!base)        // cache multiple requests
     {
@@ -348,7 +346,7 @@ const char *I_ExeDir(void)
         Z_Free(base);
         base = (char*)Z_Malloc(1024);
         if (!M_getcwd(base, 1024) || !M_WriteAccess(base))
-          strcpy(base, current_dir_dummy);
+          strcpy(base, ".");
       }
     }
   return base;
