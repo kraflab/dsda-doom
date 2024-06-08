@@ -108,7 +108,7 @@ void dsda_LimitFPS(void) {
   int allow_limit;
   int fps_limit;
 
-  allow_limit = (movement_smooth || !window_focused) && !dsda_Arg(dsda_arg_timedemo)->found && !dsda_Arg(dsda_arg_fastdemo)->found;
+  allow_limit = (movement_smooth || !window_focused) && !dsda_Flag(dsda_arg_timedemo) && !dsda_Flag(dsda_arg_fastdemo);
   fps_limit = window_focused ? dsda_IntConfig(dsda_config_fps_limit)
                              : dsda_IntConfig(dsda_config_background_fps_limit);
 
