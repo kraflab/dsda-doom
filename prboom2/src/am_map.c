@@ -276,10 +276,10 @@ static map_things_appearance_t map_things_appearance;
 #define F_PANINC  (dsda_InputActive(dsda_input_speed) ? map_scroll_speed * 2 : map_scroll_speed)
 // how much zoom-in per tic
 // goes to 2x in 1 second
-#define M_ZOOMIN        ((int) ((float)FRACUNIT * (1.00f + F_PANINC / 200.0f)))
+#define M_ZOOMIN        ((int) ((float)FRACUNIT * (1.00f + F_PANINC / 20.0f)))
 // how much zoom-out per tic
 // pulls out to 0.5x in 1 second
-#define M_ZOOMOUT       ((int) ((float)FRACUNIT / (1.00f + F_PANINC / 200.0f)))
+#define M_ZOOMOUT       ((int) ((float)FRACUNIT / (1.00f + F_PANINC / 20.0f)))
 
 #define PLAYERRADIUS    (16*(1<<MAPBITS)) // e6y
 
@@ -441,6 +441,9 @@ static player_t *plr;           // the player represented by an arrow
 markpoint_t *markpoints = NULL;    // where the points are
 int markpointnum = 0; // next point to be assigned (also number of points now)
 int markpointnum_max = 0;       // killough 2/22/98
+
+#define TRAIL_LENGTH (350) // 10 seconds of trails
+int marktrailnum = 0; // pointer into the curcular buffer (sized TRAIL_LENGTH)
 
 am_frame_t am_frame;
 
@@ -1170,13 +1173,13 @@ static void AM_changeWindowScale(void)
     scale_mtof = prev_scale_mtof;
     if (curr_mtof_zoommul == M_ZOOMIN)
     {
-      mtof_zoommul = ((int) ((float)FRACUNIT * (1.00f + f_paninc / 200.0f)));
-      ftom_zoommul = ((int) ((float)FRACUNIT / (1.00f + f_paninc / 200.0f)));
+      mtof_zoommul = ((int) ((float)FRACUNIT * (1.00f + f_paninc / 20.0f)));
+      ftom_zoommul = ((int) ((float)FRACUNIT / (1.00f + f_paninc / 20.0f)));
     }
     if (curr_mtof_zoommul == M_ZOOMOUT)
     {
-      mtof_zoommul = ((int) ((float)FRACUNIT / (1.00f + f_paninc / 200.0f)));
-      ftom_zoommul = ((int) ((float)FRACUNIT * (1.00f + f_paninc / 200.0f)));
+      mtof_zoommul = ((int) ((float)FRACUNIT / (1.00f + f_paninc / 20.0f)));
+      ftom_zoommul = ((int) ((float)FRACUNIT * (1.00f + f_paninc / 20.0f)));
     }
   }
 
@@ -1203,6 +1206,8 @@ static void AM_doFollowPlayer(void)
   AM_SetMapCenter(viewx, viewy);
 }
 
+static void AM_GetMobjPosition(mobj_t *mo, mpoint_t *p, angle_t *angle);
+
 //
 // AM_Ticker()
 //
@@ -1218,6 +1223,36 @@ void AM_Ticker (void)
 
   if (stop_zooming && leveltime - zoom_leveltime != 1)
     AM_StopZooming();
+
+  // Movement trail
+  if (plr && playeringame[0])
+  {
+    mpoint_t pt;
+    angle_t angle;
+    bool moved = false;
+
+    AM_GetMobjPosition(plr->mo, &pt, &angle);
+
+    if (markpointnum < TRAIL_LENGTH) {
+      // Hijack this method for it's automatic array growing, but ignore the set parameters
+      AM_addMark();
+      moved = true;
+    }
+
+    if (!moved) {
+      int last = (marktrailnum + TRAIL_LENGTH - 1) % TRAIL_LENGTH;
+      moved = markpoints[last].x != pt.x ||
+              markpoints[last].y != pt.y;
+    }
+
+    if (moved) {
+      // Override the previously set parameters in the same style as AM_setMarkParams()
+      markpoints[marktrailnum].x = pt.x;
+      markpoints[marktrailnum].y = pt.y;
+      markpoints[marktrailnum].label[0] = '\0';
+      marktrailnum = (marktrailnum + 1) % TRAIL_LENGTH;
+    }
+  }
 }
 
 //
@@ -2365,6 +2400,44 @@ static void AM_drawMarks(void)
           p.y < f_y + f_h && p.y >= f_y)
       {
         w = 0;
+
+        if (strlen(markpoints[i].label) == 0) {
+          mpoint_t a, b, c, d;
+          mpoint_t e, f, g, h;
+          mline_t line;
+
+          a.x = b.x = e.x = markpoints[i].x - 65536;
+          c.x = d.x = f.x = markpoints[i].x + 65536;
+          a.y = d.y = g.y = markpoints[i].y - 65536;
+          b.y = c.y = h.y = markpoints[i].y + 65536;
+          e.y = f.y = markpoints[i].y;
+          g.x = h.x = markpoints[i].x;
+          if (am_frame.precise)
+          {
+            a.fx = b.fx = e.fx = a.x;
+            c.fx = d.fx = f.fx = c.x;
+            a.fy = d.fy = g.fy = a.y;
+            b.fy = c.fy = h.fy = b.y;
+            e.fy = f.fy = e.y;
+            g.fx = h.fx = g.x;
+          }
+
+          // Inner cross in dark gray
+          line.a = e; line.b = f;
+          AM_drawMline(&line, 109);
+          line.a = g; line.b = h;
+          AM_drawMline(&line, 109);
+          // Draw medium gray box on top
+          line.a = a; line.b = b;
+          AM_drawMline(&line, 97);
+          line.a = b; line.b = c;
+          AM_drawMline(&line, 97);
+          line.a = c; line.b = d;
+          AM_drawMline(&line, 97);
+          line.a = d; line.b = a;
+          AM_drawMline(&line, 97);
+        }
+
         for (k = 0; k < (int)strlen(markpoints[i].label); k++)
         {
           namebuf[6] = markpoints[i].label[k];

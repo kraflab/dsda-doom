@@ -256,7 +256,7 @@ int dsda_ShowAliveMonsters(void) {
   return dsda_IntConfig(dsda_config_show_alive_monsters);
 }
 
-int dsda_reveal_map;
+int dsda_reveal_map = 2;
 
 int dsda_RevealAutomap(void) {
   if (dsda_StrictMode()) return 0;
