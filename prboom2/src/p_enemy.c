@@ -985,6 +985,17 @@ static dboolean P_LookForMonsters(mobj_t *actor, dboolean allaround)
     current_actor = actor;
     current_allaround = allaround;
 
+    // There is a bug in cl11+ that causes the player to get added
+    //   to the monster friend list when damaged to below 50% health.
+    // This causes all monsters to believe friend monsters exist.
+    // The search algorithm is expensive and massively so on maps with many monsters.
+    // We still need to match rng calls for demo sync, but PIT_FindTarget is a no op.
+    if (((mobj_t *) cap->cnext)->player && cap->cnext == cap->cprev)
+    {
+      P_Random(pr_friends);
+      return false;
+    }
+
     // Search first in the immediate vicinity.
 
     if (!P_BlockThingsIterator(x, y, PIT_FindTarget))
