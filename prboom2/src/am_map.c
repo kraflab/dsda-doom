@@ -447,9 +447,10 @@ typedef struct
  fixed_t x, y;
 } trailpoint_t;
 
-markpoint_t *trailpoints = NULL;
 #define TRAIL_LENGTH (350) // 10 seconds of trails
-int marktrailpos = 0; // pointer into the curcular buffer (sized TRAIL_LENGTH)
+trailpoint_t *trailpoints = NULL;
+int trailpos  = 0; // pointer into the curcular buffer (sized TRAIL_LENGTH)
+int trailsize = 0; // fill level of the circular buffer (for drawing)
 
 am_frame_t am_frame;
 
@@ -604,16 +605,17 @@ static void AM_updateTrail(void) {
 
     AM_GetMobjPosition(plr->mo, &pt, &angle);
 
-    last = (marktrailpos + (TRAIL_LENGTH - 1)) % TRAIL_LENGTH;
+    last = (trailpos + (TRAIL_LENGTH - 1)) % TRAIL_LENGTH;
     moved = trailpoints[last].x != pt.x ||
             trailpoints[last].y != pt.y;
 
     if (moved) {
-      // Override the previously set parameters in the same style as AM_setMarkParams()
-      trailpoints[marktrailpos].x = pt.x;
-      trailpoints[marktrailpos].y = pt.y;
-      trailpoints[marktrailpos].label[0] = '\0';
-      marktrailpos = (marktrailpos + 1) % TRAIL_LENGTH;
+      trailpoints[trailpos].x = pt.x;
+      trailpoints[trailpos].y = pt.y;
+      trailpos = (trailpos + 1) % TRAIL_LENGTH;
+
+      if (trailsize < trailpos)
+        trailsize = trailpos;
     }
   }
 }
@@ -2471,6 +2473,68 @@ static void AM_drawMarks(void)
 }
 
 //
+// AM_drawTrail()
+//
+// Draw the lineskip practice trail as a sequence of squares (the size of the
+// player), with crosshairs to aid in finding the player's center, even when
+// the trail is very cluttered.
+//
+// Passed nothing, returns nothing
+//
+static void AM_drawTrail() {
+  int i;
+
+  for (i = 0; i < trailsize; i++) // killough 2/22/98: remove automap mark limit
+  {
+    mpoint_t p;
+
+    p.x = trailpoints[i].x;
+    p.y = trailpoints[i].y;
+
+    p.x = CXMTOF(p.x);
+    p.y = CYMTOF(p.y);
+
+    if (p.y < f_y + f_h && p.y >= f_y)
+    {
+      mpoint_t a, b, c, d;
+      mpoint_t e, f, g, h;
+      mline_t line;
+
+      a.x = b.x = e.x = trailpoints[i].x - 65536;
+      c.x = d.x = f.x = trailpoints[i].x + 65536;
+      a.y = d.y = g.y = trailpoints[i].y - 65536;
+      b.y = c.y = h.y = trailpoints[i].y + 65536;
+      e.y = f.y = trailpoints[i].y;
+      g.x = h.x = trailpoints[i].x;
+      if (am_frame.precise)
+      {
+        a.fx = b.fx = e.fx = a.x;
+        c.fx = d.fx = f.fx = c.x;
+        a.fy = d.fy = g.fy = a.y;
+        b.fy = c.fy = h.fy = b.y;
+        e.fy = f.fy = e.y;
+        g.fx = h.fx = g.x;
+      }
+
+      // Inner cross in dark gray
+      line.a = e; line.b = f;
+      AM_drawMline(&line, 109);
+      line.a = g; line.b = h;
+      AM_drawMline(&line, 109);
+      // Draw medium gray box on top
+      line.a = a; line.b = b;
+      AM_drawMline(&line, 97);
+      line.a = b; line.b = c;
+      AM_drawMline(&line, 97);
+      line.a = c; line.b = d;
+      AM_drawMline(&line, 97);
+      line.a = d; line.b = a;
+      AM_drawMline(&line, 97);
+    }
+  }
+}
+
+//
 // AM_drawCrosshair()
 //
 // Draw the single point crosshair representing map center
@@ -2637,6 +2701,7 @@ void AM_Drawer (dboolean minimap)
   }
 
   AM_drawMarks();
+  AM_drawTrail();
 
   V_EndAutomapDraw();
 }
