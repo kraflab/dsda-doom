@@ -1603,7 +1603,8 @@ bottomtexture:
       wall.ybottom=-MAXCOORD*2;
       if (
           (backsector->ceilingheight==backsector->floorheight) &&
-          (backsector->floorpic==skyflatnum)
+          (backsector->floorpic==skyflatnum) &&
+          (bottomtexture == NO_TEXTURE)
          )
       {
         wall.ytop=(float)backsector->floorheight/MAP_SCALE;
