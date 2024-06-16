@@ -2491,10 +2491,20 @@ static void AM_drawTrail() {
     p.x = trailpoints[i].x;
     p.y = trailpoints[i].y;
 
+    if (automap_rotate)
+      AM_rotatePoint(&p);
+    else
+      AM_SetMPointFloatValue(&p);
+
     p.x = CXMTOF(p.x);
     p.y = CYMTOF(p.y);
+    if (am_frame.precise)
+    {
+      p.fx = CXMTOF_F(p.fx);
+      p.fy = CYMTOF_F(p.fy);
+    }
 
-    if (p.y < f_y + f_h && p.y >= f_y)
+    if (p.x >= f_x && p.y >= f_y && p.x < f_x + f_w && p.y < f_y + f_h)
     {
       mpoint_t a, b, c, d;
       mpoint_t e, f, g, h;
@@ -2506,14 +2516,28 @@ static void AM_drawTrail() {
       b.y = c.y = h.y = trailpoints[i].y + 65536;
       e.y = f.y = trailpoints[i].y;
       g.x = h.x = trailpoints[i].x;
-      if (am_frame.precise)
+
+      if (automap_rotate)
       {
-        a.fx = b.fx = e.fx = a.x;
-        c.fx = d.fx = f.fx = c.x;
-        a.fy = d.fy = g.fy = a.y;
-        b.fy = c.fy = h.fy = b.y;
-        e.fy = f.fy = e.y;
-        g.fx = h.fx = g.x;
+        AM_rotatePoint(&a);
+        AM_rotatePoint(&b);
+        AM_rotatePoint(&c);
+        AM_rotatePoint(&d);
+        AM_rotatePoint(&e);
+        AM_rotatePoint(&f);
+        AM_rotatePoint(&g);
+        AM_rotatePoint(&h);
+      }
+      else
+      {
+        AM_SetMPointFloatValue(&a);
+        AM_SetMPointFloatValue(&b);
+        AM_SetMPointFloatValue(&c);
+        AM_SetMPointFloatValue(&d);
+        AM_SetMPointFloatValue(&e);
+        AM_SetMPointFloatValue(&f);
+        AM_SetMPointFloatValue(&g);
+        AM_SetMPointFloatValue(&h);
       }
 
       // Inner cross in dark gray
