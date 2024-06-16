@@ -2747,7 +2747,9 @@ void AM_Drawer (dboolean minimap)
   }
 
   AM_drawMarks();
-  AM_drawTrail();
+
+  if (dsda_RevealAutomap() == 2)
+    AM_drawTrail();
 
   V_EndAutomapDraw();
 }
