@@ -2493,10 +2493,12 @@ static void AM_drawTrail() {
 
   for (i = 0; i < trailsize; i++) // killough 2/22/98: remove automap mark limit
   {
+    int pos = (i + trailpos) % trailsize;
+
     mpoint_t p;
 
-    p.x = trailpoints[i].x;
-    p.y = trailpoints[i].y;
+    p.x = trailpoints[pos].x;
+    p.y = trailpoints[pos].y;
 
     if (automap_rotate)
       AM_rotatePoint(&p);
@@ -2517,12 +2519,12 @@ static void AM_drawTrail() {
       mpoint_t e, f, g, h;
       mline_t line;
 
-      a.x = b.x = e.x = trailpoints[i].x - 65536;
-      c.x = d.x = f.x = trailpoints[i].x + 65536;
-      a.y = d.y = g.y = trailpoints[i].y - 65536;
-      b.y = c.y = h.y = trailpoints[i].y + 65536;
-      e.y = f.y = trailpoints[i].y;
-      g.x = h.x = trailpoints[i].x;
+      a.x = b.x = e.x = trailpoints[pos].x - 65536;
+      c.x = d.x = f.x = trailpoints[pos].x + 65536;
+      a.y = d.y = g.y = trailpoints[pos].y - 65536;
+      b.y = c.y = h.y = trailpoints[pos].y + 65536;
+      e.y = f.y = trailpoints[pos].y;
+      g.x = h.x = trailpoints[pos].x;
 
       if (automap_rotate)
       {
