@@ -79,6 +79,7 @@ void AM_Start(dboolean full_automap);
 //jff 4/16/98 make externally available
 
 void AM_clearMarks(void);
+void AM_clearTrail(void);
 
 void AM_setMarkParams(int num);
 
