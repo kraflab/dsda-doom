@@ -605,9 +605,16 @@ static void AM_updateTrail(void) {
 
     AM_GetMobjPosition(plr->mo, &pt, &angle);
 
-    last = (trailpos + (TRAIL_LENGTH - 1)) % TRAIL_LENGTH;
-    moved = trailpoints[last].x != pt.x ||
-            trailpoints[last].y != pt.y;
+    if (trailsize == 0)
+    {
+      moved = true;
+    }
+    else
+    {
+      last = (trailpos + (trailsize - 1)) % trailsize;
+      moved = trailpoints[last].x != pt.x ||
+              trailpoints[last].y != pt.y;
+    }
 
     if (moved) {
       trailpoints[trailpos].x = pt.x;
