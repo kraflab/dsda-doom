@@ -2701,6 +2701,7 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   { "Enable textured display", S_YESNO, m_conf, AU_X, dsda_config_map_textured },
   { "Things appearance", S_CHOICE, m_conf, AU_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
   { "Show Minimap", S_YESNO, m_conf, AU_X, dsda_config_show_minimap },
+  { "Lineskip practice trails", S_YESNO, m_conf, AU_X, dsda_config_map_trail },
   EMPTY_LINE,
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X},
   { "Textured automap", S_NUM, m_conf, AU_X, dsda_config_map_textured_trans },
