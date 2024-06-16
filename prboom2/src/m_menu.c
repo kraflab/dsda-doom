@@ -3949,7 +3949,6 @@ setup_menu_t helpstrings[] =  // HELP screen strings
   {"STRAFE RIGHT",S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_straferight},
   {"STRAFE"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_strafe},
   {"AUTORUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_autorun},
-  {"180 TURN"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_reverse},
   {"USE"         ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_use},
   NEW_COLUMN,
   {"GAME"        ,S_SKIP|S_TITLE,m_null,KT_X2},
