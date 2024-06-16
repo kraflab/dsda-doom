@@ -442,6 +442,15 @@ markpoint_t *markpoints = NULL;    // where the points are
 int markpointnum = 0; // next point to be assigned (also number of points now)
 int markpointnum_max = 0;       // killough 2/22/98
 
+typedef struct
+{
+ fixed_t x, y;
+} trailpoint_t;
+
+markpoint_t *trailpoints = NULL;
+#define TRAIL_LENGTH (350) // 10 seconds of trails
+int marktrailpos = 0; // pointer into the curcular buffer (sized TRAIL_LENGTH)
+
 am_frame_t am_frame;
 
 array_t map_lines;
@@ -578,6 +587,35 @@ static void AM_addMark(void)
   markpoints[markpointnum].y = m_y + m_h/2;
   AM_setMarkParams(markpointnum);
   markpointnum++;
+}
+
+static void AM_GetMobjPosition(mobj_t *mo, mpoint_t *p, angle_t *angle);
+
+static void AM_updateTrail(void) {
+  if (plr && playeringame[0])
+  {
+    mpoint_t pt;
+    angle_t angle;
+    bool moved;
+    int last;
+
+    if (!trailpoints)
+      trailpoints = Z_Realloc(trailpoints, TRAIL_LENGTH * sizeof(markpoint_t));
+
+    AM_GetMobjPosition(plr->mo, &pt, &angle);
+
+    last = (marktrailpos + (TRAIL_LENGTH - 1)) % TRAIL_LENGTH;
+    moved = trailpoints[last].x != pt.x ||
+            trailpoints[last].y != pt.y;
+
+    if (moved) {
+      // Override the previously set parameters in the same style as AM_setMarkParams()
+      trailpoints[marktrailpos].x = pt.x;
+      trailpoints[marktrailpos].y = pt.y;
+      trailpoints[marktrailpos].label[0] = '\0';
+      marktrailpos = (marktrailpos + 1) % TRAIL_LENGTH;
+    }
+  }
 }
 
 //
@@ -1218,6 +1256,9 @@ void AM_Ticker (void)
 
   if (stop_zooming && leveltime - zoom_leveltime != 1)
     AM_StopZooming();
+
+  if (dsda_IntConfig(dsda_config_map_trail))
+    AM_updateTrail();
 }
 
 //
