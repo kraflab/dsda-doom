@@ -28,6 +28,7 @@ int dsda_LegacyFirstMap(int* episode, int* map);
 int dsda_LegacyNewGameMap(int* episode, int* map);
 int dsda_LegacyResolveWarp(int* args, int arg_count, int* episode, int* map);
 int dsda_LegacyNextMap(int* episode, int* map);
+int dsda_LegacyPrevMap(int* episode, int* map);
 int dsda_LegacyShowNextLocBehaviour(int* behaviour);
 int dsda_LegacySkipDrawShowNextLoc(int* skip);
 void dsda_LegacyUpdateMapInfo(void);

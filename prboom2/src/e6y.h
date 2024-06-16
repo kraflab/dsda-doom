@@ -104,6 +104,7 @@ void G_SkipDemoStartCheck(void);
 void G_SkipDemoCheck(void);
 int G_ReloadLevel(void);
 int G_GotoNextLevel(void);
+int G_GotoPrevLevel(void);
 
 void M_ChangeSkyMode(void);
 

@@ -102,6 +102,19 @@ void dsda_NextMap(int* episode, int* map) {
   dsda_LegacyNextMap(episode, map);
 }
 
+void dsda_PrevMap(int* episode, int* map) {
+  if (dsda_DoomPrevMap(episode, map))
+    return;
+
+  if (dsda_HexenPrevMap(episode, map))
+    return;
+
+  if (dsda_UPrevMap(episode, map))
+    return;
+
+  dsda_LegacyPrevMap(episode, map);
+}
+
 void dsda_ShowNextLocBehaviour(int* behaviour) {
   if (dsda_DoomShowNextLocBehaviour(behaviour))
     return;

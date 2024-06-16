@@ -28,6 +28,7 @@ int dsda_DoomFirstMap(int* episode, int* map);
 int dsda_DoomNewGameMap(int* episode, int* map);
 int dsda_DoomResolveWarp(int* args, int arg_count, int* episode, int* map);
 int dsda_DoomNextMap(int* episode, int* map);
+int dsda_DoomPrevMap(int* episode, int* map);
 int dsda_DoomShowNextLocBehaviour(int* behaviour);
 int dsda_DoomSkipDrawShowNextLoc(int* skip);
 void dsda_DoomUpdateMapInfo(void);

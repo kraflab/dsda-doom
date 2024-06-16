@@ -2273,6 +2273,7 @@ setup_menu_t keys_settings5[] =  // Key Binding screen strings
   {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X},
   {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
   {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_nextlevel},
+  {"PREVIOUS LEVEL"       ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_prevlevel},
   {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_showalive},
 
   PREV_PAGE(keys_settings4),
@@ -5231,6 +5232,12 @@ dboolean M_Responder (event_t* ev) {
         if (G_GotoNextLevel())
           return true;
       }
+    }
+
+    if (dsda_InputActivated(dsda_input_prevlevel))
+    {
+      if (G_GotoPrevLevel())
+          return true;
     }
 
     if (dsda_InputActivated(dsda_input_restart))
