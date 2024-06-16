@@ -844,6 +844,19 @@ void AM_clearMarks(void)
   markpointnum = 0;
 }
 
+//
+// AM_clearTrail()
+//
+// Sets the number of trails to 0, thereby clearing them from the display
+//
+// Passed nothing, returns nothing
+//
+void AM_clearTrail(void)
+{
+  trailpos = 0;
+  trailsize = 0;
+}
+
 void AM_InitParams(void)
 {
   map_blinking_locks = dsda_IntConfig(dsda_config_map_blinking_locks);

@@ -2271,6 +2271,7 @@ void G_DoWorldDone (void)
   G_DoLoadLevel();
   gameaction = ga_nothing;
   AM_clearMarks();           //jff 4/12/98 clear any marks on the automap
+  AM_clearTrail();
   dsda_EvaluateSkipModeDoWorldDone();
 }
 
@@ -3065,6 +3066,7 @@ void G_InitNew(int skill, int episode, int map, dboolean prepare)
 
   //jff 4/16/98 force marks on automap cleared every new level start
   AM_clearMarks();
+  AM_clearTrail();
 
   dsda_InitSky();
 
