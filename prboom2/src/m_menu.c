@@ -1157,6 +1157,27 @@ static void M_QuitResponse(dboolean affirmative)
   if (!affirmative)
     return;
 
+  if (!netgame // killough 12/98
+      && !nosfxparm
+      && dsda_IntConfig(dsda_config_quit_sounds))
+  {
+    int i;
+
+    if (gamemode == commercial)
+      S_StartVoidSound(quitsounds2[(gametic>>2)&7]);
+    else
+      S_StartVoidSound(quitsounds[(gametic>>2)&7]);
+
+    // wait till all sounds stopped or 3 seconds are over
+    i = 30;
+    while (i > 0) {
+      I_uSleep(100000); // CPhipps - don't thrash cpu in this loop
+      if (!I_AnySoundStillPlaying())
+        break;
+      i--;
+    }
+  }
+
   //e6y: I_SafeExit instead of exit - prevent recursive exits
   I_SafeExit(0); // killough
 }
