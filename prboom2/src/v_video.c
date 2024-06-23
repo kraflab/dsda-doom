@@ -1285,9 +1285,11 @@ void SetRatio(int width, int height)
   ratio_scale *= 3;
   ReduceFraction(&ratio_multiplier, &ratio_scale);
 
-  float ratio_quotient = (float)ratio_multiplier/ratio_scale;
-  float ratio_percentage = (ratio_quotient - 1) * 100.0;
-  psprite_offset = MAX(0, (int)(ratio_percentage*FRACUNIT));
+  {
+    float ratio_quotient = (float)ratio_multiplier/ratio_scale;
+    float ratio_percentage = (ratio_quotient - 1) * 100.0;
+    psprite_offset = MAX(0, (int)(ratio_percentage*FRACUNIT));
+  }
 
   tallscreen = (ratio_scale < ratio_multiplier);
   if (tallscreen)
