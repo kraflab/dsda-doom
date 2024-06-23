@@ -185,6 +185,29 @@ int dsda_HexenNextMap(int* episode, int* map) {
   return true;
 }
 
+int dsda_HexenPrevMap(int* episode, int* map) {
+  int i;
+  int current_map;
+
+  if (!hexen)
+    return false;
+
+  current_map = QualifyMap(gamemap);
+
+  for (i = 1; i < 99; ++i)
+    if (MapInfo[i].nextMap == current_map) {
+      *episode = 1;
+      *map = i;
+
+      return true;
+    }
+
+  *episode = 1;
+  *map = current_map;
+
+  return true;
+}
+
 int dsda_HexenShowNextLocBehaviour(int* behaviour) {
   return false; // TODO
 }

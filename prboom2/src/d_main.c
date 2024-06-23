@@ -1218,10 +1218,10 @@ static char *GetAutoloadDir(const char *iwadname, dboolean createdir)
 
     if (autoload_path == NULL)
     {
-        const char* exedir = I_DoomExeDir();
-        len = snprintf(NULL, 0, "%s/autoload", exedir);
+        const char* configdir = I_ConfigDir();
+        len = snprintf(NULL, 0, "%s/autoload", configdir);
         autoload_path = Z_Malloc(len+1);
-        snprintf(autoload_path, len+1, "%s/autoload", exedir);
+        snprintf(autoload_path, len+1, "%s/autoload", configdir);
     }
 
     M_MakeDir(autoload_path, false);

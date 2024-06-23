@@ -68,7 +68,7 @@ char* dsda_DetectDirectory(const char* env_key, int arg_id) {
   default_directory = M_getenv(env_key);
 
   if (!default_directory)
-    default_directory = I_DoomExeDir();
+    default_directory = I_ConfigDir();
 
   arg = dsda_Arg(arg_id);
   if (arg->found) {

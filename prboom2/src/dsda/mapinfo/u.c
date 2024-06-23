@@ -95,6 +95,29 @@ int dsda_UNextMap(int* episode, int* map) {
   return false;
 }
 
+int dsda_UPrevMap(int* episode, int* map) {
+  int i;
+
+  if (!gamemapinfo)
+    return false;
+
+  for (i = 0; i < Maps.mapcount; ++i)
+    if (
+      Maps.maps[i].nextsecret[0] &&
+      !stricmp(Maps.maps[i].nextsecret, gamemapinfo->mapname)
+    )
+      return dsda_NameToMap(Maps.maps[i].mapname, episode, map);
+
+  for (i = 0; i < Maps.mapcount; ++i)
+    if (
+      Maps.maps[i].nextmap[0] &&
+      !stricmp(Maps.maps[i].nextmap, gamemapinfo->mapname)
+    )
+      return dsda_NameToMap(Maps.maps[i].mapname, episode, map);
+
+  return dsda_NameToMap(gamemapinfo->mapname, episode, map);
+}
+
 int dsda_UShowNextLocBehaviour(int* behaviour) {
   if (!gamemapinfo)
     return false;

@@ -407,7 +407,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_loadgame", dsda_input_loadgame, KEYD_F3, -1, -1),
   INPUT_SETTING("input_quicksave", dsda_input_quicksave, KEYD_F6, -1, -1),
   INPUT_SETTING("input_quickload", dsda_input_quickload, KEYD_F9, -1, -1),
-  INPUT_SETTING("input_loadgame", dsda_input_level_table, 0, -1, -1),
+  INPUT_SETTING("input_level_table", dsda_input_level_table, 0, -1, -1),
   INPUT_SETTING("input_endgame", dsda_input_endgame, KEYD_F7, -1, -1),
   INPUT_SETTING("input_quit", dsda_input_quit, KEYD_F10, -1, -1),
 
@@ -437,6 +437,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_join_demo", dsda_input_join_demo, 0, -1, -1),
   INPUT_SETTING("input_restart", dsda_input_restart, KEYD_HOME, -1, -1),
   INPUT_SETTING("input_nextlevel", dsda_input_nextlevel, KEYD_PAGEDOWN, -1, -1),
+  INPUT_SETTING("input_prevlevel", dsda_input_prevlevel, KEYD_PAGEUP, -1, -1),
   INPUT_SETTING("input_showalive", dsda_input_showalive, 0, -1, -1),
 
   INPUT_SETTING("input_menu_down", dsda_input_menu_down, KEYD_DOWNARROW, -1, DSDA_CONTROLLER_BUTTON_DPAD_DOWN),
@@ -691,10 +692,10 @@ void M_LoadDefaults (void)
   }
   else
   {
-    const char* exedir = I_DoomExeDir();
-    int len = snprintf(NULL, 0, "%s/dsda-doom.cfg", exedir);
+    const char* configdir = I_ConfigDir();
+    int len = snprintf(NULL, 0, "%s/dsda-doom.cfg", configdir);
     defaultfile = Z_Malloc(len + 1);
-    snprintf(defaultfile, len + 1, "%s/dsda-doom.cfg", exedir);
+    snprintf(defaultfile, len + 1, "%s/dsda-doom.cfg", configdir);
   }
 
   lprintf(LO_DEBUG, " default file: %s\n", defaultfile);
@@ -889,7 +890,7 @@ void M_ScreenShot(void)
     shot_dir = M_CheckWritableDir(dsda_StringConfig(dsda_config_screenshot_dir));
   if (!shot_dir)
 #ifdef _WIN32
-    shot_dir = M_CheckWritableDir(I_DoomExeDir());
+    shot_dir = M_CheckWritableDir(I_ConfigDir());
 #else
     shot_dir = (M_WriteAccess(SCREENSHOT_DIR) ? SCREENSHOT_DIR : NULL);
 #endif

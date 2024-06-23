@@ -199,6 +199,66 @@ int dsda_LegacyNextMap(int* episode, int* map) {
   return true;
 }
 
+int dsda_LegacyPrevMap(int* episode, int* map) {
+  static byte doom2_prev[33] = {
+    1, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 32, 16, 17, 18, 19,
+    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    15, 31, 2
+  };
+  static byte doom_prev[4][9] = {
+    { 11, 11, 12, 19, 14, 15, 16, 17, 13 },
+    { 18, 21, 22, 23, 24, 29, 26, 27, 25 },
+    { 28, 31, 32, 33, 34, 35, 39, 37, 36 },
+    { 38, 41, 49, 43, 44, 45, 46, 47, 42 }
+  };
+  static byte heretic_prev[6][9] = {
+    { 11, 11, 12, 13, 14, 15, 19, 17, 16 },
+    { 18, 21, 22, 23, 29, 25, 26, 27, 24 },
+    { 28, 31, 32, 33, 39, 35, 36, 37, 34 },
+    { 38, 41, 42, 43, 49, 45, 46, 47, 44 },
+    { 48, 51, 52, 59, 54, 55, 56, 57, 53 },
+    { 58, 61, 62, 63, 63, 63, 63, 63, 63 }, // E6M4-E6M9 shouldn't be accessible
+  };
+
+  // next arrays are 0-based, unlike gameepisode and gamemap
+  *episode = gameepisode - 1;
+  *map = gamemap - 1;
+
+  if (heretic) {
+    int prev;
+
+    prev = heretic_prev[BETWEEN(0, 5, *episode)][BETWEEN(0, 8, *map)];
+    *episode = prev / 10;
+    *map = prev % 10;
+  }
+  else if (gamemode == commercial) {
+    // secret level
+    doom2_prev[15] = (haswolflevels ? 32 : 15);
+
+    if (bfgedition && allow_incompatibility) {
+      if (gamemission == pack_nerve) {
+        doom2_prev[4] = 9;
+        doom2_prev[8] = 4;
+      }
+      else
+        doom2_prev[2] = 33;
+    }
+
+    *episode = 1;
+    *map = doom2_prev[BETWEEN(0, 32, *map)];
+  }
+  else {
+    int prev;
+
+    prev = doom_prev[BETWEEN(0, 3, *episode)][BETWEEN(0, 9, *map)];
+    *episode = prev / 10;
+    *map = prev % 10;
+  }
+
+  return true;
+}
+
 int dsda_LegacyShowNextLocBehaviour(int* behaviour) {
   if (
     gamemode != commercial &&

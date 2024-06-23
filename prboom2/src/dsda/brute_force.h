@@ -40,6 +40,7 @@ typedef enum {
   dsda_bf_line_skip = 0,
   dsda_bf_line_activation,
   dsda_bf_have_item,
+  dsda_bf_lack_item,
   dsda_bf_misc_max,
 } dsda_bf_attribute_t;
 

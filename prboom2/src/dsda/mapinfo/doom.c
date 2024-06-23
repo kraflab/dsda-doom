@@ -158,6 +158,40 @@ int dsda_DoomNextMap(int* episode, int* map) {
   return true;
 }
 
+int dsda_DoomPrevMap(int* episode, int* map) {
+  int i;
+
+  if (!current_map)
+    return false;
+
+  for (i = 0; i < doom_mapinfo.num_maps; ++i)
+    if (
+      doom_mapinfo.maps[i].secret_next.map &&
+      !stricmp(doom_mapinfo.maps[i].secret_next.map, current_map->lump_name)
+    ) {
+      *map = doom_mapinfo.maps[i].level_num;
+      *episode = 1;
+
+      return true;
+    }
+
+  for (i = 0; i < doom_mapinfo.num_maps; ++i)
+    if (
+      doom_mapinfo.maps[i].next.map &&
+      !stricmp(doom_mapinfo.maps[i].next.map, current_map->lump_name)
+    ) {
+      *map = doom_mapinfo.maps[i].level_num;
+      *episode = 1;
+
+      return true;
+    }
+
+  *map = current_map->level_num;
+  *episode = 1;
+
+  return false;
+}
+
 int dsda_DoomShowNextLocBehaviour(int* behaviour) {
   if (!current_map)
     return false;

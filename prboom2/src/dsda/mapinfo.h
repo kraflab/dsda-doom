@@ -68,6 +68,7 @@ void dsda_NewGameMap(int* episode, int* map);
 void dsda_ResolveWarp(int* args, int arg_count, int* episode, int* map);
 int dsda_NameToMap(const char* name, int* episode, int* map);
 void dsda_NextMap(int* episode, int* map);
+void dsda_PrevMap(int* episode, int* map);
 void dsda_ShowNextLocBehaviour(int* behaviour);
 int dsda_SkipDrawShowNextLoc(void);
 void dsda_UpdateGameMap(int episode, int map);
