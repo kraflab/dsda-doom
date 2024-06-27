@@ -5000,14 +5000,14 @@ dboolean M_Responder (event_t* ev) {
     }
     else if (ch > 0)
     {
-      if (shiftdown && ch >= 32 && ch <= 127)
-        ch = shiftxform[ch];
-      else
-        ch = toupper(ch);
       if (ch >= 32 && ch <= 127 &&
           saveCharIndex < SAVESTRINGSIZE-1 &&
           M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
       {
+        if (shiftdown)
+          ch = shiftxform[ch];
+        else
+          ch = toupper(ch);
         savegamestrings[saveSlot][saveCharIndex++] = ch;
         savegamestrings[saveSlot][saveCharIndex] = 0;
       }
