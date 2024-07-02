@@ -442,6 +442,17 @@ markpoint_t *markpoints = NULL;    // where the points are
 int markpointnum = 0; // next point to be assigned (also number of points now)
 int markpointnum_max = 0;       // killough 2/22/98
 
+typedef struct
+{
+ fixed_t x;
+ fixed_t y;
+} trailpoint_t;
+
+#define TRAIL_SIZE 350 // ten seconds
+static trailpoint_t player_trail[TRAIL_SIZE];
+static int trail_index = -1;
+static int trail_size = 0;
+
 am_frame_t am_frame;
 
 array_t map_lines;
@@ -784,6 +795,12 @@ void AM_SetResolution(void)
   AM_SetScale();
 }
 
+void AM_clearPlayerTrail(void)
+{
+  trail_index = -1;
+  trail_size = 0;
+}
+
 //
 // AM_clearMarks()
 //
@@ -794,6 +811,8 @@ void AM_SetResolution(void)
 //
 void AM_clearMarks(void)
 {
+  AM_clearPlayerTrail();
+
   markpointnum = 0;
 }
 
@@ -2311,6 +2330,115 @@ static void AM_drawThings(void)
       t = t->snext;
     }
    }
+  }
+}
+
+void AM_updatePlayerTrail(fixed_t x, fixed_t y)
+{
+  trailpoint_t pt;
+
+  pt.x = x >> FRACTOMAPBITS;
+  pt.y = y >> FRACTOMAPBITS;
+
+  if (trail_index == -1 ||
+      player_trail[trail_index].x != pt.x ||
+      player_trail[trail_index].y != pt.y)
+  {
+    trail_index = (trail_index + 1) % TRAIL_SIZE;
+    player_trail[trail_index] = pt;
+
+    if (trail_size < trail_index + 1)
+      trail_size = trail_index + 1;
+  }
+}
+
+static void AM_drawPlayerTrail(void)
+{
+  int i;
+
+  for (i = 0; i < trail_size; ++i)
+  {
+    mpoint_t p;
+
+    p.x = player_trail[i].x;
+    p.y = player_trail[i].y;
+
+    if (automap_rotate)
+      AM_rotatePoint(&p);
+    else
+      AM_SetMPointFloatValue(&p);
+
+    p.x = CXMTOF(p.x);
+    p.y = CYMTOF(p.y);
+    if (am_frame.precise)
+    {
+      p.fx = CXMTOF_F(p.fx);
+      p.fy = CYMTOF_F(p.fy);
+    }
+
+    if (p.x >= f_x && p.y >= f_y && p.x < f_x + f_w && p.y < f_y + f_h)
+    {
+      mpoint_t a, b, c, d;
+      mpoint_t e, f, g, h;
+      mline_t line;
+
+      a.x = b.x = player_trail[i].x - FRACUNIT;
+      c.x = d.x = player_trail[i].x + FRACUNIT;
+      a.y = d.y = player_trail[i].y - FRACUNIT;
+      b.y = c.y = player_trail[i].y + FRACUNIT;
+
+      e.x = player_trail[i].x - FRACUNIT / 8;
+      f.x = player_trail[i].x + FRACUNIT / 8;
+      g.y = player_trail[i].y - FRACUNIT / 8;
+      h.y = player_trail[i].y + FRACUNIT / 8;
+      e.y = f.y = player_trail[i].y;
+      g.x = h.x = player_trail[i].x;
+
+      if (automap_rotate)
+      {
+        AM_rotatePoint(&a);
+        AM_rotatePoint(&b);
+        AM_rotatePoint(&c);
+        AM_rotatePoint(&d);
+        AM_rotatePoint(&e);
+        AM_rotatePoint(&f);
+        AM_rotatePoint(&g);
+        AM_rotatePoint(&h);
+      }
+      else
+      {
+        AM_SetMPointFloatValue(&a);
+        AM_SetMPointFloatValue(&b);
+        AM_SetMPointFloatValue(&c);
+        AM_SetMPointFloatValue(&d);
+        AM_SetMPointFloatValue(&e);
+        AM_SetMPointFloatValue(&f);
+        AM_SetMPointFloatValue(&g);
+        AM_SetMPointFloatValue(&h);
+      }
+
+      {
+        int color;
+
+        color = (i % 2) ? *mapcolor_sngl_p : *mapcolor_unsn_p;
+
+        // Cross marking center
+        line.a = e; line.b = f;
+        AM_drawMline(&line, color);
+        line.a = g; line.b = h;
+        AM_drawMline(&line, color);
+
+        // Bounding box
+        line.a = a; line.b = b;
+        AM_drawMline(&line, color);
+        line.a = b; line.b = c;
+        AM_drawMline(&line, color);
+        line.a = c; line.b = d;
+        AM_drawMline(&line, color);
+        line.a = d; line.b = a;
+        AM_drawMline(&line, color);
+      }
+    }
   }
 }
 
