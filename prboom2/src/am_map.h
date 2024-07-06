@@ -168,4 +168,14 @@ typedef enum
   map_things_appearance_max
 } map_things_appearance_t;
 
+typedef enum
+{
+  map_trail_mode_off,
+  map_trail_mode_real,
+  map_trail_mode_all,
+  map_trail_mode_max
+} map_trail_mode_t;
+
+extern map_trail_mode_t map_trail_mode;
+
 #endif

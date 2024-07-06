@@ -330,8 +330,11 @@ typedef struct
 
 #define TRAIL_SIZE 350 // ten seconds
 static trailpoint_t player_trail[TRAIL_SIZE];
-static int trail_index = -1;
-static int trail_size = 0;
+static int trail_index;
+static int trail_size;
+static int trail_size_max;
+
+map_trail_mode_t map_trail_mode;
 
 am_frame_t am_frame;
 
@@ -614,6 +617,14 @@ void AM_SetPosition(void)
   }
 }
 
+void AM_initPlayerTrail(void)
+{
+  trail_index = -1;
+  trail_size = 0;
+  trail_size_max = dsda_IntConfig(dsda_config_map_trail_size);
+  map_trail_mode = dsda_IntConfig(dsda_config_map_trail_mode);
+}
+
 //
 // AM_initVariables()
 //
@@ -626,6 +637,8 @@ void AM_SetPosition(void)
 static void AM_initVariables(void)
 {
   int pnum;
+
+  AM_initPlayerTrail();
 
   if (hexen)
   {
@@ -675,12 +688,6 @@ void AM_SetResolution(void)
   AM_SetScale();
 }
 
-void AM_clearPlayerTrail(void)
-{
-  trail_index = -1;
-  trail_size = 0;
-}
-
 //
 // AM_clearMarks()
 //
@@ -691,7 +698,7 @@ void AM_clearPlayerTrail(void)
 //
 void AM_clearMarks(void)
 {
-  AM_clearPlayerTrail();
+  AM_initPlayerTrail();
 
   markpointnum = 0;
 }
@@ -2224,7 +2231,7 @@ void AM_updatePlayerTrail(fixed_t x, fixed_t y)
       player_trail[trail_index].x != pt.x ||
       player_trail[trail_index].y != pt.y)
   {
-    trail_index = (trail_index + 1) % TRAIL_SIZE;
+    trail_index = (trail_index + 1) % trail_size_max;
     player_trail[trail_index] = pt;
 
     if (trail_size < trail_index + 1)

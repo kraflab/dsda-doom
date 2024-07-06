@@ -222,6 +222,8 @@ typedef enum {
   dsda_config_map_totals,
   dsda_config_map_time,
   dsda_config_map_title,
+  dsda_config_map_trail_mode,
+  dsda_config_map_trail_size,
   dsda_config_automap_overlay,
   dsda_config_automap_rotate,
   dsda_config_automap_follow,

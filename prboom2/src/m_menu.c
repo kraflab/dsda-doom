@@ -2678,6 +2678,14 @@ static const char *map_things_appearance_list[] =
   NULL
 };
 
+static const char *map_trail_mode_list[] =
+{
+  "off",
+  "real positions",
+  "all positions",
+  NULL
+};
+
 setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
 {
   { "Automap Components", S_SKIP | S_TITLE, m_null, AU_X},
@@ -2704,8 +2712,15 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   FINAL_ENTRY
 };
 
+#define AU_X2 180
+
 setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
 {
+  { "Tools", S_SKIP | S_TITLE, m_null, AU_X2},
+  { "Player Trail Mode", S_CHOICE, m_conf, AU_X2, dsda_config_map_trail_mode, 0, map_trail_mode_list },
+  { "Player Trail Size", S_NUM, m_conf, AU_X2, dsda_config_map_trail_size },
+  EMPTY_LINE,
+  EMPTY_LINE,
   {"background", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_back},
   {"grid lines", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_grid},
   {"normal 1s wall", S_COLOR, m_conf,AU_X, dsda_config_mapcolor_wall},

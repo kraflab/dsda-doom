@@ -117,6 +117,7 @@ void dsda_InitParallelSFXFilter(void);
 void M_ChangeMapMultisamling(void);
 void M_ChangeMapTextured(void);
 void AM_InitParams(void);
+void AM_initPlayerTrail(void);
 void gld_ResetAutomapTransparency(void);
 void M_ChangeVideoMode(void);
 void M_ChangeUncappedFrameRate(void);
@@ -1001,6 +1002,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_map_title] = {
     "map_title", dsda_config_map_title,
     CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTitle
+  },
+  [dsda_config_map_trail_mode] = {
+    "map_trail_mode", dsda_config_map_trail_mode,
+    dsda_config_int, 0, map_trail_mode_max - 1, { 0 }, NULL, NOT_STRICT, AM_initPlayerTrail
+  },
+  [dsda_config_map_trail_size] = {
+    "map_trail_size", dsda_config_map_trail_size,
+    dsda_config_int, 0, 350, { 105 }, NULL, NOT_STRICT, AM_initPlayerTrail
   },
   [dsda_config_automap_overlay] = {
     "automap_overlay", dsda_config_automap_overlay,
