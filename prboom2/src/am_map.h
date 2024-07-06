@@ -134,6 +134,8 @@ extern int mapcolor_hair;     // crosshair color
 extern int mapcolor_sngl;     // single player arrow color
 extern int mapcolor_plyr[4];  // colors for players in multiplayer
 extern int mapcolor_me;       // consoleplayer's chosen colour
+extern int mapcolor_trail_1;
+extern int mapcolor_trail_2;
 
 void M_ChangeMapTextured(void);
 void M_ChangeMapMultisamling(void);

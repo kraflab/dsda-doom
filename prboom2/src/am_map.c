@@ -89,6 +89,8 @@ int mapcolor_enemy;   // enemy sprite color
 int mapcolor_hair;    // crosshair color
 int mapcolor_sngl;    // single player arrow color
 int mapcolor_plyr[4] = { 112, 96, 64, 176 }; // colors for player arrows in multiplayer
+int mapcolor_trail_1;
+int mapcolor_trail_2;
 
 static int heretic_mapcolor_back = 0;
 static int heretic_mapcolor_grid = 5 * 8;
@@ -167,6 +169,8 @@ static int* mapcolor_enemy_p;
 static int* mapcolor_hair_p;
 static int* mapcolor_sngl_p;
 static int* mapcolor_plyr_p;
+static int* mapcolor_trail_1_p;
+static int* mapcolor_trail_2_p;
 
 static void AM_SetColors(void)
 {
@@ -253,6 +257,8 @@ static void AM_SetColors(void)
     mapcolor_hair_p = &mapcolor_hair;
     mapcolor_sngl_p = &mapcolor_sngl;
     mapcolor_plyr_p = mapcolor_plyr;
+    mapcolor_trail_1_p = &mapcolor_trail_1;
+    mapcolor_trail_2_p = &mapcolor_trail_2;
   }
 }
 
@@ -2422,7 +2428,7 @@ static void AM_drawPlayerTrail(void)
       {
         int color;
 
-        color = (i % 2) ? *mapcolor_sngl_p : *mapcolor_unsn_p;
+        color = (i % 2) ? *mapcolor_trail_1_p : *mapcolor_trail_2_p;
 
         // Cross marking center
         line.a = e; line.b = f;

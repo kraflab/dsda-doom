@@ -2748,6 +2748,9 @@ setup_menu_t auto_settings3[] =  // 3nd AutoMap Settings screen
   {"your colour in multiplayer"     ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_me},
   EMPTY_LINE,
   {"friends"                        ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_frnd},        // killough 8/8/98
+  EMPTY_LINE,
+  {"player trail 1"     ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_trail_1},
+  {"player trail 2"     ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_trail_2},
 
   PREV_PAGE(auto_settings2),
   FINAL_ENTRY

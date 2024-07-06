@@ -573,6 +573,14 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mapcolor_frnd", dsda_config_mapcolor_frnd,
     CONF_COLOR(112), &mapcolor_frnd
   },
+  [dsda_config_mapcolor_trail_1] = {
+    "mapcolor_trail_1", dsda_config_mapcolor_trail_1,
+    CONF_COLOR(80), &mapcolor_trail_1
+  },
+  [dsda_config_mapcolor_trail_2] = {
+    "mapcolor_trail_2", dsda_config_mapcolor_trail_2,
+    CONF_COLOR(100), &mapcolor_trail_2
+  },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
     dsda_config_int, skytype_auto, skytype_count - 1, { skytype_auto }, NULL,
