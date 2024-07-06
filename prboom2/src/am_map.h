@@ -178,4 +178,6 @@ typedef enum
 
 extern map_trail_mode_t map_trail_mode;
 
+void AM_updatePlayerTrail(fixed_t x, fixed_t y);
+
 #endif

@@ -48,6 +48,8 @@
 #include "g_game.h"
 #include "p_tick.h"
 #include "g_overflow.h"
+#include "am_map.h"
+
 #include "e6y.h"//e6y
 
 #include "dsda.h"
@@ -1433,6 +1435,12 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
   fixed_t oldx;
   fixed_t oldy;
 
+  if (map_trail_mode == map_trail_mode_all &&
+      thing->player && thing->player->mo == thing)
+  {
+    AM_updatePlayerTrail(x, y);
+  }
+
   if (hexen) return Hexen_P_TryMove(thing, x, y);
 
   felldown = floatok = false;               // killough 11/98
@@ -1604,6 +1612,12 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
   else if (thing->flags2 & MF2_FEETARECLIPPED)
   {
     thing->flags2 &= ~MF2_FEETARECLIPPED;
+  }
+
+  if (map_trail_mode == map_trail_mode_real &&
+      thing->player && thing->player->mo == thing)
+  {
+    AM_updatePlayerTrail(x, y);
   }
 
   // if any special lines were hit, do the effect
