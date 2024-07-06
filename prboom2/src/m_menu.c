@@ -219,13 +219,6 @@ const char skullName[2][/*8*/9] = {"M_SKULL1","M_SKULL2"};
 
 menu_t* currentMenu; // current menudef
 
-// phares 3/30/98
-// externs added for setup menus
-
-int mapcolor_me;    // cph
-
-// end of externs added for setup menus
-
 //
 // PROTOTYPES
 //

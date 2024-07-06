@@ -42,6 +42,38 @@
 #include "m_fixed.h"
 #include "m_misc.h"
 
+typedef struct
+{
+  int back;
+  int grid;
+  int wall;
+  int fchg;
+  int cchg;
+  int clsd;
+  int rkey;
+  int bkey;
+  int ykey;
+  int rdor;
+  int bdor;
+  int ydor;
+  int tele;
+  int secr;
+  int revsecr;
+  int exit;
+  int unsn;
+  int flat;
+  int sprt;
+  int item;
+  int frnd;
+  int enemy;
+  int hair;
+  int sngl;
+  int me;
+  int plyr[8];
+  int trail_1;
+  int trail_2;
+} mapcolor_t;
+
 typedef struct map_point_s
 {
   float x, y;
@@ -104,38 +136,7 @@ extern int markpointnum, markpointnum_max;
 
 // end changes -- killough 2/22/98
 
-// killough 5/2/98: moved from m_misc.c
-
-//jff 1/7/98 automap colors added
-extern int mapcolor_back;     // map background
-extern int mapcolor_grid;     // grid lines color
-extern int mapcolor_wall;     // normal 1s wall color
-extern int mapcolor_fchg;     // line at floor height change color
-extern int mapcolor_cchg;     // line at ceiling height change color
-extern int mapcolor_clsd;     // line at sector with floor=ceiling color
-extern int mapcolor_rkey;     // red key color
-extern int mapcolor_bkey;     // blue key color
-extern int mapcolor_ykey;     // yellow key color
-extern int mapcolor_rdor;     // red door color (diff from keys to allow option)
-extern int mapcolor_bdor;     // blue door color (of enabling one not other)
-extern int mapcolor_ydor;     // yellow door color
-extern int mapcolor_tele;     // teleporter line color
-extern int mapcolor_secr;     // secret sector boundary color
-extern int mapcolor_revsecr;  // revealed secret sector boundary color
-//jff 4/23/98
-extern int mapcolor_exit;     // exit line
-extern int mapcolor_unsn;     // computer map unseen line color
-extern int mapcolor_flat;     // line with no floor/ceiling changes
-extern int mapcolor_sprt;     // general sprite color
-extern int mapcolor_item;     // item sprite color
-extern int mapcolor_enemy;    // enemy sprite color
-extern int mapcolor_frnd;     // friendly sprite color
-extern int mapcolor_hair;     // crosshair color
-extern int mapcolor_sngl;     // single player arrow color
-extern int mapcolor_plyr[4];  // colors for players in multiplayer
-extern int mapcolor_me;       // consoleplayer's chosen colour
-extern int mapcolor_trail_1;
-extern int mapcolor_trail_2;
+extern mapcolor_t mapcolor;
 
 void M_ChangeMapTextured(void);
 void M_ChangeMapMultisamling(void);

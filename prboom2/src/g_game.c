@@ -1464,9 +1464,9 @@ void G_Ticker (void)
   entry_leveltime = leveltime;
 
   // CPhipps - player colour changing
-  if (!demoplayback && mapcolor_plyr[consoleplayer] != mapcolor_me) {
+  if (!demoplayback && mapcolor.plyr[consoleplayer] != mapcolor.me) {
     // Changed my multiplayer colour - Inform the whole game
-    G_ChangedPlayerColour(consoleplayer, mapcolor_me);
+    G_ChangedPlayerColour(consoleplayer, mapcolor.me);
   }
   P_MapStart();
   // do player reborns if needed
@@ -1832,7 +1832,7 @@ void G_ChangedPlayerColour(int pn, int cl)
 
   if (!netgame) return;
 
-  mapcolor_plyr[pn] = cl;
+  mapcolor.plyr[pn] = cl;
 
   // Rebuild colour translation tables accordingly
   R_InitTranslationTables();
