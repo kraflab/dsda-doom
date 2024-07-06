@@ -324,8 +324,8 @@ int markpointnum_max = 0;       // killough 2/22/98
 
 typedef struct
 {
- fixed_t x;
- fixed_t y;
+  fixed_t x;
+  fixed_t y;
 } trailpoint_t;
 
 #define TRAIL_SIZE 350 // ten seconds
