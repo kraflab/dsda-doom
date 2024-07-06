@@ -2346,6 +2346,9 @@ static void AM_drawMarks(void)
   int i;
   char namebuf[16] = "AMMNUM0";
 
+  if (map_trail_mode && dsda_RevealAutomap())
+    AM_drawPlayerTrail();
+
 #if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
   {
