@@ -171,8 +171,8 @@ typedef enum
 typedef enum
 {
   map_trail_mode_off,
-  map_trail_mode_real,
-  map_trail_mode_all,
+  map_trail_mode_ignore_collisions,
+  map_trail_mode_include_collisions,
   map_trail_mode_max
 } map_trail_mode_t;
 

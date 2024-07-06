@@ -2681,8 +2681,8 @@ static const char *map_things_appearance_list[] =
 static const char *map_trail_mode_list[] =
 {
   "off",
-  "real positions",
-  "all positions",
+  "ignore collisions",
+  "include collisions",
   NULL
 };
 

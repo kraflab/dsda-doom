@@ -1435,7 +1435,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
   fixed_t oldx;
   fixed_t oldy;
 
-  if (map_trail_mode == map_trail_mode_all &&
+  if (map_trail_mode == map_trail_mode_include_collisions &&
       thing->player && thing->player->mo == thing)
   {
     AM_updatePlayerTrail(x, y);
@@ -1614,7 +1614,7 @@ dboolean P_TryMove(mobj_t* thing,fixed_t x,fixed_t y,
     thing->flags2 &= ~MF2_FEETARECLIPPED;
   }
 
-  if (map_trail_mode == map_trail_mode_real &&
+  if (map_trail_mode == map_trail_mode_ignore_collisions &&
       thing->player && thing->player->mo == thing)
   {
     AM_updatePlayerTrail(x, y);
