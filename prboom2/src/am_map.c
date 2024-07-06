@@ -2388,11 +2388,13 @@ static void AM_drawPlayerTrail(void)
       b.y = c.y = player_trail[i].y + FRACUNIT;
 
       e.x = player_trail[i].x - FRACUNIT / 8;
+      e.y = player_trail[i].y - FRACUNIT / 8;
       f.x = player_trail[i].x + FRACUNIT / 8;
-      g.y = player_trail[i].y - FRACUNIT / 8;
-      h.y = player_trail[i].y + FRACUNIT / 8;
-      e.y = f.y = player_trail[i].y;
-      g.x = h.x = player_trail[i].x;
+      f.y = player_trail[i].y + FRACUNIT / 8;
+      g.x = player_trail[i].x - FRACUNIT / 8;
+      g.y = player_trail[i].y + FRACUNIT / 8;
+      h.x = player_trail[i].x + FRACUNIT / 8;
+      h.y = player_trail[i].y - FRACUNIT / 8;
 
       if (automap_rotate)
       {
