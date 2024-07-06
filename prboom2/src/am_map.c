@@ -93,6 +93,8 @@ mapcolor_t mapcolor_heretic = {
   .hair = 5 * 8,
   .sngl = 4 * 8,
   .plyr = { 220, 144, 150, 197 },
+  .trail_1 = 33,
+  .trail_2 = 15,
 };
 
 mapcolor_t mapcolor_hexen = {
@@ -121,6 +123,8 @@ mapcolor_t mapcolor_hexen = {
   .hair = 5 * 8,
   .sngl = 4 * 8,
   .plyr = { 157, 177, 137, 198, 215, 32, 106, 234 },
+  .trail_1 = 33,
+  .trail_2 = 15,
 };
 
 static mapcolor_t *mapcolor_p;
