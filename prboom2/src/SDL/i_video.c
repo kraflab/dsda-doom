@@ -294,121 +294,121 @@ static void I_GetEvent(void)
   SDL_Event SDLEvent;
   SDL_Event *Event = &SDLEvent;
 
-while (SDL_PollEvent(Event))
-{
-  switch (Event->type) {
-  case SDL_KEYDOWN:
+  while (SDL_PollEvent(Event))
+  {
+    switch (Event->type) {
+      case SDL_KEYDOWN:
 #ifdef __APPLE__
-    if (Event->key.keysym.mod & KMOD_GUI)
-    {
-      // Switch windowed<->fullscreen if pressed <Command-F>
-      if (Event->key.keysym.sym == SDLK_f)
-      {
-        V_ToggleFullscreen();
-        break;
-      }
-    }
+        if (Event->key.keysym.mod & KMOD_GUI)
+        {
+          // Switch windowed<->fullscreen if pressed <Command-F>
+          if (Event->key.keysym.sym == SDLK_f)
+          {
+            V_ToggleFullscreen();
+            break;
+          }
+        }
 #else
-    if (Event->key.keysym.mod & KMOD_LALT)
-    {
-      // Prevent executing action on Alt-Tab
-      if (Event->key.keysym.sym == SDLK_TAB)
-      {
-        break;
-      }
-      // Switch windowed<->fullscreen if pressed Alt-Enter
-      else if (Event->key.keysym.sym == SDLK_RETURN)
-      {
-        V_ToggleFullscreen();
-        break;
-      }
-      // Immediately exit on Alt+F4 ("Boss Key")
-      else if (Event->key.keysym.sym == SDLK_F4)
-      {
-        I_SafeExit(0);
-        break;
-      }
-    }
+        if (Event->key.keysym.mod & KMOD_LALT)
+        {
+          // Prevent executing action on Alt-Tab
+          if (Event->key.keysym.sym == SDLK_TAB)
+          {
+            break;
+          }
+          // Switch windowed<->fullscreen if pressed Alt-Enter
+          else if (Event->key.keysym.sym == SDLK_RETURN)
+          {
+            V_ToggleFullscreen();
+            break;
+          }
+          // Immediately exit on Alt+F4 ("Boss Key")
+          else if (Event->key.keysym.sym == SDLK_F4)
+          {
+            I_SafeExit(0);
+            break;
+          }
+        }
 #endif
-    event.type = ev_keydown;
-    event.data1.i = I_TranslateKey(&Event->key.keysym);
-    D_PostEvent(&event);
-    break;
-
-  case SDL_KEYUP:
-  {
-    event.type = ev_keyup;
-    event.data1.i = I_TranslateKey(&Event->key.keysym);
-    D_PostEvent(&event);
-  }
-  break;
-
-  case SDL_MOUSEBUTTONDOWN:
-  case SDL_MOUSEBUTTONUP:
-  if (mouse_enabled && window_focused)
-  {
-    event.type = ev_mouse;
-    event.data1.i = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
-    D_PostEvent(&event);
-  }
-  break;
-
-  case SDL_MOUSEWHEEL:
-  if (mouse_enabled && window_focused)
-  {
-    if (Event->wheel.y > 0)
-    {
-      event.data1.i = KEYD_MWHEELUP;
-
-      event.type = ev_keydown;
-      D_PostEvent(&event);
-
-      event.type = ev_keyup;
-      D_PostEvent(&event);
-    }
-    else if (Event->wheel.y < 0)
-    {
-      event.data1.i = KEYD_MWHEELDOWN;
-
-      event.type = ev_keydown;
-      D_PostEvent(&event);
-
-      event.type = ev_keyup;
-      D_PostEvent(&event);
-    }
-  }
-  break;
-
-  case SDL_TEXTINPUT:
-    event.type = ev_text;
-    event.text = Event->text.text;
-    D_PostEvent(&event);
-    break;
-
-  case SDL_WINDOWEVENT:
-    if (Event->window.windowID == windowid)
-    {
-      switch (Event->window.event)
-      {
-      case SDL_WINDOWEVENT_FOCUS_GAINED:
-      case SDL_WINDOWEVENT_FOCUS_LOST:
-        UpdateFocus();
+        event.type = ev_keydown;
+        event.data1.i = I_TranslateKey(&Event->key.keysym);
+        D_PostEvent(&event);
         break;
-      case SDL_WINDOWEVENT_SIZE_CHANGED:
-        ApplyWindowResize(Event);
+
+      case SDL_KEYUP:
+        {
+          event.type = ev_keyup;
+          event.data1.i = I_TranslateKey(&Event->key.keysym);
+          D_PostEvent(&event);
+        }
         break;
-      }
+
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+        if (mouse_enabled && window_focused)
+        {
+          event.type = ev_mouse;
+          event.data1.i = I_SDLtoDoomMouseState(SDL_GetMouseState(NULL, NULL));
+          D_PostEvent(&event);
+        }
+        break;
+
+      case SDL_MOUSEWHEEL:
+        if (mouse_enabled && window_focused)
+        {
+          if (Event->wheel.y > 0)
+          {
+            event.data1.i = KEYD_MWHEELUP;
+
+            event.type = ev_keydown;
+            D_PostEvent(&event);
+
+            event.type = ev_keyup;
+            D_PostEvent(&event);
+          }
+          else if (Event->wheel.y < 0)
+          {
+            event.data1.i = KEYD_MWHEELDOWN;
+
+            event.type = ev_keydown;
+            D_PostEvent(&event);
+
+            event.type = ev_keyup;
+            D_PostEvent(&event);
+          }
+        }
+        break;
+
+      case SDL_TEXTINPUT:
+        event.type = ev_text;
+        event.text = Event->text.text;
+        D_PostEvent(&event);
+        break;
+
+      case SDL_WINDOWEVENT:
+        if (Event->window.windowID == windowid)
+        {
+          switch (Event->window.event)
+          {
+          case SDL_WINDOWEVENT_FOCUS_GAINED:
+          case SDL_WINDOWEVENT_FOCUS_LOST:
+            UpdateFocus();
+            break;
+          case SDL_WINDOWEVENT_SIZE_CHANGED:
+            ApplyWindowResize(Event);
+            break;
+          }
+        }
+        break;
+
+      case SDL_QUIT:
+        S_StartVoidSound(sfx_swtchn);
+        M_QuitDOOM(0);
+
+      default:
+        break;
     }
-    break;
-
-  case SDL_QUIT:
-    S_StartVoidSound(sfx_swtchn);
-    M_QuitDOOM(0);
-
-  default:
-    break;
   }
-}
 }
 
 //
