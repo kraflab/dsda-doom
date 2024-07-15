@@ -5174,18 +5174,37 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+typedef enum {
+  confirmation_null = -1,
+  confirmation_no = 0,
+  confirmation_yes = 1,
+} confirmation_t;
+
+static confirmation_t M_EventToConfirmation(int ch, int action, event_t* ev)
+{
+  if (ch == 'y' || (!ch && action == MENU_ENTER))
+    return confirmation_yes;
+  else if (ch == ' ' || ch == KEYD_ESCAPE || ch == 'n' || (!ch && action == MENU_BACKSPACE))
+    return confirmation_no;
+  else
+    return confirmation_null;
+}
+
 static dboolean M_DeleteVerifyResponder(int ch, int action, event_t* ev)
 {
-  if (toupper(ch) == 'Y')
+  switch (M_EventToConfirmation(ch, action, ev))
   {
-    M_DeleteGame(itemOn);
-    S_StartVoidSound(g_sfx_itemup);
-    delete_verify = false;
-  }
-  else if (toupper(ch) == 'N')
-  {
-    S_StartVoidSound(g_sfx_itemup);
-    delete_verify = false;
+    case confirmation_yes:
+      M_DeleteGame(itemOn);
+      S_StartVoidSound(g_sfx_itemup);
+      delete_verify = false;
+      break;
+    case confirmation_no:
+      S_StartVoidSound(g_sfx_itemup);
+      delete_verify = false;
+      break;
+    case confirmation_null:
+      break;
   }
 
   return true;
@@ -5520,22 +5539,19 @@ dboolean M_Responder (event_t* ev) {
   // Take care of any messages that need input
 
   if (messageToPrint && ch != MENU_NULL) {
-    dboolean affirmative = false;
+    dboolean confirmation = false;
 
     if (messageNeedsInput == true)
     { // phares
-      if (ch == 'y' || (!ch && action == MENU_ENTER))
-        affirmative = true;
-      else if (ch == ' ' || ch == KEYD_ESCAPE || ch == 'n' || (!ch && action == MENU_BACKSPACE))
-        affirmative = false;
-      else
+      confirmation = M_EventToConfirmation(ch, action, ev);
+      if (confirmation == confirmation_null)
         return false;
     }
 
     M_ChangeMenu(NULL, messageLastMenuActive);
     messageToPrint = 0;
     if (messageRoutine)
-      messageRoutine(affirmative);
+      messageRoutine(confirmation);
 
     M_ChangeMenu(NULL, mnact_inactive);
     S_StartVoidSound(g_sfx_swtchx);
