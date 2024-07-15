@@ -5346,6 +5346,24 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+static dboolean M_ConsoleResponder(int ch, int action, event_t* ev)
+{
+  if (ev->type == ev_text)
+  {
+    dsda_UpdateConsoleText(ev->text);
+    return true;
+  }
+  else if (action != MENU_NULL)
+  {
+    dsda_UpdateConsole(action);
+    return true;
+  }
+  else if (ch != MENU_NULL)
+    return true;
+
+  return false;
+}
+
 int M_EventToCharacter(event_t* ev)
 {
   static int joywait;
@@ -5428,19 +5446,8 @@ dboolean M_Responder (event_t* ev) {
   action = M_CurrentAction();
 
   if (M_ConsoleOpen() && action != MENU_ESCAPE)
-  {
-    if (ev->type == ev_text) {
-      dsda_UpdateConsoleText(ev->text);
+    if (M_ConsoleResponder(ch, action, ev))
       return true;
-    }
-    else if (action != MENU_NULL)
-    {
-      dsda_UpdateConsole(action);
-      return true;
-    }
-    else if (ch != MENU_NULL)
-      return true;
-  }
 
   // Save Game string input
 
