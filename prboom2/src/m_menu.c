@@ -5346,6 +5346,43 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+int M_EventToCharacter(event_t* ev)
+{
+  static int joywait;
+  static int mousewait;
+
+  if (ev->type == ev_joystick)
+  {
+    if (ev->data1.i && joywait < dsda_GetTick())
+    {
+      joywait = dsda_GetTick() + 5;
+      return 0; // meaningless, just to get you past the check for -1
+    }
+  }
+  else if (ev->type == ev_mouse)
+  {
+    if (ev->data1.i && mousewait < dsda_GetTick())
+    {
+      mousewait = dsda_GetTick() + 15;
+      return 0; // meaningless, just to get you past the check for -1
+    }
+  }
+  else if (ev->type == ev_keydown)
+  {
+    if (ev->data1.i == KEYD_RSHIFT) // phares 4/11/98
+      shiftdown = true;
+
+    return ev->data1.i;
+  }
+  else if (ev->type == ev_keyup)
+  {
+    if (ev->data1.i == KEYD_RSHIFT) // phares 4/11/98
+      shiftdown = false;
+  }
+
+  return MENU_NULL;
+}
+
 int M_CurrentAction(void)
 {
   if (dsda_InputActivated(dsda_input_menu_left))
@@ -5386,41 +5423,9 @@ int M_CurrentAction(void)
 
 dboolean M_Responder (event_t* ev) {
   int ch, action;
-  static int joywait;
-  static int mousewait;
 
-  ch = MENU_NULL; // will be changed to a legit char if we're going to use it here
-
+  ch = M_EventToCharacter(ev);
   action = M_CurrentAction();
-
-  // Process joystick input
-
-  if (ev->type == ev_joystick) {
-    if (ev->data1.i && joywait < dsda_GetTick())
-    {
-      ch = 0; // meaningless, just to get you past the check for -1
-      joywait = dsda_GetTick() + 5;
-    }
-  }
-  else if (ev->type == ev_mouse) {
-    if (ev->data1.i && mousewait < dsda_GetTick())
-    {
-      ch = 0; // meaningless, just to get you past the check for -1
-      mousewait = dsda_GetTick() + 15;
-    }
-  }
-  else if (ev->type == ev_keydown)
-  {
-    ch = ev->data1.i;
-                                  // phares 4/11/98:
-    if (ch == KEYD_RSHIFT)        // For string processing, need
-      shiftdown = true;           // to know when shift key is up or
-  }                               // down so you can get at the !,#,
-  else if (ev->type == ev_keyup)  // etc. keys. Keydowns are allowed
-  {                               // past this point, but keyups aren't
-    if (ev->data1.i == KEYD_RSHIFT) // so we need to note the difference
-      shiftdown = false;          // here using the 'shiftdown' dboolean.
-  }
 
   if (M_ConsoleOpen() && action != MENU_ESCAPE)
   {
