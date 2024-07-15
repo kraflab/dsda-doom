@@ -4911,9 +4911,163 @@ static dboolean M_DeleteVerifyResponder(int ch, int action, event_t* ev)
   return true;
 }
 
+static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
+{
+  if (action == MENU_DOWN)                             // phares 3/7/98
+  {
+    do
+    {
+      if (itemOn + 1 > currentMenu->numitems - 1)
+        itemOn = 0;
+      else
+        itemOn++;
+      S_StartVoidSound(g_sfx_menu);
+    }
+    while(currentMenu->menuitems[itemOn].status == -1);
+    return true;
+  }
+
+  if (action == MENU_UP)                               // phares 3/7/98
+  {
+    do
+    {
+      if (!itemOn)
+        itemOn = currentMenu->numitems - 1;
+      else
+        itemOn--;
+      S_StartVoidSound(g_sfx_menu);
+    }
+    while(currentMenu->menuitems[itemOn].status == -1);
+    return true;
+  }
+
+  if (action == MENU_LEFT)                             // phares 3/7/98
+  {
+    if (currentMenu->menuitems[itemOn].routine &&
+        currentMenu->menuitems[itemOn].status == 2)
+    {
+      S_StartVoidSound(g_sfx_stnmov);
+      currentMenu->menuitems[itemOn].routine(0);
+    }
+    return true;
+  }
+
+  if (action == MENU_RIGHT)                            // phares 3/7/98
+  {
+    if (currentMenu->menuitems[itemOn].routine &&
+        currentMenu->menuitems[itemOn].status == 2)
+    {
+      S_StartVoidSound(g_sfx_stnmov);
+      currentMenu->menuitems[itemOn].routine(1);
+    }
+    return true;
+  }
+
+  if (action == MENU_ENTER)                            // phares 3/7/98
+  {
+    if (currentMenu->menuitems[itemOn].routine &&
+        currentMenu->menuitems[itemOn].status)
+    {
+      currentMenu->lastOn = itemOn;
+      if (currentMenu->menuitems[itemOn].status == 2)
+      {
+        currentMenu->menuitems[itemOn].routine(1);   // right arrow
+        S_StartVoidSound(g_sfx_stnmov);
+      }
+      else
+      {
+        currentMenu->menuitems[itemOn].routine(itemOn);
+        S_StartVoidSound(g_sfx_pistol);
+      }
+    }
+    //jff 3/24/98 remember last skill selected
+    // killough 10/98 moved to skill-specific functions
+    return true;
+  }
+
+  if (action == MENU_ESCAPE)                           // phares 3/7/98
+  {
+    currentMenu->lastOn = itemOn;
+    M_ClearMenus ();
+    S_StartVoidSound(g_sfx_swtchx);
+    return true;
+  }
+
+  if (action == MENU_BACKSPACE)                        // phares 3/7/98
+  {
+    currentMenu->lastOn = itemOn;
+
+    // phares 3/30/98:
+    // add checks to see if you're in the extended help screens
+    // if so, stay with the same menu definition, but bump the
+    // index back one. if the index bumps back far enough ( == 0)
+    // then you can return to the Read_Thisn menu definitions
+
+    if (currentMenu->prevMenu)
+    {
+      if (currentMenu == &ExtHelpDef)
+      {
+        if (--extended_help_index == 0)
+        {
+          M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
+          extended_help_index = 1; // reset
+        }
+      }
+      else
+        M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
+      itemOn = currentMenu->lastOn;
+      S_StartVoidSound(g_sfx_swtchn);
+    }
+    else
+    {
+      M_ClearMenus();
+      S_StartVoidSound(g_sfx_swtchx);
+    }
+    return true;
+  }
+  else if (action == MENU_CLEAR) // [FG] delete a savegame
+  {
+    if (currentMenu == &LoadDef || currentMenu == &SaveDef)
+    {
+      if (LoadMenue[itemOn].status)
+      {
+        S_StartVoidSound(g_sfx_itemup);
+        currentMenu->lastOn = itemOn;
+        delete_verify = true;
+        return true;
+      }
+      else
+      {
+        S_StartVoidSound(g_sfx_oof);
+      }
+    }
+  }
+  else
+  {
+    int i;
+
+    for (i = itemOn + 1; i < currentMenu->numitems; i++)
+      if (currentMenu->menuitems[i].alphaKey == ch)
+      {
+        itemOn = i;
+        S_StartVoidSound(g_sfx_menu);
+        return true;
+      }
+
+    for (i = 0; i <= itemOn; i++)
+      if (currentMenu->menuitems[i].alphaKey == ch)
+      {
+        itemOn = i;
+        S_StartVoidSound(g_sfx_menu);
+        return true;
+      }
+  }
+
+  return false;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
-  int    i;
   static int joywait   = 0;
   static int mousewait = 0;
 
@@ -5396,153 +5550,9 @@ dboolean M_Responder (event_t* ev) {
 
   // From here on, these navigation keys are used on the BIG FONT menus
   // like the Main Menu.
-
-  if (action == MENU_DOWN)                             // phares 3/7/98
-  {
-    do
-    {
-      if (itemOn + 1 > currentMenu->numitems - 1)
-        itemOn = 0;
-      else
-        itemOn++;
-      S_StartVoidSound(g_sfx_menu);
-    }
-    while(currentMenu->menuitems[itemOn].status == -1);
+  if (M_MainNavigationResponder(ch, action, ev))
     return true;
-  }
 
-  if (action == MENU_UP)                               // phares 3/7/98
-  {
-    do
-    {
-      if (!itemOn)
-        itemOn = currentMenu->numitems - 1;
-      else
-        itemOn--;
-      S_StartVoidSound(g_sfx_menu);
-    }
-    while(currentMenu->menuitems[itemOn].status == -1);
-    return true;
-  }
-
-  if (action == MENU_LEFT)                             // phares 3/7/98
-  {
-    if (currentMenu->menuitems[itemOn].routine &&
-        currentMenu->menuitems[itemOn].status == 2)
-    {
-      S_StartVoidSound(g_sfx_stnmov);
-      currentMenu->menuitems[itemOn].routine(0);
-    }
-    return true;
-  }
-
-  if (action == MENU_RIGHT)                            // phares 3/7/98
-  {
-    if (currentMenu->menuitems[itemOn].routine &&
-        currentMenu->menuitems[itemOn].status == 2)
-    {
-      S_StartVoidSound(g_sfx_stnmov);
-      currentMenu->menuitems[itemOn].routine(1);
-    }
-    return true;
-  }
-
-  if (action == MENU_ENTER)                            // phares 3/7/98
-  {
-    if (currentMenu->menuitems[itemOn].routine &&
-        currentMenu->menuitems[itemOn].status)
-    {
-      currentMenu->lastOn = itemOn;
-      if (currentMenu->menuitems[itemOn].status == 2)
-      {
-        currentMenu->menuitems[itemOn].routine(1);   // right arrow
-        S_StartVoidSound(g_sfx_stnmov);
-      }
-      else
-      {
-        currentMenu->menuitems[itemOn].routine(itemOn);
-        S_StartVoidSound(g_sfx_pistol);
-      }
-    }
-    //jff 3/24/98 remember last skill selected
-    // killough 10/98 moved to skill-specific functions
-    return true;
-  }
-
-  if (action == MENU_ESCAPE)                           // phares 3/7/98
-  {
-    currentMenu->lastOn = itemOn;
-    M_ClearMenus ();
-    S_StartVoidSound(g_sfx_swtchx);
-    return true;
-  }
-
-  if (action == MENU_BACKSPACE)                        // phares 3/7/98
-  {
-    currentMenu->lastOn = itemOn;
-
-    // phares 3/30/98:
-    // add checks to see if you're in the extended help screens
-    // if so, stay with the same menu definition, but bump the
-    // index back one. if the index bumps back far enough ( == 0)
-    // then you can return to the Read_Thisn menu definitions
-
-    if (currentMenu->prevMenu)
-    {
-      if (currentMenu == &ExtHelpDef)
-      {
-        if (--extended_help_index == 0)
-        {
-          M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
-          extended_help_index = 1; // reset
-        }
-      }
-      else
-        M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
-      itemOn = currentMenu->lastOn;
-      S_StartVoidSound(g_sfx_swtchn);
-    }
-    else
-    {
-      M_ClearMenus();
-      S_StartVoidSound(g_sfx_swtchx);
-    }
-    return true;
-  }
-  else if (action == MENU_CLEAR) // [FG] delete a savegame
-  {
-    if (currentMenu == &LoadDef || currentMenu == &SaveDef)
-    {
-      if (LoadMenue[itemOn].status)
-      {
-        S_StartVoidSound(g_sfx_itemup);
-        currentMenu->lastOn = itemOn;
-        delete_verify = true;
-        return true;
-      }
-      else
-      {
-        S_StartVoidSound(g_sfx_oof);
-      }
-    }
-  }
-  else
-  {
-    for (i = itemOn + 1; i < currentMenu->numitems; i++)
-      if (currentMenu->menuitems[i].alphaKey == ch)
-      {
-        itemOn = i;
-        S_StartVoidSound(g_sfx_menu);
-        return true;
-      }
-    for (i = 0; i <= itemOn; i++)
-      if (currentMenu->menuitems[i].alphaKey == ch)
-      {
-        itemOn = i;
-        S_StartVoidSound(g_sfx_menu);
-        return true;
-      }
-  }
   return false;
 }
 
