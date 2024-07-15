@@ -5383,6 +5383,74 @@ static dboolean M_ConsoleResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+static dboolean M_SaveResponder(int ch, int action, event_t* ev)
+{
+  if (saveStringEnter && (ch != MENU_NULL || action != MENU_NULL))
+  {
+    if (action == MENU_BACKSPACE)                            // phares 3/7/98
+    {
+      if (saveCharIndex > 0)
+      {
+        if (!strcmp(savegamestrings[saveSlot], dsda_MapLumpName(gameepisode, gamemap)))
+        {
+          saveCharIndex = 0;
+        }
+        else
+        {
+          saveCharIndex--;
+        }
+        savegamestrings[saveSlot][saveCharIndex] = 0;
+      }
+    }
+    else if (action == MENU_ESCAPE)                    // phares 3/7/98
+    {
+      saveStringEnter = 0;
+      strcpy(&savegamestrings[saveSlot][0],saveOldString);
+    }
+    else if (action == MENU_ENTER)                     // phares 3/7/98
+    {
+      saveStringEnter = 0;
+      if (savegamestrings[saveSlot][0])
+        M_DoSave(saveSlot);
+    }
+    else if (ch > 0)
+    {
+      ch = toupper(ch);
+      if (ch >= 32 && ch <= 127 &&
+          saveCharIndex < SAVESTRINGSIZE-1 &&
+          M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
+      {
+        savegamestrings[saveSlot][saveCharIndex++] = ch;
+        savegamestrings[saveSlot][saveCharIndex] = 0;
+      }
+    }
+
+    return true;
+  }
+  else if (!saveStringEnter)
+  {
+    int diff = 0;
+
+    if (action == MENU_LEFT)
+      diff = -1;
+    else if (action == MENU_RIGHT)
+      diff = 1;
+
+    if (diff)
+    {
+      save_page += diff;
+      if (save_page < 0)
+        save_page = save_page_limit - 1;
+      else if (save_page >= save_page_limit)
+        save_page = 0;
+
+      M_ReadSaveStrings();
+    }
+  }
+
+  return false;
+}
+
 int M_EventToCharacter(event_t* ev)
 {
   static int joywait;
@@ -5468,73 +5536,9 @@ dboolean M_Responder (event_t* ev) {
     if (M_ConsoleResponder(ch, action, ev))
       return true;
 
-  // Save Game string input
-
-  if (saveStringEnter && (ch != MENU_NULL || action != MENU_NULL)) {
-    if (action == MENU_BACKSPACE)                            // phares 3/7/98
-    {
-      if (saveCharIndex > 0)
-      {
-        if (!strcmp(savegamestrings[saveSlot], dsda_MapLumpName(gameepisode, gamemap)))
-        {
-          saveCharIndex = 0;
-        }
-        else
-        {
-          saveCharIndex--;
-        }
-        savegamestrings[saveSlot][saveCharIndex] = 0;
-      }
-    }
-    else if (action == MENU_ESCAPE)                    // phares 3/7/98
-    {
-      saveStringEnter = 0;
-      strcpy(&savegamestrings[saveSlot][0],saveOldString);
-    }
-    else if (action == MENU_ENTER)                     // phares 3/7/98
-    {
-      saveStringEnter = 0;
-      if (savegamestrings[saveSlot][0])
-        M_DoSave(saveSlot);
-    }
-    else if (ch > 0)
-    {
-      ch = toupper(ch);
-      if (ch >= 32 && ch <= 127 &&
-          saveCharIndex < SAVESTRINGSIZE-1 &&
-          M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
-      {
-        savegamestrings[saveSlot][saveCharIndex++] = ch;
-        savegamestrings[saveSlot][saveCharIndex] = 0;
-      }
-    }
-    return true;
-  }
-
-  if (
-    menuactive &&
-    (currentMenu == &LoadDef || currentMenu == &SaveDef) &&
-    !saveStringEnter
-  )
-  {
-    int diff = 0;
-
-    if (action == MENU_LEFT)
-      diff = -1;
-    else if (action == MENU_RIGHT)
-      diff = 1;
-
-    if (diff)
-    {
-      save_page += diff;
-      if (save_page < 0)
-        save_page = save_page_limit - 1;
-      else if (save_page >= save_page_limit)
-        save_page = 0;
-
-      M_ReadSaveStrings();
-    }
-  }
+  if (currentMenu == &LoadDef || currentMenu == &SaveDef)
+    if (M_SaveResponder(ch, action, ev))
+      return true;
 
   // Take care of any messages that need input
 
