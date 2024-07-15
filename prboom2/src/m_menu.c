@@ -4894,6 +4894,23 @@ static dboolean M_SetupResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+static dboolean M_DeleteVerifyResponder(int ch, int action, event_t* ev)
+{
+  if (toupper(ch) == 'Y')
+  {
+    M_DeleteGame(itemOn);
+    S_StartVoidSound(g_sfx_itemup);
+    delete_verify = false;
+  }
+  else if (toupper(ch) == 'N')
+  {
+    S_StartVoidSound(g_sfx_itemup);
+    delete_verify = false;
+  }
+
+  return true;
+}
+
 dboolean M_Responder (event_t* ev) {
   int    ch, action;
   int    i;
@@ -5369,23 +5386,9 @@ dboolean M_Responder (event_t* ev) {
   // [FG] delete a savegame
 
   if (currentMenu == &LoadDef || currentMenu == &SaveDef)
-  {
     if (delete_verify)
-    {
-      if (toupper(ch) == 'Y')
-      {
-        M_DeleteGame(itemOn);
-        S_StartVoidSound(g_sfx_itemup);
-        delete_verify = false;
-      }
-      else if (toupper(ch) == 'N')
-      {
-        S_StartVoidSound(g_sfx_itemup);
-        delete_verify = false;
-      }
-      return true;
-    }
-  }
+      if (M_DeleteVerifyResponder(ch, action, ev))
+        return true;
 
   if (setup_active)
     if (M_SetupResponder(ch, action, ev))
