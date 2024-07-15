@@ -5472,16 +5472,10 @@ static dboolean M_MessageResponder(int ch, int action, event_t* ev)
 
 int M_EventToCharacter(event_t* ev)
 {
-  static int joywait;
   static int mousewait;
-
   if (ev->type == ev_joystick)
   {
-    if (ev->data1.i && joywait < dsda_GetTick())
-    {
-      joywait = dsda_GetTick() + 5;
-      return 0; // meaningless, just to get you past the check for -1
-    }
+    return 0; // meaningless, just to get you past the check for -1
   }
   else if (ev->type == ev_mouse)
   {

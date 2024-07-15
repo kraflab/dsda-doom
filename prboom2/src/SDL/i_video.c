@@ -379,6 +379,12 @@ static void I_GetEvent(void)
         }
         break;
 
+      case SDL_CONTROLLERBUTTONDOWN:
+      case SDL_CONTROLLERBUTTONUP:
+        if (dsda_AllowGameController())
+          dsda_PollGameControllerButtons();
+        break;
+
       case SDL_TEXTINPUT:
         event.type = ev_text;
         event.text = Event->text.text;
