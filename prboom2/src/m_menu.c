@@ -5346,13 +5346,52 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+int M_CurrentAction(void)
+{
+  if (dsda_InputActivated(dsda_input_menu_left))
+  {
+    return MENU_LEFT;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_right))
+  {
+    return MENU_RIGHT;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_up))
+  {
+    return MENU_UP;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_down))
+  {
+    return MENU_DOWN;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_backspace))
+  {
+    return MENU_BACKSPACE;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_enter))
+  {
+    return MENU_ENTER;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_escape))
+  {
+    return MENU_ESCAPE;
+  }
+  else if (dsda_InputActivated(dsda_input_menu_clear))
+  {
+    return MENU_CLEAR;
+  }
+
+  return MENU_NULL;
+}
+
 dboolean M_Responder (event_t* ev) {
   int ch, action;
   static int joywait;
   static int mousewait;
 
   ch = MENU_NULL; // will be changed to a legit char if we're going to use it here
-  action = MENU_NULL; // differentiate between action caused by a binding and input ch
+
+  action = M_CurrentAction();
 
   // Process joystick input
 
@@ -5381,39 +5420,6 @@ dboolean M_Responder (event_t* ev) {
   {                               // past this point, but keyups aren't
     if (ev->data1.i == KEYD_RSHIFT) // so we need to note the difference
       shiftdown = false;          // here using the 'shiftdown' dboolean.
-  }
-
-  if (dsda_InputActivated(dsda_input_menu_left))
-  {
-    action = MENU_LEFT;
-  }
-  else if (dsda_InputActivated(dsda_input_menu_right))
-  {
-    action = MENU_RIGHT;
-  }
-  else if (dsda_InputActivated(dsda_input_menu_up))
-  {
-    action = MENU_UP;
-  }
-  else if (dsda_InputActivated(dsda_input_menu_down))
-  {
-    action = MENU_DOWN;
-  }
-  else if (dsda_InputActivated(dsda_input_menu_backspace))
-  {
-    action = MENU_BACKSPACE;
-  }
-  else if (dsda_InputActivated(dsda_input_menu_enter))
-  {
-    action = MENU_ENTER;
-  }
-  else if (dsda_InputActivated(dsda_input_menu_escape))
-  {
-    action = MENU_ESCAPE;
-  }
-  else if (dsda_InputActivated(dsda_input_menu_clear))
-  {
-    action = MENU_CLEAR;
   }
 
   if (M_ConsoleOpen() && action != MENU_ESCAPE)
