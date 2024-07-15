@@ -166,6 +166,7 @@ void dsda_PollGameController(void) {
   if (!game_controller)
     return;
 
+  dsda_PollGameControllerButtons();
   dsda_PollLeftStick();
   dsda_PollRightStick();
 }
