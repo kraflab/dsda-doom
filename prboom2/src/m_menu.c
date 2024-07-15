@@ -5067,9 +5067,9 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
 }
 
 dboolean M_Responder (event_t* ev) {
-  int    ch, action;
-  static int joywait   = 0;
-  static int mousewait = 0;
+  int ch, action;
+  static int joywait;
+  static int mousewait;
 
   ch = MENU_NULL; // will be changed to a legit char if we're going to use it here
   action = MENU_NULL; // differentiate between action caused by a binding and input ch
