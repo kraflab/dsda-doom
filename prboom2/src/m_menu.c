@@ -5190,26 +5190,6 @@ static confirmation_t M_EventToConfirmation(int ch, int action, event_t* ev)
     return confirmation_null;
 }
 
-static dboolean M_DeleteVerifyResponder(int ch, int action, event_t* ev)
-{
-  switch (M_EventToConfirmation(ch, action, ev))
-  {
-    case confirmation_yes:
-      M_DeleteGame(itemOn);
-      S_StartVoidSound(g_sfx_itemup);
-      delete_verify = false;
-      break;
-    case confirmation_no:
-      S_StartVoidSound(g_sfx_itemup);
-      delete_verify = false;
-      break;
-    case confirmation_null:
-      break;
-  }
-
-  return true;
-}
-
 static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
 {
   if (action == MENU_DOWN)                             // phares 3/7/98
@@ -5324,23 +5304,6 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
     }
     return true;
   }
-  else if (action == MENU_CLEAR) // [FG] delete a savegame
-  {
-    if (currentMenu == &LoadDef || currentMenu == &SaveDef)
-    {
-      if (LoadMenue[itemOn].status)
-      {
-        S_StartVoidSound(g_sfx_itemup);
-        currentMenu->lastOn = itemOn;
-        delete_verify = true;
-        return true;
-      }
-      else
-      {
-        S_StartVoidSound(g_sfx_oof);
-      }
-    }
-  }
   else
   {
     int i;
@@ -5385,6 +5348,26 @@ static dboolean M_ConsoleResponder(int ch, int action, event_t* ev)
 
 static dboolean M_SaveResponder(int ch, int action, event_t* ev)
 {
+  if (delete_verify) // [FG] delete a savegame
+  {
+    switch (M_EventToConfirmation(ch, action, ev))
+    {
+      case confirmation_yes:
+        M_DeleteGame(itemOn);
+        S_StartVoidSound(g_sfx_itemup);
+        delete_verify = false;
+        break;
+      case confirmation_no:
+        S_StartVoidSound(g_sfx_itemup);
+        delete_verify = false;
+        break;
+      case confirmation_null:
+        break;
+    }
+
+    return true;
+  }
+
   if (saveStringEnter && (ch != MENU_NULL || action != MENU_NULL))
   {
     if (action == MENU_BACKSPACE)                            // phares 3/7/98
@@ -5445,6 +5428,21 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
         save_page = 0;
 
       M_ReadSaveStrings();
+    }
+  }
+
+  if (action == MENU_CLEAR) // [FG] delete a savegame
+  {
+    if (LoadMenue[itemOn].status)
+    {
+      S_StartVoidSound(g_sfx_itemup);
+      currentMenu->lastOn = itemOn;
+      delete_verify = true;
+      return true;
+    }
+    else
+    {
+      S_StartVoidSound(g_sfx_oof);
     }
   }
 
@@ -5578,13 +5576,6 @@ dboolean M_Responder (event_t* ev) {
 
   if (ch == MENU_NULL)
     return false; // we can't use the event here
-
-  // [FG] delete a savegame
-
-  if (currentMenu == &LoadDef || currentMenu == &SaveDef)
-    if (delete_verify)
-      if (M_DeleteVerifyResponder(ch, action, ev))
-        return true;
 
   if (setup_active)
     if (M_SetupResponder(ch, action, ev))
