@@ -5545,7 +5545,7 @@ int M_CurrentAction(void)
   return MENU_NULL;
 }
 
-dboolean M_Responder (event_t* ev) {
+dboolean M_Responder(event_t* ev) {
   int ch, action;
 
   ch = M_EventToCharacter(ev);
@@ -5564,11 +5564,9 @@ dboolean M_Responder (event_t* ev) {
       return true;
 
   // killough 2/22/98: add support for screenshot key:
+  // Don't eat the keypress in this case. See sf bug #1843280.
   if (dsda_InputActivated(dsda_input_screenshot))
-  {
     I_QueueScreenshot();
-    // Don't eat the keypress in this case. See sf bug #1843280.
-  }
 
   if (heretic && F_BlockingInput())
     return false;
