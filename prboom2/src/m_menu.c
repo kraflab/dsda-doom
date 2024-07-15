@@ -5449,6 +5449,27 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+static dboolean M_MessageResponder(int ch, int action, event_t* ev)
+{
+  dboolean confirmation = false;
+
+  if (messageNeedsInput)
+  { // phares
+    confirmation = M_EventToConfirmation(ch, action, ev);
+    if (confirmation == confirmation_null)
+      return true;
+  }
+
+  M_ChangeMenu(NULL, messageLastMenuActive);
+  messageToPrint = 0;
+  if (messageRoutine)
+    messageRoutine(confirmation);
+
+  M_ChangeMenu(NULL, mnact_inactive);
+  S_StartVoidSound(g_sfx_swtchx);
+  return true;
+}
+
 int M_EventToCharacter(event_t* ev)
 {
   static int joywait;
@@ -5538,27 +5559,9 @@ dboolean M_Responder (event_t* ev) {
     if (M_SaveResponder(ch, action, ev))
       return true;
 
-  // Take care of any messages that need input
-
-  if (messageToPrint && ch != MENU_NULL) {
-    dboolean confirmation = false;
-
-    if (messageNeedsInput == true)
-    { // phares
-      confirmation = M_EventToConfirmation(ch, action, ev);
-      if (confirmation == confirmation_null)
-        return false;
-    }
-
-    M_ChangeMenu(NULL, messageLastMenuActive);
-    messageToPrint = 0;
-    if (messageRoutine)
-      messageRoutine(confirmation);
-
-    M_ChangeMenu(NULL, mnact_inactive);
-    S_StartVoidSound(g_sfx_swtchx);
-    return true;
-  }
+  if (messageToPrint && ch != MENU_NULL)
+    if (M_MessageResponder(ch, action, ev))
+      return true;
 
   // killough 2/22/98: add support for screenshot key:
   if (dsda_InputActivated(dsda_input_screenshot))
