@@ -4894,6 +4894,286 @@ static dboolean M_SetupResponder(int ch, int action, event_t* ev)
   return false;
 }
 
+static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
+{
+  if (ch == KEYD_F1)                                         // phares
+  {
+    M_StartControlPanel ();
+    M_ChangeMenu(&HelpDef, mnact_nochange);
+
+    itemOn = 0;
+    S_StartVoidSound(g_sfx_swtchn);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_savegame))
+  {
+    M_StartControlPanel();
+    S_StartVoidSound(g_sfx_swtchn);
+    M_SaveGame(0);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_loadgame))
+  {
+    M_StartControlPanel();
+    S_StartVoidSound(g_sfx_swtchn);
+    M_LoadGame(0);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_level_table))
+  {
+    M_StartControlPanel();
+    S_StartVoidSound(g_sfx_swtchn);
+    M_LevelTable(0);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_soundvolume))
+  {
+    M_StartControlPanel ();
+    M_ChangeMenu(&SoundDef, mnact_nochange);
+    itemOn = sfx_vol;
+    S_StartVoidSound(g_sfx_swtchn);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_quicksave))
+  {
+    S_StartVoidSound(g_sfx_swtchn);
+    M_QuickSave();
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_endgame))
+  {
+    S_StartVoidSound(g_sfx_swtchn);
+    M_EndGame(0);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_quickload))
+  {
+    S_StartVoidSound(g_sfx_swtchn);
+    M_QuickLoad();
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_quit))
+  {
+    if (!dsda_SkipQuitPrompt())
+      S_StartVoidSound(g_sfx_swtchn);
+    M_QuitDOOM(0);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_console))
+  {
+    if (dsda_OpenConsole())
+      S_StartVoidSound(g_sfx_swtchn);
+    return true;
+  }
+
+  {
+    int i;
+
+    for (i = 0; i < CONSOLE_SCRIPT_COUNT; ++i)
+      if (dsda_InputActivated(dsda_input_script_0 + i)) {
+        dsda_ExecuteConsoleScript(i);
+
+        return true;
+      }
+  }
+
+  // Toggle gamma
+  if (dsda_InputActivated(dsda_input_gamma))
+  {
+    //e6y
+    dsda_CycleConfig(dsda_config_usegamma, true);
+    dsda_AddMessage(usegamma == 0 ? s_GAMMALVL0 :
+                    usegamma == 1 ? s_GAMMALVL1 :
+                    usegamma == 2 ? s_GAMMALVL2 :
+                    usegamma == 3 ? s_GAMMALVL3 :
+                    s_GAMMALVL4);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_zoomout))
+  {
+    if (automap_active)
+      return false;
+    M_SizeDisplay(0);
+    S_StartVoidSound(g_sfx_stnmov);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_zoomin))
+  {                                   // jff 2/23/98
+    if (automap_active)               // allow
+      return false;                   // key_hud==key_zoomin
+    M_SizeDisplay(1);                                             //  ^
+    S_StartVoidSound(g_sfx_stnmov);                              //  |
+    return true;                                                  // phares
+  }
+
+  //e6y
+  if (dsda_InputActivated(dsda_input_speed_default) && !dsda_StrictMode())
+  {
+    int value = StepwiseSum(dsda_GameSpeed(), 0, 3, 10000, 100);
+    dsda_UpdateGameSpeed(value);
+    doom_printf("Game Speed %d", value);
+    // Don't eat the keypress in this case.
+    // return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_speed_up) && !dsda_StrictMode())
+  {
+    int value = StepwiseSum(dsda_GameSpeed(), 1, 3, 10000, 100);
+    dsda_UpdateGameSpeed(value);
+    doom_printf("Game Speed %d", value);
+    // Don't eat the keypress in this case.
+    // return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_speed_down) && !dsda_StrictMode())
+  {
+    int value = StepwiseSum(dsda_GameSpeed(), -1, 3, 10000, 100);
+    dsda_UpdateGameSpeed(value);
+    doom_printf("Game Speed %d", value);
+    // Don't eat the keypress in this case.
+    // return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_nextlevel))
+  {
+    if (userplayback && !dsda_SkipMode())
+    {
+      dsda_SkipToNextMap();
+      return true;
+    }
+    else
+    {
+      if (G_GotoNextLevel())
+        return true;
+    }
+  }
+
+  if (dsda_InputActivated(dsda_input_prevlevel))
+  {
+    if (G_GotoPrevLevel())
+        return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_restart))
+  {
+    if (G_ReloadLevel())
+      return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_demo_endlevel))
+  {
+    if (userplayback && !dsda_SkipMode())
+    {
+      dsda_SkipToEndOfMap();
+      return true;
+    }
+  }
+
+  if (dsda_InputActivated(dsda_input_demo_skip))
+  {
+    if (userplayback)
+    {
+      dsda_ToggleSkipMode();
+      return true;
+    }
+  }
+
+  if (dsda_InputActivated(dsda_input_store_quick_key_frame))
+  {
+    if (
+      gamestate == GS_LEVEL &&
+      gameaction == ga_nothing &&
+      !dsda_StrictMode()
+    ) dsda_StoreQuickKeyFrame();
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_restore_quick_key_frame))
+  {
+    if (!dsda_StrictMode()) dsda_RestoreQuickKeyFrame();
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_rewind))
+  {
+    if (!dsda_StrictMode()) dsda_RewindAutoKeyFrame();
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_cycle_profile))
+  {
+    int value = dsda_CycleConfig(dsda_config_input_profile, true);
+    doom_printf("Input Profile %d", value);
+    S_StartVoidSound(g_sfx_swtchn);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_cycle_palette))
+  {
+    dsda_CyclePlayPal();
+    doom_printf("Palette %s", dsda_PlayPalData()->lump_name);
+    S_StartVoidSound(g_sfx_swtchn);
+    return true;
+  }
+
+  if (dsda_InputActivated(dsda_input_walkcamera))
+  {
+    if (demoplayback && gamestate == GS_LEVEL)
+    {
+      walkcamera.type = (walkcamera.type+1)%3;
+      P_SyncWalkcam (true, (walkcamera.type!=2));
+      R_ResetViewInterpolation ();
+      if (walkcamera.type==0)
+        R_SmoothPlaying_Reset(NULL);
+      // Don't eat the keypress in this case.
+      // return true;
+    }
+  }
+
+  if (V_IsOpenGLMode())
+  {
+    if (dsda_InputActivated(dsda_input_showalive) && !dsda_StrictMode())
+    {
+      const char* const show_alive_message[3] = { "off", "(mode 1) on", "(mode 2) on" };
+      int show_alive = dsda_CycleConfig(dsda_config_show_alive_monsters, false);
+
+      if (show_alive >= 0 && show_alive < 3)
+        doom_printf("Show Alive Monsters %s", show_alive_message[show_alive]);
+    }
+  }
+
+  M_HandleToggles();
+
+  if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
+  {
+    if (automap_active)              // jff 2/22/98
+      return false;                  // HUD mode control
+    M_SizeDisplay(2);
+    return true;
+  }
+
+  // Pop-up Main menu?
+  if (ch == KEYD_ESCAPE || action == MENU_ESCAPE) // phares
+  {
+    M_StartControlPanel();
+    S_StartVoidSound(g_sfx_swtchn);
+    return true;
+  }
+
+  return false;
+}
+
 static dboolean M_DeleteVerifyResponder(int ch, int action, event_t* ev)
 {
   if (toupper(ch) == 'Y')
@@ -5254,285 +5534,9 @@ dboolean M_Responder (event_t* ev) {
   if (heretic && F_BlockingInput())
     return false;
 
-  // If there is no active menu displayed...
-
-  if (!menuactive) {                                           // phares
-    if (ch == KEYD_F1)                                         //  V
-    {
-      M_StartControlPanel ();
-      M_ChangeMenu(&HelpDef, mnact_nochange);
-
-      itemOn = 0;
-      S_StartVoidSound(g_sfx_swtchn);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_savegame))
-    {
-      M_StartControlPanel();
-      S_StartVoidSound(g_sfx_swtchn);
-      M_SaveGame(0);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_loadgame))
-    {
-      M_StartControlPanel();
-      S_StartVoidSound(g_sfx_swtchn);
-      M_LoadGame(0);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_level_table))
-    {
-      M_StartControlPanel();
-      S_StartVoidSound(g_sfx_swtchn);
-      M_LevelTable(0);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_soundvolume))
-    {
-      M_StartControlPanel ();
-      M_ChangeMenu(&SoundDef, mnact_nochange);
-      itemOn = sfx_vol;
-      S_StartVoidSound(g_sfx_swtchn);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_quicksave))
-    {
-      S_StartVoidSound(g_sfx_swtchn);
-      M_QuickSave();
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_endgame))
-    {
-      S_StartVoidSound(g_sfx_swtchn);
-      M_EndGame(0);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_quickload))
-    {
-      S_StartVoidSound(g_sfx_swtchn);
-      M_QuickLoad();
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_quit))
-    {
-      if (!dsda_SkipQuitPrompt())
-        S_StartVoidSound(g_sfx_swtchn);
-      M_QuitDOOM(0);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_console))
-    {
-      if (dsda_OpenConsole())
-        S_StartVoidSound(g_sfx_swtchn);
-      return true;
-    }
-
-    {
-      int i;
-
-      for (i = 0; i < CONSOLE_SCRIPT_COUNT; ++i)
-        if (dsda_InputActivated(dsda_input_script_0 + i)) {
-          dsda_ExecuteConsoleScript(i);
-
-          return true;
-        }
-    }
-
-    // Toggle gamma
-    if (dsda_InputActivated(dsda_input_gamma))
-    {
-//e6y
-      dsda_CycleConfig(dsda_config_usegamma, true);
-      dsda_AddMessage(usegamma == 0 ? s_GAMMALVL0 :
-                      usegamma == 1 ? s_GAMMALVL1 :
-                      usegamma == 2 ? s_GAMMALVL2 :
-                      usegamma == 3 ? s_GAMMALVL3 :
-                      s_GAMMALVL4);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_zoomout))
-    {
-      if (automap_active)
-        return false;
-      M_SizeDisplay(0);
-      S_StartVoidSound(g_sfx_stnmov);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_zoomin))
-    {                                   // jff 2/23/98
-      if (automap_active)               // allow
-        return false;                   // key_hud==key_zoomin
-      M_SizeDisplay(1);                                             //  ^
-      S_StartVoidSound(g_sfx_stnmov);                              //  |
-      return true;                                                  // phares
-    }
-
-    //e6y
-    if (dsda_InputActivated(dsda_input_speed_default) && !dsda_StrictMode())
-    {
-      int value = StepwiseSum(dsda_GameSpeed(), 0, 3, 10000, 100);
-      dsda_UpdateGameSpeed(value);
-      doom_printf("Game Speed %d", value);
-      // Don't eat the keypress in this case.
-      // return true;
-    }
-    if (dsda_InputActivated(dsda_input_speed_up) && !dsda_StrictMode())
-    {
-      int value = StepwiseSum(dsda_GameSpeed(), 1, 3, 10000, 100);
-      dsda_UpdateGameSpeed(value);
-      doom_printf("Game Speed %d", value);
-      // Don't eat the keypress in this case.
-      // return true;
-    }
-    if (dsda_InputActivated(dsda_input_speed_down) && !dsda_StrictMode())
-    {
-      int value = StepwiseSum(dsda_GameSpeed(), -1, 3, 10000, 100);
-      dsda_UpdateGameSpeed(value);
-      doom_printf("Game Speed %d", value);
-      // Don't eat the keypress in this case.
-      // return true;
-    }
-    if (dsda_InputActivated(dsda_input_nextlevel))
-    {
-      if (userplayback && !dsda_SkipMode())
-      {
-        dsda_SkipToNextMap();
-        return true;
-      }
-      else
-      {
-        if (G_GotoNextLevel())
-          return true;
-      }
-    }
-
-    if (dsda_InputActivated(dsda_input_prevlevel))
-    {
-      if (G_GotoPrevLevel())
-          return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_restart))
-    {
-      if (G_ReloadLevel())
-        return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_demo_endlevel))
-    {
-      if (userplayback && !dsda_SkipMode())
-      {
-        dsda_SkipToEndOfMap();
-        return true;
-      }
-    }
-
-    if (dsda_InputActivated(dsda_input_demo_skip))
-    {
-      if (userplayback)
-      {
-        dsda_ToggleSkipMode();
-        return true;
-      }
-    }
-
-    if (dsda_InputActivated(dsda_input_store_quick_key_frame))
-    {
-      if (
-        gamestate == GS_LEVEL &&
-        gameaction == ga_nothing &&
-        !dsda_StrictMode()
-      ) dsda_StoreQuickKeyFrame();
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_restore_quick_key_frame))
-    {
-      if (!dsda_StrictMode()) dsda_RestoreQuickKeyFrame();
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_rewind))
-    {
-      if (!dsda_StrictMode()) dsda_RewindAutoKeyFrame();
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_cycle_profile))
-    {
-      int value = dsda_CycleConfig(dsda_config_input_profile, true);
-      doom_printf("Input Profile %d", value);
-      S_StartVoidSound(g_sfx_swtchn);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_cycle_palette))
-    {
-      dsda_CyclePlayPal();
-      doom_printf("Palette %s", dsda_PlayPalData()->lump_name);
-      S_StartVoidSound(g_sfx_swtchn);
-      return true;
-    }
-
-    if (dsda_InputActivated(dsda_input_walkcamera))
-    {
-      if (demoplayback && gamestate == GS_LEVEL)
-      {
-        walkcamera.type = (walkcamera.type+1)%3;
-        P_SyncWalkcam (true, (walkcamera.type!=2));
-        R_ResetViewInterpolation ();
-        if (walkcamera.type==0)
-          R_SmoothPlaying_Reset(NULL);
-        // Don't eat the keypress in this case.
-        // return true;
-      }
-    }
-
-    if (V_IsOpenGLMode())
-    {
-      if (dsda_InputActivated(dsda_input_showalive) && !dsda_StrictMode())
-      {
-        const char* const show_alive_message[3] = { "off", "(mode 1) on", "(mode 2) on" };
-        int show_alive = dsda_CycleConfig(dsda_config_show_alive_monsters, false);
-
-        if (show_alive >= 0 && show_alive < 3)
-          doom_printf("Show Alive Monsters %s", show_alive_message[show_alive]);
-      }
-    }
-
-    M_HandleToggles();
-
-    if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
-    {
-      if (automap_active)              // jff 2/22/98
-        return false;                  // HUD mode control
-      M_SizeDisplay(2);
-      return true;
-    }
-  }
-  // Pop-up Main menu?
-
   if (!menuactive)
-  {
-    if (ch == KEYD_ESCAPE || action == MENU_ESCAPE) // phares
-    {
-      M_StartControlPanel ();
-      S_StartVoidSound(g_sfx_swtchn);
+    if (M_InactiveMenuResponder(ch, action, ev))
       return true;
-    }
-    return false;
-  }
 
   if (ch == MENU_NULL)
     return false; // we can't use the event here
