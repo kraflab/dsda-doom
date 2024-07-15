@@ -5309,7 +5309,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
     int i;
 
     for (i = itemOn + 1; i < currentMenu->numitems; i++)
-      if (currentMenu->menuitems[i].alphaKey == ch)
+      if (ch && currentMenu->menuitems[i].alphaKey == ch)
       {
         itemOn = i;
         S_StartVoidSound(g_sfx_menu);
@@ -5317,7 +5317,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       }
 
     for (i = 0; i <= itemOn; i++)
-      if (currentMenu->menuitems[i].alphaKey == ch)
+      if (ch && currentMenu->menuitems[i].alphaKey == ch)
       {
         itemOn = i;
         S_StartVoidSound(g_sfx_menu);
