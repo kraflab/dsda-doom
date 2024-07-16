@@ -804,6 +804,43 @@ sector_t *R_PointInSector(fixed_t x, fixed_t y)
   return R_PointInSubsector(x, y)->sector;
 }
 
+void R_SectorCenter(fixed_t *x, fixed_t *y, sector_t *sec)
+{
+  int i;
+  *x = 0;
+  *y = 0;
+
+  if (!sec->linecount)
+    return;
+
+  for (i = 0; i < sec->linecount; ++i)
+  {
+    *x += sec->lines[i]->v1->x;
+    *y += sec->lines[i]->v1->y;
+  }
+
+  *x /= sec->linecount;
+  *y /= sec->linecount;
+
+  if (R_PointInSector(*x, *y) != sec)
+  {
+    *x = sec->lines[0]->v1->x;
+    *y = sec->lines[0]->v1->y;
+  }
+}
+
+void R_LineCenter(fixed_t *x, fixed_t *y, line_t *line)
+{
+  if (!line->v1 || !line->v2)
+  {
+    *x = 0;
+    *y = 0;
+  }
+
+  *x = (line->v1->x + line->v2->x) / 2;
+  *y = (line->v1->y + line->v2->y) / 2;
+}
+
 //
 // R_SetupFreelook
 //
