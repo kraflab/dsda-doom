@@ -5561,8 +5561,12 @@ dboolean M_Responder(event_t* ev) {
     return false;
 
   if (!menuactive)
+  {
     if (M_InactiveMenuResponder(ch, action, ev))
       return true;
+
+    return false;
+  }
 
   if (ch == MENU_NULL)
     return false; // we can't use the event here
