@@ -5475,11 +5475,11 @@ int M_EventToCharacter(event_t* ev)
 {
   if (ev->type == ev_joystick)
   {
-    return 0; // meaningless, just to get you past the check for -1
+    return MENU_NULL;
   }
   else if (ev->type == ev_mouse)
   {
-    return 0; // meaningless, just to get you past the check for -1
+    return MENU_NULL;
   }
   else if (ev->type == ev_keydown)
   {
@@ -5569,7 +5569,7 @@ dboolean M_Responder(event_t* ev) {
     return false;
   }
 
-  if (ch == MENU_NULL)
+  if (ch == MENU_NULL && action == MENU_NULL)
     return false; // we can't use the event here
 
   if (setup_active)
