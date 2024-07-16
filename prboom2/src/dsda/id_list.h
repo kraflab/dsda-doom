@@ -31,4 +31,6 @@ void dsda_ResetSectorIDList(int size);
 #define FIND_SECTORS(id_p, tag) for (id_p = dsda_FindSectorsFromID(tag); *id_p >= 0; id_p++)
 #define FIND_SECTORS2(id_p, tag, line) for (id_p = dsda_FindSectorsFromIDOrLine(tag, line); *id_p >= 0; id_p++)
 
+#define FIND_LINES(id_p, tag) for (id_p = dsda_FindLinesFromID(tag); *id_p >= 0; id_p++)
+
 #endif
