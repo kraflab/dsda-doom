@@ -2242,6 +2242,7 @@ setup_menu_t keys_settings4[] =  // Key Binding screen strings
   {"ROTATE"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_rotate},
   {"OVERLAY"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_overlay},
   {"TEXTURED"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_textured},
+  { "HIGHLIGHT BY TAG", S_INPUT, m_map, KB_X, 0, dsda_input_map_highlight_by_tag },
 
   PREV_PAGE(keys_settings3),
   NEXT_PAGE(keys_settings5),

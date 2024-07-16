@@ -108,6 +108,7 @@ typedef enum {
   dsda_input_map_rotate,
   dsda_input_map_overlay,
   dsda_input_map_textured,
+  dsda_input_map_highlight_by_tag,
   dsda_input_repeat_message,
   dsda_input_speed_up,
   dsda_input_speed_down,

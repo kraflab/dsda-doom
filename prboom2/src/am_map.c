@@ -57,11 +57,13 @@
 #include "m_bbox.h"
 #include "d_main.h"
 
+#include "dsda/id_list.h"
 #include "dsda/input.h"
 #include "dsda/map_format.h"
 #include "dsda/messenger.h"
 #include "dsda/settings.h"
 #include "dsda/stretch.h"
+#include "dsda/utility.h"
 
 mapcolor_t mapcolor = {
   .plyr = { 112, 96, 64, 176 },
@@ -136,6 +138,24 @@ static void AM_SetColors(void)
                          &mapcolor;
 }
 
+typedef struct
+{
+  mpoint_t a, b;
+} mline_t;
+
+typedef struct
+{
+  int tag;
+  fixed_t x, y;
+  sector_t *sec;
+  line_t *line;
+  mline_t *connections;
+  int connection_count;
+  int connection_max;
+} highlight_t;
+
+static highlight_t highlight;
+
 static int map_blinking_locks;
 static int map_secret_after;
 static int map_grid_size;
@@ -175,11 +195,6 @@ static map_things_appearance_t map_things_appearance;
 #define MTOF_F(x) (((float)(x)*scale_mtof)/(float)FRACUNIT/(float)FRACUNIT)
 #define CXMTOF_F(x)  ((float)f_x + MTOF_F((x)-m_x))
 #define CYMTOF_F(y)  ((float)f_y + (f_h - MTOF_F((y)-m_y)))
-
-typedef struct
-{
-    mpoint_t a, b;
-} mline_t;
 
 #define R ((8*PLAYERRADIUS)/7)
 mline_t hexen_player_arrow[] = {
@@ -688,6 +703,14 @@ void AM_SetResolution(void)
   AM_SetScale();
 }
 
+static void AM_ResetTagHighlight(void)
+{
+  Z_Free(highlight.connections);
+  ZERO_DATA(highlight);
+  highlight.x = INT_MIN;
+  highlight.y = INT_MIN;
+}
+
 //
 // AM_clearMarks()
 //
@@ -699,6 +722,7 @@ void AM_SetResolution(void)
 void AM_clearMarks(void)
 {
   AM_initPlayerTrail();
+  AM_ResetTagHighlight();
 
   markpointnum = 0;
 }
@@ -821,6 +845,150 @@ static void AM_maxOutWindowScale(void)
   scale_mtof = max_scale_mtof;
   scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
   AM_activateNewScale();
+}
+
+static line_t *AM_ClosestLine(fixed_t x, fixed_t y, sector_t *sec)
+{
+  int i;
+  line_t *closest_line = NULL;
+  double closest_distance = DBL_MAX;
+
+  for (i = 0; i < sec->linecount; ++i)
+  {
+    line_t *line;
+    double dist;
+
+    line = sec->lines[i];
+    dist = dsda_DistancePointToLine(
+      line->v1->x >> FRACTOMAPBITS, line->v1->y >> FRACTOMAPBITS,
+      line->v2->x >> FRACTOMAPBITS, line->v2->y >> FRACTOMAPBITS,
+      x, y
+    );
+
+    if (dist < closest_distance)
+    {
+      closest_line = line;
+      closest_distance = dist;
+    }
+  }
+
+  return closest_line;
+}
+
+static void AM_AddHighlightConnection(mpoint_t a, mpoint_t b)
+{
+  if (!highlight.connection_max)
+  {
+    highlight.connection_max = 4;
+    highlight.connections =
+      Z_Realloc(highlight.connections,
+                highlight.connection_max * sizeof(*highlight.connections));
+  }
+
+  if (highlight.connection_count == highlight.connection_max)
+  {
+    highlight.connection_max *= 2;
+    highlight.connections =
+      Z_Realloc(highlight.connections,
+                highlight.connection_max * sizeof(*highlight.connections));
+  }
+
+  highlight.connections[highlight.connection_count].a = a;
+  highlight.connections[highlight.connection_count].b = b;
+  ++highlight.connection_count;
+}
+
+static void AM_HighlightByTag(void)
+{
+  fixed_t x, y;
+  sector_t *sec;
+  line_t *line;
+  dboolean repeat;
+
+  x = m_x + m_w / 2;
+  y = m_y + m_h / 2;
+
+  repeat = (x == highlight.x && y == highlight.y);
+  highlight.x = x;
+  highlight.y = y;
+
+  sec = R_PointInSector(x << FRACTOMAPBITS, y << FRACTOMAPBITS);
+  line = AM_ClosestLine(x, y, sec);
+
+  if (!repeat || (!highlight.sec && !highlight.line))
+  {
+    highlight.sec = sec;
+    highlight.line = NULL;
+    highlight.tag = sec->tag;
+
+    doom_printf("Highlight sector %d, tag %d\n", highlight.sec->iSectorID, sec->tag);
+  }
+  else if (highlight.sec)
+  {
+    highlight.sec = NULL;
+    highlight.line = line;
+    highlight.tag = line->tag;
+
+    doom_printf("Highlight line %d, tag %d\n", highlight.line->iLineID, line->tag);
+  }
+  else
+  {
+    highlight.line = NULL;
+    highlight.tag = 0;
+
+    doom_printf("Highlight nothing\n");
+  }
+
+  Z_Free(highlight.connections);
+  highlight.connections = NULL;
+  highlight.connection_count = 0;
+  highlight.connection_max = 0;
+
+  if (highlight.tag)
+  {
+    const int *id_p;
+    mpoint_t origin;
+    mpoint_t destination;
+
+    if (highlight.line)
+    {
+      sector_t *sec;
+
+      R_LineCenter(&origin.x, &origin.y, highlight.line);
+      origin.x >>= FRACTOMAPBITS;
+      origin.y >>= FRACTOMAPBITS;
+
+      FIND_SECTORS(id_p, highlight.tag)
+      {
+        sec = &sectors[*id_p];
+
+        R_SectorCenter(&destination.x, &destination.y, sec);
+        destination.x >>= FRACTOMAPBITS;
+        destination.y >>= FRACTOMAPBITS;
+
+        AM_AddHighlightConnection(origin, destination);
+      }
+    }
+    else
+    {
+      line_t *line;
+
+      R_SectorCenter(&origin.x, &origin.y, highlight.sec);
+      origin.x >>= FRACTOMAPBITS;
+      origin.y >>= FRACTOMAPBITS;
+
+      FIND_LINES(id_p, highlight.tag)
+      {
+        line = &lines[*id_p];
+
+        R_LineCenter(&destination.x, &destination.y, line);
+        destination.x >>= FRACTOMAPBITS;
+        destination.y >>= FRACTOMAPBITS;
+
+        AM_AddHighlightConnection(origin, destination);
+      }
+    }
+  }
 }
 
 //
@@ -1004,6 +1172,15 @@ dboolean AM_Responder
 
     if (leveltime != zoom_leveltime)
       AM_StopZooming();
+  }
+  else if (dsda_InputActivated(dsda_input_map_highlight_by_tag))
+  {
+    if (!dsda_RevealAutomap())
+      doom_printf("Highlight requires iddt");
+    else
+      AM_HighlightByTag();
+
+    return true;
   }
 
   return false;
@@ -1663,6 +1840,33 @@ static void AM_drawWalls(void)
         AM_drawMline(&l, mapcolor_p->unsn);
         continue;
     }
+  }
+}
+
+static void AM_DrawConnections(void)
+{
+  int i;
+  mline_t l;
+
+  if (!dsda_RevealAutomap())
+    return;
+
+  for (i = 0; i < highlight.connection_count; ++i)
+  {
+    l = highlight.connections[i];
+
+    if (automap_rotate)
+    {
+      AM_rotatePoint(&l.a);
+      AM_rotatePoint(&l.b);
+    }
+    else
+    {
+      AM_SetMPointFloatValue(&l.a);
+      AM_SetMPointFloatValue(&l.b);
+    }
+
+    AM_drawMline(&l, mapcolor_p->exit);
   }
 }
 
@@ -2600,6 +2804,7 @@ void AM_Drawer (dboolean minimap)
   AM_drawWalls();
   AM_drawPlayers();
   AM_drawThings(); //jff 1/5/98 default double IDDT sprite
+  AM_DrawConnections();
   AM_drawCrosshair(mapcolor_p->hair);   //jff 1/7/98 default crosshair color
 
   if (V_IsOpenGLMode())
