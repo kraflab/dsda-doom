@@ -799,6 +799,11 @@ subsector_t *R_PointInSubsector(fixed_t x, fixed_t y)
   return &subsectors[nodenum & ~NF_SUBSECTOR];
 }
 
+sector_t *R_PointInSector(fixed_t x, fixed_t y)
+{
+  return R_PointInSubsector(x, y)->sector;
+}
+
 //
 // R_SetupFreelook
 //
