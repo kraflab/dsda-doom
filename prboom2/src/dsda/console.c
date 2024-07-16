@@ -236,6 +236,12 @@ static dboolean console_PlayerSetHealth(const char* command, const char* args) {
   return false;
 }
 
+static dboolean console_PlayerKill(const char* command, const char* args) {
+  P_DamageMobj(target_player.mo, NULL, NULL, 10000);
+
+  return true;
+}
+
 static dboolean console_PlayerSetArmor(const char* command, const char* args) {
   int arg_count;
   int armorpoints, armortype;
@@ -2278,6 +2284,7 @@ static console_command_entry_t console_commands[] = {
   { "player.set_vx", console_PlayerSetVX, CF_NEVER },
   { "player.set_vy", console_PlayerSetVY, CF_NEVER },
   { "player.set_vz", console_PlayerSetVZ, CF_NEVER },
+  { "player.kill", console_PlayerKill, CF_NEVER },
 
   { "music.restart", console_MusicRestart, CF_ALWAYS },
 

@@ -27,6 +27,7 @@ The in-game console offers extra tools for advanced users, including adjusting p
 - `player.set_vx <velocity>`
 - `player.set_vy <velocity>`
 - `player.set_vz <velocity>`
+- `player.kill`
 
 #### Miscellaneous
 - `script.run <script>`
