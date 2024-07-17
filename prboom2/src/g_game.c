@@ -1914,7 +1914,7 @@ void G_PlayerReborn (int player)
 static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
 {
   fixed_t     x,y;
-  subsector_t *ss;
+  sector_t *sec;
   int         i;
 
   if (!players[playernum].mo)
@@ -1943,11 +1943,11 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
     players[playernum].mo->flags2 |= MF2_PASSMOBJ;
 
     // spawn a teleport fog
-    ss = R_PointInSubsector(x, y);
+    sec = R_PointInSector(x, y);
     an = ((unsigned) ANG45 * (mthing->angle / 45)) >> ANGLETOFINESHIFT;
 
     mo = P_SpawnMobj(x + 20 * finecosine[an], y + 20 * finesine[an],
-                     ss->sector->floorheight + TELEFOGHEIGHT, g_mt_tfog);
+                     sec->floorheight + TELEFOGHEIGHT, g_mt_tfog);
 
     if (players[consoleplayer].viewz != 1)
       S_StartMobjSound(mo, g_sfx_telept);   // don't start sound on first frame
@@ -1975,7 +1975,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
   }
 
   // spawn a teleport fog
-  ss = R_PointInSubsector (x,y);
+  sec = R_PointInSector (x,y);
   { // Teleport fog at respawn point
     fixed_t xa,ya;
     int an;
@@ -2010,7 +2010,7 @@ static dboolean G_CheckSpot(int playernum, mapthing_t *mthing)
       default:  I_Error("G_CheckSpot: unexpected angle %d\n",an);
       }
 
-    mo = P_SpawnMobj(x+20*xa, y+20*ya, ss->sector->floorheight, MT_TFOG);
+    mo = P_SpawnMobj(x+20*xa, y+20*ya, sec->floorheight, MT_TFOG);
 
     if (players[consoleplayer].viewz != 1)
       S_StartMobjSound(mo, sfx_telept);  // don't start sound on first frame
@@ -4159,8 +4159,8 @@ void P_WalkTicker()
         finesine[(walkcamera.angle - ANG90) >> ANGLETOFINESHIFT]);
 
   {
-    subsector_t *subsec = R_PointInSubsector (walkcamera.x, walkcamera.y);
-    walkcamera.z = subsec->sector->floorheight + 41 * FRACUNIT;
+    sector_t *sec = R_PointInSector (walkcamera.x, walkcamera.y);
+    walkcamera.z = sec->floorheight + 41 * FRACUNIT;
   }
 
   G_ResetMotion();

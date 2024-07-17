@@ -2403,15 +2403,15 @@ void A_GauntletAttack(player_t * player, pspdef_t * psp)
 void P_RepositionMace(mobj_t * mo)
 {
     int spot;
-    subsector_t *ss;
+    sector_t *sec;
 
     P_UnsetThingPosition(mo);
     spot = P_Random(pr_heretic) % MaceSpotCount;
     mo->x = MaceSpots[spot].x;
     mo->y = MaceSpots[spot].y;
-    ss = R_PointInSubsector(mo->x, mo->y);
-    mo->z = mo->floorz = ss->sector->floorheight;
-    mo->ceilingz = ss->sector->ceilingheight;
+    sec = R_PointInSector(mo->x, mo->y);
+    mo->z = mo->floorz = sec->floorheight;
+    mo->ceilingz = sec->ceilingheight;
     P_SetThingPosition(mo);
 }
 
