@@ -37,6 +37,7 @@
 #endif
 
 #include <math.h>
+#include <float.h>
 
 #include "gl_opengl.h"
 #include "doomstat.h"
