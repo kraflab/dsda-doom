@@ -186,7 +186,7 @@ void dsda_InitSaveDir(void) {
   dsda_base_save_dir = dsda_DetectDirectory("DOOMSAVEDIR", dsda_arg_save);
 }
 
-static char* dsda_SaveDir(void) {
+char* dsda_SaveDir(void) {
   if (dsda_IntConfig(dsda_config_organized_saves)) {
     if (!dsda_wad_save_dir)
       dsda_wad_save_dir = dsda_DataDir();
