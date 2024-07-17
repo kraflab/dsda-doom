@@ -2310,7 +2310,7 @@ void P_PostProcessZDoomLineSpecial(line_t *ld)
       }
       else
       {
-        for (id_p = dsda_FindLinesFromID(ld->special_args[0]); *id_p >= 0; id_p++)
+        FIND_LINES(id_p, ld->special_args[0])
         {
           lines[*id_p].tranmap = dsda_TranMap(dsda_FloatToPercent(alpha));
           lines[*id_p].alpha = alpha;
