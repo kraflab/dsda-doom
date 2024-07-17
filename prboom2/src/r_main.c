@@ -835,6 +835,8 @@ void R_LineCenter(fixed_t *x, fixed_t *y, line_t *line)
   {
     *x = 0;
     *y = 0;
+
+    return;
   }
 
   *x = (line->v1->x + line->v2->x) / 2;
