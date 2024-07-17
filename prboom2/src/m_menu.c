@@ -67,6 +67,7 @@
 #include "m_misc.h"
 #include "lprintf.h"
 #include "am_map.h"
+#include "i_glob.h"
 #include "i_main.h"
 #include "i_system.h"
 #include "i_video.h"
@@ -964,6 +965,68 @@ void M_ReadSaveStrings(void)
   }
 
   snprintf(save_page_string, SAVE_PAGE_STRING_SIZE, "PAGE %d/%d", save_page + 1, save_page_limit);
+}
+
+#define SLOT_SCAN_MAX 112
+
+int M_AutoSaveSlot(const char *target_name)
+{
+  char name_in_file[SAVESTRINGSIZE];
+  char slots[SLOT_SCAN_MAX] = { 0 };
+  int return_slot = -1;
+  glob_t *glob;
+  FILE *fp;
+  const char *file_name;
+
+  glob = I_StartGlob(dsda_SaveDir(), "*savegame*.dsg", 0);
+  while (return_slot < 0)
+  {
+    file_name = I_NextGlob(glob);
+    if (!file_name)
+      break;
+
+    fp = M_OpenFile(file_name, "rb");
+    if (fp)
+    {
+      int slot;
+
+      if (sscanf(dsda_BaseName(file_name), "%*[^0-9]%d.dsg", &slot))
+      {
+        if (slot < SLOT_SCAN_MAX)
+          slots[slot] = 1;
+
+        if (fread(name_in_file, SAVESTRINGSIZE, 1, fp) && !strcmp(name_in_file, target_name))
+        {
+          return_slot = slot;
+          slots[slot] = 0;
+        }
+      }
+
+      fclose(fp);
+    }
+  }
+
+  I_EndGlob(glob);
+
+  if (return_slot < 0)
+    return_slot = strnlen(slots, SLOT_SCAN_MAX);
+
+  if (slots[return_slot] == 1)
+    return_slot = -1;
+
+  return return_slot;
+}
+
+void M_AutoSave(void)
+{
+  int slot;
+  char target_name[SAVESTRINGSIZE];
+
+  snprintf(target_name, SAVESTRINGSIZE, "auto-%s", dsda_MapLumpName(gameepisode, gamemap));
+
+  slot = M_AutoSaveSlot(target_name);
+  G_SaveGame(slot, target_name);
+  doom_printf("autosave");
 }
 
 //
@@ -2988,6 +3051,7 @@ setup_menu_t misc_settings[] = {
   { "Rewind Interval (s)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_interval },
   { "Rewind Depth", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_depth },
   { "Rewind Timeout (ms)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_timeout },
+  { "Autosave On Level Start", S_YESNO, m_conf, G_X, dsda_config_auto_save },
   { "Organize My Save Files", S_YESNO, m_conf, G_X, dsda_config_organized_saves },
   { "Skip Quit Prompt", S_YESNO, m_conf, G_X, dsda_config_skip_quit_prompt },
   { "Death Use Action", S_CHOICE, m_conf, G_X, dsda_config_death_use_action, 0, death_use_strings },

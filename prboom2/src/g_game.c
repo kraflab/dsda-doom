@@ -1553,6 +1553,7 @@ void G_Ticker (void)
     int buf = gametic % BACKUPTICS;
 
     dsda_UpdateAutoKeyFrames();
+    dsda_UpdateAutoSaves();
 
     if (dsda_BruteForce())
     {

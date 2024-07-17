@@ -30,5 +30,6 @@ int dsda_LastSaveSlot(void);
 void dsda_ResetLastSaveSlot(void);
 int dsda_AllowMenuLoad(int slot);
 int dsda_AllowAnyMenuLoad(void);
+void dsda_UpdateAutoSaves(void);
 
 #endif

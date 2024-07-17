@@ -891,6 +891,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_auto_key_frame_timeout", dsda_config_auto_key_frame_timeout,
     dsda_config_int, 0, 25, { 10 }, NULL, NOT_STRICT, dsda_InitKeyFrame
   },
+  [dsda_config_auto_save] = {
+    "dsda_config_auto_save", dsda_config_auto_save,
+    CONF_BOOL(0)
+  },
   [dsda_config_ex_text_scale_x] = {
     "ex_text_scale_x", dsda_config_ex_text_scale_x,
     dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams

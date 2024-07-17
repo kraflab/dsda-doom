@@ -283,3 +283,21 @@ int dsda_LastSaveSlot(void) {
 void dsda_ResetLastSaveSlot(void) {
   last_save_file_slot = -1;
 }
+
+void dsda_UpdateAutoSaves(void) {
+  static int automap = -1;
+  static int autoepisode = -1;
+
+  void M_AutoSave(void);
+
+  if (!dsda_IntConfig(dsda_config_auto_save))
+    return;
+
+  if (automap != gamemap || autoepisode != gameepisode) {
+    automap = gamemap;
+    autoepisode = gameepisode;
+
+    if (!leveltime)
+      M_AutoSave();
+  }
+}
