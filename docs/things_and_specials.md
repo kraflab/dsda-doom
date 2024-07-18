@@ -436,6 +436,16 @@ Sets the colormap for tagged sectors.
 - _colormap_: the colormap (string argument).
 - _tag_: The tag of the sector(s) to affect.
 
+**2703: Music_ChangeSong(song, local, loop)**
+Changes the current music.
+- _song_: the music lump name (string argument).
+- _local_: if true, only the activator's music changes.
+- _loop_: if true, the music loops.
+
+**2704: Music_Stop(local)**
+Stops the current music.
+- _local_: if true, only the activator's music stops.
+
 ---
 
 ### Obsolete Line Specials

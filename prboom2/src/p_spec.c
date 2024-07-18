@@ -7676,6 +7676,23 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       }
       buttonSuccess = 1;
       break;
+    case zl_music_change_song:
+      if (args[0] != LUMP_NOT_FOUND)
+      {
+        if (!args[1] || (mo->player && mo->player->mo == mo))
+        {
+          S_ChangeMusInfoMusic(args[0], args[2]);
+          buttonSuccess = 1;
+        }
+      }
+      break;
+    case zl_music_stop:
+      if (!args[0] || (mo->player && mo->player->mo == mo))
+      {
+        S_StopMusic();
+        buttonSuccess = 1;
+      }
+      break;
     default:
       break;
   }

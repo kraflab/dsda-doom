@@ -588,5 +588,11 @@ int dsda_ActionNameToNumber(const char* name) {
   if (!stricmp(name, "Sector_SetColormap"))
     return 2702;
 
+  if (!stricmp(name, "Music_ChangeSong"))
+    return 2703;
+
+  if (!stricmp(name, "Music_Stop"))
+    return 2704;
+
   return NAME_NOT_FOUND;
 }

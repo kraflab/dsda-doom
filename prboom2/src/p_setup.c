@@ -1745,6 +1745,20 @@ static void P_LoadUDMFThings(int lump)
       }
     }
 
+    if (mt.special == zl_music_change_song)
+    {
+      if (dmt->arg0str)
+        mt.special_args[0] = W_CheckNumForName(dmt->arg0str);
+      else
+        mt.special_args[0] = LUMP_NOT_FOUND;
+
+      if (mt.special_args[0] == LUMP_NOT_FOUND)
+      {
+        lprintf(LO_WARN, "Unknown song lump in thing %d action.\n", i);
+        mt.special = 0;
+      }
+    }
+
     if (dmt->flags & UDMF_TF_SKILL1)
       mt.options |= MTF_SKILL1;
 
@@ -2114,6 +2128,20 @@ static void P_LoadUDMFLineDefs(int lump)
       if (ld->special_args[0] < 0)
       {
         lprintf(LO_WARN, "Unknown colormap in line %d action.\n", i);
+        ld->special = 0;
+      }
+    }
+
+    if (ld->special == zl_music_change_song)
+    {
+      if (mld->arg0str)
+        ld->special_args[0] = W_CheckNumForName(mld->arg0str);
+      else
+        ld->special_args[0] = LUMP_NOT_FOUND;
+
+      if (ld->special_args[0] == LUMP_NOT_FOUND)
+      {
+        lprintf(LO_WARN, "Unknown song lump in line %d action.\n", i);
         ld->special = 0;
       }
     }
