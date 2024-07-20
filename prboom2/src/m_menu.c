@@ -3626,7 +3626,7 @@ static void M_BuildLevelTable(void)
   level_table_page[page][base_i].m_x = 162;
   ++base_i;
 
-  if (wad_stats_summary.completed_count == wad_stats.map_count)
+  if (wad_stats_summary.completed_count)
     dsda_StringPrintF(&m_text, "%d", wad_stats_summary.best_skill);
   else
     dsda_StringPrintF(&m_text, "-");
@@ -3638,7 +3638,7 @@ static void M_BuildLevelTable(void)
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
   dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_kills);
-  if (wad_stats_summary.completed_count == wad_stats.map_count)
+  if (wad_stats_summary.completed_count)
     dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_kills);
   else
     dsda_StringCat(&m_text, "-");
@@ -3650,7 +3650,7 @@ static void M_BuildLevelTable(void)
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
   dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_items);
-  if (wad_stats_summary.completed_count == wad_stats.map_count)
+  if (wad_stats_summary.completed_count)
     dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_items);
   else
     dsda_StringCat(&m_text, "-");
@@ -3662,7 +3662,7 @@ static void M_BuildLevelTable(void)
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
   dsda_StringPrintF(&m_text, "%d / ", wad_stats_summary.best_secrets);
-  if (wad_stats_summary.completed_count == wad_stats.map_count)
+  if (wad_stats_summary.completed_count)
     dsda_StringCatF(&m_text, "%d", wad_stats_summary.max_secrets);
   else
     dsda_StringCat(&m_text, "-");
@@ -3673,7 +3673,7 @@ static void M_BuildLevelTable(void)
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  if (wad_stats_summary.timed_count == wad_stats.map_count)
+  if (wad_stats_summary.timed_count)
     M_PrintTime(&m_text, wad_stats_summary.best_time);
   else
     dsda_StringPrintF(&m_text, "- : --");
@@ -3684,7 +3684,7 @@ static void M_BuildLevelTable(void)
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  if (wad_stats_summary.max_timed_count == wad_stats.map_count)
+  if (wad_stats_summary.max_timed_count)
     M_PrintTime(&m_text, wad_stats_summary.best_max_time);
   else
     dsda_StringPrintF(&m_text, "- : --");
@@ -3695,7 +3695,7 @@ static void M_BuildLevelTable(void)
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  if (wad_stats_summary.sk5_timed_count == wad_stats.map_count)
+  if (wad_stats_summary.sk5_timed_count)
     M_PrintTime(&m_text, wad_stats_summary.best_sk5_time);
   else
     dsda_StringPrintF(&m_text, "- : --");
