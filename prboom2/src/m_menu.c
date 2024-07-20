@@ -334,18 +334,18 @@ const char shiftxform[] =
   '&', // shift-7
   '*', // shift-8
   '(', // shift-9
-  ':',
+  ';',
   ':', // shift-;
   '<',
   '+', // shift-=
   '>', '?', '@',
   'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-  '[', // shift-[
-  '!', // shift-backslash - OH MY GOD DOES WATCOM SUCK
-  ']', // shift-]
+  '{', // shift-[
+  '|', // shift-backslash
+  '}', // shift-]
   '"', '_',
-  '\'', // shift-`
+  '~', // shift-`
   'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
   'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
   '{', '|', '}', '~', 127
