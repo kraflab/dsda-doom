@@ -40,6 +40,14 @@ static int MenuTime;
 
 dboolean mn_SuicideConsole;
 
+static int MN_SafeFontALump(int offset)
+{
+  if (offset > 58)
+    return FontABaseLump;
+
+  return FontABaseLump + offset;
+}
+
 static void MN_InitFonts(void)
 {
   FontABaseLump = W_GetNumForName("FONTA_S") + 1;
@@ -422,7 +430,7 @@ void MN_DrTextA(const char *text, int x, int y)
     }
     else
     {
-      lump = FontABaseLump + c - 33;
+      lump = MN_SafeFontALump(c - 33);
       V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
       x += R_NumPatchWidth(lump) - 1;
     }
@@ -458,7 +466,7 @@ int MN_TextAWidth(const char *text)
     }
     else
     {
-      lump = FontABaseLump + c - 33;
+      lump = MN_SafeFontALump(c - 33);
       width += R_NumPatchWidth(lump) - 1;
     }
   }
