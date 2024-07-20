@@ -66,6 +66,7 @@ void dsda_FixedToString(char* str, fixed_t x);
 dsda_fixed_t dsda_SplitFixed(fixed_t x);
 dsda_angle_t dsda_SplitAngle(angle_t x);
 void dsda_PrintCommandMovement(char* str, ticcmd_t* cmd);
+void dsda_NormalizeSlashes(char* str);
 void dsda_CutExtension(char* str);
 const char* dsda_BaseName(const char* str);
 const char* dsda_FileExtension(const char* str);

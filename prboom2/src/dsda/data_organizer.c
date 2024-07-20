@@ -39,27 +39,6 @@ static char* dsda_data_dir_strings[DATA_DIR_LIMIT];
 static char* dsda_base_data_dir;
 static char* dsda_wad_data_dir;
 
-// Remove trailing slashes, translate backslashes to slashes
-// The string to normalize is passed and returned in str
-//
-// jff 4/19/98 Make killoughs slash fixer a subroutine
-//
-static void dsda_NormalizeSlashes(char *str)
-{
-  size_t l;
-
-  // killough 1/18/98: Neater / \ handling.
-  // Remove trailing / or \ to prevent // /\ \/ \\, and change \ to /
-
-  if (!str || !(l = strlen(str)))
-    return;
-  if (str[--l] == '/' || str[l] == '\\')     // killough 1/18/98
-    str[l] = 0;
-  while (l--)
-    if (str[l] == '\\')
-      str[l] = '/';
-}
-
 char* dsda_DetectDirectory(const char* env_key, int arg_id) {
   dsda_arg_t* arg;
   char* result = NULL;
