@@ -216,6 +216,24 @@ void dsda_NormalizeSlashes(char* str)
       str[l] = '/';
 }
 
+char* dsda_ConcatDir(const char* a, const char* b)
+{
+  char* buffer;
+  size_t len;
+
+  buffer = Z_Malloc(strlen(a) + strlen(b) + 2);
+
+  strcpy(buffer, a);
+  dsda_NormalizeSlashes(buffer);
+
+  len = strlen(buffer);
+  buffer[len] = '/';
+  strcpy(buffer + len + 1, b);
+  dsda_NormalizeSlashes(buffer + len);
+
+  return buffer;
+}
+
 void dsda_CutExtension(char* str) {
   char* p;
 
