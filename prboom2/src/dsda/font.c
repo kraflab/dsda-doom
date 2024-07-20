@@ -63,7 +63,7 @@ void dsda_InitFont(void) {
       //jff 2/23/98 make all font chars defined, useful or not
     }
     else {
-      hu_font[i] = hu_font[0]; //jff 2/16/98 account for gap
+      hu_font[i] = hu_font2[i]; //jff 2/16/98 account for gap
     }
   }
 
