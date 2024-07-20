@@ -148,5 +148,6 @@ void PIT_ThrustSpike(mobj_t * actor);
 
 dboolean P_MoveThing(mobj_t *thing, fixed_t x, fixed_t y, fixed_t z, dboolean fog);
 int P_SplashDamage(fixed_t dist);
+void P_AdjustZLimits(mobj_t *thing);
 
 #endif // __P_MAP__

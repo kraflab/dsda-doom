@@ -2098,6 +2098,9 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   if (map_info.flags & MI_USE_PLAYER_START_Z)
     mobj->z += mthing->height;
 
+  if (map_format.zdoom)
+    P_AdjustZLimits(mobj);
+
   // set color translations for player sprites
   if (hexen)
   {
@@ -2612,6 +2615,10 @@ spawnit:
     {
       mobj->z -= mthing->height;
     }
+
+    if (map_format.zdoom)
+      P_AdjustZLimits(mobj);
+
     mobj->tid = mthing->tid;
     mobj->special = mthing->special;
     mobj->special_args[0] = mthing->special_args[0];

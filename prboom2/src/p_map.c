@@ -1350,6 +1350,72 @@ dboolean P_CheckPosition (mobj_t* thing,fixed_t x,fixed_t y)
   return true;
 }
 
+void P_AdjustZLimits(mobj_t *thing)
+{
+  int xl, xh;
+  int yl, yh;
+  int bx, by;
+  fixed_t bbox[4];
+
+  bbox[BOXTOP] = thing->y + thing->radius;
+  bbox[BOXBOTTOM] = thing->y - thing->radius;
+  bbox[BOXRIGHT] = thing->x + thing->radius;
+  bbox[BOXLEFT] = thing->x - thing->radius;
+
+  validcount++;
+
+  xl = P_GetSafeBlockX(bbox[BOXLEFT] - bmaporgx);
+  xh = P_GetSafeBlockX(bbox[BOXRIGHT] - bmaporgx);
+  yl = P_GetSafeBlockY(bbox[BOXBOTTOM] - bmaporgy);
+  yh = P_GetSafeBlockY(bbox[BOXTOP] - bmaporgy);
+
+  for (bx = xl; bx <= xh; ++bx)
+    for (by = yl; by <= yh; ++by)
+    {
+      int offset;
+      const int *list;
+
+      if (bx < 0 || by < 0 || bx >= bmapwidth || by >= bmapheight)
+        continue;
+
+      offset = by * bmapwidth + bx;
+      offset = *(blockmap + offset);
+      list = blockmaplump + offset;
+
+      if (skipblstart)
+        list++;
+
+      for (; *list != -1; list++)
+      {
+        line_t *ld;
+
+        ld = &lines[*list];
+        if (ld->validcount == validcount)
+          continue; // line has already been checked
+        ld->validcount = validcount;
+
+        if (bbox[BOXRIGHT] <= ld->bbox[BOXLEFT]
+            || bbox[BOXLEFT] >= ld->bbox[BOXRIGHT]
+            || bbox[BOXTOP] <= ld->bbox[BOXBOTTOM]
+            || bbox[BOXBOTTOM] >= ld->bbox[BOXTOP])
+          continue; // didn't hit it
+
+        if (P_BoxOnLineSide(bbox, ld) != -1)
+          continue; // didn't hit it
+
+        if (!ld->backsector || !ld->frontsector || !(ld->flags & ML_3DMIDTEX))
+          continue; // not relevant
+
+        P_LineOpening(ld, thing);
+
+        if (line_opening.bottom > thing->floorz)
+          thing->floorz = line_opening.bottom;
+
+        if (line_opening.top < thing->ceilingz)
+          thing->ceilingz = line_opening.top;
+      }
+    }
+}
 
 //
 // P_TryMove
