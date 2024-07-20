@@ -5484,11 +5484,15 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     }
     else if (ch > 0)
     {
-      ch = toupper(ch);
       if (ch >= 32 && ch <= 127 &&
           saveCharIndex < SAVESTRINGSIZE-1 &&
           M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
       {
+        if (!raven && shiftdown)
+          ch = shiftxform[ch];
+        else
+          ch = toupper(ch);
+
         savegamestrings[saveSlot][saveCharIndex++] = ch;
         savegamestrings[saveSlot][saveCharIndex] = 0;
       }
