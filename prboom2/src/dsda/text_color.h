@@ -87,6 +87,7 @@ typedef enum {
   dsda_tc_map_totals_max,
   dsda_tc_inter_split_normal,
   dsda_tc_inter_split_good,
+  dsda_tc_inter_split_best,
   dsda_tc_menu_title,
   dsda_tc_menu_label,
   dsda_tc_menu_label_highlight,

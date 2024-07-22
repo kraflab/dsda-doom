@@ -210,6 +210,26 @@ void dsda_WriteSplits(void) {
     I_Warn("dsda_WriteSplits: Failed to write splits file \"%s\". (%d)", path, errno);
 }
 
+static void dsda_UpdateReferenceSplits(void) {
+  int i;
+
+  for (i = 0; i < dsda_splits_count; ++i) {
+    dsda_splits[i].leveltime.ref = dsda_splits[i].leveltime.current;
+    dsda_splits[i].totalleveltimes.ref = dsda_splits[i].totalleveltimes.current;
+  }
+}
+
+static int dsda_PersonalBest(void) {
+  dsda_split_time_t* split_single;
+  dsda_split_time_t* split_total;
+
+  split_single = &dsda_splits[dsda_splits_count - 1].leveltime;
+  split_total = &dsda_splits[dsda_splits_count - 1].totalleveltimes;
+
+  return split_total->ref_delta < 0 || split_total->ref == -1 ||
+    (dsda_splits_count == 1 && split_single->ref_delta < 0);
+}
+
 static void dsda_TrackSplitTime(dsda_split_time_t* split_time, int current) {
   split_time->current = current;
   split_time->best_delta = current - split_time->best;
@@ -251,6 +271,9 @@ void dsda_RecordSplit(void) {
   dsda_splits[i].exits++;
   dsda_TrackSplitTime(&dsda_splits[i].leveltime, leveltime);
   dsda_TrackSplitTime(&dsda_splits[i].totalleveltimes, totalleveltimes);
+
+  if (i == dsda_splits_count - 1 && dsda_PersonalBest())
+    dsda_UpdateReferenceSplits();
 }
 
 dsda_split_t* dsda_CurrentSplit(void) {

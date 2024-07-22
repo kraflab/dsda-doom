@@ -100,6 +100,7 @@ dsda_text_color_t dsda_text_colors[] = {
   [dsda_tc_map_totals_max] = { "map_totals_max", CR_LIGHTBLUE },
   [dsda_tc_inter_split_normal] = { "inter_split_normal", CR_GRAY },
   [dsda_tc_inter_split_good] = { "inter_split_good", CR_GREEN },
+  [dsda_tc_inter_split_best] = { "inter_split_best", CR_GOLD },
   [dsda_tc_menu_title] = { "menu_title", CR_GOLD },
   [dsda_tc_menu_label] = { "menu_label", CR_RED },
   [dsda_tc_menu_label_highlight] = { "menu_label_highlight", CR_BRICK },

@@ -48,7 +48,8 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
     diff = dsda_SplitComparisonDelta(&split->leveltime);
     sign = diff >= 0 ? "+" : "-";
     color = diff >= 0 ? dsda_TextColor(dsda_tc_inter_split_normal) :
-                        dsda_TextColor(dsda_tc_inter_split_good);
+            split->leveltime.best_delta >= 0 ? dsda_TextColor(dsda_tc_inter_split_good) :
+                                               dsda_TextColor(dsda_tc_inter_split_best);
     diff = abs(diff);
 
     if (diff >= 2100) {

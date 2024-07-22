@@ -82,6 +82,7 @@ map_totals_value 3
 map_totals_max 11
 inter_split_normal 3
 inter_split_good 4
+inter_split_best 6
 menu_title 6
 menu_label 7
 menu_label_highlight 1
