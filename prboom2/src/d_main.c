@@ -871,6 +871,8 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
   if (M_ReadAccess(iwadname))
   {
     int ud=0,rg=0,sw=0,cm=0,sc=0,hx=0;
+    dboolean dmenupic = false;
+    dboolean large_titlepic = false;
     FILE* fp;
 
     // Identify IWAD correctly
@@ -930,7 +932,9 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
           }
 
           if (!strncmp(fileinfo[length].name,"DMENUPIC",8))
-            bfgedition++;
+            dmenupic = true;
+          if (!strncmp(fileinfo[length].name,"TITLEPIC",8) && fileinfo[length].size > 68168)
+            large_titlepic = true;
           if (!strncmp(fileinfo[length].name,"HACX",4))
             hx++;
         }
@@ -942,6 +946,10 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
     }
     else // error from open call
       I_Error("CheckIWAD: Can't open IWAD %s", iwadname);
+
+    // unity iwad has dmenupic and a large titlepic
+    if (dmenupic && !large_titlepic)
+      bfgedition++;
 
     // Determine game mode from levels present
     // Must be a full set for whichever mode is present
