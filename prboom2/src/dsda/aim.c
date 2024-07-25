@@ -86,3 +86,38 @@ void dsda_PlayerAim(mobj_t* source, angle_t angle, aim_t* aim, uint64_t target_m
     aim->z_offset = raven ? ((source->player->lookdir) << FRACBITS) / 173 : 0;
   }
 }
+
+void dsda_PlayerAimBad(mobj_t* source, angle_t angle, aim_t* aim, uint64_t target_mask)
+{
+  aim->angle = angle;
+  aim->z_offset = 0;
+
+  if (dsda_FreeAim())
+  {
+    aim->slope = finetangent[(ANG90 - source->pitch) >> ANGLETOFINESHIFT];
+    aim->z_offset = 0;
+  }
+  else
+  {
+    do
+    {
+      aim->slope = P_AimLineAttack(source, aim->angle, 16 * 64 * FRACUNIT, target_mask);
+
+      if (!linetarget)
+      {
+        aim->angle += 1 << 26;
+        aim->slope = P_AimLineAttack(source, aim->angle, 16 * 64 * FRACUNIT, target_mask);
+      }
+
+      if (!linetarget)
+      {
+        aim->angle -= 2 << 26;
+        aim->slope = P_AimLineAttack(source, aim->angle, 16 * 64 * FRACUNIT, target_mask);
+      }
+
+      if (heretic && !linetarget)
+        aim->slope = ((source->player->lookdir) << FRACBITS) / 173;
+    }
+    while (target_mask && (target_mask = 0, !linetarget));  // killough 8/2/98
+  }
+}

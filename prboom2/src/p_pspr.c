@@ -1013,7 +1013,7 @@ static void P_BulletSlope(mobj_t *mo)
 {
   aim_t aim;
 
-  dsda_PlayerAim(mo, mo->angle, &aim, mbf_features ? MF_FRIEND : 0);
+  dsda_PlayerAimBad(mo, mo->angle, &aim, mbf_features ? MF_FRIEND : 0);
 
   bulletslope = aim.slope;
 }
