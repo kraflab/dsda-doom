@@ -713,7 +713,10 @@ void A_Lower(player_t *player, pspdef_t *psp)
     return;
   }
 
-  player->readyweapon = player->pendingweapon;
+  if (player->pendingweapon < NUMWEAPONS || !mbf21)
+  {
+    player->readyweapon = player->pendingweapon;
+  }
 
   P_BringUpWeapon(player);
 }
