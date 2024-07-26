@@ -1696,7 +1696,7 @@ void P_CrossCompatibleSpecialLine(line_t *line, int side, mobj_t *thing, dboolea
 
   if (!thing->player || bossaction)
   {
-    ok = 0;
+    ok = bossaction;
     switch(line->special)
     {
       // teleporters are blocked for boss actions.

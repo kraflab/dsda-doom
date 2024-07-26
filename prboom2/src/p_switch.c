@@ -618,20 +618,20 @@ P_UseSpecialLine
     case 117:           // Blazing door raise
     case 118:           // Blazing door open
       EV_VerticalDoor (line, thing);
-      break;
+      return true;
 
     // Switches (non-retriggerable)
     case 7:
       // Build Stairs
       if (EV_BuildStairs(line,build8))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 9:
       // Change Donut
       if (EV_DoDonut(line))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 11:
       /* Exit level
@@ -645,73 +645,73 @@ P_UseSpecialLine
 
       P_ChangeSwitchTexture(line,0);
       G_ExitLevel(0);
-      break;
+      return true;
 
     case 14:
       // Raise Floor 32 and change texture
       if (EV_DoPlat(line,raiseAndChange,32))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 15:
       // Raise Floor 24 and change texture
       if (EV_DoPlat(line,raiseAndChange,24))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 18:
       // Raise Floor to next highest floor
       if (EV_DoFloor(line, raiseFloorToNearest))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 20:
       // Raise Plat next highest floor and change texture
       if (EV_DoPlat(line,raiseToNearestAndChange,0))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 21:
       // PlatDownWaitUpStay
       if (EV_DoPlat(line,downWaitUpStay,0))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 23:
       // Lower Floor to Lowest
       if (EV_DoFloor(line,lowerFloorToLowest))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 29:
       // Raise Door
       if (EV_DoDoor(line,normal))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 41:
       // Lower Ceiling to Floor
       if (EV_DoCeiling(line,lowerToFloor))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 71:
       // Turbo Lower Floor
       if (EV_DoFloor(line,turboLower))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 49:
       // Ceiling Crush And Raise
       if (EV_DoCeiling(line,crushAndRaise))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 50:
       // Close Door
       if (EV_DoDoor(line,closeDoor))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 51:
       /* Secret EXIT
@@ -725,67 +725,67 @@ P_UseSpecialLine
 
       P_ChangeSwitchTexture(line,0);
       G_SecretExitLevel(0);
-      break;
+      return true;
 
     case 55:
       // Raise Floor Crush
       if (EV_DoFloor(line,raiseFloorCrush))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 101:
       // Raise Floor
       if (EV_DoFloor(line,raiseFloor))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 102:
       // Lower Floor to Surrounding floor height
       if (EV_DoFloor(line,lowerFloor))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 103:
       // Open Door
       if (EV_DoDoor(line,openDoor))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 111:
       // Blazing Door Raise (faster than TURBO!)
       if (EV_DoDoor (line,blazeRaise))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 112:
       // Blazing Door Open (faster than TURBO!)
       if (EV_DoDoor (line,blazeOpen))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 113:
       // Blazing Door Close (faster than TURBO!)
       if (EV_DoDoor (line,blazeClose))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 122:
       // Blazing PlatDownWaitUpStay
       if (EV_DoPlat(line,blazeDWUS,0))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 127:
       // Build Stairs Turbo 16
       if (EV_BuildStairs(line,turbo16))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 131:
       // Raise Floor Turbo
       if (EV_DoFloor(line,raiseFloorTurbo))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 133:
       // BlzOpenDoor BLUE
@@ -795,13 +795,13 @@ P_UseSpecialLine
       // BlzOpenDoor YELLOW
       if (EV_DoLockedDoor (line,blazeOpen,thing))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
     case 140:
       // Raise Floor 512
       if (EV_DoFloor(line,raiseFloor512))
         P_ChangeSwitchTexture(line,0);
-      break;
+      return true;
 
       // killough 1/31/98: factored out compatibility check;
       // added inner switch, relaxed check to demo_compatibility
@@ -818,56 +818,56 @@ P_UseSpecialLine
             // 158 S1  EV_DoFloor(raiseToTexture), CSW(0)
             if (EV_DoFloor(line,raiseToTexture))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 159:
             // Raise Floor to shortest lower texture
             // 159 S1  EV_DoFloor(lowerAndChange)
             if (EV_DoFloor(line,lowerAndChange))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 160:
             // Raise Floor 24 and change
             // 160 S1  EV_DoFloor(raiseFloor24AndChange)
             if (EV_DoFloor(line,raiseFloor24AndChange))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 161:
             // Raise Floor 24
             // 161 S1  EV_DoFloor(raiseFloor24)
             if (EV_DoFloor(line,raiseFloor24))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 162:
             // Moving floor min n to max n
             // 162 S1  EV_DoPlat(perpetualRaise,0)
             if (EV_DoPlat(line,perpetualRaise,0))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 163:
             // Stop Moving floor
             // 163 S1  EV_DoPlat(perpetualRaise,0)
             EV_StopPlat(line);
             P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 164:
             // Start fast crusher
             // 164 S1  EV_DoCeiling(fastCrushAndRaise)
             if (EV_DoCeiling(line,fastCrushAndRaise))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 165:
             // Start slow silent crusher
             // 165 S1  EV_DoCeiling(silentCrushAndRaise)
             if (EV_DoCeiling(line,silentCrushAndRaise))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 166:
             // Raise ceiling, Lower floor
@@ -875,133 +875,133 @@ P_UseSpecialLine
             if (EV_DoCeiling(line, raiseToHighest) ||
                 EV_DoFloor(line, lowerFloorToLowest))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 167:
             // Lower floor and Crush
             // 167 S1 EV_DoCeiling(lowerAndCrush)
             if (EV_DoCeiling(line, lowerAndCrush))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 168:
             // Stop crusher
             // 168 S1 EV_CeilingCrushStop()
             if (EV_CeilingCrushStop(line))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 169:
             // Lights to brightest neighbor sector
             // 169 S1  EV_LightTurnOn(0)
             EV_LightTurnOn(line,0);
             P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 170:
             // Lights to near dark
             // 170 S1  EV_LightTurnOn(35)
             EV_LightTurnOn(line,35);
             P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 171:
             // Lights on full
             // 171 S1  EV_LightTurnOn(255)
             EV_LightTurnOn(line,255);
             P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 172:
             // Start Lights Strobing
             // 172 S1  EV_StartLightStrobing()
             EV_StartLightStrobing(line);
             P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 173:
             // Lights to Dimmest Near
             // 173 S1  EV_TurnTagLightsOff()
             EV_TurnTagLightsOff(line);
             P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 174:
             // Teleport
             // 174 S1  Teleport(side,thing)
             if (map_format.ev_teleport(0, line->tag,line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 175:
             // Close Door, Open in 30 secs
             // 175 S1  EV_DoDoor(close30ThenOpen)
             if (EV_DoDoor(line,close30ThenOpen))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 189: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 189 S1 Change Texture/Type Only
             if (EV_DoChange(line,trigChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 203:
             // Lower ceiling to lowest surrounding ceiling
             // 203 S1 EV_DoCeiling(lowerToLowest)
             if (EV_DoCeiling(line,lowerToLowest))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 204:
             // Lower ceiling to highest surrounding floor
             // 204 S1 EV_DoCeiling(lowerToMaxFloor)
             if (EV_DoCeiling(line,lowerToMaxFloor))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 209:
             // killough 1/31/98: silent teleporter
             //jff 209 S1 SilentTeleport
             if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 241: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Numeric)
             // 241 S1 Change Texture/Type Only
             if (EV_DoChange(line,numChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 221:
             // Lower floor to next lowest floor
             // 221 S1 Lower Floor To Nearest Floor
             if (EV_DoFloor(line,lowerFloorToNearest))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 229:
             // Raise elevator next floor
             // 229 S1 Raise Elevator next floor
             if (EV_DoElevator(line,elevateUp))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 233:
             // Lower elevator next floor
             // 233 S1 Lower Elevator next floor
             if (EV_DoElevator(line,elevateDown))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
           case 237:
             // Elevator to current floor
             // 237 S1 Elevator to current floor
             if (EV_DoElevator(line,elevateCurrent))
               P_ChangeSwitchTexture(line,0);
-            break;
+            return true;
 
 
           // jff 1/29/98 end of added S1 linedef types
@@ -1014,42 +1014,42 @@ P_UseSpecialLine
             // 78 SR Change Texture/Type Only
             if (EV_DoChange(line,numChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 176:
             // Raise Floor to shortest lower texture
             // 176 SR  EV_DoFloor(raiseToTexture), CSW(1)
             if (EV_DoFloor(line,raiseToTexture))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 177:
             // Raise Floor to shortest lower texture
             // 177 SR  EV_DoFloor(lowerAndChange)
             if (EV_DoFloor(line,lowerAndChange))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 178:
             // Raise Floor 512
             // 178 SR  EV_DoFloor(raiseFloor512)
             if (EV_DoFloor(line,raiseFloor512))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 179:
             // Raise Floor 24 and change
             // 179 SR  EV_DoFloor(raiseFloor24AndChange)
             if (EV_DoFloor(line,raiseFloor24AndChange))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 180:
             // Raise Floor 24
             // 180 SR  EV_DoFloor(raiseFloor24)
             if (EV_DoFloor(line,raiseFloor24))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 181:
             // Moving floor min n to max n
@@ -1057,35 +1057,35 @@ P_UseSpecialLine
 
             EV_DoPlat(line,perpetualRaise,0);
             P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 182:
             // Stop Moving floor
             // 182 SR  EV_DoPlat(perpetualRaise,0)
             EV_StopPlat(line);
             P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 183:
             // Start fast crusher
             // 183 SR  EV_DoCeiling(fastCrushAndRaise)
             if (EV_DoCeiling(line,fastCrushAndRaise))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 184:
             // Start slow crusher
             // 184 SR  EV_DoCeiling(crushAndRaise)
             if (EV_DoCeiling(line,crushAndRaise))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 185:
             // Start slow silent crusher
             // 185 SR  EV_DoCeiling(silentCrushAndRaise)
             if (EV_DoCeiling(line,silentCrushAndRaise))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 186:
             // Raise ceiling, Lower floor
@@ -1093,140 +1093,140 @@ P_UseSpecialLine
             if (EV_DoCeiling(line, raiseToHighest) ||
                 EV_DoFloor(line, lowerFloorToLowest))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 187:
             // Lower floor and Crush
             // 187 SR EV_DoCeiling(lowerAndCrush)
             if (EV_DoCeiling(line, lowerAndCrush))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 188:
             // Stop crusher
             // 188 SR EV_CeilingCrushStop()
             if (EV_CeilingCrushStop(line))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 190: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 190 SR Change Texture/Type Only
             if (EV_DoChange(line,trigChangeOnly,line->tag))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 191:
             // Lower Pillar, Raise Donut
             // 191 SR  EV_DoDonut()
             if (EV_DoDonut(line))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 192:
             // Lights to brightest neighbor sector
             // 192 SR  EV_LightTurnOn(0)
             EV_LightTurnOn(line,0);
             P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 193:
             // Start Lights Strobing
             // 193 SR  EV_StartLightStrobing()
             EV_StartLightStrobing(line);
             P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 194:
             // Lights to Dimmest Near
             // 194 SR  EV_TurnTagLightsOff()
             EV_TurnTagLightsOff(line);
             P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 195:
             // Teleport
             // 195 SR  Teleport(side,thing)
             if (map_format.ev_teleport(0, line->tag,line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 196:
             // Close Door, Open in 30 secs
             // 196 SR  EV_DoDoor(close30ThenOpen)
             if (EV_DoDoor(line,close30ThenOpen))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 205:
             // Lower ceiling to lowest surrounding ceiling
             // 205 SR EV_DoCeiling(lowerToLowest)
             if (EV_DoCeiling(line,lowerToLowest))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 206:
             // Lower ceiling to highest surrounding floor
             // 206 SR EV_DoCeiling(lowerToMaxFloor)
             if (EV_DoCeiling(line,lowerToMaxFloor))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 210:
             // killough 1/31/98: silent teleporter
             //jff 210 SR SilentTeleport
             if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 211: //jff 3/14/98 create instant toggle floor type
             // Toggle Floor Between C and F Instantly
             // 211 SR Toggle Floor Instant
             if (EV_DoPlat(line,toggleUpDn,0))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 222:
             // Lower floor to next lowest floor
             // 222 SR Lower Floor To Nearest Floor
             if (EV_DoFloor(line,lowerFloorToNearest))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 230:
             // Raise elevator next floor
             // 230 SR Raise Elevator next floor
             if (EV_DoElevator(line,elevateUp))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 234:
             // Lower elevator next floor
             // 234 SR Lower Elevator next floor
             if (EV_DoElevator(line,elevateDown))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 238:
             // Elevator to current floor
             // 238 SR Elevator to current floor
             if (EV_DoElevator(line,elevateCurrent))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 258:
             // Build stairs, step 8
             // 258 SR EV_BuildStairs(build8)
             if (EV_BuildStairs(line,build8))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           case 259:
             // Build stairs, step 16
             // 259 SR EV_BuildStairs(turbo16)
             if (EV_BuildStairs(line,turbo16))
               P_ChangeSwitchTexture(line,1);
-            break;
+            return true;
 
           // 1/29/98 jff end of added SR linedef types
 
@@ -1238,115 +1238,115 @@ P_UseSpecialLine
       // Close Door
       if (EV_DoDoor(line,closeDoor))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 43:
       // Lower Ceiling to Floor
       if (EV_DoCeiling(line,lowerToFloor))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 45:
       // Lower Floor to Surrounding floor height
       if (EV_DoFloor(line,lowerFloor))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 60:
       // Lower Floor to Lowest
       if (EV_DoFloor(line,lowerFloorToLowest))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 61:
       // Open Door
       if (EV_DoDoor(line,openDoor))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 62:
       // PlatDownWaitUpStay
       if (EV_DoPlat(line,downWaitUpStay,1))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 63:
       // Raise Door
       if (EV_DoDoor(line,normal))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 64:
       // Raise Floor to ceiling
       if (EV_DoFloor(line,raiseFloor))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 66:
       // Raise Floor 24 and change texture
       if (EV_DoPlat(line,raiseAndChange,24))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 67:
       // Raise Floor 32 and change texture
       if (EV_DoPlat(line,raiseAndChange,32))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 65:
       // Raise Floor Crush
       if (EV_DoFloor(line,raiseFloorCrush))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 68:
       // Raise Plat to next highest floor and change texture
       if (EV_DoPlat(line,raiseToNearestAndChange,0))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 69:
       // Raise Floor to next highest floor
       if (EV_DoFloor(line, raiseFloorToNearest))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 70:
       // Turbo Lower Floor
       if (EV_DoFloor(line,turboLower))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 114:
       // Blazing Door Raise (faster than TURBO!)
       if (EV_DoDoor (line,blazeRaise))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 115:
       // Blazing Door Open (faster than TURBO!)
       if (EV_DoDoor (line,blazeOpen))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 116:
       // Blazing Door Close (faster than TURBO!)
       if (EV_DoDoor (line,blazeClose))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 123:
       // Blazing PlatDownWaitUpStay
       if (EV_DoPlat(line,blazeDWUS,0))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 132:
       // Raise Floor Turbo
       if (EV_DoFloor(line,raiseFloorTurbo))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 99:
       // BlzOpenDoor BLUE
@@ -1356,21 +1356,21 @@ P_UseSpecialLine
       // BlzOpenDoor YELLOW
       if (EV_DoLockedDoor (line,blazeOpen,thing))
         P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 138:
       // Light Turn On
       EV_LightTurnOn(line,255);
       P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
 
     case 139:
       // Light Turn Off
       EV_LightTurnOn(line,35);
       P_ChangeSwitchTexture(line,1);
-      break;
+      return true;
   }
-  return true;
+  return !bossaction;
 }
 
 // heretic
