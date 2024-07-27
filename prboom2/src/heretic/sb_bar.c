@@ -994,6 +994,9 @@ static void Hexen_SB_Init(void)
         LumpKILLS = W_GetNumForName("KILLS");
     }
     SB_SetClassData();
+
+    // [FG] support widescreen status bar backgrounds
+    ST_SetScaledWidth();
 }
 
 void SB_SetClassData(void)
