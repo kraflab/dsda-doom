@@ -24,6 +24,7 @@
 #include "gl_struct.h"
 #include "lprintf.h"
 #include "i_main.h"
+#include "i_video.h"
 
 #include "dsda/args.h"
 #include "dsda/build.h"
@@ -149,11 +150,13 @@ dboolean dsda_StrictMode(void) {
 }
 
 dboolean dsda_MuteSfx(void) {
-  return dsda_IntConfig(dsda_config_mute_sfx);
+  return dsda_IntConfig(dsda_config_mute_sfx) ||
+         (!I_WindowFocused() && dsda_IntConfig(dsda_config_mute_unfocused_window));
 }
 
 dboolean dsda_MuteMusic(void) {
-  return dsda_IntConfig(dsda_config_mute_music);
+  return dsda_IntConfig(dsda_config_mute_music) ||
+         (!I_WindowFocused() && dsda_IntConfig(dsda_config_mute_unfocused_window));
 }
 
 dboolean dsda_ProcessCheatCodes(void) {

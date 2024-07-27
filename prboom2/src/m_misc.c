@@ -299,6 +299,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_death_use_action),
   MIGRATED_SETTING(dsda_config_mute_sfx),
   MIGRATED_SETTING(dsda_config_mute_music),
+  MIGRATED_SETTING(dsda_config_mute_unfocused_window),
   MIGRATED_SETTING(dsda_config_cheat_codes),
   MIGRATED_SETTING(dsda_config_allow_jumping),
   MIGRATED_SETTING(dsda_config_parallel_sfx_limit),

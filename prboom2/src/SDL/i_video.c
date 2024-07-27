@@ -1605,8 +1605,7 @@ static void UpdateFocus(void)
     V_TouchPalette();
   }
 
-  // Should the screen be grabbed?
-  //    screenvisible = (state & SDL_APPACTIVE) != 0;
+  S_ResetVolume();
 }
 
 void UpdateGrab(void)

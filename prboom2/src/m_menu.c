@@ -3009,6 +3009,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, dsda_config_full_sounds },
   { "Preferred MIDI player", S_CHOICE | S_STR, m_conf, G_X, dsda_config_snd_midiplayer, 0, midiplayers },
+  { "Mute Audio When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
 
   NEXT_PAGE(mouse_settings),
   FINAL_ENTRY

@@ -366,6 +366,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_mute_music", dsda_config_mute_music,
     CONF_BOOL(0), NULL, NOT_STRICT, I_ResetMusicVolume
   },
+  [dsda_config_mute_unfocused_window] = {
+    "dsda_mute_unfocused_window", dsda_config_mute_unfocused_window,
+    CONF_BOOL(0), NULL, NOT_STRICT, S_ResetVolume
+  },
   [dsda_config_cheat_codes] = {
     "dsda_cheat_codes", dsda_config_cheat_codes,
     CONF_BOOL(1)
