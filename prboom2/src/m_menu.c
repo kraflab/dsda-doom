@@ -1328,7 +1328,7 @@ void M_SfxVol(int choice)
   }
 
   // Unmute the sfx if we are adjusting the volume
-  if (dsda_MuteSfx())
+  if (dsda_IntConfig(dsda_config_mute_sfx))
     dsda_ToggleConfig(dsda_config_mute_sfx, true);
 }
 
@@ -1346,7 +1346,7 @@ void M_MusicVol(int choice)
   }
 
   // Unmute the music if we are adjusting the volume
-  if (dsda_MuteMusic())
+  if (dsda_IntConfig(dsda_config_mute_music))
     dsda_ToggleConfig(dsda_config_mute_music, true);
 }
 
