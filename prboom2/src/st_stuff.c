@@ -379,7 +379,7 @@ static int cr_ammo_full;
 
 static void ST_Stop(void);
 
-static void ST_LoadTextColors(void)
+void ST_LoadTextColors(void)
 {
   cr_health_bad = dsda_TextCR(dsda_tc_stbar_health_bad);
   cr_health_warning = dsda_TextCR(dsda_tc_stbar_health_warning);

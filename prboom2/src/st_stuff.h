@@ -55,6 +55,7 @@ extern int ST_SCALED_Y;
 extern int ST_SCALED_OFFSETX;
 
 void ST_SetScaledWidth(void);
+void ST_LoadTextColors(void);
 
 //
 // STATUS BAR
