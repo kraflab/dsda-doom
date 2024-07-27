@@ -268,6 +268,11 @@ static int I_TranslateKey(SDL_Keysym* key)
 
 }
 
+dboolean I_WindowFocused(void)
+{
+  return window_focused;
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 // Main input code
 

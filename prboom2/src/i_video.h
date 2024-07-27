@@ -99,6 +99,7 @@ extern int renderW;		// resolution scaling
 extern int renderH;		// - DTIED
 
 extern dboolean window_focused;
+dboolean I_WindowFocused(void);
 void UpdateGrab(void);
 
 #endif
