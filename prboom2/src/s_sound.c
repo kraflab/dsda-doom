@@ -156,6 +156,14 @@ void S_ResetSfxVolume(void)
     sfx_volume = snd_SfxVolume;
 }
 
+void S_ResetVolume(void)
+{
+  void I_ResetMusicVolume(void);
+
+  S_ResetSfxVolume();
+  I_ResetMusicVolume();
+}
+
 // Initializes sound stuff, including volume
 // Sets channels, SFX and music volume,
 //  allocates channel buffer, sets S_sfx lookup.
