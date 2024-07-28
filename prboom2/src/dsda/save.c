@@ -290,7 +290,11 @@ void dsda_UpdateAutoSaves(void) {
 
   void M_AutoSave(void);
 
-  if (!dsda_IntConfig(dsda_config_auto_save) || gamestate != GS_LEVEL || gameaction != ga_nothing)
+  if (!dsda_IntConfig(dsda_config_auto_save) ||
+      gamestate != GS_LEVEL ||
+      gameaction != ga_nothing ||
+      demoplayback ||
+      demorecording)
     return;
 
   if (automap != gamemap || autoepisode != gameepisode) {
