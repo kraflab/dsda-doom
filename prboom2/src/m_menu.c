@@ -5565,11 +5565,31 @@ int M_EventToCharacter(event_t* ev)
 {
   if (ev->type == ev_joystick)
   {
-    return MENU_NULL;
+    if (ev->data1.i)
+    {
+      static int wait;
+
+      if (wait < dsda_GetTick())
+      {
+        wait = dsda_GetTick() + 5;
+
+        return 0; // lets the input reach the binding responder
+      }
+    }
   }
   else if (ev->type == ev_mouse)
   {
-    return MENU_NULL;
+    if (ev->data1.i)
+    {
+      static int wait;
+
+      if (wait < dsda_GetTick())
+      {
+        wait = dsda_GetTick() + 5;
+
+        return 0; // lets the input reach the binding responder
+      }
+    }
   }
   else if (ev->type == ev_keydown)
   {
