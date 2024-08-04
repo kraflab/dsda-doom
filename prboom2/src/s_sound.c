@@ -1258,7 +1258,11 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
 
   sfx = &S_sfx[sound_id];
 
-  params.volume = (volume * (sfx_volume + 1) * 8) >> 7;
+  if (sfx_volume > 0)
+    params.volume = (volume * (sfx_volume + 1) * 8) >> 7;
+  else
+    params.volume = 0;
+
   params.pitch = (byte) (NORM_PITCH - (M_Random() & 3) + (M_Random() & 3));
   params.priority = 1; // super low priority
   params.separation = 128;
