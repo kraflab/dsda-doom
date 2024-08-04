@@ -2602,12 +2602,14 @@ void dsda_UpdateConsoleText(char* text) {
     if (text[i] < 32 || text[i] > 126)
       continue;
 
+    if (console_entry_index > CONSOLE_ENTRY_SIZE - 2)
+      console_entry_index = CONSOLE_ENTRY_SIZE - 2;
+
     for (shift_i = strlen(console_entry->text) - 1; shift_i > console_entry_index; --shift_i)
       console_entry->text[shift_i] = console_entry->text[shift_i - 1];
 
     console_entry->text[console_entry_index] = tolower(text[i]);
-    if (console_entry_index < CONSOLE_ENTRY_SIZE - 2)
-      ++console_entry_index;
+    ++console_entry_index;
   }
 
   dsda_UpdateConsoleDisplay();
