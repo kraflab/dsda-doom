@@ -959,6 +959,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_allow_jumping", dsda_config_allow_jumping,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_ResetAirControl
   },
+  [dsda_config_pistol_start] = {
+    "dsda_pistol_start", dsda_config_pistol_start,
+    CONF_BOOL(0)
+  },
   [dsda_config_parallel_sfx_limit] = {
     "dsda_parallel_sfx_limit", dsda_config_parallel_sfx_limit,
     dsda_config_int, 0, 32, { 0 }, NULL, NOT_STRICT, dsda_InitParallelSFXFilter

@@ -3149,6 +3149,7 @@ setup_menu_t demo_settings[] = {
   { "Organize Failed Demos", S_YESNO,  m_conf, G_X, dsda_config_organize_failed_demos },
   EMPTY_LINE,
   { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X},
+  { "Automatic Pistol Start", S_YESNO, m_conf, G_X, dsda_config_pistol_start },
   { "Allow Jumping", S_YESNO, m_conf, G_X, dsda_config_allow_jumping },
   { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
 

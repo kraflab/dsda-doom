@@ -1733,9 +1733,6 @@ static void D_DoomMainSetup(void)
   //e6y: some stuff from command-line should be initialised before ProcessDehFile()
   e6y_InitCommandLine();
 
-  // Automatic pistol start when advancing from one level to the next.
-  pistolstart = dsda_Flag(dsda_arg_pistolstart);
-
   // CPhipps - autoloading of wads
   autoload = !dsda_Flag(dsda_arg_noautoload);
 

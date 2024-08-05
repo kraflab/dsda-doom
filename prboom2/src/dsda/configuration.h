@@ -211,6 +211,7 @@ typedef enum {
   dsda_config_quickstart_cache_tics,
   dsda_config_death_use_action,
   dsda_config_allow_jumping,
+  dsda_config_pistol_start,
   dsda_config_parallel_sfx_limit,
   dsda_config_parallel_sfx_window,
   dsda_config_movement_toggle_sfx,

@@ -121,9 +121,6 @@ extern const char * comp_lev_str[];
 extern int shorttics;
 extern int longtics;
 
-// automatic pistol start when advancing from one level to the next
-extern int pistolstart;
-
 // hexen
 
 void G_Completed(int map, int position, int flags, angle_t angle);
