@@ -159,7 +159,7 @@ void HUlib_drawTextLine
     {                    //jff 3/26/98 changed to actual escape char
       if (++i < l->len)
       {
-        if (l->l[i] >= HU_COLOR && l->l[i] < HU_COLOR + CR_LIMIT)
+        if (l->l[i] >= HU_COLOR && l->l[i] < HU_COLOR + CR_HUD_LIMIT)
           l->cm = l->l[i] - HU_COLOR;
         else if (l->l[i] < HU_COLOR)
           x += l->l[i];

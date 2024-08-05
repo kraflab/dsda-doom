@@ -72,7 +72,7 @@ void dsda_UpdateFreeText(void) {
           ++i;
         }
 
-        if (color < 0 || color >= CR_LIMIT)
+        if (color < 0 || color >= CR_HUD_LIMIT)
           color = 0;
 
         free_text[j] = '\x1b';

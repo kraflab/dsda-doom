@@ -174,7 +174,7 @@ void dsda_LoadTextColor(void) {
   Z_Free(lump);
 }
 
-static const char* color_name_to_index[CR_LIMIT] = {
+static const char* color_name_to_index[CR_HUD_LIMIT] = {
   "",
   "brick",
   "tan",
@@ -198,7 +198,7 @@ int dsda_ColorNameToIndex(const char* name) {
   if (!name)
     return CR_DEFAULT;
 
-  for (i = CR_DEFAULT + 1; i < CR_LIMIT; ++i)
+  for (i = CR_DEFAULT + 1; i < CR_HUD_LIMIT; ++i)
     if (!stricmp(color_name_to_index[i], name))
       return i;
 

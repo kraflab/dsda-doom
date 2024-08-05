@@ -31,7 +31,7 @@ typedef struct {
 } cr_range_t;
 
 // Default values - overridden by DSDACR lump
-cr_range_t cr_range[CR_LIMIT] = {
+cr_range_t cr_range[CR_HUD_LIMIT] = {
   [CR_DEFAULT]   = { 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF },
   [CR_BRICK]     = { 0x47, 0x00, 0x00, 0xFF, 0xB8, 0xB8 },
   [CR_TAN]       = { 0x33, 0x2B, 0x13, 0xFF, 0xEB, 0xDF },
@@ -139,7 +139,7 @@ static void dsda_LoadCRLump(void) {
     if (sscanf(line, "%d %i %i %i %i %i %i", &i, &r1, &g1, &b1, &r2, &g2, &b2) != 7)
       I_Error("DSDACR lump has unknown format!");
 
-    if (i < 1 || i >= CR_LIMIT)
+    if (i < 1 || i >= CR_HUD_LIMIT)
       I_Error("DSDACR index %d is out of bounds!", i);
 
     if (r1 < 0 || g1 < 0 || b1 < 0 || r2 < 0 || g2 < 0 || b2 < 0 ||
@@ -156,6 +156,39 @@ static void dsda_LoadCRLump(void) {
 
   Z_Free(lines);
   Z_Free(lump);
+}
+
+typedef struct {
+  const char* name;
+  int fallback;
+} blood_load_t;
+
+static blood_load_t blood_data[CR_LIMIT - CR_BLOOD] = {
+  { "CRGRAY", CR_GRAY },
+  { "CRGREEN", CR_GREEN },
+  { "CRBLUE", CR_BLUE },
+  { "CRYELLOW", CR_YELLOW },
+  { "CRBLACK", CR_BLACK },
+  { "CRPURPLE", CR_PURPLE },
+  { "CRWHITE", CR_WHITE },
+  { "CRORANGE", CR_ORANGE },
+};
+
+static void dsda_LoadCRLumps(byte* buffer) {
+  int i;
+  byte* blood_buffer;
+
+  blood_buffer = buffer + CR_HUD_LIMIT * 256;
+
+  for (i = 0; i < CR_LIMIT - CR_BLOOD; ++i) {
+    int lump;
+
+    lump = W_CheckNumForName(blood_data[i].name);
+    if (lump != LUMP_NOT_FOUND && W_LumpLength(lump) == 256)
+      memcpy(blood_buffer + i * 256, W_LumpByNum(lump), 256);
+    else
+      memcpy(blood_buffer + i * 256, buffer + blood_data[i].fallback * 256, 256);
+  }
 }
 
 byte* dsda_GenerateCRTable(void) {
@@ -188,7 +221,7 @@ byte* dsda_GenerateCRTable(void) {
     if (orig_i == 176)
       length = 1;
 
-    for (cr_i = 0; cr_i < CR_LIMIT; ++cr_i) {
+    for (cr_i = 0; cr_i < CR_HUD_LIMIT; ++cr_i) {
       int target_r, target_g, target_b;
       int best_i = 0;
       int best_dist = INT_MAX;
@@ -233,6 +266,8 @@ byte* dsda_GenerateCRTable(void) {
       buffer[cr_i * 256 + orig_i] = best_i;
     }
   }
+
+  dsda_LoadCRLumps(buffer);
 
   return buffer;
 }

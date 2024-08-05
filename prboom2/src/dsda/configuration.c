@@ -73,7 +73,7 @@ typedef struct {
 #define CONF_COLOR(x) dsda_config_int, 0, 255, { x }
 #define CONF_BYTE(x) dsda_config_int, 0, 255, { x }
 #define CONF_STRING(x) dsda_config_string, 0, 0, { .v_string = x }
-#define CONF_CR(x) dsda_config_int, 0, CR_LIMIT - 1, { x }
+#define CONF_CR(x) dsda_config_int, 0, CR_HUD_LIMIT - 1, { x }
 #define CONF_WEAPON(x) dsda_config_int, 0, 9, { x }
 
 #define NOT_STRICT 0, 0
