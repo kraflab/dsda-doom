@@ -166,7 +166,7 @@ typedef struct {
 static blood_load_t blood_data[CR_LIMIT - CR_BLOOD] = {
   { "CRGRAY", CR_GRAY },
   { "CRGREEN", CR_GREEN },
-  { "CRBLUE", CR_BLUE },
+  { "CRBLUE2", CR_BLUE },
   { "CRYELLOW", CR_YELLOW },
   { "CRBLACK", CR_BLACK },
   { "CRPURPLE", CR_PURPLE },
