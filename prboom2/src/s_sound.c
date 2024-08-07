@@ -323,9 +323,6 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
   origin = (mobj_t *) origin_p;
   listener = GetSoundListener();
 
-  if (origin == NULL)
-    origin = listener;
-
   //jff 1/22/98 return if sound is not enabled
   if (nosfxparm)
     return;
@@ -368,7 +365,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
   // Check to see if it is audible, modify the params
   // killough 3/7/98, 4/25/98: code rearranged slightly
 
-  if (origin == listener) {
+  if (!origin || origin == listener) {
     params.separation = NORM_SEP;
     params.volume *= 8;
     params.priority *= 10;
