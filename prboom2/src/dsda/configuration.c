@@ -131,6 +131,7 @@ void dsda_InitGameControllerParameters(void);
 void dsda_InitExHud(void);
 void dsda_UpdateFreeText(void);
 void dsda_ResetAirControl(void);
+void dsda_AlterGameFlags(void);
 
 void dsda_TrackConfigFeatures(void) {
   if (!demorecording)
@@ -962,6 +963,22 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_pistol_start] = {
     "dsda_pistol_start", dsda_config_pistol_start,
     CONF_BOOL(0)
+  },
+  [dsda_config_respawn_monsters] = {
+    "dsda_respawn_monsters", dsda_config_respawn_monsters,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_AlterGameFlags
+  },
+  [dsda_config_fast_monsters] = {
+    "dsda_fast_monsters", dsda_config_fast_monsters,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_AlterGameFlags
+  },
+  [dsda_config_no_monsters] = {
+    "dsda_no_monsters", dsda_config_no_monsters,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_AlterGameFlags
+  },
+  [dsda_config_coop_spawns] = {
+    "dsda_coop_spawns", dsda_config_coop_spawns,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_AlterGameFlags
   },
   [dsda_config_parallel_sfx_limit] = {
     "dsda_parallel_sfx_limit", dsda_config_parallel_sfx_limit,
