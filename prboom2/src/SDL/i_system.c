@@ -408,10 +408,46 @@ static const char *I_GetBasePath(void)
  */
 
 #ifdef _WIN32
-#define PATH_SEPARATOR ';'
+#define PATH_SEPARATOR ";"
 #else
-#define PATH_SEPARATOR ':'
+#define PATH_SEPARATOR ":"
 #endif
+
+// Reference for XDG directories:
+// <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
+static const char *I_GetXDGDataHome(void)
+{
+  static char *datahome = 0;
+
+  if (!datahome)
+  {
+    const char *xdgdatahome = M_getenv("XDG_DATA_HOME");
+
+    if (!xdgdatahome || !*xdgdatahome)
+    {
+      const char *home = M_getenv("HOME");
+
+      if (!home)
+        home = "/";
+      datahome = Z_Malloc(strlen(home) + 1 + sizeof(".local/share"));
+      sprintf(datahome, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
+    }
+    else
+    {
+      datahome = Z_Strdup(xdgdatahome);
+    }
+  }
+  return datahome;
+}
+
+static const char *I_GetXDGDataDirs(void)
+{
+  const char *datadirs = M_getenv("XDG_DATA_DIRS");
+
+  if (!datadirs || !*datadirs)
+    return "/usr/local/share/"PATH_SEPARATOR"/usr/share/";
+  return datadirs;
+}
 
 char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
 {
@@ -433,10 +469,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL, NULL, NULL, I_GetBasePath}, // search the base path provided by SDL
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
-    {"/usr/local/share/games/doom"},
-    {"/usr/share/games/doom"},
-    {"/usr/local/share/doom"},
-    {"/usr/share/doom"},
+    {NULL, "games/doom", NULL, I_GetXDGDataHome}, // $HOME/.local/share/games/doom
   }, *search;
 
   static size_t num_search;
@@ -452,46 +485,60 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
 
   if (!num_search)
   {
-    char *dwp;
+    int extra = 0;
+    int datadirs = 0;
+    const char *dwp;
+
+    // calculate how many extra entries we need to add to the table
+    dwp = I_GetXDGDataDirs();
+    datadirs++;
+    while ((dwp = strchr(dwp, *PATH_SEPARATOR)))
+      dwp++, datadirs++;
+    extra += datadirs * 2; // two entries for each datadir
+    if ((dwp = M_getenv("DOOMWADPATH")))
+    {
+      extra++;
+      while ((dwp = strchr(dwp, *PATH_SEPARATOR)))
+        dwp++, extra++;
+    }
 
     // initialize with the static lookup table
     num_search = sizeof(search0)/sizeof(*search0);
-    search = Z_Malloc(num_search * sizeof(*search));
+    search = Z_Malloc((num_search + extra) * sizeof(*search));
     memcpy(search, search0, num_search * sizeof(*search));
+    memset(&search[num_search], 0, extra * sizeof(*search));
 
+    // add $XDG_DATA_DIRS/games/doom and $XDG_DATA_DIRS/doom
+    {
+      char *ptr, *dup_dwp;
+
+      dup_dwp = Z_Strdup(I_GetXDGDataDirs());
+      ptr = strtok(dup_dwp, PATH_SEPARATOR);
+      while (ptr)
+      {
+        search[num_search].dir = Z_Strdup(ptr);
+        search[num_search].sub = "games/doom";
+        search[num_search + datadirs].dir = Z_Strdup(ptr);
+        search[num_search + datadirs].sub = "doom";
+        num_search++;
+        ptr = strtok(NULL, PATH_SEPARATOR);
+      }
+      Z_Free(dup_dwp);
+      num_search += datadirs;
+    }
     // add each directory from the $DOOMWADPATH environment variable
     if ((dwp = M_getenv("DOOMWADPATH")))
     {
-      char *left, *ptr, *dup_dwp;
+      char *ptr, *dup_dwp;
 
       dup_dwp = Z_Strdup(dwp);
-      left = dup_dwp;
-
-      for (;;)
+      ptr = strtok(dup_dwp, PATH_SEPARATOR);
+      while (ptr)
       {
-          ptr = strchr(left, PATH_SEPARATOR);
-          if (ptr != NULL)
-          {
-              *ptr = '\0';
-
-              num_search++;
-              search = Z_Realloc(search, num_search * sizeof(*search));
-              memset(&search[num_search-1], 0, sizeof(*search));
-              search[num_search-1].dir = Z_Strdup(left);
-
-              left = ptr + 1;
-          }
-          else
-          {
-              break;
-          }
+        search[num_search].dir = Z_Strdup(ptr);
+        num_search++;
+        ptr = strtok(NULL, PATH_SEPARATOR);
       }
-
-      num_search++;
-      search = Z_Realloc(search, num_search * sizeof(*search));
-      memset(&search[num_search-1], 0, sizeof(*search));
-      search[num_search-1].dir = Z_Strdup(left);
-
       Z_Free(dup_dwp);
     }
   }
