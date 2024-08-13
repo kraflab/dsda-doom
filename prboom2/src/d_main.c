@@ -1051,7 +1051,7 @@ static inline dboolean CheckExeSuffix(const char *suffix)
   char *dash;
 
   if ((dash = strrchr(dsda_argv[0], '-')))
-    if (!stricmp(dash, suffix))
+    if (!strnicmp(dash, suffix, strlen(suffix)))
       return true;
 
   return false;
