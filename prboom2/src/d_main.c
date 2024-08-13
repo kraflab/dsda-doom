@@ -1063,6 +1063,17 @@ static char *FindIWADFile(void)
   dsda_arg_t* arg;
   char  * iwad  = NULL;
 
+  if (CheckExeSuffix("-heretic"))
+  {
+    if (!dsda_Flag(dsda_arg_heretic))
+      dsda_UpdateFlag(dsda_arg_heretic, true);
+  }
+  else if (CheckExeSuffix("-hexen"))
+  {
+    if (!dsda_Flag(dsda_arg_hexen))
+      dsda_UpdateFlag(dsda_arg_hexen, true);
+  }
+
   arg = dsda_Arg(dsda_arg_iwad);
   if (arg->found)
   {
@@ -1070,9 +1081,9 @@ static char *FindIWADFile(void)
   }
   else
   {
-    if (dsda_Flag(dsda_arg_heretic) || CheckExeSuffix("-heretic"))
+    if (dsda_Flag(dsda_arg_heretic))
       return I_FindWad("heretic.wad");
-    else if (dsda_Flag(dsda_arg_hexen) || CheckExeSuffix("-hexen"))
+    else if (dsda_Flag(dsda_arg_hexen))
       return I_FindWad("hexen.wad");
 
     for (i=0; !iwad && i<nstandard_iwads; i++)
