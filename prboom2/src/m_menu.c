@@ -4686,7 +4686,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
         if (gather_count >= MAXGATHER)
           return true;
 
-        if (!isdigit(ch) && ch != '-')
+        if (!isdigit((unsigned char) ch) && ch != '-')
           return true; // ignore
 
         /* killough 10/98: character-based numerical input */
