@@ -10,8 +10,6 @@ This is a successor of prboom+ with many new features, including:
 - Advanced tools for TASing
 - Rewind
 
-Download windows releases [here](https://drive.google.com/drive/folders/1KMU1dY0HZrY5h2EyPzxxXuyH8DunAJV_?usp=sharing).
-
 ### Patch Notes
 - [v0.28](./patch_notes/v0.28.md)
 - [v0.27](./patch_notes/v0.27.md)
