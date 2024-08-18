@@ -803,7 +803,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
     if (look)
     {
-      if (!V_IsOpenGLMode())
+      if (players[consoleplayer].mo && !V_IsOpenGLMode())
       {
         int target_look = players[consoleplayer].mo->pitch + (look << 16);
 
