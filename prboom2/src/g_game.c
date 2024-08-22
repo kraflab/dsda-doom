@@ -2670,11 +2670,13 @@ void G_Compatibility(void)
     // comp_voodooscroller - Voodoo dolls on slow scrollers move too slowly
     { mbf21_compatibility, mbf21_compatibility },
     // comp_reservedlineflag - ML_RESERVED clears extended flags
+    { mbf21_compatibility, mbf21_compatibility },
+    // comp_blockmapflags - adding/removing NOBLOCKMAP or NOSECTOR flags does not update blockmap
     { mbf21_compatibility, mbf21_compatibility }
   };
   unsigned int i;
 
-  if (sizeof(levels)/sizeof(*levels) != MBF_COMP_TOTAL)
+  if (sizeof(levels)/sizeof(*levels) != COMP_TOTAL)
     I_Error("G_Compatibility: consistency error");
 
   for (i = 0; i < sizeof(levels)/sizeof(*levels); i++)
@@ -2808,6 +2810,7 @@ void G_ReloadDefaults(void)
     comp[comp_friendlyspawn] = options->comp_friendlyspawn;
     comp[comp_voodooscroller] = options->comp_voodooscroller;
     comp[comp_reservedlineflag] = options->comp_reservedlineflag;
+    comp[comp_blockmapflags] = options->comp_blockmapflags;
   }
 
   G_Compatibility();

@@ -114,7 +114,9 @@ enum {
   comp_friendlyspawn,
   comp_voodooscroller,
   comp_reservedlineflag,
+  comp_blockmapflags,
 
+  COMP_TOTAL,          // actual number of comp options
   MBF_COMP_TOTAL = 32  // limit in MBF format
 };
 
@@ -126,7 +128,7 @@ enum {
   COMPERR_NUM
 };
 
-extern int comp[MBF_COMP_TOTAL];
+extern int comp[COMP_TOTAL];
 extern int default_comperr[COMPERR_NUM];
 
 // -------------------------------------------

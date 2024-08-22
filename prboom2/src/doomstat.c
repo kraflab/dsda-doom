@@ -55,7 +55,7 @@ complevel_t compatibility_level;
 // it's required for demos recorded in "demo compatibility" mode by boom201 for example
 int demover;
 
-int comp[MBF_COMP_TOTAL];    // killough 10/98
+int comp[COMP_TOTAL];    // killough 10/98
 int default_comperr[COMPERR_NUM];
 
 int demo_insurance;        // killough 1/16/98
