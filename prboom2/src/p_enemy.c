@@ -3616,8 +3616,19 @@ void A_AddFlags(mobj_t* actor)
   flags  = actor->state->args[0];
   flags2 = actor->state->args[1];
 
+  // unlink/relink the thing from the blockmap if
+  // the NOBLOCKMAP or NOSECTOR flags are added
+  const bool updateBlockmap = ((flags & MF_NOBLOCKMAP) && !(actor->flags & MF_NOBLOCKMAP))
+                           || ((flags & MF_NOSECTOR) && !(actor->flags & MF_NOSECTOR));
+
+  if (updateBlockmap)
+    P_UnsetThingPosition(actor);
+
   actor->flags  |= flags;
   actor->flags2 |= flags2;
+
+  if (updateBlockmap)
+    P_SetThingPosition(actor);
 }
 
 //
@@ -3636,8 +3647,19 @@ void A_RemoveFlags(mobj_t* actor)
   flags  = actor->state->args[0];
   flags2 = actor->state->args[1];
 
+  // unlink/relink the thing from the blockmap if
+  // the NOBLOCKMAP or NOSECTOR flags are removed
+  const bool updateBlockmap = ((flags & MF_NOBLOCKMAP) && (actor->flags & MF_NOBLOCKMAP))
+                           || ((flags & MF_NOSECTOR) && (actor->flags & MF_NOSECTOR));
+
+  if (updateBlockmap)
+    P_UnsetThingPosition(actor);
+
   actor->flags  &= ~flags;
   actor->flags2 &= ~flags2;
+
+  if (updateBlockmap)
+    P_SetThingPosition(actor);
 }
 
 
