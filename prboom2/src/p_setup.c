@@ -3677,10 +3677,7 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
   lumpnum = W_GetNumForName(lumpname);
 
   // Must process musinfo to get default track before calling S_Start
-  if (gamemode != shareware)
-  {
-    S_ParseMusInfo(lumpname);
-  }
+  S_ParseMusInfo(lumpname);
 
   // Make sure all sounds are stopped before Z_FreeTag.
   S_Start();
