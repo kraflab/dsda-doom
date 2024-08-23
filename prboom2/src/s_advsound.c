@@ -59,7 +59,7 @@ musinfo_t musinfo;
 //
 void S_ParseMusInfo(const char *mapid)
 {
-  if (W_LumpNameExists("MUSINFO"))
+  if (gamemode != shareware && W_LumpNameExists("MUSINFO"))
   {
     int num, lumpnum;
     int inMap = false;
