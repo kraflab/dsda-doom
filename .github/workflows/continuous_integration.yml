@@ -151,3 +151,25 @@ jobs:
 
       - name: Build
         run: cmake --build build --config ${{ matrix.config.build_type }}
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          cd build
+          cpack -G ZIP
+
+      - name: Upload Artifacts
+        if: ${{ matrix.config.name == 'MSYS2 UCRT64' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.config.package_name }}
+          path: build/*.zip
+
+      - name: Release
+        if: ${{ contains(github.ref, 'tags') && matrix.config.name == 'MSYS2 UCRT64' }}
+        uses: ncipollo/release-action@v1
+        with:
+          name: ${{ github.ref_name }}
+          bodyFile: patch_notes/${{ github.ref_name }}.md
+          allowUpdates: true
+          artifacts: build/*.zip
