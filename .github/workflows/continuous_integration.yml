@@ -39,7 +39,7 @@ jobs:
               name: "Linux GCC",
               os: ubuntu-latest,
               build_type: "Release",
-              extra_options: "-G Ninja",
+              extra_options: "-G Ninja -DCMAKE_INSTALL_PREFIX=/usr",
               package_name: "linux_gcc",
               shell: bash,
               artifact-path: build/*.appimage,
