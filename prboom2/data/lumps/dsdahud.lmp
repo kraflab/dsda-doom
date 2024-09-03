@@ -28,7 +28,7 @@ event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
 add_offset 1 top_left
 
@@ -45,7 +45,7 @@ event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
 add_offset 1 top_left
 
@@ -75,7 +75,7 @@ event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
 add_offset 1 top_left
 
@@ -90,7 +90,7 @@ event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
 add_offset 1 top_left
 
@@ -137,7 +137,7 @@ event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
 add_offset 1 top_left
 
@@ -161,7 +161,7 @@ event_split 10 16 top_left
 level_splits 2 2 top
 fps 298 0 top_right
 minimap 264 8 top_right 48 48 1024
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
 add_offset 1 top_left
 
@@ -178,7 +178,7 @@ map_totals 2 8 top_left
 map_time 2 40 top_left
 map_coordinates 255 8 top_right
 map_title 20 16 bottom_left
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
 
 hexen map
@@ -186,5 +186,5 @@ map_totals 2 8 top_left
 map_time 2 40 top_left
 map_coordinates 255 8 top_right
 map_title 24 20 bottom_left
-message 0 0 top_left
+message 0 0 top 1
 secret_message 0 76 none
