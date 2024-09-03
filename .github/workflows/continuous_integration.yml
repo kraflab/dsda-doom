@@ -170,6 +170,5 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: ${{ github.ref_name }}
-          bodyFile: patch_notes/${{ github.ref_name }}.md
           allowUpdates: true
           artifacts: ${{ matrix.config.artifact-path }}
