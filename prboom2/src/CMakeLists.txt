@@ -618,10 +618,9 @@ function(AddGameExecutable TARGET SOURCES)
                 POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
                 DIRECTORIES $<TARGET_FILE_DIR:${TARGET}> $ENV{PATH}
             RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}"
-            COMPONENT "Game executable"
         )
     else()
-        install(TARGETS ${TARGET} COMPONENT "Game executable" RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
+        install(TARGETS ${TARGET} RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
     endif()
 
     target_link_libraries(${TARGET} PRIVATE
