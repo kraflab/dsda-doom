@@ -208,8 +208,8 @@ typedef struct {
   float xscrollceiling;
   float yscrollceiling;
   int scrollceilingmode;
-  float xthrust;
-  float ythrust;
+  char* xthrust;
+  char* ythrust;
   int thrustgroup;
   int thrustlocation;
   char* frictionfactor;

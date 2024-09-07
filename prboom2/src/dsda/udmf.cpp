@@ -579,10 +579,10 @@ static void dsda_ParseUDMFSector(Scanner &scanner) {
       SCAN_INT(sector.scrollceilingmode);
     }
     else if (scanner.StringMatch("xthrust")) {
-      SCAN_FLOAT(sector.xthrust);
+      SCAN_FLOAT_STRING(sector.xthrust);
     }
     else if (scanner.StringMatch("ythrust")) {
-      SCAN_FLOAT(sector.ythrust);
+      SCAN_FLOAT_STRING(sector.ythrust);
     }
     else if (scanner.StringMatch("thrustgroup")) {
       SCAN_INT(sector.thrustgroup);
