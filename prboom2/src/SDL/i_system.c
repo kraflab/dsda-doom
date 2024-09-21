@@ -323,12 +323,16 @@ const char *I_ConfigDir(void)
 
       Z_Free(base);
 
+#ifdef __APPLE__
+      base = dsda_ConcatDir(home, "Library/Application Support/dsda-doom");
+#else
       xdg_data_home = M_getenv("XDG_DATA_HOME");
       if (xdg_data_home)
         base = dsda_ConcatDir(xdg_data_home, "dsda-doom");
       else
         // $XDG_DATA_HOME should be $HOME/.local/share if not defined.
         base = dsda_ConcatDir(home, ".local/share/dsda-doom");
+#endif
     }
 
     M_MakeDir(base, true); // Make sure it exists
