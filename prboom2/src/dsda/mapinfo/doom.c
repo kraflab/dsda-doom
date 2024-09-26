@@ -513,7 +513,7 @@ int dsda_DoomHUTitle(dsda_string_t* str) {
   if (!current_map)
     return false;
 
-  dsda_StringPrintF(str, "%s", current_map->nice_name);
+  dsda_StringPrintF(str, "%s: %s", current_map->lump_name, current_map->nice_name);
 
   return true;
 }
