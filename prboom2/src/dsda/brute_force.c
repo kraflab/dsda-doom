@@ -524,11 +524,15 @@ void dsda_SetBruteForceTarget(dsda_bf_attribute_t attribute,
   bf_target.best_value = dsda_BFAttribute(attribute);
   bf_target.enabled = true;
 
-  if (has_value)
+  if (has_value) {
     lprintf(LO_INFO, "Set brute force target: %s %s %d\n",
                     dsda_bf_attribute_names[attribute],
                     dsda_bf_limit_names[limit],
                     value);
+
+    if (fixed_point_attribute[attribute])
+      bf_target.value <<= FRACBITS;
+  }
   else
     lprintf(LO_INFO, "Set brute force target: %s %s\n",
                     dsda_bf_attribute_names[attribute],
