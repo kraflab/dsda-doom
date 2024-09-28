@@ -214,6 +214,12 @@ if(NOT CMAKE_CROSSCOMPILING)
 endif()
 
 if(WIN32)
+    install(FILES COPYING DESTINATION . RENAME COPYING.txt)
+else()
+    install(FILES COPYING DESTINATION "share/doc/${PROJECT_NAME}")
+endif()
+
+if(WIN32)
     set(CPACK_GENERATOR ZIP)
 elseif(LINUX)
     set(CPACK_GENERATOR External)
