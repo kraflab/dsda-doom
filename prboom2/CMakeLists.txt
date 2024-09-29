@@ -167,7 +167,7 @@ endif()
 if(WIN32)
     set(DEFAULT_WAD_DIR ".")
 else()
-    set(DEFAULT_WAD_DIR "${CMAKE_INSTALL_DATADIR}/games/doom")
+    set(DEFAULT_WAD_DIR "share/games/doom")
 endif()
 
 set(DSDAPWADDIR "${DEFAULT_WAD_DIR}" CACHE STRING "Path to install DSDA-Doom internal WAD, relative to CMAKE_INSTALL_PREFIX or absolute.")
@@ -207,11 +207,55 @@ set(WAD_DATA_PATH "${DSDA_OUTPUT_PATH}/${WAD_DATA}")
 
 add_subdirectory(data)
 add_subdirectory(src)
+add_subdirectory(ICONS)
 
 if(NOT CMAKE_CROSSCOMPILING)
     export(TARGETS ${CROSS_EXPORTS} FILE "${CMAKE_BINARY_DIR}/ImportExecutables.cmake")
 endif()
 
 if(WIN32)
-    include(CPack)
+    install(FILES COPYING DESTINATION . RENAME COPYING.txt)
+else()
+    install(FILES COPYING DESTINATION "share/doc/${PROJECT_NAME}")
 endif()
+
+if(WIN32)
+    set(CPACK_GENERATOR ZIP)
+elseif(LINUX)
+    set(CPACK_GENERATOR External)
+    set(CPACK_EXTERNAL_ENABLE_STAGING YES)
+    set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/appimage-generate.cmake")
+
+    file(GENERATE
+        OUTPUT "${PROJECT_BINARY_DIR}/appimage-generate.cmake"
+        CONTENT [[
+            find_program(LINUXDEPLOY_EXECUTABLE
+                NAMES linuxdeploy linuxdeploy-x86_64.AppImage
+                PATHS ${CPACK_PACKAGE_DIRECTORY}/linuxdeploy)
+
+            if(NOT LINUXDEPLOY_EXECUTABLE)
+                message(STATUS "Downloading linuxdeploy")
+                set(LINUXDEPLOY_EXECUTABLE ${CPACK_PACKAGE_DIRECTORY}/linuxdeploy/linuxdeploy)
+                file(DOWNLOAD
+                    https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+                    ${LINUXDEPLOY_EXECUTABLE}
+                    INACTIVITY_TIMEOUT 10)
+                execute_process(COMMAND
+                    chmod +x ${LINUXDEPLOY_EXECUTABLE} COMMAND_ECHO STDOUT)
+            endif()
+
+            execute_process(COMMAND
+                ${CMAKE_COMMAND} -E env
+                OUTPUT=${CPACK_PACKAGE_FILE_NAME}.appimage
+                VERSION=$<IF:$<BOOL:${CPACK_PACKAGE_VERSION}>,${CPACK_PACKAGE_VERSION},0.1.0>
+                ${LINUXDEPLOY_EXECUTABLE}
+                --appimage-extract-and-run
+                --appdir=${CPACK_TEMPORARY_DIRECTORY}
+                --executable=$<TARGET_FILE:dsda-doom>
+                --desktop-file=${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/applications/dsda-doom.desktop
+                --icon-file=${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps/dsda-doom.svg
+                --output=appimage)
+            ]])
+endif()
+include(CPack)
