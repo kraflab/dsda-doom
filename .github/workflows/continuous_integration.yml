@@ -49,6 +49,7 @@ jobs:
               os: macos-latest,
               build_type: "Release",
               extra_options: "-G Ninja",
+              package_name: "mac_arm64",
               shell: bash,
               artifact-path: build/*.zip,
             }
