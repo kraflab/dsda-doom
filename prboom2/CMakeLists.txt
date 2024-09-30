@@ -257,5 +257,41 @@ elseif(LINUX)
                 --icon-file=${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/icons/hicolor/scalable/apps/dsda-doom.svg
                 --output=appimage)
             ]])
+elseif(APPLE)
+    set(CPACK_GENERATOR External)
+    set(CPACK_EXTERNAL_ENABLE_STAGING YES)
+    set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/macbundle-generate.cmake")
+
+    file(GENERATE
+        OUTPUT "${PROJECT_BINARY_DIR}/maczip-generate.cmake"
+        CONTENT [[
+            find_program(DYLIBBUNDLER_EXECUTABLE
+                NAMES dylibbundler)
+
+            if(NOT DYLIBBUNDLER_EXECUTABLE)
+                message(FATAL_ERROR "Missing dylibbundler (brew install dylibbundler)")
+            endif()
+
+            execute_process(COMMAND
+                ${CMAKE_COMMAND} -E env
+                OUTPUT=${CPACK_PACKAGE_FILE_NAME}.zip
+                VERSION=$<IF:$<BOOL:${CPACK_PACKAGE_VERSION}>,${CPACK_PACKAGE_VERSION},0.1.0>
+                ${DYLIBBUNDLER_EXECUTABLE}
+                --bundle-deps
+                --create-dir
+                --fix-file $<TARGET_FILE:dsda-doom>
+                --install-path @executable_path/libs
+                --dest-dir ${CPACK_PACKAGE_FILE_NAME}/libs
+                )
+
+            execute_process(COMMAND cp $<TARGET_FILE:dsda-doom> ${CPACK_PACKAGE_FILE_NAME}/dsda-doom)
+            execute_process(COMMAND cp dsda-doom.wad ${CPACK_PACKAGE_FILE_NAME}/dsda-doom.wad)
+
+
+            execute_process(COMMAND
+                zip -r ${CPACK_PACKAGE_FILE_NAME}.zip ${CPACK_PACKAGE_FILE_NAME}
+                )
+            ]])
 endif()
 include(CPack)
