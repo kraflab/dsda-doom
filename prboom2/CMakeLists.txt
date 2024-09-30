@@ -261,7 +261,7 @@ elseif(APPLE)
     set(CPACK_GENERATOR External)
     set(CPACK_EXTERNAL_ENABLE_STAGING YES)
     set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/macbundle-generate.cmake")
+    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/maczip-generate.cmake")
 
     file(GENERATE
         OUTPUT "${PROJECT_BINARY_DIR}/maczip-generate.cmake"
