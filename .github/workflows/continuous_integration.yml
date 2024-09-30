@@ -50,6 +50,7 @@ jobs:
               build_type: "Release",
               extra_options: "-G Ninja",
               shell: bash,
+              artifact-path: build/*.zip,
             }
 
     steps:
@@ -140,7 +141,8 @@ jobs:
               portmidi \
               sdl2 \
               sdl2_image \
-              sdl2_mixer
+              sdl2_mixer \
+              dylibbundler
 
       - name: Configure
         run: |
