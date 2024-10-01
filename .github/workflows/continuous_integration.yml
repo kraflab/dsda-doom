@@ -45,11 +45,20 @@ jobs:
               artifact-path: build/*.appimage,
             }
           - {
-              name: "macOS Clang",
+              name: "macOS arm64 Clang",
               os: macos-latest,
               build_type: "Release",
               extra_options: "-G Ninja",
               package_name: "mac_arm64",
+              shell: bash,
+              artifact-path: build/*.zip,
+            }
+          - {
+              name: "macOS x64 Clang",
+              os: macos-13,
+              build_type: "Release",
+              extra_options: "-G Ninja",
+              package_name: "mac_x64",
               shell: bash,
               artifact-path: build/*.zip,
             }
