@@ -286,12 +286,10 @@ elseif(APPLE)
                 )
 
             execute_process(COMMAND cp $<TARGET_FILE:dsda-doom> ${CPACK_PACKAGE_FILE_NAME}/dsda-doom)
-            execute_process(COMMAND cp dsda-doom.wad ${CPACK_PACKAGE_FILE_NAME}/dsda-doom.wad)
+            execute_process(COMMAND cp ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/games/doom/dsda-doom.wad ${CPACK_PACKAGE_FILE_NAME}/dsda-doom.wad)
+            execute_process(COMMAND cp ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/doc/dsda-doom/COPYING ${CPACK_PACKAGE_FILE_NAME}/COPYING.txt)
 
-
-            execute_process(COMMAND
-                zip -r ${CPACK_PACKAGE_FILE_NAME}.zip ${CPACK_PACKAGE_FILE_NAME}
-                )
+            execute_process(COMMAND zip -r ${CPACK_PACKAGE_FILE_NAME}.zip ${CPACK_PACKAGE_FILE_NAME})
             ]])
 endif()
 include(CPack)
