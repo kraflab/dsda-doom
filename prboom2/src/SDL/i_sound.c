@@ -111,7 +111,7 @@ typedef struct
 
 channel_info_t channelinfo[MAX_CHANNELS];
 
-// Pitch to stepping lookup, unused.
+// Pitch to stepping lookup.
 int   steptable[256];
 
 // Volume lookups.
@@ -321,7 +321,6 @@ static void updateSoundParams(int handle, sfx_params_t *params)
   int slot = handle;
   int rightvol;
   int leftvol;
-  int step = steptable[params->pitch];
 
 #ifdef RANGECHECK
   if ((handle < 0) || (handle >= MAX_CHANNELS))
@@ -336,7 +335,7 @@ static void updateSoundParams(int handle, sfx_params_t *params)
   // Patched to shift left *then* divide, to minimize roundoff errors
   // as well as to use SAMPLERATE as defined above, not to assume 11025 Hz
   if (pitched_sounds)
-    channelinfo[slot].step = step + (((channelinfo[slot].samplerate << 16) / snd_samplerate) - 65536);
+    channelinfo[slot].step = (unsigned int)(((uint64_t)channelinfo[slot].samplerate * steptable[params->pitch]) / snd_samplerate);
   else
     channelinfo[slot].step = ((channelinfo[slot].samplerate << 16) / snd_samplerate);
 
@@ -403,9 +402,8 @@ void I_SetChannels(void)
   }
 
   // This table provides step widths for pitch parameters.
-  // I fail to see that this is currently used.
   for (i = -128 ; i < 128 ; i++)
-    steptablemid[i] = (int)(pow(1.2, ((double)i / (64.0 * snd_samplerate / 11025))) * 65536.0);
+    steptablemid[i] = (int)(pow(1.2, (double)i / 64.0) * 65536.0);
 
 
   // Generates volume lookup tables
