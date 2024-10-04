@@ -3,7 +3,7 @@ name: Continuous Integration
 on: [push, pull_request]
 
 env:
-  VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
   build:
@@ -16,41 +16,40 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {
-              name: "MSVC x64",
-              os: windows-latest,
-              build_type: "Release",
-              extra_options: "-A x64",
-              vcpkg_triplet: x64-windows,
-              shell: bash,
-            }
-          - {
-              name: "MSYS2 UCRT64",
-              os: windows-latest,
-              build_type: "Release",
-              extra_options: "-G Ninja",
-              package_name: "mingw_x64",
-              shell: "msys2 {0}",
-              msystem: ucrt64,
-              msys-env: mingw-w64-ucrt-x86_64,
-              artifact-path: build/*.zip,
-            }
-          - {
-              name: "Linux GCC",
-              os: ubuntu-latest,
-              build_type: "Release",
-              extra_options: "-G Ninja -DCMAKE_INSTALL_PREFIX=/usr",
-              package_name: "linux_gcc",
-              shell: bash,
-              artifact-path: build/*.appimage,
-            }
-          - {
-              name: "macOS Clang",
-              os: macos-latest,
-              build_type: "Release",
-              extra_options: "-G Ninja",
-              shell: bash,
-            }
+
+          - name: "MSVC x64"
+            os: windows-latest
+            build_type: "Release"
+            vcpkg_triplet: x64-windows
+            shell: pwsh
+            extra_options: >-
+              -A x64
+              -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake"
+              -DVCPKG_TARGET_TRIPLET=x64-windows
+
+          - name: "MSYS2 UCRT64"
+            os: windows-latest
+            build_type: "Release"
+            extra_options: "-G Ninja"
+            package_name: "mingw_x64"
+            shell: "msys2 {0}"
+            msystem: ucrt64
+            msys-env: mingw-w64-ucrt-x86_64
+            artifact-path: build/*.zip
+
+          - name: "Linux GCC"
+            os: ubuntu-latest
+            build_type: "Release"
+            extra_options: "-G Ninja -DCMAKE_INSTALL_PREFIX=/usr"
+            package_name: "linux_gcc"
+            shell: bash
+            artifact-path: build/*.appimage
+
+          - name: "macOS Clang"
+            os: macos-latest
+            build_type: "Release"
+            extra_options: "-G Ninja"
+            shell: bash
 
     steps:
       - uses: actions/checkout@v4
@@ -75,30 +74,13 @@ jobs:
             ${{ matrix.config.msys-env }}-SDL2_mixer
             ${{ matrix.config.msys-env }}-libzip
 
-      - name: Setup vcpkg (MSVC)
+      - name: Export GitHub Actions cache environment variables
         if: ${{ matrix.config.vcpkg_triplet }}
-        run: |
-          set -euo pipefail
-          NUGET=$(vcpkg fetch nuget | tail -n 1)
-          GH_PACKAGES_URL="https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
-
-          cd "$VCPKG_INSTALLATION_ROOT"
-          git fetch --tags
-          LATESTTAG=$(git describe --tags --abbrev=0)
-          git checkout $LATESTTAG
-
-          "$NUGET" sources add \
-            -source "$GH_PACKAGES_URL" \
-            -storepasswordincleartext \
-            -name "GitHub" \
-            -username "${{ github.repository_owner }}" \
-            -password "${{ secrets.GITHUB_TOKEN }}"
-
-          "$NUGET" setapikey "${{ secrets.GITHUB_TOKEN }}" \
-            -source "$GH_PACKAGES_URL"
-
-          echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-          echo "VCPKG_TARGET_TRIPLET=${{ matrix.config.vcpkg_triplet }}" >> $GITHUB_ENV
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
       - name: Install Dependencies (Linux)
         if: runner.os == 'Linux'
@@ -143,11 +125,11 @@ jobs:
               sdl2_mixer
 
       - name: Configure
-        run: |
-          cmake -S prboom2 \
-            -B build \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-            ${{ matrix.config.extra_options }}
+        run: >-
+          cmake -S prboom2
+          -B build
+          -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+          ${{ matrix.config.extra_options }}
 
       - name: Build
         run: cmake --build build --config ${{ matrix.config.build_type }}
