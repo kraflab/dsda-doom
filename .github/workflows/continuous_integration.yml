@@ -21,7 +21,7 @@ jobs:
               os: windows-latest,
               build_type: "Release",
               vcpkg_triplet: x64-windows,
-              shell: psh,
+              shell: pwsh,
               extra_options: >-
                 -A x64
                 -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake"
