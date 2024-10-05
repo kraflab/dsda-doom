@@ -90,14 +90,23 @@ void P_UpdateThinker(thinker_t *thinker)
   register thinker_t *th;
   // find the class the thinker belongs to
 
-  int class =
-    thinker->function == P_RemoveThinkerDelayed ? th_delete :
-    thinker->function == P_MobjThinker &&
-    ((mobj_t *) thinker)->health > 0 &&
-    (((mobj_t *) thinker)->flags & MF_COUNTKILL ||
-     ((mobj_t *) thinker)->type == MT_SKULL) ?
-    ((mobj_t *) thinker)->flags & MF_FRIEND ?
-    th_friends : th_enemies : th_misc;
+  int class;
+  if (thinker->function == P_RemoveThinkerDelayed)
+    class = th_delete;
+  else if (thinker->function != P_MobjThinker)
+    class = th_misc;
+  else {
+    register mobj_t* m = (mobj_t*)thinker;
+    if (m->type == MT_TELEPORTMAN)
+      class = th_teleport;
+    else if (m->health > 0 && (m->flags & MF_COUNTKILL || m->type == MT_SKULL))
+      if (m->flags & MF_FRIEND)
+        class = th_friends;
+      else
+        class = th_enemies;
+    else
+      class = th_misc;
+  }
 
   {
     /* Remove from current thread, if in one */
