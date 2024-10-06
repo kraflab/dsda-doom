@@ -262,16 +262,23 @@ elseif(APPLE)
     set(CPACK_EXTERNAL_ENABLE_STAGING YES)
     set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
     set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/macbundle-generate.cmake")
+    set(CPACK_SYSTEM_NAME "mac-${CMAKE_SYSTEM_PROCESSOR}")
+    set(CPACK_BUILD_DIR "${PROJECT_BINARY_DIR}")
 
     file(GENERATE
         OUTPUT "${PROJECT_BINARY_DIR}/macbundle-generate.cmake"
         CONTENT [[
-            find_program(DYLIBBUNDLER_EXECUTABLE
-                NAMES dylibbundler)
+            set(CPACK_OUTPUT_DIR "${CPACK_BUILD_DIR}/${CPACK_PACKAGE_FILE_NAME}")
+            file(MAKE_DIRECTORY ${CPACK_OUTPUT_DIR})
 
+            find_program(DYLIBBUNDLER_EXECUTABLE NAMES dylibbundler)
             if(NOT DYLIBBUNDLER_EXECUTABLE)
                 message(FATAL_ERROR "Missing dylibbundler (brew install dylibbundler)")
             endif()
+
+            file(COPY_FILE
+                $<TARGET_FILE:dsda-doom>
+                ${CPACK_OUTPUT_DIR}/dsda-doom)
 
             execute_process(COMMAND
                 ${CMAKE_COMMAND} -E env
@@ -280,20 +287,22 @@ elseif(APPLE)
                 ${DYLIBBUNDLER_EXECUTABLE}
                 --bundle-deps
                 --create-dir
-                --fix-file $<TARGET_FILE:dsda-doom>
+                --fix-file ${CPACK_OUTPUT_DIR}/dsda-doom
                 --install-path @executable_path/libs
-                --dest-dir ${CPACK_PACKAGE_FILE_NAME}/libs
-                )
+                --dest-dir ${CPACK_OUTPUT_DIR}/libs)
 
-            execute_process(COMMAND cp $<TARGET_FILE:dsda-doom> ${CPACK_PACKAGE_FILE_NAME}/dsda-doom)
-            execute_process(COMMAND cp ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/games/doom/dsda-doom.wad ${CPACK_PACKAGE_FILE_NAME}/dsda-doom.wad)
-            execute_process(COMMAND cp ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/doc/dsda-doom/COPYING ${CPACK_PACKAGE_FILE_NAME}/COPYING.txt)
+            file(COPY_FILE
+                ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/games/doom/dsda-doom.wad
+                ${CPACK_OUTPUT_DIR}/dsda-doom.wad)
+            file(COPY_FILE
+                ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/doc/dsda-doom/COPYING
+                ${CPACK_OUTPUT_DIR}/COPYING.txt)
 
             file(CONFIGURE
-                OUTPUT ${CPACK_PACKAGE_FILE_NAME}/Quarantine.txt
+                OUTPUT ${CPACK_OUTPUT_DIR}/Quarantine.txt
                 CONTENT "If you are getting errors like 'libzip.5.5.dylib cant be opened because Apple cannot check it for malicious software.' Run the following command in the dsda-doom folder:\n\nxattr -dr com.apple.quarantine path/to/folder")
 
-            execute_process(COMMAND zip -r ${CPACK_PACKAGE_FILE_NAME}.zip ${CPACK_PACKAGE_FILE_NAME})
+            execute_process(COMMAND zip -r ${CPACK_OUTPUT_DIR}.zip ${CPACK_OUTPUT_DIR})
             ]])
 endif()
 include(CPack)
