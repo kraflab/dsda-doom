@@ -1,239 +1,220 @@
 Basic Installation (ZIP, tarball, Git)
 ==================
+Prerequisites
 
-  1. To compile DSDA-Doom, you need at least SDL2. To enable various
-     extensions and optional features, the following are required:
-     - SDL2_image (for high-res textures in OpenGL, and PNG screenshots)
-     - for music support, some or all of
-       * SDL2_mixer (midi, timidity)
-       * Fluidsynth (midi)
-       * Portmidi (midi)
-       * MAD (mp3)
-       * DUMB (various tracker-style formats)
-       * vorbisfile (ogg)
-     On a typical Debian or Ubuntu system this may be sufficient:
-       apt-get install libsdl2-dev libsdl2-image-dev \
-         libsdl2-mixer-dev libfluidsynth-dev \
-         libportmidi-dev libmad0-dev libdumb1-dev libvorbis-dev
+1. To compile DSDA-Doom, you need at least SDL2. For various extensions and optional features, the following are also required:
+   - SDL2_image (for high-res textures in OpenGL and PNG screenshots)
+   - For music support, some or all of:
+     * SDL2_mixer (MIDI, TiMidity)
+     * FluidSynth (MIDI)
+     * PortMidi (MIDI)
+     * MAD (MP3)
+     * DUMB (various tracker-style formats)
+     * vorbisfile (OGG)
 
-    You will also need `cmake` and `make` if you haven't already got them.
+You will need `cmake` and `make` if you haven't already installed them.
 
-  2. `cd' to the directory containing the DSDA-Doom distribution (the directory
-     this file is in, prboom2).
+On a typical Debian or Ubuntu system, these commands may be sufficient:
+`sudo apt install build-essential cmake git`
 
-     Create a new `build` folder and `cd` into it.
-     `mkdir build && cd build`
+As well as the following:
+`sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libfluidsynth-dev libportmidi-dev libmad0-dev libdumb1-dev libvorbis-dev libzip-dev zipcmp zipmerge ziptool fluidsynth libglu1-mesa-dev`
 
-     Run `cmake .. -DCMAKE_BUILD_TYPE=Release` from this folder, or
-     `cmake .. -DCMAKE_BUILD_TYPE=Debug` for a debug build. (This gives
-     slightly lower performance, but more details in the event of
-     issues).
+On a typical Fedora system, these commands may be sufficient:
+`dnf install cmake git gcc gcc-g++`
 
-     This should end with the message "Build files have been written to: [folderpath]".
+As well as the following:
+`sudo dnf install SDL2_mixer-devel SDL2_image-devel mesa-libGLU-devel libzip-devel libzip-tools zlib-static libvorbis-devel libmad-devel dumb-devel portmidi-devel fluidsynth-devel`
 
-  3. Type `make` to compile DSDA-Doom. This may take some time; while it's
-     compiling I suggest you read the README, or maybe go and look for some
-     good doom levels to play when it's finished :-).
+2. Clone the repository and navigate to the directory containing the DSDA-Doom distribution (the directory this file is in, prboom2).
+`git clone https://github.com/kraflab/dsda-doom.git`
+`cd dsda-doom/prboom2`
 
-     This should work on all Linux systems, but systems that have a make
-     utility other than GNU make may have problems. E.g. you might need to
-     install GNU make, and then use it instead of make for these
-     instructions. I have tested BSD pmake and it works fine.
+3. Create a new build folder and navigate into it:
+`mkdir build && cd build`
 
-  4. Type `make install/strip' as root, to install the programs, data files
-     and man pages for DSDA-Doom. If you don't have root access on the machine,
-     you should ask the syadmin to do this and the next step for you.
+4. Run `CMake` to configure the build:
+   - For a release build: `cmake .. -DCMAKE_BUILD_TYPE=Release`
+   - For a debug build: `cmake .. -DCMAKE_BUILD_TYPE=Debug`
+   (Debug builds provide more details in the event of issues but have slightly lower performance.)
 
-     If you want to install manually then you should put the `dsda-doom.wad`
-     in /usr/local/share/games/doom/ (or symlink it from there).
+This should end with the message "Build files have been written to: [folderpath]".
 
-  5. Copy your Doom, Doom 2, Ultimate Doom or Final Doom IWAD (doom.wad or
-     doom2.wad) to /usr/local/share/games/doom/ (or symlink it from there).
-     Or if you don't have any of those, use the shareware IWAD, which you can
-     get from http://www.doomworld.com/ or http://www.idsoftware.com/.
+5. Compile DSDA-Doom by typing `make`.
+This may take some time; while it's compiling I suggest you read the `README`, or maybe go and look for some good doom levels to play when it's finished :-).
+This should work on all Linux systems, but systems that have a `make` utility other than GNU make may have problems. E.g. you might need to install GNU make, and then use it instead of make for these instructions. I have tested BSD `pmake` and it works fine.
 
-     If you have a system with many users, you should read the license for
-     your version of Doom, and make sure only those users allowed to use it
-     can access the IWAD file.
+6. To install the programs, data files, and man pages for DSDA-Doom, run:
+`sudo make install/strip`
+If you don't have root access, ask your system administrator to perform this step. If you want to install manually, put the `dsda-doom.wad` in `/usr/local/share/games/doom/` (or create a symlink to it).
 
-  6. You can remove the program binaries and object files from the
-     source directory by typing `make clean`.  To also remove the
-     files that `configure' created (so you can compile the package for
-     a different kind of computer), type `make distclean'.  There is
-     also a `make maintainer-clean' target, but that is intended mainly
-     for the package's developers.  If you use it, you may have to get
-     all sorts of other programs in order to regenerate files that came
-     with the distribution.
+7. Copy your Doom, Doom 2, Ultimate Doom, or Final Doom IWAD (`doom.wad` or `doom2.wad`) to `/usr/local/share/games/doom/` (or create a symlink). If you don't have any of these, you can use the shareware IWAD available from: https://www.doomworld.com/ or https://www.idsoftware.com/
 
-  7. DSDA-Doom is now ready for use. If /usr/local/games is in your path,
-     you can just run dsda-doom; otherwise give the full path.
+If you have a system with many users, read the license for your version of Doom and ensure that only authorized users can access the IWAD file.
 
+8. You can remove the program binaries and object files from the source directory by typing `make clean`. To also remove the files that `cmake` created, type: `make distclean`
 
+9. DSDA-Doom is now ready for use. If `/usr/local/games` is in your path, you can run `dsda-doom`; otherwise, use the full path.
 
 Building an RPM
-===============
+==================
 
-If you are on a system which uses the RPM packaging format, you might prefer
-to build an RPM containing the DSDA-Doom binaries rather than installing them
-directly. Follow steps 1 and 2 above, then run a "make rpm". This performs
-the usual proceedure for building the rpm in /usr/src/redhat/. Note that
-the RPM sets its own parameters to ./configure; if you want to override
-them you'll have to edit the build scripts yourself. Note that to get the
-correct permissions, you either have to run this process as root, or use the
-wrapper program fakeroot (version 0.4.5 or later - grab it from the Debian
-source archive) and make sure you have permissions to the RPM build area.
+If you are on a system that uses the RPM packaging format, you might prefer to build an RPM containing the DSDA-Doom binaries rather than installing them directly. Follow steps 2-6 above, then run `make rpm`. This performs the usual procedure for building the RPM in `/usr/src/redhat/`.
+
+Note that the RPM sets its own parameters for `cmake`; if you want to override them, you'll have to edit the build scripts yourself. To get the correct permissions, you either have to run this process as root or use the wrapper program `fakeroot` (version 0.4.5 or later - usually available from `apt` or `dnf`) and ensure you have permissions to the RPM build area.
 
 Installation Details
 ====================
 
-   These are generic installation instructions.
+These are generic installation instructions.
 
-   The `configure' shell script attempts to guess correct values for
+The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
 those values to create a `Makefile' in each directory of the package.
 It may also create one or more `.h' files containing system-dependent
 definitions.  Finally, it creates a shell script `config.status' that
 you can run in the future to recreate the current configuration, a file
 `config.cache' that saves the results of its tests to speed up
-reconfiguring, and a file `config.log' containing compiler output
+re-configuring, and a file `config.log' containing compiler output
 (useful mainly for debugging `configure').
 
-   If you need to do unusual things to compile the package, please try
+If you need to do unusual things to compile the package, please try
 to figure out how `configure' could check whether to do them, and mail
 diffs or instructions to the address given in the `README' so they can
 be considered for the next release.  If at some point `config.cache'
 contains results you don't want to keep, you may remove or edit it.
 
-   The file `configure.ac' is used to create `configure' by a program
+The file `configure.ac' is used to create `configure' by a program
 called `autoconf'.  You only need `configure.ac' if you want to change
 it or regenerate `configure' using a newer version of `autoconf'.
 
 Compilers and Options
 =====================
 
-   Some systems require unusual options for compilation or linking that
+Some systems require unusual options for compilation or linking that
 the `configure' script does not know about.  You can give `configure'
 initial values for variables by setting them in the environment.  Using
 a Bourne-compatible shell, you can do that on the command line like
 this:
-     CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
+`CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure`
 
-Or on systems that have the `env' program, you can do it like this:
-     env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
+Or on systems that have the `env` program, you can do it like this:
+`env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure`
 
 Compiling For Multiple Architectures
 ====================================
 
-   You can compile the package for more than one kind of computer at the
+You can compile the package for more than one kind of computer at the
 same time, by placing the object files for each architecture in their
-own directory.  To do this, you must use a version of `make' that
-supports the `VPATH' variable, such as GNU `make'.  `cd' to the
-directory where you want the object files and executables to go and run
-the `configure' script.  `configure' automatically checks for the
-source code in the directory that `configure' is in and in `..'.
+own directory.  To do this, you must use a version of `make` that
+supports the `VPATH` variable, such as GNU `make`.  `cd` to the
+directory where you want the object files and executable to go and run
+the `configure` script. `configure` automatically checks for the
+source code in the directory that `configure` is in and in `..`.
 
-   If you have to use a `make' that does not supports the `VPATH'
+If you have to use a `make` that does not supports the `VPATH`
 variable, you have to compile the package for one architecture at a time
-in the source code directory.  After you have installed the package for
-one architecture, use `make distclean' before reconfiguring for another
+in the source code directory. After you have installed the package for
+one architecture, use `make distclean` before reconfiguring for another
 architecture.
 
 Installation Names
 ==================
 
-   By default, `make install' will install the package's files in
-`/usr/local/bin', `/usr/local/man', etc.  You can specify an
-installation prefix other than `/usr/local' by giving `configure' the
-option `--prefix=PATH'.
+By default, `make install` will install the package's files in
+`/usr/local/bin`, `/usr/local/man`, etc.  You can specify an
+installation prefix other than `/usr/local` by giving `configure` the
+option `--prefix=PATH`.
 
-   You can specify separate installation prefixes for
-architecture-specific files and architecture-independent files.  If you
-give `configure' the option `--exec-prefix=PATH', the package will use
+You can specify separate installation prefixes for
+architecture-specific files and architecture-independent files. If you
+give `configure` the option `--exec-prefix=PATH`, the package will use
 PATH as the prefix for installing programs and libraries.
 Documentation and other data files will still use the regular prefix.
 
-   In addition, if you use an unusual directory layout you can give
-options like `--bindir=PATH' to specify different values for particular
-kinds of files.  Run `configure --help' for a list of the directories
+In addition, if you use an unusual directory layout you can give
+options like `--bindir=PATH` to specify different values for particular
+kinds of files.  Run `configure --help` for a list of the directories
 you can set and what kinds of files go in them.
 
-   If the package supports it, you can cause programs to be installed
-with an extra prefix or suffix on their names by giving `configure' the
-option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
+If the package supports it, you can cause programs to be installed
+with an extra prefix or suffix on their names by giving `configure` the
+option `--program-prefix=PREFIX` or `--program-suffix=SUFFIX`.
 
 Optional Features
 =================
 
-   Some packages pay attention to `--enable-FEATURE' options to
-`configure', where FEATURE indicates an optional part of the package.
-They may also pay attention to `--with-PACKAGE' options, where PACKAGE
-is something like `gnu-as' or `x' (for the X Window System).  The
-`README' should mention any `--enable-' and `--with-' options that the
+Some packages pay attention to `--enable-FEATURE` options to
+`configure`, where FEATURE indicates an optional part of the package.
+They may also pay attention to `--with-PACKAGE` options, where PACKAGE
+is something like `gnu-as` or `x` (for the X Window System). The
+`README` should mention any `--enable-` and `--with-` options that the
 package recognizes.
 
-   For packages that use the X Window System, `configure' can usually
+For packages that use the X Window System, `configure` can usually
 find the X include and library files automatically, but if it doesn't,
-you can use the `configure' options `--x-includes=DIR' and
-`--x-libraries=DIR' to specify their locations.
+you can use the `configure` options `--x-includes=DIR` and
+`--x-libraries=DIR` to specify their locations.
 
 Specifying the System Type
 ==========================
 
-   There may be some features `configure' can not figure out
+There may be some features `configure` can not figure out
 automatically, but needs to determine by the type of host the package
-will run on.  Usually `configure' can figure that out, but if it prints
+will run on.  Usually `configure` can figure that out, but if it prints
 a message saying it can not guess the host type, give it the
-`--host=TYPE' option.  TYPE can either be a short name for the system
-type, such as `sun4', or a canonical name with three fields:
-     CPU-COMPANY-SYSTEM
+`--host=TYPE` option. TYPE can either be a short name for the system
+type, such as `sun4`, or a canonical name with three fields:
+`CPU-COMPANY-SYSTEM`
 
-See the file `config.sub' for the possible values of each field.  If
-`config.sub' isn't included in this package, then this package doesn't
+See the file `config.sub` for the possible values of each field. If
+`config.sub` isn't included in this package, then this package doesn't
 need to know the host type.
 
-   If you are building compiler tools for cross-compiling, you can also
-use the `--target=TYPE' option to select the type of system they will
-produce code for and the `--build=TYPE' option to select the type of
+If you are building compiler tools for cross-compiling, you can also
+use the `--target=TYPE` option to select the type of system they will
+produce code for and the `--build=TYPE` option to select the type of
 system on which you are compiling the package.
 
 Sharing Defaults
 ================
 
-   If you want to set default values for `configure' scripts to share,
-you can create a site shell script called `config.site' that gives
-default values for variables like `CC', `cache_file', and `prefix'.
-`configure' looks for `PREFIX/share/config.site' if it exists, then
-`PREFIX/etc/config.site' if it exists.  Or, you can set the
-`CONFIG_SITE' environment variable to the location of the site script.
-A warning: not all `configure' scripts look for a site script.
+If you want to set default values for `configure` scripts to share,
+you can create a site shell script called `config.site` that gives
+default values for variables like `CC`, `cache_file`, and `prefix`.
+`configure` looks for `PREFIX/share/config.site` if it exists, then
+`PREFIX/etc/config.site` if it exists. Or, you can set the
+`CONFIG_SITE` environment variable to the location of the site script.
+A warning: not all `configure` scripts look for a site script.
 
 Operation Controls
 ==================
 
-   `configure' recognizes the following options to control how it
-operates.
+   `configure` recognizes the following options to control how it
+operates:
 
-`--cache-file=FILE'
+`--cache-file=FILE`
      Use and save the results of the tests in FILE instead of
-     `./config.cache'.  Set FILE to `/dev/null' to disable caching, for
-     debugging `configure'.
+     `./config.cache`.  Set FILE to `/dev/null` to disable caching, for
+     debugging `configure`.
 
-`--help'
-     Print a summary of the options to `configure', and exit.
+`--help`
+     Print a summary of the options to `configure`, and exit.
 
-`--quiet'
-`--silent'
-`-q'
-     Do not print messages saying which checks are being made.  To
-     suppress all normal output, redirect it to `/dev/null' (any error
+`--quiet`
+`--silent`
+`-q`
+     Do not print messages saying which checks are being made. To
+     suppress all normal output, redirect it to `/dev/null` (any error
      messages will still be shown).
 
-`--srcdir=DIR'
-     Look for the package's source code in directory DIR.  Usually
-     `configure' can determine that directory automatically.
+`--srcdir=DIR`
+     Look for the package's source code in directory DIR. Usually
+     `configure` can determine that directory automatically.
 
-`--version'
-     Print the version of Autoconf used to generate the `configure'
+`--version`
+     Print the version of Autoconf used to generate the `configure`
      script, and exit.
 
-`configure' also accepts some other, not widely useful, options.
+`configure` also accepts some other, not widely useful, options.
+
