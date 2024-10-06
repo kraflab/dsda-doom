@@ -302,7 +302,7 @@ elseif(APPLE)
                 OUTPUT ${CPACK_OUTPUT_DIR}/Quarantine.txt
                 CONTENT "If you are getting errors like 'libzip.5.5.dylib cant be opened because Apple cannot check it for malicious software.' Run the following command in the dsda-doom folder:\n\nxattr -dr com.apple.quarantine path/to/folder")
 
-            execute_process(COMMAND zip -r ${CPACK_OUTPUT_DIR}.zip ${CPACK_OUTPUT_DIR})
+            execute_process(COMMAND zip -r ${CPACK_PACKAGE_FILE_NAME}.zip ${CPACK_PACKAGE_FILE_NAME})
             ]])
 endif()
 include(CPack)
