@@ -261,10 +261,10 @@ elseif(APPLE)
     set(CPACK_GENERATOR External)
     set(CPACK_EXTERNAL_ENABLE_STAGING YES)
     set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/maczip-generate.cmake")
+    set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/macbundle-generate.cmake")
 
     file(GENERATE
-        OUTPUT "${PROJECT_BINARY_DIR}/maczip-generate.cmake"
+        OUTPUT "${PROJECT_BINARY_DIR}/macbundle-generate.cmake"
         CONTENT [[
             find_program(DYLIBBUNDLER_EXECUTABLE
                 NAMES dylibbundler)
@@ -288,6 +288,10 @@ elseif(APPLE)
             execute_process(COMMAND cp $<TARGET_FILE:dsda-doom> ${CPACK_PACKAGE_FILE_NAME}/dsda-doom)
             execute_process(COMMAND cp ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/games/doom/dsda-doom.wad ${CPACK_PACKAGE_FILE_NAME}/dsda-doom.wad)
             execute_process(COMMAND cp ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/doc/dsda-doom/COPYING ${CPACK_PACKAGE_FILE_NAME}/COPYING.txt)
+
+            file(CONFIGURE
+                OUTPUT ${CPACK_PACKAGE_FILE_NAME}/Quarantine.txt
+                CONTENT "If you are getting errors like 'libzip.5.5.dylib cant be opened because Apple cannot check it for malicious software.' Run the following command in the dsda-doom folder:\n\nxattr -dr com.apple.quarantine path/to/folder")
 
             execute_process(COMMAND zip -r ${CPACK_PACKAGE_FILE_NAME}.zip ${CPACK_PACKAGE_FILE_NAME})
             ]])
