@@ -152,6 +152,8 @@ FILE    *debugfile;
 
 dboolean advancedemo;
 
+dboolean automap_always_updates;
+
 //jff 4/19/98 list of standard IWAD names
 const char *const standard_iwads[]=
 {
@@ -459,7 +461,8 @@ void D_Display (fixed_t frac)
     R_InterpolateView(&players[displayplayer], frac);
 
     DSDA_ADD_CONTEXT(sf_player_view);
-    R_RenderPlayerView(&players[displayplayer]);
+    if(automap_always_updates || !automap_active)
+      R_RenderPlayerView(&players[displayplayer]);
     DSDA_REMOVE_CONTEXT(sf_player_view);
 
     dsda_UpdateRenderStats();
@@ -1563,6 +1566,11 @@ static void HandlePlayback(void)
   dsda_LoadExDemo(file);
 }
 
+void SetAutomapUpdateMode(void)
+{
+  automap_always_updates = dsda_IntConfig(dsda_config_automap_always_updates);
+}
+
 const char* doomverstr = "Unknown";
 
 static void EvaluateDoomVerStr(void)
@@ -1938,6 +1946,7 @@ static void D_DoomMainSetup(void)
     SN_InitSequenceScript();
   }
 
+  SetAutomapUpdateMode();
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "R_Init: Init DOOM refresh daemon - ");
   R_Init();

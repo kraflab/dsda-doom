@@ -132,6 +132,7 @@ void dsda_InitExHud(void);
 void dsda_UpdateFreeText(void);
 void dsda_ResetAirControl(void);
 void dsda_AlterGameFlags(void);
+void SetAutomapUpdateMode(void);
 
 void dsda_TrackConfigFeatures(void) {
   if (!demorecording)
@@ -1055,6 +1056,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_automap_grid] = {
     "automap_grid", dsda_config_automap_grid,
     CONF_BOOL(0), &automap_grid
+  },
+  [dsda_config_automap_always_updates] = {
+    "automap_always_updates", dsda_config_automap_always_updates,
+    CONF_BOOL(0), NULL, NOT_STRICT, SetAutomapUpdateMode
   },
   [dsda_config_map_grid_size] = {
     "map_grid_size", dsda_config_map_grid_size,
