@@ -121,16 +121,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          rm /usr/local/bin/2to3
-          rm /usr/local/bin/2to3-3.12
-          rm /usr/local/bin/idle3
-          rm /usr/local/bin/idle3.12
-          rm /usr/local/bin/pydoc3
-          rm /usr/local/bin/pydoc3.12
-          rm /usr/local/bin/python3
-          rm /usr/local/bin/python3-config
-          rm /usr/local/bin/python3.12
-          rm /usr/local/bin/python3.12-config
+          brew install --overwrite python@3.12
           env HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
             brew install \
               cmake \
