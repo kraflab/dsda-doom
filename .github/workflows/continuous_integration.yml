@@ -16,7 +16,6 @@ jobs:
       fail-fast: false
       matrix:
         config:
-
           - name: "MSVC x64"
             os: windows-latest
             build_type: "Release"
@@ -26,7 +25,7 @@ jobs:
               -A x64
               -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake"
               -DVCPKG_TARGET_TRIPLET=x64-windows
-
+              
           - name: "MSYS2 UCRT64"
             os: windows-latest
             build_type: "Release"
@@ -44,12 +43,24 @@ jobs:
             package_name: "linux_gcc"
             shell: bash
             artifact-path: build/*.appimage
-
-          - name: "macOS Clang"
+            
+          - name: "macOS arm64 Clang"
             os: macos-latest
             build_type: "Release"
             extra_options: "-G Ninja"
+            package_name: "mac_arm64"
             shell: bash
+            artifact-path: build/*.zip
+            
+            
+          - name: "macOS x64 Clang"
+            os: macos-13
+            build_type: "Release"
+            extra_options: "-G Ninja"
+            package_name: "mac_x64"
+            shell: bash
+            artifact-path: build/*.zip
+            
 
     steps:
       - uses: actions/checkout@v4
@@ -109,6 +120,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
+          brew install --overwrite python@3.12
           env HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
             brew install \
               cmake \
@@ -122,7 +134,8 @@ jobs:
               portmidi \
               sdl2 \
               sdl2_image \
-              sdl2_mixer
+              sdl2_mixer \
+              dylibbundler
 
       - name: Configure
         run: >-
