@@ -263,6 +263,7 @@ elseif(APPLE)
     set(CPACK_PACKAGING_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
     set(CPACK_EXTERNAL_PACKAGE_SCRIPT "${PROJECT_BINARY_DIR}/macbundle-generate.cmake")
     set(CPACK_SYSTEM_NAME "mac-${CMAKE_SYSTEM_PROCESSOR}")
+    set(CPACK_SYSTEM_PROCESSOR "${CMAKE_SYSTEM_PROCESSOR}")
     set(CPACK_BUILD_DIR "${PROJECT_BINARY_DIR}")
 
     file(GENERATE
@@ -288,8 +289,8 @@ elseif(APPLE)
                 --bundle-deps
                 --create-dir
                 --fix-file ${CPACK_OUTPUT_DIR}/dsda-doom
-                --install-path @executable_path/libs
-                --dest-dir ${CPACK_OUTPUT_DIR}/libs)
+                --install-path @executable_path/libs_${CPACK_SYSTEM_PROCESSOR}
+                --dest-dir ${CPACK_OUTPUT_DIR}/libs_${CPACK_SYSTEM_PROCESSOR})
 
             file(COPY_FILE
                 ${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}/share/games/doom/dsda-doom.wad
