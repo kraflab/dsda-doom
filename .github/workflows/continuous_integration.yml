@@ -45,7 +45,7 @@ jobs:
             artifact-path: build/*.appimage
             
           - name: "macOS arm64 Clang"
-            os: macos-latest,
+            os: macos-latest
             build_type: "Release"
             extra_options: "-G Ninja"
             package_name: "mac_arm64"
