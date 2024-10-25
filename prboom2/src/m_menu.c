@@ -2779,6 +2779,7 @@ setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
   { "Level / Total Time", S_YESNO, m_conf, AU_X, dsda_config_map_time },
   { "Level Title", S_YESNO, m_conf, AU_X, dsda_config_map_title },
   EMPTY_LINE,
+  { "Update unexplored parts in automap mode", S_YESNO, m_conf, AU_X, dsda_config_automap_always_updates },
   { "Locked doors blink", S_YESNO, m_conf, AU_X, dsda_config_map_blinking_locks },
   { "Show Secrets only after entering", S_YESNO, m_conf, AU_X, dsda_config_map_secret_after },
   { "Grid cell size 8..256, -1 for autosize", S_NUM, m_conf, AU_X, dsda_config_map_grid_size },
