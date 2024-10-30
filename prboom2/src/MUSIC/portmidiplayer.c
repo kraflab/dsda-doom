@@ -67,7 +67,6 @@ const music_player_t pm_player =
 
 #else // HAVE_LIBPORTMIDI
 
-#include <math.h>
 #include <portmidi.h>
 #include <porttime.h>
 #include <stdio.h>
@@ -394,7 +393,7 @@ static void pm_setvolume (int v)
     return;
 
   pm_volume = v;
-  volume_scale = sqrtf((float)pm_volume / 15);
+  volume_scale = pm_volume / 15.0f;
   update_volume();
 }
 
