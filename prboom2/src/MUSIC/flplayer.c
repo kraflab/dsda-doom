@@ -576,6 +576,7 @@ static void fl_render (void *vdest, unsigned length)
             {
               fluid_synth_cc (f_syn, i, 123, 0); // ALL NOTES OFF
               fluid_synth_cc (f_syn, i, 121, 0); // RESET ALL CONTROLLERS
+              fluid_synth_cc (f_syn, i, 7, 100); // reset volume
             }
             continue;
           }
