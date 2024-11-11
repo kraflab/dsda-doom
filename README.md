@@ -61,5 +61,9 @@ There is a dedicated launcher for this port available [here](https://github.com/
 - [MBF21 v1.4](https://github.com/kraflab/mbf21)
 - [UMAPINFO v2.2](https://github.com/kraflab/umapinfo)
 
+### Maintainers
+- @fabiangreffrath, @rfomin, and @Pedro-Beirao 2024-
+- @kraflab 2020-2024
+
 ### Credits
 - The DSDA-Doom icon was designed by Mal (129thVisplane). Thanks!
