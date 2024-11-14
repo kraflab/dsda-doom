@@ -34,6 +34,7 @@
 #include "g_game.h"
 
 #include "dsda/exhud.h"
+#include "dsda/font.h"
 #include "dsda/mapinfo.h"
 
 #include "heretic/def.h"
@@ -673,26 +674,38 @@ void IN_DrawYAH(void)
 
 void IN_DrawSingleStats(void)
 {
+    extern const char *lf_author;
+
     const char *prev_level_name = NameForMap(prevmap);
 
     int x;
     static int sounds;
 
     // [crispy] offset the stats for Ep.4 and up, to make room for level time
-    int yoffset = 0;
-    if (gamemode == retail && gameepisode > 3)
-    {
-        yoffset = 20;
-    }
-
-    IN_DrTextB("KILLS", 50, 65 - yoffset);
-    IN_DrTextB("ITEMS", 50, 90 - yoffset);
-    IN_DrTextB("SECRETS", 50, 115 - yoffset);
+    int yoffset = 3;
 
     x = 160 - MN_TextBWidth(prev_level_name) / 2;
-    IN_DrTextB(prev_level_name, x, 3);
+    IN_DrTextB(prev_level_name, x, yoffset);
+    yoffset += 20;
+
+    if (lf_author)
+    {
+        x = 160 - MN_TextAWidth(lf_author) / 2;
+        MN_DrTextA(lf_author, x, yoffset);
+        yoffset += (5 * hud_font.height / 4);
+    }
+
     x = 160 - MN_TextAWidth("FINISHED") / 2;
-    MN_DrTextA("FINISHED", x, 25);
+    MN_DrTextA("FINISHED", x, yoffset);
+
+    if (gamemode == retail && gameepisode > 3)
+    {
+        yoffset += 20;
+    }
+
+    IN_DrTextB("KILLS", 50, yoffset + 25);
+    IN_DrTextB("ITEMS", 50, yoffset + 50);
+    IN_DrTextB("SECRETS", 50, yoffset + 75);
 
     dsda_DrawExIntermission();
 
@@ -706,9 +719,9 @@ void IN_DrawSingleStats(void)
         S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
-    IN_DrawNumber(players[consoleplayer].killcount, 200, 65 - yoffset, 3);
-    V_DrawShadowedNamePatch(237, 65 - yoffset, "FONTB15");
-    IN_DrawNumber(totalkills, 248, 65 - yoffset, 3);
+    IN_DrawNumber(players[consoleplayer].killcount, 200, yoffset + 25, 3);
+    V_DrawShadowedNamePatch(237, yoffset + 25, "FONTB15");
+    IN_DrawNumber(totalkills, 248, yoffset + 25, 3);
     if (intertime < 60)
     {
         return;
@@ -718,9 +731,9 @@ void IN_DrawSingleStats(void)
         S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
-    IN_DrawNumber(players[consoleplayer].itemcount, 200, 90 - yoffset, 3);
-    V_DrawShadowedNamePatch(237, 90 - yoffset, "FONTB15");
-    IN_DrawNumber(totalitems, 248, 90 - yoffset, 3);
+    IN_DrawNumber(players[consoleplayer].itemcount, 200, yoffset + 50, 3);
+    V_DrawShadowedNamePatch(237, yoffset + 50, "FONTB15");
+    IN_DrawNumber(totalitems, 248, yoffset + 50, 3);
     if (intertime < 90)
     {
         return;
@@ -730,9 +743,9 @@ void IN_DrawSingleStats(void)
         S_StartVoidSound(heretic_sfx_dorcls);
         sounds++;
     }
-    IN_DrawNumber(players[consoleplayer].secretcount, 200, 115 - yoffset, 3);
-    V_DrawShadowedNamePatch(237, 115 - yoffset, "FONTB15");
-    IN_DrawNumber(totalsecret, 248, 115 - yoffset, 3);
+    IN_DrawNumber(players[consoleplayer].secretcount, 200, yoffset + 75, 3);
+    V_DrawShadowedNamePatch(237, yoffset + 75, "FONTB15");
+    IN_DrawNumber(totalsecret, 248, yoffset + 75, 3);
     if (intertime < 150)
     {
         return;
