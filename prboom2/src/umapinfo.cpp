@@ -305,7 +305,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			if (alttext) Z_Free(alttext);
 		}
 	}
-	else if (!stricmp(pname, "bossaction"))
+	else if (!stricmp(pname, "bossaction") && !raven)
 	{
 		scanner.MustGetToken(TK_Identifier);
 		int special, tag;

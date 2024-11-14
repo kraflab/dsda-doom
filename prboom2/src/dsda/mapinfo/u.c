@@ -497,7 +497,7 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
-  if (dsda_Flag(dsda_arg_nomapinfo) || dsda_UseMapinfo() || raven)
+  if (dsda_Flag(dsda_arg_nomapinfo) || dsda_UseMapinfo() || hexen)
     return;
 
   p = -1;
