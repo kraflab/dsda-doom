@@ -112,6 +112,15 @@ static const char *KillersText[] = { "K", "I", "L", "L", "E", "R", "S" };
 
 extern const char *LevelNames[];
 
+extern const char *lf_levelname;
+extern const char *lf_levelpic;
+extern const char *lf_author;
+extern const char *exitpic;
+extern const char *el_levelname;
+extern const char *el_levelpic;
+extern const char *el_author;
+extern const char *enterpic;
+
 typedef struct
 {
     int x;
@@ -167,15 +176,22 @@ static const char *NameForMap(int map)
 
 static void IN_DrawInterpic(void)
 {
-  char name[9];
-
-  if (gameepisode < 1 || gameepisode > 3) return;
-
-  snprintf(name, sizeof(name), "MAPE%d", gameepisode);
-
   // e6y: wide-res
   V_ClearBorder();
-  V_DrawNamePatchFS(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
+
+  if (enterpic)
+  {
+    V_DrawNamePatchFS(0, 0, 0, enterpic, CR_DEFAULT, VPT_STRETCH);
+  }
+  else
+  {
+    if (gameepisode < 1 || gameepisode > 3) return;
+
+    const char name[9];
+    snprintf(name, sizeof(name), "MAPE%d", gameepisode);
+
+    V_DrawNamePatchFS(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
+  }
 }
 
 static void IN_DrawBeenThere(int i)
@@ -530,6 +546,7 @@ void IN_Drawer(void)
     {
         case -1:
         case 0:                // draw stats
+            dsda_PrepareFinished();
             IN_DrawStatBack();
             switch (gametype)
             {
@@ -580,7 +597,15 @@ void IN_DrawStatBack(void)
 {
     // e6y: wide-res
     V_ClearBorder();
-    V_DrawBackground("FLOOR16", 0);
+
+    if (exitpic)
+    {
+        V_DrawNamePatch(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
+    }
+    else
+    {
+        V_DrawBackground("FLOOR16", 0);
+    }
 }
 
 //========================================================================
@@ -591,23 +616,19 @@ void IN_DrawStatBack(void)
 
 void IN_DrawOldLevel(void)
 {
-   
     const char *level_name = NameForMap(prevmap);
-
-    extern const char *lf_levelname;
     if (lf_levelname) level_name = lf_levelname;
 
-    int i;
-    int x;
-
-    x = 160 - MN_TextBWidth(level_name) / 2;
+    int x = 160 - MN_TextBWidth(level_name) / 2;
     IN_DrTextB(level_name, x, 3);
     x = 160 - MN_TextAWidth("FINISHED") / 2;
     MN_DrTextA("FINISHED", x, 25);
 
+    if (exitpic) return;
+
     if (prevmap == 9)
     {
-        for (i = 0; i < nextmap - 1; i++)
+        for (int i = 0; i < nextmap - 1; i++)
         {
             IN_DrawBeenThere(i);
         }
@@ -618,7 +639,7 @@ void IN_DrawOldLevel(void)
     }
     else
     {
-        for (i = 0; i < prevmap - 1; i++)
+        for (int i = 0; i < prevmap - 1; i++)
         {
             IN_DrawBeenThere(i);
         }
@@ -642,14 +663,9 @@ void IN_DrawOldLevel(void)
 void IN_DrawYAH(void)
 {
     const char *level_name = NameForMap(nextmap);
-
-    extern const char *el_levelname;
     if (el_levelname) level_name = el_levelname;
 
-    int i;
-    int x;
-
-    x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
+    int x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
     MN_DrTextA("NOW ENTERING:", x, 10);
     x = 160 - MN_TextBWidth(level_name) / 2;
     IN_DrTextB(level_name, x, 20);
@@ -658,7 +674,9 @@ void IN_DrawYAH(void)
     {
         prevmap = nextmap - 1;
     }
-    for (i = 0; i < prevmap; i++)
+    if (enterpic) return;
+
+    for (int i = 0; i < prevmap; i++)
     {
         IN_DrawBeenThere(i);
     }
@@ -680,15 +698,9 @@ void IN_DrawYAH(void)
 
 void IN_DrawSingleStats(void)
 {
-    dsda_PrepareFinished();
-
     const char *prev_level_name = NameForMap(prevmap);
-
-    extern const char *lf_levelname;
     if (lf_levelname) prev_level_name = lf_levelname;
-
-    extern const char *lf_author;
-
+    
     int x;
     static int sounds;
 
@@ -769,11 +781,6 @@ void IN_DrawSingleStats(void)
 
     dsda_PrepareEntering();
 
-    const char *next_level_name = NameForMap(nextmap);
-
-    extern const char *el_levelname;
-    if (el_levelname) next_level_name = el_levelname;
-
     // [crispy] ignore "now entering" if it's the final intermission
     if (gamemode != retail || gameepisode <= 3 || finalintermission)
     {
@@ -794,6 +801,9 @@ void IN_DrawSingleStats(void)
         IN_DrTextB("TOTAL", 85, 140);
         IN_DrawTime(155, 140, totalHours, totalMinutes, totalSeconds);
 
+        const char *next_level_name = NameForMap(nextmap);
+        if (el_levelname) next_level_name = el_levelname;
+
         x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
         MN_DrTextA("NOW ENTERING:", x, 160);
         x = 160 - MN_TextBWidth(next_level_name) / 2;
@@ -811,26 +821,20 @@ void IN_DrawSingleStats(void)
 void IN_DrawCoopStats(void)
 {
     const char *level_name = NameForMap(prevmap);
-
-    extern const char *lf_levelname;
     if (lf_levelname) level_name = lf_levelname;
 
-    int i;
-    int x;
-    int ypos;
-
-    static int sounds;
-
-    IN_DrTextB("KILLS", 95, 35);
-    IN_DrTextB("BONUS", 155, 35);
-    IN_DrTextB("SECRET", 232, 35);
-    x = 160 - MN_TextBWidth(level_name) / 2;
+    int x = 160 - MN_TextBWidth(level_name) / 2;
     IN_DrTextB(level_name, x, 3);
     x = 160 - MN_TextAWidth("FINISHED") / 2;
     MN_DrTextA("FINISHED", x, 25);
 
-    ypos = 50;
-    for (i = 0; i < g_maxplayers; i++)
+    IN_DrTextB("KILLS", 95, 35);
+    IN_DrTextB("BONUS", 155, 35);
+    IN_DrTextB("SECRET", 232, 35);
+
+    static int sounds;
+    int ypos = 50;
+    for (int i = 0; i < g_maxplayers; i++)
     {
         if (playeringame[i])
         {
