@@ -36,6 +36,7 @@
 #include "dsda/exhud.h"
 #include "dsda/font.h"
 #include "dsda/mapinfo.h"
+#include "dsda/mapinfo/u.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
@@ -155,9 +156,6 @@ static yahpt_t YAHspot[3][9] = {
 
 static const char *NameForMap(int map)
 {
-    extern const char *lf_levelname;
-    if (lf_levelname) return lf_levelname;
-    
     const char *name = LevelNames[(gameepisode - 1) * 9 + map - 1];
 
     if (strlen(name) < 7)
@@ -532,7 +530,6 @@ void IN_Drawer(void)
     {
         case -1:
         case 0:                // draw stats
-            dsda_PrepareFinished();
             IN_DrawStatBack();
             switch (gametype)
             {
@@ -594,7 +591,12 @@ void IN_DrawStatBack(void)
 
 void IN_DrawOldLevel(void)
 {
+   
     const char *level_name = NameForMap(prevmap);
+
+    extern const char *lf_levelname;
+    if (lf_levelname) level_name = lf_levelname;
+
     int i;
     int x;
 
@@ -640,6 +642,10 @@ void IN_DrawOldLevel(void)
 void IN_DrawYAH(void)
 {
     const char *level_name = NameForMap(nextmap);
+
+    extern const char *el_levelname;
+    if (el_levelname) level_name = el_levelname;
+
     int i;
     int x;
 
@@ -674,9 +680,14 @@ void IN_DrawYAH(void)
 
 void IN_DrawSingleStats(void)
 {
-    extern const char *lf_author;
+    dsda_PrepareFinished();
 
     const char *prev_level_name = NameForMap(prevmap);
+
+    extern const char *lf_levelname;
+    if (lf_levelname) prev_level_name = lf_levelname;
+
+    extern const char *lf_author;
 
     int x;
     static int sounds;
@@ -756,6 +767,13 @@ void IN_DrawSingleStats(void)
         sounds++;
     }
 
+    dsda_PrepareEntering();
+
+    const char *next_level_name = NameForMap(nextmap);
+
+    extern const char *el_levelname;
+    if (el_levelname) next_level_name = el_levelname;
+
     // [crispy] ignore "now entering" if it's the final intermission
     if (gamemode != retail || gameepisode <= 3 || finalintermission)
     {
@@ -776,8 +794,6 @@ void IN_DrawSingleStats(void)
         IN_DrTextB("TOTAL", 85, 140);
         IN_DrawTime(155, 140, totalHours, totalMinutes, totalSeconds);
 
-        const char *next_level_name = NameForMap(nextmap);
-
         x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
         MN_DrTextA("NOW ENTERING:", x, 160);
         x = 160 - MN_TextBWidth(next_level_name) / 2;
@@ -795,6 +811,10 @@ void IN_DrawSingleStats(void)
 void IN_DrawCoopStats(void)
 {
     const char *level_name = NameForMap(prevmap);
+
+    extern const char *lf_levelname;
+    if (lf_levelname) level_name = lf_levelname;
+
     int i;
     int x;
     int ypos;
