@@ -723,7 +723,7 @@ void IN_DrawSingleStats(void)
 
     if (gamemode == retail && gameepisode > 3)
     {
-        yoffset += 20;
+        yoffset -= 20;
     }
 
     IN_DrTextB("KILLS", 50, yoffset + 25);
