@@ -34,6 +34,7 @@
 #include "g_game.h"
 
 #include "dsda/exhud.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
@@ -153,6 +154,9 @@ static yahpt_t YAHspot[3][9] = {
 
 static const char *NameForMap(int map)
 {
+    extern const char *lf_levelname;
+    if (lf_levelname) return lf_levelname;
+    
     const char *name = LevelNames[(gameepisode - 1) * 9 + map - 1];
 
     if (strlen(name) < 7)
@@ -527,6 +531,7 @@ void IN_Drawer(void)
     {
         case -1:
         case 0:                // draw stats
+            dsda_PrepareFinished();
             IN_DrawStatBack();
             switch (gametype)
             {
@@ -669,7 +674,7 @@ void IN_DrawYAH(void)
 void IN_DrawSingleStats(void)
 {
     const char *prev_level_name = NameForMap(prevmap);
-    const char *next_level_name = NameForMap(nextmap);
+
     int x;
     static int sounds;
 
@@ -757,6 +762,8 @@ void IN_DrawSingleStats(void)
         // [crispy] Show total time on intermission
         IN_DrTextB("TOTAL", 85, 140);
         IN_DrawTime(155, 140, totalHours, totalMinutes, totalSeconds);
+
+        const char *next_level_name = NameForMap(nextmap);
 
         x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
         MN_DrTextA("NOW ENTERING:", x, 160);
@@ -1057,6 +1064,7 @@ void IN_DrTextB(const char *text, int x, int y)
         }
         else
         {
+            if (c > 90) c -= 32;
             int lump = FontBLump + c - 33;
             V_DrawShadowedNumPatch(x, y, lump);
             x += R_NumPatchWidth(lump) - 1;
