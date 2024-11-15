@@ -187,6 +187,10 @@ static void IN_DrawInterpic(void)
   {
     V_DrawNamePatchFS(0, 0, 0, enterpic, CR_DEFAULT, VPT_STRETCH);
   }
+  else if (exitpic)
+  {
+    V_DrawNamePatch(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
+  }
   else
   {
     if (gameepisode < 1 || gameepisode > 3) return;
@@ -685,7 +689,7 @@ void IN_DrawYAH(void)
     {
         prevmap = nextmap - 1;
     }
-    if (enterpic) return;
+    if (enterpic || exitpic) return;
 
     for (int i = 0; i < prevmap; i++)
     {
