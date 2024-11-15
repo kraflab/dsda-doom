@@ -239,7 +239,10 @@ static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
   prevmap = wbs->last + 1;
   nextmap = wbs->next + 1;
 
-  finalintermission = (prevmap == 8);
+  int behaviour;
+  dsda_ShowNextLocBehaviour(&behaviour);
+
+  finalintermission = (behaviour == WI_SHOW_NEXT_DONE);
 }
 
 //========================================================================
@@ -326,12 +329,15 @@ void IN_InitStats(void)
         count -= totalMinutes * 60;
         totalSeconds = count;
 
-        count = wbs->partime / 35;
-        parHours = count / 3600;
-        count -= parHours * 3600;
-        parMinutes = count / 60;
-        count -= parMinutes * 60;
-        parSeconds = count;
+        if (wbs->modified_partime)
+        {
+            count = wbs->partime / 35;
+            parHours = count / 3600;
+            count -= parHours * 3600;
+            parMinutes = count / 60;
+            count -= parMinutes * 60;
+            parSeconds = count;
+        }
     }
     else if (netgame && !deathmatch)
     {
@@ -584,7 +590,7 @@ void IN_Drawer(void)
             }
             break;
         case 2:                // going to the next level
-            if (gameepisode < 4)
+            if (gameepisode < 4 && !finalintermission)
             {
                 IN_DrawInterpic();
                 IN_DrawYAH();
