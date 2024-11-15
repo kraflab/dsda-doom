@@ -92,6 +92,10 @@ static int totalHours;
 static int totalMinutes;
 static int totalSeconds;
 
+static int parHours;
+static int parMinutes;
+static int parSeconds;
+
 static int slaughterboy;        // in DM, the player with the most kills
 
 static int killPercent[MAX_MAXPLAYERS];
@@ -317,6 +321,13 @@ void IN_InitStats(void)
         totalMinutes = count / 60;
         count -= totalMinutes * 60;
         totalSeconds = count;
+
+        count = wbs->partime / 35;
+        parHours = count / 3600;
+        count -= parHours * 3600;
+        parMinutes = count / 60;
+        count -= parMinutes * 60;
+        parSeconds = count;
     }
     else if (netgame && !deathmatch)
     {
@@ -784,22 +795,11 @@ void IN_DrawSingleStats(void)
     // [crispy] ignore "now entering" if it's the final intermission
     if (gamemode != retail || gameepisode <= 3 || finalintermission)
     {
-        IN_DrTextB("TIME", 85, 150);
-        IN_DrawTime(155, 150, hours, minutes, seconds);
-
-        // [crispy] Show total time on intermission
-        IN_DrTextB("TOTAL", 85, 170);
-        IN_DrawTime(155, 170, totalHours, totalMinutes, totalSeconds);
+        yoffset = 30;
     }
     else
     {
-        // [crispy] show the level time for Ep.4 and up
-        IN_DrTextB("TIME", 85, 120);
-        IN_DrawTime(155, 120, hours, minutes, seconds);
-
-        // [crispy] Show total time on intermission
-        IN_DrTextB("TOTAL", 85, 140);
-        IN_DrawTime(155, 140, totalHours, totalMinutes, totalSeconds);
+        yoffset = 0;
 
         const char *next_level_name = NameForMap(nextmap);
         if (el_levelname) next_level_name = el_levelname;
@@ -810,6 +810,25 @@ void IN_DrawSingleStats(void)
         IN_DrTextB(next_level_name, x, 170);
         skipintermission = false;
     }
+
+    if (wbs->modified_partime)
+    {
+        IN_DrTextB("TIME", 8, 120 + yoffset);
+        IN_DrawTime(55, 120 + yoffset, hours, minutes, seconds);
+        IN_DrTextB("TOTAL", 8, 140 + yoffset);
+        IN_DrawTime(55, 140 + yoffset, totalHours, totalMinutes, totalSeconds);
+
+        IN_DrTextB("PAR", 170, 120 + yoffset);
+        IN_DrawTime(218, 120 + yoffset, parHours, parMinutes, parSeconds);
+    }
+    else
+    {
+        IN_DrTextB("TIME", 85, 120 + yoffset);
+        IN_DrawTime(155, 120 + yoffset, hours, minutes, seconds);
+        IN_DrTextB("TOTAL", 85, 140 + yoffset);
+        IN_DrawTime(155, 140 + yoffset, totalHours, totalMinutes, totalSeconds);
+    }
+
 }
 
 //========================================================================
