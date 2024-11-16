@@ -217,6 +217,7 @@ extern int finalecount;
 extern const char* finaletext;
 extern const char* finaleflat;
 extern const char* finalepatch;
+extern const char* endpic;
 extern int acceleratestage;
 extern int midstage;
 
@@ -244,6 +245,8 @@ int dsda_UStartFinale(void) {
 
   if (!finaleflat)
     finaleflat = "FLOOR4_8"; // use a single fallback for all maps.
+  
+  endpic = gamemapinfo->endpic;
 
   return true;
 }
