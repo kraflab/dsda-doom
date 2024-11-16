@@ -198,7 +198,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			return 0;
 		}
 	}
-	else if (!stricmp(pname, "levelpic"))
+	else if (!stricmp(pname, "levelpic") && !raven)
 	{
 		ParseLumpName(scanner, mape->levelpic);
 	}
@@ -216,7 +216,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		ParseLumpName(scanner, mape->endpic);
 		mape->flags |= MapInfo_EndGameArt;
 	}
-	else if (!stricmp(pname, "endcast"))
+	else if (!stricmp(pname, "endcast") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
@@ -224,7 +224,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		            ? MapInfo_EndGameCast
 		            : MapInfo_EndGameClear;
 	}
-	else if (!stricmp(pname, "endbunny"))
+	else if (!stricmp(pname, "endbunny") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
@@ -248,7 +248,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		ParseLumpName(scanner, mape->enterpic);
 	}
-	else if (!stricmp(pname, "nointermission"))
+	else if (!stricmp(pname, "nointermission") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		if (scanner.boolean)
