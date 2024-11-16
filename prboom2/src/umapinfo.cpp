@@ -239,7 +239,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		ParseLumpName(scanner, mape->enterpic);
 	}
-	else if (!stricmp(pname, "nointermission") && !raven)
+	else if (!stricmp(pname, "nointermission"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->nointermission = scanner.boolean;
