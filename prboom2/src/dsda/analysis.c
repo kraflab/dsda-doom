@@ -51,6 +51,8 @@ int dsda_kills_on_map = 0;
 dboolean dsda_100k_on_map = false;
 dboolean dsda_100k_note_shown = false;
 dboolean dsda_pacifist_note_shown = false;
+dboolean dsda_reality_note_shown = false;
+dboolean dsda_almost_reality_note_shown = false;
 
 void dsda_ResetAnalysis(void) {
   dsda_pacifist = true;
