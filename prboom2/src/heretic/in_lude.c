@@ -75,7 +75,7 @@ static int prevmap;
 static int nextmap;
 static dboolean intermission;
 static dboolean skipintermission;
-static dboolean finalintermission;
+dboolean finalintermission;
 static int interstate = 0;
 static int intertime = -1;
 static int oldintertime = 0;
@@ -241,8 +241,7 @@ static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
 
   int behaviour;
   dsda_ShowNextLocBehaviour(&behaviour);
-
-  finalintermission = (behaviour == WI_SHOW_NEXT_DONE);
+  finalintermission = (behaviour & WI_SHOW_NEXT_DONE);
 }
 
 //========================================================================
