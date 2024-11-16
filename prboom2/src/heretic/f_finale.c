@@ -37,6 +37,8 @@ extern int finalestage;                // 0 = text, 1 = art screen
 extern int finalecount;
 extern const char *finaletext;
 extern const char *finaleflat;
+extern const char* finalepatch;
+extern const char* endpic;
 extern dboolean finalintermission;
 
 static int FontABaseLump;
@@ -164,7 +166,14 @@ void Heretic_F_TextWrite(void)
   //
   // erase the entire screen to a tiled background
   //
-  V_DrawBackground(finaleflat, 0);
+  if (finalepatch)
+  {
+     V_DrawNamePatch(0, 0, 0, finalepatch, CR_DEFAULT, VPT_STRETCH);
+  }
+  else
+  {
+    V_DrawBackground(finaleflat, 0);
+  }
 
   //
   // draw some of the text onto the screen
@@ -283,6 +292,11 @@ void Heretic_F_Drawer(void)
     if (!finalintermission)
     {
       gameaction = ga_worlddone;
+      return;
+    }
+    if (endpic)
+    {
+      V_DrawNamePatch(0, 0, 0, endpic, CR_DEFAULT, VPT_STRETCH);
       return;
     }
     switch (gameepisode)
