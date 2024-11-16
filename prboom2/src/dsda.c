@@ -555,11 +555,12 @@ static void dsda_ResetTracking(void) {
 }
 
 void dsda_WatchDeferredInitNew(int skill, int episode, int map) {
+  dsda_ResetTracking();
+  
   if (!demorecording) return;
 
   ++dsda_session_attempts;
 
-  dsda_ResetTracking();
   dsda_QueueQuickstart();
 
   dsda_ResetRevealMap();
