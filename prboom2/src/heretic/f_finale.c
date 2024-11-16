@@ -23,20 +23,21 @@
 #include "sounds.h"
 
 #include "dsda/palette.h"
+#include "dsda/mapinfo.h"
 
 #include "heretic/def.h"
 #include "heretic/dstrings.h"
 
 #include "heretic/f_finale.h"
 
-static int finalestage;                // 0 = text, 1 = art screen
-static int finalecount;
-
 #define TEXTSPEED       3
 #define TEXTWAIT        250
 
-static const char *finaletext;
-static const char *finaleflat;
+extern int finalestage;                // 0 = text, 1 = art screen
+extern int finalecount;
+extern const char *finaletext;
+extern const char *finaleflat;
+extern dboolean finalintermission;
 
 static int FontABaseLump;
 
@@ -78,10 +79,23 @@ void Heretic_F_StartFinale(void)
       break;
   }
 
+  FontABaseLump = W_GetNumForName("FONTA_S") + 1;
+
+  int mnum, muslump;
+  dsda_InterMusic(&mnum, &muslump);
+  if (muslump >= 0)
+  {
+    S_ChangeMusInfoMusic(muslump, true);
+  }
+  else
+  {
+    S_ChangeMusic(heretic_mus_cptd, true);
+  }
+
+  dsda_StartFinale();
+
   finalestage = 0;
   finalecount = 0;
-  FontABaseLump = W_GetNumForName("FONTA_S") + 1;
-  S_ChangeMusic(heretic_mus_cptd, true);
 }
 
 static dboolean F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
@@ -266,6 +280,11 @@ void Heretic_F_Drawer(void)
     Heretic_F_TextWrite();
   else
   {
+    if (!finalintermission)
+    {
+      gameaction = ga_worlddone;
+      return;
+    }
     switch (gameepisode)
     {
       case 1:
