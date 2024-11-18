@@ -64,6 +64,7 @@ typedef enum {
   dsda_arg_skiptic,
   dsda_arg_track_pacifist,
   dsda_arg_track_100k,
+  dsda_arg_track_reality,
   dsda_arg_time_keys,
   dsda_arg_time_use,
   dsda_arg_time_secrets,

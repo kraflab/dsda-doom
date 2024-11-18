@@ -47,6 +47,7 @@
 // command-line toggles
 int dsda_track_pacifist;
 int dsda_track_100k;
+int dsda_track_reality;
 
 int dsda_last_leveltime;
 int dsda_last_gamemap;
@@ -152,6 +153,7 @@ void dsda_ReadCommandLine(void) {
 
   dsda_track_pacifist = dsda_Flag(dsda_arg_track_pacifist);
   dsda_track_100k = dsda_Flag(dsda_arg_track_100k);
+  dsda_track_reality = dsda_Flag(dsda_arg_track_reality);
   dsda_analysis = dsda_Flag(dsda_arg_analysis);
   dsda_time_keys = dsda_SimpleIntArg(dsda_arg_time_keys);
   dsda_time_use = dsda_SimpleIntArg(dsda_arg_time_use);
@@ -207,6 +209,17 @@ void dsda_DisplayNotifications(void) {
 
     dsda_100k_note_shown = true;
     dsda_DisplayNotification("100K achieved!");
+  }
+
+  if (!dsda_reality && !dsda_almost_reality_note_shown) {
+    if (!dsda_almost_reality && !dsda_almost_reality_note_shown) {
+      dsda_almost_reality_note_shown = true;
+      dsda_DisplayNotification("Not reality / almost reality!");
+    }
+    else if (!dsda_reality_note_shown) {
+      dsda_reality_note_shown = true;
+      dsda_DisplayNotification("Almost reality!");
+    }
   }
 }
 
@@ -537,14 +550,17 @@ static void dsda_ResetTracking(void) {
   dsda_ResetAnalysis();
 
   dsda_pacifist_note_shown = false;
+  dsda_reality_note_shown = false;
+  dsda_almost_reality_note_shown = false;
 }
 
 void dsda_WatchDeferredInitNew(int skill, int episode, int map) {
+  dsda_ResetTracking();
+  
   if (!demorecording) return;
 
   ++dsda_session_attempts;
 
-  dsda_ResetTracking();
   dsda_QueueQuickstart();
 
   dsda_ResetRevealMap();
