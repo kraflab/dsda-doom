@@ -211,7 +211,7 @@ void dsda_DisplayNotifications(void) {
     dsda_DisplayNotification("100K achieved!");
   }
 
-  if (!dsda_reality && !dsda_almost_reality_note_shown) {
+  if (!dsda_reality && dsda_track_reality && !dsda_almost_reality_note_shown) {
     if (!dsda_almost_reality && !dsda_almost_reality_note_shown) {
       dsda_almost_reality_note_shown = true;
       dsda_DisplayNotification("Not reality / almost reality!");
