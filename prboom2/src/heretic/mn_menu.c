@@ -64,6 +64,88 @@ extern menu_t LoadDef;
 extern menu_t SaveDef;
 extern menuitem_t SoundMenu[];
 
+/////////////////////////////
+//
+// Raven Prototypes
+//
+/////////////////////////////
+
+void MN_GameFiles(int choice);
+
+extern void M_NewGame(int choice);
+extern void M_Options(int choice);
+extern void M_QuitDOOM(int choice);
+extern void M_LoadGame(int choice);
+extern void M_SaveGame(int choice);
+extern void M_ReadThis(int choice);
+
+/////////////////////////////
+//
+// Raven MainMenu
+//
+/////////////////////////////
+
+enum
+{
+  rnewgame = 0,
+  roptions,
+  rgamefiles,
+  rinfo,
+  rquitdoom,
+  rmain_end
+} rmain_e;
+
+menuitem_t RavenMainMenu[]=
+{
+  {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
+  {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
+  {1,"M_GFILES", MN_GameFiles,'g', "GAME FILES"},
+  {1,"M_INFO",M_ReadThis,'i', "INFO"},
+  {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
+};
+
+
+/////////////////////////////
+//
+// Raven GameFiles Menu
+//
+/////////////////////////////
+
+enum
+{
+  rloadgame,
+  rsavegame,
+  rsaveload_end
+} saveload_e;
+
+menuitem_t SaveLoadMenu[]=
+{
+  {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
+  {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
+};
+
+menu_t SaveLoadDef =
+{
+  rsaveload_end,       // number of menu items
+  &MainDef,           // previous menu screen
+  SaveLoadMenu,       // table that defines menu items
+  NULL, // drawing routine
+  97,64,          // initial cursor position
+  0               // last menu item the user was on
+};
+
+void MN_GameFiles(int choice)
+{
+  M_SetupNextMenu(&SaveLoadDef);
+}
+
+
+/////////////////////////////
+//
+// Raven MN_Init
+//
+/////////////////////////////
+
 void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 
 void MN_Init(void)
@@ -122,6 +204,12 @@ void MN_Init(void)
 
   SoundMenu[0].alttext = "SFX VOLUME";
   SoundMenu[2].alttext = "MUSIC VOLUME";
+
+  // Use exclusive Raven MainMenu.
+  MainDef.menuitems = RavenMainMenu;
+  MainDef.numitems = rmain_end;
+  SaveDef.prevMenu = &SaveLoadDef;
+  LoadDef.prevMenu = &SaveLoadDef;
 }
 
 void MN_UpdateClass(int choice)

@@ -6253,7 +6253,7 @@ void M_Init(void)
       // by default if Extended Help screens are found.
       //
       // Otherwise remove "Read Me!" menu option
-      if (!extended_help_count)
+      if (!extended_help_count && !raven)
       {
         MainMenu[readthis] = MainMenu[quitdoom];
         MainDef.numitems = quitdoom;
