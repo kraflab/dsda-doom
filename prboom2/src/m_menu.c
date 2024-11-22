@@ -6244,16 +6244,21 @@ void M_Init(void)
 
       // "Help" and "ReadMe!" now use the same
       // routine to match Vanilla routines.
-      MainMenu[readthis] = MainMenu[quitdoom];
-      MainDef.numitems = quitdoom;
       MainDef.y += 8;
       ReadDef1.routine = M_DrawReadThis2;
       ReadDef1.x = 330;
       ReadDef1.y = 165;
 
-      // Only FinishReadThis if Extended Help screens are found.
+      // Allowed "Read Me!" in commerical gamemodes
+      // by default if Extended Help screens are found.
+      //
+      // Otherwise remove "Read Me!" menu option
       if (!extended_help_count)
+      {
+        MainMenu[readthis] = MainMenu[quitdoom];
+        MainDef.numitems = quitdoom;
         ReadMenu1[0].routine = M_FinishReadThis;
+      }
   }
   else
   {
