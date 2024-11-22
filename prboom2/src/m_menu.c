@@ -103,6 +103,7 @@
 
 #include "heretic/mn_menu.h"
 #include "heretic/sb_bar.h"
+#include "heretic/dstrings.h"
 
 /****************************
  *
@@ -220,6 +221,10 @@ const char skullName[2][/*8*/9] = {"M_SKULL1","M_SKULL2"};
 
 menu_t* currentMenu; // current menudef
 
+extern menu_t InfoDef1;
+extern menu_t InfoDef4;
+extern menuitem_t InfoMenu4[];
+
 //
 // PROTOTYPES
 //
@@ -260,6 +265,7 @@ void M_DrawSound(void);
 void M_DrawLoad(void);
 void M_DrawSave(void);
 void M_DrawHelp (void);                                     // phares 5/04/98
+void M_DrawAd(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_DrawThermo(int x,int y,int thermWidth,int thermDot);
@@ -554,16 +560,9 @@ void M_FinishHelp(int choice)        // killough 10/98
 void M_DrawReadThis1(void)
 {
   inhelpscreens = true;
-  if (hexen)
-  {
-    V_DrawRawScreen("HELP2");
-  }
-  else if (gamemode == shareware)
-  {
-    // e6y: wide-res
-    V_ClearBorder();
-    V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
-  }
+
+  if (pwad_help2_check || gamemode == shareware)
+    M_DrawAd();
   else
     M_DrawCredits();
 }
@@ -576,7 +575,7 @@ void M_DrawReadThis1(void)
 void M_DrawReadThis2(void)
 {
   inhelpscreens = true;
-  M_DrawCredits();
+  M_DrawHelp();
 }
 
 /////////////////////////////
@@ -613,6 +612,16 @@ void M_Episode(int choice)
   if (gamemode == shareware && choice && !episodes[choice].vanilla) {
     M_StartMessage(s_SWSTRING, NULL, false); // Ty 03/27/98 - externalized
     M_SetupNextMenu(&ReadDef1);
+    return;
+  }
+
+  // Heretic shareware is different than Doom shareware in that it shows
+  // the episode select, but will display a message when selecting
+  // other episodes. This code shows that message and avoids a crash.
+  //
+  if (heretic && gamemode == shareware && choice && episodes[choice].vanilla) {
+    M_StartMessage(HERETIC_SWSTRING, NULL, false); // externalized
+    M_SetupNextMenu(&InfoDef1);
     return;
   }
 
@@ -3857,12 +3866,15 @@ void M_InitExtendedHelp(void)
          * See also: https://www.doomworld.com/forum/topic/111465-boom-extended-help-screens-an-undocumented-feature/
          */
           HelpMenu[0].routine = M_ExtHelp;
-        if (gamemode == commercial) {
-          ExtHelpDef.prevMenu  = &ReadDef1; /* previous menu */
-          ReadMenu1[0].routine = M_ExtHelp;
-        } else {
+        if (raven) {
+          ExtHelpDef.prevMenu  = &InfoDef4; /* previous menu */
+          InfoMenu4[0].routine = M_ExtHelp;
+        } else if (gamemode == shareware || pwad_help2_check) {
           ExtHelpDef.prevMenu  = &ReadDef2; /* previous menu */
           ReadMenu2[0].routine = M_ExtHelp;
+        } else {
+          ExtHelpDef.prevMenu  = &ReadDef1; /* previous menu */
+          ReadMenu1[0].routine = M_ExtHelp;
         }
       }
       return;
@@ -3890,6 +3902,7 @@ void M_DrawExtHelp(void)
   namebfr[4] = extended_help_index/10 + '0';
   namebfr[5] = extended_help_index%10 + '0';
   // CPhipps - patch drawing updated
+  V_ClearBorder(); // Redraw background for every ext HELP screen. Fixes widescreen overdraw.
   V_DrawNamePatch(0, 0, 0, namebfr, CR_DEFAULT, VPT_STRETCH);
 }
 
@@ -4139,20 +4152,38 @@ static void M_DrawStringCentered(int cx, int cy, int color, const char* ch)
 
 void M_DrawHelp (void)
 {
-  const int helplump = W_CheckNumForName("HELP");
+  const char* helplump = (gamemode == commercial) ? "HELP" : "HELP1";
 
   M_ChangeMenu(NULL, mnact_full);
 
-  if (helplump != LUMP_NOT_FOUND && lumpinfo[helplump].source != source_iwad)
+  if (W_PWADLumpNameExists(helplump))
   {
     V_ClearBorder();
-    V_DrawNumPatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
   }
   else
   {
     M_DrawBackground(g_menu_flat, 0);
     M_DrawScreenItems(helpstrings, 2);
   }
+}
+
+//
+// M_DrawAd
+//
+// This displays the help2 screen
+
+void M_DrawAd (void)
+{
+  const char* help2 = "HELP2";
+
+  M_ChangeMenu(NULL, mnact_full);
+
+  V_ClearBorder();
+  if (pwad_help2_check || gamemode == shareware)
+      V_DrawNamePatch(0, 0, 0, help2, CR_DEFAULT, VPT_STRETCH);
+  else
+    M_DrawCredits();
 }
 
 //
@@ -4185,19 +4216,14 @@ setup_menu_t cred_settings[]={
 
 void M_DrawCredits(void)     // killough 10/98: credit screen
 {
-  const int creditlump = W_CheckNumForName("CREDIT");
-
-  if (raven)
-  {
-    V_DrawRawScreen("CREDIT");
-    return;
-  }
+  const char* credit = "CREDIT";
+  const int PWADcredit = W_PWADLumpNameExists(credit);
 
   inhelpscreens = true;
-  if (creditlump != LUMP_NOT_FOUND && lumpinfo[creditlump].source != source_iwad)
+  if (PWADcredit)
   {
     V_ClearBorder();
-    V_DrawNumPatch(0, 0, 0, creditlump, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(0, 0, 0, credit, CR_DEFAULT, VPT_STRETCH);
   }
   else
   {
@@ -4989,8 +5015,9 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 {
   if (ch == KEYD_F1)                                         // phares
   {
+    menu_t* F1_menu = raven ? &InfoDef1 : &ReadDef1;
     M_StartControlPanel ();
-    M_ChangeMenu(&HelpDef, mnact_nochange);
+    M_ChangeMenu(F1_menu, mnact_nochange);
 
     itemOn = 0;
     S_StartVoidSound(g_sfx_swtchn);
@@ -6208,39 +6235,59 @@ void M_Init(void)
   messageString = NULL;
   messageLastMenuActive = menuactive;
 
+  M_InitHelpScreen();   // init the help screen       // phares 4/08/98
+  M_InitExtendedHelp(); // init extended help screens // phares 3/30/98
+
   // Here we could catch other version dependencies,
   //  like HELP1/2, and four episodes.
 
-  switch(gamemode)
-  {
-    case commercial:
-      // This is used because DOOM 2 had only one HELP
-      //  page. I use CREDIT as second page now, but
-      //  kept this hack for educational purposes.
-      MainMenu[readthis] = MainMenu[quitdoom];
-      MainDef.numitems--;
-      MainDef.y += 8;
-      ReadDef1.routine = M_DrawReadThis1;
-      ReadDef1.x = 330;
-      ReadDef1.y = 165;
-      ReadMenu1[0].routine = M_FinishReadThis;
-      break;
-    case registered:
+  //
+  // Raven code moved to MN_Init() for
+  // Heretic / Hexen 3-4 screen support.
+  if (!raven) {
+    if (gamemode == commercial) {
+        // This is used because DOOM 2 had only one HELP
+        //  page. I use CREDIT as second page now, but
+        //  kept this hack for educational purposes.
+
+        // "Help" and "ReadMe!" now use the same
+        // routine to match Vanilla routines.
+        MainDef.y += 8;
+        ReadDef1.routine = M_DrawReadThis2;
+        ReadDef1.x = 330;
+        ReadDef1.y = 165;
+
+        // Allowed "Read Me!" in commerical gamemodes
+        // by default if Extended Help screens are found.
+        //
+        // Otherwise remove "Read Me!" menu option
+        if (!extended_help_count)
+        {
+          MainMenu[readthis] = MainMenu[quitdoom];
+          MainDef.numitems = quitdoom;
+          ReadMenu1[0].routine = M_FinishReadThis;
+        }
+    }
+    else
+    {
       // Episode 2 and 3 are handled,
       //  branching to an ad screen.
 
       // killough 2/21/98: Fix registered Doom help screen
       // killough 10/98: moved to second screen, moved up to the top
-      ReadDef2.y = 15;
-      break;
-    case shareware:
-    case retail:
-    default:
-      break;
-  }
 
-  M_InitHelpScreen();   // init the help screen       // phares 4/08/98
-  M_InitExtendedHelp(); // init extended help screens // phares 3/30/98
+      // If shareware or PWAD HELP2, use ad screen (w/ offset)
+      // with HELP1 screen, else cut to only HELP1 screen
+      if (pwad_help2_check || gamemode == shareware)
+        ReadDef1.y = 15;
+      else
+      {
+        ReadDef1.routine = M_DrawReadThis2;
+        if (!extended_help_count)
+          ReadMenu1[0].routine = M_FinishReadThis;
+      }
+    }
+  }
 
   //e6y
   M_ChangeSpeed();

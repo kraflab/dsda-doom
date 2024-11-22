@@ -591,6 +591,8 @@ static dboolean dsda_AutoDetectHeretic(void)
     length = strlen(arg->value.v_string);
     if (length >= 11 && !strnicmp(arg->value.v_string + length - 11, "heretic.wad", 11))
       return true;
+    else if (length >= 12 && !strnicmp(arg->value.v_string + length - 12, "heretic1.wad", 12))
+      return true;
   }
 
   return false;

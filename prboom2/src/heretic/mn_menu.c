@@ -64,6 +64,222 @@ extern menu_t LoadDef;
 extern menu_t SaveDef;
 extern menuitem_t SoundMenu[];
 
+/////////////////////////////
+//
+// Raven Prototypes
+//
+/////////////////////////////
+
+void MN_GameFiles(int choice);
+void MN_Info(int choice);
+void MN_Info2(int choice);
+void MN_Info3(int choice);
+void MN_Info4(int choice);
+void MN_FinishInfo(int choice);
+
+void MN_DrawInfoAd(void);
+void MN_DrawInfoHelp1(void);
+void MN_DrawInfoHelp2(void);
+void MN_DrawInfoCredits(void);
+
+void MN_DrawAd(void);
+void MN_DrawCredits(void);
+void MN_DrawHelp1(void);
+void MN_DrawHelp2(void);
+
+extern void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
+extern dboolean inhelpscreens;
+extern menu_t ExtHelpDef;
+extern void M_NewGame(int choice);
+extern void M_Options(int choice);
+extern void M_QuitDOOM(int choice);
+extern void M_LoadGame(int choice);
+extern void M_SaveGame(int choice);
+
+
+/////////////////////////////
+//
+// Raven Info Screens
+//
+/////////////////////////////
+
+enum { infoempty1, info1_end } info_e1;
+enum { infoempty2, info2_end } info_e2;
+enum { infoempty3, info3_end } info_e3;
+enum { infoempty4, info4_end } info_e4;
+
+menuitem_t InfoMenu1[] = { {1,"",MN_Info2,0} };
+menuitem_t InfoMenu2[] = { {1,"",MN_Info3,0} };
+menuitem_t InfoMenu3[] = { {1,"",MN_Info4,0} };
+menuitem_t InfoMenu4[] = { {1,"",MN_FinishInfo,0} };
+
+menu_t InfoDef1 =
+{
+  info1_end,
+  &MainDef,
+  InfoMenu1,
+  MN_DrawInfoAd,
+  330,175,
+  0
+};
+
+menu_t InfoDef2 =
+{
+  info2_end,
+  &InfoDef1,
+  InfoMenu2,
+  MN_DrawInfoHelp1,
+  330,175,
+  0
+};
+
+menu_t InfoDef3 =
+{
+  info3_end,
+  &InfoDef2,
+  InfoMenu3,
+  MN_DrawInfoHelp2,
+  330,175,
+  0
+};
+
+menu_t InfoDef4 =
+{
+  info4_end,
+  &InfoDef3,
+  InfoMenu4,
+  MN_DrawInfoCredits,
+  330,175,
+  0
+};
+
+void MN_Info  (int choice) { M_SetupNextMenu(&InfoDef1); }
+void MN_Info2 (int choice) { M_SetupNextMenu(&InfoDef2); }
+void MN_Info3 (int choice) { M_SetupNextMenu(&InfoDef3); }
+void MN_Info4 (int choice) { M_SetupNextMenu(&InfoDef4); }
+void MN_FinishInfo (int choice) { M_SetupNextMenu(&MainDef); }
+
+void MN_DrawInfoAd(void)
+{
+  inhelpscreens = true;
+  MN_DrawAd();
+}
+
+void MN_DrawInfoHelp1(void)
+{
+  inhelpscreens = true;
+  MN_DrawHelp1();
+}
+
+void MN_DrawInfoHelp2(void)
+{
+  inhelpscreens = true;
+  MN_DrawHelp2();
+}
+
+void MN_DrawInfoCredits(void)
+{
+  inhelpscreens = true;
+  MN_DrawCredits();
+}
+
+void MN_DrawAd (void)
+{
+  const char* ravenlump;
+  ravenlump = (heretic && (gamemode == shareware)) ? "ORDER" : "CREDIT";
+  M_ChangeMenu(NULL, mnact_full);
+  V_DrawRawScreen(ravenlump);
+  return;
+}
+
+void MN_DrawHelp1 (void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+  V_DrawRawScreen("HELP1");
+  return;
+}
+
+void MN_DrawHelp2 (void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+  V_DrawRawScreen("HELP2");
+  return;
+}
+
+void MN_DrawCredits (void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+  V_DrawRawScreen("CREDIT");
+  return;
+}
+
+/////////////////////////////
+//
+// RavenMainMenu (Heretic and Hexen use this)
+//
+/////////////////////////////
+
+enum
+{
+  rnewgame = 0,
+  roptions,
+  rgamefiles,
+  rinfo,
+  rquitdoom,
+  rmain_end
+} rmain_e;
+
+menuitem_t RavenMainMenu[]=
+{
+  {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
+  {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
+  {1,"M_GFILES", MN_GameFiles,'g', "GAME FILES"},
+  {1,"M_INFO",MN_Info,'i', "INFO"},
+  {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
+};
+
+
+/////////////////////////////
+//
+// Raven GameFiles Menu
+//
+/////////////////////////////
+
+enum
+{
+  rloadgame,
+  rsavegame,
+  rsaveload_end
+} saveload_e;
+
+menuitem_t SaveLoadMenu[]=
+{
+  {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
+  {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
+};
+
+menu_t SaveLoadDef =
+{
+  rsaveload_end,       // number of menu items
+  &MainDef,           // previous menu screen
+  SaveLoadMenu,       // table that defines menu items
+  NULL, // drawing routine
+  97,64,          // initial cursor position
+  0               // last menu item the user was on
+};
+
+void MN_GameFiles(int choice)
+{
+  M_SetupNextMenu(&SaveLoadDef);
+}
+
+
+/////////////////////////////
+//
+// Raven MN_Init
+//
+/////////////////////////////
+
 void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 
 void MN_Init(void)
@@ -122,6 +338,20 @@ void MN_Init(void)
 
   SoundMenu[0].alttext = "SFX VOLUME";
   SoundMenu[2].alttext = "MUSIC VOLUME";
+
+  // Use exclusive Raven MainMenu.
+  MainDef.menuitems = RavenMainMenu;
+  MainDef.numitems = rmain_end;
+  SaveDef.prevMenu = &SaveLoadDef;
+  LoadDef.prevMenu = &SaveLoadDef;
+
+  // remove "ORDER" screen if not shareware
+  if (gamemode != shareware)
+  {
+    InfoDef1.routine = MN_DrawInfoHelp1;
+    InfoMenu1[0].routine = MN_Info3;
+    InfoDef2.prevMenu = &MainDef;
+  }
 }
 
 void MN_UpdateClass(int choice)
@@ -217,6 +447,12 @@ void MN_Drawer(void)
       MN_DrTextB(text, x, y);
     y += ITEM_HEIGHT;
   }
+
+  // Don't draw selector on INFO screens for Heretic / Hexen
+  if (currentMenu == &InfoDef1 || currentMenu == &InfoDef2 ||
+      currentMenu == &InfoDef3 || currentMenu == &InfoDef4 ||
+      currentMenu == &ExtHelpDef)
+    return;
 
   if (max)
   {

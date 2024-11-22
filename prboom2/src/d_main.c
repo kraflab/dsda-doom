@@ -176,7 +176,9 @@ const char *const standard_iwads[]=
   "bfgdoom.wad",
 
   "heretic.wad",
-  "hexen.wad"
+  "hexen.wad",
+
+  "heretic1.wad"
 };
 //e6y static
 const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
@@ -636,6 +638,10 @@ static void D_PageDrawer(void)
     return;
   }
 
+  // Allows use of PWAD HELP2 screen in demosequence
+  if (demosequence == 4 && pwad_help2_check)
+    pagename = "HELP2";
+
   // proff/nicolas 09/14/98 -- now stretchs bitmaps to fullscreen!
   // CPhipps - updated for new patch drawing
   // proff - added M_DrawCredits
@@ -1005,6 +1011,14 @@ void AddIWAD(const char *iwad)
 
     gamemode = commercial;
     haswolflevels = false;
+  }
+
+  if (i >= 12 && !strnicmp(iwad + i - 12, "heretic1.wad", 12))
+  {
+    if (!dsda_Flag(dsda_arg_heretic))
+      dsda_UpdateFlag(dsda_arg_heretic, true);
+
+    gamemode = shareware;
   }
 
   switch(gamemode)
@@ -1569,7 +1583,12 @@ static void EvaluateDoomVerStr(void)
 {
   if (heretic)
   {
-    doomverstr = "Heretic";
+    if (gamemode == retail)
+      doomverstr= "Heretic: Shadow of the Serpent Riders";
+    else if (gamemode == shareware)
+      doomverstr = "Heretic Shareware";
+    else
+      doomverstr = "Heretic";
   }
   else if (hexen)
   {

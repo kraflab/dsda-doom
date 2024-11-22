@@ -602,6 +602,11 @@ int W_LumpNumExists(int lump)
   return lump != LUMP_NOT_FOUND && lump < numlumps;
 }
 
+int W_PWADLumpNumExists(int lump)
+{
+  return W_LumpNumExists(lump) && (lumpinfo[lump].source == source_pwad);
+}
+
 int W_LumpNameExists(const char *name)
 {
   return W_CheckNumForName(name) != LUMP_NOT_FOUND;
@@ -610,6 +615,12 @@ int W_LumpNameExists(const char *name)
 int W_LumpNameExists2(const char *name, int ns)
 {
   return W_CheckNumForName2(name, ns) != LUMP_NOT_FOUND;
+}
+
+int W_PWADLumpNameExists(const char *name)
+{
+  int lump = W_CheckNumForName(name);
+  return (W_PWADLumpNumExists(lump));
 }
 
 void W_Shutdown(void)

@@ -115,6 +115,9 @@
 #include "dsda/split_tracker.h"
 #include "dsda/utility.h"
 
+// Allows use of HELP2 screen for PWADs under DOOM 1
+int pwad_help2_check;
+
 struct
 {
     int type;   // mobjtype_t
@@ -2731,6 +2734,12 @@ void G_ReloadDefaults(void)
   // killough 3/1/98: Initialize options based on config file
   // (allows functions above to load different values for demos
   // and savegames without messing up defaults).
+
+  // Allows PWAD HELP2 screen for DOOM 1 wads.
+  // there's no easy way to set it only to complevel 0-2, so
+  // I just allowed it for complevel 3 if HELP2 is present
+  if ((compatibility_level <= 3) && (gamemode != commercial) && (gamemode != shareware) && !raven)
+    pwad_help2_check = W_PWADLumpNameExists("HELP2");
 
   options = dsda_Options();
 
