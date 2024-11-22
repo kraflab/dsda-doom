@@ -448,6 +448,7 @@ int   *mfloorclip;   // dropoff overflow
 int   *mceilingclip; // dropoff overflow
 fixed_t spryscale;
 int64_t sprtopscreen; // R_WiggleFix
+int colheight; // Scaled software fuzz
 
 void R_DrawMaskedColumn(
   const rpatch_t *patch,
@@ -462,6 +463,8 @@ void R_DrawMaskedColumn(
   int64_t     topscreen; // R_WiggleFix
   int64_t     bottomscreen; // R_WiggleFix
   fixed_t basetexturemid = dcvars->texturemid;
+  
+  colheight = 0;
 
   dcvars->texheight = patch->height; // killough 11/98
   for (i=0; i<column->numPosts; i++) {
@@ -498,6 +501,8 @@ void R_DrawMaskedColumn(
           dcvars->drawingmasked = 1; // POPE
           colfunc (dcvars);
           dcvars->drawingmasked = 0; // POPE
+
+          colheight += dcvars->yh - dcvars->yl + 1;
         }
     }
   dcvars->texturemid = basetexturemid;
@@ -560,6 +565,7 @@ static void R_DrawVisSprite(vissprite_t *vis)
 
   if (!dcvars.colormap)   // NULL colormap = shadow draw
   {
+    R_ResetFuzzCol(colheight); // Reset fuzz column for new sprite
     colfunc = R_GetDrawColumnFunc(RDC_PIPELINE_FUZZ, RDRAW_FILTER_POINT);    // killough 3/14/98
   }
   else if (vis->color)
@@ -608,6 +614,8 @@ static void R_DrawVisSprite(vissprite_t *vis)
   for (dcvars.x=vis->x1 ; dcvars.x<=vis->x2 ; dcvars.x++, frac += vis->xiscale)
     {
       texturecolumn = frac>>FRACBITS;
+
+      if (!dcvars.colormap) R_CheckFuzzCol(dcvars.x, colheight);
 
       R_DrawMaskedColumn(
         patch,
