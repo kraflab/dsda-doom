@@ -636,6 +636,10 @@ static void D_PageDrawer(void)
     return;
   }
 
+  // Allows use of PWAD HELP2 screen in demosequence
+  if (demosequence == 4 && pwad_help2_check)
+    pagename = "HELP2";
+
   // proff/nicolas 09/14/98 -- now stretchs bitmaps to fullscreen!
   // CPhipps - updated for new patch drawing
   // proff - added M_DrawCredits

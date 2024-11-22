@@ -559,7 +559,7 @@ void M_DrawReadThis1(void)
   {
     V_DrawRawScreen("HELP2");
   }
-  else if (gamemode == shareware)
+  else if (pwad_help2_check || gamemode == shareware)
     M_DrawAd();
   else
     M_DrawCredits();
@@ -3854,7 +3854,7 @@ void M_InitExtendedHelp(void)
          * See also: https://www.doomworld.com/forum/topic/111465-boom-extended-help-screens-an-undocumented-feature/
          */
           HelpMenu[0].routine = M_ExtHelp;
-        if (gamemode == shareware) {
+        if (gamemode == shareware || pwad_help2_check) {
           ExtHelpDef.prevMenu  = &ReadDef2; /* previous menu */
           ReadMenu2[0].routine = M_ExtHelp;
         } else {
@@ -4171,7 +4171,7 @@ void M_DrawAd (void)
   M_ChangeMenu(NULL, mnact_full);
 
   V_ClearBorder();
-  if (gamemode == shareware && !raven)
+  if (pwad_help2_check || gamemode == shareware && !raven)
       V_DrawNamePatch(0, 0, 0, help2, CR_DEFAULT, VPT_STRETCH);
   else
     M_DrawCredits();
@@ -6270,7 +6270,7 @@ void M_Init(void)
 
     // If shareware or PWAD HELP2, use ad screen (w/ offset)
     // with HELP1 screen, else cut to only HELP1 screen
-    if (gamemode == shareware)
+    if (pwad_help2_check || gamemode == shareware)
       ReadDef1.y = 15;
     else
     {
