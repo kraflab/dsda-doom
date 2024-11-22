@@ -176,7 +176,9 @@ const char *const standard_iwads[]=
   "bfgdoom.wad",
 
   "heretic.wad",
-  "hexen.wad"
+  "hexen.wad",
+
+  "heretic1.wad"
 };
 //e6y static
 const int nstandard_iwads = sizeof standard_iwads/sizeof*standard_iwads;
@@ -1011,6 +1013,14 @@ void AddIWAD(const char *iwad)
     haswolflevels = false;
   }
 
+  if (i >= 12 && !strnicmp(iwad + i - 12, "heretic1.wad", 12))
+  {
+    if (!dsda_Flag(dsda_arg_heretic))
+      dsda_UpdateFlag(dsda_arg_heretic, true);
+
+    gamemode = shareware;
+  }
+
   switch(gamemode)
   {
     case retail:
@@ -1573,7 +1583,12 @@ static void EvaluateDoomVerStr(void)
 {
   if (heretic)
   {
-    doomverstr = "Heretic";
+    if (gamemode == retail)
+      doomverstr= "Heretic: Shadow of the Serpent Riders";
+    else if (gamemode == shareware)
+      doomverstr = "Heretic Shareware";
+    else
+      doomverstr = "Heretic";
   }
   else if (hexen)
   {
