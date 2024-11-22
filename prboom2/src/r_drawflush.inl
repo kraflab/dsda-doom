@@ -52,9 +52,8 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
         return;
     }
 
-    int x = temp_x;
-    int yl = tempyl[x - 1];
-    int yh = tempyh[x - 1];
+    int yl = tempyl[temp_x - 1];
+    int yh = tempyh[temp_x - 1];
 
     if (!yl)
     {
@@ -83,7 +82,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 
     ++count;
 
-    byte *dest = drawvars.topleft + startx + yl * drawvars.pitch + x;
+    byte *dest = drawvars.topleft + yl * drawvars.pitch + startx + temp_x - fuzzcellsize;
 
     int lines = fuzzcellsize - (yl % fuzzcellsize);
 
