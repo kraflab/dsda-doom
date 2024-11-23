@@ -120,9 +120,8 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew update
-          brew install --overwrite python
           env HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
-            brew install \
+            brew install --overwrite \
               cmake \
               ninja \
               pkg-config \
@@ -135,6 +134,7 @@ jobs:
               sdl2 \
               sdl2_image \
               sdl2_mixer \
+              python \
               dylibbundler
 
       - name: Configure
