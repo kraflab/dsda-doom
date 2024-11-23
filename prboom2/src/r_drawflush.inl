@@ -45,8 +45,6 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 {
    // Scaled software fuzz algorithm
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
-    dboolean cutoff = false;
-
     if ((temp_x + startx) % fuzzcellsize)
     {
         return;
@@ -63,7 +61,6 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
     if (yh == viewheight - 1)
     {
         yh = viewheight - 2;
-        cutoff = true;
     }
 
     int count = yh - yl + 1;
@@ -115,13 +112,6 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 
         lines = fuzzcellsize;
     } while (count);
-
-    if (cutoff)
-    {
-        const byte fuzz = fullcolormap
-            [6 * 256 + dest[drawvars.pitch * (fuzzoffset[fuzzpos] - FUZZOFF) / 2]];
-        memset(dest, fuzz, fuzzcellsize);
-    }
 #else
    byte *source;
    byte *dest;
