@@ -53,16 +53,6 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
     int yl = tempyl[temp_x - 1];
     int yh = tempyh[temp_x - 1];
 
-    if (!yl)
-    {
-        yl = 1;
-    }
-
-    if (yh == viewheight - 1)
-    {
-        yh = viewheight - 2;
-    }
-
     int count = yh - yl + 1;
 
     if (count < 0)
