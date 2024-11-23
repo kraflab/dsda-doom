@@ -5059,6 +5059,14 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
     return true;
   }
 
+  // Pop-up Main menu?
+  if ((!in_game && ch > -1) || ch == KEYD_ESCAPE || action == MENU_ESCAPE) // phares
+  {
+    M_StartControlPanel();
+    S_StartVoidSound(g_sfx_swtchn);
+    return true;
+  }
+
   if (dsda_InputActivated(dsda_input_console))
   {
     if (dsda_OpenConsole())
@@ -5251,14 +5259,6 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
     if (automap_active)              // jff 2/22/98
       return false;                  // HUD mode control
     M_SizeDisplay(2);
-    return true;
-  }
-
-  // Pop-up Main menu?
-  if (ch == KEYD_ESCAPE || action == MENU_ESCAPE) // phares
-  {
-    M_StartControlPanel();
-    S_StartVoidSound(g_sfx_swtchn);
     return true;
   }
 
