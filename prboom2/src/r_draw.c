@@ -107,7 +107,7 @@ static const byte   *tempfuzzmap;
 //#define FUZZOFF (SCREENWIDTH)
 #define FUZZOFF 1
 
-static const int fuzzoffset[FUZZTABLE] = {
+static const int fuzzoffset_org[FUZZTABLE] = {
   FUZZOFF,-FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
   FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
   FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,
@@ -116,6 +116,8 @@ static const int fuzzoffset[FUZZTABLE] = {
   FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,
   FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF
 };
+
+static int fuzzoffset[FUZZTABLE];
 
 static int fuzzpos = 0;
 
@@ -480,6 +482,9 @@ void R_InitBuffer(int width, int height)
 
   drawvars.topleft = screens[0].data;
   drawvars.pitch = screens[0].pitch;
+
+  for (i=0; i<FUZZTABLE; i++)
+    fuzzoffset[i] = fuzzoffset_org[i]*screens[0].pitch;
   
   if (!tallscreen)
     fuzzcellsize = (SCREENHEIGHT + 100) / 200;

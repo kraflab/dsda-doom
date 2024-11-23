@@ -97,7 +97,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
         count &= ~mask;
 
         const byte fuzz =
-            fullcolormap[6 * 256 + dest[drawvars.pitch * fuzzoffset[fuzzpos]]];
+            fullcolormap[6 * 256 + dest[fuzzoffset[fuzzpos]]];
 
         do
         {
