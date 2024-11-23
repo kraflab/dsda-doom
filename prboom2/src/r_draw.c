@@ -121,6 +121,9 @@ static int fuzzoffset[FUZZTABLE];
 
 static int fuzzpos = 0;
 
+// Fuzz cell size for scaled software fuzz
+static int fuzzcellsize;
+
 // render pipelines
 #define RDC_STANDARD      1
 #define RDC_TRANSLUCENT   2
@@ -482,6 +485,11 @@ void R_InitBuffer(int width, int height)
 
   for (i=0; i<FUZZTABLE; i++)
     fuzzoffset[i] = fuzzoffset_org[i]*screens[0].pitch;
+  
+  if (!tallscreen)
+    fuzzcellsize = (SCREENHEIGHT + 100) / 200;
+  else
+    fuzzcellsize = (SCREENWIDTH + 160) / 320;
 }
 
 //
@@ -586,4 +594,17 @@ void R_SetFuzzPos(int fp)
 int R_GetFuzzPos()
 {
   return fuzzpos;
+}
+
+void R_ResetFuzzCol(int height)
+{
+  R_ResetColumnBuffer();
+
+  fuzzpos = (fuzzpos + (height / fuzzcellsize)) % FUZZTABLE;
+}
+
+void R_CheckFuzzCol(int x, int height)
+{
+  if (!(x % fuzzcellsize))
+    R_ResetFuzzCol(height);
 }
