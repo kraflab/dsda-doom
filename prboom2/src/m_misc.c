@@ -243,6 +243,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_automap_follow),
   MIGRATED_SETTING(dsda_config_automap_grid),
   MIGRATED_SETTING(dsda_config_map_grid_size),
+  MIGRATED_SETTING(dsda_config_map_pan_speed),
   MIGRATED_SETTING(dsda_config_map_scroll_speed),
   MIGRATED_SETTING(dsda_config_map_wheel_zoom),
   MIGRATED_SETTING(dsda_config_map_use_multisamling),
