@@ -3087,6 +3087,7 @@ setup_menu_t misc_settings[] = {
   { "Skip Quit Prompt", S_YESNO, m_conf, G_X, dsda_config_skip_quit_prompt },
   { "Death Use Action", S_CHOICE, m_conf, G_X, dsda_config_death_use_action, 0, death_use_strings },
   { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
+  { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G_X, dsda_config_switch_weapon_on_pickup },
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
   { "Play SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },

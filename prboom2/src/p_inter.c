@@ -108,6 +108,8 @@ static weapontype_t GetAmmoChange[] = {
     wp_mace
 };
 
+#define autoswitch (allow_incompatibility && !deathmatch && !netgame ? dsda_IntConfig(dsda_config_switch_weapon_on_pickup) : true)
+
 //
 // P_GiveAmmo
 // Num is the number of clip loads,
@@ -134,7 +136,8 @@ static dboolean P_GiveAmmoAutoSwitch(player_t *player, ammotype_t ammo, int olda
         weaponinfo[i].ammopershot <= player->ammo[ammo]
       )
       {
-        player->pendingweapon = i;
+        if (autoswitch)
+          player->pendingweapon = i;
         break;
       }
     }
@@ -187,43 +190,47 @@ static dboolean P_GiveAmmo(player_t *player, ammotype_t ammo, int num)
     {
         if (player->weaponowned[GetAmmoChange[ammo]])
         {
-            player->pendingweapon = GetAmmoChange[ammo];
+            if (autoswitch)
+              player->pendingweapon = GetAmmoChange[ammo];
         }
     }
 
     return true;
   }
 
-  switch (ammo)
-    {
-    case am_clip:
-      if (player->readyweapon == wp_fist) {
-        if (player->weaponowned[wp_chaingun])
-          player->pendingweapon = wp_chaingun;
-        else
-          player->pendingweapon = wp_pistol;
-      }
-      break;
-
-    case am_shell:
-      if (player->readyweapon == wp_fist || player->readyweapon == wp_pistol)
-        if (player->weaponowned[wp_shotgun])
-          player->pendingweapon = wp_shotgun;
-      break;
-
-      case am_cell:
-        if (player->readyweapon == wp_fist || player->readyweapon == wp_pistol)
-          if (player->weaponowned[wp_plasma])
-            player->pendingweapon = wp_plasma;
+  if (autoswitch)
+  {
+    switch (ammo)
+      {
+      case am_clip:
+        if (player->readyweapon == wp_fist) {
+          if (player->weaponowned[wp_chaingun])
+            player->pendingweapon = wp_chaingun;
+          else
+            player->pendingweapon = wp_pistol;
+        }
         break;
 
-      case am_misl:
-        if (player->readyweapon == wp_fist)
-          if (player->weaponowned[wp_missile])
-            player->pendingweapon = wp_missile;
-    default:
-      break;
-    }
+      case am_shell:
+        if (player->readyweapon == wp_fist || player->readyweapon == wp_pistol)
+          if (player->weaponowned[wp_shotgun])
+            player->pendingweapon = wp_shotgun;
+        break;
+
+        case am_cell:
+          if (player->readyweapon == wp_fist || player->readyweapon == wp_pistol)
+            if (player->weaponowned[wp_plasma])
+              player->pendingweapon = wp_plasma;
+          break;
+
+        case am_misl:
+          if (player->readyweapon == wp_fist)
+            if (player->weaponowned[wp_missile])
+              player->pendingweapon = wp_missile;
+      default:
+        break;
+      }
+  }
   return true;
 }
 
@@ -249,8 +256,8 @@ dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
       player->weaponowned[weapon] = true;
 
       P_GiveAmmo(player, weaponinfo[weapon].ammo, deathmatch ? 5 : 2);
-
-      player->pendingweapon = weapon;
+      if (autoswitch)
+        player->pendingweapon = weapon;
       /* cph 20028/10 - for old-school DM addicts, allow old behavior
        * where only consoleplayer's pickup sounds are heard */
       // displayplayer, not consoleplayer, for viewing multiplayer demos
@@ -276,7 +283,8 @@ dboolean P_GiveWeapon(player_t *player, weapontype_t weapon, dboolean dropped)
     {
       gaveweapon = true;
       player->weaponowned[weapon] = true;
-      player->pendingweapon = weapon;
+      if (autoswitch)
+        player->pendingweapon = weapon;
     }
   return gaveweapon || gaveammo;
 }
@@ -628,7 +636,8 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
         return;
       dsda_AddPlayerMessage(s_GOTBERSERK, player);
       if (player->readyweapon != wp_fist)
-        player->pendingweapon = wp_fist;
+        if (autoswitch)
+          player->pendingweapon = wp_fist;
       sound = sfx_getpow;
       break;
 
@@ -2298,7 +2307,8 @@ dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon)
         player->bonuscount += BONUSADD;
         player->weaponowned[weapon] = true;
         P_GiveAmmo(player, wpnlev1info[weapon].ammo, GetWeaponAmmo[weapon]);
-        player->pendingweapon = weapon;
+        if (autoswitch)
+          player->pendingweapon = weapon;
         if (player == &players[consoleplayer])
         {
             S_StartVoidSound(heretic_sfx_wpnup);
@@ -2317,7 +2327,8 @@ dboolean Heretic_P_GiveWeapon(player_t * player, weapontype_t weapon)
         player->weaponowned[weapon] = true;
         if (WeaponValue[weapon] > WeaponValue[player->readyweapon])
         {                       // Only switch to more powerful weapons
-            player->pendingweapon = weapon;
+            if (autoswitch)
+              player->pendingweapon = weapon;
         }
     }
     return (gaveWeapon || gaveAmmo);
@@ -2843,7 +2854,8 @@ void TryPickupWeapon(player_t * player, pclass_t weaponClass,
         {
             P_GiveMana(player, MANA_2, 25);
         }
-        player->pendingweapon = weaponType;
+        if (autoswitch)
+          player->pendingweapon = weaponType;
         remove = false;
     }
     else
@@ -2866,7 +2878,8 @@ void TryPickupWeapon(player_t * player, pclass_t weaponClass,
             player->weaponowned[weaponType] = true;
             if (weaponType > player->readyweapon)
             {                   // Only switch to more powerful weapons
-                player->pendingweapon = weaponType;
+                if (autoswitch)
+                  player->pendingweapon = weaponType;
             }
         }
         if (!(gaveWeapon || gaveMana))
@@ -3002,7 +3015,8 @@ static void TryPickupWeaponPiece(player_t * player, pclass_t matchClass,
         {
             gaveWeapon = true;
             player->weaponowned[wp_fourth] = true;
-            player->pendingweapon = wp_fourth;
+            if (autoswitch)
+              player->pendingweapon = wp_fourth;
         }
     }
 

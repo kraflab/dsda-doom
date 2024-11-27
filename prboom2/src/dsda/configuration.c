@@ -996,6 +996,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_switch_when_ammo_runs_out", dsda_config_switch_when_ammo_runs_out,
     CONF_BOOL(1)
   },
+  [dsda_config_switch_weapon_on_pickup] = {
+    "dsda_switch_weapon_on_pickup", dsda_config_switch_weapon_on_pickup,
+    CONF_BOOL(1), NULL, STRICT_INT(1)
+  },
   [dsda_config_viewbob] = {
     "dsda_viewbob", dsda_config_viewbob,
     CONF_BOOL(1)
