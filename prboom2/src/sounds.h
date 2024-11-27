@@ -40,6 +40,7 @@
 typedef enum {
   sfx_class_none,
   sfx_class_important,
+  sfx_class_secret,
 } sfx_class_t;
 
 typedef struct {
