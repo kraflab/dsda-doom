@@ -1275,13 +1275,7 @@ void I_UpdateVideoMode(void)
       init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
   }
 
-  // In windowed mode, the window can be resized while the game is
-  // running.  This feature is disabled on OS X, as it adds an ugly
-  // scroll handle to the corner of the screen.
-#ifndef __APPLE__
-  if (!desired_fullscreen)
     init_flags |= SDL_WINDOW_RESIZABLE;
-#endif
 
   if (V_IsOpenGLMode())
   {
