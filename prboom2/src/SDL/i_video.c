@@ -1267,6 +1267,16 @@ void I_UpdateVideoMode(void)
     init_flags |= SDL_WINDOW_OPENGL;
   }
 
+  // [FG] aspect ratio correction for the canonical video modes
+  if (SCREENHEIGHT == 200 || SCREENHEIGHT == 400)
+  {
+    actualheight = 6*SCREENHEIGHT/5;
+  }
+  else
+  {
+    actualheight = SCREENHEIGHT;
+  }
+
   if (desired_fullscreen)
   {
     if (exclusive_fullscreen)
@@ -1274,8 +1284,16 @@ void I_UpdateVideoMode(void)
     else
       init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
   }
-
+  else
+  {
     init_flags |= SDL_WINDOW_RESIZABLE;
+
+    // [FG] make sure initial window size is always >= 640x480
+    while (screen_multiply*SCREENWIDTH < 640 || screen_multiply*actualheight < 480)
+    {
+      screen_multiply++;
+    }
+  }
 
   if (V_IsOpenGLMode())
   {
@@ -1299,10 +1317,10 @@ void I_UpdateVideoMode(void)
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      SCREENWIDTH * screen_multiply, SCREENHEIGHT * screen_multiply,
+      SCREENWIDTH * screen_multiply, actualheight * screen_multiply,
       init_flags);
     sdl_glcontext = SDL_GL_CreateContext(sdl_window);
-    SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, SCREENHEIGHT);
+    SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, actualheight);
   }
   else
   {
@@ -1314,34 +1332,12 @@ void I_UpdateVideoMode(void)
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      SCREENWIDTH, SCREENHEIGHT,
+      SCREENWIDTH * screen_multiply, actualheight * screen_multiply,
       init_flags);
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, flags);
 
-    // [FG] aspect ratio correction for the canonical video modes
-    if (SCREENHEIGHT == 200 || SCREENHEIGHT == 400)
-    {
-      actualheight = 6*SCREENHEIGHT/5;
-    }
-    else
-    {
-      actualheight = SCREENHEIGHT;
-    }
-
     SDL_SetWindowMinimumSize(sdl_window, SCREENWIDTH, actualheight);
     SDL_RenderSetLogicalSize(sdl_renderer, SCREENWIDTH, actualheight);
-
-    // [FG] make sure initial window size is always >= 640x480
-    while (screen_multiply*SCREENWIDTH < 640 || screen_multiply*actualheight < 480)
-    {
-      screen_multiply++;
-    }
-
-    // [FG] apply screen_multiply to initial window size
-    if (!desired_fullscreen)
-    {
-      SDL_SetWindowSize(sdl_window, screen_multiply*SCREENWIDTH, screen_multiply*actualheight);
-    }
 
     // [FG] force integer scales
     SDL_RenderSetIntegerScale(sdl_renderer, integer_scaling);
@@ -1549,6 +1545,11 @@ static dboolean MouseShouldBeGrabbed()
   // if the window doesnt have focus, never grab it
   if (!window_focused)
     return false;
+
+  // always grab the mouse when full screen (dont want to
+  // see the mouse pointer)
+  if (desired_fullscreen)
+    return true;
 
   // if we specify not to grab the mouse, never grab
   if (!mouse_enabled)
