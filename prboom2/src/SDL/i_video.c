@@ -292,12 +292,16 @@ int I_SDLtoDoomMouseState(Uint32 buttonstate)
       ;
 }
 
+static event_t delay_event;
+
 static void I_GetEvent(void)
 {
   event_t event;
 
   SDL_Event SDLEvent;
   SDL_Event *Event = &SDLEvent;
+
+  I_DelayEvent();
 
   while (SDL_PollEvent(Event))
   {
@@ -361,26 +365,33 @@ static void I_GetEvent(void)
       case SDL_MOUSEWHEEL:
         if (mouse_enabled && window_focused)
         {
+          int button = -1;
+
           if (Event->wheel.y > 0)
           {
-            event.data1.i = KEYD_MWHEELUP;
-
-            event.type = ev_keydown;
-            D_PostEvent(&event);
-
-            event.type = ev_keyup;
-            D_PostEvent(&event);
+            button = KEYD_MWHEELUP;
           }
           else if (Event->wheel.y < 0)
           {
-            event.data1.i = KEYD_MWHEELDOWN;
-
-            event.type = ev_keydown;
-            D_PostEvent(&event);
-
-            event.type = ev_keyup;
-            D_PostEvent(&event);
+            button = KEYD_MWHEELDOWN;
           }
+          else if (Event->wheel.x < 0)
+          {
+            button = KEYD_MWHEELLEFT;
+          }
+          else if (Event->wheel.x > 0)
+          {
+            button = KEYD_MWHEELRIGHT;
+          }
+
+          // post a button down event
+          event.data1.i = button;
+          event.type = ev_mouseb_down;
+          D_PostEvent(&event);
+
+          // hold button for one tic, required for checks in G_BuildTiccmd
+          delay_event.data1.i = button;
+          delay_event.type = ev_mouseb_up;
         }
         break;
 
@@ -419,6 +430,16 @@ static void I_GetEvent(void)
       default:
         break;
     }
+  }
+}
+
+// Pulled from Woof
+void I_DelayEvent(void)
+{
+  if (delay_event.data1.i)
+  {
+    D_PostEvent(&delay_event);
+    delay_event.data1.i = 0;
   }
 }
 

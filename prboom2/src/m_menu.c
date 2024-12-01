@@ -3993,6 +3993,8 @@ int M_GetKeyString(int c,int offset)
       case KEYD_PAUSE:      s = "PAUS"; break;
       case KEYD_MWHEELDOWN: s = "MWDN"; break;
       case KEYD_MWHEELUP:   s = "MWUP"; break;
+      case KEYD_MWHEELLEFT: s = "MWLT"; break;
+      case KEYD_MWHEELRIGHT: s = "MWRT"; break;
       case KEYD_PRINTSC:    s = "PRSC"; break;
       case 0:               s = "NONE"; break;
       default:              s = "JUNK"; break;
@@ -5622,14 +5624,14 @@ int M_EventToCharacter(event_t* ev)
       }
     }
   }
-  else if (ev->type == ev_keydown)
+  else if (ev->type == ev_keydown || ev->type == ev_mouseb_down)
   {
     if (ev->data1.i == KEYD_RSHIFT) // phares 4/11/98
       shiftdown = true;
 
     return ev->data1.i;
   }
-  else if (ev->type == ev_keyup)
+  else if (ev->type == ev_keyup || ev->type == ev_mouseb_up)
   {
     if (ev->data1.i == KEYD_RSHIFT) // phares 4/11/98
       shiftdown = false;

@@ -90,6 +90,12 @@ void dsda_InputTrackEvent(event_t* ev) {
     case ev_keyup:
       dsda_InputTrackKeyUp(ev);
       break;
+    case ev_mouseb_down:
+      dsda_InputTrackKeyDown(ev);
+      break;
+    case ev_mouseb_up:
+      dsda_InputTrackKeyUp(ev);
+      break;
     case ev_mouse:
       dsda_InputTrackButtons(mousebuttons, MAX_MOUSE_BUTTONS, ev);
       break;
@@ -140,6 +146,12 @@ void dsda_InputTrackGameEvent(event_t* ev) {
       dsda_InputTrackGameKeyDown(ev);
       break;
     case ev_keyup:
+      dsda_InputTrackGameKeyUp(ev);
+      break;
+    case ev_mouseb_down:
+      dsda_InputTrackGameKeyDown(ev);
+      break;
+    case ev_mouseb_up:
       dsda_InputTrackGameKeyUp(ev);
       break;
     case ev_mouse:

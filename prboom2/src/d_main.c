@@ -209,7 +209,7 @@ void D_PostEvent(event_t *ev)
       // use key is used for seeing the current frame
       if (
         !dsda_InputActivated(dsda_input_use) && !dsda_InputActivated(dsda_input_demo_skip) &&
-        (ev->type == ev_keydown || ev->type == ev_keyup) // is this condition important?
+        (ev->type == ev_keydown || ev->type == ev_keyup || ev->type == ev_mouseb_down || ev->type == ev_mouseb_up) // is this condition important?
       )
       {
         return;

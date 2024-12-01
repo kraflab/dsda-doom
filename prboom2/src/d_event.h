@@ -48,6 +48,8 @@ typedef enum
 {
   ev_keydown,
   ev_keyup,
+  ev_mouseb_down,
+  ev_mouseb_up,
   ev_mouse,
   ev_mousemotion,
   ev_joystick,

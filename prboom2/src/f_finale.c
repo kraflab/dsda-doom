@@ -617,7 +617,7 @@ void F_CastTicker (void)
 
 dboolean F_CastResponder (event_t* ev)
 {
-  if (ev->type != ev_keydown)
+  if (ev->type != ev_keydown && ev->type != ev_mouseb_down)
     return false;
 
   if (castdeath)
