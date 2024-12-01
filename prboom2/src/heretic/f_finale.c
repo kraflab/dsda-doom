@@ -90,7 +90,7 @@ dboolean F_BlockingInput(void)
 
 dboolean Heretic_F_Responder(event_t * event)
 {
-  if (event->type != ev_keydown && event->type != ev_mouseb_down)
+  if (event->type != ev_keydown)
   {
     return false;
   }

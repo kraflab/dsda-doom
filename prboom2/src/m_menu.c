@@ -5624,14 +5624,14 @@ int M_EventToCharacter(event_t* ev)
       }
     }
   }
-  else if (ev->type == ev_keydown || ev->type == ev_mouseb_down)
+  else if (ev->type == ev_keydown)
   {
     if (ev->data1.i == KEYD_RSHIFT) // phares 4/11/98
       shiftdown = true;
 
     return ev->data1.i;
   }
-  else if (ev->type == ev_keyup || ev->type == ev_mouseb_up)
+  else if (ev->type == ev_keyup)
   {
     if (ev->data1.i == KEYD_RSHIFT) // phares 4/11/98
       shiftdown = false;
