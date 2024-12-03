@@ -236,6 +236,7 @@ typedef enum {
   dsda_config_automap_follow,
   dsda_config_automap_grid,
   dsda_config_map_grid_size,
+  dsda_config_map_pan_speed,
   dsda_config_map_scroll_speed,
   dsda_config_map_wheel_zoom,
   dsda_config_map_use_multisamling,
