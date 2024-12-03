@@ -1556,6 +1556,11 @@ static dboolean MouseShouldBeGrabbed()
   if (!window_focused)
     return false;
 
+  // always grab the mouse when full screen (dont want to
+  // see the mouse pointer)
+  if (desired_fullscreen)
+    return true;
+
   // if we specify not to grab the mouse, never grab
   if (!mouse_enabled)
     return false;
@@ -1570,8 +1575,7 @@ static dboolean MouseShouldBeGrabbed()
     return false;
 
   // only grab mouse when playing levels (but not demos)
-  return (gamestate == GS_LEVEL || gamestate == GS_INTERMISSION)
-          && !demoplayback && !advancedemo;
+  return !demoplayback;
 }
 
 // Update the value of window_focused when we get a focus event
