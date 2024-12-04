@@ -19,13 +19,19 @@ jobs:
           - name: "MSVC x64"
             os: windows-latest
             build_type: "Release"
-            vcpkg_triplet: x64-windows
+            vcpkg: true
             shell: pwsh
+            package_name: "msvc_x64"
+            release: true
+            artifact-path: build/*.zip
             extra_options: >-
               -A x64
               -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_INSTALLATION_ROOT}\scripts\buildsystems\vcpkg.cmake"
-              -DVCPKG_TARGET_TRIPLET=x64-windows
-              
+              -DVCPKG_TARGET_TRIPLET=x64-windows-static-release
+              -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+              -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
+              -DCMAKE_IGNORE_PATH="C:/Strawberry/perl/bin;C:/Strawberry/c/lib"
+
           - name: "MSYS2 UCRT64"
             os: windows-latest
             build_type: "Release"
@@ -40,27 +46,28 @@ jobs:
             os: ubuntu-latest
             build_type: "Release"
             extra_options: "-G Ninja -DCMAKE_INSTALL_PREFIX=/usr"
+            release: true
             package_name: "linux_gcc"
             shell: bash
             artifact-path: build/*.appimage
-            
+
           - name: "macOS arm64 Clang"
             os: macos-latest
             build_type: "Release"
             extra_options: "-G Ninja"
+            release: true
             package_name: "mac_arm64"
             shell: bash
             artifact-path: build/*.zip
-            
-            
+
           - name: "macOS x64 Clang"
             os: macos-13
             build_type: "Release"
             extra_options: "-G Ninja"
+            release: true
             package_name: "mac_x64"
             shell: bash
             artifact-path: build/*.zip
-            
 
     steps:
       - uses: actions/checkout@v4
@@ -86,7 +93,7 @@ jobs:
             ${{ matrix.config.msys-env }}-libzip
 
       - name: Export GitHub Actions cache environment variables
-        if: ${{ matrix.config.vcpkg_triplet }}
+        if: ${{ matrix.config.vcpkg }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -161,7 +168,7 @@ jobs:
           path: ${{ matrix.config.artifact-path }}
 
       - name: Release
-        if: ${{ contains(github.ref, 'tags') && matrix.config.package_name }}
+        if: ${{ contains(github.ref, 'tags') && matrix.config.release }}
         uses: ncipollo/release-action@v1
         with:
           name: ${{ github.ref_name }}
