@@ -220,6 +220,7 @@ typedef enum {
   dsda_config_parallel_sfx_window,
   dsda_config_movement_toggle_sfx,
   dsda_config_switch_when_ammo_runs_out,
+  dsda_config_switch_weapon_on_pickup,
   dsda_config_viewbob,
   dsda_config_weaponbob,
   dsda_config_quake_intensity,
