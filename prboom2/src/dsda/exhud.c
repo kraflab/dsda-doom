@@ -659,7 +659,7 @@ static void dsda_UpdateComponents(exhud_component_t* update_components) {
 }
 
 void dsda_UpdateExHud(void) {
-  if (automap_on) {
+  if (automap_stbar) {
     if (containers[hud_map].loaded)
       dsda_UpdateComponents(containers[hud_map].components);
 
@@ -689,7 +689,7 @@ int global_patch_top_offset;
 void dsda_DrawExHud(void) {
   global_patch_top_offset = M_ConsoleOpen() ? dsda_ConsoleHeight() : 0;
 
-  if (automap_on) {
+  if (automap_stbar) {
     if (containers[hud_map].loaded)
       dsda_DrawComponents(containers[hud_map].components);
   }
