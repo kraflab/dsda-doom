@@ -282,7 +282,7 @@ void gld_MapDrawSubsectors(player_t *plr, int fx, int fy, fixed_t mx, fixed_t my
   float coord_scale;
   GLTexture *gltexture;
 
-  alpha = (float)(automap_overlay ? map_textured_overlay_trans : map_textured_trans) / 100.0f;
+  alpha = (float)((automap_overlay > 0) ? map_textured_overlay_trans : map_textured_trans) / 100.0f;
   if (alpha == 0)
     return;
 
@@ -714,7 +714,7 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   unsigned char a;
   map_line_t *line;
 
-  a = (automap_overlay ? map_lines_overlay_trans * 255 / 100 : 255);
+  a = ((automap_overlay == 1) ? map_lines_overlay_trans * 255 / 100 : 255);
   if (a == 0)
     return;
 
