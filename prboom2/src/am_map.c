@@ -1005,6 +1005,18 @@ dboolean AM_Responder
 {
   static int bigstate=0;
 
+  if (dsda_InputActivated(dsda_input_map_overlay) && (automap_input || dsda_ShowMinimap()))
+  {
+    dsda_CycleConfig(dsda_config_automap_overlay, true);
+    dsda_AddMessage(automap_overlay == 0 ? s_AMSTR_OVERLAYOFF :
+                    automap_overlay == 1 ? s_AMSTR_OVERLAYON :
+                    "Overlay Mode Dark");
+    AM_SetPosition();
+    AM_activateNewScale();
+
+    return true;
+  }
+
   if (!automap_input)
   {
     if (dsda_InputActivated(dsda_input_map))
@@ -1143,17 +1155,6 @@ dboolean AM_Responder
   {
     dsda_ToggleConfig(dsda_config_automap_rotate, true);
     dsda_AddMessage(automap_rotate ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF);
-
-    return true;
-  }
-  else if (dsda_InputActivated(dsda_input_map_overlay))
-  {
-    dsda_CycleConfig(dsda_config_automap_overlay, true);
-    dsda_AddMessage(automap_overlay == 0 ? s_AMSTR_OVERLAYOFF :
-                    automap_overlay == 1 ? s_AMSTR_OVERLAYON :
-                    "Overlay Mode Dark");
-    AM_SetPosition();
-    AM_activateNewScale();
 
     return true;
   }
