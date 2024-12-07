@@ -18,6 +18,7 @@
 
 #include "doomstat.h"
 #include "m_cheat.h"
+#include "m_menu.h"
 #include "m_random.h"
 #include "v_video.h"
 #include "r_main.h"
@@ -537,7 +538,7 @@ static int oldpieces = -1;
 
 void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
 {
-    if (refresh || fullmenu || V_IsOpenGLMode()) SB_state = -1;
+    if (refresh || fullmenu || fadeBG() || V_IsOpenGLMode()) SB_state = -1;
 
     if (!statusbaron)
     {

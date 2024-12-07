@@ -160,6 +160,25 @@
 
 extern dboolean  message_dontfuckwithme;
 
+/////////////////////////////
+//
+// booleans for setup screens
+// these tell you what state the setup screens are in, and whether any of
+// the overlay screens (automap colors, reset button message) should be
+// displayed
+
+dboolean setup_active      = false; // in one of the setup screens
+dboolean set_keybnd_active = false; // in key binding setup screens
+dboolean set_weapon_active = false; // in weapons setup screen
+dboolean set_status_active = false; // in status bar/hud setup screen
+dboolean set_auto_active   = false; // in automap setup screen
+dboolean setup_select      = false; // changing an item
+dboolean setup_gather      = false; // gathering keys for value
+dboolean colorbox_active   = false; // color palette being shown
+dboolean set_general_active = false;
+dboolean level_table_active = false;
+
+
 extern const char* g_menu_flat;
 extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
@@ -188,7 +207,7 @@ void (*messageRoutine)(int response);
 
 static void M_DrawBackground(const char *flat, int scrn)
 {
-  if (dsda_IntConfig(dsda_config_menu_background))
+  if (dsda_IntConfig(dsda_config_menu_background) == 2)
     V_DrawBackground(flat, scrn);
 }
 
@@ -1250,6 +1269,8 @@ static void M_QuitResponse(dboolean affirmative)
 void M_QuitDOOM(int choice)
 {
   static char endstring[160];
+  setup_active = false;
+  currentMenu = NULL;
 
   // We pick index 0 which is language sensitive,
   // or one at random, between 1 and maximum number.
@@ -1507,24 +1528,6 @@ void M_SizeDisplay(int choice)
 //
 // killough 10/98: added Compatibility and General menus
 //
-
-/////////////////////////////
-//
-// booleans for setup screens
-// these tell you what state the setup screens are in, and whether any of
-// the overlay screens (automap colors, reset button message) should be
-// displayed
-
-dboolean setup_active      = false; // in one of the setup screens
-dboolean set_keybnd_active = false; // in key binding setup screens
-dboolean set_weapon_active = false; // in weapons setup screen
-dboolean set_status_active = false; // in status bar/hud setup screen
-dboolean set_auto_active   = false; // in automap setup screen
-dboolean setup_select      = false; // changing an item
-dboolean setup_gather      = false; // gathering keys for value
-dboolean colorbox_active   = false; // color palette being shown
-dboolean set_general_active = false;
-dboolean level_table_active = false;
 
 /////////////////////////////
 //
@@ -3096,6 +3099,8 @@ setup_menu_t misc_settings[] = {
   FINAL_ENTRY
 };
 
+static const char* menu_background_list[] = { "Off", "Dark", "Texture", NULL };
+
 setup_menu_t display_settings[] = {
   { "Display Options", S_SKIP | S_TITLE, m_null, G_X},
   { "Use Extended Hud", S_YESNO, m_conf, G_X, dsda_config_exhud },
@@ -3115,7 +3120,7 @@ setup_menu_t display_settings[] = {
   { "Change Palette On Powers", S_YESNO, m_conf, G_X, dsda_config_palette_onpowers },
   EMPTY_LINE,
   { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, dsda_config_render_stretch_hud, 0, render_stretch_list },
-  { "Fullscreen Menu Background", S_YESNO, m_conf, G_X, dsda_config_menu_background },
+  { "Fullscreen Menu Background", S_CHOICE, m_conf, G_X, dsda_config_menu_background, 0, menu_background_list },
 
   PREV_PAGE(misc_settings),
   NEXT_PAGE(mapping_settings),
@@ -5823,6 +5828,29 @@ void M_StartControlPanel (void)
   itemOn = currentMenu->lastOn;   // JDC
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu Shaded Overlay Stuff
+//
+// This displays a dark overlay under certain screens of the menus
+
+dboolean fadeBG(void)
+{
+  return dsda_IntConfig(dsda_config_menu_background) == 1;
+}
+
+dboolean M_MenuIsShaded(void)
+{
+  int Options = (setup_active || currentMenu == &OptionsDef || currentMenu == &SoundDef);
+  return fadeBG() && Options;
+}
+
+static void M_ShadedScreen(int scrn)
+{
+  V_DrawShaded(scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, FULLSHADE);
+}
+
 //
 // M_Drawer
 // Called after the view has been rendered,
@@ -5834,6 +5862,9 @@ void M_StartControlPanel (void)
 void M_Drawer (void)
 {
   V_BeginUIDraw();
+
+  if (M_MenuIsShaded())
+    M_ShadedScreen(0);
 
   inhelpscreens = false;
 

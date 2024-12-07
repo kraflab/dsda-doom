@@ -44,6 +44,7 @@
 #include "r_main.h"
 #include "am_map.h"
 #include "m_cheat.h"
+#include "m_menu.h"
 #include "s_sound.h"
 #include "sounds.h"
 #include "dstrings.h"
@@ -893,7 +894,7 @@ void ST_Refresh(void)
 void ST_Drawer(dboolean refresh)
 {
   dboolean statusbaron = R_StatusBarVisible();
-  dboolean fullmenu = (menuactive == mnact_full);
+  dboolean fullmenu = (menuactive == mnact_full) && !M_MenuIsShaded();
 
   V_BeginUIDraw();
 
@@ -913,7 +914,7 @@ void ST_Drawer(dboolean refresh)
   ST_doPaletteStuff();  // Do red-/gold-shifts from damage/items
 
   if (statusbaron) {
-    if (st_firsttime || (V_IsOpenGLMode()))
+    if (st_firsttime || (V_IsOpenGLMode() || fadeBG()))
     {
       /* If just after ST_Start(), refresh all */
       st_firsttime = false;
