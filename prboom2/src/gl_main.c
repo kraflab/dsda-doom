@@ -848,6 +848,31 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
   glsl_PopNullShader();
 }
 
+void gld_DrawShaded(int x, int y, int width, int height, int shade)
+{
+  color_rgb_t color = gld_LookupIndexedColor(playpal_black, V_IsAutomapLightmodeIndexed());
+
+  glsl_PushNullShader();
+
+  gld_EnableTexture2D(GL_TEXTURE0_ARB, false);
+
+  glColor4f((float)color.r/255.0f,
+            (float)color.g/255.0f,
+            (float)color.b/255.0f,
+            (float)shade/30);
+
+  glBegin(GL_TRIANGLE_STRIP);
+    glVertex2i( x, y );
+    glVertex2i( x, y+height );
+    glVertex2i( x+width, y );
+    glVertex2i( x+width, y+height );
+  glEnd();
+  glColor4f(1.0f,1.0f,1.0f,1.0f);
+  gld_EnableTexture2D(GL_TEXTURE0_ARB, true);
+
+  glsl_PopNullShader();
+}
+
 void gld_SetPalette(int palette)
 {
   static int last_palette = 0;

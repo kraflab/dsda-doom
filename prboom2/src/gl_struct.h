@@ -92,6 +92,7 @@ void gld_DrawLine(int x0, int y0, int x1, int y1, int BaseColor);
 void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor);
 void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel);
 void gld_FillBlock(int x, int y, int width, int height, int col);
+void gld_DrawShaded(int x, int y, int width, int height, int shade);
 void gld_SetPalette(int palette);
 unsigned char *gld_ReadScreen(void);
 
