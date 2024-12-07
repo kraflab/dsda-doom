@@ -615,6 +615,34 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   }
 }
 
+
+//
+// FUNC_V_DrawShaded
+//
+// Adapted from Woof.
+//
+// This uses a dark colormap to create
+// a dark faded background under menus.
+//
+static void FUNC_V_DrawShaded(int scrn, int x, int y, int width, int height, int shade)
+{
+  extern const lighttable_t **colormaps;
+  byte* dest;
+  int ix, iy;
+
+  for (iy = y; iy < y + height; ++iy)
+  {
+    dest = screens[scrn].data + screens[scrn].pitch * iy + x;
+
+    for (ix = x; ix < x + width; ++ix)
+    {
+      *dest = colormaps[scrn][shade * 256 + dest[scrn]];
+      dest++;
+    }
+  }
+}
+
+
 // CPhipps - some simple, useful wrappers for that function, for drawing patches from wads
 
 // CPhipps - GNU C only suppresses generating a copy of a function if it is
@@ -742,6 +770,10 @@ static void WRAP_gld_DrawLine(fline_t* fl, int color)
 {
   gld_DrawLine_f(fl->a.fx, fl->a.fy, fl->b.fx, fl->b.fy, color);
 }
+static void WRAP_gld_DrawShaded(int scrn, int x, int y, int width, int height, int shade)
+{
+  gld_DrawShaded(x, y, width, height, shade);
+}
 
 static void NULL_BeginUIDraw(void) {}
 static void NULL_EndUIDraw(void) {}
@@ -758,6 +790,7 @@ static void NULL_PlotPixel(int scrn, int x, int y, byte color) {}
 static void NULL_PlotPixelWu(int scrn, int x, int y, byte color, int weight) {}
 static void NULL_DrawLine(fline_t* fl, int color) {}
 static void NULL_DrawLineWu(fline_t* fl, int color) {}
+static void NULL_DrawShaded(int scrn, int x, int y, int width, int height, int shade) {}
 
 static video_mode_t current_videomode = VID_MODESW;
 
@@ -776,6 +809,7 @@ V_PlotPixel_f V_PlotPixel = NULL_PlotPixel;
 V_PlotPixelWu_f V_PlotPixelWu = NULL_PlotPixelWu;
 V_DrawLine_f V_DrawLine = NULL_DrawLine;
 V_DrawLineWu_f V_DrawLineWu = NULL_DrawLineWu;
+V_DrawShaded_f V_DrawShaded = NULL_DrawShaded;
 
 //
 // V_InitMode
@@ -799,6 +833,7 @@ void V_InitMode(video_mode_t mode) {
       V_PlotPixelWu = V_PlotPixelWu8;
       V_DrawLine = WRAP_V_DrawLine;
       V_DrawLineWu = WRAP_V_DrawLineWu;
+      V_DrawShaded = FUNC_V_DrawShaded;
       current_videomode = VID_MODESW;
       break;
     case VID_MODEGL:
@@ -818,6 +853,7 @@ void V_InitMode(video_mode_t mode) {
       V_PlotPixelWu = V_PlotPixelWuGL;
       V_DrawLine = WRAP_gld_DrawLine;
       V_DrawLineWu = WRAP_gld_DrawLine;
+      V_DrawShaded = WRAP_gld_DrawShaded;
       current_videomode = VID_MODEGL;
       break;
   }

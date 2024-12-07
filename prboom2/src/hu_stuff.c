@@ -47,6 +47,7 @@
 #include "p_tick.h"
 #include "p_map.h"
 #include "sc_man.h"
+#include "m_menu.h"
 #include "m_misc.h"
 #include "r_main.h"
 #include "lprintf.h"
@@ -364,7 +365,7 @@ void HU_Start(void)
 void HU_Drawer(void)
 {
   // don't draw anything if there's a fullscreen menu up
-  if (menuactive == mnact_full)
+  if (menuactive == mnact_full && !M_MenuIsShaded())
     return;
 
   V_BeginUIDraw();

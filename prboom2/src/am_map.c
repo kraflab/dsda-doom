@@ -57,6 +57,7 @@
 #include "m_misc.h"
 #include "m_bbox.h"
 #include "d_main.h"
+#include "m_menu.h"
 
 #include "dsda/id_list.h"
 #include "dsda/input.h"
@@ -619,7 +620,7 @@ void AM_SetPosition(void)
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
 
-    if (automap_overlay)
+    if (automap_overlay > 0)
     {
       f_h = viewheight;
     }
@@ -1008,6 +1009,18 @@ dboolean AM_Responder
 {
   static int bigstate=0;
 
+  if (dsda_InputActivated(dsda_input_map_overlay) && (automap_input || dsda_ShowMinimap()))
+  {
+    dsda_CycleConfig(dsda_config_automap_overlay, true);
+    dsda_AddMessage(automap_overlay == 0 ? s_AMSTR_OVERLAYOFF :
+                    automap_overlay == 1 ? s_AMSTR_OVERLAYON :
+                    "Overlay Mode Dark");
+    AM_SetPosition();
+    AM_activateNewScale();
+
+    return true;
+  }
+
   if (!automap_input)
   {
     if (dsda_InputActivated(dsda_input_map))
@@ -1146,14 +1159,6 @@ dboolean AM_Responder
   {
     dsda_ToggleConfig(dsda_config_automap_rotate, true);
     dsda_AddMessage(automap_rotate ? s_AMSTR_ROTATEON : s_AMSTR_ROTATEOFF);
-
-    return true;
-  }
-  else if (dsda_InputActivated(dsda_input_map_overlay))
-  {
-    dsda_ToggleConfig(dsda_config_automap_overlay, true);
-    AM_SetPosition();
-    AM_activateNewScale();
 
     return true;
   }
@@ -2773,6 +2778,9 @@ void AM_Drawer (dboolean minimap)
   if (!automap_active && !minimap)
     return;
 
+  if (automap_active && automap_overlay == 2 && minimap)
+    return;
+
   V_BeginAutomapDraw();
 
   if (automap_follow)
@@ -2796,6 +2804,8 @@ void AM_Drawer (dboolean minimap)
 
   if (!automap_overlay) // cph - If not overlay mode, clear background for the automap
     V_FillRect(FB, f_x, f_y, f_w, f_h, (byte)mapcolor_p->back); //jff 1/5/98 background default color
+  if (automap_overlay == 2 && !M_MenuIsShaded())
+    V_DrawShaded(FB, f_x, f_y, f_w, f_h, FULLSHADE);
 
   if (map_textured)
   {

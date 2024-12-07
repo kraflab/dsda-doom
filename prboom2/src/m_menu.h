@@ -49,6 +49,10 @@
 
 dboolean M_Responder (event_t *ev);
 
+dboolean fadeBG(void);
+dboolean M_MenuIsShaded(void);
+#define FULLSHADE 20
+
 // Called by main loop,
 // only used for menu (skull cursor) animation.
 

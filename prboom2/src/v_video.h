@@ -223,6 +223,9 @@ extern V_FillPatch_f V_FillPatch;
 typedef void (*V_DrawBackground_f)(const char* flatname, int scrn);
 extern V_DrawBackground_f V_DrawBackground;
 
+typedef void (*V_DrawShaded_f)(int scrn, int x, int y, int width, int height, int shade);
+extern V_DrawShaded_f V_DrawShaded;
+
 // CPhipps - function to set the palette to palette number pal.
 void V_TouchPalette(void);
 void V_SetPalette(int pal);
