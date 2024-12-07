@@ -291,12 +291,12 @@ int dsda_HexenMusicIndexToLumpNum(int* lump, int music_index) {
   return true;
 }
 
-int dsda_HexenMapMusic(int* music_index, int* music_lump) {
+int dsda_HexenMapMusic(int* music_index, int* music_lump, int episode, int map) {
   if (!hexen)
     return false;
 
   *music_lump = -1;
-  *music_index = gamemap;
+  *music_index = map;
 
   return true;
 }
