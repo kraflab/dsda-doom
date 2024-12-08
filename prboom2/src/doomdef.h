@@ -396,6 +396,8 @@ typedef enum {
 #define KEYD_MOUSE3     (0x80 + 0x62)
 #define KEYD_MWHEELUP   (0x80 + 0x6b)
 #define KEYD_MWHEELDOWN (0x80 + 0x6c)
+#define KEYD_MWHEELLEFT (0X80 + 0X6d)
+#define KEYD_MWHEELRIGHT (0X80 + 0X6e)
 
 // phares 3/20/98:
 //
