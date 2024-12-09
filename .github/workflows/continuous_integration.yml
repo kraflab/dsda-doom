@@ -129,6 +129,7 @@ jobs:
           brew update
           env HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
             brew install --overwrite \
+              python \
               cmake \
               ninja \
               pkg-config \
@@ -141,7 +142,6 @@ jobs:
               sdl2 \
               sdl2_image \
               sdl2_mixer \
-              python \
               dylibbundler
 
       - name: Configure
