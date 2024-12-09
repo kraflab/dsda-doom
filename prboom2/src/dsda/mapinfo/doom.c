@@ -278,13 +278,22 @@ int dsda_DoomMusicIndexToLumpNum(int* lump, int music_index) {
   return false;
 }
 
-int dsda_DoomMapMusic(int* music_index, int* music_lump) {
+int dsda_DoomMapMusic(int* music_index, int* music_lump, int episode, int map) {
   int lump;
+  const doom_mapinfo_map_t* entry;
+  int level_num;
 
-  if (!current_map || !current_map->music)
+  if (gamemode == commercial)
+    level_num = map;
+  else
+    level_num = map + episode * 10;
+
+  entry = dsda_DoomMapEntry(level_num);
+
+  if (!entry || !entry->music)
     return false;
 
-  lump = W_CheckNumForName(current_map->music);
+  lump = W_CheckNumForName(entry->music);
 
   if (lump == LUMP_NOT_FOUND)
     return false;

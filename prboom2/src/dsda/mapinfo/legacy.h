@@ -37,7 +37,7 @@ void dsda_LegacyUpdateNextMapInfo(void);
 int dsda_LegacyResolveCLEV(int* clev, int* episode, int* map);
 int dsda_LegacyResolveINIT(int* init);
 int dsda_LegacyMusicIndexToLumpNum(int* lump, int music_index);
-int dsda_LegacyMapMusic(int* music_index, int* music_lump);
+int dsda_LegacyMapMusic(int* music_index, int* music_lump, int episode, int map);
 int dsda_LegacyIntermissionMusic(int* music_index, int* music_lump);
 int dsda_LegacyInterMusic(int* music_index, int* music_lump);
 int dsda_LegacyStartFinale(void);
