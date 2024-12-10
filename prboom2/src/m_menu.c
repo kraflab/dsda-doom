@@ -5309,9 +5309,9 @@ typedef enum {
 
 static confirmation_t M_EventToConfirmation(int ch, int action, event_t* ev)
 {
-  if (ch == 'y' || (!ch && action == MENU_ENTER))
+  if (ch == 'y' || action == MENU_ENTER)
     return confirmation_yes;
-  else if (ch == ' ' || ch == KEYD_ESCAPE || ch == 'n' || (!ch && action == MENU_BACKSPACE))
+  else if (ch == ' ' || ch == KEYD_ESCAPE || ch == 'n' || action == MENU_BACKSPACE)
     return confirmation_no;
   else
     return confirmation_null;
