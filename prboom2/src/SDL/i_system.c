@@ -312,7 +312,11 @@ const char *I_ConfigDir(void)
 
   if (!base)
   {
-    char *home = M_getenv("HOME");
+    const char *home = M_getenv("HOME");
+    if (!home)
+    {
+      home = "/";
+    }
 
     // First, try legacy directory.
     base = dsda_ConcatDir(home, ".dsda-doom");
