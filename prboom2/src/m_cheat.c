@@ -39,6 +39,7 @@
 #include "p_tick.h"
 #include "m_cheat.h"
 #include "s_sound.h"
+#include "s_advsound.h"
 #include "sounds.h"
 #include "dstrings.h"
 #include "r_main.h"
@@ -254,7 +255,8 @@ cheatseq_t cheat[] = {
 static void cheat_mus(buf)
 char buf[3];
 {
-  int musnum;
+  int musnum, muslump;
+  int epsd, map;
 
   //jff 3/20/98 note: this cheat allowed in netgame/demorecord
 
@@ -262,34 +264,35 @@ char buf[3];
   if (!isdigit(buf[0]) || !isdigit(buf[1]))
     return;
 
+  if (gamemode == commercial)
+  {
+    epsd = 1; //jff was 0, but espd is 1-based
+    map = (buf[0] - '0') * 10 + buf[1] - '0';
+  }
+  else
+  {
+    epsd = buf[0] - '1';
+    map = buf[1] - '1';
+  }
+
   dsda_AddMessage(s_STSTR_MUS);
 
-  if (gamemode == commercial)
-    {
-      musnum = mus_runnin + (buf[0]-'0')*10 + buf[1]-'0' - 1;
+  idmusnum = -1;
+  dsda_MapMusic(&musnum, &muslump, epsd, map);
+  idmusnum = musnum; //jff 3/17/98 remember idmus number for restore
 
-      //jff 4/11/98 prevent IDMUS00 in DOOMII and IDMUS36 or greater
-      if (musnum < mus_runnin ||  ((buf[0]-'0')*10 + buf[1]-'0') > 35)
-        dsda_AddMessage(s_STSTR_NOMUS);
-      else
-        {
-          S_ChangeMusic(musnum, 1);
-          idmusnum = musnum; //jff 3/17/98 remember idmus number for restore
-        }
-    }
+  if (muslump != -1)
+  {
+    S_ChangeMusInfoMusic(muslump, true);
+  }
+  else if (musnum != -1)
+  {
+    S_ChangeMusic(musnum, 1);
+  }
   else
-    {
-      musnum = mus_e1m1 + (buf[0]-'1')*9 + (buf[1]-'1');
-
-      //jff 4/11/98 prevent IDMUS0x IDMUSx0 in DOOMI and greater than introa
-      if (buf[0] < '1' || buf[1] < '1' || ((buf[0]-'1')*9 + buf[1]-'1') > 31)
-        dsda_AddMessage(s_STSTR_NOMUS);
-      else
-        {
-          S_ChangeMusic(musnum, 1);
-          idmusnum = musnum; //jff 3/17/98 remember idmus number for restore
-        }
-    }
+  {
+    dsda_AddMessage(s_STSTR_NOMUS);
+  }
 }
 
 // 'choppers' invulnerability & chainsaw
