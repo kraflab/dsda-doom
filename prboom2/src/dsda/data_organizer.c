@@ -77,7 +77,7 @@ void dsda_InitDataDir(void) {
   dsda_StringPrintF(&str, "%s/%s", parent_directory, dsda_data_root);
 
   dsda_base_data_dir = str.string;
-  M_MakeDir(dsda_base_data_dir, true);
+  M_MakeDir(dsda_base_data_dir, false);
 
   Z_Free(parent_directory);
 }
@@ -126,7 +126,7 @@ static void dsda_InitWadDataDir(void) {
   for (i = 0; i < DATA_DIR_LIMIT; ++i)
     if (dsda_data_dir_strings[i]) {
       dsda_StringCatF(&str, "/%s", dsda_data_dir_strings[i]);
-      M_MakeDir(str.string, true);
+      M_MakeDir(str.string, false);
     }
 
   dsda_wad_data_dir = str.string;

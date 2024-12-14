@@ -227,7 +227,10 @@ void dsda_SaveWadStats(void) {
 
   file = M_OpenFile(path, "wb");
   if (!file)
-    lprintf(LO_WARN, "dsda_SaveWadStats: Failed to save wad stats file \"%s\".", path);
+  {
+    lprintf(LO_WARN, "dsda_SaveWadStats: Failed to save wad stats file \"%s\".\n", path);
+    return;
+  }
 
   fprintf(file, "%d\n", current_version);
   fprintf(file, "%d\n", wad_stats.total_kills);

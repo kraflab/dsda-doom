@@ -57,7 +57,7 @@ static void dsda_InitTranMapBaseDir(void) {
   tranmap_base_dir = Z_Malloc(length);
   snprintf(tranmap_base_dir, length, "%s/tranmaps", data_root);
 
-  M_MakeDir(tranmap_base_dir, true);
+  M_MakeDir(tranmap_base_dir, false);
 }
 
 static void dsda_InitTranMapPaletteDir(void) {
@@ -73,7 +73,7 @@ static void dsda_InitTranMapPaletteDir(void) {
   tranmap_palette_dir = Z_Malloc(length);
   snprintf(tranmap_palette_dir, length, "%s/%s", tranmap_base_dir, playpal_cksum.string);
 
-  M_MakeDir(tranmap_palette_dir, true);
+  M_MakeDir(tranmap_palette_dir, false);
 }
 
 //
