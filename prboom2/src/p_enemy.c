@@ -856,6 +856,7 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
 {
   player_t *player;
   int stop, stopc, c;
+  dboolean unseen[MAX_MAXPLAYERS] = {0};
 
   if (raven) return Raven_P_LookForPlayers(actor, allaround);
 
@@ -929,8 +930,11 @@ static dboolean P_LookForPlayers(mobj_t *actor, dboolean allaround)
       if (player->health <= 0)
   continue;               // dead
 
-      if (!P_IsVisible(actor, player->mo, allaround))
-  continue;
+      if (unseen[actor->lastlook] || !P_IsVisible(actor, player->mo, allaround))
+      {
+        unseen[actor->lastlook] = true;
+        continue;
+      }
 
       P_SetTarget(&actor->target, player->mo);
 
