@@ -1166,7 +1166,11 @@ static void IdentifyVersion (void)
     Z_Free(iwad);
   }
   else
-    I_Error("IdentifyVersion: IWAD not found\n");
+  {
+    I_Error("IdentifyVersion: IWAD not found\n\n"
+            "Make sure your IWADs are in a folder that dsda-doom searches on\n"
+            "For example: %s", I_ConfigDir());
+  }
 }
 
 //
