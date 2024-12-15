@@ -417,6 +417,11 @@ void ST_SetScaledWidth(void)
       break;
   }
 
+  // Raven HUD breaks in "patch_stretch_not_adjusted",
+  // so let's use "patch_stretch_doom_format" settings
+  if (raven && render_stretch_hud == patch_stretch_not_adjusted)
+      ST_SCALED_WIDTH  = width * WIDE_SCREENWIDTH / 320;
+
   ST_SCALED_WIDTH = (ST_SCALED_WIDTH + 3) & (int)~3;
 
   if (ST_SCALED_WIDTH > SCREENWIDTH)
