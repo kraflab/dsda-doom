@@ -339,7 +339,7 @@ const char *I_ConfigDir(void)
 #endif
     }
 
-    M_MakeDir(base, true); // Make sure it exists
+    M_MakeDir(base, false);
   }
 
   return base;
