@@ -173,7 +173,6 @@ int dsda_UMusicIndexToLumpNum(int* lump, int music_index) {
 int dsda_UMapMusic(int* music_index, int* music_lump, int episode, int map) {
   int lump;
   struct MapEntry* entry = dsda_UMapEntry(episode, map);
-  int level_num;
 
   if (!entry || !entry->music[0])
     return false;
