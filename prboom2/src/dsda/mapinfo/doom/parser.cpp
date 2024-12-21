@@ -489,8 +489,11 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
   map.special_actions = (doom_mapinfo_special_action_t *) Z_Realloc(
     map.special_actions, map.num_special_actions * sizeof(*map.special_actions)
   );
-  memcpy(map.special_actions, &special_actions[0],
-         map.num_special_actions * sizeof(*map.special_actions));
+
+  if(map.num_special_actions > 0) {
+    memcpy(map.special_actions, &special_actions[0],
+           map.num_special_actions * sizeof(*map.special_actions));
+  }
 }
 
 static void dsda_ParseDoomMapInfoMap(Scanner &scanner) {
@@ -806,17 +809,33 @@ void dsda_ParseDoomMapInfo(const unsigned char* buffer, size_t length, doom_mapi
   while (scanner.TokensLeft())
     dsda_ParseDoomMapInfoIdentifier(scanner);
 
-  doom_mapinfo.maps = &doom_mapinfo_maps[0];
   doom_mapinfo.num_maps = doom_mapinfo_maps.size();
+  if(doom_mapinfo.num_maps > 0) {
+    doom_mapinfo.maps = &doom_mapinfo_maps[0];
+  } else {
+    doom_mapinfo.maps = NULL;
+  }
 
-  doom_mapinfo.skills = &doom_mapinfo_skills[0];
   doom_mapinfo.num_skills = doom_mapinfo_skills.size();
+  if(doom_mapinfo.num_skills > 0) {
+    doom_mapinfo.skills = &doom_mapinfo_skills[0];
+  } else {
+    doom_mapinfo.skills = NULL;
+  }
 
-  doom_mapinfo.clusters = &doom_mapinfo_clusters[0];
   doom_mapinfo.num_clusters = doom_mapinfo_clusters.size();
+  if(doom_mapinfo.num_clusters > 0) {
+    doom_mapinfo.clusters = &doom_mapinfo_clusters[0];
+  } else {
+    doom_mapinfo.clusters = NULL;
+  }
 
-  doom_mapinfo.episodes = &doom_mapinfo_episodes[0];
   doom_mapinfo.num_episodes = doom_mapinfo_episodes.size();
+  if(doom_mapinfo.num_episodes > 0) {
+    doom_mapinfo.episodes = &doom_mapinfo_episodes[0];
+  } else {
+    doom_mapinfo.episodes = NULL;
+  }
 
   doom_mapinfo.loaded = true;
 }
