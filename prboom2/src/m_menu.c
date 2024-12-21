@@ -4000,6 +4000,8 @@ int M_GetKeyString(int c,int offset)
       case KEYD_PAUSE:      s = "PAUS"; break;
       case KEYD_MWHEELDOWN: s = "MWDN"; break;
       case KEYD_MWHEELUP:   s = "MWUP"; break;
+      case KEYD_MWHEELLEFT: s = "MWLT"; break;
+      case KEYD_MWHEELRIGHT: s = "MWRT"; break;
       case KEYD_PRINTSC:    s = "PRSC"; break;
       case 0:               s = "NONE"; break;
       default:              s = "JUNK"; break;
