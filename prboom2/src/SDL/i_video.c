@@ -1290,12 +1290,6 @@ void I_UpdateVideoMode(void)
   else
   {
     init_flags |= SDL_WINDOW_RESIZABLE;
-
-    // [FG] make sure initial window size is always >= 640x480
-    while (screen_multiply*SCREENWIDTH < 640 || screen_multiply*actualheight < 480)
-    {
-      screen_multiply++;
-    }
   }
 
   if (V_IsOpenGLMode())
