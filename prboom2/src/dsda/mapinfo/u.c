@@ -170,16 +170,14 @@ int dsda_UMusicIndexToLumpNum(int* lump, int music_index) {
   return false;
 }
 
-int dsda_UMapMusic(int* music_index, int* music_lump) {
+int dsda_UMapMusic(int* music_index, int* music_lump, int episode, int map) {
   int lump;
+  struct MapEntry* entry = dsda_UMapEntry(episode, map);
 
-  if (!gamemapinfo)
+  if (!entry || !entry->music[0])
     return false;
 
-  if (!gamemapinfo->music[0])
-    return false;
-
-  lump = W_CheckNumForName(gamemapinfo->music);
+  lump = W_CheckNumForName(entry->music);
 
   if (lump == LUMP_NOT_FOUND)
     return false;

@@ -275,7 +275,7 @@ void S_Start(void)
   // start new music for the level
   mus_paused = 0;
 
-  dsda_MapMusic(&mnum, &muslump);
+  dsda_MapMusic(&mnum, &muslump, gameepisode, gamemap);
 
   if (muslump >= 0)
   {
