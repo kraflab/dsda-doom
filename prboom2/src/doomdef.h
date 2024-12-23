@@ -109,6 +109,10 @@ typedef enum {
 // SCREENWIDTH and SCREENHEIGHT define the visible size
 extern int SCREENWIDTH;
 extern int SCREENHEIGHT;
+// ACTUALHEIGHT is the actual height of the resolution
+// If the resolution is 200p or 400p, aspect ratio correction
+// should be applied, making this value 240 or 480
+extern int ACTUALHEIGHT;
 // SCREENPITCH is the size of one line in the buffer and
 // can be bigger than the SCREENWIDTH depending on the size
 // of one pixel (8, 16 or 32 bit) and the padding at the

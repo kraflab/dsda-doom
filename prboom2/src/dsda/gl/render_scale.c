@@ -48,7 +48,7 @@ void dsda_GLGetSDLWindowSize(SDL_Window* sdl_window) {
 void dsda_GLSetRenderViewportParams() {
   float viewport_aspect;
 
-  viewport_aspect = (float)SCREENWIDTH / (float)SCREENHEIGHT;
+  viewport_aspect = (float)SCREENWIDTH / (float)ACTUALHEIGHT;
 
   // Black bars on left and right of viewport
   if ((int)(gl_window_height * viewport_aspect) < gl_window_width) {
@@ -66,7 +66,7 @@ void dsda_GLSetRenderViewportParams() {
   }
 
   gl_scale_x = (float)gl_viewport_width / (float)SCREENWIDTH;
-  gl_scale_y = (float)gl_viewport_height / (float)SCREENHEIGHT;
+  gl_scale_y = (float)gl_viewport_height / (float)ACTUALHEIGHT;
 
   // elim - This will be zero if no statusbar is being drawn
   gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
