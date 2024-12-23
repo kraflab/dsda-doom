@@ -1076,16 +1076,16 @@ void I_InitScreenResolution(void)
 
   desired_fullscreen = dsda_IntConfig(dsda_config_use_fullscreen);
 
-  if (dsda_Flag(dsda_arg_fullscreen))
-    desired_fullscreen = 1;
-
-  if (dsda_Flag(dsda_arg_window))
-    desired_fullscreen = 0;
-
   if (init)
   {
     //e6y: ability to change screen resolution from GUI
     I_FillScreenResolutionsList();
+
+    if (dsda_Flag(dsda_arg_fullscreen))
+    desired_fullscreen = 1;
+
+    if (dsda_Flag(dsda_arg_window))
+      desired_fullscreen = 0;
 
     // Video stuff
     arg = dsda_Arg(dsda_arg_width);
