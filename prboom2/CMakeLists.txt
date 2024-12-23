@@ -91,6 +91,7 @@ check_symbol_exists(mmap "sys/mman.h" HAVE_MMAP)
 check_symbol_exists(CreateFileMapping "windows.h" HAVE_CREATE_FILE_MAPPING)
 check_symbol_exists(strsignal "string.h" HAVE_STRSIGNAL)
 check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
+check_symbol_exists(getpwuid "unistd.h;sys/types.h;pwd.h" HAVE_GETPWUID)
 
 include(CheckIncludeFile)
 

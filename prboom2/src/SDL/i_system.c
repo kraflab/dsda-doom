@@ -56,6 +56,10 @@
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#ifdef HAVE_GETPWUID
+#include <sys/types.h>
+#include <pwd.h>
+#endif
 #endif
 
 #ifdef _MSC_VER
@@ -315,7 +319,13 @@ const char *I_ConfigDir(void)
     const char *home = M_getenv("HOME");
     if (!home)
     {
-      home = "/";
+#ifdef HAVE_GETPWUID
+      struct passwd *user_info = getpwuid(getuid());
+      if (user_info != NULL)
+        home = user_info->pw_dir;
+      else
+#endif
+        home = "/";
     }
 
     // First, try legacy directory.
