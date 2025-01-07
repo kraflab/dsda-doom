@@ -38,7 +38,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     snprintf(
       str,
       max_size,
-      "%sARM %3d%%",
+      "%sA.C. %2d",
       armor_percent == 0 ? dsda_TextColor(dsda_tc_exhud_armor_zero) :
         armor_percent <= 50 ? dsda_TextColor(dsda_tc_exhud_armor_one) :
         dsda_TextColor(dsda_tc_exhud_armor_two),
