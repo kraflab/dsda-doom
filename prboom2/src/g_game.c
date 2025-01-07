@@ -4204,6 +4204,10 @@ void G_ContinueDemo(const char *playback_name)
 
 static dboolean InventoryMoveLeft(void)
 {
+    player_t *plr;
+
+    plr = &players[consoleplayer];
+
     if (R_FullView())
     {
         inv_ptr--;
@@ -4211,6 +4215,7 @@ static dboolean InventoryMoveLeft(void)
         {
             inv_ptr = 0;
         }
+        plr->readyArtifact = plr->inventory[inv_ptr].type;
         return true;
     }
 
@@ -4251,6 +4256,7 @@ static dboolean InventoryMoveRight(void)
             if (inv_ptr < 0)
                 inv_ptr = 0;
         }
+        plr->readyArtifact = plr->inventory[inv_ptr].type;
         return true;
     }
 
