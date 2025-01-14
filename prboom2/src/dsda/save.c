@@ -187,11 +187,15 @@ void dsda_InitSaveDir(void) {
 }
 
 char* dsda_SaveDir(void) {
-  if (dsda_IntConfig(dsda_config_organized_saves)) {
-    if (!dsda_wad_save_dir)
-      dsda_wad_save_dir = dsda_DataDir();
+  dsda_arg_t* arg = dsda_Arg(dsda_arg_save);
 
-    return dsda_wad_save_dir;
+  if (!arg->found) {
+    if (dsda_IntConfig(dsda_config_organized_saves)) {
+      if (!dsda_wad_save_dir)
+        dsda_wad_save_dir = dsda_DataDir();
+
+      return dsda_wad_save_dir;
+    }
   }
 
   return dsda_base_save_dir;
