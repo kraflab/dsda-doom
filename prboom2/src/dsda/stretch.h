@@ -51,6 +51,10 @@ typedef enum
   patch_stretch_max
 } patch_stretch_t;
 
+// Raven HUD breaks in "patch_stretch_not_adjusted",
+// so let's use "patch_stretch_doom_format" settings
+#define stretch_hud(a) ((raven && (a) == patch_stretch_not_adjusted) ? patch_stretch_doom_format : (a))
+
 extern int wide_offsetx;
 extern int wide_offset2x;
 extern int wide_offsety;

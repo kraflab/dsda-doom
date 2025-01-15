@@ -403,7 +403,7 @@ void ST_SetScaledWidth(void)
   if (width == 0)
       width = ST_WIDTH;
 
-  switch (render_stretch_hud)
+  switch (stretch_hud(render_stretch_hud))
   {
     case patch_stretch_not_adjusted:
       ST_SCALED_WIDTH  = width * patches_scalex;

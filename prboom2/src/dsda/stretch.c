@@ -158,7 +158,7 @@ void dsda_ResetExTextOffsets(void) {
 static void InitStretchParam(stretch_param_t* offsets, int stretch, enum patch_translation_e flags) {
   memset(offsets, 0, sizeof(*offsets));
 
-  switch (stretch) {
+  switch (stretch_hud(stretch)) {
     case patch_stretch_not_adjusted:
       if (flags == VPT_ALIGN_WIDE) {
         offsets->video = &video_stretch;
@@ -271,10 +271,7 @@ void dsda_EvaluatePatchScale(void) {
       SCREENHEIGHT < 200 || WIDE_SCREENHEIGHT < 200)
     render_stretch_hud = patch_stretch_fit_to_width;
 
-  if (raven && render_stretch_hud == 0)
-    render_stretch_hud++;
-
-  switch (render_stretch_hud) {
+  switch (stretch_hud(render_stretch_hud)) {
     case patch_stretch_not_adjusted:
       wide_offset2x = SCREENWIDTH - patches_scalex * 320;
       wide_offset2y = SCREENHEIGHT - patches_scaley * 200;
