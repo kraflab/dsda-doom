@@ -34,7 +34,7 @@ endif()
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
 
-project("dsda-doom" VERSION 0.28.2)
+project("dsda-doom" VERSION 0.28.3)
 
 # Set a default build type if none was specified
 set(default_build_type "RelWithDebInfo")
