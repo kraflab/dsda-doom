@@ -25,6 +25,8 @@
 #include "r_main.h"
 #include "st_stuff.h"
 
+#include <math.h>
+
 int gl_window_width;
 int gl_window_height;
 int gl_viewport_width;
