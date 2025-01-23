@@ -168,15 +168,16 @@ extern dboolean  message_dontfuckwithme;
 // displayed
 
 dboolean setup_active      = false; // in one of the setup screens
+dboolean set_general_active = false;
 dboolean set_keybnd_active = false; // in key binding setup screens
+dboolean set_display_active = false;
+dboolean set_demos_active = false; // in demos setup screen
 dboolean set_weapon_active = false; // in weapons setup screen
-dboolean set_status_active = false; // in status bar/hud setup screen
 dboolean set_auto_active   = false; // in automap setup screen
+dboolean level_table_active = false;
 dboolean setup_select      = false; // changing an item
 dboolean setup_gather      = false; // gathering keys for value
 dboolean colorbox_active   = false; // color palette being shown
-dboolean set_general_active = false;
-dboolean level_table_active = false;
 
 
 extern const char* g_menu_flat;
@@ -303,33 +304,37 @@ void M_ClearMenus (void);
 // phares 3/30/98
 // prototypes added to support Setup Menus and Extended HELP screens
 
-int  M_GetKeyString(int,int);
+void M_General(int);      // killough 10/98
 void M_KeyBindings(int choice);
+void M_Display(int);
+void M_Demos(int);
 void M_Weapons(int);
-void M_StatusBar(int);
 void M_Automap(int);
-void M_InitExtendedHelp(void);
-void M_ExtHelpNextScreen(int);
-void M_ExtHelp(int);
-static int M_GetPixelWidth(const char*);
+void M_LevelTable(int);
+void M_DrawGeneral(void); // killough 10/98
 void M_DrawKeybnd(void);
+void M_DrawDisplay(void);
+void M_DrawDemos(void);
 void M_DrawWeapons(void);
+void M_DrawAutoMap(void);
+void M_DrawLevelTable(void);
+void M_DrawExtHelp(void);
+
+static int M_GetPixelWidth(const char*);
 static void M_DrawString(int cx, int cy, int color, const char* ch);
 static void M_DrawMenuString(int,int,int);
 static void M_DrawStringCentered(int,int,int,const char*);
-void M_DrawStatusHUD(void);
-void M_DrawExtHelp(void);
-void M_DrawAutoMap(void);
+
+void M_InitExtendedHelp(void);
+void M_ExtHelpNextScreen(int);
+void M_ExtHelp(int);
 void M_ChangeDemoSmoothTurns(void);
 void M_ChangeTextureParams(void);
-void M_General(int);      // killough 10/98
-void M_DrawGeneral(void); // killough 10/98
-void M_LevelTable(int);
-void M_DrawLevelTable(void);
 void M_ChangeFullScreen(void);
 void M_ChangeVideoMode(void);
 void M_ChangeUseGLSurface(void);
 void M_ChangeApplyPalette(void);
+int  M_GetKeyString(int,int);
 
 menu_t SkillDef;                                              // phares 5/04/98
 
@@ -1157,13 +1162,14 @@ void M_SaveGame (int choice)
 
 enum
 {
-  general, // killough 10/98
-  set_key_bindings,
-  set_weapons,
-  set_statbar,
-  set_automap,
-  soundvol,
-  level_table,
+  opt_general, // killough 10/98
+  opt_bindings,
+  opt_display,
+  opt_demos,
+  opt_weapons,
+  opt_automap,
+  opt_soundvol,
+  opt_level_table,
   opt_end
 } options_e;
 
@@ -1173,8 +1179,9 @@ menuitem_t OptionsMenu[]=
 {
   { 1, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
   { 1, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
+  { 1, "M_DSPLAY", M_Display, 'd', "DISPLAY" },
+  { 1, "M_DEMOS", M_Demos, 's', "DEMOS" },
   { 1, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
-  { 1, "M_STAT", M_StatusBar, 's', "STATUS BAR / HUD" },
   { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
   { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" },
   { 1, "M_LVLTBL", M_LevelTable, 's', "LEVEL TABLE" },
@@ -1617,12 +1624,42 @@ menuitem_t Generic_Setup[] =
   {1,"",M_DoNothing,0}
 };
 
+menu_t GeneralDef =                                           // killough 10/98
+{
+  generic_setup_end,
+  &OptionsDef,
+  Generic_Setup,
+  M_DrawGeneral,
+  34,5,      // skull drawn here
+  0
+};
+
 menu_t KeybndDef =
 {
   generic_setup_end,
   &OptionsDef,
   Generic_Setup,
   M_DrawKeybnd,
+  34,5,      // skull drawn here
+  0
+};
+
+menu_t DisplayDef =                                           // killough 10/98
+{
+  generic_setup_end,
+  &OptionsDef,
+  Generic_Setup,
+  M_DrawDisplay,
+  34,5,      // skull drawn here
+  0
+};
+
+menu_t DemosDef =
+{
+  generic_setup_end,
+  &OptionsDef,
+  Generic_Setup,
+  M_DrawDemos,
   34,5,      // skull drawn here
   0
 };
@@ -1637,32 +1674,12 @@ menu_t WeaponDef =
   0
 };
 
-menu_t StatusHUDDef =
-{
-  generic_setup_end,
-  &OptionsDef,
-  Generic_Setup,
-  M_DrawStatusHUD,
-  34,5,      // skull drawn here
-  0
-};
-
 menu_t AutoMapDef =
 {
   generic_setup_end,
   &OptionsDef,
   Generic_Setup,
   M_DrawAutoMap,
-  34,5,      // skull drawn here
-  0
-};
-
-menu_t GeneralDef =                                           // killough 10/98
-{
-  generic_setup_end,
-  &OptionsDef,
-  Generic_Setup,
-  M_DrawGeneral,
   34,5,      // skull drawn here
   0
 };
@@ -1679,7 +1696,7 @@ menu_t LevelTableDef =
 
 // Data used by the Automap color selection code
 
-#define CHIP_SIZE 7 // size of color block for colored items
+#define CHIP_SIZE 8 // size of color block for colored items
 
 #define COLORPALXORIG ((320 - 16*(CHIP_SIZE+1))/2)
 #define COLORPALYORIG ((200 - 16*(CHIP_SIZE+1))/2)
@@ -2081,7 +2098,6 @@ static void M_DrawPages(const char **pages)
     strcpy(menu_buffer, pages[i]);
     M_DrawMenuString(x, PAGES_Y , cr_title);
 
-    printf("%d %d\n", i, current_page);
     if (i == current_page)
     {
       int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
@@ -2691,42 +2707,42 @@ void M_DrawWeapons(void)
 
 /////////////////////////////
 //
-// The Status Bar / HUD tables.
+// The Demos tables.
 
-#define SB_X 203
+#define DM_X 203
 
 // Screen table definitions
 
-setup_menu_t stat_settings1[];
+setup_menu_t demo_settings1[];
 //e6y
-setup_menu_t stat_settings2[];
+setup_menu_t demo_settings2[];
 
-setup_menu_t* stat_settings[] =
+setup_menu_t* demo_settings[] =
 {
-  stat_settings1,
+  demo_settings1,
   //e6y
-  stat_settings2,
+  demo_settings2,
   NULL
 };
 
-setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
+setup_menu_t demo_settings1[] =  // Demos Settings screen
 {
-  { "STATUS BAR", S_SKIP | S_TITLE, m_null, SB_X},
-  { "USE RED NUMBERS", S_YESNO, m_conf, SB_X, dsda_config_sts_always_red },
-  { "GRAY %",S_YESNO, m_conf, SB_X, dsda_config_sts_pct_always_gray },
-  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, SB_X, dsda_config_sts_traditional_keys },
+  { "STATUS BAR", S_SKIP | S_TITLE, m_null, DM_X},
+  { "USE RED NUMBERS", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
+  { "GRAY %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
+  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, DM_X, dsda_config_sts_traditional_keys },
   EMPTY_LINE,
-  { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, SB_X},
-  { "SHOW MESSAGES", S_YESNO, m_conf, SB_X, dsda_config_show_messages },
-  { "HEALTH LOW/OK", S_NUM, m_conf, SB_X, dsda_config_hud_health_red },
-  { "HEALTH OK/GOOD", S_NUM, m_conf, SB_X, dsda_config_hud_health_yellow },
-  { "HEALTH GOOD/EXTRA", S_NUM, m_conf, SB_X, dsda_config_hud_health_green },
-  { "AMMO LOW/OK", S_NUM, m_conf, SB_X, dsda_config_hud_ammo_red },
-  { "AMMO OK/GOOD", S_NUM, m_conf, SB_X, dsda_config_hud_ammo_yellow },
-  { "REPORT REVEALED SECRETS", S_YESNO, m_conf, SB_X, dsda_config_hudadd_secretarea },
-  { "DEMO PLAYBACK PROGRESS BAR", S_YESNO, m_conf, SB_X, dsda_config_hudadd_demoprogressbar },
+  { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, DM_X},
+  { "SHOW MESSAGES", S_YESNO, m_conf, DM_X, dsda_config_show_messages },
+  { "HEALTH LOW/OK", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
+  { "HEALTH OK/GOOD", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow },
+  { "HEALTH GOOD/EXTRA", S_NUM, m_conf, DM_X, dsda_config_hud_health_green },
+  { "AMMO LOW/OK", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_red },
+  { "AMMO OK/GOOD", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_yellow },
+  { "REPORT REVEALED SECRETS", S_YESNO, m_conf, DM_X, dsda_config_hudadd_secretarea },
+  { "DEMO PLAYBACK PROGRESS BAR", S_YESNO, m_conf, DM_X, dsda_config_hudadd_demoprogressbar },
 
-  NEXT_PAGE(stat_settings2),
+  NEXT_PAGE(demo_settings2),
   FINAL_ENTRY
 };
 
@@ -2736,7 +2752,7 @@ setup_menu_t stat_settings1[] =  // Status Bar and HUD Settings screen
 static const char *crosshair_str[] =
   { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big", NULL };
 
-setup_menu_t stat_settings2[] =
+setup_menu_t demo_settings2[] =
 {
   { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X},
   { "ENABLE CROSSHAIR", S_CHOICE, m_conf, HUD_X, dsda_config_hudadd_crosshair, 0, crosshair_str },
@@ -2747,30 +2763,30 @@ setup_menu_t stat_settings2[] =
   { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color },
   { "TARGET CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color },
 
-  PREV_PAGE(stat_settings1),
+  PREV_PAGE(demo_settings1),
   FINAL_ENTRY
 };
 
-// Setting up for the Status Bar / HUD screen. Turn on flags, set pointers,
+// Setting up for the Demos screen. Turn on flags, set pointers,
 // locate the first item on the screen where the cursor is allowed to
 // land.
 
-void M_StatusBar(int choice)
+void M_Demos(int choice)
 {
-  M_EnterSetup(&StatusHUDDef, &set_status_active, stat_settings[0]);
+  M_EnterSetup(&DemosDef, &set_demos_active, demo_settings[0]);
 }
 
-// The drawing part of the Status Bar / HUD Setup initialization. Draw the
+// The drawing part of the Demos Setup initialization. Draw the
 // background, title, instruction line, and items.
 
-void M_DrawStatusHUD(void)
+void M_DrawDemos(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(59, 2, "M_STAT", CR_DEFAULT, "STATUS BAR / HUD", cr_title);
+  M_DrawTitle(59, 2, "M_DEMOS", CR_DEFAULT, "DEMOS", cr_title);
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
@@ -2972,7 +2988,7 @@ const char *gen_pages[] =
 };
 
 setup_menu_t audiovideo_settings[], mouse_settings[], controller_settings[], misc_settings[];
-setup_menu_t display_settings[], mapping_settings[], demo_settings[], tas_settings[];
+setup_menu_t display_settings[], mapping_settings[], demo_settings_temp[], tas_settings[];
 
 setup_menu_t* gen_settings[] =
 {
@@ -2982,7 +2998,7 @@ setup_menu_t* gen_settings[] =
   misc_settings,
   display_settings,
   mapping_settings,
-  demo_settings,
+  demo_settings_temp,
   tas_settings,
   NULL
 };
@@ -3188,11 +3204,11 @@ setup_menu_t mapping_settings[] = {
   { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, dsda_config_comperr_blockmap },
 
   PREV_PAGE(display_settings),
-  NEXT_PAGE(demo_settings),
+  NEXT_PAGE(demo_settings_temp),
   FINAL_ENTRY
 };
 
-setup_menu_t demo_settings[] = {
+setup_menu_t demo_settings_temp[] = {
   { "Demo Settings", S_SKIP | S_TITLE, m_null, G_X},
   { "Strict Mode", S_YESNO, m_conf, G_X, dsda_config_strict_mode },
   { "Cycle Ghost Colors", S_YESNO, m_conf, G_X, dsda_config_cycle_ghost_colors },
@@ -3229,7 +3245,7 @@ setup_menu_t tas_settings[] = {
   { "Permanent Strafe50", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50 },
   { "Strafe50 On Turns", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50onturns },
 
-  PREV_PAGE(demo_settings),
+  PREV_PAGE(demo_settings_temp),
   FINAL_ENTRY
 };
 
@@ -3279,6 +3295,23 @@ void M_DrawGeneral(void)
 
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", cr_title);
+  M_DrawInstructions();
+  M_DrawPages(gen_pages);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
+}
+
+void M_Display(int choice)
+{
+  M_EnterSetup(&DisplayDef, &set_display_active, gen_settings[0]);
+}
+
+void M_DrawDisplay(void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+
+  M_DrawBackground(g_menu_flat, 0);
+
+  M_DrawTitle(114, 2, "M_DSPLAY", CR_DEFAULT, "DISPLAY", cr_title);
   M_DrawInstructions();
   M_DrawPages(gen_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
@@ -4381,12 +4414,13 @@ static void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
   setup_active = false;
+  set_general_active = false;
   set_keybnd_active = false;
+  set_display_active = false;
+  set_demos_active = false;
   set_weapon_active = false;
-  set_status_active = false;
   set_auto_active = false;
   colorbox_active = false;
-  set_general_active = false;
   level_table_active = false;
 }
 
@@ -5049,7 +5083,7 @@ static dboolean M_SetupResponder(int ch, int action, event_t* ev)
       return true;
 
   // killough 10/98: consolidate handling into one place:
-  if (set_general_active || set_status_active)
+  if (set_general_active || set_demos_active || set_display_active)
     if (M_StringResponder(ch, action, ev))
       return true;
 
