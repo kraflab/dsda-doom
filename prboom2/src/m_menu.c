@@ -1538,6 +1538,7 @@ void M_SizeDisplay(int choice)
 
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
+int current_page;
 
 // save the setup menu's itemon value in the S_END element's x coordinate
 
@@ -2066,6 +2067,32 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 }
 
+#define PAGES_Y 20
+
+static void M_DrawPages(const char **pages)
+{
+  int x = 0;
+  int w = 0;
+
+  for (int i = 0; pages[i] != NULL; i++)
+  {
+    w = M_GetPixelWidth(pages[i]);
+
+    strcpy(menu_buffer, pages[i]);
+    M_DrawMenuString(x, PAGES_Y , cr_title);
+
+    printf("%d %d\n", i, current_page);
+    if (i == current_page)
+    {
+      int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
+      V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+      V_FillRect(0, xx, yy, ww, hh, PAL_WHITE);
+    }
+
+    x += w + 4;
+  }
+}
+
 /////////////////////////////
 //
 // Data used to draw the "are you sure?" dialogue box when resetting
@@ -2096,7 +2123,7 @@ void M_DrawDelVerify(void)
 // cph 2006/08/06 - go back to the Boom version, and then clean up by using
 // M_DrawStringCentered (much better than all those magic 'x' valies!)
 
-#define INSTRUCTION_Y 20
+#define INSTRUCTION_Y 190
 
 static void M_DrawInstructionString(int cr, const char *str)
 {
@@ -2151,13 +2178,14 @@ static void M_DrawInstructions(void)
   }
 }
 
+#define TITLE(page_name) { page_name, S_SKIP | S_TITLE, m_null, G_X}
 #define NEXT_PAGE(page) { "->", S_SKIP | S_NEXT, m_null, 318, .menu = page }
 #define PREV_PAGE(page) { "<-", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
-#define DEFAULT_LIST_Y (INSTRUCTION_Y + 1.5 * menu_font->line_height)
+#define DEFAULT_LIST_Y (4 * menu_font->line_height)
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
@@ -2168,6 +2196,7 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
   setup_select = false;
   colorbox_active = false;
   setup_gather = false;
+  current_page = 0;
 
   M_UpdateSetupMenu(setup_menu);
 }
@@ -2929,6 +2958,19 @@ void M_DrawAutoMap(void)
 // The General table.
 // killough 10/10/98
 
+const char *gen_pages[] =
+{
+  "Video",
+  "Mouse",
+  "Controller",
+  "Misc",
+  "Display",
+  "Mapping",
+  "Demo",
+  "TAS",
+  NULL
+};
+
 setup_menu_t audiovideo_settings[], mouse_settings[], controller_settings[], misc_settings[];
 setup_menu_t display_settings[], mapping_settings[], demo_settings[], tas_settings[];
 
@@ -3238,6 +3280,7 @@ void M_DrawGeneral(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", cr_title);
   M_DrawInstructions();
+  M_DrawPages(gen_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4959,6 +5002,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
         S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        current_page--;
         return true;
       }
     }
@@ -4977,6 +5021,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
         S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        current_page++;
         return true;
       }
     }
