@@ -1147,7 +1147,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_sdl_video_window_pos] = {
     "sdl_video_window_pos", dsda_config_sdl_video_window_pos,
-    CONF_STRING("center")
+    CONF_STRING("")
+  },
+  [dsda_config_sdl_video_display_index] = {
+    "sdl_video_display_index", dsda_config_sdl_video_display_index,
+    dsda_config_int, 0, 10, { 0 }, NULL, NOT_STRICT
   },
   [dsda_config_palette_ondamage] = {
     "palette_ondamage", dsda_config_palette_ondamage,

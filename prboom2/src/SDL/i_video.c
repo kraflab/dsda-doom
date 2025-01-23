@@ -1226,8 +1226,8 @@ void I_UpdateVideoMode(void)
   int render_vsync;
   int integer_scaling;
   const char *sdl_video_window_pos;
-  int x = SDL_WINDOWPOS_CENTERED;
-  int y = SDL_WINDOWPOS_CENTERED;
+  int sdl_video_display_index;
+  int x, y;
   const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
                            dsda_Flag(dsda_arg_fastdemo);
 
@@ -1235,6 +1235,7 @@ void I_UpdateVideoMode(void)
                          I_DesiredVideoMode() == VID_MODESW;
   render_vsync = dsda_IntConfig(dsda_config_render_vsync) && !novsync;
   sdl_video_window_pos = dsda_StringConfig(dsda_config_sdl_video_window_pos);
+  sdl_video_display_index = dsda_IntConfig(dsda_config_sdl_video_display_index);
   screen_multiply = dsda_IntConfig(dsda_config_render_screen_multiply);
   integer_scaling = dsda_IntConfig(dsda_config_integer_scaling);
 
@@ -1281,6 +1282,8 @@ void I_UpdateVideoMode(void)
     ACTUALHEIGHT = SCREENHEIGHT;
   }
 
+  x = SDL_WINDOWPOS_CENTERED_DISPLAY(sdl_video_display_index);
+  y = SDL_WINDOWPOS_CENTERED_DISPLAY(sdl_video_display_index);
   if (sdl_video_window_pos)
   {
     int nx, ny;
@@ -1288,11 +1291,6 @@ void I_UpdateVideoMode(void)
     {
       x = nx;
       y = ny;
-    }
-    else if (strcmp(sdl_video_window_pos, "center") == 0)
-    {
-      x = SDL_WINDOWPOS_CENTERED;
-      y = SDL_WINDOWPOS_CENTERED;
     }
   }
 
