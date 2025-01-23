@@ -2090,8 +2090,17 @@ static void M_DrawPages(const char **pages)
 {
   int x = 0;
   int w = 0;
+  int i = 0;
 
-  for (int i = 0; pages[i] != NULL; i++)
+  // Find the initial offset, to make the text centered
+  for (i = 0; pages[i] != NULL; i++)
+  {
+    w = M_GetPixelWidth(pages[i]);
+    x += w + 6;
+  }
+  x = (320 - x) / 2;
+
+  for (i = 0; pages[i] != NULL; i++)
   {
     w = M_GetPixelWidth(pages[i]);
 
@@ -2105,7 +2114,7 @@ static void M_DrawPages(const char **pages)
       V_FillRect(0, xx, yy, ww, hh, PAL_WHITE);
     }
 
-    x += w + 4;
+    x += w + 6;
   }
 }
 
