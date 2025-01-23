@@ -9,6 +9,11 @@
 // and publishing an article explaining how it all works.
 // https://medium.com/@jmickle_/writing-a-doom-style-shader-for-unity-63fa13678634
 
+// Also thanks to Gooberman, since I borrowed his method for
+// fixing rounding issues for the colorIndex variable below.
+// A little bit of fudgery goes a long way... :P
+// https://github.com/GooberMan/rum-and-raisin-doom/commit/91500a86b02243dd90958aae4427051ad5c63b0d
+
 // [XA] adjusted this value a bit from the truecolor shader,
 // to taste -- seems to match software pretty damn closely
 #define DOOMLIGHTFACTOR 200.0
@@ -19,15 +24,14 @@ uniform sampler2D colormap;
 // Returns color index based on R texel component
 float indexColor(float r)
 {
-  return r * 255.0;
+  return r * 0.99609375 + 0.0009765625; // equivalent to (texel.r * 255 / 256) + (1 / 1024)
 }
 
 // Returns light index based on depth and light level.
 // Based on equations from EDGE.
 float indexLight(float z)
 {
-  // Quantize light level to nearest of 64 discrete values
-  float L = floor(63.0 * lightlevel + 0.5);
+  float L = 63.0 * lightlevel;
   // Compute minimal light index (brightest) for light level
   float min_L = clamp(36.0 - L, 0.0, 31.0);
   // Compute and clamp light index
@@ -37,12 +41,10 @@ float indexLight(float z)
 // Returns RGB palette value based on color and light indices
 vec3 indexRGB(float ci, float li)
 {
-  // - Round to nearest integer indices
   // - Re-clamp light index to valid range in case it was modified by caller
-  // - Convert to texture coordinates
-  ci = floor(ci + 0.5) / 256.0;
-  // There are 33 colormaps (32 + invuln), thus the 33 divisor
-  li = clamp(floor(li + 0.5), 0.0, 31.0) / 33.0;
+  // - Convert to texture coordinates; divide by 32 since there's an extra 32nd row in the
+  //   colormap image for the invuln pal
+  li = clamp(li, 0.0, 31.0) / 32.0;
   return texture2D(colormap, vec2(ci, li)).rgb;
 }
 
