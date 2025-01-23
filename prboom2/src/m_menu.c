@@ -2749,13 +2749,9 @@ setup_menu_t demo_settings1[] =  // Demos Settings screen
 //e6y
 #define HUD_X 284
 
-static const char *crosshair_str[] =
-  { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big", NULL };
-
 setup_menu_t demo_settings2[] =
 {
   { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X},
-  { "ENABLE CROSSHAIR", S_CHOICE, m_conf, HUD_X, dsda_config_hudadd_crosshair, 0, crosshair_str },
   { "SCALE CROSSHAIR", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale },
   { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
   { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
@@ -2980,7 +2976,6 @@ const char *gen_pages[] =
   "Mouse",
   "Controller",
   "Misc",
-  "Display",
   "Mapping",
   "Demo",
   "TAS",
@@ -2988,7 +2983,7 @@ const char *gen_pages[] =
 };
 
 setup_menu_t audiovideo_settings[], mouse_settings[], controller_settings[], misc_settings[];
-setup_menu_t display_settings[], mapping_settings[], demo_settings_temp[], tas_settings[];
+setup_menu_t mapping_settings[], demo_settings_temp[], tas_settings[];
 
 setup_menu_t* gen_settings[] =
 {
@@ -2996,7 +2991,6 @@ setup_menu_t* gen_settings[] =
   mouse_settings,
   controller_settings,
   misc_settings,
-  display_settings,
   mapping_settings,
   demo_settings_temp,
   tas_settings,
@@ -3072,6 +3066,7 @@ setup_menu_t audiovideo_settings[] = {
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   { "Background FPS Limit", S_NUM, m_conf, G_X, dsda_config_background_fps_limit },
+  { "Show FPS", S_YESNO,  m_conf, G_X, dsda_config_show_fps },
   { "Fake Contrast", S_CHOICE, m_conf, G_X, dsda_config_fake_contrast_mode, 0, fake_contrast_list },
   { "GL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list },
   EMPTY_LINE,
@@ -3138,7 +3133,6 @@ setup_menu_t misc_settings[] = {
   { "Default skill level", S_CHOICE, m_conf, G_X, dsda_config_default_skill, 0, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_conf, G_X, dsda_config_default_complevel, 0, &gen_compstrings[1] },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, dsda_config_cheat_codes },
-  { "Announce Map On Entry", S_YESNO, m_conf, G_X, dsda_config_announce_map },
   EMPTY_LINE,
   { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X},
   { "Rewind Interval (s)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_interval },
@@ -3155,34 +3149,6 @@ setup_menu_t misc_settings[] = {
   { "Play SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
 
   PREV_PAGE(controller_settings),
-  NEXT_PAGE(display_settings),
-  FINAL_ENTRY
-};
-
-static const char* menu_background_list[] = { "Off", "Dark", "Texture", NULL };
-
-setup_menu_t display_settings[] = {
-  { "Display Options", S_SKIP | S_TITLE, m_null, G_X},
-  { "Use Extended Hud", S_YESNO, m_conf, G_X, dsda_config_exhud },
-  { "Ex Hud Scale %", S_NUM, m_conf, G_X, dsda_config_ex_text_scale_x },
-  { "Ex Hud Ratio %", S_NUM, m_conf, G_X, dsda_config_ex_text_ratio_y },
-  { "Hide Status Bar Horns", S_YESNO, m_conf, G_X, dsda_config_hide_horns },
-  { "Hide Weapon", S_YESNO, m_conf, G_X, dsda_config_hide_weapon },
-  { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, dsda_config_render_wipescreen },
-  { "Show FPS", S_YESNO,  m_conf, G_X, dsda_config_show_fps },
-  { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
-  { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
-  { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
-  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
-  EMPTY_LINE,
-  { "Change Palette On Pain", S_YESNO, m_conf, G_X, dsda_config_palette_ondamage },
-  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, dsda_config_palette_onbonus },
-  { "Change Palette On Powers", S_YESNO, m_conf, G_X, dsda_config_palette_onpowers },
-  EMPTY_LINE,
-  { "Status Bar and Menu Appearance", S_CHOICE, m_conf, G_X, dsda_config_render_stretch_hud, 0, render_stretch_list },
-  { "Fullscreen Menu Background", S_CHOICE, m_conf, G_X, dsda_config_menu_background, 0, menu_background_list },
-
-  PREV_PAGE(misc_settings),
   NEXT_PAGE(mapping_settings),
   FINAL_ENTRY
 };
@@ -3203,7 +3169,7 @@ setup_menu_t mapping_settings[] = {
   { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, dsda_config_comperr_hangsolid },
   { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, dsda_config_comperr_blockmap },
 
-  PREV_PAGE(display_settings),
+  PREV_PAGE(misc_settings),
   NEXT_PAGE(demo_settings_temp),
   FINAL_ENTRY
 };
@@ -3300,9 +3266,105 @@ void M_DrawGeneral(void)
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
+const char *display_pages[] =
+{
+  "Options",
+  "Status Bar",
+  "HUD",
+  "Crosshair",
+  NULL
+};
+
+setup_menu_t display_options_settings[], display_statbar_settings[];
+setup_menu_t display_hud_settings[], display_crosshair_settings[];
+
+setup_menu_t* display_settings[] =
+{
+  display_options_settings,
+  display_statbar_settings,
+  display_hud_settings,
+  display_crosshair_settings,
+  NULL
+};
+
+#define D_X 226
+
+static const char* menu_background_list[] = { "Off", "Dark", "Texture", NULL };
+
+setup_menu_t display_options_settings[] = {
+  { "Hide Weapon", S_YESNO, m_conf, G_X, dsda_config_hide_weapon },
+  { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, dsda_config_render_wipescreen },
+  { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
+  { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
+  { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
+  { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  EMPTY_LINE,
+  { "Change Palette On Pain", S_YESNO, m_conf, G_X, dsda_config_palette_ondamage },
+  { "Change Palette On Bonus", S_YESNO, m_conf, G_X, dsda_config_palette_onbonus },
+  { "Change Palette On Powers", S_YESNO, m_conf, G_X, dsda_config_palette_onpowers },
+  EMPTY_LINE,
+  { "Fullscreen Menu Background", S_CHOICE, m_conf, G_X, dsda_config_menu_background, 0, menu_background_list },
+
+  NEXT_PAGE(display_statbar_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t display_statbar_settings[] =  // Demos Settings screen
+{
+  { "Hide Status Bar Horns", S_YESNO, m_conf, DM_X, dsda_config_hide_horns },
+  { "Single Key Display", S_YESNO, m_conf, DM_X, dsda_config_sts_traditional_keys },
+  EMPTY_LINE,
+  { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
+  { "Use Red Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
+  { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
+  { "Health Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow },
+  { "Health Good/Extra", S_NUM, m_conf, DM_X, dsda_config_hud_health_green },
+  { "Ammo Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_red },
+  { "Ammo Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_yellow },
+  EMPTY_LINE,
+  { "Appearance", S_CHOICE, m_conf, DM_X, dsda_config_render_stretch_hud, 0, render_stretch_list },
+
+  PREV_PAGE(display_options_settings),
+  NEXT_PAGE(display_hud_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t display_hud_settings[] =  // Demos Settings screen
+{
+  { "Use Extended Hud", S_YESNO, m_conf, G_X, dsda_config_exhud },
+  { "Ex Hud Scale %", S_NUM, m_conf, G_X, dsda_config_ex_text_scale_x },
+  { "Ex Hud Ratio %", S_NUM, m_conf, G_X, dsda_config_ex_text_ratio_y },
+  EMPTY_LINE,
+  { "Show Messages", S_YESNO, m_conf, G_X, dsda_config_show_messages },
+  { "Report Revealed Secrets", S_YESNO, m_conf, G_X, dsda_config_hudadd_secretarea },
+  { "Announce Map On Entry", S_YESNO, m_conf, G_X, dsda_config_announce_map },
+  { "Demo Playback Progress Bar", S_YESNO, m_conf, G_X, dsda_config_hudadd_demoprogressbar },
+
+  PREV_PAGE(display_statbar_settings),
+  NEXT_PAGE(display_crosshair_settings),
+  FINAL_ENTRY
+};
+
+static const char *crosshair_str[] =
+  { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big", NULL };
+
+setup_menu_t display_crosshair_settings[] =
+{
+  { "Enable Crosshair", S_CHOICE, m_conf, HUD_X, dsda_config_hudadd_crosshair, 0, crosshair_str },
+  { "Scale Crosshair", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale },
+  { "Change Crosshair Color By Player Health", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
+  { "Change Crosshair Color On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
+  { "Lock Crosshair On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_lock_target },
+  { "Default Crosshair Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color },
+  { "Target Crosshair Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color },
+
+  PREV_PAGE(display_hud_settings),
+  FINAL_ENTRY
+};
+
 void M_Display(int choice)
 {
-  M_EnterSetup(&DisplayDef, &set_display_active, gen_settings[0]);
+  M_EnterSetup(&DisplayDef, &set_display_active, display_settings[0]);
 }
 
 void M_DrawDisplay(void)
@@ -3313,7 +3375,7 @@ void M_DrawDisplay(void)
 
   M_DrawTitle(114, 2, "M_DSPLAY", CR_DEFAULT, "DISPLAY", cr_title);
   M_DrawInstructions();
-  M_DrawPages(gen_pages);
+  M_DrawPages(display_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
