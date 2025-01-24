@@ -563,6 +563,20 @@ int dsda_HexenApplyFadeTable(void) {
   return true;
 }
 
+int dsda_HexenFogExists(void) {
+  int fade_lump;
+
+  if (!hexen)
+    return false;
+
+  fade_lump = CurrentMap->fadetable;
+
+  if (fade_lump == W_GetNumForName("FOGMAP"))
+    return true;
+  else
+    return false;
+}
+
 int dsda_HexenMapCluster(int* cluster, int map) {
   if (!hexen)
     return false;

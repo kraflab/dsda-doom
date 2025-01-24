@@ -61,6 +61,7 @@
 #include "dsda/palette.h"
 #include "dsda/stretch.h"
 #include "dsda/text_color.h"
+#include "dsda/mapinfo/hexen.h"
 
 // DWF 2012-05-10
 // SetRatio sets the following global variables based on window geometry and
@@ -625,10 +626,13 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 // a dark faded background under menus.
 //
 static void FUNC_V_DrawShaded(int scrn, int x, int y, int width, int height, int shade)
-{
-  extern const lighttable_t **colormaps;
+{ 
+  const lighttable_t *darkcolormap;
   byte* dest;
   int ix, iy;
+
+  // Compensate for Hexen FOGMAP
+  darkcolormap = dsda_HexenFogExists() ? (const lighttable_t *)W_LumpByName("COLORMAP") : colormaps[scrn];
 
   for (iy = y; iy < y + height; ++iy)
   {
@@ -636,7 +640,7 @@ static void FUNC_V_DrawShaded(int scrn, int x, int y, int width, int height, int
 
     for (ix = x; ix < x + width; ++ix)
     {
-      *dest = colormaps[scrn][shade * 256 + dest[scrn]];
+      *dest = darkcolormap[shade * 256 + dest[scrn]];
       dest++;
     }
   }
