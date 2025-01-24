@@ -850,12 +850,8 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
 
 void gld_DrawShaded(int x, int y, int width, int height, int shade)
 {
-  // This is more messy than I'd like. (I hate this, but this is my current fix for the menu overlay invert)
-  // The `col` fixes the menu overlay from inverting during `invul_cm`.
-  // The 'automap` boolean is to undo the `col` invert for the automap.
-  dboolean automap = V_IsAutomapLightmodeIndexed();
-  int col = invul_cm && !automap ? playpal_white : playpal_black;
-  color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
+  int black = 0;
+  color_rgb_t color = gld_LookupIndexedColor(black, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
 
   glsl_PushNullShader();
 
