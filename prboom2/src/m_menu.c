@@ -6250,7 +6250,7 @@ void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
   int i;
   int dot_offset;
 
-  if (raven) return MN_DrawSlider(x, y, thermWidth, thermDot);
+  if (raven) return MN_DrawSlider(x, y, thermWidth, thermRange, thermDot);
 
   xx = x;
   V_DrawNamePatch(xx, y, 0, "M_THERML", CR_DEFAULT, VPT_STRETCH);
