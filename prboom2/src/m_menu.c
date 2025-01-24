@@ -2990,25 +2990,26 @@ void M_DrawAutoMap(void)
 const char *gen_pages[] =
 {
   "Video",
+  "Audio",
   "Mouse",
   "Controller",
   "Misc",
-  "Mapping",
+  "Emulation",
   NULL
 };
 
-setup_menu_t audiovideo_settings[], mouse_settings[], controller_settings[], misc_settings[];
-setup_menu_t mapping_settings[], demo_settings_temp[], tas_settings[];
+setup_menu_t gen_video_settings[], gen_audio_settings[], gen_mouse_settings[];
+setup_menu_t gen_controller_settings[], gen_misc_settings[];
+setup_menu_t mapping_settings[];
 
 setup_menu_t* gen_settings[] =
 {
-  audiovideo_settings,
-  mouse_settings,
-  controller_settings,
-  misc_settings,
+  gen_video_settings,
+  gen_audio_settings,
+  gen_mouse_settings,
+  gen_controller_settings,
+  gen_misc_settings,
   mapping_settings,
-  demo_settings_temp,
-  tas_settings,
   NULL
 };
 
@@ -3070,34 +3071,44 @@ static const char* fake_contrast_list[] =
 
 static const char *gl_fade_mode_list[] = { "Normal", "Smooth", NULL };
 
-setup_menu_t audiovideo_settings[] = {
-  { "Video", S_SKIP | S_TITLE, m_null, G_X},
+setup_menu_t gen_video_settings[] = {
   { "Video mode", S_CHOICE | S_STR, m_conf, G_X, dsda_config_videomode, 0, videomodes },
   { "Screen Resolution", S_CHOICE | S_STR, m_conf, G_X, dsda_config_screen_resolution, 0, screen_resolutions_list },
   { "Aspect Ratio", S_CHOICE, m_conf, G_X, dsda_config_render_aspect, 0, render_aspects_list },
   { "Fullscreen Video mode", S_YESNO, m_conf, G_X, dsda_config_use_fullscreen },
   { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, dsda_config_exclusive_fullscreen },
+  EMPTY_LINE,
   { "Vertical Sync", S_YESNO, m_conf, G_X, dsda_config_render_vsync },
   { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   { "Background FPS Limit", S_NUM, m_conf, G_X, dsda_config_background_fps_limit },
   { "Show FPS", S_YESNO,  m_conf, G_X, dsda_config_show_fps },
+  EMPTY_LINE,
   { "Fake Contrast", S_CHOICE, m_conf, G_X, dsda_config_fake_contrast_mode, 0, fake_contrast_list },
   { "GL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list },
-  EMPTY_LINE,
-  { "Sound & Music", S_SKIP | S_TITLE, m_null, G_X},
-  { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
-  { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
-  { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, dsda_config_full_sounds },
-  { "Preferred MIDI player", S_CHOICE | S_STR, m_conf, G_X, dsda_config_snd_midiplayer, 0, midiplayers },
-  { "Mute Audio When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
 
-  NEXT_PAGE(mouse_settings),
+  NEXT_PAGE(gen_audio_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t mouse_settings[] = {
-  { "Mouse Options", S_SKIP | S_TITLE, m_null, G_X},
+setup_menu_t gen_audio_settings[] = {
+  { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
+  { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, dsda_config_full_sounds },
+  { "Play SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
+  { "Mute Audio When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
+  EMPTY_LINE,
+  { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
+  { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
+  { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
+  EMPTY_LINE,
+  { "Preferred MIDI player", S_CHOICE | S_STR, m_conf, G_X, dsda_config_snd_midiplayer, 0, midiplayers },
+
+  PREV_PAGE(gen_video_settings),
+  NEXT_PAGE(gen_mouse_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t gen_mouse_settings[] = {
   { "Enable Mouse", S_YESNO, m_conf, G_X, dsda_config_use_mouse },
   EMPTY_LINE,
   { "Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_mouse_sensitivity_horiz },
@@ -3114,13 +3125,12 @@ setup_menu_t mouse_settings[] = {
   { "Carry Fractional Tics", S_YESNO, m_conf, G_X, dsda_config_mouse_carrytics },
   { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, dsda_config_mouse_stutter_correction },
 
-  PREV_PAGE(audiovideo_settings),
-  NEXT_PAGE(controller_settings),
+  PREV_PAGE(gen_audio_settings),
+  NEXT_PAGE(gen_controller_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t controller_settings[] = {
-  { "Controller Options", S_SKIP | S_TITLE, m_null, G_X},
+setup_menu_t gen_controller_settings[] = {
   { "Enable Controller", S_YESNO, m_conf, G_X, dsda_config_use_game_controller },
   EMPTY_LINE,
   { "Left Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_left_analog_sensitivity_x },
@@ -3138,32 +3148,29 @@ setup_menu_t controller_settings[] = {
   { "Left Trigger Deadzone", S_NUM, m_conf, G_X, dsda_config_left_trigger_deadzone },
   { "Right Trigger Deadzone", S_NUM, m_conf, G_X, dsda_config_right_trigger_deadzone },
 
-  PREV_PAGE(mouse_settings),
-  NEXT_PAGE(misc_settings),
+  PREV_PAGE(gen_mouse_settings),
+  NEXT_PAGE(gen_misc_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t misc_settings[] = {
-  { "Miscellaneous", S_SKIP | S_TITLE, m_null, G_X},
+setup_menu_t gen_misc_settings[] = {
   { "Default skill level", S_CHOICE, m_conf, G_X, dsda_config_default_skill, 0, gen_skillstrings },
   { "Default compatibility level", S_CHOICE, m_conf, G_X, dsda_config_default_complevel, 0, &gen_compstrings[1] },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, dsda_config_cheat_codes },
   EMPTY_LINE,
-  { "Quality Of Life", S_SKIP | S_TITLE, m_null, G_X},
+  TITLE("Quality of Life"),
   { "Rewind Interval (s)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_interval },
   { "Rewind Depth", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_depth },
   { "Rewind Timeout (ms)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_timeout },
+  EMPTY_LINE,
   { "Autosave On Level Start", S_YESNO, m_conf, G_X, dsda_config_auto_save },
   { "Organize My Save Files", S_YESNO, m_conf, G_X, dsda_config_organized_saves },
   { "Skip Quit Prompt", S_YESNO, m_conf, G_X, dsda_config_skip_quit_prompt },
   { "Death Use Action", S_CHOICE, m_conf, G_X, dsda_config_death_use_action, 0, death_use_strings },
   { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
   { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G_X, dsda_config_switch_weapon_on_pickup },
-  { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
-  { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
-  { "Play SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
 
-  PREV_PAGE(controller_settings),
+  PREV_PAGE(gen_controller_settings),
   NEXT_PAGE(mapping_settings),
   FINAL_ENTRY
 };
@@ -3184,8 +3191,7 @@ setup_menu_t mapping_settings[] = {
   { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, dsda_config_comperr_hangsolid },
   { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, dsda_config_comperr_blockmap },
 
-  PREV_PAGE(misc_settings),
-  NEXT_PAGE(demo_settings_temp),
+  PREV_PAGE(gen_misc_settings),
   FINAL_ENTRY
 };
 
@@ -3277,7 +3283,7 @@ setup_menu_t display_options_settings[] = {
   { "Change Palette On Bonus", S_YESNO, m_conf, G_X, dsda_config_palette_onbonus },
   { "Change Palette On Powers", S_YESNO, m_conf, G_X, dsda_config_palette_onpowers },
   EMPTY_LINE,
-  { "Fullscreen Menu Background", S_CHOICE, m_conf, G_X, dsda_config_menu_background, 0, menu_background_list },
+  { "Menu Background", S_CHOICE, m_conf, G_X, dsda_config_menu_background, 0, menu_background_list },
 
   NEXT_PAGE(display_statbar_settings),
   FINAL_ENTRY
