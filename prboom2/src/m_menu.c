@@ -133,7 +133,7 @@
 #define S_FILE     0x00080000 // killough 10/98: Filenames
 #define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
 #define S_CREDIT   0x00200000 // killough 10/98: credit
-// #define S_      0x00400000
+#define S_THERMO   0x00400000 // Slider for choosing a value
 #define S_CHOICE   0x00800000 // this item has several values
 // #define S_      0x01000000
 #define S_NAME     0x02000000
@@ -150,9 +150,9 @@
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
+#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_THERMO|S_NAME)
 
-#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_NAME)
+#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_THERMO|S_NAME)
 
 #define S_STRING (S_FILE|S_NAME)
 
@@ -288,7 +288,7 @@ void M_DrawHelp (void);                                     // phares 5/04/98
 void M_DrawAd(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
-void M_DrawThermo(int x,int y,int thermWidth,int thermDot);
+void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot);
 void M_DrawEmptyCell(menu_t *menu,int item);
 void M_DrawSelCell(menu_t *menu,int item);
 void M_WriteText(int x, int y, const char *string, int cm);
@@ -1168,7 +1168,7 @@ enum
   opt_demos,
   opt_weapons,
   opt_automap,
-  opt_soundvol,
+  // opt_soundvol,
   opt_level_table,
   opt_end
 } options_e;
@@ -1183,7 +1183,7 @@ menuitem_t OptionsMenu[]=
   { 1, "M_DEMOS", M_Demos, 's', "DEMOS" },
   { 1, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
   { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
-  { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" },
+  // { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" }, only available using the keybind
   { 1, "M_LVLTBL", M_LevelTable, 's', "LEVEL TABLE" },
 };
 
@@ -1341,9 +1341,9 @@ void M_DrawSound(void)
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 38, 0, "M_SVOL", CR_DEFAULT, VPT_STRETCH);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,snd_SfxVolume);
+  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,16,snd_SfxVolume);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,snd_MusicVolume);
+  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,16,snd_MusicVolume);
 }
 
 void M_Sound(int choice)
@@ -2000,6 +2000,11 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     M_DrawMenuString(x,y,color);
     return;
   }
+
+  if (flags & S_THERMO) {
+    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
+    return;
+  }
 }
 
 /////////////////////////////
@@ -2012,6 +2017,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 {
   int i = 0;
   int end_y;
+  int offset_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
   int scroll_i = 0;
   int current_i = 0;
   int max_i = 0;
@@ -2052,18 +2058,19 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 
   i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
-    int y;
+    int desc_y;
+    int set_y;
     dboolean skip_entry = false;
 
     if (src->m_flags & (S_NEXT | S_PREV)) {
-      y = 200 - menu_font->line_height - 2;
+      desc_y = 200 - menu_font->line_height - 2;
     }
     else if (src->m_flags & S_RESET_Y) {
       skip_entry = true;
       i = 0;
     }
     else {
-      y = base_y + (i - scroll_i) * menu_font->line_height;
+      desc_y = base_y + (i - scroll_i) * menu_font->line_height + offset_y;
 
       if (i - scroll_i < 0 || i - scroll_i > limit_i)
         skip_entry = true;
@@ -2074,13 +2081,20 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     if (skip_entry)
       continue;
 
+    set_y = desc_y;
+    if (src->m_flags & S_THERMO)
+    {
+      desc_y += 3;
+      offset_y += 6;
+    }
+
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)
-      M_DrawItem(src, y);
+      M_DrawItem(src, desc_y);
 
     // See if we're to draw the setting (right-hand part)
     if (src->m_flags & S_SHOWSET)
-      M_DrawSetting(src, y);
+      M_DrawSetting(src, set_y);
   }
 }
 
@@ -2163,7 +2177,7 @@ static void M_DrawInstructions(void)
   // are changing an item or just sitting on it.
 
   if (setup_select) {
-    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_FILE | S_CHOICE | S_NAME)) {
+    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_FILE | S_CHOICE | S_THERMO | S_NAME)) {
       case S_INPUT:
         M_DrawInstructionString(cr_info_edit, "Press key or button for this action");
         break;
@@ -2186,6 +2200,9 @@ static void M_DrawInstructions(void)
         M_DrawInstructionString(cr_info_edit, "Type/edit filename and Press ENTER");
         break;
       case S_CHOICE:
+        M_DrawInstructionString(cr_info_edit, "Press left or right to choose");
+        break;
+      case S_THERMO:
         M_DrawInstructionString(cr_info_edit, "Press left or right to choose");
         break;
       case S_NAME:
@@ -3013,7 +3030,7 @@ setup_menu_t* gen_settings[] =
   NULL
 };
 
-#define G_X 226
+#define G_X 200
 
 static const char *videomodes[] = {
   "Software",
@@ -3092,9 +3109,12 @@ setup_menu_t gen_video_settings[] = {
 };
 
 setup_menu_t gen_audio_settings[] = {
+  { "SFX Volume", S_THERMO, m_conf, G_X, dsda_config_sfx_volume},
+  { "Music Volume", S_THERMO, m_conf, G_X, dsda_config_music_volume},
+  EMPTY_LINE,
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, dsda_config_full_sounds },
-  { "Play SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
+  { "SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
   { "Mute Audio When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
   EMPTY_LINE,
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
@@ -3295,7 +3315,7 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
   { "Single Key Display", S_YESNO, m_conf, DM_X, dsda_config_sts_traditional_keys },
   EMPTY_LINE,
   { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
-  { "Use Red Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
+  { "Colored Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
   { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
   { "Health Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow },
   { "Health Good/Extra", S_NUM, m_conf, DM_X, dsda_config_hud_health_green },
@@ -4924,6 +4944,26 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
       }
       return true;
     }
+
+    if (ptr1->m_flags & S_THERMO)
+    {
+      if (action == MENU_LEFT) {
+        if (dsda_IntConfig(ptr1->config_id) > 0) {
+          dsda_DecrementIntConfig(ptr1->config_id, true);
+          S_StartVoidSound(g_sfx_menu);
+        }
+      }
+      else if (action == MENU_RIGHT) {
+        if (dsda_IntConfig(ptr1->config_id) < 15) {
+          dsda_IncrementIntConfig(ptr1->config_id, true);
+          S_StartVoidSound(g_sfx_menu);
+        }
+      }
+      else if (action == MENU_ENTER) {
+        M_SelectDone(ptr1);
+      }
+      return true;
+    }
   }
 
   return false;
@@ -6190,50 +6230,38 @@ void M_StopMessage(void)
 // proff/nicolas 09/20/98 -- changed for hi-res
 // CPhipps - patch drawing updated
 //
-void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
+void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
 {
-  int          xx;
-  int           i;
+  int xx;
+  int i;
+  int dot_offset;
   char num[4];
-  int horizScaler; //Used to allow more thermo range for mouse sensitivity.
 
   if (raven) return MN_DrawSlider(x, y, thermWidth, thermDot);
 
-  /*
-   * Modification By Barry Mead to allow the Thermometer to have vastly
-   * larger ranges. (the thermWidth parameter can now have a value as
-   * large as 200.      Modified 1-9-2000  Originally I used it to make
-   * the sensitivity range for the mouse better. It could however also
-   * be used to improve the dynamic range of music and sound affect
-   * volume controls for example.
-   */
-  thermWidth = (thermWidth > 200) ? 200 : thermWidth; //Clamp to 200 max
-  horizScaler = (thermWidth > 23) ? (200 / thermWidth) : 8; //Dynamic range
   xx = x;
   V_DrawNamePatch(xx, y, 0, "M_THERML", CR_DEFAULT, VPT_STRETCH);
   xx += 8;
   for (i=0;i<thermWidth;i++)
-    {
+  {
     V_DrawNamePatch(xx, y, 0, "M_THERMM", CR_DEFAULT, VPT_STRETCH);
-    xx += horizScaler;
-    }
-
-  xx += (8 - horizScaler);  /* make the right end look even */
-
+    xx += 8;
+  }
   V_DrawNamePatch(xx, y, 0, "M_THERMR", CR_DEFAULT, VPT_STRETCH);
+
+  if (thermDot >= thermRange)
+  {
+      thermDot = thermRange - 1;
+  }
+
+  dot_offset = 8 * thermDot * thermWidth / thermRange;
+  dot_offset -= thermRange / thermWidth;
+  V_DrawNamePatch(x + 8 + dot_offset, y, 0, "M_THERMO", CR_DEFAULT, VPT_STRETCH);
 
   // [crispy] print the value
   snprintf(num, sizeof(num), "%3d", thermDot);
   strcpy(menu_buffer, num);
-  M_DrawMenuString(xx + 12, y + 3, cr_value_edit);
-
-  // [crispy]
-  if (thermDot >= thermWidth)
-  {
-    thermDot = thermWidth - 1;
-  }
-
-  V_DrawNamePatch((x+8)+thermDot*horizScaler,y,0,"M_THERMO",CR_DEFAULT,VPT_STRETCH);
+  M_DrawMenuString(xx + 4, y + 3, cr_value_edit);
 }
 
 //
