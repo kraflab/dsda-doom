@@ -2722,53 +2722,60 @@ void M_DrawWeapons(void)
 
 // Screen table definitions
 
-setup_menu_t demo_settings1[];
-//e6y
-setup_menu_t demo_settings2[];
-
-setup_menu_t* demo_settings[] =
+const char *demos_pages[] =
 {
-  demo_settings1,
-  //e6y
-  demo_settings2,
+  "Options",
+  "TAS",
   NULL
 };
 
-setup_menu_t demo_settings1[] =  // Demos Settings screen
-{
-  { "STATUS BAR", S_SKIP | S_TITLE, m_null, DM_X},
-  { "USE RED NUMBERS", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
-  { "GRAY %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
-  { "SINGLE KEY DISPLAY", S_YESNO, m_conf, DM_X, dsda_config_sts_traditional_keys },
-  EMPTY_LINE,
-  { "HEADS-UP DISPLAY", S_SKIP | S_TITLE, m_null, DM_X},
-  { "SHOW MESSAGES", S_YESNO, m_conf, DM_X, dsda_config_show_messages },
-  { "HEALTH LOW/OK", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
-  { "HEALTH OK/GOOD", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow },
-  { "HEALTH GOOD/EXTRA", S_NUM, m_conf, DM_X, dsda_config_hud_health_green },
-  { "AMMO LOW/OK", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_red },
-  { "AMMO OK/GOOD", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_yellow },
-  { "REPORT REVEALED SECRETS", S_YESNO, m_conf, DM_X, dsda_config_hudadd_secretarea },
-  { "DEMO PLAYBACK PROGRESS BAR", S_YESNO, m_conf, DM_X, dsda_config_hudadd_demoprogressbar },
+setup_menu_t demos_demos_settings[];
+setup_menu_t demos_tas_settings[];
 
-  NEXT_PAGE(demo_settings2),
+setup_menu_t* demos_settings[] =
+{
+  demos_demos_settings,
+  demos_tas_settings,
+  NULL
+};
+
+setup_menu_t demos_demos_settings[] =  // Demos Settings screen
+{
+  { "Strict Mode", S_YESNO, m_conf, DM_X, dsda_config_strict_mode },
+  { "Cycle Ghost Colors", S_YESNO, m_conf, DM_X, dsda_config_cycle_ghost_colors },
+  { "Show Demo Attempts", S_YESNO, m_conf, DM_X, dsda_config_show_demo_attempts },
+  { "Show Split Data", S_YESNO, m_conf, DM_X, dsda_config_show_split_data },
+  { "Text File Author", S_NAME, m_conf, DM_X, dsda_config_player_name },
+  { "Quickstart Cache Tics", S_NUM, m_conf, DM_X, dsda_config_quickstart_cache_tics },
+  { "Smooth Demo Playback", S_YESNO, m_conf, DM_X, dsda_config_demo_smoothturns },
+  { "Smooth Demo Playback Factor", S_NUM, m_conf, DM_X, dsda_config_demo_smoothturnsfactor },
+  { "Show Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
+  { "Organize Failed Demos", S_YESNO,  m_conf, DM_X, dsda_config_organize_failed_demos },
+  EMPTY_LINE,
+  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, DM_X},
+  { "Automatic Pistol Start", S_YESNO, m_conf, DM_X, dsda_config_pistol_start },
+  { "Respawn Monsters", S_YESNO, m_conf, DM_X, dsda_config_respawn_monsters },
+  { "Fast Monsters", S_YESNO, m_conf, DM_X, dsda_config_fast_monsters },
+  { "No Monsters", S_YESNO, m_conf, DM_X, dsda_config_no_monsters },
+  { "Coop Spawns", S_YESNO, m_conf, DM_X, dsda_config_coop_spawns },
+  { "Allow Jumping", S_YESNO, m_conf, DM_X, dsda_config_allow_jumping },
+  { "OpenGL Show Health Bars", S_YESNO, m_conf, DM_X, dsda_config_gl_health_bar },
+
+  NEXT_PAGE(demos_tas_settings),
   FINAL_ENTRY
 };
 
-//e6y
-#define HUD_X 284
-
-setup_menu_t demo_settings2[] =
+setup_menu_t demos_tas_settings[] =
 {
-  { "CROSSHAIR SETTINGS", S_SKIP | S_TITLE, m_null, HUD_X},
-  { "SCALE CROSSHAIR", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale },
-  { "CHANGE CROSSHAIR COLOR BY PLAYER HEALTH", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
-  { "CHANGE CROSSHAIR COLOR ON TARGET", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
-  { "LOCK CROSSHAIR ON TARGET", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_lock_target },
-  { "DEFAULT CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color },
-  { "TARGET CROSSHAIR COLOR", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color },
+  { "Wipe At Full Speed", S_YESNO, m_conf, DM_X, dsda_config_wipe_at_full_speed },
+  { "Show Command Display", S_YESNO, m_conf, DM_X, dsda_config_command_display },
+  { "Command History", S_NUM, m_conf, DM_X, dsda_config_command_history_size },
+  { "Hide Empty Commands", S_YESNO, m_conf, DM_X, dsda_config_hide_empty_commands },
+  { "Show Coordinate Display", S_YESNO, m_conf, DM_X, dsda_config_coordinate_display },
+  { "Permanent Strafe50", S_YESNO, m_conf, DM_X, dsda_config_movement_strafe50 },
+  { "Strafe50 On Turns", S_YESNO, m_conf, DM_X, dsda_config_movement_strafe50onturns },
 
-  PREV_PAGE(demo_settings1),
+  PREV_PAGE(demos_demos_settings),
   FINAL_ENTRY
 };
 
@@ -2778,7 +2785,7 @@ setup_menu_t demo_settings2[] =
 
 void M_Demos(int choice)
 {
-  M_EnterSetup(&DemosDef, &set_demos_active, demo_settings[0]);
+  M_EnterSetup(&DemosDef, &set_demos_active, demos_settings[0]);
 }
 
 // The drawing part of the Demos Setup initialization. Draw the
@@ -2793,6 +2800,7 @@ void M_DrawDemos(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(59, 2, "M_DEMOS", CR_DEFAULT, "DEMOS", cr_title);
   M_DrawInstructions();
+  M_DrawPages(demos_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2986,8 +2994,6 @@ const char *gen_pages[] =
   "Controller",
   "Misc",
   "Mapping",
-  "Demo",
-  "TAS",
   NULL
 };
 
@@ -3183,47 +3189,6 @@ setup_menu_t mapping_settings[] = {
   FINAL_ENTRY
 };
 
-setup_menu_t demo_settings_temp[] = {
-  { "Demo Settings", S_SKIP | S_TITLE, m_null, G_X},
-  { "Strict Mode", S_YESNO, m_conf, G_X, dsda_config_strict_mode },
-  { "Cycle Ghost Colors", S_YESNO, m_conf, G_X, dsda_config_cycle_ghost_colors },
-  { "Show Demo Attempts", S_YESNO, m_conf, G_X, dsda_config_show_demo_attempts },
-  { "Show Split Data", S_YESNO, m_conf, G_X, dsda_config_show_split_data },
-  { "Text File Author", S_NAME, m_conf, G_X, dsda_config_player_name },
-  { "Quickstart Cache Tics", S_NUM, m_conf, G_X, dsda_config_quickstart_cache_tics },
-  { "Smooth Demo Playback", S_YESNO, m_conf, G_X, dsda_config_demo_smoothturns },
-  { "Smooth Demo Playback Factor", S_NUM, m_conf, G_X, dsda_config_demo_smoothturnsfactor },
-  { "Show Precise Intermission Time", S_YESNO,  m_conf, G_X, dsda_config_show_level_splits },
-  { "Organize Failed Demos", S_YESNO,  m_conf, G_X, dsda_config_organize_failed_demos },
-  EMPTY_LINE,
-  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, G_X},
-  { "Automatic Pistol Start", S_YESNO, m_conf, G_X, dsda_config_pistol_start },
-  { "Respawn Monsters", S_YESNO, m_conf, G_X, dsda_config_respawn_monsters },
-  { "Fast Monsters", S_YESNO, m_conf, G_X, dsda_config_fast_monsters },
-  { "No Monsters", S_YESNO, m_conf, G_X, dsda_config_no_monsters },
-  { "Coop Spawns", S_YESNO, m_conf, G_X, dsda_config_coop_spawns },
-  { "Allow Jumping", S_YESNO, m_conf, G_X, dsda_config_allow_jumping },
-  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
-
-  PREV_PAGE(mapping_settings),
-  NEXT_PAGE(tas_settings),
-  FINAL_ENTRY
-};
-
-setup_menu_t tas_settings[] = {
-  { "TAS Settings", S_SKIP | S_TITLE, m_null, G_X},
-  { "Wipe At Full Speed", S_YESNO, m_conf, G_X, dsda_config_wipe_at_full_speed },
-  { "Show Command Display", S_YESNO, m_conf, G_X, dsda_config_command_display },
-  { "Command History", S_NUM, m_conf, G_X, dsda_config_command_history_size },
-  { "Hide Empty Commands", S_YESNO, m_conf, G_X, dsda_config_hide_empty_commands },
-  { "Show Coordinate Display", S_YESNO, m_conf, G_X, dsda_config_coordinate_display },
-  { "Permanent Strafe50", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50 },
-  { "Strafe50 On Turns", S_YESNO, m_conf, G_X, dsda_config_movement_strafe50onturns },
-
-  PREV_PAGE(demo_settings_temp),
-  FINAL_ENTRY
-};
-
 // To (un)set fullscreen video after menu changes
 void M_ChangeFullScreen(void)
 {
@@ -3356,6 +3321,8 @@ setup_menu_t display_hud_settings[] =  // Demos Settings screen
 
 static const char *crosshair_str[] =
   { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big", NULL };
+
+#define HUD_X 284
 
 setup_menu_t display_crosshair_settings[] =
 {
