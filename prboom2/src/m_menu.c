@@ -1698,8 +1698,8 @@ menu_t LevelTableDef =
 
 #define CHIP_SIZE 8 // size of color block for colored items
 
-#define COLORPALXORIG ((320 - 16*(CHIP_SIZE+1))/2)
-#define COLORPALYORIG ((200 - 16*(CHIP_SIZE+1))/2)
+#define COLORPALXORIG ((320 - 16*(CHIP_SIZE))/2)
+#define COLORPALYORIG ((200 - 16*(CHIP_SIZE))/2)
 
 #define PAL_BLACK   0
 #define PAL_WHITE   4
@@ -2935,7 +2935,7 @@ void M_Automap(int choice)
 
 int color_palette_x; // X position of the cursor on the color palette
 int color_palette_y; // Y position of the cursor on the color palette
-byte palette_background[16*(CHIP_SIZE+1)+8];
+byte palette_background[16*(CHIP_SIZE)+8];
 
 // M_DrawColPal() draws the color palette when the user needs to select a
 // color.
@@ -2956,8 +2956,8 @@ static void M_DrawColPal(void)
   // Draw the cursor around the paint chip
   // (cpx,cpy) is the upper left-hand corner of the paint chip
 
-  cpx = COLORPALXORIG+color_palette_x*(CHIP_SIZE+1)-1;
-  cpy = COLORPALYORIG+color_palette_y*(CHIP_SIZE+1)-1;
+  cpx = COLORPALXORIG+color_palette_x*(CHIP_SIZE)-1;
+  cpy = COLORPALYORIG+color_palette_y*(CHIP_SIZE)-1;
   // proff 12/6/98: Drawing of colorchips completly changed for hi-res, it now uses a patch
   V_DrawNamePatch(cpx,cpy,0,"M_PALSEL",CR_DEFAULT,VPT_STRETCH); // PROFF_GL_FIX
 }
