@@ -382,6 +382,7 @@ const char shiftxform[] =
 };
 
 static int cr_title;
+static int cr_title_hightlight;
 static int cr_label;
 static int cr_label_highlight;
 static int cr_label_edit;
@@ -395,6 +396,7 @@ static int cr_warning;
 static void M_LoadTextColors(void)
 {
   cr_title = dsda_TextCR(dsda_tc_menu_title);
+  cr_title_hightlight = dsda_TextCR(dsda_tc_menu_title_hightlight);
   cr_label = dsda_TextCR(dsda_tc_menu_label);
   cr_label_highlight = dsda_TextCR(dsda_tc_menu_label_highlight);
   cr_label_edit = dsda_TextCR(dsda_tc_menu_label_edit);
@@ -2133,13 +2135,18 @@ static void M_DrawPages(const char **pages)
     w = M_GetPixelWidth(pages[i]);
 
     strcpy(menu_buffer, pages[i]);
-    M_DrawMenuString(x, PAGES_Y , cr_title);
 
     if (i == current_page)
     {
+      M_DrawMenuString(x, PAGES_Y , cr_title_hightlight);
+
       int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, PAL_WHITE);
+      V_FillRect(0, xx, yy, ww, hh, playpal_white);
+    }
+    else
+    {
+      M_DrawMenuString(x, PAGES_Y , cr_title);
     }
 
     x += w + 6;
