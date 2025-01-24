@@ -420,6 +420,14 @@ static void M_LoadMenuFont(void)
 
 /////////////////////////////
 //
+// The menu_buffer is used to construct strings for display on the screen.
+
+#define MENU_BUFFER_SIZE 128
+
+static char menu_buffer[MENU_BUFFER_SIZE];
+
+/////////////////////////////
+//
 // MAIN MENU
 //
 
@@ -1336,14 +1344,22 @@ menu_t SoundDef =
 
 void M_DrawSound(void)
 {
+  char num[4];
+
   if (raven) return MN_DrawSound();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 38, 0, "M_SVOL", CR_DEFAULT, VPT_STRETCH);
 
   M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,16,snd_SfxVolume);
+  snprintf(num, sizeof(num), "%3d", snd_SfxVolume);
+  strcpy(menu_buffer, num);
+  M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(sfx_vol+1) + 3, cr_value_edit);
 
   M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,16,snd_MusicVolume);
+  snprintf(num, sizeof(num), "%3d", snd_MusicVolume);
+  strcpy(menu_buffer, num);
+  M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(music_vol+1) + 3, cr_value_edit);
 }
 
 void M_Sound(int choice)
@@ -1586,14 +1602,6 @@ static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
   while (current_setup_menu[set_menu_itemon++].m_flags & S_SKIP);
   current_setup_menu[--set_menu_itemon].m_flags |= S_HILITE;
 }
-
-/////////////////////////////
-//
-// The menu_buffer is used to construct strings for display on the screen.
-
-#define MENU_BUFFER_SIZE 128
-
-static char menu_buffer[MENU_BUFFER_SIZE];
 
 /////////////////////////////
 //
@@ -2003,6 +2011,12 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
   if (flags & S_THERMO) {
     M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
+
+    sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
+
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+      strcat(menu_buffer, " <");
+    M_DrawMenuString(x + 80, y + 3, color);
     return;
   }
 }
@@ -6235,7 +6249,6 @@ void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
   int xx;
   int i;
   int dot_offset;
-  char num[4];
 
   if (raven) return MN_DrawSlider(x, y, thermWidth, thermDot);
 
@@ -6257,11 +6270,6 @@ void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
   dot_offset = 8 * thermDot * thermWidth / thermRange;
   dot_offset -= thermRange / thermWidth;
   V_DrawNamePatch(x + 8 + dot_offset, y, 0, "M_THERMO", CR_DEFAULT, VPT_STRETCH);
-
-  // [crispy] print the value
-  snprintf(num, sizeof(num), "%3d", thermDot);
-  strcpy(menu_buffer, num);
-  M_DrawMenuString(xx + 4, y + 3, cr_value_edit);
 }
 
 //
