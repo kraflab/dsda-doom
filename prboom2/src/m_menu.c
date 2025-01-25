@@ -2936,15 +2936,26 @@ void M_DrawDemos(void)
 //
 // The Automap tables.
 
-#define AU_X    275
+#define AU_X    240
 
-setup_menu_t auto_settings1[];
+const char *auto_pages[] =
+{
+  "Options",
+  "Appearance",
+  "Colors1",
+  "Colors2",
+  NULL
+};
+
+setup_menu_t auto_options_settings[];
+setup_menu_t auto_appearance_settings[];
 setup_menu_t auto_settings2[];
 setup_menu_t auto_settings3[];
 
 setup_menu_t* auto_settings[] =
 {
-  auto_settings1,
+  auto_options_settings,
+  auto_appearance_settings,
   auto_settings2,
   auto_settings3,
   NULL
@@ -2968,42 +2979,47 @@ static const char *map_trail_mode_list[] =
   NULL
 };
 
-setup_menu_t auto_settings1[] =  // 1st AutoMap Settings screen
+setup_menu_t auto_options_settings[] =
 {
-  { "Automap Components", S_SKIP | S_TITLE, m_null, AU_X},
-  { "Stat Totals", S_YESNO, m_conf, AU_X, dsda_config_map_totals },
-  { "Player Coordinates", S_YESNO, m_conf, AU_X, dsda_config_map_coordinates },
-  { "Level / Total Time", S_YESNO, m_conf, AU_X, dsda_config_map_time },
-  { "Level Title", S_YESNO, m_conf, AU_X, dsda_config_map_title },
-  EMPTY_LINE,
   { "Locked doors blink", S_YESNO, m_conf, AU_X, dsda_config_map_blinking_locks },
   { "Show Secrets only after entering", S_YESNO, m_conf, AU_X, dsda_config_map_secret_after },
   { "Grid cell size 8..256, -1 for autosize", S_NUM, m_conf, AU_X, dsda_config_map_grid_size },
   { "Pan speed (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_pan_speed },
   { "Zoom speed (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_scroll_speed },  
   { "Use mouse wheel for zooming", S_YESNO, m_conf, AU_X, dsda_config_map_wheel_zoom },
+  { "Show Minimap", S_YESNO, m_conf, AU_X, dsda_config_show_minimap },
+  EMPTY_LINE,
+  { "Components", S_SKIP | S_TITLE, m_null, AU_X},
+  { "Stat Totals", S_YESNO, m_conf, AU_X, dsda_config_map_totals },
+  { "Player Coordinates", S_YESNO, m_conf, AU_X, dsda_config_map_coordinates },
+  { "Level / Total Time", S_YESNO, m_conf, AU_X, dsda_config_map_time },
+  { "Level Title", S_YESNO, m_conf, AU_X, dsda_config_map_title },
+
+  NEXT_PAGE(auto_appearance_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t auto_appearance_settings[] =
+{
   { "Enable textured display", S_YESNO, m_conf, AU_X, dsda_config_map_textured },
   { "Things appearance", S_CHOICE, m_conf, AU_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
-  { "Show Minimap", S_YESNO, m_conf, AU_X, dsda_config_show_minimap },
   EMPTY_LINE,
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X},
   { "Textured automap", S_NUM, m_conf, AU_X, dsda_config_map_textured_trans },
   { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_textured_overlay_trans },
   { "Lines in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_lines_overlay_trans },
+  EMPTY_LINE,
+  { "Trail", S_SKIP | S_TITLE, m_null, AU_X},
+  { "Player Trail Mode", S_CHOICE, m_conf, AU_X, dsda_config_map_trail_mode, 0, map_trail_mode_list },
+  { "Player Trail Size", S_NUM, m_conf, AU_X, dsda_config_map_trail_size },
 
+  PREV_PAGE(auto_options_settings),
   NEXT_PAGE(auto_settings2),
   FINAL_ENTRY
 };
 
-#define AU_X2 180
-
 setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
 {
-  { "Tools", S_SKIP | S_TITLE, m_null, AU_X2},
-  { "Player Trail Mode", S_CHOICE, m_conf, AU_X2, dsda_config_map_trail_mode, 0, map_trail_mode_list },
-  { "Player Trail Size", S_NUM, m_conf, AU_X2, dsda_config_map_trail_size },
-  EMPTY_LINE,
-  EMPTY_LINE,
   {"background", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_back},
   {"grid lines", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_grid},
   {"normal 1s wall", S_COLOR, m_conf,AU_X, dsda_config_mapcolor_wall},
@@ -3017,7 +3033,7 @@ setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
   {"blue door"                          ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_bdor},
   {"yellow door"                        ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_ydor},
 
-  PREV_PAGE(auto_settings1),
+  PREV_PAGE(auto_appearance_settings),
   NEXT_PAGE(auto_settings3),
   FINAL_ENTRY
 };
@@ -3101,6 +3117,7 @@ void M_DrawAutoMap(void)
   // CPhipps - patch drawing updated
   M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", cr_title);
   M_DrawInstructions();
+  M_DrawPages(auto_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 
   // If a color is being selected, need to show color paint chips
