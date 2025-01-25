@@ -1270,7 +1270,7 @@ void I_UpdateVideoMode(void)
   }
 
   // [FG] aspect ratio correction for the canonical video modes
-  if (SCREENHEIGHT == 200 || SCREENHEIGHT == 400)
+  if ((SCREENHEIGHT == 200 || SCREENHEIGHT == 400) && dsda_IntConfig(dsda_config_aspect_ratio_correction))
   {
     ACTUALHEIGHT = 6*SCREENHEIGHT/5;
   }
