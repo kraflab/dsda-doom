@@ -2184,6 +2184,18 @@ static void M_DrawCarouselPages(const char **pages)
   }
   x = (320 - x) / 2;
 
+  // Draw the arrows on the sides
+  if (start_i > 0)
+  {
+    strcpy(menu_buffer, "<-");
+    M_DrawMenuString(x - 16, PAGES_Y , cr_title);
+  }
+  if (end_i < i)
+  {
+    strcpy(menu_buffer, "->");
+    M_DrawMenuString(320 - x, PAGES_Y , cr_title);
+  }
+
   for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
   {
     w = M_GetPixelWidth(pages[i]);
@@ -2296,8 +2308,8 @@ static void M_DrawInstructions(void)
 }
 
 #define TITLE(page_name) { page_name, S_SKIP | S_TITLE, m_null, G_X}
-#define NEXT_PAGE(page) { "->", S_SKIP | S_NEXT, m_null, 318, .menu = page }
-#define PREV_PAGE(page) { "<-", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
+#define NEXT_PAGE(page) { "", S_SKIP | S_NEXT, m_null, 318, .menu = page }
+#define PREV_PAGE(page) { "", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
@@ -2337,9 +2349,9 @@ const char *keys_pages[] =
   "Misc",
   "Menus",
   "Cheats",
-  "Raven Mov.",
-  "Heretic Inv.",
-  "Hexen Inv.",
+  "Raven",
+  "Heretic Inv",
+  "Hexen Inv",
   "dsda-doom keys",
   "Scripts",
   "Build Mode (1)",
@@ -2347,11 +2359,12 @@ const char *keys_pages[] =
   NULL
 };
 
-setup_menu_t keys_settings1[];
+setup_menu_t keys_movement_settings[];
 setup_menu_t keys_settings2[];
 setup_menu_t keys_settings3[];
 setup_menu_t keys_settings4[];
 setup_menu_t keys_settings5[];
+setup_menu_t keys_misc_settings[];
 setup_menu_t keys_settings6[];
 setup_menu_t keys_settings7[];
 setup_menu_t raven_keys_settings[];
@@ -2366,11 +2379,12 @@ setup_menu_t build_keys_settings2[];
 
 setup_menu_t* keys_settings[] =
 {
-  keys_settings1,
+  keys_movement_settings,
   keys_settings2,
   keys_settings3,
   keys_settings4,
   keys_settings5,
+  keys_misc_settings,
   keys_settings6,
   keys_settings7,
   raven_keys_settings,
@@ -2399,11 +2413,10 @@ setup_menu_t* keys_settings[] =
 // to the previous screen. If you leave these off, you can't move from
 // screen to screen.
 
-setup_menu_t keys_settings1[] =  // Key Binding screen strings
+setup_menu_t keys_movement_settings[] =  // Key Binding screen strings
 {
   { "INPUT PROFILE", S_NUM, m_conf, KB_X, dsda_config_input_profile },
   EMPTY_LINE,
-  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KB_X},
   {"FORWARD"     ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_forward},
   {"BACKWARD"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_backward},
   {"TURN LEFT"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_turnleft},
@@ -2426,6 +2439,14 @@ setup_menu_t keys_settings1[] =  // Key Binding screen strings
 
 setup_menu_t keys_settings2[] =  // Key Binding screen strings
 {
+  {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_savegame},
+  {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_loadgame},
+  {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quicksave},
+  {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quickload},
+  {"LEVEL TABLE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_level_table},
+  {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_endgame},
+  {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quit},
+  EMPTY_LINE,
   {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KB_X},
 
   // phares 4/13/98:
@@ -2450,24 +2471,14 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   {"LARGER VIEW" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomin},
   {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomout},
   {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_screenshot},
-  EMPTY_LINE,
-  {"GAME"        ,S_SKIP|S_TITLE,m_null,KB_X},
-  {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_savegame},
-  {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_loadgame},
-  {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quicksave},
-  {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quickload},
-  {"LEVEL TABLE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_level_table},
-  {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_endgame},
-  {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quit},
 
-  PREV_PAGE(keys_settings1),
+  PREV_PAGE(keys_movement_settings),
   NEXT_PAGE(keys_settings3),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings3[] =  // Key Binding screen strings
 {
-  {"WEAPONS" ,S_SKIP|S_TITLE,m_null,KB_X},
   {"FIST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon1},
   {"PISTOL"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon2},
   {"SHOTGUN" ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon3},
@@ -2490,7 +2501,6 @@ setup_menu_t keys_settings3[] =  // Key Binding screen strings
 
 setup_menu_t keys_settings4[] =  // Key Binding screen strings
 {
-  {"AUTOMAP"    ,S_SKIP|S_TITLE,m_null,KB_X},
   {"FOLLOW"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_follow},
   {"ZOOM IN"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomin},
   {"ZOOM OUT"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomout},
@@ -2515,32 +2525,36 @@ setup_menu_t keys_settings4[] =  // Key Binding screen strings
 //e6y
 setup_menu_t keys_settings5[] =  // Key Binding screen strings
 {
-  {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X},
-  {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_up},
-  {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_down},
-  {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_default},
-  EMPTY_LINE,
-  {"DEMOS"                ,S_SKIP|S_TITLE,m_null,KB_X},
   {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_skip},
   {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_endlevel},
   {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_walkcamera},
   {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_join_demo},
   {"RESTART DEMO ATTEMPT" ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
-  EMPTY_LINE,
-  {"MISC"                 ,S_SKIP|S_TITLE,m_null,KB_X},
+
+  PREV_PAGE(keys_settings4),
+  NEXT_PAGE(keys_misc_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t keys_misc_settings[] =
+{
   {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
   {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_nextlevel},
   {"PREVIOUS LEVEL"       ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_prevlevel},
   {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_showalive},
+  EMPTY_LINE,
+  {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_up},
+  {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_down},
+  {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_default},
 
-  PREV_PAGE(keys_settings4),
+  PREV_PAGE(keys_settings5),
   NEXT_PAGE(keys_settings6),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings6[] =
 {
-  {"MENUS"       ,S_SKIP|S_TITLE,m_null,KB_X},
   {"NEXT ITEM"   ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_down},
   {"PREV ITEM"   ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_up},
   {"LEFT"        ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_left},
@@ -2553,14 +2567,13 @@ setup_menu_t keys_settings6[] =
   {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X},
   {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_repeat_message},
 
-  PREV_PAGE(keys_settings5),
+  PREV_PAGE(keys_misc_settings),
   NEXT_PAGE(keys_settings7),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_settings7[] =
 {
-  { "CHEATS", S_SKIP | S_TITLE, m_null, KB_X},
   { "God Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_iddqd },
   { "Ammo & Keys", S_INPUT, m_scrn, KB_X, 0, dsda_input_idkfa },
   { "Ammo", S_INPUT, m_scrn, KB_X, 0, dsda_input_idfa },
