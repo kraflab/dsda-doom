@@ -1211,6 +1211,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "boom_translucent_sprites", dsda_config_boom_translucent_sprites,
     CONF_BOOL(1), NULL, NOT_STRICT, deh_changeCompTranslucency
   },
+  [dsda_config_vanilla_translucent_ghosts] = {
+    "vanilla_translucent_ghosts", dsda_config_vanilla_translucent_ghosts,
+    CONF_BOOL(0), NULL, NOT_STRICT
+  },
   [dsda_config_show_alive_monsters] = { // never persisted
     "show_alive_monsters", dsda_config_show_alive_monsters,
     dsda_config_int, 0, 2, { 0 }, NULL, STRICT_INT(0)
