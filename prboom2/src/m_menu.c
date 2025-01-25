@@ -1564,6 +1564,7 @@ void M_SizeDisplay(int choice)
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
 int current_page;
+int previous_page;
 
 // save the setup menu's itemon value in the S_END element's x coordinate
 
@@ -2153,6 +2154,59 @@ static void M_DrawPages(const char **pages)
   }
 }
 
+static void M_DrawCarouselPages(const char **pages)
+{
+  int x = 0;
+  int w = 0;
+  int i = 0;
+  int start_i = 0;
+  int end_i = 3;
+
+  if (current_page > 1)
+  {
+    if (previous_page < current_page)
+    {
+      start_i = current_page - 2;
+      end_i = current_page + 1;
+    }
+    else if (previous_page > current_page)
+    {
+      start_i = current_page - 1;
+      end_i = current_page + 2;
+    }
+  }
+
+  // Find the initial offset, to make the text centered
+  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
+  {
+    w = M_GetPixelWidth(pages[i]);
+    x += w + 6;
+  }
+  x = (320 - x) / 2;
+
+  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
+  {
+    w = M_GetPixelWidth(pages[i]);
+
+    strcpy(menu_buffer, pages[i]);
+
+    if (i == current_page)
+    {
+      M_DrawMenuString(x, PAGES_Y , cr_title_hightlight);
+
+      int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
+      V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+      V_FillRect(0, xx, yy, ww, hh, playpal_white);
+    }
+    else
+    {
+      M_DrawMenuString(x, PAGES_Y , cr_title);
+    }
+
+    x += w + 6;
+  }
+}
+
 /////////////////////////////
 //
 // Data used to draw the "are you sure?" dialogue box when resetting
@@ -2248,7 +2302,7 @@ static void M_DrawInstructions(void)
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
-#define DEFAULT_LIST_Y (4 * menu_font->line_height)
+#define DEFAULT_LIST_Y (4.5 * menu_font->line_height)
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
@@ -2260,6 +2314,7 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
   colorbox_active = false;
   setup_gather = false;
   current_page = 0;
+  previous_page = 0;
 
   M_UpdateSetupMenu(setup_menu);
 }
@@ -2271,6 +2326,26 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
 #define KB_X  160
 
 // Definitions of the (in this case) four key binding screens.
+
+const char *keys_pages[] =
+{
+  "Movement",
+  "Game",
+  "Weapons",
+  "Automap",
+  "Demos",
+  "Misc",
+  "Menus",
+  "Cheats",
+  "Raven Mov.",
+  "Heretic Inv.",
+  "Hexen Inv.",
+  "dsda-doom keys",
+  "Scripts",
+  "Build Mode (1)",
+  "Build Mode (2)",
+  NULL
+};
 
 setup_menu_t keys_settings1[];
 setup_menu_t keys_settings2[];
@@ -2683,6 +2758,7 @@ void M_DrawKeybnd(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", cr_title);
   M_DrawInstructions();
+  M_DrawCarouselPages(keys_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -5141,6 +5217,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
         S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        previous_page = current_page;
         current_page--;
         return true;
       }
@@ -5160,6 +5237,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
         S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        previous_page = current_page;
         current_page++;
         return true;
       }
