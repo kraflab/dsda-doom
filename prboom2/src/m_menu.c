@@ -2013,13 +2013,13 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   }
 
   if (flags & S_THERMO) {
-    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
+    M_DrawThermo(x, y + 3, 8, 16, dsda_IntConfig(s->config_id));
 
     sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
 
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
-    M_DrawMenuString(x + 80, y + 3, color);
+    M_DrawMenuString(x + 80, y + 6, color);
     return;
   }
 }
@@ -2063,34 +2063,46 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 
   end_y = base_y + (max_i + 1) * menu_font->line_height;
-  if (end_y > 200)
-    excess_i = (end_y - 200 + menu_font->line_height - 1) / menu_font->line_height;
+  if (end_y > 190)
+    excess_i = (end_y - 190 + menu_font->line_height - 1) / menu_font->line_height;
 
   limit_i = max_i - excess_i;
   buffer_i = (max_i - current_i > 3 ? 3 : max_i - current_i);
 
   if (excess_i)
+  {
     while (current_i - scroll_i > limit_i - buffer_i)
       ++scroll_i;
 
+    // if (scroll_i)
+    //   V_DrawNumPatch(300, 35, 0, W_GetNumForName("ARROW_UP"), CR_BLOOD_WHITE, VPT_STRETCH | VPT_TRANS);
+    //   // M_DrawString(250, 40, cr_title, "A");
+    
+    // if ((max_i - current_i) > 3)
+    //   V_DrawNumPatch(300, 170, 0, W_GetNumForName("ARROW_DW"), CR_BLOOD_WHITE, VPT_STRETCH | VPT_TRANS);
+    //   // M_DrawString(250, 180, cr_title, "V");
+  }
+
   i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
-    int desc_y;
-    int set_y;
+    int y;
     dboolean skip_entry = false;
 
     if (src->m_flags & (S_NEXT | S_PREV)) {
-      desc_y = 200 - menu_font->line_height - 2;
+      y = 190 - menu_font->line_height - 2;
     }
     else if (src->m_flags & S_RESET_Y) {
       skip_entry = true;
       i = 0;
     }
     else {
-      desc_y = base_y + (i - scroll_i) * menu_font->line_height + offset_y;
+      y = base_y + (i - scroll_i) * menu_font->line_height + offset_y;
 
       if (i - scroll_i < 0 || i - scroll_i > limit_i)
         skip_entry = true;
+      
+      if (src->m_flags & S_THERMO)
+        offset_y += 6;
 
       ++i;
     }
@@ -2098,20 +2110,27 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     if (skip_entry)
       continue;
 
-    set_y = desc_y;
-    if (src->m_flags & S_THERMO)
+    if (excess_i)
     {
-      desc_y += 3;
-      offset_y += 6;
+      if ((i == (scroll_i + 1)) && scroll_i)
+      {
+        M_DrawString(150, base_y, CR_WHITE, ". . .");
+        continue;
+      }
+      if ((i == (limit_i + scroll_i + 1)) && ((max_i - current_i) > 3))
+      {
+        M_DrawString(150, y, CR_WHITE, ". . .");
+        continue;
+      }
     }
 
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)
-      M_DrawItem(src, desc_y);
+      M_DrawItem(src, y);
 
     // See if we're to draw the setting (right-hand part)
     if (src->m_flags & S_SHOWSET)
-      M_DrawSetting(src, set_y);
+      M_DrawSetting(src, y);
   }
 }
 
@@ -2190,7 +2209,7 @@ static void M_DrawCarouselPages(const char **pages)
     strcpy(menu_buffer, "<-");
     M_DrawMenuString(x - 16, PAGES_Y , cr_title);
   }
-  if (end_i < i)
+  if (pages[i] != NULL)
   {
     strcpy(menu_buffer, "->");
     M_DrawMenuString(320 - x, PAGES_Y , cr_title);
@@ -2350,12 +2369,9 @@ const char *keys_pages[] =
   "Menus",
   "Cheats",
   "Raven",
-  "Heretic Inv",
-  "Hexen Inv",
   "dsda-doom keys",
   "Scripts",
-  "Build Mode (1)",
-  "Build Mode (2)",
+  "Build Mode",
   NULL
 };
 
@@ -2368,12 +2384,9 @@ setup_menu_t keys_misc_settings[];
 setup_menu_t keys_settings6[];
 setup_menu_t keys_settings7[];
 setup_menu_t raven_keys_settings[];
-setup_menu_t heretic_keys_settings[];
-setup_menu_t hexen_keys_settings[];
 setup_menu_t dsda_keys_settings[];
 setup_menu_t script_keys_settings[];
-setup_menu_t build_keys_settings1[];
-setup_menu_t build_keys_settings2[];
+setup_menu_t build_keys_settings[];
 
 // The table which gets you from one screen table to the next.
 
@@ -2388,12 +2401,9 @@ setup_menu_t* keys_settings[] =
   keys_settings6,
   keys_settings7,
   raven_keys_settings,
-  heretic_keys_settings,
-  hexen_keys_settings,
   dsda_keys_settings,
   script_keys_settings,
-  build_keys_settings1,
-  build_keys_settings2,
+  build_keys_settings,
   NULL
 };
 
@@ -2479,6 +2489,8 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
 
 setup_menu_t keys_settings3[] =  // Key Binding screen strings
 {
+  {"FIRE"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_fire},
+  EMPTY_LINE,
   {"FIST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon1},
   {"PISTOL"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon2},
   {"SHOTGUN" ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon3},
@@ -2492,7 +2504,6 @@ setup_menu_t keys_settings3[] =  // Key Binding screen strings
   {"NEXT"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_nextweapon},
   {"PREVIOUS",S_INPUT       ,m_scrn,KB_X,0,dsda_input_prevweapon},
   {"BEST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_toggleweapon},
-  {"FIRE"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_fire},
 
   PREV_PAGE(keys_settings2),
   NEXT_PAGE(keys_settings4),
@@ -2600,7 +2611,6 @@ setup_menu_t keys_settings7[] =
 };
 
 setup_menu_t raven_keys_settings[] = {
-  { "RAVEN MOVEMENT", S_SKIP | S_TITLE, m_null, KB_X},
   { "LOOK UP", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookup },
   { "LOOK DOWN", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookdown },
   { "LOOK CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookcenter },
@@ -2608,15 +2618,12 @@ setup_menu_t raven_keys_settings[] = {
   { "FLY DOWN", S_INPUT, m_scrn, KB_X, 0, dsda_input_flydown },
   { "FLY CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_flycenter },
   { "JUMP", S_INPUT, m_scrn, KB_X, 0, dsda_input_jump },
-
-  PREV_PAGE(keys_settings7),
-  NEXT_PAGE(heretic_keys_settings),
-  FINAL_ENTRY
-};
-
-setup_menu_t heretic_keys_settings[] = {
-  { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, KB_X},
+  EMPTY_LINE,
+  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invleft },
+  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invright },
   { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, 0, dsda_input_use_artifact },
+  EMPTY_LINE,
+  { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, KB_X},
   { "USE TOME OF POWER", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_tome },
   { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_quartz },
   { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_urn },
@@ -2627,17 +2634,8 @@ setup_menu_t heretic_keys_settings[] = {
   { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_wings },
   { "USE TORCH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_torch },
   { "USE MORPH OVUM", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_morph },
-  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invleft },
-  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invright },
-
-  PREV_PAGE(raven_keys_settings),
-  NEXT_PAGE(hexen_keys_settings),
-  FINAL_ENTRY
-};
-
-setup_menu_t hexen_keys_settings[] = {
+  EMPTY_LINE,
   { "HEXEN INVENTORY", S_SKIP | S_TITLE, m_null, KB_X},
-  { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, 0, dsda_input_use_artifact },
   { "USE ICON OF THE DEFENDER", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_ring },
   { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_quartz },
   { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_urn },
@@ -2653,13 +2651,12 @@ setup_menu_t hexen_keys_settings[] = {
   { "USE KRATER OF MIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_krater },
   { "USE DRAGONSKIN BRACERS", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_bracers },
   { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_chaosdevice },
-  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invleft },
-  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invright },
 
-  PREV_PAGE(heretic_keys_settings),
+  PREV_PAGE(keys_settings7),
   NEXT_PAGE(dsda_keys_settings),
   FINAL_ENTRY
 };
+
 
 setup_menu_t dsda_keys_settings[] = {
   { "DSDA-Doom Keys", S_SKIP | S_TITLE, m_null, KB_X},
@@ -2682,7 +2679,7 @@ setup_menu_t dsda_keys_settings[] = {
   { "Render Stats", S_INPUT, m_scrn, KB_X, 0, dsda_input_idrate },
   { "FPS", S_INPUT, m_scrn, KB_X, 0, dsda_input_fps },
 
-  PREV_PAGE(hexen_keys_settings),
+  PREV_PAGE(raven_keys_settings),
   NEXT_PAGE(script_keys_settings),
   FINAL_ENTRY
 };
@@ -2701,12 +2698,11 @@ setup_menu_t script_keys_settings[] = {
   { "Script 9", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_9 },
 
   PREV_PAGE(dsda_keys_settings),
-  NEXT_PAGE(build_keys_settings1),
+  NEXT_PAGE(build_keys_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t build_keys_settings1[] = {
-  { "Build Mode (1)", S_SKIP | S_TITLE, m_null, KB_X},
+setup_menu_t build_keys_settings[] = {
   { "Toggle Build Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_build },
   { "Advance Frame", S_INPUT, m_build, KB_X, 0, dsda_input_build_advance_frame },
   { "Reverse Frame", S_INPUT, m_build, KB_X, 0, dsda_input_build_reverse_frame },
@@ -2724,15 +2720,8 @@ setup_menu_t build_keys_settings1[] = {
   { "Strafe Right", S_INPUT, m_build, KB_X, 0, dsda_input_build_strafe_right },
   { "Fine Strafe Left", S_INPUT, m_build, KB_X, 0, dsda_input_build_fine_strafe_left },
   { "Fine Strafe Right", S_INPUT, m_build, KB_X, 0, dsda_input_build_fine_strafe_right },
+  EMPTY_LINE,
   { "Use", S_INPUT, m_build, KB_X, 0, dsda_input_build_use },
-
-  PREV_PAGE(script_keys_settings),
-  NEXT_PAGE(build_keys_settings2),
-  FINAL_ENTRY
-};
-
-setup_menu_t build_keys_settings2[] = {
-  { "Build Mode (2)", S_SKIP | S_TITLE, m_null, KB_X},
   { "Fire", S_INPUT, m_build, KB_X, 0, dsda_input_build_fire },
   { "Fist", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon1 },
   { "Pistol", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon2 },
@@ -2744,7 +2733,7 @@ setup_menu_t build_keys_settings2[] = {
   { "Chainsaw", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon8 },
   { "SSG", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon9 },
 
-  PREV_PAGE(build_keys_settings1),
+  PREV_PAGE(script_keys_settings),
   FINAL_ENTRY
 };
 
@@ -2942,22 +2931,19 @@ const char *auto_pages[] =
 {
   "Options",
   "Appearance",
-  "Colors1",
-  "Colors2",
+  "Colors",
   NULL
 };
 
 setup_menu_t auto_options_settings[];
 setup_menu_t auto_appearance_settings[];
-setup_menu_t auto_settings2[];
-setup_menu_t auto_settings3[];
+setup_menu_t auto_colors_settings[];
 
 setup_menu_t* auto_settings[] =
 {
   auto_options_settings,
   auto_appearance_settings,
-  auto_settings2,
-  auto_settings3,
+  auto_colors_settings,
   NULL
 };
 
@@ -3014,11 +3000,11 @@ setup_menu_t auto_appearance_settings[] =
   { "Player Trail Size", S_NUM, m_conf, AU_X, dsda_config_map_trail_size },
 
   PREV_PAGE(auto_options_settings),
-  NEXT_PAGE(auto_settings2),
+  NEXT_PAGE(auto_colors_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
+setup_menu_t auto_colors_settings[] =  // 2st AutoMap Settings screen
 {
   {"background", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_back},
   {"grid lines", S_COLOR, m_conf, AU_X, dsda_config_mapcolor_grid},
@@ -3032,14 +3018,7 @@ setup_menu_t auto_settings2[] =  // 2st AutoMap Settings screen
   {"red door"                           ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_rdor},
   {"blue door"                          ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_bdor},
   {"yellow door"                        ,S_COLOR,m_conf,AU_X, dsda_config_mapcolor_ydor},
-
-  PREV_PAGE(auto_appearance_settings),
-  NEXT_PAGE(auto_settings3),
-  FINAL_ENTRY
-};
-
-setup_menu_t auto_settings3[] =  // 3nd AutoMap Settings screen
-{
+  EMPTY_LINE,
   {"teleporter line"                ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_tele},
   {"secret sector boundary"         ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_secr},
   {"revealed secret sector boundary",S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_revsecr},
@@ -3059,10 +3038,9 @@ setup_menu_t auto_settings3[] =  // 3nd AutoMap Settings screen
   {"player trail 1"     ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_trail_1},
   {"player trail 2"     ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_trail_2},
 
-  PREV_PAGE(auto_settings2),
+  PREV_PAGE(auto_appearance_settings),
   FINAL_ENTRY
 };
-
 
 // Setting up for the Automap screen. Turn on flags, set pointers,
 // locate the first item on the screen where the cursor is allowed to
@@ -3513,6 +3491,14 @@ void M_DrawDisplay(void)
 // The level table.
 //
 
+const char *level_table_pages[] =
+{
+  "Stats",
+  "Time",
+  "Summary",
+  NULL
+};
+
 #define LEVEL_TABLE_PAGES 3
 
 static setup_menu_t *level_table_page[LEVEL_TABLE_PAGES];
@@ -3653,7 +3639,7 @@ static void M_ResetLevelTable(void)
   const int page_count[LEVEL_TABLE_PAGES] = {
     wad_stats.map_count * 5 + 16,
     wad_stats.map_count * 4 + 16,
-    40,
+    38,
   };
 
   for (page = 0; page < LEVEL_TABLE_PAGES; ++page)
@@ -3852,15 +3838,8 @@ static void M_BuildLevelTable(void)
   M_CalculateWadStatsSummary();
 
   ++page;
-  base_i = 0;
+  base_i = 2;
   wad_stats_summary_page = page;
-
-  level_table_page[page][base_i].m_text = Z_Strdup("Summary");
-  level_table_page[page][base_i].m_flags = S_TITLE | S_NOSELECT | S_CENTER;
-  level_table_page[page][base_i].m_x = 160;
-  ++base_i;
-
-  INSERT_LEVEL_TABLE_EMPTY_LINE
 
   dsda_StringPrintF(&m_text, "Maps");
   level_table_page[page][base_i].m_text = m_text.string;
@@ -4035,6 +4014,8 @@ void M_DrawLevelTable(void)
   M_DrawTitle(114, 2, "M_LVLTBL", CR_DEFAULT, "LEVEL TABLE", cr_title);
   if (current_setup_menu != level_table_page[wad_stats_summary_page])
     M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
+
+  M_DrawPages(level_table_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
