@@ -2013,13 +2013,13 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   }
 
   if (flags & S_THERMO) {
-    M_DrawThermo(x, y + 3, 8, 16, dsda_IntConfig(s->config_id));
+    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
 
     sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
 
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
-    M_DrawMenuString(x + 80, y + 6, color);
+    M_DrawMenuString(x + 80, y + 3, color);
     return;
   }
 }
@@ -2073,40 +2073,39 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   {
     while (current_i - scroll_i > limit_i - buffer_i)
       ++scroll_i;
-
-    // if (scroll_i)
-    //   V_DrawNumPatch(300, 35, 0, W_GetNumForName("ARROW_UP"), CR_BLOOD_WHITE, VPT_STRETCH | VPT_TRANS);
-    
-    // if ((max_i - current_i) > 3)
-    //   V_DrawNumPatch(300, 170, 0, W_GetNumForName("ARROW_DW"), CR_BLOOD_WHITE, VPT_STRETCH | VPT_TRANS);
   }
 
   i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
-    int y;
+    int desc_y;
+    int set_y;
     dboolean skip_entry = false;
 
     if (src->m_flags & (S_NEXT | S_PREV)) {
-      y = 190 - menu_font->line_height - 2;
+      desc_y = 190 - menu_font->line_height - 2;
     }
     else if (src->m_flags & S_RESET_Y) {
       skip_entry = true;
       i = 0;
     }
     else {
-      y = base_y + (i - scroll_i) * menu_font->line_height + offset_y;
+      desc_y = base_y + (i - scroll_i) * menu_font->line_height + offset_y;
 
       if (i - scroll_i < 0 || i - scroll_i > limit_i)
         skip_entry = true;
-      
-      if (src->m_flags & S_THERMO)
-        offset_y += 6;
 
       ++i;
     }
 
     if (skip_entry)
       continue;
+
+    set_y = desc_y;
+    if (src->m_flags & S_THERMO)
+    {
+      offset_y += 6;
+      desc_y += 3;
+    }
 
     if (excess_i)
     {
@@ -2117,18 +2116,18 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
       }
       if ((i == (limit_i + scroll_i + 1)) && ((max_i - current_i) > 3))
       {
-        M_DrawString(150, y, CR_WHITE, "- - -");
+        M_DrawString(150, desc_y, CR_WHITE, "- - -");
         continue;
       }
     }
 
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)
-      M_DrawItem(src, y);
+      M_DrawItem(src, desc_y);
 
     // See if we're to draw the setting (right-hand part)
     if (src->m_flags & S_SHOWSET)
-      M_DrawSetting(src, y);
+      M_DrawSetting(src, set_y);
   }
 }
 
@@ -2160,7 +2159,7 @@ static void M_DrawPages(const char **pages)
 
       int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, playpal_white);
+      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_title_hightlight][16]);
     }
     else
     {
@@ -2225,7 +2224,7 @@ static void M_DrawCarouselPages(const char **pages)
 
       int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, playpal_white);
+      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_title_hightlight][16]);
     }
     else
     {
@@ -2777,7 +2776,7 @@ setup_menu_t* weap_settings[] =
 
 setup_menu_t weap_settings1[] =  // Weapons Settings screen
 {
-  { "Weapon Preferences", S_SKIP | S_TITLE, m_null, WP_X},
+  { "Priority", S_SKIP | S_TITLE, m_null, WP_X},
   { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_1 },
   { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_2 },
   { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_3 },
@@ -2831,27 +2830,29 @@ const char *demos_pages[] =
   NULL
 };
 
-setup_menu_t demos_demos_settings[];
+setup_menu_t demos_options_settings[];
 setup_menu_t demos_tas_settings[];
 
 setup_menu_t* demos_settings[] =
 {
-  demos_demos_settings,
+  demos_options_settings,
   demos_tas_settings,
   NULL
 };
 
-setup_menu_t demos_demos_settings[] =  // Demos Settings screen
+setup_menu_t demos_options_settings[] =  // Demos Settings screen
 {
   { "Strict Mode", S_YESNO, m_conf, DM_X, dsda_config_strict_mode },
-  { "Cycle Ghost Colors", S_YESNO, m_conf, DM_X, dsda_config_cycle_ghost_colors },
+  EMPTY_LINE,
   { "Show Demo Attempts", S_YESNO, m_conf, DM_X, dsda_config_show_demo_attempts },
   { "Show Split Data", S_YESNO, m_conf, DM_X, dsda_config_show_split_data },
-  { "Text File Author", S_NAME, m_conf, DM_X, dsda_config_player_name },
+  { "Show Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
   { "Quickstart Cache Tics", S_NUM, m_conf, DM_X, dsda_config_quickstart_cache_tics },
+  { "Text File Author", S_NAME, m_conf, DM_X, dsda_config_player_name },
+  EMPTY_LINE,
   { "Smooth Demo Playback", S_YESNO, m_conf, DM_X, dsda_config_demo_smoothturns },
   { "Smooth Demo Playback Factor", S_NUM, m_conf, DM_X, dsda_config_demo_smoothturnsfactor },
-  { "Show Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
+  { "Cycle Ghost Colors", S_YESNO, m_conf, DM_X, dsda_config_cycle_ghost_colors },
   { "Organize Failed Demos", S_YESNO,  m_conf, DM_X, dsda_config_organize_failed_demos },
 
   NEXT_PAGE(demos_tas_settings),
@@ -2865,10 +2866,11 @@ setup_menu_t demos_tas_settings[] =
   { "Command History", S_NUM, m_conf, DM_X, dsda_config_command_history_size },
   { "Hide Empty Commands", S_YESNO, m_conf, DM_X, dsda_config_hide_empty_commands },
   { "Show Coordinate Display", S_YESNO, m_conf, DM_X, dsda_config_coordinate_display },
+  EMPTY_LINE,
   { "Permanent Strafe50", S_YESNO, m_conf, DM_X, dsda_config_movement_strafe50 },
   { "Strafe50 On Turns", S_YESNO, m_conf, DM_X, dsda_config_movement_strafe50onturns },
 
-  PREV_PAGE(demos_demos_settings),
+  PREV_PAGE(demos_options_settings),
   FINAL_ENTRY
 };
 
