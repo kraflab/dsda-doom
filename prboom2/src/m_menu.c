@@ -2176,23 +2176,32 @@ static void M_DrawCarouselPages(const char **pages)
   int w = 0;
   int i = 0;
   int start_i = 0;
-  int end_i = 3;
+  int end_i = 4;
 
-  if (current_page > 1)
+  if (current_page > 2)
   {
     if (previous_page < current_page)
     {
       start_i = current_page - 2;
-      end_i = current_page + 1;
+      end_i = current_page + 2;
     }
     else if (previous_page > current_page)
     {
-      start_i = current_page - 1;
+      start_i = current_page - 2;
       end_i = current_page + 2;
+    }
+
+    if (pages[current_page + 1] == NULL)
+    {
+      start_i = current_page - 4;
+    }
+    else if (pages[current_page + 2] == NULL)
+    {
+      start_i = current_page - 3;
     }
   }
 
-  // Find the initial offset, to make the text centered
+  // Find the initial offset to center text
   for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
   {
     w = M_GetPixelWidth(pages[i]);
