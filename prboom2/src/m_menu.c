@@ -2211,25 +2211,17 @@ static void M_DrawCarouselPages(const char **pages)
 
   // Draw the arrows on the sides
   if (start_i > 0)
-  {
-    strcpy(menu_buffer, "<-");
-    M_DrawMenuString(x - 16, PAGES_Y , cr_title);
-  }
+    M_DrawString(x - 16, PAGES_Y , cr_title, "<-");
   if (pages[i] != NULL)
-  {
-    strcpy(menu_buffer, "->");
-    M_DrawMenuString(320 - x, PAGES_Y , cr_title);
-  }
+    M_DrawString(320 - x, PAGES_Y , cr_title, "->");
 
   for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
   {
     w = M_GetPixelWidth(pages[i]);
 
-    strcpy(menu_buffer, pages[i]);
-
     if (i == current_page)
     {
-      M_DrawMenuString(x, PAGES_Y , cr_title_hightlight);
+      M_DrawString(x, PAGES_Y, cr_title_hightlight, pages[i]);
 
       int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
@@ -2237,7 +2229,7 @@ static void M_DrawCarouselPages(const char **pages)
     }
     else
     {
-      M_DrawMenuString(x, PAGES_Y , cr_title);
+      M_DrawString(x, PAGES_Y, cr_title, pages[i]);
     }
 
     x += w + 6;
