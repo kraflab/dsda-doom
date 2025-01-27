@@ -2076,11 +2076,9 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 
     // if (scroll_i)
     //   V_DrawNumPatch(300, 35, 0, W_GetNumForName("ARROW_UP"), CR_BLOOD_WHITE, VPT_STRETCH | VPT_TRANS);
-    //   // M_DrawString(250, 40, cr_title, "A");
     
     // if ((max_i - current_i) > 3)
     //   V_DrawNumPatch(300, 170, 0, W_GetNumForName("ARROW_DW"), CR_BLOOD_WHITE, VPT_STRETCH | VPT_TRANS);
-    //   // M_DrawString(250, 180, cr_title, "V");
   }
 
   i = 0;
@@ -2114,12 +2112,12 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     {
       if ((i == (scroll_i + 1)) && scroll_i)
       {
-        M_DrawString(150, base_y, CR_WHITE, ". . .");
+        M_DrawString(150, base_y, CR_WHITE, "- - -");
         continue;
       }
       if ((i == (limit_i + scroll_i + 1)) && ((max_i - current_i) > 3))
       {
-        M_DrawString(150, y, CR_WHITE, ". . .");
+        M_DrawString(150, y, CR_WHITE, "- - -");
         continue;
       }
     }
@@ -2361,49 +2359,46 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
 const char *keys_pages[] =
 {
   "Movement",
-  "Game",
   "Weapons",
   "Automap",
-  "Demos",
+  "Game",
   "Misc",
+  "Toggles",
   "Menus",
-  "Cheats",
   "Raven",
-  "dsda-doom keys",
+  "Cheats",
   "Scripts",
   "Build Mode",
   NULL
 };
 
 setup_menu_t keys_movement_settings[];
-setup_menu_t keys_settings2[];
-setup_menu_t keys_settings3[];
-setup_menu_t keys_settings4[];
-setup_menu_t keys_settings5[];
+setup_menu_t keys_weapons_settings[];
+setup_menu_t keys_automap_settings[];
+setup_menu_t keys_game_settings[];
 setup_menu_t keys_misc_settings[];
-setup_menu_t keys_settings6[];
-setup_menu_t keys_settings7[];
-setup_menu_t raven_keys_settings[];
-setup_menu_t dsda_keys_settings[];
-setup_menu_t script_keys_settings[];
-setup_menu_t build_keys_settings[];
+setup_menu_t keys_toggles_settings[];
+setup_menu_t keys_menus_settings[];
+setup_menu_t keys_raven_settings[];
+setup_menu_t keys_cheats_settings[];
+setup_menu_t keys_scripts_settings[];
+setup_menu_t keys_build_settings[];
 
 // The table which gets you from one screen table to the next.
 
 setup_menu_t* keys_settings[] =
 {
   keys_movement_settings,
-  keys_settings2,
-  keys_settings3,
-  keys_settings4,
-  keys_settings5,
+  keys_weapons_settings,
+  keys_automap_settings,
+  keys_game_settings,
   keys_misc_settings,
-  keys_settings6,
-  keys_settings7,
-  raven_keys_settings,
-  dsda_keys_settings,
-  script_keys_settings,
-  build_keys_settings,
+  keys_toggles_settings,
+  keys_menus_settings,
+  keys_raven_settings,
+  keys_cheats_settings,
+  keys_scripts_settings,
+  keys_build_settings,
   NULL
 };
 
@@ -2436,24 +2431,73 @@ setup_menu_t keys_movement_settings[] =  // Key Binding screen strings
   {"STRAFE RIGHT",S_INPUT     ,m_scrn,KB_X,0,dsda_input_straferight},
   {"STRAFE"      ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_strafe},
   {"180 TURN"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_reverse},
-  {"USE"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_use},
   EMPTY_LINE,
   {"TOGGLES"  ,S_SKIP|S_TITLE,m_null,KB_X},
   {"AUTORUN"  ,S_INPUT,m_scrn,KB_X,0,dsda_input_autorun},
   {"FREE LOOK",S_INPUT,m_scrn,KB_X,0,dsda_input_mlook},
   {"VERTMOUSE",S_INPUT,m_scrn,KB_X,0,dsda_input_novert},
 
-  NEXT_PAGE(keys_settings2),
+  NEXT_PAGE(keys_weapons_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t keys_settings2[] =  // Key Binding screen strings
+setup_menu_t keys_weapons_settings[] =  // Key Binding screen strings
+{
+  {"FIRE"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_fire},
+  {"USE"     ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_use},
+  EMPTY_LINE,
+  {"FIST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon1},
+  {"PISTOL"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon2},
+  {"SHOTGUN" ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon3},
+  {"CHAINGUN",S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon4},
+  {"ROCKET"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon5},
+  {"PLASMA"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon6},
+  {"BFG",     S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon7},
+  {"CHAINSAW",S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon8},
+  {"SSG"     ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon9},
+  EMPTY_LINE,
+  {"NEXT"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_nextweapon},
+  {"PREVIOUS",S_INPUT       ,m_scrn,KB_X,0,dsda_input_prevweapon},
+  {"BEST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_toggleweapon},
+
+  PREV_PAGE(keys_movement_settings),
+  NEXT_PAGE(keys_automap_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t keys_automap_settings[] =  // Key Binding screen strings
+{
+  {"TOGGLE AUTOMAP"     ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_map},
+  EMPTY_LINE,
+  {"FOLLOW"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_follow},
+  {"ZOOM IN"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomin},
+  {"ZOOM OUT"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomout},
+  {"SHIFT UP"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_up},
+  {"SHIFT DOWN" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_down},
+  {"SHIFT LEFT" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_left},
+  {"SHIFT RIGHT",S_INPUT     ,m_map ,KB_X,0,dsda_input_map_right},
+  {"MARK PLACE" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_mark},
+  {"CLEAR MARKS",S_INPUT     ,m_map ,KB_X,0,dsda_input_map_clear},
+  {"FULL/ZOOM"  ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_gobig},
+  {"GRID"       ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_grid},
+  {"ROTATE"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_rotate},
+  {"OVERLAY"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_overlay},
+  {"TEXTURED"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_textured},
+  { "HIGHLIGHT BY TAG", S_INPUT, m_map, KB_X, 0, dsda_input_map_highlight_by_tag },
+
+  PREV_PAGE(keys_weapons_settings),
+  NEXT_PAGE(keys_game_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t keys_game_settings[] =  // Key Binding screen strings
 {
   {"SAVE"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_savegame},
   {"LOAD"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_loadgame},
   {"QUICKSAVE"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quicksave},
   {"QUICKLOAD"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quickload},
   {"LEVEL TABLE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_level_table},
+  {"CONSOLE"     ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_console},
   {"END GAME"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_endgame},
   {"QUIT"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_quit},
   EMPTY_LINE,
@@ -2472,7 +2516,6 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   // {"HELP"        ,S_SKIP|S_KEEP|S_INPUT ,m_scrn,0   ,0,dsda_input_help},
   // {"MENU"        ,S_SKIP|S_KEEP|S_INPUT ,m_scrn,0   ,0,dsda_input_escape},
   {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_pause},
-  {"AUTOMAP"     ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_map},
   {"VOLUME"      ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_soundvolume},
   {"HUD"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_hud},
   {"MESSAGES"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_messages},
@@ -2482,89 +2525,59 @@ setup_menu_t keys_settings2[] =  // Key Binding screen strings
   {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomout},
   {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_screenshot},
 
-  PREV_PAGE(keys_movement_settings),
-  NEXT_PAGE(keys_settings3),
-  FINAL_ENTRY
-};
-
-setup_menu_t keys_settings3[] =  // Key Binding screen strings
-{
-  {"FIRE"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_fire},
-  EMPTY_LINE,
-  {"FIST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon1},
-  {"PISTOL"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon2},
-  {"SHOTGUN" ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon3},
-  {"CHAINGUN",S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon4},
-  {"ROCKET"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon5},
-  {"PLASMA"  ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon6},
-  {"BFG",     S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon7},
-  {"CHAINSAW",S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon8},
-  {"SSG"     ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_weapon9},
-  EMPTY_LINE,
-  {"NEXT"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_nextweapon},
-  {"PREVIOUS",S_INPUT       ,m_scrn,KB_X,0,dsda_input_prevweapon},
-  {"BEST"    ,S_INPUT       ,m_scrn,KB_X,0,dsda_input_toggleweapon},
-
-  PREV_PAGE(keys_settings2),
-  NEXT_PAGE(keys_settings4),
-  FINAL_ENTRY
-};
-
-setup_menu_t keys_settings4[] =  // Key Binding screen strings
-{
-  {"FOLLOW"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_follow},
-  {"ZOOM IN"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomin},
-  {"ZOOM OUT"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_zoomout},
-  {"SHIFT UP"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_up},
-  {"SHIFT DOWN" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_down},
-  {"SHIFT LEFT" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_left},
-  {"SHIFT RIGHT",S_INPUT     ,m_map ,KB_X,0,dsda_input_map_right},
-  {"MARK PLACE" ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_mark},
-  {"CLEAR MARKS",S_INPUT     ,m_map ,KB_X,0,dsda_input_map_clear},
-  {"FULL/ZOOM"  ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_gobig},
-  {"GRID"       ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_grid},
-  {"ROTATE"     ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_rotate},
-  {"OVERLAY"    ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_overlay},
-  {"TEXTURED"   ,S_INPUT     ,m_map ,KB_X,0,dsda_input_map_textured},
-  { "HIGHLIGHT BY TAG", S_INPUT, m_map, KB_X, 0, dsda_input_map_highlight_by_tag },
-
-  PREV_PAGE(keys_settings3),
-  NEXT_PAGE(keys_settings5),
-  FINAL_ENTRY
-};
-
-//e6y
-setup_menu_t keys_settings5[] =  // Key Binding screen strings
-{
-  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_skip},
-  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_endlevel},
-  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_walkcamera},
-  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_join_demo},
-  {"RESTART DEMO ATTEMPT" ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
-
-  PREV_PAGE(keys_settings4),
+  PREV_PAGE(keys_automap_settings),
   NEXT_PAGE(keys_misc_settings),
   FINAL_ENTRY
 };
 
 setup_menu_t keys_misc_settings[] =
 {
-  {"RESTART CURRENT MAP"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
-  {"NEXT LEVEL"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_nextlevel},
-  {"PREVIOUS LEVEL"       ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_prevlevel},
-  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_showalive},
+  {"Restart Map/Demo"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
+  {"Next Level"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_nextlevel},
+  {"Previous Level"       ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_prevlevel},
+  { "Rewind", S_INPUT, m_scrn, KB_X, 0, dsda_input_rewind },
+  { "Store Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_store_quick_key_frame },
+  { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_restore_quick_key_frame },
+  { "Fake Archvile Jump", S_INPUT, m_scrn, KB_X, 0, dsda_input_avj },
   EMPTY_LINE,
   {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X},
   {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_up},
   {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_down},
   {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_default},
+  EMPTY_LINE,
+  {"Demos"           ,S_SKIP|S_TITLE,m_null,KB_X},
+  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_skip},
+  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_endlevel},
+  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_join_demo},
+  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_walkcamera},
 
-  PREV_PAGE(keys_settings5),
-  NEXT_PAGE(keys_settings6),
+  PREV_PAGE(keys_game_settings),
+  NEXT_PAGE(keys_toggles_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t keys_settings6[] =
+setup_menu_t keys_toggles_settings[] = {
+  { "Command Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_command_display },
+  { "Strict Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_strict_mode },
+  { "Coordinate Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_coordinate_display },
+  { "Extended HUD", S_INPUT, m_scrn, KB_X, 0, dsda_input_exhud },
+  { "SFX", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_sfx },
+  { "Music", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_music },
+  { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, 0, dsda_input_cheat_codes },
+  { "Render Stats", S_INPUT, m_scrn, KB_X, 0, dsda_input_idrate },
+  { "FPS", S_INPUT, m_scrn, KB_X, 0, dsda_input_fps },
+  {"Show Alive Monsters"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_showalive},
+  EMPTY_LINE,
+  { "Cycle", S_SKIP | S_TITLE, m_null, KB_X},
+  { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, 0, dsda_input_cycle_profile },
+  { "Cycle Palette", S_INPUT, m_scrn, KB_X, 0, dsda_input_cycle_palette },
+
+  PREV_PAGE(keys_misc_settings),
+  NEXT_PAGE(keys_menus_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t keys_menus_settings[] =
 {
   {"NEXT ITEM"   ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_down},
   {"PREV ITEM"   ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_up},
@@ -2578,39 +2591,12 @@ setup_menu_t keys_settings6[] =
   {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X},
   {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_repeat_message},
 
-  PREV_PAGE(keys_misc_settings),
-  NEXT_PAGE(keys_settings7),
+  PREV_PAGE(keys_toggles_settings),
+  NEXT_PAGE(keys_raven_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t keys_settings7[] =
-{
-  { "God Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_iddqd },
-  { "Ammo & Keys", S_INPUT, m_scrn, KB_X, 0, dsda_input_idkfa },
-  { "Ammo", S_INPUT, m_scrn, KB_X, 0, dsda_input_idfa },
-  { "No Clipping", S_INPUT, m_scrn, KB_X, 0, dsda_input_idclip },
-  { "Health", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdh },
-  { "Armor", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdm },
-  { "Invulnerability", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdv },
-  { "Berserk", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholds },
-  { "Partial Invisibility", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdi },
-  { "Radiation Suit", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdr },
-  { "Computer Area Map", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholda },
-  { "Light Amplification", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdl },
-  { "Show Position", S_INPUT, m_scrn, KB_X, 0, dsda_input_idmypos },
-  { "Reveal Map", S_INPUT, m_scrn, KB_X, 0, dsda_input_iddt },
-  { "Reset Health", S_INPUT, m_scrn, KB_X, 0, dsda_input_ponce },
-  { "Tome of Power", S_INPUT, m_scrn, KB_X, 0, dsda_input_shazam },
-  { "Chicken", S_INPUT, m_scrn, KB_X, 0, dsda_input_chicken },
-  { "No Target", S_INPUT, m_scrn, KB_X, 0, dsda_input_notarget },
-  { "Freeze", S_INPUT, m_scrn, KB_X, 0, dsda_input_freeze },
-
-  PREV_PAGE(keys_settings6),
-  NEXT_PAGE(raven_keys_settings),
-  FINAL_ENTRY
-};
-
-setup_menu_t raven_keys_settings[] = {
+setup_menu_t keys_raven_settings[] = {
   { "LOOK UP", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookup },
   { "LOOK DOWN", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookdown },
   { "LOOK CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookcenter },
@@ -2652,40 +2638,39 @@ setup_menu_t raven_keys_settings[] = {
   { "USE DRAGONSKIN BRACERS", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_bracers },
   { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_chaosdevice },
 
-  PREV_PAGE(keys_settings7),
-  NEXT_PAGE(dsda_keys_settings),
+  PREV_PAGE(keys_menus_settings),
+  NEXT_PAGE(keys_cheats_settings),
   FINAL_ENTRY
 };
 
+setup_menu_t keys_cheats_settings[] =
+{
+  { "God Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_iddqd },
+  { "Ammo & Keys", S_INPUT, m_scrn, KB_X, 0, dsda_input_idkfa },
+  { "Ammo", S_INPUT, m_scrn, KB_X, 0, dsda_input_idfa },
+  { "No Clipping", S_INPUT, m_scrn, KB_X, 0, dsda_input_idclip },
+  { "Health", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdh },
+  { "Armor", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdm },
+  { "Invulnerability", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdv },
+  { "Berserk", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholds },
+  { "Partial Invisibility", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdi },
+  { "Radiation Suit", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdr },
+  { "Computer Area Map", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholda },
+  { "Light Amplification", S_INPUT, m_scrn, KB_X, 0, dsda_input_idbeholdl },
+  { "Show Position", S_INPUT, m_scrn, KB_X, 0, dsda_input_idmypos },
+  { "Reveal Map", S_INPUT, m_scrn, KB_X, 0, dsda_input_iddt },
+  { "Reset Health", S_INPUT, m_scrn, KB_X, 0, dsda_input_ponce },
+  { "Tome of Power", S_INPUT, m_scrn, KB_X, 0, dsda_input_shazam },
+  { "Chicken", S_INPUT, m_scrn, KB_X, 0, dsda_input_chicken },
+  { "No Target", S_INPUT, m_scrn, KB_X, 0, dsda_input_notarget },
+  { "Freeze", S_INPUT, m_scrn, KB_X, 0, dsda_input_freeze },
 
-setup_menu_t dsda_keys_settings[] = {
-  { "DSDA-Doom Keys", S_SKIP | S_TITLE, m_null, KB_X},
-  { "Store Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_store_quick_key_frame },
-  { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_restore_quick_key_frame },
-  { "Rewind", S_INPUT, m_scrn, KB_X, 0, dsda_input_rewind },
-  { "Cycle Input Profile", S_INPUT, m_scrn, KB_X, 0, dsda_input_cycle_profile },
-  { "Cycle Palette", S_INPUT, m_scrn, KB_X, 0, dsda_input_cycle_palette },
-  { "Open Console", S_INPUT, m_scrn, KB_X, 0, dsda_input_console },
-  { "Fake Archvile Jump", S_INPUT, m_scrn, KB_X, 0, dsda_input_avj },
-  EMPTY_LINE,
-  { "Toggles", S_SKIP | S_TITLE, m_null, KB_X},
-  { "Command Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_command_display },
-  { "Strict Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_strict_mode },
-  { "Coordinate Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_coordinate_display },
-  { "Extended HUD", S_INPUT, m_scrn, KB_X, 0, dsda_input_exhud },
-  { "SFX", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_sfx },
-  { "Music", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_music },
-  { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, 0, dsda_input_cheat_codes },
-  { "Render Stats", S_INPUT, m_scrn, KB_X, 0, dsda_input_idrate },
-  { "FPS", S_INPUT, m_scrn, KB_X, 0, dsda_input_fps },
-
-  PREV_PAGE(raven_keys_settings),
-  NEXT_PAGE(script_keys_settings),
+  PREV_PAGE(keys_raven_settings),
+  NEXT_PAGE(keys_scripts_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t script_keys_settings[] = {
-  { "Script Keys", S_SKIP | S_TITLE, m_null, KB_X},
+setup_menu_t keys_scripts_settings[] = {
   { "Script 0", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_0 },
   { "Script 1", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_1 },
   { "Script 2", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_2 },
@@ -2697,13 +2682,14 @@ setup_menu_t script_keys_settings[] = {
   { "Script 8", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_8 },
   { "Script 9", S_INPUT, m_scrn, KB_X, 0, dsda_input_script_9 },
 
-  PREV_PAGE(dsda_keys_settings),
-  NEXT_PAGE(build_keys_settings),
+  PREV_PAGE(keys_cheats_settings),
+  NEXT_PAGE(keys_build_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t build_keys_settings[] = {
+setup_menu_t keys_build_settings[] = {
   { "Toggle Build Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_build },
+  EMPTY_LINE,
   { "Advance Frame", S_INPUT, m_build, KB_X, 0, dsda_input_build_advance_frame },
   { "Reverse Frame", S_INPUT, m_build, KB_X, 0, dsda_input_build_reverse_frame },
   { "Reset Command", S_INPUT, m_build, KB_X, 0, dsda_input_build_reset_command },
@@ -2733,7 +2719,7 @@ setup_menu_t build_keys_settings[] = {
   { "Chainsaw", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon8 },
   { "SSG", S_INPUT, m_build, KB_X, 0, dsda_input_build_weapon9 },
 
-  PREV_PAGE(script_keys_settings),
+  PREV_PAGE(keys_scripts_settings),
   FINAL_ENTRY
 };
 
@@ -2867,15 +2853,6 @@ setup_menu_t demos_demos_settings[] =  // Demos Settings screen
   { "Smooth Demo Playback Factor", S_NUM, m_conf, DM_X, dsda_config_demo_smoothturnsfactor },
   { "Show Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
   { "Organize Failed Demos", S_YESNO,  m_conf, DM_X, dsda_config_organize_failed_demos },
-  EMPTY_LINE,
-  { "Casual Play Settings", S_SKIP | S_TITLE, m_null, DM_X},
-  { "Automatic Pistol Start", S_YESNO, m_conf, DM_X, dsda_config_pistol_start },
-  { "Respawn Monsters", S_YESNO, m_conf, DM_X, dsda_config_respawn_monsters },
-  { "Fast Monsters", S_YESNO, m_conf, DM_X, dsda_config_fast_monsters },
-  { "No Monsters", S_YESNO, m_conf, DM_X, dsda_config_no_monsters },
-  { "Coop Spawns", S_YESNO, m_conf, DM_X, dsda_config_coop_spawns },
-  { "Allow Jumping", S_YESNO, m_conf, DM_X, dsda_config_allow_jumping },
-  { "OpenGL Show Health Bars", S_YESNO, m_conf, DM_X, dsda_config_gl_health_bar },
 
   NEXT_PAGE(demos_tas_settings),
   FINAL_ENTRY
@@ -3116,13 +3093,13 @@ const char *gen_pages[] =
   "Mouse",
   "Controller",
   "Misc",
-  "Emulation",
+  "Gameplay",
   NULL
 };
 
 setup_menu_t gen_video_settings[], gen_audio_settings[], gen_mouse_settings[];
 setup_menu_t gen_controller_settings[], gen_misc_settings[];
-setup_menu_t mapping_settings[];
+setup_menu_t gen_gameplay_settings[];
 
 setup_menu_t* gen_settings[] =
 {
@@ -3131,7 +3108,7 @@ setup_menu_t* gen_settings[] =
   gen_mouse_settings,
   gen_controller_settings,
   gen_misc_settings,
-  mapping_settings,
+  gen_gameplay_settings,
   NULL
 };
 
@@ -3296,25 +3273,35 @@ setup_menu_t gen_misc_settings[] = {
   { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G_X, dsda_config_switch_weapon_on_pickup },
 
   PREV_PAGE(gen_controller_settings),
-  NEXT_PAGE(mapping_settings),
+  NEXT_PAGE(gen_gameplay_settings),
   FINAL_ENTRY
 };
 
-setup_menu_t mapping_settings[] = {
-  { "EMULATION", S_SKIP | S_TITLE, m_null, G_X},
-  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_spechit_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_spechit_emulate },
-  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_reject_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_reject_emulate },
-  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_intercept_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_intercept_emulate },
-  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G_X, dsda_config_overrun_playeringame_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G_X, dsda_config_overrun_playeringame_emulate },
+#define G2_X 220
+
+setup_menu_t gen_gameplay_settings[] = {
+  { "Casual Play", S_SKIP | S_TITLE, m_null, G2_X},
+  { "Automatic Pistol Start", S_YESNO, m_conf, G2_X, dsda_config_pistol_start },
+  { "Respawn Monsters", S_YESNO, m_conf, G2_X, dsda_config_respawn_monsters },
+  { "Fast Monsters", S_YESNO, m_conf, G2_X, dsda_config_fast_monsters },
+  { "No Monsters", S_YESNO, m_conf, G2_X, dsda_config_no_monsters },
+  { "Coop Spawns", S_YESNO, m_conf, G2_X, dsda_config_coop_spawns },
+  { "Allow Jumping", S_YESNO, m_conf, G2_X, dsda_config_allow_jumping },
   EMPTY_LINE,
-  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G_X},
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G_X, dsda_config_comperr_passuse },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G_X, dsda_config_comperr_hangsolid },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G_X, dsda_config_comperr_blockmap },
+  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G2_X},
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G2_X, dsda_config_comperr_passuse },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G2_X, dsda_config_comperr_hangsolid },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G2_X, dsda_config_comperr_blockmap },
+  EMPTY_LINE,
+  { "EMULATION", S_SKIP | S_TITLE, m_null, G2_X},
+  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_emulate },
+  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_emulate },
+  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_emulate },
+  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_emulate },
 
   PREV_PAGE(gen_misc_settings),
   FINAL_ENTRY
@@ -3401,8 +3388,9 @@ setup_menu_t display_options_settings[] = {
   { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, dsda_config_render_wipescreen },
   { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
-  { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
+  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
   EMPTY_LINE,
   { "Change Palette On Pain", S_YESNO, m_conf, G_X, dsda_config_palette_ondamage },
   { "Change Palette On Bonus", S_YESNO, m_conf, G_X, dsda_config_palette_onbonus },
