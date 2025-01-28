@@ -1730,6 +1730,9 @@ menu_t LevelTableDef =
 #define PAL_BLACK   0
 #define PAL_WHITE   4
 
+#define PAGES_Y 20
+#define DEFAULT_LIST_Y (PAGES_Y + 14)
+
 // Data used by the string editing code
 
 #define ENTRY_STRING_BFR_SIZE 128
@@ -2056,6 +2059,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   int excess_i = 0;
   int limit_i = 0;
   int buffer_i = 0;
+  float scrollbar_scale = 0;
   const setup_menu_t* src;
 
   i = 0;
@@ -2088,6 +2092,20 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   {
     while (current_i - scroll_i > limit_i - buffer_i)
       ++scroll_i;
+
+    scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)max_i;
+
+    int xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 1, hh = limit_i * scrollbar_scale;
+    V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+    V_FillRect(0, xx, yy, ww, hh, colrngs[CR_DEFAULT][16]);
+
+    // xx = 309, yy = base_y - 1, ww = 3, hh = 1;
+    // V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+    // V_FillRect(0, xx, yy, ww, hh, colrngs[CR_DEFAULT][16]);
+
+    // xx = 309, yy = base_y - 1 + max_i * scrollbar_scale, ww = 3, hh = 1;
+    // V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+    // V_FillRect(0, xx, yy, ww, hh, colrngs[CR_DEFAULT][16]);
   }
 
   i = 0;
@@ -2122,19 +2140,19 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
       desc_y += 3;
     }
 
-    if (excess_i)
-    {
-      if ((i == (scroll_i + 1)) && scroll_i)
-      {
-        M_DrawString(150, base_y, CR_WHITE, "- - -");
-        continue;
-      }
-      if ((i == (limit_i + scroll_i + 1)) && ((max_i - current_i) > 3))
-      {
-        M_DrawString(150, desc_y, CR_WHITE, "- - -");
-        continue;
-      }
-    }
+    // if (excess_i)
+    // {
+    //   if ((i == (scroll_i + 1)) && scroll_i)
+    //   {
+    //     M_DrawString(150, base_y, CR_WHITE, "- more -");
+    //     continue;
+    //   }
+    //   if ((i == (limit_i + scroll_i + 1)) && ((max_i - current_i) > 3))
+    //   {
+    //     M_DrawString(150, desc_y, CR_WHITE, "- more -");
+    //     continue;
+    //   }
+    // }
 
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)
@@ -2145,8 +2163,6 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
       M_DrawSetting(src, set_y);
   }
 }
-
-#define PAGES_Y 20
 
 static void M_DrawPages(const char **pages)
 {
@@ -2336,8 +2352,6 @@ static void M_DrawInstructions(void)
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
-
-#define DEFAULT_LIST_Y (PAGES_Y + 14)
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
