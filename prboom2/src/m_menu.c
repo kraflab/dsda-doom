@@ -172,6 +172,7 @@ dboolean set_general_active = false;
 dboolean set_keybnd_active = false; // in key binding setup screens
 dboolean set_display_active = false;
 dboolean set_demos_active = false; // in demos setup screen
+dboolean set_compatibility_active = false;
 dboolean set_weapon_active = false; // in weapons setup screen
 dboolean set_auto_active   = false; // in automap setup screen
 dboolean level_table_active = false;
@@ -308,6 +309,7 @@ void M_General(int);      // killough 10/98
 void M_KeyBindings(int choice);
 void M_Display(int);
 void M_Demos(int);
+void M_Compatibility(int);
 void M_Weapons(int);
 void M_Automap(int);
 void M_LevelTable(int);
@@ -315,6 +317,7 @@ void M_DrawGeneral(void); // killough 10/98
 void M_DrawKeybnd(void);
 void M_DrawDisplay(void);
 void M_DrawDemos(void);
+void M_DrawCompatibility(void);
 void M_DrawWeapons(void);
 void M_DrawAutoMap(void);
 void M_DrawLevelTable(void);
@@ -1176,6 +1179,7 @@ enum
   opt_bindings,
   opt_display,
   opt_demos,
+  opt_compatibility,
   opt_weapons,
   opt_automap,
   // opt_soundvol,
@@ -1190,7 +1194,8 @@ menuitem_t OptionsMenu[]=
   { 1, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
   { 1, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
   { 1, "M_DSPLAY", M_Display, 'd', "DISPLAY" },
-  { 1, "M_DEMOS", M_Demos, 's', "DEMOS" },
+  { 1, "M_DEMOS", M_Demos, 'm', "DEMOS" },
+  { 1, "M_COMP", M_Compatibility, 'c', "COMPATIBILITY" },
   { 1, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
   { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
   // { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" }, only available using the keybind
@@ -1671,6 +1676,16 @@ menu_t DemosDef =
   &OptionsDef,
   Generic_Setup,
   M_DrawDemos,
+  34,5,      // skull drawn here
+  0
+};
+
+menu_t CompatibilityDef =                                           // killough 10/98
+{
+  generic_setup_end,
+  &OptionsDef,
+  Generic_Setup,
+  M_DrawCompatibility,
   34,5,      // skull drawn here
   0
 };
@@ -3087,13 +3102,11 @@ const char *gen_pages[] =
   "Mouse",
   "Controller",
   "Misc",
-  "Gameplay",
   NULL
 };
 
 setup_menu_t gen_video_settings[], gen_audio_settings[], gen_mouse_settings[];
 setup_menu_t gen_controller_settings[], gen_misc_settings[];
-setup_menu_t gen_gameplay_settings[];
 
 setup_menu_t* gen_settings[] =
 {
@@ -3102,7 +3115,6 @@ setup_menu_t* gen_settings[] =
   gen_mouse_settings,
   gen_controller_settings,
   gen_misc_settings,
-  gen_gameplay_settings,
   NULL
 };
 
@@ -3267,39 +3279,10 @@ setup_menu_t gen_misc_settings[] = {
   { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G_X, dsda_config_switch_weapon_on_pickup },
 
   PREV_PAGE(gen_controller_settings),
-  NEXT_PAGE(gen_gameplay_settings),
   FINAL_ENTRY
 };
 
 #define G2_X 220
-
-setup_menu_t gen_gameplay_settings[] = {
-  { "Casual Play", S_SKIP | S_TITLE, m_null, G2_X},
-  { "Automatic Pistol Start", S_YESNO, m_conf, G2_X, dsda_config_pistol_start },
-  { "Respawn Monsters", S_YESNO, m_conf, G2_X, dsda_config_respawn_monsters },
-  { "Fast Monsters", S_YESNO, m_conf, G2_X, dsda_config_fast_monsters },
-  { "No Monsters", S_YESNO, m_conf, G2_X, dsda_config_no_monsters },
-  { "Coop Spawns", S_YESNO, m_conf, G2_X, dsda_config_coop_spawns },
-  { "Allow Jumping", S_YESNO, m_conf, G2_X, dsda_config_allow_jumping },
-  EMPTY_LINE,
-  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G2_X},
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G2_X, dsda_config_comperr_passuse },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G2_X, dsda_config_comperr_hangsolid },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G2_X, dsda_config_comperr_blockmap },
-  EMPTY_LINE,
-  { "EMULATION", S_SKIP | S_TITLE, m_null, G2_X},
-  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_emulate },
-  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_emulate },
-  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_emulate },
-  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_emulate },
-
-  PREV_PAGE(gen_misc_settings),
-  FINAL_ENTRY
-};
 
 // To (un)set fullscreen video after menu changes
 void M_ChangeFullScreen(void)
@@ -3465,6 +3448,70 @@ void M_DrawDisplay(void)
   M_DrawTitle(114, 2, "M_DSPLAY", CR_DEFAULT, "DISPLAY", cr_title);
   M_DrawInstructions();
   M_DrawPages(display_pages);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
+}
+
+const char *comp_pages[] =
+{
+  "Casual Play",
+  "Emulation",
+  NULL
+};
+
+setup_menu_t comp_casual_settings[], comp_emulation_settings[];
+
+setup_menu_t* comp_settings[] =
+{
+  comp_casual_settings,
+  comp_emulation_settings,
+  NULL
+};
+
+setup_menu_t comp_casual_settings[] = {
+  { "Automatic Pistol Start", S_YESNO, m_conf, G2_X, dsda_config_pistol_start },
+  { "Respawn Monsters", S_YESNO, m_conf, G2_X, dsda_config_respawn_monsters },
+  { "Fast Monsters", S_YESNO, m_conf, G2_X, dsda_config_fast_monsters },
+  { "No Monsters", S_YESNO, m_conf, G2_X, dsda_config_no_monsters },
+  { "Coop Spawns", S_YESNO, m_conf, G2_X, dsda_config_coop_spawns },
+  { "Allow Jumping", S_YESNO, m_conf, G2_X, dsda_config_allow_jumping },
+
+  NEXT_PAGE(comp_emulation_settings),
+  FINAL_ENTRY
+};
+
+setup_menu_t comp_emulation_settings[] = {
+  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_emulate },
+  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_emulate },
+  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_emulate },
+  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_emulate },
+  EMPTY_LINE,
+  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G2_X},
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G2_X, dsda_config_comperr_passuse },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G2_X, dsda_config_comperr_hangsolid },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G2_X, dsda_config_comperr_blockmap },
+
+  PREV_PAGE(comp_casual_settings),
+  FINAL_ENTRY
+};move skill level to comp
+
+void M_Compatibility(int choice)
+{
+  M_EnterSetup(&CompatibilityDef, &set_compatibility_active, comp_settings[0]);
+}
+
+void M_DrawCompatibility(void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+
+  M_DrawBackground(g_menu_flat, 0);
+
+  M_DrawTitle(114, 2, "M_COMP", CR_DEFAULT, "COMPATIBILITY", cr_title);
+  M_DrawInstructions();
+  M_DrawPages(comp_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
