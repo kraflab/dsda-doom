@@ -3118,7 +3118,7 @@ setup_menu_t* gen_settings[] =
   NULL
 };
 
-#define G_X 200
+#define G_X 210
 
 static const char *videomodes[] = {
   "Software",
@@ -3183,14 +3183,15 @@ setup_menu_t gen_video_settings[] = {
   { "Fullscreen Video mode", S_YESNO, m_conf, G_X, dsda_config_use_fullscreen },
   { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, dsda_config_exclusive_fullscreen },
   EMPTY_LINE,
+  TITLE("FPS"),
   { "Vertical Sync", S_YESNO, m_conf, G_X, dsda_config_render_vsync },
-  { "Uncapped Framerate", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
+  { "Uncapped FPS", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
   { "Background FPS Limit", S_NUM, m_conf, G_X, dsda_config_background_fps_limit },
   { "Show FPS", S_YESNO,  m_conf, G_X, dsda_config_show_fps },
   EMPTY_LINE,
   { "Fake Contrast", S_CHOICE, m_conf, G_X, dsda_config_fake_contrast_mode, 0, fake_contrast_list },
-  { "GL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list },
+  { "OpenGL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list },
 
   NEXT_PAGE(gen_audio_settings),
   FINAL_ENTRY
@@ -3203,7 +3204,7 @@ setup_menu_t gen_audio_settings[] = {
   { "Enable v1.1 Pitch Effects", S_YESNO, m_conf, G_X, dsda_config_pitched_sounds },
   { "Disable Sound Cutoffs", S_YESNO, m_conf, G_X, dsda_config_full_sounds },
   { "SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
-  { "Mute Audio When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
+  { "Mute When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
   EMPTY_LINE,
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
@@ -3262,21 +3263,19 @@ setup_menu_t gen_controller_settings[] = {
 };
 
 setup_menu_t gen_misc_settings[] = {
-  { "Default skill level", S_CHOICE, m_conf, G_X, dsda_config_default_skill, 0, gen_skillstrings },
-  { "Default compatibility level", S_CHOICE, m_conf, G_X, dsda_config_default_complevel, 0, &gen_compstrings[1] },
+  { "Death Use Action", S_CHOICE, m_conf, G_X, dsda_config_death_use_action, 0, death_use_strings },
+  { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
+  { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G_X, dsda_config_switch_weapon_on_pickup },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, dsda_config_cheat_codes },
+  { "Skip Quit Prompt", S_YESNO, m_conf, G_X, dsda_config_skip_quit_prompt },
   EMPTY_LINE,
-  TITLE("Quality of Life"),
+  TITLE("Rewind"),
   { "Rewind Interval (s)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_interval },
   { "Rewind Depth", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_depth },
   { "Rewind Timeout (ms)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_timeout },
   EMPTY_LINE,
   { "Autosave On Level Start", S_YESNO, m_conf, G_X, dsda_config_auto_save },
   { "Organize My Save Files", S_YESNO, m_conf, G_X, dsda_config_organized_saves },
-  { "Skip Quit Prompt", S_YESNO, m_conf, G_X, dsda_config_skip_quit_prompt },
-  { "Death Use Action", S_CHOICE, m_conf, G_X, dsda_config_death_use_action, 0, death_use_strings },
-  { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
-  { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G_X, dsda_config_switch_weapon_on_pickup },
 
   PREV_PAGE(gen_controller_settings),
   FINAL_ENTRY
@@ -3453,21 +3452,25 @@ void M_DrawDisplay(void)
 
 const char *comp_pages[] =
 {
-  "Casual Play",
+  "Options",
   "Emulation",
   NULL
 };
 
-setup_menu_t comp_casual_settings[], comp_emulation_settings[];
+setup_menu_t comp_options_settings[], comp_emulation_settings[];
 
 setup_menu_t* comp_settings[] =
 {
-  comp_casual_settings,
+  comp_options_settings,
   comp_emulation_settings,
   NULL
 };
 
-setup_menu_t comp_casual_settings[] = {
+setup_menu_t comp_options_settings[] = {
+  { "Default skill level", S_CHOICE, m_conf, G2_X, dsda_config_default_skill, 0, gen_skillstrings },
+  { "Default compatibility level", S_CHOICE, m_conf, G2_X, dsda_config_default_complevel, 0, &gen_compstrings[1] },
+  EMPTY_LINE,
+  { "Casual Play", S_SKIP | S_TITLE, m_conf, G2_X},
   { "Automatic Pistol Start", S_YESNO, m_conf, G2_X, dsda_config_pistol_start },
   { "Respawn Monsters", S_YESNO, m_conf, G2_X, dsda_config_respawn_monsters },
   { "Fast Monsters", S_YESNO, m_conf, G2_X, dsda_config_fast_monsters },
@@ -3494,9 +3497,9 @@ setup_menu_t comp_emulation_settings[] = {
   { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G2_X, dsda_config_comperr_hangsolid },
   { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G2_X, dsda_config_comperr_blockmap },
 
-  PREV_PAGE(comp_casual_settings),
+  PREV_PAGE(comp_options_settings),
   FINAL_ENTRY
-};move skill level to comp
+};
 
 void M_Compatibility(int choice)
 {
