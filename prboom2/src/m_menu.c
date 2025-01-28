@@ -2971,6 +2971,8 @@ setup_menu_t auto_options_settings[] =
   FINAL_ENTRY
 };
 
+#define T_X 180
+
 setup_menu_t auto_appearance_settings[] =
 {
   { "Enable textured display", S_YESNO, m_conf, AU_X, dsda_config_map_textured },
@@ -2981,9 +2983,9 @@ setup_menu_t auto_appearance_settings[] =
   { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_textured_overlay_trans },
   { "Lines in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_lines_overlay_trans },
   EMPTY_LINE,
-  { "Trail", S_SKIP | S_TITLE, m_null, AU_X},
-  { "Player Trail Mode", S_CHOICE, m_conf, AU_X, dsda_config_map_trail_mode, 0, map_trail_mode_list },
-  { "Player Trail Size", S_NUM, m_conf, AU_X, dsda_config_map_trail_size },
+  { "Trail", S_SKIP | S_TITLE, m_null, T_X},
+  { "Player Trail Mode", S_CHOICE, m_conf, T_X, dsda_config_map_trail_mode, 0, map_trail_mode_list },
+  { "Player Trail Size", S_NUM, m_conf, T_X, dsda_config_map_trail_size },
 
   PREV_PAGE(auto_options_settings),
   NEXT_PAGE(auto_colors_settings),
@@ -3206,6 +3208,7 @@ setup_menu_t gen_audio_settings[] = {
   { "SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
   { "Mute When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
   EMPTY_LINE,
+  TITLE("Limits"),
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
@@ -3383,6 +3386,7 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
   { "Hide Status Bar Horns", S_YESNO, m_conf, DM_X, dsda_config_hide_horns },
   { "Single Key Display", S_YESNO, m_conf, DM_X, dsda_config_sts_traditional_keys },
   EMPTY_LINE,
+  TITLE("Coloring"),
   { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
   { "Colored Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
   { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
@@ -3404,9 +3408,11 @@ setup_menu_t display_hud_settings[] =  // Demos Settings screen
   { "Ex Hud Scale %", S_NUM, m_conf, G_X, dsda_config_ex_text_scale_x },
   { "Ex Hud Ratio %", S_NUM, m_conf, G_X, dsda_config_ex_text_ratio_y },
   EMPTY_LINE,
+  TITLE("Messages"),
   { "Show Messages", S_YESNO, m_conf, G_X, dsda_config_show_messages },
   { "Report Revealed Secrets", S_YESNO, m_conf, G_X, dsda_config_hudadd_secretarea },
   { "Announce Map On Entry", S_YESNO, m_conf, G_X, dsda_config_announce_map },
+  EMPTY_LINE,
   { "Demo Playback Progress Bar", S_YESNO, m_conf, G_X, dsda_config_hudadd_demoprogressbar },
 
   PREV_PAGE(display_statbar_settings),
