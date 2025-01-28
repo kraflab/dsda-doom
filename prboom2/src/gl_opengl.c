@@ -36,6 +36,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 
 #include <SDL.h>
 #include "gl_opengl.h"

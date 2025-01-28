@@ -115,10 +115,12 @@ static int maxframe;
 void R_InitSpritesRes(void)
 {
   if (xtoviewangle) Z_Free(xtoviewangle);
+  if (linearskyangle) Z_Free (linearskyangle);
   if (negonearray) Z_Free(negonearray);
   if (screenheightarray) Z_Free(screenheightarray);
 
   xtoviewangle = Z_Calloc(1, (SCREENWIDTH + 1) * sizeof(*xtoviewangle));
+  linearskyangle = Z_Calloc(1, (SCREENWIDTH + 1) * sizeof(*linearskyangle));
   negonearray = Z_Calloc(1, SCREENWIDTH * sizeof(*negonearray));
   screenheightarray = Z_Calloc(1, SCREENWIDTH * sizeof(*screenheightarray));
 

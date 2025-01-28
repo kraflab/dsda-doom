@@ -63,6 +63,7 @@
 
 #include "dsda/map_format.h"
 #include "dsda/render_stats.h"
+#include "dsda/configuration.h"
 
 int Sky1Texture;
 int Sky2Texture;
@@ -76,6 +77,9 @@ static visplane_t *visplanes[MAXVISPLANES];   // killough
 static visplane_t *freetail;                  // killough
 static visplane_t **freehead = &freetail;     // killough
 visplane_t *floorplane, *ceilingplane;
+
+// [FG] linear horizontal sky scrolling
+static angle_t *xtoskyangle;
 
 // killough -- hash function for visplanes
 // Empirically verified to be fairly uniform:
@@ -131,6 +135,8 @@ void R_InitPlanesRes(void)
 
   yslope = Z_Calloc(1, SCREENHEIGHT * sizeof(*yslope));
   distscale = Z_Calloc(1, SCREENWIDTH * sizeof(*distscale));
+
+  xtoskyangle = dsda_IntConfig(dsda_config_render_linearsky) ? linearskyangle : xtoviewangle;
 }
 
 void R_InitVisplanesRes(void)
@@ -152,6 +158,12 @@ void R_InitVisplanesRes(void)
 //
 void R_InitPlanes (void)
 {
+}
+
+// Refresh "Linear Sky"
+void dsda_RefreshLinearSky (void)
+{
+  xtoskyangle = dsda_IntConfig(dsda_config_render_linearsky) ? linearskyangle : xtoviewangle;
 }
 
 //
@@ -607,9 +619,9 @@ static void R_DoDrawPlane(visplane_t *pl)
           for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)
             if ((dcvars.yl = pl->top[x]) != SHRT_MAX && dcvars.yl <= (dcvars.yh = pl->bottom[x])) // dropoff overflow
             {
-              dcvars.source = R_GetPatchColumn(patch, (an + xtoviewangle[x]) >> ANGLETOSKYSHIFT)->pixels;
-              dcvars.prevsource = R_GetPatchColumn(patch, (an + xtoviewangle[x-1]) >> ANGLETOSKYSHIFT)->pixels;
-              dcvars.nextsource = R_GetPatchColumn(patch, (an + xtoviewangle[x+1]) >> ANGLETOSKYSHIFT)->pixels;
+              dcvars.source = R_GetPatchColumn(patch, (an + xtoskyangle[x]) >> ANGLETOSKYSHIFT)->pixels;
+              dcvars.prevsource = R_GetPatchColumn(patch, (an + xtoskyangle[x-1]) >> ANGLETOSKYSHIFT)->pixels;
+              dcvars.nextsource = R_GetPatchColumn(patch, (an + xtoskyangle[x+1]) >> ANGLETOSKYSHIFT)->pixels;
               colfunc(&dcvars);
             }
 
@@ -623,9 +635,9 @@ static void R_DoDrawPlane(visplane_t *pl)
       for (x = pl->minx; (dcvars.x = x) <= pl->maxx; x++)
         if ((dcvars.yl = pl->top[x]) != SHRT_MAX && dcvars.yl <= (dcvars.yh = pl->bottom[x])) // dropoff overflow
         {
-          dcvars.source = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x])^flip) >> ANGLETOSKYSHIFT);
-          dcvars.prevsource = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x-1])^flip) >> ANGLETOSKYSHIFT);
-          dcvars.nextsource = R_GetTextureColumn(tex_patch, ((an + xtoviewangle[x+1])^flip) >> ANGLETOSKYSHIFT);
+          dcvars.source = R_GetTextureColumn(tex_patch, ((an + xtoskyangle[x])^flip) >> ANGLETOSKYSHIFT);
+          dcvars.prevsource = R_GetTextureColumn(tex_patch, ((an + xtoskyangle[x-1])^flip) >> ANGLETOSKYSHIFT);
+          dcvars.nextsource = R_GetTextureColumn(tex_patch, ((an + xtoskyangle[x+1])^flip) >> ANGLETOSKYSHIFT);
           colfunc(&dcvars);
         }
     }

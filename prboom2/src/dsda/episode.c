@@ -55,7 +55,7 @@ void dsda_AddOriginalEpisodes(void) {
     dsda_AddEpisode("e2m1", NULL, "M_EPI2", 't', true);
     dsda_AddEpisode("e3m1", NULL, "M_EPI3", 'i', true);
 
-    if (gamemode == retail)
+    if (gamemode == retail && compatibility_level >= ultdoom_compatibility)
       dsda_AddEpisode("e4m1", NULL, "M_EPI4", 't', true);
   }
 }

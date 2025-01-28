@@ -25,6 +25,8 @@
 #include "r_main.h"
 #include "st_stuff.h"
 
+#include <math.h>
+
 int gl_window_width;
 int gl_window_height;
 int gl_viewport_width;
@@ -69,7 +71,7 @@ void dsda_GLSetRenderViewportParams() {
   gl_scale_y = (float)gl_viewport_height / (float)SCREENHEIGHT;
 
   // elim - This will be zero if no statusbar is being drawn
-  gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT + 1) * R_PartialView();
+  gl_statusbar_height = (int)ceilf(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
 
   gl_scene_width = gl_viewport_width;
   gl_scene_height = gl_viewport_height - gl_statusbar_height;
