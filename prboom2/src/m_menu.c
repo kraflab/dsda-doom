@@ -2337,7 +2337,7 @@ static void M_DrawInstructions(void)
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
-#define DEFAULT_LIST_Y (4.5 * menu_font->line_height)
+#define DEFAULT_LIST_Y (3.8 * menu_font->line_height)
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
@@ -3368,6 +3368,7 @@ setup_menu_t display_options_settings[] = {
   { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
   { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
   EMPTY_LINE,
