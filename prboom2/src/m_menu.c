@@ -2337,7 +2337,7 @@ static void M_DrawInstructions(void)
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
-#define DEFAULT_LIST_Y (3.8 * menu_font->line_height)
+#define DEFAULT_LIST_Y (PAGES_Y + 14)
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
@@ -2358,7 +2358,7 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
 //
 // The Key Binding Screen tables.
 
-#define KB_X  160
+#define KB_X  170
 
 // Definitions of the (in this case) four key binding screens.
 
@@ -3424,17 +3424,17 @@ setup_menu_t display_hud_settings[] =  // Demos Settings screen
 static const char *crosshair_str[] =
   { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big", NULL };
 
-#define HUD_X 284
+#define HUD_X 240
 
 setup_menu_t display_crosshair_settings[] =
 {
   { "Enable Crosshair", S_CHOICE, m_conf, HUD_X, dsda_config_hudadd_crosshair, 0, crosshair_str },
   { "Scale Crosshair", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale },
-  { "Change Crosshair Color By Player Health", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
-  { "Change Crosshair Color On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
+  { "Change Color By Player Health", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
+  { "Change Color On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
+  { "Default Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color },
+  { "Target Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color },
   { "Lock Crosshair On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_lock_target },
-  { "Default Crosshair Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color },
-  { "Target Crosshair Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color },
 
   PREV_PAGE(display_hud_settings),
   FINAL_ENTRY
