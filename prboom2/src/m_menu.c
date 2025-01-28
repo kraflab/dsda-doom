@@ -382,7 +382,7 @@ const char shiftxform[] =
 };
 
 static int cr_title;
-static int cr_title_hightlight;
+static int cr_tab;
 static int cr_label;
 static int cr_label_highlight;
 static int cr_label_edit;
@@ -396,7 +396,7 @@ static int cr_warning;
 static void M_LoadTextColors(void)
 {
   cr_title = dsda_TextCR(dsda_tc_menu_title);
-  cr_title_hightlight = dsda_TextCR(dsda_tc_menu_title_hightlight);
+  cr_tab = dsda_TextCR(dsda_tc_menu_tab);
   cr_label = dsda_TextCR(dsda_tc_menu_label);
   cr_label_highlight = dsda_TextCR(dsda_tc_menu_label_highlight);
   cr_label_edit = dsda_TextCR(dsda_tc_menu_label_edit);
@@ -2152,18 +2152,13 @@ static void M_DrawPages(const char **pages)
     w = M_GetPixelWidth(pages[i]);
 
     strcpy(menu_buffer, pages[i]);
+    M_DrawMenuString(x, PAGES_Y , cr_tab);
 
     if (i == current_page)
     {
-      M_DrawMenuString(x, PAGES_Y , cr_title_hightlight);
-
       int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_title_hightlight][16]);
-    }
-    else
-    {
-      M_DrawMenuString(x, PAGES_Y , cr_title);
+      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_tab][16]);
     }
 
     x += w + 6;
@@ -2211,25 +2206,21 @@ static void M_DrawCarouselPages(const char **pages)
 
   // Draw the arrows on the sides
   if (start_i > 0)
-    M_DrawString(x - 16, PAGES_Y , cr_title, "<-");
+    M_DrawString(x - 16, PAGES_Y , cr_tab, "<-");
   if (pages[i] != NULL)
-    M_DrawString(320 - x, PAGES_Y , cr_title, "->");
+    M_DrawString(320 - x, PAGES_Y , cr_tab, "->");
 
   for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
   {
     w = M_GetPixelWidth(pages[i]);
 
+    M_DrawString(x, PAGES_Y, cr_tab, pages[i]);
+
     if (i == current_page)
     {
-      M_DrawString(x, PAGES_Y, cr_title_hightlight, pages[i]);
-
       int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_title_hightlight][16]);
-    }
-    else
-    {
-      M_DrawString(x, PAGES_Y, cr_title, pages[i]);
+      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_tab][16]);
     }
 
     x += w + 6;
