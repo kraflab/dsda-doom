@@ -981,9 +981,13 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "dsda_coop_spawns", dsda_config_coop_spawns,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_AlterGameFlags
   },
+  [dsda_config_parallel_sfx_active] = {
+    "dsda_parallel_sfx_active", dsda_config_parallel_sfx_active,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_InitParallelSFXFilter
+  },
   [dsda_config_parallel_sfx_limit] = {
     "dsda_parallel_sfx_limit", dsda_config_parallel_sfx_limit,
-    dsda_config_int, 0, 32, { 0 }, NULL, NOT_STRICT, dsda_InitParallelSFXFilter
+    dsda_config_int, 1, 32, { 32 }, NULL, NOT_STRICT, dsda_InitParallelSFXFilter
   },
   [dsda_config_parallel_sfx_window] = {
     "dsda_parallel_sfx_window", dsda_config_parallel_sfx_window,

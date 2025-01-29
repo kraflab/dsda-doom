@@ -169,10 +169,12 @@ void dsda_FreeDehSFX(void) {
   sfx_state = NULL;
 }
 
+static int dsda_parallel_sfx_active;
 static int dsda_parallel_sfx_limit;
 static int dsda_parallel_sfx_window;
 
 void dsda_InitParallelSFXFilter(void) {
+  dsda_parallel_sfx_active = dsda_IntConfig(dsda_config_parallel_sfx_active);
   dsda_parallel_sfx_limit = dsda_IntConfig(dsda_config_parallel_sfx_limit);
   dsda_parallel_sfx_window = dsda_IntConfig(dsda_config_parallel_sfx_window);
 }
@@ -180,7 +182,7 @@ void dsda_InitParallelSFXFilter(void) {
 dboolean dsda_BlockSFX(sfxinfo_t *sfx) {
   extern int gametic;
 
-  if (!dsda_parallel_sfx_limit) return false;
+  if (!dsda_parallel_sfx_active) return false;
 
   if (gametic - sfx->parallel_tic >= dsda_parallel_sfx_window) {
     sfx->parallel_tic = gametic;

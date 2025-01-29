@@ -309,6 +309,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_fast_monsters),
   MIGRATED_SETTING(dsda_config_no_monsters),
   MIGRATED_SETTING(dsda_config_coop_spawns),
+  MIGRATED_SETTING(dsda_config_parallel_sfx_active),
   MIGRATED_SETTING(dsda_config_parallel_sfx_limit),
   MIGRATED_SETTING(dsda_config_parallel_sfx_window),
   MIGRATED_SETTING(dsda_config_movement_toggle_sfx),

@@ -216,6 +216,7 @@ typedef enum {
   dsda_config_fast_monsters,
   dsda_config_no_monsters,
   dsda_config_coop_spawns,
+  dsda_config_parallel_sfx_active,
   dsda_config_parallel_sfx_limit,
   dsda_config_parallel_sfx_window,
   dsda_config_movement_toggle_sfx,
