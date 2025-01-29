@@ -386,6 +386,7 @@ const char shiftxform[] =
 
 static int cr_title;
 static int cr_tab;
+static int cr_tab_highlight;
 static int cr_label;
 static int cr_label_highlight;
 static int cr_label_edit;
@@ -400,6 +401,7 @@ static void M_LoadTextColors(void)
 {
   cr_title = dsda_TextCR(dsda_tc_menu_title);
   cr_tab = dsda_TextCR(dsda_tc_menu_tab);
+  cr_tab_highlight = dsda_TextCR(dsda_tc_menu_tab_highlight);
   cr_label = dsda_TextCR(dsda_tc_menu_label);
   cr_label_highlight = dsda_TextCR(dsda_tc_menu_label_highlight);
   cr_label_edit = dsda_TextCR(dsda_tc_menu_label_edit);
@@ -2180,18 +2182,9 @@ static void M_DrawPages(const char **pages)
 
   for (i = 0; pages[i] != NULL; i++)
   {
+    M_DrawString(x, PAGES_Y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
+
     w = M_GetPixelWidth(pages[i]);
-
-    strcpy(menu_buffer, pages[i]);
-    M_DrawMenuString(x, PAGES_Y , cr_tab);
-
-    if (i == current_page)
-    {
-      int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
-      V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_tab][16]);
-    }
-
     x += w + 6;
   }
 }
@@ -2243,17 +2236,9 @@ static void M_DrawCarouselPages(const char **pages)
 
   for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
   {
+    M_DrawString(x, PAGES_Y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
+
     w = M_GetPixelWidth(pages[i]);
-
-    M_DrawString(x, PAGES_Y, cr_tab, pages[i]);
-
-    if (i == current_page)
-    {
-      int xx = x, yy = PAGES_Y + 8, ww = w, hh = 1;
-      V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, colrngs[cr_tab][16]);
-    }
-
     x += w + 6;
   }
 }
@@ -2994,8 +2979,8 @@ setup_menu_t auto_appearance_settings[] =
   EMPTY_LINE,
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X},
   { "Textured automap", S_NUM, m_conf, AU_X, dsda_config_map_textured_trans },
-  { "Textured automap in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_textured_overlay_trans },
-  { "Lines in overlay mode", S_NUM, m_conf, AU_X, dsda_config_map_lines_overlay_trans },
+  { "Textured automap on overlay", S_NUM, m_conf, AU_X, dsda_config_map_textured_overlay_trans },
+  { "Lines on overlay", S_NUM, m_conf, AU_X, dsda_config_map_lines_overlay_trans },
   EMPTY_LINE,
   { "Trail", S_SKIP | S_TITLE, m_null, T_X},
   { "Player Trail Mode", S_CHOICE, m_conf, T_X, dsda_config_map_trail_mode, 0, map_trail_mode_list },
