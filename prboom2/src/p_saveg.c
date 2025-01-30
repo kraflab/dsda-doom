@@ -1119,7 +1119,9 @@ void P_ArchiveThinkers(void) {
     if (buttonlist[i].btimer != 0)
     {
       P_SAVE_BYTE(tc_button);
-      P_SAVE_TYPE(&buttonlist[i], button_t);
+      button_t button = buttonlist[i];
+      button.line = (line_t *)(button.line - lines);
+      P_SAVE_TYPE(&button, button_t);
     }
   }
 
@@ -1664,6 +1666,7 @@ void P_UnArchiveThinkers(void) {
         {
           button_t button;
           P_LOAD_SIZE(&button, sizeof(button_t));
+          button.line = &lines[(size_t)button.line];
           P_StartButton(button.line, button.where, button.btexture, button.btimer);
           break;
         }
