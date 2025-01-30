@@ -1118,10 +1118,10 @@ void P_ArchiveThinkers(void) {
   {
     if (buttonlist[i].btimer != 0)
     {
+      button_t *button;
       P_SAVE_BYTE(tc_button);
-      button_t button = buttonlist[i];
-      button.line = (line_t *)(button.line - lines);
-      P_SAVE_TYPE(&button, button_t);
+      P_SAVE_TYPE_REF(&buttonlist[i], button, button_t);
+      button->line = (line_t *)(button->line - lines);
     }
   }
 
