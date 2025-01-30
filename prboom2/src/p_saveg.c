@@ -1226,6 +1226,7 @@ void P_UnArchiveThinkers(void) {
         tc == tc_quake          ? sizeof(quake_t)          :
         tc == tc_ambient_source ? sizeof(ambient_source_t) :
         tc == tc_mobj           ? sizeof(mobj_t)           :
+        tc == tc_button         ? sizeof(button_t)         :
       0;
     }
 
@@ -1660,10 +1661,12 @@ void P_UnArchiveThinkers(void) {
         }
 
       case tc_button:
-        button_t button;
-        P_LOAD_SIZE(&button, sizeof(button_t));
-        P_StartButton(button.line, button.where, button.btexture, button.btimer);
-        break;
+        {
+          button_t button;
+          P_LOAD_SIZE(&button, sizeof(button_t));
+          P_StartButton(button.line, button.where, button.btexture, button.btimer);
+          break;
+        }
 
       default:
         I_Error("P_UnarchiveSpecials: Unknown tc %i in extraction", tc);
