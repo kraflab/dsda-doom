@@ -741,6 +741,7 @@ typedef enum {
   tc_poly_door,
   tc_quake,
   tc_ambient_source,
+  tc_button,
   tc_end
 } true_thinkerclass_t;
 
@@ -1110,6 +1111,15 @@ void P_ArchiveThinkers(void) {
 
       if (mobj->player)
         mobj->player = (player_t *)((mobj->player-players) + 1);
+    }
+  }
+
+  for (int i = 0; i < MAXBUTTONS; i++)
+  {
+    if (buttonlist[i].btimer != 0)
+    {
+      P_SAVE_BYTE(tc_button);
+      P_SAVE_TYPE(&buttonlist[i], button_t);
     }
   }
 
@@ -1648,6 +1658,12 @@ void P_UnArchiveThinkers(void) {
             totallive++;
           break;
         }
+
+      case tc_button:
+        button_t button;
+        P_LOAD_SIZE(&button, sizeof(button_t));
+        P_StartButton(button.line, button.where, button.btexture, button.btimer);
+        break;
 
       default:
         I_Error("P_UnarchiveSpecials: Unknown tc %i in extraction", tc);
