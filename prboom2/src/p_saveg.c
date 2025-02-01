@@ -741,6 +741,7 @@ typedef enum {
   tc_poly_door,
   tc_quake,
   tc_ambient_source,
+  tc_button,
   tc_end
 } true_thinkerclass_t;
 
@@ -1113,6 +1114,17 @@ void P_ArchiveThinkers(void) {
     }
   }
 
+  for (int i = 0; i < MAXBUTTONS; i++)
+  {
+    if (buttonlist[i].btimer != 0)
+    {
+      button_t *button;
+      P_SAVE_BYTE(tc_button);
+      P_SAVE_TYPE_REF(&buttonlist[i], button, button_t);
+      button->line = (line_t *)(button->line - lines);
+    }
+  }
+
   // add a terminating marker
   P_SAVE_BYTE(tc_end);
 
@@ -1216,6 +1228,7 @@ void P_UnArchiveThinkers(void) {
         tc == tc_quake          ? sizeof(quake_t)          :
         tc == tc_ambient_source ? sizeof(ambient_source_t) :
         tc == tc_mobj           ? sizeof(mobj_t)           :
+        tc == tc_button         ? sizeof(button_t)         :
       0;
     }
 
@@ -1646,6 +1659,15 @@ void P_UnArchiveThinkers(void) {
 
           if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL | MF_CORPSE)))
             totallive++;
+          break;
+        }
+
+      case tc_button:
+        {
+          button_t button;
+          P_LOAD_SIZE(&button, sizeof(button_t));
+          button.line = &lines[(size_t)button.line];
+          P_StartButton(button.line, button.where, button.btexture, button.btimer);
           break;
         }
 

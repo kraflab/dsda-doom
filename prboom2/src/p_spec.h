@@ -1241,6 +1241,12 @@ void P_InitPicAnims
 void P_InitSwitchList
 ( void );
 
+void P_StartButton
+( line_t*       line,
+  bwhere_e      w,
+  int           texture,
+  int           time );
+
 // at map load
 void P_SpawnSpecials
 ( void );
