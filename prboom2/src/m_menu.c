@@ -2535,26 +2535,28 @@ setup_menu_t keys_game_settings[] =  // Key Binding screen strings
   FINAL_ENTRY
 };
 
+#define MS_X 200
+
 setup_menu_t keys_misc_settings[] =
 {
-  {"Restart Map/Demo"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_restart},
-  {"Next Level"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_nextlevel},
-  {"Previous Level"       ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_prevlevel},
-  { "Rewind", S_INPUT, m_scrn, KB_X, 0, dsda_input_rewind },
-  { "Store Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_store_quick_key_frame },
-  { "Restore Quick Key Frame", S_INPUT, m_scrn, KB_X, 0, dsda_input_restore_quick_key_frame },
-  { "Fake Archvile Jump", S_INPUT, m_scrn, KB_X, 0, dsda_input_avj },
+  {"Restart Map/Demo"  ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_restart},
+  {"Next Level"           ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_nextlevel},
+  {"Previous Level"       ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_prevlevel},
+  { "Rewind", S_INPUT, m_scrn, MS_X, 0, dsda_input_rewind },
+  { "Store Quick Key Frame", S_INPUT, m_scrn, MS_X, 0, dsda_input_store_quick_key_frame },
+  { "Restore Quick Key Frame", S_INPUT, m_scrn, MS_X, 0, dsda_input_restore_quick_key_frame },
+  { "Fake Archvile Jump", S_INPUT, m_scrn, MS_X, 0, dsda_input_avj },
   EMPTY_LINE,
-  {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,KB_X},
-  {"SPEED UP"             ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_up},
-  {"SPEED DOWN"           ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_down},
-  {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_speed_default},
+  {"GAME SPEED"           ,S_SKIP|S_TITLE,m_null,MS_X},
+  {"SPEED UP"             ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_speed_up},
+  {"SPEED DOWN"           ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_speed_down},
+  {"RESET TO DEFAULT"     ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_speed_default},
   EMPTY_LINE,
-  {"Demos"           ,S_SKIP|S_TITLE,m_null,KB_X},
-  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_skip},
-  {"END LEVEL"            ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_demo_endlevel},
-  {"JOIN"                 ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_join_demo},
-  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,KB_X,0,dsda_input_walkcamera},
+  {"Demos"           ,S_SKIP|S_TITLE,m_null,MS_X},
+  {"START/STOP SKIPPING"  ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_demo_skip},
+  {"END LEVEL"            ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_demo_endlevel},
+  {"JOIN"                 ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_join_demo},
+  {"CAMERA MODE"          ,S_INPUT   ,m_scrn,MS_X,0,dsda_input_walkcamera},
 
   PREV_PAGE(keys_game_settings),
   NEXT_PAGE(keys_toggles_settings),
@@ -2602,46 +2604,46 @@ setup_menu_t keys_menus_settings[] =
 };
 
 setup_menu_t keys_raven_settings[] = {
-  { "LOOK UP", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookup },
-  { "LOOK DOWN", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookdown },
-  { "LOOK CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_lookcenter },
-  { "FLY UP", S_INPUT, m_scrn, KB_X, 0, dsda_input_flyup },
-  { "FLY DOWN", S_INPUT, m_scrn, KB_X, 0, dsda_input_flydown },
-  { "FLY CENTER", S_INPUT, m_scrn, KB_X, 0, dsda_input_flycenter },
-  { "JUMP", S_INPUT, m_scrn, KB_X, 0, dsda_input_jump },
+  { "LOOK UP", S_INPUT, m_scrn, MS_X, 0, dsda_input_lookup },
+  { "LOOK DOWN", S_INPUT, m_scrn, MS_X, 0, dsda_input_lookdown },
+  { "LOOK CENTER", S_INPUT, m_scrn, MS_X, 0, dsda_input_lookcenter },
+  { "FLY UP", S_INPUT, m_scrn, MS_X, 0, dsda_input_flyup },
+  { "FLY DOWN", S_INPUT, m_scrn, MS_X, 0, dsda_input_flydown },
+  { "FLY CENTER", S_INPUT, m_scrn, MS_X, 0, dsda_input_flycenter },
+  { "JUMP", S_INPUT, m_scrn, MS_X, 0, dsda_input_jump },
   EMPTY_LINE,
-  { "INVENTORY LEFT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invleft },
-  { "INVENTORY RIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_invright },
-  { "USE ARTIFACT", S_INPUT, m_scrn, KB_X, 0, dsda_input_use_artifact },
+  { "INVENTORY LEFT", S_INPUT, m_scrn, MS_X, 0, dsda_input_invleft },
+  { "INVENTORY RIGHT", S_INPUT, m_scrn, MS_X, 0, dsda_input_invright },
+  { "USE ARTIFACT", S_INPUT, m_scrn, MS_X, 0, dsda_input_use_artifact },
   EMPTY_LINE,
-  { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, KB_X},
-  { "USE TOME OF POWER", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_tome },
-  { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_quartz },
-  { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_urn },
-  { "USE TIMEBOMB", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_bomb },
-  { "USE RING OF INVINCIBILITY", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_ring },
-  { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_chaosdevice },
-  { "USE SHADOWSPHERE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_shadowsphere },
-  { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_wings },
-  { "USE TORCH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_torch },
-  { "USE MORPH OVUM", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_morph },
+  { "HERETIC INVENTORY", S_SKIP | S_TITLE, m_null, MS_X},
+  { "USE TOME OF POWER", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_tome },
+  { "USE QUARTZ FLASK", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_quartz },
+  { "USE MYSTIC URN", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_urn },
+  { "USE TIMEBOMB", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_bomb },
+  { "USE RING OF INVINCIBILITY", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_ring },
+  { "USE CHAOS DEVICE", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_chaosdevice },
+  { "USE SHADOWSPHERE", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_shadowsphere },
+  { "USE WINGS OF WRATH", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_wings },
+  { "USE TORCH", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_torch },
+  { "USE MORPH OVUM", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_morph },
   EMPTY_LINE,
-  { "HEXEN INVENTORY", S_SKIP | S_TITLE, m_null, KB_X},
-  { "USE ICON OF THE DEFENDER", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_ring },
-  { "USE QUARTZ FLASK", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_quartz },
-  { "USE MYSTIC URN", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_urn },
-  { "USE MYSTIC AMBIT INCANT", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_incant },
-  { "USE DARK SERVANT", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_summon },
-  { "USE TORCH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_torch },
-  { "USE PORKALATOR", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_morph },
-  { "USE WINGS OF WRATH", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_wings },
-  { "USE DISC OF REPULSION", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_disk },
-  { "USE FLECHETTE", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_flechette },
-  { "USE BANISHMENT DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_banishment },
-  { "USE BOOTS OF SPEED", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_boots },
-  { "USE KRATER OF MIGHT", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_krater },
-  { "USE DRAGONSKIN BRACERS", S_INPUT, m_scrn, KB_X, 0, dsda_input_hexen_arti_bracers },
-  { "USE CHAOS DEVICE", S_INPUT, m_scrn, KB_X, 0, dsda_input_arti_chaosdevice },
+  { "HEXEN INVENTORY", S_SKIP | S_TITLE, m_null, MS_X},
+  { "USE ICON OF THE DEFENDER", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_ring },
+  { "USE QUARTZ FLASK", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_quartz },
+  { "USE MYSTIC URN", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_urn },
+  { "USE MYSTIC AMBIT INCANT", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_incant },
+  { "USE DARK SERVANT", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_summon },
+  { "USE TORCH", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_torch },
+  { "USE PORKALATOR", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_morph },
+  { "USE WINGS OF WRATH", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_wings },
+  { "USE DISC OF REPULSION", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_disk },
+  { "USE FLECHETTE", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_flechette },
+  { "USE BANISHMENT DEVICE", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_banishment },
+  { "USE BOOTS OF SPEED", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_boots },
+  { "USE KRATER OF MIGHT", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_krater },
+  { "USE DRAGONSKIN BRACERS", S_INPUT, m_scrn, MS_X, 0, dsda_input_hexen_arti_bracers },
+  { "USE CHAOS DEVICE", S_INPUT, m_scrn, MS_X, 0, dsda_input_arti_chaosdevice },
 
   PREV_PAGE(keys_menus_settings),
   NEXT_PAGE(keys_cheats_settings),
@@ -2852,7 +2854,7 @@ setup_menu_t demos_options_settings[] =  // Demos Settings screen
   EMPTY_LINE,
   { "Show Demo Attempts", S_YESNO, m_conf, DM_X, dsda_config_show_demo_attempts },
   { "Show Split Data", S_YESNO, m_conf, DM_X, dsda_config_show_split_data },
-  { "Show Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
+  { "Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
   { "Quickstart Cache Tics", S_NUM, m_conf, DM_X, dsda_config_quickstart_cache_tics },
   { "Text File Author", S_NAME, m_conf, DM_X, dsda_config_player_name },
   EMPTY_LINE,
@@ -2910,7 +2912,8 @@ void M_DrawDemos(void)
 //
 // The Automap tables.
 
-#define AU_X    240
+#define AU_X    260
+#define AA_X    240
 
 const char *auto_pages[] =
 {
@@ -2974,13 +2977,13 @@ setup_menu_t auto_options_settings[] =
 
 setup_menu_t auto_appearance_settings[] =
 {
-  { "Enable textured display", S_YESNO, m_conf, AU_X, dsda_config_map_textured },
-  { "Things appearance", S_CHOICE, m_conf, AU_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
+  { "Enable textured display", S_YESNO, m_conf, AA_X, dsda_config_map_textured },
+  { "Things appearance", S_CHOICE, m_conf, AA_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
   EMPTY_LINE,
-  { "Translucency percentage", S_SKIP | S_TITLE, m_null, AU_X},
-  { "Textured automap", S_NUM, m_conf, AU_X, dsda_config_map_textured_trans },
-  { "Textured automap on overlay", S_NUM, m_conf, AU_X, dsda_config_map_textured_overlay_trans },
-  { "Lines on overlay", S_NUM, m_conf, AU_X, dsda_config_map_lines_overlay_trans },
+  { "Translucency percentage", S_SKIP | S_TITLE, m_null, AA_X},
+  { "Textured automap", S_NUM, m_conf, AA_X, dsda_config_map_textured_trans },
+  { "Textured automap on overlay", S_NUM, m_conf, AA_X, dsda_config_map_textured_overlay_trans },
+  { "Lines on overlay", S_NUM, m_conf, AA_X, dsda_config_map_lines_overlay_trans },
   EMPTY_LINE,
   { "Trail", S_SKIP | S_TITLE, m_null, T_X},
   { "Player Trail Mode", S_CHOICE, m_conf, T_X, dsda_config_map_trail_mode, 0, map_trail_mode_list },
@@ -3404,16 +3407,16 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
 
 setup_menu_t display_hud_settings[] =  // Demos Settings screen
 {
-  { "Use Extended Hud", S_YESNO, m_conf, G_X, dsda_config_exhud },
-  { "Ex Hud Scale %", S_NUM, m_conf, G_X, dsda_config_ex_text_scale_x },
-  { "Ex Hud Ratio %", S_NUM, m_conf, G_X, dsda_config_ex_text_ratio_y },
+  { "Use Extended Hud", S_YESNO, m_conf, D_X, dsda_config_exhud },
+  { "Ex Hud Scale %", S_NUM, m_conf, D_X, dsda_config_ex_text_scale_x },
+  { "Ex Hud Ratio %", S_NUM, m_conf, D_X, dsda_config_ex_text_ratio_y },
   EMPTY_LINE,
   TITLE("Messages"),
-  { "Show Messages", S_YESNO, m_conf, G_X, dsda_config_show_messages },
-  { "Report Revealed Secrets", S_YESNO, m_conf, G_X, dsda_config_hudadd_secretarea },
-  { "Announce Map On Entry", S_YESNO, m_conf, G_X, dsda_config_announce_map },
+  { "Show Messages", S_YESNO, m_conf, D_X, dsda_config_show_messages },
+  { "Report Revealed Secrets", S_YESNO, m_conf, D_X, dsda_config_hudadd_secretarea },
+  { "Announce Map On Entry", S_YESNO, m_conf, D_X, dsda_config_announce_map },
   EMPTY_LINE,
-  { "Demo Playback Progress Bar", S_YESNO, m_conf, G_X, dsda_config_hudadd_demoprogressbar },
+  { "Demo Playback Progress Bar", S_YESNO, m_conf, D_X, dsda_config_hudadd_demoprogressbar },
 
   PREV_PAGE(display_statbar_settings),
   NEXT_PAGE(display_crosshair_settings),
@@ -3423,7 +3426,7 @@ setup_menu_t display_hud_settings[] =  // Demos Settings screen
 static const char *crosshair_str[] =
   { "none", "cross", "angle", "dot", "small", "slim", "tiny", "big", NULL };
 
-#define HUD_X 240
+#define HUD_X 245
 
 setup_menu_t display_crosshair_settings[] =
 {
@@ -3489,19 +3492,19 @@ setup_menu_t comp_options_settings[] = {
 };
 
 setup_menu_t comp_emulation_settings[] = {
-  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_spechit_emulate },
-  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_reject_emulate },
-  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_intercept_emulate },
-  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, G2_X, dsda_config_overrun_playeringame_emulate },
+  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_spechit_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_spechit_emulate },
+  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_reject_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_reject_emulate },
+  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_intercept_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_intercept_emulate },
+  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_playeringame_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_playeringame_emulate },
   EMPTY_LINE,
-  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, G2_X},
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, G2_X, dsda_config_comperr_passuse },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, G2_X, dsda_config_comperr_hangsolid },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, G2_X, dsda_config_comperr_blockmap },
+  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, HUD_X},
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, HUD_X, dsda_config_comperr_passuse },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, HUD_X, dsda_config_comperr_hangsolid },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, HUD_X, dsda_config_comperr_blockmap },
 
   PREV_PAGE(comp_options_settings),
   FINAL_ENTRY
