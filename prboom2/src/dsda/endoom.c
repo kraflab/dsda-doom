@@ -20,6 +20,7 @@
 #include "windows.h"
 #endif
 
+#include "args.h"
 #include "doomdef.h"
 #include "doomtype.h"
 #include "lprintf.h"
@@ -344,8 +345,14 @@ static void RestoreOldMode(void) {
 void dsda_CacheEndoom(void) {
   int lump;
   int show_endoom = dsda_IntConfig(dsda_config_show_endoom);
+  dboolean demo_check  = dsda_Flag(dsda_arg_record) || dsda_Flag(dsda_arg_recordfromto)
+                      || dsda_Flag(dsda_arg_playdemo) || dsda_Flag(dsda_arg_timedemo)
+                      || dsda_Flag(dsda_arg_fastdemo);
 
   output_format = dsda_IntConfig(dsda_config_ansi_endoom);
+
+  if (demo_check)
+    return;
 
   if (show_endoom == 0)
     return;
