@@ -285,6 +285,7 @@ typedef enum {
   dsda_config_analog_look_acceleration,
   dsda_config_swap_analogs,
   dsda_config_invert_analog_look,
+  dsda_config_show_endoom,
   dsda_config_ansi_endoom,
   dsda_config_quit_sounds,
   dsda_config_announce_map,
