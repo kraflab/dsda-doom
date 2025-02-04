@@ -361,7 +361,7 @@ void dsda_CacheEndoom(void) {
       lump = W_CheckNumForName("ENDOOM");
   }
 
-  if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000)
+  if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000 || (show_endoom==2 && !W_PWADLumpNumExists(lump)))
     return;
 
   endoom = Z_Malloc(4000);
