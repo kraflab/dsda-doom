@@ -2774,17 +2774,22 @@ static const char *weapon_attack_alignment_strings[] = {
 // Note that this screen has no PREV or NEXT items, since there are no
 // neighboring screens.
 
-setup_menu_t weap_settings1[];
-
-setup_menu_t* weap_settings[] =
+const char *weap_pages[] =
 {
-  weap_settings1,
+  "Priority",
   NULL
 };
 
-setup_menu_t weap_settings1[] =  // Weapons Settings screen
+setup_menu_t weap_priority_settings[];
+
+setup_menu_t* weap_settings[] =
 {
-  { "Priority", S_SKIP | S_TITLE, m_null, WP_X},
+  weap_priority_settings,
+  NULL
+};
+
+setup_menu_t weap_priority_settings[] =  // Weapons Settings screen
+{
   { "1ST CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_1 },
   { "2nd CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_2 },
   { "3rd CHOICE WEAPON", S_WEAP, m_conf, WP_X, dsda_config_weapon_choice_3 },
@@ -2820,6 +2825,7 @@ void M_DrawWeapons(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", cr_title);
   M_DrawInstructions();
+  M_DrawPages(weap_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4788,7 +4794,7 @@ static dboolean M_WeaponResponder(int ch, int action, event_t* ev)
 
       // see if 'ch' is already assigned elsewhere. if so,
       // you have to swap assignments.
-      ptr2 = weap_settings1;
+      ptr2 = weap_priority_settings;
       old_value = dsda_PersistentIntConfig(ptr1->config_id);
       for (; !(ptr2->m_flags & S_END); ptr2++)
         if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
