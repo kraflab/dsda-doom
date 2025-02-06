@@ -758,9 +758,9 @@ int HU_DrawDemoProgress(int force)
 
   prev_len = len;
 
-  V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_white);
+  V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_lightest);
   if (len > 4)
-    V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_black);
+    V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_darkest);
 
   return true;
 }

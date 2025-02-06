@@ -2099,15 +2099,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 
     int xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
     V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-    V_FillRect(0, xx, yy, ww, hh, colrngs[CR_GRAY][16]);
-
-    // xx = 309, yy = base_y - 1, ww = 3, hh = 1;
-    // V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-    // V_FillRect(0, xx, yy, ww, hh, colrngs[CR_DEFAULT][16]);
-
-    // xx = 309, yy = base_y - 1 + max_i * scrollbar_scale, ww = 3, hh = 1;
-    // V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-    // V_FillRect(0, xx, yy, ww, hh, colrngs[CR_DEFAULT][16]);
+    V_FillRect(0, xx, yy, ww, hh, colrngs[CR_WHITE][cr_shaded[playpal_lightest]]);
   }
 
   i = 0;
@@ -2178,7 +2170,7 @@ static void M_DrawPages(const char **pages)
     w = M_GetPixelWidth(pages[i]);
     x += w + 6;
   }
-  x = (320 - x) / 2;
+  x = (320 - x + 6) / 2;
 
   for (i = 0; pages[i] != NULL; i++)
   {
@@ -2226,11 +2218,11 @@ static void M_DrawCarouselPages(const char **pages)
     w = M_GetPixelWidth(pages[i]);
     x += w + 6;
   }
-  x = (320 - x) / 2;
+  x = (320 - x + 6) / 2;
 
   // Draw the arrows on the sides
   if (start_i > 0)
-    M_DrawString(x - 16, PAGES_Y , cr_tab, "<-");
+    M_DrawString(x -  M_GetPixelWidth("<-") - 1, PAGES_Y , cr_tab, "<-");
   if (pages[i] != NULL)
     M_DrawString(320 - x, PAGES_Y , cr_tab, "->");
 
@@ -2373,7 +2365,7 @@ const char *keys_pages[] =
   "Raven",
   "Cheats",
   "Scripts",
-  "Build Mode",
+  "Build",
   NULL
 };
 

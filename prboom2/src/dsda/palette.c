@@ -191,12 +191,12 @@ void dsda_InitPlayPal(void) {
 
       if (lightness < darkest) {
         darkest = lightness;
-        playpal_data[playpal_i].black = i;
+        playpal_data[playpal_i].darkest = i;
       }
 
       if (lightness > lightest) {
         lightest = lightness;
-        playpal_data[playpal_i].white = i;
+        playpal_data[playpal_i].lightest = i;
       }
     }
   }
