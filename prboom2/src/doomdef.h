@@ -84,7 +84,12 @@ typedef enum {
   none
 } GameMission_t;
 
+#define chex      ((gamemission == tc_chex) || (gamemission == tc_chex3v))
 #define chex_exe  (gamemission == tc_chex)
+
+#define hacx      (gamemission == tc_hacx)
+#define rekkr     (gamemission == tc_rekkr)
+#define freedoom  (gamemission == tc_freedoom)
 
 // Identify language to use, software localization.
 typedef enum {
