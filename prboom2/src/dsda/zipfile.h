@@ -19,7 +19,9 @@
 #define __DSDA_ZIPFILE__
 
 const char* dsda_UnzipFile(const char *zipped_file_name);
+const char* dsda_UnzipFileInit(const char *zipped_file_name);
 
 void dsda_CleanZipTempDirs(void);
+void dsda_CleanZipTempDirsInit(void);
 
 #endif /* __DSDA_ZIPFILE__ */

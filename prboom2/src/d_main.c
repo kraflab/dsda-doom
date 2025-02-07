@@ -122,6 +122,8 @@
 
 static void D_PageDrawer(void);
 
+const char* iwadlump;
+
 // jff 1/24/98 add new versions of these variables to remember command line
 dboolean clnomonsters;   // checkparm of -nomonsters
 dboolean clrespawnparm;  // checkparm of -respawn
@@ -1100,6 +1102,9 @@ static char *FindIWADFile(void)
     else if (dsda_Flag(dsda_arg_hexen))
       return I_FindWad("hexen.wad");
 
+    if (iwadlump != NULL)
+      return I_FindWad(iwadlump);
+
     for (i=0; !iwad && i<nstandard_iwads; i++)
       iwad = I_FindWad(standard_iwads[i]);
   }
@@ -1156,9 +1161,23 @@ static void IdentifyVersion (void)
   dsda_InitDataDir();
   dsda_InitSaveDir();
 
+  // Parse IWAD lump
+  dsda_IWADLump();
+
+  // Reset lump cache
+  dsda_ResetInitLumpCache();
+
   // locate the IWAD and determine game mode from it
 
   iwad = FindIWADFile();
+
+  // Check if the IWAD that IWAD lump says exists
+  // If not, default to normal behaviour
+  if ((iwad != iwadlump) && !(iwad && *iwad))
+  {
+    iwadlump = NULL;
+    iwad = FindIWADFile();
+  }
 
   if (iwad && *iwad)
   {
@@ -1398,10 +1417,11 @@ static void D_AddZip(const char* zipped_file_name, wad_source_t source, deh_queu
   const char* temporary_directory;
 
   full_zip_path = I_RequireZip(zipped_file_name);
-  temporary_directory = dsda_UnzipFile(full_zip_path);
+  temporary_directory = MainLumpCache ? dsda_UnzipFile(full_zip_path) : dsda_UnzipFileInit(full_zip_path);
 
   LoadWADsAtPath(temporary_directory, source);
-  LoadDehackedFilesAtPath(temporary_directory, true, deh_queue);
+  if (MainLumpCache)
+    LoadDehackedFilesAtPath(temporary_directory, true, deh_queue);
 
   Z_Free(full_zip_path);
 }
@@ -1663,6 +1683,58 @@ static void EvaluateDoomVerStr(void)
   lprintf(LO_INFO, "Playing: %s\n", doomverstr);
 }
 
+static void dsda_Loadfiles(void)
+{
+  dsda_arg_t *arg;
+
+  if ((arg = dsda_Arg(dsda_arg_file))->found)
+  {
+    int file_i;
+    // the parms after p are wadfile/lump names,
+    // until end of parms or another - preceded parm
+    modifiedgame = true;            // homebrew levels
+
+    for (file_i = 0; file_i < arg->count; ++file_i)
+    {
+      const char* file_name;
+      char *file = NULL;
+
+      file_name = arg->value.v_string_array[file_i];
+
+      if (!dsda_FileExtension(file_name))
+      {
+        const char *extensions[] = { ".wad", ".lmp", ".zip", ".deh", ".bex", NULL };
+
+        file = I_RequireAnyFile(file_name, extensions);
+        file_name = file;
+      }
+
+      if (dsda_HasFileExt(file_name, ".deh") || dsda_HasFileExt(file_name, ".bex"))
+      {
+        if (MainLumpCache)
+          dsda_AppendStringArg(dsda_arg_deh, file_name);
+      }
+      else if (dsda_HasFileExt(file_name, ".zip"))
+      {
+        D_AddZip(file_name, source_pwad, NULL);
+      }
+      else if (dsda_HasFileExt(file_name, ".wad") || dsda_HasFileExt(file_name, ".lmp"))
+      {
+        if (!file)
+          file = I_RequireWad(file_name);
+
+        D_AddFile(file, source_pwad);
+      }
+      else
+      {
+        I_Error("File type \"%s\" is not supported", dsda_FileExtension(file_name));
+      }
+
+      Z_Free(file);
+    }
+  }
+}
+
 //
 // D_DoomMainSetup
 //
@@ -1685,7 +1757,10 @@ static void D_DoomMainSetup(void)
 
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
 
-  IdentifyVersion();
+  dsda_Loadfiles();  // Load files for IWAD lump
+  W_Init(); // Quick cache to search for IWAD lump
+
+  IdentifyVersion(); // Get IWAD
 
   dsda_InitGlobal();
 
@@ -1751,9 +1826,6 @@ static void D_DoomMainSetup(void)
 
   // init subsystems
 
-  G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
-  // jff 3/24/98 this sets startskill if it was -1
-
   // proff 04/05/2000: for GL-specific switches
   gld_InitCommandLine();
 
@@ -1783,51 +1855,7 @@ static void D_DoomMainSetup(void)
   // add any files specified on the command line with -file wadfile
   // to the wad list
 
-  if ((arg = dsda_Arg(dsda_arg_file))->found)
-  {
-    int file_i;
-    // the parms after p are wadfile/lump names,
-    // until end of parms or another - preceded parm
-    modifiedgame = true;            // homebrew levels
-
-    for (file_i = 0; file_i < arg->count; ++file_i)
-    {
-      const char* file_name;
-      char *file = NULL;
-
-      file_name = arg->value.v_string_array[file_i];
-
-      if (!dsda_FileExtension(file_name))
-      {
-        const char *extensions[] = { ".wad", ".lmp", ".zip", ".deh", ".bex", NULL };
-
-        file = I_RequireAnyFile(file_name, extensions);
-        file_name = file;
-      }
-
-      if (dsda_HasFileExt(file_name, ".deh") || dsda_HasFileExt(file_name, ".bex"))
-      {
-        dsda_AppendStringArg(dsda_arg_deh, file_name);
-      }
-      else if (dsda_HasFileExt(file_name, ".zip"))
-      {
-        D_AddZip(file_name, source_pwad, NULL);
-      }
-      else if (dsda_HasFileExt(file_name, ".wad") || dsda_HasFileExt(file_name, ".lmp"))
-      {
-        if (!file)
-          file = I_RequireWad(file_name);
-
-        D_AddFile(file, source_pwad);
-      }
-      else
-      {
-        I_Error("File type \"%s\" is not supported", dsda_FileExtension(file_name));
-      }
-
-      Z_Free(file);
-    }
-  }
+  dsda_Loadfiles();
 
   // add wad files from autoload PWAD directories
   if (autoload)
@@ -1838,6 +1866,12 @@ static void D_DoomMainSetup(void)
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "W_Init: Init WADfiles.\n");
   W_Init(); // CPhipps - handling of wadfiles init changed
+
+  if (iwadlump != NULL)
+    lprintf(LO_INFO, "Detected IWAD lump: %s.wad\n", iwadlump);
+
+  G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
+  // jff 3/24/98 this sets startskill if it was -1
 
   if (hexen)
   {

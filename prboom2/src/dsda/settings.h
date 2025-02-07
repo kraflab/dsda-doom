@@ -23,6 +23,7 @@
 #define UNSPECIFIED_COMPLEVEL -2
 
 void dsda_InitSettings(void);
+void dsda_IWADLump(void);
 int dsda_CompatibilityLevel(void);
 void dsda_SetTas(void);
 dboolean dsda_ViewBob(void);

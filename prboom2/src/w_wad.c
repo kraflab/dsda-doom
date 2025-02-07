@@ -56,6 +56,7 @@
 #include "e6y.h"
 
 #include "dsda/utility.h"
+#include "dsda/zipfile.h"
 
 //
 // GLOBALS
@@ -64,6 +65,8 @@
 // Location of each lump on disk.
 lumpinfo_t *lumpinfo;
 int        numlumps;         // killough
+
+int MainLumpCache;
 
 void ExtractFileBase (const char *path, char *dest)
 {
@@ -160,7 +163,8 @@ static void W_AddFile(wadfile_info_t *wadfile)
   }
 
   //jff 8/3/98 use logical output routine
-  lprintf (LO_INFO," adding %s\n",wadfile->name);
+  if (MainLumpCache)
+    lprintf (LO_INFO," adding %s\n",wadfile->name);
   startlump = numlumps;
 
   // mark lumps from internal resource
@@ -495,6 +499,9 @@ void W_Init(void)
       W_AddFile(&wadfiles[i]);
   }
 
+  if (!MainLumpCache && !numlumps)
+    return;
+
   if (!numlumps)
     I_Error ("W_Init: No files found");
 
@@ -503,11 +510,14 @@ void W_Init(void)
   // killough 1/24/98: change interface to use M_START/M_END explicitly
   // killough 4/17/98: Add namespace tags to each entry
   // killough 4/4/98: add colormap markers
-  W_CoalesceMarkedResource("S_START", "S_END", ns_sprites);
-  W_CoalesceMarkedResource("F_START", "F_END", ns_flats);
-  W_CoalesceMarkedResource("C_START", "C_END", ns_colormaps);
-  W_CoalesceMarkedResource("B_START", "B_END", ns_prboom);
-  W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires);
+  if (MainLumpCache)
+  {
+    W_CoalesceMarkedResource("S_START", "S_END", ns_sprites);
+    W_CoalesceMarkedResource("F_START", "F_END", ns_flats);
+    W_CoalesceMarkedResource("C_START", "C_END", ns_colormaps);
+    W_CoalesceMarkedResource("B_START", "B_END", ns_prboom);
+    W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires);
+  }
 
   // killough 1/31/98: initialize lump hash table
   W_HashLumps();
@@ -637,4 +647,14 @@ void W_Shutdown(void)
       wadfiles[i].handle = -1;
     }
   }
+}
+
+void dsda_ResetInitLumpCache(void)
+{
+  W_Shutdown();
+  dsda_CleanZipTempDirsInit();
+
+  wadfiles=NULL;
+  numwadfiles = 0;
+  MainLumpCache = true;
 }
