@@ -15,16 +15,13 @@
 //  DSDA GAMEINFO
 //
 
-#include <string>
-#include <cstring>
+#include <string.h>
 
 extern "C" {
 #include "d_main.h"
 #include "w_wad.h"
 #include "lprintf.h"
 #include "z_zone.h"
-
-char *Z_Strdup(const char *s);
 }
 
 #include "scanner.h"
@@ -39,21 +36,13 @@ void dsda_ParseGameInfoLine(Scanner &scanner) {
     return;
   }
 
-  if (!stricmp(scanner.string, "IWAD"))
-  {
-    scanner.CheckToken('=');
-
-    if (!scanner.CheckString()) {
-      lprintf(LO_WARN, "Invalid GAMEINFO: expects string\n");
-
-      scanner.GetNextToken();
-      scanner.SkipLine();
-      return;
+  if (!stricmp(scanner.string, "IWAD")) {
+    scanner.MustGetToken('=');
+    scanner.MustGetString();
+    if (iwadlump) {
+      Z_Free(iwadlump);
     }
-
-    std::string name(scanner.string);
-
-    iwadlump = Z_Strdup(name.c_str());
+  iwadlump = Z_Strdup(scanner.string);
   }
 }
 
