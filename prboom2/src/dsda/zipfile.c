@@ -131,6 +131,23 @@ const char* dsda_UnzipFile(const char *zipped_file_name) {
   return temporary_directory.string;
 }
 
+const char* dsda_ReadUnzippedFile(const char *zipped_file_name) {
+  dsda_string_t temporary_directory;
+  int i;
+  static unsigned int file_counter = 0;
+
+  dsda_StringPrintF(&temporary_directory, "%s/%u-%s", I_GetTempDir(), file_counter, dsda_BaseName(zipped_file_name));
+
+  for (i = 0; temp_dirs[file_counter] != NULL; i++) {
+    temp_dirs = Z_Realloc(temp_dirs, (file_counter + 2) * sizeof(*temp_dirs));
+    temp_dirs[file_counter] = temporary_directory.string;
+    temp_dirs[file_counter + 1] = NULL;
+    file_counter++;
+  }
+
+  return temporary_directory.string;
+}
+
 void dsda_CleanZipTempDirs(void) {
   int i;
 
@@ -143,38 +160,4 @@ void dsda_CleanZipTempDirs(void) {
     Z_Free(temp_dirs[i]);
   }
   Z_Free(temp_dirs);
-}
-
-const char* dsda_UnzipFileInit(const char *zipped_file_name) {
-  dsda_string_t temporary_directory;
-  static unsigned int file_counter = 0;
-
-  dsda_StringPrintF(&temporary_directory, "%s/%u-%s", I_GetTempDir(), file_counter, dsda_BaseName(zipped_file_name));
-  if (M_IsDir(temporary_directory.string))
-    if (!M_RemoveFilesAtPath(temporary_directory.string))
-      I_Error("dsda_UnzipFile: unable to clear tempdir %s\n", temporary_directory.string);
-  M_MakeDir(temporary_directory.string, true);
-
-  dsda_UnzipFileToDestination(zipped_file_name, temporary_directory.string);
-
-  temp_init = Z_Realloc(temp_init, (file_counter + 2) * sizeof(*temp_init));
-  temp_init[file_counter] = temporary_directory.string;
-  temp_init[file_counter + 1] = NULL;
-  file_counter++;
-
-  return temporary_directory.string;
-}
-
-void dsda_CleanZipTempDirsInit(void) {
-  int i;
-
-  if(temp_init == NULL)
-    return;
-
-  for (i = 0; temp_init[i] != NULL; i++) {
-    M_RemoveFilesAtPath(temp_init[i]);
-    M_remove(temp_init[i]);
-    Z_Free(temp_init[i]);
-  }
-  Z_Free(temp_init);
 }

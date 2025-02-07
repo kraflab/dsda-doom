@@ -56,7 +56,6 @@
 #include "e6y.h"
 
 #include "dsda/utility.h"
-#include "dsda/zipfile.h"
 
 //
 // GLOBALS
@@ -652,7 +651,6 @@ void W_Shutdown(void)
 void dsda_ResetInitLumpCache(void)
 {
   W_Shutdown();
-  dsda_CleanZipTempDirsInit();
 
   wadfiles=NULL;
   numwadfiles = 0;
