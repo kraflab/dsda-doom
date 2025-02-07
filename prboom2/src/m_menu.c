@@ -2515,12 +2515,12 @@ setup_menu_t keys_game_settings[] =  // Key Binding screen strings
   {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_pause},
   {"VOLUME"      ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_soundvolume},
   {"HUD"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_hud},
-  {"MESSAGES"    ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_messages},
   {"GAMMA FIX"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_gamma},
   {"SPY"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_spy},
   {"LARGER VIEW" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomin},
   {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomout},
   {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_screenshot},
+  {"REPEAT MESSAGE",S_INPUT   ,m_scrn,KB_X,0,dsda_input_repeat_message},
 
   PREV_PAGE(keys_automap_settings),
   NEXT_PAGE(keys_misc_settings),
@@ -2557,11 +2557,12 @@ setup_menu_t keys_misc_settings[] =
 
 setup_menu_t keys_toggles_settings[] = {
   { "Command Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_command_display },
-  { "Strict Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_strict_mode },
   { "Coordinate Display", S_INPUT, m_scrn, KB_X, 0, dsda_input_coordinate_display },
+  { "Strict Mode", S_INPUT, m_scrn, KB_X, 0, dsda_input_strict_mode },
   { "Extended HUD", S_INPUT, m_scrn, KB_X, 0, dsda_input_exhud },
   { "SFX", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_sfx },
   { "Music", S_INPUT, m_scrn, KB_X, 0, dsda_input_mute_music },
+  { "Messages" ,S_INPUT ,m_scrn, KB_X, 0, dsda_input_messages},
   { "Cheat Code Entry", S_INPUT, m_scrn, KB_X, 0, dsda_input_cheat_codes },
   { "Render Stats", S_INPUT, m_scrn, KB_X, 0, dsda_input_idrate },
   { "FPS", S_INPUT, m_scrn, KB_X, 0, dsda_input_fps },
@@ -2586,9 +2587,6 @@ setup_menu_t keys_menus_settings[] =
   { "SELECT ITEM", S_INPUT | S_NOCLEAR, m_menu, KB_X, 0, dsda_input_menu_enter },
   {"EXIT"        ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_escape},
   {"CLEAR"       ,S_INPUT     ,m_menu,KB_X,0,dsda_input_menu_clear},
-  EMPTY_LINE,
-  {"MESSAGES"       ,S_SKIP|S_TITLE,m_null,KB_X},
-  {"REPEAT MESSAGE" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_repeat_message},
 
   PREV_PAGE(keys_toggles_settings),
   NEXT_PAGE(keys_raven_settings),
@@ -2856,8 +2854,9 @@ setup_menu_t demos_options_settings[] =  // Demos Settings screen
   { "Quickstart Cache Tics", S_NUM, m_conf, DM_X, dsda_config_quickstart_cache_tics },
   { "Text File Author", S_NAME, m_conf, DM_X, dsda_config_player_name },
   EMPTY_LINE,
-  { "Smooth Demo Playback", S_YESNO, m_conf, DM_X, dsda_config_demo_smoothturns },
-  { "Smooth Demo Playback Factor", S_NUM, m_conf, DM_X, dsda_config_demo_smoothturnsfactor },
+  { "Playback Progress Bar", S_YESNO, m_conf, DM_X, dsda_config_hudadd_demoprogressbar },
+  { "Smooth Playback", S_YESNO, m_conf, DM_X, dsda_config_demo_smoothturns },
+  { "Smooth Playback Factor", S_NUM, m_conf, DM_X, dsda_config_demo_smoothturnsfactor },
   { "Cycle Ghost Colors", S_YESNO, m_conf, DM_X, dsda_config_cycle_ghost_colors },
   { "Organize Failed Demos", S_YESNO,  m_conf, DM_X, dsda_config_organize_failed_demos },
 
@@ -2910,8 +2909,8 @@ void M_DrawDemos(void)
 //
 // The Automap tables.
 
-#define AU_X    260
-#define AA_X    240
+#define AU_X 260
+#define AA_X 240
 
 const char *auto_pages[] =
 {
@@ -2955,7 +2954,7 @@ setup_menu_t auto_options_settings[] =
 {
   { "Locked doors blink", S_YESNO, m_conf, AU_X, dsda_config_map_blinking_locks },
   { "Show Secrets only after entering", S_YESNO, m_conf, AU_X, dsda_config_map_secret_after },
-  { "Grid cell size 8..256, -1 for autosize", S_NUM, m_conf, AU_X, dsda_config_map_grid_size },
+  { "Grid cell size 8..256, -1 for auto", S_NUM, m_conf, AU_X, dsda_config_map_grid_size },
   { "Pan speed (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_pan_speed },
   { "Zoom speed (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_scroll_speed },  
   { "Use mouse wheel for zooming", S_YESNO, m_conf, AU_X, dsda_config_map_wheel_zoom },
@@ -3389,7 +3388,7 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
   EMPTY_LINE,
   TITLE("Coloring"),
   { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
-  { "Colored Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
+  { "Use Red Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
   { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
   { "Health Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow },
   { "Health Good/Extra", S_NUM, m_conf, DM_X, dsda_config_hud_health_green },
@@ -3413,8 +3412,6 @@ setup_menu_t display_hud_settings[] =  // Demos Settings screen
   { "Show Messages", S_YESNO, m_conf, D_X, dsda_config_show_messages },
   { "Report Revealed Secrets", S_YESNO, m_conf, D_X, dsda_config_hudadd_secretarea },
   { "Announce Map On Entry", S_YESNO, m_conf, D_X, dsda_config_announce_map },
-  EMPTY_LINE,
-  { "Demo Playback Progress Bar", S_YESNO, m_conf, D_X, dsda_config_hudadd_demoprogressbar },
 
   PREV_PAGE(display_statbar_settings),
   NEXT_PAGE(display_crosshair_settings),
@@ -3429,6 +3426,7 @@ static const char *crosshair_str[] =
 setup_menu_t display_crosshair_settings[] =
 {
   { "Enable Crosshair", S_CHOICE, m_conf, HUD_X, dsda_config_hudadd_crosshair, 0, crosshair_str },
+  EMPTY_LINE,
   { "Scale Crosshair", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale },
   { "Change Color By Player Health", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
   { "Change Color On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
@@ -3490,19 +3488,19 @@ setup_menu_t comp_options_settings[] = {
 };
 
 setup_menu_t comp_emulation_settings[] = {
-  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_spechit_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_spechit_emulate },
-  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_reject_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_reject_emulate },
-  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_intercept_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_intercept_emulate },
-  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, HUD_X, dsda_config_overrun_playeringame_warn },
-  { "TRY TO EMULATE IT", S_YESNO, m_conf, HUD_X, dsda_config_overrun_playeringame_emulate },
+  { "WARN ON SPECHITS OVERFLOW", S_YESNO, m_conf, AU_X, dsda_config_overrun_spechit_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, AU_X, dsda_config_overrun_spechit_emulate },
+  { "WARN ON REJECT OVERFLOW", S_YESNO, m_conf, AU_X, dsda_config_overrun_reject_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, AU_X, dsda_config_overrun_reject_emulate },
+  { "WARN ON INTERCEPTS OVERFLOW", S_YESNO, m_conf, AU_X, dsda_config_overrun_intercept_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, AU_X, dsda_config_overrun_intercept_emulate },
+  { "WARN ON PLAYERINGAME OVERFLOW", S_YESNO, m_conf, AU_X, dsda_config_overrun_playeringame_warn },
+  { "TRY TO EMULATE IT", S_YESNO, m_conf, AU_X, dsda_config_overrun_playeringame_emulate },
   EMPTY_LINE,
-  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, HUD_X},
-  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, HUD_X, dsda_config_comperr_passuse },
-  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, HUD_X, dsda_config_comperr_hangsolid },
-  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, HUD_X, dsda_config_comperr_blockmap },
+  { "MAPPING ERROR FIXES", S_SKIP | S_TITLE, m_conf, AU_X},
+  { "USE PASSES THRU ALL SPECIAL LINES", S_YESNO, m_conf, AU_X, dsda_config_comperr_passuse },
+  { "WALK UNDER SOLID HANGING BODIES", S_YESNO, m_conf, AU_X, dsda_config_comperr_hangsolid },
+  { "FIX CLIPPING IN LARGE LEVELS", S_YESNO, m_conf, AU_X, dsda_config_comperr_blockmap },
 
   PREV_PAGE(comp_options_settings),
   FINAL_ENTRY
