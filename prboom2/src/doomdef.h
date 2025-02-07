@@ -78,6 +78,7 @@ typedef enum {
   pack_nerve,   // No Rest For The Living
   tc_hacx,      // HACX - Twitch 'n Kill
   tc_chex,      // Chex Quest
+  tc_chex3v,    // Chex Quest 3: Vanilla/Modding Edition
   tc_rekkr,     // REKKR
   tc_freedoom,  // Freedoom
   none
