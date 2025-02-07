@@ -93,6 +93,7 @@
 #include "dsda/data_organizer.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/gameinfo.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/options.h"
 #include "dsda/pause.h"
@@ -122,7 +123,7 @@
 
 static void D_PageDrawer(void);
 
-const char* iwadlump;
+char* iwadlump;
 
 // jff 1/24/98 add new versions of these variables to remember command line
 dboolean clnomonsters;   // checkparm of -nomonsters
@@ -1161,8 +1162,8 @@ static void IdentifyVersion (void)
   dsda_InitDataDir();
   dsda_InitSaveDir();
 
-  // Parse IWAD lump
-  dsda_IWADLump();
+  // Parse GAMEINFO lump
+  dsda_LoadGameInfo();
 
   // Reset lump cache
   dsda_ResetInitLumpCache();
@@ -1171,10 +1172,11 @@ static void IdentifyVersion (void)
 
   iwad = FindIWADFile();
 
-  // Check if the IWAD that IWAD lump says exists
+  // Check if GAMEINFO IWAD exists
   // If not, default to normal behaviour
   if ((iwad != iwadlump) && !(iwad && *iwad))
   {
+    Z_Free(iwadlump);
     iwadlump = NULL;
     iwad = FindIWADFile();
   }
@@ -1757,8 +1759,8 @@ static void D_DoomMainSetup(void)
 
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
 
-  dsda_Loadfiles();  // Load files for IWAD lump
-  W_Init(); // Quick cache to search for IWAD lump
+  dsda_Loadfiles();  // Load files for GAMEINFO lump
+  W_Init(); // Quick cache to search for GAMEINFO / IWAD
 
   IdentifyVersion(); // Get IWAD
 
@@ -1868,7 +1870,10 @@ static void D_DoomMainSetup(void)
   W_Init(); // CPhipps - handling of wadfiles init changed
 
   if (iwadlump != NULL)
-    lprintf(LO_INFO, "Detected IWAD lump: %s.wad\n", iwadlump);
+  {
+    lprintf(LO_INFO, "Detected GAMEINFO lump: %s\n", iwadlump);
+    Z_Free(iwadlump);
+  }
 
   G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
   // jff 3/24/98 this sets startskill if it was -1

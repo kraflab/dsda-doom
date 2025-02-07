@@ -67,7 +67,7 @@ void D_StartTitle(void);
 void D_DoomMain(void);
 void D_AddFile (const char *file, wad_source_t source);
 
-extern const char* iwadlump;
+extern char* iwadlump;
 
 void AddIWAD(const char *iwad);
 

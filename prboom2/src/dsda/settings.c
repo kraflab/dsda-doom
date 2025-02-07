@@ -17,7 +17,6 @@
 
 #include "doomstat.h"
 #include "m_menu.h"
-#include "d_main.h"
 #include "e6y.h"
 #include "r_things.h"
 #include "w_wad.h"
@@ -51,38 +50,6 @@ void dsda_InitSettings(void) {
   dsda_InitQuickstartCache();
   dsda_InitParallelSFXFilter();
   gld_ResetAutomapTransparency();
-}
-
-void dsda_IWADLump(void) {
-  const char* iwad = NULL;
-  static int last_numwadfiles = -1;
-
-  // This might be called before all wads are loaded
-  if (numwadfiles != last_numwadfiles) {
-      int num;
-
-      last_numwadfiles = numwadfiles;
-      num = W_CheckNumForName("IWAD");
-
-      if (num != LUMP_NOT_FOUND) {
-          int length;
-          const char* data;
-
-          length = W_LumpLength(num);
-          data = W_LumpByNum(num);
-
-          if (length == 4 && !strncasecmp("doom", data, 4))
-              iwad = "doom";
-          else if (length == 5 && !strncasecmp("doom2", data, 5))
-              iwad = "doom2";
-          else if (length == 8 && !strncasecmp("plutonia", data, 8))
-              iwad = "plutonia";
-          else if (length == 3 && !strncasecmp("tnt", data, 3))
-              iwad = "tnt";
-      }
-    }
-
-  iwadlump = iwad;
 }
 
 static int dsda_WadCompatibilityLevel(void) {
