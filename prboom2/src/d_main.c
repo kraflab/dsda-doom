@@ -1757,9 +1757,13 @@ static void D_DoomMainSetup(void)
     I_SafeExit(0);
   }
 
+  // CPhipps - autoloading of wads
+  autoload = !dsda_Flag(dsda_arg_noautoload);
+
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
 
   dsda_Loadfiles();  // Load files for GAMEINFO lump
+  if (autoload) D_AutoloadPWadDir(); // Load autoload PWAD files for GAMEINFO lump
   W_Init(); // Quick cache to search for GAMEINFO / IWAD
 
   IdentifyVersion(); // Get IWAD
@@ -1840,9 +1844,6 @@ static void D_DoomMainSetup(void)
 
   //e6y: some stuff from command-line should be initialised before ProcessDehFile()
   e6y_InitCommandLine();
-
-  // CPhipps - autoloading of wads
-  autoload = !dsda_Flag(dsda_arg_noautoload);
 
   D_AddFile(port_wad_file, source_auto_load);
 
