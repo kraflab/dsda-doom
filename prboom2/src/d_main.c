@@ -168,8 +168,9 @@ const char *const standard_iwads[]=
   "freedoom1.wad",
   "freedm.wad",
 
-  "hacx.wad",
   "chex.wad",
+
+  "hacx.wad",
   "rekkrsa.wad",
 
   "bfgdoom2.wad",
@@ -1028,7 +1029,7 @@ void AddIWAD(const char *iwad)
     case shareware:
       gamemission = doom;
       if (i>=8 && !strnicmp(iwad+i-8,"chex.wad",8))
-        gamemission = chex;
+        gamemission = tc_chex;
       break;
     case commercial:
       gamemission = doom2;
@@ -1039,7 +1040,7 @@ void AddIWAD(const char *iwad)
       else if (i>=12 && !strnicmp(iwad+i-12,"plutonia.wad",12))
         gamemission = pack_plut;
       else if (i>=8 && !strnicmp(iwad+i-8,"hacx.wad",8))
-        gamemission = hacx;
+        gamemission = tc_hacx;
       break;
     default:
       gamemission = none;
@@ -1605,7 +1606,7 @@ static void EvaluateDoomVerStr(void)
       case retail:
         switch (gamemission)
         {
-          case chex:
+          case tc_chex:
             doomverstr = "Chex(R) Quest";
             break;
           default:
@@ -1628,7 +1629,7 @@ static void EvaluateDoomVerStr(void)
           case pack_tnt:
             doomverstr = "Final DOOM - TNT: Evilution";
             break;
-          case hacx:
+          case tc_hacx:
             doomverstr = "HACX - Twitch 'n Kill";
             break;
           default:
@@ -1885,7 +1886,7 @@ static void D_DoomMainSetup(void)
         ProcessDehFile(NULL, D_dehout(), lump);
       }
     }
-    if (gamemission == chex)
+    if (gamemission == tc_chex)
     {
       int lump = W_CheckNumForName2("CHEXDEH", ns_prboom);
       if (lump != LUMP_NOT_FOUND)

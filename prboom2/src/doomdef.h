@@ -76,10 +76,14 @@ typedef enum {
   pack_tnt,     // TNT mission pack
   pack_plut,    // Plutonia pack
   pack_nerve,   // No Rest For The Living
-  hacx,         // HACX - Twitch 'n Kill
-  chex,         // Chex Quest
+  tc_hacx,      // HACX - Twitch 'n Kill
+  tc_chex,      // Chex Quest
+  tc_rekkr,     // REKKR
+  tc_freedoom,  // Freedoom
   none
 } GameMission_t;
+
+#define chex_exe  (gamemission == tc_chex)
 
 // Identify language to use, software localization.
 typedef enum {
