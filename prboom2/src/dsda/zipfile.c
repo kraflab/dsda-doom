@@ -26,7 +26,6 @@
 #include "dsda/utility.h"
 
 static char **temp_dirs;
-static char **temp_init;
 
 /* Allow a maximum of 1GB to be uncompressed to prevent zip-bombs */
 #define UNZIPPED_BYTES_LIMIT 1000000000ULL
@@ -138,12 +137,10 @@ const char* dsda_ReadUnzippedFile(const char *zipped_file_name) {
 
   dsda_StringPrintF(&temporary_directory, "%s/%u-%s", I_GetTempDir(), file_counter, dsda_BaseName(zipped_file_name));
 
-  for (i = 0; temp_dirs[file_counter] != NULL; i++) {
-    temp_dirs = Z_Realloc(temp_dirs, (file_counter + 2) * sizeof(*temp_dirs));
-    temp_dirs[file_counter] = temporary_directory.string;
-    temp_dirs[file_counter + 1] = NULL;
-    file_counter++;
-  }
+  temp_dirs = Z_Realloc(temp_dirs, (file_counter + 2) * sizeof(*temp_dirs));
+  temp_dirs[file_counter] = temporary_directory.string;
+  temp_dirs[file_counter + 1] = NULL;
+  file_counter++;
 
   return temporary_directory.string;
 }
