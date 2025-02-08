@@ -6508,26 +6508,21 @@ void M_DrawTitle(int y, const char *patch, int cm,
                  const char *alttext, int altcm)
 {
   int lumpnum = W_CheckNumForName(patch);
-  int width, height;
+
+  if (raven) return MN_DrawTitle(y, alttext, altcm);
 
   if (lumpnum != LUMP_NOT_FOUND)
   {
-    width = R_NumPatchWidth(lumpnum);
-    height = R_NumPatchHeight(lumpnum);
-
     int flags = VPT_STRETCH;
     if (cm != CR_DEFAULT)
       flags |= VPT_TRANS;
-    V_DrawNumPatch(160 - (width / 2), y, 0, lumpnum, cm, flags);
+    V_DrawNumPatch(160 - (R_NumPatchWidth(lumpnum) / 2), y, 0, lumpnum, cm, flags);
   }
   else
   {
     // patch doesn't exist, draw some text in place of it
-    width = M_StringWidth(alttext);
-    height = M_StringHeight(alttext);
-
-    M_WriteText(160 - (width / 2),
-                y + 8 - (height / 2), // assumes patch height 16
+    M_WriteText(160 - (M_StringWidth(alttext) / 2),
+                y + 8 - (M_StringHeight(alttext) / 2), // assumes patch height 16
                 alttext, altcm);
   }
 }

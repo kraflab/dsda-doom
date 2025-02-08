@@ -759,6 +759,11 @@ int MN_TextBWidth(const char *text)
   return (width);
 }
 
+void MN_DrawTitle(int y, const char *text, int cm)
+{
+  MN_DrTextB(text, 160 - (MN_TextBWidth(text) / 2), y);
+}
+
 #define SLIDER_LIMIT 200
 #define SLIDER_WIDTH (SLIDER_LIMIT - 64)
 #define SLIDER_PATCH_COUNT (SLIDER_WIDTH / 8)
