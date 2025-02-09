@@ -649,7 +649,9 @@ void dsda_ResetInitLumpCache(void)
 {
   W_Shutdown();
 
-  wadfiles=NULL;
+  wadfiles = NULL;
   numwadfiles = 0;
+  lumpinfo = NULL;
+  numlumps = 0;
   MainLumpCache = true;
 }

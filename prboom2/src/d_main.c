@@ -1844,6 +1844,9 @@ static void D_DoomMainSetup(void)
 
   // init subsystems
 
+  G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
+  // jff 3/24/98 this sets startskill if it was -1
+
   // proff 04/05/2000: for GL-specific switches
   gld_InitCommandLine();
 
@@ -1882,15 +1885,6 @@ static void D_DoomMainSetup(void)
   lprintf(LO_DEBUG, "W_Init: Init WADfiles.\n");
   W_Init(); // CPhipps - handling of wadfiles init changed
 
-  if (iwadlump != NULL)
-  {
-    lprintf(LO_INFO, "Detected GAMEINFO lump: %s\n", iwadlump);
-    Z_Free(iwadlump);
-  }
-
-  G_ReloadDefaults();    // killough 3/4/98: set defaults just loaded.
-  // jff 3/24/98 this sets startskill if it was -1
-
   if (hexen)
   {
     if (!W_LumpNameExists("MAP05"))
@@ -1907,6 +1901,13 @@ static void D_DoomMainSetup(void)
 
   lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
   dsda_ParseOptionsLump();
+
+  if (iwadlump != NULL)
+  {
+    lprintf(LO_INFO, "Detected GAMEINFO lump: %s\n", iwadlump);
+    Z_Free(iwadlump);
+  }
+
   G_ReloadDefaults();
 
   // e6y
