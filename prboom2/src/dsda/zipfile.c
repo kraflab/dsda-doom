@@ -132,7 +132,6 @@ const char* dsda_UnzipFile(const char *zipped_file_name) {
 
 const char* dsda_ReadUnzippedFile(const char *zipped_file_name) {
   dsda_string_t temporary_directory;
-  int i;
   static unsigned int file_counter = 0;
 
   dsda_StringPrintF(&temporary_directory, "%s/%u-%s", I_GetTempDir(), file_counter, dsda_BaseName(zipped_file_name));

@@ -39,10 +39,11 @@ void dsda_ParseGameInfoLine(Scanner &scanner) {
   if (!stricmp(scanner.string, "IWAD")) {
     scanner.MustGetToken('=');
     scanner.MustGetString();
-    if (iwadlump) {
+
+    if (iwadlump)
       Z_Free(iwadlump);
-    }
-  iwadlump = Z_Strdup(scanner.string);
+
+    iwadlump = Z_Strdup(scanner.string);
   }
 }
 

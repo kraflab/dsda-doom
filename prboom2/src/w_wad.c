@@ -509,14 +509,11 @@ void W_Init(void)
   // killough 1/24/98: change interface to use M_START/M_END explicitly
   // killough 4/17/98: Add namespace tags to each entry
   // killough 4/4/98: add colormap markers
-  if (MainLumpCache)
-  {
-    W_CoalesceMarkedResource("S_START", "S_END", ns_sprites);
-    W_CoalesceMarkedResource("F_START", "F_END", ns_flats);
-    W_CoalesceMarkedResource("C_START", "C_END", ns_colormaps);
-    W_CoalesceMarkedResource("B_START", "B_END", ns_prboom);
-    W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires);
-  }
+  W_CoalesceMarkedResource("S_START", "S_END", ns_sprites);
+  W_CoalesceMarkedResource("F_START", "F_END", ns_flats);
+  W_CoalesceMarkedResource("C_START", "C_END", ns_colormaps);
+  W_CoalesceMarkedResource("B_START", "B_END", ns_prboom);
+  W_CoalesceMarkedResource("HI_START", "HI_END", ns_hires);
 
   // killough 1/31/98: initialize lump hash table
   W_HashLumps();
