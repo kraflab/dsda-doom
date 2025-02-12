@@ -51,6 +51,8 @@ dboolean M_Responder (event_t *ev);
 
 dboolean fadeBG(void);
 dboolean M_MenuIsShaded(void);
+void M_ShadedScreen(int scrn);
+
 #define FULLSHADE 20
 
 // Called by main loop,

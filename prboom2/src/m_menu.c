@@ -5858,7 +5858,7 @@ dboolean M_MenuIsShaded(void)
   return fadeBG() && Options;
 }
 
-static void M_ShadedScreen(int scrn)
+void M_ShadedScreen(int scrn)
 {
   V_DrawShaded(scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, FULLSHADE);
 }
@@ -5874,9 +5874,6 @@ static void M_ShadedScreen(int scrn)
 void M_Drawer (void)
 {
   V_BeginUIDraw();
-
-  if (M_MenuIsShaded())
-    M_ShadedScreen(0);
 
   inhelpscreens = false;
 
