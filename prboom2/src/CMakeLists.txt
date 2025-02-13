@@ -57,6 +57,8 @@ set(COMMON_SRC
     dsda/font.h
     dsda/game_controller.c
     dsda/game_controller.h
+    dsda/gameinfo.cpp
+    dsda/gameinfo.h
     dsda/ghost.c
     dsda/ghost.h
     dsda/gl/render_scale.c
