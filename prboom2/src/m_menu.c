@@ -295,8 +295,7 @@ void M_DrawSelCell(menu_t *menu,int item);
 void M_WriteText(int x, int y, const char *string, int cm);
 int  M_StringWidth(const char *string);
 int  M_StringHeight(const char *string);
-void M_DrawTitle(int y, const char *patch, int cm,
-                 const char *alttext, int altcm);
+void M_DrawTitle(int y, const char *text, int cm);
 void M_StartMessage(const char *string,void *routine,dboolean input);
 void M_StopMessage(void);
 void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
@@ -2054,7 +2053,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 {
   int i = 0;
   int end_y;
-  int offset_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
+  int carry_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
   int scroll_i = 0;
   int current_i = 0;
   int max_i = 0;
@@ -2116,7 +2115,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
       i = 0;
     }
     else {
-      desc_y = base_y + (i - scroll_i) * menu_font->line_height + offset_y;
+      desc_y = base_y + (i - scroll_i) * menu_font->line_height + carry_y;
 
       if (i - scroll_i < 0 || i - scroll_i > limit_i)
         skip_entry = true;
@@ -2130,23 +2129,9 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     set_y = desc_y;
     if (src->m_flags & S_THERMO)
     {
-      offset_y += 6;
+      carry_y += 6;
       desc_y += 3;
     }
-
-    // if (excess_i)
-    // {
-    //   if ((i == (scroll_i + 1)) && scroll_i)
-    //   {
-    //     M_DrawString(150, base_y, CR_WHITE, "- more -");
-    //     continue;
-    //   }
-    //   if ((i == (limit_i + scroll_i + 1)) && ((max_i - current_i) > 3))
-    //   {
-    //     M_DrawString(150, desc_y, CR_WHITE, "- more -");
-    //     continue;
-    //   }
-    // }
 
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)
@@ -2158,30 +2143,8 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 }
 
-static void M_DrawPages(const char **pages)
-{
-  int x = 0;
-  int w = 0;
-  int i = 0;
-
-  // Find the initial offset, to make the text centered
-  for (i = 0; pages[i] != NULL; i++)
-  {
-    w = M_GetPixelWidth(pages[i]);
-    x += w + 6;
-  }
-  x = (320 - x + 6) / 2;
-
-  for (i = 0; pages[i] != NULL; i++)
-  {
-    M_DrawString(x, PAGES_Y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
-
-    w = M_GetPixelWidth(pages[i]);
-    x += w + 6;
-  }
-}
-
-static void M_DrawCarouselPages(const char **pages)
+// Draws the name of each page. If there are more than 5, uses a carousel
+static void M_DrawTabs(const char **pages)
 {
   int x = 0;
   int w = 0;
@@ -2189,6 +2152,7 @@ static void M_DrawCarouselPages(const char **pages)
   int start_i = 0;
   int end_i = 4;
 
+  // Figure out what tabs should be drawn if using carousel
   if (current_page > 2)
   {
     if (previous_page < current_page)
@@ -2203,13 +2167,11 @@ static void M_DrawCarouselPages(const char **pages)
     }
 
     if (pages[current_page + 1] == NULL)
-    {
       start_i = current_page - 4;
-    }
     else if (pages[current_page + 2] == NULL)
-    {
       start_i = current_page - 3;
-    }
+
+    if (start_i < 0) start_i = 0;
   }
 
   // Find the initial offset to center text
@@ -2226,6 +2188,7 @@ static void M_DrawCarouselPages(const char **pages)
   if (pages[i] != NULL)
     M_DrawString(320 - x, PAGES_Y , cr_tab, "->");
 
+  // Draw the page names
   for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
   {
     M_DrawString(x, PAGES_Y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
@@ -2741,9 +2704,9 @@ void M_DrawKeybnd(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(2, "", CR_DEFAULT, "KEY BINDINGS", cr_title); // M_KEYBND
+  M_DrawTitle(2, "KEY BINDINGS", cr_title); // M_KEYBND
   M_DrawInstructions();
-  M_DrawCarouselPages(keys_pages);
+  M_DrawTabs(keys_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2813,9 +2776,9 @@ void M_DrawWeapons(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(2, "", CR_DEFAULT, "WEAPONS", cr_title); // M_WEAP
+  M_DrawTitle(2, "WEAPONS", cr_title); // M_WEAP
   M_DrawInstructions();
-  M_DrawPages(weap_pages);
+  M_DrawTabs(weap_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2898,9 +2861,9 @@ void M_DrawDemos(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(2, "", CR_DEFAULT, "DEMOS", cr_title); // M_DEMOS
+  M_DrawTitle(2, "DEMOS", cr_title); // M_DEMOS
   M_DrawInstructions();
-  M_DrawPages(demos_pages);
+  M_DrawTabs(demos_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3080,9 +3043,9 @@ void M_DrawAutoMap(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(2, "", CR_DEFAULT, "AUTOMAP", cr_title); // M_AUTO
+  M_DrawTitle(2, "AUTOMAP", cr_title); // M_AUTO
   M_DrawInstructions();
-  M_DrawPages(auto_pages);
+  M_DrawTabs(auto_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 
   // If a color is being selected, need to show color paint chips
@@ -3120,6 +3083,7 @@ setup_menu_t* gen_settings[] =
 };
 
 #define G_X 210
+#define G2_X 220
 
 static const char *videomodes[] = {
   "Software",
@@ -3220,21 +3184,21 @@ setup_menu_t gen_audio_settings[] = {
 };
 
 setup_menu_t gen_mouse_settings[] = {
-  { "Enable Mouse", S_YESNO, m_conf, G_X, dsda_config_use_mouse },
+  { "Enable Mouse", S_YESNO, m_conf, G2_X, dsda_config_use_mouse },
   EMPTY_LINE,
-  { "Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_mouse_sensitivity_horiz },
-  { "Vertical Sensitivity", S_NUM, m_conf, G_X, dsda_config_mouse_sensitivity_vert },
-  { "Free Look Sensitivity", S_NUM, m_conf, G_X, dsda_config_mouse_sensitivity_mlook },
-  { "Acceleration", S_NUM, m_conf, G_X, dsda_config_mouse_acceleration },
+  { "Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_horiz },
+  { "Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_vert },
+  { "Free Look Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_mlook },
+  { "Acceleration", S_NUM, m_conf, G2_X, dsda_config_mouse_acceleration },
   EMPTY_LINE,
-  { "Enable Free Look", S_YESNO, m_conf, G_X, dsda_config_freelook },
-  { "Invert Free Look", S_YESNO, m_conf, G_X, dsda_config_movement_mouseinvert },
+  { "Enable Free Look", S_YESNO, m_conf, G2_X, dsda_config_freelook },
+  { "Invert Free Look", S_YESNO, m_conf, G2_X, dsda_config_movement_mouseinvert },
   EMPTY_LINE,
-  { "Mouse Strafe Divisor", S_NUM, m_conf, G_X, dsda_config_movement_mousestrafedivisor },
-  { "Dbl-Click As Use", S_YESNO, m_conf, G_X, dsda_config_mouse_doubleclick_as_use },
-  { "Vertical Mouse Movement", S_YESNO, m_conf, G_X, dsda_config_vertmouse },
-  { "Carry Fractional Tics", S_YESNO, m_conf, G_X, dsda_config_mouse_carrytics },
-  { "Mouse Stutter Correction", S_YESNO, m_conf, G_X, dsda_config_mouse_stutter_correction },
+  { "Mouse Strafe Divisor", S_NUM, m_conf, G2_X, dsda_config_movement_mousestrafedivisor },
+  { "Dbl-Click As Use", S_YESNO, m_conf, G2_X, dsda_config_mouse_doubleclick_as_use },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G2_X, dsda_config_vertmouse },
+  { "Carry Fractional Tics", S_YESNO, m_conf, G2_X, dsda_config_mouse_carrytics },
+  { "Mouse Stutter Correction", S_YESNO, m_conf, G2_X, dsda_config_mouse_stutter_correction },
 
   PREV_PAGE(gen_audio_settings),
   NEXT_PAGE(gen_controller_settings),
@@ -3242,22 +3206,22 @@ setup_menu_t gen_mouse_settings[] = {
 };
 
 setup_menu_t gen_controller_settings[] = {
-  { "Enable Controller", S_YESNO, m_conf, G_X, dsda_config_use_game_controller },
+  { "Enable Controller", S_YESNO, m_conf, G2_X, dsda_config_use_game_controller },
   EMPTY_LINE,
-  { "Left Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_left_analog_sensitivity_x },
-  { "Left Vertical Sensitivity", S_NUM, m_conf, G_X, dsda_config_left_analog_sensitivity_y },
-  { "Right Horizontal Sensitivity", S_NUM, m_conf, G_X, dsda_config_right_analog_sensitivity_x },
-  { "Right Vertical Sensitivity", S_NUM, m_conf, G_X, dsda_config_right_analog_sensitivity_y },
-  { "Acceleration", S_NUM, m_conf, G_X, dsda_config_analog_look_acceleration },
+  { "Left Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_left_analog_sensitivity_x },
+  { "Left Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_left_analog_sensitivity_y },
+  { "Right Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_right_analog_sensitivity_x },
+  { "Right Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_right_analog_sensitivity_y },
+  { "Acceleration", S_NUM, m_conf, G2_X, dsda_config_analog_look_acceleration },
   EMPTY_LINE,
-  { "Enable Free Look", S_YESNO, m_conf, G_X, dsda_config_freelook },
-  { "Invert Free Look", S_YESNO, m_conf, G_X, dsda_config_invert_analog_look },
-  { "Swap Analogs", S_YESNO, m_conf, G_X, dsda_config_swap_analogs },
+  { "Enable Free Look", S_YESNO, m_conf, G2_X, dsda_config_freelook },
+  { "Invert Free Look", S_YESNO, m_conf, G2_X, dsda_config_invert_analog_look },
+  { "Swap Analogs", S_YESNO, m_conf, G2_X, dsda_config_swap_analogs },
   EMPTY_LINE,
-  { "Left Analog Deadzone", S_NUM, m_conf, G_X, dsda_config_left_analog_deadzone },
-  { "Right Analog Deadzone", S_NUM, m_conf, G_X, dsda_config_right_analog_deadzone },
-  { "Left Trigger Deadzone", S_NUM, m_conf, G_X, dsda_config_left_trigger_deadzone },
-  { "Right Trigger Deadzone", S_NUM, m_conf, G_X, dsda_config_right_trigger_deadzone },
+  { "Left Analog Deadzone", S_NUM, m_conf, G2_X, dsda_config_left_analog_deadzone },
+  { "Right Analog Deadzone", S_NUM, m_conf, G2_X, dsda_config_right_analog_deadzone },
+  { "Left Trigger Deadzone", S_NUM, m_conf, G2_X, dsda_config_left_trigger_deadzone },
+  { "Right Trigger Deadzone", S_NUM, m_conf, G2_X, dsda_config_right_trigger_deadzone },
 
   PREV_PAGE(gen_mouse_settings),
   NEXT_PAGE(gen_misc_settings),
@@ -3265,25 +3229,23 @@ setup_menu_t gen_controller_settings[] = {
 };
 
 setup_menu_t gen_misc_settings[] = {
-  { "Death Use Action", S_CHOICE, m_conf, G_X, dsda_config_death_use_action, 0, death_use_strings },
-  { "Boom Weapon Auto Switch", S_YESNO, m_conf, G_X, dsda_config_switch_when_ammo_runs_out },
-  { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G_X, dsda_config_switch_weapon_on_pickup },
-  { "Enable Cheat Code Entry", S_YESNO, m_conf, G_X, dsda_config_cheat_codes },
-  { "Skip Quit Prompt", S_YESNO, m_conf, G_X, dsda_config_skip_quit_prompt },
+  { "Death Use Action", S_CHOICE, m_conf, G2_X, dsda_config_death_use_action, 0, death_use_strings },
+  { "Boom Weapon Auto Switch", S_YESNO, m_conf, G2_X, dsda_config_switch_when_ammo_runs_out },
+  { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G2_X, dsda_config_switch_weapon_on_pickup },
+  { "Enable Cheat Code Entry", S_YESNO, m_conf, G2_X, dsda_config_cheat_codes },
+  { "Skip Quit Prompt", S_YESNO, m_conf, G2_X, dsda_config_skip_quit_prompt },
   EMPTY_LINE,
   TITLE("Rewind"),
-  { "Rewind Interval (s)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_interval },
-  { "Rewind Depth", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_depth },
-  { "Rewind Timeout (ms)", S_NUM, m_conf, G_X, dsda_config_auto_key_frame_timeout },
+  { "Rewind Interval (s)", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_interval },
+  { "Rewind Depth", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_depth },
+  { "Rewind Timeout (ms)", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_timeout },
   EMPTY_LINE,
-  { "Autosave On Level Start", S_YESNO, m_conf, G_X, dsda_config_auto_save },
-  { "Organize My Save Files", S_YESNO, m_conf, G_X, dsda_config_organized_saves },
+  { "Autosave On Level Start", S_YESNO, m_conf, G2_X, dsda_config_auto_save },
+  { "Organize My Save Files", S_YESNO, m_conf, G2_X, dsda_config_organized_saves },
 
   PREV_PAGE(gen_controller_settings),
   FINAL_ENTRY
 };
-
-#define G2_X 220
 
 // To (un)set fullscreen video after menu changes
 void M_ChangeFullScreen(void)
@@ -3330,9 +3292,9 @@ void M_DrawGeneral(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(2, "", CR_DEFAULT, "GENERAL", cr_title); // M_GENERL
+  M_DrawTitle(2, "GENERAL", cr_title); // M_GENERL
   M_DrawInstructions();
-  M_DrawPages(gen_pages);
+  M_DrawTabs(gen_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3449,9 +3411,9 @@ void M_DrawDisplay(void)
 
   M_DrawBackground(g_menu_flat, 0);
 
-  M_DrawTitle(2, "", CR_DEFAULT, "DISPLAY", cr_title); // M_DSPLAY
+  M_DrawTitle(2, "DISPLAY", cr_title); // M_DSPLAY
   M_DrawInstructions();
-  M_DrawPages(display_pages);
+  M_DrawTabs(display_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3517,9 +3479,9 @@ void M_DrawCompatibility(void)
 
   M_DrawBackground(g_menu_flat, 0);
 
-  M_DrawTitle(2, "", CR_DEFAULT, "COMPATIBILITY", cr_title); // M_COMP
+  M_DrawTitle(2, "COMPATIBILITY", cr_title); // M_COMP
   M_DrawInstructions();
-  M_DrawPages(comp_pages);
+  M_DrawTabs(comp_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4048,11 +4010,11 @@ void M_DrawLevelTable(void)
 
   M_DrawBackground(g_menu_flat, 0);
 
-  M_DrawTitle(2, "", CR_DEFAULT, "LEVEL TABLE", cr_title); // M_LVLTBL
+  M_DrawTitle(2, "LEVEL TABLE", cr_title); // M_LVLTBL
   if (current_setup_menu != level_table_page[wad_stats_summary_page])
     M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
 
-  M_DrawPages(level_table_pages);
+  M_DrawTabs(level_table_pages);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4523,7 +4485,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   {
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(9, "", cr_title, PACKAGE_NAME " v" PACKAGE_VERSION, cr_title); // PRBOOM
+    M_DrawTitle(9, PACKAGE_NAME " v" PACKAGE_VERSION, cr_title); // PRBOOM
     M_DrawScreenItems(cred_settings, 32);
   }
 }
@@ -6397,7 +6359,7 @@ void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
 
   if (thermDot >= thermRange)
   {
-      thermDot = thermRange - 1;
+    thermDot = thermRange - 1;
   }
 
   dot_offset = 8 * thermDot * thermWidth / thermRange;
@@ -6504,27 +6466,13 @@ void M_WriteText (int x,int y, const char* string, int cm)
   }
 }
 
-void M_DrawTitle(int y, const char *patch, int cm,
-                 const char *alttext, int altcm)
+void M_DrawTitle(int y, const char *text, int cm)
 {
-  int lumpnum = W_CheckNumForName(patch);
+  if (raven) return MN_DrawTitle(y, text, cm);
 
-  if (raven) return MN_DrawTitle(y, alttext, altcm);
-
-  if (lumpnum != LUMP_NOT_FOUND)
-  {
-    int flags = VPT_STRETCH;
-    if (cm != CR_DEFAULT)
-      flags |= VPT_TRANS;
-    V_DrawNumPatch(160 - (R_NumPatchWidth(lumpnum) / 2), y, 0, lumpnum, cm, flags);
-  }
-  else
-  {
-    // patch doesn't exist, draw some text in place of it
-    M_WriteText(160 - (M_StringWidth(alttext) / 2),
-                y + 8 - (M_StringHeight(alttext) / 2), // assumes patch height 16
-                alttext, altcm);
-  }
+  M_WriteText(160 - (M_StringWidth(text) / 2),
+              y + 8 - (M_StringHeight(text) / 2), // assumes patch height 16
+              text, cm);
 }
 
 /////////////////////////////
