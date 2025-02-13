@@ -642,7 +642,7 @@ void AM_initPlayerTrail(void)
   trail_index = -1;
   trail_size = 0;
   trail_size_max = dsda_IntConfig(dsda_config_map_trail_size);
-  map_trail_mode = dsda_IntConfig(dsda_config_map_trail_mode);
+  map_trail_mode = dsda_IntConfig(dsda_config_map_trail) ? dsda_IntConfig(dsda_config_map_trail_collisions) : map_trail_mode_ignore_collisions;
 }
 
 //
