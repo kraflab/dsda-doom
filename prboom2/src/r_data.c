@@ -43,6 +43,7 @@
 #include "p_tick.h"
 #include "lprintf.h"  // jff 08/03/98 - declaration of lprintf
 #include "p_tick.h"
+#include "v_video.h"
 
 #include "dsda/args.h"
 #include "dsda/configuration.h"
