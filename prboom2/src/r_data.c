@@ -398,10 +398,6 @@ static void R_InitColormaps(void)
   for (i=1; i<numcolormaps; i++)
     colormaps[i] = (const lighttable_t *)W_LumpByNum(i+firstcolormaplump);
   // cph - always lock
-
-  cr_bright = &colormaps[0][256];
-  cr_shaded = &colormaps[0][256 * 6];
-  cr_dark = &colormaps[0][256 * 15];
 }
 
 // killough 4/4/98: get colormap number from name

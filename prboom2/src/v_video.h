@@ -96,10 +96,6 @@ typedef enum
 } crange_idx_e;
 //jff 1/16/98 end palette color range additions
 
-byte *cr_bright;
-byte *cr_shaded;
-byte *cr_dark;
-
 typedef struct {
   byte *data;          // pointer to the screen content
   dboolean not_on_heap; // if set, no malloc or free is preformed and

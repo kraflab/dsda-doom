@@ -2098,7 +2098,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 
     int xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
     V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-    V_FillRect(0, xx, yy, ww, hh, colrngs[CR_WHITE][cr_shaded[playpal_lightest]]);
+    V_FillRect(0, xx, yy, ww, hh, colrngs[CR_TAN][playpal_lightest]);
   }
 
   i = 0;
