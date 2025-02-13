@@ -168,8 +168,11 @@ const char *const standard_iwads[]=
   "freedoom1.wad",
   "freedm.wad",
 
-  "hacx.wad",
   "chex.wad",
+  "chex3v.wad",
+  "chex3d2.wad",
+
+  "hacx.wad",
   "rekkrsa.wad",
 
   "bfgdoom2.wad",
@@ -612,6 +615,7 @@ static int  demosequence;         // killough 5/2/98: made static
 static int  pagetic;
 static const char *pagename; // CPhipps - const
 dboolean bfgedition = 0;
+dboolean freedm = 0;
 
 //
 // D_PageTicker
@@ -879,6 +883,7 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
     int ud=0,rg=0,sw=0,cm=0,sc=0,hx=0;
     dboolean dmenupic = false;
     dboolean large_titlepic = false;
+    dboolean freedm_lmp = false;
     FILE* fp;
 
     // Identify IWAD correctly
@@ -943,6 +948,8 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
             large_titlepic = true;
           if (!strncmp(fileinfo[length].name,"HACX",4))
             hx++;
+          if (!strncmp(fileinfo[length].name,"FREEDM",6))
+            freedm_lmp = true;
         }
         Z_Free(fileinfo);
 
@@ -956,6 +963,8 @@ void CheckIWAD(const char *iwadname,GameMode_t *gmode,dboolean *hassec)
     // unity iwad has dmenupic and a large titlepic
     if (dmenupic && !large_titlepic)
       bfgedition++;
+    if (freedm_lmp)
+      freedm++;
 
     // Determine game mode from levels present
     // Must be a full set for whichever mode is present
@@ -1028,7 +1037,13 @@ void AddIWAD(const char *iwad)
     case shareware:
       gamemission = doom;
       if (i>=8 && !strnicmp(iwad+i-8,"chex.wad",8))
-        gamemission = chex;
+        gamemission = tc_chex;
+      else if (i>=10 && !strnicmp(iwad+i-10,"chex3v.wad",10))
+        gamemission = tc_chex3v;
+      else if (i>=11 && !strnicmp(iwad+i-11,"rekkrsa.wad",11))
+        gamemission = tc_rekkr;
+      else if (i>=13 && !strnicmp(iwad+i-13,"freedoom1.wad",13))
+        gamemission = tc_freedoom;
       break;
     case commercial:
       gamemission = doom2;
@@ -1038,8 +1053,13 @@ void AddIWAD(const char *iwad)
         gamemission = pack_tnt;
       else if (i>=12 && !strnicmp(iwad+i-12,"plutonia.wad",12))
         gamemission = pack_plut;
+      else if (i>=11 && !strnicmp(iwad+i-11,"chex3d2.wad",11))
+        gamemission = tc_chex3v;
       else if (i>=8 && !strnicmp(iwad+i-8,"hacx.wad",8))
-        gamemission = hacx;
+        gamemission = tc_hacx;
+      else if ((i>=13 && !strnicmp(iwad+i-13,"freedoom2.wad",13))
+            || (i>=10 && !strnicmp(iwad+i-10,"freedm.wad",10)))
+        gamemission = tc_freedoom;
       break;
     default:
       gamemission = none;
@@ -1430,6 +1450,10 @@ static const char *D_AutoLoadGameBase()
 {
   return hexen ? "hexen-all" :
          heretic ? "heretic-all" :
+         hacx ? "hacx-all" :
+         rekkr ? "rekkr-all" :
+         chex ? "chex-all" :
+         freedoom ? "freedoom-all" :
          "doom-all";
 }
 
@@ -1605,8 +1629,17 @@ static void EvaluateDoomVerStr(void)
       case retail:
         switch (gamemission)
         {
-          case chex:
+          case tc_chex:
             doomverstr = "Chex(R) Quest";
+            break;
+          case tc_chex3v:
+            doomverstr = "Chex(R) Quest 3: Vanilla Edition";
+            break;
+          case tc_rekkr:
+            doomverstr = "REKKR";
+            break;
+          case tc_freedoom:
+            doomverstr = "Freedoom Phase 1";
             break;
           default:
             doomverstr = "The Ultimate DOOM";
@@ -1628,8 +1661,14 @@ static void EvaluateDoomVerStr(void)
           case pack_tnt:
             doomverstr = "Final DOOM - TNT: Evilution";
             break;
-          case hacx:
+          case tc_chex3v:
+            doomverstr = "Chex(R) Quest 3: Modding Edition";
+            break;
+          case tc_hacx:
             doomverstr = "HACX - Twitch 'n Kill";
+            break;
+          case tc_freedoom:
+            doomverstr = freedm ? "FreeDM" : "Freedoom Phase 2";
             break;
           default:
             doomverstr = "DOOM 2: Hell on Earth";
@@ -1885,7 +1924,7 @@ static void D_DoomMainSetup(void)
         ProcessDehFile(NULL, D_dehout(), lump);
       }
     }
-    if (gamemission == chex)
+    if (gamemission == tc_chex)
     {
       int lump = W_CheckNumForName2("CHEXDEH", ns_prboom);
       if (lump != LUMP_NOT_FOUND)
