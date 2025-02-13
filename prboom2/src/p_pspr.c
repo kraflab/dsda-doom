@@ -313,7 +313,8 @@ int P_SwitchWeapon(player_t *player)
           break;
         // fallthrough
       case 0:
-        newweapon = wp_fist;
+        if (!(demo_compatibility && player->weaponowned[wp_chainsaw]))  // Never switch from chainsaw in vanilla
+          newweapon = wp_fist;
         break;
       case 2:
         if (player->ammo[am_clip])
