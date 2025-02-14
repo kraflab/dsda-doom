@@ -26,7 +26,7 @@
 
 #define ITEM_HEIGHT 20
 #define SELECTOR_XOFFSET (-28)
-#define SELECTOR_YOFFSET (-1)
+#define SELECTOR_YOFFSET (-4)
 #define SFX_VOL_INDEX 1
 #define MUS_VOL_INDEX 3
 

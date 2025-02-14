@@ -416,7 +416,7 @@ static const dsda_font_t *menu_font;
 
 static void M_LoadMenuFont(void)
 {
-  menu_font = raven ? &exhud_font : &hud_font;
+  menu_font = &hud_font;
 }
 
 /////////////////////////////////////////////////////////////////////////////
