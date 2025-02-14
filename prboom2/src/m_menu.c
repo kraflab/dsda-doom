@@ -4166,7 +4166,7 @@ void M_DrawHelp (void)
 
   M_ChangeMenu(NULL, mnact_full);
 
-  if (W_PWADLumpNameExists(helplump))
+  if (W_PWADLumpNameExists(helplump) || tc_game)
   {
     V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
@@ -4230,7 +4230,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   const int PWADcredit = W_PWADLumpNameExists(credit);
 
   inhelpscreens = true;
-  if (PWADcredit)
+  if (PWADcredit || tc_game)
   {
     V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, credit, CR_DEFAULT, VPT_STRETCH);
