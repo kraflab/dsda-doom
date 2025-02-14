@@ -2013,12 +2013,14 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 {
   int i = 0;
   int end_y;
+  int carry_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
   int scroll_i = 0;
   int current_i = 0;
   int max_i = 0;
   int excess_i = 0;
   int limit_i = 0;
   int buffer_i = 0;
+  float scrollbar_scale = 0;
   const setup_menu_t* src;
 
   i = 0;
@@ -2041,30 +2043,39 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 
   end_y = base_y + (max_i + 1) * menu_font->line_height;
-  if (end_y > 200)
-    excess_i = (end_y - 200 + menu_font->line_height - 1) / menu_font->line_height;
+  if (end_y > 190)
+    excess_i = (end_y - 190 + menu_font->line_height - 1) / menu_font->line_height;
 
   limit_i = max_i - excess_i;
   buffer_i = (max_i - current_i > 3 ? 3 : max_i - current_i);
 
   if (excess_i)
+  {
     while (current_i - scroll_i > limit_i - buffer_i)
       ++scroll_i;
 
+    scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)max_i;
+
+    int xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
+    V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+    V_FillRect(0, xx, yy, ww, hh, colrngs[CR_TAN][playpal_lightest]);
+  }
+
   i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
-    int y;
+    int desc_y;
+    int set_y;
     dboolean skip_entry = false;
 
     if (src->m_flags & (S_NEXT | S_PREV)) {
-      y = 200 - menu_font->line_height - 2;
+      desc_y = 190 - menu_font->line_height - 2;
     }
     else if (src->m_flags & S_RESET_Y) {
       skip_entry = true;
       i = 0;
     }
     else {
-      y = base_y + (i - scroll_i) * menu_font->line_height;
+      desc_y = base_y + (i - scroll_i) * menu_font->line_height + carry_y;
 
       if (i - scroll_i < 0 || i - scroll_i > limit_i)
         skip_entry = true;
@@ -2075,13 +2086,20 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     if (skip_entry)
       continue;
 
+    set_y = desc_y;
+    if (src->m_flags & S_THERMO)
+    {
+      carry_y += 6;
+      desc_y += 3;
+    }
+
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)
-      M_DrawItem(src, y);
+      M_DrawItem(src, desc_y);
 
     // See if we're to draw the setting (right-hand part)
     if (src->m_flags & S_SHOWSET)
-      M_DrawSetting(src, y);
+      M_DrawSetting(src, set_y);
   }
 }
 
