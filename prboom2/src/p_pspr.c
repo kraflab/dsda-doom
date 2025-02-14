@@ -303,6 +303,10 @@ int P_SwitchWeapon(player_t *player)
   newweapon = currentweapon;
   i = NUMWEAPONS + 1;   // killough 5/2/98
 
+  // Fix weapon switch logic in vanilla (example: chainsaw with ammo)
+  if (demo_compatibility)
+    currentweapon = newweapon = wp_nochange;
+
   // killough 2/8/98: follow preferences and fix BFG/SSG bugs
 
   do
