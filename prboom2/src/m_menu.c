@@ -133,7 +133,7 @@
 #define S_FILE     0x00080000 // killough 10/98: Filenames
 #define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
 #define S_CREDIT   0x00200000 // killough 10/98: credit
-// #define S_      0x00400000
+#define S_THERMO   0x00400000 // Slider for choosing a value
 #define S_CHOICE   0x00800000 // this item has several values
 // #define S_      0x01000000
 #define S_NAME     0x02000000
@@ -150,9 +150,9 @@
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_NAME)
+#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_THERMO|S_NAME)
 
-#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_NAME)
+#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_THERMO|S_NAME)
 
 #define S_STRING (S_FILE|S_NAME)
 
@@ -287,7 +287,7 @@ void M_DrawHelp (void);                                     // phares 5/04/98
 void M_DrawAd(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
-void M_DrawThermo(int x,int y,int thermWidth,int thermDot);
+void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot);
 void M_DrawEmptyCell(menu_t *menu,int item);
 void M_DrawSelCell(menu_t *menu,int item);
 void M_WriteText(int x, int y, const char *string, int cm);
@@ -1329,14 +1329,22 @@ menu_t SoundDef =
 
 void M_DrawSound(void)
 {
+  char num[4];
+
   if (raven) return MN_DrawSound();
 
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 38, 0, "M_SVOL", CR_DEFAULT, VPT_STRETCH);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,snd_SfxVolume);
+  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,16,snd_SfxVolume);
+  snprintf(num, sizeof(num), "%3d", snd_SfxVolume);
+  strcpy(menu_buffer, num);
+  M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(sfx_vol+1) + 3, cr_value_edit);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,snd_MusicVolume);
+  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,16,snd_MusicVolume);
+  snprintf(num, sizeof(num), "%3d", snd_MusicVolume);
+  strcpy(menu_buffer, num);
+  M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(music_vol+1) + 3, cr_value_edit);
 }
 
 void M_Sound(int choice)
@@ -1982,6 +1990,17 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     M_DrawMenuString(x,y,color);
     return;
   }
+
+  if (flags & S_THERMO) {
+    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
+
+    sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
+
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+      strcat(menu_buffer, " <");
+    M_DrawMenuString(x + 80, y + 3, color);
+    return;
+  }
 }
 
 /////////////////////////////
@@ -2111,7 +2130,7 @@ static void M_DrawInstructions(void)
   // are changing an item or just sitting on it.
 
   if (setup_select) {
-    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_FILE | S_CHOICE | S_NAME)) {
+    switch (flags & (S_INPUT | S_YESNO | S_WEAP | S_NUM | S_COLOR | S_CRITEM | S_FILE | S_CHOICE | S_THERMO | S_NAME)) {
       case S_INPUT:
         M_DrawInstructionString(cr_info_edit, "Press key or button for this action");
         break;
@@ -2134,6 +2153,9 @@ static void M_DrawInstructions(void)
         M_DrawInstructionString(cr_info_edit, "Type/edit filename and Press ENTER");
         break;
       case S_CHOICE:
+        M_DrawInstructionString(cr_info_edit, "Press left or right to choose");
+        break;
+      case S_THERMO:
         M_DrawInstructionString(cr_info_edit, "Press left or right to choose");
         break;
       case S_NAME:
@@ -4804,6 +4826,26 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
       }
       return true;
     }
+
+    if (ptr1->m_flags & S_THERMO)
+    {
+      if (action == MENU_LEFT) {
+        if (dsda_IntConfig(ptr1->config_id) > 0) {
+          dsda_DecrementIntConfig(ptr1->config_id, true);
+          S_StartVoidSound(g_sfx_menu);
+        }
+      }
+      else if (action == MENU_RIGHT) {
+        if (dsda_IntConfig(ptr1->config_id) < 15) {
+          dsda_IncrementIntConfig(ptr1->config_id, true);
+          S_StartVoidSound(g_sfx_menu);
+        }
+      }
+      else if (action == MENU_ENTER) {
+        M_SelectDone(ptr1);
+      }
+      return true;
+    }
   }
 
   return false;
@@ -6068,50 +6110,32 @@ void M_StopMessage(void)
 // proff/nicolas 09/20/98 -- changed for hi-res
 // CPhipps - patch drawing updated
 //
-void M_DrawThermo(int x,int y,int thermWidth,int thermDot )
+void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
 {
-  int          xx;
-  int           i;
-  char num[4];
-  int horizScaler; //Used to allow more thermo range for mouse sensitivity.
+  int xx;
+  int i;
+  int dot_offset;
 
-  if (raven) return MN_DrawSlider(x, y, thermWidth, thermDot);
+  if (raven) return MN_DrawSlider(x, y, thermWidth, thermRange, thermDot);
 
-  /*
-   * Modification By Barry Mead to allow the Thermometer to have vastly
-   * larger ranges. (the thermWidth parameter can now have a value as
-   * large as 200.      Modified 1-9-2000  Originally I used it to make
-   * the sensitivity range for the mouse better. It could however also
-   * be used to improve the dynamic range of music and sound affect
-   * volume controls for example.
-   */
-  thermWidth = (thermWidth > 200) ? 200 : thermWidth; //Clamp to 200 max
-  horizScaler = (thermWidth > 23) ? (200 / thermWidth) : 8; //Dynamic range
   xx = x;
   V_DrawNamePatch(xx, y, 0, "M_THERML", CR_DEFAULT, VPT_STRETCH);
   xx += 8;
   for (i=0;i<thermWidth;i++)
-    {
+  {
     V_DrawNamePatch(xx, y, 0, "M_THERMM", CR_DEFAULT, VPT_STRETCH);
-    xx += horizScaler;
-    }
-
-  xx += (8 - horizScaler);  /* make the right end look even */
-
+    xx += 8;
+  }
   V_DrawNamePatch(xx, y, 0, "M_THERMR", CR_DEFAULT, VPT_STRETCH);
 
-  // [crispy] print the value
-  snprintf(num, sizeof(num), "%3d", thermDot);
-  strcpy(menu_buffer, num);
-  M_DrawMenuString(xx + 12, y + 3, cr_value_edit);
-
-  // [crispy]
-  if (thermDot >= thermWidth)
+  if (thermDot >= thermRange)
   {
-    thermDot = thermWidth - 1;
+    thermDot = thermRange - 1;
   }
 
-  V_DrawNamePatch((x+8)+thermDot*horizScaler,y,0,"M_THERMO",CR_DEFAULT,VPT_STRETCH);
+  dot_offset = 8 * thermDot * thermWidth / thermRange;
+  dot_offset -= thermRange / thermWidth;
+  V_DrawNamePatch(x + 8 + dot_offset, y, 0, "M_THERMO", CR_DEFAULT, VPT_STRETCH);
 }
 
 //
