@@ -293,8 +293,7 @@ void M_DrawSelCell(menu_t *menu,int item);
 void M_WriteText(int x, int y, const char *string, int cm);
 int  M_StringWidth(const char *string);
 int  M_StringHeight(const char *string);
-void M_DrawTitle(int x, int y, const char *patch, int cm,
-                 const char *alttext, int altcm);
+void M_DrawTitle(int y, const char *text, int cm);
 void M_StartMessage(const char *string,void *routine,dboolean input);
 void M_StopMessage(void);
 void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
@@ -2694,7 +2693,7 @@ void M_DrawKeybnd(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(84, 2, "M_KEYBND", CR_DEFAULT, "KEY BINDINGS", cr_title);
+  M_DrawTitle(2, "KEY BINDINGS", cr_title); // M_KEYBND
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
@@ -2760,7 +2759,7 @@ void M_DrawWeapons(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(109, 2, "M_WEAP", CR_DEFAULT, "WEAPONS", cr_title);
+  M_DrawTitle(2, "WEAPONS", cr_title); // M_WEAP
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
@@ -3019,7 +3018,7 @@ void M_DrawAutoMap(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // CPhipps - patch drawing updated
-  M_DrawTitle(109, 2, "M_AUTO", CR_DEFAULT, "AUTOMAP", cr_title);
+  M_DrawTitle(2, "AUTOMAP", cr_title); // M_AUTO
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 
@@ -3342,7 +3341,7 @@ void M_DrawGeneral(void)
   M_DrawBackground(g_menu_flat, 0); // Draw background
 
   // proff/nicolas 09/20/98 -- changed for hi-res
-  M_DrawTitle(114, 2, "M_GENERL", CR_DEFAULT, "GENERAL", cr_title);
+  M_DrawTitle(2, "GENERAL", cr_title); // M_GENERL
   M_DrawInstructions();
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
@@ -3871,7 +3870,7 @@ void M_DrawLevelTable(void)
 
   M_DrawBackground(g_menu_flat, 0);
 
-  M_DrawTitle(114, 2, "M_LVLTBL", CR_DEFAULT, "LEVEL TABLE", cr_title);
+  M_DrawTitle(2, "LEVEL TABLE", cr_title); // M_LVLTBL
   if (current_setup_menu != level_table_page[wad_stats_summary_page])
     M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
@@ -4344,7 +4343,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   {
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(81, 9, "PRBOOM", cr_title, PACKAGE_NAME " v" PACKAGE_VERSION, cr_title);
+    M_DrawTitle(9, PACKAGE_NAME " v" PACKAGE_VERSION, cr_title); // PRBOOM
     M_DrawScreenItems(cred_settings, 32);
   }
 }
@@ -6324,25 +6323,13 @@ void M_WriteText (int x,int y, const char* string, int cm)
   }
 }
 
-void M_DrawTitle(int x, int y, const char *patch, int cm,
-                 const char *alttext, int altcm)
+void M_DrawTitle(int y, const char *text, int cm)
 {
-  int lumpnum = W_CheckNumForName(patch);
+  if (raven) return MN_DrawTitle(y, text, cm);
 
-  if (lumpnum != LUMP_NOT_FOUND)
-  {
-    int flags = VPT_STRETCH;
-    if (cm != CR_DEFAULT)
-      flags |= VPT_TRANS;
-    V_DrawNumPatch(x, y, 0, lumpnum, cm, flags);
-  }
-  else
-  {
-    // patch doesn't exist, draw some text in place of it
-    M_WriteText(160-(M_StringWidth(alttext)/2),
-                y+8-(M_StringHeight(alttext)/2), // assumes patch height 16
-                alttext, altcm);
-  }
+  M_WriteText(160 - (M_StringWidth(text) / 2),
+              y + 8 - (M_StringHeight(text) / 2), // assumes patch height 16
+              text, cm);
 }
 
 /////////////////////////////
