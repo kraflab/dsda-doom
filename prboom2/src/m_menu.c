@@ -377,6 +377,8 @@ const char shiftxform[] =
 };
 
 static int cr_title;
+static int cr_tab;
+static int cr_tab_highlight;
 static int cr_label;
 static int cr_label_highlight;
 static int cr_label_edit;
@@ -390,6 +392,8 @@ static int cr_warning;
 static void M_LoadTextColors(void)
 {
   cr_title = dsda_TextCR(dsda_tc_menu_title);
+  cr_tab = dsda_TextCR(dsda_tc_menu_tab);
+  cr_tab_highlight = dsda_TextCR(dsda_tc_menu_tab_highlight);
   cr_label = dsda_TextCR(dsda_tc_menu_label);
   cr_label_highlight = dsda_TextCR(dsda_tc_menu_label_highlight);
   cr_label_edit = dsda_TextCR(dsda_tc_menu_label_edit);
@@ -1546,6 +1550,8 @@ void M_SizeDisplay(int choice)
 
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
+int current_page;
+int previous_page;
 
 // save the setup menu's itemon value in the S_END element's x coordinate
 
@@ -1686,13 +1692,16 @@ menu_t LevelTableDef =
 
 // Data used by the Automap color selection code
 
-#define CHIP_SIZE 7 // size of color block for colored items
+#define CHIP_SIZE 8 // size of color block for colored items
 
-#define COLORPALXORIG ((320 - 16*(CHIP_SIZE+1))/2)
-#define COLORPALYORIG ((200 - 16*(CHIP_SIZE+1))/2)
+#define COLORPALXORIG ((320 - 16*(CHIP_SIZE))/2)
+#define COLORPALYORIG ((200 - 16*(CHIP_SIZE))/2)
 
 #define PAL_BLACK   0
 #define PAL_WHITE   4
+
+#define TABS_Y 20
+#define DEFAULT_LIST_Y (TABS_Y + 14)
 
 // Data used by the string editing code
 
@@ -2103,6 +2112,61 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 }
 
+// Draws the name of each page. If there are more than 5, uses a carousel
+static void M_DrawTabs(const char **pages)
+{
+  int x = 0;
+  int w = 0;
+  int i = 0;
+  int start_i = 0;
+  int end_i = 4;
+
+  // Figure out what tabs should be drawn if using carousel
+  if (current_page > 2)
+  {
+    if (previous_page < current_page)
+    {
+      start_i = current_page - 2;
+      end_i = current_page + 2;
+    }
+    else if (previous_page > current_page)
+    {
+      start_i = current_page - 2;
+      end_i = current_page + 2;
+    }
+
+    if (pages[current_page + 1] == NULL)
+      start_i = current_page - 4;
+    else if (pages[current_page + 2] == NULL)
+      start_i = current_page - 3;
+
+    if (start_i < 0) start_i = 0;
+  }
+
+  // Find the initial offset to center text
+  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
+  {
+    w = M_GetPixelWidth(pages[i]);
+    x += w + 6;
+  }
+  x = (320 - x + 6) / 2;
+
+  // Draw the arrows on the sides
+  if (start_i > 0)
+    M_DrawString(x -  M_GetPixelWidth("<-") - 1, TABS_Y , cr_tab, "<-");
+  if (pages[i] != NULL)
+    M_DrawString(320 - x, TABS_Y , cr_tab, "->");
+
+  // Draw the page names
+  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
+  {
+    M_DrawString(x, TABS_Y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
+
+    w = M_GetPixelWidth(pages[i]);
+    x += w + 6;
+  }
+}
+
 /////////////////////////////
 //
 // Data used to draw the "are you sure?" dialogue box when resetting
@@ -2133,7 +2197,7 @@ void M_DrawDelVerify(void)
 // cph 2006/08/06 - go back to the Boom version, and then clean up by using
 // M_DrawStringCentered (much better than all those magic 'x' valies!)
 
-#define INSTRUCTION_Y 20
+#define INSTRUCTION_Y 190
 
 static void M_DrawInstructionString(int cr, const char *str)
 {
@@ -2191,13 +2255,12 @@ static void M_DrawInstructions(void)
   }
 }
 
-#define NEXT_PAGE(page) { "->", S_SKIP | S_NEXT, m_null, 318, .menu = page }
-#define PREV_PAGE(page) { "<-", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
+#define TITLE(page_name) { page_name, S_SKIP | S_TITLE, m_null, G_X}
+#define NEXT_PAGE(page) { "", S_SKIP | S_NEXT, m_null, 318, .menu = page }
+#define PREV_PAGE(page) { "", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
-
-#define DEFAULT_LIST_Y (INSTRUCTION_Y + 1.5 * menu_font->line_height)
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
@@ -2208,6 +2271,8 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
   setup_select = false;
   colorbox_active = false;
   setup_gather = false;
+  current_page = 0;
+  previous_page = 0;
 
   M_UpdateSetupMenu(setup_menu);
 }
@@ -5020,6 +5085,8 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
         S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        previous_page = current_page;
+        current_page--;
         return true;
       }
     }
@@ -5038,6 +5105,8 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
         S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        previous_page = current_page;
+        current_page++;
         return true;
       }
     }
