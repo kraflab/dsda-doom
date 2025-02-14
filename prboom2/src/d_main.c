@@ -1450,7 +1450,10 @@ static const char *D_AutoLoadGameBase()
 {
   return hexen ? "hexen-all" :
          heretic ? "heretic-all" :
-         "doom-all";
+         chex ? "chex-all" :
+         freedoom ? "freedoom-all" :
+         !tc_game ? "doom-all":
+         NULL;
 }
 
 #define ALL_AUTOLOAD "all-all"
@@ -1467,11 +1470,14 @@ void D_AutoloadIWadDir()
   LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_all_queue);
   Z_Free(autoload_dir);
 
-  // common auto-loaded files for the game
-  autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  LoadWADsAtPath(autoload_dir, source_auto_load);
-  LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_game_queue);
-  Z_Free(autoload_dir);
+  if (D_AutoLoadGameBase())
+  {
+    // common auto-loaded files for the game
+    autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
+    LoadWADsAtPath(autoload_dir, source_auto_load);
+    LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_game_queue);
+    Z_Free(autoload_dir);
+  }
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
@@ -1510,11 +1516,14 @@ static void D_AutoloadDehIWadDir()
   D_ProcessDehAutoloadQueue(&autoload_deh_all_queue);
   Z_Free(autoload_dir);
 
-  // common auto-loaded files for the game
-  autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
-  LoadDehackedFilesAtPath(autoload_dir, false, NULL);
-  D_ProcessDehAutoloadQueue(&autoload_deh_game_queue);
-  Z_Free(autoload_dir);
+  if (D_AutoLoadGameBase())
+  {
+    // common auto-loaded files for the game
+    autoload_dir = GetAutoloadDir(D_AutoLoadGameBase(), true);
+    LoadDehackedFilesAtPath(autoload_dir, false, NULL);
+    D_ProcessDehAutoloadQueue(&autoload_deh_game_queue);
+    Z_Free(autoload_dir);
+  }
 
   // auto-loaded files per IWAD
   autoload_dir = GetAutoloadDir(IWADBaseName(), true);
