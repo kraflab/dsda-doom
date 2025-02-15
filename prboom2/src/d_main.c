@@ -1068,6 +1068,14 @@ void AddIWAD(const char *iwad)
   if (gamemode == indetermined)
     //jff 9/3/98 use logical output routine
     lprintf(LO_WARN,"Unknown Game Version, may not work\n");
+
+  // Set up gamemission booleans
+  tc_game = (gamemission > pack_nerve) ? true : false;
+  freedoom = (gamemission == tc_freedoom) ? true : false;
+  chex_exe = (gamemission == tc_chex) ? true : false;
+  chex = ((gamemission == tc_chex)
+       || (gamemission == tc_chex3v)) ? true : false;
+
   D_AddFile(iwad,source_iwad);
 }
 

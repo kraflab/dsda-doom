@@ -84,11 +84,10 @@ typedef enum {
   none
 } GameMission_t;
 
-#define tc_game   !((gamemission == doom) || (gamemission == doom2) || (gamemission == pack_tnt) || (gamemission == pack_plut) || (gamemission == pack_nerve))
-
-#define chex      ((gamemission == tc_chex) || (gamemission == tc_chex3v))
-#define chex_exe  (gamemission == tc_chex)
-#define freedoom  (gamemission == tc_freedoom)
+extern dboolean tc_game;
+extern dboolean freedoom;
+extern dboolean chex_exe;
+extern dboolean chex;
 
 // Identify language to use, software localization.
 typedef enum {
