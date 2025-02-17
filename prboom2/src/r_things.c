@@ -1063,7 +1063,12 @@ static void R_DrawPSprite (pspdef_t *psp)
   {
     int weapon_attack_alignment = dsda_IntConfig(dsda_config_weapon_attack_alignment);
 
-    if (!dsda_WeaponBob())
+    // [crispy] don't align swiping weapons
+    const dboolean swiping_weapon = hexen && (viewplayer->pclass == PCLASS_FIGHTER ||
+                                             (viewplayer->pclass == PCLASS_CLERIC &&
+                                             viewplayer->readyweapon == wp_first));
+
+    if (!dsda_WeaponBob() && !(swiping_weapon && viewplayer->attackdown))
     {
       static fixed_t last_sy = 32 * FRACUNIT;
 
@@ -1086,7 +1091,7 @@ static void R_DrawPSprite (pspdef_t *psp)
 
       // [crispy] don't center vertically during lowering and raising states
       if (weapon_attack_alignment >= CENTERWEAPON_HORVER &&
-          psp->state->action != A_Lower && psp->state->action != A_Raise)
+          psp->state->action != A_Lower && psp->state->action != A_Raise && !swiping_weapon)
       {
           R_ApplyWeaponBob(NULL, false, &psp_sy, weapon_attack_alignment == CENTERWEAPON_BOB);
       }
