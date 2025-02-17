@@ -2044,6 +2044,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   int excess_i = 0;
   int limit_i = 0;
   int buffer_i = 0;
+  int line_height = 0;
   float scrollbar_scale = 0;
   const setup_menu_t* src;
 
@@ -2066,9 +2067,12 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     }
   }
 
-  end_y = base_y + (max_i + 1) * menu_font->line_height;
+
+  line_height = menu_font->line_height < 9 ? menu_font->line_height : 9;
+
+  end_y = base_y + (max_i + 1) * line_height;
   if (end_y > 190)
-    excess_i = (end_y - 190 + menu_font->line_height - 1) / menu_font->line_height;
+    excess_i = (end_y - 190 + line_height - 1) / line_height;
 
   limit_i = max_i - excess_i;
   buffer_i = (max_i - current_i > 3 ? 3 : max_i - current_i);
@@ -2092,14 +2096,14 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     dboolean skip_entry = false;
 
     if (src->m_flags & (S_NEXT | S_PREV)) {
-      desc_y = 190 - menu_font->line_height - 2;
+      desc_y = 190 - line_height - 2;
     }
     else if (src->m_flags & S_RESET_Y) {
       skip_entry = true;
       i = 0;
     }
     else {
-      desc_y = base_y + (i - scroll_i) * menu_font->line_height + carry_y;
+      desc_y = base_y + (i - scroll_i) * line_height + carry_y;
 
       if (i - scroll_i < 0 || i - scroll_i > limit_i)
         skip_entry = true;
