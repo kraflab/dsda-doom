@@ -85,9 +85,6 @@ typedef enum {
 } GameMission_t;
 
 extern dboolean tc_game;
-extern dboolean freedoom;
-extern dboolean chex_exe;
-extern dboolean chex;
 
 // Identify language to use, software localization.
 typedef enum {
