@@ -1209,7 +1209,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_translucent_sprites] = {
     "boom_translucent_sprites", dsda_config_translucent_sprites,
-    CONF_BOOL(1), NULL, NOT_STRICT, deh_changeCompTranslucency
+    dsda_config_int, 0, 2, { 1 }, NULL, NOT_STRICT, deh_changeCompTranslucency
   },
   [dsda_config_translucent_ghosts] = {
     "translucent_ghosts", dsda_config_translucent_ghosts,

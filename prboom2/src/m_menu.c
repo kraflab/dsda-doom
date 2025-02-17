@@ -3102,6 +3102,7 @@ setup_menu_t misc_settings[] = {
 };
 
 static const char* menu_background_list[] = { "Off", "Dark", "Texture", NULL };
+static const char* translucent_list[] = { "Off", "Default", "w/ Vanilla", NULL };
 
 setup_menu_t display_settings[] = {
   { "Display Options", S_SKIP | S_TITLE, m_null, G_X},
@@ -3116,7 +3117,7 @@ setup_menu_t display_settings[] = {
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
-  { "Translucent Sprites", S_YESNO, m_conf, G_X, dsda_config_translucent_sprites },
+  { "Translucent Sprites", S_CHOICE, m_conf, G_X, dsda_config_translucent_sprites, 0, translucent_list },
   { "Translucent Ghosts", S_YESNO, m_conf, G_X, dsda_config_translucent_ghosts },
   EMPTY_LINE,
   { "Change Palette On Pain", S_YESNO, m_conf, G_X, dsda_config_palette_ondamage },
