@@ -280,8 +280,6 @@ void MN_GameFiles(int choice)
 //
 /////////////////////////////
 
-void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
-
 void MN_Init(void)
 {
   MN_InitFonts();

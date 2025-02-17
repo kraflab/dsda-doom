@@ -158,8 +158,6 @@
 
 #define S_HASDEFPTR (S_STRING|S_YESNO|S_NUM|S_WEAP|S_COLOR|S_CRITEM|S_CHOICE)
 
-extern dboolean  message_dontfuckwithme;
-
 /////////////////////////////
 //
 // booleans for setup screens
@@ -167,45 +165,36 @@ extern dboolean  message_dontfuckwithme;
 // the overlay screens (automap colors, reset button message) should be
 // displayed
 
-dboolean setup_active      = false; // in one of the setup screens
-dboolean set_general_active = false;
-dboolean set_keybnd_active = false; // in key binding setup screens
-dboolean set_display_active = false;
-dboolean set_demos_active = false; // in demos setup screen
-dboolean set_compatibility_active = false;
-dboolean set_weapon_active = false; // in weapons setup screen
-dboolean set_auto_active   = false; // in automap setup screen
-dboolean level_table_active = false;
-dboolean setup_select      = false; // changing an item
-dboolean setup_gather      = false; // gathering keys for value
-dboolean colorbox_active   = false; // color palette being shown
+static dboolean setup_active      = false; // in one of the setup screens
+static dboolean set_general_active = false;
+static dboolean set_keybnd_active = false; // in key binding setup screens
+static dboolean set_display_active = false;
+static dboolean set_demos_active = false; // in demos setup screen
+static dboolean set_compatibility_active = false;
+static dboolean set_weapon_active = false; // in weapons setup screen
+static dboolean set_auto_active   = false; // in automap setup screen
+static dboolean level_table_active = false;
+static dboolean setup_select      = false; // changing an item
+static dboolean setup_gather      = false; // gathering keys for value
+static dboolean colorbox_active   = false; // color palette being shown
 
 
 extern const char* g_menu_flat;
 extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
 
-//
-// defaulted values
-//
-
-int hide_setup=1; // killough 5/15/98
-
 #define QUICKSAVESLOT 255
 
-int messageToPrint;  // 1 = message to be printed
+static int messageToPrint;  // 1 = message to be printed
 
 // CPhipps - static const
 static const char* messageString; // ...and here is the message string!
 
-// message x & y
-int     messx;
-int     messy;
-int     messageLastMenuActive;
+static int messageLastMenuActive;
 
-dboolean messageNeedsInput; // timed message = no input from user
+static dboolean messageNeedsInput; // timed message = no input from user
 
-void (*messageRoutine)(int response);
+static void (*messageRoutine)(int response);
 
 static void M_DrawBackground(const char *flat, int scrn)
 {
@@ -219,7 +208,7 @@ int saveStringEnter;
 int saveSlot;        // which slot to save in
 int saveCharIndex;   // which char we're editing
 // old save description before edit
-char saveOldString[SAVESTRINGSIZE];
+static char saveOldString[SAVESTRINGSIZE];
 
 dboolean inhelpscreens; // indicates we are in or just left a help screen
 
@@ -232,13 +221,13 @@ menuactive_t menuactive;    // The menus are up
 
 char savegamestrings[10][SAVESTRINGSIZE];
 
-short itemOn;           // menu item skull is on (for Big Font menus)
-short skullAnimCounter; // skull animation counter
-short whichSkull;       // which skull to draw (he blinks)
+short itemOn;                  // menu item skull is on (for Big Font menus)
+static short skullAnimCounter; // skull animation counter
+static short whichSkull;       // which skull to draw (he blinks)
 
 // graphic name of skulls
 
-const char skullName[2][/*8*/9] = {"M_SKULL1","M_SKULL2"};
+static const char skullName[2][/*8*/9] = {"M_SKULL1","M_SKULL2"};
 
 menu_t* currentMenu; // current menudef
 
@@ -260,89 +249,87 @@ void M_ReadThis(int choice);
 void M_ReadThis2(int choice);
 void M_QuitDOOM(int choice);
 
-void M_ChangeSensitivity(int choice);
-void M_SfxVol(int choice);
-void M_MusicVol(int choice);
-/* void M_ChangeDetail(int choice);  unused -- killough */
-void M_SizeDisplay(int choice);
-void M_StartGame(int choice);
-void M_Sound(int choice);
+static void M_SfxVol(int choice);
+static void M_MusicVol(int choice);
+static void M_SizeDisplay(int choice);
+static void M_Sound(int choice);
 
-void M_FinishReadThis(int choice);
-void M_FinishHelp(int choice);            // killough 10/98
-void M_LoadSelect(int choice);
-void M_SaveSelect(int choice);
-void M_ReadSaveStrings(void);
-void M_QuickSave(void);
-void M_QuickLoad(void);
+static void M_FinishReadThis(int choice);
+static void M_FinishHelp(int choice);            // killough 10/98
+static void M_LoadSelect(int choice);
+static void M_SaveSelect(int choice);
+static void M_ReadSaveStrings(void);
+static void M_QuickSave(void);
+static void M_QuickLoad(void);
 
-void M_DrawMainMenu(void);
-void M_DrawReadThis1(void);
-void M_DrawReadThis2(void);
-void M_DrawSkillMenu(void);
-void M_DrawEpisode(void);
-void M_DrawOptions(void);
-void M_DrawSound(void);
-void M_DrawLoad(void);
-void M_DrawSave(void);
-void M_DrawHelp (void);                                     // phares 5/04/98
-void M_DrawAd(void);
+static void M_DrawMainMenu(void);
+static void M_DrawReadThis1(void);
+static void M_DrawReadThis2(void);
+static void M_DrawSkillMenu(void);
+static void M_DrawEpisode(void);
+static void M_DrawOptions(void);
+static void M_DrawSound(void);
+static void M_DrawLoad(void);
+static void M_DrawSave(void);
+static void M_DrawHelp (void);                                     // phares 5/04/98
+static void M_DrawAd(void);
 
-void M_DrawSaveLoadBorder(int x,int y);
-void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot);
-void M_DrawEmptyCell(menu_t *menu,int item);
-void M_DrawSelCell(menu_t *menu,int item);
-void M_WriteText(int x, int y, const char *string, int cm);
-int  M_StringWidth(const char *string);
-int  M_StringHeight(const char *string);
-void M_DrawTitle(int y, const char *text, int cm);
-void M_StartMessage(const char *string,void *routine,dboolean input);
-void M_StopMessage(void);
+static void M_DrawSaveLoadBorder(int x,int y);
+static void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot);
+static void M_DrawEmptyCell(menu_t *menu,int item);
+static void M_DrawSelCell(menu_t *menu,int item);
+static void M_WriteText(int x, int y, const char *string, int cm);
+static int  M_StringWidth(const char *string);
+static int  M_StringHeight(const char *string);
+static void M_DrawTitle(int y, const char *text, int cm);
+static void M_StartMessage(const char *string,void *routine,dboolean input);
+static void M_StopMessage(void);
+
 void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
 void M_ClearMenus (void);
 
 // phares 3/30/98
 // prototypes added to support Setup Menus and Extended HELP screens
 
-void M_General(int);      // killough 10/98
-void M_KeyBindings(int choice);
-void M_Display(int);
-void M_Demos(int);
-void M_Compatibility(int);
-void M_Weapons(int);
-void M_Automap(int);
-void M_LevelTable(int);
-void M_DrawGeneral(void); // killough 10/98
-void M_DrawKeybnd(void);
-void M_DrawDisplay(void);
-void M_DrawDemos(void);
-void M_DrawCompatibility(void);
-void M_DrawWeapons(void);
-void M_DrawAutoMap(void);
-void M_DrawLevelTable(void);
-void M_DrawExtHelp(void);
+static void M_General(int);      // killough 10/98
+static void M_KeyBindings(int choice);
+static void M_Display(int);
+static void M_Demos(int);
+static void M_Compatibility(int);
+static void M_Weapons(int);
+static void M_Automap(int);
+static void M_LevelTable(int);
+static void M_DrawGeneral(void); // killough 10/98
+static void M_DrawKeybnd(void);
+static void M_DrawDisplay(void);
+static void M_DrawDemos(void);
+static void M_DrawCompatibility(void);
+static void M_DrawWeapons(void);
+static void M_DrawAutoMap(void);
+static void M_DrawLevelTable(void);
+static void M_DrawExtHelp(void);
 
 static int M_GetPixelWidth(const char*);
 static void M_DrawString(int cx, int cy, int color, const char* ch);
 static void M_DrawMenuString(int,int,int);
 static void M_DrawStringCentered(int,int,int,const char*);
 
-void M_InitExtendedHelp(void);
-void M_ExtHelpNextScreen(int);
-void M_ExtHelp(int);
+static void M_InitExtendedHelp(void);
+static void M_ExtHelpNextScreen(int);
+static void M_ExtHelp(int);
+static int  M_GetKeyString(int,int);
+
 void M_ChangeDemoSmoothTurns(void);
-void M_ChangeTextureParams(void);
 void M_ChangeFullScreen(void);
 void M_ChangeVideoMode(void);
 void M_ChangeUseGLSurface(void);
 void M_ChangeApplyPalette(void);
-int  M_GetKeyString(int,int);
 
 menu_t SkillDef;                                              // phares 5/04/98
 
 // end of prototypes added to support Setup Menus and Extended HELP screens
 
-const char shiftxform[] =
+static const char shiftxform[] =
 {
   0,
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
@@ -458,7 +445,7 @@ enum
 // associated with the item.
 //
 
-menuitem_t MainMenu[]=
+static menuitem_t MainMenu[]=
 {
   {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
   {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
@@ -482,7 +469,7 @@ menu_t MainDef =
 // M_DrawMainMenu
 //
 
-void M_DrawMainMenu(void)
+static void M_DrawMainMenu(void)
 {
   if (raven) return MN_DrawMainMenu();
 
@@ -519,22 +506,22 @@ enum               // killough 10/98
 
 // The definitions of the Read This! screens
 
-menuitem_t ReadMenu1[] =
+static menuitem_t ReadMenu1[] =
 {
   {1,"",M_ReadThis2,0}
 };
 
-menuitem_t ReadMenu2[]=
+static menuitem_t ReadMenu2[]=
 {
   {1,"",M_FinishReadThis,0}
 };
 
-menuitem_t HelpMenu[]=    // killough 10/98
+static menuitem_t HelpMenu[]=    // killough 10/98
 {
   {1,"",M_FinishHelp,0}
 };
 
-menu_t ReadDef1 =
+static menu_t ReadDef1 =
 {
   read1_end,
   &MainDef,
@@ -545,7 +532,7 @@ menu_t ReadDef1 =
   0
 };
 
-menu_t ReadDef2 =
+static menu_t ReadDef2 =
 {
   read2_end,
   &ReadDef1,
@@ -555,7 +542,7 @@ menu_t ReadDef2 =
   0
 };
 
-menu_t HelpDef =           // killough 10/98
+static menu_t HelpDef =           // killough 10/98
 {
   help_end,
   &HelpDef,
@@ -579,12 +566,12 @@ void M_ReadThis2(int choice)
   M_SetupNextMenu(&ReadDef2);
 }
 
-void M_FinishReadThis(int choice)
+static void M_FinishReadThis(int choice)
 {
   M_SetupNextMenu(&MainDef);
 }
 
-void M_FinishHelp(int choice)        // killough 10/98
+static void M_FinishHelp(int choice)        // killough 10/98
 {
   M_SetupNextMenu(&MainDef);
 }
@@ -595,7 +582,7 @@ void M_FinishHelp(int choice)        // killough 10/98
 //
 // killough 10/98: updated with new screens
 
-void M_DrawReadThis1(void)
+static void M_DrawReadThis1(void)
 {
   inhelpscreens = true;
 
@@ -610,7 +597,7 @@ void M_DrawReadThis1(void)
 //
 // killough 10/98: updated with new screens
 
-void M_DrawReadThis2(void)
+static void M_DrawReadThis2(void)
 {
   inhelpscreens = true;
   M_DrawHelp();
@@ -637,7 +624,7 @@ menu_t EpiDef =
 
 static int chosen_episode;
 
-void M_DrawEpisode(void)
+static void M_DrawEpisode(void)
 {
   if (raven) return MN_DrawEpisode();
 
@@ -690,7 +677,7 @@ menu_t SkillDef =
 // M_NewGame
 //
 
-void M_DrawSkillMenu(void)
+static void M_DrawSkillMenu(void)
 {
   if (raven) return MN_DrawSkillMenu();
 
@@ -845,7 +832,7 @@ static void M_DeleteGame(int slot)
 // M_LoadGame & Cie.
 //
 
-void M_DrawLoad(void)
+static void M_DrawLoad(void)
 {
   int i;
 
@@ -869,7 +856,7 @@ void M_DrawLoad(void)
 // Draw border for the savegame description
 //
 
-void M_DrawSaveLoadBorder(int x,int y)
+static void M_DrawSaveLoadBorder(int x,int y)
 {
   int i;
 
@@ -955,7 +942,7 @@ void M_LoadGame (int choice)
 
 // The definitions of the Save Game screen
 
-menuitem_t SaveMenu[]=
+static menuitem_t SaveMenu[]=
 {
   {1,"", M_SaveSelect,'1'},
   {1,"", M_SaveSelect,'2'},
@@ -981,7 +968,7 @@ menu_t SaveDef =
 // M_ReadSaveStrings
 //  read the strings from the savegame files
 //
-void M_ReadSaveStrings(void)
+static void M_ReadSaveStrings(void)
 {
   int i;
 
@@ -1016,7 +1003,7 @@ void M_ReadSaveStrings(void)
 
 #define SLOT_SCAN_MAX 112
 
-int M_AutoSaveSlot(const char *target_name)
+static int M_AutoSaveSlot(const char *target_name)
 {
   char name_in_file[SAVESTRINGSIZE];
   char slots[SLOT_SCAN_MAX] = { 0 };
@@ -1079,7 +1066,7 @@ void M_AutoSave(void)
 //
 //  M_SaveGame & Cie.
 //
-void M_DrawSave(void)
+static void M_DrawSave(void)
 {
   int i;
 
@@ -1137,7 +1124,7 @@ static inline dboolean IsMapName(char *str)
     return false;
 }
 
-void M_SaveSelect(int choice)
+static void M_SaveSelect(int choice)
 {
   // we are going to be intercepting all chars
   saveStringEnter = 1;
@@ -1190,7 +1177,7 @@ enum
 
 // The definitions of the Options menu
 
-menuitem_t OptionsMenu[]=
+static menuitem_t OptionsMenu[]=
 {
   { 1, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
   { 1, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
@@ -1217,7 +1204,7 @@ menu_t OptionsDef =
 // M_Options
 //
 
-void M_DrawOptions(void)
+static void M_DrawOptions(void)
 {
   if (raven) return MN_DrawOptions();
 
@@ -1350,7 +1337,7 @@ menu_t SoundDef =
 // Change Sfx & Music volumes
 //
 
-void M_DrawSound(void)
+static void M_DrawSound(void)
 {
   char num[4];
 
@@ -1370,12 +1357,12 @@ void M_DrawSound(void)
   M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(music_vol+1) + 3, cr_value_edit);
 }
 
-void M_Sound(int choice)
+static void M_Sound(int choice)
 {
   M_SetupNextMenu(&SoundDef);
 }
 
-void M_SfxVol(int choice)
+static void M_SfxVol(int choice)
 {
   switch(choice)
   {
@@ -1393,7 +1380,7 @@ void M_SfxVol(int choice)
     dsda_ToggleConfig(dsda_config_mute_sfx, true);
 }
 
-void M_MusicVol(int choice)
+static void M_MusicVol(int choice)
 {
   switch(choice)
   {
@@ -1416,7 +1403,7 @@ void M_MusicVol(int choice)
 //    M_QuickSave
 //
 
-void M_QuickSave(void)
+static void M_QuickSave(void)
 {
   if (gamestate != GS_LEVEL)
     return;
@@ -1430,7 +1417,7 @@ void M_QuickSave(void)
 // M_QuickLoad
 //
 
-void M_QuickLoad(void)
+static void M_QuickLoad(void)
 {
   char *name;
 
@@ -1513,7 +1500,7 @@ void M_ChangeMessages(void)
 // hud_displayed is toggled by + or = in fullscreen
 // hud_displayed is cleared by -
 
-void M_SizeDisplay(int choice)
+static void M_SizeDisplay(int choice)
 {
   switch(choice) {
     case 0:
@@ -1569,8 +1556,8 @@ void M_SizeDisplay(int choice)
 
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
-int current_page;
-int previous_page;
+static int current_page;
+static int previous_page;
 
 // save the setup menu's itemon value in the S_END element's x coordinate
 
@@ -1636,12 +1623,12 @@ enum
 // Generic_Setup is a do-nothing definition that the mainstream Menu code
 // can understand, while the Setup Menu code is working. Another placeholder.
 
-menuitem_t Generic_Setup[] =
+static menuitem_t Generic_Setup[] =
 {
   {1,"",M_DoNothing,0}
 };
 
-menu_t GeneralDef =                                           // killough 10/98
+static menu_t GeneralDef =                                           // killough 10/98
 {
   generic_setup_end,
   &OptionsDef,
@@ -1651,7 +1638,7 @@ menu_t GeneralDef =                                           // killough 10/98
   0
 };
 
-menu_t KeybndDef =
+static menu_t KeybndDef =
 {
   generic_setup_end,
   &OptionsDef,
@@ -1661,7 +1648,7 @@ menu_t KeybndDef =
   0
 };
 
-menu_t DisplayDef =                                           // killough 10/98
+static menu_t DisplayDef =                                           // killough 10/98
 {
   generic_setup_end,
   &OptionsDef,
@@ -1671,7 +1658,7 @@ menu_t DisplayDef =                                           // killough 10/98
   0
 };
 
-menu_t DemosDef =
+static menu_t DemosDef =
 {
   generic_setup_end,
   &OptionsDef,
@@ -1681,7 +1668,7 @@ menu_t DemosDef =
   0
 };
 
-menu_t CompatibilityDef =                                           // killough 10/98
+static menu_t CompatibilityDef =                                           // killough 10/98
 {
   generic_setup_end,
   &OptionsDef,
@@ -1691,7 +1678,7 @@ menu_t CompatibilityDef =                                           // killough 
   0
 };
 
-menu_t WeaponDef =
+static menu_t WeaponDef =
 {
   generic_setup_end,
   &OptionsDef,
@@ -1701,7 +1688,7 @@ menu_t WeaponDef =
   0
 };
 
-menu_t AutoMapDef =
+static menu_t AutoMapDef =
 {
   generic_setup_end,
   &OptionsDef,
@@ -1711,7 +1698,7 @@ menu_t AutoMapDef =
   0
 };
 
-menu_t LevelTableDef =
+static menu_t LevelTableDef =
 {
   generic_setup_end,
   &OptionsDef,
@@ -1727,9 +1714,6 @@ menu_t LevelTableDef =
 
 #define COLORPALXORIG ((320 - 16*(CHIP_SIZE))/2)
 #define COLORPALYORIG ((200 - 16*(CHIP_SIZE))/2)
-
-#define PAL_BLACK   0
-#define PAL_WHITE   4
 
 #define TABS_Y 20
 #define DEFAULT_LIST_Y (TABS_Y + 14)
@@ -1793,8 +1777,8 @@ static void M_DrawItem(const setup_menu_t* s, int y)
 // of what is gathered is determined by the low/high settings for the item.
 
 #define MAXGATHER 5
-int  gather_count;
-char gather_buffer[MAXGATHER+1];  // killough 10/98: make input character-based
+static int  gather_count;
+static char gather_buffer[MAXGATHER+1];  // killough 10/98: make input character-based
 
 /////////////////////////////
 //
@@ -1927,7 +1911,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     {
       int xx = x, yy = y - 1, ww = 8, hh = 8;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-      V_FillRect(0, xx, yy, ww, hh, PAL_BLACK);
+      V_FillRect(0, xx, yy, ww, hh, playpal_darkest);
       xx = x + 1, yy = y, ww = 6, hh = 6;
       V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
       V_FillRect(0, xx, yy, ww, hh, (byte)ch);
@@ -1983,7 +1967,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       {
         int xx = (x+cursor_start-1), yy = y, ww = char_width, hh = 9;
         V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-        V_FillRect(0, xx, yy, ww, hh, PAL_WHITE);
+        V_FillRect(0, xx, yy, ww, hh, playpal_lightest);
       }
     }
     else {
@@ -2286,7 +2270,7 @@ static void M_DrawInstructions(void)
   }
 }
 
-#define TITLE(page_name) { page_name, S_SKIP | S_TITLE, m_null, G_X}
+#define TITLE(page_name, offset_x) { page_name, S_SKIP | S_TITLE, m_null, offset_x}
 #define NEXT_PAGE(page) { "", S_SKIP | S_NEXT, m_null, 318, .menu = page }
 #define PREV_PAGE(page) { "", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
@@ -2316,7 +2300,7 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
 
 // Definitions of the (in this case) four key binding screens.
 
-const char *keys_pages[] =
+static const char *keys_pages[] =
 {
   "Movement",
   "Weapons",
@@ -2687,7 +2671,7 @@ setup_menu_t keys_build_settings[] = {
 // locate the first item on the screen where the cursor is allowed to
 // land.
 
-void M_KeyBindings(int choice)
+static void M_KeyBindings(int choice)
 {
   M_EnterSetup(&KeybndDef, &set_keybnd_active, keys_settings[0]);
 }
@@ -2695,7 +2679,7 @@ void M_KeyBindings(int choice)
 // The drawing part of the Key Bindings Setup initialization. Draw the
 // background, title, instruction line, and items.
 
-void M_DrawKeybnd(void)
+static void M_DrawKeybnd(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -2727,7 +2711,7 @@ static const char *weapon_attack_alignment_strings[] = {
 // Note that this screen has no PREV or NEXT items, since there are no
 // neighboring screens.
 
-const char *weap_pages[] =
+static const char *weap_pages[] =
 {
   "Priority",
   NULL
@@ -2760,7 +2744,7 @@ setup_menu_t weap_priority_settings[] =  // Weapons Settings screen
 // locate the first item on the screen where the cursor is allowed to
 // land.
 
-void M_Weapons(int choice)
+static void M_Weapons(int choice)
 {
   M_EnterSetup(&WeaponDef, &set_weapon_active, weap_settings[0]);
 }
@@ -2769,7 +2753,7 @@ void M_Weapons(int choice)
 // The drawing part of the Weapons Setup initialization. Draw the
 // background, title, instruction line, and items.
 
-void M_DrawWeapons(void)
+static void M_DrawWeapons(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -2790,7 +2774,7 @@ void M_DrawWeapons(void)
 
 // Screen table definitions
 
-const char *demos_pages[] =
+static const char *demos_pages[] =
 {
   "Options",
   "TAS",
@@ -2846,7 +2830,7 @@ setup_menu_t demos_tas_settings[] =
 // locate the first item on the screen where the cursor is allowed to
 // land.
 
-void M_Demos(int choice)
+static void M_Demos(int choice)
 {
   M_EnterSetup(&DemosDef, &set_demos_active, demos_settings[0]);
 }
@@ -2854,7 +2838,7 @@ void M_Demos(int choice)
 // The drawing part of the Demos Setup initialization. Draw the
 // background, title, instruction line, and items.
 
-void M_DrawDemos(void)
+static void M_DrawDemos(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -2875,7 +2859,7 @@ void M_DrawDemos(void)
 #define AU_X 260
 #define AA_X 240
 
-const char *auto_pages[] =
+static const char *auto_pages[] =
 {
   "Options",
   "Appearance",
@@ -2996,7 +2980,7 @@ setup_menu_t auto_colors_settings[] =  // 2st AutoMap Settings screen
 // locate the first item on the screen where the cursor is allowed to
 // land.
 
-void M_Automap(int choice)
+static void M_Automap(int choice)
 {
   M_EnterSetup(&AutoMapDef, &set_auto_active, auto_settings[0]);
 }
@@ -3006,7 +2990,6 @@ void M_Automap(int choice)
 
 int color_palette_x; // X position of the cursor on the color palette
 int color_palette_y; // Y position of the cursor on the color palette
-byte palette_background[16*(CHIP_SIZE)+8];
 
 // M_DrawColPal() draws the color palette when the user needs to select a
 // color.
@@ -3036,7 +3019,7 @@ static void M_DrawColPal(void)
 // The drawing part of the Automap Setup initialization. Draw the
 // background, title, instruction line, and items.
 
-void M_DrawAutoMap(void)
+static void M_DrawAutoMap(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -3059,7 +3042,7 @@ void M_DrawAutoMap(void)
 // The General table.
 // killough 10/10/98
 
-const char *gen_pages[] =
+static const char *gen_pages[] =
 {
   "Video",
   "Audio",
@@ -3148,7 +3131,7 @@ setup_menu_t gen_video_settings[] = {
   { "Fullscreen Video mode", S_YESNO, m_conf, G_X, dsda_config_use_fullscreen },
   { "Exclusive Fullscreen", S_YESNO, m_conf, G_X, dsda_config_exclusive_fullscreen },
   EMPTY_LINE,
-  TITLE("FPS"),
+  TITLE("FPS", G_X),
   { "Vertical Sync", S_YESNO, m_conf, G_X, dsda_config_render_vsync },
   { "Uncapped FPS", S_YESNO, m_conf, G_X, dsda_config_uncapped_framerate },
   { "FPS Limit", S_NUM, m_conf, G_X, dsda_config_fps_limit },
@@ -3171,7 +3154,7 @@ setup_menu_t gen_audio_settings[] = {
   { "SFX For Movement Toggles", S_YESNO, m_conf, G_X, dsda_config_movement_toggle_sfx },
   { "Mute When Out of Focus", S_YESNO, m_conf, G_X, dsda_config_mute_unfocused_window },
   EMPTY_LINE,
-  TITLE("Limits"),
+  TITLE("Limits", G_X),
   { "Number of Sound Channels", S_NUM, m_conf, G_X, dsda_config_snd_channels },
   { "Parallel Same-Sound Limit", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_limit },
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
@@ -3235,7 +3218,7 @@ setup_menu_t gen_misc_settings[] = {
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G2_X, dsda_config_cheat_codes },
   { "Skip Quit Prompt", S_YESNO, m_conf, G2_X, dsda_config_skip_quit_prompt },
   EMPTY_LINE,
-  TITLE("Rewind"),
+  TITLE("Rewind", G2_X),
   { "Rewind Interval (s)", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_interval },
   { "Rewind Depth", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_depth },
   { "Rewind Timeout (ms)", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_timeout },
@@ -3277,7 +3260,7 @@ void M_ChangeDemoSmoothTurns(void)
 // locate the first item on the screen where the cursor is allowed to
 // land.
 
-void M_General(int choice)
+static void M_General(int choice)
 {
   M_EnterSetup(&GeneralDef, &set_general_active, gen_settings[0]);
 }
@@ -3285,7 +3268,7 @@ void M_General(int choice)
 // The drawing part of the General Setup initialization. Draw the
 // background, title, instruction line, and items.
 
-void M_DrawGeneral(void)
+static void M_DrawGeneral(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -3298,7 +3281,7 @@ void M_DrawGeneral(void)
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
-const char *display_pages[] =
+static const char *display_pages[] =
 {
   "Options",
   "Status Bar",
@@ -3348,7 +3331,7 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
   { "Hide Status Bar Horns", S_YESNO, m_conf, DM_X, dsda_config_hide_horns },
   { "Single Key Display", S_YESNO, m_conf, DM_X, dsda_config_sts_traditional_keys },
   EMPTY_LINE,
-  TITLE("Coloring"),
+  TITLE("Coloring", DM_X),
   { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
   { "Use Red Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
   { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
@@ -3370,7 +3353,7 @@ setup_menu_t display_hud_settings[] =  // Demos Settings screen
   { "Ex Hud Scale %", S_NUM, m_conf, D_X, dsda_config_ex_text_scale_x },
   { "Ex Hud Ratio %", S_NUM, m_conf, D_X, dsda_config_ex_text_ratio_y },
   EMPTY_LINE,
-  TITLE("Messages"),
+  TITLE("Messages", D_X),
   { "Show Messages", S_YESNO, m_conf, D_X, dsda_config_show_messages },
   { "Report Revealed Secrets", S_YESNO, m_conf, D_X, dsda_config_hudadd_secretarea },
   { "Announce Map On Entry", S_YESNO, m_conf, D_X, dsda_config_announce_map },
@@ -3400,12 +3383,12 @@ setup_menu_t display_crosshair_settings[] =
   FINAL_ENTRY
 };
 
-void M_Display(int choice)
+static void M_Display(int choice)
 {
   M_EnterSetup(&DisplayDef, &set_display_active, display_settings[0]);
 }
 
-void M_DrawDisplay(void)
+static void M_DrawDisplay(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -3417,7 +3400,7 @@ void M_DrawDisplay(void)
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
-const char *comp_pages[] =
+static const char *comp_pages[] =
 {
   "Options",
   "Emulation",
@@ -3468,12 +3451,12 @@ setup_menu_t comp_emulation_settings[] = {
   FINAL_ENTRY
 };
 
-void M_Compatibility(int choice)
+static void M_Compatibility(int choice)
 {
   M_EnterSetup(&CompatibilityDef, &set_compatibility_active, comp_settings[0]);
 }
 
-void M_DrawCompatibility(void)
+static void M_DrawCompatibility(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -3490,7 +3473,7 @@ void M_DrawCompatibility(void)
 // The level table.
 //
 
-const char *level_table_pages[] =
+static const char *level_table_pages[] =
 {
   "Stats",
   "Time",
@@ -3998,13 +3981,13 @@ static void M_BuildLevelTable(void)
   INSERT_FINAL_LEVEL_TABLE_ENTRY
 }
 
-void M_LevelTable(int choice)
+static void M_LevelTable(int choice)
 {
   M_BuildLevelTable();
   M_EnterSetup(&LevelTableDef, &level_table_active, level_table_page[0]);
 }
 
-void M_DrawLevelTable(void)
+static void M_DrawLevelTable(void)
 {
   M_ChangeMenu(NULL, mnact_full);
 
@@ -4081,7 +4064,7 @@ menu_t ExtHelpDef =
 // M_ExtHelpNextScreen establishes the number of the next HELP screen in
 // the series.
 
-void M_ExtHelpNextScreen(int choice)
+static void M_ExtHelpNextScreen(int choice)
 {
   choice = 0;
   if (++extended_help_index > extended_help_count)
@@ -4098,7 +4081,7 @@ void M_ExtHelpNextScreen(int choice)
 // Routine to look for HELPnn screens and create a menu
 // definition structure that defines extended help screens.
 
-void M_InitExtendedHelp(void)
+static void M_InitExtendedHelp(void)
 
 {
   int index;
@@ -4139,7 +4122,7 @@ void M_InitExtendedHelp(void)
 
 // Initialization for the extended HELP screens.
 
-void M_ExtHelp(int choice)
+static void M_ExtHelp(int choice)
 {
   choice = 0;
   extended_help_index = 1; // Start with first extended help screen
@@ -4148,7 +4131,7 @@ void M_ExtHelp(int choice)
 
 // Initialize the drawing part of the extended HELP screens.
 
-void M_DrawExtHelp(void)
+static void M_DrawExtHelp(void)
 {
   char namebfr[10] = { "HELPnn" }; // CPhipps - make it local & writable
 
@@ -4179,7 +4162,7 @@ void M_DrawExtHelp(void)
 // M_GetKeyString finds the correct string to represent the key binding
 // for the current item being drawn.
 
-int M_GetKeyString(int c,int offset)
+static int M_GetKeyString(int c,int offset)
 {
   const char* s;
 
@@ -4406,7 +4389,7 @@ static void M_DrawStringCentered(int cx, int cy, int color, const char* ch)
 //
 // This displays the help screen
 
-void M_DrawHelp (void)
+static void M_DrawHelp (void)
 {
   const char* helplump = (gamemode == commercial) ? "HELP" : "HELP1";
 
@@ -4429,7 +4412,7 @@ void M_DrawHelp (void)
 //
 // This displays the help2 screen
 
-void M_DrawAd (void)
+static void M_DrawAd (void)
 {
   const char* help2 = "HELP2";
 
@@ -5880,7 +5863,7 @@ static dboolean M_MessageResponder(int ch, int action, event_t* ev)
   return true;
 }
 
-int M_EventToCharacter(event_t* ev)
+static int M_EventToCharacter(event_t* ev)
 {
   if (ev->type == ev_joystick)
   {
@@ -5926,7 +5909,7 @@ int M_EventToCharacter(event_t* ev)
   return MENU_NULL;
 }
 
-int M_CurrentAction(void)
+static int M_CurrentAction(void)
 {
   if (dsda_InputActivated(dsda_input_menu_left))
   {
@@ -6310,7 +6293,7 @@ void M_Ticker (void)
 // Message Routines
 //
 
-void M_StartMessage (const char* string,void* routine,dboolean input)
+static void M_StartMessage (const char* string,void* routine,dboolean input)
 {
   messageLastMenuActive = menuactive;
   messageToPrint = 1;
@@ -6321,7 +6304,7 @@ void M_StartMessage (const char* string,void* routine,dboolean input)
   return;
 }
 
-void M_StopMessage(void)
+static void M_StopMessage(void)
 {
   M_ChangeMenu(NULL, messageLastMenuActive);
   messageToPrint = 0;
@@ -6339,7 +6322,7 @@ void M_StopMessage(void)
 // proff/nicolas 09/20/98 -- changed for hi-res
 // CPhipps - patch drawing updated
 //
-void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
+static void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
 {
   int xx;
   int i;
@@ -6371,7 +6354,7 @@ void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
 // Draw an empty cell in the thermometer
 //
 
-void M_DrawEmptyCell (menu_t* menu,int item)
+static void M_DrawEmptyCell (menu_t* menu,int item)
 {
   // CPhipps - patch drawing updated
   V_DrawNamePatch(menu->x - 10, menu->y+item*LINEHEIGHT - 1, 0,
@@ -6382,7 +6365,7 @@ void M_DrawEmptyCell (menu_t* menu,int item)
 // Draw a full cell in the thermometer
 //
 
-void M_DrawSelCell (menu_t* menu,int item)
+static void M_DrawSelCell (menu_t* menu,int item)
 {
   // CPhipps - patch drawing updated
   V_DrawNamePatch(menu->x - 10, menu->y+item*LINEHEIGHT - 1, 0,
@@ -6398,7 +6381,7 @@ void M_DrawSelCell (menu_t* menu,int item)
 // Find string width from menu_font chars
 //
 
-int M_StringWidth(const char* string)
+static int M_StringWidth(const char* string)
 {
   int i, c, w = 0;
   for (i = 0;(size_t)i < strlen(string);i++)
@@ -6411,7 +6394,7 @@ int M_StringWidth(const char* string)
 //    Find string height from menu_font chars
 //
 
-int M_StringHeight(const char* string)
+static int M_StringHeight(const char* string)
 {
   int i, h = menu_font->height;
   for (i = 0;string[i];i++)            // killough 1/31/98
@@ -6423,7 +6406,7 @@ int M_StringHeight(const char* string)
 //
 //    Write a string using the menu_font
 //
-void M_WriteText (int x,int y, const char* string, int cm)
+static void M_WriteText (int x,int y, const char* string, int cm)
 {
   int   w;
   const char* ch;
@@ -6466,7 +6449,7 @@ void M_WriteText (int x,int y, const char* string, int cm)
   }
 }
 
-void M_DrawTitle(int y, const char *text, int cm)
+static void M_DrawTitle(int y, const char *text, int cm)
 {
   if (raven) return MN_DrawTitle(y, text, cm);
 
@@ -6484,7 +6467,7 @@ void M_DrawTitle(int y, const char *text, int cm)
 // M_InitHelpScreen() clears the weapons from the HELP
 // screen that don't exist in this version of the game.
 
-void M_InitHelpScreen(void)
+static void M_InitHelpScreen(void)
 {
   setup_menu_t* src;
 
