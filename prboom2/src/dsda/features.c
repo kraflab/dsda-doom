@@ -25,7 +25,7 @@
 
 static uint64_t used_features;
 
-static const char* feature_names[64] = {
+static const char* feature_names[128] = {
   [uf_menu] = "Menu",
   [uf_exhud] = "Extended HUD",
   [uf_advhud] = "Advanced HUD",
@@ -65,6 +65,8 @@ static const char* feature_names[64] = {
   [uf_mouse_and_controller] = "Mouse and Controller",
   [uf_ghost] = "Ghost",
   [uf_advanced_map] = "Advanced Map",
+  [uf_vanillatrans] = "Vanilla Translucency",
+  [uf_ghosttrans] = "Ghost Translucency",
 };
 
 #define FEATURE_BIT(x) ((uint64_t) 1 << x)

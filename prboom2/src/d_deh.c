@@ -60,6 +60,7 @@
 #include "dsda/args.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
+#include "dsda/settings.h"
 #include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
@@ -1573,6 +1574,14 @@ uint64_t deh_stringToMobjFlags(char *strval)
   return deh_stringToFlags(strval, deh_mobjflags);
 }
 
+int dsda_SetTranslucency(void)
+{
+  if (dsda_StrictMode() && (dsda_IntConfig(dsda_config_translucent_sprites) > 1))
+    dsda_UpdateIntConfig(dsda_config_translucent_sprites, 1, false);
+
+  return dsda_IntConfig(dsda_config_translucent_sprites);
+}
+
 void deh_changeCompTranslucency(void)
 {
   extern byte* edited_mobjinfo_bits;
@@ -1586,7 +1595,7 @@ void deh_changeCompTranslucency(void)
 
   if (raven) return;
 
-  boom_translucent_sprites = dsda_IntConfig(dsda_config_translucent_sprites);
+  boom_translucent_sprites = dsda_SetTranslucency();
   vanilla_translucent_sprites = boom_translucent_sprites > 1;
   translucency_active = (compatibility_level >= boom_compatibility_compatibility) ? !comp[comp_translucency] : vanilla_translucent_sprites;
 

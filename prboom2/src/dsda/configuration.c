@@ -18,6 +18,7 @@
 #include <string.h>
 
 #include "am_map.h"
+#include "d_deh.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "hu_stuff.h"
@@ -193,6 +194,12 @@ void dsda_TrackConfigFeatures(void) {
 
   if (dsda_IntConfig(dsda_config_map_textured) || dsda_IntConfig(dsda_config_show_minimap))
     dsda_TrackFeature(uf_advanced_map);
+
+  if (dsda_IntConfig(dsda_config_translucent_sprites) > 1)
+    dsda_TrackFeature(uf_vanillatrans);
+
+  if (dsda_IntConfig(dsda_config_translucent_ghosts))
+    dsda_TrackFeature(uf_ghosttrans);
 }
 
 // TODO: migrate all kinds of stuff from M_Init
@@ -210,6 +217,7 @@ void dsda_UpdateStrictMode(void) {
   dsda_RefreshExHudCommandDisplay();
   dsda_RefreshExHudMinimap();
   dsda_TrackConfigFeatures();
+  dsda_SetTranslucency();
 }
 
 dsda_config_t dsda_config[dsda_config_count] = {
@@ -1213,7 +1221,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_translucent_ghosts] = {
     "translucent_ghosts", dsda_config_translucent_ghosts,
-    CONF_BOOL(0), NULL, NOT_STRICT
+    CONF_BOOL(0), NULL, STRICT_INT(0)
   },
   [dsda_config_show_alive_monsters] = { // never persisted
     "show_alive_monsters", dsda_config_show_alive_monsters,
