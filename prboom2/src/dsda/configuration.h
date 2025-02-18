@@ -271,6 +271,7 @@ typedef enum {
   dsda_config_render_patches_scalex,
   dsda_config_render_patches_scaley,
   dsda_config_render_stretchsky,
+  dsda_config_render_linearsky,
   dsda_config_translucent_sprites,
   dsda_config_translucent_ghosts,
   dsda_config_show_alive_monsters,

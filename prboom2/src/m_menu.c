@@ -3116,6 +3116,7 @@ setup_menu_t display_settings[] = {
   { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
+  { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
   { "Translucent Sprites", S_CHOICE, m_conf, G_X, dsda_config_translucent_sprites, 0, translucent_list },
   { "Translucent Ghosts", S_YESNO, m_conf, G_X, dsda_config_translucent_ghosts },
@@ -4168,7 +4169,7 @@ void M_DrawHelp (void)
 
   M_ChangeMenu(NULL, mnact_full);
 
-  if (W_PWADLumpNameExists(helplump))
+  if (W_PWADLumpNameExists(helplump) || tc_game)
   {
     V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
@@ -4232,7 +4233,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   const int PWADcredit = W_PWADLumpNameExists(credit);
 
   inhelpscreens = true;
-  if (PWADcredit)
+  if (PWADcredit || tc_game)
   {
     V_ClearBorder();
     V_DrawNamePatch(0, 0, 0, credit, CR_DEFAULT, VPT_STRETCH);
@@ -5860,7 +5861,7 @@ dboolean M_MenuIsShaded(void)
   return fadeBG() && Options;
 }
 
-static void M_ShadedScreen(int scrn)
+void M_ShadedScreen(int scrn)
 {
   V_DrawShaded(scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, FULLSHADE);
 }
@@ -5876,9 +5877,6 @@ static void M_ShadedScreen(int scrn)
 void M_Drawer (void)
 {
   V_BeginUIDraw();
-
-  if (M_MenuIsShaded())
-    M_ShadedScreen(0);
 
   inhelpscreens = false;
 

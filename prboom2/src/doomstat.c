@@ -40,6 +40,8 @@
 GameMode_t gamemode = indetermined;
 GameMission_t   gamemission = doom;
 
+dboolean tc_game;
+
 // Language.
 Language_t   language = english;
 
