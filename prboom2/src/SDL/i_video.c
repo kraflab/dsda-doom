@@ -1226,6 +1226,8 @@ void I_UpdateVideoMode(void)
   int render_vsync;
   int integer_scaling;
   const char *sdl_video_window_pos;
+  int sdl_video_display_index;
+  int x, y;
   const dboolean novsync = dsda_Flag(dsda_arg_timedemo) ||
                            dsda_Flag(dsda_arg_fastdemo);
 
@@ -1233,6 +1235,7 @@ void I_UpdateVideoMode(void)
                          I_DesiredVideoMode() == VID_MODESW;
   render_vsync = dsda_IntConfig(dsda_config_render_vsync) && !novsync;
   sdl_video_window_pos = dsda_StringConfig(dsda_config_sdl_video_window_pos);
+  sdl_video_display_index = dsda_IntConfig(dsda_config_sdl_video_display_index);
   screen_multiply = dsda_IntConfig(dsda_config_render_screen_multiply);
   integer_scaling = dsda_IntConfig(dsda_config_integer_scaling);
 
@@ -1279,16 +1282,16 @@ void I_UpdateVideoMode(void)
     ACTUALHEIGHT = SCREENHEIGHT;
   }
 
-  if (desired_fullscreen)
+  x = SDL_WINDOWPOS_CENTERED_DISPLAY(sdl_video_display_index);
+  y = SDL_WINDOWPOS_CENTERED_DISPLAY(sdl_video_display_index);
+  if (sdl_video_window_pos)
   {
-    if (exclusive_fullscreen)
-      init_flags |= SDL_WINDOW_FULLSCREEN;
-    else
-      init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-  }
-  else
-  {
-    init_flags |= SDL_WINDOW_RESIZABLE;
+    int nx, ny;
+    if (sscanf(sdl_video_window_pos, "%d,%d", &nx, &ny) == 2)
+    {
+      x = nx;
+      y = ny;
+    }
   }
 
   if (V_IsOpenGLMode())
@@ -1312,7 +1315,7 @@ void I_UpdateVideoMode(void)
 
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
-      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+      x, y,
       SCREENWIDTH * screen_multiply, ACTUALHEIGHT * screen_multiply,
       init_flags);
     sdl_glcontext = SDL_GL_CreateContext(sdl_window);
@@ -1327,7 +1330,7 @@ void I_UpdateVideoMode(void)
 
     sdl_window = SDL_CreateWindow(
       PACKAGE_NAME " " PACKAGE_VERSION,
-      SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+      x, y,
       SCREENWIDTH * screen_multiply, ACTUALHEIGHT * screen_multiply,
       init_flags);
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, flags);
@@ -1349,17 +1352,20 @@ void I_UpdateVideoMode(void)
     }
   }
 
-  if (sdl_video_window_pos)
+  // When creating the window, its not allowed to set a position in a different display
+  // This allows that
+  SDL_SetWindowPosition(sdl_window, x, y);
+
+  if (desired_fullscreen)
   {
-    int x, y;
-    if (sscanf(sdl_video_window_pos, "%d,%d", &x, &y) == 2)
-    {
-      SDL_SetWindowPosition(sdl_window, x, y);
-    }
-    if (strcmp(sdl_video_window_pos, "center") == 0)
-    {
-      SDL_SetWindowPosition(sdl_window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-    }
+    if (exclusive_fullscreen)
+      SDL_SetWindowFullscreen(sdl_window, SDL_WINDOW_FULLSCREEN);
+    else
+      SDL_SetWindowFullscreen(sdl_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+  }
+  else
+  {
+    SDL_SetWindowResizable(sdl_window, SDL_TRUE);
   }
 
   // Workaround for SDL 2.0.14 alt-tab bug (taken from Doom Retro)
