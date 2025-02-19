@@ -93,6 +93,7 @@
 #include "dsda/data_organizer.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/gameinfo.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/options.h"
 #include "dsda/pause.h"
@@ -121,6 +122,8 @@
 #include "i_glob.h"
 
 static void D_PageDrawer(void);
+
+char* iwadlump;
 
 // jff 1/24/98 add new versions of these variables to remember command line
 dboolean clnomonsters;   // checkparm of -nomonsters
@@ -1129,6 +1132,9 @@ static char *FindIWADFile(void)
     else if (dsda_Flag(dsda_arg_hexen))
       return I_FindWad("hexen.wad");
 
+    if (iwadlump != NULL)
+      return I_FindWad(iwadlump);
+
     for (i=0; !iwad && i<nstandard_iwads; i++)
       iwad = I_FindWad(standard_iwads[i]);
   }
@@ -1185,9 +1191,24 @@ static void IdentifyVersion (void)
   dsda_InitDataDir();
   dsda_InitSaveDir();
 
+  // Parse GAMEINFO lump
+  dsda_LoadGameInfo();
+
+  // Reset lump cache
+  dsda_ResetInitLumpCache();
+
   // locate the IWAD and determine game mode from it
 
   iwad = FindIWADFile();
+
+  // Check if GAMEINFO IWAD exists
+  // If not, default to normal behaviour
+  if ((iwad != iwadlump) && !(iwad && *iwad))
+  {
+    Z_Free(iwadlump);
+    iwadlump = NULL;
+    iwad = FindIWADFile();
+  }
 
   if (iwad && *iwad)
   {
@@ -1428,6 +1449,19 @@ static void D_AddZip(const char* zipped_file_name, wad_source_t source, deh_queu
 
   full_zip_path = I_RequireZip(zipped_file_name);
   temporary_directory = dsda_UnzipFile(full_zip_path);
+
+  LoadWADsAtPath(temporary_directory, source);
+
+  Z_Free(full_zip_path);
+}
+
+static void D_AddUnzippedFile(const char* zipped_file_name, wad_source_t source, deh_queue_t *deh_queue)
+{
+  char* full_zip_path;
+  const char* temporary_directory;
+
+  full_zip_path = I_RequireZip(zipped_file_name);
+  temporary_directory = dsda_ReadUnzippedFile(full_zip_path);
 
   LoadWADsAtPath(temporary_directory, source);
   LoadDehackedFilesAtPath(temporary_directory, true, deh_queue);
@@ -1717,6 +1751,58 @@ static void EvaluateDoomVerStr(void)
   lprintf(LO_INFO, "Playing: %s\n", doomverstr);
 }
 
+static void dsda_Loadfiles(void)
+{
+  dsda_arg_t *arg;
+
+  if ((arg = dsda_Arg(dsda_arg_file))->found)
+  {
+    int file_i;
+    // the parms after p are wadfile/lump names,
+    // until end of parms or another - preceded parm
+    modifiedgame = true;            // homebrew levels
+
+    for (file_i = 0; file_i < arg->count; ++file_i)
+    {
+      const char* file_name;
+      char *file = NULL;
+
+      file_name = arg->value.v_string_array[file_i];
+
+      if (!dsda_FileExtension(file_name))
+      {
+        const char *extensions[] = { ".wad", ".lmp", ".zip", ".deh", ".bex", NULL };
+
+        file = I_RequireAnyFile(file_name, extensions);
+        file_name = file;
+      }
+
+      if (dsda_HasFileExt(file_name, ".deh") || dsda_HasFileExt(file_name, ".bex"))
+      {
+        if (MainLumpCache)
+          dsda_AppendStringArg(dsda_arg_deh, file_name);
+      }
+      else if (dsda_HasFileExt(file_name, ".zip"))
+      {
+        MainLumpCache ? D_AddUnzippedFile(file_name, source_pwad, NULL) : D_AddZip(file_name, source_pwad, NULL);
+      }
+      else if (dsda_HasFileExt(file_name, ".wad") || dsda_HasFileExt(file_name, ".lmp"))
+      {
+        if (!file)
+          file = I_RequireWad(file_name);
+
+        D_AddFile(file, source_pwad);
+      }
+      else
+      {
+        I_Error("File type \"%s\" is not supported", dsda_FileExtension(file_name));
+      }
+
+      Z_Free(file);
+    }
+  }
+}
+
 //
 // D_DoomMainSetup
 //
@@ -1737,9 +1823,16 @@ static void D_DoomMainSetup(void)
     I_SafeExit(0);
   }
 
+  // CPhipps - autoloading of wads
+  autoload = !dsda_Flag(dsda_arg_noautoload);
+
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
 
-  IdentifyVersion();
+  dsda_Loadfiles();  // Load files for GAMEINFO lump
+  if (autoload) D_AutoloadPWadDir(); // Load autoload PWAD files for GAMEINFO lump
+  W_Init(); // Quick cache to search for GAMEINFO / IWAD
+
+  IdentifyVersion(); // Get IWAD
 
   dsda_InitGlobal();
 
@@ -1821,9 +1914,6 @@ static void D_DoomMainSetup(void)
   //e6y: some stuff from command-line should be initialised before ProcessDehFile()
   e6y_InitCommandLine();
 
-  // CPhipps - autoloading of wads
-  autoload = !dsda_Flag(dsda_arg_noautoload);
-
   D_AddFile(port_wad_file, source_auto_load);
 
   HandlePlayback(); // must come before autoload: may detect iwad in footer
@@ -1837,51 +1927,7 @@ static void D_DoomMainSetup(void)
   // add any files specified on the command line with -file wadfile
   // to the wad list
 
-  if ((arg = dsda_Arg(dsda_arg_file))->found)
-  {
-    int file_i;
-    // the parms after p are wadfile/lump names,
-    // until end of parms or another - preceded parm
-    modifiedgame = true;            // homebrew levels
-
-    for (file_i = 0; file_i < arg->count; ++file_i)
-    {
-      const char* file_name;
-      char *file = NULL;
-
-      file_name = arg->value.v_string_array[file_i];
-
-      if (!dsda_FileExtension(file_name))
-      {
-        const char *extensions[] = { ".wad", ".lmp", ".zip", ".deh", ".bex", NULL };
-
-        file = I_RequireAnyFile(file_name, extensions);
-        file_name = file;
-      }
-
-      if (dsda_HasFileExt(file_name, ".deh") || dsda_HasFileExt(file_name, ".bex"))
-      {
-        dsda_AppendStringArg(dsda_arg_deh, file_name);
-      }
-      else if (dsda_HasFileExt(file_name, ".zip"))
-      {
-        D_AddZip(file_name, source_pwad, NULL);
-      }
-      else if (dsda_HasFileExt(file_name, ".wad") || dsda_HasFileExt(file_name, ".lmp"))
-      {
-        if (!file)
-          file = I_RequireWad(file_name);
-
-        D_AddFile(file, source_pwad);
-      }
-      else
-      {
-        I_Error("File type \"%s\" is not supported", dsda_FileExtension(file_name));
-      }
-
-      Z_Free(file);
-    }
-  }
+  dsda_Loadfiles();
 
   // add wad files from autoload PWAD directories
   if (autoload)
@@ -1909,6 +1955,13 @@ static void D_DoomMainSetup(void)
 
   lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
   dsda_ParseOptionsLump();
+
+  if (iwadlump != NULL)
+  {
+    lprintf(LO_INFO, "Detected GAMEINFO lump: %s\n", iwadlump);
+    Z_Free(iwadlump);
+  }
+
   G_ReloadDefaults();
 
   // e6y
