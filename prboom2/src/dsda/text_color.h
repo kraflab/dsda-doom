@@ -100,6 +100,7 @@ typedef enum {
   dsda_tc_menu_info_highlight,
   dsda_tc_menu_info_edit,
   dsda_tc_menu_warning,
+  dsda_tc_menu_scrollbar,
   dsda_tc_stbar_health_bad,
   dsda_tc_stbar_health_warning,
   dsda_tc_stbar_health_ok,

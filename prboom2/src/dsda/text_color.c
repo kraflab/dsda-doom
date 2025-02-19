@@ -113,6 +113,7 @@ dsda_text_color_t dsda_text_colors[] = {
   [dsda_tc_menu_info_highlight] = { "menu_info_highlight", CR_BRICK },
   [dsda_tc_menu_info_edit] = { "menu_info_edit", CR_GRAY },
   [dsda_tc_menu_warning] = { "menu_warning", CR_RED },
+  [dsda_tc_menu_scrollbar] = { "menu_scrollbar", CR_TAN },
   [dsda_tc_stbar_health_bad] = { "stbar_health_bad", CR_RED },
   [dsda_tc_stbar_health_warning] = { "stbar_health_warning", CR_GOLD },
   [dsda_tc_stbar_health_ok] = { "stbar_health_ok", CR_GREEN },

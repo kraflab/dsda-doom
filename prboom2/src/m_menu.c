@@ -382,6 +382,7 @@ static int cr_value_edit;
 static int cr_info_highlight;
 static int cr_info_edit;
 static int cr_warning;
+static int cr_scrollbar;
 
 static void M_LoadTextColors(void)
 {
@@ -397,6 +398,7 @@ static void M_LoadTextColors(void)
   cr_info_highlight = dsda_TextCR(dsda_tc_menu_info_highlight);
   cr_info_edit = dsda_TextCR(dsda_tc_menu_info_edit);
   cr_warning = dsda_TextCR(dsda_tc_menu_warning);
+  cr_scrollbar = dsda_TextCR(dsda_tc_menu_scrollbar);
 }
 
 static const dsda_font_t *menu_font;
@@ -2082,11 +2084,12 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     while (current_i - scroll_i > limit_i - buffer_i)
       ++scroll_i;
 
+    // Draw scrollbar if needed
     scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)max_i;
 
     int xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
     V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-    V_FillRect(0, xx, yy, ww, hh, colrngs[CR_TAN][playpal_lightest]);
+    V_FillRect(0, xx, yy, ww, hh, colrngs[cr_scrollbar][playpal_lightest]);
   }
 
   i = 0;
