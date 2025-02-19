@@ -1061,34 +1061,25 @@ static void R_DrawPSprite (pspdef_t *psp)
   flip = (dboolean)(sprframe->flip & 1);
 
   {
-    weaponinfo_t *winfo;
-    int state;
-    int weapon_attack_alignment;
+    int weapon_attack_alignment = dsda_IntConfig(dsda_config_weapon_attack_alignment);
 
-    if (hexen)
-    {
-      winfo = &hexen_weaponinfo[viewplayer->readyweapon][viewplayer->pclass];
-    }
-    else
-    {
-      winfo = &weaponinfo[viewplayer->readyweapon];
-    }
+    // [crispy] don't align swiping weapons
+    const dboolean swiping_weapon = hexen && (viewplayer->pclass == PCLASS_FIGHTER ||
+                                             (viewplayer->pclass == PCLASS_CLERIC &&
+                                             viewplayer->readyweapon == wp_first));
 
-    state = viewplayer->psprites[ps_weapon].state - states;
-    weapon_attack_alignment = dsda_IntConfig(dsda_config_weapon_attack_alignment);
-
-    if (!dsda_WeaponBob())
+    if (!dsda_WeaponBob() && !(swiping_weapon && viewplayer->attackdown))
     {
       static fixed_t last_sy = 32 * FRACUNIT;
 
       psp_sx = FRACUNIT;
 
-      if (state != winfo->downstate && state != winfo->upstate)
+      if (psp->state->action != A_Lower && psp->state->action != A_Raise)
       {
         last_sy = psp->sy;
         psp_sy = 32 * FRACUNIT;
       }
-      else if (state == winfo->downstate)
+      else if (psp->state->action == A_Lower)
       {
         // We want to move smoothly from where we were
         psp_sy -= (last_sy - 32 * FRACUNIT);
@@ -1100,7 +1091,7 @@ static void R_DrawPSprite (pspdef_t *psp)
 
       // [crispy] don't center vertically during lowering and raising states
       if (weapon_attack_alignment >= CENTERWEAPON_HORVER &&
-          state != winfo->downstate && state != winfo->upstate)
+          psp->state->action != A_Lower && psp->state->action != A_Raise && !swiping_weapon)
       {
           R_ApplyWeaponBob(NULL, false, &psp_sy, weapon_attack_alignment == CENTERWEAPON_BOB);
       }
