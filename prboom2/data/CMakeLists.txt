@@ -169,6 +169,9 @@ set(GRAPHICS
     graphics/dig124.ppm
     graphics/dig125.ppm
     graphics/dig126.ppm
+    graphics/fonta06.ppm
+    graphics/fonta28.ppm
+    graphics/fonta30.ppm
     graphics/boxul.ppm
     graphics/boxuc.ppm
     graphics/boxur.ppm
