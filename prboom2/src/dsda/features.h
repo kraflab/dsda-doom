@@ -83,7 +83,11 @@ typedef enum {
   uf_mouse_and_controller,
   uf_ghost,
   uf_advanced_map,
-  // 63
+  uf_vanillatrans,
+  uf_ghosttrans,
+  // 65
+
+  // 127
 } dsda_feature_flag_t;
 
 #define FEATURE_SIZE 8
