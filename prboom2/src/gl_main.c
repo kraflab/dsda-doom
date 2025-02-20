@@ -754,7 +754,7 @@ void gld_StartFuzz(int sprite, float ratio)
   // for indexed lightmode, the fuzz color needs to take
   // pain/item fades and gamma into account, so do a color
   // lookup based on the closest-to-black color index.
-  color = gld_LookupIndexedColor(invul_cm ? playpal_white : playpal_black, true);
+  color = gld_LookupIndexedColor(invul_cm ? playpal_lightest : playpal_darkest, true);
   glColor3f((float)color.r/255.0f,
             (float)color.g/255.0f,
             (float)color.b/255.0f);
