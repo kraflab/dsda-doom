@@ -43,7 +43,7 @@ jobs:
             artifact-path: build/*.zip
 
           - name: "Linux GCC"
-            os: ubuntu-latest
+            os: ubuntu-22.04
             build_type: "Release"
             extra_options: "-G Ninja -DCMAKE_INSTALL_PREFIX=/usr"
             release: true
