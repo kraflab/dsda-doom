@@ -764,7 +764,7 @@ static void ST_doPaletteStuff(void)
       // radiation suit palette is used to tint the screen green,
       // as though the player is being covered in goo by an
       // attacking flemoid.
-      if (gamemission == chex)
+      if (gamemission == tc_chex)
       {
         palette = RADIATIONPAL;
       }

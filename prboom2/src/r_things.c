@@ -1231,18 +1231,22 @@ static void R_DrawPSprite (pspdef_t *psp)
     psp_inter.x1_prev = vis->x1;
     psp_inter.texturemid_prev = vis->texturemid;
 
-    if (lump == psp_inter.lump)
+    // Do not interpolate on the first tic of the level
+    if (leveltime > 1)
     {
-      int deltax = vis->x2 - vis->x1;
-      vis->x1 = psp_inter.x1 + FixedMul (tic_vars.frac, (vis->x1 - psp_inter.x1));
-      vis->x2 = vis->x1 + deltax;
-      vis->texturemid = psp_inter.texturemid + FixedMul (tic_vars.frac, (vis->texturemid - psp_inter.texturemid));
-    }
-    else
-    {
-      psp_inter.x1 = vis->x1;
-      psp_inter.texturemid = vis->texturemid;
-      psp_inter.lump=lump;
+      if (lump == psp_inter.lump)
+      {
+        int deltax = vis->x2 - vis->x1;
+        vis->x1 = psp_inter.x1 + FixedMul (tic_vars.frac, (vis->x1 - psp_inter.x1));
+        vis->x2 = vis->x1 + deltax;
+        vis->texturemid = psp_inter.texturemid + FixedMul (tic_vars.frac, (vis->texturemid - psp_inter.texturemid));
+      }
+      else
+      {
+        psp_inter.x1 = vis->x1;
+        psp_inter.texturemid = vis->texturemid;
+        psp_inter.lump=lump;
+      }
     }
   }
 
