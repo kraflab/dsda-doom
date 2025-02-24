@@ -23,7 +23,7 @@
 
 #include "features.h"
 
-static uint64_t used_features;
+static uint64_t used_features[FEATURES_PARTS];
 
 static const char* feature_names[64] = {
   [uf_menu] = "Menu",
@@ -70,34 +70,42 @@ static const char* feature_names[64] = {
 #define FEATURE_BIT(x) ((uint64_t) 1 << x)
 
 void dsda_TrackFeature(int feature) {
-  used_features |= FEATURE_BIT(feature);
+  FOR_FEATURES_PART
+    used_features[f] |= FEATURE_BIT(feature - f * 64);
+  END_FEATURES_PART
 }
 
 void dsda_ResetFeatures(void) {
-  used_features = 0;
+  FOR_FEATURES_PART
+    used_features[f] = 0;
+  END_FEATURES_PART
 }
 
-uint64_t dsda_UsedFeatures(void) {
+uint64_t *dsda_UsedFeatures(void) {
   return used_features;
 }
 
-void dsda_MergeFeatures(uint64_t source) {
-  used_features |= source;
+void dsda_MergeFeatures(uint64_t *source) {
+  FOR_FEATURES_PART
+    used_features[f] |= source[f];
+  END_FEATURES_PART
 }
 
 void dsda_CopyFeatures(byte* result) {
   dsda_CopyFeatures2(result, used_features);
 }
 
-void dsda_CopyFeatures2(byte* result, uint64_t source) {
-  result[0] = (source      ) & 0xff;
-  result[1] = (source >>  8) & 0xff;
-  result[2] = (source >> 16) & 0xff;
-  result[3] = (source >> 24) & 0xff;
-  result[4] = (source >> 32) & 0xff;
-  result[5] = (source >> 40) & 0xff;
-  result[6] = (source >> 48) & 0xff;
-  result[7] = (source >> 56) & 0xff;
+void dsda_CopyFeatures2(byte* result, uint64_t *source) {
+  FOR_FEATURES_PART
+    result[0 + f * 8] = (source[f]      ) & 0xff;
+    result[1 + f * 8] = (source[f] >>  8) & 0xff;
+    result[2 + f * 8] = (source[f] >> 16) & 0xff;
+    result[3 + f * 8] = (source[f] >> 24) & 0xff;
+    result[4 + f * 8] = (source[f] >> 32) & 0xff;
+    result[5 + f * 8] = (source[f] >> 40) & 0xff;
+    result[6 + f * 8] = (source[f] >> 48) & 0xff;
+    result[7 + f * 8] = (source[f] >> 56) & 0xff;
+  END_FEATURES_PART
 }
 
 char* dsda_DescribeFeatures(void) {
@@ -107,15 +115,18 @@ char* dsda_DescribeFeatures(void) {
 
   dsda_InitString(&description, NULL);
 
-  for (i = 0; i < 64; ++i)
-    if (used_features & FEATURE_BIT(i) && feature_names[i]) {
-      if (first)
-        first = false;
-      else
-        dsda_StringCat(&description, ", ");
+  FOR_FEATURES_PART
+    for (i = 0; i < 64; ++i) {
+      if (used_features[f] & FEATURE_BIT(i) && feature_names[i + f * 64]) {
+        if (first)
+          first = false;
+        else
+          dsda_StringCat(&description, ", ");
 
-      dsda_StringCat(&description, feature_names[i]);
+        dsda_StringCat(&description, feature_names[i + f * 64]);
+      }
     }
+  END_FEATURES_PART
 
   if (!description.string)
     dsda_StringCat(&description, "Tachyeres pteneres");

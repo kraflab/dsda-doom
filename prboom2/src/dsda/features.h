@@ -86,12 +86,16 @@ typedef enum {
   // 63
 } dsda_feature_flag_t;
 
-#define FEATURE_SIZE 8
+// Size of the uint64 array of features
+#define FEATURES_PARTS 2
+
+#define FOR_FEATURES_PART for (int f = 0; f < FEATURES_PARTS; f++) {
+#define END_FEATURES_PART }
 
 void dsda_TrackFeature(int feature);
 void dsda_ResetFeatures(void);
-uint64_t dsda_UsedFeatures(void);
-void dsda_MergeFeatures(uint64_t source);
+uint64_t *dsda_UsedFeatures(void);
+void dsda_MergeFeatures(uint64_t *source);
 void dsda_CopyFeatures(byte* result);
-void dsda_CopyFeatures2(byte* result, uint64_t source);
+void dsda_CopyFeatures2(byte* result, uint64_t *source);
 char* dsda_DescribeFeatures(void);

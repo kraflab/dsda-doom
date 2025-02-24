@@ -42,7 +42,7 @@ typedef struct {
   byte* footer;
   size_t demo_size;
   size_t footer_size;
-  uint64_t features;
+  uint64_t features[FEATURES_PARTS];
   int is_signed;
 } exdemo_t;
 
@@ -401,17 +401,35 @@ void dsda_MergeExDemoFeatures(void) {
 static void DemoEx_GetFeatures(const wadinfo_t* header) {
   char* str;
   char signature[33];
+  char ftext[16 * FEATURES_PARTS + 1];
+  int ftext_start = 0;
+  int ftext_end = 0;
 
   exdemo.is_signed = 0;
-  exdemo.features = 0;
+  FOR_FEATURES_PART
+    exdemo.features[f] = 0;
+  END_FEATURES_PART
 
   str = DemoEx_LumpAsString(DEMOEX_FEATURE_LUMPNAME, header);
   if (!str)
     return;
 
-  if (sscanf(str, "%*[^\n]\n%" PRIx64 "-%32s", &exdemo.features, signature) == 2) {
-    byte features[FEATURE_SIZE];
+  if (sscanf(str, "%*[^\n]\n0x%n%[^-]%n-%32s", &ftext_start, ftext, &ftext_end, signature) == 2) {
+    byte features[8 * FEATURES_PARTS];
     dsda_cksum_t cksum;
+    char padded_ftext[16 * FEATURES_PARTS + 1];
+    int i;
+
+    for (i = 0; i < (16 * FEATURES_PARTS) - (ftext_end - ftext_start); i++)
+      strcat(padded_ftext, "0");
+    strcat(padded_ftext, ftext);
+
+    FOR_FEATURES_PART
+      char current_text[17];
+      strncpy(current_text, padded_ftext + f * 16, 16);
+      current_text[16] = '\0';
+      exdemo.features[FEATURES_PARTS - f - 1] = strtoll(current_text, NULL, 16);
+    END_FEATURES_PART
 
     dsda_CopyFeatures2(features, exdemo.features);
 
@@ -433,17 +451,28 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   char* description;
   byte* buffer;
   size_t buffer_length;
-  uint64_t features;
+  uint64_t *features;
 
   dsda_GetDemoRecordingCheckSum(&cksum);
   description = dsda_DescribeFeatures();
   features = dsda_UsedFeatures();
 
-  // 18 for 64 bits in hex + \n + \0 + \- + extra space :^)
-  buffer_length = strlen(cksum.string) + strlen(description) + 24;
+  // (2 + 16 * FEATURE_SIZE) for the bitmap size in hex + \n + \0 + \- + extra space :^)
+  buffer_length = strlen(cksum.string) + strlen(description) + 8 + 16 * FEATURES_PARTS;
   buffer = Z_Calloc(buffer_length, 1);
 
-  snprintf(buffer, buffer_length, "%s\n0x%016" PRIx64 "-%s", description, features, cksum.string);
+  char current_feature[17];
+
+  strcpy(buffer, description);
+  strcat(buffer, "\n0x");
+
+  FOR_FEATURES_PART
+    snprintf(current_feature, 17, "%016" PRIx64, features[FEATURES_PARTS - f - 1]);
+    strncat(buffer, current_feature, 16);
+  END_FEATURES_PART
+
+  strcat(buffer, "-");
+  strcat(buffer, cksum.string);
 
   AddPWADTableLump(wadtbl, DEMOEX_FEATURE_LUMPNAME, buffer, buffer_length);
 

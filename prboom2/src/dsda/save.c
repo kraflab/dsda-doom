@@ -43,17 +43,16 @@ extern int dsda_max_kill_requirement;
 extern int player_damage_last_tic;
 
 static void dsda_ArchiveInternal(void) {
-  uint64_t features;
-
   P_SAVE_X(dsda_max_kill_requirement);
   P_SAVE_X(player_damage_last_tic);
 
-  features = dsda_UsedFeatures();
-  P_SAVE_X(features);
+  FOR_FEATURES_PART
+    P_SAVE_X(dsda_UsedFeatures()[f]);
+  END_FEATURES_PART
 }
 
 static void dsda_UnArchiveInternal(void) {
-  uint64_t features;
+  uint64_t features[FEATURES_PARTS];
 
   P_LOAD_X(dsda_max_kill_requirement);
   P_LOAD_X(player_damage_last_tic);
