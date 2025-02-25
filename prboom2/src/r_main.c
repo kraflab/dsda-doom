@@ -87,6 +87,8 @@ int r_frame_count;
 
 #define HEXEN_PI 3.141592657
 
+#define FIXED2DOUBLE(x) ((x)/(double)FRACUNIT)
+
 int validcount = 1;         // increment every time a check is made
 int validcount2 = 1;
 const lighttable_t *fixedcolormap;
@@ -141,6 +143,9 @@ int viewangletox[FINEANGLES/2];
 // e6y: resolution limitation is removed
 angle_t *xtoviewangle;   // killough 2/8/98
 
+// [FG] linear horizontal sky scrolling
+angle_t *linearskyangle;
+
 // killough 3/20/98: Support dynamic colormaps, e.g. deep water
 // killough 4/4/98: support dynamic number of them as well
 
@@ -151,6 +156,8 @@ const lighttable_t *(*scalelight)[MAXLIGHTSCALE];
 const lighttable_t *(*zlight)[MAXLIGHTZ];
 const lighttable_t *fullcolormap;
 const lighttable_t **colormaps;
+
+const byte* colormap_lump;
 
 // killough 3/20/98, 4/4/98: end dynamic colormaps
 
@@ -362,7 +369,8 @@ angle_t R_PointToPseudoAngle (fixed_t x, fixed_t y)
 
 static void R_InitTextureMapping (void)
 {
-  int i,x;
+  int i,x,angle;
+  double linearskyfactor;
   FieldOfView = FIELDOFVIEW;
 
   // For widescreen displays, increase the FOV so that the middle part of the
@@ -410,11 +418,17 @@ static void R_InitTextureMapping (void)
   //  xtoviewangle will give the smallest view angle
   //  that maps to x.
 
+  linearskyfactor = FIXED2DOUBLE(finetangent[FINEANGLES/4 + FieldOfView/2]) * ANG90;
+
   for (x=0; x<=viewwidth; x++)
     {
       for (i=0; viewangletox[i] > x; i++)
         ;
       xtoviewangle[x] = (i<<ANGLETOFINESHIFT)-ANG90;
+
+      // [FG] linear horizontal sky scrolling
+      angle = (0.5 - x / (double)viewwidth) * linearskyfactor;
+      linearskyangle[x] = (angle >= 0) ? angle : ANGLE_MAX + angle;
     }
 
   // Take out the fencepost cases from viewangletox.

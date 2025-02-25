@@ -121,6 +121,8 @@ static const char *pm_name (void)
 #include <delayimp.h>
 #endif
 
+static dboolean channel_used[16];
+
 #define DEFAULT_VOLUME 100
 static int channel_volume[16];
 static float volume_scale;
@@ -157,6 +159,7 @@ static void reset_device (void)
     Pm_Write(pm_stream, event_chorus, 16);
 
   use_reset_delay = mus_portmidi_reset_delay > 0;
+  memset(channel_used, 0, sizeof(channel_used));
 }
 
 static void init_reset_buffer (void)
@@ -573,7 +576,10 @@ static void writesysex (unsigned long when, int etype, byte *data, int len)
     Pm_WriteSysEx (pm_stream, when, sysexbuff);
 
     if (is_sysex_reset(sysexbuff, sysexbufflen))
+    {
       reset_volume();
+      memset(channel_used, 0, sizeof(channel_used));
+    }
 
     sysexbufflen = 0;
   }
@@ -648,9 +654,12 @@ static void pm_render (void *vdest, unsigned bufflen)
               // prevent hanging notes (doom2.wad MAP14, MAP22)
               for (int i = 0; i < 16; i++)
               {
-                writeevent (when, 0xB0, i, 0x7B, 0x00); // all notes off
-                writeevent (when, 0xB0, i, 0x79, 0x00); // reset all controllers
-                write_volume (when, i, DEFAULT_VOLUME); // reset volume
+                if (channel_used[i])
+                {
+                  writeevent(when, 0xB0, i, 0x79, 0x00); // reset all controllers
+                  write_volume(when, i, DEFAULT_VOLUME); // reset volume
+                  channel_used[i] = false;
+                }
               }
               continue;
             }
@@ -662,17 +671,20 @@ static void pm_render (void *vdest, unsigned bufflen)
         if (currevent->data.channel.param1 == MIDI_CONTROLLER_MAIN_VOLUME)
         {
           write_volume (when, currevent->data.channel.channel, currevent->data.channel.param2);
+          channel_used[currevent->data.channel.channel] = true;
           break;
         }
         else if (currevent->data.channel.param1 == 0x79)
         {
           // ms gs synth resets volume if "reset all controllers" value isn't zero
           writeevent (when, 0xB0, currevent->data.channel.channel, 0x79, 0x00);
+          channel_used[currevent->data.channel.channel] = true;
           break;
         }
         // fall through
       default:
         writeevent (when, currevent->event_type, currevent->data.channel.channel, currevent->data.channel.param1, currevent->data.channel.param2);
+        channel_used[currevent->data.channel.channel] = true;
         break;
     }
 

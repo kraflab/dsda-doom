@@ -102,10 +102,6 @@ static double spmc;
 static double f_delta;
 static int f_soundrate;
 
-#define SYSEX_BUFF_SIZE 1024
-static unsigned char sysexbuff[SYSEX_BUFF_SIZE];
-static int sysexbufflen;
-
 static const char *fl_name (void)
 {
   return "fluidsynth midi player";
@@ -460,33 +456,6 @@ static void fl_writesamples_ex (short *dest, int nsamp)
   }
 }
 
-static void writesysex (unsigned char *data, int len)
-{
-  // sysex code is untested
-  // it's possible to use an auto-resizing buffer here, but a malformed
-  // midi file could make it grow arbitrarily large (since it must grow
-  // until it hits an 0xf7 terminator)
-  int didrespond = 0;
-
-  if (len + sysexbufflen > SYSEX_BUFF_SIZE)
-  {
-    lprintf (LO_WARN, "fluidplayer: ignoring large or malformed sysex message\n");
-    sysexbufflen = 0;
-    return;
-  }
-  memcpy (sysexbuff + sysexbufflen, data, len);
-  sysexbufflen += len;
-  if (sysexbuff[sysexbufflen - 1] == 0xf7) // terminator
-  { // pass len-1 because fluidsynth does NOT want the final F7
-    fluid_synth_sysex (f_syn, (const char *)sysexbuff, sysexbufflen - 1, NULL, NULL, &didrespond, 0);
-    sysexbufflen = 0;
-  }
-  if (!didrespond)
-  {
-    lprintf (LO_WARN, "fluidplayer: SYSEX message received but not understood\n");
-  }
-}
-
 static void fl_render (void *vdest, unsigned length)
 {
   short *dest = (short*)vdest;
@@ -555,10 +524,6 @@ static void fl_render (void *vdest, unsigned length)
         break;
       case MIDI_EVENT_PITCH_BEND:
         fluid_synth_pitch_bend (f_syn, currevent->data.channel.channel, currevent->data.channel.param1 | currevent->data.channel.param2 << 7);
-        break;
-      case MIDI_EVENT_SYSEX:
-      case MIDI_EVENT_SYSEX_SPLIT:
-        writesysex (currevent->data.sysex.data, currevent->data.sysex.length);
         break;
       case MIDI_EVENT_META:
         if (currevent->data.meta.type == MIDI_META_SET_TEMPO)

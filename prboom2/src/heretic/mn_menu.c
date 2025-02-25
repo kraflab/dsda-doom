@@ -26,7 +26,7 @@
 
 #define ITEM_HEIGHT 20
 #define SELECTOR_XOFFSET (-28)
-#define SELECTOR_YOFFSET (-1)
+#define SELECTOR_YOFFSET (-4)
 #define SFX_VOL_INDEX 1
 #define MUS_VOL_INDEX 3
 
@@ -279,8 +279,6 @@ void MN_GameFiles(int choice)
 // Raven MN_Init
 //
 /////////////////////////////
-
-void M_DrawThermo(int x, int y, int thermWidth, int thermDot);
 
 void MN_Init(void)
 {
@@ -585,9 +583,15 @@ void MN_DrawOptions(void)
 
 void MN_DrawSound(void)
 {
-  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX, 16, snd_SfxVolume);
+  char num[4];
 
-  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, snd_MusicVolume);
+  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX, 16, 16, snd_SfxVolume);
+  snprintf(num, sizeof(num), "%3d", snd_SfxVolume);
+  MN_DrTextA(num, SoundDef.x + 130, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX + 3);
+
+  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, 16, snd_MusicVolume);
+  snprintf(num, sizeof(num), "%3d", snd_MusicVolume);
+  MN_DrTextA(num, SoundDef.x + 130, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX + 3);
 }
 
 extern char savegamestrings[10][SAVESTRINGSIZE];
@@ -753,47 +757,48 @@ int MN_TextBWidth(const char *text)
   return (width);
 }
 
+void MN_DrawTitle(int y, const char *text, int cm)
+{
+  MN_DrTextB(text, 160 - (MN_TextBWidth(text) / 2), y);
+}
+
 #define SLIDER_LIMIT 200
 #define SLIDER_WIDTH (SLIDER_LIMIT - 64)
 #define SLIDER_PATCH_COUNT (SLIDER_WIDTH / 8)
 
-void MN_DrawSlider(int x, int y, int width, int slot)
+void MN_DrawSlider(int x, int y, int width, int range, int slot)
 {
-  int x2;
-  int count;
-  char num[4];
-  int slot_x;
+  int xx;
+  int i;
+  int slot_offset;
   short slider_img = 0;
 
-  width = (width > SLIDER_LIMIT) ? SLIDER_LIMIT : width;
+  width -= 4;
 
-  V_DrawNamePatch(x, y, 0, "M_SLDLT", CR_DEFAULT, VPT_STRETCH);
-
-  for (x2 = x + 32, count = SLIDER_PATCH_COUNT; count--; x2 += 8)
+  xx = x - 12;
+  V_DrawNamePatch(xx, y, 0, "M_SLDLT", CR_DEFAULT, VPT_STRETCH);
+  xx += 32;
+  for (i=0;i<width;i++)
   {
     const char* name;
-
     name = (slider_img & 1 ? "M_SLDMD1" : "M_SLDMD2");
     slider_img ^= 1;
+    V_DrawNamePatch(xx, y, 0, name, CR_DEFAULT, VPT_STRETCH);
 
-    V_DrawNamePatch(x2, y, 0, name, CR_DEFAULT, VPT_STRETCH);
+    xx += 8;
   }
+  V_DrawNamePatch(xx, y, 0, "M_SLDRT", CR_DEFAULT, VPT_STRETCH);
 
-  V_DrawNamePatch(x2, y, 0, "M_SLDRT", CR_DEFAULT, VPT_STRETCH);
-
-  // [crispy] print the value
-  snprintf(num, sizeof(num), "%3d", slot);
-  MN_DrTextA(num, x2 + 32, y + 3);
-
-  // [crispy] do not crash anymore if the value is out of bounds
-  if (slot >= width)
+  if (slot >= range)
   {
-    slot = width - 1;
+    slot = range - 1;
   }
 
-  slot_x = x + 36 + (SLIDER_WIDTH - 8) * slot / (width - 1);
+  width += 1;
 
-  V_DrawNamePatch(slot_x, y + 7, 0, "M_SLDKB", CR_DEFAULT, VPT_STRETCH);
+  slot_offset = 8 * slot * width / range;
+  slot_offset -= range / width;
+  V_DrawNamePatch(x + 20 + slot_offset, y + 7, 0, "M_SLDKB", CR_DEFAULT, VPT_STRETCH);
 }
 
 // hexen
