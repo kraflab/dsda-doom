@@ -1208,6 +1208,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "render_linearsky", dsda_config_render_linearsky,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshLinearSky
   },
+  [dsda_config_aspect_ratio_correction] = {
+    "aspect_ratio_correction", dsda_config_aspect_ratio_correction,
+    CONF_BOOL(1), NULL, NOT_STRICT
+  },
   [dsda_config_gl_fade_mode] = {
     "gl_fade_mode", dsda_config_gl_fade_mode,
     dsda_config_int, 0, 1, { 0 }
