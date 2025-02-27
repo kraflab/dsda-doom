@@ -63,8 +63,6 @@ char* dsda_DetectDirectory(const char* env_key, int arg_id) {
   if (!result)
     result = Z_Strdup(default_directory);
 
-  dsda_NormalizeSlashes(result);
-
   return result;
 }
 
