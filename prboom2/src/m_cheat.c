@@ -257,6 +257,7 @@ char buf[3];
 {
   int musnum, muslump;
   int epsd, map;
+  char *mapname;
 
   //jff 3/20/98 note: this cheat allowed in netgame/demorecord
 
@@ -271,23 +272,28 @@ char buf[3];
   }
   else
   {
-    epsd = buf[0] - '1';
-    map = buf[1] - '1';
+    epsd = buf[0] - '0';
+    map = buf[1] - '0';
   }
-
-  dsda_AddMessage(s_STSTR_MUS);
 
   idmusnum = -1;
   dsda_MapMusic(&musnum, &muslump, epsd, map);
   idmusnum = musnum; //jff 3/17/98 remember idmus number for restore
 
-  if (muslump != -1)
+  mapname = VANILLA_MAP_LUMP_NAME(epsd,map);
+
+  if (W_LumpNameExists(mapname))
   {
-    S_ChangeMusInfoMusic(muslump, true);
-  }
-  else if (musnum != -1)
-  {
-    S_ChangeMusic(musnum, 1);
+    doom_printf("%s: %s", s_STSTR_MUS, mapname);
+
+    if (muslump != -1)
+    {
+      S_ChangeMusInfoMusic(muslump, true);
+    }
+    else if (musnum != -1)
+    {
+      S_ChangeMusic(musnum, 1);
+    }
   }
   else
   {
