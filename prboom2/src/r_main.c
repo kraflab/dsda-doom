@@ -502,11 +502,13 @@ static void R_InitLightTables (void)
 // The change will take effect next refresh.
 //
 
+extern dboolean BorderNeedRefresh;
 dboolean setsizeneeded;
 static int setblocks;
 
 void R_SetViewSize(void)
 {
+  BorderNeedRefresh = true;
   setsizeneeded = true;
   setblocks = dsda_IntConfig(dsda_config_screenblocks);
 }
