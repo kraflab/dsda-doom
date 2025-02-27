@@ -340,6 +340,7 @@ static void D_DrawPause(void)
 }
 
 static dboolean must_fill_back_screen;
+extern dboolean ScreenSize_Interpolate;
 
 void D_MustFillBackScreen(void)
 {
@@ -486,6 +487,10 @@ void D_Display (fixed_t frac)
     DSDA_REMOVE_CONTEXT(sf_status_bar);
 
     BorderNeedRefresh = false;
+
+    // Interpolate weapon only when not changing screensize
+    ScreenSize_Interpolate = true;
+
     if (V_IsSoftwareMode())
       R_DrawViewBorder();
 
