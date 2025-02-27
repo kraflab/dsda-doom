@@ -3340,7 +3340,7 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
   EMPTY_LINE,
   TITLE("Coloring", DM_X),
   { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
-  { "Use Red Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_always_red },
+  { "Colored Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_colored_numbers },
   { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
   { "Health Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow },
   { "Health Good/Extra", S_NUM, m_conf, DM_X, dsda_config_hud_health_green },
