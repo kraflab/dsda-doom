@@ -46,13 +46,13 @@ static void dsda_ArchiveInternal(void) {
   P_SAVE_X(dsda_max_kill_requirement);
   P_SAVE_X(player_damage_last_tic);
 
-  FOR_FEATURES_PART
+  FOR_FEATURE_SLOT
     P_SAVE_X(dsda_UsedFeatures()[f]);
-  END_FEATURES_PART
+  END_FEATURE_SLOT
 }
 
 static void dsda_UnArchiveInternal(void) {
-  uint64_t features[FEATURES_PARTS];
+  byte features[FEATURE_SLOTS];
 
   P_LOAD_X(dsda_max_kill_requirement);
   P_LOAD_X(player_damage_last_tic);

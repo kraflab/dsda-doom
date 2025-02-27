@@ -42,7 +42,7 @@ typedef struct {
   byte* footer;
   size_t demo_size;
   size_t footer_size;
-  uint64_t features[FEATURES_PARTS];
+  byte features[FEATURE_SLOTS];
   int is_signed;
 } exdemo_t;
 
@@ -401,39 +401,36 @@ void dsda_MergeExDemoFeatures(void) {
 static void DemoEx_GetFeatures(const wadinfo_t* header) {
   char* str;
   char signature[33];
-  char ftext[16 * FEATURES_PARTS + 1];
+  char ftext[2 * FEATURE_SLOTS + 1];
   int ftext_start = 0;
   int ftext_end = 0;
 
   exdemo.is_signed = 0;
-  FOR_FEATURES_PART
+  FOR_FEATURE_SLOT
     exdemo.features[f] = 0;
-  END_FEATURES_PART
+  END_FEATURE_SLOT
 
   str = DemoEx_LumpAsString(DEMOEX_FEATURE_LUMPNAME, header);
   if (!str)
     return;
 
   if (sscanf(str, "%*[^\n]\n0x%n%[^-]%n-%32s", &ftext_start, ftext, &ftext_end, signature) == 2) {
-    byte features[8 * FEATURES_PARTS];
     dsda_cksum_t cksum;
-    char padded_ftext[16 * FEATURES_PARTS + 1];
+    char padded_ftext[2 * FEATURE_SLOTS + 1];
     int i;
 
-    for (i = 0; i < (16 * FEATURES_PARTS) - (ftext_end - ftext_start); i++)
+    for (i = 0; i < (2 * FEATURE_SLOTS) - (ftext_end - ftext_start); i++)
       strcat(padded_ftext, "0");
     strcat(padded_ftext, ftext);
 
-    FOR_FEATURES_PART
-      char current_text[17];
-      strncpy(current_text, padded_ftext + f * 16, 16);
-      current_text[16] = '\0';
-      exdemo.features[FEATURES_PARTS - f - 1] = strtoll(current_text, NULL, 16);
-    END_FEATURES_PART
+    FOR_FEATURE_SLOT
+      char current_text[3];
+      strncpy(current_text, padded_ftext + f * 2, 2);
+      current_text[2] = '\0';
+      exdemo.features[FEATURE_SLOTS - f - 1] = strtol(current_text, NULL, 16);
+    END_FEATURE_SLOT
 
-    dsda_CopyFeatures2(features, exdemo.features);
-
-    dsda_GetDemoCheckSum(&cksum, features, exdemo.demo, exdemo.demo_size);
+    dsda_GetDemoCheckSum(&cksum, exdemo.features, exdemo.demo, exdemo.demo_size);
 
     if (!strcmp(signature, cksum.string))
       exdemo.is_signed = 1;
@@ -451,25 +448,24 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   char* description;
   byte* buffer;
   size_t buffer_length;
-  uint64_t *features;
+  byte *features;
+  char current_feature[3];
 
   dsda_GetDemoRecordingCheckSum(&cksum);
   description = dsda_DescribeFeatures();
   features = dsda_UsedFeatures();
 
-  // (2 + 16 * FEATURE_SIZE) for the bitmap size in hex + \n + \0 + \- + extra space :^)
-  buffer_length = strlen(cksum.string) + strlen(description) + 8 + 16 * FEATURES_PARTS;
+  // (2 + 2 * FEATURE_SLOTS) for the bitmap size in hex + \n + \0 + \- + extra space :^)
+  buffer_length = strlen(cksum.string) + strlen(description) + 8 + 2 * FEATURE_SLOTS;
   buffer = Z_Calloc(buffer_length, 1);
-
-  char current_feature[17];
 
   strcpy(buffer, description);
   strcat(buffer, "\n0x");
 
-  FOR_FEATURES_PART
-    snprintf(current_feature, 17, "%016" PRIx64, features[FEATURES_PARTS - f - 1]);
-    strncat(buffer, current_feature, 16);
-  END_FEATURES_PART
+  FOR_FEATURE_SLOT
+    snprintf(current_feature, 3, "%02" PRIx8, features[FEATURE_SLOTS - f - 1]);
+    strncat(buffer, current_feature, 2);
+  END_FEATURE_SLOT
 
   strcat(buffer, "-");
   strcat(buffer, cksum.string);
