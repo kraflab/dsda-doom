@@ -84,10 +84,13 @@ static void cheat_kfa();
 static void cheat_noclip();
 static void cheat_pw();
 static void cheat_behold();
+static void cheat_clev0();
 static void cheat_clev();
 static void cheat_mypos();
 static void cheat_rate();
+static void cheat_comp0();
 static void cheat_comp();
+static void cheat_skill0();
 static void cheat_skill();
 static void cheat_friction();
 static void cheat_pushers();
@@ -164,11 +167,14 @@ cheatseq_t cheat[] = {
   CHEAT("idbeholdl",  "Lite-Amp Goggles", cht_always, cheat_pw, pw_infrared, false),
   CHEAT("idbehold",   "BEHOLD menu",      cht_always, cheat_behold, 0, false),
   CHEAT("idclev",     "Level Warp",       not_demo | not_menu, cheat_clev, -2, false),
+  CHEAT("idclev",     "Level Warp",       not_demo | not_menu, cheat_clev0, 0, false),
   CHEAT("idmypos",    NULL,               cht_always, cheat_mypos, 0, false),
   CHEAT("idrate",     "Frame rate",       cht_always, cheat_rate, 0, false),
   // phares
   CHEAT("tntcomp",    NULL,               not_demo, cheat_comp, -2, false),
+  CHEAT("tntcomp",    NULL,               not_demo, cheat_comp0, 0, false),
   CHEAT("skill",      NULL,               not_demo, cheat_skill, -1, false),
+  CHEAT("skill",      NULL,               not_demo, cheat_skill0, 0, false),
   // jff 2/01/98 kill all monsters
   CHEAT("tntem",      NULL,               not_demo, cheat_massacre, 0, false),
   // killough 2/07/98: moved from am_map.c
@@ -489,6 +495,24 @@ static void cheat_behold()
   dsda_AddMessage(s_STSTR_BEHOLD);
 }
 
+// check 'clev' change-level cheat
+static void cheat_clev0()
+{
+  int epsd, map;
+  char *cur, *next;
+  cur = Z_Strdup(VANILLA_MAP_LUMP_NAME(gameepisode, gamemap));
+
+  dsda_NextMap(&epsd, &map);
+  next = VANILLA_MAP_LUMP_NAME(epsd, map);
+
+  if (W_LumpNameExists(next))
+    doom_printf("Current: %s, next: %s", cur, next);
+  else
+    doom_printf("Current: %s", cur);
+
+  Z_Free(cur);
+}
+
 // 'clev' change-level cheat
 static void cheat_clev(char buf[3])
 {
@@ -525,23 +549,38 @@ static void cheat_rate()
   dsda_ToggleRenderStats();
 }
 
-// compatibility cheat
+// check compatibility cheat
+static void cheat_comp0()
+{
+  doom_printf("Complevel: %i - %s", compatibility_level, comp_lev_str[compatibility_level]);
+}
 
+// compatibility cheat
 static void cheat_comp(char buf[3])
 {
-  compatibility_level = (buf[0] - '0') * 10 + buf[1] - '0';
+  int compinput = (buf[0] - '0') * 10 + buf[1] - '0';
 
-  if (compatibility_level < 0 ||
-      compatibility_level >= MAX_COMPATIBILITY_LEVEL ||
-      (compatibility_level > 17 && compatibility_level < 21))
+  if (compinput < 0 ||
+      compinput >= MAX_COMPATIBILITY_LEVEL ||
+      (compinput > 17 && compinput < 21))
   {
-    doom_printf("Invalid complevel");
+    return; //doom_printf("Invalid complevel");
   }
   else
   {
+    compatibility_level = compinput;
     G_Compatibility(); // this is missing options checking
-    doom_printf("%s", comp_lev_str[compatibility_level]);
+    doom_printf("New Complevel: %i - %s", compatibility_level, comp_lev_str[compatibility_level]);
   }
+}
+
+// Check skill cheat
+static void cheat_skill0()
+{
+  if (raven || tc_game)
+    return doom_printf("Skill: %i", gameskill + 1);
+
+  doom_printf("Skill: %i - %s", gameskill + 1, skill_str[gameskill + 1]);
 }
 
 // Skill cheat
