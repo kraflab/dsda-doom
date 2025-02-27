@@ -552,6 +552,9 @@ static void cheat_rate()
 // check compatibility cheat
 static void cheat_comp0()
 {
+  if (raven)
+    return doom_printf("Cheat disabled for %s", heretic ? "Heretic" : "Hexen");
+
   doom_printf("Complevel: %i - %s", compatibility_level, comp_lev_str[compatibility_level]);
 }
 
@@ -559,6 +562,8 @@ static void cheat_comp0()
 static void cheat_comp(char buf[3])
 {
   int compinput = (buf[0] - '0') * 10 + buf[1] - '0';
+
+  if (raven) return;
 
   if (compinput < 0 ||
       compinput >= MAX_COMPATIBILITY_LEVEL ||
