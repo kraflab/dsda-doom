@@ -124,6 +124,7 @@
 static void D_PageDrawer(void);
 
 char* iwadlump;
+char* doomiwadver;
 
 // jff 1/24/98 add new versions of these variables to remember command line
 dboolean clnomonsters;   // checkparm of -nomonsters
@@ -1134,6 +1135,32 @@ static dboolean FileMatchesIWAD(const char *name)
 }
 
 //
+// DetectDoomVersion
+//
+// If GAMEINFO is not present but Doom 1 maps are found, autoload DOOM 1.
+//
+
+static void dsda_DetectDoomVersion(void)
+{
+  int i, ii;
+  char lump[5];
+
+  for (i=0;i<10;i++)
+  {
+    for (ii=0;ii<10;ii++)
+    {
+      sprintf(lump, "E%dM%d", i, ii);
+      if (W_LumpNameExists(lump))
+      {
+        doomiwadver = lump;
+        iwadlump = Z_Strdup("DOOM.WAD");
+        return;
+      }
+    }
+  }
+}
+
+//
 // IdentifyVersion
 //
 // Set the location of the defaults file and the savegame root
@@ -1165,6 +1192,10 @@ static void IdentifyVersion (void)
   // Parse GAMEINFO lump
   dsda_LoadGameInfo();
 
+  // Autodetect Doom 1 maps
+  if (iwadlump == NULL)
+    dsda_DetectDoomVersion();
+
   // Reset lump cache
   dsda_ResetInitLumpCache();
 
@@ -1178,6 +1209,7 @@ static void IdentifyVersion (void)
   {
     Z_Free(iwadlump);
     iwadlump = NULL;
+    doomiwadver = NULL;
     iwad = FindIWADFile();
   }
 
@@ -1904,7 +1936,7 @@ static void D_DoomMainSetup(void)
 
   if (iwadlump != NULL)
   {
-    lprintf(LO_INFO, "Detected GAMEINFO lump: %s\n", iwadlump);
+    lprintf(LO_INFO, "Detected %s lump: %s\n", doomiwadver ? doomiwadver : "GAMEINFO", iwadlump);
     Z_Free(iwadlump);
   }
 
