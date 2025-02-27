@@ -784,9 +784,9 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   // More precise weapon drawing:
   // Shotgun from DSV3_War looks correctly now. Especially during movement.
   // There is no more line of graphics under certain weapons.
-  x1 = vis->x1;
+  x1 = viewwindowx + vis->x1;
   x2 = roundf(x1 + gltexture->realtexwidth * pspritexscale_f);
-  y1 = roundf(viewheight / 2.0 - vis->texturemid * pspriteyscale_f / FRACUNIT);
+  y1 = roundf(viewwindowy + centery - (int)(((float)vis->texturemid / (float)FRACUNIT) * pspriteyscale_f));
   y2 = roundf(y1 + gltexture->realtexheight * pspriteyscale_f);
   // e6y: don't do the gamma table correction on the lighting
   light = (float)lightlevel / 255.0f;
@@ -1008,7 +1008,7 @@ void gld_StartDrawScene(void)
   gld_SetPalette(-1);
 
   glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-  glScissor(0, SCREENHEIGHT - viewheight, viewwidth, viewheight);
+  glScissor(viewwindowx, SCREENHEIGHT - (viewheight + viewwindowy), viewwidth, viewheight);
   glEnable(GL_SCISSOR_TEST);
   // Player coordinates
   xCamera=-(float)viewx/MAP_SCALE;
