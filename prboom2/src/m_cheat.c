@@ -88,6 +88,7 @@ static void cheat_clev();
 static void cheat_mypos();
 static void cheat_rate();
 static void cheat_comp();
+static void cheat_skill();
 static void cheat_friction();
 static void cheat_pushers();
 static void cheat_massacre();
@@ -167,6 +168,7 @@ cheatseq_t cheat[] = {
   CHEAT("idrate",     "Frame rate",       cht_always, cheat_rate, 0, false),
   // phares
   CHEAT("tntcomp",    NULL,               not_demo, cheat_comp, -2, false),
+  CHEAT("skill",      NULL,               not_demo, cheat_skill, -1, false),
   // jff 2/01/98 kill all monsters
   CHEAT("tntem",      NULL,               not_demo, cheat_massacre, 0, false),
   // killough 2/07/98: moved from am_map.c
@@ -539,6 +541,24 @@ static void cheat_comp(char buf[3])
   {
     G_Compatibility(); // this is missing options checking
     doom_printf("%s", comp_lev_str[compatibility_level]);
+  }
+}
+
+// Skill cheat
+static void cheat_skill(char buf[1])
+{
+  int skill = buf[0] - '0';
+
+  if (skill >= 1 && skill <= 5)
+  {
+    gameskill = skill - 1;
+
+    if (raven || tc_game)
+      doom_printf("Next Level Skill: %i", gameskill + 1);
+    else
+      doom_printf("Next Level Skill: %i - %s", gameskill + 1, skill_str[gameskill + 1]);
+
+    dsda_UpdateGameSkill(gameskill);
   }
 }
 
