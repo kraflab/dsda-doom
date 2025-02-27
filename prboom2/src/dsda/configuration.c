@@ -540,6 +540,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mapcolor_revsecr", dsda_config_mapcolor_revsecr,
     CONF_COLOR(112), &mapcolor.revsecr
   },
+  [dsda_config_mapcolor_tagfinder] = {
+    "mapcolor_tagfinder", dsda_config_mapcolor_tagfinder,
+    CONF_COLOR(252), &mapcolor.tagfinder
+  },
   [dsda_config_mapcolor_exit] = {
     "mapcolor_exit", dsda_config_mapcolor_exit,
     CONF_COLOR(0), &mapcolor.exit

@@ -1883,7 +1883,7 @@ static void AM_DrawConnections(void)
       AM_SetMPointFloatValue(&l.b);
     }
 
-    AM_drawMline(&l, mapcolor_p->exit);
+    AM_drawMline(&l, mapcolor_p->tagfinder);
   }
 }
 
