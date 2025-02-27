@@ -544,6 +544,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "mapcolor_exit", dsda_config_mapcolor_exit,
     CONF_COLOR(0), &mapcolor.exit
   },
+  [dsda_config_mapcolor_exitsecr] = {
+    "mapcolor_exitsecr", dsda_config_mapcolor_exitsecr,
+    CONF_COLOR(0), &mapcolor.exitsecr
+  },
   [dsda_config_mapcolor_unsn] = {
     "mapcolor_unsn", dsda_config_mapcolor_unsn,
     CONF_COLOR(104), &mapcolor.unsn

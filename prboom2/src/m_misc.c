@@ -222,6 +222,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_mapcolor_secr),
   MIGRATED_SETTING(dsda_config_mapcolor_revsecr),
   MIGRATED_SETTING(dsda_config_mapcolor_exit),
+  MIGRATED_SETTING(dsda_config_mapcolor_exitsecr),
   MIGRATED_SETTING(dsda_config_mapcolor_unsn),
   MIGRATED_SETTING(dsda_config_mapcolor_flat),
   MIGRATED_SETTING(dsda_config_mapcolor_sprt),

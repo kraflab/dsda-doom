@@ -215,6 +215,7 @@ static dsda_option_t option_list[] = {
   { "mapcolor_secr", NULL, 0, 255, dsda_config_mapcolor_secr },
   { "mapcolor_revsecr", NULL, 0, 255, dsda_config_mapcolor_revsecr },
   { "mapcolor_exit", NULL, 0, 255, dsda_config_mapcolor_exit },
+  { "mapcolor_exitsecr", NULL, 0, 255, dsda_config_mapcolor_exitsecr },
   { "mapcolor_unsn", NULL, 0, 255, dsda_config_mapcolor_unsn },
   { "mapcolor_flat", NULL, 0, 255, dsda_config_mapcolor_flat },
   { "mapcolor_sprt", NULL, 0, 255, dsda_config_mapcolor_sprt },

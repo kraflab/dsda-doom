@@ -60,6 +60,7 @@ typedef struct
   int secr;
   int revsecr;
   int exit;
+  int exitsecr;
   int unsn;
   int flat;
   int sprt;
