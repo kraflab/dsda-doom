@@ -2896,14 +2896,6 @@ static const char *map_things_appearance_list[] =
   NULL
 };
 
-static const char *map_trail_mode_list[] =
-{
-  "off",
-  "ignore collisions",
-  "include collisions",
-  NULL
-};
-
 setup_menu_t auto_options_settings[] =
 {
   { "Locked doors blink", S_YESNO, m_conf, AU_X, dsda_config_map_blinking_locks },
@@ -2937,7 +2929,8 @@ setup_menu_t auto_appearance_settings[] =
   { "Lines on overlay", S_NUM, m_conf, AA_X, dsda_config_map_lines_overlay_trans },
   EMPTY_LINE,
   { "Trail", S_SKIP | S_TITLE, m_null, T_X},
-  { "Player Trail Mode", S_CHOICE, m_conf, T_X, dsda_config_map_trail_mode, 0, map_trail_mode_list },
+  { "Player Trail", S_YESNO, m_conf, T_X, dsda_config_map_trail },
+  { "Include Collisions", S_YESNO, m_conf, T_X, dsda_config_map_trail_collisions },
   { "Player Trail Size", S_NUM, m_conf, T_X, dsda_config_map_trail_size },
 
   PREV_PAGE(auto_options_settings),

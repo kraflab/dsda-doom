@@ -352,6 +352,7 @@ typedef struct
 static trailpoint_t player_trail[TRAIL_SIZE];
 static int trail_index;
 static int trail_size;
+static int trail_collisions;
 static int trail_size_max;
 
 map_trail_mode_t map_trail_mode;
@@ -642,7 +643,8 @@ void AM_initPlayerTrail(void)
   trail_index = -1;
   trail_size = 0;
   trail_size_max = dsda_IntConfig(dsda_config_map_trail_size);
-  map_trail_mode = dsda_IntConfig(dsda_config_map_trail_mode);
+  trail_collisions = dsda_IntConfig(dsda_config_map_trail_collisions) ? map_trail_mode_include_collisions : map_trail_mode_ignore_collisions;
+  map_trail_mode = dsda_IntConfig(dsda_config_map_trail) ? trail_collisions : map_trail_mode_off;
 }
 
 //
