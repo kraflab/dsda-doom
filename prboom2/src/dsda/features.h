@@ -96,8 +96,6 @@ typedef enum {
 #define FEATURE_SIZE 128
 #define FEATURE_SLOTS BITNSLOTS(FEATURE_SIZE)
 
-#define FOR_FEATURE_SLOT for (int f = 0; f < FEATURE_SLOTS; f++) {
-#define END_FEATURE_SLOT }
 
 void dsda_TrackFeature(int feature);
 void dsda_ResetFeatures(void);

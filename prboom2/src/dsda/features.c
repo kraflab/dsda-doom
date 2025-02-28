@@ -80,15 +80,15 @@ byte *dsda_UsedFeatures(void) {
 }
 
 void dsda_MergeFeatures(byte *source) {
-  FOR_FEATURE_SLOT
+  for (int f = 0; f < FEATURE_SLOTS; f++) {
     used_features[f] |= source[f];
-  END_FEATURE_SLOT
+  }
 }
 
 void dsda_CopyFeatures(byte* result) {
-  FOR_FEATURE_SLOT
+  for (int f = 0; f < FEATURE_SLOTS; f++) {
     result[f] = used_features[f];
-  END_FEATURE_SLOT
+  }
 }
 
 char* dsda_DescribeFeatures(void) {
@@ -98,18 +98,16 @@ char* dsda_DescribeFeatures(void) {
 
   dsda_InitString(&description, NULL);
 
-  FOR_FEATURE_SLOT
-    for (i = 0; i < 8; i++) {
-      if (BITTEST(used_features, i + f * 8) && feature_names[i + f * 8]) {
-        if (first)
-          first = false;
-        else
-          dsda_StringCat(&description, ", ");
+  for (int i = 0; i < FEATURE_SIZE; i++) {
+    if (BITTEST(used_features, i) && feature_names[i]) {
+      if (first)
+        first = false;
+      else
+        dsda_StringCat(&description, ", ");
 
-        dsda_StringCat(&description, feature_names[i + f * 8]);
-      }
+      dsda_StringCat(&description, feature_names[i]);
     }
-  END_FEATURE_SLOT
+  }
 
   if (!description.string)
     dsda_StringCat(&description, "Tachyeres pteneres");

@@ -46,9 +46,9 @@ static void dsda_ArchiveInternal(void) {
   P_SAVE_X(dsda_max_kill_requirement);
   P_SAVE_X(player_damage_last_tic);
 
-  FOR_FEATURE_SLOT
+  for (int f = 0; f < FEATURE_SLOTS; f++) {
     P_SAVE_X(dsda_UsedFeatures()[f]);
-  END_FEATURE_SLOT
+  }
 }
 
 static void dsda_UnArchiveInternal(void) {

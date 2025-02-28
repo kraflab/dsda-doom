@@ -406,9 +406,9 @@ static void DemoEx_GetFeatures(const wadinfo_t* header) {
   int ftext_end = 0;
 
   exdemo.is_signed = 0;
-  FOR_FEATURE_SLOT
+  for (int f = 0; f < FEATURE_SLOTS; f++) {
     exdemo.features[f] = 0;
-  END_FEATURE_SLOT
+  }
 
   str = DemoEx_LumpAsString(DEMOEX_FEATURE_LUMPNAME, header);
   if (!str)
@@ -423,12 +423,12 @@ static void DemoEx_GetFeatures(const wadinfo_t* header) {
       strcat(padded_ftext, "0");
     strcat(padded_ftext, ftext);
 
-    FOR_FEATURE_SLOT
+    for (int f = 0; f < FEATURE_SLOTS; f++) {
       char current_text[3];
       strncpy(current_text, padded_ftext + f * 2, 2);
       current_text[2] = '\0';
       exdemo.features[FEATURE_SLOTS - f - 1] = strtol(current_text, NULL, 16);
-    END_FEATURE_SLOT
+    }
 
     dsda_GetDemoCheckSum(&cksum, exdemo.features, exdemo.demo, exdemo.demo_size);
 
@@ -462,10 +462,10 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   strcpy(buffer, description);
   strcat(buffer, "\n0x");
 
-  FOR_FEATURE_SLOT
+  for (int f = 0; f < FEATURE_SLOTS; f++) {
     snprintf(current_feature, 3, "%02" PRIx8, features[FEATURE_SLOTS - f - 1]);
     strncat(buffer, current_feature, 2);
-  END_FEATURE_SLOT
+  }
 
   strcat(buffer, "-");
   strcat(buffer, cksum.string);
