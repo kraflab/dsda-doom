@@ -2087,7 +2087,10 @@ void WI_loadData(void)
           else
           {
             // HACK ALERT!
-            a->p[i] = anims[1][4].p[i];
+            if ( gamemap == 8 )
+              a->p[i] = anims[1][6].p[i]; // if map is E2M8, use E2M7 data
+            else
+              a->p[i] = anims[1][4].p[i]; // E2M5 data (for E2M9)
           }
         }
       }
