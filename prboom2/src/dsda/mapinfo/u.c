@@ -257,15 +257,7 @@ int dsda_UFTicker(void) {
   const int TEXTWAIT = 250;
   const int NEWTEXTWAIT = 1000;
 
-  if (!demo_compatibility)
-    WI_checkForAccelerate();
-  else {
-    int i;
-
-    for (i = 0; i < g_maxplayers; i++)
-      if (players[i].cmd.buttons)
-        next_level = true;
-  }
+  WI_checkForAccelerate();
 
   if (!next_level) {
     // advance animation
