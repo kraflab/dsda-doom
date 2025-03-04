@@ -715,7 +715,11 @@ void WI_initAnimatedBack(int entering)
     a = &anims[wbs->epsd][i];
 
     // init variables
-    a->ctr = -1;
+    // [crispy] Do not reset animation timers upon switching to "Entering" state
+    // via WI_initShowNextLoc. Fixes notable blinking of Tower of Babel drawing
+    // and the rest of animations from being restarted.
+    if (!entering)
+      a->ctr = -1;
 
     // specify the next time to draw it
     if (a->type == ANIM_ALWAYS)
