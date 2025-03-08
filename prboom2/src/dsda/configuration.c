@@ -83,7 +83,7 @@ extern int dsda_input_profile;
 extern int weapon_preferences[2][NUMWEAPONS + 1];
 extern int demo_smoothturns;
 extern int demo_smoothturnsfactor;
-extern int sts_always_red;
+extern int sts_colored_numbers;
 extern int sts_pct_always_gray;
 extern int sts_traditional_keys;
 extern int full_sounds;
@@ -300,9 +300,9 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "weapon_attack_alignment", dsda_config_weapon_attack_alignment,
     dsda_config_int, 0, 3, { 0 }, NULL, STRICT_INT(0)
   },
-  [dsda_config_sts_always_red] = {
-    "sts_always_red", dsda_config_sts_always_red,
-    CONF_BOOL(1), &sts_always_red
+  [dsda_config_sts_colored_numbers] = {
+    "sts_colored_numbers", dsda_config_sts_colored_numbers,
+    CONF_BOOL(0), &sts_colored_numbers
   },
   [dsda_config_sts_pct_always_gray] = {
     "sts_pct_always_gray", dsda_config_sts_pct_always_gray,
