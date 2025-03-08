@@ -88,6 +88,7 @@ extern map_format_t map_format;
 
 int dsda_DoorType(int index);
 dboolean dsda_IsExitLine(int index);
+dboolean dsda_IsSecretExitLine(int index);
 dboolean dsda_IsTeleportLine(int index);
 void dsda_ApplyZDoomMapFormat(void);
 void dsda_ApplyDefaultMapFormat(void);

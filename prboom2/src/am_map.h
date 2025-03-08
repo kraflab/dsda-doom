@@ -59,7 +59,9 @@ typedef struct
   int tele;
   int secr;
   int revsecr;
+  int tagfinder;
   int exit;
+  int exitsecr;
   int unsn;
   int flat;
   int sprt;
