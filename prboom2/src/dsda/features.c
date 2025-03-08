@@ -23,9 +23,9 @@
 
 #include "features.h"
 
-static uint64_t used_features;
+static byte used_features[FEATURE_SLOTS];
 
-static const char* feature_names[64] = {
+static const char* feature_names[FEATURE_SIZE] = {
   [uf_menu] = "Menu",
   [uf_exhud] = "Extended HUD",
   [uf_advhud] = "Advanced HUD",
@@ -67,37 +67,28 @@ static const char* feature_names[64] = {
   [uf_advanced_map] = "Advanced Map",
 };
 
-#define FEATURE_BIT(x) ((uint64_t) 1 << x)
-
 void dsda_TrackFeature(int feature) {
-  used_features |= FEATURE_BIT(feature);
+  BITSET(used_features, feature);
 }
 
 void dsda_ResetFeatures(void) {
-  used_features = 0;
+  memset(used_features, 0, FEATURE_SLOTS);
 }
 
-uint64_t dsda_UsedFeatures(void) {
+byte *dsda_UsedFeatures(void) {
   return used_features;
 }
 
-void dsda_MergeFeatures(uint64_t source) {
-  used_features |= source;
+void dsda_MergeFeatures(byte *source) {
+  for (int f = 0; f < FEATURE_SLOTS; f++) {
+    used_features[f] |= source[f];
+  }
 }
 
 void dsda_CopyFeatures(byte* result) {
-  dsda_CopyFeatures2(result, used_features);
-}
-
-void dsda_CopyFeatures2(byte* result, uint64_t source) {
-  result[0] = (source      ) & 0xff;
-  result[1] = (source >>  8) & 0xff;
-  result[2] = (source >> 16) & 0xff;
-  result[3] = (source >> 24) & 0xff;
-  result[4] = (source >> 32) & 0xff;
-  result[5] = (source >> 40) & 0xff;
-  result[6] = (source >> 48) & 0xff;
-  result[7] = (source >> 56) & 0xff;
+  for (int f = 0; f < FEATURE_SLOTS; f++) {
+    result[f] = used_features[f];
+  }
 }
 
 char* dsda_DescribeFeatures(void) {
@@ -107,8 +98,8 @@ char* dsda_DescribeFeatures(void) {
 
   dsda_InitString(&description, NULL);
 
-  for (i = 0; i < 64; ++i)
-    if (used_features & FEATURE_BIT(i) && feature_names[i]) {
+  for (int i = 0; i < FEATURE_SIZE; i++) {
+    if (BITTEST(used_features, i) && feature_names[i]) {
       if (first)
         first = false;
       else
@@ -116,6 +107,7 @@ char* dsda_DescribeFeatures(void) {
 
       dsda_StringCat(&description, feature_names[i]);
     }
+  }
 
   if (!description.string)
     dsda_StringCat(&description, "Tachyeres pteneres");

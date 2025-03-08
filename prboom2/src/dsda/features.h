@@ -86,12 +86,20 @@ typedef enum {
   // 63
 } dsda_feature_flag_t;
 
-#define FEATURE_SIZE 8
+#define BITMASK(b) (1 << ((b) % 8))
+#define BITSLOT(b) ((b) / 8)
+#define BITSET(a, b) ((a)[BITSLOT(b)] |= BITMASK(b))
+#define BITCLEAR(a, b) ((a)[BITSLOT(b)] &= ~BITMASK(b))
+#define BITTEST(a, b) ((a)[BITSLOT(b)] & BITMASK(b))
+#define BITNSLOTS(nb) ((nb + 8 - 1) / 8)
+
+#define FEATURE_SIZE 128
+#define FEATURE_SLOTS BITNSLOTS(FEATURE_SIZE)
+
 
 void dsda_TrackFeature(int feature);
 void dsda_ResetFeatures(void);
-uint64_t dsda_UsedFeatures(void);
-void dsda_MergeFeatures(uint64_t source);
+byte *dsda_UsedFeatures(void);
+void dsda_MergeFeatures(byte *source);
 void dsda_CopyFeatures(byte* result);
-void dsda_CopyFeatures2(byte* result, uint64_t source);
 char* dsda_DescribeFeatures(void);
