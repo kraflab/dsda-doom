@@ -1135,98 +1135,6 @@ static dboolean FileMatchesIWAD(const char *name)
 }
 
 //
-// DetectDoomVersion
-//
-// If GAMEINFO is not present but Doom 1 maps are found, autoload DOOM 1.
-//
-
-static void dsda_DetectDoomVersion(void)
-{
-  int i, ii;
-  char lump[5];
-
-  for (i=0;i<10;i++)
-  {
-    for (ii=0;ii<10;ii++)
-    {
-      sprintf(lump, "E%dM%d", i, ii);
-      if (W_LumpNameExists(lump))
-      {
-        doomiwadver = lump;
-        iwadlump = Z_Strdup("DOOM.WAD");
-        return;
-      }
-    }
-  }
-}
-
-//
-// IdentifyVersion
-//
-// Set the location of the defaults file and the savegame root
-// Locate and validate an IWAD file
-// Determine gamemode from the IWAD
-//
-// supports IWADs with custom names. Also allows the -iwad parameter to
-// specify which iwad is being searched for if several exist in one dir.
-// The -iwad parm may specify:
-//
-// 1) a specific pathname, which must exist (.wad optional)
-// 2) or a directory, which must contain a standard IWAD,
-// 3) or a filename, which must be found in one of the standard places:
-//   a) current dir,
-//   b) exe dir
-//   c) $DOOMWADDIR
-//   d) or $HOME
-//
-// jff 4/19/98 rewritten to use a more advanced search algorithm
-
-static void IdentifyVersion (void)
-{
-  char *iwad;
-
-  // why is this here?
-  dsda_InitDataDir();
-  dsda_InitSaveDir();
-
-  // Parse GAMEINFO lump
-  dsda_LoadGameInfo();
-
-  // Autodetect Doom 1 maps
-  if (iwadlump == NULL)
-    dsda_DetectDoomVersion();
-
-  // Reset lump cache
-  dsda_ResetInitLumpCache();
-
-  // locate the IWAD and determine game mode from it
-
-  iwad = FindIWADFile();
-
-  // Check if GAMEINFO IWAD exists
-  // If not, default to normal behaviour
-  if ((iwad != iwadlump) && !(iwad && *iwad))
-  {
-    Z_Free(iwadlump);
-    iwadlump = NULL;
-    doomiwadver = NULL;
-    iwad = FindIWADFile();
-  }
-
-  if (iwad && *iwad)
-  {
-    AddIWAD(iwad);
-    Z_Free(iwad);
-  }
-  else
-  {
-    I_Error("IdentifyVersion: IWAD not found\n\n"
-            "Make sure your IWADs are in a folder that dsda-doom searches on\n"
-            "For example: %s", I_ConfigDir());
-  }
-}
-
-//
 // DoLooseFiles
 //
 // Take any file names on the command line before the first switch parm
@@ -1782,6 +1690,113 @@ static void dsda_Loadfiles(void)
 }
 
 //
+// DetectDoomVersion
+//
+// If GAMEINFO is not present but Doom 1 maps are found, autoload DOOM 1.
+//
+
+static void dsda_DetectDoomVersion(void)
+{
+  int i, ii;
+  char lump[5];
+
+  for (i=0;i<10;i++)
+  {
+    for (ii=0;ii<10;ii++)
+    {
+      sprintf(lump, "E%dM%d", i, ii);
+      if (W_LumpNameExists(lump))
+      {
+        doomiwadver = lump;
+        iwadlump = Z_Strdup("DOOM.WAD");
+        return;
+      }
+    }
+  }
+}
+
+//
+// IdentifyVersion
+//
+// Set the location of the defaults file and the savegame root
+// Locate and validate an IWAD file
+// Determine gamemode from the IWAD
+//
+// supports IWADs with custom names. Also allows the -iwad parameter to
+// specify which iwad is being searched for if several exist in one dir.
+// The -iwad parm may specify:
+//
+// 1) a specific pathname, which must exist (.wad optional)
+// 2) or a directory, which must contain a standard IWAD,
+// 3) or a filename, which must be found in one of the standard places:
+//   a) current dir,
+//   b) exe dir
+//   c) $DOOMWADDIR
+//   d) or $HOME
+//
+// jff 4/19/98 rewritten to use a more advanced search algorithm
+
+static void IdentifyVersion (void)
+{
+  char *iwad = NULL;
+
+  // why is this here?
+  dsda_InitDataDir();
+  dsda_InitSaveDir();
+
+  if (!dsda_Arg(dsda_arg_iwad)->found)
+  {
+    dsda_Loadfiles();  // Load files for GAMEINFO lump
+    if (!dsda_Flag(dsda_arg_noautoload)) D_AutoloadPWadDir(); // Load autoload PWAD files for GAMEINFO lump
+    W_Init(); // Quick cache to search for GAMEINFO lump
+
+    // Parse GAMEINFO lump
+    dsda_LoadGameInfo();
+
+    // Autodetect Doom 1 maps
+    if (iwadlump == NULL)
+      dsda_DetectDoomVersion();
+
+    // Reset lump cache
+    dsda_ResetInitLumpCache();
+
+    // If IWAD found, check if it exists
+    if (iwadlump != NULL)
+    {
+      iwad = FindIWADFile();
+
+      // Clear data if IWAD not found
+      if (!(iwad && *iwad))
+      {
+        Z_Free(iwadlump);
+        iwadlump = NULL;
+        doomiwadver = NULL;
+      }
+    }
+  }
+
+  // If GAMEINFO/Doom 1 IWAD not found,
+  // locate IWAD the traditional way
+  if (iwadlump == NULL)
+    iwad = FindIWADFile();
+
+  // It is now ok to load dehacked / unzip files
+  MainLumpCache = true;
+
+  if (iwad && *iwad)
+  {
+    AddIWAD(iwad);
+    Z_Free(iwad);
+  }
+  else
+  {
+    I_Error("IdentifyVersion: IWAD not found\n\n"
+            "Make sure your IWADs are in a folder that dsda-doom searches on\n"
+            "For example: %s", I_ConfigDir());
+  }
+}
+
+//
 // D_DoomMainSetup
 //
 // CPhipps - the old contents of D_DoomMain, but moved out of the main
@@ -1805,10 +1820,6 @@ static void D_DoomMainSetup(void)
   autoload = !dsda_Flag(dsda_arg_noautoload);
 
   DoLooseFiles();  // Ty 08/29/98 - handle "loose" files on command line
-
-  dsda_Loadfiles();  // Load files for GAMEINFO lump
-  if (autoload) D_AutoloadPWadDir(); // Load autoload PWAD files for GAMEINFO lump
-  W_Init(); // Quick cache to search for GAMEINFO / IWAD
 
   IdentifyVersion(); // Get IWAD
 
