@@ -100,6 +100,12 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
+      - name: Update vcpkg
+        if: ${{ matrix.config.vcpkg }}
+        run: |
+          cd "${env:VCPKG_INSTALLATION_ROOT}"
+          git pull
+
       - name: Install Dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
