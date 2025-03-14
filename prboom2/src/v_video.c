@@ -357,7 +357,9 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
   stretch_param_t *params;
 
   if (cm == CR_DEFAULT)
-    trans = NULL;
+    trans = &colormaps[0][0];
+  else if (cm == CR_DARKEN)
+    trans = &colormaps[0][256 * 15];
   else if (cm < CR_LIMIT)
     trans = colrngs[cm];
   else
