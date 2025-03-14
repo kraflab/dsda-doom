@@ -1749,6 +1749,7 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   char *p, *t;
   int w = 0;
   int color =
+    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_label + CR_DARKEN :
     flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
     flags & S_HILITE ? cr_label_highlight :
     flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
@@ -1761,12 +1762,11 @@ static void M_DrawItem(const setup_menu_t* s, int y)
 
   for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
   {      /* killough 10/98: support left-justification: */
-    strcpy(menu_buffer,p);
     if (flags & S_CENTER)
-      w = M_GetPixelWidth(menu_buffer) / 2;
+      w = M_GetPixelWidth(p) / 2;
     else if (!(flags & S_LEFTJUST))
-      w = M_GetPixelWidth(menu_buffer) + 4;
-    M_DrawMenuString(x - w, y ,color);
+      w = M_GetPixelWidth(p) + 4;
+    M_DrawString(x - w, y ,color, p);
     // print a blinking "arrow" next to the currently highlighted menu item
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
       M_DrawString(x - w - 8, y, color, ">");
@@ -1801,6 +1801,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   // depending on whether the item is a text string or not.
 
   color =
+    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_value + CR_DARKEN :
     flags & S_SELECT ? cr_value_edit :
     flags & S_HILITE ? cr_value_highlight :
     cr_value;
@@ -1808,7 +1809,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   // Is the item a YES/NO item?
 
   if (flags & S_YESNO) {
-    strcpy(menu_buffer, dsda_PersistentIntConfig(s->config_id) ? "YES" : "NO");
+    strcpy(menu_buffer, dsda_IntConfig(s->config_id) ? "YES" : "NO");
 
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
@@ -1827,12 +1828,16 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     else {
       int value;
 
-      value = dsda_PersistentIntConfig(s->config_id);
+      value = dsda_IntConfig(s->config_id);
 
       sprintf(menu_buffer, "%d", value);
 
       if (flags & S_CRITEM)
+      {
         color = value;
+        if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+          color += CR_DARKEN;
+      }
     }
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
@@ -1906,7 +1911,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   {
     int ch;
 
-    ch = dsda_PersistentIntConfig(s->config_id);
+    ch = dsda_IntConfig(s->config_id);
     // proff 12/6/98: Drawing of colorchips completly changed for hi-res, it now uses a patch
     // draw the paint chip
     // e6y: wide-res
@@ -1973,7 +1978,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       }
     }
     else {
-      strncpy(text, dsda_PersistentStringConfig(s->config_id), ENTRY_STRING_BFR_SIZE - 1);
+      strncpy(text, dsda_StringConfig(s->config_id), ENTRY_STRING_BFR_SIZE - 1);
     }
 
     // Draw the setting for the item
@@ -1993,7 +1998,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
         sprintf(menu_buffer, "%s", entry_string_index);
       else
-        sprintf(menu_buffer, "%s", dsda_PersistentStringConfig(s->config_id));
+        sprintf(menu_buffer, "%s", dsda_StringConfig(s->config_id));
     }
     else
     {
@@ -2002,7 +2007,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
         value = choice_value;
       else
-        value = dsda_PersistentIntConfig(s->config_id);
+        value = dsda_IntConfig(s->config_id);
 
       if (s->selectstrings == NULL) {
         sprintf(menu_buffer, "%d", value);
@@ -4730,10 +4735,10 @@ static dboolean M_WeaponResponder(int ch, int action, event_t* ev)
       // see if 'ch' is already assigned elsewhere. if so,
       // you have to swap assignments.
       ptr2 = weap_priority_settings;
-      old_value = dsda_PersistentIntConfig(ptr1->config_id);
+      old_value = dsda_IntConfig(ptr1->config_id);
       for (; !(ptr2->m_flags & S_END); ptr2++)
         if (ptr2->m_flags & S_WEAP && ptr1 != ptr2 &&
-            dsda_PersistentIntConfig(ptr2->config_id) == ch)
+            dsda_IntConfig(ptr2->config_id) == ch)
         {
           dsda_UpdateIntConfig(ptr2->config_id, old_value, true);
           break;
@@ -5126,6 +5131,9 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
   {
     int flags = ptr1->m_flags;
 
+    if (dsda_StrictMode() && dsda_IsStrictConfig(ptr1->config_id))
+      return true;
+
     // You've selected an item to change. Highlight it, post a new
     // message about what to do, and get ready to process the
     // change.
@@ -5139,7 +5147,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
     }
     else if (flags & S_COLOR)
     {
-      int color = dsda_PersistentIntConfig(ptr1->config_id);
+      int color = dsda_IntConfig(ptr1->config_id);
 
       if (color < 0 || color > 255) // range check the value
         color = 0;        // 'no show' if invalid
@@ -5150,7 +5158,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
     }
     else if (flags & S_STRING)
     {
-      strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
+      strncpy(entry_string_index, dsda_StringConfig(ptr1->config_id),
               ENTRY_STRING_BFR_SIZE - 1);
 
       entry_index = 0; // current cursor position in entry_string_index
@@ -5159,12 +5167,12 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
     {
       if (flags & S_STR)
       {
-        strncpy(entry_string_index, dsda_PersistentStringConfig(ptr1->config_id),
+        strncpy(entry_string_index, dsda_StringConfig(ptr1->config_id),
                 ENTRY_STRING_BFR_SIZE - 1);
       }
       else
       {
-        choice_value = dsda_PersistentIntConfig(ptr1->config_id);
+        choice_value = dsda_IntConfig(ptr1->config_id);
       }
     }
 
