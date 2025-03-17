@@ -3169,7 +3169,7 @@ static void deh_procBexSounds(DEHFILE *fpin, char *line)
     if (match >= 0)
     {
       deh_log("Substituting '%s' for sound '%s'\n", candidate, key);
-      S_sfx[match].name = deh_sfx_name(candidate);
+      dsda_GetDehSFX(match)->name = deh_sfx_name(candidate);
     }
   }
 }
