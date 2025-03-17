@@ -407,15 +407,16 @@ void gld_AddPatchToTexture(GLTexture *gltexture, unsigned char *buffer, const rp
     return;
   if (!patch)
     return;
+
   if ((cm==CR_DEFAULT) || (cm==CR_LIMIT))
-  {
-    gld_AddPatchToTexture_UnTranslated(gltexture,buffer,patch,originx,originy);
-    return;
-  }
-  if (cm<CR_LIMIT)
+    outr=&colormaps[0][0];
+  else if (cm==CR_DARKEN)
+    outr=&colormaps[0][256 * 15];
+  else if (cm<CR_LIMIT)
     outr=colrngs[cm];
   else
     outr=translationtables + 256*((cm-CR_LIMIT)-1);
+
   playpal = V_GetPlaypal();
   xs=0;
   xe=patch->width;
