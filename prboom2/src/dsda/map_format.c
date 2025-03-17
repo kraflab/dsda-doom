@@ -120,10 +120,16 @@ dboolean dsda_IsExitLine(int index) {
 
   return special == 11  ||
          special == 52  ||
-         special == 197 ||
-         special == 51  ||
-         special == 124 ||
-         special == 198;
+         special == 197;
+}
+
+dboolean dsda_IsSecretExitLine(int index) {
+  int special = lines[index].special;
+
+  if (!map_format.hexen)
+    return special == 51  ||
+           special == 124 ||
+           special == 198;
 }
 
 dboolean dsda_IsTeleportLine(int index) {
