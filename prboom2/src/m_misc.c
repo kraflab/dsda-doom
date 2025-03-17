@@ -98,7 +98,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_default_complevel),
   MIGRATED_SETTING(dsda_config_default_skill),
   MIGRATED_SETTING(dsda_config_weapon_attack_alignment),
-  MIGRATED_SETTING(dsda_config_sts_always_red),
+  MIGRATED_SETTING(dsda_config_sts_colored_numbers),
   MIGRATED_SETTING(dsda_config_sts_pct_always_gray),
   MIGRATED_SETTING(dsda_config_sts_traditional_keys),
   MIGRATED_SETTING(dsda_config_show_messages),
