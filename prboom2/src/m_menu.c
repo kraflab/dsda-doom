@@ -1504,19 +1504,23 @@ void M_ChangeMessages(void)
 
 static void M_SizeDisplay(int choice)
 {
+  int screenblocks;
+
+  screenblocks = R_ViewSize();
+
   switch(choice) {
     case 0:
-      if (R_FullView())
+      if (screenblocks > 3)
         dsda_DecrementIntConfig(dsda_config_screenblocks, true);
       break;
     case 1:
-      if (R_PartialView())
+      if (screenblocks < 11)
         dsda_IncrementIntConfig(dsda_config_screenblocks, true);
       else
         dsda_ToggleConfig(dsda_config_hud_displayed, true);
       break;
     case 2:
-      if (R_PartialView()) {
+      if (screenblocks < 11) {
         dsda_UpdateIntConfig(dsda_config_screenblocks, 11, true);
         dsda_UpdateIntConfig(dsda_config_hud_displayed, true, true);
       }
