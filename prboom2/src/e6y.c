@@ -426,7 +426,7 @@ int I_MessageBox(const char* text, unsigned int type)
   {
     HWND current_hwnd = GetForegroundWindow();
     wchar_t *wtext = ConvertUtf8ToWide(text);
-    wchar_t *wpackage = ConvertUtf8ToWide(PACKAGE_NAME);
+    wchar_t *wpackage = ConvertUtf8ToWide(PROJECT_NAME);
     result = MessageBoxW(GetDesktopWindow(), wtext, wpackage, type|MB_TASKMODAL|MB_TOPMOST);
     Z_Free(wtext);
     Z_Free(wpackage);
@@ -663,7 +663,7 @@ void e6y_G_Compatibility(void)
       {
 #ifdef RANGECHECK
         if (b[i] >= 256)
-          I_Error("Wrong version number of package: %s", PACKAGE_VERSION);
+          I_Error("Wrong version number of package: %s", PROJECT_VERSION);
 #endif
         emulated_version += b[i] * k;
       }

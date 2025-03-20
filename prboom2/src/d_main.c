@@ -1712,7 +1712,7 @@ static void EvaluateDoomVerStr(void)
           "%s is released under the GNU General Public license v2.0.\n"
           "You are welcome to redistribute it under certain conditions.\n"
           "It comes with ABSOLUTELY NO WARRANTY. See the file COPYING for details.\n\n",
-          PACKAGE_NAME);
+          PROJECT_NAME);
 
   lprintf(LO_INFO, "Playing: %s\n", doomverstr);
 }

@@ -4468,7 +4468,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   {
     // Use V_DrawBackground here deliberately to force drawing a background
     V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(9, PACKAGE_NAME " v" PACKAGE_VERSION, cr_title); // PRBOOM
+    M_DrawTitle(9, PROJECT_NAME " v" PROJECT_VERSION, cr_title); // PRBOOM
     M_DrawScreenItems(cred_settings, 32);
   }
 }

@@ -165,7 +165,7 @@ unsigned long I_GetRandomTimeSeed(void)
  */
 const char* I_GetVersionString(char* buf, size_t sz)
 {
-  snprintf(buf,sz,"%s v%s (https://github.com/kraflab/dsda-doom/)",PACKAGE_NAME,PACKAGE_VERSION);
+  snprintf(buf, sz, "%s v%s (https://github.com/kraflab/dsda-doom/)", PROJECT_NAME, PROJECT_VERSION);
   return buf;
 }
 

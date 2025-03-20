@@ -76,11 +76,9 @@ check_ipo_supported(RESULT HAVE_LTO)
 include(CMakeDependentOption)
 cmake_dependent_option(ENABLE_LTO "Use link-time optimisation" OFF "HAVE_LTO" OFF)
 
-set(PACKAGE_NAME "${PROJECT_NAME}")
-set(PACKAGE_TARNAME "dsda-doom")
+set(PROJECT_TARNAME "dsda-doom")
 set(WAD_DATA "dsda-doom.wad")
-set(PACKAGE_VERSION "${PROJECT_VERSION}")
-set(PACKAGE_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
+set(PROJECT_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
 
 include(CheckSymbolExists)
 

@@ -478,7 +478,7 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
 
 static void DemoEx_AddPort(wadtbl_t* wadtbl) {
   AddPWADTableLump(wadtbl, DEMOEX_PORTNAME_LUMPNAME,
-                   (const byte*) PACKAGE_STRING, strlen(PACKAGE_STRING));
+                   (const byte*) PROJECT_STRING, strlen(PROJECT_STRING));
 }
 
 static void PartitionDemo(const char* filename) {
