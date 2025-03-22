@@ -715,7 +715,11 @@ void WI_initAnimatedBack(int entering)
     a = &anims[wbs->epsd][i];
 
     // init variables
-    a->ctr = -1;
+    // [crispy] Do not reset animation timers upon switching to "Entering" state
+    // via WI_initShowNextLoc. Fixes notable blinking of Tower of Babel drawing
+    // and the rest of animations from being restarted.
+    if (!entering)
+      a->ctr = -1;
 
     // specify the next time to draw it
     if (a->type == ANIM_ALWAYS)
@@ -809,6 +813,14 @@ void WI_drawAnimatedBack(void)
 
   if (wbs->epsd < 0 || wbs->epsd > 2)
     return;
+
+  // [crispy] show Fortress of Mystery if it has been completed
+  if (wbs->epsd == 1 && wbs->didsecret)
+  {
+    a = &anims[1][7];
+
+    V_DrawNumPatch(a->loc.x, a->loc.y, FB, a->p[2].lumpnum, CR_DEFAULT, VPT_STRETCH);
+  }
 
   for (i=0 ; i<NUMANIMS[wbs->epsd] ; i++)
   {
@@ -2075,7 +2087,10 @@ void WI_loadData(void)
           else
           {
             // HACK ALERT!
-            a->p[i] = anims[1][4].p[i];
+            if ( gamemap == 8 )
+              a->p[i] = anims[1][6].p[i]; // if map is E2M8, use E2M7 data
+            else
+              a->p[i] = anims[1][4].p[i]; // E2M5 data (for E2M9)
           }
         }
       }
