@@ -1362,6 +1362,8 @@ static void D_AddZip(const char* zipped_file_name, wad_source_t source, deh_queu
   temporary_directory = dsda_UnzipFile(full_zip_path);
 
   LoadWADsAtPath(temporary_directory, source);
+  if (MainLumpCache)
+     LoadDehackedFilesAtPath(temporary_directory, true, deh_queue);
 
   Z_Free(full_zip_path);
 }
@@ -1670,7 +1672,10 @@ static void dsda_Loadfiles(void)
       }
       else if (dsda_HasFileExt(file_name, ".zip"))
       {
-        MainLumpCache ? D_AddUnzippedFile(file_name, source_pwad, NULL) : D_AddZip(file_name, source_pwad, NULL);
+        if (dsda_Arg(dsda_arg_iwad)->found)
+           D_AddZip(file_name, source_pwad, NULL);
+         else
+           MainLumpCache ? D_AddUnzippedFile(file_name, source_pwad, NULL) : D_AddZip(file_name, source_pwad, NULL);
       }
       else if (dsda_HasFileExt(file_name, ".wad") || dsda_HasFileExt(file_name, ".lmp"))
       {
