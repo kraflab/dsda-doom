@@ -65,7 +65,8 @@
 lumpinfo_t *lumpinfo;
 int        numlumps;         // killough
 
-int MainLumpCache;
+int MainLumpCache = false;
+int EpisodeStructure = false;
 
 void ExtractFileBase (const char *path, char *dest)
 {
@@ -498,11 +499,13 @@ void W_Init(void)
       W_AddFile(&wadfiles[i]);
   }
 
-  if (!MainLumpCache && !numlumps)
-    return;
-
   if (!numlumps)
+  {
+    if (!MainLumpCache)
+      return;
+
     I_Error ("W_Init: No files found");
+  }
 
   //jff 1/23/98
   // get all the sprites and flats into one marked block each
