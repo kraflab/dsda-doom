@@ -2805,8 +2805,6 @@ setup_menu_t* demos_settings[] =
 
 setup_menu_t demos_options_settings[] =  // Demos Settings screen
 {
-  { "Strict Mode", S_YESNO, m_conf, DM_X, dsda_config_strict_mode },
-  EMPTY_LINE,
   { "Show Demo Attempts", S_YESNO, m_conf, DM_X, dsda_config_show_demo_attempts },
   { "Show Split Data", S_YESNO, m_conf, DM_X, dsda_config_show_split_data },
   { "Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
@@ -2825,6 +2823,8 @@ setup_menu_t demos_options_settings[] =  // Demos Settings screen
 
 setup_menu_t demos_tas_settings[] =
 {
+  { "Strict Mode", S_YESNO, m_conf, DM_X, dsda_config_strict_mode },
+  EMPTY_LINE,
   { "Wipe At Full Speed", S_YESNO, m_conf, DM_X, dsda_config_wipe_at_full_speed },
   { "Show Command Display", S_YESNO, m_conf, DM_X, dsda_config_command_display },
   { "Command History", S_NUM, m_conf, DM_X, dsda_config_command_history_size },
