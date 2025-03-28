@@ -1152,6 +1152,15 @@ void M_SaveGame (int choice)
   if (gamestate != GS_LEVEL)
     return;
 
+  if (!dsda_AllowAnyMenuSave())
+  {
+    M_StartMessage(
+      "you can't save the game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
+    return;
+  }
+
   M_SetupNextMenu(&SaveDef);
   M_ReadSaveStrings();
 }
@@ -1409,6 +1418,15 @@ static void M_QuickSave(void)
 {
   if (gamestate != GS_LEVEL)
     return;
+
+  if (!dsda_AllowAnyMenuSave())
+  {
+    M_StartMessage(
+      "you can't save the game\n"
+      "under these conditions!\n\n"PRESSKEY,
+      NULL, false); // killough 5/26/98: not externalized
+    return;
+  }
 
   G_SaveGame(QUICKSAVESLOT, "quicksave");
   doom_printf("quicksave");
