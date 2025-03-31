@@ -1681,7 +1681,10 @@ static automap_style_t AM_wallStyle(int i)
     )
       return ams_locked;
 
-    if (mapcolor_p->exit && dsda_IsExitLine(i))
+    if (mapcolor_p->exitsecr && (dsda_IsSecretExitLine(i) && !dsda_IsExitLine(i)))
+      return ams_exit_secret;
+
+    if (mapcolor_p->exit && (dsda_IsExitLine(i) || dsda_IsSecretExitLine(i)))
       return ams_exit;
 
     if (!lines[i].backsector) // 1-sided
@@ -1830,6 +1833,10 @@ static void AM_drawWalls(void)
         AM_drawMline(&l, mapcolor_p->exit);
         continue;
 
+      case ams_exit_secret:
+        AM_drawMline(&l, mapcolor_p->exitsecr);
+        continue;
+
       case ams_one_sided:
         AM_drawMline(&l, mapcolor_p->wall);
         continue;
@@ -1893,7 +1900,7 @@ static void AM_DrawConnections(void)
       AM_SetMPointFloatValue(&l.b);
     }
 
-    AM_drawMline(&l, mapcolor_p->exit);
+    AM_drawMline(&l, mapcolor_p->tagfinder);
   }
 }
 
