@@ -419,9 +419,10 @@ static void DemoEx_GetFeatures(const wadinfo_t* header) {
     char padded_ftext[2 * FEATURE_SLOTS + 1];
     int i;
 
+    memset(&padded_ftext, 0, sizeof(padded_ftext));
     for (i = 0; i < (2 * FEATURE_SLOTS) - (ftext_end - ftext_start); i++)
       strcat(padded_ftext, "0");
-    strcat(padded_ftext, ftext);
+    strncat(padded_ftext, ftext, ftext_end - ftext_start);
 
     for (int f = 0; f < FEATURE_SLOTS; f++) {
       char current_text[3];

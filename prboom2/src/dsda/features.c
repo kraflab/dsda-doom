@@ -98,7 +98,7 @@ char* dsda_DescribeFeatures(void) {
 
   dsda_InitString(&description, NULL);
 
-  for (int i = 0; i < FEATURE_SIZE; i++) {
+  for (i = 0; i < FEATURE_SIZE; i++) {
     if (BITTEST(used_features, i) && feature_names[i]) {
       if (first)
         first = false;
