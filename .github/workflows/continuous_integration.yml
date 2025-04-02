@@ -100,12 +100,6 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
-      - name: Update vcpkg
-        if: ${{ matrix.config.vcpkg }}
-        run: |
-          cd "${env:VCPKG_INSTALLATION_ROOT}"
-          git pull
-
       - name: Install Dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
@@ -113,7 +107,6 @@ jobs:
           sudo apt-get upgrade
           sudo apt-get install -y \
             gcc \
-            cmake \
             ninja-build \
             pkg-config \
             libdumb1-dev \
@@ -139,7 +132,6 @@ jobs:
           env HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
             brew install --overwrite \
               python \
-              cmake \
               ninja \
               pkg-config \
               dumb \
@@ -152,6 +144,9 @@ jobs:
               sdl2_image \
               sdl2_mixer \
               dylibbundler
+
+      - name: Install CMake
+        uses: lukka/get-cmake@v3.31.6
 
       - name: Configure
         run: >-
