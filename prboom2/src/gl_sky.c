@@ -186,7 +186,9 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
       wall->skyyaw = skyXShift;
       wall->skypitch = skyYShift;
       // Choose offset based on logic from r_sky.c
-      if (h >= 128 && h < 200)
+      if (!raven)
+        wall->skyoffset = (100 - h) / (float)h;
+      else if (h >= 128 && h < 200)
         wall->skyoffset = -28.0f / 128.0f;
       else if (h > 200)
         wall->skyoffset = (200 - h) / 128.0f;

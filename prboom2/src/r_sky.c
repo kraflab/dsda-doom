@@ -75,7 +75,7 @@ void R_InitSkyMap(void)
     if (!textureheight)
       return;
 
-    // There are various combinations for sky rendering depending on how tall the sky is:
+    // There are various combinations for Raven sky rendering depending on how tall the sky is:
     //        h <  128: Unstretched and tiled, centered on horizon
     // 128 <= h <  200: Can possibly be stretched. When unstretched, the baseline is
     //                  28 rows below the horizon so that the top of the texture
