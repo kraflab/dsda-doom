@@ -186,14 +186,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
       wall->skyyaw = skyXShift;
       wall->skypitch = skyYShift;
       // Choose offset based on logic from r_sky.c
-      if (!raven)
-        wall->skyoffset = (100 - h) / (float)h;
-      else if (h >= 128 && h < 200)
-        wall->skyoffset = -28.0f / 128.0f;
-      else if (h > 200)
-        wall->skyoffset = (200 - h) / 128.0f;
-      else
-        wall->skyoffset = 0.0f;
+      wall->skyoffset = skytexturemid / (float)FRACUNIT / h;
       wall->flag = GLDWF_SKY;
     }
   }
@@ -250,7 +243,7 @@ void gld_SkyTransform(GLWall* wall)
   float flipx = wall->flag == GLDWF_SKYFLIP ? -1.0 : 1.0;
   // Scale factors
   float scalex = scale_correction / skyscale * flipx;
-  float scaley = scale_correction * ratio * (skystretch ? 2.0 : 1.0f) / skyscale;
+  float scaley = scale_correction * ratio * (skystretch ? ( (float)SKYSTRETCH_HEIGHT / h ) : 1.0f) / skyscale;
   // Translations
   float transx = wall->skyyaw * tilex * flipx;
   float transy = wall->skypitch * tiley;
