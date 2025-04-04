@@ -112,6 +112,9 @@ extern char savedescription[SAVEDESCLEN];  // Description to save in savegame
 /* cph - compatibility level strings */
 extern const char * comp_lev_str[];
 
+/* default skill strings */
+extern const char * skill_str[];
+
 // e6y
 // There is a new command-line switch "-shorttics".
 // This makes it possible to practice routes and tricks
