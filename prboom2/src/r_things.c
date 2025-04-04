@@ -1105,7 +1105,7 @@ static void R_DrawPSprite (pspdef_t *psp)
           R_ApplyWeaponBob(NULL, false, &psp_sy, weapon_attack_alignment == CENTERWEAPON_BOB);
       }
     }
-    else if (psp->state->action == A_WeaponReady && psp->state->tics > 1)
+    else if (psp->state->action == A_WeaponReady && psp->state->tics > 1 && movement_smooth)
     {
       // Interpolate bobbing for animated weapons (Chainsaw)
       R_ApplyWeaponBob(&psp_sx, true, &psp_sy, true);
