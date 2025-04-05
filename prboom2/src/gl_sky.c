@@ -139,7 +139,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
 {
   side_t *s = NULL;
   line_t *l = NULL;
-  int sky = skytexture;
+  int sky = texturetranslation[skytexture];
 
   wall->gltexture = NULL;
 

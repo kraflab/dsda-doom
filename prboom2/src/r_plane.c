@@ -584,7 +584,7 @@ static void R_DoDrawPlane(visplane_t *pl)
       else
       {    // Normal Doom sky, only one allowed per level
         dcvars.texturemid = skytexturemid;    // Default y-offset
-        texture = skytexture;             // Default texture
+        texture = texturetranslation[skytexture]; // Default texture
         flip = 0;                         // Doom flips it
       }
 
