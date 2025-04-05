@@ -36,7 +36,6 @@
 
 #include "settings.h"
 
-int dsda_tas;
 int dsda_skip_next_wipe;
 
 void dsda_InitSettings(void) {
@@ -117,8 +116,8 @@ int dsda_CompatibilityLevel(void) {
   return UNSPECIFIED_COMPLEVEL;
 }
 
-void dsda_SetTas(void) {
-  dsda_tas = true;
+void dsda_SetTas(dboolean t) {
+  dsda_UpdateIntConfig(dsda_config_strict_mode, !t, true);
 }
 
 dboolean dsda_ViewBob(void) {
@@ -146,7 +145,7 @@ dboolean dsda_VertMouse(void) {
 }
 
 dboolean dsda_StrictMode(void) {
-  return dsda_IntConfig(dsda_config_strict_mode) && demorecording && !dsda_tas;
+  return dsda_IntConfig(dsda_config_strict_mode) && demorecording;
 }
 
 dboolean dsda_MuteSfx(void) {

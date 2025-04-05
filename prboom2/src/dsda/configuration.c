@@ -374,7 +374,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_cheat_codes] = {
     "dsda_cheat_codes", dsda_config_cheat_codes,
-    CONF_BOOL(1)
+    CONF_BOOL(1), NULL, STRICT_INT(0)
   },
   [dsda_config_organize_failed_demos] = {
     "dsda_organize_failed_demos", dsda_config_organize_failed_demos,
@@ -675,7 +675,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_movement_strafe50onturns] = {
     "movement_strafe50onturns", dsda_config_movement_strafe50onturns,
-    CONF_BOOL(0), NULL, NOT_STRICT, M_ChangeSpeed
+    CONF_BOOL(0), NULL, STRICT_INT(0), M_ChangeSpeed
   },
   [dsda_config_movement_shorttics] = {
     "movement_shorttics", dsda_config_movement_shorttics,
@@ -835,7 +835,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_hudadd_crosshair_target_color] = {
     "hudadd_crosshair_target_color", dsda_config_hudadd_crosshair_target_color,
-    CONF_CR(9)
+    CONF_CR(9), NULL, STRICT_INT(9)
   },
   [dsda_config_hud_displayed] = {
     "hud_displayed", dsda_config_hud_displayed,
@@ -895,7 +895,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_auto_key_frame_interval] = {
     "dsda_auto_key_frame_interval", dsda_config_auto_key_frame_interval,
-    dsda_config_int, 1, 600, { 1 }, NULL, NOT_STRICT, dsda_InitKeyFrame
+    dsda_config_int, 1, 600, { 1 }, NULL, STRICT_INT(1), dsda_InitKeyFrame
   },
   [dsda_config_auto_key_frame_depth] = {
     "dsda_auto_key_frame_depth", dsda_config_auto_key_frame_depth,
@@ -903,11 +903,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_auto_key_frame_timeout] = {
     "dsda_auto_key_frame_timeout", dsda_config_auto_key_frame_timeout,
-    dsda_config_int, 0, 25, { 10 }, NULL, NOT_STRICT, dsda_InitKeyFrame
+    dsda_config_int, 0, 25, { 10 }, NULL, STRICT_INT(0), dsda_InitKeyFrame
   },
   [dsda_config_auto_save] = {
     "dsda_config_auto_save", dsda_config_auto_save,
-    CONF_BOOL(0)
+    CONF_BOOL(0), NULL, STRICT_INT(0)
   },
   [dsda_config_ex_text_scale_x] = {
     "ex_text_scale_x", dsda_config_ex_text_scale_x,
@@ -919,7 +919,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_wipe_at_full_speed] = {
     "dsda_wipe_at_full_speed", dsda_config_wipe_at_full_speed,
-    CONF_BOOL(1)
+    CONF_BOOL(1), NULL, STRICT_INT(0)
   },
   [dsda_config_show_demo_attempts] = {
     "dsda_show_demo_attempts", dsda_config_show_demo_attempts,
@@ -939,11 +939,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_command_history_size] = {
     "dsda_command_history_size", dsda_config_command_history_size,
-    dsda_config_int, 1, 20, { 10 }, NULL, NOT_STRICT, dsda_InitCommandHistory
+    dsda_config_int, 1, 20, { 10 }, NULL, STRICT_INT(0), dsda_InitCommandHistory
   },
   [dsda_config_hide_empty_commands] = {
     "dsda_hide_empty_commands", dsda_config_hide_empty_commands,
-    CONF_BOOL(1), NULL, NOT_STRICT, dsda_InitCommandHistory
+    CONF_BOOL(1), NULL, STRICT_INT(0), dsda_InitCommandHistory
   },
   [dsda_config_skip_quit_prompt] = {
     "dsda_skip_quit_prompt", dsda_config_skip_quit_prompt,
@@ -971,7 +971,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_pistol_start] = {
     "dsda_pistol_start", dsda_config_pistol_start,
-    CONF_BOOL(0)
+    CONF_BOOL(0), NULL, NOT_STRICT
   },
   [dsda_config_respawn_monsters] = {
     "dsda_respawn_monsters", dsda_config_respawn_monsters,
@@ -1047,15 +1047,15 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_map_trail] = {
     "map_trail", dsda_config_map_trail,
-    CONF_BOOL(0), NULL, NOT_STRICT, AM_initPlayerTrail
+    CONF_BOOL(0), NULL, STRICT_INT(0), AM_initPlayerTrail
   },
   [dsda_config_map_trail_collisions] = {
     "map_trail_collisions", dsda_config_map_trail_collisions,
-    CONF_BOOL(0), NULL, NOT_STRICT, AM_initPlayerTrail
+    CONF_BOOL(0), NULL, STRICT_INT(0), AM_initPlayerTrail
   },
   [dsda_config_map_trail_size] = {
     "map_trail_size", dsda_config_map_trail_size,
-    dsda_config_int, 0, 350, { 105 }, NULL, NOT_STRICT, AM_initPlayerTrail
+    dsda_config_int, 0, 350, { 105 }, NULL, STRICT_INT(0), AM_initPlayerTrail
   },
   [dsda_config_automap_overlay] = {
     "automap_overlay", dsda_config_automap_overlay,
@@ -1099,11 +1099,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_map_textured_trans] = {
     "map_textured_trans", dsda_config_map_textured_trans,
-    dsda_config_int, 0, 100, { 100 }, NULL, NOT_STRICT, gld_ResetAutomapTransparency
+    dsda_config_int, 0, 100, { 100 }, NULL, STRICT_INT(0), gld_ResetAutomapTransparency
   },
   [dsda_config_map_textured_overlay_trans] = {
     "map_textured_overlay_trans", dsda_config_map_textured_overlay_trans,
-    dsda_config_int, 0, 100, { 66 }, NULL, NOT_STRICT, gld_ResetAutomapTransparency
+    dsda_config_int, 0, 100, { 66 }, NULL, STRICT_INT(0), gld_ResetAutomapTransparency
   },
   [dsda_config_map_lines_overlay_trans] = {
     "map_lines_overlay_trans", dsda_config_map_lines_overlay_trans,
@@ -1548,8 +1548,8 @@ int dsda_IntConfig(dsda_config_identifier_t id) {
   return dsda_config[id].transient_value.v_int;
 }
 
-int dsda_PersistentIntConfig(dsda_config_identifier_t id) {
-  return dsda_config[id].persistent_value.v_int;
+dboolean dsda_IsStrictConfig(dsda_config_identifier_t id) {
+  return dsda_config[id].flags & CONF_STRICT;
 }
 
 int dsda_TransientIntConfig(dsda_config_identifier_t id) {
@@ -1558,10 +1558,6 @@ int dsda_TransientIntConfig(dsda_config_identifier_t id) {
 
 const char* dsda_StringConfig(dsda_config_identifier_t id) {
   return dsda_config[id].transient_value.v_string;
-}
-
-const char* dsda_PersistentStringConfig(dsda_config_identifier_t id) {
-  return dsda_config[id].persistent_value.v_string;
 }
 
 char* dsda_ConfigSummary(const char* name) {
