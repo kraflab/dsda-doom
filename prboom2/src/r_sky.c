@@ -39,6 +39,7 @@
 #include "e6y.h"
 
 #include "dsda/configuration.h"
+#include "dsda/excmd.h"
 #include "dsda/mapinfo.h"
 #include "dsda/settings.h"
 
@@ -62,7 +63,7 @@ void R_InitSkyMap(void)
 
   r_stretchsky = dsda_IntConfig(dsda_config_render_stretchsky);
 
-  if (raven || !dsda_MouseLook())
+  if (raven || !dsda_FreeAim())
   {
     skystretch = false;
     skytexturemid = (raven ? 200 : 100) * FRACUNIT;
