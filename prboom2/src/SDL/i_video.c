@@ -1294,6 +1294,14 @@ void I_UpdateVideoMode(void)
     }
   }
 
+  if (desired_fullscreen)
+  {
+    if (exclusive_fullscreen)
+      init_flags |= SDL_WINDOW_FULLSCREEN;
+    else
+      init_flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+  }
+
   if (V_IsOpenGLMode())
   {
     SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 0 );
