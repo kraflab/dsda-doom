@@ -85,6 +85,7 @@
 #include "m_file.h"
 
 #include "dsda/args.h"
+#include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/playback.h"
@@ -281,7 +282,7 @@ void M_ChangeSkyMode(void)
   gl_skymode = dsda_IntConfig(dsda_config_gl_skymode);
 
   if (gl_skymode == skytype_auto)
-    gl_drawskys = (dsda_MouseLook() ? skytype_skydome : skytype_standard);
+    gl_drawskys = (dsda_FreeAim() ? skytype_skydome : skytype_standard);
   else
     gl_drawskys = gl_skymode;
 }
