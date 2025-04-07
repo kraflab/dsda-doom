@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2023 by Pierre Wendling
+// Copyright(C) 2025 by Andrik Powell
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -12,15 +12,20 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	DSDA zipfile support using libzip
+//  DSDA GAMEINFO
 //
 
-#ifndef __DSDA_ZIPFILE__
-#define __DSDA_ZIPFILE__
+#ifndef __GAMEINFO__
+#define __GAMEINFO__
 
-const char* dsda_UnzipFile(const char *zipped_file_name);
-const char* dsda_ReadUnzippedFile(const char *zipped_file_name);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void dsda_CleanZipTempDirs(void);
+void dsda_LoadGameInfo(void);
 
-#endif /* __DSDA_ZIPFILE__ */
+#ifdef __cplusplus
+}
+#endif
+
+#endif

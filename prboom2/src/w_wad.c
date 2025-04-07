@@ -65,6 +65,8 @@
 lumpinfo_t *lumpinfo;
 int        numlumps;         // killough
 
+int MainLumpCache = false;
+
 void ExtractFileBase (const char *path, char *dest)
 {
   const char *src = path + strlen(path) - 1;
@@ -160,7 +162,8 @@ static void W_AddFile(wadfile_info_t *wadfile)
   }
 
   //jff 8/3/98 use logical output routine
-  lprintf (LO_INFO," adding %s\n",wadfile->name);
+  if (MainLumpCache)
+    lprintf (LO_INFO," adding %s\n",wadfile->name);
   startlump = numlumps;
 
   // mark lumps from internal resource
@@ -496,7 +499,10 @@ void W_Init(void)
   }
 
   if (!numlumps)
+  {
+    if (!MainLumpCache) return;
     I_Error ("W_Init: No files found");
+  }
 
   //jff 1/23/98
   // get all the sprites and flats into one marked block each
@@ -637,4 +643,14 @@ void W_Shutdown(void)
       wadfiles[i].handle = -1;
     }
   }
+}
+
+void dsda_ResetInitLumpCache(void)
+{
+  W_Shutdown();
+
+  wadfiles = NULL;
+  numwadfiles = 0;
+  lumpinfo = NULL;
+  numlumps = 0;
 }
