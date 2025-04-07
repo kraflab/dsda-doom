@@ -302,6 +302,7 @@ typedef enum {
 } dsda_config_type_t;
 
 void dsda_UpdateStrictMode(void);
+dboolean dsda_IsStrictConfig(dsda_config_identifier_t id);
 void dsda_TrackConfigFeatures(void);
 void dsda_RevertIntConfig(dsda_config_identifier_t id);
 int dsda_MaxConfigLength(void);
@@ -316,10 +317,8 @@ int dsda_CycleConfig(dsda_config_identifier_t id, dboolean persist);
 int dsda_UpdateIntConfig(dsda_config_identifier_t id, int value, dboolean persist);
 const char* dsda_UpdateStringConfig(dsda_config_identifier_t id, const char* value, dboolean persist);
 int dsda_IntConfig(dsda_config_identifier_t id);
-int dsda_PersistentIntConfig(dsda_config_identifier_t id);
 int dsda_TransientIntConfig(dsda_config_identifier_t id);
 const char* dsda_StringConfig(dsda_config_identifier_t id);
-const char* dsda_PersistentStringConfig(dsda_config_identifier_t id);
 char* dsda_ConfigSummary(const char* name);
 int dsda_ConfigIDByName(const char* name);
 dsda_config_type_t dsda_ConfigType(dsda_config_identifier_t id);
