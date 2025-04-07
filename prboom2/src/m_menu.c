@@ -2805,8 +2805,6 @@ setup_menu_t* demos_settings[] =
 
 setup_menu_t demos_options_settings[] =  // Demos Settings screen
 {
-  { "Strict Mode", S_YESNO, m_conf, DM_X, dsda_config_strict_mode },
-  EMPTY_LINE,
   { "Show Demo Attempts", S_YESNO, m_conf, DM_X, dsda_config_show_demo_attempts },
   { "Show Split Data", S_YESNO, m_conf, DM_X, dsda_config_show_split_data },
   { "Precise Intermission Time", S_YESNO,  m_conf, DM_X, dsda_config_show_level_splits },
@@ -2825,6 +2823,8 @@ setup_menu_t demos_options_settings[] =  // Demos Settings screen
 
 setup_menu_t demos_tas_settings[] =
 {
+  { "Strict Mode", S_YESNO, m_conf, DM_X, dsda_config_strict_mode },
+  EMPTY_LINE,
   { "Wipe At Full Speed", S_YESNO, m_conf, DM_X, dsda_config_wipe_at_full_speed },
   { "Show Command Display", S_YESNO, m_conf, DM_X, dsda_config_command_display },
   { "Command History", S_NUM, m_conf, DM_X, dsda_config_command_history_size },
@@ -2907,7 +2907,7 @@ setup_menu_t auto_options_settings[] =
   { "Show Secrets only after entering", S_YESNO, m_conf, AU_X, dsda_config_map_secret_after },
   { "Grid cell size 8..256, -1 for auto", S_NUM, m_conf, AU_X, dsda_config_map_grid_size },
   { "Pan speed (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_pan_speed },
-  { "Zoom speed (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_scroll_speed },  
+  { "Zoom speed (1..32)", S_NUM, m_conf, AU_X, dsda_config_map_scroll_speed },
   { "Use mouse wheel for zooming", S_YESNO, m_conf, AU_X, dsda_config_map_wheel_zoom },
   { "Show Minimap", S_YESNO, m_conf, AU_X, dsda_config_show_minimap },
   EMPTY_LINE,
@@ -2933,10 +2933,10 @@ setup_menu_t auto_appearance_settings[] =
   { "Textured automap on overlay", S_NUM, m_conf, AA_X, dsda_config_map_textured_overlay_trans },
   { "Lines on overlay", S_NUM, m_conf, AA_X, dsda_config_map_lines_overlay_trans },
   EMPTY_LINE,
-  { "Trail", S_SKIP | S_TITLE, m_null, T_X},
-  { "Player Trail", S_YESNO, m_conf, T_X, dsda_config_map_trail },
-  { "Include Collisions", S_YESNO, m_conf, T_X, dsda_config_map_trail_collisions },
-  { "Player Trail Size", S_NUM, m_conf, T_X, dsda_config_map_trail_size },
+  { "Trail", S_SKIP | S_TITLE, m_null, AA_X},
+  { "Player Trail", S_YESNO, m_conf, AA_X, dsda_config_map_trail },
+  { "Include Collisions", S_YESNO, m_conf, AA_X, dsda_config_map_trail_collisions },
+  { "Player Trail Size", S_NUM, m_conf, AA_X, dsda_config_map_trail_size },
 
   PREV_PAGE(auto_options_settings),
   NEXT_PAGE(auto_colors_settings),

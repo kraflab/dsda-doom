@@ -180,8 +180,6 @@ void dsda_ReadCommandLine(void) {
   if (arg->found)
     dsda_InitGhostImport(arg->value.v_string_array, arg->count);
 
-  if (dsda_Flag(dsda_arg_tas) || dsda_Flag(dsda_arg_build)) dsda_SetTas();
-
   dsda_InitKeyFrame();
   dsda_InitCommandHistory();
 }

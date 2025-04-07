@@ -284,7 +284,7 @@ void dsda_InitDemoRecording(void) {
 
   // Key settings revert when starting a new attempt
   dsda_RevertIntConfig(dsda_config_vertmouse);
-  dsda_RevertIntConfig(dsda_config_strict_mode);
+  dsda_SetTas(dsda_Flag(dsda_arg_tas) || dsda_Flag(dsda_arg_build) || dsda_Flag(dsda_arg_dsdademo));
 
   // prboom+ has already cached its settings (with demorecording == false)
   // we need to reset things here to satisfy strict mode
