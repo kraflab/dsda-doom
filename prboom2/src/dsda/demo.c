@@ -442,14 +442,14 @@ const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
   return demo_p;
 }
 
-void dsda_GetDemoCheckSum(dsda_cksum_t* cksum, byte* features, byte* demo, size_t demo_size) {
+void dsda_GetDemoCheckSum(dsda_cksum_t* cksum, byte* features, size_t feature_slots, byte* demo, size_t demo_size) {
   struct MD5Context md5;
 
   MD5Init(&md5);
 
   MD5Update(&md5, demo, demo_size);
 
-  MD5Update(&md5, features, FEATURE_SLOTS);
+  MD5Update(&md5, features, feature_slots);
 
   MD5Final(cksum->bytes, &md5);
 
@@ -461,7 +461,7 @@ void dsda_GetDemoRecordingCheckSum(dsda_cksum_t* cksum) {
 
   dsda_CopyFeatures(features);
 
-  dsda_GetDemoCheckSum(cksum, features, dsda_demo_write_buffer, dsda_DemoBufferOffset());
+  dsda_GetDemoCheckSum(cksum, features, FEATURE_SLOTS, dsda_demo_write_buffer, dsda_DemoBufferOffset());
 }
 
 static int dsda_ExportDemoToFile(const char* demo_name) {
