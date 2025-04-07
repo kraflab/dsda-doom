@@ -93,6 +93,7 @@
 #include "dsda/data_organizer.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/gameinfo.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/options.h"
 #include "dsda/pause.h"
@@ -121,6 +122,8 @@
 #include "i_glob.h"
 
 static void D_PageDrawer(void);
+
+char* iwadlump;
 
 // jff 1/24/98 add new versions of these variables to remember command line
 dboolean clnomonsters;   // checkparm of -nomonsters
@@ -1100,6 +1103,9 @@ static char *FindIWADFile(void)
     else if (dsda_Flag(dsda_arg_hexen))
       return I_FindWad("hexen.wad");
 
+    if (iwadlump != NULL)
+      return I_FindWad(iwadlump);
+
     for (i=0; !iwad && i<nstandard_iwads; i++)
       iwad = I_FindWad(standard_iwads[i]);
   }
@@ -1722,11 +1728,32 @@ static void IdentifyVersion (void)
     if (!dsda_Flag(dsda_arg_noautoload)) D_AutoloadPWadDir(); // Load autoload PWAD files for GAMEINFO lump
     W_Init(); // Quick cache to search for GAMEINFO lump
 
+    // Parse GAMEINFO lump
+    dsda_LoadGameInfo();
+
     // Reset lump cache
     dsda_ResetInitLumpCache();
+
+    // If IWAD found, check if it exists
+    if (iwadlump != NULL)
+    {
+      iwad = FindIWADFile();
+
+      // Clear data if IWAD not found
+      if (!(iwad && *iwad))
+      {
+        Z_Free(iwadlump);
+        iwadlump = NULL;
+      }
+    }
   }
 
-  iwad = FindIWADFile();
+  // If GAMEINFO IWAD not found,
+  // locate IWAD the traditional way
+  if (iwadlump == NULL)
+  {
+    iwad = FindIWADFile();
+  }
 
   // It is now ok to load dehacked / unzip files
   MainLumpCache = true;
@@ -1892,6 +1919,13 @@ static void D_DoomMainSetup(void)
 
   lprintf(LO_DEBUG, "G_ReloadDefaults: Checking OPTIONS.\n");
   dsda_ParseOptionsLump();
+
+  if (iwadlump != NULL)
+  {
+    lprintf(LO_INFO, "Detected GAMEINFO lump: %s\n", iwadlump);
+    Z_Free(iwadlump);
+  }
+
   G_ReloadDefaults();
 
   // e6y
