@@ -130,6 +130,20 @@ const char* dsda_UnzipFile(const char *zipped_file_name) {
   return temporary_directory.string;
 }
 
+const char* dsda_ReadUnzippedFile(const char *zipped_file_name) {
+  dsda_string_t temporary_directory;
+  static unsigned int file_counter = 0;
+
+  dsda_StringPrintF(&temporary_directory, "%s/%u-%s", I_GetTempDir(), file_counter, dsda_BaseName(zipped_file_name));
+
+  temp_dirs = Z_Realloc(temp_dirs, (file_counter + 2) * sizeof(*temp_dirs));
+  temp_dirs[file_counter] = temporary_directory.string;
+  temp_dirs[file_counter + 1] = NULL;
+  file_counter++;
+
+  return temporary_directory.string;
+}
+
 void dsda_CleanZipTempDirs(void) {
   int i;
 
