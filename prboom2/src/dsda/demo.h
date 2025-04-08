@@ -45,7 +45,7 @@ void dsda_JoinDemoCmd(ticcmd_t* cmd);
 const byte* dsda_StripDemoVersion255(const byte* demo_p, const byte* header_p, size_t size);
 void dsda_WriteDSDADemoHeader(byte** p);
 void dsda_ApplyDSDADemoFormat(byte** demo_p);
-void dsda_GetDemoCheckSum(dsda_cksum_t* cksum, byte* features, byte* demo, size_t demo_size);
+void dsda_GetDemoCheckSum(dsda_cksum_t* cksum, byte* features, size_t feature_slots, byte* demo, size_t demo_size);
 void dsda_GetDemoRecordingCheckSum(dsda_cksum_t* cksum);
 void dsda_EndDemoRecording(void);
 int dsda_DemoDataSize(byte complete);
