@@ -1623,6 +1623,10 @@ void P_UnArchiveThinkers(void) {
 
           mobj->state = states + (intptr_t) mobj->state;
 
+          // Wipe blocklist pointers. They will be restored correctly later in P_UnArchiveBlockLinks.
+          mobj->bprev = NULL;
+          mobj->bnext = NULL;
+
           if (mobj->player)
             (mobj->player = &players[(size_t) mobj->player - 1]) -> mo = mobj;
 
@@ -1645,6 +1649,10 @@ void P_UnArchiveThinkers(void) {
             mobj->tranmap = NULL;
 
           P_SetThingPosition (mobj);
+
+          // Wipe blocklist pointers again as P_SetThingPosition may have changed them.
+          mobj->bprev = NULL;
+          mobj->bnext = NULL;
 
           // killough 2/28/98:
           // Fix for falling down into a wall after savegame loaded:
