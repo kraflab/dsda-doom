@@ -2102,7 +2102,7 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   limit_i = max_i - excess_i;
   buffer_i = (max_i - current_i > 3 ? 3 : max_i - current_i);
 
-  if (excess_i)
+  if (excess_i && !inhelpscreens)
   {
     while (current_i - scroll_i > limit_i - buffer_i)
       ++scroll_i;
@@ -6136,7 +6136,7 @@ dboolean fadeBG(void)
 
 dboolean M_MenuIsShaded(void)
 {
-  int Options = (setup_active || currentMenu == &OptionsDef || currentMenu == &SoundDef);
+  int Options = (setup_active || currentMenu == &OptionsDef || currentMenu == &SoundDef || inhelpscreens);
   return fadeBG() && Options;
 }
 
