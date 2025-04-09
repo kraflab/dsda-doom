@@ -500,9 +500,75 @@ void R_InitBuffer(int width, int height)
 //
 // CPhipps - patch drawing updated
 
+void R_FillBackColor (void)
+{
+  extern patchnum_t stbarbg;
+  byte col, col_top;
+  byte r, g, b;
+  int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
+  int ST_SCALED_BORDER = brdr_b.height * patches_scaley/2;
+  const unsigned char *playpal = V_GetPlaypal();
+
+  int i, j;
+  const byte* lump;
+  const byte* p;
+  short width;
+  byte length;
+  byte entry;
+
+  lump = W_LumpByNum(stbarbg.lumpnum);
+
+  width = *((const int16_t *) lump);
+  width = LittleShort(width);
+
+  for (i = 0; i < width; ++i) {
+    int32_t offset;
+    p = lump + 8 + 4 * i;
+    offset = *((const int32_t *) p);
+    p = lump + LittleLong(offset);
+
+    while (*p != 0xff) {
+      p++;
+      length = *p++;
+      p++;
+
+      for (j = 0; j < length; ++j) {
+        entry = *p++;
+        r = playpal[3 * entry + 0];
+        g = playpal[3 * entry + 1];
+        b = playpal[3 * entry + 2];
+
+        //lprintf(LO_INFO, "r: row[%i] col[%i] val[%i]\n",   i+1, j+1, r);
+        //lprintf(LO_INFO, "g: row[%i] col[%i] val[%i]\n",   i+1, j+1, g);
+        //lprintf(LO_INFO, "b: row[%i] col[%i] val[%i]\n\n", i+1, j+1, b);
+      }
+
+      p++;
+    }
+  }
+
+  // get colors from palette -- explicitly get it as a byte
+  // (i.e. unsigned) so it doesn't get interpreted as a negative value.
+  //r = playpal[3 * stbarbg.lumpnum + 0];
+  //g = playpal[3 * stbarbg.lumpnum + 1];
+  //b = playpal[3 * stbarbg.lumpnum + 2];
+
+  lprintf(LO_INFO, "r: %i\n", r);
+  lprintf(LO_INFO, "g: %i\n", g);
+  lprintf(LO_INFO, "b: %i\n\n", b);
+
+  // [FG] tune down saturation for empiric reasons
+  col = V_BestColor(playpal, r/3, g/3, b/3);
+  col_top = V_BestColor(playpal, r/2, g/2, b/2);
+
+  V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, col);
+  V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_BORDER, col_top);
+}
+
 void R_FillBackScreen (void)
 {
   int automap = automap_on;
+  int stbar_color = dsda_IntConfig(dsda_config_stbar_bg_color);
 
   if (grnrock.lumpnum == 0)
     return;
@@ -541,6 +607,9 @@ void R_FillBackScreen (void)
         V_FillPatch(brdr_b.lumpnum, 1, 0, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
         V_FillPatch(brdr_b.lumpnum, 1, SCREENWIDTH - ST_SCALED_OFFSETX, stbar_top, ST_SCALED_OFFSETX, brdr_b.height, VPT_NONE);
       }
+
+      if (stbar_color)
+        R_FillBackColor();
     }
   }
 
