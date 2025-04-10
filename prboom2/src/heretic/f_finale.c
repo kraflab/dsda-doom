@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "w_wad.h"
 #include "v_video.h"
+#include "m_menu.h"
 #include "s_sound.h"
 #include "sounds.h"
 
@@ -236,6 +237,12 @@ void F_DrawUnderwater(void)
   switch (finalestage)
   {
     case 1:
+      if (menuactive) // Force menu off to avoid bad palette on menu
+      {
+        M_LeaveSetupMenu();
+        M_ClearMenus();
+        S_StartVoidSound(g_sfx_swtchx);
+      }
       V_SetPlayPal(playpal_heretic_e2end);
       V_DrawRawScreen("E2END");
 

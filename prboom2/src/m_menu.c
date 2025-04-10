@@ -4589,7 +4589,7 @@ dboolean M_ConsoleOpen(void)
   return menuactive && currentMenu == &dsda_ConsoleDef;
 }
 
-static void M_LeaveSetupMenu(void)
+void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
   setup_active = false;
