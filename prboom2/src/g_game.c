@@ -2352,11 +2352,6 @@ static void G_LoadGameErr(const char *msg)
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
 }
 
-const char * skill_str[] = {
-  // dummy first option because defaultskill is 1-based
-  "", "ITYTD", "HNTR", "HMP", "UV", "NM"
-};
-
 const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 { "Doom v1.2", "Doom v1.666", "Doom/Doom2 v1.9", "Ultimate Doom/Doom95", "Final Doom",
   "early DosDoom", "TASDoom", "\"boom compatibility\"", "boom v2.01", "boom v2.02", "lxdoom v1.3.2+",

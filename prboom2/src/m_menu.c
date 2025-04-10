@@ -3709,7 +3709,7 @@ static void M_BuildLevelTable(void)
     if (map->best_skill) {
       dsda_StringPrintF(&m_text, "%d", map->best_skill);
       entry->m_text = m_text.string;
-      if (map->best_skill == 5)
+      if (map->best_skill == num_skills)
         entry->m_flags |= S_TC_SEL;
     }
     else {

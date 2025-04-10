@@ -266,16 +266,19 @@ void dsda_WadStatsEnterMap(void) {
 
 void dsda_WadStatsExitMap(int missed_monsters) {
   int skill;
-
-  // TODO: remap 5 -> num_skills and 4 -> num_skills - 1
+  int nightmare_skill;
+  int best_normal_skill;
 
   if (!current_map_stats || demoplayback)
     return;
 
+  nightmare_skill = num_skills;
+  best_normal_skill = num_skills - 1;   
+
   if (!nomonsters) {
     skill = gameskill + 1;
     if (skill > current_map_stats->best_skill) {
-      if (current_map_stats->best_skill < 4) {
+      if (current_map_stats->best_skill < best_normal_skill) {
         current_map_stats->best_time = -1;
         current_map_stats->best_max_time = -1;
         current_map_stats->best_kills = 0;
@@ -286,12 +289,12 @@ void dsda_WadStatsExitMap(int missed_monsters) {
       current_map_stats->best_skill = skill;
     }
 
-    if (skill >= current_map_stats->best_skill || skill == 4) {
+    if (skill >= current_map_stats->best_skill || skill == best_normal_skill) {
       if (levels_completed == 1)
         if (current_map_stats->best_time == -1 || current_map_stats->best_time > leveltime)
           current_map_stats->best_time = leveltime;
 
-      if (levels_completed == 1 && skill == 5)
+      if (levels_completed == 1 && skill == nightmare_skill)
         if (current_map_stats->best_nm_time == -1 || current_map_stats->best_nm_time > leveltime)
           current_map_stats->best_nm_time = leveltime;
 
