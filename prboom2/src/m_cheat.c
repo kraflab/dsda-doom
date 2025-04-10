@@ -579,13 +579,29 @@ static void cheat_comp(char buf[3])
   }
 }
 
+// Get skill strings
+static const char* dsda_skill_str(void)
+{
+  if (hexen)
+  {
+    if (PlayerClass[consoleplayer] == PCLASS_FIGHTER)
+        return hexen_skill_fighter[gameskill];
+    else if (PlayerClass[consoleplayer] == PCLASS_CLERIC)
+        return hexen_skill_cleric[gameskill];
+    else if (PlayerClass[consoleplayer] == PCLASS_MAGE)
+        return hexen_skill_mage[gameskill];
+  }
+
+  return skill_infos[gameskill].name;
+}
+
 // Check skill cheat
 static void cheat_skill0()
 {
-  if (raven || tc_game)
-    return doom_printf("Skill: %i", gameskill + 1);
-
-  doom_printf("Skill: %i - %s", gameskill + 1, skill_str[gameskill + 1]);
+  if (!tc_game)
+    doom_printf("Skill: %i - %s", gameskill + 1, dsda_skill_str());
+  else
+    doom_printf("Skill: %i", gameskill + 1);
 }
 
 // Skill cheat
@@ -593,14 +609,14 @@ static void cheat_skill(char buf[1])
 {
   int skill = buf[0] - '0';
 
-  if (skill >= 1 && skill <= 5)
+  if (skill >= 1 && skill <= num_skills)
   {
     gameskill = skill - 1;
 
-    if (raven || tc_game)
-      doom_printf("Next Level Skill: %i", gameskill + 1);
+    if (!tc_game)
+      doom_printf("Next Level Skill: %i - %s", gameskill + 1, dsda_skill_str());
     else
-      doom_printf("Next Level Skill: %i - %s", gameskill + 1, skill_str[gameskill + 1]);
+      doom_printf("Next Level Skill: %i", gameskill + 1);
 
     dsda_UpdateGameSkill(gameskill);
   }
