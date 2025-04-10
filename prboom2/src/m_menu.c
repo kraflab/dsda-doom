@@ -3577,7 +3577,7 @@ typedef struct {
   int completed_count;
   int timed_count;
   int max_timed_count;
-  int sk5_timed_count;
+  int nm_timed_count;
   int best_skill;
   int best_kills;
   int best_items;
@@ -3587,7 +3587,7 @@ typedef struct {
   int max_secrets;
   int best_time;
   int best_max_time;
-  int best_sk5_time;
+  int best_nm_time;
 } wad_stats_summary_t;
 
 static wad_stats_summary_t wad_stats_summary;
@@ -3630,10 +3630,10 @@ static void M_CalculateWadStatsSummary(void)
       wad_stats_summary.best_max_time += map->best_max_time;
     }
 
-    if (map->best_sk5_time >= 0)
+    if (map->best_nm_time >= 0)
     {
-      ++wad_stats_summary.sk5_timed_count;
-      wad_stats_summary.best_sk5_time += map->best_sk5_time;
+      ++wad_stats_summary.nm_timed_count;
+      wad_stats_summary.best_nm_time += map->best_nm_time;
     }
   }
 }
@@ -3820,14 +3820,14 @@ static void M_BuildLevelTable(void)
   END_LOOP_LEVEL_TABLE_COLUMN
 
   column_x += 80;
-  INSERT_LEVEL_TABLE_COLUMN("SK 5 TIME", column_x)
+  INSERT_LEVEL_TABLE_COLUMN("NM TIME", column_x)
 
   LOOP_LEVEL_TABLE_COLUMN
     entry->m_flags = S_LABEL | S_SKIP;
     entry->m_x = column_x;
 
-    if (map->best_sk5_time >= 0) {
-      M_PrintTime(&m_text, map->best_sk5_time);
+    if (map->best_nm_time >= 0) {
+      M_PrintTime(&m_text, map->best_nm_time);
       entry->m_text = m_text.string;
       entry->m_flags |= S_TC_SEL;
     }
@@ -3902,7 +3902,7 @@ static void M_BuildLevelTable(void)
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  dsda_StringPrintF(&m_text, "Sk 5 Time");
+  dsda_StringPrintF(&m_text, "Nightmare Time");
   level_table_page[page][base_i].m_text = m_text.string;
   level_table_page[page][base_i].m_flags = S_TITLE | S_SKIP;
   level_table_page[page][base_i].m_x = 162;
@@ -3990,8 +3990,8 @@ static void M_BuildLevelTable(void)
 
   INSERT_LEVEL_TABLE_EMPTY_LINE
 
-  if (wad_stats_summary.sk5_timed_count)
-    M_PrintTime(&m_text, wad_stats_summary.best_sk5_time);
+  if (wad_stats_summary.nm_timed_count)
+    M_PrintTime(&m_text, wad_stats_summary.best_nm_time);
   else
     dsda_StringPrintF(&m_text, "- : --");
   level_table_page[page][base_i].m_text = m_text.string;
