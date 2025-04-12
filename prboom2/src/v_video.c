@@ -588,12 +588,12 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
         }
 
         if (dcvars.yl < 0) {
-          yoffset = 0-dcvars.yl;
+          yoffset = (0-dcvars.yl) * 200/params->video->height;
           dcvars.yl = 0;
           dcvars.edgeslope &= ~RDRAW_EDGESLOPE_TOP_MASK;
         }
         if (dcvars.yl < top) {
-          yoffset = top-dcvars.yl;
+          yoffset = (top-dcvars.yl) * 200/params->video->height;
           dcvars.yl = top;
           dcvars.edgeslope &= ~RDRAW_EDGESLOPE_TOP_MASK;
         }
