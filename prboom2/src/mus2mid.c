@@ -534,11 +534,6 @@ dboolean mus2mid(MEMFILE *musinput, MEMFILE *midioutput)
           return true;
         }
 
-        if (WriteReleaseKey(channel, key, midioutput))
-        {
-          return true;
-        }
-
         break;
 
       case mus_presskey:
