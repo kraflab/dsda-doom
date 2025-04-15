@@ -81,8 +81,6 @@ typedef enum {
   dsda_input_hud,
   dsda_input_messages,
   dsda_input_gamma,
-  dsda_input_zoomin,
-  dsda_input_zoomout,
   dsda_input_screenshot,
   dsda_input_savegame,
   dsda_input_loadgame,

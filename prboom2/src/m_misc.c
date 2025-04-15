@@ -421,8 +421,6 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_messages", dsda_input_messages, KEYD_F8, -1, -1),
   INPUT_SETTING("input_gamma", dsda_input_gamma, KEYD_F11, -1, -1),
   INPUT_SETTING("input_spy", dsda_input_spy, KEYD_F12, -1, -1),
-  INPUT_SETTING("input_zoomin", dsda_input_zoomin, '=', -1, -1),
-  INPUT_SETTING("input_zoomout", dsda_input_zoomout, '-', -1, -1),
   INPUT_SETTING("input_screenshot", dsda_input_screenshot, '*', -1, -1),
   INPUT_SETTING("input_savegame", dsda_input_savegame, KEYD_F2, -1, -1),
   INPUT_SETTING("input_loadgame", dsda_input_loadgame, KEYD_F3, -1, -1),

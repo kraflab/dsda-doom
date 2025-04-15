@@ -2483,8 +2483,6 @@ setup_menu_t keys_game_settings[] =  // Key Binding screen strings
   {"HUD"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_hud},
   {"GAMMA FIX"   ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_gamma},
   {"SPY"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_spy},
-  {"LARGER VIEW" ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomin},
-  {"SMALLER VIEW",S_INPUT     ,m_scrn,KB_X,0,dsda_input_zoomout},
   {"SCREENSHOT"  ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_screenshot},
   {"REPEAT MESSAGE",S_INPUT   ,m_scrn,KB_X,0,dsda_input_repeat_message},
 
@@ -4279,8 +4277,6 @@ setup_menu_t helpstrings[] =  // HELP screen strings
   {"MESSAGES"    ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_messages},
   {"GAMMA FIX"   ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_gamma},
   {"SPY"         ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_spy},
-  {"LARGER VIEW" ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_zoomin},
-  {"SMALLER VIEW",S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_zoomout},
   {"SCREENSHOT"  ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_screenshot},
   EMPTY_LINE,
   {"AUTOMAP"     ,S_SKIP|S_TITLE,m_null,KT_X1},
@@ -5447,24 +5443,6 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 
         return true;
       }
-  }
-
-  if (dsda_InputActivated(dsda_input_zoomout))
-  {
-    if (automap_active)
-      return false;
-    M_SizeDisplay(0);
-    S_StartVoidSound(g_sfx_stnmov);
-    return true;
-  }
-
-  if (dsda_InputActivated(dsda_input_zoomin))
-  {                                   // jff 2/23/98
-    if (automap_active)               // allow
-      return false;                   // key_hud==key_zoomin
-    M_SizeDisplay(1);                                             //  ^
-    S_StartVoidSound(g_sfx_stnmov);                              //  |
-    return true;                                                  // phares
   }
 
   if (dsda_InputActivated(dsda_input_nextlevel))
