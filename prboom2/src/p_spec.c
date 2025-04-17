@@ -247,11 +247,14 @@ void P_InitPicAnims (void)
     lastanim->istexture = animdefs[i].istexture;
     lastanim->numpics = lastanim->picnum - lastanim->basepic + 1;
 
-    if (lastanim->numpics < 2)
-        I_Error ("P_InitPicAnims: bad cycle from %s to %s",
-                  animdefs[i].startname,
-                  animdefs[i].endname);
-
+    // [crispy] skip reading SMMU swirling flats
+    if (lastanim->speed < 65536 && lastanim->numpics != 1)
+    { 
+      if (lastanim->numpics < 2)
+          I_Error ("P_InitPicAnims: bad cycle from %s to %s",
+                    animdefs[i].startname,
+                    animdefs[i].endname);
+    }
     lastanim->speed = LittleLong(animdefs[i].speed); // killough 5/5/98: add LONG()
     lastanim++;
   }
