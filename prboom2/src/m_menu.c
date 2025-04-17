@@ -2104,13 +2104,14 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
 
   if (excess_i && !inhelpscreens)
   {
+    int xx, yy, ww, hh;
     while (current_i - scroll_i > limit_i - buffer_i)
       ++scroll_i;
 
     // Draw scrollbar if needed
     scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)max_i;
 
-    int xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
+    xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
     V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
     V_FillRect(0, xx, yy, ww, hh, colrngs[cr_scrollbar][playpal_lightest]);
   }
