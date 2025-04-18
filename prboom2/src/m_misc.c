@@ -413,6 +413,7 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_toggleweapon", dsda_input_toggleweapon, '0', -1, -1),
   INPUT_SETTING("input_fire", dsda_input_fire, KEYD_RCTRL, 0, DSDA_CONTROLLER_BUTTON_TRIGGERRIGHT),
 
+  INPUT_SETTING("input_help", dsda_input_help, KEYD_F1, -1, -1),
   INPUT_SETTING("input_pause", dsda_input_pause, KEYD_PAUSE, -1, -1),
   INPUT_SETTING("input_map", dsda_input_map, KEYD_TAB, -1, DSDA_CONTROLLER_BUTTON_TRIGGERLEFT),
   INPUT_SETTING("input_soundvolume", dsda_input_soundvolume, KEYD_F4, -1, -1),
@@ -420,8 +421,6 @@ cfg_input_def_t input_defs[] = {
   INPUT_SETTING("input_messages", dsda_input_messages, KEYD_F8, -1, -1),
   INPUT_SETTING("input_gamma", dsda_input_gamma, KEYD_F11, -1, -1),
   INPUT_SETTING("input_spy", dsda_input_spy, KEYD_F12, -1, -1),
-  INPUT_SETTING("input_zoomin", dsda_input_zoomin, '=', -1, -1),
-  INPUT_SETTING("input_zoomout", dsda_input_zoomout, '-', -1, -1),
   INPUT_SETTING("input_screenshot", dsda_input_screenshot, '*', -1, -1),
   INPUT_SETTING("input_savegame", dsda_input_savegame, KEYD_F2, -1, -1),
   INPUT_SETTING("input_loadgame", dsda_input_loadgame, KEYD_F3, -1, -1),
@@ -690,18 +689,6 @@ void M_LoadDefaults (void)
 
     for (c = 0; c < DSDA_INPUT_PROFILE_COUNT; ++c)
       dsda_InputSetSpecific(c, input_defs[i].identifier, input_defs[i].input);
-  }
-
-  // special fallback input values
-  {
-    dsda_input_default_t fallback_help = { KEYD_F1, -1, -1 };
-    dsda_input_default_t fallback_escape = { KEYD_ESCAPE, -1, -1 };
-
-    for (i = 0; i < DSDA_INPUT_PROFILE_COUNT; ++i)
-    {
-      dsda_InputSetSpecific(i, dsda_input_help, fallback_help);
-      dsda_InputSetSpecific(i, dsda_input_escape, fallback_escape);
-    }
   }
 
   // check for a custom default file
