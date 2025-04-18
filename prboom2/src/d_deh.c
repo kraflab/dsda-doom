@@ -42,6 +42,7 @@
 #include "sounds.h"
 #include "info.h"
 #include "m_cheat.h"
+#include "p_tick.h"
 #include "p_inter.h"
 #include "p_enemy.h"
 #include "p_map.h"
@@ -59,6 +60,7 @@
 #include "dsda/args.h"
 #include "dsda/mobjinfo.h"
 #include "dsda/music.h"
+#include "dsda/settings.h"
 #include "dsda/sfx.h"
 #include "dsda/sprite.h"
 #include "dsda/state.h"
@@ -1576,7 +1578,7 @@ void deh_changeCompTranslucency(void)
 {
   extern byte* edited_mobjinfo_bits;
   int i;
-  int boom_translucent_sprites;
+  int boom_translucent_sprites, vanilla_translucent_sprites, translucency_active;
   int predefined_translucency[] = {
     MT_FIRE, MT_SMOKE, MT_FATSHOT, MT_BRUISERSHOT, MT_SPAWNFIRE,
     MT_TROOPSHOT, MT_HEADSHOT, MT_PLASMA, MT_BFG, MT_ARACHPLAZ, MT_PUFF,
@@ -1585,17 +1587,43 @@ void deh_changeCompTranslucency(void)
 
   if (raven) return;
 
-  boom_translucent_sprites = dsda_IntConfig(dsda_config_boom_translucent_sprites);
+  boom_translucent_sprites = dsda_IntConfig(dsda_config_translucent_sprites);
+  vanilla_translucent_sprites = boom_translucent_sprites > 1;
+  translucency_active = (compatibility_level >= boom_compatibility_compatibility) ? !comp[comp_translucency] : vanilla_translucent_sprites;
 
+  // Reset translucency
   for (i = 0; (size_t)i < sizeof(predefined_translucency) / sizeof(predefined_translucency[0]); i++)
-  {
     if (!edited_mobjinfo_bits[predefined_translucency[i]])
+      mobjinfo[predefined_translucency[i]].flags &= ~MF_TRANSLUCENT;
+
+  // Set translucency
+  if (translucency_active)
+    for (i = 0; (size_t)i < sizeof(predefined_translucency) / sizeof(predefined_translucency[0]); i++)
+      if (!edited_mobjinfo_bits[predefined_translucency[i]])
+        if (boom_translucent_sprites)
+          mobjinfo[predefined_translucency[i]].flags |= MF_TRANSLUCENT;
+
+  // This updates the existing things in the map.
+  if (in_game)
+  {
+    thinker_t *th, *start_th;
+    int i;
+    th = &thinkercap;
+    start_th = th;
+
+    do
     {
-      if (comp[comp_translucency] || !boom_translucent_sprites)
-        mobjinfo[predefined_translucency[i]].flags &= ~MF_TRANSLUCENT;
-      else
-        mobjinfo[predefined_translucency[i]].flags |= MF_TRANSLUCENT;
-    }
+      th = th->next;
+      if (th->function == P_MobjThinker)
+      {
+        mobj_t *mobj;
+        mobj = (mobj_t *) th;
+
+        for (i = 0; (size_t)i < sizeof(predefined_translucency) / sizeof(predefined_translucency[0]); i++)
+          if (mobj->type == predefined_translucency[i])
+            mobj->flags = mobjinfo[predefined_translucency[i]].flags;
+      }
+    } while (th != start_th);
   }
 }
 

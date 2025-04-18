@@ -65,6 +65,8 @@ static const char* feature_names[FEATURE_SIZE] = {
   [uf_mouse_and_controller] = "Mouse and Controller",
   [uf_ghost] = "Ghost",
   [uf_advanced_map] = "Advanced Map",
+  [uf_vanillatrans] = "Vanilla Translucency",
+  [uf_ghosttrans] = "Ghost Translucency",
 };
 
 void dsda_TrackFeature(int feature) {
