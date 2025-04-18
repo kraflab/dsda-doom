@@ -145,9 +145,6 @@ jobs:
               sdl2_mixer \
               dylibbundler
 
-      - name: Install CMake
-        uses: lukka/get-cmake@v3.31.6
-
       - name: Configure
         run: >-
           cmake -S prboom2
