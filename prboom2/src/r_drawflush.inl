@@ -45,15 +45,19 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 {
    // Scaled software fuzz algorithm
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
+{
+    int yl, yh, count, lines;
+    byte *dest;
+
     if ((temp_x + startx) % fuzzcellsize)
     {
         return;
     }
 
-    int yl = tempyl[temp_x - 1];
-    int yh = tempyh[temp_x - 1];
+    yl = tempyl[temp_x - 1];
+    yh = tempyh[temp_x - 1];
 
-    int count = yh - yl + 1;
+    count = yh - yl + 1;
 
     if (count < 0)
     {
@@ -69,12 +73,15 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 
     ++count;
 
-    byte *dest = drawvars.topleft + yl * drawvars.pitch + startx + temp_x - fuzzcellsize;
+    dest = drawvars.topleft + yl * drawvars.pitch + startx + temp_x - fuzzcellsize;
 
-    int lines = fuzzcellsize - (yl % fuzzcellsize);
+    lines = fuzzcellsize - (yl % fuzzcellsize);
 
     do
     {
+        int mask;
+        byte fuzz;
+
         count -= lines;
 
         // if (count < 0)
@@ -82,12 +89,11 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
         //    lines += count;
         //    count = 0;
         // }
-        const int mask = count >> (8 * sizeof(mask) - 1);
+        mask = count >> (8 * sizeof(mask) - 1);
         lines += count & mask;
         count &= ~mask;
 
-        const byte fuzz =
-            fullcolormap[6 * 256 + dest[fuzzoffset[fuzzpos]]];
+        fuzz = fullcolormap[6 * 256 + dest[fuzzoffset[fuzzpos]]];
 
         do
         {
@@ -102,7 +108,9 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 
         lines = fuzzcellsize;
     } while (count);
+}
 #else
+{
    byte *source;
    byte *dest;
    int  count, yl;
@@ -126,6 +134,7 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
          dest += drawvars.pitch;
       }
    }
+}
 #endif
 }
 
@@ -138,16 +147,16 @@ static void R_FLUSHWHOLE_FUNCNAME(void)
 //
 static void R_FLUSHHEADTAIL_FUNCNAME(void)
 {
+   byte *source;
+   byte *dest;
+   int count, colnum = 0;
+   int yl, yh;
+
    #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
       // Only whole flushes are supported for fuzz
       R_FLUSHWHOLE_FUNCNAME();
       return;
    #endif
-
-   byte *source;
-   byte *dest;
-   int count, colnum = 0;
-   int yl, yh;
 
    while(colnum < 4)
    {
@@ -201,15 +210,17 @@ static void R_FLUSHHEADTAIL_FUNCNAME(void)
 
 static void R_FLUSHQUAD_FUNCNAME(void)
 {
+   byte *source;
+   byte *dest;
+   int count;
+
    #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
       // Only whole flushes are supported for fuzz
       return;
    #endif
 
-   byte *source = &tempbuf[commontop << 2];
-   byte *dest = drawvars.topleft + commontop*drawvars.pitch + startx;
-   int count;
-
+   source = &tempbuf[commontop << 2];
+   dest = drawvars.topleft + commontop*drawvars.pitch + startx;
    count = commonbot - commontop + 1;
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_TRANSLUCENT)

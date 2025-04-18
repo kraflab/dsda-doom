@@ -469,7 +469,7 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
 
   for (int f = 0; f < FEATURE_SLOTS; f++) {
     snprintf(current_feature, 3, "%02" PRIx8, features[FEATURE_SLOTS - f - 1]);
-    strncat(buffer, current_feature, 2);
+    strcat(buffer, current_feature);
   }
 
   strcat(buffer, "-");
