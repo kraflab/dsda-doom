@@ -20,6 +20,7 @@
 #include "w_wad.h"
 #include "v_video.h"
 #include "m_menu.h"
+#include "g_game.h"
 #include "dsda/settings.h"
 #include "heretic/dstrings.h"
 #include "heretic/mn_menu.h"
@@ -360,27 +361,27 @@ void MN_UpdateClass(int choice)
   {
     case PCLASS_FIGHTER:
       SkillDef.x = 120;
-      SkillDef.menuitems[0].alttext = "SQUIRE";
-      SkillDef.menuitems[1].alttext = "KNIGHT";
-      SkillDef.menuitems[2].alttext = "WARRIOR";
-      SkillDef.menuitems[3].alttext = "BERSERKER";
-      SkillDef.menuitems[4].alttext = "TITAN";
+      SkillDef.menuitems[0].alttext = hexen_skill_fighter[0];
+      SkillDef.menuitems[1].alttext = hexen_skill_fighter[1];
+      SkillDef.menuitems[2].alttext = hexen_skill_fighter[2];
+      SkillDef.menuitems[3].alttext = hexen_skill_fighter[3];
+      SkillDef.menuitems[4].alttext = hexen_skill_fighter[4];
       break;
     case PCLASS_CLERIC:
       SkillDef.x = 116;
-      SkillDef.menuitems[0].alttext = "ALTAR BOY";
-      SkillDef.menuitems[1].alttext = "ACOLYTE";
-      SkillDef.menuitems[2].alttext = "PRIEST";
-      SkillDef.menuitems[3].alttext = "CARDINAL";
-      SkillDef.menuitems[4].alttext = "POPE";
+      SkillDef.menuitems[0].alttext = hexen_skill_cleric[0];
+      SkillDef.menuitems[1].alttext = hexen_skill_cleric[1];
+      SkillDef.menuitems[2].alttext = hexen_skill_cleric[2];
+      SkillDef.menuitems[3].alttext = hexen_skill_cleric[3];
+      SkillDef.menuitems[4].alttext = hexen_skill_cleric[4];
       break;
     case PCLASS_MAGE:
       SkillDef.x = 112;
-      SkillDef.menuitems[0].alttext = "APPRENTICE";
-      SkillDef.menuitems[1].alttext = "ENCHANTER";
-      SkillDef.menuitems[2].alttext = "SORCERER";
-      SkillDef.menuitems[3].alttext = "WARLOCK";
-      SkillDef.menuitems[4].alttext = "ARCHIMAGE";
+      SkillDef.menuitems[0].alttext = hexen_skill_mage[0];
+      SkillDef.menuitems[1].alttext = hexen_skill_mage[1];
+      SkillDef.menuitems[2].alttext = hexen_skill_mage[2];
+      SkillDef.menuitems[3].alttext = hexen_skill_mage[3];
+      SkillDef.menuitems[4].alttext = hexen_skill_mage[4];
       break;
   }
 }

@@ -25,7 +25,7 @@ typedef struct {
   int best_skill;
   int best_time;
   int best_max_time;
-  int best_sk5_time;
+  int best_nm_time;
   int total_exits;
   int total_kills;
   int best_kills;

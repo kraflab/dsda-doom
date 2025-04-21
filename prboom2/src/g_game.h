@@ -112,8 +112,10 @@ extern char savedescription[SAVEDESCLEN];  // Description to save in savegame
 /* cph - compatibility level strings */
 extern const char * comp_lev_str[];
 
-/* default skill strings */
-extern const char * skill_str[];
+// Hexen Skill Strings
+extern const char * hexen_skill_fighter[5];
+extern const char * hexen_skill_cleric[5];
+extern const char * hexen_skill_mage[5];
 
 // e6y
 // There is a new command-line switch "-shorttics".

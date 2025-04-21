@@ -138,7 +138,7 @@ static void dsda_CreateWadStats(void) {
 
       ms->best_time = -1;
       ms->best_max_time = -1;
-      ms->best_sk5_time = -1;
+      ms->best_nm_time = -1;
       ms->max_kills = -1;
       ms->max_items = -1;
       ms->max_secrets = -1;
@@ -181,7 +181,7 @@ static void dsda_LoadWadStats(void) {
           sscanf(
             lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
             ms.lump, &ms.episode, &ms.map,
-            &ms.best_skill, &ms.best_time, &ms.best_max_time, &ms.best_sk5_time,
+            &ms.best_skill, &ms.best_time, &ms.best_max_time, &ms.best_nm_time,
             &ms.total_exits, &ms.total_kills,
             &ms.best_kills, &ms.best_items, &ms.best_secrets,
             &ms.max_kills, &ms.max_items, &ms.max_secrets
@@ -241,7 +241,7 @@ void dsda_SaveWadStats(void) {
     ms = &wad_stats.maps[i];
     fprintf(file, "%s %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
             ms->lump, ms->episode, ms->map,
-            ms->best_skill, ms->best_time, ms->best_max_time, ms->best_sk5_time,
+            ms->best_skill, ms->best_time, ms->best_max_time, ms->best_nm_time,
             ms->total_exits, ms->total_kills,
             ms->best_kills, ms->best_items, ms->best_secrets,
             ms->max_kills, ms->max_items, ms->max_secrets);
@@ -266,16 +266,19 @@ void dsda_WadStatsEnterMap(void) {
 
 void dsda_WadStatsExitMap(int missed_monsters) {
   int skill;
-
-  // TODO: remap 5 -> num_skills and 4 -> num_skills - 1
+  int nightmare_skill;
+  int best_normal_skill;
 
   if (!current_map_stats || demoplayback)
     return;
 
+  nightmare_skill = num_skills;
+  best_normal_skill = num_skills - 1;   
+
   if (!nomonsters) {
     skill = gameskill + 1;
     if (skill > current_map_stats->best_skill) {
-      if (current_map_stats->best_skill < 4) {
+      if (current_map_stats->best_skill < best_normal_skill) {
         current_map_stats->best_time = -1;
         current_map_stats->best_max_time = -1;
         current_map_stats->best_kills = 0;
@@ -286,14 +289,14 @@ void dsda_WadStatsExitMap(int missed_monsters) {
       current_map_stats->best_skill = skill;
     }
 
-    if (skill >= current_map_stats->best_skill || skill == 4) {
+    if (skill >= current_map_stats->best_skill || skill == best_normal_skill) {
       if (levels_completed == 1)
         if (current_map_stats->best_time == -1 || current_map_stats->best_time > leveltime)
           current_map_stats->best_time = leveltime;
 
-      if (levels_completed == 1 && skill == 5)
-        if (current_map_stats->best_sk5_time == -1 || current_map_stats->best_sk5_time > leveltime)
-          current_map_stats->best_sk5_time = leveltime;
+      if (levels_completed == 1 && skill == nightmare_skill)
+        if (current_map_stats->best_nm_time == -1 || current_map_stats->best_nm_time > leveltime)
+          current_map_stats->best_nm_time = leveltime;
 
       current_map_stats->max_kills = totalkills;
       current_map_stats->max_items = totalitems;

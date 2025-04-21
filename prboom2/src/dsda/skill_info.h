@@ -52,6 +52,7 @@ typedef struct {
 } skill_info_t;
 
 extern skill_info_t skill_info;
+extern skill_info_t *skill_infos;
 
 extern int num_skills;
 
