@@ -65,6 +65,7 @@ extern  dboolean modifiedgame;
 
 // CPhipps - new compatibility handling
 extern complevel_t compatibility_level;
+extern int complvl;
 
 // CPhipps - old compatibility testing flags aliased to new handling
 #define compatibility (compatibility_level<=boom_compatibility_compatibility)

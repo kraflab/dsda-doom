@@ -79,6 +79,7 @@
 #include "f_finale.h"
 #include "e6y.h"//e6y
 
+#include "dsda/args.h"
 #include "dsda/episode.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
@@ -1766,6 +1767,22 @@ dboolean M_SetDisabled(const setup_menu_t* s)
   // Strict Mode
   if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
     return true;
+
+  // Complevel Argument
+  if (s->config_id == dsda_config_default_complevel)
+  {
+    if (dsda_Arg(dsda_arg_complevel)->found)
+    {
+      dsda_UpdateIntConfig(dsda_config_default_complevel, dsda_Arg(dsda_arg_complevel)->value.v_int, false);
+      return true;
+    }
+    // COMPLVL Lump
+    else if (complvl != -1)
+    {
+      dsda_UpdateIntConfig(dsda_config_default_complevel, complvl, false);
+      return true;
+    }
+  }
 
   return false;
 }
