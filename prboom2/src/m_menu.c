@@ -31,7 +31,6 @@
  *  Sliders and icons. Kinda widget stuff.
  *  Setup Menus.
  *  Extended HELP screens.
- *  Dynamic HELP screen.
  *
  *-----------------------------------------------------------------------------*/
 
@@ -2479,17 +2478,11 @@ setup_menu_t keys_game_settings[] =  // Key Binding screen strings
   {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KB_X},
 
   // phares 4/13/98:
-  // key_help and key_escape can no longer be rebound. This keeps the
+  // key_escape can no longer be rebound. This keeps the
   // player from getting themselves in a bind where they can't remember how
-  // to get to the menus, and can't remember how to get to the help screen
-  // to give them a clue as to how to get to the menus. :)
-
-  // Also, the keys assigned to these functions cannot be bound to other
-  // functions. Introduce an S_KEEP flag to show that you cannot swap this
-  // key with other keys in the same 'group'. (m_scrn, etc.)
-
-  // {"HELP"        ,S_SKIP|S_KEEP|S_INPUT ,m_scrn,0   ,0,dsda_input_help},
+  // to get to the menus
   // {"MENU"        ,S_SKIP|S_KEEP|S_INPUT ,m_scrn,0   ,0,dsda_input_escape},
+  {"HELP"        ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_help},
   {"PAUSE"       ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_pause},
   {"VOLUME"      ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_soundvolume},
   {"HUD"         ,S_INPUT     ,m_scrn,KB_X,0,dsda_input_hud},
@@ -4174,20 +4167,6 @@ static void M_DrawExtHelp(void)
 //
 ////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////
-//
-// Dynamic HELP screen                     // phares 3/2/98
-//
-// Rather than providing the static HELP screens from DOOM and its versions,
-// BOOM provides the player with a dynamic HELP screen that displays the
-// current settings of major key bindings.
-//
-// The Dynamic HELP screen is defined in a manner similar to that used for
-// the Setup Screens above.
-//
-// M_GetKeyString finds the correct string to represent the key binding
-// for the current item being drawn.
-
 static int M_GetKeyString(int c,int offset)
 {
   const char* s;
@@ -4272,77 +4251,6 @@ static int M_GetKeyString(int c,int offset)
   return offset;
 }
 
-//
-// The Dynamic HELP screen table.
-
-#define KT_X1 283
-#define KT_X2 172
-#define KT_X3  87
-
-setup_menu_t helpstrings[] =  // HELP screen strings
-{
-  {"SCREEN"      ,S_SKIP|S_TITLE,m_null,KT_X1},
-  {"HELP"        ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_help},
-  {"MENU"        ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_escape},
-  {"PAUSE"       ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_pause},
-  {"AUTOMAP"     ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map},
-  {"SOUND VOLUME",S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_soundvolume},
-  {"HUD"         ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_hud},
-  {"MESSAGES"    ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_messages},
-  {"GAMMA FIX"   ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_gamma},
-  {"SPY"         ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_spy},
-  {"LARGER VIEW" ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_zoomin},
-  {"SMALLER VIEW",S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_zoomout},
-  {"SCREENSHOT"  ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_screenshot},
-  EMPTY_LINE,
-  {"AUTOMAP"     ,S_SKIP|S_TITLE,m_null,KT_X1},
-  {"FOLLOW MODE" ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_follow},
-  {"ZOOM IN"     ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_zoomin},
-  {"ZOOM OUT"    ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_zoomout},
-  {"MARK PLACE"  ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_mark},
-  {"CLEAR LAST MARK",S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_clear},
-  {"FULL/ZOOM"   ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_gobig},
-  {"GRID"        ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_grid},
-  {"ROTATE"      ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_rotate},
-  {"OVERLAY"     ,S_SKIP|S_INPUT,m_null,KT_X1,0,dsda_input_map_overlay},
-  NEW_COLUMN,
-  {"WEAPONS"     ,S_SKIP|S_TITLE,m_null,KT_X3},
-  {"FIST"        ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon1},
-  {"PISTOL"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon2},
-  {"SHOTGUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon3},
-  {"CHAINGUN"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon4},
-  {"ROCKET"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon5},
-  {"PLASMA"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon6},
-  {"BFG 9000"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon7},
-  {"CHAINSAW"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon8},
-  {"SSG"         ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_weapon9},
-  {"BEST"        ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_toggleweapon},
-  {"FIRE"        ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_fire},
-  EMPTY_LINE,
-  {"MOVEMENT"    ,S_SKIP|S_TITLE,m_null,KT_X3},
-  {"FORWARD"     ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_forward},
-  {"BACKWARD"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_backward},
-  {"TURN LEFT"   ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_turnleft},
-  {"TURN RIGHT"  ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_turnright},
-  {"RUN"         ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_speed},
-  {"STRAFE LEFT" ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_strafeleft},
-  {"STRAFE RIGHT",S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_straferight},
-  {"STRAFE"      ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_strafe},
-  {"AUTORUN"     ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_autorun},
-  {"180 TURN"    ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_reverse},
-  {"USE"         ,S_SKIP|S_INPUT,m_null,KT_X3,0,dsda_input_use},
-  NEW_COLUMN,
-  {"GAME"        ,S_SKIP|S_TITLE,m_null,KT_X2},
-  {"SAVE"        ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_savegame},
-  {"LOAD"        ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_loadgame},
-  {"QUICKSAVE"   ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_quicksave},
-  {"END GAME"    ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_endgame},
-  {"QUICKLOAD"   ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_quickload},
-  {"QUIT"        ,S_SKIP|S_INPUT,m_null,KT_X2,0,dsda_input_quit},
-
-  FINAL_ENTRY
-};
-
 /* cph 2006/08/06
  * M_DrawString() is the old M_DrawMenuString, except that it is not tied to
  * menu_buffer - no reason to force all the callers to write into one array! */
@@ -4421,16 +4329,8 @@ static void M_DrawHelp (void)
 
   M_ChangeMenu(NULL, mnact_full);
 
-  if (W_PWADLumpNameExists(helplump) || tc_game)
-  {
-    V_ClearBorder();
-    V_DrawNamePatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
-  }
-  else
-  {
-    M_DrawBackground(g_menu_flat, 0);
-    M_DrawScreenItems(helpstrings, 2);
-  }
+  V_ClearBorder();
+  V_DrawNamePatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
 }
 
 //
@@ -4446,15 +4346,10 @@ static void M_DrawAd (void)
 
   V_ClearBorder();
   if (pwad_help2_check || gamemode == shareware)
-      V_DrawNamePatch(0, 0, 0, help2, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(0, 0, 0, help2, CR_DEFAULT, VPT_STRETCH);
   else
     M_DrawCredits();
 }
-
-//
-// End of Dynamic HELP screen                // phares 3/2/98
-//
-////////////////////////////////////////////////////////////////////////////
 
 #define CR_X 20
 #define CR_X2 50
@@ -5306,7 +5201,7 @@ static dboolean M_SetupResponder(int ch, int action, event_t* ev)
 
 static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 {
-  if (ch == KEYD_F1)                                         // phares
+  if (dsda_InputActivated(dsda_input_help))                                         // phares
   {
     menu_t* F1_menu = raven ? &InfoDef1 : &ReadDef1;
     M_StartControlPanel ();
@@ -6489,27 +6384,6 @@ static void M_DrawTitle(int y, const char *text, int cm)
 // Initialization Routines to take care of one-time setup
 //
 
-// phares 4/08/98:
-// M_InitHelpScreen() clears the weapons from the HELP
-// screen that don't exist in this version of the game.
-
-static void M_InitHelpScreen(void)
-{
-  setup_menu_t* src;
-
-  for (src = helpstrings; !(src->m_flags & S_END); src++) {
-    if (!src->m_text)
-      continue;
-
-    if ((strncmp(src->m_text,"PLASMA",6) == 0) && (gamemode == shareware))
-      src->m_flags = S_SKIP; // Don't show setting or item
-    if ((strncmp(src->m_text,"BFG",3) == 0) && (gamemode == shareware))
-      src->m_flags = S_SKIP; // Don't show setting or item
-    if ((strncmp(src->m_text,"SSG",3) == 0) && (gamemode != commercial))
-      src->m_flags = S_SKIP; // Don't show setting or item
-  }
-}
-
 //
 // M_Init
 //
@@ -6528,7 +6402,6 @@ void M_Init(void)
   messageString = NULL;
   messageLastMenuActive = menuactive;
 
-  M_InitHelpScreen();   // init the help screen       // phares 4/08/98
   M_InitExtendedHelp(); // init extended help screens // phares 3/30/98
 
   // Here we could catch other version dependencies,
