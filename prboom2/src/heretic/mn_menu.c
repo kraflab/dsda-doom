@@ -600,7 +600,7 @@ extern char savegamestrings[10][SAVESTRINGSIZE];
 static void MN_DrawFileSlots(int x, int y)
 {
   int i;
-  extern char save_page_string[];
+  extern const char *saves_pages[];
 
   for (i = 0; i < g_menu_save_page_size; i++)
   {
@@ -609,7 +609,7 @@ static void MN_DrawFileSlots(int x, int y)
     y += ITEM_HEIGHT;
   }
 
-  MN_DrTextA(save_page_string, x + 5, y + 5);
+  M_DrawTabs(saves_pages, 5, 135);
 }
 
 void MN_DrawLoad(void)
