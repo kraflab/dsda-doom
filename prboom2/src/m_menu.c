@@ -3330,6 +3330,7 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
 {
   { "Hide Status Bar Horns", S_YESNO, m_conf, DM_X, dsda_config_hide_horns },
   { "Single Key Display", S_YESNO, m_conf, DM_X, dsda_config_sts_traditional_keys },
+  { "Solid Color Background", S_YESNO, m_conf, DM_X, dsda_config_sts_solid_bg_color },
   EMPTY_LINE,
   TITLE("Coloring", DM_X),
   { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },

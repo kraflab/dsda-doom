@@ -48,6 +48,7 @@ typedef enum {
   dsda_config_sts_always_red,
   dsda_config_sts_pct_always_gray,
   dsda_config_sts_traditional_keys,
+  dsda_config_sts_solid_bg_color,
   dsda_config_strict_mode,
   dsda_config_vertmouse,
   dsda_config_freelook,

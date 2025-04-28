@@ -27,6 +27,7 @@
 #include "r_main.h"
 #include "r_segs.h"
 #include "s_sound.h"
+#include "st_stuff.h"
 #include "smooth.h"
 #include "v_video.h"
 #include "z_zone.h"
@@ -311,6 +312,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_sts_traditional_keys] = {
     "sts_traditional_keys", dsda_config_sts_traditional_keys,
     CONF_BOOL(0), &sts_traditional_keys
+  },
+  [dsda_config_sts_solid_bg_color] = {
+    "sts_solid_bg_color", dsda_config_sts_solid_bg_color,
+    CONF_BOOL(0), NULL, NOT_STRICT, ST_SetResolution
   },
   [dsda_config_strict_mode] = {
     "dsda_strict_mode", dsda_config_strict_mode,
