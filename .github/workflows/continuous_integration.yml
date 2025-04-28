@@ -144,7 +144,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('vcpkg.json', 'vcpkg_installed/compiler-file-hash-cache.json', 'vcpkg_installed/status') }}
+          key: vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('prboom2/vcpkg.json', 'vcpkg_installed/compiler-file-hash-cache.json', 'vcpkg_installed/status') }}
           restore-keys: vcpkg-${{ matrix.config.triplet }}-
 
       - name: Configure
@@ -161,7 +161,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('vcpkg.json', 'vcpkg_installed/compiler-file-hash-cache.json', 'vcpkg_installed/status') }}
+          key: vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('prboom2/vcpkg.json', 'vcpkg_installed/compiler-file-hash-cache.json', 'vcpkg_installed/status') }}
 
       - name: Package
         if: ${{ matrix.config.package_name }}
