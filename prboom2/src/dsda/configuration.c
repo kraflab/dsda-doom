@@ -1576,6 +1576,10 @@ int dsda_TransientIntConfig(dsda_config_identifier_t id) {
   return dsda_config[id].transient_value.v_int;
 }
 
+int dsda_UpperLimitConfig(dsda_config_identifier_t id) {
+  return dsda_config[id].upper_limit;
+}
+
 const char* dsda_StringConfig(dsda_config_identifier_t id) {
   return dsda_config[id].transient_value.v_string;
 }

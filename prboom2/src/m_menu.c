@@ -2040,7 +2040,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   }
 
   if (flags & S_THERMO) {
-    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
+    M_DrawThermo(x, y, 8, dsda_UpperLimitConfig(s->config_id) + 1, dsda_IntConfig(s->config_id));
 
     sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
 
