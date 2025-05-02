@@ -46,6 +46,7 @@
 #endif
 
 #include <stdio.h>
+#include <time.h>
 
 #include "SDL.h"
 
@@ -183,7 +184,7 @@ extern const char* g_menu_flat;
 extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
 
-#define QUICKSAVESLOT 255
+#define QUICKSAVESLOT 0
 
 static int messageToPrint;  // 1 = message to be printed
 
@@ -783,11 +784,11 @@ enum
   load_end
 } load_e;
 
-const int save_page_limit = 16;
-
+int current_save_page = 1; // 0 is the quicksaves page
+const int save_page_limit = 17;
 const char *saves_pages[] =
 {
-  "1", "2", "3",
+  "Q", "1", "2", "3",
   "4", "5", "6", "7",
   "8", "9", "10", "11",
   "12", "13", "14", "15",
@@ -824,7 +825,7 @@ menu_t LoadDef =
 
 dboolean delete_verify = false;
 
-static void M_DeleteGame(int slot)
+static void M_DeleteSaveGame(int slot)
 {
   char *name;
 
@@ -845,6 +846,7 @@ static void M_DeleteGame(int slot)
 static void M_DrawLoad(void)
 {
   int i;
+  current_save_page = current_page;
 
   if (raven) return MN_DrawLoad();
 
@@ -942,6 +944,7 @@ void M_LoadGame (int choice)
   }
 
   M_SetupNextMenu(&LoadDef);
+  current_page = current_save_page;
   M_ReadSaveStrings();
 }
 
@@ -1051,7 +1054,13 @@ static int M_AutoSaveSlot(const char *target_name)
   I_EndGlob(glob);
 
   if (return_slot < 0)
+  {
     return_slot = strnlen(slots, SLOT_SCAN_MAX);
+
+    // Make sure autosaves dont get added to the first page (quicksaves page)
+    if (return_slot < g_menu_save_page_size)
+      return_slot = g_menu_save_page_size;
+  }
 
   if (slots[return_slot] == 1)
     return_slot = -1;
@@ -1077,6 +1086,7 @@ void M_AutoSave(void)
 static void M_DrawSave(void)
 {
   int i;
+  current_save_page = current_page;
 
   if (raven) return MN_DrawSave();
 
@@ -1168,6 +1178,7 @@ void M_SaveGame (int choice)
   }
 
   M_SetupNextMenu(&SaveDef);
+  current_page = current_save_page;
   M_ReadSaveStrings();
 }
 
@@ -1422,6 +1433,11 @@ static void M_MusicVol(int choice)
 
 static void M_QuickSave(void)
 {
+  int i;
+  char description[SAVESTRINGSIZE];
+  time_t now;
+  struct tm *timeinfo;
+
   if (gamestate != GS_LEVEL)
     return;
 
@@ -1434,8 +1450,28 @@ static void M_QuickSave(void)
     return;
   }
 
-  G_SaveGame(QUICKSAVESLOT, "quicksave");
-  doom_printf("quicksave");
+  // Move all quicksaves downwards to make space for a new one
+  M_DeleteSaveGame(g_menu_save_page_size - 1);
+  for (i = g_menu_save_page_size - 2; i >= 0; i--)
+  {
+    char *oldname = dsda_SaveGameName(i, false);
+    char *newname = dsda_SaveGameName(i + 1, false);
+
+    rename(oldname, newname);
+
+    Z_Free(oldname);
+    Z_Free(newname);
+  }
+
+  time (&now);
+  timeinfo = localtime (&now);
+
+  strftime(description, sizeof(description), "quick %x %X", timeinfo);
+
+  G_SaveGame(QUICKSAVESLOT, description);
+  doom_printf("%s", description);
+
+  M_ReadSaveStrings();
 }
 
 /////////////////////////////
@@ -5769,7 +5805,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     switch (M_EventToConfirmation(ch, action, ev))
     {
       case confirmation_yes:
-        M_DeleteGame(itemOn);
+        M_DeleteSaveGame(itemOn);
         S_StartVoidSound(g_sfx_itemup);
         delete_verify = false;
         break;
