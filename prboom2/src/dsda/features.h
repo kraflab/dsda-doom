@@ -83,7 +83,13 @@ typedef enum {
   uf_mouse_and_controller,
   uf_ghost,
   uf_advanced_map,
-  // 63
+  // uf_blink_keys = 63
+  // uf_fuzz = 64
+  uf_vanillatrans = 65,
+  uf_ghosttrans,
+  // 67
+
+  // 127
 } dsda_feature_flag_t;
 
 #define BITMASK(b) (1 << ((b) % 8))

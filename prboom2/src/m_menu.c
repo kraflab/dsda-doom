@@ -3324,6 +3324,7 @@ setup_menu_t* display_settings[] =
 #define D_X 226
 
 static const char* menu_background_list[] = { "Off", "Dark", "Texture", NULL };
+static const char* translucent_list[] = { "Off", "Default", "w/ Vanilla", NULL };
 
 setup_menu_t display_options_settings[] = {
   { "Hide Weapon", S_YESNO, m_conf, G_X, dsda_config_hide_weapon },
@@ -3334,6 +3335,8 @@ setup_menu_t display_options_settings[] = {
   { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
   { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
+  { "Translucent Sprites", S_CHOICE, m_conf, G_X, dsda_config_translucent_sprites, 0, translucent_list },
+  { "Translucent Ghosts", S_YESNO, m_conf, G_X, dsda_config_translucent_ghosts },
   EMPTY_LINE,
   { "Change Palette On Pain", S_YESNO, m_conf, G_X, dsda_config_palette_ondamage },
   { "Change Palette On Bonus", S_YESNO, m_conf, G_X, dsda_config_palette_onbonus },
