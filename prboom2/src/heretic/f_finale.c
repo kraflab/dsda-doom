@@ -18,6 +18,7 @@
 #include "doomstat.h"
 #include "w_wad.h"
 #include "v_video.h"
+#include "m_menu.h"
 #include "s_sound.h"
 #include "sounds.h"
 
@@ -83,24 +84,25 @@ void Heretic_F_StartFinale(void)
   S_ChangeMusic(heretic_mus_cptd, true);
 }
 
-dboolean F_BlockingInput(void)
+static dboolean F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
 {
   return finalestage == 1 && gameepisode == 2;
 }
 
 dboolean Heretic_F_Responder(event_t * event)
 {
-  if (event->type != ev_keydown)
-  {
-    return false;
-  }
-
   if (F_BlockingInput())
   {                           // we're showing the water pic, make any key kick to demo mode
     V_SetPlayPal(playpal_default);
     finalestage++;
     return true;
   }
+
+  if (event->type != ev_keydown)
+  {
+    return false;
+  }
+
   return false;
 }
 
@@ -235,6 +237,12 @@ void F_DrawUnderwater(void)
   switch (finalestage)
   {
     case 1:
+      if (menuactive) // Force menu off to avoid bad palette on menu
+      {
+        M_LeaveSetupMenu();
+        M_ClearMenus();
+        S_StartVoidSound(g_sfx_swtchx);
+      }
       V_SetPlayPal(playpal_heretic_e2end);
       V_DrawRawScreen("E2END");
 

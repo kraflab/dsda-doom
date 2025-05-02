@@ -4486,7 +4486,7 @@ dboolean M_ConsoleOpen(void)
   return menuactive && currentMenu == &dsda_ConsoleDef;
 }
 
-static void M_LeaveSetupMenu(void)
+void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
   setup_active = false;
@@ -5894,9 +5894,6 @@ dboolean M_Responder(event_t* ev) {
   // Don't eat the keypress in this case. See sf bug #1843280.
   if (dsda_InputActivated(dsda_input_screenshot))
     I_QueueScreenshot();
-
-  if (heretic && F_BlockingInput())
-    return false;
 
   if (!menuactive)
   {
