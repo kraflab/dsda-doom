@@ -25,7 +25,7 @@ typedef enum {
   uf_quickstartcache,
   uf_100k,
   uf_console,
-  uf_levelbrightness,
+  // 7
   // 8
   // 9
   // 10
@@ -87,7 +87,8 @@ typedef enum {
   // uf_fuzz = 64
   uf_vanillatrans = 65,
   uf_ghosttrans,
-  // 67
+  uf_levelbrightness,
+  // 68
 
   // 127
 } dsda_feature_flag_t;
