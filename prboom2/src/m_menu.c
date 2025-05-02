@@ -2040,7 +2040,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   }
 
   if (flags & S_THERMO) {
-    M_DrawThermo(x, y, 8, dsda_UpperLimitConfig(s->config_id) + 1, dsda_IntConfig(s->config_id));
+    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
 
     sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
 
@@ -3159,7 +3159,6 @@ setup_menu_t gen_video_settings[] = {
   EMPTY_LINE,
   { "Fake Contrast", S_CHOICE, m_conf, G_X, dsda_config_fake_contrast_mode, 0, fake_contrast_list },
   { "OpenGL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list },
-  { "Extra Lighting", S_THERMO, m_conf, G_X, dsda_config_extra_level_brightness },
 
   NEXT_PAGE(gen_audio_settings),
   FINAL_ENTRY
