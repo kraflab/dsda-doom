@@ -493,6 +493,73 @@ void R_InitBuffer(int width, int height)
 }
 
 //
+// R_FillBackColor
+// Fills the statusbar widescreen area
+// with a color
+//
+
+void R_FillBackColor (void)
+{
+  extern patchnum_t stbarbg;
+  byte col, col_top;
+  int i, j, pixel_cnt;
+  int r, g, b;
+  int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
+  int ST_SCALED_BORDER = brdr_b.height * patches_scaley/2;
+  const unsigned char *playpal = V_GetPlaypal();
+
+  const byte* lump;
+  const byte* p;
+  short width;
+  byte length;
+  byte entry;
+
+  pixel_cnt = 0;
+  r = g = b = 0;
+
+  lump = W_LumpByNum(stbarbg.lumpnum);
+  width = *((const int16_t *) lump);
+  width = LittleShort(width);
+
+  for (i = 0; i < width; ++i) {
+    // Skip irrelevant data in the doom patch header
+    int32_t offset;
+    p = lump + 8 + 4 * i;
+    offset = *((const int32_t *) p);
+    p = lump + LittleLong(offset);
+
+    while (*p != 0xff) {
+      p++;
+      length = *p++;
+      p++;
+
+      // Get RGB values per pixel
+      for (j = 0; j < length; ++j) {
+        entry = *p++;
+        r += playpal[3 * entry + 0];
+        g += playpal[3 * entry + 1];
+        b += playpal[3 * entry + 2];
+        pixel_cnt++;
+      }
+
+      p++;
+    }
+  }
+
+  // Average RGB values
+  r /= pixel_cnt;
+  g /= pixel_cnt;
+  b /= pixel_cnt;
+
+  // Convert to palette and tune down saturation
+  col = V_BestColor(playpal, r/3, g/3, b/3);
+  col_top = V_BestColor(playpal, r/2, g/2, b/2);
+
+  V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, col);
+  V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_BORDER, col_top);
+ }
+
+//
 // R_FillBackScreen
 // Fills the back screen with a pattern
 //  for variable screen sizes
@@ -519,6 +586,14 @@ void R_FillBackScreen (void)
     if (only_stbar && ST_SCALED_OFFSETX > 0)
     {
       int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
+      int stbar_solid_bg = dsda_IntConfig(dsda_config_sts_solid_bg_color);
+
+      if (stbar_solid_bg)
+      {
+        R_FillBackColor();
+        V_EndUIDraw();
+        return;
+      }
 
       if (V_IsOpenGLMode())
         V_FillFlat(grnrock.lumpnum, 1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, VPT_STRETCH);
