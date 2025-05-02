@@ -25,7 +25,7 @@ typedef enum {
   uf_quickstartcache,
   uf_100k,
   uf_console,
-  // 7
+  uf_levelbrightness,
   // 8
   // 9
   // 10
