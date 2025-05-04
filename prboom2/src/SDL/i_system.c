@@ -431,6 +431,7 @@ static const char *I_GetBasePath(void)
 #define PATH_SEPARATOR ":"
 #endif
 
+#if !defined(_WIN32) && !defined(AMIGA)
 // Reference for XDG directories:
 // <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
 static const char *I_GetXDGDataHome(void)
@@ -466,6 +467,7 @@ static const char *I_GetXDGDataDirs(void)
     return "/usr/local/share/"PATH_SEPARATOR"/usr/share/";
   return datadirs;
 }
+#endif
 
 char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
 {
@@ -477,8 +479,8 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     const char *(*func)(void); // for functions that return the directory
   } search0[] = {
     {NULL, NULL, NULL, I_ExeDir}, // executable directory
-#ifndef _WIN32
-    {NULL, NULL, NULL, I_ConfigDir}, // config and autoload directory. on windows, this is the same as I_ExeDir
+#if !defined(_WIN32) && !defined(AMIGA)
+    {NULL, NULL, NULL, I_ConfigDir}, // config and autoload directory. on windows/amiga, this is the same as I_ExeDir
 #endif
     {NULL}, // current working directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
@@ -488,7 +490,9 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL, "../share/games/doom", NULL, I_GetBasePath}, // AppImage
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
+#if !defined(_WIN32) && !defined(AMIGA)
     {NULL, "games/doom", NULL, I_GetXDGDataHome}, // $HOME/.local/share/games/doom
+#endif
   }, *search;
 
   static size_t num_search;
@@ -505,15 +509,19 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
   if (!num_search)
   {
     int extra = 0;
+#if !defined(_WIN32) && !defined(AMIGA)
     int datadirs = 0;
+#endif
     const char *dwp;
 
     // calculate how many extra entries we need to add to the table
+#if !defined(_WIN32) && !defined(AMIGA)
     dwp = I_GetXDGDataDirs();
     datadirs++;
     while ((dwp = strchr(dwp, *PATH_SEPARATOR)))
       dwp++, datadirs++;
     extra += datadirs * 2; // two entries for each datadir
+#endif
     if ((dwp = M_getenv("DOOMWADPATH")))
     {
       extra++;
@@ -527,7 +535,13 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     memcpy(search, search0, num_search * sizeof(*search));
     memset(&search[num_search], 0, extra * sizeof(*search));
 
+#if !defined(_WIN32) && !defined(AMIGA)
     // add $XDG_DATA_DIRS/games/doom and $XDG_DATA_DIRS/doom
+    // by default this includes:
+    // - /usr/local/share/games/doom
+    // - /usr/share/games/doom
+    // - /usr/local/share/doom
+    // - /usr/share/doom
     {
       char *ptr, *dup_dwp;
 
@@ -545,6 +559,8 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
       Z_Free(dup_dwp);
       num_search += datadirs;
     }
+#endif
+
     // add each directory from the $DOOMWADPATH environment variable
     if ((dwp = M_getenv("DOOMWADPATH")))
     {
