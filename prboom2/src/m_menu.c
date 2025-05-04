@@ -784,7 +784,9 @@ enum
   load_end
 } load_e;
 
-int current_save_page = 1; // 0 is the quicksaves page
+static int current_save_page = 1; // 0 is the quicksaves page
+static int current_save_item = 0;
+
 const int save_page_limit = 17;
 const char *saves_pages[] =
 {
@@ -847,6 +849,7 @@ static void M_DrawLoad(void)
 {
   int i;
   current_save_page = current_page;
+  current_save_item = itemOn;
 
   if (raven) return MN_DrawLoad();
 
@@ -945,6 +948,7 @@ void M_LoadGame (int choice)
 
   M_SetupNextMenu(&LoadDef);
   current_page = current_save_page;
+  itemOn = current_save_item;
   M_ReadSaveStrings();
 }
 
@@ -1087,6 +1091,7 @@ static void M_DrawSave(void)
 {
   int i;
   current_save_page = current_page;
+  current_save_item = itemOn;
 
   if (raven) return MN_DrawSave();
 
@@ -1179,6 +1184,7 @@ void M_SaveGame (int choice)
 
   M_SetupNextMenu(&SaveDef);
   current_page = current_save_page;
+  itemOn = current_save_item;
   M_ReadSaveStrings();
 }
 
