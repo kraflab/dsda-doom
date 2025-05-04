@@ -310,6 +310,24 @@ const char* I_GetTempDir(void)
 
 #else /* not Windows, not Amiga */
 
+static const char *I_GetHomeDir(void)
+{
+  const char *home = M_getenv("HOME");
+
+  if (!home)
+  {
+#ifdef HAVE_GETPWUID
+    struct passwd *user_info = getpwuid(getuid());
+    if (user_info != NULL)
+      home = user_info->pw_dir;
+    else
+#endif
+      home = "/";
+  }
+
+  return home;
+}
+
 // Reference for XDG directories:
 // <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
 static const char *I_GetXDGDataHome(void)
@@ -322,10 +340,7 @@ static const char *I_GetXDGDataHome(void)
 
     if (!xdgdatahome || !*xdgdatahome)
     {
-      const char *home = M_getenv("HOME");
-
-      if (!home)
-        home = "/";
+      const char *home = I_GetHomeDir();
       datahome = Z_Malloc(strlen(home) + 1 + sizeof(".local/share"));
       sprintf(datahome, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
     }
@@ -352,17 +367,7 @@ const char *I_ConfigDir(void)
 
   if (!base)
   {
-    const char *home = M_getenv("HOME");
-    if (!home)
-    {
-#ifdef HAVE_GETPWUID
-      struct passwd *user_info = getpwuid(getuid());
-      if (user_info != NULL)
-        home = user_info->pw_dir;
-      else
-#endif
-        home = "/";
-    }
+    const char *home = I_GetHomeDir();
 
     // First, try legacy directory.
     base = dsda_ConcatDir(home, ".dsda-doom");
