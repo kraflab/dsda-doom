@@ -308,7 +308,43 @@ const char* I_GetTempDir(void)
   return "PROGDIR:";
 }
 
-#else
+#else /* not Windows, not Amiga */
+
+// Reference for XDG directories:
+// <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
+static const char *I_GetXDGDataHome(void)
+{
+  static char *datahome = 0;
+
+  if (!datahome)
+  {
+    const char *xdgdatahome = M_getenv("XDG_DATA_HOME");
+
+    if (!xdgdatahome || !*xdgdatahome)
+    {
+      const char *home = M_getenv("HOME");
+
+      if (!home)
+        home = "/";
+      datahome = Z_Malloc(strlen(home) + 1 + sizeof(".local/share"));
+      sprintf(datahome, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
+    }
+    else
+    {
+      datahome = Z_Strdup(xdgdatahome);
+    }
+  }
+  return datahome;
+}
+
+static const char *I_GetXDGDataDirs(void)
+{
+  const char *datadirs = M_getenv("XDG_DATA_DIRS");
+
+  if (!datadirs || !*datadirs)
+    return "/usr/local/share/:/usr/share/";
+  return datadirs;
+}
 
 const char *I_ConfigDir(void)
 {
@@ -333,19 +369,12 @@ const char *I_ConfigDir(void)
     if (access(base, F_OK) != 0)
     {
       // Legacy directory is not accessible. Use XDG directory.
-      char *xdg_data_home;
-
       Z_Free(base);
 
 #ifdef __APPLE__
       base = dsda_ConcatDir(home, "Library/Application Support/dsda-doom");
 #else
-      xdg_data_home = M_getenv("XDG_DATA_HOME");
-      if (xdg_data_home)
-        base = dsda_ConcatDir(xdg_data_home, "dsda-doom");
-      else
-        // $XDG_DATA_HOME should be $HOME/.local/share if not defined.
-        base = dsda_ConcatDir(home, ".local/share/dsda-doom");
+      base = dsda_ConcatDir(I_GetXDGDataHome(), "dsda-doom");
 #endif
     }
 
@@ -429,44 +458,6 @@ static const char *I_GetBasePath(void)
 #define PATH_SEPARATOR ";"
 #else
 #define PATH_SEPARATOR ":"
-#endif
-
-#if !defined(_WIN32) && !defined(AMIGA)
-// Reference for XDG directories:
-// <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
-static const char *I_GetXDGDataHome(void)
-{
-  static char *datahome = 0;
-
-  if (!datahome)
-  {
-    const char *xdgdatahome = M_getenv("XDG_DATA_HOME");
-
-    if (!xdgdatahome || !*xdgdatahome)
-    {
-      const char *home = M_getenv("HOME");
-
-      if (!home)
-        home = "/";
-      datahome = Z_Malloc(strlen(home) + 1 + sizeof(".local/share"));
-      sprintf(datahome, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
-    }
-    else
-    {
-      datahome = Z_Strdup(xdgdatahome);
-    }
-  }
-  return datahome;
-}
-
-static const char *I_GetXDGDataDirs(void)
-{
-  const char *datadirs = M_getenv("XDG_DATA_DIRS");
-
-  if (!datadirs || !*datadirs)
-    return "/usr/local/share/"PATH_SEPARATOR"/usr/share/";
-  return datadirs;
-}
 #endif
 
 char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
