@@ -243,6 +243,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_map_totals),
   MIGRATED_SETTING(dsda_config_map_time),
   MIGRATED_SETTING(dsda_config_map_title),
+  MIGRATED_SETTING(dsda_config_map_title_author_cycle),
   MIGRATED_SETTING(dsda_config_map_trail),
   MIGRATED_SETTING(dsda_config_map_trail_collisions),
   MIGRATED_SETTING(dsda_config_map_trail_size),
