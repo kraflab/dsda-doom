@@ -45,6 +45,7 @@
 #endif
 
 #include <stdio.h>
+#include <time.h>
 
 #include "SDL.h"
 
@@ -182,7 +183,7 @@ extern const char* g_menu_flat;
 extern int g_menu_save_page_size;
 extern int g_menu_font_spacing;
 
-#define QUICKSAVESLOT 255
+#define QUICKSAVESLOT 0
 
 static int messageToPrint;  // 1 = message to be printed
 
@@ -233,6 +234,9 @@ menu_t* currentMenu; // current menudef
 extern menu_t InfoDef1;
 extern menu_t InfoDef4;
 extern menuitem_t InfoMenu4[];
+
+static int current_page;
+static int previous_page;
 
 //
 // PROTOTYPES
@@ -779,11 +783,18 @@ enum
   load_end
 } load_e;
 
-static int save_page = 0;
-static const int save_page_limit = 16;
+static int current_save_page = 1; // 0 is the quicksaves page
+static int current_save_item = 0;
 
-#define SAVE_PAGE_STRING_SIZE 16
-char save_page_string[SAVE_PAGE_STRING_SIZE];
+const int save_page_limit = 17;
+const char *saves_pages[] =
+{
+  "Q", "1", "2", "3",
+  "4", "5", "6", "7",
+  "8", "9", "10", "11",
+  "12", "13", "14", "15",
+  "16", NULL
+};
 
 // The definitions of the Load Game screen
 
@@ -815,14 +826,14 @@ menu_t LoadDef =
 
 dboolean delete_verify = false;
 
-static void M_DeleteGame(int slot)
+static void M_DeleteSaveGame(int slot)
 {
   char *name;
 
   if (dsda_LastSaveSlot() == slot)
     dsda_ResetLastSaveSlot();
 
-  name = dsda_SaveGameName(slot + save_page * g_menu_save_page_size, false);
+  name = dsda_SaveGameName(slot + current_page * g_menu_save_page_size, false);
   remove(name);
   Z_Free(name);
 
@@ -836,6 +847,8 @@ static void M_DeleteGame(int slot)
 static void M_DrawLoad(void)
 {
   int i;
+  current_save_page = current_page;
+  current_save_item = itemOn;
 
   if (raven) return MN_DrawLoad();
 
@@ -847,7 +860,7 @@ static void M_DrawLoad(void)
     M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], CR_DEFAULT);
   }
 
-  M_WriteText(LoadDef.x, LoadDef.y + LINEHEIGHT * load_end, save_page_string, CR_DEFAULT);
+  M_DrawTabs(saves_pages, 5, 145);
 
   if (delete_verify)
     M_DrawDelVerify();
@@ -878,7 +891,7 @@ static void M_DrawSaveLoadBorder(int x,int y)
 
 void M_LoadSelect(int choice)
 {
-  if (!dsda_AllowMenuLoad(choice + save_page * g_menu_save_page_size))
+  if (!dsda_AllowMenuLoad(choice + current_page * g_menu_save_page_size))
   {
     M_StartMessage(
       "you can't load this game\n"
@@ -891,7 +904,7 @@ void M_LoadSelect(int choice)
   //  to g_game.c, this only passes the slot.
 
   // killough 3/16/98, 5/15/98: add slot, cmd
-  G_LoadGame(choice + save_page * g_menu_save_page_size);
+  G_LoadGame(choice + current_page * g_menu_save_page_size);
   M_ClearMenus();
 }
 
@@ -933,6 +946,8 @@ void M_LoadGame (int choice)
   }
 
   M_SetupNextMenu(&LoadDef);
+  current_page = current_save_page;
+  itemOn = current_save_item;
   M_ReadSaveStrings();
 }
 
@@ -978,7 +993,7 @@ static void M_ReadSaveStrings(void)
     FILE *fp;  // killough 11/98: change to use stdio
 
     // killough 3/22/98
-    name = dsda_SaveGameName(i + save_page * g_menu_save_page_size, false);
+    name = dsda_SaveGameName(i + current_page * g_menu_save_page_size, false);
 
     fp = M_OpenFile(name,"rb");
     Z_Free(name);
@@ -998,8 +1013,6 @@ static void M_ReadSaveStrings(void)
       fclose(fp);
     }
   }
-
-  snprintf(save_page_string, SAVE_PAGE_STRING_SIZE, "PAGE %d/%d", save_page + 1, save_page_limit);
 }
 
 #define SLOT_SCAN_MAX 112
@@ -1044,7 +1057,13 @@ static int M_AutoSaveSlot(const char *target_name)
   I_EndGlob(glob);
 
   if (return_slot < 0)
+  {
     return_slot = strnlen(slots, SLOT_SCAN_MAX);
+
+    // Make sure autosaves dont get added to the first page (quicksaves page)
+    if (return_slot < g_menu_save_page_size)
+      return_slot = g_menu_save_page_size;
+  }
 
   if (slots[return_slot] == 1)
     return_slot = -1;
@@ -1070,6 +1089,8 @@ void M_AutoSave(void)
 static void M_DrawSave(void)
 {
   int i;
+  current_save_page = current_page;
+  current_save_item = itemOn;
 
   if (raven) return MN_DrawSave();
 
@@ -1082,7 +1103,7 @@ static void M_DrawSave(void)
     M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], CR_DEFAULT);
     }
 
-  M_WriteText(LoadDef.x, LoadDef.y + LINEHEIGHT * load_end, save_page_string, CR_DEFAULT);
+  M_DrawTabs(saves_pages, 5, 145);
 
   if (saveStringEnter)
     {
@@ -1099,7 +1120,7 @@ static void M_DrawSave(void)
 //
 static void M_DoSave(int slot)
 {
-  G_SaveGame(slot + save_page * g_menu_save_page_size, savegamestrings[slot]);
+  G_SaveGame(slot + current_page * g_menu_save_page_size, savegamestrings[slot]);
   M_ClearMenus();
 }
 
@@ -1161,6 +1182,8 @@ void M_SaveGame (int choice)
   }
 
   M_SetupNextMenu(&SaveDef);
+  current_page = current_save_page;
+  itemOn = current_save_item;
   M_ReadSaveStrings();
 }
 
@@ -1415,6 +1438,11 @@ static void M_MusicVol(int choice)
 
 static void M_QuickSave(void)
 {
+  int i;
+  char description[SAVESTRINGSIZE];
+  time_t now;
+  struct tm *timeinfo;
+
   if (gamestate != GS_LEVEL)
     return;
 
@@ -1427,8 +1455,28 @@ static void M_QuickSave(void)
     return;
   }
 
-  G_SaveGame(QUICKSAVESLOT, "quicksave");
-  doom_printf("quicksave");
+  // Move all quicksaves downwards to make space for a new one
+  M_DeleteSaveGame(g_menu_save_page_size - 1);
+  for (i = g_menu_save_page_size - 2; i >= 0; i--)
+  {
+    char *oldname = dsda_SaveGameName(i, false);
+    char *newname = dsda_SaveGameName(i + 1, false);
+
+    rename(oldname, newname);
+
+    Z_Free(oldname);
+    Z_Free(newname);
+  }
+
+  time (&now);
+  timeinfo = localtime (&now);
+
+  strftime(description, sizeof(description), "quick %x %X", timeinfo);
+
+  G_SaveGame(QUICKSAVESLOT, description);
+  doom_printf("%s", description);
+
+  M_ReadSaveStrings();
 }
 
 /////////////////////////////
@@ -1575,8 +1623,6 @@ static void M_SizeDisplay(int choice)
 
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
-static int current_page;
-static int previous_page;
 
 // save the setup menu's itemon value in the S_END element's x coordinate
 
@@ -2157,35 +2203,32 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 }
 
-// Draws the name of each page. If there are more than 5, uses a carousel
-static void M_DrawTabs(const char **pages)
+// Draws the name of each page. If there are more than m, uses a carousel
+void M_DrawTabs(const char **pages, int m, int y)
 {
   int x = 0;
   int w = 0;
   int i = 0;
   int start_i = 0;
-  int end_i = 4;
+  int end_i = m - 1;
+  int s = (m / 2); // halfway point
 
   // Figure out what tabs should be drawn if using carousel
-  if (current_page > 2)
+  if (current_page > s)
   {
-    if (previous_page < current_page)
-    {
-      start_i = current_page - 2;
-      end_i = current_page + 2;
-    }
-    else if (previous_page > current_page)
-    {
-      start_i = current_page - 2;
-      end_i = current_page + 2;
-    }
+    while (pages[current_page + i] != NULL)
+      i++;
 
-    if (pages[current_page + 1] == NULL)
-      start_i = current_page - 4;
-    else if (pages[current_page + 2] == NULL)
-      start_i = current_page - 3;
-
-    if (start_i < 0) start_i = 0;
+    if (i <= s)
+    {
+      start_i = current_page + i - m;
+      end_i = current_page + i;
+    }
+    else
+    {
+        start_i = current_page - s;
+        end_i = current_page + s;
+    }
   }
 
   // Find the initial offset to center text
@@ -2198,14 +2241,14 @@ static void M_DrawTabs(const char **pages)
 
   // Draw the arrows on the sides
   if (start_i > 0)
-    M_DrawString(x -  M_GetPixelWidth("<-") - 1, TABS_Y , cr_tab, "<-");
+    M_DrawString(x - M_GetPixelWidth("<-") - 2, y , cr_tab, "<-");
   if (pages[i] != NULL)
-    M_DrawString(320 - x, TABS_Y , cr_tab, "->");
+    M_DrawString(320 - x + 2, y , cr_tab, "->");
 
   // Draw the page names
   for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
   {
-    M_DrawString(x, TABS_Y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
+    M_DrawString(x, y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
 
     w = M_GetPixelWidth(pages[i]);
     x += w + 6;
@@ -2316,8 +2359,6 @@ static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup
   setup_select = false;
   colorbox_active = false;
   setup_gather = false;
-  current_page = 0;
-  previous_page = 0;
 
   M_UpdateSetupMenu(setup_menu);
 }
@@ -2714,7 +2755,7 @@ static void M_DrawKeybnd(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "KEY BINDINGS", cr_title); // M_KEYBND
   M_DrawInstructions();
-  M_DrawTabs(keys_pages);
+  M_DrawTabs(keys_pages, 5, TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2786,7 +2827,7 @@ static void M_DrawWeapons(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "WEAPONS", cr_title); // M_WEAP
   M_DrawInstructions();
-  M_DrawTabs(weap_pages);
+  M_DrawTabs(weap_pages, sizeof(weap_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2871,7 +2912,7 @@ static void M_DrawDemos(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "DEMOS", cr_title); // M_DEMOS
   M_DrawInstructions();
-  M_DrawTabs(demos_pages);
+  M_DrawTabs(demos_pages, sizeof(demos_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3047,7 +3088,7 @@ static void M_DrawAutoMap(void)
   // CPhipps - patch drawing updated
   M_DrawTitle(2, "AUTOMAP", cr_title); // M_AUTO
   M_DrawInstructions();
-  M_DrawTabs(auto_pages);
+  M_DrawTabs(auto_pages, sizeof(auto_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 
   // If a color is being selected, need to show color paint chips
@@ -3296,7 +3337,7 @@ static void M_DrawGeneral(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "GENERAL", cr_title); // M_GENERL
   M_DrawInstructions();
-  M_DrawTabs(gen_pages);
+  M_DrawTabs(gen_pages, sizeof(gen_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3419,7 +3460,7 @@ static void M_DrawDisplay(void)
 
   M_DrawTitle(2, "DISPLAY", cr_title); // M_DSPLAY
   M_DrawInstructions();
-  M_DrawTabs(display_pages);
+  M_DrawTabs(display_pages, sizeof(display_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3487,7 +3528,7 @@ static void M_DrawCompatibility(void)
 
   M_DrawTitle(2, "COMPATIBILITY", cr_title); // M_COMP
   M_DrawInstructions();
-  M_DrawTabs(comp_pages);
+  M_DrawTabs(comp_pages, sizeof(comp_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4020,7 +4061,7 @@ static void M_DrawLevelTable(void)
   if (current_setup_menu != level_table_page[wad_stats_summary_page])
     M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
 
-  M_DrawTabs(level_table_pages);
+  M_DrawTabs(level_table_pages, sizeof(level_table_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -5670,7 +5711,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     switch (M_EventToConfirmation(ch, action, ev))
     {
       case confirmation_yes:
-        M_DeleteGame(itemOn);
+        M_DeleteSaveGame(itemOn);
         S_StartVoidSound(g_sfx_itemup);
         delete_verify = false;
         break;
@@ -5742,11 +5783,11 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
 
     if (diff)
     {
-      save_page += diff;
-      if (save_page < 0)
-        save_page = save_page_limit - 1;
-      else if (save_page >= save_page_limit)
-        save_page = 0;
+      current_page += diff;
+      if (current_page < 0)
+        current_page = save_page_limit - 1;
+      else if (current_page >= save_page_limit)
+        current_page = 0;
 
       M_ReadSaveStrings();
     }
@@ -6192,6 +6233,9 @@ void M_SetupNextMenu(menu_t *menudef)
   itemOn = currentMenu->lastOn;
 
   BorderNeedRefresh = true;
+
+  current_page = 0;
+  previous_page = 0;
 }
 
 /////////////////////////////

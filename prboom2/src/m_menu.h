@@ -81,6 +81,8 @@ void M_ResetMenu(void);      // killough 11/98: reset main menu ordering
 
 void M_DrawCredits(void);    // killough 11/98
 
+void M_DrawTabs(const char **pages, int m, int y);
+
 /****************************
  *
  * The setup_group enum is used to show which 'groups' keys fall into so
