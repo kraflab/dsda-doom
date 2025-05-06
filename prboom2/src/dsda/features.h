@@ -87,7 +87,8 @@ typedef enum {
   // uf_fuzz = 64
   uf_vanillatrans = 65,
   uf_ghosttrans,
-  // 67
+  uf_levelbrightness,
+  // 68
 
   // 127
 } dsda_feature_flag_t;

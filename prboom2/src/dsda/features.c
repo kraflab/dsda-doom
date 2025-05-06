@@ -33,6 +33,7 @@ static const char* feature_names[FEATURE_SIZE] = {
   [uf_quickstartcache] = "Quickstart Cache",
   [uf_100k] = "100K Tracker",
   [uf_console] = "Console",
+  [uf_levelbrightness] = "Extra Lighting",
 
   [uf_iddt] = "IDDT",
   [uf_automap] = "IDBEHOLD Map",

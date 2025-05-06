@@ -1312,6 +1312,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "announce_map", dsda_config_announce_map,
     CONF_BOOL(0),
   },
+  [dsda_config_extra_level_brightness] = {
+    "extra_level_brightness", dsda_config_extra_level_brightness,
+    dsda_config_int, 0, 4, {0}, NULL, STRICT_INT(0)
+  },
 };
 
 static void dsda_PersistIntConfig(dsda_config_t* conf) {

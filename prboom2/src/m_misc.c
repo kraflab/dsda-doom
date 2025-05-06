@@ -170,6 +170,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_render_linearsky),
   MIGRATED_SETTING(dsda_config_aspect_ratio_correction),
   MIGRATED_SETTING(dsda_config_freelook),
+  MIGRATED_SETTING(dsda_config_extra_level_brightness),
 
   SETTING_HEADING("OpenGL settings"),
   MIGRATED_SETTING(dsda_config_gl_render_multisampling),
