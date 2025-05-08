@@ -3,7 +3,6 @@ name: Continuous Integration
 on: [push, pull_request]
 
 env:
-  VCPKG_INSTALLED_DIR: "${{ github.workspace }}/vcpkg_installed"
   VCPKG_BINARY_SOURCES: "clear;files,${{ github.workspace }}/vcpkg_cache,readwrite"
 
 jobs:
@@ -139,12 +138,17 @@ jobs:
               sdl2_mixer \
               dylibbundler
 
+      - name: Generate vcpkg cache key
+        if: ${{ matrix.config.vcpkg }}
+        shell: bash
+        run: echo "CACHE_KEY=vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('prboom2/vcpkg.json') }}" >> $GITHUB_ENV 
+
       - name: Restore vcpkg cache
         if: ${{ matrix.config.vcpkg }}
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('prboom2/vcpkg.json', 'vcpkg_installed/compiler-file-hash-cache.json', 'vcpkg_installed/status') }}
+          key: ${{ env.CACHE_KEY }}
           restore-keys: vcpkg-${{ matrix.config.triplet }}-
 
       - name: Configure
@@ -157,11 +161,19 @@ jobs:
       - name: Build
         run: cmake --build build --config ${{ matrix.config.build_type }}
 
+      # Delete the old cache on hit to emulate a cache update.
+      - name: Delete old vcpkg cache
+        if: ${{ matrix.config.vcpkg }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh cache delete --repo ${{ github.repository }} ${{ env.CACHE_KEY }}
+
       - name: Save vcpkg cache
+        if: ${{ matrix.config.vcpkg }}
         uses: actions/cache/save@v4
         with:
           path: ${{ github.workspace }}/vcpkg_cache
-          key: vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('prboom2/vcpkg.json', 'vcpkg_installed/compiler-file-hash-cache.json', 'vcpkg_installed/status') }}
+          key: ${{ env.CACHE_KEY }}
 
       - name: Package
         if: ${{ matrix.config.package_name }}
