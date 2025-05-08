@@ -308,7 +308,58 @@ const char* I_GetTempDir(void)
   return "PROGDIR:";
 }
 
-#else
+#else /* not Windows, not Amiga */
+
+static const char *I_GetHomeDir(void)
+{
+  const char *home = M_getenv("HOME");
+
+  if (!home)
+  {
+#ifdef HAVE_GETPWUID
+    struct passwd *user_info = getpwuid(getuid());
+    if (user_info != NULL)
+      home = user_info->pw_dir;
+    else
+#endif
+      home = "/";
+  }
+
+  return home;
+}
+
+// Reference for XDG directories:
+// <https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html>
+static const char *I_GetXDGDataHome(void)
+{
+  static char *datahome = 0;
+
+  if (!datahome)
+  {
+    const char *xdgdatahome = M_getenv("XDG_DATA_HOME");
+
+    if (!xdgdatahome || !*xdgdatahome)
+    {
+      const char *home = I_GetHomeDir();
+      datahome = Z_Malloc(strlen(home) + 1 + sizeof(".local/share"));
+      sprintf(datahome, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
+    }
+    else
+    {
+      datahome = Z_Strdup(xdgdatahome);
+    }
+  }
+  return datahome;
+}
+
+static const char *I_GetXDGDataDirs(void)
+{
+  const char *datadirs = M_getenv("XDG_DATA_DIRS");
+
+  if (!datadirs || !*datadirs)
+    return "/usr/local/share/:/usr/share/";
+  return datadirs;
+}
 
 const char *I_ConfigDir(void)
 {
@@ -316,36 +367,19 @@ const char *I_ConfigDir(void)
 
   if (!base)
   {
-    const char *home = M_getenv("HOME");
-    if (!home)
-    {
-#ifdef HAVE_GETPWUID
-      struct passwd *user_info = getpwuid(getuid());
-      if (user_info != NULL)
-        home = user_info->pw_dir;
-      else
-#endif
-        home = "/";
-    }
+    const char *home = I_GetHomeDir();
 
     // First, try legacy directory.
     base = dsda_ConcatDir(home, ".dsda-doom");
     if (access(base, F_OK) != 0)
     {
       // Legacy directory is not accessible. Use XDG directory.
-      char *xdg_data_home;
-
       Z_Free(base);
 
 #ifdef __APPLE__
       base = dsda_ConcatDir(home, "Library/Application Support/dsda-doom");
 #else
-      xdg_data_home = M_getenv("XDG_DATA_HOME");
-      if (xdg_data_home)
-        base = dsda_ConcatDir(xdg_data_home, "dsda-doom");
-      else
-        // $XDG_DATA_HOME should be $HOME/.local/share if not defined.
-        base = dsda_ConcatDir(home, ".local/share/dsda-doom");
+      base = dsda_ConcatDir(I_GetXDGDataHome(), "dsda-doom");
 #endif
     }
 
@@ -426,9 +460,9 @@ static const char *I_GetBasePath(void)
  */
 
 #ifdef _WIN32
-#define PATH_SEPARATOR ';'
+#define PATH_SEPARATOR ";"
 #else
-#define PATH_SEPARATOR ':'
+#define PATH_SEPARATOR ":"
 #endif
 
 char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
@@ -441,8 +475,8 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     const char *(*func)(void); // for functions that return the directory
   } search0[] = {
     {NULL, NULL, NULL, I_ExeDir}, // executable directory
-#ifndef _WIN32
-    {NULL, NULL, NULL, I_ConfigDir}, // config and autoload directory. on windows, this is the same as I_ExeDir
+#if !defined(_WIN32) && !defined(AMIGA)
+    {NULL, NULL, NULL, I_ConfigDir}, // config and autoload directory. on windows/amiga, this is the same as I_ExeDir
 #endif
     {NULL}, // current working directory
     {NULL, NULL, "DOOMWADDIR"}, // run-time $DOOMWADDIR
@@ -452,10 +486,9 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     {NULL, "../share/games/doom", NULL, I_GetBasePath}, // AppImage
     {NULL, "doom", "HOME"}, // ~/doom
     {NULL, NULL, "HOME"}, // ~
-    {"/usr/local/share/games/doom"},
-    {"/usr/share/games/doom"},
-    {"/usr/local/share/doom"},
-    {"/usr/share/doom"},
+#if !defined(_WIN32) && !defined(AMIGA)
+    {NULL, "games/doom", NULL, I_GetXDGDataHome}, // $HOME/.local/share/games/doom
+#endif
   }, *search;
 
   static size_t num_search;
@@ -471,46 +504,72 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
 
   if (!num_search)
   {
-    char *dwp;
+    int extra = 0;
+#if !defined(_WIN32) && !defined(AMIGA)
+    int datadirs = 0;
+#endif
+    const char *dwp;
+
+    // calculate how many extra entries we need to add to the table
+#if !defined(_WIN32) && !defined(AMIGA)
+    dwp = I_GetXDGDataDirs();
+    datadirs++;
+    while ((dwp = strchr(dwp, *PATH_SEPARATOR)))
+      dwp++, datadirs++;
+    extra += datadirs * 2; // two entries for each datadir
+#endif
+    if ((dwp = M_getenv("DOOMWADPATH")))
+    {
+      extra++;
+      while ((dwp = strchr(dwp, *PATH_SEPARATOR)))
+        dwp++, extra++;
+    }
 
     // initialize with the static lookup table
     num_search = sizeof(search0)/sizeof(*search0);
-    search = Z_Malloc(num_search * sizeof(*search));
+    search = Z_Malloc((num_search + extra) * sizeof(*search));
     memcpy(search, search0, num_search * sizeof(*search));
+    memset(&search[num_search], 0, extra * sizeof(*search));
+
+#if !defined(_WIN32) && !defined(AMIGA)
+    // add $XDG_DATA_DIRS/games/doom and $XDG_DATA_DIRS/doom
+    // by default this includes:
+    // - /usr/local/share/games/doom
+    // - /usr/share/games/doom
+    // - /usr/local/share/doom
+    // - /usr/share/doom
+    {
+      char *ptr, *dup_dwp;
+
+      dup_dwp = Z_Strdup(I_GetXDGDataDirs());
+      ptr = strtok(dup_dwp, PATH_SEPARATOR);
+      while (ptr)
+      {
+        search[num_search].dir = Z_Strdup(ptr);
+        search[num_search].sub = "games/doom";
+        search[num_search + datadirs].dir = Z_Strdup(ptr);
+        search[num_search + datadirs].sub = "doom";
+        num_search++;
+        ptr = strtok(NULL, PATH_SEPARATOR);
+      }
+      Z_Free(dup_dwp);
+      num_search += datadirs;
+    }
+#endif
 
     // add each directory from the $DOOMWADPATH environment variable
     if ((dwp = M_getenv("DOOMWADPATH")))
     {
-      char *left, *ptr, *dup_dwp;
+      char *ptr, *dup_dwp;
 
       dup_dwp = Z_Strdup(dwp);
-      left = dup_dwp;
-
-      for (;;)
+      ptr = strtok(dup_dwp, PATH_SEPARATOR);
+      while (ptr)
       {
-          ptr = strchr(left, PATH_SEPARATOR);
-          if (ptr != NULL)
-          {
-              *ptr = '\0';
-
-              num_search++;
-              search = Z_Realloc(search, num_search * sizeof(*search));
-              memset(&search[num_search-1], 0, sizeof(*search));
-              search[num_search-1].dir = Z_Strdup(left);
-
-              left = ptr + 1;
-          }
-          else
-          {
-              break;
-          }
+        search[num_search].dir = Z_Strdup(ptr);
+        num_search++;
+        ptr = strtok(NULL, PATH_SEPARATOR);
       }
-
-      num_search++;
-      search = Z_Realloc(search, num_search * sizeof(*search));
-      memset(&search[num_search-1], 0, sizeof(*search));
-      search[num_search-1].dir = Z_Strdup(left);
-
       Z_Free(dup_dwp);
     }
   }
