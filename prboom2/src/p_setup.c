@@ -3835,6 +3835,8 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
 
   P_MapStart();
 
+  P_SetThingPosition_SetFuncs();
+
   if (heretic)
   {
     P_InitAmbientSound();
