@@ -173,7 +173,7 @@ void gld_AddSkyTexture(GLWall *wall, int sky1, int sky2, int skytype)
       wall->skyyaw = (double) (viewangle + s->textureoffset) / (double) ANGLE_MAX;
       wall->skypitch = skyYShift;
       wall->skyoffset = (((float)s->rowoffset/(float)FRACUNIT - 28.0f)/wall->gltexture->buffer_height);
-      wall->flag = l->special == 282 ? GLDWF_SKY : GLDWF_SKYFLIP;
+      wall->flag = l->special == 272 ? GLDWF_SKY : GLDWF_SKYFLIP;
     }
   }
   else
