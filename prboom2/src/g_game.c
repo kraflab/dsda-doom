@@ -895,15 +895,15 @@ void G_BuildTiccmd(ticcmd_t* cmd)
       {
         // HERETIC_TODO: fix this
         newweapon =
-          dsda_InputActive(dsda_input_weapon1) ? wp_fist :    // killough 5/2/98: reformatted
-          dsda_InputActive(dsda_input_weapon2) ? wp_pistol :
-          dsda_InputActive(dsda_input_weapon3) ? wp_shotgun :
-          dsda_InputActive(dsda_input_weapon4) ? wp_chaingun :
-          dsda_InputActive(dsda_input_weapon5) ? wp_missile :
-          dsda_InputActive(dsda_input_weapon6) && gamemode != shareware ? wp_plasma :
-          dsda_InputActive(dsda_input_weapon7) && gamemode != shareware ? wp_bfg :
-          dsda_InputActive(dsda_input_weapon8) ? wp_chainsaw :
-          (!demo_compatibility && dsda_InputActive(dsda_input_weapon9) && gamemode == commercial) ? wp_supershotgun :
+          dsda_InputTickActivated(dsda_input_weapon1) ? wp_fist :    // killough 5/2/98: reformatted
+          dsda_InputTickActivated(dsda_input_weapon2) ? wp_pistol :
+          dsda_InputTickActivated(dsda_input_weapon3) ? wp_shotgun :
+          dsda_InputTickActivated(dsda_input_weapon4) ? wp_chaingun :
+          dsda_InputTickActivated(dsda_input_weapon5) ? wp_missile :
+          dsda_InputTickActivated(dsda_input_weapon6) && gamemode != shareware ? wp_plasma :
+          dsda_InputTickActivated(dsda_input_weapon7) && gamemode != shareware ? wp_bfg :
+          dsda_InputTickActivated(dsda_input_weapon8) ? wp_chainsaw :
+          (!demo_compatibility && dsda_InputTickActivated(dsda_input_weapon9) && gamemode == commercial) ? wp_supershotgun :
           wp_nochange;
       }
 
