@@ -33,7 +33,6 @@ static const char* feature_names[FEATURE_SIZE] = {
   [uf_quickstartcache] = "Quickstart Cache",
   [uf_100k] = "100K Tracker",
   [uf_console] = "Console",
-  [uf_levelbrightness] = "Extra Lighting",
 
   [uf_iddt] = "IDDT",
   [uf_automap] = "IDBEHOLD Map",
@@ -68,6 +67,7 @@ static const char* feature_names[FEATURE_SIZE] = {
   [uf_advanced_map] = "Advanced Map",
   [uf_vanillatrans] = "Vanilla Translucency",
   [uf_ghosttrans] = "Ghost Translucency",
+  [uf_levelbrightness] = "Extra Lighting",
 };
 
 void dsda_TrackFeature(int feature) {
