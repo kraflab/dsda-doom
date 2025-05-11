@@ -5783,6 +5783,8 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
 
     if (diff)
     {
+      S_StartVoidSound(g_sfx_menu);
+
       current_page += diff;
       if (current_page < 0)
         current_page = save_page_limit - 1;
