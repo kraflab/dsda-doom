@@ -726,6 +726,7 @@ int force_singletics_to = 0;
 
 int HU_DrawDemoProgress(int force)
 {
+  extern float mouse_hide_timer;
   static unsigned int last_update = 0;
   static int prev_len = -1;
 
@@ -759,9 +760,18 @@ int HU_DrawDemoProgress(int force)
 
   prev_len = len;
 
-  V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_lightest);
-  if (len > 4)
-    V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_darkest);
+  if (mouse_hide_timer > 0)
+  {
+    V_FillRect(0, 0, SCREENHEIGHT - 16, len - 0, 16, playpal_lightest);
+    if (len > 4)
+      V_FillRect(0, 2, SCREENHEIGHT - 14, len - 4, 12, playpal_darkest);
+  }
+  else
+  {
+    V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_lightest);
+    if (len > 4)
+      V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_darkest);
+  }
 
   return true;
 }

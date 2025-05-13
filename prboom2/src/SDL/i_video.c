@@ -128,6 +128,7 @@ int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
+int mouse_hide_timer = 0;
 
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
@@ -1541,6 +1542,8 @@ static void I_ReadMouse(void)
       event.data2.i = -y;
 
       D_PostEvent(&event);
+
+      mouse_hide_timer = 3 * TICRATE;
     }
   }
 }
@@ -1555,6 +1558,13 @@ static dboolean MouseShouldBeGrabbed()
   // if the window doesnt have focus, never grab it
   if (!window_focused)
     return false;
+
+  // during playback the mouse should be hidden when not moving
+  if (demoplayback && mouse_hide_timer > 0)
+  {
+    mouse_hide_timer--;
+    return false;
+  }
 
   // always grab the mouse when full screen (dont want to
   // see the mouse pointer)
@@ -1574,8 +1584,8 @@ static dboolean MouseShouldBeGrabbed()
   if (menuactive || dsda_Paused())
     return false;
 
-  // only grab mouse when playing levels (but not demos)
-  return !demoplayback;
+  // grab mouse when playing levels
+  return true;
 }
 
 // Update the value of window_focused when we get a focus event
