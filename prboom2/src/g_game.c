@@ -35,6 +35,8 @@
  *-----------------------------------------------------------------------------
  */
 
+#include "SDL.h"
+#include "doomdef.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -1297,6 +1299,19 @@ dboolean G_Responder (event_t* ev)
       AM_Responder(ev)
     )
   ) return true;
+
+
+  if (demoplayback && dsda_InputActivated(dsda_input_fire))
+  {
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+
+    if (y > (SCREENHEIGHT - SCREENHEIGHT / 50))
+    {
+      dsda_JumpToLogicTic(demo_tics_count * x / SCREENWIDTH);
+      return true;
+    }
+  }
 
   // allow spy mode changes even during the demo
   // killough 2/22/98: even during DM demo
