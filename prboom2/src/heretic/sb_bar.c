@@ -1262,7 +1262,7 @@ void DrawKeyBar(void)
 
 static int PieceX[NUMCLASSES][3] = {
     [PCLASS_FIGHTER] = {190, 225, 234},
-                       {190, 212, 225},
+                       {190, 213, 226},
                        {190, 205, 224},
                        {0, 0, 0}                   // Pig is never used
 };
@@ -1277,15 +1277,15 @@ static void DrawWeaponPieces(void)
     V_DrawNumPatch(190, 162, 0, LumpWEAPONSLOT, CR_DEFAULT, VPT_STRETCH);
     if (CPlayer->pieces & WPIECE1)
     {
-        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer] - 1][0], 162, 0, LumpPIECE1, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][0], 162, 0, LumpPIECE1, CR_DEFAULT, VPT_STRETCH);
     }
     if (CPlayer->pieces & WPIECE2)
     {
-        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer] - 1][1], 162, 0, LumpPIECE2, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][1], 162, 0, LumpPIECE2, CR_DEFAULT, VPT_STRETCH);
     }
     if (CPlayer->pieces & WPIECE3)
     {
-        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer] - 1][2], 162, 0, LumpPIECE3, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNumPatch(PieceX[PlayerClass[consoleplayer]][2], 162, 0, LumpPIECE3, CR_DEFAULT, VPT_STRETCH);
     }
 }
 
