@@ -1285,6 +1285,27 @@ static void G_DoLoadLevel (void)
   }
 }
 
+void dsda_GetMousePosition(int *x, int *y)
+{
+  extern int gl_viewport_width, gl_viewport_height, gl_viewport_x, gl_viewport_y;
+  int window_x, window_y;
+  SDL_GetMouseState(&window_x, &window_y);
+
+  // window_x and window_y have the mouse position in the window
+  // but we want the mouse position in the viewport
+  if (gl_viewport_x < window_x && window_x < (gl_viewport_x + gl_viewport_width))
+  {
+    *x = window_x - gl_viewport_x;
+  }
+  else *x = 0;
+
+  if (gl_viewport_y < window_y && window_y < (gl_viewport_y + gl_viewport_height))
+  {
+    *y = window_y - gl_viewport_y;
+  }
+  else *y = 0;
+}
+
 //
 // G_Responder
 // Get info needed to make ticcmd_ts for the players.
@@ -1300,15 +1321,15 @@ dboolean G_Responder (event_t* ev)
     )
   ) return true;
 
-
   if (demoplayback && dsda_InputActivated(dsda_input_fire))
   {
+    extern int gl_viewport_width, gl_viewport_height;
     int x, y;
-    SDL_GetMouseState(&x, &y);
+    dsda_GetMousePosition(&x, &y);
 
-    if (y > (SCREENHEIGHT - SCREENHEIGHT / 50))
+    if (x && y > (gl_viewport_height * (200 - 12) / 200))
     {
-      dsda_JumpToLogicTic(demo_tics_count * x / SCREENWIDTH);
+      dsda_JumpToLogicTic(demo_tics_count * x / (gl_viewport_width));
       return true;
     }
   }
@@ -2375,7 +2396,7 @@ const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 
 const char * hexen_skill_fighter[5] = { "SQUIRE", "KNIGHT", "WARRIOR", "BERSERKER", "TITAN" };
 const char * hexen_skill_cleric[5] = { "ALTAR BOY", "ACOLYTE", "PRIEST", "CARDINAL", "POPE" };
-const char * hexen_skill_mage[5] = { "APPRENTICE", "ENCHANTER", "SORCERER", "WARLOCK", "ARCHIMAGE" };  
+const char * hexen_skill_mage[5] = { "APPRENTICE", "ENCHANTER", "SORCERER", "WARLOCK", "ARCHIMAGE" };
 
 //==========================================================================
 //

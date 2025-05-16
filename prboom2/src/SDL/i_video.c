@@ -89,6 +89,7 @@
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
+#include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/gl/render_scale.h"
 
@@ -586,15 +587,6 @@ static int newpal = 0;
 
 void I_FinishUpdate (void)
 {
-  //e6y: new mouse code
-  UpdateGrab();
-
-#ifdef MONITOR_VISIBILITY
-  //!!if (!(SDL_GetAppState()&SDL_APPACTIVE)) {
-  //!!  return;
-  //!!}
-#endif
-
   if (V_IsOpenGLMode()) {
     // proff 04/05/2000: swap OpenGL buffers
     gld_Finish();
@@ -1527,6 +1519,9 @@ static void I_ReadMouse(void)
   if (!mouse_enabled)
     return;
 
+  //e6y: new mouse code
+  UpdateGrab();
+
   if (window_focused)
   {
     int x, y;
@@ -1543,7 +1538,8 @@ static void I_ReadMouse(void)
 
       D_PostEvent(&event);
 
-      mouse_hide_timer = 3 * TICRATE;
+      if (!menuactive)
+        mouse_hide_timer = 2 * TICRATE;
     }
   }
 }
@@ -1560,9 +1556,11 @@ static dboolean MouseShouldBeGrabbed()
     return false;
 
   // during playback the mouse should be hidden when not moving
-  if (demoplayback && mouse_hide_timer > 0)
+  if (demoplayback && !menuactive && mouse_hide_timer > 0)
   {
-    mouse_hide_timer--;
+    if (!dsda_SkipMode())
+      mouse_hide_timer--;
+
     return false;
   }
 
