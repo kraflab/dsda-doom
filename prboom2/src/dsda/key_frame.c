@@ -59,7 +59,7 @@ static dsda_key_frame_t first_kf;
 static dsda_key_frame_t quick_kf;
 static dsda_key_frame_t temp_kf;
 static auto_kf_t* auto_key_frames;
-static auto_kf_t* last_auto_kf;
+auto_kf_t* last_auto_kf;
 static int auto_kf_size;
 static int restore_key_frame_index = -1;
 
@@ -117,7 +117,7 @@ static void dsda_ResolveParentKF(dsda_key_frame_t* kf) {
   }
 }
 
-static void dsda_RewindKF(auto_kf_t** current) {
+void dsda_RewindKF(auto_kf_t** current) {
   auto_kf_t* auto_kf;
 
   auto_kf = *current;

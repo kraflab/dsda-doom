@@ -31,6 +31,8 @@
  *-----------------------------------------------------------------------------
  */
 
+#include "dsda/configuration.h"
+#include "v_video.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -86,6 +88,7 @@
 
 #include "dsda/args.h"
 #include "dsda/excmd.h"
+#include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/playback.h"
@@ -762,9 +765,23 @@ int HU_DrawDemoProgress(int force)
 
   if (mouse_hide_timer > 0)
   {
-    V_FillRect(0, 0, SCREENHEIGHT - 16, len - 0, 16, playpal_lightest);
+    V_FillRect(0, 0, SCREENHEIGHT - 12, len - 0, 12, playpal_lightest);
     if (len > 4)
-      V_FillRect(0, 2, SCREENHEIGHT - 14, len - 4, 12, playpal_darkest);
+      V_FillRect(0, 2, SCREENHEIGHT - 10, len - 4, 8, playpal_darkest);
+
+    extern auto_kf_t* last_auto_kf;
+    extern void dsda_RewindKF(auto_kf_t** current);
+    if (last_auto_kf) {
+      auto_kf_t* auto_kf;
+
+      auto_kf = last_auto_kf;
+      for (auto_kf = last_auto_kf; auto_kf && auto_kf->kf.buffer; dsda_RewindKF(&auto_kf))
+        {
+          int nlen = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * auto_kf->kf.game_tic_count / tics_count));
+          V_FillRect(0, nlen, SCREENHEIGHT - 10, 1, 8, colrngs[CR_LIGHTBLUE][playpal_lightest]);
+        }
+    }
+    V_FillRect(0, len - 1, SCREENHEIGHT - 12, 2, 12, playpal_lightest);
   }
   else
   {
