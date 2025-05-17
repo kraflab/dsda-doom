@@ -94,6 +94,7 @@ void HU_InitThresholds(void)
 }
 
 dsda_string_t hud_title;
+dsda_string_t hud_title_cycle;
 
 static void HU_FetchTitle(void)
 {
@@ -101,6 +102,19 @@ static void HU_FetchTitle(void)
     dsda_FreeString(&hud_title);
 
   dsda_HUTitle(&hud_title);
+}
+
+dsda_string_t hud_author;
+
+static void HU_FetchAuthor(void)
+{
+  const char* author = dsda_MapAuthor();
+
+  if (hud_author.string)
+    dsda_FreeString(&hud_author);
+
+  if (author && author[0])
+    dsda_StringPrintF(&hud_author, author);
 }
 
 static void HU_InitMessages(void)
@@ -310,17 +324,15 @@ void HU_AnnounceMap(void)
 
     if (gamemap != last_gamemap || gameepisode != last_gameepisode)
     {
-      const char *author;
 
       last_gamemap = gamemap;
       last_gameepisode = gameepisode;
 
-      author = dsda_MapAuthor();
-      if (author && author[0])
+      if (hud_author.string)
       {
         dsda_string_t message;
 
-        dsda_StringPrintF(&message, "%s by %s", hud_title.string, author);
+        dsda_StringPrintF(&message, "%s by %s", hud_title.string, hud_author.string);
         dsda_AddAlert(message.string);
         dsda_FreeString(&message);
       }
@@ -348,6 +360,7 @@ void HU_Start(void)
   HU_InitPlayer();
   HU_InitMessages();
   HU_FetchTitle();
+  HU_FetchAuthor();
   HU_InitCrosshair();
 
   dsda_InitExHud();
@@ -421,6 +434,12 @@ void HU_Ticker(void)
     {
       S_StartVoidSound(custom_message_p->sfx);
     }
+  }
+
+  // Reset map/author cycle when leaving automap
+  if (hud_title_cycle.string && !automap_active)
+  {
+    dsda_FreeString(&hud_title_cycle);
   }
 
   dsda_UpdateExHud();
