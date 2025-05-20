@@ -31,6 +31,8 @@
  *-----------------------------------------------------------------------------
  */
 
+#include "dsda/configuration.h"
+#include "v_video.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -86,6 +88,7 @@
 
 #include "dsda/args.h"
 #include "dsda/excmd.h"
+#include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/playback.h"
@@ -726,6 +729,7 @@ int force_singletics_to = 0;
 
 int HU_DrawDemoProgress(int force)
 {
+  extern float mouse_hide_timer;
   static unsigned int last_update = 0;
   static int prev_len = -1;
 
@@ -759,9 +763,40 @@ int HU_DrawDemoProgress(int force)
 
   prev_len = len;
 
-  V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_lightest);
-  if (len > 4)
-    V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_darkest);
+  if (mouse_hide_timer > 0)
+  {
+    V_FillRect(0, 0, SCREENHEIGHT - 12, len - 0, 12, playpal_lightest);
+    if (len > 4)
+      V_FillRect(0, 2, SCREENHEIGHT - 10, len - 4, 8, playpal_darkest);
+
+    extern dsda_key_frame_t* playback_key_frames;
+    extern int playback_kf_size;
+    for (int i = 0; i < playback_kf_size; i++)
+    {
+      if (!playback_key_frames[i].buffer) continue;
+
+      int nlen = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * playback_key_frames[i].game_tic_count / tics_count));
+      V_FillRect(0, nlen, SCREENHEIGHT - 10, 1, 8, colrngs[CR_LIGHTBLUE][playpal_lightest]);
+    }
+
+    extern auto_kf_t* auto_key_frames;
+    extern int auto_kf_size;
+    for (int i = 0; i < auto_kf_size; i++)
+    {
+      if (!auto_key_frames[i].kf.buffer) continue;
+
+      int nlen = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * auto_key_frames[i].kf.game_tic_count / tics_count));
+      V_FillRect(0, nlen, SCREENHEIGHT - 10, 1, 8, colrngs[CR_GREEN][playpal_lightest]);
+    }
+
+    V_FillRect(0, len - 1, SCREENHEIGHT - 12, 2, 12, playpal_lightest);
+  }
+  else
+  {
+    V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_lightest);
+    if (len > 4)
+      V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_darkest);
+  }
 
   return true;
 }

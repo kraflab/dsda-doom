@@ -55,6 +55,9 @@ static void dsda_CacheSkipSetting(dboolean* old, dboolean* current) {
 static dboolean old_fastdemo, old_nodrawers, old_nosfxparm, old_nomusicparm;
 
 static void dsda_ApplySkipSettings(void) {
+  if (skip_mode)
+    return;
+
   dsda_CacheSkipSetting(&old_fastdemo, &fastdemo);
   dsda_CacheSkipSetting(&old_nodrawers, &nodrawers);
   dsda_CacheSkipSetting(&old_nosfxparm, &nosfxparm);
@@ -72,11 +75,11 @@ void dsda_EnterSkipMode(void) {
   extern void M_ClearMenus(void);
 
   dsda_TrackFeature(uf_skip);
+  dsda_ApplySkipSettings();
 
   skip_mode = true;
 
   M_ClearMenus();
-  dsda_ApplySkipSettings();
   dsda_ResetPauseMode();
   S_StopMusic();
   I_Init2();

@@ -54,5 +54,6 @@ void dsda_RewindAutoKeyFrame(void);
 void dsda_ResetAutoKeyFrameTimeout(void);
 void dsda_UpdateAutoKeyFrames(void);
 void dsda_ForgetAutoKeyFrames(void);
+void dsda_UpdatePlaybackKeyFrames(void);
 
 #endif
