@@ -769,18 +769,26 @@ int HU_DrawDemoProgress(int force)
     if (len > 4)
       V_FillRect(0, 2, SCREENHEIGHT - 10, len - 4, 8, playpal_darkest);
 
-    extern auto_kf_t* last_auto_kf;
-    extern void dsda_RewindKF(auto_kf_t** current);
-    if (last_auto_kf) {
-      auto_kf_t* auto_kf;
+    extern dsda_key_frame_t* playback_key_frames;
+    extern int playback_kf_size;
+    for (int i = 0; i < playback_kf_size; i++)
+    {
+      if (!playback_key_frames[i].buffer) continue;
 
-      auto_kf = last_auto_kf;
-      for (auto_kf = last_auto_kf; auto_kf && auto_kf->kf.buffer; dsda_RewindKF(&auto_kf))
-        {
-          int nlen = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * auto_kf->kf.game_tic_count / tics_count));
-          V_FillRect(0, nlen, SCREENHEIGHT - 10, 1, 8, colrngs[CR_LIGHTBLUE][playpal_lightest]);
-        }
+      int nlen = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * playback_key_frames[i].game_tic_count / tics_count));
+      V_FillRect(0, nlen, SCREENHEIGHT - 10, 1, 8, colrngs[CR_LIGHTBLUE][playpal_lightest]);
     }
+
+    extern auto_kf_t* auto_key_frames;
+    extern int auto_kf_size;
+    for (int i = 0; i < auto_kf_size; i++)
+    {
+      if (!auto_key_frames[i].kf.buffer) continue;
+
+      int nlen = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * auto_key_frames[i].kf.game_tic_count / tics_count));
+      V_FillRect(0, nlen, SCREENHEIGHT - 10, 1, 8, colrngs[CR_GREEN][playpal_lightest]);
+    }
+
     V_FillRect(0, len - 1, SCREENHEIGHT - 12, 2, 12, playpal_lightest);
   }
   else

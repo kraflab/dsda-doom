@@ -56,15 +56,11 @@ dboolean dsda_JumpToLogicTic(int tic) {
   if (tic < 0)
     return false;
 
-  if (tic > true_logictic)
-    dsda_SkipToLogicTic(tic);
-  else if (tic < true_logictic) {
-    if (!dsda_RestoreClosestKeyFrame(tic))
-      return false;
+  if (!dsda_RestoreClosestKeyFrame(tic))
+    return false;
 
-    if (tic != true_logictic)
-      dsda_SkipToLogicTic(tic);
-  }
+  if (tic != true_logictic)
+    dsda_SkipToLogicTic(tic);
 
   return true;
 }
