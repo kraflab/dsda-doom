@@ -33,6 +33,12 @@
         "dumb"
       ]
     },
+    "libopenmpt": {
+      "description": "Build with libopenmpt support",
+      "dependencies": [
+        "libopenmpt"
+      ]
+    },
     "fluidsynth": {
       "description": "Build with FluidSynth support",
       "dependencies": [
