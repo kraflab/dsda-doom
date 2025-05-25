@@ -473,6 +473,8 @@ set(DOOMMUSIC_SOURCES
     MUSIC/portmidiplayer.h
     MUSIC/vorbisplayer.c
     MUSIC/vorbisplayer.h
+    MUSIC/libopenmptplayer.c
+    MUSIC/libopenmptplayer.h
 )
 
 set(EXTRA_FILES
@@ -588,6 +590,10 @@ function(AddGameExecutable TARGET SOURCES)
 
     if(HAVE_LIBPORTMIDI)
         target_link_libraries(${TARGET} PRIVATE PortMidi::portmidi)
+    endif()
+
+    if(HAVE_LIBOPENMPT)
+        target_link_libraries(${TARGET} PRIVATE libopenmpt::libopenmpt)
     endif()
 
     add_dependencies(${TARGET} dsda-doom-wad)

@@ -30,6 +30,11 @@ if(WITH_VORBISFILE)
     list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
 endif()
 
+option(WITH_LIBOPENMPT "Use libopenmpt if available" ON)
+if(WITH_LIBOPENMPT)
+    list(APPEND VCPKG_MANIFEST_FEATURES "libopenmpt")
+endif()
+
 # Automatically install dependencies
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
@@ -160,6 +165,13 @@ if(WITH_PORTMIDI)
     find_package(PortMidi)
     if(PortMidi_FOUND)
         set(HAVE_LIBPORTMIDI TRUE)
+    endif()
+endif()
+
+if(WITH_LIBOPENMPT)
+    find_package(libopenmpt)
+    if(libopenmpt_FOUND)
+        set(HAVE_LIBOPENMPT TRUE)
     endif()
 endif()
 
