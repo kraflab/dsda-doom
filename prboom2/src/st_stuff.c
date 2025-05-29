@@ -905,13 +905,12 @@ void ST_Refresh(void)
 void ST_Drawer(dboolean refresh)
 {
   dboolean statusbaron = R_StatusBarVisible();
-  dboolean fullmenu = (menuactive == mnact_full) && !M_MenuIsShaded();
 
   V_BeginUIDraw();
 
   if (raven)
   {
-    SB_Drawer(statusbaron, refresh, fullmenu);
+    SB_Drawer(statusbaron, refresh);
     V_EndUIDraw();
     return;
   }
@@ -920,7 +919,7 @@ void ST_Drawer(dboolean refresh)
    * completely by the call from D_Display
    * proff - really do it
    */
-  st_firsttime = st_firsttime || refresh || fullmenu;
+  st_firsttime = st_firsttime || refresh;
 
   ST_doPaletteStuff();  // Do red-/gold-shifts from damage/items
 
@@ -930,14 +929,12 @@ void ST_Drawer(dboolean refresh)
       /* If just after ST_Start(), refresh all */
       st_firsttime = false;
       ST_refreshBackground(); // draw status bar background to off-screen buff
-      if (!fullmenu)
-        ST_drawWidgets(true); // and refresh all widgets
+      ST_drawWidgets(true); // and refresh all widgets
     }
     else
     {
       /* Otherwise, update as little as possible */
-      if (!fullmenu)
-        ST_drawWidgets(false); // update all widgets
+      ST_drawWidgets(false); // update all widgets
     }
   }
 

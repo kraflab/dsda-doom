@@ -536,9 +536,9 @@ static int oldmana1 = -1;
 static int oldmana2 = -1;
 static int oldpieces = -1;
 
-void SB_Drawer(dboolean statusbaron, dboolean refresh, dboolean fullmenu)
+void SB_Drawer(dboolean statusbaron, dboolean refresh)
 {
-    if (refresh || fullmenu || fadeBG() || V_IsOpenGLMode()) SB_state = -1;
+    if (refresh || fadeBG() || V_IsOpenGLMode()) SB_state = -1;
 
     if (!statusbaron)
     {
