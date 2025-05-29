@@ -452,8 +452,6 @@ set(SDLDOOM_SOURCES
 )
 
 set(DOOMMUSIC_SOURCES
-    MUSIC/dumbplayer.c
-    MUSIC/dumbplayer.h
     MUSIC/flplayer.c
     MUSIC/flplayer.h
     MUSIC/madplayer.c
@@ -578,10 +576,6 @@ function(AddGameExecutable TARGET SOURCES)
 
     if(HAVE_LIBFLUIDSYNTH)
         target_link_libraries(${TARGET} PRIVATE FluidSynth::libfluidsynth)
-    endif()
-
-    if(HAVE_LIBDUMB)
-        target_link_libraries(${TARGET} PRIVATE DUMB::DUMB)
     endif()
 
     if(HAVE_LIBVORBISFILE)

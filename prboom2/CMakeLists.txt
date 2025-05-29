@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
 
-option(WITH_DUMB "Use DUMB if available" ON)
-if(WITH_DUMB)
-    list(APPEND VCPKG_MANIFEST_FEATURES "dumb")
-endif()
-
 option(WITH_FLUIDSYNTH "Use FluidSynth if available" ON)
 if(WITH_FLUIDSYNTH)
     list(APPEND VCPKG_MANIFEST_FEATURES "fluidsynth")
@@ -144,13 +139,6 @@ if(WITH_FLUIDSYNTH)
     find_package(FluidSynth)
     if(FluidSynth_FOUND)
         set(HAVE_LIBFLUIDSYNTH TRUE)
-    endif()
-endif()
-
-if(WITH_DUMB)
-    find_package(DUMB)
-    if(DUMB_FOUND)
-        set(HAVE_LIBDUMB TRUE)
     endif()
 endif()
 

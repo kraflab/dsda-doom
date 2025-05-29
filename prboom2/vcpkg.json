@@ -27,12 +27,6 @@
     "zlib"
   ],
   "features": {
-    "dumb": {
-      "description": "Build with DUMB support",
-      "dependencies": [
-        "dumb"
-      ]
-    },
     "libopenmpt": {
       "description": "Build with libopenmpt support",
       "dependencies": [

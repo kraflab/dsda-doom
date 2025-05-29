@@ -9,7 +9,7 @@ Prerequisites
      * FluidSynth (MIDI)
      * PortMidi (MIDI)
      * MAD (MP3)
-     * DUMB (various tracker-style formats)
+     * libopenmpt (various tracker-style formats)
      * vorbisfile (OGG)
 
 You will need `cmake` and `make` if you haven't already installed them.
@@ -18,13 +18,13 @@ On a typical Debian or Ubuntu system, these commands may be sufficient:
 `sudo apt install build-essential cmake git`
 
 As well as the following:
-`sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libfluidsynth-dev libportmidi-dev libmad0-dev libdumb1-dev libvorbis-dev libzip-dev zipcmp zipmerge ziptool fluidsynth libglu1-mesa-dev`
+`sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libfluidsynth-dev libportmidi-dev libmad0-dev libopenmpt-dev libvorbis-dev libzip-dev zipcmp zipmerge ziptool fluidsynth libglu1-mesa-dev`
 
 On a typical Fedora system, these commands may be sufficient:
 `dnf install cmake git gcc gcc-g++`
 
 As well as the following:
-`sudo dnf install SDL2_mixer-devel SDL2_image-devel mesa-libGLU-devel libzip-devel libzip-tools zlib-static libvorbis-devel libmad-devel dumb-devel portmidi-devel fluidsynth-devel`
+`sudo dnf install SDL2_mixer-devel SDL2_image-devel mesa-libGLU-devel libzip-devel libzip-tools zlib-static libvorbis-devel libmad-devel libopenmpt-devel portmidi-devel fluidsynth-devel`
 
 2. Clone the repository and navigate to the directory containing the DSDA-Doom distribution (the directory this file is in, prboom2).
 `git clone https://github.com/kraflab/dsda-doom.git`
