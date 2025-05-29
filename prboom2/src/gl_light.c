@@ -51,6 +51,7 @@
 
 dboolean gl_ui_lightmode_indexed = false;
 dboolean gl_automap_lightmode_indexed = false;
+dboolean gl_menu_lightmode_indexed = false;
 
 static float lighttable[5][256];
 

@@ -739,6 +739,14 @@ static void WRAP_gld_EndAutomapDraw(void)
 {
   gld_EndAutomapDraw();
 }
+static void WRAP_gld_BeginMenuDraw(void)
+{
+  gld_BeginMenuDraw();
+}
+static void WRAP_gld_EndMenuDraw(void)
+{
+  gld_EndMenuDraw();
+}
 static void WRAP_gld_FillRect(int scrn, int x, int y, int width, int height, byte colour)
 {
   gld_FillBlock(x,y,width,height,colour);
@@ -786,6 +794,8 @@ static void NULL_BeginUIDraw(void) {}
 static void NULL_EndUIDraw(void) {}
 static void NULL_BeginAutomapDraw(void) {}
 static void NULL_EndAutomapDraw(void) {}
+static void NULL_BeginMenuDraw(void) {}
+static void NULL_EndMenuDraw(void) {}
 static void NULL_FillRect(int scrn, int x, int y, int width, int height, byte colour) {}
 static void NULL_CopyRect(int srcscrn, int destscrn, int x, int y, int width, int height, enum patch_translation_e flags) {}
 static void NULL_FillFlat(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags) {}
@@ -805,6 +815,8 @@ V_BeginUIDraw_f V_BeginUIDraw = NULL_BeginUIDraw;
 V_EndUIDraw_f V_EndUIDraw = NULL_EndUIDraw;
 V_BeginUIDraw_f V_BeginAutomapDraw = NULL_BeginAutomapDraw;
 V_EndUIDraw_f V_EndAutomapDraw = NULL_EndAutomapDraw;
+V_BeginUIDraw_f V_BeginMenuDraw = NULL_BeginMenuDraw;
+V_EndUIDraw_f V_EndMenuDraw = NULL_EndMenuDraw;
 V_CopyRect_f V_CopyRect = NULL_CopyRect;
 V_FillRect_f V_FillRect = NULL_FillRect;
 V_DrawNumPatch_f V_DrawNumPatch = NULL_DrawNumPatch;
@@ -829,6 +841,8 @@ void V_InitMode(video_mode_t mode) {
       V_EndUIDraw = NULL_EndUIDraw; // [XA] ditto for the other begin/ends
       V_BeginAutomapDraw = NULL_BeginAutomapDraw;
       V_EndAutomapDraw = NULL_EndAutomapDraw;
+      V_BeginMenuDraw = NULL_BeginMenuDraw;
+      V_EndMenuDraw = NULL_EndMenuDraw;
       V_CopyRect = FUNC_V_CopyRect;
       V_FillRect = V_FillRect8;
       V_DrawNumPatch = FUNC_V_DrawNumPatch;
@@ -849,6 +863,8 @@ void V_InitMode(video_mode_t mode) {
       V_EndUIDraw = WRAP_gld_EndUIDraw;
       V_BeginAutomapDraw = WRAP_gld_BeginAutomapDraw;
       V_EndAutomapDraw = WRAP_gld_EndAutomapDraw;
+      V_BeginMenuDraw = WRAP_gld_BeginMenuDraw;
+      V_EndMenuDraw = WRAP_gld_EndMenuDraw;
       V_CopyRect = WRAP_gld_CopyRect;
       V_FillRect = WRAP_gld_FillRect;
       V_DrawNumPatch = WRAP_gld_DrawNumPatch;
@@ -880,6 +896,10 @@ dboolean V_IsUILightmodeIndexed(void) {
 
 dboolean V_IsAutomapLightmodeIndexed(void) {
   return gl_automap_lightmode_indexed;
+}
+
+dboolean V_IsMenuLightmodeIndexed(void) {
+  return gl_menu_lightmode_indexed;
 }
 
 void V_CopyScreen(int srcscrn, int destscrn)
