@@ -138,12 +138,6 @@ jobs:
               sdl2_mixer \
               dylibbundler
 
-      - name: Update vcpkg
-        if: ${{ matrix.config.vcpkg }}
-        run: |
-          cd "${env:VCPKG_INSTALLATION_ROOT}"
-          git pull
-
       - name: Generate vcpkg cache key
         if: ${{ matrix.config.vcpkg }}
         shell: bash
