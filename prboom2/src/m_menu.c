@@ -6074,7 +6074,7 @@ dboolean fadeBG(void)
 
 dboolean M_MenuIsShaded(void)
 {
-  int Options = (setup_active || currentMenu == &OptionsDef || currentMenu == &SoundDef);
+  int Options = (setup_active || currentMenu == &OptionsDef);
   return fadeBG() && Options;
 }
 
