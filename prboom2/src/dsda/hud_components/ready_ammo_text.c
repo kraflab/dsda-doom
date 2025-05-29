@@ -25,6 +25,21 @@ typedef struct {
 
 static local_component_t* local;
 
+int dsda_AmmoColor(player_t* player) {
+  int ammo_percent;
+
+  ammo_percent = P_AmmoPercent(player, player->readyweapon);
+
+  if (ammo_percent < hud_ammo_red)
+    return dsda_tc_exhud_ammo_bad;
+  else if (ammo_percent < hud_ammo_yellow)
+    return dsda_tc_exhud_ammo_warning;
+  else if (ammo_percent < 100)
+    return dsda_tc_exhud_ammo_ok;
+  else
+    return dsda_tc_exhud_ammo_full;
+}
+
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   player_t* player;
 

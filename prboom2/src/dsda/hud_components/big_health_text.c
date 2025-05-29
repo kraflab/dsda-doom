@@ -33,10 +33,10 @@ static void dsda_DrawComponent(void) {
 
   player = &players[displayplayer];
 
-  cm = player->health <= hud_health_red ? dsda_TextCR(dsda_tc_exhud_health_bad) :
-       player->health <= hud_health_yellow ? dsda_TextCR(dsda_tc_exhud_health_warning) :
-       player->health <= hud_health_green ? dsda_TextCR(dsda_tc_exhud_health_ok) :
-       dsda_TextCR(dsda_tc_exhud_health_super);
+  cm = player->health <= hud_health_red ? dsda_TextCR(dsda_tc_stbar_health_bad) :
+       player->health <= hud_health_yellow ? dsda_TextCR(dsda_tc_stbar_health_warning) :
+       player->health <= hud_health_green ? dsda_TextCR(dsda_tc_stbar_health_ok) :
+       dsda_TextCR(dsda_tc_stbar_health_super);
 
   dsda_DrawBigNumber(local->component.x, local->component.y, patch_delta_x, 0,
                      cm, local->component.vpt, 3, player->health);

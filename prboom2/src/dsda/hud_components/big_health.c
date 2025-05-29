@@ -45,10 +45,10 @@ static void dsda_DrawComponent(void) {
   x = local->component.x;
   y = local->component.y;
 
-  cm = player->health <= hud_health_red ? dsda_TextCR(dsda_tc_exhud_health_bad) :
-       player->health <= hud_health_yellow ? dsda_TextCR(dsda_tc_exhud_health_warning) :
-       player->health <= hud_health_green ? dsda_TextCR(dsda_tc_exhud_health_ok) :
-       dsda_TextCR(dsda_tc_exhud_health_super);
+  cm = player->health <= hud_health_red ? dsda_TextCR(dsda_tc_stbar_health_bad) :
+       player->health <= hud_health_yellow ? dsda_TextCR(dsda_tc_stbar_health_warning) :
+       player->health <= hud_health_green ? dsda_TextCR(dsda_tc_stbar_health_ok) :
+       dsda_TextCR(dsda_tc_stbar_health_super);
 
   V_DrawNumPatch(x, y, FG,
                  player->powers[pw_strength] ? strength_lump : health_lump,

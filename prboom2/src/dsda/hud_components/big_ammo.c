@@ -27,19 +27,19 @@ typedef struct {
 
 static local_component_t* local;
 
-int dsda_AmmoColor(player_t* player) {
+int dsda_AmmoColorBig(player_t* player) {
   int ammo_percent;
 
   ammo_percent = P_AmmoPercent(player, player->readyweapon);
 
   if (ammo_percent < hud_ammo_red)
-    return dsda_tc_exhud_ammo_bad;
+    return dsda_tc_stbar_ammo_bad;
   else if (ammo_percent < hud_ammo_yellow)
-    return dsda_tc_exhud_ammo_warning;
+    return dsda_tc_stbar_ammo_warning;
   else if (ammo_percent < 100)
-    return dsda_tc_exhud_ammo_ok;
+    return dsda_tc_stbar_ammo_ok;
   else
-    return dsda_tc_exhud_ammo_full;
+    return dsda_tc_stbar_ammo_full;
 }
 
 static void dsda_DrawComponent(void) {
@@ -59,7 +59,7 @@ static void dsda_DrawComponent(void) {
   ammo = player->ammo[ammo_type];
 
   dsda_DrawBigNumber(local->component.x, local->component.y, PATCH_DELTA_X, 0,
-                     dsda_TextCR(dsda_AmmoColor(player)), local->component.vpt, 3, ammo);
+                     dsda_TextCR(dsda_AmmoColorBig(player)), local->component.vpt, 3, ammo);
 }
 
 void dsda_InitBigAmmoHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
