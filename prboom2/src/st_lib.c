@@ -226,7 +226,7 @@ void STlib_updatePercent
     // CPhipps - patch drawing updated
     V_DrawNumPatch(per->n.x, per->n.y, FG, per->p->lumpnum,
        sts_pct_always_gray ? CR_GRAY : cm,
-       (sts_colored_numbers ? VPT_TRANS : VPT_NONE) | VPT_ALIGN_BOTTOM);
+       (sts_colored_numbers || sts_pct_always_gray ? VPT_TRANS : VPT_NONE) | VPT_ALIGN_BOTTOM);
   }
 
   STlib_updateNum(&per->n, cm, refresh);

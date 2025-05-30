@@ -98,11 +98,12 @@ int dsda_HexenArmor(player_t* player) {
 }
 
 static void dsda_DrawBigDigit(int x, int y, int cm, int vpt, int digit) {
+  extern int sts_colored_numbers;
   if (digit > 9 || digit < 0)
     return;
 
   snprintf(digit_lump, sizeof(digit_lump), digit_lump_format, digit);
-  V_DrawNamePatch(x, y, FG, digit_lump, cm, vpt | VPT_TRANS);
+  V_DrawNamePatch(x, y, FG, digit_lump, cm, vpt | ((sts_colored_numbers ? VPT_TRANS : VPT_NONE)));
 }
 
 static int digit_mod[6] = { 1, 10, 100, 1000, 10000, 100000 };
