@@ -1906,6 +1906,15 @@ static void D_DoomMainSetup(void)
     I_SafeExit(0);
   }
 
+  // Recording strict demos will disable autoload
+  arg = dsda_Arg(dsda_arg_record);
+  if (arg->found)
+  {
+    autostart = true;
+    dsda_SetDemoBaseName(arg->value.v_string);
+    dsda_InitDemoRecording();
+  }
+
   // CPhipps - autoloading of wads
   autoload = !dsda_Flag(dsda_arg_noautoload);
 
@@ -2193,16 +2202,6 @@ static void D_DoomMainSetup(void)
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "ST_Init: Init status bar.\n");
   ST_Init();
-
-  // start the appropriate game based on parms
-
-  arg = dsda_Arg(dsda_arg_record);
-  if (arg->found)
-  {
-    autostart = true;
-    dsda_SetDemoBaseName(arg->value.v_string);
-    dsda_InitDemoRecording();
-  }
 
   dsda_ExecutePlaybackOptions();
 
