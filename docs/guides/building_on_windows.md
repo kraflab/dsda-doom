@@ -123,7 +123,7 @@ pacman -S mingw-w64-ucrt-x86_64-gcc cmake git ninja pkgconf
 Additionally, you will need the following external libraries:
 
 ```
-pacman -S mingw-w64-ucrt-x86_64-dumb mingw-w64-ucrt-x86_64-fluidsynth mingw-w64-ucrt-x86_64-libmad mingw-w64-ucrt-x86_64-libvorbis mingw-w64-ucrt-x86_64-libzip mingw-w64-ucrt-x86_64-portmidi mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-SDL2_image mingw-w64-ucrt-x86_64-SDL2_mixer
+pacman -S mingw-w64-ucrt-x86_64-libopenmpt mingw-w64-ucrt-x86_64-fluidsynth mingw-w64-ucrt-x86_64-libmad mingw-w64-ucrt-x86_64-libvorbis mingw-w64-ucrt-x86_64-libzip mingw-w64-ucrt-x86_64-portmidi mingw-w64-ucrt-x86_64-SDL2 mingw-w64-ucrt-x86_64-SDL2_image mingw-w64-ucrt-x86_64-SDL2_mixer
 ```
 
 ### Building

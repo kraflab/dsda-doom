@@ -1,13 +1,5 @@
 /* Emacs style mode select   -*- C -*-
  *-----------------------------------------------------------------------------
- *
- *
- *  PrBoom: a Doom port merged with LxDoom and LSDLDoom
- *  based on BOOM, a modified and improved DOOM engine
- *
- *  Copyright (C) 2011 by
- *  Nicholai Main
- *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -24,23 +16,13 @@
  *  02111-1307, USA.
  *
  * DESCRIPTION:
- *
+ *  Tracker music player based on libopenmpt.
  *---------------------------------------------------------------------
  */
 
-#ifndef DUMBPLAYER_H
-#define DUMBPLAYER_H
+#ifndef LIBOPENMPTPLAYER_H
+#define LIBOPENMPTPLAYER_H
 
+extern const music_player_t mpt_player;
 
-
-
-extern const music_player_t db_player;
-
-
-
-
-
-
-
-
-#endif // DUMBPLAYER_H
+#endif // LIBOPENMPTPLAYER_H

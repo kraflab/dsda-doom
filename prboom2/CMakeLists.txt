@@ -1,10 +1,5 @@
 cmake_minimum_required(VERSION 3.9)
 
-option(WITH_DUMB "Use DUMB if available" ON)
-if(WITH_DUMB)
-    list(APPEND VCPKG_MANIFEST_FEATURES "dumb")
-endif()
-
 option(WITH_FLUIDSYNTH "Use FluidSynth if available" ON)
 if(WITH_FLUIDSYNTH)
     list(APPEND VCPKG_MANIFEST_FEATURES "fluidsynth")
@@ -28,6 +23,11 @@ endif()
 option(WITH_VORBISFILE "Use vorbisfile if available" ON)
 if(WITH_VORBISFILE)
     list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
+endif()
+
+option(WITH_LIBOPENMPT "Use libopenmpt if available" ON)
+if(WITH_LIBOPENMPT)
+    list(APPEND VCPKG_MANIFEST_FEATURES "libopenmpt")
 endif()
 
 # Automatically install dependencies
@@ -142,13 +142,6 @@ if(WITH_FLUIDSYNTH)
     endif()
 endif()
 
-if(WITH_DUMB)
-    find_package(DUMB)
-    if(DUMB_FOUND)
-        set(HAVE_LIBDUMB TRUE)
-    endif()
-endif()
-
 if(WITH_VORBISFILE)
     find_package(Vorbis COMPONENTS File)
     if(Vorbis_File_FOUND)
@@ -160,6 +153,13 @@ if(WITH_PORTMIDI)
     find_package(PortMidi)
     if(PortMidi_FOUND)
         set(HAVE_LIBPORTMIDI TRUE)
+    endif()
+endif()
+
+if(WITH_LIBOPENMPT)
+    find_package(libopenmpt)
+    if(libopenmpt_FOUND)
+        set(HAVE_LIBOPENMPT TRUE)
     endif()
 endif()
 
