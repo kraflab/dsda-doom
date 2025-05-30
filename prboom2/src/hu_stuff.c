@@ -364,10 +364,6 @@ void HU_Start(void)
 //
 void HU_Drawer(void)
 {
-  // don't draw anything if there's a fullscreen menu up
-  if (menuactive == mnact_full && !M_MenuIsShaded())
-    return;
-
   V_BeginUIDraw();
 
   HU_DrawCrosshair();
