@@ -58,9 +58,11 @@ static int auto_kf_timeout_count;
 static dsda_key_frame_t first_kf;
 static dsda_key_frame_t quick_kf;
 static dsda_key_frame_t temp_kf;
-static auto_kf_t* auto_key_frames;
+auto_kf_t* auto_key_frames;
+int auto_kf_size;
 static auto_kf_t* last_auto_kf;
-static int auto_kf_size;
+dsda_key_frame_t* playback_key_frames;
+int playback_kf_size = 60;
 static int restore_key_frame_index = -1;
 
 static int dsda_auto_key_frame_interval;
@@ -117,7 +119,7 @@ static void dsda_ResolveParentKF(dsda_key_frame_t* kf) {
   }
 }
 
-static void dsda_RewindKF(auto_kf_t** current) {
+void dsda_RewindKF(auto_kf_t** current) {
   auto_kf_t* auto_kf;
 
   auto_kf = *current;
@@ -133,17 +135,17 @@ static void dsda_RewindKF(auto_kf_t** current) {
 static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
   dsda_key_frame_t* closest = NULL;
 
-  if (last_auto_kf) {
-    auto_kf_t* auto_kf;
+  if (auto_key_frames)
+    for (int i = 0; i < auto_kf_size; i++)
+      if (auto_key_frames[i].kf.game_tic_count <= target_tic_count)
+        if (!closest || auto_key_frames[i].kf.game_tic_count > closest->game_tic_count)
+          closest = &auto_key_frames[i].kf;
 
-    auto_kf = last_auto_kf;
-    for (auto_kf = last_auto_kf; auto_kf && auto_kf->kf.buffer; dsda_RewindKF(&auto_kf))
-      if (auto_kf->kf.game_tic_count <= target_tic_count)
-        if (!closest || auto_kf->kf.game_tic_count > closest->game_tic_count) {
-          closest = &auto_kf->kf;
-          break;
-        }
-  }
+  if (playback_key_frames)
+    for (int i = 0; i < playback_kf_size; i++)
+      if (playback_key_frames[i].game_tic_count <= target_tic_count)
+        if (!closest || playback_key_frames[i].game_tic_count > closest->game_tic_count)
+          closest = &playback_key_frames[i];
 
   if (!demorecording && temp_kf.buffer)
     if (temp_kf.game_tic_count <= target_tic_count)
@@ -200,6 +202,8 @@ void dsda_InitKeyFrame(void) {
     auto_key_frames[i].prev = &auto_key_frames[i - 1];
 
   last_auto_kf = &auto_key_frames[auto_kf_size - 1];
+
+  playback_key_frames = Z_Calloc(playback_kf_size, sizeof(dsda_key_frame_t));
 }
 
 void dsda_ExportKeyFrame(byte* buffer, int length) {
@@ -362,6 +366,9 @@ void dsda_UpdateAutoKeyFrames(void) {
   int interval_tics;
   dsda_key_frame_t* current_key_frame;
 
+  if (demoplayback)
+    dsda_UpdatePlaybackKeyFrames();
+
   if (
     auto_kf_timed_out ||
     auto_kf_size == 0 ||
@@ -411,5 +418,26 @@ void dsda_UpdateAutoKeyFrames(void) {
 
     if (!first_kf.buffer)
       dsda_CopyKeyFrame(&first_kf, current_key_frame);
+  }
+}
+
+void dsda_UpdatePlaybackKeyFrames(void) {
+  int current_time;
+  int interval_tics;
+
+  if (
+    auto_kf_timed_out ||
+    gameaction != ga_nothing
+  ) return;
+
+  current_time = totalleveltimes + leveltime;
+  interval_tics = (demo_tics_count * demo_playerscount) / playback_kf_size;
+
+  // Automatically save a key frame each interval
+  if (current_time % interval_tics == 0) {
+    dsda_key_frame_t* current_key_frame = &playback_key_frames[current_time / interval_tics];
+
+    if (!current_key_frame->buffer)
+      dsda_StoreKeyFrame(current_key_frame, false, false);
   }
 }
