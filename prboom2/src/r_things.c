@@ -981,6 +981,7 @@ void R_AddAllAliveMonstersSprites(void)
 static void R_ApplyWeaponBob (fixed_t *sx, dboolean bobx, fixed_t *sy, dboolean boby)
 {
 	const angle_t angle = (128 * leveltime) & FINEMASK;
+	fixed_t bob = viewplayer->bob * dsda_WeaponBob() / 4;
 
 	if (sx)
 	{
@@ -988,7 +989,7 @@ static void R_ApplyWeaponBob (fixed_t *sx, dboolean bobx, fixed_t *sy, dboolean 
 
 		if (bobx)
 		{
-			 *sx += FixedMul(viewplayer->bob, finecosine[angle]);
+			 *sx += FixedMul(bob, finecosine[angle]);
 		}
 	}
 
@@ -998,7 +999,7 @@ static void R_ApplyWeaponBob (fixed_t *sx, dboolean bobx, fixed_t *sy, dboolean 
 
 		if (boby)
 		{
-			*sy += FixedMul(viewplayer->bob, finesine[angle & (FINEANGLES / 2 - 1)]);
+			*sy += FixedMul(bob, finesine[angle & (FINEANGLES / 2 - 1)]);
 		}
 	}
 }

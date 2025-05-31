@@ -120,11 +120,11 @@ void dsda_SetTas(dboolean t) {
   dsda_UpdateIntConfig(dsda_config_strict_mode, !t, true);
 }
 
-dboolean dsda_ViewBob(void) {
+int dsda_ViewBob(void) {
   return dsda_IntConfig(dsda_config_viewbob);
 }
 
-dboolean dsda_WeaponBob(void) {
+int dsda_WeaponBob(void) {
   return dsda_IntConfig(dsda_config_weaponbob);
 }
 

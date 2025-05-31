@@ -3366,12 +3366,14 @@ setup_menu_t* display_settings[] =
 
 static const char* menu_background_list[] = { "Off", "Dark", "Texture", NULL };
 static const char* translucent_list[] = { "Off", "Default", "w/ Vanilla", NULL };
+static const char* viewbob_list[] = { "Off", "25%", "50%", "75%", "100%", NULL };
+static const char* weaponbob_list[] = { "Off", "25%", "50%", "75%", "100%", NULL };
 
 setup_menu_t display_options_settings[] = {
   { "Hide Weapon", S_YESNO, m_conf, G_X, dsda_config_hide_weapon },
   { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, dsda_config_render_wipescreen },
-  { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
-  { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
+  { "View Bobbing", S_CHOICE, m_conf, G_X, dsda_config_viewbob, 0, viewbob_list },
+  { "Weapon Bobbing", S_CHOICE, m_conf, G_X, dsda_config_weaponbob, 0, weaponbob_list },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
   { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
