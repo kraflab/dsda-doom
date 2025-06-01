@@ -79,6 +79,7 @@
 #include "f_finale.h"
 #include "e6y.h"//e6y
 
+#include "dsda/args.h"
 #include "dsda/episode.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
@@ -135,7 +136,7 @@
 #define S_CREDIT   0x00200000 // killough 10/98: credit
 #define S_THERMO   0x00400000 // Slider for choosing a value
 #define S_CHOICE   0x00800000 // this item has several values
-// #define S_      0x01000000
+#define S_DISABLED 0x01000000
 #define S_NAME     0x02000000
 #define S_RESET_Y  0x04000000
 // #define S_      0x08000000
@@ -1797,6 +1798,42 @@ static int choice_value;
 
 /////////////////////////////
 //
+// M_SetDisabled
+//
+// Disable certain menu options based on various conditions:
+// StrictMode, Complevel, and more!
+//
+//
+
+dboolean M_SetDisabled(const setup_menu_t* s)
+{
+  int flags = s->m_flags;
+
+  // Strict Mode
+  if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+    return true;
+
+  // Complevel Argument
+  if (s->config_id == dsda_config_default_complevel)
+  {
+    if (dsda_Arg(dsda_arg_complevel)->found)
+    {
+      dsda_UpdateIntConfig(dsda_config_default_complevel, dsda_Arg(dsda_arg_complevel)->value.v_int, false);
+      return true;
+    }
+    // COMPLVL Lump
+    else if (complvl != -1)
+    {
+      dsda_UpdateIntConfig(dsda_config_default_complevel, complvl, false);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/////////////////////////////
+//
 // phares 4/18/98:
 // Consolidate Item drawing code
 //
@@ -1811,8 +1848,13 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   int flags = s->m_flags;
   char *p, *t;
   int w = 0;
-  int color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_label + CR_DARKEN :
+  int color;
+
+  if (M_SetDisabled(s))
+    flags |= S_DISABLED;
+
+  color =
+    flags & S_DISABLED ? cr_label + CR_DARKEN :
     flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
     flags & S_HILITE ? cr_label_highlight :
     flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
@@ -1860,11 +1902,14 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 {
   int x = s->m_x, flags = s->m_flags, color;
 
+  if (M_SetDisabled(s))
+    flags |= S_DISABLED;
+
   // Determine color of the text. This may or may not be used later,
   // depending on whether the item is a text string or not.
 
   color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_value + CR_DARKEN :
+    flags & S_DISABLED ? cr_value + CR_DARKEN :
     flags & S_SELECT ? cr_value_edit :
     flags & S_HILITE ? cr_value_highlight :
     cr_value;
@@ -1898,7 +1943,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       if (flags & S_CRITEM)
       {
         color = value;
-        if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+        if (flags & S_DISABLED)
           color += CR_DARKEN;
       }
     }
@@ -5092,7 +5137,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
   {
     int flags = ptr1->m_flags;
 
-    if (dsda_StrictMode() && dsda_IsStrictConfig(ptr1->config_id))
+    if (M_SetDisabled(ptr1))
       return true;
 
     // You've selected an item to change. Highlight it, post a new
