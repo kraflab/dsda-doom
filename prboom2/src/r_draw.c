@@ -555,8 +555,10 @@ void R_FillBackColor (void)
   col = V_BestColor(playpal, r/3, g/3, b/3);
   col_top = V_BestColor(playpal, r/2, g/2, b/2);
 
+  V_BeginMenuDraw();
   V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, col);
   V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_BORDER, col_top);
+  V_EndMenuDraw();
  }
 
 //

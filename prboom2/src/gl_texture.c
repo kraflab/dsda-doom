@@ -1430,7 +1430,7 @@ void gld_FlushTextures(void)
   gld_ResetLastTexture();
 
   gld_InitSky();
-  gld_InitColormapTextures(V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
+  gld_InitColormapTextures(V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed());
 
   // do not draw anything in current frame after flushing
   gld_ResetDrawInfo();
