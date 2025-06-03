@@ -526,10 +526,10 @@ void D_Display (fixed_t frac)
     D_DrawPause();
   }
 
-  V_BeginUIDraw();
+  V_BeginMenuDraw();
   if (M_MenuIsShaded())
     M_ShadedScreen(0);
-  V_EndUIDraw();
+  V_EndMenuDraw();
 
   // menus go directly to the screen
   M_Drawer();          // menu is drawn even on top of everything
