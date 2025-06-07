@@ -1762,11 +1762,35 @@ static int choice_value;
 
 dboolean M_SetDisabled(const setup_menu_t* s)
 {
-  int flags = s->m_flags;
-
   // Strict Mode
   if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
     return true;
+
+  // Dependant Menu Options
+  if (s->dependent_id > 0)
+  {
+    if (s->dependent_id == dsda_config_videomode) // OpenGL vs Software
+    {
+      if (!strcmp(s->dependent_input, "OpenGL") && V_IsSoftwareMode())
+        return true;
+
+      if (!strcmp(s->dependent_input, "Software") && V_IsOpenGLMode())
+        return true;
+    }
+    else  // Default behaviour
+    {
+      if (s->dependent_exclude == true) // disable if dependant value matches
+      {
+        if (dsda_StringConfig(s->dependent_id) == s->dependent_input)
+          return true;
+      }
+      else // disable if dependant value doesn't match [default]
+      {
+        if (dsda_StringConfig(s->dependent_id) != s->dependent_input)
+          return true;
+      }
+    }
+  }
 
   // Complevel Argument
   if (s->config_id == dsda_config_default_complevel)
@@ -2346,11 +2370,13 @@ static void M_DrawInstructions(void)
 }
 
 #define TITLE(page_name, offset_x) { page_name, S_SKIP | S_TITLE, m_null, offset_x}
-#define NEXT_PAGE(page) { "", S_SKIP | S_NEXT, m_null, 318, .menu = page }
-#define PREV_PAGE(page) { "", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, .menu = page }
+#define NEXT_PAGE(page) { "", S_SKIP | S_NEXT, m_null, 318, 0, 0, 0, .menu = page }
+#define PREV_PAGE(page) { "", S_SKIP | S_PREV | S_LEFTJUST, m_null, 2, 0, 0, 0, .menu = page }
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
+#define DEPEND(config, value)     0, m_null, config, (const char *)value, false
+#define EXCLUDE(config, value)    0, m_null, config, (const char *)value, true
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
@@ -2988,18 +3014,18 @@ setup_menu_t auto_options_settings[] =
 
 setup_menu_t auto_appearance_settings[] =
 {
-  { "Enable textured display", S_YESNO, m_conf, AA_X, dsda_config_map_textured },
+  { "Enable textured display", S_YESNO, m_conf, AA_X, dsda_config_map_textured, DEPEND(dsda_config_videomode, "OpenGL") },
   { "Things appearance", S_CHOICE, m_conf, AA_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
   EMPTY_LINE,
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AA_X},
-  { "Textured automap", S_NUM, m_conf, AA_X, dsda_config_map_textured_trans },
-  { "Textured automap on overlay", S_NUM, m_conf, AA_X, dsda_config_map_textured_overlay_trans },
-  { "Lines on overlay", S_NUM, m_conf, AA_X, dsda_config_map_lines_overlay_trans },
+  { "Textured automap", S_NUM, m_conf, AA_X, dsda_config_map_textured_trans, DEPEND(dsda_config_videomode, "OpenGL") },
+  { "Textured automap on overlay", S_NUM, m_conf, AA_X, dsda_config_map_textured_overlay_trans, DEPEND(dsda_config_videomode, "OpenGL") },
+  { "Lines on overlay", S_NUM, m_conf, AA_X, dsda_config_map_lines_overlay_trans, DEPEND(dsda_config_videomode, "OpenGL") },
   EMPTY_LINE,
   { "Trail", S_SKIP | S_TITLE, m_null, AA_X},
   { "Player Trail", S_YESNO, m_conf, AA_X, dsda_config_map_trail },
-  { "Include Collisions", S_YESNO, m_conf, AA_X, dsda_config_map_trail_collisions },
-  { "Player Trail Size", S_NUM, m_conf, AA_X, dsda_config_map_trail_size },
+  { "Include Collisions", S_YESNO, m_conf, AA_X, dsda_config_map_trail_collisions, DEPEND(dsda_config_map_trail, true) },
+  { "Player Trail Size", S_NUM, m_conf, AA_X, dsda_config_map_trail_size, DEPEND(dsda_config_map_trail, true) },
 
   PREV_PAGE(auto_options_settings),
   NEXT_PAGE(auto_colors_settings),
@@ -3209,7 +3235,7 @@ setup_menu_t gen_video_settings[] = {
   { "Show FPS", S_YESNO,  m_conf, G_X, dsda_config_show_fps },
   EMPTY_LINE,
   { "Fake Contrast", S_CHOICE, m_conf, G_X, dsda_config_fake_contrast_mode, 0, fake_contrast_list },
-  { "OpenGL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list },
+  { "OpenGL Light Fade", S_CHOICE, m_conf, G_X, dsda_config_gl_fade_mode, 0, gl_fade_mode_list, dsda_config_videomode, "OpenGL" },
 
   NEXT_PAGE(gen_audio_settings),
   FINAL_ENTRY
@@ -3236,50 +3262,58 @@ setup_menu_t gen_audio_settings[] = {
   FINAL_ENTRY
 };
 
+#define MOUSE_ON   DEPEND(dsda_config_use_mouse, true)
+
 setup_menu_t gen_mouse_settings[] = {
   { "Enable Mouse", S_YESNO, m_conf, G2_X, dsda_config_use_mouse },
   EMPTY_LINE,
-  { "Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_horiz },
-  { "Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_vert },
-  { "Free Look Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_mlook },
-  { "Acceleration", S_NUM, m_conf, G2_X, dsda_config_mouse_acceleration },
+  { "Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_horiz, MOUSE_ON },
+  { "Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_vert, MOUSE_ON },
+  { "Free Look Sensitivity", S_NUM, m_conf, G2_X, dsda_config_mouse_sensitivity_mlook, MOUSE_ON },
+  { "Acceleration", S_NUM, m_conf, G2_X, dsda_config_mouse_acceleration, MOUSE_ON },
   EMPTY_LINE,
-  { "Enable Free Look", S_YESNO, m_conf, G2_X, dsda_config_freelook },
-  { "Invert Free Look", S_YESNO, m_conf, G2_X, dsda_config_movement_mouseinvert },
+  { "Enable Free Look", S_YESNO, m_conf, G2_X, dsda_config_freelook, MOUSE_ON },
+  { "Invert Free Look", S_YESNO, m_conf, G2_X, dsda_config_movement_mouseinvert, MOUSE_ON },
   EMPTY_LINE,
-  { "Mouse Strafe Divisor", S_NUM, m_conf, G2_X, dsda_config_movement_mousestrafedivisor },
-  { "Dbl-Click As Use", S_YESNO, m_conf, G2_X, dsda_config_mouse_doubleclick_as_use },
-  { "Vertical Mouse Movement", S_YESNO, m_conf, G2_X, dsda_config_vertmouse },
-  { "Carry Fractional Tics", S_YESNO, m_conf, G2_X, dsda_config_mouse_carrytics },
-  { "Mouse Stutter Correction", S_YESNO, m_conf, G2_X, dsda_config_mouse_stutter_correction },
+  { "Mouse Strafe Divisor", S_NUM, m_conf, G2_X, dsda_config_movement_mousestrafedivisor, MOUSE_ON },
+  { "Dbl-Click As Use", S_YESNO, m_conf, G2_X, dsda_config_mouse_doubleclick_as_use, MOUSE_ON },
+  { "Vertical Mouse Movement", S_YESNO, m_conf, G2_X, dsda_config_vertmouse, MOUSE_ON },
+  { "Carry Fractional Tics", S_YESNO, m_conf, G2_X, dsda_config_mouse_carrytics, MOUSE_ON },
+  { "Mouse Stutter Correction", S_YESNO, m_conf, G2_X, dsda_config_mouse_stutter_correction, MOUSE_ON },
 
   PREV_PAGE(gen_audio_settings),
   NEXT_PAGE(gen_controller_settings),
   FINAL_ENTRY
 };
 
+#undef MOUSE_ON
+
+#define CONTROLLER_ON   DEPEND(dsda_config_use_game_controller, true)
+
 setup_menu_t gen_controller_settings[] = {
   { "Enable Controller", S_YESNO, m_conf, G2_X, dsda_config_use_game_controller },
   EMPTY_LINE,
-  { "Left Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_left_analog_sensitivity_x },
-  { "Left Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_left_analog_sensitivity_y },
-  { "Right Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_right_analog_sensitivity_x },
-  { "Right Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_right_analog_sensitivity_y },
-  { "Acceleration", S_NUM, m_conf, G2_X, dsda_config_analog_look_acceleration },
+  { "Left Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_left_analog_sensitivity_x, CONTROLLER_ON },
+  { "Left Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_left_analog_sensitivity_y, CONTROLLER_ON },
+  { "Right Horizontal Sensitivity", S_NUM, m_conf, G2_X, dsda_config_right_analog_sensitivity_x, CONTROLLER_ON },
+  { "Right Vertical Sensitivity", S_NUM, m_conf, G2_X, dsda_config_right_analog_sensitivity_y, CONTROLLER_ON },
+  { "Acceleration", S_NUM, m_conf, G2_X, dsda_config_analog_look_acceleration, CONTROLLER_ON },
   EMPTY_LINE,
-  { "Enable Free Look", S_YESNO, m_conf, G2_X, dsda_config_freelook },
-  { "Invert Free Look", S_YESNO, m_conf, G2_X, dsda_config_invert_analog_look },
-  { "Swap Analogs", S_YESNO, m_conf, G2_X, dsda_config_swap_analogs },
+  { "Enable Free Look", S_YESNO, m_conf, G2_X, dsda_config_freelook, CONTROLLER_ON },
+  { "Invert Free Look", S_YESNO, m_conf, G2_X, dsda_config_invert_analog_look, CONTROLLER_ON },
+  { "Swap Analogs", S_YESNO, m_conf, G2_X, dsda_config_swap_analogs, CONTROLLER_ON },
   EMPTY_LINE,
-  { "Left Analog Deadzone", S_NUM, m_conf, G2_X, dsda_config_left_analog_deadzone },
-  { "Right Analog Deadzone", S_NUM, m_conf, G2_X, dsda_config_right_analog_deadzone },
-  { "Left Trigger Deadzone", S_NUM, m_conf, G2_X, dsda_config_left_trigger_deadzone },
-  { "Right Trigger Deadzone", S_NUM, m_conf, G2_X, dsda_config_right_trigger_deadzone },
+  { "Left Analog Deadzone", S_NUM, m_conf, G2_X, dsda_config_left_analog_deadzone, CONTROLLER_ON },
+  { "Right Analog Deadzone", S_NUM, m_conf, G2_X, dsda_config_right_analog_deadzone, CONTROLLER_ON },
+  { "Left Trigger Deadzone", S_NUM, m_conf, G2_X, dsda_config_left_trigger_deadzone, CONTROLLER_ON },
+  { "Right Trigger Deadzone", S_NUM, m_conf, G2_X, dsda_config_right_trigger_deadzone, CONTROLLER_ON },
 
   PREV_PAGE(gen_mouse_settings),
   NEXT_PAGE(gen_misc_settings),
   FINAL_ENTRY
 };
+
+#undef CONTROLLER_ON
 
 setup_menu_t gen_misc_settings[] = {
   { "Death Use Action", S_CHOICE, m_conf, G2_X, dsda_config_death_use_action, 0, death_use_strings },
@@ -3382,9 +3416,9 @@ setup_menu_t display_options_settings[] = {
   { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
   { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
-  { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
+  { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky, DEPEND(dsda_config_videomode, "Software") },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
-  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
+  { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar, DEPEND(dsda_config_videomode, "OpenGL") },
   EMPTY_LINE,
   { "Change Palette On Pain", S_YESNO, m_conf, G_X, dsda_config_palette_ondamage },
   { "Change Palette On Bonus", S_YESNO, m_conf, G_X, dsda_config_palette_onbonus },
@@ -3396,6 +3430,8 @@ setup_menu_t display_options_settings[] = {
   FINAL_ENTRY
 };
 
+#define COLORED_NUM   DEPEND(dsda_config_sts_colored_numbers, true)
+
 setup_menu_t display_statbar_settings[] =  // Demos Settings screen
 {
   { "Hide Status Bar Horns", S_YESNO, m_conf, DM_X, dsda_config_hide_horns },
@@ -3404,11 +3440,11 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
   TITLE("Coloring", DM_X),
   { "Gray %",S_YESNO, m_conf, DM_X, dsda_config_sts_pct_always_gray },
   { "Colored Numbers", S_YESNO, m_conf, DM_X, dsda_config_sts_colored_numbers },
-  { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red },
-  { "Health Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow },
-  { "Health Good/Extra", S_NUM, m_conf, DM_X, dsda_config_hud_health_green },
-  { "Ammo Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_red },
-  { "Ammo Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_yellow },
+  { "Health Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_health_red, COLORED_NUM },
+  { "Health Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_health_yellow, COLORED_NUM },
+  { "Health Good/Extra", S_NUM, m_conf, DM_X, dsda_config_hud_health_green, COLORED_NUM },
+  { "Ammo Low/Ok", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_red, COLORED_NUM },
+  { "Ammo Ok/Good", S_NUM, m_conf, DM_X, dsda_config_hud_ammo_yellow, COLORED_NUM },
   EMPTY_LINE,
   { "Appearance", S_CHOICE, m_conf, DM_X, dsda_config_render_stretch_hud, 0, render_stretch_list },
 
@@ -3417,11 +3453,13 @@ setup_menu_t display_statbar_settings[] =  // Demos Settings screen
   FINAL_ENTRY
 };
 
+#undef COLORED_NUM
+
 setup_menu_t display_hud_settings[] =  // Demos Settings screen
 {
   { "Use Extended Hud", S_YESNO, m_conf, D_X, dsda_config_exhud },
-  { "Ex Hud Scale %", S_NUM, m_conf, D_X, dsda_config_ex_text_scale_x },
-  { "Ex Hud Ratio %", S_NUM, m_conf, D_X, dsda_config_ex_text_ratio_y },
+  { "Ex Hud Scale %", S_NUM, m_conf, D_X, dsda_config_ex_text_scale_x, DEPEND(dsda_config_exhud, true) },
+  { "Ex Hud Ratio %", S_NUM, m_conf, D_X, dsda_config_ex_text_ratio_y, DEPEND(dsda_config_exhud, true) },
   EMPTY_LINE,
   TITLE("Messages", D_X),
   { "Show Messages", S_YESNO, m_conf, D_X, dsda_config_show_messages },
@@ -3438,20 +3476,24 @@ static const char *crosshair_str[] =
 
 #define HUD_X 245
 
+#define CROSSHAIR_ON  EXCLUDE(dsda_config_hudadd_crosshair, 0)
+
 setup_menu_t display_crosshair_settings[] =
 {
   { "Enable Crosshair", S_CHOICE, m_conf, HUD_X, dsda_config_hudadd_crosshair, 0, crosshair_str },
   EMPTY_LINE,
-  { "Scale Crosshair", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale },
-  { "Change Color By Player Health", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health },
-  { "Change Color On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target },
-  { "Default Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color },
-  { "Target Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color },
-  { "Lock Crosshair On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_lock_target },
+  { "Scale Crosshair", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_scale, CROSSHAIR_ON },
+  { "Change Color By Player Health", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_health, CROSSHAIR_ON },
+  { "Change Color On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_target, CROSSHAIR_ON },
+  { "Default Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_color, CROSSHAIR_ON },
+  { "Target Color", S_CRITEM, m_conf, HUD_X, dsda_config_hudadd_crosshair_target_color, CROSSHAIR_ON },
+  { "Lock Crosshair On Target", S_YESNO, m_conf, HUD_X, dsda_config_hudadd_crosshair_lock_target, CROSSHAIR_ON },
 
   PREV_PAGE(display_hud_settings),
   FINAL_ENTRY
 };
+
+#undef CROSSHAIR_ON
 
 static void M_Display(int choice)
 {

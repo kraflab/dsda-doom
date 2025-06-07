@@ -124,6 +124,9 @@ typedef struct setup_menu_s
   dsda_config_identifier_t config_id;
   int input; // composite input identifier
   const char **selectstrings; /* list of strings for choice value */
+  dsda_config_identifier_t dependent_id;
+  const char *dependent_input;
+  int dependent_exclude;
   struct setup_menu_s *menu;  /* next or prev menu */
 } setup_menu_t;
 
