@@ -2951,6 +2951,7 @@ static const char *map_things_appearance_list[] =
 #if defined(HAVE_LIBSDL2_IMAGE)
   "icons",
 #endif
+  "hitboxes",
   NULL
 };
 
