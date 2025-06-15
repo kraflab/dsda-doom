@@ -185,32 +185,36 @@ option(RANGECHECK "Enable internal range checking" OFF)
 
 configure_file(cmake/config.h.cin config.h)
 
-# Support cross compiling
-option(FORCE_CROSSCOMPILE "Enable cross-compilation" OFF)
-if(FORCE_CROSSCOMPILE)
-    set(CMAKE_CROSSCOMPILING ON)
-endif()
-
-if(CMAKE_CROSSCOMPILING)
-    set(IMPORT_EXECUTABLES "IMPORTFILE-NOTFOUND" CACHE FILEPATH "Export file from native build")
-    include(${IMPORT_EXECUTABLES})
-else()
-    if(NOT CROSS_EXPORTS)
-        set(CROSS_EXPORTS "")
-    endif()
-endif()
-
 set(DSDA_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 set(WAD_DATA_PATH "${DSDA_OUTPUT_PATH}/${WAD_DATA}")
 
-add_subdirectory(data)
+if(CMAKE_CROSSCOMPILING)
+    set(DSDA_HOST_TOOLCHAIN "" 
+        CACHE FILEPATH "Toolchain file to build host tools with"
+    )
+    include(ExternalProject)
+    ExternalProject_Add(dsda-doom-wad
+        SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data"
+        CMAKE_CACHE_ARGS
+            "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+            "-DWAD_DATA_PATH:FILEPATH=${WAD_DATA_PATH}"
+            "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${DSDA_HOST_TOOLCHAIN}"
+        BUILD_ALWAYS TRUE
+        BUILD_BYPRODUCTS "${WAD_DATA_PATH}"
+        INSTALL_COMMAND ""
+    )
+else()
+    add_subdirectory(data)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(ICONS)
 
-if(NOT CMAKE_CROSSCOMPILING)
-    export(TARGETS ${CROSS_EXPORTS} FILE "${CMAKE_BINARY_DIR}/ImportExecutables.cmake")
-endif()
+install(FILES
+    "${WAD_DATA_PATH}"
+    DESTINATION "${DSDAPWADDIR}"
+)
 
 if(WIN32)
     install(FILES COPYING DESTINATION . RENAME COPYING.txt)
