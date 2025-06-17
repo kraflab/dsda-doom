@@ -490,6 +490,19 @@ void gld_EndAutomapDraw(void)
   glsl_PopNullShader();
 }
 
+void gld_BeginMenuDraw(void)
+{
+  gld_InitColormapTextures(true);
+  glsl_PushNullShader();
+  gl_menu_lightmode_indexed = true;
+}
+
+void gld_EndMenuDraw(void)
+{
+  gl_menu_lightmode_indexed = false;
+  glsl_PopNullShader();
+}
+
 void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags)
 {
   GLTexture *gltexture;
@@ -666,7 +679,7 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
 // use colormaps[0] as a fallback in such a case.
 const lighttable_t *gld_GetActiveColormap()
 {
-  if (V_IsAutomapLightmodeIndexed())
+  if (V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed())
     return colormaps[0];
   else if (fixedcolormap)
     return fixedcolormap;
@@ -718,7 +731,7 @@ void gld_DrawLine_f(float x0, float y0, float x1, float y1, int BaseColor)
   if (a == 0)
     return;
 
-  color = gld_LookupIndexedColor(BaseColor, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
+  color = gld_LookupIndexedColor(BaseColor, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed());
 
   line = M_ArrayGetNewItem(&map_lines, sizeof(line[0]));
 
@@ -826,7 +839,7 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
 
 void gld_FillBlock(int x, int y, int width, int height, int col)
 {
-  color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
+  color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed());
 
   glsl_PushNullShader();
 
@@ -850,12 +863,7 @@ void gld_FillBlock(int x, int y, int width, int height, int col)
 
 void gld_DrawShaded(int x, int y, int width, int height, int shade)
 {
-  // This is more messy than I'd like. (I hate this, but this is my current fix for the menu overlay invert)
-  // The `col` fixes the menu overlay from inverting during `invul_cm`.
-  // The 'automap` boolean is to undo the `col` invert for the automap.
-  dboolean automap = V_IsAutomapLightmodeIndexed();
-  int col = invul_cm && !automap ? 256 : 0;
-  color_rgb_t color = gld_LookupIndexedColor(col, V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed());
+  color_rgb_t color = gld_LookupIndexedColor(playpal_darkest, V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed());
 
   glsl_PushNullShader();
 
