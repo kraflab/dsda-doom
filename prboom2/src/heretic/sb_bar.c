@@ -555,7 +555,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh)
     {
         if (heretic)
         {
-            V_DrawNumPatch(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatchFS(0, 158, 0, LumpBARBACK, CR_DEFAULT, VPT_STRETCH);
             if (players[consoleplayer].cheats & CF_GODMODE)
             {
                 V_DrawNamePatch(16, 167, 0, "GOD1", CR_DEFAULT, VPT_STRETCH);
@@ -564,7 +564,7 @@ void SB_Drawer(dboolean statusbaron, dboolean refresh)
         }
         else
         {
-            V_DrawNumPatch(0, 134, 0, LumpH2BAR, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatchFS(0, 134, 0, LumpH2BAR, CR_DEFAULT, VPT_STRETCH);
         }
 
         oldhealth = -1;
@@ -696,12 +696,12 @@ void DrawCommonBar(void)
     {
       if (heretic)
       {
-          V_DrawNumPatch(0,  148, 0, LumpLTFCTOP, CR_DEFAULT, VPT_STRETCH);
-          V_DrawNumPatch(290,  148, 0, LumpRTFCTOP, CR_DEFAULT, VPT_STRETCH);
+          V_DrawNumPatchFS(0,  148, 0, LumpLTFCTOP, CR_DEFAULT, VPT_STRETCH);
+          V_DrawNumPatchFS(290,  148, 0, LumpRTFCTOP, CR_DEFAULT, VPT_STRETCH);
       }
       else
       {
-          V_DrawNumPatch(0, 134, 0, LumpH2TOP, CR_DEFAULT, VPT_STRETCH);
+          V_DrawNumPatchFS(0, 134, 0, LumpH2TOP, CR_DEFAULT, VPT_STRETCH);
       }
     }
 
@@ -725,7 +725,7 @@ void DrawCommonBar(void)
             healthPos = (healthPos * 256) / 100;
             chainY =
                 (HealthMarker == CPlayer->mo->health) ? 191 : 191 + ChainWiggle;
-            V_DrawNumPatch(0,  190, 0, LumpCHAINBACK, CR_DEFAULT, VPT_STRETCH);
+            V_DrawNumPatchFS(0,  190, 0, LumpCHAINBACK, CR_DEFAULT, VPT_STRETCH);
             V_DrawNumPatch(2 + (healthPos % 17),  chainY, 0, LumpCHAIN, CR_DEFAULT, VPT_STRETCH);
             V_DrawNumPatch(17 + healthPos,  chainY, 0, LumpLIFEGEM, CR_DEFAULT, VPT_STRETCH);
             V_DrawNumPatch(0,  190, 0, LumpLTFACE, CR_DEFAULT, VPT_STRETCH);
