@@ -1174,12 +1174,13 @@ dboolean AM_Responder
   else if (dsda_InputActivated(dsda_input_map_clear))
   {
     // [Alaux] Clear just the last mark
-    if (!markpointnum)
-      dsda_AddMessage(s_AMSTR_MARKSCLEARED);
-    else {
+    if (markpointnum)
       AM_clearLastMark();
+
+    if (markpointnum)
       doom_printf("Cleared spot %d", markpointnum);
-    }
+    else
+      dsda_AddMessage(s_AMSTR_MARKSCLEARED);
 
     return true;
   }
