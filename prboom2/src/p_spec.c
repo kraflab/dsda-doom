@@ -1507,6 +1507,27 @@ dboolean PUREFUNC P_IsSecret(const sector_t *sec)
   return (sec->flags & SECF_SECRET) != 0;
 }
 
+//
+// P_IsDeathExit()
+//
+// If the sector a death exit via E1M8 or MBF21 actions
+//
+dboolean PUREFUNC P_IsDeathExit(const sector_t *sec)
+{
+  if (sec->special < 32)
+  {
+    return (sec->special == 11);
+  }
+  else if (mbf21 && sec->special & DEATH_MASK)
+  {
+    const int i = (sec->special & DAMAGE_MASK) >> DAMAGE_SHIFT;
+
+    return (i == 2 || i == 3);
+  }
+
+  return false;
+}
+
 
 //
 // P_WasSecret()
