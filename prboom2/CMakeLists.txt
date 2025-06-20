@@ -98,12 +98,7 @@ check_include_file("unistd.h" HAVE_UNISTD_H)
 check_include_file("asm/byteorder.h" HAVE_ASM_BYTEORDER_H)
 check_include_file("dirent.h" HAVE_DIRENT_H)
 
-include(GetAvailableFlags)
-
-get_supported_warnings(SUPPORTED_WARNINGS)
-get_fast_math_flag(FAST_MATH_FLAG)
-get_compile_definitions(DSDA_COMPILE_DEFINITIONS)
-get_deprecation_silencing_definitions(DEPRECATION_SILENCING_DEFINITIONS)
+include(DsdaTargetFeatures)
 
 include(PkgConfigHelper)
 
