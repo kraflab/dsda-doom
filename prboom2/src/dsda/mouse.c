@@ -15,6 +15,8 @@
 //	DSDA Mouse
 //
 
+#include "SDL.h"
+
 #include "dsda/configuration.h"
 #include "dsda/features.h"
 
@@ -56,4 +58,25 @@ void dsda_ApplyQuickstartMouseCache(int* mousex) {
 
 void dsda_QueueQuickstart(void) {
   quickstart_queued = true;
+}
+
+void dsda_GetMousePosition(int *x, int *y)
+{
+  extern int gl_viewport_width, gl_viewport_height, gl_viewport_x, gl_viewport_y;
+  int window_x, window_y;
+  SDL_GetMouseState(&window_x, &window_y);
+
+  // window_x and window_y have the mouse position in the window
+  // but we want the mouse position in the viewport
+  if (gl_viewport_x < window_x && window_x < (gl_viewport_x + gl_viewport_width))
+  {
+    *x = window_x - gl_viewport_x;
+  }
+  else *x = 0;
+
+  if (gl_viewport_y < window_y && window_y < (gl_viewport_y + gl_viewport_height))
+  {
+    *y = window_y - gl_viewport_y;
+  }
+  else *y = 0;
 }

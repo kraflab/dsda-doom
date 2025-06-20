@@ -295,7 +295,7 @@ void dsda_InitDemoRecording(void) {
   dsda_TrackConfigFeatures();
 
   if (!demo_key_frame_initialized) {
-    dsda_InitKeyFrame();
+    dsda_InitAutoKeyFrames();
     demo_key_frame_initialized = true;
   }
 
