@@ -20,6 +20,7 @@
 #include "dsda/configuration.h"
 #include "dsda/features.h"
 
+#include "i_video.h"
 #include "mouse.h"
 
 static int quickstart_cache_tics;
@@ -62,21 +63,28 @@ void dsda_QueueQuickstart(void) {
 
 void dsda_GetMousePosition(int *x, int *y)
 {
-  extern int gl_viewport_width, gl_viewport_height, gl_viewport_x, gl_viewport_y;
-  int window_x, window_y;
-  SDL_GetMouseState(&window_x, &window_y);
+  SDL_GetMouseState(x, y);
 
-  // window_x and window_y have the mouse position in the window
+  // SDL_GetMouseState doesnt account for HiDPI displays
+  {
+    int logical_w, logical_h;
+    SDL_GetWindowSize(sdl_window, &logical_w, &logical_h);
+
+    *x = (int)(*x * (float)window_rect.w / (float)logical_w);
+    *y = (int)(*y * (float)window_rect.h / (float)logical_h);
+  }
+
+  // x and y currently have the mouse position in the window
   // but we want the mouse position in the viewport
-  if (gl_viewport_x < window_x && window_x < (gl_viewport_x + gl_viewport_width))
+  if (viewport_rect.x < *x && *x < (viewport_rect.w + viewport_rect.x) &&
+      viewport_rect.y < *y && *y < (viewport_rect.h + viewport_rect.y))
   {
-    *x = window_x - gl_viewport_x;
+    *x -= viewport_rect.x;
+    *y -= viewport_rect.y;
   }
-  else *x = 0;
-
-  if (gl_viewport_y < window_y && window_y < (gl_viewport_y + gl_viewport_height))
+  else
   {
-    *y = window_y - gl_viewport_y;
+    *x = 0;
+    *y = 0;
   }
-  else *y = 0;
 }
