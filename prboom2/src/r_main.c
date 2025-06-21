@@ -765,6 +765,9 @@ void R_ExecuteSetViewSize (void)
     }
   }
 
+  I_SetWindowRect();
+  I_SetViewportRect();
+
   if (V_IsOpenGLMode())
     dsda_GLSetRenderViewportParams();
 

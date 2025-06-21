@@ -32,6 +32,8 @@
  *-----------------------------------------------------------------------------
  */
 
+#include <SDL_render.h>
+#include <SDL_video.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -118,10 +120,12 @@ SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
 SDL_Renderer *sdl_renderer;
-static SDL_Texture *sdl_texture;
+SDL_Texture *sdl_texture;
 static SDL_GLContext sdl_glcontext;
 unsigned int windowid = 0;
 SDL_Rect src_rect = { 0, 0, 0, 0 };
+SDL_Rect window_rect = { 0, 0, 0, 0 };
+SDL_Rect viewport_rect = { 0, 0, 0, 0 };
 
 ////////////////////////////////////////////////////////////////////////////
 // Input code
@@ -1461,7 +1465,6 @@ void I_UpdateVideoMode(void)
     deh_changeCompTranslucency();
 
     // elim - Sets up viewport sizing for render-to-texture scaling
-    dsda_GLGetSDLWindowSize(sdl_window);
     dsda_GLSetRenderViewportParams();
     dsda_GLSetRenderViewport();
   }
@@ -1646,9 +1649,41 @@ void UpdateGrab(void)
 
 static void ApplyWindowResize(SDL_Event *resize_event)
 {
+  I_SetWindowRect();
+  I_SetViewportRect();
+
   if (!V_IsOpenGLMode() || !sdl_window)
     return;
 
-  dsda_GLGetSDLWindowSize(sdl_window);
   dsda_GLSetRenderViewportParams();
+}
+
+void I_SetWindowRect()
+{
+  if (V_IsOpenGLMode())
+    SDL_GL_GetDrawableSize(sdl_window, &window_rect.w, &window_rect.h);
+  else
+    SDL_GetRendererOutputSize(sdl_renderer, &window_rect.w, &window_rect.h);
+}
+
+void I_SetViewportRect()
+{
+  float viewport_aspect = (float)SCREENWIDTH / (float)ACTUALHEIGHT;
+
+  // Black bars on left and right of viewport
+  if (((float)window_rect.w / (float)window_rect.h) > viewport_aspect)
+  {
+    viewport_rect.w = (int)((float)window_rect.h * viewport_aspect);
+    viewport_rect.h = window_rect.h;
+    viewport_rect.x = (window_rect.w - viewport_rect.w) >> 1;
+    viewport_rect.y = 0;
+  }
+  // Either matching window's aspect ratio, or black bars on top and bottom (ie 21:9 on a 16:9 display)
+  else
+  {
+    viewport_rect.w = window_rect.w;
+    viewport_rect.h = (int)((float)window_rect.w / viewport_aspect);
+    viewport_rect.x = 0;
+    viewport_rect.y = (window_rect.h - viewport_rect.h) >> 1;
+  }
 }

@@ -38,6 +38,7 @@
 #include "gl_opengl.h"
 
 #include "v_video.h"
+#include "i_video.h"
 #include "gl_intern.h"
 #include "m_random.h"
 #include "lprintf.h"
@@ -63,10 +64,10 @@ GLuint CaptureScreenAsTexID(void)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-    gld_GetTexDimension(gl_viewport_width), gld_GetTexDimension(gl_viewport_height),
+    gld_GetTexDimension(viewport_rect.w), gld_GetTexDimension(viewport_rect.h),
     0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 
-  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
+  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, viewport_rect.x, viewport_rect.y, viewport_rect.w, viewport_rect.h);
 
   return id;
 }
@@ -80,12 +81,12 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
   float tx, tx2;
   int dx = MAX(1, (SCREENWIDTH > SCREENHEIGHT) ? SCREENHEIGHT / 200 : SCREENWIDTH / 200);
 
-  total_w = gld_GetTexDimension(gl_viewport_width);
-  total_h = gld_GetTexDimension(gl_viewport_height);
+  total_w = gld_GetTexDimension(viewport_rect.w);
+  total_h = gld_GetTexDimension(viewport_rect.h);
 
   fU1 = 0.0f;
-  fV1 = (float)gl_viewport_height / (float)total_h;
-  fU2 = (float)gl_viewport_width / (float)total_w;
+  fV1 = (float)viewport_rect.h / (float)total_h;
+  fU2 = (float)viewport_rect.w / (float)total_w;
   fV2 = 0.0f;
 
 
@@ -111,8 +112,8 @@ int gld_wipe_doMelt(int ticks, int *y_lookup)
     yoffs = MAX(0, y_lookup[i]);
 
     // elim - melt texture is the pixel size of the GL viewport, not the game scene texture size
-    scaled_i = MIN(gl_viewport_width, (int)((float)i * gl_scale_x));
-    scaled_i2 = MIN(gl_viewport_width, (int)((float)i2 * gl_scale_x));
+    scaled_i = MIN(viewport_rect.w, (int)((float)i * gl_scale_x));
+    scaled_i2 = MIN(viewport_rect.w, (int)((float)i2 * gl_scale_x));
 
     // elim - texel coordinates don't necessarily match texture buffer dimensions, since textures
     //        have to be stored in dimensions that are power-of-2

@@ -47,6 +47,9 @@
 extern SDL_Window *sdl_window;
 extern SDL_Renderer *sdl_renderer;
 
+extern SDL_Rect window_rect;
+extern SDL_Rect viewport_rect;
+
 extern const char *screen_resolutions_list[];
 
 extern const char *sdl_video_window_pos;
@@ -101,5 +104,8 @@ extern int renderH;		// - DTIED
 extern dboolean window_focused;
 dboolean I_WindowFocused(void);
 void UpdateGrab(void);
+
+void I_SetWindowRect(void);
+void I_SetViewportRect(void);
 
 #endif
