@@ -530,14 +530,15 @@ function(AddGameExecutable TARGET SOURCES)
 
     add_executable(${TARGET} WIN32 ${SOURCES})
 
-    target_compile_options(${TARGET} PRIVATE
-        ${SUPPORTED_WARNINGS}
-        ${FAST_MATH_FLAG}
-    )
+    dsda_target_set_warnings(${TARGET})
+    dsda_target_silence_deprecation(${TARGET})
+    dsda_target_enable_fast_math(${TARGET})
 
-    target_compile_definitions(${TARGET} PRIVATE
-        ${DEPRECATION_SILENCING_DEFINITIONS}
-        ${DSDA_COMPILE_DEFINITIONS}
+    target_compile_definitions(${TARGET}
+        PRIVATE
+        HAVE_CONFIG_H
+        $<$<NOT:$<BOOL:${HAVE_STRICMP}>>:stricmp=strcasecmp>
+        $<$<NOT:$<BOOL:${HAVE_STRNICMP}>>:strnicmp=strncasecmp>
     )
 
     target_include_directories(${TARGET} PRIVATE

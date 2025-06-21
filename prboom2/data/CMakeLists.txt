@@ -3,6 +3,13 @@ project(dsda-doom-wad
     LANGUAGES C
 )
 
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    list(APPEND
+        CMAKE_MODULE_PATH
+        "${CMAKE_CURRENT_LIST_DIR}/../cmake"
+    )
+endif()
+
 # PrBoom-Plus WAD creation tool
 
 add_executable(dsda_rdatawad
@@ -27,7 +34,9 @@ set_target_properties(dsda_rdatawad
     OUTPUT_NAME rdatawad
 )
 
-#TODO: Add warnings and defines back
+include(DsdaTargetFeatures)
+dsda_target_set_warnings(dsda_rdatawad)
+dsda_target_silence_deprecation(dsda_rdatawad)
 
 # PrBoom-Plus internal WAD
 
