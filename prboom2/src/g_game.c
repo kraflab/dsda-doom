@@ -412,6 +412,16 @@ static dboolean WeaponSelectable(weapontype_t weapon)
     return false;
   }
 
+  // Can't select the fist if we have the chainsaw, unless
+  // we also have the berserk pack.
+  if ((demo_compatibility)
+      && weapon == wp_fist
+      && players[consoleplayer].weaponowned[wp_chainsaw]
+      && !players[consoleplayer].powers[pw_strength])
+  {
+    return false;
+  }
+
   return true;
 }
 
