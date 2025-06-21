@@ -60,7 +60,6 @@ int curpos;
 int inv_ptr;
 int ArtifactFlash;
 int SB_state = -1;
-int playerkeys = 0;
 
 // Private Data
 
@@ -817,7 +816,7 @@ void DrawMainBar(void)
     }
 
     // Keys
-    if (oldkeys != playerkeys)
+    if (oldkeys != CPlayer->ravenkeys)
     {
         if (CPlayer->cards[key_yellow])
         {
@@ -831,7 +830,7 @@ void DrawMainBar(void)
         {
             V_DrawNamePatch(153, 180, 0, "bkeyicon", CR_DEFAULT, VPT_STRETCH);
         }
-        oldkeys = playerkeys;
+        oldkeys = CPlayer->ravenkeys;
     }
     // Ammo
     temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
@@ -1215,19 +1214,19 @@ void DrawKeyBar(void)
     int xPosition;
     int temp;
 
-    if (oldkeys != playerkeys)
+    if (oldkeys != CPlayer->ravenkeys)
     {
         xPosition = 46;
         for (i = 0; i < NUMCARDS && xPosition <= 126; i++)
         {
-            if (playerkeys & (1 << i))
+            if (CPlayer->ravenkeys & (1 << i))
             {
                 V_DrawNumPatch(xPosition, 164, 0,
                                W_GetNumForName("keyslot1") + i, CR_DEFAULT, VPT_STRETCH);
                 xPosition += 20;
             }
         }
-        oldkeys = playerkeys;
+        oldkeys = CPlayer->ravenkeys;
     }
     temp = pclass[CPlayer->pclass].auto_armor_save +
         CPlayer->armorpoints[ARMOR_ARMOR] +

@@ -1776,7 +1776,9 @@ static void G_PlayerFinishLevel(int player)
   p->lookdir = 0;
   p->rain1 = NULL;
   p->rain2 = NULL;
-  playerkeys = 0;
+
+  if (!hexen || (hexen && dsda_MapCluster(gamemap) != dsda_MapCluster(leave_data.map)))
+    p->ravenkeys = 0;
 
   memset(p->powers, 0, sizeof p->powers);
   if (flb.flight_carryover)
