@@ -231,16 +231,14 @@ void D_PostEvent(event_t *ev)
       // Immediate exit if quit key is pressed in skip mode
       I_SafeExit(0);
     }
-    else
+    else if ( dsda_InputActivated(dsda_input_menu_escape))
     {
-      // use key is used for seeing the current frame
-      if (
-        !dsda_InputActivated(dsda_input_use) && !dsda_InputActivated(dsda_input_demo_skip) &&
-        (ev->type == ev_keydown || ev->type == ev_keyup) // is this condition important?
-      )
-      {
-        return;
-      }
+      dsda_ExitSkipMode();
+    }
+    // use key is used for seeing the current frame
+    else if (!dsda_InputActivated(dsda_input_use) && !dsda_InputActivated(dsda_input_demo_skip))
+    {
+      return;
     }
   }
 
