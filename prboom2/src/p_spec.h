@@ -1038,6 +1038,9 @@ dboolean P_CeilingPlanesDiffer(const sector_t *sec, const sector_t *other);
 dboolean PUREFUNC P_IsSecret
 ( const sector_t *sec );
 
+dboolean PUREFUNC P_IsDeathExit
+( const sector_t *sec );
+
 dboolean PUREFUNC P_WasSecret
 ( const sector_t *sec );
 
