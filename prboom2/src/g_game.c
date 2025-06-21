@@ -35,6 +35,7 @@
  *-----------------------------------------------------------------------------
  */
 
+#include "doomdef.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -1298,6 +1299,20 @@ dboolean G_Responder (event_t* ev)
     )
   ) return true;
 
+  if (dsda_IntConfig(dsda_config_playback_mouse_controls) &&
+    demoplayback && !timingdemo && dsda_InputActivated(dsda_input_fire))
+  {
+    extern int gl_viewport_width, gl_viewport_height;
+    int x, y;
+    dsda_GetMousePosition(&x, &y);
+
+    if (x && y > (SCREENHEIGHT - ST_SCALED_HEIGHT / 6))
+    {
+      dsda_JumpToLogicTic(demo_tics_count * x / (gl_viewport_width));
+      return true;
+    }
+  }
+
   // allow spy mode changes even during the demo
   // killough 2/22/98: even during DM demo
   //
@@ -1535,8 +1550,13 @@ void G_Ticker (void)
   else {
     int buf = gametic % BACKUPTICS;
 
-    dsda_UpdateAutoKeyFrames();
-    dsda_UpdateAutoSaves();
+    if (!timingdemo) {
+      dsda_UpdateAutoKeyFrames();
+      dsda_UpdateAutoSaves();
+
+      if (demoplayback)
+        dsda_UpdatePlaybackKeyFrames();
+    }
 
     if (dsda_BruteForce())
     {
@@ -2360,7 +2380,7 @@ const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
 
 const char * hexen_skill_fighter[5] = { "SQUIRE", "KNIGHT", "WARRIOR", "BERSERKER", "TITAN" };
 const char * hexen_skill_cleric[5] = { "ALTAR BOY", "ACOLYTE", "PRIEST", "CARDINAL", "POPE" };
-const char * hexen_skill_mage[5] = { "APPRENTICE", "ENCHANTER", "SORCERER", "WARLOCK", "ARCHIMAGE" };  
+const char * hexen_skill_mage[5] = { "APPRENTICE", "ENCHANTER", "SORCERER", "WARLOCK", "ARCHIMAGE" };
 
 //==========================================================================
 //
@@ -3910,6 +3930,8 @@ void G_StartDemoPlayback(const byte *buffer, int length, int behaviour)
   dsda_InitDemoPlayback();
   demo_p = G_ReadDemoHeaderEx(demobuffer, demolength, RDH_SAFE);
   dsda_AttachPlaybackStream(demo_p, demolength, behaviour);
+
+  dsda_InitPlaybackKeyFrames();
 
   R_SmoothPlaying_Reset(NULL); // e6y
 }

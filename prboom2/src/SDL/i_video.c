@@ -89,6 +89,7 @@
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
+#include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/gl/render_scale.h"
 
@@ -128,6 +129,7 @@ int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
+int mouse_hide_timer = 0;
 
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
@@ -585,15 +587,6 @@ static int newpal = 0;
 
 void I_FinishUpdate (void)
 {
-  //e6y: new mouse code
-  UpdateGrab();
-
-#ifdef MONITOR_VISIBILITY
-  //!!if (!(SDL_GetAppState()&SDL_APPACTIVE)) {
-  //!!  return;
-  //!!}
-#endif
-
   if (V_IsOpenGLMode()) {
     // proff 04/05/2000: swap OpenGL buffers
     gld_Finish();
@@ -1479,12 +1472,20 @@ void I_UpdateVideoMode(void)
 
 static void ActivateMouse(void)
 {
-  SDL_SetRelativeMouseMode(SDL_TRUE);
-  SDL_GetRelativeMouseState(NULL, NULL);
+  if (demoplayback)
+  {
+    SDL_ShowCursor(SDL_DISABLE);
+  }
+  else
+  {
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+    SDL_GetRelativeMouseState(NULL, NULL);
+  }
 }
 
 static void DeactivateMouse(void)
 {
+  SDL_ShowCursor(SDL_ENABLE);
   SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
@@ -1526,6 +1527,9 @@ static void I_ReadMouse(void)
   if (!mouse_enabled)
     return;
 
+  //e6y: new mouse code
+  UpdateGrab();
+
   if (window_focused)
   {
     int x, y;
@@ -1541,6 +1545,9 @@ static void I_ReadMouse(void)
       event.data2.i = -y;
 
       D_PostEvent(&event);
+
+      if (!menuactive)
+        mouse_hide_timer = 2 * TICRATE;
     }
   }
 }
@@ -1555,6 +1562,15 @@ static dboolean MouseShouldBeGrabbed()
   // if the window doesnt have focus, never grab it
   if (!window_focused)
     return false;
+
+  // during playback the mouse should be hidden when not moving
+  if (demoplayback && !menuactive && mouse_hide_timer > 0)
+  {
+    if (!dsda_SkipMode())
+      mouse_hide_timer--;
+
+    return false;
+  }
 
   // always grab the mouse when full screen (dont want to
   // see the mouse pointer)
@@ -1574,8 +1590,8 @@ static dboolean MouseShouldBeGrabbed()
   if (menuactive || dsda_Paused())
     return false;
 
-  // only grab mouse when playing levels (but not demos)
-  return !demoplayback;
+  // grab mouse when playing levels
+  return true;
 }
 
 // Update the value of window_focused when we get a focus event

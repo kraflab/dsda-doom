@@ -2865,6 +2865,7 @@ setup_menu_t demos_options_settings[] =  // Demos Settings screen
   { "Text File Author", S_NAME, m_conf, DM_X, dsda_config_player_name },
   EMPTY_LINE,
   { "Playback Progress Bar", S_YESNO, m_conf, DM_X, dsda_config_hudadd_demoprogressbar },
+  { "Playback Mouse Controls", S_YESNO, m_conf, DM_X, dsda_config_playback_mouse_controls },
   { "Smooth Playback", S_YESNO, m_conf, DM_X, dsda_config_demo_smoothturns },
   { "Smooth Playback Factor", S_NUM, m_conf, DM_X, dsda_config_demo_smoothturnsfactor },
   { "Cycle Ghost Colors", S_YESNO, m_conf, DM_X, dsda_config_cycle_ghost_colors },

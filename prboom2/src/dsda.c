@@ -180,7 +180,7 @@ void dsda_ReadCommandLine(void) {
   if (arg->found)
     dsda_InitGhostImport(arg->value.v_string_array, arg->count);
 
-  dsda_InitKeyFrame();
+  dsda_InitAutoKeyFrames();
   dsda_InitCommandHistory();
 }
 
@@ -554,7 +554,7 @@ static void dsda_ResetTracking(void) {
 
 void dsda_WatchDeferredInitNew(int skill, int episode, int map) {
   dsda_ResetTracking();
-  
+
   if (!demorecording) return;
 
   ++dsda_session_attempts;
