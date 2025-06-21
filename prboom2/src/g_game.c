@@ -4007,13 +4007,29 @@ dboolean G_CheckDemoStatus (void)
     lprintf(LO_INFO, "Timed %u gametics in %u realtics = %-.1f frames per second\n",
              (unsigned) gametic,realtics,
              (unsigned) gametic * (double) TICRATE / realtics);
-    I_SafeExit(0);
+
+    if (dsda_IntConfig(dsda_config_demo_end_quit))
+      I_SafeExit(0);
+    else
+    {
+      timingdemo = false;
+      dsda_ClearPlaybackStream();
+      return false;
+    }
   }
 
   if (demoplayback)
   {
     if (userdemo)
-      I_SafeExit(0);  // killough
+    {
+      if (dsda_IntConfig(dsda_config_demo_end_quit))
+        I_SafeExit(0);  // killough
+      else
+      {
+        dsda_ClearPlaybackStream();
+        return false;
+      }
+    }
 
     G_ReloadDefaults();    // killough 3/1/98
     netgame = false;       // killough 3/29/98
