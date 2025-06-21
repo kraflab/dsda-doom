@@ -172,7 +172,7 @@ static void IN_DrawInterpic(void)
 
   // e6y: wide-res
   V_ClearBorder();
-  V_DrawNamePatch(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatchFS(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
 }
 
 static void IN_DrawBeenThere(int i)

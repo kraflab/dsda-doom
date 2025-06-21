@@ -364,7 +364,7 @@ void F_TextWrite (void)
   if (finalepatch)
   {
     V_ClearBorder();
-    V_DrawNamePatch(0, 0, 0, finalepatch, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatchFS(0, 0, 0, finalepatch, CR_DEFAULT, VPT_STRETCH);
   }
   else
     V_DrawBackground(finaleflat, 0);
@@ -702,7 +702,7 @@ void F_CastDrawer (void)
   V_ClearBorder();
   // erase the entire screen to a background
   // CPhipps - patch drawing updated
-  V_DrawNamePatch(0,0,0, castbackground, CR_DEFAULT, VPT_STRETCH); // Ty 03/30/98 bg texture extern
+  V_DrawNamePatchFS(0,0,0, castbackground, CR_DEFAULT, VPT_STRETCH); // Ty 03/30/98 bg texture extern
 
   F_CastPrint (*(castorder[castnum].name));
 
@@ -790,14 +790,14 @@ void F_BunnyScroll (void)
   {
     int scrolled = 320 - (finalecount-230)/2;
     if (scrolled <= 0) {
-      V_DrawNamePatch(0, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatchFS(0, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
     } else if (scrolled >= 320) {
-      V_DrawNamePatch(p1offset, 0, 0, scrollpic1, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatchFS(p1offset, 0, 0, scrollpic1, CR_DEFAULT, VPT_STRETCH);
       if (p1offset > 0)
-        V_DrawNamePatch(-320, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
+        V_DrawNamePatchFS(-320, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
     } else {
-      V_DrawNamePatch(p1offset + 320 - scrolled, 0, 0, scrollpic1, CR_DEFAULT, VPT_STRETCH);
-      V_DrawNamePatch(-scrolled, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatchFS(p1offset + 320 - scrolled, 0, 0, scrollpic1, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatchFS(-scrolled, 0, 0, scrollpic2, CR_DEFAULT, VPT_STRETCH);
     }
     if (p2width == 320)
       V_ClearBorder();
@@ -860,27 +860,32 @@ void F_Drawer (void)
     F_TextWrite ();
   else
   {
-    // e6y: wide-res
-    V_ClearBorder();
+    const char* finalelump = NULL;
+
+    // Allows use of HELP2 screen for PWADs under DOOM 1
+    dboolean showhelp2 = (gamemode == retail && pwad_help2_check) || gamemode <= registered;
 
     switch (gameepisode)
     {
       // CPhipps - patch drawing updated
       case 1:
-           if ( (gamemode == retail && !pwad_help2_check) || gamemode == commercial )
-             V_DrawNamePatch(0, 0, 0, "CREDIT", CR_DEFAULT, VPT_STRETCH);
-           else
-             V_DrawNamePatch(0, 0, 0, "HELP2", CR_DEFAULT, VPT_STRETCH);
-           break;
+        finalelump = showhelp2 ? "HELP2" : "CREDIT";
+        break;
       case 2:
-           V_DrawNamePatch(0, 0, 0, "VICTORY2", CR_DEFAULT, VPT_STRETCH);
-           break;
+        finalelump = "VICTORY2";
+        break;
       case 3:
-           F_BunnyScroll ();
-           break;
+        F_BunnyScroll ();
+        break;
       case 4:
-           V_DrawNamePatch(0, 0, 0, "ENDPIC", CR_DEFAULT, VPT_STRETCH);
-           break;
+        finalelump = "ENDPIC";
+        break;
+    }
+
+    if (finalelump)
+    {
+      V_ClearBorder(); // e6y: wide-res
+      V_DrawNamePatchFS(0, 0, 0, finalelump, CR_DEFAULT, VPT_STRETCH);
     }
   }
 }

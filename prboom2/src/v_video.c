@@ -350,7 +350,7 @@ void V_Init (void)
 //  means that their inner loops weren't so well optimised, so merging code may even speed them).
 //
 static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
-        int cm, enum patch_translation_e flags)
+        dboolean center, int cm, enum patch_translation_e flags)
 {
   const byte *trans;
 
@@ -382,8 +382,11 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
     flags &= ~VPT_TRANS;
 
   // [FG] automatically center wide patches without horizontal offset
-  if (patch->width > 320 && patch->leftoffset == 0)
-    x -= (patch->width - 320) / 2;
+  if (center)
+  {
+    if (patch->width > 320 && patch->leftoffset == 0)
+      x -= (patch->width - 320) / 2;
+  }
 
   if (!(flags & VPT_STRETCH_MASK)) {
     int             col;
@@ -657,15 +660,15 @@ static void FUNC_V_DrawShaded(int scrn, int x, int y, int width, int height, int
 // This inline is _only_ for the function below
 
 static void FUNC_V_DrawNumPatch(int x, int y, int scrn, int lump,
-         int cm, enum patch_translation_e flags)
+         dboolean center, int cm, enum patch_translation_e flags)
 {
-  V_DrawMemPatch(x, y, scrn, R_PatchByNum(lump), cm, flags);
+  V_DrawMemPatch(x, y, scrn, R_PatchByNum(lump), center, cm, flags);
 }
 
 static void FUNC_V_DrawNumPatchPrecise(float x, float y, int scrn, int lump,
-         int cm, enum patch_translation_e flags)
+         dboolean center, int cm, enum patch_translation_e flags)
 {
-  V_DrawMemPatch((int)x, (int)y, scrn, R_PatchByNum(lump), cm, flags);
+  V_DrawMemPatch((int)x, (int)y, scrn, R_PatchByNum(lump), center, cm, flags);
 }
 
 static int currentPaletteIndex = 0;
@@ -766,13 +769,13 @@ static void WRAP_gld_FillPatch(int lump, int n, int x, int y, int width, int hei
 {
   gld_FillPatch(lump, x, y, width, height, flags);
 }
-static void WRAP_gld_DrawNumPatch(int x, int y, int scrn, int lump, int cm, enum patch_translation_e flags)
+static void WRAP_gld_DrawNumPatch(int x, int y, int scrn, int lump, dboolean center, int cm, enum patch_translation_e flags)
 {
-  gld_DrawNumPatch(x,y,lump,cm,flags);
+  gld_DrawNumPatch(x,y,lump,center,cm,flags);
 }
-static void WRAP_gld_DrawNumPatchPrecise(float x, float y, int scrn, int lump, int cm, enum patch_translation_e flags)
+static void WRAP_gld_DrawNumPatchPrecise(float x, float y, int scrn, int lump, dboolean center, int cm, enum patch_translation_e flags)
 {
-  gld_DrawNumPatch_f(x,y,lump,cm,flags);
+  gld_DrawNumPatch_f(x,y,lump,center,cm,flags);
 }
 static void V_PlotPixelGL(int scrn, int x, int y, byte color) {
   gld_DrawLine(x-1, y, x+1, y, color);
@@ -801,8 +804,8 @@ static void NULL_CopyRect(int srcscrn, int destscrn, int x, int y, int width, in
 static void NULL_FillFlat(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags) {}
 static void NULL_FillPatch(int lump, int n, int x, int y, int width, int height, enum patch_translation_e flags) {}
 static void NULL_DrawBackground(const char *flatname, int n) {}
-static void NULL_DrawNumPatch(int x, int y, int scrn, int lump, int cm, enum patch_translation_e flags) {}
-static void NULL_DrawNumPatchPrecise(float x, float y, int scrn, int lump, int cm, enum patch_translation_e flags) {}
+static void NULL_DrawNumPatch(int x, int y, int scrn, int lump, dboolean center, int cm, enum patch_translation_e flags) {}
+static void NULL_DrawNumPatchPrecise(float x, float y, int scrn, int lump, dboolean center, int cm, enum patch_translation_e flags) {}
 static void NULL_PlotPixel(int scrn, int x, int y, byte color) {}
 static void NULL_PlotPixelWu(int scrn, int x, int y, byte color, int weight) {}
 static void NULL_DrawLine(fline_t* fl, int color) {}
@@ -819,8 +822,8 @@ V_BeginUIDraw_f V_BeginMenuDraw = NULL_BeginMenuDraw;
 V_EndUIDraw_f V_EndMenuDraw = NULL_EndMenuDraw;
 V_CopyRect_f V_CopyRect = NULL_CopyRect;
 V_FillRect_f V_FillRect = NULL_FillRect;
-V_DrawNumPatch_f V_DrawNumPatch = NULL_DrawNumPatch;
-V_DrawNumPatchPrecise_f V_DrawNumPatchPrecise = NULL_DrawNumPatchPrecise;
+V_DrawNumPatchGen_f V_DrawNumPatchGen = NULL_DrawNumPatch;
+V_DrawNumPatchGenPrecise_f V_DrawNumPatchGenPrecise = NULL_DrawNumPatchPrecise;
 V_FillFlat_f V_FillFlat = NULL_FillFlat;
 V_FillPatch_f V_FillPatch = NULL_FillPatch;
 V_DrawBackground_f V_DrawBackground = NULL_DrawBackground;
@@ -845,8 +848,8 @@ void V_InitMode(video_mode_t mode) {
       V_EndMenuDraw = NULL_EndMenuDraw;
       V_CopyRect = FUNC_V_CopyRect;
       V_FillRect = V_FillRect8;
-      V_DrawNumPatch = FUNC_V_DrawNumPatch;
-      V_DrawNumPatchPrecise = FUNC_V_DrawNumPatchPrecise;
+      V_DrawNumPatchGen = FUNC_V_DrawNumPatch;
+      V_DrawNumPatchGenPrecise = FUNC_V_DrawNumPatchPrecise;
       V_FillFlat = FUNC_V_FillFlat;
       V_FillPatch = FUNC_V_FillPatch;
       V_DrawBackground = FUNC_V_DrawBackground;
@@ -867,8 +870,8 @@ void V_InitMode(video_mode_t mode) {
       V_EndMenuDraw = WRAP_gld_EndMenuDraw;
       V_CopyRect = WRAP_gld_CopyRect;
       V_FillRect = WRAP_gld_FillRect;
-      V_DrawNumPatch = WRAP_gld_DrawNumPatch;
-      V_DrawNumPatchPrecise = WRAP_gld_DrawNumPatchPrecise;
+      V_DrawNumPatchGen = WRAP_gld_DrawNumPatch;
+      V_DrawNumPatchGenPrecise = WRAP_gld_DrawNumPatchPrecise;
       V_FillFlat = WRAP_gld_FillFlat;
       V_FillPatch = WRAP_gld_FillPatch;
       V_DrawBackground = WRAP_gld_DrawBackground;
@@ -1498,7 +1501,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
     lump = W_CheckNumForName(lump_name);
     if (W_LumpLength(lump) != HERETIC_RAW_SCREEN_SIZE)
     {
-      V_DrawNamePatch(0, 0, 0, lump_name, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatchFS(0, 0, 0, lump_name, CR_DEFAULT, VPT_STRETCH);
       return;
     }
   }
