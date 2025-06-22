@@ -255,6 +255,7 @@ typedef struct player_s
   pclass_t pclass;            // player class type
   int morphTics;              // player is a pig if > 0
   int pieces;                 // Fourth Weapon pieces
+  int ravenkeys;              // Track statusbar keys
   short yellowMessage;
   int poisoncount;            // screen flash for poison damage
   mobj_t *poisoner;           // NULL for non-player mobjs
