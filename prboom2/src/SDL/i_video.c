@@ -1475,7 +1475,7 @@ void I_UpdateVideoMode(void)
 
 static void ActivateMouse(void)
 {
-  if (demoplayback)
+  if (demoplayback && !walkcamera.type)
   {
     SDL_ShowCursor(SDL_DISABLE);
   }
@@ -1566,6 +1566,15 @@ static dboolean MouseShouldBeGrabbed()
   if (!window_focused)
     return false;
 
+  // if we specify not to grab the mouse, never grab
+  if (!mouse_enabled)
+    return false;
+
+  // always grab the mouse in camera mode when playing levels
+  // and menu is not active
+  if (walkcamera.type)
+    return (demoplayback && gamestate == GS_LEVEL && !menuactive);
+
   // during playback the mouse should be hidden when not moving
   if (demoplayback && !menuactive && mouse_hide_timer > 0)
   {
@@ -1579,15 +1588,6 @@ static dboolean MouseShouldBeGrabbed()
   // see the mouse pointer)
   if (desired_fullscreen)
     return true;
-
-  // if we specify not to grab the mouse, never grab
-  if (!mouse_enabled)
-    return false;
-
-  // always grab the mouse in camera mode when playing levels
-  // and menu is not active
-  if (walkcamera.type)
-    return (demoplayback && gamestate == GS_LEVEL && !menuactive);
 
   // when menu is active or game is paused, release the mouse
   if (menuactive || dsda_Paused())

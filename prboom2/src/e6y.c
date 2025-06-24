@@ -764,7 +764,7 @@ int HU_DrawDemoProgress(int force)
 
   prev_len = len;
 
-  if (dsda_IntConfig(dsda_config_playback_mouse_controls) && mouse_hide_timer > 0 && !timingdemo)
+  if (dsda_IntConfig(dsda_config_playback_mouse_controls) && mouse_hide_timer > 0 && !timingdemo && !walkcamera.type)
   {
     extern auto_kf_t* auto_key_frames;
     extern int auto_kf_size;
