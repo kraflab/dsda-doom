@@ -34,7 +34,7 @@ endif()
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
 
-project("dsda-doom" VERSION 0.29.0)
+project("dsda-doom" VERSION 0.29.1)
 
 # Set a default build type if none was specified
 set(default_build_type "RelWithDebInfo")
@@ -187,14 +187,14 @@ set(WAD_DATA_PATH "${DSDA_OUTPUT_PATH}/${WAD_DATA}")
 set(DSDA_BUILD_PWAD_WITH_EXTERNAL_PROJECT ${CMAKE_CROSSCOMPILING})
 if(CMAKE_GENERATOR MATCHES "Visual Studio")
     set(DSDA_BUILD_PWAD_WITH_EXTERNAL_PROJECT TRUE)
-    set(DSDA_EXTERNAL_PROJECT_VS_ARGS 
+    set(DSDA_EXTERNAL_PROJECT_VS_ARGS
         "CMAKE_GENERATOR" "${CMAKE_GENERATOR}"
         "CMAKE_GENERATOR_PLATFORM" "${CMAKE_VS_PLATFORM_NAME_DEFAULT}"
     )
 endif()
 
 if(DSDA_BUILD_PWAD_WITH_EXTERNAL_PROJECT)
-    set(DSDA_HOST_TOOLCHAIN "" 
+    set(DSDA_HOST_TOOLCHAIN ""
         CACHE FILEPATH "Toolchain file to build host tools with"
     )
     include(ExternalProject)
