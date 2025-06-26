@@ -1,12 +1,8 @@
 include_guard()
 
-# Internal functions, these should not be called from outside this module
+include(DsdaHelpers)
 
-function(dsda_internal_fail_if_invalid_target tgt)
-  if(NOT TARGET ${tgt})
-    message(FATAL_ERROR "${tgt} is not a valid CMake target.")
-  endif()
-endfunction()
+# Internal functions, these should not be called from outside this module
 
 function(dsda_internal_setup_warnings_msvc result_var)
   set(${result_var}
@@ -102,7 +98,7 @@ endfunction()
 # Public functions
 
 function(dsda_target_set_warnings tgt)
-  dsda_internal_fail_if_invalid_target(${tgt})
+  dsda_fail_if_invalid_target(${tgt})
   
   if(NOT DEFINED CACHE{DSDA_ENABLED_WARNINGS})
     dsda_internal_setup_warnings()
@@ -115,7 +111,7 @@ function(dsda_target_set_warnings tgt)
 endfunction()
 
 function(dsda_target_silence_deprecation tgt)
-  dsda_internal_fail_if_invalid_target(${tgt})
+  dsda_fail_if_invalid_target(${tgt})
 
   if(WIN32)
     target_compile_definitions(${tgt}
@@ -132,7 +128,7 @@ function(dsda_target_silence_deprecation tgt)
 endfunction()
 
 function(dsda_target_enable_fast_math tgt)
-  dsda_internal_fail_if_invalid_target(${tgt})
+  dsda_fail_if_invalid_target(${tgt})
 
   if(NOT DEFINED CACHE{DSDA_FAST_MATH_FLAG})
     dsda_internal_check_fast_math_flag()
