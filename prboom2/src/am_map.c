@@ -1702,6 +1702,12 @@ static automap_style_t AM_wallStyle(int i)
     if (mapcolor_p->exit && (dsda_IsExitLine(i) || dsda_IsSecretExitLine(i)))
       return ams_exit;
 
+    if (mapcolor_p->exitsecr && (dsda_IsDeathSecretExitLine(i) && !dsda_IsDeathExitLine(i)))
+      return ams_exit_secret;
+
+    if (mapcolor_p->exit && (dsda_IsDeathExitLine(i) || dsda_IsDeathSecretExitLine(i)))
+      return ams_exit;
+
     if (!lines[i].backsector) // 1-sided
     {
       if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
@@ -1743,6 +1749,20 @@ static automap_style_t AM_wallStyle(int i)
       )
       {
         return ams_revealed_secret;
+      }
+      else if (
+        (mapcolor_p->exitsecr && !mapcolor_p->exit) &&
+        (P_IsDeathExit(lines[i].frontsector) || P_IsDeathExit(lines[i].backsector))
+      )
+      {
+        return ams_exit_secret;
+      }
+      else if (
+        (mapcolor_p->exit || mapcolor_p->exitsecr) &&
+        (P_IsDeathExit(lines[i].frontsector) || P_IsDeathExit(lines[i].backsector))
+      )
+      {
+        return ams_exit;
       }
       else if (lines[i].backsector->floorheight !=
                 lines[i].frontsector->floorheight)
