@@ -27,12 +27,6 @@
 
 #include <math.h>
 
-int gl_window_width;
-int gl_window_height;
-int gl_viewport_width;
-int gl_viewport_height;
-int gl_viewport_x;
-int gl_viewport_y;
 int gl_statusbar_height;
 int gl_scene_width;
 int gl_scene_height;
@@ -43,66 +37,45 @@ int gl_letterbox_clear_required = 0;
 static int gl_clear_box_width;
 static int gl_clear_box_height;
 
-void dsda_GLGetSDLWindowSize(SDL_Window* sdl_window) {
-  SDL_GL_GetDrawableSize(sdl_window, &gl_window_width, &gl_window_height);
-}
 
 void dsda_GLSetRenderViewportParams() {
-  float viewport_aspect;
-
-  viewport_aspect = (float)SCREENWIDTH / (float)ACTUALHEIGHT;
-
-  // Black bars on left and right of viewport
-  if ((int)(gl_window_height * viewport_aspect) < gl_window_width) {
-    gl_viewport_width = (int)((float)gl_window_height * viewport_aspect);
-    gl_viewport_height = gl_window_height;
-    gl_viewport_x = (gl_window_width - gl_viewport_width) >> 1;
-    gl_viewport_y = 0;
-  }
-  // Either matching window's aspect ratio, or black bars on top and bottom (ie 21:9 on a 16:9 display)
-  else {
-    gl_viewport_width = gl_window_width;
-    gl_viewport_height = (int)((float)gl_window_width / viewport_aspect);
-    gl_viewport_x = 0;
-    gl_viewport_y = (gl_window_height - gl_viewport_height) >> 1;
-  }
-
-  gl_scale_x = (float)gl_viewport_width / (float)SCREENWIDTH;
-  gl_scale_y = (float)gl_viewport_height / (float)SCREENHEIGHT;
+  extern SDL_Rect viewport_rect;
+  gl_scale_x = (float)viewport_rect.w / (float)SCREENWIDTH;
+  gl_scale_y = (float)viewport_rect.h / (float)SCREENHEIGHT;
 
   // elim - This will be zero if no statusbar is being drawn
   gl_statusbar_height = ceilf(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
 
-  gl_scene_width = gl_viewport_width;
-  gl_scene_height = gl_viewport_height - gl_statusbar_height;
+  gl_scene_width = viewport_rect.w;
+  gl_scene_height = viewport_rect.h - gl_statusbar_height;
 
   // elim - If the viewport's x or y coordinate is indented from the window, we need to call glClear
   //        each frame to prevent artifacts smearing on undrawn framebuffer area
-  gl_letterbox_clear_required = gl_viewport_x + gl_viewport_y;
+  gl_letterbox_clear_required = viewport_rect.x + viewport_rect.y;
   if (gl_letterbox_clear_required) {
-    gl_clear_box_width = ((gl_viewport_y != 0) * gl_window_width) + gl_viewport_x;
-    gl_clear_box_height = ((gl_viewport_y == 0) * gl_window_height) + gl_viewport_y;
+    gl_clear_box_width = ((viewport_rect.y != 0) * window_rect.w) + viewport_rect.x;
+    gl_clear_box_height = ((viewport_rect.y == 0) * window_rect.h) + viewport_rect.y;
   }
 }
 
 void dsda_GLSetRenderViewport() {
-  glViewport(gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
+  glViewport(viewport_rect.x, viewport_rect.y, viewport_rect.w, viewport_rect.h);
 }
 
 void dsda_GLSetRenderViewportScissor() {
-  glScissor(gl_viewport_x, gl_viewport_y, gl_viewport_width, gl_viewport_height);
+  glScissor(viewport_rect.x, viewport_rect.y, viewport_rect.w, viewport_rect.h);
 }
 
 void dsda_GLSetRenderSceneScissor() {
-  glScissor(gl_viewport_x,
-            gl_viewport_y + gl_statusbar_height,
+  glScissor(viewport_rect.x,
+            viewport_rect.y + gl_statusbar_height,
             gl_scene_width, gl_scene_height);
 }
 
 void dsda_GLSetScreenSpaceScissor(int x, int y, int w, int h)
 {
-  glScissor(gl_viewport_x + x * gl_scale_x,
-            gl_viewport_y + (SCREENHEIGHT - (y + h)) * gl_scale_y,
+  glScissor(viewport_rect.x + x * gl_scale_x,
+            viewport_rect.y + (SCREENHEIGHT - (y + h)) * gl_scale_y,
             w * gl_scale_x,
             h * gl_scale_y);
 }
@@ -116,7 +89,7 @@ void dsda_GLUpdateStatusBarVisible() {
 
   if (saved_visible != current_visible) {
     gl_statusbar_height = (int)(gl_scale_y * (float)ST_SCALED_HEIGHT) * R_PartialView();
-    gl_scene_height = gl_viewport_height - gl_statusbar_height;
+    gl_scene_height = viewport_rect.h - gl_statusbar_height;
   }
 }
 
@@ -124,7 +97,7 @@ void dsda_GLLetterboxClear() {
   if (!gl_letterbox_clear_required)
     return;
 
-  glViewport(0, 0, gl_window_width, gl_window_height);
+  glViewport(0, 0, window_rect.w, window_rect.h);
   glEnable(GL_SCISSOR_TEST);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -133,8 +106,8 @@ void dsda_GLLetterboxClear() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Top or right box
-  glScissor(gl_window_width - gl_clear_box_width,
-            gl_window_height - gl_clear_box_height,
+  glScissor(window_rect.w - gl_clear_box_width,
+            window_rect.h - gl_clear_box_height,
             gl_clear_box_width, gl_clear_box_height);
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -168,9 +141,9 @@ void dsda_GLEndMeltRenderTexture() {
   glBegin(GL_TRIANGLE_STRIP);
   {
     glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
-    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, gl_window_height);
-    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)gl_window_width, 0.0f);
-    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)gl_window_width, (float)gl_window_height);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, window_rect.h);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)window_rect.w, 0.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)window_rect.w, (float)window_rect.h);
   }
   glEnd();
 
@@ -185,8 +158,8 @@ void dsda_GLFullscreenOrtho2D() {
   glLoadIdentity();
   glOrtho(
     (GLdouble) 0,
-    (GLdouble) gl_window_width,
-    (GLdouble) gl_window_height,
+    (GLdouble) window_rect.w,
+    (GLdouble) window_rect.h,
     (GLdouble) 0,
     (GLdouble) -1.0,
     (GLdouble) 1.0

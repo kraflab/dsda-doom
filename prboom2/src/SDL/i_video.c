@@ -32,6 +32,8 @@
  *-----------------------------------------------------------------------------
  */
 
+#include <SDL_render.h>
+#include <SDL_video.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -89,6 +91,7 @@
 #include "dsda/palette.h"
 #include "dsda/pause.h"
 #include "dsda/settings.h"
+#include "dsda/skip.h"
 #include "dsda/time.h"
 #include "dsda/gl/render_scale.h"
 
@@ -117,10 +120,12 @@ SDL_Surface *screen;
 static SDL_Surface *buffer;
 SDL_Window *sdl_window;
 SDL_Renderer *sdl_renderer;
-static SDL_Texture *sdl_texture;
+SDL_Texture *sdl_texture;
 static SDL_GLContext sdl_glcontext;
 unsigned int windowid = 0;
 SDL_Rect src_rect = { 0, 0, 0, 0 };
+SDL_Rect window_rect = { 0, 0, 0, 0 };
+SDL_Rect viewport_rect = { 0, 0, 0, 0 };
 
 ////////////////////////////////////////////////////////////////////////////
 // Input code
@@ -128,6 +133,7 @@ int             leds_always_off = 0; // Expected by m_misc, not relevant
 
 // Mouse handling
 static dboolean mouse_enabled; // usemouse, but can be overriden by -nomouse
+int mouse_hide_timer = 0;
 
 /////////////////////////////////////////////////////////////////////////////////
 // Keyboard handling
@@ -585,15 +591,6 @@ static int newpal = 0;
 
 void I_FinishUpdate (void)
 {
-  //e6y: new mouse code
-  UpdateGrab();
-
-#ifdef MONITOR_VISIBILITY
-  //!!if (!(SDL_GetAppState()&SDL_APPACTIVE)) {
-  //!!  return;
-  //!!}
-#endif
-
   if (V_IsOpenGLMode()) {
     // proff 04/05/2000: swap OpenGL buffers
     gld_Finish();
@@ -1468,7 +1465,6 @@ void I_UpdateVideoMode(void)
     deh_changeCompTranslucency();
 
     // elim - Sets up viewport sizing for render-to-texture scaling
-    dsda_GLGetSDLWindowSize(sdl_window);
     dsda_GLSetRenderViewportParams();
     dsda_GLSetRenderViewport();
   }
@@ -1479,12 +1475,20 @@ void I_UpdateVideoMode(void)
 
 static void ActivateMouse(void)
 {
-  SDL_SetRelativeMouseMode(SDL_TRUE);
-  SDL_GetRelativeMouseState(NULL, NULL);
+  if (demoplayback && !walkcamera.type)
+  {
+    SDL_ShowCursor(SDL_DISABLE);
+  }
+  else
+  {
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+    SDL_GetRelativeMouseState(NULL, NULL);
+  }
 }
 
 static void DeactivateMouse(void)
 {
+  SDL_ShowCursor(SDL_ENABLE);
   SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
@@ -1526,6 +1530,9 @@ static void I_ReadMouse(void)
   if (!mouse_enabled)
     return;
 
+  //e6y: new mouse code
+  UpdateGrab();
+
   if (window_focused)
   {
     int x, y;
@@ -1541,6 +1548,9 @@ static void I_ReadMouse(void)
       event.data2.i = -y;
 
       D_PostEvent(&event);
+
+      if (!menuactive)
+        mouse_hide_timer = 2 * TICRATE;
     }
   }
 }
@@ -1556,11 +1566,6 @@ static dboolean MouseShouldBeGrabbed()
   if (!window_focused)
     return false;
 
-  // always grab the mouse when full screen (dont want to
-  // see the mouse pointer)
-  if (desired_fullscreen)
-    return true;
-
   // if we specify not to grab the mouse, never grab
   if (!mouse_enabled)
     return false;
@@ -1570,12 +1575,26 @@ static dboolean MouseShouldBeGrabbed()
   if (walkcamera.type)
     return (demoplayback && gamestate == GS_LEVEL && !menuactive);
 
+  // during playback the mouse should be hidden when not moving
+  if (demoplayback && !menuactive && mouse_hide_timer > 0)
+  {
+    if (!dsda_SkipMode())
+      mouse_hide_timer--;
+
+    return false;
+  }
+
+  // always grab the mouse when full screen (dont want to
+  // see the mouse pointer)
+  if (desired_fullscreen)
+    return true;
+
   // when menu is active or game is paused, release the mouse
   if (menuactive || dsda_Paused())
     return false;
 
-  // only grab mouse when playing levels (but not demos)
-  return !demoplayback;
+  // grab mouse when playing levels
+  return true;
 }
 
 // Update the value of window_focused when we get a focus event
@@ -1630,9 +1649,41 @@ void UpdateGrab(void)
 
 static void ApplyWindowResize(SDL_Event *resize_event)
 {
+  I_SetWindowRect();
+  I_SetViewportRect();
+
   if (!V_IsOpenGLMode() || !sdl_window)
     return;
 
-  dsda_GLGetSDLWindowSize(sdl_window);
   dsda_GLSetRenderViewportParams();
+}
+
+void I_SetWindowRect()
+{
+  if (V_IsOpenGLMode())
+    SDL_GL_GetDrawableSize(sdl_window, &window_rect.w, &window_rect.h);
+  else
+    SDL_GetRendererOutputSize(sdl_renderer, &window_rect.w, &window_rect.h);
+}
+
+void I_SetViewportRect()
+{
+  float viewport_aspect = (float)SCREENWIDTH / (float)ACTUALHEIGHT;
+
+  // Black bars on left and right of viewport
+  if (((float)window_rect.w / (float)window_rect.h) > viewport_aspect)
+  {
+    viewport_rect.w = (int)((float)window_rect.h * viewport_aspect);
+    viewport_rect.h = window_rect.h;
+    viewport_rect.x = (window_rect.w - viewport_rect.w) >> 1;
+    viewport_rect.y = 0;
+  }
+  // Either matching window's aspect ratio, or black bars on top and bottom (ie 21:9 on a 16:9 display)
+  else
+  {
+    viewport_rect.w = window_rect.w;
+    viewport_rect.h = (int)((float)window_rect.w / viewport_aspect);
+    viewport_rect.x = 0;
+    viewport_rect.y = (window_rect.h - viewport_rect.h) >> 1;
+  }
 }
