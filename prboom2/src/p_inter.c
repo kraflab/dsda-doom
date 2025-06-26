@@ -393,7 +393,7 @@ void P_GiveCard(player_t *player, card_t card)
   player->cards[card] = 1;
 
   if (player == &players[consoleplayer])
-    playerkeys |= 1 << card;
+    player->ravenkeys |= 1 << card;
 
   dsda_WatchCard(card);
 }
@@ -3047,7 +3047,7 @@ int P_GiveKey(player_t * player, card_t key)
     player->cards[key] = true;
 
     if (player == &players[consoleplayer])
-      playerkeys |= 1 << key;
+      player->ravenkeys |= 1 << key;
 
     return true;
 }

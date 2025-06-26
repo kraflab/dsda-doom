@@ -281,6 +281,17 @@ mline_t thintriangle_guy[] =
 #undef R
 #define NUMTHINTRIANGLEGUYLINES (sizeof(thintriangle_guy)/sizeof(mline_t))
 
+#define R (FRACUNIT)
+mline_t thingbox_guy[] =
+{
+{ { (fixed_t)(-R), (fixed_t)(-R) }, { (fixed_t)( R), (fixed_t)(-R) } },
+{ { (fixed_t)( R), (fixed_t)(-R) }, { (fixed_t)( R), (fixed_t)( R) } },
+{ { (fixed_t)( R), (fixed_t)( R) }, { (fixed_t)(-R), (fixed_t)( R) } },
+{ { (fixed_t)(-R), (fixed_t)( R) }, { (fixed_t)(-R), (fixed_t)(-R) } }
+};
+#undef R
+#define NUMTHINGBOXGUYLINES (sizeof(thingbox_guy)/sizeof(mline_t))
+
 int automap_active;
 int automap_overlay;
 int automap_rotate;
@@ -455,8 +466,11 @@ static void AM_restoreScaleAndLoc(void)
 
 void AM_setMarkParams(int num)
 {
-  int i;
-  static char namebuf[16] = "AMMNUM0";
+  int i, namelen;
+  char namebuf[16];
+
+  sprintf(namebuf,"%s", !raven ? "AMMNUM0" : "SMALLIN0");
+  namelen = !raven ? 6 : 7;
 
   markpoints[num].w = 0;
   markpoints[num].h = 0;
@@ -464,7 +478,7 @@ void AM_setMarkParams(int num)
   snprintf(markpoints[num].label, sizeof(markpoints[num].label), "%d", num);
   for (i = 0; i < (int)strlen(markpoints[num].label); i++)
   {
-    namebuf[6] = markpoints[num].label[i];
+    namebuf[namelen] = markpoints[num].label[i];
     markpoints[num].widths[i] = V_NamePatchWidth(namebuf);
     markpoints[num].w += markpoints[num].widths[i] + 1;
     markpoints[num].h = MAX(markpoints[num].h, V_NamePatchHeight(namebuf));
@@ -1156,19 +1170,20 @@ dboolean AM_Responder
     /* Ty 03/27/98 - *not* externalized
      * cph 2001/11/20 - use doom_printf so we don't have our own buffer */
     doom_printf("%s %d", s_AMSTR_MARKEDSPOT, markpointnum);
-    if (!raven) AM_addMark();
+    AM_addMark();
 
     return true;
   }
   else if (dsda_InputActivated(dsda_input_map_clear))
   {
     // [Alaux] Clear just the last mark
-    if (!markpointnum)
-      dsda_AddMessage(s_AMSTR_MARKSCLEARED);
-    else {
+    if (markpointnum)
       AM_clearLastMark();
+
+    if (markpointnum)
       doom_printf("Cleared spot %d", markpointnum);
-    }
+    else
+      dsda_AddMessage(s_AMSTR_MARKSCLEARED);
 
     return true;
   }
@@ -1687,6 +1702,12 @@ static automap_style_t AM_wallStyle(int i)
     if (mapcolor_p->exit && (dsda_IsExitLine(i) || dsda_IsSecretExitLine(i)))
       return ams_exit;
 
+    if (mapcolor_p->exitsecr && (dsda_IsDeathSecretExitLine(i) && !dsda_IsDeathExitLine(i)))
+      return ams_exit_secret;
+
+    if (mapcolor_p->exit && (dsda_IsDeathExitLine(i) || dsda_IsDeathSecretExitLine(i)))
+      return ams_exit;
+
     if (!lines[i].backsector) // 1-sided
     {
       if (AM_DrawHiddenSecrets() && P_IsSecret(lines[i].frontsector))
@@ -1728,6 +1749,20 @@ static automap_style_t AM_wallStyle(int i)
       )
       {
         return ams_revealed_secret;
+      }
+      else if (
+        (mapcolor_p->exitsecr && !mapcolor_p->exit) &&
+        (P_IsDeathExit(lines[i].frontsector) || P_IsDeathExit(lines[i].backsector))
+      )
+      {
+        return ams_exit_secret;
+      }
+      else if (
+        (mapcolor_p->exit || mapcolor_p->exitsecr) &&
+        (P_IsDeathExit(lines[i].frontsector) || P_IsDeathExit(lines[i].backsector))
+      )
+      {
+        return ams_exit;
       }
       else if (lines[i].backsector->floorheight !=
                 lines[i].frontsector->floorheight)
@@ -2336,6 +2371,8 @@ static void AM_drawThings(void)
 {
   int   i;
   mobj_t* t;
+  mline_t* lineguy = thintriangle_guy;
+  int lineguylines = NUMTHINTRIANGLEGUYLINES;
 
 #if defined(HAVE_LIBSDL2_IMAGE)
   if (V_IsOpenGLMode())
@@ -2390,7 +2427,8 @@ static void AM_drawThings(void)
         continue;
       }
 
-      if (map_things_appearance == map_things_appearance_scaled)
+      if (map_things_appearance == map_things_appearance_scaled
+        || map_things_appearance == map_things_appearance_box)
         scale = (BETWEEN(4<<FRACBITS, 256<<FRACBITS, t->radius)>>FRACTOMAPBITS);// * 16 / 20;
       else
         scale = 16<<MAPBITS;
@@ -2442,10 +2480,17 @@ static void AM_drawThings(void)
           continue;
         }
       }
+
+      if (map_things_appearance == map_things_appearance_box)
+      {
+        lineguy = thingbox_guy;
+        lineguylines = NUMTHINGBOXGUYLINES;
+        angle = 0x40000000;
+      }
+
       //jff 1/5/98 end added code for keys
       //jff previously entire code
-      AM_drawLineCharacter(thintriangle_guy, NUMTHINTRIANGLEGUYLINES,
-        scale, angle,
+      AM_drawLineCharacter(lineguy, lineguylines, scale, angle,
         t->flags & MF_FRIEND && !t->player ? mapcolor_p->frnd :
         /* cph 2006/07/30 - Show count-as-kills in red. */
         ((t->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL) ? mapcolor_p->enemy :
@@ -2581,8 +2626,11 @@ static void AM_drawPlayerTrail(void)
 //
 static void AM_drawMarks(void)
 {
-  int i;
-  char namebuf[16] = "AMMNUM0";
+  int i, namelen;
+  char namebuf[16];
+
+  sprintf(namebuf,"%s", !raven ? "AMMNUM0" : "SMALLIN0");
+  namelen = !raven ? 6 : 7;
 
   if (map_trail_mode && dsda_RevealAutomap())
     AM_drawPlayerTrail();
@@ -2625,7 +2673,7 @@ static void AM_drawMarks(void)
         w = 0;
         for (k = 0; k < (int)strlen(markpoints[i].label); k++)
         {
-          namebuf[6] = markpoints[i].label[k];
+          namebuf[namelen] = markpoints[i].label[k];
 
           if (p.x < f_x + f_w &&
               p.x + markpoints[i].widths[k] * SCREENWIDTH / 320 >= f_x)

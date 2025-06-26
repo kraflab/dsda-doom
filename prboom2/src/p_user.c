@@ -263,7 +263,8 @@ void P_CalcHeight (player_t* player)
   }
 
   angle = (FINEANGLES / 20 * leveltime) & FINEMASK;
-  bob = dsda_ViewBob() ? FixedMul(player->bob / 2, finesine[angle]) : 0;
+  bob = player->bob * dsda_ViewBob() / 4;
+  bob = FixedMul(bob / 2, finesine[angle]);
 
   // move viewheight
 

@@ -31,6 +31,9 @@
  *-----------------------------------------------------------------------------
  */
 
+#include "doomdef.h"
+#include "r_patch.h"
+#include "st_stuff.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -83,9 +86,12 @@
 #include "d_deh.h"
 #include "e6y.h"
 #include "m_file.h"
+#include "v_video.h"
 
 #include "dsda/args.h"
+#include "dsda/configuration.h"
 #include "dsda/excmd.h"
+#include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/playback.h"
@@ -726,15 +732,14 @@ int force_singletics_to = 0;
 
 int HU_DrawDemoProgress(int force)
 {
+  extern float mouse_hide_timer;
   static unsigned int last_update = 0;
   static int prev_len = -1;
 
   int len, tics_count, diff;
   unsigned int tick, max_period;
 
-  if (gamestate == GS_DEMOSCREEN ||
-      !demoplayback ||
-      !dsda_IntConfig(dsda_config_hudadd_demoprogressbar))
+  if (gamestate == GS_DEMOSCREEN || !demoplayback)
     return false;
 
   tics_count = demo_tics_count * demo_playerscount;
@@ -759,11 +764,61 @@ int HU_DrawDemoProgress(int force)
 
   prev_len = len;
 
-  V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_lightest);
-  if (len > 4)
-    V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_darkest);
+  if (dsda_IntConfig(dsda_config_playback_mouse_controls) && mouse_hide_timer > 0 && !timingdemo && !walkcamera.type)
+  {
+    extern auto_kf_t* auto_key_frames;
+    extern int auto_kf_size;
+    extern dsda_key_frame_t* playback_key_frames;
+    extern int playback_kf_size;
+    extern dsda_key_frame_t quick_kf;
+    int x;
 
-  return true;
+    int bar_h = ST_SCALED_HEIGHT / 6;
+    int bar_y = SCREENHEIGHT - bar_h;
+    int inner_h = bar_h * 2/3;
+    int inner_y = SCREENHEIGHT - bar_h + (bar_h - inner_h) / 2;
+
+    V_FillRect(0, 0, bar_y, len, bar_h, playpal_lightest);
+    if (len > 4)
+      V_FillRect(0, 2, inner_y, len - 4, inner_h, playpal_darkest);
+
+    // playback key frames in light blue
+    for (int i = 0; i < playback_kf_size; i++)
+    {
+      if (!playback_key_frames[i].buffer) continue;
+      x = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * playback_key_frames[i].game_tic_count / tics_count));
+      V_FillRect(0, x, inner_y, 1, inner_h, colrngs[CR_LIGHTBLUE][playpal_lightest]);
+    }
+
+    // rewind key frames in green
+    for (int i = 0; i < auto_kf_size; i++)
+    {
+      if (!auto_key_frames[i].kf.buffer) continue;
+      x= MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * auto_key_frames[i].kf.game_tic_count / tics_count));
+      V_FillRect(0, x, inner_y, 1, inner_h, colrngs[CR_GREEN][playpal_lightest]);
+    }
+
+    // quick key frame in red
+    if (quick_kf.buffer)
+    {
+      x = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * quick_kf.game_tic_count / tics_count));
+      V_FillRect(0, x, inner_y, 1, inner_h, colrngs[CR_RED][playpal_lightest]);
+    }
+
+    V_FillRect(0, len - 1, bar_y, 2, bar_h, playpal_lightest);
+
+    return true;
+  }
+  else if (dsda_IntConfig(dsda_config_hudadd_demoprogressbar))
+  {
+    V_FillRect(0, 0, SCREENHEIGHT - 4, len - 0, 4, playpal_lightest);
+    if (len > 4)
+      V_FillRect(0, 2, SCREENHEIGHT - 3, len - 4, 2, playpal_darkest);
+
+    return true;
+  }
+
+  return false;
 }
 
 #ifdef _WIN32

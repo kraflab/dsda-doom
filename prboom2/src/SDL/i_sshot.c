@@ -59,15 +59,8 @@ int renderH;
 
 void I_UpdateRenderSize(void)
 {
-  if (V_IsOpenGLMode())
-  {
-    renderW = gl_window_width;
-    renderH = gl_window_height;
-  }
-  else
-  {
-    SDL_GetRendererOutputSize(sdl_renderer, &renderW, &renderH);
-  }
+  renderW = window_rect.w;
+  renderH = window_rect.h;
 }
 
 //

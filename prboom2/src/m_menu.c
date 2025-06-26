@@ -2865,6 +2865,7 @@ setup_menu_t demos_options_settings[] =  // Demos Settings screen
   { "Text File Author", S_NAME, m_conf, DM_X, dsda_config_player_name },
   EMPTY_LINE,
   { "Playback Progress Bar", S_YESNO, m_conf, DM_X, dsda_config_hudadd_demoprogressbar },
+  { "Playback Mouse Controls", S_YESNO, m_conf, DM_X, dsda_config_playback_mouse_controls },
   { "Smooth Playback", S_YESNO, m_conf, DM_X, dsda_config_demo_smoothturns },
   { "Smooth Playback Factor", S_NUM, m_conf, DM_X, dsda_config_demo_smoothturnsfactor },
   { "Cycle Ghost Colors", S_YESNO, m_conf, DM_X, dsda_config_cycle_ghost_colors },
@@ -2951,6 +2952,7 @@ static const char *map_things_appearance_list[] =
 #if defined(HAVE_LIBSDL2_IMAGE)
   "icons",
 #endif
+  "hitboxes",
   NULL
 };
 
@@ -3366,12 +3368,14 @@ setup_menu_t* display_settings[] =
 
 static const char* menu_background_list[] = { "Off", "Dark", "Texture", NULL };
 static const char* translucent_list[] = { "Off", "Default", "w/ Vanilla", NULL };
+static const char* viewbob_list[] = { "Off", "25%", "50%", "75%", "100%", NULL };
+static const char* weaponbob_list[] = { "Off", "25%", "50%", "75%", "100%", NULL };
 
 setup_menu_t display_options_settings[] = {
   { "Hide Weapon", S_YESNO, m_conf, G_X, dsda_config_hide_weapon },
   { "Wipe Screen Effect", S_YESNO,  m_conf, G_X, dsda_config_render_wipescreen },
-  { "View Bobbing", S_YESNO, m_conf, G_X, dsda_config_viewbob },
-  { "Weapon Bobbing", S_YESNO, m_conf, G_X, dsda_config_weaponbob },
+  { "View Bobbing", S_CHOICE, m_conf, G_X, dsda_config_viewbob, 0, viewbob_list },
+  { "Weapon Bobbing", S_CHOICE, m_conf, G_X, dsda_config_weaponbob, 0, weaponbob_list },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
   { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
@@ -4204,7 +4208,7 @@ static void M_DrawExtHelp(void)
   namebfr[5] = extended_help_index%10 + '0';
   // CPhipps - patch drawing updated
   V_ClearBorder(); // Redraw background for every ext HELP screen. Fixes widescreen overdraw.
-  V_DrawNamePatch(0, 0, 0, namebfr, CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatchFS(0, 0, 0, namebfr, CR_DEFAULT, VPT_STRETCH);
 }
 
 //
@@ -4375,7 +4379,7 @@ static void M_DrawHelp (void)
   M_ChangeMenu(NULL, mnact_full);
 
   V_ClearBorder();
-  V_DrawNamePatch(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatchFS(0, 0, 0, helplump, CR_DEFAULT, VPT_STRETCH);
 }
 
 //
@@ -4391,7 +4395,7 @@ static void M_DrawAd (void)
 
   V_ClearBorder();
   if (pwad_help2_check || gamemode == shareware)
-    V_DrawNamePatch(0, 0, 0, help2, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatchFS(0, 0, 0, help2, CR_DEFAULT, VPT_STRETCH);
   else
     M_DrawCredits();
 }
@@ -4428,7 +4432,7 @@ void M_DrawCredits(void)     // killough 10/98: credit screen
   if (PWADcredit || tc_game)
   {
     V_ClearBorder();
-    V_DrawNamePatch(0, 0, 0, credit, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatchFS(0, 0, 0, credit, CR_DEFAULT, VPT_STRETCH);
   }
   else
   {

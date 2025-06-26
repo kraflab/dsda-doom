@@ -166,6 +166,7 @@ typedef enum
 #if defined(HAVE_LIBSDL2_IMAGE)
   map_things_appearance_icon,
 #endif
+  map_things_appearance_box,
 
   map_things_appearance_max
 } map_things_appearance_t;

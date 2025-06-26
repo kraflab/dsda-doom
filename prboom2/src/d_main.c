@@ -231,16 +231,14 @@ void D_PostEvent(event_t *ev)
       // Immediate exit if quit key is pressed in skip mode
       I_SafeExit(0);
     }
-    else
+    else if ( dsda_InputActivated(dsda_input_menu_escape))
     {
-      // use key is used for seeing the current frame
-      if (
-        !dsda_InputActivated(dsda_input_use) && !dsda_InputActivated(dsda_input_demo_skip) &&
-        (ev->type == ev_keydown || ev->type == ev_keyup) // is this condition important?
-      )
-      {
-        return;
-      }
+      dsda_ExitSkipMode();
+    }
+    // use key is used for seeing the current frame
+    else if (!dsda_InputActivated(dsda_input_use) && !dsda_InputActivated(dsda_input_demo_skip))
+    {
+      return;
     }
   }
 
@@ -526,10 +524,10 @@ void D_Display (fixed_t frac)
     D_DrawPause();
   }
 
-  V_BeginUIDraw();
+  V_BeginMenuDraw();
   if (M_MenuIsShaded())
     M_ShadedScreen(0);
-  V_EndUIDraw();
+  V_EndMenuDraw();
 
   // menus go directly to the screen
   M_Drawer();          // menu is drawn even on top of everything
@@ -682,7 +680,7 @@ static void D_PageDrawer(void)
   {
     // e6y: wide-res
     V_ClearBorder();
-    V_DrawNamePatch(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatchFS(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
   }
   else
     M_DrawCredits();

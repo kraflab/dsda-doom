@@ -58,6 +58,7 @@ enum bleedtype {
 extern int gl_drawskys;
 extern dboolean gl_ui_lightmode_indexed;
 extern dboolean gl_automap_lightmode_indexed;
+extern dboolean gl_menu_lightmode_indexed;
 void gld_FlushTextures(void);
 
 void gld_InitVertexData();
@@ -71,9 +72,11 @@ void gld_BeginUIDraw(void);
 void gld_EndUIDraw(void);
 void gld_BeginAutomapDraw(void);
 void gld_EndAutomapDraw(void);
+void gld_BeginMenuDraw(void);
+void gld_EndMenuDraw(void);
 
-void gld_DrawNumPatch(int x, int y, int lump, int cm, enum patch_translation_e flags);
-void gld_DrawNumPatch_f(float x, float y, int lump, int cm, enum patch_translation_e flags);
+void gld_DrawNumPatch(int x, int y, int lump, dboolean center, int cm, enum patch_translation_e flags);
+void gld_DrawNumPatch_f(float x, float y, int lump, dboolean center, int cm, enum patch_translation_e flags);
 
 void gld_FillRaw(int lump, int x, int y, int src_width, int src_height, int dst_width, int dst_height, enum patch_translation_e flags);
 #define gld_FillRawName(name, x, y, src_width, src_height, dst_width, dst_height, flags) \
