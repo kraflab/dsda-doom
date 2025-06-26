@@ -6502,7 +6502,7 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
                 // [crispy] fix wyvern + porkalator bug
                 if (mo == NULL)
                 {
-                    fprintf(stderr, "DragonSeek: P_FindMobjFromTID() returned NULL mobj!\n");
+                    lprintf(LO_WARN, "DragonSeek: P_FindMobjFromTID() returned NULL mobj!\n");
                     mo_x = 0;
                     mo_y = 0;
                 }
