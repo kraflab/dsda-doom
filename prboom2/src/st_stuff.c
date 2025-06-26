@@ -434,7 +434,7 @@ static void ST_refreshBackground(void)
     {
       flags = VPT_ALIGN_BOTTOM;
 
-      V_DrawNumPatch(ST_X, y, BG, stbarbg.lumpnum, CR_DEFAULT, flags);
+      V_DrawNumPatchFS(ST_X, y, BG, stbarbg.lumpnum, CR_DEFAULT, flags);
       if (!deathmatch)
       {
         V_DrawNumPatch(ST_ARMSBGX, y, BG, armsbg.lumpnum, CR_DEFAULT, flags);
