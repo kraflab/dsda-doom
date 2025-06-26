@@ -1025,6 +1025,11 @@ static int M_AutoSaveSlot(const char *target_name)
   glob_t *glob;
   FILE *fp;
   const char *file_name;
+  int i;
+
+  // First page is reserved to quicksaves
+  for (i = 0; i < g_menu_save_page_size; i++)
+    slots[i] = 1;
 
   glob = I_StartGlob(dsda_SaveDir(), "*savegame*.dsg", 0);
   while (return_slot < 0)
@@ -1057,13 +1062,7 @@ static int M_AutoSaveSlot(const char *target_name)
   I_EndGlob(glob);
 
   if (return_slot < 0)
-  {
     return_slot = strnlen(slots, SLOT_SCAN_MAX);
-
-    // Make sure autosaves dont get added to the first page (quicksaves page)
-    if (return_slot < g_menu_save_page_size)
-      return_slot = g_menu_save_page_size;
-  }
 
   if (slots[return_slot] == 1)
     return_slot = -1;
