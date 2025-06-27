@@ -1204,6 +1204,99 @@ int V_GetPlaypalCount(void)
   return (dsda_PlayPalData()->length / PALETTE_SIZE);
 }
 
+//
+// V_GetPatchColor
+// Get the color of a Doom-Format
+// graphic via lumpnum
+//
+
+ColorEntry_t V_GetPatchColor (int lumpnum)
+{
+  ColorEntry_t col;
+  const unsigned char *playpal = V_GetPlaypal();
+  int i, j, pixel_cnt;
+  const byte* lump;
+  short width;
+
+  pixel_cnt = 0;
+  col.r = 0;
+  col.g = 0;
+  col.b = 0;
+
+  lump = W_LumpByNum(lumpnum);
+
+  width = *((const int16_t *) lump);
+  width = LittleShort(width);
+
+  if (width >= 16)
+  {
+    // Get color from left 16 pixels
+    for (i = 0; i < 16; ++i) {
+      // Skip irrelevant data in the doom patch header
+      byte length;
+      byte entry;
+      const byte* p;
+      int32_t offset;
+      p = lump + 8 + 4 * i;
+      offset = *((const int32_t *) p);
+      p = lump + LittleLong(offset);
+
+      while (*p != 0xff) {
+        p++;
+        length = *p++;
+        p++;
+
+        // Get RGB values per pixel
+        for (j = 0; j < length; ++j) {
+          entry = *p++;
+          col.r += playpal[3 * entry + 0];
+          col.g += playpal[3 * entry + 1];
+          col.b += playpal[3 * entry + 2];
+          pixel_cnt++;
+        }
+
+        p++;
+      }
+    }
+
+    // Get color from right 16 pixels
+    for (i = width - 16; i < width; ++i) {
+      // Skip irrelevant data in the doom patch header
+      byte length;
+      byte entry;
+      const byte* p;
+      int32_t offset;
+      p = lump + 8 + 4 * i;
+      offset = *((const int32_t *) p);
+      p = lump + LittleLong(offset);
+
+      while (*p != 0xff) {
+        p++;
+        length = *p++;
+        p++;
+
+        // Get RGB values per pixel
+        for (j = 0; j < length; ++j) {
+          entry = *p++;
+          col.r += playpal[3 * entry + 0];
+          col.g += playpal[3 * entry + 1];
+          col.b += playpal[3 * entry + 2];
+          pixel_cnt++;
+        }
+
+        p++;
+      }
+    }
+  }
+
+  // Average RGB values
+  col.r /= pixel_cnt;
+  col.g /= pixel_cnt;
+  col.b /= pixel_cnt;
+
+  return col;
+}
+
 void V_ClearBorder(void)
 {
   int bordtop, bordbottom, bordleft, bordright;

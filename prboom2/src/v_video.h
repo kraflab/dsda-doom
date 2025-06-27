@@ -309,6 +309,13 @@ void V_FreePlaypal(void);
 // [XA] get number of palettes in the current playpal
 int V_GetPlaypalCount(void);
 
+typedef struct ColorEntry_s
+{
+  int r, g, b;
+} ColorEntry_t;
+
+ColorEntry_t V_GetPatchColor (int lumpnum);
+
 // e6y: wide-res
 void V_ClearBorder(void);
 
