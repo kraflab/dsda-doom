@@ -1,38 +1,9 @@
 cmake_minimum_required(VERSION 3.9)
 
-option(WITH_XMP "Use libxmp if available" ON)
-if(WITH_XMP)
-    list(APPEND VCPKG_MANIFEST_FEATURES "libxmp")
-endif()
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-option(WITH_FLUIDSYNTH "Use FluidSynth if available" ON)
-if(WITH_FLUIDSYNTH)
-    list(APPEND VCPKG_MANIFEST_FEATURES "fluidsynth")
-endif()
-
-option(WITH_IMAGE "Use SDL2_image if available" ON)
-if(WITH_IMAGE)
-    list(APPEND VCPKG_MANIFEST_FEATURES "sdl2-image")
-endif()
-
-option(WITH_MAD "Use libmad if available" ON)
-if(WITH_MAD)
-    list(APPEND VCPKG_MANIFEST_FEATURES "libmad")
-endif()
-
-option(WITH_PORTMIDI "Use PortMidi if available" ON)
-if(WITH_PORTMIDI)
-    list(APPEND VCPKG_MANIFEST_FEATURES "portmidi")
-endif()
-
-option(WITH_VORBISFILE "Use vorbisfile if available" ON)
-if(WITH_VORBISFILE)
-    list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
-endif()
-
-# Automatically install dependencies
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
+# Setup dependencies options before `project()` so vcpkg features can be used
+include(DsdaDepsSetup)
 
 project("dsda-doom" VERSION 0.29.3)
 
@@ -46,8 +17,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
-
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(GNUInstallDirs)
 
