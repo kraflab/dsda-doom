@@ -533,17 +533,10 @@ function(AddGameExecutable TARGET SOURCES)
     dsda_target_set_warnings(${TARGET})
     dsda_target_silence_deprecation(${TARGET})
     dsda_target_enable_fast_math(${TARGET})
-
-    target_compile_definitions(${TARGET}
-        PRIVATE
-        HAVE_CONFIG_H
-        $<$<NOT:$<BOOL:${HAVE_STRICMP}>>:stricmp=strcasecmp>
-        $<$<NOT:$<BOOL:${HAVE_STRNICMP}>>:strnicmp=strncasecmp>
-    )
+    dsda_target_use_config_h(${TARGET})
 
     target_include_directories(${TARGET} PRIVATE
         ${SDL2_INCLUDE_DIRS}
-        ${CMAKE_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
     )
 

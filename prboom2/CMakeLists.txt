@@ -80,24 +80,6 @@ set(PROJECT_TARNAME "dsda-doom")
 set(WAD_DATA "dsda-doom.wad")
 set(PROJECT_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
 
-include(CheckSymbolExists)
-
-check_symbol_exists(stricmp "string.h" HAVE_STRICMP)
-check_symbol_exists(strnicmp "string.h" HAVE_STRNICMP)
-check_symbol_exists(getopt "unistd.h" HAVE_GETOPT)
-check_symbol_exists(mmap "sys/mman.h" HAVE_MMAP)
-check_symbol_exists(CreateFileMapping "windows.h" HAVE_CREATE_FILE_MAPPING)
-check_symbol_exists(strsignal "string.h" HAVE_STRSIGNAL)
-check_symbol_exists(mkstemp "stdlib.h" HAVE_MKSTEMP)
-check_symbol_exists(getpwuid "unistd.h;sys/types.h;pwd.h" HAVE_GETPWUID)
-
-include(CheckIncludeFile)
-
-check_include_file("sys/wait.h" HAVE_SYS_WAIT_H)
-check_include_file("unistd.h" HAVE_UNISTD_H)
-check_include_file("asm/byteorder.h" HAVE_ASM_BYTEORDER_H)
-check_include_file("dirent.h" HAVE_DIRENT_H)
-
 include(DsdaTargetFeatures)
 
 include(PkgConfigHelper)
@@ -178,7 +160,7 @@ option(SIMPLECHECKS "Enable checks which only impose significant overhead if a p
 # Debug options, disabled by default
 option(RANGECHECK "Enable internal range checking" OFF)
 
-configure_file(cmake/config.h.cin config.h)
+include(DsdaConfigHeader)
 
 set(DSDA_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
