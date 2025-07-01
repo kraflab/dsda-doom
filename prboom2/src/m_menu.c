@@ -833,7 +833,7 @@ static void M_DeleteSaveGame(int slot)
   if (dsda_LastSaveSlot() == slot)
     dsda_ResetLastSaveSlot();
 
-  name = dsda_SaveGameName(slot + current_page * g_menu_save_page_size, false);
+  name = dsda_SaveGameName(slot, false);
   remove(name);
   Z_Free(name);
 
@@ -1117,9 +1117,9 @@ static void M_DrawSave(void)
 //
 // M_Responder calls this when user is finished
 //
-static void M_DoSave(int slot)
+static void M_DoSave(int choice)
 {
-  G_SaveGame(slot + current_page * g_menu_save_page_size, savegamestrings[slot]);
+  G_SaveGame(choice + current_page * g_menu_save_page_size, savegamestrings[choice]);
   M_ClearMenus();
 }
 
@@ -5714,7 +5714,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     switch (M_EventToConfirmation(ch, action, ev))
     {
       case confirmation_yes:
-        M_DeleteSaveGame(itemOn);
+        M_DeleteSaveGame(itemOn + current_page * g_menu_save_page_size);
         S_StartVoidSound(g_sfx_itemup);
         delete_verify = false;
         break;
