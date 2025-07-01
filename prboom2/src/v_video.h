@@ -219,7 +219,7 @@ typedef void (*V_DrawNumPatchGenPrecise_f)(float x, float y, int scrn,
                                  enum patch_translation_e flags);
 extern V_DrawNumPatchGenPrecise_f V_DrawNumPatchGenPrecise;
 
-// V_DrawNumPatch - Draws the patch from lump "num"Add commentMore actions
+// V_DrawNumPatch - Draws the patch from lump "num"
 #define V_DrawNumPatch(x,y,s,n,t,f) V_DrawNumPatchGen(x,y,s,n,false,t,f)
 #define V_DrawNumPatchPrecise(x,y,s,n,t,f) V_DrawNumPatchGenPrecise(x,y,s,n,false,t,f)
 
