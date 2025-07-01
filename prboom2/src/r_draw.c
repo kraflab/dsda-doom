@@ -501,65 +501,37 @@ void R_InitBuffer(int width, int height)
 void R_FillBackColor (void)
 {
   extern patchnum_t stbarbg;
-  byte col, col_top;
-  int i, j, pixel_cnt;
-  int r, g, b;
-  int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
-  int ST_SCALED_BORDER = brdr_b.height * patches_scaley/2;
-  const unsigned char *playpal = V_GetPlaypal();
+  static byte col;
+  static byte col_top;
+  static int prevlump = -1;
+  const int stbar_top = SCREENHEIGHT - ST_SCALED_HEIGHT;
+  const int ST_SCALED_BORDER = brdr_b.height * patches_scaley/2;
+  int lump = stbarbg.lumpnum;
 
-  const byte* lump;
-  const byte* p;
-  short width;
-  byte length;
-  byte entry;
+  if (prevlump != lump)
+  {
+    const unsigned char *playpal = V_GetPlaypal();
+    SDL_Color stbar_color = V_GetPatchColor(lump);
+    int r = stbar_color.r;
+    int g = stbar_color.g;
+    int b = stbar_color.b;
 
-  pixel_cnt = 0;
-  r = g = b = 0;
+    // Convert to palette and tune down saturation
+    col = V_BestColor(playpal, r/3, g/3, b/3);
+    col_top = V_BestColor(playpal, r/2, g/2, b/2);
 
-  lump = W_LumpByNum(stbarbg.lumpnum);
-  width = *((const int16_t *) lump);
-  width = LittleShort(width);
+    // If colors are the same, brighten top
+    if (col_top == col)
+      col_top = V_BestColor(playpal, r, g, b);
 
-  for (i = 0; i < width; ++i) {
-    // Skip irrelevant data in the doom patch header
-    int32_t offset;
-    p = lump + 8 + 4 * i;
-    offset = *((const int32_t *) p);
-    p = lump + LittleLong(offset);
-
-    while (*p != 0xff) {
-      p++;
-      length = *p++;
-      p++;
-
-      // Get RGB values per pixel
-      for (j = 0; j < length; ++j) {
-        entry = *p++;
-        r += playpal[3 * entry + 0];
-        g += playpal[3 * entry + 1];
-        b += playpal[3 * entry + 2];
-        pixel_cnt++;
-      }
-
-      p++;
-    }
+    prevlump = lump;
   }
 
-  // Average RGB values
-  r /= pixel_cnt;
-  g /= pixel_cnt;
-  b /= pixel_cnt;
-
-  // Convert to palette and tune down saturation
-  col = V_BestColor(playpal, r/3, g/3, b/3);
-  col_top = V_BestColor(playpal, r/2, g/2, b/2);
-
   V_BeginMenuDraw();
-  V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_HEIGHT, col);
   V_FillRect(1, 0, stbar_top, SCREENWIDTH, ST_SCALED_BORDER, col_top);
+  V_FillRect(1, 0, stbar_top + ST_SCALED_BORDER, SCREENWIDTH, ST_SCALED_HEIGHT - ST_SCALED_BORDER, col);
   V_EndMenuDraw();
- }
+}
 
 //
 // R_FillBackScreen

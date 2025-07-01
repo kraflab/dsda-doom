@@ -37,6 +37,8 @@
 #ifndef __V_VIDEO__
 #define __V_VIDEO__
 
+#include "SDL.h"
+
 #include "doomtype.h"
 #include "doomdef.h"
 // Needed because we are refering to patches.
@@ -298,6 +300,8 @@ void V_FreePlaypal(void);
 
 // [XA] get number of palettes in the current playpal
 int V_GetPlaypalCount(void);
+
+SDL_Color V_GetPatchColor (int lumpnum);
 
 // e6y: wide-res
 void V_ClearBorder(void);

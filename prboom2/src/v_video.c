@@ -1201,6 +1201,66 @@ int V_GetPlaypalCount(void)
   return (dsda_PlayPalData()->length / PALETTE_SIZE);
 }
 
+//
+// V_GetPatchColor
+// Get the color of a Doom-Format
+// graphic via lumpnum
+//
+
+SDL_Color V_GetPatchColor (int lumpnum)
+{
+  SDL_Color col = {0,0,0,0};
+  int r = 0, g = 0, b = 0;
+  const unsigned char *playpal = V_GetPlaypal();
+  int x, y, pixel_cnt = 0;
+  const byte* lump;
+  short width;
+
+  lump = W_LumpByNum(lumpnum);
+
+  width = *((const int16_t *) lump);
+  width = LittleShort(width);
+
+  for (x = 0; x < width; ++x) {
+    byte length;
+    byte entry;
+    const byte* p;
+    int32_t offset;
+
+    // Only calculate for the leftmost and rightmost 16 columns
+    if (width > 32 && x > 16 && x < width - 16)
+      continue;
+
+    // Skip irrelevant data in the doom patch header
+    p = lump + 8 + 4 * x;
+    offset = *((const int32_t *) p);
+    p = lump + LittleLong(offset);
+
+    while (*p != 0xff) {
+      p++;
+      length = *p++;
+      p++;
+
+      // Get RGB values per pixel
+      for (y = 0; y < length; ++y) {
+        entry = *p++;
+        r += playpal[3 * entry + 0];
+        g += playpal[3 * entry + 1];
+        b += playpal[3 * entry + 2];
+        pixel_cnt++;
+      }
+      p++;
+    }
+  }
+
+  // Average RGB values
+  col.r = r / pixel_cnt;
+  col.g = g / pixel_cnt;
+  col.b = b / pixel_cnt;
+
+  return col;
+}
+
 void V_ClearBorder(void)
 {
   int bordtop, bordbottom, bordleft, bordright;
