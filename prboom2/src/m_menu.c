@@ -1099,7 +1099,7 @@ static void M_DrawSave(void)
   for (i = 0 ; i < load_end ; i++)
     {
     M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], CR_DEFAULT);
+    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], current_page == 0 ? CR_DARKEN : CR_DEFAULT);
     }
 
   M_DrawTabs(saves_pages, 5, 145);
@@ -1147,6 +1147,9 @@ static inline dboolean IsMapName(char *str)
 
 static void M_SaveSelect(int choice)
 {
+  if (current_save_page == 0)
+    return;
+
   // we are going to be intercepting all chars
   saveStringEnter = 1;
 
