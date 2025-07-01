@@ -38,6 +38,14 @@ include(DsdaTargetFeatures)
 dsda_target_set_warnings(dsda_rdatawad)
 dsda_target_silence_deprecation(dsda_rdatawad)
 
+include(CheckBigEndian)
+check_big_endian(RD_IS_BIG_ENDIAN)
+
+target_compile_definitions(dsda_rdatawad
+    PRIVATE
+    "RD_IS_BIG_ENDIAN=${RD_IS_BIG_ENDIAN}"
+)
+
 # PrBoom-Plus internal WAD
 
 set(PALETTE
