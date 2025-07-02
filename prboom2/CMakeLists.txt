@@ -49,9 +49,6 @@ endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(CheckBigEndian)
-check_big_endian(WORDS_BIGENDIAN)
-
 include(GNUInstallDirs)
 
 if(POLICY CMP0099)

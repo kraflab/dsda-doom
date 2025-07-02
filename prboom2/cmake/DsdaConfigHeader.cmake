@@ -49,6 +49,9 @@ function(dsda_internal_check_variables)
 endfunction()
 
 function(dsda_internal_generate_build_config)
+  include(CheckBigEndian)
+  check_big_endian(WORDS_BIGENDIAN)
+
   dsda_internal_check_symbols()
   dsda_internal_check_includes()
   dsda_internal_check_variables()
