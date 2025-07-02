@@ -317,7 +317,58 @@ void P_LineOpening(const line_t *linedef, const mobj_t *actor)
 // these structures need to be updated.
 //
 
-void P_UnsetThingPosition (mobj_t *thing)
+static void P_UnsetThingPosition_Boom (mobj_t *thing)
+{
+  if (!(thing->flags & MF_NOSECTOR))
+    {
+      // inert things don't need to be in blockmap?
+      // unlink from subsector
+      if (thing->snext)
+        thing->snext->sprev = thing->sprev;
+
+      if (thing->sprev)
+        ((mobj_t *)thing->sprev)->snext = thing->snext;
+      else
+        thing->subsector->sector->thinglist = thing->snext;
+
+        // phares 3/14/98
+        //
+        // Save the sector list pointed to by touching_sectorlist.
+        // In P_SetThingPosition, we'll keep any nodes that represent
+        // sectors the Thing still touches. We'll add new ones then, and
+        // delete any nodes for sectors the Thing has vacated. Then we'll
+        // put it back into touching_sectorlist. It's done this way to
+        // avoid a lot of deleting/creating for nodes, when most of the
+        // time you just get back what you deleted anyway.
+        //
+        // If this Thing is being removed entirely, then the calling
+        // routine will clear out the nodes in sector_list.
+
+      sector_list = thing->touching_sectorlist;
+      thing->touching_sectorlist = NULL; //to be restored by P_SetThingPosition
+    }
+
+  if (!(thing->flags & MF_NOBLOCKMAP))
+    {
+      // inert things don't need to be in blockmap
+
+      if (thing->bnext) // unlink from block map
+        thing->bnext->bprev = thing->bprev;
+
+      if (thing->bprev)
+        ((mobj_t *)thing->bprev)->bnext = thing->bnext;
+      else
+        {
+          int blockx = (thing->x - bmaporgx)>>MAPBLOCKSHIFT;
+          int blocky = (thing->y - bmaporgy)>>MAPBLOCKSHIFT;
+          if (blockx>=0 && blockx < bmapwidth &&
+              blocky>=0 && blocky <bmapheight)
+            blocklinks[blocky*bmapwidth+blockx] = thing->bnext;
+        }
+    }
+}
+
+static void P_UnsetThingPosition_MBF (mobj_t *thing)
 {
   if (!(thing->flags & MF_NOSECTOR))
     {
@@ -377,7 +428,61 @@ void P_UnsetThingPosition (mobj_t *thing)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_SetThingPosition(mobj_t *thing)
+static void P_SetThingPosition_Boom(mobj_t *thing)
+{                                                      // link into subsector
+  subsector_t *ss = thing->subsector = R_PointInSubsector(thing->x, thing->y);
+  if (!(thing->flags & MF_NOSECTOR))
+    {
+      // invisible things don't go into the sector links
+      sector_t *sec = ss->sector;
+
+      thing->sprev = NULL;
+      thing->snext = sec->thinglist;
+
+      if (sec->thinglist)
+        sec->thinglist->sprev = (mobj_t **)thing;
+
+      sec->thinglist = thing;
+
+      // phares 3/16/98
+      //
+      // If sector_list isn't NULL, it has a collection of sector
+      // nodes that were just removed from this Thing.
+
+      // Collect the sectors the object will live in by looking at
+      // the existing sector_list and adding new nodes and deleting
+      // obsolete ones.
+
+      // When a node is deleted, its sector links (the links starting
+      // at sector_t->touching_thinglist) are broken. When a node is
+      // added, new sector links are created.
+
+      P_CreateSecNodeList(thing,thing->x,thing->y);
+      thing->touching_sectorlist = sector_list; // Attach to Thing's mobj_t
+      sector_list = NULL; // clear for next time
+    }
+
+  // link into blockmap
+  if (!(thing->flags & MF_NOBLOCKMAP))
+    {
+      // inert things don't need to be in blockmap
+      int blockx = (thing->x - bmaporgx)>>MAPBLOCKSHIFT;
+      int blocky = (thing->y - bmaporgy)>>MAPBLOCKSHIFT;
+      if (blockx>=0 && blockx < bmapwidth && blocky>=0 && blocky < bmapheight)
+        {
+          mobj_t **link = &blocklinks[blocky*bmapwidth+blockx];
+          thing->bprev = NULL;
+          thing->bnext = *link;
+          if (*link)
+            (*link)->bprev = (mobj_t **)thing;
+          *link = thing;
+        }
+      else        // thing is off the map
+        thing->bnext = NULL, thing->bprev = NULL;
+    }
+}
+
+static void P_SetThingPosition_MBF(mobj_t *thing)
 {                                                      // link into subsector
   subsector_t *ss = thing->subsector = R_PointInSubsector(thing->x, thing->y);
   if (!(thing->flags & MF_NOSECTOR))
@@ -434,6 +539,24 @@ void P_SetThingPosition(mobj_t *thing)
         thing->bnext = NULL, thing->bprev = NULL;
     }
 }
+
+void (*P_UnsetThingPosition)(struct mobj_s *thing) = P_UnsetThingPosition_MBF;
+void (*P_SetThingPosition)(struct mobj_s *thing) = P_SetThingPosition_MBF;
+
+void P_SetThingPosition_SetFuncs(void)
+{
+    if (!mbf_features)
+    {
+        P_UnsetThingPosition = P_UnsetThingPosition_Boom;
+        P_SetThingPosition = P_SetThingPosition_Boom;
+    }
+    else
+    {
+        P_UnsetThingPosition = P_UnsetThingPosition_MBF;
+        P_SetThingPosition = P_SetThingPosition_MBF;
+    }
+}
+
 
 //
 // BLOCK MAP ITERATORS
@@ -609,11 +732,20 @@ dboolean P_BlockLinesIterator2(int x, int y, dboolean func(line_t*))
 
 dboolean P_BlockThingsIterator(int x, int y, dboolean func(mobj_t*))
 {
-  mobj_t *mobj;
-  if (!(x<0 || y<0 || x>=bmapwidth || y>=bmapheight))
-    for (mobj = blocklinks[y*bmapwidth+x]; mobj; mobj = mobj->bnext)
-      if (!func(mobj))
-        return false;
+  mobj_t *mobj, *first;
+
+  if (x < 0 || y < 0 || x >= bmapwidth || y >= bmapheight)
+    return true;
+
+  for (mobj = blocklinks[y*bmapwidth+x]; (first = mobj); mobj = mobj->bnext)
+  {
+    if (!func(mobj))
+      return false;
+
+    if (mobj->bnext == first)
+      I_Error("P_BlockThingsIterator: Infitnite loop detected!");
+  }
+
   return true;
 }
 
