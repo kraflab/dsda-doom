@@ -732,11 +732,20 @@ dboolean P_BlockLinesIterator2(int x, int y, dboolean func(line_t*))
 
 dboolean P_BlockThingsIterator(int x, int y, dboolean func(mobj_t*))
 {
-  mobj_t *mobj;
-  if (!(x<0 || y<0 || x>=bmapwidth || y>=bmapheight))
-    for (mobj = blocklinks[y*bmapwidth+x]; mobj; mobj = mobj->bnext)
-      if (!func(mobj))
-        return false;
+  mobj_t *mobj, *first;
+
+  if (x < 0 || y < 0 || x >= bmapwidth || y >= bmapheight)
+    return true;
+
+  for (mobj = blocklinks[y*bmapwidth+x]; (first = mobj); mobj = mobj->bnext)
+  {
+    if (!func(mobj))
+      return false;
+
+    if (mobj->bnext == first)
+      I_Error("P_BlockThingsIterator: Infitnite loop detected!");
+  }
+
   return true;
 }
 
