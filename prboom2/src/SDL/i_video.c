@@ -894,59 +894,6 @@ static void I_FillScreenResolutionsList(void)
 }
 
 // e6y
-// Function for trying to set the closest supported resolution if the requested mode can't be set correctly.
-// For example dsda-doom.exe -geom 1025x768 -nowindow will set 1024x768.
-// It should be used only for fullscreen modes.
-static void I_ClosestResolution (int *width, int *height)
-{
-  int display_index = 0;
-  int twidth, theight;
-  int cwidth = 0, cheight = 0;
-  int i, count;
-  unsigned int closest = UINT_MAX;
-  unsigned int dist;
-
-  if (!SDL_WasInit(SDL_INIT_VIDEO))
-    return;
-
-  count = SDL_GetNumDisplayModes(display_index);
-
-  if (count > 0)
-  {
-    for(i=0; i<count; ++i)
-    {
-      SDL_DisplayMode mode;
-      SDL_GetDisplayMode(display_index, i, &mode);
-
-      twidth = mode.w;
-      theight = mode.h;
-
-      if (twidth == *width && theight == *height)
-        return;
-
-      //if (iteration == 0 && (twidth < *width || theight < *height))
-      //  continue;
-
-      dist = (twidth - *width) * (twidth - *width) +
-             (theight - *height) * (theight - *height);
-
-      if (dist < closest)
-      {
-        closest = dist;
-        cwidth = twidth;
-        cheight = theight;
-      }
-    }
-    if (closest != 4294967295u)
-    {
-      *width = cwidth;
-      *height = cheight;
-      return;
-    }
-  }
-}
-
-// e6y
 // It is a simple test of CPU cache misses.
 unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
 {
@@ -984,21 +931,17 @@ unsigned int I_TestCPUCacheMisses(int width, int height, unsigned int mintime)
 // Calculates the screen resolution, possibly using the supplied guide
 void I_CalculateRes(int width, int height)
 {
-  if (desired_fullscreen && exclusive_fullscreen)
-  {
-    I_ClosestResolution(&width, &height);
-  }
+  SCREENWIDTH = width;
+  SCREENHEIGHT = height;
 
-  if (V_IsOpenGLMode()) {
-    SCREENWIDTH = width;
-    SCREENHEIGHT = height;
+  if (V_IsOpenGLMode())
+  {
     SCREENPITCH = SCREENWIDTH;
-  } else {
+  }
+  else
+  {
     unsigned int count1, count2;
     int pitch1, pitch2;
-
-    SCREENWIDTH = width;//(width+15) & ~15;
-    SCREENHEIGHT = height;
 
     // e6y
     // Trying to optimise screen pitch for reducing of CPU cache misses.
