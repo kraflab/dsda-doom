@@ -286,6 +286,9 @@ void dsda_InitDemoRecording(void) {
   dsda_RevertIntConfig(dsda_config_vertmouse);
   dsda_SetTas(dsda_Flag(dsda_arg_tas) || dsda_Flag(dsda_arg_build) || dsda_Flag(dsda_arg_dsdademo));
 
+  if (dsda_StrictMode())
+    dsda_UpdateFlag(dsda_arg_noautoload, true);
+
   // prboom+ has already cached its settings (with demorecording == false)
   // we need to reset things here to satisfy strict mode
   dsda_InitSettings();
