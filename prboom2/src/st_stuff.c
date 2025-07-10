@@ -828,9 +828,9 @@ void M_ChangeApplyPalette(void)
 
 int ST_HealthColor(int health)
 {
-  if (health < hud_health_red)
+  if (health <= hud_health_red)
     return cr_health_bad;
-  else if (health < hud_health_yellow)
+  else if (health <= hud_health_yellow)
     return cr_health_warning;
   else if (health <= hud_health_green)
     return cr_health_ok;
