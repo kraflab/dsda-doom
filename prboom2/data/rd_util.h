@@ -1,6 +1,11 @@
 // Copyright (c) 1993-2011 PrBoom developers (see AUTHORS)
 // Licence: GPLv2 or later (see COPYING)
 
+#ifndef RD_UTIL_H
+#define RD_UTIL_H
+
+#include <stddef.h>
+
 // Useful utility functions
 
 #ifdef __GNUC__
@@ -36,3 +41,5 @@ char *xstrdup(const char *s);
 // slurp an entire file into memory or kill yourself
 size_t read_or_die(void **ptr, const char *file);
 void search_path(const char *path);
+
+#endif /* RD_UTIL_H */
