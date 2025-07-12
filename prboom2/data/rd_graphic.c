@@ -3,14 +3,14 @@
 
 // Convert portable pixmap to Doom patch format
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-
-#include "rd_util.h"
-#include "rd_palette.h"
 #include "rd_graphic.h"
+
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "rd_palette.h"
+#include "rd_util.h"
 
 //
 // parseppm
