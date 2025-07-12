@@ -3,13 +3,13 @@
 
 // Output wad construction - add lump data, build wad directory
 
-#include <stdlib.h>
+#include "rd_output.h"
+
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "rd_util.h"
-#include "rd_output.h"
 
 struct lump
 {
