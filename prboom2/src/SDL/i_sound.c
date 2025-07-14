@@ -55,6 +55,7 @@
 
 #include "m_swap.h"
 #include "i_sound.h"
+#include "i_sndfile.h"
 #include "m_misc.h"
 #include "w_wad.h"
 #include "lprintf.h"
@@ -156,6 +157,45 @@ static void stopchan(int i)
   }
 }
 
+// [FG] support multi-channel samples by converting them to mono first
+static Uint8 *ConvertToMono(Uint8 **data, SDL_AudioSpec *sample, Uint32 *len)
+{
+  SDL_AudioCVT cvt;
+
+  if (sample->channels < 1)
+  {
+    return NULL;
+  }
+
+  if (SDL_BuildAudioCVT(&cvt,
+                        sample->format, sample->channels, sample->freq,
+                        sample->format,                1, sample->freq) < 0)
+  {
+    lprintf(LO_WARN, "SDL_BuildAudioCVT: %s\n", SDL_GetError());
+    return NULL;
+  }
+
+  cvt.len = *len;
+  cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult); // [FG] will call SDL_FreeWAV() on this later
+  memset(cvt.buf, 0, cvt.len * cvt.len_mult);
+  memcpy(cvt.buf, *data, cvt.len);
+
+  if (SDL_ConvertAudio(&cvt) < 0)
+  {
+    SDL_free(cvt.buf);
+    lprintf(LO_WARN, "SDL_ConvertAudio: %s\n", SDL_GetError());
+    return NULL;
+  }
+
+  SDL_FreeWAV(*data);
+
+  sample->channels = 1;
+  *data = cvt.buf;
+  *len = cvt.len_cvt;
+
+  return *data;
+}
+
 typedef struct wav_data_s
 {
   int sfxid;
@@ -192,51 +232,33 @@ static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
     }
   }
 
-  if (target == NULL &&
-      len > 44 && !memcmp(data, "RIFF", 4) && !memcmp(data + 8, "WAVEfmt ", 8))
+  if (target == NULL
+      // not Doom sound lump
+      && len > 2 && !(data[0] == 0x03 && data[1] == 0x00))
   {
-    SDL_RWops *RWops;
-    SDL_AudioSpec wav_spec;
-    Uint8 *wav_buffer = NULL;
-    int bits, samplelen;
+    SDL_AudioSpec sample;
+    byte *wavdata;
+    Uint32 samplelen = (Uint32)len;
 
-    RWops = SDL_RWFromConstMem(data, len);
-
-    if (SDL_LoadWAV_RW(RWops, 1, &wav_spec, &wav_buffer, &samplelen) == NULL)
+    if (Load_SNDFile((void *)data, &sample, &wavdata, &samplelen) == NULL)
     {
-      lprintf(LO_WARN, "Could not open wav file: %s\n", SDL_GetError());
+      lprintf(LO_WARN, "Can't open sfx file: %s\n", S_sfx[sfxid].name);
       return NULL;
     }
 
-    if (wav_spec.channels != 1)
+    if (sample.channels != 1)
     {
-      lprintf(LO_WARN, "Only mono WAV file is supported");
-      SDL_FreeWAV(wav_buffer);
-      return NULL;
-    }
-
-    if (!SDL_AUDIO_ISINT(wav_spec.format))
-    {
-      lprintf(LO_WARN, "WAV file in unsupported format");
-      SDL_FreeWAV(wav_buffer);
-      return NULL;
-    }
-
-    bits = SDL_AUDIO_BITSIZE(wav_spec.format);
-    if (bits != 8 && bits != 16)
-    {
-      lprintf(LO_WARN, "Only 8 or 16 bit WAV files are supported");
-      SDL_FreeWAV(wav_buffer);
-      return NULL;
+      if (ConvertToMono(&wavdata, &sample, &samplelen) == NULL)
+        return NULL; 
     }
 
     target = Z_Malloc(sizeof(*target));
 
     target->sfxid = sfxid;
-    target->data = wav_buffer;
+    target->data = wavdata;
     target->samplelen = samplelen;
-    target->samplerate = wav_spec.freq;
-    target->bits = bits;
+    target->samplerate = sample.freq;
+    target->bits = SDL_AUDIO_BITSIZE(sample.format);
 
     // use head insertion
     target->next = wav_data_hash[key];
