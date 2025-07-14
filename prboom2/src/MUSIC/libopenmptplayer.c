@@ -68,6 +68,7 @@ const music_player_t mpt_player =
 static int mpt_samplerate;
 static int mpt_paused;
 static int mpt_gain;
+static int mpt_looping;
 static openmpt_module *mpt_cur_module;
 
 static const char *mpt_name (void)
@@ -140,7 +141,7 @@ static void mpt_play (const void *handle, int looping)
   #pragma GCC diagnostic ignored "-Wcast-qual"
   mpt_cur_module = (openmpt_module *) handle;
   #pragma GCC diagnostic pop
-  openmpt_module_set_repeat_count(mpt_cur_module, looping ? -1 : 0);
+  mpt_looping = looping;
 
   ret = openmpt_module_set_render_param(mpt_cur_module,
                   OPENMPT_MODULE_RENDER_MASTERGAIN_MILLIBEL,
@@ -178,6 +179,9 @@ static void mpt_render (void *dest, unsigned nsamp)
 
     if (nout != nsamp)
       memset(sdest + nout * 2, 0, (nsamp - nout) * 4);
+
+    if (nout == 0 && mpt_looping)
+      openmpt_module_set_position_seconds(mpt_cur_module, 0.0);
   }
   else
     memset (dest, 0, nsamp * 4);
