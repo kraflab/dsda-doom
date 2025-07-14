@@ -81,7 +81,7 @@ static sf_count_t sfvio_tell(void *user_data)
   return data->offset;
 }
 
-void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **wavdata,
+void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
                    Uint32 *samplelen)
 {
   SNDFILE *sndfile;
@@ -95,8 +95,8 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **wavdata,
     sfvio_tell
   };
   sfvio_data_t sfdata;
-  Uint32 wavlen;
-  short *local_wavdata;
+  Uint32 local_samplelen;
+  short *local_sampledata;
 
   sfdata.data = data;
   sfdata.length = *samplelen;
@@ -116,18 +116,18 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **wavdata,
     return NULL;
   }
 
-  wavlen = sfinfo.frames * sfinfo.channels * sizeof(short);
-  local_wavdata = SDL_malloc(wavlen);
+  local_samplelen = sfinfo.frames * sfinfo.channels * sizeof(short);
+  local_sampledata = SDL_malloc(local_samplelen);
 
-  if (!local_wavdata) {
+  if (!local_sampledata) {
     sf_close(sndfile);
     return NULL;
   }
 
-  if (sf_readf_short(sndfile, local_wavdata, sfinfo.frames) < sfinfo.frames) {
+  if (sf_readf_short(sndfile, local_sampledata, sfinfo.frames) < sfinfo.frames) {
     lprintf(LO_WARN, "sf_readf_short: %s\n", sf_strerror(sndfile));
     sf_close(sndfile);
-    SDL_free(local_wavdata);
+    SDL_free(local_sampledata);
     return NULL;
   }
 
@@ -137,8 +137,8 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **wavdata,
   sample->freq = sfinfo.samplerate;
   sample->format = AUDIO_S16;
 
-  *wavdata = (Uint8 *)local_wavdata;
-  *samplelen = wavlen;
+  *sampledata = (Uint8 *)local_sampledata;
+  *samplelen = local_samplelen;
 
   return sample;
 }

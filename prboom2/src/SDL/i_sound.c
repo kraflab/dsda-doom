@@ -196,29 +196,29 @@ static Uint8 *ConvertToMono(Uint8 **data, SDL_AudioSpec *sample, Uint32 *len)
   return *data;
 }
 
-typedef struct wav_data_s
+typedef struct snd_data_s
 {
   int sfxid;
   const unsigned char *data;
   int samplelen;
   int samplerate;
   int bits;
-  struct wav_data_s *next;
-} wav_data_t;
+  struct snd_data_s *next;
+} snd_data_t;
 
 #define WAV_DATA_HASH_SIZE 32
-static wav_data_t *wav_data_hash[WAV_DATA_HASH_SIZE];
+static snd_data_t *snd_data_hash[WAV_DATA_HASH_SIZE];
 
-static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
+static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
 {
   int key;
-  wav_data_t *target = NULL;
+  snd_data_t *target = NULL;
 
   key = (sfxid % WAV_DATA_HASH_SIZE);
 
-  if (wav_data_hash[key])
+  if (snd_data_hash[key])
   {
-    wav_data_t *rover = wav_data_hash[key];
+    snd_data_t *rover = snd_data_hash[key];
 
     while (rover)
     {
@@ -237,10 +237,10 @@ static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
       && len > 2 && !(data[0] == 0x03 && data[1] == 0x00))
   {
     SDL_AudioSpec sample;
-    byte *wavdata;
+    byte *sampledata;
     Uint32 samplelen = (Uint32)len;
 
-    if (Load_SNDFile((void *)data, &sample, &wavdata, &samplelen) == NULL)
+    if (Load_SNDFile((void *)data, &sample, &sampledata, &samplelen) == NULL)
     {
       lprintf(LO_WARN, "Can't open sfx file: %s\n", S_sfx[sfxid].name);
       return NULL;
@@ -248,21 +248,21 @@ static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
 
     if (sample.channels != 1)
     {
-      if (ConvertToMono(&wavdata, &sample, &samplelen) == NULL)
+      if (ConvertToMono(&sampledata, &sample, &samplelen) == NULL)
         return NULL; 
     }
 
     target = Z_Malloc(sizeof(*target));
 
     target->sfxid = sfxid;
-    target->data = wavdata;
+    target->data = sampledata;
     target->samplelen = samplelen;
     target->samplerate = sample.freq;
     target->bits = SDL_AUDIO_BITSIZE(sample.format);
 
     // use head insertion
-    target->next = wav_data_hash[key];
-    wav_data_hash[key] = target;
+    target->next = snd_data_hash[key];
+    snd_data_hash[key] = target;
   }
 
   return target;
@@ -278,7 +278,7 @@ static wav_data_t *GetWavData(int sfxid, const unsigned char *data, size_t len)
 static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
 {
   channel_info_t *ci = channelinfo + channel;
-  wav_data_t *wav_data = GetWavData(sfxid, data, len);
+  snd_data_t *wav_data = GetSndData(sfxid, data, len);
 
   stopchan(channel);
 
