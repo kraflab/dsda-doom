@@ -176,18 +176,18 @@ static Uint8 *ConvertToMono(Uint8 **data, SDL_AudioSpec *sample, Uint32 *len)
   }
 
   cvt.len = *len;
-  cvt.buf = (Uint8 *)SDL_malloc(cvt.len * cvt.len_mult); // [FG] will call SDL_FreeWAV() on this later
+  cvt.buf = Z_Malloc(cvt.len * cvt.len_mult);
   memset(cvt.buf, 0, cvt.len * cvt.len_mult);
   memcpy(cvt.buf, *data, cvt.len);
 
   if (SDL_ConvertAudio(&cvt) < 0)
   {
-    SDL_free(cvt.buf);
+    Z_Free(cvt.buf);
     lprintf(LO_WARN, "SDL_ConvertAudio: %s\n", SDL_GetError());
     return NULL;
   }
 
-  SDL_FreeWAV(*data);
+  Z_Free(*data);
 
   sample->channels = 1;
   *data = cvt.buf;
@@ -206,15 +206,15 @@ typedef struct snd_data_s
   struct snd_data_s *next;
 } snd_data_t;
 
-#define WAV_DATA_HASH_SIZE 32
-static snd_data_t *snd_data_hash[WAV_DATA_HASH_SIZE];
+#define SND_DATA_HASH_SIZE 32
+static snd_data_t *snd_data_hash[SND_DATA_HASH_SIZE];
 
 static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
 {
   int key;
   snd_data_t *target = NULL;
 
-  key = (sfxid % WAV_DATA_HASH_SIZE);
+  key = (sfxid % SND_DATA_HASH_SIZE);
 
   if (snd_data_hash[key])
   {
@@ -249,7 +249,10 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
     if (sample.channels != 1)
     {
       if (ConvertToMono(&sampledata, &sample, &samplelen) == NULL)
+      {
+        Z_Free(sampledata);
         return NULL; 
+      }
     }
 
     target = Z_Malloc(sizeof(*target));

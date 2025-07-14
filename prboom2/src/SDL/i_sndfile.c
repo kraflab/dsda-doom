@@ -18,6 +18,7 @@
 
 #include "lprintf.h"
 #include "memio.h"
+#include "z_zone.h"
 
 static sf_count_t sfvio_get_filelen(void *user_data)
 {
@@ -87,7 +88,7 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
   }
 
   local_samplelen = sfinfo.frames * sfinfo.channels * sizeof(short);
-  local_sampledata = SDL_malloc(local_samplelen);
+  local_sampledata = Z_Malloc(local_samplelen);
 
   if (!local_sampledata)
   {
@@ -103,7 +104,7 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     lprintf(LO_WARN, "sf_readf_short: %s\n", sf_strerror(sndfile));
     sf_close(sndfile);
     mem_fclose(sfdata);
-    SDL_free(local_sampledata);
+    Z_Free(local_sampledata);
     return NULL;
   }
 
