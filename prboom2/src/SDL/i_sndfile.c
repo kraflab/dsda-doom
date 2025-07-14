@@ -124,6 +124,8 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     return NULL;
   }
 
+  sf_command(sndfile, SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_TRUE);
+
   if (sf_readf_short(sndfile, local_sampledata, sfinfo.frames) < sfinfo.frames) {
     lprintf(LO_WARN, "sf_readf_short: %s\n", sf_strerror(sndfile));
     sf_close(sndfile);
