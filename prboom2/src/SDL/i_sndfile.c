@@ -17,69 +17,38 @@
 #include "sndfile.h"
 
 #include "lprintf.h"
-
-typedef struct sfvio_data_s
-{
-  char *data;
-  sf_count_t length, offset;
-} sfvio_data_t;
+#include "memio.h"
 
 static sf_count_t sfvio_get_filelen(void *user_data)
 {
-  sfvio_data_t *data = user_data;
-  return data->length;
+  MEMFILE *fs = user_data;
+  long pos;
+  sf_count_t len;
+
+  pos = mem_ftell(fs);
+  mem_fseek(fs, 0, MEM_SEEK_END);
+  len = mem_ftell(fs);
+  mem_fseek(fs, pos, MEM_SEEK_SET);
+
+  return len;
 }
 
 static sf_count_t sfvio_seek(sf_count_t offset, int whence, void *user_data)
 {
-  sfvio_data_t *data = user_data;
-  const sf_count_t len = sfvio_get_filelen(user_data);
-
-  switch (whence) {
-    case SEEK_SET:
-      data->offset = offset;
-      break;
-
-    case SEEK_CUR:
-      data->offset += offset;
-      break;
-
-    case SEEK_END:
-      data->offset = len + offset;
-      break;
-  }
-
-  if (data->offset > len)
-    data->offset = len;
-
-  if (data->offset < 0)
-    data->offset = 0;
-
-  return data->offset;
+  MEMFILE *fs = user_data;
+  mem_fseek(fs, offset, whence);
+  return mem_ftell(fs);
 }
 
 static sf_count_t sfvio_read(void *ptr, sf_count_t count, void *user_data)
 {
-  sfvio_data_t *data = user_data;
-  const sf_count_t len = sfvio_get_filelen(user_data);
-  const sf_count_t remain = len - data->offset;
-
-  if (count > remain)
-    count = remain;
-
-  if (count == 0)
-    return count;
-
-  memcpy(ptr, data->data + data->offset, count);
-  data->offset += count;
-  return count;
+  return mem_fread(ptr, 1, count, (MEMFILE *)user_data);
 }
 
 static sf_count_t sfvio_tell(void *user_data)
 {
-  sfvio_data_t *data = user_data;
-  return data->offset;
-}
+  return mem_ftell((MEMFILE *)user_data);
+} 
 
 void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
                    Uint32 *samplelen)
@@ -94,46 +63,52 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     NULL,
     sfvio_tell
   };
-  sfvio_data_t sfdata;
   Uint32 local_samplelen;
   short *local_sampledata;
 
-  sfdata.data = data;
-  sfdata.length = *samplelen;
-  sfdata.offset = 0;
+  MEMFILE *sfdata = mem_fopen_read(data, *samplelen);
 
   memset(&sfinfo, 0, sizeof(sfinfo));
 
-  sndfile = sf_open_virtual(&sfvio, SFM_READ, &sfinfo, &sfdata);
+  sndfile = sf_open_virtual(&sfvio, SFM_READ, &sfinfo, sfdata);
 
-  if (!sndfile) {
+  if (!sndfile)
+  {
     lprintf(LO_WARN, "sf_open_virtual: %s\n", sf_strerror(sndfile));
+    mem_fclose(sfdata);
     return NULL;
   }
 
-  if (sfinfo.frames <= 0 || sfinfo.channels <= 0) {
+  if (sfinfo.frames <= 0 || sfinfo.channels <= 0)
+  {
     sf_close(sndfile);
+    mem_fclose(sfdata);
     return NULL;
   }
 
   local_samplelen = sfinfo.frames * sfinfo.channels * sizeof(short);
   local_sampledata = SDL_malloc(local_samplelen);
 
-  if (!local_sampledata) {
+  if (!local_sampledata)
+  {
     sf_close(sndfile);
+    mem_fclose(sfdata);
     return NULL;
   }
 
   sf_command(sndfile, SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_TRUE);
 
-  if (sf_readf_short(sndfile, local_sampledata, sfinfo.frames) < sfinfo.frames) {
+  if (sf_readf_short(sndfile, local_sampledata, sfinfo.frames) < sfinfo.frames)
+  {
     lprintf(LO_WARN, "sf_readf_short: %s\n", sf_strerror(sndfile));
     sf_close(sndfile);
+    mem_fclose(sfdata);
     SDL_free(local_sampledata);
     return NULL;
   }
 
   sf_close(sndfile);
+  mem_fclose(sfdata);
 
   sample->channels = sfinfo.channels;
   sample->freq = sfinfo.samplerate;

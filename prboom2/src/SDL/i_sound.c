@@ -278,16 +278,16 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
 static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
 {
   channel_info_t *ci = channelinfo + channel;
-  snd_data_t *wav_data = GetSndData(sfxid, data, len);
+  snd_data_t *snd_data = GetSndData(sfxid, data, len);
 
   stopchan(channel);
 
-  if (wav_data)
+  if (snd_data)
   {
-    ci->data = wav_data->data;
-    ci->enddata = ci->data + wav_data->samplelen - 1;
-    ci->samplerate = wav_data->samplerate;
-    ci->bits = wav_data->bits;
+    ci->data = snd_data->data;
+    ci->enddata = ci->data + snd_data->samplelen - 1;
+    ci->samplerate = snd_data->samplerate;
+    ci->bits = snd_data->bits;
   }
   else
   {
