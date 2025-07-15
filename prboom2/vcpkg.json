@@ -27,10 +27,10 @@
     "zlib"
   ],
   "features": {
-    "libopenmpt": {
-      "description": "Build with libopenmpt support",
+    "dumb": {
+      "description": "Build with DUMB support",
       "dependencies": [
-        "libopenmpt"
+        "dumb"
       ]
     },
     "fluidsynth": {
