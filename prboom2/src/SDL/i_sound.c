@@ -184,6 +184,7 @@ static Uint8 *ConvertAudioFormat(void **data, SDL_AudioSpec *sample, Uint32 *len
   Z_Free(*data);
 
   sample->channels = 1;
+  sample->format = AUDIO_S16;
   *data = cvt.buf;
   *len = cvt.len_cvt;
 
@@ -196,7 +197,6 @@ typedef struct snd_data_s
   const unsigned char *data;
   int samplelen;
   int samplerate;
-  int bits;
   struct snd_data_s *next;
 } snd_data_t;
 
@@ -255,7 +255,6 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
     target->data = sampledata;
     target->samplelen = samplelen;
     target->samplerate = sample.freq;
-    target->bits = 16;
 
     // use head insertion
     target->next = snd_data_hash[key];
@@ -284,7 +283,7 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
     ci->data = snd_data->data;
     ci->enddata = ci->data + snd_data->samplelen - 1;
     ci->samplerate = snd_data->samplerate;
-    ci->bits = snd_data->bits;
+    ci->bits = 16;
   }
   else
   {
