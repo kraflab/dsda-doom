@@ -110,12 +110,12 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     case SF_FORMAT_ALAC_20:
     case SF_FORMAT_ALAC_24:
     case SF_FORMAT_ALAC_32:
-//#ifdef HAVE_SNDFILE_MPEG
+#ifdef HAVE_SNDFILE_MPEG
     case SF_FORMAT_MPEG_LAYER_I:
     case SF_FORMAT_MPEG_LAYER_II:
     case SF_FORMAT_MPEG_LAYER_III:
       float_format = true;
-//#endif
+#endif
     default:
       float_format = false;
   }
@@ -131,7 +131,7 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
 
   if (ret < sfinfo.frames)
   {
-    lprintf(LO_WARN, "sf_readf_short: %s\n", sf_strerror(sndfile));
+    lprintf(LO_WARN, "sf_readf: %s\n", sf_strerror(sndfile));
     sf_close(sndfile);
     mem_fclose(sfdata);
     Z_Free(local_sampledata);

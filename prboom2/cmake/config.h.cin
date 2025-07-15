@@ -29,6 +29,7 @@
 #cmakedefine HAVE_LIBVORBISFILE
 #cmakedefine HAVE_LIBPORTMIDI
 #cmakedefine HAVE_LIBOPENMPT
+#cmakedefine HAVE_SNDFILE_MPEG
 
 #cmakedefine SIMPLECHECKS
 

@@ -164,7 +164,7 @@ static Uint8 *ConvertAudioFormat(Uint8 **data, SDL_AudioSpec *sample, Uint32 *le
 
   if (SDL_BuildAudioCVT(&cvt,
                         sample->format, sample->channels, sample->freq,
-                        AUDIO_S16,                1, sample->freq) < 0)
+                        AUDIO_S16, 1, sample->freq) < 0)
   {
     lprintf(LO_WARN, "SDL_BuildAudioCVT: %s\n", SDL_GetError());
     return NULL;
