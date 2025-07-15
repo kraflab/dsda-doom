@@ -18,7 +18,7 @@
 
 #include "SDL_audio.h"
 
-void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
+void *Load_SNDFile(void *data, SDL_AudioSpec *sample, void **sampledata,
 				   Uint32 *samplelen);
 
 #endif

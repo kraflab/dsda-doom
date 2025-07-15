@@ -51,7 +51,7 @@ static sf_count_t sfvio_tell(void *user_data)
   return mem_ftell((MEMFILE *)user_data);
 } 
 
-void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
+void *Load_SNDFile(void *data, SDL_AudioSpec *sample, void **sampledata,
                    Uint32 *samplelen)
 {
   SNDFILE *sndfile;
@@ -88,16 +88,6 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     return NULL;
   }
 
-  local_samplelen = sfinfo.frames * sfinfo.channels * sizeof(short);
-  local_sampledata = Z_Malloc(local_samplelen);
-
-  if (!local_sampledata)
-  {
-    sf_close(sndfile);
-    mem_fclose(sfdata);
-    return NULL;
-  }
-
   dboolean float_format;
   switch ((sfinfo.format & SF_FORMAT_SUBMASK))
   {
@@ -114,11 +104,16 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     case SF_FORMAT_MPEG_LAYER_I:
     case SF_FORMAT_MPEG_LAYER_II:
     case SF_FORMAT_MPEG_LAYER_III:
-      float_format = true;
 #endif
+      float_format = true;
+      break;
     default:
       float_format = false;
+      break;
   }
+
+  local_samplelen = sfinfo.frames * sfinfo.channels * (float_format ? sizeof(float) : sizeof(short));
+  local_sampledata = Z_Malloc(local_samplelen);
 
   if (float_format)
   {
@@ -145,7 +140,7 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
   sample->freq = sfinfo.samplerate;
   sample->format = float_format ? AUDIO_F32 : AUDIO_S16;
 
-  *sampledata = (Uint8 *)local_sampledata;
+  *sampledata = local_sampledata;
   *samplelen = local_samplelen;
 
   return sample;

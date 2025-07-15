@@ -158,7 +158,7 @@ static void stopchan(int i)
 }
 
 // [FG] support multi-channel samples by converting them to mono first
-static Uint8 *ConvertAudioFormat(Uint8 **data, SDL_AudioSpec *sample, Uint32 *len)
+static Uint8 *ConvertAudioFormat(void **data, SDL_AudioSpec *sample, Uint32 *len)
 {
   SDL_AudioCVT cvt;
 
@@ -172,7 +172,6 @@ static Uint8 *ConvertAudioFormat(Uint8 **data, SDL_AudioSpec *sample, Uint32 *le
 
   cvt.len = *len;
   cvt.buf = Z_Malloc(cvt.len * cvt.len_mult);
-  memset(cvt.buf, 0, cvt.len * cvt.len_mult);
   memcpy(cvt.buf, *data, cvt.len);
 
   if (SDL_ConvertAudio(&cvt) < 0)
@@ -232,7 +231,7 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
       && len > 2 && !(data[0] == 0x03 && data[1] == 0x00))
   {
     SDL_AudioSpec sample;
-    byte *sampledata;
+    void *sampledata;
     Uint32 samplelen = (Uint32)len;
 
     if (Load_SNDFile((void *)data, &sample, &sampledata, &samplelen) == NULL)
@@ -256,7 +255,7 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
     target->data = sampledata;
     target->samplelen = samplelen;
     target->samplerate = sample.freq;
-    target->bits = SDL_AUDIO_BITSIZE(sample.format);
+    target->bits = 16;
 
     // use head insertion
     target->next = snd_data_hash[key];
