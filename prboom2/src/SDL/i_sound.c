@@ -158,18 +158,13 @@ static void stopchan(int i)
 }
 
 // [FG] support multi-channel samples by converting them to mono first
-static Uint8 *ConvertToMono(Uint8 **data, SDL_AudioSpec *sample, Uint32 *len)
+static Uint8 *ConvertAudioFormat(Uint8 **data, SDL_AudioSpec *sample, Uint32 *len)
 {
   SDL_AudioCVT cvt;
 
-  if (sample->channels < 1)
-  {
-    return NULL;
-  }
-
   if (SDL_BuildAudioCVT(&cvt,
                         sample->format, sample->channels, sample->freq,
-                        sample->format,                1, sample->freq) < 0)
+                        AUDIO_S16,                1, sample->freq) < 0)
   {
     lprintf(LO_WARN, "SDL_BuildAudioCVT: %s\n", SDL_GetError());
     return NULL;
@@ -246,9 +241,9 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
       return NULL;
     }
 
-    if (sample.channels != 1)
+    if (sample.channels != 1 || SDL_AUDIO_ISFLOAT(sample.format))
     {
-      if (ConvertToMono(&sampledata, &sample, &samplelen) == NULL)
+      if (ConvertAudioFormat(&sampledata, &sample, &samplelen) == NULL)
       {
         Z_Free(sampledata);
         return NULL; 

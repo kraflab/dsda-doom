@@ -65,7 +65,8 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     sfvio_tell
   };
   Uint32 local_samplelen;
-  short *local_sampledata;
+  void *local_sampledata;
+  sf_count_t ret;
 
   MEMFILE *sfdata = mem_fopen_read(data, *samplelen);
 
@@ -97,9 +98,38 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
     return NULL;
   }
 
-  sf_command(sndfile, SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_TRUE);
+  dboolean float_format;
+  switch ((sfinfo.format & SF_FORMAT_SUBMASK))
+  {
+    case SF_FORMAT_PCM_24:
+    case SF_FORMAT_PCM_32:
+    case SF_FORMAT_FLOAT:
+    case SF_FORMAT_DOUBLE:
+    case SF_FORMAT_VORBIS:
+    case SF_FORMAT_OPUS:
+    case SF_FORMAT_ALAC_20:
+    case SF_FORMAT_ALAC_24:
+    case SF_FORMAT_ALAC_32:
+//#ifdef HAVE_SNDFILE_MPEG
+    case SF_FORMAT_MPEG_LAYER_I:
+    case SF_FORMAT_MPEG_LAYER_II:
+    case SF_FORMAT_MPEG_LAYER_III:
+      float_format = true;
+//#endif
+    default:
+      float_format = false;
+  }
 
-  if (sf_readf_short(sndfile, local_sampledata, sfinfo.frames) < sfinfo.frames)
+  if (float_format)
+  {
+    ret = sf_readf_float(sndfile, local_sampledata, sfinfo.frames);
+  }
+  else
+  {
+    ret = sf_readf_short(sndfile, local_sampledata, sfinfo.frames);
+  }
+
+  if (ret < sfinfo.frames)
   {
     lprintf(LO_WARN, "sf_readf_short: %s\n", sf_strerror(sndfile));
     sf_close(sndfile);
@@ -113,7 +143,7 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, Uint8 **sampledata,
 
   sample->channels = sfinfo.channels;
   sample->freq = sfinfo.samplerate;
-  sample->format = AUDIO_S16;
+  sample->format = float_format ? AUDIO_F32 : AUDIO_S16;
 
   *sampledata = (Uint8 *)local_sampledata;
   *samplelen = local_samplelen;
