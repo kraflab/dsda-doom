@@ -292,6 +292,15 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
     ci->enddata = ci->data + len - 1;
     ci->samplerate = (ci->data[3] << 8) + ci->data[2];
     ci->data += 8; /* Skip header */
+    // DMX skips the first and last 16 bytes of data. Custom sounds may
+    // be created with tools that aren't aware of this, which means part
+    // of the waveform is cut off. We compensate for this by fading in
+    // or out sounds that start or end at a non-zero amplitude to
+    // prevent clicking.
+    // Reference: https://www.doomworld.com/forum/post/949486
+    #define DMXPADSIZE 16
+    ci->data += DMXPADSIZE;
+    ci->enddata -= DMXPADSIZE * 2;
     ci->bits = 8;
   }
 
