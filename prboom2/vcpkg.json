@@ -27,10 +27,13 @@
     "zlib"
   ],
   "features": {
-    "dumb": {
-      "description": "Build with DUMB support",
+    "libxmp": {
+      "description": "Build with libxmp support",
       "dependencies": [
-        "dumb"
+        {
+          "name": "libxmp",
+          "default-features": false
+        }
       ]
     },
     "fluidsynth": {
