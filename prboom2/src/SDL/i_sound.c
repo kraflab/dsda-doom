@@ -490,8 +490,6 @@ int I_StartSound(int id, int channel, sfx_params_t *params)
   // The entries DSBSPWLK, DSBSPACT, DSSWTCHN and DSSWTCHX are all zero-length sounds
   if (len <= 8) return -1;
 
-  /* Find padded length */
-  len -= 8;
   // do the lump caching outside the SDL_LockAudio/SDL_UnlockAudio pair
   // use locking which makes sure the sound data is in a malloced area and
   // not in a memory mapped one

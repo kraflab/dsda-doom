@@ -55,7 +55,7 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, void **sampledata,
                    Uint32 *samplelen)
 {
   SNDFILE *sndfile;
-  SF_INFO sfinfo;
+  SF_INFO sfinfo = {0};
   SF_VIRTUAL_IO sfvio =
   {
     sfvio_get_filelen,
@@ -66,11 +66,10 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, void **sampledata,
   };
   Uint32 local_samplelen;
   void *local_sampledata;
-  sf_count_t ret;
+  sf_count_t num_frames;
+  dboolean float_format;
 
   MEMFILE *sfdata = mem_fopen_read(data, *samplelen);
-
-  memset(&sfinfo, 0, sizeof(sfinfo));
 
   sndfile = sf_open_virtual(&sfvio, SFM_READ, &sfinfo, sfdata);
 
@@ -88,7 +87,6 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, void **sampledata,
     return NULL;
   }
 
-  dboolean float_format;
   switch ((sfinfo.format & SF_FORMAT_SUBMASK))
   {
     case SF_FORMAT_PCM_24:
@@ -117,14 +115,14 @@ void *Load_SNDFile(void *data, SDL_AudioSpec *sample, void **sampledata,
 
   if (float_format)
   {
-    ret = sf_readf_float(sndfile, local_sampledata, sfinfo.frames);
+    num_frames = sf_readf_float(sndfile, local_sampledata, sfinfo.frames);
   }
   else
   {
-    ret = sf_readf_short(sndfile, local_sampledata, sfinfo.frames);
+    num_frames = sf_readf_short(sndfile, local_sampledata, sfinfo.frames);
   }
 
-  if (ret < sfinfo.frames)
+  if (num_frames < sfinfo.frames)
   {
     lprintf(LO_WARN, "sf_readf: %s\n", sf_strerror(sndfile));
     sf_close(sndfile);
