@@ -27,15 +27,6 @@
     "zlib"
   ],
   "features": {
-    "libxmp": {
-      "description": "Build with libxmp support",
-      "dependencies": [
-        {
-          "name": "libxmp",
-          "default-features": false
-        }
-      ]
-    },
     "fluidsynth": {
       "description": "Build with FluidSynth support",
       "dependencies": [
@@ -55,6 +46,15 @@
       "description": "Build with vorbisfile support",
       "dependencies": [
         "libvorbis"
+      ]
+    },
+    "libxmp": {
+      "description": "Build with libxmp support",
+      "dependencies": [
+        {
+          "name": "libxmp",
+          "default-features": false
+        }
       ]
     },
     "portmidi": {
