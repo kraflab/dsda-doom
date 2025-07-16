@@ -226,9 +226,7 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
     }
   }
 
-  if (target == NULL
-      // not Doom sound lump
-      && len > 2 && !(data[0] == 0x03 && data[1] == 0x00))
+  if (target == NULL)
   {
     SDL_AudioSpec sample;
     void *sampledata;
@@ -264,6 +262,31 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
   return target;
 }
 
+#define DMXHDRSIZE 8
+#define DMXPADSIZE 16
+
+INLINE static dboolean IsDMXSound(const byte *data, int len)
+{
+  return len > DMXHDRSIZE && data[0] == 0x03 && data[1] == 0x00;
+}
+
+static void CacheSounds(void)
+{
+  int id;
+  for (id = 1; id < num_sfx; id++)
+  {
+    int lump = I_GetSfxLumpNum(&S_sfx[id]);
+    if (lump >= 0)
+    {
+      const byte *data = W_LumpByNum(lump);
+      int len = W_LumpLength(lump);
+
+      if (!IsDMXSound(data, len))
+        GetSndData(id, data, len);
+    }
+  }
+}
+
 //
 // This function adds a sound to the
 //  list of currently active sounds,
@@ -271,8 +294,6 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
 //  (eight, usually) of internal channels.
 // Returns a handle.
 //
-#define DMXHDRSIZE 8
-#define DMXPADSIZE 16
 
 static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len,
                   const snd_data_t *snd_data)
@@ -502,8 +523,7 @@ int I_StartSound(int id, int channel, sfx_params_t *params)
   // not in a memory mapped one
   data = (const unsigned char *)W_LockLumpNum(lump);
 
-  // Is this a DMX format sound lump?
-  if (data[0] == 0x03 && data[1] == 0x00)
+  if (IsDMXSound(data, len))
   {
     // Read the encoded number of samples. This value includes padding.
     const int num_samples =
@@ -802,6 +822,10 @@ void I_InitSound(void)
 
   if (!nomusicparm)
     I_InitMusic();
+
+  lprintf(LO_DEBUG, " Precaching all sound effects... ");
+  CacheSounds();
+  lprintf(LO_DEBUG, "done\n");
 
   lprintf(LO_DEBUG, "I_InitSound: sound module ready\n");
   SDL_PauseAudio(0);
