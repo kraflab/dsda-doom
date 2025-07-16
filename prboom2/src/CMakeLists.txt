@@ -446,6 +446,8 @@ set(MUS2MID_SRC
 set(SDLDOOM_SOURCES
     SDL/i_main.c
     SDL/i_sound.c
+    SDL/i_sndfile.c
+    SDL/i_sndfile.h
     SDL/i_sshot.c
     SDL/i_system.c
     SDL/i_video.c
@@ -545,6 +547,7 @@ function(AddGameExecutable TARGET SOURCES)
         ${SDL2_LIBRARIES}
         SDL2_mixer::SDL2_mixer
         ZLIB::ZLIB
+        SndFile::sndfile
     )
 
     if(WIN32)

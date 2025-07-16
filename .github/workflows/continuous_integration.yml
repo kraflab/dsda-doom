@@ -91,6 +91,7 @@ jobs:
             ${{ matrix.config.msys-env }}-SDL2
             ${{ matrix.config.msys-env }}-SDL2_image
             ${{ matrix.config.msys-env }}-SDL2_mixer
+            ${{ matrix.config.msys-env }}-libsndfile
             ${{ matrix.config.msys-env }}-libzip
 
       - name: Install Dependencies (Linux)
@@ -113,6 +114,7 @@ jobs:
             libsdl2-image-dev \
             libsdl2-mixer-dev \
             libvorbis-dev \
+            libsndfile1-dev \
             libzip-dev \
             zipcmp \
             zipmerge \
@@ -136,6 +138,7 @@ jobs:
               sdl2 \
               sdl2_image \
               sdl2_mixer \
+              libsndfile \
               dylibbundler
 
       - name: Generate vcpkg cache key

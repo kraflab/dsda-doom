@@ -87,9 +87,14 @@ find_package(libzip REQUIRED)
 find_package(SDL2 2.0.7 REQUIRED)
 find_package(SDL2_mixer REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(SndFile 1.0.29 REQUIRED)
 
 if(NOT TARGET SDL2_mixer::SDL2_mixer)
     add_library(SDL2_mixer::SDL2_mixer ALIAS SDL2_mixer::SDL2_mixer-static)
+endif()
+
+if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
+   set(HAVE_SNDFILE_MPEG TRUE)
 endif()
 
 if(WITH_IMAGE)
