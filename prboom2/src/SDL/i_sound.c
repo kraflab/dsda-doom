@@ -271,10 +271,13 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
 //  (eight, usually) of internal channels.
 // Returns a handle.
 //
-static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
+#define DMXHDRSIZE 8
+#define DMXPADSIZE 16
+
+static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len,
+                  const snd_data_t *snd_data)
 {
   channel_info_t *ci = channelinfo + channel;
-  snd_data_t *snd_data = GetSndData(sfxid, data, len);
 
   stopchan(channel);
 
@@ -291,16 +294,10 @@ static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len)
     /* Set pointer to end of raw data. */
     ci->enddata = ci->data + len - 1;
     ci->samplerate = (ci->data[3] << 8) + ci->data[2];
-    ci->data += 8; /* Skip header */
-    // DMX skips the first and last 16 bytes of data. Custom sounds may
-    // be created with tools that aren't aware of this, which means part
-    // of the waveform is cut off. We compensate for this by fading in
-    // or out sounds that start or end at a non-zero amplitude to
-    // prevent clicking.
-    // Reference: https://www.doomworld.com/forum/post/949486
-    #define DMXPADSIZE 16
-    ci->data += DMXPADSIZE;
-    ci->enddata -= DMXPADSIZE * 2;
+    // Skip header and padding before samples.
+    ci->data += DMXHDRSIZE + DMXPADSIZE;
+    // Skip padding after samples.
+    ci->enddata -= DMXPADSIZE;
     ci->bits = 8;
   }
 
@@ -480,6 +477,7 @@ int I_StartSound(int id, int channel, sfx_params_t *params)
   const unsigned char *data;
   int lump;
   size_t len;
+  snd_data_t *snd_data = NULL;
 
   if ((channel < 0) || (channel >= MAX_CHANNELS))
 #ifdef RANGECHECK
@@ -497,17 +495,36 @@ int I_StartSound(int id, int channel, sfx_params_t *params)
   // e6y: Crash with zero-length sounds.
   // Example wad: dakills (http://www.doomworld.com/idgames/index.php?id=2803)
   // The entries DSBSPWLK, DSBSPACT, DSSWTCHN and DSSWTCHX are all zero-length sounds
-  if (len <= 8) return -1;
+  if (len <= DMXHDRSIZE) return -1;
 
   // do the lump caching outside the SDL_LockAudio/SDL_UnlockAudio pair
   // use locking which makes sure the sound data is in a malloced area and
   // not in a memory mapped one
   data = (const unsigned char *)W_LockLumpNum(lump);
 
+  // Is this a DMX format sound lump?
+  if (data[0] == 0x03 && data[1] == 0x00)
+  {
+    // Read the encoded number of samples. This value includes padding.
+    const int num_samples =
+        (data[7] << 24) | (data[6] << 16) | (data[5] << 8) | data[4];
+
+    // Don't play DMX format sound lumps that think they're longer than they
+    // really are, only contain padding, or are shorter than the padding size.
+    if (num_samples > len - DMXHDRSIZE || num_samples <= DMXPADSIZE * 2)
+      return -1;
+  }
+  else
+  {
+    snd_data = GetSndData(id, data, len);
+    if (!snd_data)
+      return -1;
+  }
+
   SDL_LockMutex (sfxmutex);
 
   // Returns a handle (not used).
-  addsfx(id, channel, data, len);
+  addsfx(id, channel, data, len, snd_data);
   updateSoundParams(channel, params);
 
   SDL_UnlockMutex (sfxmutex);
