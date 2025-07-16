@@ -164,7 +164,7 @@ static Uint8 *ConvertAudioFormat(void **data, SDL_AudioSpec *sample, Uint32 *len
 
   if (SDL_BuildAudioCVT(&cvt,
                         sample->format, sample->channels, sample->freq,
-                        AUDIO_S16, 1, sample->freq) < 0)
+                        AUDIO_S16, 1, snd_samplerate) < 0)
   {
     lprintf(LO_WARN, "SDL_BuildAudioCVT: %s\n", SDL_GetError());
     return NULL;
@@ -185,6 +185,7 @@ static Uint8 *ConvertAudioFormat(void **data, SDL_AudioSpec *sample, Uint32 *len
 
   sample->channels = 1;
   sample->format = AUDIO_S16;
+  sample->freq = snd_samplerate;
   *data = cvt.buf;
   *len = cvt.len_cvt;
 
@@ -238,7 +239,8 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
       return NULL;
     }
 
-    if (sample.channels != 1 || SDL_AUDIO_ISFLOAT(sample.format))
+    if (sample.channels != 1 || sample.freq != snd_samplerate
+        || SDL_AUDIO_ISFLOAT(sample.format))
     {
       if (ConvertAudioFormat(&sampledata, &sample, &samplelen) == NULL)
       {
