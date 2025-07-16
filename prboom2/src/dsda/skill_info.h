@@ -59,5 +59,6 @@ extern int num_skills;
 void dsda_InitSkills(void);
 void dsda_RefreshGameSkill(void);
 void dsda_UpdateGameSkill(int skill);
+void dsda_AlterGameFlags(void);
 
 #endif
