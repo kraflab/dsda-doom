@@ -1,6 +1,11 @@
 // Copyright (c) 1993-2011 PrBoom developers (see AUTHORS)
 // Licence: GPLv2 or later (see COPYING)
 
+#ifndef RD_GRAPHIC_H
+#define RD_GRAPHIC_H
+
+#include <stddef.h>
+
 // Convert portable pixmap to Doom format
 
 // convert ppm to doom patch format, with insertion point
@@ -9,3 +14,5 @@ size_t ppm_to_patch(void **lumpdata, const char *filename,
 
 // convert ppm to raw bitmap (for use with flats)
 size_t ppm_to_bitmap(void **lumpdata, const char *filename);
+
+#endif /* RD_GRAPHIC_H */
