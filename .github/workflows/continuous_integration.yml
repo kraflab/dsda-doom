@@ -83,7 +83,7 @@ jobs:
             ${{ matrix.config.msys-env }}-cmake
             ${{ matrix.config.msys-env }}-ninja
             ${{ matrix.config.msys-env }}-pkgconf
-            ${{ matrix.config.msys-env }}-libopenmpt
+            ${{ matrix.config.msys-env }}-libxmp
             ${{ matrix.config.msys-env }}-fluidsynth
             ${{ matrix.config.msys-env }}-libmad
             ${{ matrix.config.msys-env }}-libvorbis
@@ -103,7 +103,7 @@ jobs:
             gcc \
             ninja-build \
             pkg-config \
-            libopenmpt-dev \
+            libxmp-dev \
             libfluidsynth-dev \
             fluidsynth \
             libgl-dev \
@@ -129,7 +129,7 @@ jobs:
               python \
               ninja \
               pkg-config \
-              libopenmpt \
+              libxmp \
               fluid-synth \
               libvorbis \
               libzip \

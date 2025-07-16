@@ -930,10 +930,10 @@ static void PlaySong(int handle, int looping);
 #include "MUSIC/musicplayer.h"
 #include "MUSIC/oplplayer.h"
 #include "MUSIC/madplayer.h"
+#include "MUSIC/xmpplayer.h"
 #include "MUSIC/flplayer.h"
 #include "MUSIC/vorbisplayer.h"
 #include "MUSIC/portmidiplayer.h"
-#include "MUSIC/libopenmptplayer.h"
 
 static Mix_Music *music[2] = { NULL, NULL };
 
@@ -950,7 +950,7 @@ static const music_player_t *music_players[] =
   // mus2midi very often succeeds even on garbage input
   &vorb_player, // vorbisplayer.h
   &mp_player, // madplayer.h
-  &mpt_player, // libopenmptplayer.h
+  &xmp_player, // xmpplayer.h
   &fl_player, // flplayer.h
   &opl_synth_player, // oplplayer.h
   &pm_player, // portmidiplayer.h
@@ -962,7 +962,7 @@ static int music_player_was_init[NUM_MUS_PLAYERS];
 
 #define PLAYER_VORBIS     "vorbis player"
 #define PLAYER_MAD        "mad mp3 player"
-#define PLAYER_LIBOPENMPT "libopenmpt tracker player"
+#define PLAYER_XMP        "libxmp tracker player"
 #define PLAYER_FLUIDSYNTH "fluidsynth midi player"
 #define PLAYER_OPL        "opl synth player"
 #define PLAYER_PORTMIDI   "portmidi midi player"
@@ -972,7 +972,7 @@ char music_player_order[NUM_MUS_PLAYERS][200] =
 {
   PLAYER_VORBIS,
   PLAYER_MAD,
-  PLAYER_LIBOPENMPT,
+  PLAYER_XMP,
   PLAYER_FLUIDSYNTH,
   PLAYER_OPL,
   PLAYER_PORTMIDI,

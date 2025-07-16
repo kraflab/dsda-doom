@@ -5,6 +5,7 @@
   "homepage": "https://github.com/kraflab/dsda-doom",
   "license": "GPL-2.0-only",
   "dependencies": [
+    "libsndfile",
     {
       "name": "libzip",
       "default-features": false,
@@ -24,16 +25,9 @@
         "opusfile"
       ]
     },
-    "libsndfile",
     "zlib"
   ],
   "features": {
-    "libopenmpt": {
-      "description": "Build with libopenmpt support",
-      "dependencies": [
-        "libopenmpt"
-      ]
-    },
     "fluidsynth": {
       "description": "Build with FluidSynth support",
       "dependencies": [
@@ -53,6 +47,15 @@
       "description": "Build with vorbisfile support",
       "dependencies": [
         "libvorbis"
+      ]
+    },
+    "libxmp": {
+      "description": "Build with libxmp support",
+      "dependencies": [
+        {
+          "name": "libxmp",
+          "default-features": false
+        }
       ]
     },
     "portmidi": {
