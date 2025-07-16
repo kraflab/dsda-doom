@@ -117,6 +117,7 @@ static void xmp_play(const void *handle, int looping)
     return;
   }
 
+  xmp_set_player(context, XMP_PLAYER_VOLUME, 100);
   xmp_looping = looping;
   xmp_playing = 1;
 }
