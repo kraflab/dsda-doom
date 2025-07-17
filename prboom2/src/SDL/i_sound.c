@@ -272,7 +272,7 @@ INLINE static dboolean IsDMXSound(const byte *data, int len)
   return len > DMXHDRSIZE && data[0] == 0x03 && data[1] == 0x00;
 }
 
-static void CacheSounds(void)
+void I_CacheSounds(void)
 {
   int id;
   for (id = 1; id < num_sfx; id++)
@@ -824,10 +824,6 @@ void I_InitSound(void)
 
   if (!nomusicparm)
     I_InitMusic();
-
-  lprintf(LO_DEBUG, " Precaching all sound effects... ");
-  CacheSounds();
-  lprintf(LO_DEBUG, "done\n");
 
   lprintf(LO_DEBUG, "I_InitSound: sound module ready\n");
   SDL_PauseAudio(0);
