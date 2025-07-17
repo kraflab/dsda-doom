@@ -43,6 +43,15 @@ typedef struct {
 std::unordered_map<std::string, named_sfx_t> name_to_sfx;
 std::unordered_map<int, ambient_sfx_t> id_to_ambient_sfx;
 
+dboolean dsda_IsLoopingAmbientSFX(int sfx_id) {
+  for (auto &amb_sfx : id_to_ambient_sfx) {
+    if (amb_sfx.second.sfx_id == sfx_id && amb_sfx.second.min_tics < 0)
+      return true;
+  }
+
+  return false;
+}
+
 static ambient_sfx_t* dsda_AmbientSFX(int id) {
   return id_to_ambient_sfx[id].sfx_id ? &id_to_ambient_sfx[id] : NULL;
 }
