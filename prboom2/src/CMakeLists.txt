@@ -559,7 +559,6 @@ function(AddGameExecutable TARGET SOURCES)
 
     set_target_properties(${TARGET} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${DSDA_OUTPUT_PATH}
-        INTERPROCEDURAL_OPTIMIZATION ${ENABLE_LTO}
         C_STANDARD 99
     )
 
@@ -603,12 +602,6 @@ function(AddGameExecutable TARGET SOURCES)
         )
     endif()
 
-    if(WIN32)
-        set(DSDA_BINARY_INSTALL_DIR ".")
-    else()
-        set(DSDA_BINARY_INSTALL_DIR "${CMAKE_INSTALL_BINDIR}")
-    endif()
-
     if(CMAKE_VERSION VERSION_GREATER 3.20
         AND WIN32
         AND NOT VCPKG_TOOLCHAIN
@@ -619,10 +612,10 @@ function(AddGameExecutable TARGET SOURCES)
                 PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
                 POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
                 DIRECTORIES $<TARGET_FILE_DIR:${TARGET}> $ENV{PATH}
-            RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}"
+            RUNTIME DESTINATION "${DSDA_INSTALL_BINDIR}"
         )
     else()
-        install(TARGETS ${TARGET} RUNTIME DESTINATION "${DSDA_BINARY_INSTALL_DIR}")
+        install(TARGETS ${TARGET} RUNTIME DESTINATION "${DSDA_INSTALL_BINDIR}")
     endif()
 
     target_link_libraries(${TARGET} PRIVATE

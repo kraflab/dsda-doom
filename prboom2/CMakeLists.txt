@@ -1,38 +1,9 @@
 cmake_minimum_required(VERSION 3.9)
 
-option(WITH_XMP "Use libxmp if available" ON)
-if(WITH_XMP)
-    list(APPEND VCPKG_MANIFEST_FEATURES "libxmp")
-endif()
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-option(WITH_FLUIDSYNTH "Use FluidSynth if available" ON)
-if(WITH_FLUIDSYNTH)
-    list(APPEND VCPKG_MANIFEST_FEATURES "fluidsynth")
-endif()
-
-option(WITH_IMAGE "Use SDL2_image if available" ON)
-if(WITH_IMAGE)
-    list(APPEND VCPKG_MANIFEST_FEATURES "sdl2-image")
-endif()
-
-option(WITH_MAD "Use libmad if available" ON)
-if(WITH_MAD)
-    list(APPEND VCPKG_MANIFEST_FEATURES "libmad")
-endif()
-
-option(WITH_PORTMIDI "Use PortMidi if available" ON)
-if(WITH_PORTMIDI)
-    list(APPEND VCPKG_MANIFEST_FEATURES "portmidi")
-endif()
-
-option(WITH_VORBISFILE "Use vorbisfile if available" ON)
-if(WITH_VORBISFILE)
-    list(APPEND VCPKG_MANIFEST_FEATURES "libvorbis")
-endif()
-
-# Automatically install dependencies
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-set(X_VCPKG_APPLOCAL_DEPS_INSTALL TRUE)
+# Setup dependencies options before `project()` so vcpkg features can be used
+include(DsdaDepsSetup)
 
 project("dsda-doom" VERSION 0.29.3)
 
@@ -47,17 +18,11 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-include(GNUInstallDirs)
-
 if(POLICY CMP0099)
   cmake_policy(SET CMP0099 NEW)
 else()
   message(WARNING "Your version of CMake is very old. This may cause linking issues if your dependencies are not in your compiler's default search paths.")
 endif()
-
-option(CMAKE_FIND_PACKAGE_PREFER_CONFIG "Search for package config before using Find modules" ON)
 
 if(VCPKG_TOOLCHAIN)
     set(ENV{PKG_CONFIG_PATH} "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/pkgconfig")
@@ -67,16 +32,11 @@ if(POLICY CMP0069)
     cmake_policy(SET CMP0069 NEW)
 endif()
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT HAVE_LTO)
-
-include(CMakeDependentOption)
-cmake_dependent_option(ENABLE_LTO "Use link-time optimisation" OFF "HAVE_LTO" OFF)
-
 set(PROJECT_TARNAME "dsda-doom")
 set(WAD_DATA "dsda-doom.wad")
 set(PROJECT_STRING "${PROJECT_NAME} ${PROJECT_VERSION}")
 
+include(DsdaOptions)
 include(DsdaTargetFeatures)
 
 include(PkgConfigHelper)
@@ -149,26 +109,6 @@ if(WITH_PORTMIDI)
     endif()
 endif()
 
-if(WIN32)
-    set(DEFAULT_WAD_DIR ".")
-else()
-    set(DEFAULT_WAD_DIR "share/games/doom")
-endif()
-
-set(DSDAPWADDIR "${DEFAULT_WAD_DIR}" CACHE STRING "Path to install DSDA-Doom internal WAD, relative to CMAKE_INSTALL_PREFIX or absolute.")
-set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/${DEFAULT_WAD_DIR}" CACHE PATH "Path to look for WAD files.")
-
-if(IS_ABSOLUTE "${DSDAPWADDIR}")
-    set(DSDA_ABSOLUTE_PWAD_PATH "${DSDAPWADDIR}")
-else()
-    set(DSDA_ABSOLUTE_PWAD_PATH "${CMAKE_INSTALL_PREFIX}/${DSDAPWADDIR}")
-endif()
-
-option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
-
-# Debug options, disabled by default
-option(RANGECHECK "Enable internal range checking" OFF)
-
 include(DsdaConfigHeader)
 
 set(DSDA_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -212,11 +152,10 @@ install(FILES
     DESTINATION "${DSDAPWADDIR}"
 )
 
-if(WIN32)
-    install(FILES COPYING DESTINATION . RENAME COPYING.txt)
-else()
-    install(FILES COPYING DESTINATION "share/doc/${PROJECT_NAME}")
-endif()
+install(FILES
+    "COPYING"
+    DESTINATION "${DSDA_INSTALL_COPYRIGHT_DIR}"
+)
 
 if(WIN32)
     set(CPACK_GENERATOR ZIP)
