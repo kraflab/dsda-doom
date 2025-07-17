@@ -13,7 +13,7 @@ On arm64 machines, brew will be installed in `/opt/homebrew`.
 ## Install Build Dependencies
 Install cmake, SDL2 and additional dependencies for DSDA-Doom:
 ```
-brew install cmake pkgconf libxmp fluid-synth libvorbis libzip mad portmidi sdl2 sdl2_image sdl2_mixer
+brew install cmake pkgconf libxmp fluid-synth libvorbis libzip mad portmidi sdl2 sdl2_image sdl2_mixer libsndfile
 ```
 ## Build DSDA-Doom
 Make a clone of the DSDA-Doom Git repository:
