@@ -94,7 +94,6 @@ static const void *xmp_registersong(const void *data, unsigned len)
 {
   if (xmp_load_module_from_memory(context, data, len) < 0)
   {
-    lprintf(LO_WARN, "xmp_registersong: failed to load module.\n");
     return NULL;
   }
 
