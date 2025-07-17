@@ -71,6 +71,7 @@
 //e6y
 #include "e6y.h"
 
+#include "dsda/ambient.h"
 #include "dsda/settings.h"
 
 static dboolean registered_non_rw = false;
@@ -195,7 +196,7 @@ static Uint8 *ConvertAudioFormat(void **data, SDL_AudioSpec *sample, Uint32 *len
 typedef struct snd_data_s
 {
   int sfxid;
-  const unsigned char *data;
+  unsigned char *data;
   int samplelen;
   int samplerate;
   struct snd_data_s *next;
@@ -264,6 +265,58 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
   return target;
 }
 
+#define FADETIME 1000 // microseconds
+
+static void FadeInOutMono16(short *data, int len, int rate)
+{
+  const int fadelen = rate * FADETIME / 1000000;
+  int i;
+
+  if (len < fadelen)
+    return;
+
+  if (data[0] != 0)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[i] = data[i] * i / fadelen;
+    }
+  }
+
+  if (data[len - 1] != 0)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[len - 1 - i] = data[len - 1 - i] * i / fadelen;
+    }
+  }
+}
+
+static void FadeInOutMono8(byte *data, int len, int rate)
+{
+  const int fadelen = rate * FADETIME / 1000000;
+  int i;
+
+  if (len < fadelen)
+    return;
+
+  if (data[0] != 128)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[i] = (data[i] - 128) * i / fadelen + 128;
+    }
+  }
+
+  if (data[len - 1] != 128)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[len - 1 - i] = (data[len - 1 - i] - 128) * i / fadelen + 128;
+    }
+  }
+}
+
 #define DMXHDRSIZE 8
 #define DMXPADSIZE 16
 
@@ -301,8 +354,29 @@ void I_CacheSounds(void)
       const byte *data = W_LumpByNum(lump);
       int len = W_LumpLength(lump);
 
-      if (!IsDMXSound(data, len))
-        GetSndData(id, data, len);
+      if (IsDMXSound(data, len))
+      {
+        int dmx_len = GetDMXLength(data);
+
+        if (IsValidDMXSound(dmx_len, len) && !dsda_IsLoopingAmbientSFX(id))
+        {
+          const int dmx_rate = GetDMXSampleRate(data);
+          byte *dmx_data = W_GetModifiableLumpData(lump);
+          dmx_data = &dmx_data[DMXHDRSIZE + DMXPADSIZE];
+          dmx_len -= DMXPADSIZE * 2;
+          FadeInOutMono8(dmx_data, dmx_len, dmx_rate);
+        }
+      }
+      else
+      {
+        snd_data_t *snd_data = GetSndData(id, data, len);
+
+        if (snd_data && !dsda_IsLoopingAmbientSFX(id))
+        {
+          len = snd_data->samplelen / sizeof(short);
+          FadeInOutMono16((short *)snd_data->data, len, snd_data->samplerate);
+        }
+      }
     }
   }
 }
