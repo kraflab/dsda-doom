@@ -2155,6 +2155,7 @@ static void D_DoomMainSetup(void)
   dsda_LoadWadPreferences();
   dsda_LoadMapInfo();
   dsda_InitSkills();
+  dsda_InitGameFlags(); // Set game modifiers based off args / cfg
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "\nP_Init: Init Playloop state.\n");

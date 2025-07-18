@@ -60,5 +60,8 @@ void dsda_InitSkills(void);
 void dsda_RefreshGameSkill(void);
 void dsda_UpdateGameSkill(int skill);
 void dsda_AlterGameFlags(void);
+void dsda_InitGameFlags(void);
+void dsda_RefreshPistolStart(void);
+void dsda_RefreshAlwaysPistolStart(void);
 
 #endif
