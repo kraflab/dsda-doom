@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.17...4.0)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -18,18 +18,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-if(POLICY CMP0099)
-  cmake_policy(SET CMP0099 NEW)
-else()
-  message(WARNING "Your version of CMake is very old. This may cause linking issues if your dependencies are not in your compiler's default search paths.")
-endif()
-
 if(VCPKG_TOOLCHAIN)
     set(ENV{PKG_CONFIG_PATH} "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/pkgconfig")
-endif()
-
-if(POLICY CMP0069)
-    cmake_policy(SET CMP0069 NEW)
 endif()
 
 set(PROJECT_TARNAME "dsda-doom")
