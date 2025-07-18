@@ -56,6 +56,8 @@ void I_ShutdownSound(void);
 //  SFX I/O
 //
 
+void I_CacheSounds(void);
+
 // Initialize channels?
 void I_SetChannels(void);
 

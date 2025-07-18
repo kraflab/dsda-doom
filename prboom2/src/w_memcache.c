@@ -88,3 +88,8 @@ const void *W_LockLumpNum(int lump)
 {
   return W_LumpByNum(lump);
 }
+
+void *W_GetModifiableLumpData(int lump)
+{
+  return lump_data[lump];
+}

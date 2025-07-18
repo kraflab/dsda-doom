@@ -164,6 +164,7 @@ char*   W_ReadLumpToString (int lump);
 const void* W_SafeLumpByNum (int lump);
 const void* W_LumpByNum (int lump);
 const void* W_LockLumpNum(int lump);
+void *W_GetModifiableLumpData(int lump);
 
 int W_LumpNumExists(int lump);
 int W_LumpNameExists(const char *name);

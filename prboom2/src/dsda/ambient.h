@@ -40,6 +40,7 @@ typedef struct {
   int wait_tics;
 } ambient_source_t;
 
+dboolean dsda_IsLoopingAmbientSFX(int sfx_id);
 void dsda_UpdateAmbientSource(ambient_source_t* source);
 void dsda_SpawnAmbientSource(mobj_t* mobj);
 void dsda_LoadAmbientSndInfo(void);

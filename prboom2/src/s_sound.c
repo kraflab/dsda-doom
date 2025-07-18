@@ -203,6 +203,10 @@ void S_Init(void)
 
       dsda_CacheSoundLumps();
 
+      lprintf(LO_DEBUG, " Precaching all sound effects... ");
+      I_CacheSounds();
+      lprintf(LO_DEBUG, "done\n");
+
       // {
       //   int i;
       //   const int snd_curve_length = 1200;

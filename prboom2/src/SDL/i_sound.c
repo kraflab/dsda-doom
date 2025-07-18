@@ -71,6 +71,7 @@
 //e6y
 #include "e6y.h"
 
+#include "dsda/ambient.h"
 #include "dsda/settings.h"
 
 static dboolean registered_non_rw = false;
@@ -195,7 +196,7 @@ static Uint8 *ConvertAudioFormat(void **data, SDL_AudioSpec *sample, Uint32 *len
 typedef struct snd_data_s
 {
   int sfxid;
-  const unsigned char *data;
+  unsigned char *data;
   int samplelen;
   int samplerate;
   struct snd_data_s *next;
@@ -264,15 +265,85 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
   return target;
 }
 
+#define FADETIME 1000 // microseconds
+
+static void FadeInOutMono16(short *data, int len, int rate)
+{
+  const int fadelen = rate * FADETIME / 1000000;
+  int i;
+
+  if (len < fadelen)
+    return;
+
+  if (data[0] != 0)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[i] = data[i] * i / fadelen;
+    }
+  }
+
+  if (data[len - 1] != 0)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[len - 1 - i] = data[len - 1 - i] * i / fadelen;
+    }
+  }
+}
+
+static void FadeInOutMono8(byte *data, int len, int rate)
+{
+  const int fadelen = rate * FADETIME / 1000000;
+  int i;
+
+  if (len < fadelen)
+    return;
+
+  if (data[0] != 128)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[i] = (data[i] - 128) * i / fadelen + 128;
+    }
+  }
+
+  if (data[len - 1] != 128)
+  {
+    for (i = 0; i < fadelen; i++)
+    {
+      data[len - 1 - i] = (data[len - 1 - i] - 128) * i / fadelen + 128;
+    }
+  }
+}
+
 #define DMXHDRSIZE 8
 #define DMXPADSIZE 16
+
+INLINE static int GetDMXSampleRate(const byte *data)
+{
+  return ((data[3] << 8) | data[2]);
+}
+
+INLINE static dboolean IsValidDMXSound(int dmx_len, int len)
+{
+  // Don't play DMX format sound lumps that think they're longer than they
+  // really are, only contain padding, or are shorter than the padding size.
+  return (dmx_len <= len - DMXHDRSIZE && dmx_len > DMXPADSIZE * 2);
+}
+
+INLINE static int GetDMXLength(const byte *data)
+{
+  // Read the encoded number of samples. This value includes padding.
+  return ((data[7] << 24) | (data[6] << 16) | (data[5] << 8) | data[4]);
+}
 
 INLINE static dboolean IsDMXSound(const byte *data, int len)
 {
   return len > DMXHDRSIZE && data[0] == 0x03 && data[1] == 0x00;
 }
 
-static void CacheSounds(void)
+void I_CacheSounds(void)
 {
   int id;
   for (id = 1; id < num_sfx; id++)
@@ -283,8 +354,29 @@ static void CacheSounds(void)
       const byte *data = W_LumpByNum(lump);
       int len = W_LumpLength(lump);
 
-      if (!IsDMXSound(data, len))
-        GetSndData(id, data, len);
+      if (IsDMXSound(data, len))
+      {
+        int dmx_len = GetDMXLength(data);
+
+        if (IsValidDMXSound(dmx_len, len) && !dsda_IsLoopingAmbientSFX(id))
+        {
+          const int dmx_rate = GetDMXSampleRate(data);
+          byte *dmx_data = W_GetModifiableLumpData(lump);
+          dmx_data = &dmx_data[DMXHDRSIZE + DMXPADSIZE];
+          dmx_len -= DMXPADSIZE * 2;
+          FadeInOutMono8(dmx_data, dmx_len, dmx_rate);
+        }
+      }
+      else
+      {
+        snd_data_t *snd_data = GetSndData(id, data, len);
+
+        if (snd_data && !dsda_IsLoopingAmbientSFX(id))
+        {
+          len = snd_data->samplelen / sizeof(short);
+          FadeInOutMono16((short *)snd_data->data, len, snd_data->samplerate);
+        }
+      }
     }
   }
 }
@@ -297,32 +389,16 @@ static void CacheSounds(void)
 // Returns a handle.
 //
 
-static int addsfx(int sfxid, int channel, const unsigned char *data, size_t len,
-                  const snd_data_t *snd_data)
+static int addsfx(int sfxid, int channel, const channel_info_t *cinfo)
 {
   channel_info_t *ci = channelinfo + channel;
 
   stopchan(channel);
 
-  if (snd_data)
-  {
-    ci->data = snd_data->data;
-    ci->enddata = ci->data + snd_data->samplelen - 1;
-    ci->samplerate = snd_data->samplerate;
-    ci->bits = 16;
-  }
-  else
-  {
-    ci->data = data;
-    /* Set pointer to end of raw data. */
-    ci->enddata = ci->data + len - 1;
-    ci->samplerate = (ci->data[3] << 8) + ci->data[2];
-    // Skip header and padding before samples.
-    ci->data += DMXHDRSIZE + DMXPADSIZE;
-    // Skip padding after samples.
-    ci->enddata -= DMXPADSIZE;
-    ci->bits = 8;
-  }
+  ci->data = cinfo->data;
+  ci->enddata = cinfo->enddata;
+  ci->samplerate = cinfo->samplerate;
+  ci->bits = cinfo->bits;
 
   ci->stepremainder = 0;
   // Should be gametic, I presume.
@@ -501,6 +577,7 @@ int I_StartSound(int id, int channel, sfx_params_t *params)
   int lump;
   size_t len;
   snd_data_t *snd_data = NULL;
+  channel_info_t cinfo = {0};
 
   if ((channel < 0) || (channel >= MAX_CHANNELS))
 #ifdef RANGECHECK
@@ -527,26 +604,41 @@ int I_StartSound(int id, int channel, sfx_params_t *params)
 
   if (IsDMXSound(data, len))
   {
-    // Read the encoded number of samples. This value includes padding.
-    const int num_samples =
-        (data[7] << 24) | (data[6] << 16) | (data[5] << 8) | data[4];
+    const int dmx_len = GetDMXLength(data);
 
-    // Don't play DMX format sound lumps that think they're longer than they
-    // really are, only contain padding, or are shorter than the padding size.
-    if (num_samples > len - DMXHDRSIZE || num_samples <= DMXPADSIZE * 2)
+    if (IsValidDMXSound(dmx_len, len))
+    {
+      cinfo.data = &data[DMXHDRSIZE + DMXPADSIZE];
+      cinfo.enddata = &cinfo.data[dmx_len - DMXPADSIZE * 2 - 1];
+      cinfo.samplerate = GetDMXSampleRate(data);
+      cinfo.bits = 8;
+    }
+    else
+    {
       return -1;
+    }
   }
   else
   {
     snd_data = GetSndData(id, data, len);
-    if (!snd_data)
+
+    if (snd_data)
+    {
+      cinfo.data = snd_data->data;
+      cinfo.enddata = &cinfo.data[snd_data->samplelen - 1];
+      cinfo.samplerate = snd_data->samplerate;
+      cinfo.bits = 16;
+    }
+    else
+    {
       return -1;
+    }
   }
 
   SDL_LockMutex (sfxmutex);
 
   // Returns a handle (not used).
-  addsfx(id, channel, data, len, snd_data);
+  addsfx(id, channel, &cinfo);
   updateSoundParams(channel, params);
 
   SDL_UnlockMutex (sfxmutex);
@@ -824,10 +916,6 @@ void I_InitSound(void)
 
   if (!nomusicparm)
     I_InitMusic();
-
-  lprintf(LO_DEBUG, " Precaching all sound effects... ");
-  CacheSounds();
-  lprintf(LO_DEBUG, "done\n");
 
   lprintf(LO_DEBUG, "I_InitSound: sound module ready\n");
   SDL_PauseAudio(0);

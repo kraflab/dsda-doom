@@ -260,3 +260,8 @@ const void* W_LockLumpNum(int lump)
 
   return lump_data[lump];
 }
+
+void *W_GetModifiableLumpData(int lump)
+{
+  return lump_data[lump];
+}
