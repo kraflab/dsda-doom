@@ -567,7 +567,7 @@ function(AddGameExecutable TARGET SOURCES)
     endif()
 
     if(HAVE_LIBMAD)
-        target_link_libraries(${TARGET} PRIVATE LibMad::libmad)
+        target_link_libraries(${TARGET} PRIVATE mad::mad)
     endif()
 
     if(HAVE_LIBFLUIDSYNTH)

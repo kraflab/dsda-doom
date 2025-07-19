@@ -56,7 +56,7 @@ find_file(
 
 find_library(
   FluidSynth_LIBRARY
-  NAMES fluidsynth libfluidsynth
+  NAMES fluidsynth libfluidsynth fluidsynth-3 libfluidsynth-3
   HINTS "${PC_FLUIDSYNTH_LIBDIR}"
 )
 
