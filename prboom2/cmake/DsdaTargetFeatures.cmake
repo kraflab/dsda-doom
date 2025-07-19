@@ -22,7 +22,6 @@ function(dsda_internal_setup_warnings_gnu result_var)
     "-Wno-unused-function"
     "-Wno-switch"
     "-Wno-sign-compare"
-    "-Wno-format-truncation"
     "-Wno-missing-field-initializers"
   )
   set(GNU_C_WARNINGS
@@ -32,6 +31,13 @@ function(dsda_internal_setup_warnings_gnu result_var)
     -Wbad-function-cast
   )
   set(GNU_WARNINGS_SET ${GNU_WARNINGS} ${GNU_C_WARNINGS})
+
+  if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
+    OR (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
+    OR (CMAKE_C_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 17)
+  )
+    list(APPEND GNU_WARNINGS_SET "-Wno-format-truncation")
+  endif()
 
   include(CheckCCompilerFlag)
   check_c_compiler_flag("${GNU_WARNINGS_SET}" DSDA_SUPPORTS_GNU_WARNINGS)
@@ -99,7 +105,7 @@ endfunction()
 
 function(dsda_target_set_warnings tgt)
   dsda_fail_if_invalid_target(${tgt})
-  
+
   if(NOT DEFINED CACHE{DSDA_ENABLED_WARNINGS})
     dsda_internal_setup_warnings()
   endif()
