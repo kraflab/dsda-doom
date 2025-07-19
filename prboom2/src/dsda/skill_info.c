@@ -221,16 +221,44 @@ void dsda_InitSkills(void) {
   }
 }
 
+void dsda_InitGameFlags(void)
+{
+  if (dsda_Flag(dsda_arg_pistol_start) || dsda_IntConfig(dsda_config_always_pistol_start))
+      dsda_UpdateIntConfig(dsda_config_pistol_start, true, true);
+  if (dsda_Flag(dsda_arg_respawn))
+      dsda_UpdateIntConfig(dsda_config_respawn_monsters, true, true);
+  if (dsda_Flag(dsda_arg_fast))
+      dsda_UpdateIntConfig(dsda_config_fast_monsters, true, true);
+  if (dsda_Flag(dsda_arg_nomonsters))
+      dsda_UpdateIntConfig(dsda_config_no_monsters, true, true);
+  if (dsda_Flag(dsda_arg_coop_spawns))
+      dsda_UpdateIntConfig(dsda_config_coop_spawns, true, true);
+}
+
+void dsda_RefreshPistolStart(void)
+{
+  dboolean pistol_start_conflict = dsda_IntConfig(dsda_config_always_pistol_start) && !dsda_IntConfig(dsda_config_pistol_start);
+
+  if (allow_incompatibility || in_game)
+    if (pistol_start_conflict)
+      dsda_UpdateIntConfig(dsda_config_always_pistol_start, false, true);
+}
+
+void dsda_RefreshAlwaysPistolStart(void)
+{
+  dboolean pistol_start_conflict = dsda_IntConfig(dsda_config_always_pistol_start) && !dsda_IntConfig(dsda_config_pistol_start);
+
+  if (allow_incompatibility || in_game)
+    if (pistol_start_conflict)
+      dsda_UpdateIntConfig(dsda_config_pistol_start, true, true);
+}
+
 static void dsda_ResetGameFlags(void)
 {
-  respawnparm = dsda_Flag(dsda_arg_respawn) ||
-                (allow_incompatibility && dsda_IntConfig(dsda_config_respawn_monsters));
-  fastparm = dsda_Flag(dsda_arg_fast) ||
-             (allow_incompatibility && dsda_IntConfig(dsda_config_fast_monsters));
-  nomonsters = dsda_Flag(dsda_arg_nomonsters) ||
-             (allow_incompatibility && dsda_IntConfig(dsda_config_no_monsters));
-  coop_spawns = dsda_Flag(dsda_arg_coop_spawns) ||
-                (allow_incompatibility && dsda_IntConfig(dsda_config_coop_spawns));
+  respawnparm = (allow_incompatibility ? dsda_IntConfig(dsda_config_respawn_monsters) : dsda_Flag(dsda_arg_respawn));
+  fastparm    = (allow_incompatibility ? dsda_IntConfig(dsda_config_fast_monsters)    : dsda_Flag(dsda_arg_fast));
+  nomonsters  = (allow_incompatibility ? dsda_IntConfig(dsda_config_no_monsters)      : dsda_Flag(dsda_arg_nomonsters));
+  coop_spawns = (allow_incompatibility ? dsda_IntConfig(dsda_config_coop_spawns)      : dsda_Flag(dsda_arg_coop_spawns));
 }
 
 void dsda_RefreshGameSkill(void) {
