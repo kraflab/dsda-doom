@@ -37,7 +37,8 @@
 #include "musicplayer.h"
 
 #ifndef HAVE_LIBMAD
-#include <string.h>
+
+#include <stddef.h>
 
 static const char *mp_name (void)
 {

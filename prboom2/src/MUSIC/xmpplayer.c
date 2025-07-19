@@ -22,6 +22,8 @@
 
 #ifndef HAVE_LIBXMP
 
+#include <stddef.h>
+
 static const char *xmp_name(void)
 {
   return "libxmp tracker player (DISABLED)";

@@ -37,7 +37,8 @@
 #include "musicplayer.h"
 
 #ifndef HAVE_LIBVORBISFILE
-#include <string.h>
+
+#include <stddef.h>
 
 static const char *vorb_name (void)
 {

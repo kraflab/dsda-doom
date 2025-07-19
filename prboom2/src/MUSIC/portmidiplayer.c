@@ -38,7 +38,8 @@
 #include "musicplayer.h"
 
 #ifndef HAVE_LIBPORTMIDI
-#include <string.h>
+
+#include <stddef.h>
 
 static const char *pm_name (void)
 {

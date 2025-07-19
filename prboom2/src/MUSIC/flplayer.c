@@ -35,7 +35,8 @@
 #include "musicplayer.h"
 
 #ifndef HAVE_LIBFLUIDSYNTH
-#include <string.h>
+
+#include <stddef.h>
 
 static const char *fl_name (void)
 {
