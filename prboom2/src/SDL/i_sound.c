@@ -234,7 +234,7 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
     void *sampledata;
     Uint32 samplelen = (Uint32)len;
 
-    if (Load_SNDFile((void *)data, &sample, &sampledata, &samplelen) == NULL)
+    if (Load_SNDFile(data, &sample, &sampledata, &samplelen) == NULL)
     {
       lprintf(LO_WARN, "Can't open sfx file: %s\n", S_sfx[sfxid].name);
       return NULL;
