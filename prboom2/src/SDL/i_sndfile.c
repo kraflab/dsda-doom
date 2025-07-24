@@ -51,7 +51,7 @@ static sf_count_t sfvio_tell(void *user_data)
   return mem_ftell((MEMFILE *)user_data);
 } 
 
-void *Load_SNDFile(void *data, SDL_AudioSpec *sample, void **sampledata,
+void *Load_SNDFile(const void *data, SDL_AudioSpec *sample, void **sampledata,
                    Uint32 *samplelen)
 {
   SNDFILE *sndfile;

@@ -732,7 +732,7 @@ int force_singletics_to = 0;
 
 int HU_DrawDemoProgress(int force)
 {
-  extern float mouse_hide_timer;
+  extern int mouse_hide_timer;
   static unsigned int last_update = 0;
   static int prev_len = -1;
 
