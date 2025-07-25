@@ -13,7 +13,7 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 include(DsdaHelpers)
-if(dsda_is_top_proejct)
+if(dsda_is_top_project)
     dsda_set_default_build_config(RelWithDebInfo)
 endif()
 
