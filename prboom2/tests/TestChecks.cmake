@@ -1,0 +1,55 @@
+include_guard()
+
+function(check_wad_file wad_filename wad_expected_hash result)
+  if(${result})
+    return()
+  endif()
+
+  message(CHECK_START "Looking for ${wad_filename}")
+  if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/WAD/${wad_filename}")
+    message(CHECK_FAIL "File not found")
+    set(${result} FALSE CACHE INTERNAL "")
+    return()
+  endif()
+
+  file(SHA3_256 "${CMAKE_CURRENT_LIST_DIR}/WAD/${wad_filename}" wad_hash)
+  if(NOT wad_hash STREQUAL ${wad_expected_hash})
+    message(CHECK_FAIL "Hash not matched")
+    set(${result} FALSE CACHE INTERNAL "")
+    return()
+  endif()
+
+  set(${result} TRUE CACHE INTERNAL "")
+  message(CHECK_PASS "Found")
+endfunction()
+
+function(check_test_wads)
+  if(DSDA_INTERNAL_TEST_WADS_FOUND)
+    return()
+  endif()
+
+  message(CHECK_START "Looking for test WADs")
+  list(APPEND CMAKE_MESSAGE_INDENT "  ")
+
+  check_wad_file(DOOM2.WAD 3d128688dacd56b3ecb6b824d60bfe284dcb30d8f9b89a59660fa378dce5d677 HAVE_DOOM2)
+  check_wad_file(HERETIC.WAD 89fc8d0d5d4dd182e9c13b6098142cc7bc085cb27541e7eae6966d660488cd50 HAVE_HERETIC)
+  check_wad_file(HEXEN.WAD dc5e687f7c5634e4b8c177e28697f4e52c3bf81e79de65ad172cc65bae6f8df6 HAVE_HEXEN)
+  check_wad_file(rush.wad e73e8081b0ede7a0b963ee24760db5057a557213d7f65294c5a5c87484b2ca28 HAVE_RUSH)
+  check_wad_file(Valiant.wad d839806afd41a88679a8b7ba3928444af9cca974a85b12f0a64472fed2ab2523 HAVE_VALIANT)
+
+  foreach(wad IN ITEMS DOOM2 HERETIC HEXEN rush Valiant)
+    string(TOUPPER "${wad}" wad_flag)
+    if(NOT HAVE_${wad_flag})
+      list(APPEND missing_test_wads ${wad})
+    endif()
+  endforeach()
+
+  list(POP_BACK CMAKE_MESSAGE_INDENT)
+  if(missing_test_wads)
+    message(CHECK_FAIL "Missing WADs: ${missing_test_wads} - Some tests may not be included")
+  else()
+    message(CHECK_PASS "found all WADs")
+    set(DSDA_INTERNAL_TEST_WADS_FOUND TRUE CACHE INTERNAL "")
+  endif()
+
+endfunction()
