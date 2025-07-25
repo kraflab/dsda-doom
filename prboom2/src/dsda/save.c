@@ -142,6 +142,38 @@ static void dsda_UnArchiveContext(void) {
   true_basetic = gametic - true_logictic_value;
 }
 
+int saved_pistolstart, saved_respawnparm, saved_fastparm, saved_nomonsters, saved_coop_spawns;
+
+void dsda_ArchiveGameModifiers(void)
+{
+  saved_pistolstart = pistolstart;
+  saved_respawnparm = respawnparm;
+  saved_fastparm    = fastparm;
+  saved_nomonsters  = nomonsters;
+  saved_coop_spawns = coop_spawns;
+
+  P_SAVE_X(saved_pistolstart);
+  P_SAVE_X(saved_respawnparm);
+  P_SAVE_X(saved_fastparm);
+  P_SAVE_X(saved_nomonsters);
+  P_SAVE_X(saved_coop_spawns);
+}
+
+void dsda_UnArchiveGameModifiers(void)
+{
+  P_LOAD_X(saved_pistolstart);
+  P_LOAD_X(saved_respawnparm);
+  P_LOAD_X(saved_fastparm);
+  P_LOAD_X(saved_nomonsters);
+  P_LOAD_X(saved_coop_spawns);
+
+  dsda_UpdateIntConfig(dsda_config_pistol_start,     saved_pistolstart, true);
+  dsda_UpdateIntConfig(dsda_config_respawn_monsters, saved_respawnparm, true);
+  dsda_UpdateIntConfig(dsda_config_fast_monsters,    saved_fastparm,    true);
+  dsda_UpdateIntConfig(dsda_config_no_monsters,      saved_nomonsters,  true);
+  dsda_UpdateIntConfig(dsda_config_coop_spawns,      saved_coop_spawns, true);
+}
+
 void dsda_ArchiveAll(void) {
   dsda_ArchiveContext();
 
@@ -159,6 +191,7 @@ void dsda_ArchiveAll(void) {
   P_ArchiveRNG();
   P_ArchiveMap();
 
+  dsda_ArchiveGameModifiers();
   dsda_ArchiveInternal();
 }
 
@@ -179,6 +212,7 @@ void dsda_UnArchiveAll(void) {
   P_UnArchiveMap();
   P_MapEnd();
 
+  dsda_UnArchiveGameModifiers();
   dsda_UnArchiveInternal();
 }
 
