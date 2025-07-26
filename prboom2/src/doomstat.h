@@ -74,6 +74,8 @@ extern complevel_t compatibility_level;
 
 extern int demo_insurance;      // killough 4/5/98
 
+extern dboolean pistolstart;
+
 // -------------------------------------------
 // killough 10/98: compatibility vector
 

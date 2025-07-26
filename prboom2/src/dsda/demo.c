@@ -277,7 +277,7 @@ void dsda_InitDemoRecording(void) {
     I_Error("You must specify a skill level when recording a demo!\n"
             "Example: dsda-doom -iwad DOOM -complevel 3 -skill 4 -record demo");
 
-  if (dsda_Flag(dsda_arg_pistolstart))
+  if (dsda_Flag(dsda_arg_pistol_start))
     I_Error("The -pistolstart option is not allowed when recording a demo!");
 
   demorecording = true;

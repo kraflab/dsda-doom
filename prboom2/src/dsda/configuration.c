@@ -135,6 +135,8 @@ void dsda_InitExHud(void);
 void dsda_UpdateFreeText(void);
 void dsda_ResetAirControl(void);
 void dsda_AlterGameFlags(void);
+void dsda_RefreshPistolStart(void);
+void dsda_RefreshAlwaysPistolStart(void);
 
 void dsda_TrackConfigFeatures(void) {
   if (!demorecording)
@@ -983,7 +985,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_pistol_start] = {
     "dsda_pistol_start", dsda_config_pistol_start,
-    CONF_BOOL(0), NULL, NOT_STRICT
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshPistolStart
+  },
+  [dsda_config_always_pistol_start] = {
+    "dsda_always_pistol_start", dsda_config_always_pistol_start,
+    CONF_BOOL(0), NULL, NOT_STRICT, dsda_RefreshAlwaysPistolStart
   },
   [dsda_config_respawn_monsters] = {
     "dsda_respawn_monsters", dsda_config_respawn_monsters,

@@ -137,6 +137,8 @@ dboolean nomonsters;     // working -nomonsters
 dboolean respawnparm;    // working -respawn
 dboolean fastparm;       // working -fast
 
+dboolean pistolstart;
+
 dboolean randomclass;
 
 dboolean singletics = false; // debug flag to cancel adaptiveness
@@ -2155,6 +2157,7 @@ static void D_DoomMainSetup(void)
   dsda_LoadWadPreferences();
   dsda_LoadMapInfo();
   dsda_InitSkills();
+  dsda_InitGameModifiers(); // Set game modifiers based off args / persistent cfgs
 
   //jff 9/3/98 use logical output routine
   lprintf(LO_DEBUG, "\nP_Init: Init Playloop state.\n");
