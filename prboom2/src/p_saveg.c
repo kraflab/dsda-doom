@@ -115,13 +115,15 @@ void P_ArchivePlayers (void)
     if (playeringame[i])
       {
         int      j;
-        player_t *dest;
+        player_t *dest, tmp_player;
 
-        P_SAVE_TYPE_REF(&players[i], dest, player_t);
+        dest = &tmp_player;
+        memcpy(dest, &players[i], sizeof(player_t));
         for (j=0; j<NUMPSPRITES; j++)
           if (dest->psprites[j].state)
             dest->psprites[j].state =
               (state_t *)(dest->psprites[j].state-states);
+        P_SAVE_TYPE(dest, player_t);
       }
 }
 
@@ -366,14 +368,15 @@ static dboolean P_IsMobjThinker(thinker_t* thinker)
          (thinker->function == P_RemoveThinkerDelayed && thinker->references);
 }
 
-static void P_ReplaceMobjWithIndex(mobj_t **mobj)
+static mobj_t *P_ReplaceMobjWithIndex(mobj_t *mobj)
 {
-  if (*mobj)
+  if (mobj)
   {
-    *mobj = P_IsMobjThinker(&(*mobj)->thinker) ?
-            (mobj_t *) (*mobj)->thinker.prev   :
+    return P_IsMobjThinker(&mobj->thinker) ?
+            (mobj_t *)mobj->thinker.prev   :
             NULL;
   }
+  return NULL;
 }
 
 /*
@@ -996,7 +999,7 @@ void P_ArchiveThinkers(void) {
       acs_t *acs;
       P_SAVE_BYTE(tc_acs);
       P_SAVE_TYPE_REF(th, acs, acs_t);
-      P_ReplaceMobjWithIndex(&acs->activator);
+      acs->activator = P_ReplaceMobjWithIndex(acs->activator);
       acs->line = (line_t *) (acs->line ? acs->line - lines : -1);
 
       continue;
@@ -1055,7 +1058,7 @@ void P_ArchiveThinkers(void) {
       quake_t *quake;
       P_SAVE_BYTE(tc_quake);
       P_SAVE_TYPE_REF(th, quake, quake_t);
-      P_ReplaceMobjWithIndex(&quake->location);
+      quake->location = P_ReplaceMobjWithIndex(quake->location);
       continue;
     }
 
@@ -1064,16 +1067,15 @@ void P_ArchiveThinkers(void) {
       ambient_source_t *ambient_source;
       P_SAVE_BYTE(tc_ambient_source);
       P_SAVE_TYPE_REF(th, ambient_source, ambient_source_t);
-      P_ReplaceMobjWithIndex(&ambient_source->mobj);
+      ambient_source->mobj = P_ReplaceMobjWithIndex(ambient_source->mobj);
       continue;
     }
 
     if (P_IsMobjThinker(th))
     {
-      mobj_t *mobj;
-
-      P_SAVE_BYTE(tc_mobj);
-      P_SAVE_TYPE_REF(th, mobj, mobj_t);
+      mobj_t tmp_mobj;
+      mobj_t *mobj = &tmp_mobj;
+      memcpy(mobj, th, sizeof(*mobj));
 
       mobj->state = (state_t *)(mobj->state - states);
 
@@ -1092,25 +1094,28 @@ void P_ArchiveThinkers(void) {
       // the thinker pointed to by these fields is not a
       // mobj thinker.
 
-      P_ReplaceMobjWithIndex(&mobj->target);
-      P_ReplaceMobjWithIndex(&mobj->tracer);
+      mobj->target = P_ReplaceMobjWithIndex(mobj->target);
+      mobj->target = P_ReplaceMobjWithIndex(mobj->tracer);
 
       // killough 2/14/98: new field: save last known enemy. Prevents
       // monsters from going to sleep after killing monsters and not
       // seeing player anymore.
 
-      P_ReplaceMobjWithIndex(&mobj->lastenemy);
+      mobj->lastenemy = P_ReplaceMobjWithIndex(mobj->lastenemy);
 
       // killough 2/14/98: end changes
 
       if (raven)
       {
-        P_ReplaceMobjWithIndex(&mobj->special1.m);
-        P_ReplaceMobjWithIndex(&mobj->special2.m);
+        mobj->special1.m = P_ReplaceMobjWithIndex(mobj->special1.m);
+        mobj->special2.m = P_ReplaceMobjWithIndex(mobj->special2.m);
       }
 
       if (mobj->player)
         mobj->player = (player_t *)((mobj->player-players) + 1);
+
+      P_SAVE_BYTE(tc_mobj);
+      P_SAVE_TYPE(mobj, mobj_t)
     }
   }
 
@@ -1138,7 +1143,7 @@ void P_ArchiveThinkers(void) {
       mobj_t *target = sectors[i].soundtarget;
       // Fix crash on reload when a soundtarget points to a removed corpse
       // (prboom bug #1590350)
-      P_ReplaceMobjWithIndex(&target);
+      target = P_ReplaceMobjWithIndex(target);
       P_SAVE_X(target);
     }
   }
