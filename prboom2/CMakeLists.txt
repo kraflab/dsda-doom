@@ -12,6 +12,10 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(dsda_is_top_project TRUE)
 endif()
 
+if(dsda_is_top_project)
+    include(DsdaSanitiser)
+endif()
+
 include(DsdaHelpers)
 if(dsda_is_top_project)
     dsda_set_default_build_config(RelWithDebInfo)
