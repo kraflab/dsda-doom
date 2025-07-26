@@ -537,54 +537,20 @@ function(AddGameExecutable TARGET SOURCES)
     dsda_target_enable_fast_math(${TARGET})
     dsda_target_use_config_h(${TARGET})
 
-    target_include_directories(${TARGET} PRIVATE
-        ${SDL2_INCLUDE_DIRS}
+    target_include_directories(${TARGET}
+        PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
-    target_link_libraries(${TARGET} PRIVATE
-        libzip::zip
-        ${SDL2_LIBRARIES}
-        SDL2_mixer::SDL2_mixer
-        ZLIB::ZLIB
-        SndFile::sndfile
+    target_link_libraries(${TARGET}
+        PRIVATE
+        dsda::dependencies
     )
-
-    if(WIN32)
-        target_link_libraries(${TARGET} PRIVATE
-            winmm
-            comctl32
-        )
-    endif()
 
     set_target_properties(${TARGET} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY ${DSDA_OUTPUT_PATH}
         C_STANDARD 99
     )
-
-    if(HAVE_LIBSDL2_IMAGE)
-        target_link_libraries(${TARGET} PRIVATE SDL2_image::SDL2_image)
-    endif()
-
-    if(HAVE_LIBMAD)
-        target_link_libraries(${TARGET} PRIVATE mad::mad)
-    endif()
-
-    if(HAVE_LIBFLUIDSYNTH)
-        target_link_libraries(${TARGET} PRIVATE FluidSynth::libfluidsynth)
-    endif()
-
-    if(HAVE_LIBXMP)
-        target_link_libraries(${TARGET} PRIVATE libxmp::xmp)
-    endif()
-
-    if(HAVE_LIBVORBISFILE)
-        target_link_libraries(${TARGET} PRIVATE Vorbis::vorbisfile)
-    endif()
-
-    if(HAVE_LIBPORTMIDI)
-        target_link_libraries(${TARGET} PRIVATE PortMidi::portmidi)
-    endif()
 
     add_dependencies(${TARGET} dsda-doom-wad)
 
@@ -617,11 +583,6 @@ function(AddGameExecutable TARGET SOURCES)
     else()
         install(TARGETS ${TARGET} RUNTIME DESTINATION "${DSDA_INSTALL_BINDIR}")
     endif()
-
-    target_link_libraries(${TARGET} PRIVATE
-        ${OPENGL_gl_LIBRARY}
-        ${OPENGL_glu_LIBRARY}
-    )
 endfunction()
 
 AddGameExecutable(dsda-doom "${DSDA_SOURCES}")
