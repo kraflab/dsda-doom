@@ -654,6 +654,17 @@ void D_PageTicker(void)
     D_AdvanceDemo();
 }
 
+// Draw Credits for Blank Demos
+static void D_DrawCredits(void)
+{
+  if (!W_PWADLumpNameExists("CREDIT"))
+    M_DrawCreditsDynamic();
+  else
+    M_DrawCredits();
+}
+
+#define M_SKIPDEMOS (lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
+
 //
 // D_PageDrawer
 //
@@ -672,6 +683,11 @@ static void D_PageDrawer(void)
   // Allows use of PWAD HELP2 screen in demosequence
   if (demosequence == 4 && pwad_help2_check)
     pagename = "HELP2";
+
+  // Draw Credits for Blank Demos
+  if (pagename && M_SKIPDEMOS)
+    if (!strcmp(pagename, "CREDIT"))
+      return D_DrawCredits();
 
   // proff/nicolas 09/14/98 -- now stretchs bitmaps to fullscreen!
   // CPhipps - updated for new patch drawing
@@ -802,6 +818,23 @@ const demostate_t doom_demostates[][4] =
   }
 };
 
+const demostate_t doom_demostates_blank[][4] =
+{
+  {
+    {D_DrawTitle1, "TITLEPIC"},
+    {D_DrawTitle1, "TITLEPIC"},
+    {D_DrawTitle2, "TITLEPIC"},
+    {D_DrawTitle1, "TITLEPIC"},
+  },
+
+  {
+    {D_SetPageName, "CREDIT"},
+    {D_SetPageName, "CREDIT"},
+    {D_SetPageName, "CREDIT"},
+    {D_SetPageName, "CREDIT"},
+  }
+};
+
 /*
  * This cycles through the demo sequences.
  * killough 11/98: made table-driven
@@ -809,6 +842,11 @@ const demostate_t doom_demostates[][4] =
 
 void D_DoAdvanceDemo(void)
 {
+  extern const demostate_t heretic_demostates[][4];
+  extern const demostate_t hexen_demostates[][4];
+  extern const demostate_t heretic_demostates_blank[][4];
+  extern const demostate_t hexen_demostates_blank[][4];
+
   players[consoleplayer].playerstate = PST_LIVE;  /* not reborn */
   advancedemo = false;
   dsda_ResetPauseMode();
@@ -821,6 +859,16 @@ void D_DoAdvanceDemo(void)
     demosequence = 0;
   else if (!demostates[++demosequence][gamemode].func)
     demosequence = 0;
+
+  // Change demostates if demos are blank
+  if (M_SKIPDEMOS)
+  {
+    demostates = raven ? heretic ? heretic_demostates_blank : hexen_demostates_blank : doom_demostates_blank;
+    if (demosequence > (raven ? 2 : 1))
+      demosequence = 0;
+  }
+  else
+    demostates = raven ? heretic ? heretic_demostates : hexen_demostates : doom_demostates;
 
   // do not even attempt to play DEMO4 if it is not available
   if (demosequence == 6 && gamemode == commercial && !W_LumpNameExists("demo4"))
