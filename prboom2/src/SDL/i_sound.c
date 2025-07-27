@@ -246,7 +246,7 @@ static snd_data_t *GetSndData(int sfxid, const unsigned char *data, size_t len)
       if (ConvertAudioFormat(&sampledata, &sample, &samplelen) == NULL)
       {
         Z_Free(sampledata);
-        return NULL; 
+        return NULL;
       }
     }
 
@@ -872,6 +872,8 @@ void I_InitSound(void)
   int audio_channels;
   int audio_buffers;
 
+  I_InitSoundParams();
+
   if (sound_was_initialized || (nomusicparm && nosfxparm))
     return;
 
@@ -885,8 +887,6 @@ void I_InitSound(void)
 
   // Secure and configure sound device first.
   lprintf(LO_DEBUG, "I_InitSound: ");
-
-  I_InitSoundParams();
 
   audio_rate = snd_samplerate;
   audio_channels = 2;
