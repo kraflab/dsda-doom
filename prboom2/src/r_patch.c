@@ -628,7 +628,7 @@ static void createTextureCompositePatch(int id) {
   for (i=0; i<texture->patchcount; i++) {
     texpatch = &texture->patches[i];
     patchNum = texpatch->patch;
-    oldPatch = (const patch_t*)W_LumpByNum(patchNum);
+    oldPatch = (const patch_t*)W_LockLumpNum(patchNum);
 
     for (x=0; x<LittleShort(oldPatch->width); x++) {
       int tx = texpatch->originx + x;
@@ -682,7 +682,7 @@ static void createTextureCompositePatch(int id) {
   for (i=0; i<texture->patchcount; i++) {
     texpatch = &texture->patches[i];
     patchNum = texpatch->patch;
-    oldPatch = (const patch_t*)W_LumpByNum(patchNum);
+    oldPatch = (const patch_t*)W_LockLumpNum(patchNum);
 
     for (x=0; x<LittleShort(oldPatch->width); x++) {
       int top = -1;
