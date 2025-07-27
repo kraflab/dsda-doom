@@ -158,6 +158,7 @@ jobs:
           cmake -S prboom2
           -B build
           -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+          -DSTRICT_FIND=ON
           ${{ matrix.config.extra_options }}
 
       - name: Build
