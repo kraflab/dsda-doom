@@ -64,6 +64,22 @@
 
 #define SAVEGAMESIZE 0x20000
 
+#define SIZE_P sizeof(void *)
+
+#define P_PAD_SAVEP() \
+  do \
+  { \
+    size_t pad = (SIZE_P - ((intptr_t) save_p & (SIZE_P - 1))) & (SIZE_P - 1); \
+    CheckSaveGame(pad); \
+    save_p += pad; \
+  } while (0)
+
+#define P_PAD_LOADP() \
+  do \
+  { \
+    save_p += (SIZE_P - ((intptr_t) save_p & (SIZE_P - 1))) & (SIZE_P - 1); \
+  } while (0)
+
 byte *save_p;
 byte *savebuffer;
 static int savegamesize;
@@ -115,15 +131,14 @@ void P_ArchivePlayers (void)
     if (playeringame[i])
       {
         int      j;
-        player_t *dest, tmp_player;
+        player_t *dest;
 
-        dest = &tmp_player;
-        memcpy(dest, &players[i], sizeof(player_t));
+        P_PAD_SAVEP();
+        P_SAVE_TYPE_REF(&players[i], dest, player_t); 
         for (j=0; j<NUMPSPRITES; j++)
           if (dest->psprites[j].state)
             dest->psprites[j].state =
               (state_t *)(dest->psprites[j].state-states);
-        P_SAVE_TYPE(dest, player_t);
       }
 }
 
@@ -139,6 +154,7 @@ void P_UnArchivePlayers (void)
       {
         int j;
 
+        P_PAD_LOADP();
         P_LOAD_X(players[i]);
 
         // will be set when unarc thinker
@@ -368,15 +384,14 @@ static dboolean P_IsMobjThinker(thinker_t* thinker)
          (thinker->function == P_RemoveThinkerDelayed && thinker->references);
 }
 
-static mobj_t *P_ReplaceMobjWithIndex(mobj_t *mobj)
+static void P_ReplaceMobjWithIndex(mobj_t **mobj)
 {
-  if (mobj)
+  if (*mobj)
   {
-    return P_IsMobjThinker(&mobj->thinker) ?
-            (mobj_t *)mobj->thinker.prev   :
+    *mobj = P_IsMobjThinker(&(*mobj)->thinker) ?
+            (mobj_t *) (*mobj)->thinker.prev   :
             NULL;
   }
-  return NULL;
 }
 
 /*
@@ -783,6 +798,7 @@ void P_ArchiveThinkers(void) {
       ceiling_t *ceiling;
     ceiling:                               // killough 2/14/98
       P_SAVE_BYTE(tc_ceiling);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, ceiling, ceiling_t);
       ceiling->sector = (sector_t *)(intptr_t)(ceiling->sector->iSectorID);
       continue;
@@ -792,6 +808,7 @@ void P_ArchiveThinkers(void) {
     {
       vldoor_t *door;
       P_SAVE_BYTE(tc_door);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, door, vldoor_t);
       door->sector = (sector_t *)(intptr_t)(door->sector->iSectorID);
       //jff 1/31/98 archive line remembered by door as well
@@ -803,6 +820,7 @@ void P_ArchiveThinkers(void) {
     {
       floormove_t *floor;
       P_SAVE_BYTE(tc_floor);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, floor, floormove_t);
       floor->sector = (sector_t *)(intptr_t)(floor->sector->iSectorID);
       continue;
@@ -813,6 +831,7 @@ void P_ArchiveThinkers(void) {
       plat_t *plat;
     plat:   // killough 2/14/98: added fix for original plat height above
       P_SAVE_BYTE(tc_plat);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, plat, plat_t);
       plat->sector = (sector_t *)(intptr_t)(plat->sector->iSectorID);
       continue;
@@ -822,6 +841,7 @@ void P_ArchiveThinkers(void) {
     {
       lightflash_t *flash;
       P_SAVE_BYTE(tc_flash);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, flash, lightflash_t);
       flash->sector = (sector_t *)(intptr_t)(flash->sector->iSectorID);
       continue;
@@ -831,6 +851,7 @@ void P_ArchiveThinkers(void) {
     {
       strobe_t *strobe;
       P_SAVE_BYTE(tc_strobe);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, strobe, strobe_t);
       strobe->sector = (sector_t *)(intptr_t)(strobe->sector->iSectorID);
       continue;
@@ -840,6 +861,7 @@ void P_ArchiveThinkers(void) {
     {
       glow_t *glow;
       P_SAVE_BYTE(tc_glow);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, glow, glow_t);
       glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
       continue;
@@ -849,6 +871,7 @@ void P_ArchiveThinkers(void) {
     {
       zdoom_glow_t *glow;
       P_SAVE_BYTE(tc_zdoom_glow);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, glow, zdoom_glow_t);
       glow->sector = (sector_t *)(intptr_t)(glow->sector->iSectorID);
       continue;
@@ -859,6 +882,7 @@ void P_ArchiveThinkers(void) {
     {
       fireflicker_t *flicker;
       P_SAVE_BYTE(tc_flicker);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, flicker, fireflicker_t);
       flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
       continue;
@@ -868,6 +892,7 @@ void P_ArchiveThinkers(void) {
     {
       zdoom_flicker_t *flicker;
       P_SAVE_BYTE(tc_zdoom_flicker);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, flicker, zdoom_flicker_t);
       flicker->sector = (sector_t *)(intptr_t)(flicker->sector->iSectorID);
       continue;
@@ -878,6 +903,7 @@ void P_ArchiveThinkers(void) {
     {
       elevator_t *elevator;         //jff 2/22/98
       P_SAVE_BYTE(tc_elevator);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, elevator, elevator_t);
       elevator->sector = (sector_t *)(intptr_t)(elevator->sector->iSectorID);
       continue;
@@ -886,6 +912,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateSideScroller)
     {
       P_SAVE_BYTE(tc_scroll_side);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -893,6 +920,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateFloorScroller)
     {
       P_SAVE_BYTE(tc_scroll_floor);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -900,6 +928,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateCeilingScroller)
     {
       P_SAVE_BYTE(tc_scroll_ceiling);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -907,6 +936,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateFloorCarryScroller)
     {
       P_SAVE_BYTE(tc_scroll_floor_carry);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -914,6 +944,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateZDoomFloorScroller)
     {
       P_SAVE_BYTE(tc_zdoom_scroll_floor);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -921,6 +952,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateZDoomCeilingScroller)
     {
       P_SAVE_BYTE(tc_zdoom_scroll_ceiling);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -928,6 +960,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateThruster)
     {
       P_SAVE_BYTE(tc_thrust);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, scroll_t);
       continue;
     }
@@ -935,6 +968,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateControlSideScroller)
     {
       P_SAVE_BYTE(tc_scroll_side_control);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, control_scroll_t);
       continue;
     }
@@ -942,6 +976,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateControlFloorScroller)
     {
       P_SAVE_BYTE(tc_scroll_floor_control);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, control_scroll_t);
       continue;
     }
@@ -949,6 +984,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateControlCeilingScroller)
     {
       P_SAVE_BYTE(tc_scroll_ceiling_control);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, control_scroll_t);
       continue;
     }
@@ -956,6 +992,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == dsda_UpdateControlFloorCarryScroller)
     {
       P_SAVE_BYTE(tc_scroll_floor_carry_control);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, control_scroll_t);
       continue;
     }
@@ -965,6 +1002,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == T_Pusher)
     {
       P_SAVE_BYTE(tc_pusher);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, pusher_t);
       continue;
     }
@@ -972,6 +1010,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == T_Friction)
     {
       P_SAVE_BYTE(tc_friction);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, friction_t);
       continue;
     }
@@ -980,6 +1019,7 @@ void P_ArchiveThinkers(void) {
     {
       light_t *light;
       P_SAVE_BYTE(tc_light);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, light, light_t);
       light->sector = (sector_t *)(intptr_t)(light->sector->iSectorID);
       continue;
@@ -989,6 +1029,7 @@ void P_ArchiveThinkers(void) {
     {
       phase_t *phase;
       P_SAVE_BYTE(tc_phase);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, phase, phase_t);
       phase->sector = (sector_t *)(intptr_t)(phase->sector->iSectorID);
       continue;
@@ -998,8 +1039,9 @@ void P_ArchiveThinkers(void) {
     {
       acs_t *acs;
       P_SAVE_BYTE(tc_acs);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, acs, acs_t);
-      acs->activator = P_ReplaceMobjWithIndex(acs->activator);
+      P_ReplaceMobjWithIndex(&acs->activator);
       acs->line = (line_t *) (acs->line ? acs->line - lines : -1);
 
       continue;
@@ -1009,6 +1051,7 @@ void P_ArchiveThinkers(void) {
     {
       pillar_t *pillar;
       P_SAVE_BYTE(tc_pillar);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, pillar, pillar_t);
       pillar->sector = (sector_t *)(intptr_t)(pillar->sector->iSectorID);
       continue;
@@ -1018,6 +1061,7 @@ void P_ArchiveThinkers(void) {
     {
       planeWaggle_t *floor_waggle;
       P_SAVE_BYTE(tc_floor_waggle);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, floor_waggle, planeWaggle_t);
       floor_waggle->sector = (sector_t *)(intptr_t)(floor_waggle->sector->iSectorID);
       continue;
@@ -1027,6 +1071,7 @@ void P_ArchiveThinkers(void) {
     {
       planeWaggle_t *ceiling_waggle;
       P_SAVE_BYTE(tc_ceiling_waggle);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, ceiling_waggle, planeWaggle_t);
       ceiling_waggle->sector = (sector_t *)(intptr_t)(ceiling_waggle->sector->iSectorID);
       continue;
@@ -1035,6 +1080,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == T_RotatePoly)
     {
       P_SAVE_BYTE(tc_poly_rotate);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, polyevent_t);
       continue;
     }
@@ -1042,6 +1088,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == T_MovePoly)
     {
       P_SAVE_BYTE(tc_poly_move);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, polyevent_t);
       continue;
     }
@@ -1049,6 +1096,7 @@ void P_ArchiveThinkers(void) {
     if (th->function == T_PolyDoor)
     {
       P_SAVE_BYTE(tc_poly_door);
+      P_PAD_SAVEP();
       P_SAVE_TYPE(th, polydoor_t);
       continue;
     }
@@ -1057,8 +1105,9 @@ void P_ArchiveThinkers(void) {
     {
       quake_t *quake;
       P_SAVE_BYTE(tc_quake);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, quake, quake_t);
-      quake->location = P_ReplaceMobjWithIndex(quake->location);
+      P_ReplaceMobjWithIndex(&quake->location);
       continue;
     }
 
@@ -1066,16 +1115,19 @@ void P_ArchiveThinkers(void) {
     {
       ambient_source_t *ambient_source;
       P_SAVE_BYTE(tc_ambient_source);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(th, ambient_source, ambient_source_t);
-      ambient_source->mobj = P_ReplaceMobjWithIndex(ambient_source->mobj);
+      P_ReplaceMobjWithIndex(&ambient_source->mobj);
       continue;
     }
 
     if (P_IsMobjThinker(th))
     {
-      mobj_t tmp_mobj;
-      mobj_t *mobj = &tmp_mobj;
-      memcpy(mobj, th, sizeof(*mobj));
+      mobj_t *mobj;
+
+      P_SAVE_BYTE(tc_mobj);
+      P_PAD_SAVEP();
+      P_SAVE_TYPE_REF(th, mobj, mobj_t);
 
       mobj->state = (state_t *)(mobj->state - states);
 
@@ -1094,28 +1146,25 @@ void P_ArchiveThinkers(void) {
       // the thinker pointed to by these fields is not a
       // mobj thinker.
 
-      mobj->target = P_ReplaceMobjWithIndex(mobj->target);
-      mobj->target = P_ReplaceMobjWithIndex(mobj->tracer);
+      P_ReplaceMobjWithIndex(&mobj->target);
+      P_ReplaceMobjWithIndex(&mobj->tracer);
 
       // killough 2/14/98: new field: save last known enemy. Prevents
       // monsters from going to sleep after killing monsters and not
       // seeing player anymore.
 
-      mobj->lastenemy = P_ReplaceMobjWithIndex(mobj->lastenemy);
+      P_ReplaceMobjWithIndex(&mobj->lastenemy);
 
       // killough 2/14/98: end changes
 
       if (raven)
       {
-        mobj->special1.m = P_ReplaceMobjWithIndex(mobj->special1.m);
-        mobj->special2.m = P_ReplaceMobjWithIndex(mobj->special2.m);
+        P_ReplaceMobjWithIndex(&mobj->special1.m);
+        P_ReplaceMobjWithIndex(&mobj->special2.m);
       }
 
       if (mobj->player)
         mobj->player = (player_t *)((mobj->player-players) + 1);
-
-      P_SAVE_BYTE(tc_mobj);
-      P_SAVE_TYPE(mobj, mobj_t)
     }
   }
 
@@ -1125,6 +1174,7 @@ void P_ArchiveThinkers(void) {
     {
       button_t *button;
       P_SAVE_BYTE(tc_button);
+      P_PAD_SAVEP();
       P_SAVE_TYPE_REF(&buttonlist[i], button, button_t);
       button->line = (line_t *)(button->line - lines);
     }
@@ -1132,6 +1182,7 @@ void P_ArchiveThinkers(void) {
 
   // add a terminating marker
   P_SAVE_BYTE(tc_end);
+  P_PAD_SAVEP();
 
   P_ArchivePolyObjSpecialData();
 
@@ -1143,7 +1194,7 @@ void P_ArchiveThinkers(void) {
       mobj_t *target = sectors[i].soundtarget;
       // Fix crash on reload when a soundtarget points to a removed corpse
       // (prboom bug #1590350)
-      target = P_ReplaceMobjWithIndex(target);
+      P_ReplaceMobjWithIndex(&target);
       P_SAVE_X(target);
     }
   }
@@ -1192,6 +1243,8 @@ void P_UnArchiveThinkers(void) {
     while (true)
     {
       P_LOAD_BYTE(tc);
+      P_PAD_LOADP();
+
       if (tc == tc_end)
         break;
 
@@ -1237,8 +1290,8 @@ void P_UnArchiveThinkers(void) {
       0;
     }
 
-    if (*--save_p != tc_end)
-      I_Error ("P_UnArchiveThinkers: Unknown tc %i in size calculation", *save_p);
+    if (tc != tc_end)
+      I_Error ("P_UnArchiveThinkers: Unknown tc %i in size calculation", tc);
 
     // first table entry special: 0 maps to NULL
     *(mobj_p = Z_Malloc((mobj_count + 1) * sizeof *mobj_p)) = 0;   // table of pointers
@@ -1250,6 +1303,8 @@ void P_UnArchiveThinkers(void) {
   while (true)
   {
     P_LOAD_BYTE(tc);
+    P_PAD_LOADP();
+
     if (tc == tc_end)
       break;
 
