@@ -1,6 +1,6 @@
 include_guard()
 
-if(DSDA_STRICT)
+if(STRICT_FIND)
   set(dsda_strict_keyword)
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.1)
     set(CMAKE_FIND_REQUIRED ON)
