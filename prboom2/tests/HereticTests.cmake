@@ -5,7 +5,7 @@ function(add_heretic_test lump_path expected_time extra_args)
   add_test(
     NAME dsda.heretic.${lump_name}
     COMMAND ${CMAKE_COMMAND}
-      ${dsda_executable_arg}
+      "-DDSDA_DOOM_EXECUTABLE=${dsda_executable_arg}"
       -DTEST_LUMP=heretic/${lump_path}.lmp
       -DEXPECTED_FINAL_TIME=${expected_time}
       -DTEST_EXTRA_ARGS=${extra_args}

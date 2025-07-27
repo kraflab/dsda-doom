@@ -4,7 +4,7 @@ function(add_category_test lump_name expected_category)
   add_test(
     NAME dsda.category.${lump_name}
     COMMAND ${CMAKE_COMMAND}
-      ${dsda_executable_arg}
+      "-DDSDA_DOOM_EXECUTABLE=${dsda_executable_arg}"
       -DTEST_LUMP=${lump_name}.lmp
       -DEXPECTED_CATEGORY=${expected_category}
       -P ${CMAKE_CURRENT_LIST_DIR}/CategoryTestRunner.cmake

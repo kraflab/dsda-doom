@@ -4,7 +4,7 @@ function(add_sync_test lump_name expected_time iwad pwad)
   add_test(
     NAME dsda.sync.${lump_name}
     COMMAND ${CMAKE_COMMAND}
-      ${dsda_executable_arg}
+      "-DDSDA_DOOM_EXECUTABLE=${dsda_executable_arg}"
       -DTEST_LUMP=${lump_name}.lmp
       -DEXPECTED_FINAL_TIME=${expected_time}
       -DTEST_IWAD=${iwad}

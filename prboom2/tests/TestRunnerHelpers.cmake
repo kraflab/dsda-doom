@@ -5,8 +5,10 @@ function(dsda_check_test_environment)
     message(FATAL_ERROR "DSDA_DOOM_EXECUTABLE is not set")
   endif()
 
-  if(NOT EXISTS "${DSDA_DOOM_EXECUTABLE}")
-    message(FATAL_ERROR "${DSDA_DOOM_EXECUTABLE} does not exist")
+  list(GET DSDA_DOOM_EXECUTABLE -1 real_executable)
+
+  if(NOT EXISTS "${real_executable}")
+    message(FATAL_ERROR "${real_executable} does not exist")
   endif()
 
   if(NOT DEFINED TEST_LUMP)

@@ -5,7 +5,7 @@ function(add_analysis_test lump_name analysis_key expected_result)
   add_test(
     NAME dsda.analysis.${analysis_key}.${lump_name}
     COMMAND ${CMAKE_COMMAND}
-      ${dsda_executable_arg}
+      "-DDSDA_DOOM_EXECUTABLE=${dsda_executable_arg}"
       -DTEST_LUMP=${lump_name}.lmp
       -DWITH_ANALYSIS_PWAD=${arg_WITH_ANALYSIS_PWAD}
       -DANALYSIS_KEY=${analysis_key}
