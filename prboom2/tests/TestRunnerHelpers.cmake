@@ -107,8 +107,18 @@ function(dsda_play_demo lump iwad pwad extra_args)
       -levelstat
       -analysis
       ${extra_args}
+    RESULT_VARIABLE cmd_failed
+    OUTPUT_VARIABLE cmd_output
+    ERROR_VARIABLE cmd_output
     COMMAND_ECHO STDERR
   )
+
+  if(cmd_failed)
+    message(FATAL_ERROR
+      "Failed to playback demo:\n"
+      "${cmd_output}"
+    )
+  endif()
 endfunction()
 
 dsda_check_test_environment()
