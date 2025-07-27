@@ -654,6 +654,20 @@ void D_PageTicker(void)
     D_AdvanceDemo();
 }
 
+// Check whether to skip IWAD Demos
+int dsda_SkipIwadDemos(const char *name)
+{
+  if (allow_incompatibility)
+  {
+    int pwaddemos = W_PWADLumpNameExists(name);
+    int pwadmaps =  W_PWADLumpNameExists("THINGS");
+    if (pwadmaps && !pwaddemos)
+      return true;
+  }
+
+  return false;
+}
+
 // Draw Credits for Blank Demos
 static void D_DrawCredits(void)
 {
@@ -663,7 +677,7 @@ static void D_DrawCredits(void)
     M_DrawCredits();
 }
 
-#define M_SKIPDEMOS (lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
+#define M_SKIPDEMOS (dsda_SkipIwadDemos("DEMO1") || lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
 
 //
 // D_PageDrawer
