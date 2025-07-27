@@ -604,8 +604,17 @@ static void M_DrawReadThis1(void)
 
 static void M_DrawReadThis2(void)
 {
+  const char* helplump = (gamemode == commercial) ? "HELP" : "HELP1";
+  int pwadmaps = W_PWADLumpNameExists("THINGS"); // show help screen for IWAD
+
   inhelpscreens = true;
-  M_DrawHelp();
+
+  if (W_PWADLumpNameExists(helplump) || !pwadmaps)
+    M_DrawHelp();
+  else if (W_PWADLumpNameExists("CREDIT"))
+    M_DrawCredits();
+  else
+    M_DrawCreditsDynamic();
 }
 
 /////////////////////////////
@@ -4427,22 +4436,20 @@ setup_menu_t cred_settings[]={
 
 void M_DrawCredits(void)     // killough 10/98: credit screen
 {
-  const char* credit = "CREDIT";
-  const int PWADcredit = W_PWADLumpNameExists(credit);
-
   inhelpscreens = true;
-  if (PWADcredit || tc_game)
-  {
-    V_ClearBorder();
-    V_DrawNamePatchFS(0, 0, 0, credit, CR_DEFAULT, VPT_STRETCH);
-  }
-  else
-  {
-    // Use V_DrawBackground here deliberately to force drawing a background
-    V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(9, PROJECT_NAME " v" PROJECT_VERSION, cr_title); // PRBOOM
-    M_DrawScreenItems(cred_settings, 32);
-  }
+
+  V_ClearBorder();
+  V_DrawNamePatchFS(0, 0, 0, "CREDIT", CR_DEFAULT, VPT_STRETCH);
+}
+
+void M_DrawCreditsDynamic(void)     // Dynamic Credits
+{
+  inhelpscreens = true;
+
+  // Use V_DrawBackground here deliberately to force drawing a background
+  V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
+  M_DrawTitle(9, PROJECT_NAME " v" PROJECT_VERSION, cr_title); // PRBOOM
+  M_DrawScreenItems(cred_settings, 32);
 }
 
 static int M_IndexInChoices(const char *str, const char **choices) {
