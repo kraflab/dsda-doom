@@ -3,12 +3,6 @@
 /build*
 /release*
 
-# spec files
-analysis.txt
-levelstat.txt
-/spec/support/wads/*
-!/spec/support/wads/analysis_test.wad
-
 # macOS
 .DS_Store
 

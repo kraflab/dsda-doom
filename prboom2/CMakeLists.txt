@@ -7,6 +7,8 @@ include(DsdaDepsSetup)
 
 project("dsda-doom" VERSION 0.29.3)
 
+enable_testing()
+
 set(dsda_is_top_project FALSE)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(dsda_is_top_project TRUE)
@@ -79,6 +81,10 @@ install(FILES
     "COPYING"
     DESTINATION "${DSDA_INSTALL_COPYRIGHT_DIR}"
 )
+
+if(ENABLE_TESTS)
+    add_subdirectory(tests)
+endif()
 
 if(WIN32)
     set(CPACK_GENERATOR ZIP)
