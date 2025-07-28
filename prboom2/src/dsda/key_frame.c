@@ -438,7 +438,9 @@ void dsda_UpdatePlaybackKeyFrames(void) {
   interval_tics = (demo_tics_count * demo_playerscount) / playback_kf_size;
 
   // Automatically save a key frame each interval
-  if (current_time % interval_tics == 0) {
+  if (current_time % interval_tics == 0 &&
+      current_time / interval_tics < playback_kf_size) {
+
     dsda_key_frame_t* current_key_frame = &playback_key_frames[current_time / interval_tics];
 
     if (!current_key_frame->buffer)
