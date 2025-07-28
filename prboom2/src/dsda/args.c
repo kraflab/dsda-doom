@@ -198,7 +198,7 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "play single player with coop thing spawns",
     arg_null,
   },
-  [dsda_arg_pistolstart] = {
+  [dsda_arg_pistol_start] = {
     "-pistolstart", "-wandstart", NULL,
     "automatically pistol start each map",
     arg_null,
