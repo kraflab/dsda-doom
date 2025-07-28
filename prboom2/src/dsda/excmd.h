@@ -36,7 +36,6 @@ dboolean dsda_ExCmdDemo(void);
 void dsda_EnableCasualExCmdFeatures(void);
 dboolean dsda_AllowCasualExCmdFeatures(void);
 dboolean dsda_AllowJumping(void);
-dboolean dsda_AllowFreeLook(void);
 dboolean dsda_FreeAim(void);
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p);
 void dsda_WriteExCmd(char** p, ticcmd_t* cmd);

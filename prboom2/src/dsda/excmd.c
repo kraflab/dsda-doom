@@ -64,12 +64,9 @@ dboolean dsda_AllowJumping(void) {
 }
 
 dboolean dsda_FreeAim(void) {
-  return (allow_incompatibility && dsda_IntConfig(dsda_config_freelook))
+  return ((allow_incompatibility || dsda_AllowCasualExCmdFeatures())
+         && dsda_IntConfig(dsda_config_freelook))
          || map_info.flags & MI_ALLOW_FREE_LOOK;
-}
-
-dboolean dsda_AllowFreeLook(void) {
-  return dsda_FreeAim() || dsda_AllowCasualExCmdFeatures();
 }
 
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
