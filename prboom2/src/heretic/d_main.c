@@ -100,3 +100,27 @@ const demostate_t heretic_demostates[][4] =
     {NULL},
   }
 };
+
+const demostate_t heretic_demostates_blank[][4] =
+{
+  {
+    { Heretic_D_DrawTitle, NULL },
+    { Heretic_D_DrawTitle, NULL },
+    { Heretic_D_DrawTitle, NULL },
+    { Heretic_D_DrawTitle, NULL },
+  },
+
+  {
+    { Heretic_D_DrawTitle2, NULL },
+    { Heretic_D_DrawTitle2, NULL },
+    { Heretic_D_DrawTitle2, NULL },
+    { Heretic_D_DrawTitle2, NULL },
+  },
+
+  {
+    { Heretic_D_DrawCredits, NULL },
+    { Heretic_D_DrawCredits, NULL },
+    { Heretic_D_DrawCredits, NULL },
+    { Heretic_D_DrawCredits, NULL },
+  }
+};

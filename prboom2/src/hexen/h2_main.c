@@ -92,3 +92,27 @@ const demostate_t hexen_demostates[][4] =
     {NULL},
   }
 };
+
+const demostate_t hexen_demostates_blank[][4] =
+{
+  {
+    { Hexen_D_DrawTitle, NULL },
+    { Hexen_D_DrawTitle, NULL },
+    { Hexen_D_DrawTitle, NULL },
+    { Hexen_D_DrawTitle, NULL },
+  },
+
+  {
+    { Hexen_D_DrawTitle2, NULL },
+    { Hexen_D_DrawTitle2, NULL },
+    { Hexen_D_DrawTitle2, NULL },
+    { Hexen_D_DrawTitle2, NULL },
+  },
+
+  {
+    { Hexen_D_DrawCredits, NULL },
+    { Hexen_D_DrawCredits, NULL },
+    { Hexen_D_DrawCredits, NULL },
+    { Hexen_D_DrawCredits, NULL },
+  }
+};
