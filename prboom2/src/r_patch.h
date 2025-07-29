@@ -32,6 +32,8 @@
 #ifndef R_PATCH_H
 #define R_PATCH_H
 
+#include "doomtype.h"
+
 // Used to specify the sloping of the top and bottom of a column post
 typedef enum {
   RDRAW_EDGESLOPE_TOP_UP   = (1<<0),
@@ -49,17 +51,22 @@ typedef enum {
   PATCH_HASHOLES        = 0x00000004,
 } rpatch_flag_t;
 
+#ifdef _MSC_VER
+#pragma pack(push)
+#pragma pack(1)
+#endif //_MSC_VER
+
 typedef struct {
   int topdelta;
   int length;
   edgeslope_t slope;
-} rpost_t;
+} PACKEDATTR rpost_t;
 
 typedef struct {
   int numPosts;
   rpost_t *posts;
   unsigned char *pixels;
-} rcolumn_t;
+} PACKEDATTR rcolumn_t;
 
 typedef struct {
   int width;
@@ -79,8 +86,11 @@ typedef struct {
   rpost_t *posts;
 
   unsigned int flags;//e6y
-} rpatch_t;
+} PACKEDATTR rpatch_t;
 
+#ifdef _MSC_VER
+#pragma pack(pop)
+#endif //_MSC_VER
 
 const rpatch_t *R_PatchByNum(int id);
 #define R_PatchByName(name) R_PatchByNum(W_GetNumForName(name))
