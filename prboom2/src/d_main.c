@@ -372,7 +372,7 @@ void D_Display (fixed_t frac)
 {
   static dboolean isborderstate        = false;
   static dboolean borderwillneedredraw = false;
-  static gamestate_t oldgamestate = -1;
+  static gamestate_t oldgamestate = GS_DEFAULT;
   dboolean wipe;
   dboolean viewactive = false, isborder = false;
 
@@ -399,7 +399,7 @@ void D_Display (fixed_t frac)
 
   if (setsizeneeded) {               // change the view size if needed
     R_ExecuteSetViewSize();
-    oldgamestate = -1;            // force background redraw
+    oldgamestate = GS_DEFAULT;            // force background redraw
   }
 
   if (V_IsOpenGLMode() && !exclusive_fullscreen && !nodrawers)
@@ -414,7 +414,7 @@ void D_Display (fixed_t frac)
 
   if (gamestate != GS_LEVEL) { // Not a level
     switch (oldgamestate) {
-    case -1:
+    case GS_DEFAULT:
     case GS_LEVEL:
       V_SetPalette(0); // cph - use default (basic) palette
     default:
@@ -1783,7 +1783,7 @@ static void dsda_DetectEpisodeStructure(void)
   {
     for (ii=0;ii<10;ii++)
     {
-      sprintf(lump, "E%dM%d", i, ii);
+      snprintf(lump, sizeof(lump), "E%dM%d", i, ii);
       if (W_LumpNameExists(lump))
       {
         EpisodeStructure = true;

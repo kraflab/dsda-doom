@@ -811,6 +811,8 @@ void T_HexenPlatRaise(plat_t * plat)
                 SN_StartSequence((mobj_t *) & plat->sector->soundorg,
                                  SEQ_PLATFORM + plat->sector->seqType);
             }
+        default:
+            break;
     }
 }
 
@@ -887,6 +889,8 @@ int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount)
                     plat->high = sec->floorheight;
                 plat->wait = args[2];
                 plat->status = P_Random(pr_hexen) & 1;
+                break;
+            default:
                 break;
         }
         P_AddActivePlat(plat);

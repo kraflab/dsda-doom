@@ -73,7 +73,7 @@ static void dsda_RegisterFontLightness(double lightness) {
     cr_font.light_upper_bound = lightness;
 }
 
-static void dsda_CalculateFontBounds(const char *playpal) {
+static void dsda_CalculateFontBounds(const byte* playpal) {
   int i, j;
   const byte* lump;
   const byte* p;

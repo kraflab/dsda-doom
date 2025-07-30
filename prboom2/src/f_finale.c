@@ -240,6 +240,8 @@ void F_StartFinale (void)
                        (gamemission == pack_plut) ? s_P4TEXT : s_C4TEXT;
         }
         break;
+      case indetermined:
+        break;
     }
   }
 

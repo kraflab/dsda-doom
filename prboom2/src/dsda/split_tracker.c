@@ -182,20 +182,20 @@ static void dsda_LoadSplits(void) {
 
 void dsda_WriteSplits(void) {
   char* path;
-  byte  buffer[32 * 100];
-  byte* p = buffer;
+  char  buffer[22 + 72 * dsda_splits_count];
+  char* p = buffer;
   int i;
 
   if (!attempts)
     return;
-
   path = dsda_SplitTrackerPath();
 
-  p += sprintf(p, "%d %d\n", attempts, SPLIT_VERSION);
+  p += snprintf(p, 22, "%d %d\n", attempts, SPLIT_VERSION);
 
   for (i = 0; i < dsda_splits_count; ++i) {
-    p += sprintf(
-      p, "%i %i %i %i %i %i %i\n",
+    p += snprintf(
+      p, 72,
+      "%i %i %i %i %i %i %i\n",
       dsda_splits[i].episode,
       dsda_splits[i].map,
       dsda_splits[i].leveltime.best,
