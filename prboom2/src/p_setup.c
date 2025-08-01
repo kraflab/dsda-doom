@@ -261,7 +261,7 @@ static void *calloc_IfSameLevel(void* p, size_t n1, size_t n2)
 // Checks a lump for a magic string to identify its type (e.g. extended nodes)
 //
 
-static dboolean CheckForIdentifier(int lumpnum, const byte *id, size_t length)
+static dboolean CheckForIdentifier(int lumpnum, const char *id, size_t length)
 {
   dboolean result = false;
 

@@ -99,7 +99,7 @@ static void ShowOverflowWarning(overrun_list_t overflow, int fatal, const char *
 
     overflows[overflow].promted = true;
 
-    sprintf(buffer,
+    snprintf(buffer, sizeof(buffer),
       (fatal ? str1 : (EMULATE(overflow) ? str2 : str3)),
       name[overflow],
       "\nYou can change PrBoom behaviour for this overflow through in-game menu.",

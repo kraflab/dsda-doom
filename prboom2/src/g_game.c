@@ -1711,6 +1711,9 @@ void G_Ticker (void)
     case GS_DEMOSCREEN:
       D_PageTicker();
       break;
+
+    case GS_DEFAULT:
+      break;
   }
 
   if (leveltime == entry_leveltime)
@@ -3928,7 +3931,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     {
       demo_tics_count = dsda_DemoTicsCount(p, demobuffer, demolength);
 
-      sprintf(demo_len_st, "\x1b\x35/%d:%02d",
+      snprintf(demo_len_st, sizeof(demo_len_st), "\x1b\x35/%d:%02d",
         demo_tics_count / TICRATE / 60,
         (demo_tics_count % (60 * TICRATE)) / TICRATE);
     }

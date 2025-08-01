@@ -148,50 +148,50 @@ static void dsda_UpdateCommandText(dsda_command_t* command,
                                    dsda_text_t* component, dboolean playback) {
   int length;
 
-  length = sprintf(component->msg, "%s", display_command->color);
+  length = snprintf(component->msg, sizeof(component->msg), "%s", display_command->color);
 
   if (playback)
-    length += sprintf(component->msg + length, " PL  ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, " PL  ");
   else if (display_command->repeat)
-    length += sprintf(component->msg + length, "x%-3d ", display_command->repeat + 1);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "x%-3d ", display_command->repeat + 1);
   else
-    length += sprintf(component->msg + length, "     ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "     ");
 
   if (command->forwardmove > 0)
-    length += sprintf(component->msg + length, "MF%2d ", command->forwardmove);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "MF%2d ", command->forwardmove);
   else if (command->forwardmove < 0)
-    length += sprintf(component->msg + length, "MB%2d ", -command->forwardmove);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "MB%2d ", -command->forwardmove);
   else
-    length += sprintf(component->msg + length, "     ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "     ");
 
   if (command->sidemove > 0)
-    length += sprintf(component->msg + length, "SR%2d ", command->sidemove);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "SR%2d ", command->sidemove);
   else if (command->sidemove < 0)
-    length += sprintf(component->msg + length, "SL%2d ", -command->sidemove);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "SL%2d ", -command->sidemove);
   else
-    length += sprintf(component->msg + length, "     ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "     ");
 
   if (command->angleturn > 0)
-    length += sprintf(component->msg + length, "TL%2d ", command->angleturn);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "TL%2d ", command->angleturn);
   else if (command->angleturn < 0)
-    length += sprintf(component->msg + length, "TR%2d ", -command->angleturn);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "TR%2d ", -command->angleturn);
   else
-    length += sprintf(component->msg + length, "     ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "     ");
 
   if (command->attack)
-    length += sprintf(component->msg + length, "A");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "A");
   else
-    length += sprintf(component->msg + length, " ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, " ");
 
   if (command->use)
-    length += sprintf(component->msg + length, "U");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "U");
   else
-    length += sprintf(component->msg + length, " ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, " ");
 
   if (command->change)
-    length += sprintf(component->msg + length, "C%d", command->change);
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "C%d", command->change);
   else
-    length += sprintf(component->msg + length, "  ");
+    length += snprintf(component->msg + length, sizeof(component->msg) - length, "  ");
 
   dsda_RefreshHudText(component);
 }

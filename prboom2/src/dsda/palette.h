@@ -50,7 +50,7 @@ typedef struct playpal_data_s {
   SDL_Color* colours;
 } dsda_playpal_t;
 
-double dsda_PaletteEntryLightness(const char *playpal, int i);
+double dsda_PaletteEntryLightness(const byte *playpal, int i);
 dsda_playpal_t* dsda_PlayPalData(void);
 void dsda_CyclePlayPal(void);
 void dsda_SetPlayPal(int index);

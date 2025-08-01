@@ -46,6 +46,7 @@
 #include <SDL.h>
 #include <math.h>
 
+#include "doomtype.h"
 #include "doomstat.h"
 #include "v_video.h"
 #include "gl_intern.h"
@@ -70,7 +71,7 @@ typedef struct
 
 typedef struct
 {
-  int id;
+  GLuint id;
   int rows, columns;
   int loopcount;
   GLSkyLoopDef *loops;

@@ -46,8 +46,8 @@
 
 #include "info.h"
 
-void A_BetaSkullAttack(); // killough 10/98: beta lost souls attacked different
-void A_Stop();
+void A_BetaSkullAttack(mobj_t *actor); // killough 10/98: beta lost souls attacked different
+void A_Stop(mobj_t *actor);
 
 // ********************************************************************
 // Sprite names

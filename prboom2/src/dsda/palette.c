@@ -82,7 +82,7 @@ void dsda_FreePlayPal(void) {
     }
 }
 
-static dboolean dsda_DuplicatePaletteEntry(const char *playpal, int i, int j) {
+static dboolean dsda_DuplicatePaletteEntry(const byte *playpal, int i, int j) {
   int colormap_i;
 
   if (
@@ -99,7 +99,7 @@ static dboolean dsda_DuplicatePaletteEntry(const char *playpal, int i, int j) {
   return true;
 }
 
-double dsda_PaletteEntryLightness(const char *playpal, int i) {
+double dsda_PaletteEntryLightness(const byte *playpal, int i) {
   double L;
   byte pal_r, pal_g, pal_b;
   double r, g, b;
@@ -148,7 +148,7 @@ void dsda_InitPlayPal(void) {
 
   for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i) {
     int lump;
-    const char *playpal;
+    const byte *playpal;
     int i, j, found = 0;
 
     lump = W_CheckNumForName(playpal_data[playpal_i].lump_name);

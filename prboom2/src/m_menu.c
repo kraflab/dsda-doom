@@ -1321,9 +1321,9 @@ void M_QuitDOOM(int choice)
   // or one at random, between 1 and maximum number.
   // Ty 03/27/98 - externalized DOSY as a string s_DOSY that's in the sprintf
   if (language != english)
-    sprintf(endstring,"%s\n\n%s",s_DOSY, *endmsg[0] );
+    snprintf(endstring, sizeof(endstring), "%s\n\n%s",s_DOSY, *endmsg[0] );
   else         // killough 1/18/98: fix endgame message calculation:
-    sprintf(endstring,"%s\n\n%s", *endmsg[gametic%(NUM_QUITMESSAGES-1)+1], s_DOSY);
+    snprintf(endstring, sizeof(endstring), "%s\n\n%s", *endmsg[gametic%(NUM_QUITMESSAGES-1)+1], s_DOSY);
 
   if (dsda_SkipQuitPrompt())
     M_QuitResponse(true);
@@ -1895,7 +1895,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
       value = dsda_IntConfig(s->config_id);
 
-      sprintf(menu_buffer, "%d", value);
+      snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
 
       if (flags & S_CRITEM)
       {
@@ -1942,7 +1942,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       else
         format = "MB%d";
 
-      sprintf(menu_buffer + strlen(menu_buffer), format, input->mouseb + 1);
+      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer),format, input->mouseb + 1);
       any_input = true;
     }
 
@@ -1953,7 +1953,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       else
         format = "%s";
 
-      sprintf(menu_buffer + strlen(menu_buffer), format,
+      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer), format,
               dsda_GameControllerButtonName(input->joyb));
       any_input = true;
     }
@@ -2061,9 +2061,9 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     if (flags & S_STR)
     {
       if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
-        sprintf(menu_buffer, "%s", entry_string_index);
+        snprintf(menu_buffer, sizeof(menu_buffer), "%s", entry_string_index);
       else
-        sprintf(menu_buffer, "%s", dsda_StringConfig(s->config_id));
+        snprintf(menu_buffer, sizeof(menu_buffer), "%s", dsda_StringConfig(s->config_id));
     }
     else
     {
@@ -2075,7 +2075,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
         value = dsda_IntConfig(s->config_id);
 
       if (s->selectstrings == NULL) {
-        sprintf(menu_buffer, "%d", value);
+        snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
       } else {
         strcpy(menu_buffer, s->selectstrings[value]);
       }
@@ -2090,7 +2090,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   if (flags & S_THERMO) {
     M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
 
-    sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
+    snprintf(menu_buffer, sizeof(menu_buffer), "%d", dsda_IntConfig(s->config_id));
 
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");

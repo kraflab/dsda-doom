@@ -383,6 +383,8 @@ void MN_UpdateClass(int choice)
       SkillDef.menuitems[3].alttext = hexen_skill_mage[3];
       SkillDef.menuitems[4].alttext = hexen_skill_mage[4];
       break;
+    default:
+      break;
   }
 }
 
