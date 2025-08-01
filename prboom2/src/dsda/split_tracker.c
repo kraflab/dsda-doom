@@ -22,6 +22,7 @@
 #include "m_file.h"
 #include "lprintf.h"
 #include "e6y.h"
+#include "z_zone.h"
 
 #include "dsda/args.h"
 #include "dsda/demo.h"
@@ -182,7 +183,7 @@ static void dsda_LoadSplits(void) {
 
 void dsda_WriteSplits(void) {
   char* path;
-  char  buffer[22 + 72 * dsda_splits_count];
+  char *buffer = Z_Malloc(22 + 72 * dsda_splits_count);
   char* p = buffer;
   int i;
 
@@ -208,6 +209,8 @@ void dsda_WriteSplits(void) {
 
   if (!M_WriteFile(path, buffer, p - buffer))
     I_Warn("dsda_WriteSplits: Failed to write splits file \"%s\". (%d)", path, errno);
+
+  Z_Free(buffer);
 }
 
 static void dsda_UpdateReferenceSplits(void) {
