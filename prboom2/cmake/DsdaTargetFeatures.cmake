@@ -30,14 +30,14 @@ function(dsda_internal_setup_warnings_gnu result_var)
     -Wdeclaration-after-statement
     -Wbad-function-cast
   )
-  set(GNU_WARNINGS_SET ${GNU_WARNINGS} ${GNU_C_WARNINGS})
-
   if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
     OR (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
     OR (CMAKE_C_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 17)
   )
-    list(APPEND GNU_WARNINGS_SET "-Wno-format-truncation")
+    list(APPEND GNU_WARNINGS "-Wno-format-truncation")
   endif()
+
+  set(GNU_WARNINGS_SET ${GNU_WARNINGS} ${GNU_C_WARNINGS})
 
   include(CheckCCompilerFlag)
   check_c_compiler_flag("${GNU_WARNINGS_SET}" DSDA_SUPPORTS_GNU_WARNINGS)
