@@ -16,6 +16,7 @@ set(DOOMWADDIR "${CMAKE_INSTALL_PREFIX}/${default_wad_dir}" CACHE PATH "Path to 
 set(DSDA_INSTALL_COPYRIGHT_DIR "${default_copyright_dir}" CACHE STRING "Destination of the copyright file")
 set(DSDA_INSTALL_BINDIR "${default_bin_dir}" CACHE STRING "Destination of the dsda-doom binary")
 
+option(ENABLE_PACKAGING "Enable creating CPack packages" ${dsda_is_top_project})
 option(STRICT_FIND "Fail configuration if an optional dependency is not found" OFF)
 option(SIMPLECHECKS "Enable checks which only impose significant overhead if a posible error is detected" ON)
 option(RANGECHECK "Enable internal range checking" OFF)
