@@ -2488,15 +2488,22 @@ static void AM_drawThings(void)
         angle = 0x40000000;
       }
 
+      int color = mapcolor_p->sprt;
+
+      if (t->flags & MF_FRIEND && !t->player)
+        color = mapcolor_p->frnd;
+      /* cph 2006/07/30 - Show count-as-kills in red. */
+      else if ((t->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL)
+        color = mapcolor_p->enemy;
+      /* bbm 2/28/03 Show countable items in yellow. */
+      else if (t->flags & MF_COUNTITEM)
+        color = mapcolor_p->item;
+      else if (t->flags & MF_SPECIAL)
+        color = mapcolor_p->pickup;
+
       //jff 1/5/98 end added code for keys
       //jff previously entire code
-      AM_drawLineCharacter(lineguy, lineguylines, scale, angle,
-        t->flags & MF_FRIEND && !t->player ? mapcolor_p->frnd :
-        /* cph 2006/07/30 - Show count-as-kills in red. */
-        ((t->flags & (MF_COUNTKILL | MF_CORPSE)) == MF_COUNTKILL) ? mapcolor_p->enemy :
-        /* bbm 2/28/03 Show countable items in yellow. */
-        t->flags & MF_COUNTITEM ? mapcolor_p->item : mapcolor_p->sprt,
-        p.x, p.y);
+      AM_drawLineCharacter(lineguy, lineguylines, scale, angle, color, p.x, p.y);
       t = t->snext;
     }
    }
