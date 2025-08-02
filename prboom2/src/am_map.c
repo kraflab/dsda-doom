@@ -2413,6 +2413,7 @@ static void AM_drawThings(void)
     t = sectors[i].thinglist;
     while (t) // for all things in that sector
     {
+      int color;
       mpoint_t p;
       angle_t angle;
       fixed_t scale;
@@ -2443,7 +2444,7 @@ static void AM_drawThings(void)
       //jff 1/5/98 case over doomednum of thing being drawn
       if (mapcolor_p->rkey || mapcolor_p->ykey || mapcolor_p->bkey)
       {
-        int color = -1;
+        color = -1;
 
         if (heretic)
         {
@@ -2488,7 +2489,7 @@ static void AM_drawThings(void)
         angle = 0x40000000;
       }
 
-      int color = mapcolor_p->sprt;
+      color = mapcolor_p->sprt;
 
       if (t->flags & MF_FRIEND && !t->player)
         color = mapcolor_p->frnd;

@@ -576,7 +576,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mapcolor_sprt] = {
     "mapcolor_sprt", dsda_config_mapcolor_sprt,
-    CONF_COLOR(208), &mapcolor.sprt
+    CONF_COLOR(88), &mapcolor.sprt
   },
   [dsda_config_mapcolor_item] = {
     "mapcolor_item", dsda_config_mapcolor_item,
