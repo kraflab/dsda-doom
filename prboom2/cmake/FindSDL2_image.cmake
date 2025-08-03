@@ -49,27 +49,33 @@ The following cache variables may also be set:
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_SDL2_IMAGE QUIET SDL2_image)
+pkg_check_modules(PC_SDL2_image IMPORTED_TARGET SDL2_image)
+
+if(PC_SDL2_image_FOUND)
+  if(NOT TARGET SDL2_image::SDL2_image)
+    add_library(SDL2_image::SDL2_image ALIAS PkgConfig::PC_SDL2_image)
+  endif()
+  set(SDL2_image_FOUND TRUE)
+  set(SDL2_image_VERSION ${PC_SDL2_image_VERSION})
+  return()
+endif()
 
 find_path(
   SDL2_image_INCLUDE_DIR
   NAMES SDL_image.h
   PATH_SUFFIXES SDL2
-  HINTS "${PC_SDL2_IMAGE_INCLUDEDIR}"
 )
 
 find_file(
   SDL2_image_DLL_RELEASE
   NAMES SDL2_image.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_SDL2_IMAGE_PREFIX}"
 )
 
 find_file(
   SDL2_image_DLL_DEBUG
   NAMES SDL2_imaged.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_SDL2_IMAGE_PREFIX}"
 )
 
 include(SelectDllConfigurations)
@@ -78,13 +84,11 @@ select_dll_configurations(SDL2_image)
 find_library(
   SDL2_image_LIBRARY_RELEASE
   NAMES SDL2_image SDL2_image-static
-  HINTS "${PC_SDL2_IMAGE_LIBDIR}"
 )
 
 find_library(
   SDL2_image_LIBRARY_DEBUG
   NAMES SDL2_imaged SDL2_image-staticd
-  HINTS "${PC_SDL2_IMAGE_LIBDIR}"
 )
 
 include(SelectLibraryConfigurations)
@@ -96,14 +100,10 @@ else()
   set(_sdl2_image_library_type STATIC)
 endif()
 
-get_flags_from_pkg_config("${_sdl2_image_library_type}" "PC_SDL2_IMAGE" "_sdl2_image")
-
-if(_sdl2_image_library_type STREQUAL "STATIC" AND NOT PC_SDL2_IMAGE_FOUND)
+if(_sdl2_image_library_type STREQUAL "STATIC")
   set(SDL2_image_LINK_LIBRARIES "" CACHE STRING "Additional libraries to link to SDL2_image.")
   set(SDL2_image_LINK_DIRECTORIES "" CACHE PATH "Additional directories to search libraries in for SDL2_image.")
-  set(_sdl2_image_link_libraries ${SDL2_image_LINK_LIBRARIES})
-  set(_sdl2_image_link_directories ${SDL2_image_LINK_DIRECTORIES})
-  if(NOT _sdl2_image_link_libraries)
+  if(NOT SDL2_image_LINK_LIBRARIES)
     message(WARNING
       "pkg-config is unavailable and SDL2_image seems to be static, link failures are to be expected.\n"
       "Set `SDL2_image_LINK_LIBRARIES` to a list of libraries SDL2_image depends on.\n"
@@ -128,10 +128,8 @@ if(SDL2_image_FOUND)
     set_target_properties(
       ${_sdl2_image_target_name}
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${SDL2_image_INCLUDE_DIR}"
-                 INTERFACE_COMPILE_OPTIONS "${_sdl2_image_compile_options}"
-                 INTERFACE_LINK_LIBRARIES "${_sdl2_image_link_libraries}"
-                 INTERFACE_LINK_DIRECTORIES "${_sdl2_image_link_directories}"
-                 INTERFACE_LINK_OPTIONS "${_sdl2_image_link_options}"
+                 INTERFACE_LINK_LIBRARIES "${SDL2_image_LINK_LIBRARIES}"
+                 INTERFACE_LINK_DIRECTORIES "${SDL2_image_LINK_DIRECTORIES}"
     )
   endif()
 
