@@ -52,14 +52,6 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-if(Vorbis_FIND_REQUIRED)
-  set(_find_package_search_type "REQUIRED")
-elseif(Vorbis_FIND_QUIETLY)
-  set(_find_package_search_type "QUIET")
-else()
-  set(_find_package_search_type "")
-endif()
-
 find_package(PkgConfig QUIET)
 pkg_check_modules(PC_vorbis IMPORTED_TARGET vorbis)
 pkg_check_modules(PC_vorbisenc IMPORTED_TARGET vorbisenc)
@@ -143,7 +135,8 @@ find_library(_has_math_lib NAMES m)
 if(_has_math_lib)
   list(APPEND _vorbis_link_libraries m)
 endif()
-find_package(Ogg ${_find_package_search_type})
+include(CMakeFindDependencyMacro)
+find_dependency(Ogg)
 list(APPEND _vorbis_link_libraries Ogg::ogg)
 set(_vorbisenc_link_libraries Vorbis::vorbis)
 set(_vorbisfile_link_libraries Vorbis::vorbis)

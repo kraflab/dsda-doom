@@ -38,14 +38,6 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-if(PortMidi_FIND_REQUIRED)
-  set(_find_package_search_type "REQUIRED")
-elseif(PortMidi_FIND_QUIETLY)
-  set(_find_package_search_type "QUIET")
-else()
-  set(_find_package_search_type "")
-endif()
-
 find_package(PkgConfig QUIET)
 pkg_check_modules(PC_portmidi IMPORTED_TARGET portmidi)
 
@@ -81,7 +73,8 @@ else()
 endif()
 
 if(_portmidi_library_type MATCHES "STATIC")
-  find_package(Threads ${_find_package_search_type})
+  include(CMakeFindDependencyMacro)
+  find_dependency(Threads)
   list(APPEND _portmidi_link_libraries Threads::Threads)
   if(WIN32)
     list(APPEND _portmidi_link_libraries winmm)
@@ -93,7 +86,7 @@ if(_portmidi_library_type MATCHES "STATIC")
          "-Wl,-framework,CoreServices"
     )
   elseif(UNIX)
-    find_package(ALSA ${_find_package_search_type})
+    find_dependency(ALSA)
     list(APPEND _portmidi_link_libraries ALSA::ALSA)
   endif()
 endif()
