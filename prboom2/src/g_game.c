@@ -809,7 +809,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
   if (players[consoleplayer].mo && players[consoleplayer].mo->pitch && !dsda_MouseLook())
     dsda_QueueExCmdLook(XC_LOOK_RESET);
 
-  if (dsda_AllowFreeLook())
+  if (dsda_FreeAim())
   {
     short look;
 
