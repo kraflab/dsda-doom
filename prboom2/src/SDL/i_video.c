@@ -1577,15 +1577,16 @@ void UpdateGrab(void)
 
   grab = MouseShouldBeGrabbed();
 
-  if (grab && !currently_grabbed)
+  if (grab)
   {
-    ActivateMouse();
-  }
+    if (!currently_grabbed)
+      ActivateMouse();
 
-  if (!grab && currently_grabbed)
-  {
-    DeactivateMouse();
+    if (!demoplayback)
+      SDL_WarpMouseInWindow(sdl_window, window_rect.w / 2, window_rect.h / 2);
   }
+  else if (currently_grabbed)
+    DeactivateMouse();
 
   currently_grabbed = grab;
 }
