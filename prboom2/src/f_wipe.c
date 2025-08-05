@@ -77,6 +77,7 @@ void R_InitMeltRes(void)
 static int wipe_initMelt(int ticks)
 {
   int i;
+  int block_width = WIDE_SCREENWIDTH / 320;
 
   if (V_IsSoftwareMode())
   {
@@ -89,16 +90,20 @@ static int wipe_initMelt(int ticks)
 
   // setup initial column positions (y<0 => not ready to scroll yet)
   y_lookup[0] = -(M_Random()%16);
-  for (i=1;i<SCREENWIDTH;i++)
-    {
-      int r = (M_Random()%3) - 1;
-      y_lookup[i] = y_lookup[i-1] + r;
-      if (y_lookup[i] > 0)
-        y_lookup[i] = 0;
-      else
-        if (y_lookup[i] == -16)
-          y_lookup[i] = -15;
-    }
+  for (i = 1; i < SCREENWIDTH; i++)
+  {
+    int r = y_lookup[i - 1];
+
+    if (i % block_width == 0)
+      r += (M_Random()%3) - 1;
+
+    y_lookup[i] = r;
+    if (y_lookup[i] > 0)
+      y_lookup[i] = 0;
+    else
+      if (y_lookup[i] == -16)
+        y_lookup[i] = -15;
+  }
   return 0;
 }
 
