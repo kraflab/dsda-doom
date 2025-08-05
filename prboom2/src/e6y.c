@@ -32,6 +32,7 @@
  */
 
 #include "doomdef.h"
+#include "dsda/demo.h"
 #include "r_patch.h"
 #include "st_stuff.h"
 #ifdef HAVE_CONFIG_H
@@ -743,11 +744,11 @@ int HU_DrawDemoProgress(int force)
     return false;
 
   tics_count = demo_tics_count * demo_playerscount;
-  len = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * dsda_PlaybackTics() / tics_count));
+  len = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * dsda_DemoTic() / tics_count));
 
   if (!force)
   {
-    max_period = ((tics_count - dsda_PlaybackTics() > 35 * demo_playerscount) ? 500 : 15);
+    max_period = ((tics_count - dsda_DemoTic() > 35 * demo_playerscount) ? 500 : 15);
 
     // Unnecessary updates of progress bar
     // can slow down demo skipping and playback
