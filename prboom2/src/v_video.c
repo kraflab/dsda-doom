@@ -278,7 +278,7 @@ static void FUNC_V_FillFlat(int lump, int scrn, int x, int y, int width, int hei
 
   for (sy = y; sy < y + height; ++sy)
   {
-    src_y_offset = 64 * ((int) ((sy - y) / ratio_y) % 64);
+    src_y_offset = 64 * ((int) (sy / ratio_y) % 64);
     dest = screens[scrn].data + pitch * sy + x;
 
     for (sx = x; sx < x + width; ++sx)
