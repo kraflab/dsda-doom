@@ -35,7 +35,6 @@ static const byte* playback_origin_p;
 static const byte* playback_p;
 static int playback_length;
 static int playback_behaviour;
-static int playback_tics;
 
 static dsda_arg_t* playdemo_arg;
 static dsda_arg_t* playlump_arg;
@@ -44,6 +43,8 @@ static dsda_arg_t* timedemo_arg;
 static dsda_arg_t* recordfromto_arg;
 static char* playback_name;
 static char* playback_filename;
+
+extern int demo_tics;
 
 dboolean demoplayback;
 dboolean userdemo;
@@ -181,20 +182,16 @@ void dsda_AttachPlaybackStream(const byte* demo_p, int length, int behaviour) {
   playback_p = demo_p;
   playback_length = length;
   playback_behaviour = behaviour;
-  playback_tics = 0;
-}
-
-int dsda_PlaybackTics(void) {
-  return playback_tics;
+  demo_tics = 0;
 }
 
 void dsda_StorePlaybackPosition(void) {
-  P_SAVE_X(playback_tics);
+  P_SAVE_X(demo_tics);
   P_SAVE_X(playback_p);
 }
 
 void dsda_RestorePlaybackPosition(void) {
-  P_LOAD_X(playback_tics);
+  P_LOAD_X(demo_tics);
   P_LOAD_X(playback_p);
 }
 
@@ -203,7 +200,7 @@ void dsda_ClearPlaybackStream(void) {
   playback_p = NULL;
   playback_length = 0;
   playback_behaviour = 0;
-  playback_tics = 0;
+  demo_tics = 0;
 
   demoplayback = false;
   userdemo = false;
@@ -245,7 +242,7 @@ void dsda_TryPlaybackOneTick(ticcmd_t* cmd) {
   else {
     G_ReadOneTick(cmd, &playback_p);
 
-    ++playback_tics;
+    ++demo_tics;
   }
 
   if (ended) {

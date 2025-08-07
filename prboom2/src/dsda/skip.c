@@ -27,6 +27,7 @@
 
 #include "dsda/args.h"
 #include "dsda/build.h"
+#include "dsda/demo.h"
 #include "dsda/features.h"
 #include "dsda/pause.h"
 #include "dsda/playback.h"
@@ -149,7 +150,7 @@ void dsda_EvaluateSkipModeBuildTiccmd(void) {
         (
           demo_skiptics > 0 ?
             gametic > demo_skiptics :
-            dsda_PlaybackTics() - demo_skiptics >= demo_tics_count
+            dsda_DemoTic() - demo_skiptics >= demo_tics_count
         )
       ) ||
       (

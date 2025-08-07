@@ -46,13 +46,14 @@
 
 #define INITIAL_DEMO_BUFFER_SIZE 0x20000
 
+int demo_tics;
+
 static char* dsda_demo_name_base;
 static byte* dsda_demo_write_buffer;
 static byte* dsda_demo_write_buffer_p;
 static int dsda_demo_write_buffer_length;
 static int dsda_extra_demo_header_data_offset;
 static int largest_real_offset;
-static int demo_tics;
 static int compatibility_level_unspecified;
 
 #define DSDA_UDMF_VERSION 1
