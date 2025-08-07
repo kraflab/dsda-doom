@@ -4,17 +4,24 @@
 #  SndFile_LIBRARY
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_SndFile QUIET sndfile)
+pkg_check_modules(PC_sndfile IMPORTED_TARGET sndfile)
+
+if(PC_sndfile_FOUND)
+  if(NOT TARGET SndFile::sndfile)
+    add_library(SndFile::sndfile ALIAS PkgConfig::PC_sndfile)
+  endif()
+  set(SndFile_FOUND TRUE)
+  set(SndFile_VERSION ${PC_sndfile_VERSION})
+  return()
+endif()
 
 find_path(
   SndFile_INCLUDE_DIR sndfile.h
-  HINTS "${PC_SndFile_INCLUDEDIR}"
 )
 
 find_library(
   SndFile_LIBRARY
   NAMES sndfile libsndfile
-  HINTS "${PC_SndFile_LIBDIR}"
 )
 
 include(FindPackageHandleStandardArgs)

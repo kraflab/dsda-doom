@@ -9,9 +9,6 @@ if(STRICT_FIND)
   endif()
 endif()
 
-# TODO: Move away from including this module this way
-include(PkgConfigHelper)
-
 add_library(dsda_dependencies INTERFACE IMPORTED)
 add_library(dsda::dependencies ALIAS dsda_dependencies)
 
@@ -67,7 +64,7 @@ if(WITH_XMP)
 endif()
 
 if(WITH_VORBISFILE)
-  find_package(Vorbis COMPONENTS File ${dsda_strict_keyword})
+  find_package(Vorbis ${dsda_strict_keyword})
   if(Vorbis_File_FOUND)
     set(HAVE_LIBVORBISFILE TRUE)
   endif()

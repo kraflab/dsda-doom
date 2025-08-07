@@ -52,62 +52,65 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-if(Vorbis_FIND_REQUIRED)
-  set(_find_package_search_type "REQUIRED")
-elseif(Vorbis_FIND_QUIETLY)
-  set(_find_package_search_type "QUIET")
-else()
-  set(_find_package_search_type "")
-endif()
-
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_VORBIS QUIET vorbis)
-pkg_check_modules(PC_VORBISENC QUIET vorbisenc)
-pkg_check_modules(PC_VORBISFILE QUIET vorbisfile)
+pkg_check_modules(PC_vorbis IMPORTED_TARGET vorbis)
+pkg_check_modules(PC_vorbisenc IMPORTED_TARGET vorbisenc)
+pkg_check_modules(PC_vorbisfile IMPORTED_TARGET vorbisfile)
+
+if(PC_vorbis_FOUND AND PC_vorbisenc_FOUND AND PC_vorbisfile_FOUND)
+  if(NOT TARGET Vorbis::vorbis)
+    add_library(Vorbis::vorbis ALIAS PkgConfig::PC_vorbis)
+    set(Vorbis_Vorbis_FOUND TRUE)
+  endif()
+  if(NOT TARGET Vorbis::vorbisenc)
+    add_library(Vorbis::vorbisenc ALIAS PkgConfig::PC_vorbisenc)
+    set(Vorbis_Enc_FOUND TRUE)
+  endif()
+  if(NOT TARGET Vorbis::vorbisfile)
+    add_library(Vorbis::vorbisfile ALIAS PkgConfig::PC_vorbisfile)
+    set(Vorbis_File_FOUND TRUE)
+  endif()
+  set(Vorbis_FOUND TRUE)
+  set(Vorbis_VERSION ${PC_Vorbis_VERSION})
+  return()
+endif()
 
 find_path(
   Vorbis_INCLUDE_DIR
   NAMES vorbis/codec.h
-  HINTS "${PC_VORBIS_INCLUDEDIR}"
 )
 
 find_file(
   Vorbis_Vorbis_DLL
   NAMES vorbis.dll libvorbis.dll libvorbis-0.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_VORBIS_PREFIX}"
 )
 
 find_file(
   Vorbis_Enc_DLL
   NAMES vorbisenc.dll libvorbisenc.dll libvorbisenc-2.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_VORBISENC_PREFIX}"
 )
 
 find_file(
   Vorbis_File_DLL
-  NAMES vorbisfile.dll libvorbisfile.dll libvorbisfile-3.dll 
+  NAMES vorbisfile.dll libvorbisfile.dll libvorbisfile-3.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_VORBISFILE_PREFIX}"
 )
 
 find_library(
   Vorbis_Vorbis_LIBRARY
   NAMES vorbis
-  HINTS "${PC_VORBIS_LIBDIR}"
 )
 
 find_library(
   Vorbis_Enc_LIBRARY
   NAMES vorbisenc
-  HINTS "${PC_VORBISENC_LIBDIR}"
 )
 
 find_library(
   Vorbis_File_LIBRARY
   NAMES vorbisfile
-  HINTS "${PC_VORBISFILE_LIBDIR}"
 )
 
 if(Vorbis_Vorbis_DLL OR Vorbis_Vorbis_LIBRARY MATCHES ".so|.dylib")
@@ -128,20 +131,17 @@ else()
   set(_vorbisfile_library_type STATIC)
 endif()
 
-get_flags_from_pkg_config("${_vorbis_library_type}" "PC_VORBIS" "_vorbis")
-get_flags_from_pkg_config("${_vorbisenc_library_type}" "PC_VORBISENC" "_vorbisenc")
-get_flags_from_pkg_config("${_vorbisfile_library_type}" "PC_VORBISFILE" "_vorbisfile")
-
 find_library(_has_math_lib NAMES m)
 if(_has_math_lib)
   list(APPEND _vorbis_link_libraries m)
 endif()
-find_package(Ogg ${_find_package_search_type})
+include(CMakeFindDependencyMacro)
+find_dependency(Ogg)
 list(APPEND _vorbis_link_libraries Ogg::ogg)
 set(_vorbisenc_link_libraries Vorbis::vorbis)
 set(_vorbisfile_link_libraries Vorbis::vorbis)
 
-foreach(_component "Vorbis" "Enc" "File")  
+foreach(_component "Vorbis" "Enc" "File")
   if(Vorbis_${_component}_LIBRARY)
     set(Vorbis_${_component}_FOUND "TRUE")
   else()
@@ -163,10 +163,7 @@ if(Vorbis_Vorbis_FOUND AND NOT TARGET Vorbis::vorbis)
   set_target_properties(
     Vorbis::vorbis
     PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${Vorbis_INCLUDE_DIR}"
-               INTERFACE_COMPILE_OPTIONS "${_vorbis_compile_options}"
                INTERFACE_LINK_LIBRARIES "${_vorbis_link_libraries}"
-               INTERFACE_LINK_DIRECTORIES "${_vorbis_link_directories}"
-               INTERFACE_LINK_OPTIONS "${_vorbis_link_options}"
   )
   if(Vorbis_Vorbis_DLL)
     set_target_properties(
@@ -187,10 +184,7 @@ if(Vorbis_Enc_FOUND AND NOT TARGET Vorbis::vorbisenc)
   set_target_properties(
     Vorbis::vorbisenc
     PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${Vorbis_INCLUDE_DIR}"
-               INTERFACE_COMPILE_OPTIONS "${_vorbisenc_compile_options}"
                INTERFACE_LINK_LIBRARIES "${_vorbisenc_link_libraries}"
-               INTERFACE_LINK_DIRECTORIES "${_vorbisenc_link_directories}"
-               INTERFACE_LINK_OPTIONS "${_vorbisenc_link_options}"
   )
   if(Vorbis_Enc_DLL)
     set_target_properties(
@@ -211,10 +205,7 @@ if(Vorbis_File_FOUND AND NOT TARGET Vorbis::vorbisfile)
   set_target_properties(
     Vorbis::vorbisfile
     PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${Vorbis_INCLUDE_DIR}"
-               INTERFACE_COMPILE_OPTIONS "${_vorbisfile_compile_options}"
                INTERFACE_LINK_LIBRARIES "${_vorbisfile_link_libraries}"
-               INTERFACE_LINK_DIRECTORIES "${_vorbisfile_link_directories}"
-               INTERFACE_LINK_OPTIONS "${_vorbisfile_link_options}"
   )
   if(Vorbis_File_DLL)
     set_target_properties(

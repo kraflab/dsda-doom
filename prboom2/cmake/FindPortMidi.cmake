@@ -38,34 +38,32 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
-if(PortMidi_FIND_REQUIRED)
-  set(_find_package_search_type "REQUIRED")
-elseif(PortMidi_FIND_QUIETLY)
-  set(_find_package_search_type "QUIET")
-else()
-  set(_find_package_search_type "")
-endif()
-
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_PORTMIDI QUIET portmidi)
+pkg_check_modules(PC_portmidi IMPORTED_TARGET portmidi)
+
+if(PC_portmidi_FOUND)
+  if(NOT TARGET PortMidi::portmidi)
+    add_library(PortMidi::portmidi ALIAS PkgConfig::PC_portmidi)
+  endif()
+  set(PortMidi_FOUND TRUE)
+  set(PortMidi_VERSION ${PC_PortMidi_VERSION})
+  return()
+endif()
 
 find_path(
   PortMidi_INCLUDE_DIR
   NAMES portmidi.h
-  HINTS "${PC_PORTMIDI_INCLUDEDIR}"
 )
 
 find_file(
   PortMidi_DLL
   NAMES portmidi.dll libportmidi.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_PORTMIDI_PREFIX}"
 )
 
 find_library(
   PortMidi_LIBRARY
   NAMES portmidi
-  HINTS "${PC_PORTMIDI_LIBDIR}"
 )
 
 if(PortMidi_DLL OR PortMidi_LIBRARY MATCHES ".so|.dylib")
@@ -74,10 +72,9 @@ else()
   set(_portmidi_library_type STATIC)
 endif()
 
-get_flags_from_pkg_config("${_portmidi_library_type}" "PC_PORTMIDI" "_portmidi")
-
-if(_portmidi_library_type MATCHES "STATIC" AND NOT PC_PORTMIDI_FOUND)
-  find_package(Threads ${_find_package_search_type})
+if(_portmidi_library_type MATCHES "STATIC")
+  include(CMakeFindDependencyMacro)
+  find_dependency(Threads)
   list(APPEND _portmidi_link_libraries Threads::Threads)
   if(WIN32)
     list(APPEND _portmidi_link_libraries winmm)
@@ -89,7 +86,7 @@ if(_portmidi_library_type MATCHES "STATIC" AND NOT PC_PORTMIDI_FOUND)
          "-Wl,-framework,CoreServices"
     )
   elseif(UNIX)
-    find_package(ALSA ${_find_package_search_type})
+    find_dependency(ALSA)
     list(APPEND _portmidi_link_libraries ALSA::ALSA)
   endif()
 endif()
@@ -106,10 +103,7 @@ if(PortMidi_FOUND)
     set_target_properties(
       PortMidi::portmidi
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${PortMidi_INCLUDE_DIR}"
-                 INTERFACE_COMPILE_OPTIONS "${_portmidi_compile_options}"
                  INTERFACE_LINK_LIBRARIES "${_portmidi_link_libraries}"
-                 INTERFACE_LINK_DIRECTORIES "${_portmidi_link_directories}"
-                 INTERFACE_LINK_OPTIONS "${_portmidi_link_options}"
     )
   endif()
 
