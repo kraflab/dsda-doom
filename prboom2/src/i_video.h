@@ -47,6 +47,7 @@
 extern SDL_Window *sdl_window;
 extern SDL_Renderer *sdl_renderer;
 
+extern SDL_Rect renderer_rect;
 extern SDL_Rect window_rect;
 extern SDL_Rect viewport_rect;
 
