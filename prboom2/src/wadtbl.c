@@ -98,7 +98,7 @@ void AddPWADTableLump(wadtbl_t *wadtbl, const char *name, const byte* data, size
   }
 }
 
-wadinfo_t *ReadPWADTable(char *buffer, size_t size)
+wadinfo_t *ReadPWADTable(byte *buffer, size_t size)
 {
   int i;
   unsigned int length;

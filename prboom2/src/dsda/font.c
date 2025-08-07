@@ -32,7 +32,7 @@ void dsda_InitFont(void) {
 
   j = HU_FONTSTART;
   for (i = 0; i < HU_FONTSIZE - 1; i++, j++) {
-    sprintf(buffer, "DIG%.3d", j);
+    snprintf(buffer, sizeof(buffer), "DIG%.3d", j);
     R_SetPatchNum(&hu_font2[i], buffer);
   }
 
@@ -40,25 +40,25 @@ void dsda_InitFont(void) {
   for (i = 0; i < HU_FONTSIZE; ++i, ++j) {
     if ('0' <= j && j <= '9') {
       if (raven)
-        sprintf(buffer, "FONTA%.2d", j - 32);
+        snprintf(buffer, sizeof(buffer), "FONTA%.2d", j - 32);
       else
-        sprintf(buffer, "STCFN%.3d", j);
+        snprintf(buffer, sizeof(buffer), "STCFN%.3d", j);
       R_SetPatchNum(&hu_font[i], buffer);
     }
     else if ('A' <= j && j <= 'Z') {
       if (raven)
-        sprintf(buffer, "FONTA%.2d", j - 32);
+        snprintf(buffer, sizeof(buffer), "FONTA%.2d", j - 32);
       else
-        sprintf(buffer, "STCFN%.3d", j);
+        snprintf(buffer, sizeof(buffer), "STCFN%.3d", j);
       R_SetPatchNum(&hu_font[i], buffer);
     }
     else if (!raven && j < 97) {
-      sprintf(buffer, "STCFN%.3d", j);
+      snprintf(buffer, sizeof(buffer), "STCFN%.3d", j);
       R_SetPatchNum(&hu_font[i], buffer);
       //jff 2/23/98 make all font chars defined, useful or not
     }
     else if (raven && j < 91) {
-      sprintf(buffer, "FONTA%.2d", j - 32);
+      snprintf(buffer, sizeof(buffer), "FONTA%.2d", j - 32);
       R_SetPatchNum(&hu_font[i], buffer);
       //jff 2/23/98 make all font chars defined, useful or not
     }

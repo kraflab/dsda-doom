@@ -511,7 +511,7 @@ static dboolean dsda_UseDemoNameWithTime(void) {
 static char* dsda_DemoNameWithTime(void) {
   char* demo_name;
   char* base_name;
-  int counter = 2;
+  unsigned int counter = 2;
   size_t length;
 
   length = strlen(dsda_demo_name_base) + 16 + 1;
@@ -579,7 +579,7 @@ void dsda_EndDemoRecording(void) {
 void dsda_ExportDemo(const char* name) {
   char* demo_name;
   char* base_name;
-  int counter = 2;
+  unsigned int counter = 2;
   int old_offset;
 
   base_name = Z_Strdup(name);
