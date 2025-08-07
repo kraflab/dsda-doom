@@ -23,6 +23,7 @@
 #include "p_inter.h"
 #include "p_tick.h"
 
+#include "dsda/skill_info.h"
 #include "hexen/a_action.h"
 
 #include "p_things.h"
@@ -159,7 +160,7 @@ dboolean EV_ThingProjectile(byte * args, dboolean gravity)
     searcher = -1;
     tid = args[0];
     moType = TranslateThingType[args[1]];
-    if (nomonsters && (mobjinfo[moType].flags & MF_COUNTKILL))
+    if ((skill_info.flags & SI_NO_MONSTERS) && (mobjinfo[moType].flags & MF_COUNTKILL))
     {                           // Don't spawn monsters if -nomonsters
         return false;
     }
@@ -209,7 +210,7 @@ dboolean EV_ThingSpawn(byte * args, dboolean fog)
     searcher = -1;
     tid = args[0];
     moType = TranslateThingType[args[1]];
-    if (nomonsters && (mobjinfo[moType].flags & MF_COUNTKILL))
+    if ((skill_info.flags & SI_NO_MONSTERS) && (mobjinfo[moType].flags & MF_COUNTKILL))
     {                           // Don't spawn monsters if -nomonsters
         return false;
     }
