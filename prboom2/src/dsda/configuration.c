@@ -576,7 +576,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_mapcolor_sprt] = {
     "mapcolor_sprt", dsda_config_mapcolor_sprt,
-    CONF_COLOR(112), &mapcolor.sprt
+    CONF_COLOR(88), &mapcolor.sprt
   },
   [dsda_config_mapcolor_item] = {
     "mapcolor_item", dsda_config_mapcolor_item,
@@ -609,6 +609,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_mapcolor_trail_2] = {
     "mapcolor_trail_2", dsda_config_mapcolor_trail_2,
     CONF_COLOR(100), &mapcolor.trail_2
+  },
+  [dsda_config_mapcolor_pickup] = {
+    "mapcolor_pickup", dsda_config_mapcolor_pickup,
+    CONF_COLOR(112), &mapcolor.pickup
   },
   [dsda_config_gl_skymode] = {
     "gl_skymode", dsda_config_gl_skymode,
