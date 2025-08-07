@@ -74,7 +74,10 @@ typedef struct memblock {
   unsigned char tag;
 } memblock_t;
 
-static const size_t HEADER_SIZE = sizeof(memblock_t);
+// Minimum chunk size at which blocks are allocated
+#define CHUNK_SIZE sizeof(void *)
+
+static const size_t HEADER_SIZE = (sizeof(memblock_t) + CHUNK_SIZE - 1) & ~(CHUNK_SIZE - 1);
 
 static memblock_t *blockbytag[ZONE_MAX];
 
@@ -123,10 +126,12 @@ static void *Z_MallocTag(size_t size, int tag)
 
 void Z_Free(void *p)
 {
-  memblock_t *block = (memblock_t *)((char *) p - HEADER_SIZE);
+  memblock_t *block;
 
   if (!p)
     return;
+
+  block = (memblock_t *)((char *) p - HEADER_SIZE);
 
   if (block->signature != ZONE_SIGNATURE)
     I_Error("Z_Free: freed a non-zone pointer");

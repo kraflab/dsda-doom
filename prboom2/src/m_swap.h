@@ -59,32 +59,32 @@
 #ifdef HAVE_ASM_BYTEORDER_H
 #include <asm/byteorder.h>
 #ifdef __arch__swab16
-#define doom_swap_s  (signed short)__arch__swab16
+#define doom_swap_s  (int16_t)__arch__swab16
 #endif
 #ifdef __arch__swab32
-#define doom_swap_l  (signed long)__arch__swab32
+#define doom_swap_l  (int32_t)__arch__swab32
 #endif
 #endif /* HAVE_ASM_BYTEORDER_H */
 
 #ifdef HAVE_LIBKERN_OSBYTEORDER_H
 #include <libkern/OSByteOrder.h>
 
-#define doom_swap_s (short)OSSwapInt16
-#define doom_swap_l (long)OSSwapInt32
+#define doom_swap_s (int16_t)OSSwapInt16
+#define doom_swap_l (int32_t)OSSwapInt32
 #endif
 
 #ifndef doom_swap_l
 #define doom_swap_l(x) \
-        ((long int)((((unsigned long int)(x) & 0x000000ffU) << 24) | \
-                             (((unsigned long int)(x) & 0x0000ff00U) <<  8) | \
-                             (((unsigned long int)(x) & 0x00ff0000U) >>  8) | \
-                             (((unsigned long int)(x) & 0xff000000U) >> 24)))
+        ((int32_t)((((uint32_t)(x) & 0x000000ffU) << 24) | \
+                             (((uint32_t)(x) & 0x0000ff00U) <<  8) | \
+                             (((uint32_t)(x) & 0x00ff0000U) >>  8) | \
+                             (((uint32_t)(x) & 0xff000000U) >> 24)))
 #endif
 
 #ifndef doom_swap_s
 #define doom_swap_s(x) \
-        ((short int)((((unsigned short int)(x) & 0x00ff) << 8) | \
-                              (((unsigned short int)(x) & 0xff00) >> 8)))
+        ((int16_t)((((uint16_t)(x) & 0x00ff) << 8) | \
+                              (((uint16_t)(x) & 0xff00) >> 8)))
 #endif
 
 /* Macros are named doom_XtoYT, where
@@ -110,15 +110,15 @@
 
 #else
 
-#define doom_wtohl(x) (long int)(x)
-#define doom_htowl(x) (long int)(x)
-#define doom_wtohs(x) (short int)(x)
-#define doom_htows(x) (short int)(x)
+#define doom_wtohl(x) (int32_t)(x)
+#define doom_htowl(x) (int32_t)(x)
+#define doom_wtohs(x) (int16_t)(x)
+#define doom_htows(x) (int16_t)(x)
 
-#define doom_ntohl(x) (long int)(x)
-#define doom_htonl(x) (long int)(x)
-#define doom_ntohs(x) (short int)(x)
-#define doom_htons(x) (short int)(x)
+#define doom_ntohl(x) (int32_t)(x)
+#define doom_htonl(x) (int32_t)(x)
+#define doom_ntohs(x) (int16_t)(x)
+#define doom_htons(x) (int16_t)(x)
 
 #endif
 
