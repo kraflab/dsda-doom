@@ -4160,7 +4160,9 @@ void P_WalkTicker()
   if (dsda_InputActive(dsda_input_strafeleft))
     side -= sidemove[speed];
 
-  forward += mousey;
+  if (dsda_IntConfig(dsda_config_vertmouse))
+    forward += mousey;
+
   if (strafe)
     side += mousex / 4;       /* mead  Don't want to strafe as fast as turns.*/
   else
