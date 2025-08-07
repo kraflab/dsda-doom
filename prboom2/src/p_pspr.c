@@ -52,7 +52,6 @@
 #include "dsda.h"
 #include "dsda/aim.h"
 #include "dsda/excmd.h"
-#include "dsda/settings.h"
 
 #define LOWERSPEED   (FRACUNIT*6)
 #define RAISESPEED   (FRACUNIT*6)
@@ -629,11 +628,10 @@ void A_WeaponReady(player_t *player, pspdef_t *psp)
   // bob the weapon based on movement speed
   if (!player->morphTics)
   {
-    fixed_t bob = player->bob * dsda_WeaponBob() / 4;
     int angle = (128 * leveltime) & FINEMASK;
-    psp->sx = FRACUNIT + FixedMul(bob, finecosine[angle]);
+    psp->sx = FRACUNIT + FixedMul(player->bob, finecosine[angle]);
     angle &= FINEANGLES / 2 - 1;
-    psp->sy = WEAPONTOP + FixedMul(bob, finesine[angle]);
+    psp->sy = WEAPONTOP + FixedMul(player->bob, finesine[angle]);
   }
 }
 
