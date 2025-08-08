@@ -232,11 +232,11 @@ enum
 
 menuitem_t RavenMainMenu[]=
 {
-  {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
-  {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
-  {1,"M_GFILES", MN_GameFiles,'g', "GAME FILES"},
-  {1,"M_INFO",MN_Info,'i', "INFO"},
-  {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
+  {1,"", M_NewGame, 'n', "NEW GAME"},
+  {1,"",M_Options, 'o', "OPTIONS"},
+  {1,"", MN_GameFiles,'g', "GAME FILES"},
+  {1,"",MN_Info,'i', "INFO"},
+  {1,"", M_QuitDOOM,'q', "QUIT GAME"}
 };
 
 
@@ -255,8 +255,8 @@ enum
 
 menuitem_t SaveLoadMenu[]=
 {
-  {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
-  {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
+  {1,"", M_LoadGame,'l', "LOAD GAME"},
+  {1,"", M_SaveGame,'s', "SAVE GAME"},
 };
 
 menu_t SaveLoadDef =
