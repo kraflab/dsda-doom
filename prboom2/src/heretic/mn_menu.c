@@ -441,9 +441,11 @@ void MN_Drawer(void)
 
   for (i = 0; i < max; i++)
   {
-    const char *text = currentMenu->menuitems[i].alttext;
-    if (text)
-      MN_DrTextB(text, x, y);
+    if (W_LumpNameExists(currentMenu->menuitems[i].name))
+      V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name, CR_DEFAULT, VPT_STRETCH);
+    else if (currentMenu->menuitems[i].alttext)
+      MN_DrTextB(currentMenu->menuitems[i].alttext, x, y);
+
     y += ITEM_HEIGHT;
   }
 
