@@ -1583,7 +1583,7 @@ void UpdateGrab(void)
     if (!currently_grabbed)
       ActivateMouse();
 
-    if (!demoplayback)
+    if (!demoplayback || walkcamera.type)
       SDL_WarpMouseInWindow(sdl_window, window_rect.w / 2, window_rect.h / 2);
   }
   else if (currently_grabbed)
