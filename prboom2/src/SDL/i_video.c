@@ -123,9 +123,10 @@ SDL_Renderer *sdl_renderer;
 SDL_Texture *sdl_texture;
 static SDL_GLContext sdl_glcontext;
 unsigned int windowid = 0;
-SDL_Rect src_rect = { 0, 0, 0, 0 };
-SDL_Rect window_rect = { 0, 0, 0, 0 };
-SDL_Rect viewport_rect = { 0, 0, 0, 0 };
+SDL_Rect src_rect = { 0, 0, 0, 0 };       // Drawn pixels, independent of window size
+SDL_Rect window_rect = { 0, 0, 0, 0 };    // Physical window
+SDL_Rect renderer_rect = { 0, 0, 0, 0 };  // The window, but with HiDPI accounted
+SDL_Rect viewport_rect = { 0, 0, 0, 0 };  // The renderer, but without the black bars
 
 ////////////////////////////////////////////////////////////////////////////
 // Input code
@@ -1577,15 +1578,16 @@ void UpdateGrab(void)
 
   grab = MouseShouldBeGrabbed();
 
-  if (grab && !currently_grabbed)
+  if (grab)
   {
-    ActivateMouse();
-  }
+    if (!currently_grabbed)
+      ActivateMouse();
 
-  if (!grab && currently_grabbed)
-  {
-    DeactivateMouse();
+    if (!demoplayback || walkcamera.type)
+      SDL_WarpMouseInWindow(sdl_window, window_rect.w / 2, window_rect.h / 2);
   }
+  else if (currently_grabbed)
+    DeactivateMouse();
 
   currently_grabbed = grab;
 }
@@ -1603,10 +1605,12 @@ static void ApplyWindowResize(SDL_Event *resize_event)
 
 void I_SetWindowRect()
 {
+  SDL_GetWindowSize(sdl_window, &window_rect.w, &window_rect.h);
+
   if (V_IsOpenGLMode())
-    SDL_GL_GetDrawableSize(sdl_window, &window_rect.w, &window_rect.h);
+    SDL_GL_GetDrawableSize(sdl_window, &renderer_rect.w, &renderer_rect.h);
   else
-    SDL_GetRendererOutputSize(sdl_renderer, &window_rect.w, &window_rect.h);
+    SDL_GetRendererOutputSize(sdl_renderer, &renderer_rect.w, &renderer_rect.h);
 }
 
 void I_SetViewportRect()
@@ -1614,19 +1618,19 @@ void I_SetViewportRect()
   float viewport_aspect = (float)SCREENWIDTH / (float)ACTUALHEIGHT;
 
   // Black bars on left and right of viewport
-  if (((float)window_rect.w / (float)window_rect.h) > viewport_aspect)
+  if (((float)renderer_rect.w / (float)renderer_rect.h) > viewport_aspect)
   {
-    viewport_rect.w = (int)((float)window_rect.h * viewport_aspect);
-    viewport_rect.h = window_rect.h;
-    viewport_rect.x = (window_rect.w - viewport_rect.w) >> 1;
+    viewport_rect.w = (int)((float)renderer_rect.h * viewport_aspect);
+    viewport_rect.h = renderer_rect.h;
+    viewport_rect.x = (renderer_rect.w - viewport_rect.w) >> 1;
     viewport_rect.y = 0;
   }
   // Either matching window's aspect ratio, or black bars on top and bottom (ie 21:9 on a 16:9 display)
   else
   {
-    viewport_rect.w = window_rect.w;
-    viewport_rect.h = (int)((float)window_rect.w / viewport_aspect);
+    viewport_rect.w = renderer_rect.w;
+    viewport_rect.h = (int)((float)renderer_rect.w / viewport_aspect);
     viewport_rect.x = 0;
-    viewport_rect.y = (window_rect.h - viewport_rect.h) >> 1;
+    viewport_rect.y = (renderer_rect.h - viewport_rect.h) >> 1;
   }
 }

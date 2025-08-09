@@ -53,8 +53,8 @@ void dsda_GLSetRenderViewportParams() {
   //        each frame to prevent artifacts smearing on undrawn framebuffer area
   gl_letterbox_clear_required = viewport_rect.x + viewport_rect.y;
   if (gl_letterbox_clear_required) {
-    gl_clear_box_width = ((viewport_rect.y != 0) * window_rect.w) + viewport_rect.x;
-    gl_clear_box_height = ((viewport_rect.y == 0) * window_rect.h) + viewport_rect.y;
+    gl_clear_box_width = ((viewport_rect.y != 0) * renderer_rect.w) + viewport_rect.x;
+    gl_clear_box_height = ((viewport_rect.y == 0) * renderer_rect.h) + viewport_rect.y;
   }
 }
 
@@ -97,7 +97,7 @@ void dsda_GLLetterboxClear() {
   if (!gl_letterbox_clear_required)
     return;
 
-  glViewport(0, 0, window_rect.w, window_rect.h);
+  glViewport(0, 0, renderer_rect.w, renderer_rect.h);
   glEnable(GL_SCISSOR_TEST);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -106,8 +106,8 @@ void dsda_GLLetterboxClear() {
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Top or right box
-  glScissor(window_rect.w - gl_clear_box_width,
-            window_rect.h - gl_clear_box_height,
+  glScissor(renderer_rect.w - gl_clear_box_width,
+            renderer_rect.h - gl_clear_box_height,
             gl_clear_box_width, gl_clear_box_height);
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -141,9 +141,9 @@ void dsda_GLEndMeltRenderTexture() {
   glBegin(GL_TRIANGLE_STRIP);
   {
     glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
-    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, window_rect.h);
-    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)window_rect.w, 0.0f);
-    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)window_rect.w, (float)window_rect.h);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, renderer_rect.h);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)renderer_rect.w, 0.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)renderer_rect.w, (float)renderer_rect.h);
   }
   glEnd();
 
@@ -158,8 +158,8 @@ void dsda_GLFullscreenOrtho2D() {
   glLoadIdentity();
   glOrtho(
     (GLdouble) 0,
-    (GLdouble) window_rect.w,
-    (GLdouble) window_rect.h,
+    (GLdouble) renderer_rect.w,
+    (GLdouble) renderer_rect.h,
     (GLdouble) 0,
     (GLdouble) -1.0,
     (GLdouble) 1.0
