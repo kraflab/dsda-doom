@@ -314,6 +314,10 @@ static void M_DrawAutoMap(void);
 static void M_DrawLevelTable(void);
 static void M_DrawExtHelp(void);
 
+static void CSNewGame(void);
+static void CSPistolStart(void);
+static void CSCurrentLoadout(void);
+
 static int M_GetPixelWidth(const char*);
 static void M_DrawString(int cx, int cy, int color, const char* ch);
 static void M_DrawMenuString(int,int,int);
@@ -1840,6 +1844,14 @@ static dboolean M_ItemDisabled(const setup_menu_t* s)
   // Strict Mode
   if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
     return true;
+
+  // Hexen Stuff
+  if (hexen)
+  {
+    // Hexen doesn't allow pistolstart + loadout doesn't work due to key management
+    if (s->action == CSPistolStart || s->action == CSCurrentLoadout)
+      return true;
+  }
 
   return false;
 }
@@ -5092,6 +5104,9 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
   if (ptr1->m_flags & S_FUNC)
   {
     if (action == MENU_ENTER) {
+      if (M_ItemDisabled(ptr1))
+        return true;
+
       if (ptr1->action)
         ptr1->action();
 
