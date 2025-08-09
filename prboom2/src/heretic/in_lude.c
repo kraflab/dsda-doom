@@ -207,9 +207,7 @@ static void IN_DrawInterpic(void)
   }
   else
   {
-    if (gameepisode < 1 || gameepisode > 3) return;
-
-    const char name[9];
+    char name[9];
     snprintf(name, sizeof(name), "MAPE%d", gameepisode);
 
     V_DrawNamePatchFS(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
@@ -249,13 +247,13 @@ static void IN_InitLumps(void)
 
 static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
 {
-  wbs = wbstartstruct;
-  prevmap = wbs->last + 1;
-  nextmap = wbs->next + 1;
-
   int behaviour;
   dsda_ShowNextLocBehaviour(&behaviour);
   finalintermission = (behaviour & WI_SHOW_NEXT_DONE);
+
+  wbs = wbstartstruct;
+  prevmap = wbs->last + 1;
+  nextmap = wbs->next + 1;
 }
 
 //========================================================================
@@ -650,12 +648,10 @@ void IN_DrawStatBack(void)
 
 void IN_DrawOldLevel(void)
 {
-    int x;
-
     const char *prev_level_name = lf_levelname ? lf_levelname : NameForMap(prevmap);
+
     IN_DrawLevelname(lf_levelpic, prev_level_name, 3);
-    x = 160 - MN_TextAWidth("FINISHED") / 2;
-    MN_DrTextA("FINISHED", x, 25);
+    MN_DrTextA("FINISHED", 160 - MN_TextAWidth("FINISHED") / 2, 25);
 
     if (exitpic) return;
 
@@ -697,8 +693,7 @@ void IN_DrawYAH(void)
 {
     const char *level_name = el_levelname ? el_levelname : NameForMap(nextmap);
 
-    int x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
-    MN_DrTextA("NOW ENTERING:", x, 10);
+    MN_DrTextA("NOW ENTERING:", 160 - MN_TextAWidth("NOW ENTERING:") / 2, 10);
     IN_DrawLevelname(el_levelpic, level_name, 20);
 
     if (prevmap == 9)
@@ -816,15 +811,12 @@ void IN_DrawSingleStats(void)
     }
     else
     {
+      const char *next_level_name = el_levelname ? el_levelname : NameForMap(nextmap);
         yoffset = 0;
-
-        const char *next_level_name = NameForMap(nextmap);
-        if (el_levelname) next_level_name = el_levelname;
 
         x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
         MN_DrTextA("NOW ENTERING:", x, 160);
-        x = 160 - MN_TextBWidth(next_level_name) / 2;
-        IN_DrTextB(next_level_name, x, 170);
+        IN_DrawLevelname(el_levelpic, next_level_name, 170);
         skipintermission = false;
     }
 
@@ -856,20 +848,18 @@ void IN_DrawSingleStats(void)
 
 void IN_DrawCoopStats(void)
 {
-    const char *level_name = NameForMap(prevmap);
-    if (lf_levelname) level_name = lf_levelname;
+    static int sounds;
+    int ypos = 50;
 
-    int x = 160 - MN_TextBWidth(level_name) / 2;
-    IN_DrTextB(level_name, x, 3);
-    x = 160 - MN_TextAWidth("FINISHED") / 2;
-    MN_DrTextA("FINISHED", x, 25);
+    const char *prev_level_name = lf_levelname ? lf_levelname : NameForMap(prevmap);
+    IN_DrawLevelname(lf_levelpic, prev_level_name, 3);
+
+    MN_DrTextA("FINISHED", 160 - MN_TextAWidth("FINISHED") / 2, 25);
 
     IN_DrTextB("KILLS", 95, 35);
     IN_DrTextB("BONUS", 155, 35);
     IN_DrTextB("SECRET", 232, 35);
 
-    static int sounds;
-    int ypos = 50;
     for (int i = 0; i < g_maxplayers; i++)
     {
         if (playeringame[i])
@@ -1131,13 +1121,13 @@ void IN_DrTextB(const char *text, int x, int y)
 
     while ((c = *text++) != 0)
     {
+        if (c > 90) // Lowercase chars
+          c -= 32;
+
         if (c < 33)
-        {
-            x += 8;
-        }
+          x += 8;
         else
         {
-            if (c > 90) c -= 32;
             int lump = FontBLump + c - 33;
             V_DrawShadowedNumPatch(x, y, lump);
             x += R_NumPatchWidth(lump) - 1;
