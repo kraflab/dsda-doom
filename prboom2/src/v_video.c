@@ -1607,7 +1607,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
       x_pos = x_offset + x;
 
       // Don't draw pixels outside screen
-      if ((x_pos < 0) || (x_pos > SCREENWIDTH))
+      if ((x_pos < 0) || (x_pos > SCREENWIDTH - width))
         continue;
       
       V_FillRect(0, x_pos, y, width, height, *raw);
