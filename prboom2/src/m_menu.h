@@ -79,7 +79,8 @@ void M_ForcedLoadGame(const char *msg); // killough 5/15/98: forced loadgames
 
 void M_ResetMenu(void);      // killough 11/98: reset main menu ordering
 
-void M_DrawCredits(void);    // killough 11/98
+void M_DrawCredits(void);
+void M_DrawCreditsDynamic(void);    // killough 11/98
 
 void M_DrawTabs(const char **pages, int m, int y);
 
