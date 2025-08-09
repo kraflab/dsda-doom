@@ -1529,7 +1529,7 @@ dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_
 
   is_monster = (type == MT_SKULL || (mobjinfo[type].flags & MF_COUNTKILL));
 
-  if (nomonsters && is_monster)
+  if ((skill_info.flags & SI_NO_MONSTERS) && is_monster)
     return false;
 
   dsda_ResetThingIDSearch(&search);
@@ -1630,7 +1630,7 @@ dboolean P_SpawnThing(short thing_id, mobj_t *source, int spawn_num,
   if (type == num_mobj_types)
     return false;
 
-  if (nomonsters && (type == MT_SKULL || (mobjinfo[type].flags & MF_COUNTKILL)))
+  if ((skill_info.flags & SI_NO_MONSTERS) && (type == MT_SKULL || (mobjinfo[type].flags & MF_COUNTKILL)))
     return false;
 
   dsda_ResetThingIDSearch(&search);
@@ -2539,7 +2539,7 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
 
   // don't spawn any monsters if -nomonsters
 
-  if (nomonsters && (i == MT_SKULL || (mobjinfo[i].flags & MF_COUNTKILL)))
+  if ((skill_info.flags & SI_NO_MONSTERS) && (i == MT_SKULL || (mobjinfo[i].flags & MF_COUNTKILL)))
     return NULL;
 
   // spawn it
