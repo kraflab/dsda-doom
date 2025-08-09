@@ -77,6 +77,13 @@ static dboolean intermission;
 static dboolean skipintermission;
 dboolean finalintermission;
 static int interstate = 0;
+enum
+{
+  IN_STATS = 0,
+  IN_FINISHED,
+  IN_ENTERING,
+  IN_ENTERING_DELAY,
+} interstate_e;
 static int intertime = -1;
 static int oldintertime = 0;
 static gametype_t gametype;
@@ -178,6 +185,11 @@ static const char *NameForMap(int map)
     return name + 7;
 }
 
+static dboolean IN_HasInterpic()
+{
+  return (gameepisode > 1 && gameepisode < 3) || enterpic || exitpic;
+}
+
 static void IN_DrawInterpic(void)
 {
   // e6y: wide-res
@@ -189,7 +201,7 @@ static void IN_DrawInterpic(void)
   }
   else if (exitpic)
   {
-    V_DrawNamePatch(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatchFS(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
   }
   else
   {
@@ -420,7 +432,7 @@ void IN_Ticker(void)
     {
         return;
     }
-    if (interstate == 3)
+    if (interstate == IN_ENTERING_DELAY)
     {
         IN_WaitStop();
         return;
@@ -432,33 +444,33 @@ void IN_Ticker(void)
         interstate++;
 
         // [crispy] skip "now entering" if it's the final intermission
-        if (interstate >= 1 && finalintermission)
+        if (interstate >= IN_FINISHED && finalintermission)
         {
             IN_Stop();
             G_WorldDone();
             return;
         }
 
-        if (gameepisode > 3 && interstate >= 1)
+        if (!IN_HasInterpic() && interstate >= IN_FINISHED)
         {                       // Extended Wad levels:  skip directly to the next level
-            interstate = 3;
+            interstate = IN_ENTERING_DELAY;
         }
         switch (interstate)
         {
-            case 0:
+            case IN_STATS:
                 oldintertime = intertime + 300;
-                if (gameepisode > 3)
+                if (!IN_HasInterpic())
                 {
                     oldintertime = intertime + 1200;
                 }
                 break;
-            case 1:
+            case IN_FINISHED:
                 oldintertime = intertime + 200;
                 break;
-            case 2:
+            case IN_ENTERING:
                 oldintertime = INT_MAX;
                 break;
-            case 3:
+            case IN_ENTERING_DELAY:
                 cnt = 10;
                 break;
             default:
@@ -467,7 +479,7 @@ void IN_Ticker(void)
     }
     if (skipintermission)
     {
-        if (interstate == 0 && intertime < 150)
+        if (interstate == IN_STATS && intertime < 150)
         {
             intertime = 150;
             skipintermission = false;
@@ -480,14 +492,14 @@ void IN_Ticker(void)
             G_WorldDone();
             return;
         }
-        else if (interstate < 2 && gameepisode < 4)
+        else if (interstate < IN_ENTERING && IN_HasInterpic())
         {
-            interstate = 2;
+            interstate = IN_ENTERING;
             skipintermission = false;
             S_StartVoidSound(heretic_sfx_dorcls);
             return;
         }
-        interstate = 3;
+        interstate = IN_ENTERING_DELAY;
         cnt = 10;
         skipintermission = false;
         S_StartVoidSound(heretic_sfx_dorcls);
@@ -552,12 +564,12 @@ void IN_Drawer(void)
     {
         return;
     }
-    if (interstate == 3)
+    if (interstate == IN_ENTERING_DELAY)
     {
         return;
     }
 
-    if (oldinterstate != 2 && interstate == 2)
+    if (oldinterstate != IN_ENTERING && interstate == IN_ENTERING)
     {
         S_StartVoidSound(heretic_sfx_pstop);
     }
@@ -565,7 +577,7 @@ void IN_Drawer(void)
     switch (interstate)
     {
         case -1:
-        case 0:                // draw stats
+        case IN_STATS:                // draw stats
             dsda_PrepareFinished();
             IN_DrawStatBack();
             switch (gametype)
@@ -581,22 +593,22 @@ void IN_Drawer(void)
                     break;
             }
             break;
-        case 1:                // leaving old level
-            if (gameepisode < 4)
+        case IN_FINISHED:                // leaving old level
+            if (IN_HasInterpic())
             {
                 IN_DrawInterpic();
                 IN_DrawOldLevel();
             }
             break;
-        case 2:                // going to the next level
-            if (gameepisode < 4 && !finalintermission)
+        case IN_ENTERING:                // going to the next level
+            if (IN_HasInterpic() && !finalintermission)
             {
                 IN_DrawInterpic();
                 IN_DrawYAH();
             }
             break;
-        case 3:                // waiting before going to the next level
-            if (gameepisode < 4)
+        case IN_ENTERING_DELAY:                // waiting before going to the next level
+            if (IN_HasInterpic())
             {
                 IN_DrawInterpic();
             }
@@ -704,7 +716,7 @@ void IN_DrawYAH(void)
     {
         IN_DrawBeenThere(8);
     }
-    if (!(intertime & 16) || interstate == 3)
+    if (!(intertime & 16) || interstate == IN_ENTERING_DELAY)
     {                           // draw the destination 'X'
         IN_DrawGoingThere(nextmap - 1);
     }
@@ -720,7 +732,7 @@ void IN_DrawSingleStats(void)
 {
     const char *prev_level_name = NameForMap(prevmap);
     if (lf_levelname) prev_level_name = lf_levelname;
-    
+
     int x;
     static int sounds;
 
@@ -741,7 +753,7 @@ void IN_DrawSingleStats(void)
     x = 160 - MN_TextAWidth("FINISHED") / 2;
     MN_DrTextA("FINISHED", x, yoffset);
 
-    if (gamemode == retail && gameepisode > 3)
+    if (gamemode == retail && !IN_HasInterpic())
     {
         yoffset -= 20;
     }
@@ -802,7 +814,7 @@ void IN_DrawSingleStats(void)
     dsda_PrepareEntering();
 
     // [crispy] ignore "now entering" if it's the final intermission
-    if (gamemode != retail || gameepisode <= 3 || finalintermission)
+    if (gamemode != retail || IN_HasInterpic() || finalintermission)
     {
         yoffset = 30;
     }
