@@ -1169,8 +1169,7 @@ void WI_drawShowNextLoc(void)
     return; // MAP08 end game
 
   // draws which level you are entering..
-  if ( (gamemode != commercial)
-     || wbs->next != 30)  // check for MAP30 end game
+  if ( (gamemode != commercial) || (gamemap != 30) )  // allows for MAP31 entering screen, if not MAP30
   WI_drawEL();
 }
 
