@@ -47,6 +47,8 @@ void F_Ticker (void);
 /* Called by main loop. */
 void F_Drawer (void);
 
+dboolean F_ShowCast(void);
+
 void F_StartFinale (void);
 void F_StartCast (const char* background, const char* music, dboolean loop_music);
 void F_StartScroll (const char* right, const char* left, const char* music, dboolean loop_music);

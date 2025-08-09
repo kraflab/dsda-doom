@@ -285,7 +285,7 @@ float Get_TextSpeed(void)
 // killough 5/10/98: add back v1.9 demo compatibility
 //
 
-static dboolean F_ShowCast(void)
+dboolean F_ShowCast(void)
 {
   return gamemap == 30 ||
          (gamemission == pack_nerve && allow_incompatibility && gamemap == 8) ||
