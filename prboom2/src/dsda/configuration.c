@@ -37,6 +37,7 @@
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/input.h"
+#include "dsda/skill_info.h"
 #include "dsda/stretch.h"
 #include "dsda/utility.h"
 
@@ -1006,6 +1007,70 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_coop_spawns] = {
     "dsda_coop_spawns", dsda_config_coop_spawns,
     CONF_BOOL(0), NULL, NOT_STRICT, dsda_AlterGameFlags
+  },
+  [dsda_config_skill_spawn_filter] = {
+    "dsda_skill_spawn_filter", dsda_config_skill_spawn_filter,
+    dsda_config_int, 0, 2, { 1 }, &cskill_spawn_filter
+  },
+  [dsda_config_skill_coop_spawns] = {
+    "dsda_skill_coop_spawns", dsda_config_skill_coop_spawns,
+    CONF_BOOL(0), &cskill_coop_spawns
+  },
+  [dsda_config_skill_ammo_factor] = {
+    "dsda_skill_ammo_factor", dsda_config_skill_ammo_factor,
+    dsda_config_int, 0, 4, { 1 }, &cskill_ammo_factor
+  },
+  [dsda_config_skill_damage_factor] = {
+    "dsda_skill_damage_factor", dsda_config_skill_damage_factor,
+    dsda_config_int, 0, 4, { 1 }, &cskill_damage_factor
+  },
+  [dsda_config_skill_armor_factor] = {
+    "dsda_skill_armor_factor", dsda_config_skill_armor_factor,
+    dsda_config_int, 0, 4, { 1 }, &cskill_armor_factor
+  },
+  [dsda_config_skill_health_factor] = {
+    "dsda_skill_health_factor", dsda_config_skill_health_factor,
+    dsda_config_int, 0, 4, { 1 }, &cskill_health_factor
+  },
+  [dsda_config_skill_monster_health_factor] = {
+    "dsda_skill_monster_health_factor", dsda_config_skill_monster_health_factor,
+    dsda_config_int, 0, 4, { 1 }, &cskill_monster_hp_factor
+  },
+  [dsda_config_skill_friend_health_factor] = {
+    "dsda_skill_friend_health_factor", dsda_config_skill_friend_health_factor,
+    dsda_config_int, 0, 4, { 1 }, &cskill_friend_hp_factor
+  },
+  [dsda_config_skill_respawn_monsters] = {
+    "dsda_skill_respawn_monsters", dsda_config_skill_respawn_monsters,
+    CONF_BOOL(0), &cskill_respawn
+  },
+  [dsda_config_skill_respawn_time] = {
+    "dsda_skill_respawn_time", dsda_config_skill_respawn_time,
+    dsda_config_int, 1, 32, { 12 }, &cskill_respawn_time
+  },
+  [dsda_config_skill_no_monsters] = {
+    "dsda_skill_no_monsters", dsda_config_skill_no_monsters,
+    CONF_BOOL(0), &cskill_no_monsters
+  },
+  [dsda_config_skill_fast_monsters] = {
+    "dsda_skill_fast_monsters", dsda_config_skill_fast_monsters,
+    CONF_BOOL(0), &cskill_fast_monsters
+  },
+  [dsda_config_skill_aggressive_monsters] = {
+    "dsda_skill_aggressive_monsters", dsda_config_skill_aggressive_monsters,
+    CONF_BOOL(0), &cskill_aggressive
+  },
+  [dsda_config_skill_easy_brain] = {
+    "dsda_skill_easy_brain", dsda_config_skill_easy_brain,
+    CONF_BOOL(0), &cskill_easy_brain
+  },
+  [dsda_config_skill_auto_use_health] = {
+    "dsda_skill_auto_use_health", dsda_config_skill_auto_use_health,
+    CONF_BOOL(0), &cskill_auto_use_hp
+  },
+  [dsda_config_skill_no_pain] = {
+    "dsda_skill_no_pain", dsda_config_skill_no_pain,
+    CONF_BOOL(0), &cskill_no_pain
   },
   [dsda_config_parallel_sfx_limit] = {
     "dsda_parallel_sfx_limit", dsda_config_parallel_sfx_limit,

@@ -171,6 +171,7 @@ static dboolean set_keybnd_active = false; // in key binding setup screens
 static dboolean set_display_active = false;
 static dboolean set_demos_active = false; // in demos setup screen
 static dboolean set_compatibility_active = false;
+static dboolean set_skill_builder_active = false;
 static dboolean set_weapon_active = false; // in weapons setup screen
 static dboolean set_auto_active   = false; // in automap setup screen
 static dboolean level_table_active = false;
@@ -307,6 +308,7 @@ static void M_DrawKeybnd(void);
 static void M_DrawDisplay(void);
 static void M_DrawDemos(void);
 static void M_DrawCompatibility(void);
+static void M_DrawSkillBuilder(void);
 static void M_DrawWeapons(void);
 static void M_DrawAutoMap(void);
 static void M_DrawLevelTable(void);
@@ -1758,6 +1760,16 @@ static menu_t CompatibilityDef =                                           // ki
   &OptionsDef,
   Generic_Setup,
   M_DrawCompatibility,
+  34,5,      // skull drawn here
+  0
+};
+
+static menu_t SkillBuilderDef =                                           // killough 10/98
+{
+  generic_setup_end,
+  &SkillDef,
+  Generic_Setup,
+  M_DrawSkillBuilder,
   34,5,      // skull drawn here
   0
 };
@@ -3601,6 +3613,141 @@ static void M_DrawCompatibility(void)
   M_DrawTitle(2, "COMPATIBILITY", cr_title); // M_COMP
   M_DrawInstructions();
   M_DrawTabs(comp_pages, sizeof(comp_pages), TABS_Y);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
+}
+
+/////////////////////////////
+//
+// Custom Skill Functions [based off Nugget]
+
+enum
+{
+  cskill_new_game,
+  cskill_pistol_start,
+  cskill_loadout_current
+} cskill_mode_e;
+
+static void M_StartCustomSkill(int mode)
+{
+  // Use custom skill (-1 to match gameskill)
+  chosen_skill = num_skills - 1;
+
+  dsda_UpdateCustomSkill(chosen_skill);
+
+  if (mode == cskill_new_game || gamestate == GS_DEMOSCREEN)
+    M_FinishGameSelection();
+  else if (mode == cskill_pistol_start || !in_game)
+    G_DeferedInitNew(chosen_skill, gameepisode, gamemap);
+  else if (mode == cskill_loadout_current)
+    G_RestartWithLoadout();
+
+  M_ClearMenus();
+}
+
+static void StartCustomSkill(int mode)
+{
+    M_StartCustomSkill(mode);
+
+    M_LeaveSetupMenu();
+    M_ClearMenus();
+    S_StartVoidSound(g_sfx_swtchx);
+}
+
+static void CSNewGame(void)
+{
+  StartCustomSkill(cskill_new_game);
+}
+
+static void CSPistolStart(void)
+{
+  StartCustomSkill(cskill_pistol_start);
+}
+
+static void CSCurrentLoadout(void)
+{
+  StartCustomSkill(cskill_loadout_current);
+}
+
+
+/////////////////////////////
+//
+// Custom Skill Builder.
+
+static const char *skill_pages[] =
+{
+  "Basic",
+  "Advanced",
+  NULL
+};
+
+setup_menu_t skill_options_builder[], skill_options_start[];
+
+setup_menu_t* skill_options[] =
+{
+  skill_options_builder,
+  skill_options_start,
+  NULL
+};
+
+static const char *skill_spawn_filter[]       = { "Easy", "Medium", "Hard", NULL };
+static const char *skill_ammo_multiplier[]    = { "Half", "Default", "1.5x - Raven", "Double - ITYTD/NM", "Quad", NULL };
+static const char *skill_damage_multiplier[]  = { "Half - ITYTD", "Default", "1.5x", "Double", "Quad", NULL };
+static const char *skill_multiplier[]         = { "Half", "Default", "1.5x", "Double", "Quad", NULL };
+
+#define SK_X 200
+#define SK_X2 50
+
+setup_menu_t skill_options_builder[] = {
+  { "Thing Spawns", S_CHOICE, m_conf, SK_X, dsda_config_skill_spawn_filter, 0, skill_spawn_filter },
+  { "Coop Spawns", S_YESNO, m_conf, SK_X, dsda_config_skill_coop_spawns },
+  EMPTY_LINE,
+  { "Damage to Player", S_CHOICE, m_conf, SK_X, dsda_config_skill_damage_factor, 0, skill_damage_multiplier },
+  { "Ammo Pickups %", S_CHOICE, m_conf, SK_X, dsda_config_skill_ammo_factor, 0, skill_ammo_multiplier },
+  { "Auto Use Health", S_YESNO, m_conf, SK_X, dsda_config_skill_auto_use_health },
+  EMPTY_LINE,
+  { "Respawn Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_respawn_monsters },
+  { "Fast Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_fast_monsters },
+  { "Aggressive Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_aggressive_monsters},
+  { "No Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_no_monsters },
+  EMPTY_LINE,
+  { "Pistol Start", S_YESNO, m_conf, SK_X, dsda_config_pistol_start },
+  EMPTY_LINE,
+  FUNCTION("Start New Game", S_LEFTJUST, SK_X2, CSNewGame),
+  FUNCTION("Restart Map -- Pistol Start", S_LEFTJUST, SK_X2, CSPistolStart),
+  FUNCTION("Restart Map -- Current Loadout", S_LEFTJUST, SK_X2, CSCurrentLoadout),
+
+  NEXT_PAGE(skill_options_start),
+  FINAL_ENTRY
+};
+
+setup_menu_t skill_options_start[] = {
+  { "Respawn Time", S_NUM, m_conf, SK_X, dsda_config_skill_respawn_time },
+  { "Slow Spawn-Cube Spitter", S_YESNO, m_conf, SK_X, dsda_config_skill_easy_brain },
+  { "Disable Pain States", S_YESNO, m_conf, SK_X, dsda_config_skill_no_pain },
+  EMPTY_LINE,
+  { "Armor Pickups %", S_CHOICE, m_conf, SK_X, dsda_config_skill_armor_factor, 0, skill_multiplier },
+  { "Health Pickups %", S_CHOICE, m_conf, SK_X, dsda_config_skill_health_factor, 0, skill_multiplier },
+  { "Monster Health", S_CHOICE, m_conf, SK_X, dsda_config_skill_monster_health_factor, 0, skill_multiplier },
+  { "Friend Health", S_CHOICE, m_conf, SK_X, dsda_config_skill_friend_health_factor, 0, skill_multiplier },
+
+  PREV_PAGE(skill_options_builder),
+  FINAL_ENTRY
+};
+
+static void M_SkillBuilder(int choice)
+{
+  M_EnterSetup(&SkillBuilderDef, &set_skill_builder_active, skill_options[0]);
+}
+
+static void M_DrawSkillBuilder(void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+
+  M_DrawBackground(g_menu_flat, 0);
+
+  M_DrawTitle(2, "CUSTOM SKILL BUILDER", cr_title); // M_CSTSKL
+  M_DrawInstructions();
+  M_DrawTabs(skill_pages, sizeof(skill_pages), TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -6061,17 +6208,26 @@ dboolean M_Responder(event_t* ev) {
 // Plus a variety of routines that control the Big Font menu display.
 // Plus some initialization for game-dependant situations.
 
+static menuitem_t CustomSkillMenu[] = {
+  { 1, "M_CSTSKL", M_SkillBuilder, 'c', "Custom Skill...", 0, MENUF_OPTLUMP },
+};
+
 static void M_InitializeSkillMenu(void)
 {
   extern skill_info_t *skill_infos;
   int i;
 
+  // if skill has more than 7 items, remove custom skill space
+  int cskill_space      = num_og_skills < 7 && !raven; // looks bad in raven
+  int cskill_space_num  = customskill ? cskill_space ? 2 : 1 : 0;
+  int skill_list        = num_og_skills + cskill_space_num;
+
   SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
 
-  SkillDef.numitems = num_skills;
-  SkillDef.menuitems = Z_Calloc(num_skills, sizeof(*SkillDef.menuitems));
+  SkillDef.numitems = skill_list;
+  SkillDef.menuitems = Z_Calloc(skill_list, sizeof(*SkillDef.menuitems));
 
-  for (i = 0; i < num_skills; ++i)
+  for (i = 0; i < num_og_skills; ++i)
   {
     SkillDef.menuitems[i].status = 1;
 
@@ -6086,6 +6242,27 @@ static void M_InitializeSkillMenu(void)
 
     if (skill_infos[i].flags & SI_DEFAULT_SKILL)
       SkillDef.lastOn = i;
+  }
+
+  // Add Custom Skill
+  if (customskill)
+  {
+    // Find where Custom Skill is in menu
+    int num_cskill = num_og_skills + cskill_space;
+
+    // Add Custom Skill Spacing (if less than 7 items)
+    if (cskill_space)
+      SkillDef.menuitems[num_skills - 1].status = -1; // Disable selection for space
+
+    // Fill in Custom Skill Info
+    SkillDef.menuitems[num_cskill].status = CustomSkillMenu[0].status;
+
+    strcpy(SkillDef.menuitems[num_cskill].name, CustomSkillMenu[0].name);
+
+    SkillDef.menuitems[num_cskill].alttext  = CustomSkillMenu[0].alttext;
+    SkillDef.menuitems[num_cskill].routine  = CustomSkillMenu[0].routine;
+    SkillDef.menuitems[num_cskill].alphaKey = CustomSkillMenu[0].alphaKey;
+    SkillDef.menuitems[num_cskill].flags    = CustomSkillMenu[0].flags;
   }
 
   if (SkillDef.lastOn >= num_skills)
