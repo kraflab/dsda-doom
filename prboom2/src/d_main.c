@@ -658,7 +658,7 @@ void D_PageTicker(void)
 static int dsda_SkipIwadDemos(void)
 {
   int pwaddemo = W_PWADLumpNameExists("DEMO1");
-  int pwadmaps = W_PWADLumpNameExists("THINGS");
+  int pwadmaps = W_PWADMapExists();
 
   if ((pwadmaps && !pwaddemo) || lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
     return true;

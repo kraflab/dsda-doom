@@ -625,8 +625,12 @@ int W_LumpNameExists2(const char *name, int ns)
 
 int W_PWADLumpNameExists(const char *name)
 {
-  int lump = W_CheckNumForName(name);
-  return (W_PWADLumpNumExists(lump));
+  return W_PWADLumpNumExists(W_CheckNumForName(name));
+}
+
+int W_PWADMapExists(void)
+{
+  return W_PWADLumpNameExists("THINGS") || W_PWADLumpNameExists("TEXTMAP");
 }
 
 void W_Shutdown(void)
