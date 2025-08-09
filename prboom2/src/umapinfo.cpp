@@ -197,7 +197,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			return 0;
 		}
 	}
-	else if (!stricmp(pname, "levelpic") && !raven)
+	else if (!stricmp(pname, "levelpic"))
 	{
 		ParseLumpName(scanner, mape->levelpic);
 	}

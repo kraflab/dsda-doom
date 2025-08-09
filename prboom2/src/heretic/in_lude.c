@@ -67,6 +67,7 @@ static void IN_DrawDMStats(void);
 static void IN_DrawNumber(int val, int x, int y, int digits);
 static void IN_DrawTime(int x, int y, int h, int m, int s);
 static void IN_DrTextB(const char *text, int x, int y);
+static void IN_DrawLevelname(const char *patch, const char *levelname, int y);
 
 // contains information passed into intermission
 static wbstartstruct_t* wbs;
@@ -187,7 +188,8 @@ static const char *NameForMap(int map)
 
 static dboolean IN_HasInterpic()
 {
-  return (gameepisode > 1 && gameepisode < 3) || enterpic || exitpic;
+  return (gameepisode > 1 && gameepisode < 3) ||
+          W_LumpNameExists(enterpic) || W_LumpNameExists(exitpic);
 }
 
 static void IN_DrawInterpic(void)
@@ -195,11 +197,11 @@ static void IN_DrawInterpic(void)
   // e6y: wide-res
   V_ClearBorder();
 
-  if (enterpic)
+  if (W_LumpNameExists(enterpic))
   {
     V_DrawNamePatchFS(0, 0, 0, enterpic, CR_DEFAULT, VPT_STRETCH);
   }
-  else if (exitpic)
+  else if (W_LumpNameExists(exitpic))
   {
     V_DrawNamePatchFS(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
   }
@@ -648,11 +650,10 @@ void IN_DrawStatBack(void)
 
 void IN_DrawOldLevel(void)
 {
-    const char *level_name = NameForMap(prevmap);
-    if (lf_levelname) level_name = lf_levelname;
+    int x;
 
-    int x = 160 - MN_TextBWidth(level_name) / 2;
-    IN_DrTextB(level_name, x, 3);
+    const char *prev_level_name = lf_levelname ? lf_levelname : NameForMap(prevmap);
+    IN_DrawLevelname(lf_levelpic, prev_level_name, 3);
     x = 160 - MN_TextAWidth("FINISHED") / 2;
     MN_DrTextA("FINISHED", x, 25);
 
@@ -694,13 +695,11 @@ void IN_DrawOldLevel(void)
 
 void IN_DrawYAH(void)
 {
-    const char *level_name = NameForMap(nextmap);
-    if (el_levelname) level_name = el_levelname;
+    const char *level_name = el_levelname ? el_levelname : NameForMap(nextmap);
 
     int x = 160 - MN_TextAWidth("NOW ENTERING:") / 2;
     MN_DrTextA("NOW ENTERING:", x, 10);
-    x = 160 - MN_TextBWidth(level_name) / 2;
-    IN_DrTextB(level_name, x, 20);
+    IN_DrawLevelname(el_levelpic, level_name, 20);
 
     if (prevmap == 9)
     {
@@ -730,17 +729,14 @@ void IN_DrawYAH(void)
 
 void IN_DrawSingleStats(void)
 {
-    const char *prev_level_name = NameForMap(prevmap);
-    if (lf_levelname) prev_level_name = lf_levelname;
-
     int x;
     static int sounds;
 
     // [crispy] offset the stats for Ep.4 and up, to make room for level time
     int yoffset = 3;
 
-    x = 160 - MN_TextBWidth(prev_level_name) / 2;
-    IN_DrTextB(prev_level_name, x, yoffset);
+    const char *prev_level_name = lf_levelname ? lf_levelname : NameForMap(prevmap);
+    IN_DrawLevelname(lf_levelpic, prev_level_name, yoffset);
     yoffset += 20;
 
     if (lf_author)
@@ -1147,4 +1143,19 @@ void IN_DrTextB(const char *text, int x, int y)
             x += R_NumPatchWidth(lump) - 1;
         }
     }
+}
+
+void IN_DrawLevelname(const char *patch, const char *levelname, int y)
+{
+  int x;
+  if (W_LumpNameExists(patch))
+  {
+    x = 160 - V_NamePatchWidth(patch) / 2;
+    V_DrawNamePatch(x, y, 0, patch, CR_DEFAULT, VPT_STRETCH);
+  }
+  else
+  {
+    x = 160 - MN_TextBWidth(levelname) / 2;
+    IN_DrTextB(levelname, x, y);
+  }
 }
