@@ -191,6 +191,7 @@ jobs:
         with:
           name: ${{ matrix.config.package_name }}
           path: ${{ matrix.config.artifact-path }}
+          if-no-files-found: error
 
       - name: Release
         if: ${{ contains(github.ref, 'tags') && matrix.config.release }}
