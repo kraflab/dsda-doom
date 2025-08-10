@@ -1383,12 +1383,12 @@ P_UseSpecialLine
 dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dboolean bossaction)
 {
     // This condition never reached in heretic
-    if (side || bossaction) return false;
+    if (side) return false;
 
     //
     //      Switches that other things can activate
     //
-    if (!thing->player)
+    if (!thing->player && !bossaction)
     {
         if (line->flags & ML_SECRET)
             return false;       // never open secret doors
@@ -1402,6 +1402,20 @@ dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dbool
             default:
                 return false;
         }
+    }
+
+    if (bossaction)
+    {
+      switch(line->special)
+      {
+        // 0-tag specials, locked switches and teleporters need to be blocked for boss actions.
+        case 1:         // MANUAL DOOR RAISE
+        case 32:        // MANUAL BLUE
+        case 33:        // MANUAL RED
+        case 34:        // MANUAL YELLOW
+          return false;
+          break;
+      }
     }
 
     //
