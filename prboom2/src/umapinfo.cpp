@@ -305,7 +305,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			if (alttext) Z_Free(alttext);
 		}
 	}
-	else if (!stricmp(pname, "bossaction") && !raven)
+	else if (!stricmp(pname, "bossaction"))
 	{
 		scanner.MustGetToken(TK_Identifier);
 		int special, tag;
@@ -336,7 +336,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			scanner.MustGetInteger();
 			tag = scanner.number;
 			// allow no 0-tag specials here, unless a level exit.
-			if (tag != 0 || special == 11 || special == 51 || special == 52 || special == 124)
+			if (tag != 0 || special == 11 || special == 51 || special == 52 || (raven ? special == 105 : special == 124))
 			{
 				if (mape->numbossactions == -1) mape->numbossactions = 1;
 				else mape->numbossactions++;
