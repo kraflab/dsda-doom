@@ -188,7 +188,7 @@ static const char *NameForMap(int map)
 
 static dboolean IN_HasInterpic()
 {
-  return (gameepisode > 1 && gameepisode < 3) ||
+  return (gameepisode > 0 && gameepisode < 4) ||
           W_LumpNameExists(enterpic) || W_LumpNameExists(exitpic);
 }
 
@@ -630,7 +630,7 @@ void IN_DrawStatBack(void)
     // e6y: wide-res
     V_ClearBorder();
 
-    if (exitpic)
+    if (W_LumpNameExists(exitpic))
     {
         V_DrawNamePatch(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
     }
