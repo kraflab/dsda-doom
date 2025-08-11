@@ -825,7 +825,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_cap_muxcommand] = {
     "cap_muxcommand", dsda_config_cap_muxcommand,
-    CONF_STRING("ffmpeg -i temp_v.nut -i temp_a.nut -c copy -y %f")
+    CONF_STRING("ffmpeg -i temp_v.nut -i temp_a.nut -r %r -c copy -y %f")
   },
   [dsda_config_cap_tempfile1] = {
     "cap_tempfile1", dsda_config_cap_tempfile1,
