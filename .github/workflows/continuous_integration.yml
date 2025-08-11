@@ -121,24 +121,7 @@ jobs:
 
       - name: Install Dependencies (macOS)
         if: runner.os == 'macOS'
-        run: |
-          brew update
-          env HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
-            brew install --overwrite \
-              python \
-              ninja \
-              pkg-config \
-              libxmp \
-              fluid-synth \
-              libvorbis \
-              libzip \
-              mad \
-              portmidi \
-              sdl2 \
-              sdl2_image \
-              sdl2_mixer \
-              libsndfile \
-              dylibbundler
+        run: brew bundle
 
       - name: Generate vcpkg cache key
         if: ${{ matrix.config.vcpkg }}
