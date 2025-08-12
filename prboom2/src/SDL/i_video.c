@@ -1418,15 +1418,8 @@ void I_UpdateVideoMode(void)
 
 static void ActivateMouse(void)
 {
-  if (demoplayback && !walkcamera.type)
-  {
-    SDL_ShowCursor(SDL_DISABLE);
-  }
-  else
-  {
-    SDL_SetRelativeMouseMode(SDL_TRUE);
-    SDL_GetRelativeMouseState(NULL, NULL);
-  }
+  SDL_SetRelativeMouseMode(SDL_TRUE);
+  SDL_GetRelativeMouseState(NULL, NULL);
 }
 
 static void DeactivateMouse(void)
