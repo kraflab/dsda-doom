@@ -219,7 +219,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		if (scanner.boolean) strcpy(mape->endpic, "$CAST");
 		else strcpy(mape->endpic, "-");
 	}
-	else if (!stricmp(pname, "endbunny") && !raven)
+	else if (!stricmp(pname, "endbunny"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		if (scanner.boolean) strcpy(mape->endpic, "$BUNNY");

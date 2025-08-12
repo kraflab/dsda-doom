@@ -289,6 +289,11 @@ void Heretic_F_Drawer(void)
     Heretic_F_TextWrite();
   else
   {
+    if (strcmp(endpic, "$BUNNY") == 0)
+    {
+      F_DemonScroll();
+      return;
+    }
     if (W_LumpNameExists(endpic))
     {
       V_DrawNamePatch(0, 0, 0, endpic, CR_DEFAULT, VPT_STRETCH);
