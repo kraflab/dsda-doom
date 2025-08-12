@@ -224,7 +224,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		            ? MapInfo_EndGameCast
 		            : MapInfo_EndGameClear;
 	}
-	else if (!stricmp(pname, "endbunny") && !raven)
+	else if (!stricmp(pname, "endbunny"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
