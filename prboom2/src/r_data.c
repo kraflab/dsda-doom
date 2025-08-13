@@ -170,7 +170,7 @@ static void R_InitTextures (void)
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
-  names = W_LumpByNum(names_lump = W_GetNumForName("PNAMES"));
+  names = W_LockLumpNum(names_lump = W_GetNumForName("PNAMES"));
   nummappatches = LittleLong(*((const int *)names));
   name_p = names+4;
   patchlookup = Z_Malloc(nummappatches*sizeof(*patchlookup));  // killough
@@ -199,7 +199,7 @@ static void R_InitTextures (void)
   // The data is contained in one or two lumps,
   //  TEXTURE1 for shareware, plus TEXTURE2 for commercial.
 
-  maptex = maptex1 = W_LumpByNum(maptex_lump[0] = W_GetNumForName("TEXTURE1"));
+  maptex = maptex1 = W_LockLumpNum(maptex_lump[0] = W_GetNumForName("TEXTURE1"));
   numtextures1 = LittleLong(*maptex);
   maxoff = W_LumpLength(maptex_lump[0]);
   directory = maptex+1;
