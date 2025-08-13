@@ -656,6 +656,18 @@ void D_PageTicker(void)
     D_AdvanceDemo();
 }
 
+// Check whether to skip IWAD Demos
+static int dsda_SkipIwadDemos(void)
+{
+  int pwaddemo = W_PWADLumpNameExists("DEMO1");
+  int pwadmaps = W_PWADMapExists();
+
+  if ((pwadmaps && !pwaddemo) || lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
+    return true;
+  
+  return false;
+}
+
 //
 // D_PageDrawer
 //
@@ -684,8 +696,10 @@ static void D_PageDrawer(void)
     V_ClearBorder();
     V_DrawNamePatchFS(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
   }
-  else
+  else if (dsda_SkipIwadDemos() && W_PWADLumpNameExists("CREDIT"))
     M_DrawCredits();
+  else
+    M_DrawCreditsDynamic();
 }
 
 //
@@ -827,6 +841,17 @@ void D_DoAdvanceDemo(void)
   // do not even attempt to play DEMO4 if it is not available
   if (demosequence == 6 && gamemode == commercial && !W_LumpNameExists("demo4"))
     demosequence = 0;
+
+  if (dsda_SkipIwadDemos())
+  {
+    // Skip blank / IWAD demos in PWADs
+    if (demostates[demosequence][gamemode].func == G_DeferedPlayDemo)
+      demosequence++;
+
+    // Limit to just TITLEPIC / CREDIT
+    if (demosequence > (raven ? 3 : 2))
+      demosequence = 0;
+  }
 
   demostates[demosequence][gamemode].func(demostates[demosequence][gamemode].name);
 }
