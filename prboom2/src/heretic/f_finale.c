@@ -202,6 +202,7 @@ void F_DemonScroll(void)
 {
   static int yval = 0;
   static int nextscroll = 0;
+  int lump_width = W_LumpLength(W_CheckNumForName("FINAL2")) / 200;
 
   if (finalecount < 70)
   {
@@ -210,7 +211,7 @@ void F_DemonScroll(void)
   }
   else if (yval < 200)
   {
-    V_DrawRawScreenSection("FINAL2", (200 - yval) * 320, 0, yval);
+    V_DrawRawScreenSection("FINAL2", (200 - yval) * lump_width, 0, yval);
     V_DrawRawScreenSection("FINAL1", 0, yval, 200 - yval);
     if (finalecount >= nextscroll)
     {
