@@ -2080,7 +2080,8 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
     if (!ch) // don't show this item in automap mode
       V_DrawNamePatch(x+1,y,0,"M_PALNO", CR_DEFAULT, VPT_STRETCH);
-    M_BlinkingArrowRight(s);
+    if (M_ItemSelected(s) && !setup_select)
+      M_DrawString(x + 8, y, color, " <");
     return;
   }
 
