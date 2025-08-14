@@ -29,12 +29,20 @@ function(dsda_internal_setup_warnings_gnu result_var)
     -Wno-pointer-sign
     -Wdeclaration-after-statement
     -Wbad-function-cast
+    -Wno-strict-prototypes
   )
   if(CMAKE_C_COMPILER_ID STREQUAL "GNU"
     OR (CMAKE_C_COMPILER_ID STREQUAL "Clang" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
     OR (CMAKE_C_COMPILER_ID STREQUAL "AppleClang" AND CMAKE_C_COMPILER_VERSION VERSION_GREATER_EQUAL 17)
   )
     list(APPEND GNU_WARNINGS "-Wno-format-truncation")
+  endif()
+  if(CMAKE_C_COMPILER_ID MATCHES "Clang")
+    list(APPEND GNU_WARNINGS
+      "-Wno-tautological-constant-out-of-range-compare"
+      "-Wno-tautological-unsigned-enum-zero-compare"
+      "-Wno-misleading-indentation"
+    )
   endif()
 
   set(GNU_WARNINGS_SET ${GNU_WARNINGS} ${GNU_C_WARNINGS})

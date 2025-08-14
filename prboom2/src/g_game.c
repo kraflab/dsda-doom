@@ -3151,6 +3151,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 {
   char buf[10];
   char *p = buf;
+  const byte* data_p = (byte*)buf;
 
   if (compatibility_level == tasdoom_compatibility)
   {
@@ -3183,8 +3184,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 
   dsda_WriteTicToDemo(buf, p - buf);
 
-  p = buf; // make SURE it is exactly the same
-  G_ReadOneTick(cmd, (const byte **) &p);
+  G_ReadOneTick(cmd, &data_p);
 }
 
 // These functions are used to read and write game-specific options in demos
