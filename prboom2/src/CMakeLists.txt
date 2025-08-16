@@ -537,6 +537,11 @@ function(AddGameExecutable TARGET SOURCES)
     dsda_target_enable_fast_math(${TARGET})
     dsda_target_use_config_h(${TARGET})
 
+    target_compile_features(${TARGET}
+        PRIVATE
+        cxx_std_11
+    )
+
     target_include_directories(${TARGET}
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
