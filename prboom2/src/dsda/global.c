@@ -138,6 +138,7 @@ const char* g_skyflatname;
 dboolean hexen = false;
 dboolean heretic = false;
 dboolean raven = false;
+dboolean customskill = false;
 
 static void dsda_InitDoom(void) {
   int i;
