@@ -81,13 +81,13 @@ void R_InitMeltRes(void)
 int rescale_pixels(int number)
 {
   int new_number = number * SCREENHEIGHT / 200;
-  return (number >= 1 && new_number < 1) ? 1 : (number * SCREENHEIGHT / 200);
+  return (number >= 1 && new_number < 1) ? 1 : new_number;
 }
 
 int slow_down(int number)
 {
   int new_number = number * TICRATE / target_fps;
-  return new_number < 1 ? 1 : new_number;
+  return (number >= 1 && new_number < 1) ? 1 : new_number;
 }
 
 int speed_up(int number)
@@ -151,6 +151,11 @@ static int wipe_doMelt(int ticks)
     for (i=0;i<(SCREENWIDTH);i++) {
       if (y_lookup[i]<0) {
         y_lookup[i] += rescale_pixels(1);
+        // prevent overshooing and showing garbage pixels at the top.
+        // increments by 1 worked for native footage but now they're variable
+        // so the first positive step is not guaranteed to be 0
+        if (y_lookup[i] > 0)
+          y_lookup[i] = 0;
         done = false;
         continue;
       }
