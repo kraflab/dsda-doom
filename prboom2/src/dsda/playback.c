@@ -84,15 +84,13 @@ const char* dsda_PlaybackName(void) {
 }
 
 void dsda_ExecutePlaybackOptions(void) {
-  if (playdemo_arg)
-  {
-    G_DeferedPlayDemo(playback_name);
-    userdemo = true;
-  }
-  else if (playlump_arg) {
+  if (playlump_arg) {
     if (W_CheckNumForName(playback_name) == LUMP_NOT_FOUND)
       I_Error("Unable to find required internal demo lump \"%s\"", playback_name);
+  }
 
+  if (playdemo_arg)
+  {
     G_DeferedPlayDemo(playback_name);
     userdemo = true;
   }
@@ -125,7 +123,7 @@ static void dsda_UpdatePlaybackName(const char* name, dboolean require_file) {
   playback_name = Z_Strdup(name);
 
   if (require_file)
-    playback_filename = I_RequireFile(playback_name, ".lmp");
+    playback_filename = I_FindFile(playback_name, ".lmp");
   else
     playback_filename = NULL;
 }
@@ -137,6 +135,9 @@ const char* dsda_ParsePlaybackOptions(void) {
   if (arg->found) {
     playdemo_arg = arg;
     dsda_UpdatePlaybackName(arg->value.v_string, true);
+    // fall back to lump if file not found
+    if (!playback_filename)
+      playlump_arg = arg;
     return playback_filename;
   }
 
@@ -144,6 +145,7 @@ const char* dsda_ParsePlaybackOptions(void) {
   if (arg->found) {
     playlump_arg = arg;
     dsda_UpdatePlaybackName(arg->value.v_string, false);
+    playdemo_arg = arg;
     return playback_filename;
   }
 
@@ -152,6 +154,9 @@ const char* dsda_ParsePlaybackOptions(void) {
     fastdemo_arg = arg;
     fastdemo = true;
     dsda_UpdatePlaybackName(arg->value.v_string, true);
+    // fall back to lump if file not found
+    if (!playback_filename)
+      playlump_arg = arg;
     return playback_filename;
   }
 
@@ -159,6 +164,9 @@ const char* dsda_ParsePlaybackOptions(void) {
   if (arg->found) {
     timedemo_arg = arg;
     dsda_UpdatePlaybackName(arg->value.v_string, true);
+    // fall back to lump if file not found
+    if (!playback_filename)
+      playlump_arg = arg;
     return playback_filename;
   }
 
@@ -167,6 +175,9 @@ const char* dsda_ParsePlaybackOptions(void) {
     recordfromto_arg = arg;
     dsda_SetDemoBaseName(arg->value.v_string_array[1]);
     dsda_UpdatePlaybackName(arg->value.v_string_array[0], true);
+    // require a file
+    if (!playback_filename)
+      playback_filename = I_RequireFile(arg->value.v_string_array[0], ".lmp");
     return playback_filename;
   }
 
