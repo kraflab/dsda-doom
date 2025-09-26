@@ -36,6 +36,7 @@
 #include <zlib.h>
 
 #include "doomstat.h"
+#include "doomtype.h"
 #include "m_bbox.h"
 #include "g_game.h"
 #include "w_wad.h"
@@ -3288,6 +3289,18 @@ static void P_RemoveSlimeTrails(void)         // killough 10/98
   Z_Free(hit);
 }
 
+// [crispy] fix long wall wobble
+static angle_t anglediff(angle_t a, angle_t b)
+{
+  if (b > a)
+    return anglediff(b, a);
+
+  if (a - b < ANG180)
+    return a - b;
+  else // [crispy] wrap around
+    return b - a;
+}
+
 static void R_CalcSegsLength(void)
 {
   int i;
@@ -3301,6 +3314,12 @@ static void R_CalcSegsLength(void)
     li->halflength = (uint32_t)(length / 2.0);
     // [crispy] re-calculate angle used for rendering
     li->pangle = R_PointToAngleEx2(li->v1->px, li->v1->py, li->v2->px, li->v2->py);
+    // [crispy] more than just a little adjustment?
+    // back to the original angle then
+    if (anglediff(li->pangle, li->angle) > ANG60/2)
+    {
+      li->pangle = li->angle;
+    }
   }
 }
 
