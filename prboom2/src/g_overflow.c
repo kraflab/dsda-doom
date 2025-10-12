@@ -295,7 +295,7 @@ void SpechitOverrun(spechit_overrun_param_t *params)
 
         default:
           fprintf(stderr, "SpechitOverrun: Warning: unable to emulate"
-                          "an overrun where numspechit=%i\n",
+                          " an overrun where numspechit=%i\n",
                            numspechit);
           break;
         }
