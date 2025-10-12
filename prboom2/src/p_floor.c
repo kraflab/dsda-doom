@@ -1196,7 +1196,7 @@ int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t hei
     P_SpawnElevator(sec, line, type, speed, height);
   }
 
-	return rtn;
+  return rtn;
 }
 
 int EV_DoElevator

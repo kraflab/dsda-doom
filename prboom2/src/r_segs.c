@@ -1012,9 +1012,9 @@ void R_StoreWallRange(const int start, const int stop)
        * a possibility, otherwise the floor marking would overwrite the ceiling
        * marking, resulting in HOM. */
       if (markceiling && ceilingplane == floorplane)
-	      floorplane = R_DupPlane (floorplane, rw_x, rw_stopx-1);
+        floorplane = R_DupPlane (floorplane, rw_x, rw_stopx-1);
       else
-	      floorplane = R_CheckPlane (floorplane, rw_x, rw_stopx-1);
+        floorplane = R_CheckPlane (floorplane, rw_x, rw_stopx-1);
     }
     else
     {

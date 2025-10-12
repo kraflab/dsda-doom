@@ -726,8 +726,8 @@ void R_ExecuteSetViewSize (void)
 
   skyiscale = (200 << FRACBITS) / SCREENHEIGHT;
 
-	// [RH] Sky height fix for screens not 200 (or 240) pixels tall
-	R_InitSkyMap();
+  // [RH] Sky height fix for screens not 200 (or 240) pixels tall
+  R_InitSkyMap();
 
   // thing clipping
   for (i=0 ; i<viewwidth ; i++)

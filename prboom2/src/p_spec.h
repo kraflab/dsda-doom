@@ -1264,7 +1264,7 @@ dboolean P_UseSpecialLine
 ( mobj_t* thing,
   line_t* line,
   int   side,
-	dboolean noplayercheck);
+  dboolean noplayercheck);
 
 void P_PlayerInSpecialSector
 ( player_t* player );
