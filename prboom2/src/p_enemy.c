@@ -3897,7 +3897,7 @@ dboolean P_UpdateChicken(mobj_t * actor, int tics)
         mo->flags = oldChicken.flags;
         mo->health = oldChicken.health;
         P_SetTarget(&mo->target, oldChicken.target);
-        mo->special1.i = 5 * 35;  // Next try in 5 seconds
+        mo->special1.i = 5 * TICRATE;  // Next try in 5 seconds
         mo->special2.i = moType;
         dsda_WatchMorph(mo);
         return (false);
@@ -4332,9 +4332,9 @@ void A_MinotaurDecide(mobj_t * actor)
         actor->momy = FixedMul(g_mntr_charge_speed, finesine[angle]);
         // Charge duration
         if (hexen)
-          actor->special_args[4] = 35 / 2;
+          actor->special_args[4] = TICRATE / 2;
         else
-          actor->special1.i = 35 / 2;
+          actor->special1.i = TICRATE / 2;
     }
     else if (target->z == target->floorz
              && dist < 9 * 64 * FRACUNIT && P_Random(pr_heretic) < g_mntr_fire_rng)
@@ -4783,7 +4783,7 @@ void A_SpawnTeleGlitter2(mobj_t * actor)
 
 void A_AccTeleGlitter(mobj_t * actor)
 {
-    if (++actor->health > 35)
+    if (++actor->health > TICRATE)
     {
         actor->momz += actor->momz / 2;
     }
@@ -5376,7 +5376,7 @@ dboolean P_UpdateMorphedMonster(mobj_t * actor, int tics)
         mo->health = oldMonster.health;
         P_SetTarget(&mo->target, oldMonster.target);
         mo->special = oldMonster.special;
-        mo->special1.i = 5 * 35;  // Next try in 5 seconds
+        mo->special1.i = 5 * TICRATE;  // Next try in 5 seconds
         mo->special2.i = moType;
         mo->tid = oldMonster.tid;
         memcpy(mo->special_args, oldMonster.special_args, SPECIAL_ARGS_SIZE);
@@ -7480,7 +7480,7 @@ void A_IceGuyMissileExplode(mobj_t * actor)
 #define SORCBALL_SPEED_ROTATIONS 	5
 #define SORC_DEFENSE_TIME			255
 #define SORC_DEFENSE_HEIGHT			45
-#define BOUNCE_TIME_UNIT			(35/2)
+#define BOUNCE_TIME_UNIT			(TICRATE/2)
 #define SORCFX4_RAPIDFIRE_TIME		(6*3)   // 3 seconds
 #define SORCFX4_SPREAD_ANGLE		20
 
@@ -7848,7 +7848,7 @@ void A_SorcOffense2(mobj_t * actor)
     mo = P_SpawnMissileAngle(parent, HEXEN_MT_SORCFX4, ang1, 0);
     if (mo)
     {
-        mo->special2.i = 35 * 5 / 2;      // 5 seconds
+        mo->special2.i = TICRATE * 5 / 2;      // 5 seconds
         dist = P_AproxDistance(dest->x - mo->x, dest->y - mo->y);
         dist = dist / mo->info->speed;
         if (dist < 1)
@@ -8261,7 +8261,7 @@ void A_CheckFloor(mobj_t * actor)
 //      250-254         For use in respective control scripts
 //      255             For use in death script (spawn spots)
 //===========================================================================
-#define KORAX_SPIRIT_LIFETIME	(5*(35/5))      // 5 seconds
+#define KORAX_SPIRIT_LIFETIME	(5*(TICRATE/5))      // 5 seconds
 #define KORAX_COMMAND_HEIGHT	(120*FRACUNIT)
 #define KORAX_COMMAND_OFFSET	(27*FRACUNIT)
 

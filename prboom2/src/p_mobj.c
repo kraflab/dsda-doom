@@ -1431,7 +1431,7 @@ void P_MobjThinker (mobj_t* mobj)
 
     mobj->movecount++;
 
-    if (mobj->movecount < skill_info.respawn_time * 35)
+    if (mobj->movecount < skill_info.respawn_time * TICRATE)
       return;
 
     if (leveltime & 31)
@@ -1980,7 +1980,7 @@ void P_RespawnSpecials (void)
 
   // wait at least 30 seconds
 
-  if (leveltime - itemrespawntime[iquetail] < 30*35)
+  if (leveltime - itemrespawntime[iquetail] < 30*TICRATE)
     return;
 
   mthing = &itemrespawnque[iquetail];

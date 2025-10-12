@@ -2168,7 +2168,7 @@ void G_DoCompleted (void)
   if (hexen)
     totalleveltimes = players[consoleplayer].worldTimer;
   else
-    totalleveltimes += leveltime - leveltime % 35;
+    totalleveltimes += leveltime - leveltime % TICRATE;
   ++levels_completed;
 
   gameaction = ga_nothing;
@@ -4279,7 +4279,7 @@ static dboolean InventoryMoveLeft(void)
         return true;
     }
 
-    inventoryTics = 5 * 35;
+    inventoryTics = 5 * TICRATE;
     if (!inventory)
     {
         inventory = true;
@@ -4320,7 +4320,7 @@ static dboolean InventoryMoveRight(void)
         return true;
     }
 
-    inventoryTics = 5 * 35;
+    inventoryTics = 5 * TICRATE;
     if (!inventory)
     {
         inventory = true;

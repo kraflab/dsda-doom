@@ -2403,8 +2403,8 @@ static void P_SpawnPlaneWaggle(sector_t *sector, int height, int speed,
   waggle->accDelta = speed << 10;
   waggle->scale = 0;
   waggle->targetScale = height << 10;
-  waggle->scaleDelta = waggle->targetScale / (35 + ((3 * 35) * height) / 255);
-  waggle->ticker = timer ? timer * 35 : -1;
+  waggle->scaleDelta = waggle->targetScale / (TICRATE + ((3 * TICRATE) * height) / 255);
+  waggle->ticker = timer ? timer * TICRATE : -1;
   waggle->state = WGLSTATE_EXPAND;
   P_AddThinker(&waggle->thinker);
 }

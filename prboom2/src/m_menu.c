@@ -3729,8 +3729,8 @@ static void M_ResetLevelTable(void)
 static void M_PrintTime(dsda_string_t* m_text, int tics)
 {
   dsda_StringPrintF(m_text, "%d:%05.2f",
-                    tics / 35 / 60,
-                    (float) (tics % (60 * 35)) / 35);
+                    tics / TICRATE / 60,
+                    (float) (tics % (60 * TICRATE)) / TICRATE);
 }
 
 static int wad_stats_summary_page;

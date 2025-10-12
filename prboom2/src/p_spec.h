@@ -69,6 +69,7 @@
 
 // p_lights
 
+// relative to TICRATE
 #define GLOWSPEED       8
 #define STROBEBRIGHT    5
 #define FASTDARK        15
