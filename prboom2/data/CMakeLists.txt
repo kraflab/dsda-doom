@@ -436,7 +436,7 @@ set(WAD_CMDLINE
 
 add_custom_command(
     OUTPUT ${WAD_DATA_PATH}
-    COMMAND dsda_rdatawad -I "${CMAKE_CURRENT_SOURCE_DIR}" ${WAD_CMDLINE} -o "${WAD_DATA_PATH}"
+    COMMAND $<TARGET_FILE:dsda_rdatawad> -I "${CMAKE_CURRENT_SOURCE_DIR}" ${WAD_CMDLINE} -o "${WAD_DATA_PATH}"
     DEPENDS dsda_rdatawad ${WAD_SRC}
     VERBATIM
 )
