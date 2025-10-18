@@ -35,6 +35,7 @@
 #include <math.h>
 #include <zlib.h>
 
+#include "doomdata.h"
 #include "doomstat.h"
 #include "doomtype.h"
 #include "m_bbox.h"
@@ -2076,6 +2077,12 @@ static void P_LoadLineDefs (int lump)
       ld->sidenum[0] = LittleShort(mld->sidenum[0]);
       ld->sidenum[1] = LittleShort(mld->sidenum[1]);
     }
+
+    if ((unsigned short) -1 == ld->sidenum[0])
+      ld->sidenum[0] = NO_INDEX;
+
+    if ((unsigned short) -1 == ld->sidenum[1])
+      ld->sidenum[1] = NO_INDEX;
 
     map_format.translate_line_flags(&ld->flags, &ld->activation);
 
