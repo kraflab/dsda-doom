@@ -2385,7 +2385,7 @@ static void P_AllocateUDMFSideDefs(int lump)
   sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
 }
 
-void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessCompatibleSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i)
 {
   // killough 4/4/98: allow sidedef texture names to be overloaded
   // killough 4/11/98: refined to allow colormaps to work as wall
@@ -2394,53 +2394,53 @@ void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, 
   {
     case 242:                       // variable colormap via 242 linedef
       sd->bottomtexture =
-        (sec->bottommap =   R_ColormapNumForName(msd->bottomtexture)) < 0 ?
-        sec->bottommap = 0, R_TextureNumForName(msd->bottomtexture): 0 ;
+        (sec->bottommap =   R_ColormapNumForName(bottom)) < 0 ?
+        sec->bottommap = 0, R_TextureNumForName(bottom): 0 ;
       sd->midtexture =
-        (sec->midmap =   R_ColormapNumForName(msd->midtexture)) < 0 ?
-        sec->midmap = 0, R_TextureNumForName(msd->midtexture)  : 0 ;
+        (sec->midmap =   R_ColormapNumForName(mid)) < 0 ?
+        sec->midmap = 0, R_TextureNumForName(mid)  : 0 ;
       sd->toptexture =
-        (sec->topmap =   R_ColormapNumForName(msd->toptexture)) < 0 ?
-        sec->topmap = 0, R_TextureNumForName(msd->toptexture)  : 0 ;
+        (sec->topmap =   R_ColormapNumForName(top)) < 0 ?
+        sec->topmap = 0, R_TextureNumForName(top)  : 0 ;
       break;
 
     case 260: // killough 4/11/98: apply translucency to 2s normal texture
-      sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
-        (sd->special = W_CheckNumForName(msd->midtexture)) == LUMP_NOT_FOUND ||
+      sd->midtexture = strncasecmp("TRANMAP", mid, 8) ?
+        (sd->special = W_CheckNumForName(mid)) == LUMP_NOT_FOUND ||
         W_LumpLength(sd->special) != 65536 ?
-        sd->special=0, R_TextureNumForName(msd->midtexture) :
+        sd->special=0, R_TextureNumForName(mid) :
           (sd->special++, 0) : (sd->special=0);
-      sd->toptexture = R_TextureNumForName(msd->toptexture);
-      sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+      sd->toptexture = R_TextureNumForName(top);
+      sd->bottomtexture = R_TextureNumForName(bottom);
       break;
 
     default:                        // normal cases
-      sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-      sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-      sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+      sd->midtexture = R_SafeTextureNumForName(mid, i);
+      sd->toptexture = R_SafeTextureNumForName(top, i);
+      sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
       break;
   }
 }
 
-void P_PostProcessHereticSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessHereticSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i)
 {
-  sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-  sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-  sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+  sd->midtexture = R_SafeTextureNumForName(mid, i);
+  sd->toptexture = R_SafeTextureNumForName(top, i);
+  sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
-void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessHexenSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i)
 {
-  sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-  sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-  sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+  sd->midtexture = R_SafeTextureNumForName(mid, i);
+  sd->toptexture = R_SafeTextureNumForName(top, i);
+  sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
-void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessZDoomSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i)
 {
-  sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-  sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-  sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+  sd->midtexture = R_SafeTextureNumForName(mid, i);
+  sd->toptexture = R_SafeTextureNumForName(top, i);
+  sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
 // killough 4/4/98: delay using texture names until
@@ -2477,7 +2477,7 @@ static void P_LoadSideDefs(int lump)
       sd->sector = sec = &sectors[sector_num];
     }
 
-    map_format.post_process_sidedef_special(sd, msd, sec, i);
+    map_format.post_process_sidedef_special(sd, msd->bottomtexture, msd->midtexture, msd->toptexture, sec, i);
   }
 }
 
@@ -2535,9 +2535,7 @@ static void P_LoadUDMFSideDefs(int lump)
 
     sd->sector = &sectors[msd->sector];
 
-    sd->midtexture = R_SafeTextureNumForName(msd->texturemiddle, i);
-    sd->toptexture = R_SafeTextureNumForName(msd->texturetop, i);
-    sd->bottomtexture = R_SafeTextureNumForName(msd->texturebottom, i);
+    map_format.post_process_sidedef_special(sd, msd->texturebottom, msd->texturemiddle, msd->texturetop, sd->sector, i);
 
     if (sd->scalex_top != FRACUNIT || sd->scaley_top != FRACUNIT ||
         sd->scalex_mid != FRACUNIT || sd->scaley_mid != FRACUNIT ||
