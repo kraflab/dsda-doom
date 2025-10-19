@@ -2304,7 +2304,7 @@ void P_PostProcessCompatibleLineSpecial(line_t *ld)
       else
         tranmap = W_LumpByNum(lump - 1);
 
-      if (!ld->special_args[0])         // if tag==0,
+      if (!ld->special_args[0]) // if tag==0,
       {
         ld->tranmap = tranmap;  // affect this linedef only
         ld->alpha = 0.66f;
@@ -3367,18 +3367,20 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
   return true;
 }
 
-static void P_CheckForUDMF(int lumpnum)
+static dboolean P_CheckForUDMF(int lumpnum)
 {
   const int32_t textmap = lumpnum + ML_TEXTMAP;
 
   if (P_CheckLumpsForSameSource(lumpnum, textmap))
   {
-    if (!strcasecmp(lumpinfo[textmap].name, "TEXTMAP"))
+    if (!strncasecmp(lumpinfo[textmap].name, "TEXTMAP", 8))
     {
       dsda_ParseUDMF(W_LumpByNum(textmap), W_LumpLength(textmap), I_Error);
-      return;
+      return true;
     }
   }
+
+  return false;
 }
 
 static dboolean P_CheckForBehavior(int lumpnum)
@@ -3538,9 +3540,7 @@ map_loader_t map_loader;
 
 void P_UpdateMapLoader(int lumpnum)
 {
-  P_CheckForUDMF(lumpnum);
-
-  map_loader = (udmf_namespace != UDMF_NONE) ? udmf_map_loader : binary_map_loader;
+  map_loader = (P_CheckForUDMF(lumpnum)) ? udmf_map_loader : binary_map_loader;
 }
 
 //
