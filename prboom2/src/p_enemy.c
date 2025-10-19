@@ -1119,7 +1119,7 @@ void A_KeenDie(mobj_t* mo)
           return;                           // other Keen not dead
       }
 
-  junk.tag = 666;
+  junk.special_args[0] = 666;
   EV_DoDoor(&junk,openDoor);
 }
 
@@ -2725,14 +2725,14 @@ void A_BossDeath(mobj_t *mo)
     {
       if (mo->flags2 & MF2_MAP07BOSS1)
       {
-        junk.tag = 666;
+        junk.special_args[0] = 666;
         EV_DoFloor(&junk,lowerFloorToLowest);
         return;
       }
 
       if (mo->flags2 & MF2_MAP07BOSS2)
       {
-        junk.tag = 667;
+        junk.special_args[0] = 667;
         EV_DoFloor(&junk,raiseToTexture);
         return;
       }
@@ -2743,7 +2743,7 @@ void A_BossDeath(mobj_t *mo)
     switch(gameepisode)
     {
       case 1:
-        junk.tag = 666;
+        junk.special_args[0] = 666;
         EV_DoFloor(&junk, lowerFloorToLowest);
         return;
         break;
@@ -2752,13 +2752,13 @@ void A_BossDeath(mobj_t *mo)
         switch(gamemap)
         {
           case 6:
-            junk.tag = 666;
+            junk.special_args[0] = 666;
             EV_DoDoor(&junk, blazeOpen);
             return;
             break;
 
           case 8:
-            junk.tag = 666;
+            junk.special_args[0] = 666;
             EV_DoFloor(&junk, lowerFloorToLowest);
             return;
             break;
@@ -3175,7 +3175,7 @@ void A_LineEffect(mobj_t *mo)
   junk.special = (short)mo->state->misc1;
   if (!junk.special)
     return;
-  junk.tag = (short)mo->state->misc2;
+  junk.special_args[0] = (short)mo->state->misc2;
   if (!P_UseSpecialLine(mo, &junk, 0, false))
     map_format.cross_special_line(&junk, 0, mo, false);
   mo->state->misc1 = junk.special;
@@ -5035,7 +5035,7 @@ void Heretic_A_BossDeath(mobj_t * actor)
     {                           // Kill any remaining monsters
         P_Massacre();
     }
-    dummyLine.tag = 666;
+    dummyLine.special_args[0] = 666;
     EV_DoFloor(&dummyLine, lowerFloor);
 }
 

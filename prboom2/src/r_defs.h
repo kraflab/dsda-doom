@@ -318,7 +318,7 @@ typedef struct line_s
   float texel_length;
   line_flags_t flags;           // Animation related.
   short special;
-  short tag;
+  short id;
   unsigned short sidenum[2];        // Visual appearance: SideDefs.
   fixed_t bbox[4];       // A bounding box, for the linedef's extent
   slopetype_t slopetype; // To aid move clipping.
@@ -335,6 +335,7 @@ typedef struct line_s
   byte player_activations;
 
   // hexen
+  // also used in UDMF -- tag -> arg0/id split
   int special_args[5];
 
   // zdoom

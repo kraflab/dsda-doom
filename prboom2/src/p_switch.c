@@ -453,7 +453,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if ((line->special & FloorChange) || !(line->special & FloorModel))
           return false; // FloorModel is "Allow Monsters" if FloorChange is 0
-      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
+      if (!line->special_args[0] && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenFloor;
     }
@@ -462,7 +462,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if ((line->special & CeilingChange) || !(line->special & CeilingModel))
           return false;   // CeilingModel is "Allow Monsters" if CeilingChange is 0
-      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
+      if (!line->special_args[0] && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenCeiling;
     }
@@ -475,7 +475,7 @@ P_UseSpecialLine
         if (line->flags & ML_SECRET) // they can't open secret doors either
           return false;
       }
-      if (!line->tag && ((line->special&6)!=6)) //jff 3/2/98 all non-manual
+      if (!line->special_args[0] && ((line->special&6)!=6)) //jff 3/2/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenDoor;
     }
@@ -485,7 +485,7 @@ P_UseSpecialLine
         return false;   // monsters disallowed from unlocking doors
       if (!P_CanUnlockGenDoor(line,thing->player))
         return false;
-      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
+      if (!line->special_args[0] && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
 
       linefunc = EV_DoGenLockedDoor;
@@ -495,7 +495,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if (!(line->special & LiftMonster))
           return false; // monsters disallowed
-      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
+      if (!line->special_args[0] && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenLift;
     }
@@ -504,7 +504,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if (!(line->special & StairMonster))
           return false; // monsters disallowed
-      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
+      if (!line->special_args[0] && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenStairs;
     }
@@ -513,7 +513,7 @@ P_UseSpecialLine
       if (!thing->player && !bossaction)
         if (!(line->special & CrusherMonster))
           return false; // monsters disallowed
-      if (!line->tag && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
+      if (!line->special_args[0] && ((line->special&6)!=6)) //jff 2/27/98 all non-manual
         return false;                         // generalized types require tag
       linefunc = EV_DoGenCrusher;
     }
@@ -929,7 +929,7 @@ P_UseSpecialLine
           case 174:
             // Teleport
             // 174 S1  Teleport(side,thing)
-            if (map_format.ev_teleport(0, line->tag,line,side,thing,TELF_VANILLA))
+            if (map_format.ev_teleport(0, line->special_args[0],line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,0);
             return true;
 
@@ -943,7 +943,7 @@ P_UseSpecialLine
           case 189: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 189 S1 Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly,line->tag))
+            if (EV_DoChange(line,trigChangeOnly,line->special_args[0]))
               P_ChangeSwitchTexture(line,0);
             return true;
 
@@ -964,14 +964,14 @@ P_UseSpecialLine
           case 209:
             // killough 1/31/98: silent teleporter
             //jff 209 S1 SilentTeleport
-            if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
+            if (map_format.ev_teleport(0, line->special_args[0], line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,0);
             return true;
 
           case 241: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Numeric)
             // 241 S1 Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly,line->tag))
+            if (EV_DoChange(line,numChangeOnly,line->special_args[0]))
               P_ChangeSwitchTexture(line,0);
             return true;
 
@@ -1012,7 +1012,7 @@ P_UseSpecialLine
           case 78: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Numeric)
             // 78 SR Change Texture/Type Only
-            if (EV_DoChange(line,numChangeOnly,line->tag))
+            if (EV_DoChange(line,numChangeOnly,line->special_args[0]))
               P_ChangeSwitchTexture(line,1);
             return true;
 
@@ -1112,7 +1112,7 @@ P_UseSpecialLine
           case 190: //jff 3/15/98 create texture change no motion type
             // Texture Change Only (Trigger)
             // 190 SR Change Texture/Type Only
-            if (EV_DoChange(line,trigChangeOnly,line->tag))
+            if (EV_DoChange(line,trigChangeOnly,line->special_args[0]))
               P_ChangeSwitchTexture(line,1);
             return true;
 
@@ -1147,7 +1147,7 @@ P_UseSpecialLine
           case 195:
             // Teleport
             // 195 SR  Teleport(side,thing)
-            if (map_format.ev_teleport(0, line->tag,line,side,thing,TELF_VANILLA))
+            if (map_format.ev_teleport(0, line->special_args[0],line,side,thing,TELF_VANILLA))
               P_ChangeSwitchTexture(line,1);
             return true;
 
@@ -1175,7 +1175,7 @@ P_UseSpecialLine
           case 210:
             // killough 1/31/98: silent teleporter
             //jff 210 SR SilentTeleport
-            if (map_format.ev_teleport(0, line->tag, line, side, thing, TELF_SILENT))
+            if (map_format.ev_teleport(0, line->special_args[0], line, side, thing, TELF_SILENT))
               P_ChangeSwitchTexture(line,1);
             return true;
 

@@ -959,9 +959,9 @@ static void AM_HighlightByTag(void)
   {
     highlight.sec = NULL;
     highlight.line = line;
-    highlight.tag = line->tag;
+    highlight.tag = line->special_args[0];
 
-    doom_printf("Highlight line %d, tag %d\n", highlight.line->iLineID, line->tag);
+    doom_printf("Highlight line %d, tag %d\n", highlight.line->iLineID, line->special_args[0]);
   }
   else
   {

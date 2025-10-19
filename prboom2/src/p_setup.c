@@ -1911,21 +1911,21 @@ static void P_SetLineID(line_t *ld)
   switch (ld->special)
   {
     case zl_line_set_identification:
-      ld->tag = (unsigned short) 256 * ld->special_args[4] + ld->special_args[0];
+      ld->id = (unsigned short) 256 * ld->special_args[4] + ld->special_args[0];
       ld->special = 0;
       break;
     case zl_translucent_line:
-      ld->tag = ld->special_args[0];
+      ld->id = ld->special_args[0];
       break;
     case zl_teleport_line:
     case zl_scroll_texture_model:
-      ld->tag = ld->special_args[0];
+      ld->id = ld->special_args[0];
       break;
     case zl_polyobj_start_line:
-      ld->tag = ld->special_args[3];
+      ld->id = ld->special_args[3];
       break;
     case zl_polyobj_explicit_line:
-      ld->tag = ld->special_args[4];
+      ld->id = ld->special_args[4];
       break;
   }
 }
@@ -2046,7 +2046,7 @@ static void P_LoadLineDefs (int lump)
 
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = mld->special; // just a byte in hexen
-      ld->tag = 0;
+      ld->id = 0;
       ld->special_args[0] = mld->arg1;
       ld->special_args[1] = mld->arg2;
       ld->special_args[2] = mld->arg3;
@@ -2064,8 +2064,8 @@ static void P_LoadLineDefs (int lump)
 
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = LittleShort(mld->special);
-      ld->tag = LittleShort(mld->tag);
-      ld->special_args[0] = 0;
+      ld->id = LittleShort(mld->tag);
+      ld->special_args[0] = ld->id; // UDMF: tag -> arg0/id split
       ld->special_args[1] = 0;
       ld->special_args[2] = 0;
       ld->special_args[3] = 0;
@@ -2080,7 +2080,7 @@ static void P_LoadLineDefs (int lump)
 
     P_CalculateLineDefProperties(ld);
 
-    dsda_AddLineID(ld->tag, i);
+    dsda_AddLineID(ld->id, i);
   }
 }
 
@@ -2102,7 +2102,7 @@ static void P_LoadUDMFLineDefs(int lump)
 
     ld->flags = (mld->flags & ML_BOOM);
     ld->special = mld->special;
-    ld->tag = (mld->id >= 0 ? mld->id : 0);
+    ld->id = (mld->id >= 0 ? mld->id : 0);
     ld->special_args[0] = mld->arg0;
     ld->special_args[1] = mld->arg1;
     ld->special_args[2] = mld->arg2;
@@ -2250,8 +2250,8 @@ static void P_LoadUDMFLineDefs(int lump)
     if (ld->healthgroup)
       dsda_AddLineToHealthGroup(ld);
 
-    if (ld->tag > 0)
-      dsda_AddLineID(ld->tag, i);
+    if (ld->id > 0)
+      dsda_AddLineID(ld->id, i);
 
     if (mld->moreids)
     {
@@ -2292,14 +2292,14 @@ void P_PostProcessCompatibleLineSpecial(line_t *ld)
       else
         tranmap = W_LumpByNum(lump - 1);
 
-      if (!ld->tag)             // if tag==0,
+      if (!ld->special_args[0])         // if tag==0,
       {
         ld->tranmap = tranmap;  // affect this linedef only
         ld->alpha = 0.66f;
       }
       else
         for (j=0;j<numlines;j++)          // if tag!=0,
-          if (lines[j].tag == ld->tag)    // affect all matching linedefs
+          if (lines[j].id == ld->special_args[0]) // affect all matching linedefs
           {
             lines[j].tranmap = tranmap;
             lines[j].alpha = 0.66f;
