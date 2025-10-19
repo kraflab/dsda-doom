@@ -23,6 +23,7 @@ char *Z_StrdupLevel(const char *s);
 void *Z_MallocLevel(size_t size);
 }
 
+#include "dsda/global.h"
 #include "doomdef.h"
 #include "scanner.h"
 #include "udmf.h"
