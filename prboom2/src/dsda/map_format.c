@@ -333,7 +333,7 @@ void dsda_RemoveMobjThingID(mobj_t* mo);
 void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
 void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy);
 
-static const map_format_t dsda_udmf = {
+static const map_format_t zdoom_map_format = {
   .zdoom = true,
   .hexen = true,
   .polyobjs = true,
@@ -552,7 +552,7 @@ static void dsda_ApplyLowPrecision(void) {
 }
 
 void dsda_ApplyZDoomMapFormat(void) {
-  map_format = dsda_udmf;
+  map_format = zdoom_map_format;
 
   if (!mbf21)
     I_Error("You must use complevel 21 when playing doom-in-hexen format maps.");
@@ -572,7 +572,7 @@ void dsda_ApplyUDMF(void) {
     map_format = hexen_map_format;
   }
   else if (udmf_namespace == UDMF_DSDA) {
-    map_format = dsda_udmf;
+    map_format = zdoom_map_format;
   }
 
   dsda_ApplyHighPrecision();
