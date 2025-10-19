@@ -15,8 +15,6 @@
 //	DSDA UDMF
 //
 
-#include "doomdef.h"
-#include "lprintf.h"
 #include <cstring>
 #include <vector>
 
@@ -25,8 +23,8 @@ char *Z_StrdupLevel(const char *s);
 void *Z_MallocLevel(size_t size);
 }
 
+#include "doomdef.h"
 #include "scanner.h"
-
 #include "udmf.h"
 
 udmf_namespace_t udmf_namespace = UDMF_NONE;

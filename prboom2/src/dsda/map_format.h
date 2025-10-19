@@ -69,10 +69,6 @@ typedef struct {
   void (*add_mobj_thing_id)(mobj_t *, short);
   void (*remove_mobj_thing_id)(mobj_t *);
   void (*iterate_spechit)(mobj_t *, fixed_t, fixed_t);
-  int (*point_on_side)(fixed_t, fixed_t, const node_t *);
-  int (*point_on_seg_side)(fixed_t, fixed_t, const seg_t *);
-  int (*point_on_line_side)(fixed_t, fixed_t, const line_t *);
-  int (*point_on_divline_side)(fixed_t, fixed_t, const divline_t *);
   size_t mapthing_size;
   size_t maplinedef_size;
   int mt_push;
