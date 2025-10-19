@@ -15,6 +15,8 @@
 //	DSDA UDMF
 //
 
+#include "doomdef.h"
+#include "lprintf.h"
 #include <cstring>
 #include <vector>
 
@@ -26,6 +28,8 @@ void *Z_MallocLevel(size_t size);
 #include "scanner.h"
 
 #include "udmf.h"
+
+udmf_namespace_t udmf_namespace = UDMF_NONE;
 
 std::vector<udmf_line_t> udmf_lines;
 std::vector<udmf_side_t> udmf_sides;
@@ -802,8 +806,21 @@ static void dsda_ParseUDMFIdentifier(Scanner &scanner) {
     scanner.MustGetToken('=');
     scanner.MustGetToken(TK_StringConst);
 
-    if (stricmp(scanner.string, "zdoom") && stricmp(scanner.string, "dsda"))
-      scanner.ErrorF("Unknown UDMF namespace \"%s\"", scanner.string);
+    if (!stricmp(scanner.string, "doom") && !raven) {
+      udmf_namespace = UDMF_DOOM;
+    }
+    else if (!stricmp(scanner.string, "heretic") && heretic) {
+      udmf_namespace = UDMF_HERETIC;
+    }
+    else if (!stricmp(scanner.string, "hexen") && hexen) {
+      udmf_namespace = UDMF_HEXEN;
+    }
+    else if ((!stricmp(scanner.string, "dsda") || !stricmp(scanner.string, "zdoom")) && !raven) {
+      udmf_namespace = UDMF_DSDA;
+    }
+    else {
+      scanner.ErrorF("Unsupported UDMF namespace \"%s\"", scanner.string);
+    }
 
     scanner.MustGetToken(';');
   }

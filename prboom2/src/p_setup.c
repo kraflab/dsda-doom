@@ -131,7 +131,6 @@ int firstglvertex = 0;
 static nodes_version_t nodesVersion = DEFAULT_BSP_NODES;
 dboolean use_gl_nodes = false;
 dboolean has_behavior;
-dboolean udmf_map;
 
 // figgi 08/21/00 -- glSegs
 typedef struct
@@ -3358,21 +3357,18 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
   return true;
 }
 
-static dboolean P_CheckForUDMF(int lumpnum)
+static void P_CheckForUDMF(int lumpnum)
 {
-  int i;
+  const int32_t textmap = lumpnum + ML_TEXTMAP;
 
-  i = lumpnum + ML_TEXTMAP;
-  if (P_CheckLumpsForSameSource(lumpnum, i))
+  if (P_CheckLumpsForSameSource(lumpnum, textmap))
   {
-    if (!strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
+    if (!strcasecmp(lumpinfo[textmap].name, "TEXTMAP"))
     {
-      dsda_ParseUDMF(W_LumpByNum(i), W_LumpLength(i), I_Error);
-      return true;
+      dsda_ParseUDMF(W_LumpByNum(textmap), W_LumpLength(textmap), I_Error);
+      return;
     }
   }
-
-  return false;
 }
 
 static dboolean P_CheckForBehavior(int lumpnum)
@@ -3420,15 +3416,9 @@ static void P_VerifyLevelComponents(int lumpnum)
 
 static void P_UpdateMapFormat()
 {
-  if (udmf_map)
+  if (udmf_namespace != UDMF_NONE)
   {
-    if (heretic)
-      I_Error("UDMF maps are not supported in Heretic yet");
-
-    if (hexen)
-      I_Error("UDMF maps are not supported in Hexen yet");
-
-    dsda_ApplyZDoomMapFormat();
+    dsda_ApplyUDMF();
   }
   else
   {
@@ -3446,7 +3436,7 @@ static void P_UpdateMapFormat()
     }
     else
     {
-      dsda_ApplyDefaultMapFormat();
+      dsda_ApplyBinaryMapFormat();
     }
   }
 }
@@ -3523,7 +3513,7 @@ map_loader_t udmf_map_loader = {
   .po_load_things = PO_LoadUDMFThings,
 };
 
-map_loader_t legacy_map_loader = {
+map_loader_t binary_map_loader = {
   .load_vertexes = P_LoadVertexes,
   .load_sectors = P_LoadSectors,
   .load_things = P_LoadThings,
@@ -3538,9 +3528,9 @@ map_loader_t map_loader;
 
 void P_UpdateMapLoader(int lumpnum)
 {
-  udmf_map = P_CheckForUDMF(lumpnum);
+  P_CheckForUDMF(lumpnum);
 
-  map_loader = udmf_map ? udmf_map_loader : legacy_map_loader;
+  map_loader = (udmf_namespace != UDMF_NONE) ? udmf_map_loader : binary_map_loader;
 }
 
 //

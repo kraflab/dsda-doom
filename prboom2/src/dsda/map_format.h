@@ -93,6 +93,7 @@ dboolean dsda_IsDeathExitLine(int index);
 dboolean dsda_IsDeathSecretExitLine(int index);
 dboolean dsda_IsTeleportLine(int index);
 void dsda_ApplyZDoomMapFormat(void);
-void dsda_ApplyDefaultMapFormat(void);
+void dsda_ApplyUDMF(void);
+void dsda_ApplyBinaryMapFormat(void);
 
 #endif
