@@ -269,10 +269,10 @@ extern void P_PostProcessHereticLineSpecial(line_t *ld);
 extern void P_PostProcessHexenLineSpecial(line_t *ld);
 extern void P_PostProcessZDoomLineSpecial(line_t *ld);
 
-extern void P_PostProcessCompatibleSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i);
-extern void P_PostProcessHereticSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i);
-extern void P_PostProcessHexenSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i);
-extern void P_PostProcessZDoomSidedefSpecial(side_t *sd, char bottom[8], char mid[8], char top[8], sector_t *sec, int i);
+extern void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
+extern void P_PostProcessHereticSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
+extern void P_PostProcessHexenSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
+extern void P_PostProcessZDoomSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
 
 extern void P_AnimateCompatibleSurfaces(void);
 extern void P_AnimateHereticSurfaces(void);
