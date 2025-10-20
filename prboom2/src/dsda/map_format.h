@@ -53,7 +53,7 @@ typedef struct {
   dboolean (*test_activate_line)(line_t *, mobj_t *, int, line_activation_t);
   dboolean (*execute_line_special)(int, int *, line_t *, int, mobj_t *);
   void (*post_process_line_special)(line_t *);
-  void (*post_process_sidedef_special)(side_t *, const char[8], const char[8], const char[8], sector_t *, int);
+  void (*post_process_sidedef_special)(side_t *, const char*, const char*, const char*, sector_t *, int);
   void (*animate_surfaces)(void);
   void (*check_impact)(mobj_t *);
   void (*translate_line_flags)(unsigned int *, line_activation_t *);

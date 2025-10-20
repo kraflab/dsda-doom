@@ -2397,7 +2397,7 @@ static void P_AllocateUDMFSideDefs(int lump)
   sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
 }
 
-void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i)
+void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
   // killough 4/4/98: allow sidedef texture names to be overloaded
   // killough 4/11/98: refined to allow colormaps to work as wall
@@ -2434,21 +2434,21 @@ void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const char bottom[8], con
   }
 }
 
-void P_PostProcessHereticSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i)
+void P_PostProcessHereticSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
   sd->midtexture = R_SafeTextureNumForName(mid, i);
   sd->toptexture = R_SafeTextureNumForName(top, i);
   sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
-void P_PostProcessHexenSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i)
+void P_PostProcessHexenSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
   sd->midtexture = R_SafeTextureNumForName(mid, i);
   sd->toptexture = R_SafeTextureNumForName(top, i);
   sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
-void P_PostProcessZDoomSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i)
+void P_PostProcessZDoomSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
   sd->midtexture = R_SafeTextureNumForName(mid, i);
   sd->toptexture = R_SafeTextureNumForName(top, i);
