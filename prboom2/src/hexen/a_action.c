@@ -26,6 +26,7 @@
 #include "p_enemy.h"
 #include "p_tick.h"
 
+#include "dsda/skill_info.h"
 #include "hexen/p_things.h"
 
 #include "a_action.h"
@@ -118,7 +119,7 @@ void A_PotteryExplode(mobj_t * actor)
     S_StartMobjSound(mo, hexen_sfx_pottery_explode);
     if (actor->special_args[0])
     {                           // Spawn an item
-        if (!nomonsters
+        if (!(skill_info.flags & SI_NO_MONSTERS)
             || !(mobjinfo[TranslateThingType[actor->special_args[0]]].
                  flags & MF_COUNTKILL))
         {                       // Only spawn monsters if not -nomonsters
@@ -831,7 +832,7 @@ void A_SoAExplode(mobj_t * actor)
     {                           // Spawn an item
         // TODO: should this be on or off?
 #if 0 // Checks are not present in version 1.1
-        if (!nomonsters
+        if (!(skill_info.flags & SI_NO_MONSTERS))
             || !(mobjinfo[TranslateThingType[actor->special_args[0]]].
                  flags & MF_COUNTKILL))
 #endif

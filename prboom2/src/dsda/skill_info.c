@@ -127,6 +127,7 @@ const skill_info_t hexen_skill_infos[5] = {
 };
 
 int num_skills;
+int num_og_skills;
 skill_info_t* skill_infos;
 
 static void dsda_CopyFactor(fixed_t* dest, const char* source) {
@@ -139,7 +140,7 @@ static void dsda_CopyFactor(fixed_t* dest, const char* source) {
     *dest = dsda_StringToFixed(source) + 1;
 }
 
-void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
+static void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
   memset(&skill_infos[i], 0, sizeof(skill_infos[i]));
 
   dsda_CopyFactor(&skill_infos[i].ammo_factor, info->ammo_factor);
@@ -171,11 +172,18 @@ void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
 void dsda_InitSkills(void) {
   int i = 0;
   int j;
+  int original_skills;
   dboolean clear_skills;
+
+  // Check for new skills
+  dsda_CheckCustomSkill();
 
   clear_skills = (doom_mapinfo.num_skills && doom_mapinfo.skills_cleared);
 
-  num_skills = (clear_skills ? 0 : 5) + doom_mapinfo.num_skills;
+  num_skills = (clear_skills ? 0 : 5) + (int)doom_mapinfo.num_skills + customskill;
+  num_og_skills = num_skills - customskill;
+
+  original_skills = 5;
 
   skill_infos = Z_Calloc(num_skills, sizeof(*skill_infos));
 
@@ -186,7 +194,7 @@ void dsda_InitSkills(void) {
                            heretic ? heretic_skill_infos :
                                      doom_skill_infos;
 
-    for (i = 0; i < 5; ++i)
+    for (i = 0; i < original_skills; ++i)
       skill_infos[i] = original_skill_infos[i];
   }
 
@@ -219,6 +227,87 @@ void dsda_InitSkills(void) {
     else
       dsda_CopySkillInfo(i + j, &doom_mapinfo.skills[j]);
   }
+}
+
+/////////////////////////////////////////
+//
+// Add Custom Skill Properties
+//
+//
+
+// Custom Skill variables
+int cskill_spawn_filter;
+int cskill_ammo_factor;
+int cskill_damage_factor;
+int cskill_armor_factor;
+int cskill_health_factor;
+int cskill_monster_hp_factor;
+int cskill_friend_hp_factor;
+int cskill_respawn;
+int cskill_respawn_time;
+int cskill_coop_spawns;
+int cskill_no_monsters;
+int cskill_fast_monsters;
+int cskill_aggressive;
+int cskill_no_pain;
+int cskill_easy_brain;
+int cskill_auto_use_hp;
+
+static int dsda_GetCustomSpawnFilter(int config) {
+  switch (config)
+  {
+    case 0: return 1; // if "easy",   skill 1
+    case 1: return 3; // if "medium", skill 3
+    case 2: return 4; // if "hard",   skill 4
+    default: return false;
+  }
+}
+
+static int dsda_GetCustomFactor(int config) {
+  switch (config)
+  {
+    case 0: return FRACUNIT / 2;      // Half
+    case 1: return FRACUNIT;          // Default
+    case 2: return FRACUNIT * 3 / 2;  // 1.5x - Raven games use this
+    case 3: return FRACUNIT * 2;      // Double
+    case 4: return FRACUNIT * 4;      // Quad
+    default: return false;
+  }
+}
+
+void dsda_UpdateCustomSkill(int custom_skill_num) {
+  // Add label for skill cheat
+  skill_infos[custom_skill_num].name = "Custom Skill";
+
+  // Reset custom skill properties
+  skill_infos[custom_skill_num].flags = 0;
+  skill_infos[custom_skill_num].respawn_time = 0;
+
+  // Get spawn filter value
+  skill_infos[custom_skill_num].spawn_filter = dsda_GetCustomSpawnFilter(cskill_spawn_filter);;
+
+  // Get multiplier factors
+  skill_infos[custom_skill_num].ammo_factor             = dsda_GetCustomFactor(cskill_ammo_factor);
+  skill_infos[custom_skill_num].damage_factor           = dsda_GetCustomFactor(cskill_damage_factor);
+  skill_infos[custom_skill_num].armor_factor            = dsda_GetCustomFactor(cskill_armor_factor);
+  skill_infos[custom_skill_num].health_factor           = dsda_GetCustomFactor(cskill_health_factor);
+  skill_infos[custom_skill_num].monster_health_factor   = dsda_GetCustomFactor(cskill_monster_hp_factor);
+  skill_infos[custom_skill_num].friend_health_factor    = dsda_GetCustomFactor(cskill_friend_hp_factor);
+
+  // Get respawn time (if respawn is enabled)
+  if (cskill_respawn) skill_infos[custom_skill_num].respawn_time = cskill_respawn_time;
+
+  // Add remaining flags
+  if (cskill_coop_spawns)            skill_infos[custom_skill_num].flags |= SI_SPAWN_MULTI;
+  if (cskill_no_monsters)            skill_infos[custom_skill_num].flags |= SI_NO_MONSTERS;
+  if (cskill_fast_monsters)          skill_infos[custom_skill_num].flags |= SI_FAST_MONSTERS;
+  if (cskill_aggressive)             skill_infos[custom_skill_num].flags |= SI_INSTANT_REACTION;
+  if (cskill_no_pain)                skill_infos[custom_skill_num].flags |= SI_NO_PAIN;
+  if (cskill_easy_brain && !raven)   skill_infos[custom_skill_num].flags |= SI_EASY_BOSS_BRAIN;
+  if (cskill_auto_use_hp && raven)   skill_infos[custom_skill_num].flags |= SI_AUTO_USE_HEALTH;
+
+  // Update the skill
+  dsda_UpdateGameSkill(custom_skill_num);
 }
 
 // At startup, set-up temp game modifier configs based off args / persistent cfgs
@@ -290,6 +379,9 @@ void dsda_RefreshGameSkill(void) {
   if (respawnparm && !skill_info.respawn_time)
     skill_info.respawn_time = 12;
 
+  if (nomonsters)
+    skill_info.flags |= SI_NO_MONSTERS;
+
   if (fastparm)
     skill_info.flags |= SI_FAST_MONSTERS;
 
@@ -313,4 +405,14 @@ void dsda_AlterGameFlags(void)
     return;
 
   dsda_RefreshGameSkill();
+}
+
+void dsda_CheckCustomSkill(void) {
+  //if (started_demo)
+    //return;
+
+  if (!allow_incompatibility || netgame)
+    return;
+
+  customskill = true;
 }

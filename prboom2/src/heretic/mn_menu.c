@@ -444,7 +444,13 @@ void MN_Drawer(void)
   for (i = 0; i < max; i++)
   {
     const char *text = currentMenu->menuitems[i].alttext;
-    if (text)
+    int text_sml = text && (currentMenu->menuitems[i].flags == MENUF_OPTLUMP);
+
+    if (text_sml) {  // use small font for custom skill
+      y += 4;        // add some padding (looks bad otherwise)
+      MN_DrTextA(text, x, y);
+    }
+    else if (text)
       MN_DrTextB(text, x, y);
     y += ITEM_HEIGHT;
   }

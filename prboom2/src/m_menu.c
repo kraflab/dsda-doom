@@ -135,10 +135,10 @@
 #define S_CREDIT   0x00200000 // killough 10/98: credit
 #define S_THERMO   0x00400000 // Slider for choosing a value
 #define S_CHOICE   0x00800000 // this item has several values
-// #define S_      0x01000000
+#define S_DISABLED 0x01000000
 #define S_NAME     0x02000000
 #define S_RESET_Y  0x04000000
-// #define S_      0x08000000
+#define S_FUNC     0x08000000
 // #define S_      0x10000000
 // #define S_      0x20000000
 #define S_STR      0x40000000 // need to refactor things...
@@ -150,9 +150,9 @@
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_THERMO|S_NAME)
+#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_FUNC|S_THERMO|S_NAME)
 
-#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_THERMO|S_NAME)
+#define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_FUNC|S_THERMO|S_NAME)
 
 #define S_STRING (S_FILE|S_NAME)
 
@@ -171,6 +171,7 @@ static dboolean set_keybnd_active = false; // in key binding setup screens
 static dboolean set_display_active = false;
 static dboolean set_demos_active = false; // in demos setup screen
 static dboolean set_compatibility_active = false;
+static dboolean set_skill_builder_active = false;
 static dboolean set_weapon_active = false; // in weapons setup screen
 static dboolean set_auto_active   = false; // in automap setup screen
 static dboolean level_table_active = false;
@@ -307,10 +308,15 @@ static void M_DrawKeybnd(void);
 static void M_DrawDisplay(void);
 static void M_DrawDemos(void);
 static void M_DrawCompatibility(void);
+static void M_DrawSkillBuilder(void);
 static void M_DrawWeapons(void);
 static void M_DrawAutoMap(void);
 static void M_DrawLevelTable(void);
 static void M_DrawExtHelp(void);
+
+static void CSNewGame(void);
+static void CSPistolStart(void);
+static void CSCurrentLoadout(void);
 
 static int M_GetPixelWidth(const char*);
 static void M_DrawString(int cx, int cy, int color, const char* ch);
@@ -766,6 +772,7 @@ void M_ChooseSkill(int choice)
       message = s_NIGHTMARE; // Ty 03/27/98 - externalized
 
     M_StartMessage(message, M_VerifySkill, true);
+    M_SetupNextMenu(&ReadDef1); // Clear in-menu variables when "no" or "ESC"
 
     return;
   }
@@ -1665,6 +1672,22 @@ static void M_SetSetupMenuItemOn (const int x)
   }
 }
 
+static dboolean M_ItemSelected(const setup_menu_t *s)
+{
+    int flags = s->m_flags;
+
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
+        return true;
+
+    return false;
+}
+
+static void M_BlinkingArrowRight(const setup_menu_t *s)
+{
+    if (M_ItemSelected(s) && !setup_select)
+        strcat(menu_buffer, " <");
+}
+
 static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
 {
   current_setup_menu = new_setup_menu;
@@ -1754,6 +1777,16 @@ static menu_t CompatibilityDef =                                           // ki
   0
 };
 
+static menu_t SkillBuilderDef =                                           // killough 10/98
+{
+  generic_setup_end,
+  &SkillDef,
+  Generic_Setup,
+  M_DrawSkillBuilder,
+  34,5,      // skull drawn here
+  0
+};
+
 static menu_t WeaponDef =
 {
   generic_setup_end,
@@ -1808,6 +1841,56 @@ static int choice_value;
 
 /////////////////////////////
 //
+// M_ItemDisabled
+//
+// Disable certain menu options based on various conditions:
+// StrictMode, Complevel, and more!
+//
+//
+
+static dboolean M_ItemDisabled(const setup_menu_t* s)
+{
+  // Strict Mode
+  if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+    return true;
+
+  // Hexen Stuff
+  if (hexen)
+  {
+    // Hexen doesn't allow pistolstart + loadout doesn't work due to key management
+    if (s->action == CSPistolStart || s->action == CSCurrentLoadout)
+      return true;
+  }
+
+  return false;
+}
+
+/////////////////////////////
+//
+// Menu Text Colors
+//
+//
+
+static int GetItemColor(int flags)
+{
+    return (flags & S_TITLE && flags & S_DISABLED) ? cr_title + CR_DARKEN :
+            flags & S_DISABLED ? cr_label + CR_DARKEN :
+            flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
+            flags & S_HILITE ? cr_label_highlight :
+            flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
+            cr_label; // killough 10/98
+}
+
+static int GetOptionColor(int flags)
+{
+    return flags & S_DISABLED ? cr_value + CR_DARKEN :
+           flags & S_SELECT ? cr_value_edit :
+           flags & S_HILITE ? cr_value_highlight :
+           cr_value;
+}
+
+/////////////////////////////
+//
 // phares 4/18/98:
 // Consolidate Item drawing code
 //
@@ -1819,31 +1902,42 @@ static int choice_value;
 static void M_DrawItem(const setup_menu_t* s, int y)
 {
   int x = s->m_x;
+  char text[66];
   int flags = s->m_flags;
   char *p, *t;
   int w = 0;
-  int color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_label + CR_DARKEN :
-    flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
-    flags & S_HILITE ? cr_label_highlight :
-    flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
-    cr_label; // killough 10/98
+  int color;
+
+  if (M_ItemDisabled(s))
+    flags |= S_DISABLED;
+
+  color = GetItemColor(flags);
+
+  // Add ". . ." to function
+  sprintf(text, "%s%s", s->m_text, (flags & S_FUNC) ? ". . ." : "");
 
   /* killough 10/98:
    * Enhance to support multiline text separated by newlines.
    * This supports multiline items on horizontally-crowded menus.
    */
 
-  for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
+  for (p = t = Z_Strdup(text); (p = strtok(p,"\n")); y += 8, p = NULL)
   {      /* killough 10/98: support left-justification: */
-    if (flags & S_CENTER)
-      w = M_GetPixelWidth(p) / 2;
-    else if (!(flags & S_LEFTJUST))
-      w = M_GetPixelWidth(p) + 4;
-    M_DrawString(x - w, y ,color, p);
-    // print a blinking "arrow" next to the currently highlighted menu item
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
-      M_DrawString(x - w - 8, y, color, ">");
+    w = M_GetPixelWidth(p);
+
+    if (!(flags & S_LEFTJUST))
+      x -= (w + 4);
+
+    M_DrawString(x, y, color, p);
+
+    // print a blinking left "arrow" before highlighted menu item
+    if (M_ItemSelected(s))
+      M_DrawString(x - 8, y, color, ">");
+
+    // print a blinking right "arrow" after highlighted function
+    if (flags & S_FUNC)
+      if (M_ItemSelected(s) && !setup_select)
+          M_DrawString(x + w, y, color, " <");
   }
   Z_Free(t);
 }
@@ -1874,19 +1968,17 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   // Determine color of the text. This may or may not be used later,
   // depending on whether the item is a text string or not.
 
-  color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_value + CR_DARKEN :
-    flags & S_SELECT ? cr_value_edit :
-    flags & S_HILITE ? cr_value_highlight :
-    cr_value;
+  if (M_ItemDisabled(s))
+    flags |= S_DISABLED;
+
+  color = GetOptionColor(flags);
 
   // Is the item a YES/NO item?
 
   if (flags & S_YESNO) {
     strcpy(menu_buffer, dsda_IntConfig(s->config_id) ? "YES" : "NO");
 
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
+    M_BlinkingArrowRight(s);
     M_DrawMenuString(x,y,color);
     return;
   }
@@ -1909,12 +2001,11 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       if (flags & S_CRITEM)
       {
         color = value;
-        if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+        if (M_ItemDisabled(s))
           color += CR_DARKEN;
       }
     }
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
+    M_BlinkingArrowRight(s);
     M_DrawMenuString(x, y, color);
     return;
   }
@@ -1971,9 +2062,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     if (!any_input)
       M_GetKeyString(0, 0);
 
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-
+    M_BlinkingArrowRight(s);
     M_DrawMenuString(x, y, color);
 
     return;
@@ -2000,7 +2089,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
     if (!ch) // don't show this item in automap mode
       V_DrawNamePatch(x+1,y,0,"M_PALNO", CR_DEFAULT, VPT_STRETCH);
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+    if (M_ItemSelected(s) && !setup_select)
       M_DrawString(x + 8, y, color, " <");
     return;
   }
@@ -2058,8 +2147,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     // Draw the setting for the item
 
     strcpy(menu_buffer, text);
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
+    M_BlinkingArrowRight(s);
     M_DrawMenuString(x, y, color);
     return;
   }
@@ -2090,8 +2178,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       }
     }
 
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
+    M_BlinkingArrowRight(s);
     M_DrawMenuString(x,y,color);
     return;
   }
@@ -2101,8 +2188,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
     snprintf(menu_buffer, sizeof(menu_buffer), "%d", dsda_IntConfig(s->config_id));
 
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
+    M_BlinkingArrowRight(s);
     M_DrawMenuString(x + 80, y + 3, color);
     return;
   }
@@ -2349,6 +2435,8 @@ static void M_DrawInstructions(void)
   else {
     if (flags & S_INPUT)
       M_DrawInstructionString(cr_info_highlight, "Press Enter to Change, Del to Clear");
+    else if (flags & S_FUNC)
+      M_DrawInstructionString(cr_info_highlight, "Press Enter to Select");
     else
       M_DrawInstructionString(cr_info_highlight, "Press Enter to Change");
   }
@@ -2360,6 +2448,7 @@ static void M_DrawInstructions(void)
 #define FINAL_ENTRY { 0, S_SKIP | S_END, m_null }
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
+#define FUNCTION(action_name, flags, offset_x, action_func) { action_name, !flags ? (S_FUNC) : (S_FUNC | flags), m_null, offset_x, .action = action_func }
 
 static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
 {
@@ -3552,6 +3641,141 @@ static void M_DrawCompatibility(void)
 
 /////////////////////////////
 //
+// Custom Skill Functions [based off Nugget]
+
+enum
+{
+  cskill_new_game,
+  cskill_pistol_start,
+  cskill_loadout_current
+} cskill_mode_e;
+
+static void M_StartCustomSkill(int mode)
+{
+  // Use custom skill (-1 to match gameskill)
+  chosen_skill = num_skills - 1;
+
+  dsda_UpdateCustomSkill(chosen_skill);
+
+  if (mode == cskill_new_game || gamestate == GS_DEMOSCREEN)
+    M_FinishGameSelection();
+  else if (mode == cskill_pistol_start || !in_game)
+    G_DeferedInitNew(chosen_skill, gameepisode, gamemap);
+  else if (mode == cskill_loadout_current)
+    G_RestartWithLoadout();
+
+  M_ClearMenus();
+}
+
+static void StartCustomSkill(int mode)
+{
+    M_StartCustomSkill(mode);
+
+    M_LeaveSetupMenu();
+    M_ClearMenus();
+    S_StartVoidSound(g_sfx_swtchx);
+}
+
+static void CSNewGame(void)
+{
+  StartCustomSkill(cskill_new_game);
+}
+
+static void CSPistolStart(void)
+{
+  StartCustomSkill(cskill_pistol_start);
+}
+
+static void CSCurrentLoadout(void)
+{
+  StartCustomSkill(cskill_loadout_current);
+}
+
+
+/////////////////////////////
+//
+// Custom Skill Builder.
+
+static const char *skill_pages[] =
+{
+  "Basic",
+  "Advanced",
+  NULL
+};
+
+setup_menu_t skill_options_builder[], skill_options_start[];
+
+setup_menu_t* skill_options[] =
+{
+  skill_options_builder,
+  skill_options_start,
+  NULL
+};
+
+static const char *skill_spawn_filter[]       = { "Easy", "Medium", "Hard", NULL };
+static const char *skill_ammo_multiplier[]    = { "Half", "Default", "1.5x - Raven", "Double - ITYTD/NM", "Quad", NULL };
+static const char *skill_damage_multiplier[]  = { "Half - ITYTD", "Default", "1.5x", "Double", "Quad", NULL };
+static const char *skill_multiplier[]         = { "Half", "Default", "1.5x", "Double", "Quad", NULL };
+
+#define SK_X 200
+#define SK_X2 50
+
+setup_menu_t skill_options_builder[] = {
+  { "Thing Spawns", S_CHOICE, m_conf, SK_X, dsda_config_skill_spawn_filter, 0, skill_spawn_filter },
+  { "Coop Spawns", S_YESNO, m_conf, SK_X, dsda_config_skill_coop_spawns },
+  EMPTY_LINE,
+  { "Damage to Player", S_CHOICE, m_conf, SK_X, dsda_config_skill_damage_factor, 0, skill_damage_multiplier },
+  { "Ammo Pickups %", S_CHOICE, m_conf, SK_X, dsda_config_skill_ammo_factor, 0, skill_ammo_multiplier },
+  { "Auto Use Health", S_YESNO, m_conf, SK_X, dsda_config_skill_auto_use_health },
+  EMPTY_LINE,
+  { "Respawn Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_respawn_monsters },
+  { "Fast Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_fast_monsters },
+  { "Aggressive Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_aggressive_monsters},
+  { "No Monsters", S_YESNO, m_conf, SK_X, dsda_config_skill_no_monsters },
+  EMPTY_LINE,
+  { "Pistol Start", S_YESNO, m_conf, SK_X, dsda_config_pistol_start },
+  EMPTY_LINE,
+  FUNCTION("Start New Game", S_LEFTJUST, SK_X2, CSNewGame),
+  FUNCTION("Restart Map -- Pistol Start", S_LEFTJUST, SK_X2, CSPistolStart),
+  FUNCTION("Restart Map -- Current Loadout", S_LEFTJUST, SK_X2, CSCurrentLoadout),
+
+  NEXT_PAGE(skill_options_start),
+  FINAL_ENTRY
+};
+
+setup_menu_t skill_options_start[] = {
+  { "Respawn Time", S_NUM, m_conf, SK_X, dsda_config_skill_respawn_time },
+  { "Slow Spawn-Cube Spitter", S_YESNO, m_conf, SK_X, dsda_config_skill_easy_brain },
+  { "Disable Pain States", S_YESNO, m_conf, SK_X, dsda_config_skill_no_pain },
+  EMPTY_LINE,
+  { "Armor Pickups %", S_CHOICE, m_conf, SK_X, dsda_config_skill_armor_factor, 0, skill_multiplier },
+  { "Health Pickups %", S_CHOICE, m_conf, SK_X, dsda_config_skill_health_factor, 0, skill_multiplier },
+  { "Monster Health", S_CHOICE, m_conf, SK_X, dsda_config_skill_monster_health_factor, 0, skill_multiplier },
+  { "Friend Health", S_CHOICE, m_conf, SK_X, dsda_config_skill_friend_health_factor, 0, skill_multiplier },
+
+  PREV_PAGE(skill_options_builder),
+  FINAL_ENTRY
+};
+
+static void M_SkillBuilder(int choice)
+{
+  M_EnterSetup(&SkillBuilderDef, &set_skill_builder_active, skill_options[0]);
+}
+
+static void M_DrawSkillBuilder(void)
+{
+  M_ChangeMenu(NULL, mnact_full);
+
+  M_DrawBackground(g_menu_flat, 0);
+
+  M_DrawTitle(2, "CUSTOM SKILL BUILDER", cr_title); // M_CSTSKL
+  M_DrawInstructions();
+  M_DrawTabs(skill_pages, sizeof(skill_pages), TABS_Y);
+  M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
+}
+
+/////////////////////////////
+//
 // The level table.
 //
 
@@ -3766,7 +3990,7 @@ static void M_BuildLevelTable(void)
     if (map->best_skill) {
       dsda_StringPrintF(&m_text, "%d", map->best_skill);
       entry->m_text = m_text.string;
-      if (map->best_skill == num_skills)
+      if (map->best_skill == num_og_skills)
         entry->m_flags |= S_TC_SEL;
     }
     else {
@@ -4883,11 +5107,26 @@ static dboolean M_LevelTableResponder(int ch, int action, event_t* ev)
 
 static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
 {
+  setup_menu_t* ptr1 = current_setup_menu + set_menu_itemon;
+
+  // Execute functions
+  if (ptr1->m_flags & S_FUNC)
+  {
+    if (action == MENU_ENTER) {
+      if (M_ItemDisabled(ptr1))
+        return true;
+
+      if (ptr1->action)
+        ptr1->action();
+
+      M_SelectDone(ptr1);
+      return true;
+    }
+  }
+
   // changing an entry
   if (setup_select)
   {
-    setup_menu_t* ptr1 = current_setup_menu + set_menu_itemon;
-
     if (action == MENU_ESCAPE) // Exit key = no change
     {
       M_SelectDone(ptr1);                           // phares 4/17/98
@@ -5108,7 +5347,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
   {
     int flags = ptr1->m_flags;
 
-    if (dsda_StrictMode() && dsda_IsStrictConfig(ptr1->config_id))
+    if (M_ItemDisabled(ptr1))
       return true;
 
     // You've selected an item to change. Highlight it, post a new
@@ -5993,17 +6232,26 @@ dboolean M_Responder(event_t* ev) {
 // Plus a variety of routines that control the Big Font menu display.
 // Plus some initialization for game-dependant situations.
 
+static menuitem_t CustomSkillMenu[] = {
+  { 1, "M_CSTSKL", M_SkillBuilder, 'c', "Custom Skill...", 0, MENUF_OPTLUMP },
+};
+
 static void M_InitializeSkillMenu(void)
 {
   extern skill_info_t *skill_infos;
   int i;
 
+  // if skill has more than 7 items, remove custom skill space
+  int cskill_space      = num_og_skills < 7 && !raven; // looks bad in raven
+  int cskill_space_num  = customskill ? cskill_space ? 2 : 1 : 0;
+  int skill_list        = num_og_skills + cskill_space_num;
+
   SkillDef.lastOn = dsda_IntConfig(dsda_config_default_skill) - 1;
 
-  SkillDef.numitems = num_skills;
-  SkillDef.menuitems = Z_Calloc(num_skills, sizeof(*SkillDef.menuitems));
+  SkillDef.numitems = skill_list;
+  SkillDef.menuitems = Z_Calloc(skill_list, sizeof(*SkillDef.menuitems));
 
-  for (i = 0; i < num_skills; ++i)
+  for (i = 0; i < num_og_skills; ++i)
   {
     SkillDef.menuitems[i].status = 1;
 
@@ -6018,6 +6266,27 @@ static void M_InitializeSkillMenu(void)
 
     if (skill_infos[i].flags & SI_DEFAULT_SKILL)
       SkillDef.lastOn = i;
+  }
+
+  // Add Custom Skill
+  if (customskill)
+  {
+    // Find where Custom Skill is in menu
+    int num_cskill = num_og_skills + cskill_space;
+
+    // Add Custom Skill Spacing (if less than 7 items)
+    if (cskill_space)
+      SkillDef.menuitems[num_skills - 1].status = -1; // Disable selection for space
+
+    // Fill in Custom Skill Info
+    SkillDef.menuitems[num_cskill].status = CustomSkillMenu[0].status;
+
+    strcpy(SkillDef.menuitems[num_cskill].name, CustomSkillMenu[0].name);
+
+    SkillDef.menuitems[num_cskill].alttext  = CustomSkillMenu[0].alttext;
+    SkillDef.menuitems[num_cskill].routine  = CustomSkillMenu[0].routine;
+    SkillDef.menuitems[num_cskill].alphaKey = CustomSkillMenu[0].alphaKey;
+    SkillDef.menuitems[num_cskill].flags    = CustomSkillMenu[0].flags;
   }
 
   if (SkillDef.lastOn >= num_skills)
@@ -6176,30 +6445,22 @@ void M_Drawer (void)
       if (
         currentMenu->menuitems[i].status != -1 && (
           !currentMenu->menuitems[i].name[0] || !W_LumpNameExists(currentMenu->menuitems[i].name)
-        )
+        ) && !(currentMenu->menuitems[i].flags & MENUF_OPTLUMP)
       )
         ++lumps_missing;
 
-    if (!lumps_missing)
-      for (i = 0; i < max; i++)
-      {
-        if (currentMenu->menuitems[i].name[0])
-          V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
-                          currentMenu->menuitems[i].color, VPT_STRETCH);
-
-        y += LINEHEIGHT;
-      }
-    else
-      for (i = 0; i < max; i++)
-      {
-        const char *alttext = currentMenu->menuitems[i].alttext;
-
-        if (alttext)
-          M_WriteText(x, y + 8 - (M_StringHeight(alttext) / 2),
-                      alttext, currentMenu->menuitems[i].color);
-
-        y += LINEHEIGHT;
-      }
+    for (i = 0; i < max; i++)
+    {
+      const char *alttext = currentMenu->menuitems[i].alttext;
+      if (!lumps_missing && currentMenu->menuitems[i].name[0] &&
+          !(currentMenu->menuitems[i].flags & MENUF_OPTLUMP))
+        V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
+                        currentMenu->menuitems[i].color, VPT_STRETCH);
+      else if (alttext)
+        M_WriteText(x, y + 8 - (M_StringHeight(alttext) / 2),
+                    alttext, currentMenu->menuitems[i].color);
+      y += LINEHEIGHT;
+    }
 
     // DRAW SKULL
     if (max > 0)
