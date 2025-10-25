@@ -292,6 +292,12 @@ mline_t thingbox_guy[] =
 #undef R
 #define NUMTHINGBOXGUYLINES (sizeof(thingbox_guy)/sizeof(mline_t))
 
+#define R (FRACUNIT)
+mline_t arrowhead_guy[] = {{{(fixed_t)0, (fixed_t)(-.5 * R)}, {(fixed_t)(.75 * R), (fixed_t)0}},
+  {{(fixed_t)0, (fixed_t)(.5 * R)}, {(fixed_t)(.75 * R), (fixed_t)0}}};
+#undef R
+#define NUMARROWHEADGUYLINES (sizeof(arrowhead_guy)/sizeof(mline_t))
+
 int automap_active;
 int automap_overlay;
 int automap_rotate;
@@ -2485,13 +2491,6 @@ static void AM_drawThings(void)
         }
       }
 
-      if (map_things_appearance == map_things_appearance_box)
-      {
-        lineguy = thingbox_guy;
-        lineguylines = NUMTHINGBOXGUYLINES;
-        angle = 0x40000000;
-      }
-
       color = mapcolor_p->sprt;
 
       if (t->flags & MF_FRIEND && !t->player)
@@ -2504,6 +2503,14 @@ static void AM_drawThings(void)
         color = mapcolor_p->item;
       else if (t->flags & MF_SPECIAL)
         color = mapcolor_p->pickup;
+
+      if (map_things_appearance == map_things_appearance_box)
+      {
+        AM_drawLineCharacter(arrowhead_guy, NUMARROWHEADGUYLINES, scale, angle, color, p.x, p.y);
+        lineguy = thingbox_guy;
+        lineguylines = NUMTHINGBOXGUYLINES;
+        angle = 0x40000000;
+      }
 
       //jff 1/5/98 end added code for keys
       //jff previously entire code
