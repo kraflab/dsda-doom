@@ -35,6 +35,7 @@
 #include <math.h>
 #include <zlib.h>
 
+#include "doomdata.h"
 #include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
@@ -2066,8 +2067,8 @@ static void P_LoadLineDefs (int lump)
       ld->special_args[4] = mld->arg5;
       ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
       ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
-      ld->sidenum[0] = LittleShort(mld->sidenum[0]);
-      ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+      ld->sidenum[0] = (unsigned short)LittleShort(mld->sidenum[0]);
+      ld->sidenum[1] = (unsigned short)LittleShort(mld->sidenum[1]);
       P_SetLineID(ld);
     }
     else
@@ -2084,9 +2085,15 @@ static void P_LoadLineDefs (int lump)
       ld->special_args[4] = 0;
       ld->v1 = &vertexes[(unsigned short)LittleShort(mld->v1)];
       ld->v2 = &vertexes[(unsigned short)LittleShort(mld->v2)];
-      ld->sidenum[0] = LittleShort(mld->sidenum[0]);
-      ld->sidenum[1] = LittleShort(mld->sidenum[1]);
+      ld->sidenum[0] = (unsigned short)LittleShort(mld->sidenum[0]);
+      ld->sidenum[1] = (unsigned short)LittleShort(mld->sidenum[1]);
     }
+
+    if ((unsigned short) -1 == ld->sidenum[0])
+      ld->sidenum[0] = NO_INDEX;
+
+    if ((unsigned short) -1 == ld->sidenum[1])
+      ld->sidenum[1] = NO_INDEX;
 
     map_format.translate_line_flags(&ld->flags, &ld->activation);
 

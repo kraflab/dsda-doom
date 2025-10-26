@@ -319,7 +319,7 @@ typedef struct line_s
   line_flags_t flags;           // Animation related.
   short special;
   short id;
-  unsigned short sidenum[2];        // Visual appearance: SideDefs.
+  int32_t sidenum[2];    // Visual appearance: SideDefs.
   fixed_t bbox[4];       // A bounding box, for the linedef's extent
   slopetype_t slopetype; // To aid move clipping.
   sector_t *frontsector; // Front and back sector.
