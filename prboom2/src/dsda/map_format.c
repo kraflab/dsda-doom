@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "dsda/udmf.h"
 #include "lprintf.h"
 #include "p_spec.h"
 #include "r_main.h"
@@ -268,10 +269,10 @@ extern void P_PostProcessHereticLineSpecial(line_t *ld);
 extern void P_PostProcessHexenLineSpecial(line_t *ld);
 extern void P_PostProcessZDoomLineSpecial(line_t *ld);
 
-extern void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
-extern void P_PostProcessHereticSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
-extern void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
-extern void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i);
+extern void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
+extern void P_PostProcessHereticSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
+extern void P_PostProcessHexenSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
+extern void P_PostProcessZDoomSidedefSpecial(side_t *sd, const char bottom[8], const char mid[8], const char top[8], sector_t *sec, int i);
 
 extern void P_AnimateCompatibleSurfaces(void);
 extern void P_AnimateHereticSurfaces(void);
@@ -372,10 +373,6 @@ static const map_format_t zdoom_map_format = {
   .add_mobj_thing_id = dsda_AddMobjThingID,
   .remove_mobj_thing_id = dsda_RemoveMobjThingID,
   .iterate_spechit = P_IterateZDoomSpecHit,
-  .point_on_side = R_ZDoomPointOnSide,
-  .point_on_seg_side = R_ZDoomPointOnSegSide,
-  .point_on_line_side = P_ZDoomPointOnLineSide,
-  .point_on_divline_side = P_ZDoomPointOnDivlineSide,
   .mapthing_size = sizeof(hexen_mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = MT_PUSH,
@@ -427,10 +424,6 @@ static const map_format_t hexen_map_format = {
   .add_mobj_thing_id = P_InsertMobjIntoTIDList,
   .remove_mobj_thing_id = P_RemoveMobjFromTIDList,
   .iterate_spechit = NULL, // not used
-  .point_on_side = R_CompatiblePointOnSide,
-  .point_on_seg_side = R_CompatiblePointOnSegSide,
-  .point_on_line_side = P_CompatiblePointOnLineSide,
-  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(hexen_mapthing_t),
   .maplinedef_size = sizeof(hexen_maplinedef_t),
   .mt_push = -1,
@@ -482,10 +475,6 @@ static const map_format_t heretic_map_format = {
   .add_mobj_thing_id = NULL, // not used
   .remove_mobj_thing_id = NULL, // not used
   .iterate_spechit = P_IterateCompatibleSpecHit,
-  .point_on_side = R_CompatiblePointOnSide,
-  .point_on_seg_side = R_CompatiblePointOnSegSide,
-  .point_on_line_side = P_CompatiblePointOnLineSide,
-  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = -1,
@@ -537,10 +526,6 @@ static const map_format_t doom_map_format = {
   .add_mobj_thing_id = NULL, // not used
   .remove_mobj_thing_id = NULL, // not used
   .iterate_spechit = P_IterateCompatibleSpecHit,
-  .point_on_side = R_CompatiblePointOnSide,
-  .point_on_seg_side = R_CompatiblePointOnSegSide,
-  .point_on_line_side = P_CompatiblePointOnLineSide,
-  .point_on_divline_side = P_CompatiblePointOnDivlineSide,
   .mapthing_size = sizeof(doom_mapthing_t),
   .maplinedef_size = sizeof(doom_maplinedef_t),
   .mt_push = MT_PUSH,
@@ -552,11 +537,18 @@ static const map_format_t doom_map_format = {
   .visibility = VF_DOOM,
 };
 
-static void dsda_ApplyMapPrecision(void) {
-  R_PointOnSide = map_format.point_on_side;
-  R_PointOnSegSide = map_format.point_on_seg_side;
-  P_PointOnLineSide = map_format.point_on_line_side;
-  P_PointOnDivlineSide = map_format.point_on_divline_side;
+static void dsda_ApplyHighPrecision(void) {
+  R_PointOnSide = R_ZDoomPointOnSide;
+  R_PointOnSegSide = R_ZDoomPointOnSegSide;
+  P_PointOnLineSide = P_ZDoomPointOnLineSide;
+  P_PointOnDivlineSide = P_ZDoomPointOnDivlineSide;
+}
+
+static void dsda_ApplyLowPrecision(void) {
+  R_PointOnSide = R_CompatiblePointOnSide;
+  R_PointOnSegSide = R_CompatiblePointOnSegSide;
+  P_PointOnLineSide = P_CompatiblePointOnLineSide;
+  P_PointOnDivlineSide = P_CompatiblePointOnDivlineSide;
 }
 
 void dsda_ApplyZDoomMapFormat(void) {
@@ -565,11 +557,29 @@ void dsda_ApplyZDoomMapFormat(void) {
   if (!mbf21)
     I_Error("You must use complevel 21 when playing doom-in-hexen format maps.");
 
-  dsda_ApplyMapPrecision();
+  dsda_ApplyHighPrecision();
   dsda_MigrateMobjInfo();
 }
 
-void dsda_ApplyDefaultMapFormat(void) {
+void dsda_ApplyUDMF(void) {
+  if (udmf_namespace == UDMF_DOOM) {
+    map_format = doom_map_format;
+  }
+  else if (udmf_namespace == UDMF_HERETIC) {
+    map_format = heretic_map_format;
+  }
+  else if (udmf_namespace == UDMF_HEXEN) {
+    map_format = hexen_map_format;
+  }
+  else if (udmf_namespace == UDMF_DSDA) {
+    map_format = zdoom_map_format;
+  }
+
+  dsda_ApplyHighPrecision();
+  dsda_MigrateMobjInfo();
+}
+
+void dsda_ApplyBinaryMapFormat(void) {
   if (hexen)
     map_format = hexen_map_format;
   else if (heretic)
@@ -577,6 +587,6 @@ void dsda_ApplyDefaultMapFormat(void) {
   else
     map_format = doom_map_format;
 
-  dsda_ApplyMapPrecision();
+  dsda_ApplyLowPrecision();
   dsda_MigrateMobjInfo();
 }

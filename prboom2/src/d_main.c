@@ -2155,7 +2155,7 @@ static void D_DoomMainSetup(void)
 
   PostProcessDeh();
   dsda_AppendZDoomMobjInfo();
-  dsda_ApplyDefaultMapFormat();
+  dsda_ApplyBinaryMapFormat();
 
   lprintf(LO_DEBUG, "dsda_InitWadStats: Setting up wad stats.\n");
   dsda_InitWadStats();
