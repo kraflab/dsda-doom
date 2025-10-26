@@ -350,7 +350,7 @@ int dsda_UBossAction(mobj_t* mo) {
     if (gamemapinfo->bossactions[i].type == mo->type) {
       junk = *lines;
       junk.special = (short) gamemapinfo->bossactions[i].special;
-      junk.tag = (short) gamemapinfo->bossactions[i].tag;
+      junk.special_args[0] = (short) gamemapinfo->bossactions[i].tag;
 
       // use special semantics for line activation to block problem types.
       if (!P_UseSpecialLine(mo, &junk, 0, true))

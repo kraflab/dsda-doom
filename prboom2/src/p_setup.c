@@ -35,6 +35,7 @@
 #include <math.h>
 #include <zlib.h>
 
+#include "doomdef.h"
 #include "doomstat.h"
 #include "doomtype.h"
 #include "m_bbox.h"
@@ -131,7 +132,6 @@ int firstglvertex = 0;
 static nodes_version_t nodesVersion = DEFAULT_BSP_NODES;
 dboolean use_gl_nodes = false;
 dboolean has_behavior;
-dboolean udmf_map;
 
 // figgi 08/21/00 -- glSegs
 typedef struct
@@ -1760,6 +1760,8 @@ static void P_LoadUDMFThings(int lump)
       }
     }
 
+    mt.options |= MTF_NOTSINGLE|MTF_NOTDM|MTF_NOTCOOP;
+
     if (dmt->flags & UDMF_TF_SKILL1)
       mt.options |= MTF_SKILL1;
 
@@ -1779,13 +1781,22 @@ static void P_LoadUDMFThings(int lump)
       mt.options |= MTF_AMBUSH;
 
     if (dmt->flags & UDMF_TF_SINGLE)
+    {
       mt.options |= MTF_GSINGLE;
+      mt.options &= ~MTF_NOTSINGLE;
+    }
 
     if (dmt->flags & UDMF_TF_DM)
+    {
       mt.options |= MTF_GDEATHMATCH;
+      mt.options &= ~MTF_NOTDM;
+    }
 
     if (dmt->flags & UDMF_TF_COOP)
+    {
       mt.options |= MTF_GCOOP;
+      mt.options &= ~MTF_NOTCOOP;
+    }
 
     if (dmt->flags & UDMF_TF_FRIEND)
       mt.options |= MTF_FRIENDLY;
@@ -1912,21 +1923,21 @@ static void P_SetLineID(line_t *ld)
   switch (ld->special)
   {
     case zl_line_set_identification:
-      ld->tag = (unsigned short) 256 * ld->special_args[4] + ld->special_args[0];
+      ld->id = (unsigned short) 256 * ld->special_args[4] + ld->special_args[0];
       ld->special = 0;
       break;
     case zl_translucent_line:
-      ld->tag = ld->special_args[0];
+      ld->id = ld->special_args[0];
       break;
     case zl_teleport_line:
     case zl_scroll_texture_model:
-      ld->tag = ld->special_args[0];
+      ld->id = ld->special_args[0];
       break;
     case zl_polyobj_start_line:
-      ld->tag = ld->special_args[3];
+      ld->id = ld->special_args[3];
       break;
     case zl_polyobj_explicit_line:
-      ld->tag = ld->special_args[4];
+      ld->id = ld->special_args[4];
       break;
   }
 }
@@ -2047,7 +2058,7 @@ static void P_LoadLineDefs (int lump)
 
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = mld->special; // just a byte in hexen
-      ld->tag = 0;
+      ld->id = 0;
       ld->special_args[0] = mld->arg1;
       ld->special_args[1] = mld->arg2;
       ld->special_args[2] = mld->arg3;
@@ -2065,8 +2076,8 @@ static void P_LoadLineDefs (int lump)
 
       ld->flags = (unsigned short)LittleShort(mld->flags);
       ld->special = LittleShort(mld->special);
-      ld->tag = LittleShort(mld->tag);
-      ld->special_args[0] = 0;
+      ld->id = LittleShort(mld->tag);
+      ld->special_args[0] = ld->id; // UDMF: tag -> arg0/id split
       ld->special_args[1] = 0;
       ld->special_args[2] = 0;
       ld->special_args[3] = 0;
@@ -2081,7 +2092,7 @@ static void P_LoadLineDefs (int lump)
 
     P_CalculateLineDefProperties(ld);
 
-    dsda_AddLineID(ld->tag, i);
+    dsda_AddLineID(ld->id, i);
   }
 }
 
@@ -2103,7 +2114,7 @@ static void P_LoadUDMFLineDefs(int lump)
 
     ld->flags = (mld->flags & ML_BOOM);
     ld->special = mld->special;
-    ld->tag = (mld->id >= 0 ? mld->id : 0);
+    ld->id = (mld->id >= 0 ? mld->id : 0);
     ld->special_args[0] = mld->arg0;
     ld->special_args[1] = mld->arg1;
     ld->special_args[2] = mld->arg2;
@@ -2251,8 +2262,8 @@ static void P_LoadUDMFLineDefs(int lump)
     if (ld->healthgroup)
       dsda_AddLineToHealthGroup(ld);
 
-    if (ld->tag > 0)
-      dsda_AddLineID(ld->tag, i);
+    if (ld->id > 0)
+      dsda_AddLineID(ld->id, i);
 
     if (mld->moreids)
     {
@@ -2293,14 +2304,14 @@ void P_PostProcessCompatibleLineSpecial(line_t *ld)
       else
         tranmap = W_LumpByNum(lump - 1);
 
-      if (!ld->tag)             // if tag==0,
+      if (!ld->special_args[0]) // if tag==0,
       {
         ld->tranmap = tranmap;  // affect this linedef only
         ld->alpha = 0.66f;
       }
       else
         for (j=0;j<numlines;j++)          // if tag!=0,
-          if (lines[j].tag == ld->tag)    // affect all matching linedefs
+          if (lines[j].id == ld->special_args[0]) // affect all matching linedefs
           {
             lines[j].tranmap = tranmap;
             lines[j].alpha = 0.66f;
@@ -2386,7 +2397,7 @@ static void P_AllocateUDMFSideDefs(int lump)
   sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
 }
 
-void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
   // killough 4/4/98: allow sidedef texture names to be overloaded
   // killough 4/11/98: refined to allow colormaps to work as wall
@@ -2395,53 +2406,53 @@ void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const mapsidedef_t *msd, 
   {
     case 242:                       // variable colormap via 242 linedef
       sd->bottomtexture =
-        (sec->bottommap =   R_ColormapNumForName(msd->bottomtexture)) < 0 ?
-        sec->bottommap = 0, R_TextureNumForName(msd->bottomtexture): 0 ;
+        (sec->bottommap =   R_ColormapNumForName(bottom)) < 0 ?
+        sec->bottommap = 0, R_TextureNumForName(bottom): 0 ;
       sd->midtexture =
-        (sec->midmap =   R_ColormapNumForName(msd->midtexture)) < 0 ?
-        sec->midmap = 0, R_TextureNumForName(msd->midtexture)  : 0 ;
+        (sec->midmap =   R_ColormapNumForName(mid)) < 0 ?
+        sec->midmap = 0, R_TextureNumForName(mid)  : 0 ;
       sd->toptexture =
-        (sec->topmap =   R_ColormapNumForName(msd->toptexture)) < 0 ?
-        sec->topmap = 0, R_TextureNumForName(msd->toptexture)  : 0 ;
+        (sec->topmap =   R_ColormapNumForName(top)) < 0 ?
+        sec->topmap = 0, R_TextureNumForName(top)  : 0 ;
       break;
 
     case 260: // killough 4/11/98: apply translucency to 2s normal texture
-      sd->midtexture = strncasecmp("TRANMAP", msd->midtexture, 8) ?
-        (sd->special = W_CheckNumForName(msd->midtexture)) == LUMP_NOT_FOUND ||
+      sd->midtexture = strncasecmp("TRANMAP", mid, 8) ?
+        (sd->special = W_CheckNumForName(mid)) == LUMP_NOT_FOUND ||
         W_LumpLength(sd->special) != 65536 ?
-        sd->special=0, R_TextureNumForName(msd->midtexture) :
+        sd->special=0, R_TextureNumForName(mid) :
           (sd->special++, 0) : (sd->special=0);
-      sd->toptexture = R_TextureNumForName(msd->toptexture);
-      sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+      sd->toptexture = R_TextureNumForName(top);
+      sd->bottomtexture = R_TextureNumForName(bottom);
       break;
 
     default:                        // normal cases
-      sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-      sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-      sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+      sd->midtexture = R_SafeTextureNumForName(mid, i);
+      sd->toptexture = R_SafeTextureNumForName(top, i);
+      sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
       break;
   }
 }
 
-void P_PostProcessHereticSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessHereticSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
-  sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-  sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-  sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+  sd->midtexture = R_SafeTextureNumForName(mid, i);
+  sd->toptexture = R_SafeTextureNumForName(top, i);
+  sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
-void P_PostProcessHexenSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessHexenSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
-  sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-  sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-  sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+  sd->midtexture = R_SafeTextureNumForName(mid, i);
+  sd->toptexture = R_SafeTextureNumForName(top, i);
+  sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
-void P_PostProcessZDoomSidedefSpecial(side_t *sd, const mapsidedef_t *msd, sector_t *sec, int i)
+void P_PostProcessZDoomSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
-  sd->midtexture = R_SafeTextureNumForName(msd->midtexture, i);
-  sd->toptexture = R_SafeTextureNumForName(msd->toptexture, i);
-  sd->bottomtexture = R_SafeTextureNumForName(msd->bottomtexture, i);
+  sd->midtexture = R_SafeTextureNumForName(mid, i);
+  sd->toptexture = R_SafeTextureNumForName(top, i);
+  sd->bottomtexture = R_SafeTextureNumForName(bottom, i);
 }
 
 // killough 4/4/98: delay using texture names until
@@ -2478,7 +2489,7 @@ static void P_LoadSideDefs(int lump)
       sd->sector = sec = &sectors[sector_num];
     }
 
-    map_format.post_process_sidedef_special(sd, msd, sec, i);
+    map_format.post_process_sidedef_special(sd, msd->bottomtexture, msd->midtexture, msd->toptexture, sec, i);
   }
 }
 
@@ -2536,9 +2547,7 @@ static void P_LoadUDMFSideDefs(int lump)
 
     sd->sector = &sectors[msd->sector];
 
-    sd->midtexture = R_SafeTextureNumForName(msd->texturemiddle, i);
-    sd->toptexture = R_SafeTextureNumForName(msd->texturetop, i);
-    sd->bottomtexture = R_SafeTextureNumForName(msd->texturebottom, i);
+    map_format.post_process_sidedef_special(sd, msd->texturebottom, msd->texturemiddle, msd->texturetop, sd->sector, i);
 
     if (sd->scalex_top != FRACUNIT || sd->scaley_top != FRACUNIT ||
         sd->scalex_mid != FRACUNIT || sd->scaley_mid != FRACUNIT ||
@@ -3360,14 +3369,13 @@ dboolean P_CheckLumpsForSameSource(int lump1, int lump2)
 
 static dboolean P_CheckForUDMF(int lumpnum)
 {
-  int i;
+  const int32_t textmap = lumpnum + ML_TEXTMAP;
 
-  i = lumpnum + ML_TEXTMAP;
-  if (P_CheckLumpsForSameSource(lumpnum, i))
+  if (P_CheckLumpsForSameSource(lumpnum, textmap))
   {
-    if (!strncasecmp(lumpinfo[i].name, "TEXTMAP", 8))
+    if (!strncasecmp(lumpinfo[textmap].name, "TEXTMAP", 8))
     {
-      dsda_ParseUDMF(W_LumpByNum(i), W_LumpLength(i), I_Error);
+      dsda_ParseUDMF(W_LumpByNum(textmap), W_LumpLength(textmap), I_Error);
       return true;
     }
   }
@@ -3420,15 +3428,9 @@ static void P_VerifyLevelComponents(int lumpnum)
 
 static void P_UpdateMapFormat()
 {
-  if (udmf_map)
+  if (udmf_namespace != UDMF_NONE)
   {
-    if (heretic)
-      I_Error("UDMF maps are not supported in Heretic yet");
-
-    if (hexen)
-      I_Error("UDMF maps are not supported in Hexen yet");
-
-    dsda_ApplyZDoomMapFormat();
+    dsda_ApplyUDMF();
   }
   else
   {
@@ -3446,7 +3448,7 @@ static void P_UpdateMapFormat()
     }
     else
     {
-      dsda_ApplyDefaultMapFormat();
+      dsda_ApplyBinaryMapFormat();
     }
   }
 }
@@ -3523,7 +3525,7 @@ map_loader_t udmf_map_loader = {
   .po_load_things = PO_LoadUDMFThings,
 };
 
-map_loader_t legacy_map_loader = {
+map_loader_t binary_map_loader = {
   .load_vertexes = P_LoadVertexes,
   .load_sectors = P_LoadSectors,
   .load_things = P_LoadThings,
@@ -3538,9 +3540,7 @@ map_loader_t map_loader;
 
 void P_UpdateMapLoader(int lumpnum)
 {
-  udmf_map = P_CheckForUDMF(lumpnum);
-
-  map_loader = udmf_map ? udmf_map_loader : legacy_map_loader;
+  map_loader = (P_CheckForUDMF(lumpnum)) ? udmf_map_loader : binary_map_loader;
 }
 
 //
