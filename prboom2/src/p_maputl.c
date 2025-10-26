@@ -47,6 +47,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda/map_format.h"
+#include <dsda/configuration.h>
 
 //
 // P_AproxDistance
@@ -773,6 +774,9 @@ dboolean P_TraverseIntercepts(traverser_t func, fixed_t maxfrac)
   return true;                  // everything was traversed
 }
 
+amlinetrace_t amlinetraces[NUMAMLINETRACES] = {0};
+unsigned int cur_amlinetrace = 0;
+
 //
 // P_PathTraverse
 // Traces a line from x1,y1 to x2,y2,
@@ -794,6 +798,17 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
   int     mapx1, mapy1;
   int     mapxstep, mapystep;
   int     count;
+
+	if (dsda_IntConfig(dsda_config_map_traces))
+	{
+		extern int gametic;
+		amlinetraces[cur_amlinetrace].x1 = x1;
+		amlinetraces[cur_amlinetrace].x2 = x2;
+		amlinetraces[cur_amlinetrace].y1 = y1;
+		amlinetraces[cur_amlinetrace].y2 = y2;
+		amlinetraces[cur_amlinetrace].when = gametic;
+		cur_amlinetrace = (cur_amlinetrace + 1) % NUMAMLINETRACES;
+	}
 
   validcount++;
   intercept_p = intercepts;
