@@ -2931,7 +2931,7 @@ void AM_Drawer (dboolean minimap)
     AM_drawGrid(mapcolor_p->grid);      //jff 1/7/98 grid default color
   AM_drawWalls();
   AM_drawPlayers();
-  if (dsda_IntConfig(dsda_config_map_traces) && dsda_RevealAutomap())
+  if (dsda_IntConfig(dsda_config_map_traces) && dsda_RevealAutomap() == 2)
     AM_drawLineTraces();
   AM_drawThings(); //jff 1/5/98 default double IDDT sprite
   AM_DrawConnections();
