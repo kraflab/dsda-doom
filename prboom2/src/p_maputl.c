@@ -806,7 +806,7 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 		amlinetraces[cur_amlinetrace].x2 = x2;
 		amlinetraces[cur_amlinetrace].y1 = y1;
 		amlinetraces[cur_amlinetrace].y2 = y2;
-		amlinetraces[cur_amlinetrace].when = gametic;
+		amlinetraces[cur_amlinetrace].when = leveltime;
 		cur_amlinetrace = (cur_amlinetrace + 1) % NUMAMLINETRACES;
 	}
 

@@ -2782,7 +2782,7 @@ static void AM_drawLineTraces(void)
   for (unsigned short i = 0; i < NUMAMLINETRACES; i++)
   {
     amlinetrace_t *p = &amlinetraces[(cur_amlinetrace + i) % NUMAMLINETRACES];
-    int fade = (gametic - p->when) << 1;
+    int fade = (leveltime - p->when) << 1;
     if (fade < 24 && (p->x1 != p->x2 || p->y1 != p->y2))
     {
       int color;
@@ -2801,7 +2801,7 @@ static void AM_drawLineTraces(void)
         AM_SetMPointFloatValue(&pathline.b);
       }
       // red to fading gray
-      color = gametic <= p->when + 1 ? 176 : 78 + fade;
+      color = leveltime <= p->when + 1 ? 176 : 78 + fade;
       AM_drawMline(&pathline, color);
     }
   }
