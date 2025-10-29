@@ -116,7 +116,7 @@ static char* dsda_FloatString(Scanner &scanner) {
 static void dsda_ParseUDMFLineDef(Scanner &scanner) {
   udmf_line_t line = { 0 };
 
-  line.id = -1;
+  line.id = (udmf_namespace == UDMF_DSDA) ? -1 : 0;
   line.sideback = -1;
   line.alpha = 1.0;
 
