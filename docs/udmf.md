@@ -6,13 +6,13 @@ In principle, udmf features supported by both dsda-doom and gzdoom should work t
 
 It's strongly recommended to configure defaults with [MAPINFO](./mapinfo.md) for cross-port consistency.
 
-DSDA-Doom supports the `zdoom` and `dsda` namespaces and the zdbsp extended gl nodes gln, gl2, and gl3. Properties marked with a `*` are only supported by the opengl renderer.
+DSDA-Doom supports the `doom`, `heretic`, `hexen`, `zdoom` and `dsda` namespaces, as well as the XGLN/ZGLN, XGL2/ZGL2 and XGL3/ZGL3 extended node formats. Properties marked with a `*` are only supported by the opengl renderer.
 
 ### Linedefs
 
 | Property | Description |
 | --- | --- |
-| **id** _integer_ | Line ID / tag (default -1). |
+| **id** _integer_ | Line ID / tag (default -1 in `hexen`, `zdoom` and `dsda` namespaces, 0 otherwise). |
 | **v1** _integer_ | Index of the first vertex. |
 | **v2** _integer_ | Index of the second vertex. |
 | **blocking** _bool_ | Blocks things. |
