@@ -2993,6 +2993,7 @@ setup_menu_t auto_appearance_settings[] =
 {
   { "Enable textured display", S_YESNO, m_conf, AA_X, dsda_config_map_textured },
   { "Things appearance", S_CHOICE, m_conf, AA_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
+  { "Show Line Traces", S_YESNO, m_conf, AA_X, dsda_config_map_traces },
   EMPTY_LINE,
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AA_X},
   { "Textured automap", S_NUM, m_conf, AA_X, dsda_config_map_textured_trans },

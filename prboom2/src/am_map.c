@@ -2777,6 +2777,36 @@ static void AM_drawCrosshair(int color)
   V_DrawLine(&line, color);
 }
 
+static void AM_drawLineTraces(void)
+{
+  for (unsigned short i = 0; i < NUMAMLINETRACES; i++)
+  {
+    amlinetrace_t *p = &amlinetraces[(cur_amlinetrace + i) % NUMAMLINETRACES];
+    int fade = (leveltime - p->when) << 1;
+    if (fade < 24 && (p->x1 != p->x2 || p->y1 != p->y2))
+    {
+      int color;
+      mline_t pathline = {
+        {p->x1 >> FRACTOMAPBITS, p->y1 >> FRACTOMAPBITS},
+        {p->x2 >> FRACTOMAPBITS, p->y2 >> FRACTOMAPBITS}};
+
+      if (automap_rotate)
+      {
+        AM_rotatePoint(&pathline.a);
+        AM_rotatePoint(&pathline.b);
+      }
+      else
+      {
+        AM_SetMPointFloatValue(&pathline.a);
+        AM_SetMPointFloatValue(&pathline.b);
+      }
+      // red to fading gray
+      color = leveltime <= p->when + 1 ? 176 : 78 + fade;
+      AM_drawMline(&pathline, color);
+    }
+  }
+}
+
 void M_ChangeMapTextured(void)
 {
   map_textured = dsda_IntConfig(dsda_config_map_textured);
@@ -2901,6 +2931,8 @@ void AM_Drawer (dboolean minimap)
     AM_drawGrid(mapcolor_p->grid);      //jff 1/7/98 grid default color
   AM_drawWalls();
   AM_drawPlayers();
+  if (dsda_IntConfig(dsda_config_map_traces) && dsda_RevealAutomap() == 2)
+    AM_drawLineTraces();
   AM_drawThings(); //jff 1/5/98 default double IDDT sprite
   AM_DrawConnections();
   AM_drawCrosshair(mapcolor_p->hair);   //jff 1/7/98 default crosshair color

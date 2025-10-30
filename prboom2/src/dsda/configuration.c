@@ -1083,6 +1083,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "map_trail_size", dsda_config_map_trail_size,
     dsda_config_int, 0, 350, { 105 }, NULL, STRICT_INT(0), AM_initPlayerTrail
   },
+  [dsda_config_map_traces] = {
+    "map_traces", dsda_config_map_traces,
+    CONF_BOOL(0)
+  },
   [dsda_config_automap_overlay] = {
     "automap_overlay", dsda_config_automap_overlay,
     dsda_config_int, 0, 2, { 0 }, &automap_overlay
