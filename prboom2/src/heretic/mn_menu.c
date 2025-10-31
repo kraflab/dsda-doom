@@ -104,10 +104,10 @@ extern void M_SaveGame(int choice);
 //
 /////////////////////////////
 
-enum { infoempty1, info1_end } info_e1;
-enum { infoempty2, info2_end } info_e2;
-enum { infoempty3, info3_end } info_e3;
-enum { infoempty4, info4_end } info_e4;
+enum info_e1 { infoempty1, info1_end };
+enum info_e2 { infoempty2, info2_end };
+enum info_e3 { infoempty3, info3_end };
+enum info_e4 { infoempty4, info4_end };
 
 menuitem_t InfoMenu1[] = { {1,"",MN_Info2,0} };
 menuitem_t InfoMenu2[] = { {1,"",MN_Info3,0} };
@@ -190,28 +190,24 @@ void MN_DrawAd (void)
   ravenlump = (heretic && (gamemode == shareware)) ? "ORDER" : "CREDIT";
   M_ChangeMenu(NULL, mnact_full);
   V_DrawRawScreen(ravenlump);
-  return;
 }
 
 void MN_DrawHelp1 (void)
 {
   M_ChangeMenu(NULL, mnact_full);
   V_DrawRawScreen("HELP1");
-  return;
 }
 
 void MN_DrawHelp2 (void)
 {
   M_ChangeMenu(NULL, mnact_full);
   V_DrawRawScreen("HELP2");
-  return;
 }
 
 void MN_DrawCredits (void)
 {
   M_ChangeMenu(NULL, mnact_full);
   V_DrawRawScreen("CREDIT");
-  return;
 }
 
 /////////////////////////////
@@ -220,7 +216,7 @@ void MN_DrawCredits (void)
 //
 /////////////////////////////
 
-enum
+enum rmain_e
 {
   rnewgame = 0,
   roptions,
@@ -228,7 +224,7 @@ enum
   rinfo,
   rquitdoom,
   rmain_end
-} rmain_e;
+};
 
 menuitem_t RavenMainMenu[]=
 {
@@ -246,12 +242,12 @@ menuitem_t RavenMainMenu[]=
 //
 /////////////////////////////
 
-enum
+enum saveload_e
 {
   rloadgame,
   rsavegame,
   rsaveload_end
-} saveload_e;
+};
 
 menuitem_t SaveLoadMenu[]=
 {

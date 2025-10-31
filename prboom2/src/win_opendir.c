@@ -57,7 +57,6 @@ DIR *opendir(const _TCHAR *szPath)
    DIR *nd;
    unsigned int rc;
    _TCHAR szFullPath[MAX_PATH];
-	
    errno = 0;
    
    if(!szPath)
@@ -110,9 +109,9 @@ DIR *opendir(const _TCHAR *szPath)
    /* Add on a slash if the path does not end with one. */
    if(nd->dd_name[0] != _T('\0')
       && _tcsrchr(nd->dd_name, _T('/'))  != nd->dd_name
-					    + _tcslen(nd->dd_name) - 1
+         + _tcslen(nd->dd_name) - 1
       && _tcsrchr(nd->dd_name, _T('\\')) != nd->dd_name
-      					    + _tcslen(nd->dd_name) - 1)
+         + _tcslen(nd->dd_name) - 1)
    {
       _tcscat(nd->dd_name, SLASH);
    }

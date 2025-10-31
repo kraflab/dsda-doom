@@ -69,6 +69,7 @@
 
 // p_lights
 
+// relative to TICRATE
 #define GLOWSPEED       8
 #define STROBEBRIGHT    5
 #define FASTDARK        15
@@ -1263,7 +1264,7 @@ dboolean P_UseSpecialLine
 ( mobj_t* thing,
   line_t* line,
   int   side,
-	dboolean noplayercheck);
+  dboolean noplayercheck);
 
 void P_PlayerInSpecialSector
 ( player_t* player );

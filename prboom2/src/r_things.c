@@ -980,28 +980,28 @@ void R_AddAllAliveMonstersSprites(void)
 // [crispy] apply bobbing (or centering) to the player's weapon sprite
 static void R_ApplyWeaponBob (fixed_t *sx, dboolean bobx, fixed_t *sy, dboolean boby)
 {
-	const angle_t angle = (128 * leveltime) & FINEMASK;
-	fixed_t bob = viewplayer->bob * dsda_WeaponBob() / 4;
+  const angle_t angle = (128 * leveltime) & FINEMASK;
+  fixed_t bob = viewplayer->bob * dsda_WeaponBob() / 4;
 
-	if (sx)
-	{
-		*sx = FRACUNIT;
+  if (sx)
+  {
+    *sx = FRACUNIT;
 
-		if (bobx)
-		{
-			 *sx += FixedMul(bob, finecosine[angle]);
-		}
-	}
+    if (bobx)
+    {
+       *sx += FixedMul(bob, finecosine[angle]);
+    }
+  }
 
-	if (sy)
-	{
-		*sy = 32 * FRACUNIT; // [crispy] WEAPONTOP
+  if (sy)
+  {
+    *sy = 32 * FRACUNIT; // [crispy] WEAPONTOP
 
-		if (boby)
-		{
-			*sy += FixedMul(bob, finesine[angle & (FINEANGLES / 2 - 1)]);
-		}
-	}
+    if (boby)
+    {
+      *sy += FixedMul(bob, finesine[angle & (FINEANGLES / 2 - 1)]);
+    }
+  }
 }
 
 //

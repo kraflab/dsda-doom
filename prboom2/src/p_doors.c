@@ -382,7 +382,7 @@ void T_VerticalHexenDoor(vldoor_t *door)
             break;
           case DREV_CLOSE30THENOPEN:
             door->direction = 0;
-            door->topcountdown = 35 * 30;
+            door->topcountdown = TICRATE * 30;
             break;
           default:
             break;
@@ -837,7 +837,7 @@ void P_SpawnDoorCloseIn30 (sector_t* sec)
   door->direction = 0;
   door->type = g_door_normal;
   door->speed = VDOORSPEED;
-  door->topcountdown = 30 * 35;
+  door->topcountdown = 30 * TICRATE;
   door->line = NULL; // jff 1/31/98 remember line that triggered us
   door->lighttag = 0; /* killough 10/98: no lighting changes */
 }
@@ -872,7 +872,7 @@ void P_SpawnDoorRaiseIn5Mins
   door->topheight = P_FindLowestCeilingSurrounding(sec);
   door->topheight -= 4*FRACUNIT;
   door->topwait = VDOORWAIT;
-  door->topcountdown = 5 * 60 * 35;
+  door->topcountdown = 5 * 60 * TICRATE;
   door->line = NULL; // jff 1/31/98 remember line that triggered us
   door->lighttag = 0; /* killough 10/98: no lighting changes */
 }
