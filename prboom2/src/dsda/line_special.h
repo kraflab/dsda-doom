@@ -46,7 +46,7 @@ typedef enum {
 //zl_door_animated                       = 14,
 //zl_autosave                            = 15,
 //zl_transfer_wall_light                 = 16,
-//zl_thing_raise                         = 17,
+  zl_thing_raise                         = 17,
 //zl_start_conversation                  = 18,
   zl_thing_stop                          = 19,
   zl_floor_lower_by_value                = 20,
