@@ -60,6 +60,7 @@
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/line_special.h"
 #include "dsda/settings.h"
 #include "dsda/skill_info.h"
 #include "dsda/spawn_number.h"
@@ -515,6 +516,14 @@ static void P_XYMovement (mobj_t* mo)
             return;
           }
         }
+
+        // [RH] Don't explode on horizon lines.
+        if (map_format.zdoom && blockline->special == zl_line_horizon)
+        {
+          P_RemoveMobj(mo);
+          return;
+        }
+
         P_ExplodeMissile(mo);
       }
       else // whatever else it is, it is now standing still in (x,y)

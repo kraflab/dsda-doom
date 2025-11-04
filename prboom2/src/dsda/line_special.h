@@ -38,7 +38,7 @@ typedef enum {
   zl_polyobj_move_times_8                = 6,
   zl_polyobj_door_swing                  = 7,
   zl_polyobj_door_slide                  = 8,
-//zl_line_horizon                        = 9,
+  zl_line_horizon                        = 9,
   zl_door_close                          = 10,
   zl_door_open                           = 11,
   zl_door_raise                          = 12,
