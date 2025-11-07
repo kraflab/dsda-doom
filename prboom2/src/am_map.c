@@ -2866,7 +2866,7 @@ void AM_Drawer (dboolean minimap)
 
   V_BeginAutomapDraw();
 
-  if (automap_follow)
+  if (automap_follow || minimap)
     AM_doFollowPlayer();
 
   // Change the zoom if necessary
