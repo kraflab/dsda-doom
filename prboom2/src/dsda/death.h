@@ -15,8 +15,8 @@
 //	DSDA Death
 //
 
-#ifndef __DSDA_DEMO__
-#define __DSDA_DEMO__
+#ifndef __DSDA_DEATH__
+#define __DSDA_DEATH__
 
 void dsda_DeathUse(player_t* player);
 
