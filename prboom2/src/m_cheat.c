@@ -332,6 +332,9 @@ void M_CheatGod(void)
     mt.options = 1; // arbitrary non-zero value
     P_SpawnPlayer(consoleplayer, &mt);
 
+    // reset view to center (heretic / hexen)
+    plyr->lookdir = 0;
+
     // spawn a teleport fog
     an = plyr->mo->angle >> ANGLETOFINESHIFT;
     P_SpawnMobj(plyr->mo->x + 20*finecosine[an],
