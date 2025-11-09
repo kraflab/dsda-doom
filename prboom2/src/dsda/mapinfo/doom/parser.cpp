@@ -382,6 +382,9 @@ static void dsda_ParseDoomMapInfoMapBlock(Scanner &scanner, doom_mapinfo_map_t &
     else if (scanner.StringMatch("BorderTexture")) {
       SCAN_STRING(map.border_texture);
     }
+    else if (scanner.StringMatch("Lightning")) {
+      map.lightning = scanner.number;
+    }
     else if (scanner.StringMatch("EvenLighting")) {
       map.flags |= DMI_EVEN_LIGHTING;
       map.flags &= ~DMI_SMOOTH_LIGHTING;
