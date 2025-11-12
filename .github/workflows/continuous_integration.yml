@@ -61,7 +61,7 @@ jobs:
             artifact-path: build/*.zip
 
           - name: "macOS x64 Clang"
-            os: macos-13
+            os: macos-15-intel
             build_type: "Release"
             extra_options: "-G Ninja"
             release: true
