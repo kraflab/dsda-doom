@@ -78,6 +78,7 @@ typedef struct {
   char* author;
   int level_num;
   int cluster;
+  dboolean lightning;
   doom_mapinfo_map_next_t next;
   doom_mapinfo_map_next_t secret_next;
   doom_mapinfo_sky_t sky1;
