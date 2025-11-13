@@ -167,7 +167,9 @@ void dsda_UnArchiveGameModifiers(void)
   P_LOAD_X(saved_nomonsters);
   P_LOAD_X(saved_coop_spawns);
 
-  dsda_UpdateIntConfig(dsda_config_pistol_start,     saved_pistolstart, true);
+  // If "Always Pistol Start" is enabled, skip resetting "Pistol Start" upon load
+  if (!dsda_IntConfig(dsda_config_always_pistol_start) && dsda_IntConfig(dsda_config_pistol_start))
+    dsda_UpdateIntConfig(dsda_config_pistol_start,     saved_pistolstart, true);
   dsda_UpdateIntConfig(dsda_config_respawn_monsters, saved_respawnparm, true);
   dsda_UpdateIntConfig(dsda_config_fast_monsters,    saved_fastparm,    true);
   dsda_UpdateIntConfig(dsda_config_no_monsters,      saved_nomonsters,  true);
