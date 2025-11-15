@@ -38,6 +38,20 @@ typedef enum {
   death_use_reload,
 } death_use_action_t;
 
+int dsda_SkipDeathUseAction(void)
+{
+  // if demo playback, don't skip
+  if (demoplayback)
+    return false;
+
+  // if demo recording and death_use_nothing is set, skip DeathUseAction
+  if (demorecording)
+    if (players[consoleplayer].playerstate == PST_DEAD && dsda_IntConfig(dsda_config_death_use_action) == death_use_nothing)
+      return true;
+
+  return false;
+}
+
 static int dsda_DeathUseAction(void)
 {
   if (demorecording ||
@@ -50,6 +64,9 @@ static int dsda_DeathUseAction(void)
 }
 
 void dsda_DeathUse(player_t* player) {
+  if (dsda_SkipDeathUseAction())
+    return;
+
   switch (dsda_DeathUseAction())
   {
     case death_use_default:
