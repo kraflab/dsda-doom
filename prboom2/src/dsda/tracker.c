@@ -58,6 +58,13 @@ mobj_t* dsda_FindMobj(int id) {
   return NULL;
 }
 
+int dsda_GetMobjIndex(mobj_t* mobj) {
+    if (mobj == NULL) {
+        return -1;
+    }
+    return mobj->index;
+}
+
 static void dsda_WipeTracker(int i) {
   dsda_tracker[i].type = dsda_tracker_nothing;
   dsda_tracker[i].id = 0;
