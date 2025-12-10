@@ -610,7 +610,7 @@ int W_LumpNumExists(int lump)
 
 int W_PWADLumpNumExists(int lump)
 {
-  return W_LumpNumExists(lump) && (lumpinfo[lump].source == source_pwad);
+  return W_LumpNumExists(lump) && (lumpinfo[lump].source == source_pwad || lumpinfo[lump].source == source_auto_load);
 }
 
 int W_LumpNameExists(const char *name)
