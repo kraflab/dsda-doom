@@ -763,6 +763,11 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
       mobj = (mobj_t *) th;
 
+      if (mobj->flags & MF_RESSURECTED)
+      {
+        continue;
+      }
+
       if ((!alive || mobj->health > 0) && mobj->flags & flags)
       {
         dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
