@@ -763,7 +763,7 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
       mobj = (mobj_t *) th;
 
-      if (mobj->flags & MF_RESSURECTED)
+      if (mobj->intflags & MIF_SPAWNED_BY_ICON)
       {
         continue;
       }
