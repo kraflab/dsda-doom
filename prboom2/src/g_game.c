@@ -2713,7 +2713,7 @@ void G_Compatibility(void)
     { mbf21_compatibility, mbf21_compatibility },
     // comp_reservedlineflag - ML_RESERVED clears extended flags
     { mbf21_compatibility, mbf21_compatibility },
-    // comp_thingsectorlight - MObjs are lit according to the average of transferred light levels
+    // comp_thingsectorlight - Sprites are lit according to the average of transferred light levels
     { mbf21_compatibility, mbf21_compatibility },
   };
   unsigned int i;
