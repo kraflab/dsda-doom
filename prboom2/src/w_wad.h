@@ -65,17 +65,18 @@ typedef struct
 // Ty 08/29/98 - add source field to identify where this lump came from
 typedef enum {
   source_skip = -1,
-  source_iwad=0,    // iwad file load
-  source_pre,       // predefined lump
-  source_auto_load, // lump auto-loaded by config file
-  source_pwad,      // pwad file load
-  source_lmp,       // lmp file load
-  source_net        // CPhipps
+  source_iwad=0,          // iwad file load
+  source_port_wad,        // predefined lump
+  source_auto_load,       // lump auto-loaded by config file
+  source_pwad_auto_load,  // pwad dir auto-load
+  source_pwad,            // pwad file load
+  source_lmp,             // lmp file load
+  source_net,             // CPhipps
 
   //e6y
-//  ,source_deh_auto_load
-  ,source_deh
-  ,source_err
+//  source_deh_auto_load,
+  source_deh,
+  source_err
 
 } wad_source_t;
 
@@ -171,6 +172,10 @@ int W_LumpNameExists(const char *name);
 int W_LumpNameExists2(const char *name, int ns);
 int W_PWADLumpNumExists(int lump);
 int W_PWADLumpNameExists(const char *name);
+int W_AUTOLumpNumExists(int lump);
+int W_AUTOLumpNameExists(const char *name);
+int W_PWADLumpNumExists2(int lump);
+int W_PWADLumpNameExists2(const char *name);
 int W_PWADMapExists(void);
 
 // CPhipps - convenience macros
