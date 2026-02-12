@@ -615,6 +615,8 @@ int W_PWADLumpNumExists(int lump)
 
 int W_LumpNameExists(const char *name)
 {
+  if (!name)
+    return false;
   return W_CheckNumForName(name) != LUMP_NOT_FOUND;
 }
 
