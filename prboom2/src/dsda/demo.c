@@ -794,28 +794,9 @@ void dsda_WriteDSDADemoHeader(byte** p) {
 }
 
 void dsda_ApplyDSDADemoFormat(byte** demo_p) {
-  dboolean use_dsda_format = false;
-
-  if (map_format.zdoom)
-  {
-    if (!mbf21)
-      I_Error("You must use complevel 21 when recording in advanced formats.");
-
-    use_dsda_format = true;
-  }
-  else if (dsda_UseMapinfo())
-  {
-    use_dsda_format = true;
-  }
-
   if (dsda_Flag(dsda_arg_dsdademo))
   {
-    use_dsda_format = true;
     dsda_EnableCasualExCmdFeatures();
-  }
-
-  if (use_dsda_format)
-  {
     dsda_EnableExCmd();
     dsda_WriteDSDADemoHeader(demo_p);
   }
