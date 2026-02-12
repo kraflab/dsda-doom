@@ -643,7 +643,7 @@ void Scanner::Unescape(char *str)
 		if (c != '\\') {
 			*str++ = c;
 		}
-		else {
+		else if (*p) {
 			switch (*p) {
 			case 'a':
 				*str++ = '\a';
@@ -718,6 +718,10 @@ void Scanner::Unescape(char *str)
 				break;
 			}
 			p++;
+		}
+		else
+		{
+			// Trailing backslash
 		}
 	}
 	*str = 0;
