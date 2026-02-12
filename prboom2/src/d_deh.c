@@ -1588,7 +1588,7 @@ void deh_changeCompTranslucency(void)
   if (raven) return;
 
   boom_translucent_sprites = dsda_IntConfig(dsda_config_translucent_sprites);
-  vanilla_translucent_sprites = boom_translucent_sprites > 1;
+  vanilla_translucent_sprites = !dsda_StrictMode() && boom_translucent_sprites > 1;
   translucency_active = (compatibility_level >= boom_compatibility_compatibility) ? !comp[comp_translucency] : vanilla_translucent_sprites;
 
   // Reset translucency
