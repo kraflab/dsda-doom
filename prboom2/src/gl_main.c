@@ -682,7 +682,7 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
 // use colormaps[0] as a fallback in such a case.
 const lighttable_t *gld_GetActiveColormap()
 {
-  if (V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed())
+  if (V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed())
     return colormaps[0];
   else if (fixedcolormap)
     return fixedcolormap;
