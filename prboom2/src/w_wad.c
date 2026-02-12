@@ -167,7 +167,7 @@ static void W_AddFile(wadfile_info_t *wadfile)
   startlump = numlumps;
 
   // mark lumps from internal resource
-  if (wadfile->src == source_auto_load)
+  if (wadfile->src == source_port_wad)
   {
     int len = strlen(WAD_DATA);
     int len_file = strlen(wadfile->name);
@@ -610,7 +610,17 @@ int W_LumpNumExists(int lump)
 
 int W_PWADLumpNumExists(int lump)
 {
-  return W_LumpNumExists(lump) && (lumpinfo[lump].source == source_pwad);
+  return W_LumpNumExists(lump) && (lumpinfo[lump].source == source_pwad || lumpinfo[lump].source == source_pwad_auto_load);
+}
+
+int W_AUTOLumpNumExists(int lump)
+{
+  return W_LumpNumExists(lump) && (lumpinfo[lump].source == source_auto_load);
+}
+
+int W_PWADLumpNumExists2(int lump)
+{
+  return (W_AUTOLumpNumExists(lump) || W_PWADLumpNumExists(lump));
 }
 
 int W_LumpNameExists(const char *name)
@@ -628,9 +638,19 @@ int W_PWADLumpNameExists(const char *name)
   return W_PWADLumpNumExists(W_CheckNumForName(name));
 }
 
+int W_AUTOLumpNameExists(const char *name)
+{
+  return W_AUTOLumpNumExists(W_CheckNumForName(name));
+}
+
+int W_PWADLumpNameExists2(const char *name)
+{
+  return (W_AUTOLumpNumExists(W_CheckNumForName(name)) || W_PWADLumpNumExists(W_CheckNumForName(name)));
+}
+
 int W_PWADMapExists(void)
 {
-  return W_PWADLumpNameExists("THINGS") || W_PWADLumpNameExists("TEXTMAP");
+  return W_PWADLumpNameExists2("THINGS") || W_PWADLumpNameExists2("TEXTMAP");
 }
 
 void W_Shutdown(void)

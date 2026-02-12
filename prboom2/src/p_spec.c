@@ -202,7 +202,7 @@ void P_InitPicAnims (void)
   {
     lump = W_CheckNumForName("ANIMATED");
 
-    if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source != source_auto_load)
+    if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source != source_port_wad)
       animdefs = (const animdef_t *) W_LumpByNum(lump);
     else
       animdefs = heretic_animdefs;
