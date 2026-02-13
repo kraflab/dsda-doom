@@ -94,6 +94,7 @@
 #include "dsda/build.h"
 #include "dsda/configuration.h"
 #include "dsda/console.h"
+#include "dsda/death.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
@@ -838,7 +839,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
   {
-    cmd->buttons |= BT_USE;
+    if (!dsda_DeathUseNothingInDemo())
+      cmd->buttons |= BT_USE;
     // clear double clicks if hit use button
     dclicks = 0;
   }
@@ -981,7 +983,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks++;
       if (dclicks == 2)
         {
-          cmd->buttons |= BT_USE;
+          if (!dsda_DeathUseNothingInDemo())
+            cmd->buttons |= BT_USE;
           dclicks = 0;
         }
       else
@@ -1003,7 +1006,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks2++;
       if (dclicks2 == 2)
         {
-          cmd->buttons |= BT_USE;
+          if (!dsda_DeathUseNothingInDemo())
+            cmd->buttons |= BT_USE;
           dclicks2 = 0;
         }
       else
