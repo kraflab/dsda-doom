@@ -18,7 +18,7 @@
 #ifndef __DSDA_DEATH__
 #define __DSDA_DEATH__
 
-extern int dsda_SkipDeathUseAction(void);
 void dsda_DeathUse(player_t* player);
+extern int dsda_DeathUseNothingInDemo(void);
 
 #endif
