@@ -102,6 +102,17 @@ void P_AnimateZDoomSurfaces(void)
   // The linespeciallist stuff isn't relevant (using doom scrollers)
   // AnimDef stuff will come later
   // Skies / lightning as well
+  if (LevelHasLightning)
+  {
+    if (!NextLightningFlash || LightningFlash)
+    {
+      P_LightningFlash();
+    }
+    else
+    {
+      NextLightningFlash--;
+    }
+  }
 }
 
 void P_AnimateHexenSurfaces(void)
@@ -277,7 +288,8 @@ static void P_LightningFlash(void)
     if (foundSec)
     {
         Sky1Texture = dsda_Sky2Texture();     // set alternate sky
-        S_StartVoidSound(hexen_sfx_thunder_crash);
+        if (hexen)                            // Doom doesn't have thunder sfx
+            S_StartVoidSound(hexen_sfx_thunder_crash);
     }
     // Calculate the next lighting flash
     if (!NextLightningFlash)
