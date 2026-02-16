@@ -32,8 +32,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     str,
     max_size,
     "%s%4d",
-    dsda_render_stats_fps < 35 ? dsda_TextColor(dsda_tc_exhud_fps_bad) :
-                                 dsda_TextColor(dsda_tc_exhud_fps_fine),
+    dsda_render_stats_fps < TICRATE ? dsda_TextColor(dsda_tc_exhud_fps_bad) :
+                                      dsda_TextColor(dsda_tc_exhud_fps_fine),
     dsda_render_stats_fps
   );
 }

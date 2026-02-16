@@ -438,8 +438,8 @@ static void fl_writesamples_ex (short *dest, int nsamp)
   if (nsamp * 2 > fbuff_siz)
   {
     float *newfbuff = (float*)realloc (fbuff, nsamp * 2 * sizeof (float));
-	if (!newfbuff) return;
-	fbuff = newfbuff;
+    if (!newfbuff) return;
+    fbuff = newfbuff;
     fbuff_siz = nsamp * 2;
   }
 
@@ -448,7 +448,7 @@ static void fl_writesamples_ex (short *dest, int nsamp)
   for (i = 0; i < nsamp * 2; i++)
   {
     // data is NOT already clipped
-	  float f = fbuff[i];
+    float f = fbuff[i];
     if (f > 1.0f)
       f = 1.0f;
     if (f < -1.0f)

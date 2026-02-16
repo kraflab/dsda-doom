@@ -453,7 +453,7 @@ static void StartOpenACS(int number, int infoIndex, int offset)
     script->number = number;
 
     // World objects are allotted 1 second for initialization
-    script->delayCount = 35;
+    script->delayCount = TICRATE;
 
     script->infoIndex = infoIndex;
     script->ip = offset;
@@ -472,7 +472,7 @@ void P_CheckACSStore(void)
             P_StartACS(store->script, 0, store->args, NULL, NULL, 0);
             if (NewScript)
             {
-                NewScript->delayCount = 35;
+                NewScript->delayCount = TICRATE;
             }
             store->map = -1;
         }

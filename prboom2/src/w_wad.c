@@ -228,7 +228,7 @@ static void W_AddFile(wadfile_info_t *wadfile)
           lump_p->li_namespace = ns_global;              // killough 4/17/98
         }
         strncpy (lump_p->name, fileinfo->name, 8);
-	lump_p->source = wadfile->src;                    // Ty 08/29/98
+        lump_p->source = wadfile->src;                    // Ty 08/29/98
       }
 
     Z_Free(fileinfo2free);      // killough
