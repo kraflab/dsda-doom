@@ -183,6 +183,7 @@ jobs:
           tag: "development"
           prerelease: true
           generateReleaseNotes: true
+          removeArtifacts: true
           allowUpdates: true
           omitBodyDuringUpdate: true
           artifacts: ${{ matrix.config.artifact-path }}
