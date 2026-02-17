@@ -75,23 +75,23 @@
 //
 //-----------------------------------------------------------------------------
 
-static void cheat_mus();
+static void cheat_mus(char buf[3]);
 static void cheat_choppers();
 static void cheat_god();
 static void cheat_fa();
 static void cheat_k();
 static void cheat_kfa();
 static void cheat_noclip();
-static void cheat_pw();
+static void cheat_pw(int pw);
 static void cheat_behold();
 static void cheat_clev0();
-static void cheat_clev();
+static void cheat_clev(char buf[3]);
 static void cheat_mypos();
 static void cheat_rate();
 static void cheat_comp0();
-static void cheat_comp();
+static void cheat_comp(char buf[3]);
 static void cheat_skill0();
-static void cheat_skill();
+static void cheat_skill(char buf[1]);
 static void cheat_friction();
 static void cheat_pushers();
 static void cheat_massacre();
@@ -103,11 +103,11 @@ static void cheat_hom();
 static void cheat_fast();
 static void cheat_tntkey();
 static void cheat_tntkeyx();
-static void cheat_tntkeyxx();
+static void cheat_tntkeyxx(int key);
 static void cheat_tntweap();
-static void cheat_tntweapx();
+static void cheat_tntweapx(char buf[3]);
 static void cheat_tntammo();
-static void cheat_tntammox();
+static void cheat_tntammox(char buf[1]);
 static void cheat_smart();
 static void cheat_pitch();
 static void cheat_megaarmour();
@@ -120,14 +120,14 @@ static void cheat_fly();
 static void cheat_reset_health();
 static void cheat_tome();
 static void cheat_chicken();
-static void cheat_artifact();
+static void cheat_artifact(char buf[3]);
 
 // hexen
 static void cheat_inventory();
 static void cheat_puzzle();
-static void cheat_class();
+static void cheat_class(char buf[2]);
 static void cheat_init();
-static void cheat_script();
+static void cheat_script(char buf[3]);
 
 //-----------------------------------------------------------------------------
 //
@@ -260,8 +260,7 @@ cheatseq_t cheat[] = {
 
 //-----------------------------------------------------------------------------
 
-static void cheat_mus(buf)
-char buf[3];
+static void cheat_mus(char buf[3])
 {
   int musnum, muslump;
   int epsd, map;
@@ -332,6 +331,9 @@ void M_CheatGod(void)
     mt.type = consoleplayer + 1;
     mt.options = 1; // arbitrary non-zero value
     P_SpawnPlayer(consoleplayer, &mt);
+
+    // reset view to center (heretic / hexen)
+    plyr->lookdir = 0;
 
     // spawn a teleport fog
     an = plyr->mo->angle >> ANGLETOFINESHIFT;
@@ -761,6 +763,11 @@ static void cheat_cycle_mobj(mobj_t **last_mobj, int *last_count, int flags, int
 
       mobj = (mobj_t *) th;
 
+      if (mobj->intflags & MIF_SPAWNED_BY_ICON)
+      {
+        continue;
+      }
+
       if ((!alive || mobj->health > 0) && mobj->flags & flags)
       {
         dsda_UpdateIntConfig(dsda_config_automap_follow, false, true);
@@ -835,8 +842,7 @@ static void cheat_tntweap()
   dsda_AddMessage(gamemode == commercial ? "Weapon number 1-9" : "Weapon number 1-8");
 }
 
-static void cheat_tntweapx(buf)
-char buf[3];
+static void cheat_tntweapx(char buf[3])
 {
   int w = *buf - '1';
 
@@ -865,8 +871,7 @@ static void cheat_tntammo()
   dsda_AddMessage("Ammo 1-4, Backpack");
 }
 
-static void cheat_tntammox(buf)
-char buf[1];
+static void cheat_tntammox(char buf[1])
 {
   int a = *buf - '1';
   if (*buf == 'b')  // Ty 03/27/98 - strings *not* externalized

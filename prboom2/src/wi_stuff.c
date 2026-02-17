@@ -35,6 +35,7 @@
 #include "doomstat.h"
 #include "m_random.h"
 #include "w_wad.h"
+#include "f_finale.h"
 #include "g_game.h"
 #include "r_main.h"
 #include "v_video.h"
@@ -406,9 +407,9 @@ static void WI_endNetgameStats(void);
 void WI_levelNameLump(int epis, int map, char* buf)
 {
   if (gamemode == commercial) {
-    sprintf(buf, "CWILV%2.2d", map);
+    snprintf(buf, 9, "CWILV%2.2d", map);
   } else {
-    sprintf(buf, "WILV%d%d", epis, map);
+    snprintf(buf, 9, "WILV%d%d", epis, map);
   }
 }
 
@@ -968,6 +969,15 @@ void WI_End(void)
     WI_endStats();
 }
 
+#define WI_LONGER_NOW_ENTERING (allow_incompatibility && gamemode == commercial && !netgame)
+
+void WI_wait(void)
+{
+  if (WI_LONGER_NOW_ENTERING && !F_ShowCast())
+      cnt = TICRATE + 10;
+  else
+      cnt = 10;
+}
 
 // ====================================================================
 // WI_initNoState
@@ -979,7 +989,7 @@ void WI_initNoState(void)
 {
   state = NoState;
   acceleratestage = 0;
-  cnt = 10;
+  WI_wait();
 }
 
 
@@ -1032,10 +1042,9 @@ static void WI_drawTimeStats(int cnt_time, int cnt_total_time, int cnt_par)
 //
 void WI_updateNoState(void)
 {
-
   WI_updateAnimatedBack();
 
-  if (!--cnt)
+  if (!--cnt || (WI_LONGER_NOW_ENTERING && acceleratestage))
     G_WorldDone();
 }
 
@@ -1169,8 +1178,7 @@ void WI_drawShowNextLoc(void)
     return; // MAP08 end game
 
   // draws which level you are entering..
-  if ( (gamemode != commercial)
-     || wbs->next != 30)  // check for MAP30 end game
+  if ( (gamemode != commercial) || (gamemap != 30) )  // allows for MAP31 entering screen, if not MAP30
   WI_drawEL();
 }
 
@@ -2100,7 +2108,7 @@ void WI_loadData(void)
   for (i=0;i<10;i++)
   {
     // numbers 0-9
-    sprintf(name, "WINUM%d", i);
+    snprintf(name, sizeof(name), "WINUM%d", i);
     R_SetPatchNum(&num[i], name);
   }
 }

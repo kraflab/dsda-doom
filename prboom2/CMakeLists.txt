@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 # Setup dependencies options before `project()` so vcpkg features can be used
 include(DsdaDepsSetup)
 
-project("dsda-doom" VERSION 0.29.3)
+project("dsda-doom" VERSION 0.29.4)
 
 set(dsda_is_top_project FALSE)
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -59,6 +59,8 @@ if(DSDA_BUILD_PWAD_WITH_EXTERNAL_PROJECT)
             "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
             "-DWAD_DATA_PATH:FILEPATH=${WAD_DATA_PATH}"
             "-DCMAKE_TOOLCHAIN_FILE:FILEPATH=${DSDA_HOST_TOOLCHAIN}"
+            "-DCMAKE_C_FLAGS:STRING=$ENV{CFLAGS_FOR_BUILD} $ENV{CPPFLAGS_FOR_BUILD}"
+            "-DCMAKE_EXE_LINKER_FLAGS:STRING=$ENV{LDFLAGS_FOR_BUILD}"
         BUILD_ALWAYS TRUE
         BUILD_BYPRODUCTS "${WAD_DATA_PATH}"
         INSTALL_COMMAND ""

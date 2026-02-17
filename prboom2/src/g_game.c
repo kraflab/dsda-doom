@@ -35,6 +35,7 @@
  *-----------------------------------------------------------------------------
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -1435,7 +1436,7 @@ dboolean G_Responder (event_t* ev)
     case ev_move_analog:
       dsda_WatchGameControllerEvent();
 
-      left_analog_x = ev->data1.f;
+      left_analog_x = dsda_StrictMode() ? lroundf(ev->data1.f * 0.5f) * 2 : ev->data1.f;
       left_analog_y = ev->data2.f;
       return true;    // eat events
 
@@ -1710,6 +1711,9 @@ void G_Ticker (void)
 
     case GS_DEMOSCREEN:
       D_PageTicker();
+      break;
+
+    case GS_DEFAULT:
       break;
   }
 
@@ -3148,6 +3152,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 {
   char buf[10];
   char *p = buf;
+  const byte* data_p = (byte*)buf;
 
   if (compatibility_level == tasdoom_compatibility)
   {
@@ -3180,8 +3185,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 
   dsda_WriteTicToDemo(buf, p - buf);
 
-  p = buf; // make SURE it is exactly the same
-  G_ReadOneTick(cmd, (const byte **) &p);
+  G_ReadOneTick(cmd, &data_p);
 }
 
 // These functions are used to read and write game-specific options in demos
@@ -3928,7 +3932,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     {
       demo_tics_count = dsda_DemoTicsCount(p, demobuffer, demolength);
 
-      sprintf(demo_len_st, "\x1b\x35/%d:%02d",
+      snprintf(demo_len_st, sizeof(demo_len_st), "\x1b\x35/%d:%02d",
         demo_tics_count / TICRATE / 60,
         (demo_tics_count % (60 * TICRATE)) / TICRATE);
     }
@@ -4157,7 +4161,9 @@ void P_WalkTicker()
   if (dsda_InputActive(dsda_input_strafeleft))
     side -= sidemove[speed];
 
-  forward += mousey;
+  if (dsda_IntConfig(dsda_config_vertmouse))
+    forward += mousey;
+
   if (strafe)
     side += mousex / 4;       /* mead  Don't want to strafe as fast as turns.*/
   else

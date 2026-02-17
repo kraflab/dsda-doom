@@ -374,7 +374,7 @@ void D_Display (fixed_t frac)
 {
   static dboolean isborderstate        = false;
   static dboolean borderwillneedredraw = false;
-  static gamestate_t oldgamestate = -1;
+  static gamestate_t oldgamestate = GS_DEFAULT;
   dboolean wipe;
   dboolean viewactive = false, isborder = false;
 
@@ -401,7 +401,7 @@ void D_Display (fixed_t frac)
 
   if (setsizeneeded) {               // change the view size if needed
     R_ExecuteSetViewSize();
-    oldgamestate = -1;            // force background redraw
+    oldgamestate = GS_DEFAULT;            // force background redraw
   }
 
   if (V_IsOpenGLMode() && !exclusive_fullscreen && !nodrawers)
@@ -416,7 +416,7 @@ void D_Display (fixed_t frac)
 
   if (gamestate != GS_LEVEL) { // Not a level
     switch (oldgamestate) {
-    case -1:
+    case GS_DEFAULT:
     case GS_LEVEL:
       V_SetPalette(0); // cph - use default (basic) palette
     default:
@@ -656,6 +656,18 @@ void D_PageTicker(void)
     D_AdvanceDemo();
 }
 
+// Check whether to skip IWAD Demos
+static int dsda_SkipIwadDemos(void)
+{
+  int pwaddemo = W_PWADLumpNameExists("DEMO1");
+  int pwadmaps = W_PWADMapExists();
+
+  if ((pwadmaps && !pwaddemo) || lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
+    return true;
+  
+  return false;
+}
+
 //
 // D_PageDrawer
 //
@@ -684,8 +696,10 @@ static void D_PageDrawer(void)
     V_ClearBorder();
     V_DrawNamePatchFS(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
   }
-  else
+  else if (dsda_SkipIwadDemos() && W_PWADLumpNameExists("CREDIT"))
     M_DrawCredits();
+  else
+    M_DrawCreditsDynamic();
 }
 
 //
@@ -827,6 +841,17 @@ void D_DoAdvanceDemo(void)
   // do not even attempt to play DEMO4 if it is not available
   if (demosequence == 6 && gamemode == commercial && !W_LumpNameExists("demo4"))
     demosequence = 0;
+
+  if (dsda_SkipIwadDemos())
+  {
+    // Skip blank / IWAD demos in PWADs
+    if (demostates[demosequence][gamemode].func == G_DeferedPlayDemo)
+      demosequence++;
+
+    // Limit to just TITLEPIC / CREDIT
+    if (demosequence > (raven ? 3 : 2))
+      demosequence = 0;
+  }
 
   demostates[demosequence][gamemode].func(demostates[demosequence][gamemode].name);
 }
@@ -1785,7 +1810,7 @@ static void dsda_DetectEpisodeStructure(void)
   {
     for (ii=0;ii<10;ii++)
     {
-      sprintf(lump, "E%dM%d", i, ii);
+      snprintf(lump, sizeof(lump), "E%dM%d", i, ii);
       if (W_LumpNameExists(lump))
       {
         EpisodeStructure = true;
@@ -2130,7 +2155,7 @@ static void D_DoomMainSetup(void)
 
   PostProcessDeh();
   dsda_AppendZDoomMobjInfo();
-  dsda_ApplyDefaultMapFormat();
+  dsda_ApplyBinaryMapFormat();
 
   lprintf(LO_DEBUG, "dsda_InitWadStats: Setting up wad stats.\n");
   dsda_InitWadStats();

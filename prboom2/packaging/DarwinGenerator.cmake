@@ -1,5 +1,5 @@
 set(staging_dir "${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGING_INSTALL_PREFIX}")
-set(packaged_dir "${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGE_NAME}")
+set(packaged_dir "${CPACK_TEMPORARY_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}")
 file(MAKE_DIRECTORY ${packaged_dir})
 
 file(COPY_FILE
@@ -35,13 +35,13 @@ execute_process(
     --create-dir
     --overwrite-files
     --fix-file ${packaged_dir}/dsda-doom
-    --install-path @executable_path/libs
-    --dest-dir ${packaged_dir}/libs
+    --install-path @executable_path/libs_${CPACK_SYSTEM_PROCESSOR}
+    --dest-dir ${packaged_dir}/libs_${CPACK_SYSTEM_PROCESSOR}
 )
 
 execute_process(
   COMMAND zip
     -r ${CPACK_PACKAGE_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}.zip
-    dsda-doom
+    ${CPACK_PACKAGE_FILE_NAME}
   WORKING_DIRECTORY ${CPACK_TEMPORARY_DIRECTORY}
 )

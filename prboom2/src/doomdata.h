@@ -114,7 +114,8 @@ typedef struct {
   unsigned short sidenum[2];
 } PACKEDATTR doom_maplinedef_t;
 
-#define NO_INDEX ((unsigned short)-1)
+// Updated to 32-bit
+#define NO_INDEX ((unsigned int)-1)
 
 //
 // LineDef attributes.

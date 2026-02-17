@@ -96,7 +96,7 @@ void dsda_TranslateCheckSum(dsda_cksum_t* cksum) {
   unsigned int i;
 
   for (i = 0; i < 16; i++)
-    sprintf(&cksum->string[i * 2], "%02x", cksum->bytes[i]);
+    snprintf(&cksum->string[i * 2], 3, "%02x", cksum->bytes[i]);
   cksum->string[32] = '\0';
 }
 
@@ -174,23 +174,23 @@ void dsda_PrintCommandMovement(char* str, ticcmd_t* cmd) {
   str[0] = '\0';
 
   if (cmd->forwardmove > 0)
-    str += sprintf(str, "MF%2d ", cmd->forwardmove);
+    str += snprintf(str, 6, "MF%2d ", cmd->forwardmove);
   else if (cmd->forwardmove < 0)
-    str += sprintf(str, "MB%2d ", -cmd->forwardmove);
+    str += snprintf(str, 6, "MB%2d ", -cmd->forwardmove);
   else
-    str += sprintf(str, "     ");
+    str += snprintf(str, 6, "     ");
 
   if (cmd->sidemove > 0)
-    str += sprintf(str, "SR%2d ", cmd->sidemove);
+    str += snprintf(str, 6, "SR%2d ", cmd->sidemove);
   else if (cmd->sidemove < 0)
-    str += sprintf(str, "SL%2d ", -cmd->sidemove);
+    str += snprintf(str, 6, "SL%2d ", -cmd->sidemove);
   else
-    str += sprintf(str, "     ");
+    str += snprintf(str, 6, "     ");
 
   if (cmd->angleturn > 0)
-    str += sprintf(str, "TL%2d", cmd->angleturn >> 8);
+    str += snprintf(str, 6, "TL%2d", cmd->angleturn >> 8);
   else if (cmd->angleturn < 0)
-    str += sprintf(str, "TR%2d", -(cmd->angleturn >> 8));
+    str += snprintf(str, 6, "TR%2d", -(cmd->angleturn >> 8));
 }
 
 char* dsda_ConcatDir(const char* a, const char* b)

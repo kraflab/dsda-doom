@@ -106,9 +106,16 @@ int       *texturetranslation;
 //
 
 const byte *R_GetTextureColumn(const rpatch_t *texpatch, int col) {
+  const int width = texpatch->width;
+  const unsigned int mask = texpatch->widthmask;
+
   while (col < 0)
-    col += texpatch->width;
-  col &= texpatch->widthmask;
+    col += width;
+
+  if (mask + 1 == width)
+    col &= mask;
+  else
+    col %= width;
 
   return texpatch->columns[col].pixels;
 }

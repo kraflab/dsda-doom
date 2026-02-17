@@ -59,8 +59,8 @@ int renderH;
 
 void I_UpdateRenderSize(void)
 {
-  renderW = window_rect.w;
-  renderH = window_rect.h;
+  renderW = renderer_rect.w;
+  renderH = renderer_rect.h;
 }
 
 //

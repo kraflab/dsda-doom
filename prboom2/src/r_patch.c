@@ -324,20 +324,20 @@ static void FillEmptySpace(rpatch_t *patch)
 //
 //==========================================================================
 
-static dboolean CheckIfPatch(int lump)
+dboolean R_IsPatchLump(int lumpnum)
 {
   int size;
   int width, height;
   const patch_t * patch;
   dboolean result;
 
-  size = W_LumpLength(lump);
+  size = W_LumpLength(lumpnum);
 
   // minimum length of a valid Doom patch
   if (size < 13)
     return false;
 
-  patch = (const patch_t *)W_LumpByNum(lump);
+  patch = (const patch_t *)W_LumpByNum(lumpnum);
 
   width = LittleShort(patch->width);
   height = LittleShort(patch->height);
@@ -399,7 +399,7 @@ static void createPatch(int id) {
     I_Error("createPatch: %i >= numlumps", id);
 #endif
 
-  if (!CheckIfPatch(patchNum))
+  if (!R_IsPatchLump(patchNum))
   {
     I_Error("createPatch: Unknown patch format %s.",
       (patchNum < numlumps ? lumpinfo[patchNum].name : NULL));

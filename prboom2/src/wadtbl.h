@@ -51,6 +51,6 @@ typedef struct
 void InitPWADTable(wadtbl_t *wadtbl);
 void FreePWADTable(wadtbl_t *wadtbl);
 void AddPWADTableLump(wadtbl_t *wadtbl, const char *name, const byte* data, size_t size);
-wadinfo_t *ReadPWADTable(char *buffer, size_t size);
+wadinfo_t *ReadPWADTable(byte *buffer, size_t size);
 
 #endif

@@ -1,16 +1,8 @@
 include_guard()
 
 if(STRICT_FIND)
-  set(dsda_strict_keyword)
-  if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.1)
-    set(CMAKE_FIND_REQUIRED ON)
-  else()
-    set(dsda_strict_keyword REQUIRED)
-  endif()
+  set(dsda_strict_keyword REQUIRED)
 endif()
-
-# TODO: Move away from including this module this way
-include(PkgConfigHelper)
 
 add_library(dsda_dependencies INTERFACE IMPORTED)
 add_library(dsda::dependencies ALIAS dsda_dependencies)
@@ -67,7 +59,7 @@ if(WITH_XMP)
 endif()
 
 if(WITH_VORBISFILE)
-  find_package(Vorbis COMPONENTS File ${dsda_strict_keyword})
+  find_package(Vorbis ${dsda_strict_keyword})
   if(Vorbis_File_FOUND)
     set(HAVE_LIBVORBISFILE TRUE)
   endif()

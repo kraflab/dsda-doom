@@ -45,25 +45,31 @@ The following cache variables may also be set:
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_OGG QUIET ogg)
+pkg_check_modules(PC_ogg IMPORTED_TARGET ogg)
+
+if(PC_ogg_FOUND)
+  if(NOT TARGET Ogg::ogg)
+    add_library(Ogg::ogg ALIAS PkgConfig::PC_ogg)
+  endif()
+  set(Ogg_FOUND TRUE)
+  set(Ogg_VERSION ${PC_ogg_VERSION})
+  return()
+endif()
 
 find_path(
   Ogg_INCLUDE_DIR
   NAMES ogg/ogg.h
-  HINTS "${PC_OGG_INCLUDEDIR}"
 )
 
 find_file(
   Ogg_DLL
   NAMES ogg.dll libogg.dll libogg-0.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_OGG_PREFIX}"
 )
 
 find_library(
   Ogg_LIBRARY
   NAMES ogg
-  HINTS "${PC_OGG_LIBDIR}"
 )
 
 if(Ogg_DLL OR Ogg_LIBRARY MATCHES ".so|.dylib")
@@ -71,8 +77,6 @@ if(Ogg_DLL OR Ogg_LIBRARY MATCHES ".so|.dylib")
 else()
   set(_ogg_library_type STATIC)
 endif()
-
-get_flags_from_pkg_config("${_ogg_library_type}" "PC_OGG" "_ogg")
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
@@ -86,10 +90,6 @@ if(Ogg_FOUND)
     set_target_properties(
       Ogg::ogg
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${Ogg_INCLUDE_DIR}"
-                 INTERFACE_COMPILE_OPTIONS "${_ogg_compile_options}"
-                 INTERFACE_LINK_LIBRARIES "${_ogg_link_libraries}"
-                 INTERFACE_LINK_DIRECTORIES "${_ogg_link_directories}"
-                 INTERFACE_LINK_OPTIONS "${_ogg_link_options}"
     )
   endif()
 

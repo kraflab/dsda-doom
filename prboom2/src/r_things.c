@@ -1102,6 +1102,11 @@ static void R_DrawPSprite (pspdef_t *psp)
       // Interpolate bobbing for animated weapons (Chainsaw)
       R_ApplyWeaponBob(&psp_sx, true, &psp_sy, true);
     }
+    else if (psp->state->action == A_WeaponReady && dsda_WeaponBob() < 4)
+    {
+      // Always apply Weaponbob when using bobbing increments
+      R_ApplyWeaponBob(&psp_sx, true, &psp_sy, true);
+    }
   }
 
   {

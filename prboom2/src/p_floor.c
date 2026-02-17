@@ -489,7 +489,7 @@ int EV_DoFloor
   rtn = 0;
 
   // move all floors with the same tag as the linedef
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sec = &sectors[*id_p];
 
@@ -776,7 +776,7 @@ int EV_BuildStairs
   sector_t*     sec;
 
   // start a stair at each sector tagged the same as the linedef
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     //e6y sector_t*
     sec = &sectors[*id_p];
@@ -931,7 +931,7 @@ int EV_BuildStairs
     }
     /* killough 10/98: compatibility option */
     if (comp[comp_stairs]) {
-      id_p = dsda_FindSectorsFromID(line->tag);
+      id_p = dsda_FindSectorsFromID(line->special_args[0]);
 
       /* cph 2001/09/22 - emulate buggy MBF comp_stairs for demos, with logic
        * reversed since we now have a separate outer loop index.
@@ -1100,7 +1100,7 @@ int EV_DoDonut(line_t *line)
   int rtn = 0;
 
   // do function on all sectors with same tag as linedef
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
     rtn |= P_SpawnDonut(*id_p, line, FLOORSPEED / 2, FLOORSPEED / 2);
 
   return rtn;
@@ -1209,7 +1209,7 @@ int EV_DoElevator
 
   rtn = 0;
   // act on all sectors with the same tag as the triggering linedef
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sec = &sectors[*id_p];
 

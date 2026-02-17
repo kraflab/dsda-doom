@@ -57,15 +57,17 @@ typedef unsigned char byte;
 #define ntohs
 #else // WORDS_BIGENDIAN
 
+#include <stdint.h>
+
 #define ntohl(x) \
-        (/*(long int)*/((((unsigned long int)(x) & 0x000000ffU) << 24) | \
-                             (((unsigned long int)(x) & 0x0000ff00U) <<  8) | \
-                             (((unsigned long int)(x) & 0x00ff0000U) >>  8) | \
-                             (((unsigned long int)(x) & 0xff000000U) >> 24)))
+        ((((uint32_t)(x) & 0x000000ffU) << 24) | \
+          (((uint32_t)(x) & 0x0000ff00U) <<  8) | \
+          (((uint32_t)(x) & 0x00ff0000U) >>  8) | \
+          (((uint32_t)(x) & 0xff000000U) >> 24))
 
 #define ntohs(x) \
-        (/*(short int)*/((((unsigned short int)(x) & 0x00ff) << 8) | \
-                              (((unsigned short int)(x) & 0xff00) >> 8)))
+        ((((uint16_t)(x) & 0x00ff) << 8) | \
+         (((uint16_t)(x) & 0xff00) >> 8))
 #endif // WORDS_BIGENDIAN
 #endif // ntohl
 
@@ -604,7 +606,7 @@ static dboolean ReadFileHeader(midi_file_t *file, midimem_t *mf)
      || ntohl(file->header.chunk_header.chunk_size) != 6)
     {
         lprintf (LO_WARN, "ReadFileHeader: Invalid MIDI chunk header! "
-                        "chunk_size=%ld\n",
+                        "chunk_size=%" PRIu32 "\n",
                         ntohl(file->header.chunk_header.chunk_size));
         return false;
     }

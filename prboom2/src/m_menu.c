@@ -604,8 +604,17 @@ static void M_DrawReadThis1(void)
 
 static void M_DrawReadThis2(void)
 {
+  const char* helplump = (gamemode == commercial) ? "HELP" : "HELP1";
+  int pwadmaps = W_PWADMapExists(); // show help screen for IWAD
+
   inhelpscreens = true;
-  M_DrawHelp();
+
+  if (W_PWADLumpNameExists(helplump) || !pwadmaps)
+    M_DrawHelp();
+  else if (W_PWADLumpNameExists("CREDIT"))
+    M_DrawCredits();
+  else
+    M_DrawCreditsDynamic();
 }
 
 /////////////////////////////
@@ -1321,9 +1330,9 @@ void M_QuitDOOM(int choice)
   // or one at random, between 1 and maximum number.
   // Ty 03/27/98 - externalized DOSY as a string s_DOSY that's in the sprintf
   if (language != english)
-    sprintf(endstring,"%s\n\n%s",s_DOSY, *endmsg[0] );
+    snprintf(endstring, sizeof(endstring), "%s\n\n%s",s_DOSY, *endmsg[0] );
   else         // killough 1/18/98: fix endgame message calculation:
-    sprintf(endstring,"%s\n\n%s", *endmsg[gametic%(NUM_QUITMESSAGES-1)+1], s_DOSY);
+    snprintf(endstring, sizeof(endstring), "%s\n\n%s", *endmsg[gametic%(NUM_QUITMESSAGES-1)+1], s_DOSY);
 
   if (dsda_SkipQuitPrompt())
     M_QuitResponse(true);
@@ -1895,7 +1904,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
       value = dsda_IntConfig(s->config_id);
 
-      sprintf(menu_buffer, "%d", value);
+      snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
 
       if (flags & S_CRITEM)
       {
@@ -1942,7 +1951,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       else
         format = "MB%d";
 
-      sprintf(menu_buffer + strlen(menu_buffer), format, input->mouseb + 1);
+      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer),format, input->mouseb + 1);
       any_input = true;
     }
 
@@ -1953,7 +1962,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
       else
         format = "%s";
 
-      sprintf(menu_buffer + strlen(menu_buffer), format,
+      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer), format,
               dsda_GameControllerButtonName(input->joyb));
       any_input = true;
     }
@@ -2061,9 +2070,9 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     if (flags & S_STR)
     {
       if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
-        sprintf(menu_buffer, "%s", entry_string_index);
+        snprintf(menu_buffer, sizeof(menu_buffer), "%s", entry_string_index);
       else
-        sprintf(menu_buffer, "%s", dsda_StringConfig(s->config_id));
+        snprintf(menu_buffer, sizeof(menu_buffer), "%s", dsda_StringConfig(s->config_id));
     }
     else
     {
@@ -2075,7 +2084,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
         value = dsda_IntConfig(s->config_id);
 
       if (s->selectstrings == NULL) {
-        sprintf(menu_buffer, "%d", value);
+        snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
       } else {
         strcpy(menu_buffer, s->selectstrings[value]);
       }
@@ -2090,7 +2099,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   if (flags & S_THERMO) {
     M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
 
-    sprintf(menu_buffer, "%d", dsda_IntConfig(s->config_id));
+    snprintf(menu_buffer, sizeof(menu_buffer), "%d", dsda_IntConfig(s->config_id));
 
     if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
       strcat(menu_buffer, " <");
@@ -2984,6 +2993,7 @@ setup_menu_t auto_appearance_settings[] =
 {
   { "Enable textured display", S_YESNO, m_conf, AA_X, dsda_config_map_textured },
   { "Things appearance", S_CHOICE, m_conf, AA_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
+  { "Show Line Traces", S_YESNO, m_conf, AA_X, dsda_config_map_traces },
   EMPTY_LINE,
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AA_X},
   { "Textured automap", S_NUM, m_conf, AA_X, dsda_config_map_textured_trans },
@@ -3025,6 +3035,7 @@ setup_menu_t auto_colors_settings[] =  // 2st AutoMap Settings screen
   {"computer map unseen line"       ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_unsn},
   {"line w/no floor/ceiling changes",S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_flat},
   {"general sprite"                 ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_sprt},
+  {"pickup sprite"                  ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_pickup},
   {"countable enemy sprite"         ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_enemy},      // cph 2006/06/30
   {"countable item sprite"          ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_item},       // mead 3/4/2003
   {"crosshair"                      ,S_COLOR ,m_conf,AU_X, dsda_config_mapcolor_hair},
@@ -4429,22 +4440,20 @@ setup_menu_t cred_settings[]={
 
 void M_DrawCredits(void)     // killough 10/98: credit screen
 {
-  const char* credit = "CREDIT";
-  const int PWADcredit = W_PWADLumpNameExists(credit);
-
   inhelpscreens = true;
-  if (PWADcredit || tc_game)
-  {
-    V_ClearBorder();
-    V_DrawNamePatchFS(0, 0, 0, credit, CR_DEFAULT, VPT_STRETCH);
-  }
-  else
-  {
-    // Use V_DrawBackground here deliberately to force drawing a background
-    V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
-    M_DrawTitle(9, PROJECT_NAME " v" PROJECT_VERSION, cr_title); // PRBOOM
-    M_DrawScreenItems(cred_settings, 32);
-  }
+
+  V_ClearBorder();
+  V_DrawNamePatchFS(0, 0, 0, "CREDIT", CR_DEFAULT, VPT_STRETCH);
+}
+
+void M_DrawCreditsDynamic(void)     // Dynamic Credits
+{
+  inhelpscreens = true;
+
+  // Use V_DrawBackground here deliberately to force drawing a background
+  V_DrawBackground(gamemode==shareware ? "CEIL5_1" : "MFLR8_4", 0);
+  M_DrawTitle(9, PROJECT_NAME " v" PROJECT_VERSION, cr_title); // PRBOOM
+  M_DrawScreenItems(cred_settings, 32);
 }
 
 static int M_IndexInChoices(const char *str, const char **choices) {
