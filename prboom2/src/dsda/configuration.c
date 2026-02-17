@@ -1071,6 +1071,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "map_title", dsda_config_map_title,
     CONF_BOOL(1), NULL, NOT_STRICT, dsda_RefreshMapTitle
   },
+  [dsda_config_map_title_author_cycle] = {
+    "map_title_author_cycle", dsda_config_map_title_author_cycle,
+    CONF_BOOL(1), NULL, NOT_STRICT
+  },
   [dsda_config_map_trail] = {
     "map_trail", dsda_config_map_trail,
     CONF_BOOL(0), NULL, STRICT_INT(0), AM_initPlayerTrail
