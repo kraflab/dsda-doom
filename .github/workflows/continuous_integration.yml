@@ -193,6 +193,17 @@ jobs:
           path: ${{ matrix.config.artifact-path }}
           if-no-files-found: error
 
+      - name: Development Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: "Development"
+          tag: "development"
+          prerelease: true
+          generateReleaseNotes: true
+          allowUpdates: true
+          omitBodyDuringUpdate: true
+          artifacts: ${{ matrix.config.artifact-path }}
+
       - name: Release
         if: ${{ contains(github.ref, 'tags') && matrix.config.release }}
         uses: ncipollo/release-action@v1
