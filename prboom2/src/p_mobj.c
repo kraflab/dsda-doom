@@ -518,7 +518,7 @@ static void P_XYMovement (mobj_t* mo)
         }
 
         // [RH] Don't explode on horizon lines.
-        if (map_format.zdoom && blockline->special == zl_line_horizon)
+        if (map_format.zdoom && blockline && blockline->special == zl_line_horizon)
         {
           P_RemoveMobj(mo);
           return;
