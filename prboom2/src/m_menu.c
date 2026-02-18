@@ -1482,7 +1482,7 @@ static void M_QuickSave(void)
   time (&now);
   timeinfo = localtime (&now);
 
-  strftime(description, sizeof(description), "quick %x %X", timeinfo);
+  strftime(description, sizeof(description), "%x %X", timeinfo);
 
   G_SaveGame(QUICKSAVESLOT, description);
   doom_printf("%s", description);
