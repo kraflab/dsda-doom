@@ -184,6 +184,7 @@ jobs:
           prerelease: true
           generateReleaseNotes: true
           removeArtifacts: true
+          immutableCreate: true
           allowUpdates: true
           omitBodyDuringUpdate: true
           artifacts: ${{ matrix.config.artifact-path }}
