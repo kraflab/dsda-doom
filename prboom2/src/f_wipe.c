@@ -47,6 +47,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda/settings.h"
+#include <dsda/configuration.h>
 
 //
 // SCREEN WIPE PACKAGE
@@ -66,6 +67,9 @@ static screeninfo_t wipe_scr;
 // e6y: resolution limitation is removed
 static int *y_lookup = NULL;
 
+static int target_fps;
+extern int capturing_video;
+
 // e6y: resolution limitation is removed
 void R_InitMeltRes(void)
 {
@@ -74,9 +78,34 @@ void R_InitMeltRes(void)
   y_lookup = Z_Calloc(1, SCREENWIDTH * sizeof(*y_lookup));
 }
 
+int rescale_pixels(int number)
+{
+  int new_number = number * SCREENHEIGHT / 200;
+  return (number >= 1 && new_number < 1) ? 1 : new_number;
+}
+
+int slow_down(int number)
+{
+  int new_number = number * TICRATE / target_fps;
+  return (number >= 1 && new_number < 1) ? 1 : new_number;
+}
+
+int speed_up(int number)
+{
+  return number * target_fps / TICRATE;
+}
+
 static int wipe_initMelt(int ticks)
 {
   int i;
+  int block_width = WIDE_SCREENWIDTH / 320;
+
+  if (block_width < 1)
+    block_width = 1;
+
+  // wipe runs at fixed 35fps, but its framerate in the video is changed to cap_fps
+  // we change its speed depending on cap_fps so it looks the same in the video
+  target_fps = capturing_video ? dsda_IntConfig(dsda_config_cap_fps) : TICRATE;
 
   if (V_IsSoftwareMode())
   {
@@ -89,16 +118,27 @@ static int wipe_initMelt(int ticks)
 
   // setup initial column positions (y<0 => not ready to scroll yet)
   y_lookup[0] = -(M_Random()%16);
-  for (i=1;i<SCREENWIDTH;i++)
-    {
-      int r = (M_Random()%3) - 1;
-      y_lookup[i] = y_lookup[i-1] + r;
-      if (y_lookup[i] > 0)
-        y_lookup[i] = 0;
-      else
-        if (y_lookup[i] == -16)
-          y_lookup[i] = -15;
-    }
+  for (i = 1; i < SCREENWIDTH; i++)
+  {
+    int r = y_lookup[i - 1];
+
+    if (i % block_width == 0)
+      r += (M_Random()%3) - 1;
+
+    y_lookup[i] = r;
+    if (y_lookup[i] > 0)
+      y_lookup[i] = 0;
+    else
+      if (y_lookup[i] == -16)
+        y_lookup[i] = -15;
+  }
+
+  for (i = 0; i < SCREENWIDTH; i++)
+  {
+    // range of values has to be increased along with framerate
+    // so the pattern retains overall shape
+    y_lookup[i] = speed_up(rescale_pixels(y_lookup[i]));
+  }
   return 0;
 }
 
@@ -110,7 +150,12 @@ static int wipe_doMelt(int ticks)
   while (ticks--) {
     for (i=0;i<(SCREENWIDTH);i++) {
       if (y_lookup[i]<0) {
-        y_lookup[i]++;
+        y_lookup[i] += rescale_pixels(1);
+        // prevent overshooing and showing garbage pixels at the top.
+        // increments by 1 worked for native footage but now they're variable
+        // so the first positive step is not guaranteed to be 0
+        if (y_lookup[i] > 0)
+          y_lookup[i] = 0;
         done = false;
         continue;
       }
@@ -119,33 +164,38 @@ static int wipe_doMelt(int ticks)
         int j, dy;
 
         /* cph 2001/07/29 -
-          *  The original melt rate was 8 pixels/sec, i.e. 25 frames to melt
-          *  the whole screen, so make the melt rate depend on SCREENHEIGHT
-          *  so it takes no longer in high res
-          */
-        dy = (y_lookup[i] < 16) ? y_lookup[i]+1 : SCREENHEIGHT/25;
+         *  The original melt rate was 8 pixels/sec, i.e. 25 frames to melt
+         *  the whole screen, so make the melt rate depend on SCREENHEIGHT
+         *  so it takes no longer in high res
+         */
+
+        // slowing things down by reducing deltas
+        // so wipe retains duration at higher framerates
+        dy = (y_lookup[i] < slow_down(rescale_pixels(16)))
+          ? y_lookup[i] + slow_down(rescale_pixels(1))
+          : slow_down(rescale_pixels(8));
         if (y_lookup[i]+dy >= SCREENHEIGHT)
           dy = SCREENHEIGHT - y_lookup[i];
 
-       if (V_IsSoftwareMode()) {
-        s = wipe_scr_end.data    + (y_lookup[i]*wipe_scr_end.pitch+i);
-        d = wipe_scr.data        + (y_lookup[i]*wipe_scr.pitch+i);
-        for (j=dy;j;j--) {
-          d[0] = s[0];
-          d += wipe_scr.pitch;
-          s += wipe_scr_end.pitch;
+        if (V_IsSoftwareMode()) {
+          s = wipe_scr_end.data    + (y_lookup[i]*wipe_scr_end.pitch+i);
+          d = wipe_scr.data        + (y_lookup[i]*wipe_scr.pitch+i);
+          for (j=dy;j;j--) {
+            d[0] = s[0];
+            d += wipe_scr.pitch;
+            s += wipe_scr_end.pitch;
+          }
         }
-       }
         y_lookup[i] += dy;
-       if (V_IsSoftwareMode()) {
-        s = wipe_scr_start.data  + i;
-        d = wipe_scr.data        + (y_lookup[i]*wipe_scr.pitch+i);
-        for (j=SCREENHEIGHT-y_lookup[i];j;j--) {
-          d[0] = s[0];
-          d += wipe_scr.pitch;
-          s += wipe_scr_end.pitch;
+        if (V_IsSoftwareMode()) {
+          s = wipe_scr_start.data  + i;
+          d = wipe_scr.data        + (y_lookup[i]*wipe_scr.pitch+i);
+          for (j=SCREENHEIGHT-y_lookup[i];j;j--) {
+            d[0] = s[0];
+            d += wipe_scr.pitch;
+            s += wipe_scr_end.pitch;
+          }
         }
-       }
         done = false;
       }
     }
