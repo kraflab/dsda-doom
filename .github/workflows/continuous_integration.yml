@@ -176,15 +176,21 @@ jobs:
           path: ${{ matrix.config.artifact-path }}
           if-no-files-found: error
 
+      - name: Find Latest Tag
+        uses: oprypin/find-latest-tag@v1.1.2
+        with:
+          repository: Pedro-Beirao/dsda-doom
+          releases-only: true
+        id: latest_tag
+
       - name: Development Release
         uses: ncipollo/release-action@v1
         with:
           name: "Development"
           tag: "development"
           prerelease: true
-          generateReleaseNotes: true
-          removeArtifacts: true
-          immutableCreate: true
+          generateReleaseNotesPreviousTag: ${{ steps.latest_tag.outputs.tag }}
+          makeLatest: false
           allowUpdates: true
           omitBodyDuringUpdate: true
           artifacts: ${{ matrix.config.artifact-path }}
