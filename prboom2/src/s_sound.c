@@ -674,9 +674,6 @@ void S_ChangeMusic(int musicnum, int looping)
 
   music = &S_music[musicnum];
 
-  if (mus_playing == music)
-    return;
-
   // shutdown old music
   S_StopMusic();
 
@@ -736,9 +733,6 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
     return;
 
   music = &S_music[mus_musinfo];
-
-  if (music->lumpnum == lumpnum)
-    return;
 
   // shutdown old music
   S_StopMusic();
