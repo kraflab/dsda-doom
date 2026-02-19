@@ -195,18 +195,10 @@ jobs:
         with:
           path: artifacts
 
-          
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          title: 'Development'
-          automatic_release_tag: 'development'
-          files: |
-            **/artifacts/*/*.zip
-            **/artifacts/*/*.appimage
-
       - name: Automatic Development Release
         uses: oliversalzburg/action-automatic-semantic-releases@v2.0.0
         with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic-release-tag: development
           body-prefix: This is a development release. These builds may not be demo safe.
           files: |
@@ -214,7 +206,7 @@ jobs:
             **/artifacts/*/*.appimage
           merge-similar: false
           prerelease: true
-          title: Development Release
+          title: Development
           with-authors: true
                 
       
