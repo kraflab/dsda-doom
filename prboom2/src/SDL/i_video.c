@@ -683,6 +683,11 @@ static void I_ShutdownSDL(void)
   return;
 }
 
+void dsda_Shutdown(void)
+{
+  I_AtExit(I_ShutdownSDL, true, "I_ShutdownSDL", exit_priority_normal);
+}
+
 void I_PreInitGraphics(void)
 {
   int p;
@@ -701,7 +706,7 @@ void I_PreInitGraphics(void)
     I_Error("Could not initialize SDL [%s]", SDL_GetError());
   }
 
-  I_AtExit(I_ShutdownSDL, true, "I_ShutdownSDL", exit_priority_normal);
+  // No longer call `I_ShutdownSDL()` here cuz we need window/renderer info for ENDOOM later on
 }
 
 // e6y: resolution limitation is removed

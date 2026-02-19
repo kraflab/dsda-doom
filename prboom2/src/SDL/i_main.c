@@ -219,6 +219,7 @@ static void I_Quit (void)
 {
   M_SaveDefaults ();
   dsda_DumpEndoom();
+  dsda_Shutdown();
 }
 
 //
