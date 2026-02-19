@@ -343,10 +343,13 @@ static void RestoreOldMode(void) {
 
 void dsda_CacheEndoom(void) {
   int lump;
+  int show_endoom;
 
   output_format = dsda_IntConfig(dsda_config_ansi_endoom);
 
-  if (!output_format)
+  show_endoom = dsda_IntConfig(dsda_config_show_endoom);
+
+  if (show_endoom==0)
     return;
 
   if (hexen)

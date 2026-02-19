@@ -3293,6 +3293,8 @@ setup_menu_t gen_misc_settings[] = {
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G2_X, dsda_config_cheat_codes },
   { "Skip Quit Prompt", S_YESNO, m_conf, G2_X, dsda_config_skip_quit_prompt },
   EMPTY_LINE,
+  { "Endoom Screen", S_YESNO, m_conf, G2_X, dsda_config_show_endoom },
+  EMPTY_LINE,
   TITLE("Rewind", G2_X),
   { "Rewind Interval (s)", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_interval },
   { "Rewind Depth", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_depth },
