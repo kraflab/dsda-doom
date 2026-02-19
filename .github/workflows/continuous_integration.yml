@@ -203,8 +203,8 @@ jobs:
           title: 'Development'
           automatic_release_tag: 'development'
           files: |
-            **/artifacts/*.zip
-            **/artifacts/*.appimage
+            **/artifacts/*/*.zip
+            **/artifacts/*/*.appimage
 
           # Currently disabled, because we have problems with the theme
           # **/artifacts/Gittyup win64/Gittyup*.exe
