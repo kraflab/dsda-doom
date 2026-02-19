@@ -350,6 +350,9 @@ void dsda_CacheEndoom(void) {
 
   show_endoom = dsda_IntConfig(dsda_config_show_endoom);
 
+  if (started_demo)
+    return;
+
   if (show_endoom==0)
     return;
 
