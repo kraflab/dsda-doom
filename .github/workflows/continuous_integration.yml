@@ -176,28 +176,14 @@ jobs:
           path: ${{ matrix.config.artifact-path }}
           if-no-files-found: error
 
-      - name: Delete Release
-        uses: larryjoelane/delete-release-action@v1.0.24
-        with:
-          release-name: Development
-
-      - name: Find Latest Tag
-        uses: "WyriHaximus/github-action-get-previous-tag@v2"
-        id: latest_tag
-        with:
-          prefix: v
-
       - name: Development Release
-        uses: ncipollo/release-action@v1
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          name: "Development"
-          tag: "development"
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
-          generateReleaseNotesPreviousTag: ${{ steps.latest_tag.outputs.tag }}
-          makeLatest: false
-          allowUpdates: true
-          omitBodyDuringUpdate: true
-          artifacts: ${{ matrix.config.artifact-path }}
+          title: 'Development'
+          automatic_release_tag: 'development'
+          files: ${{ matrix.config.artifact-path }}
 
       - name: Release
         if: ${{ contains(github.ref, 'tags') && matrix.config.release }}
