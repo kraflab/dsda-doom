@@ -1322,6 +1322,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "show_endoom", dsda_config_show_endoom,
     dsda_config_int, 0, 2, { 0 }
   },
+  [dsda_config_export_endoom] = {
+    "export_endoom", dsda_config_export_endoom,
+    CONF_BOOL(0),
+  },
   [dsda_config_ansi_endoom] = {
     "ansi_endoom", dsda_config_ansi_endoom,
     dsda_config_int, 0, 2, { 0 }
