@@ -198,7 +198,7 @@ jobs:
       - name: Automatic Development Release
         uses: oliversalzburg/action-automatic-semantic-releases@v2.0.0
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
           automatic-release-tag: development
           body-prefix: This is a development release. These builds may not be demo safe.
           files: |
