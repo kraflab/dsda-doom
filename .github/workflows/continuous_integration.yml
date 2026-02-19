@@ -176,12 +176,16 @@ jobs:
           path: ${{ matrix.config.artifact-path }}
           if-no-files-found: error
 
-      - name: Find Latest Tag
-        uses: oprypin/find-latest-tag@v1.1.2
+      - name: Delete Release
+        uses: larryjoelane/delete-release-action@v1.0.24
         with:
-          repository: Pedro-Beirao/dsda-doom
-          releases-only: true
+          release-name: Development
+
+      - name: Find Latest Tag
+        uses: "WyriHaximus/github-action-get-previous-tag@v2"
         id: latest_tag
+        with:
+          prefix: v
 
       - name: Development Release
         uses: ncipollo/release-action@v1
