@@ -1,5 +1,5 @@
 //
-// Copyright(C) 2022 by Ryan Krafnick
+// Copyright(C) 2005-2014 Simon Howard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -11,11 +11,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// DESCRIPTION:
-//	DSDA Endoom
-//
 
-void dsda_CacheEndoom(void);
-void dsda_DumpEndoom(void);
-void dsda_TerminalEndoom(void);
-void dsda_WindowEndoom(void);
+#ifndef TXT_UTF8_H
+#define TXT_UTF8_H
+
+#include <stdarg.h>
+
+unsigned int TXT_DecodeUTF8(const char **ptr);
+
+#endif /* #ifndef TXT_UTF8_H */
