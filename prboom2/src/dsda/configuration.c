@@ -1320,7 +1320,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_show_endoom] = {
     "show_endoom", dsda_config_show_endoom,
-    CONF_BOOL(0),
+    dsda_config_int, 0, 2, { 0 }
   },
   [dsda_config_ansi_endoom] = {
     "ansi_endoom", dsda_config_ansi_endoom,
