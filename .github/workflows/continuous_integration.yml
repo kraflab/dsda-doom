@@ -176,15 +176,6 @@ jobs:
           path: ${{ matrix.config.artifact-path }}
           if-no-files-found: error
 
-      - name: Development Release
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          title: 'Development'
-          automatic_release_tag: 'development'
-          files: ${{ matrix.config.artifact-path }}
-
       - name: Release
         if: ${{ contains(github.ref, 'tags') && matrix.config.release }}
         uses: ncipollo/release-action@v1
@@ -193,3 +184,29 @@ jobs:
           allowUpdates: true
           omitBodyDuringUpdate: true
           artifacts: ${{ matrix.config.artifact-path }}
+
+  publish:
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Development Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          title: 'Development'
+          automatic_release_tag: 'development'
+          files: |
+            **/artifacts/*.zip
+            **/artifacts/*.appimage
+
+          # Currently disabled, because we have problems with the theme
+          # **/artifacts/Gittyup win64/Gittyup*.exe
+          # **/artifacts/Gittyup macos/Gittyup*.dmg
+
