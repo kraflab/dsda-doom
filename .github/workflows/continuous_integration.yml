@@ -195,9 +195,7 @@ jobs:
         with:
           path: artifacts
 
-      - name: Development Release
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
+          
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
           title: 'Development'
@@ -206,7 +204,17 @@ jobs:
             **/artifacts/*/*.zip
             **/artifacts/*/*.appimage
 
-          # Currently disabled, because we have problems with the theme
-          # **/artifacts/Gittyup win64/Gittyup*.exe
-          # **/artifacts/Gittyup macos/Gittyup*.dmg
-
+      - name: Automatic Development Release
+        uses: oliversalzburg/action-automatic-semantic-releases@v2.0.0
+        with:
+          automatic-release-tag: development
+          body-prefix: This is a development release. These builds may not be demo safe.
+          files: |
+            **/artifacts/*/*.zip
+            **/artifacts/*/*.appimage
+          merge-similar: false
+          prerelease: true
+          title: Development Release
+          with-authors: true
+                
+      
