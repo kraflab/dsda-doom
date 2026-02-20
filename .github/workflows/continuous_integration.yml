@@ -194,8 +194,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Required due to the way Git works, without it we won't be able to find the latest tag
         
       - name: Download artifacts
         uses: actions/download-artifact@v4
