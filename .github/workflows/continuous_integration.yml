@@ -202,12 +202,9 @@ jobs:
         with:
           path: artifacts
 
-      - name: Get Latest  Tag
-        uses: debanjan97/github-action-get-previous-tag@v1.0.0
-        with:
-          prefix: v
+      - name: Latest Release Version
+        uses: fangqiuming/latest-release-version@v1.2.0-beta
         id: latest_tag
-          
 
       - name: Automatic Development Release
         uses: oliversalzburg/action-automatic-semantic-releases@85df1a5f81e6a18f5bb88eb495198b27399066dc
@@ -221,6 +218,6 @@ jobs:
             **/artifacts/*/*.appimage
           prerelease: true
           with-authors: true
-          root-version: ${{ steps.latest_tag.outputs.tag }}
+          root-version: ${{ steps.latest_tag.outputs.tag_name }}
                 
       
