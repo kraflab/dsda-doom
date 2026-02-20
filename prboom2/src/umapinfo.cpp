@@ -213,7 +213,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		ParseLumpName(scanner, mape->endpic);
 	}
-	else if (!stricmp(pname, "endcast"))
+	else if (!stricmp(pname, "endcast") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		if (scanner.boolean) strcpy(mape->endpic, "$CAST");
@@ -336,7 +336,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			scanner.MustGetInteger();
 			tag = scanner.number;
 			// allow no 0-tag specials here, unless a level exit.
-			if (tag != 0 || special == 11 || special == 51 || special == 52 || special == 124)
+			if (tag != 0 || special == 11 || special == 51 || special == 52 || (raven ? special == 105 : special == 124))
 			{
 				if (mape->numbossactions == -1) mape->numbossactions = 1;
 				else mape->numbossactions++;
