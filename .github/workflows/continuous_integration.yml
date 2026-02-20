@@ -188,6 +188,8 @@ jobs:
   publish:
     needs: [build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
       - name: Download artifacts
@@ -196,17 +198,16 @@ jobs:
           path: artifacts
 
       - name: Automatic Development Release
-        uses: oliversalzburg/action-automatic-semantic-releases@v2.0.0
+        uses: oliversalzburg/action-automatic-semantic-releases@85df1a5f81e6a18f5bb88eb495198b27399066dc
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          title: Development
           automatic-release-tag: development
-          body-prefix: This is a development release. These builds may not be demo safe.
+          body-prefix: These builds may not be demo safe.
           files: |
             **/artifacts/*/*.zip
             **/artifacts/*/*.appimage
-          merge-similar: false
           prerelease: true
-          title: Development
           with-authors: true
                 
       
