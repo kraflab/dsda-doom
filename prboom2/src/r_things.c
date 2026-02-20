@@ -927,8 +927,7 @@ void R_AddSprites(subsector_t* subsec, int lightlevel)
   sector_t* sec=subsec->sector;
   mobj_t *thing;
 
-  if (compatibility_level <= boom_202_compatibility)
-    lightlevel = sec->lightlevel;
+  lightlevel = (comp[comp_thingsectorlight]) ? lightlevel : sec->lightlevel;
 
   // Handle all things in sector.
 
