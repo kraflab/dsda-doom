@@ -202,9 +202,13 @@ jobs:
         with:
           path: artifacts
 
-      - name: Latest Release Version
-        uses: fangqiuming/latest-release-version@v1.2.0-beta
-        id: latest_tag
+      - name: Get latest release
+        id: latest_release
+        run: |
+          TAG=$(gh release view --json tagName -q .tagName)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Automatic Development Release
         uses: oliversalzburg/action-automatic-semantic-releases@85df1a5f81e6a18f5bb88eb495198b27399066dc
@@ -218,6 +222,6 @@ jobs:
             **/artifacts/*/*.appimage
           prerelease: true
           with-authors: true
-          root-version: ${{ steps.latest_tag.outputs.tag_name }}
+          root-version: ${{ steps.latest_release.outputs.tag }}
                 
       
