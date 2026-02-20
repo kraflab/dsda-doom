@@ -202,11 +202,12 @@ jobs:
         with:
           path: artifacts
 
-      - name: Get Latest Tag
-        uses: WyriHaximus/github-action-get-previous-tag@61819f33034117e6c686e6a31dba995a85afc9de
-        id: latest_tag
+      - name: Get Latest  Tag
+        uses: debanjan97/github-action-get-previous-tag@v1.0.0
         with:
-          pattern: ^v.*
+          prefix: v
+        id: latest_tag
+          
 
       - name: Automatic Development Release
         uses: oliversalzburg/action-automatic-semantic-releases@85df1a5f81e6a18f5bb88eb495198b27399066dc
