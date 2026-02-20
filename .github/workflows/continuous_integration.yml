@@ -197,6 +197,10 @@ jobs:
         with:
           path: artifacts
 
+      - name: Get Latest Tag
+        uses: WyriHaximus/github-action-get-previous-tag@04e8485ecb6487243907e330d522ff60f02283ce
+        id: latest_tag
+
       - name: Automatic Development Release
         uses: oliversalzburg/action-automatic-semantic-releases@85df1a5f81e6a18f5bb88eb495198b27399066dc
         with:
@@ -209,5 +213,6 @@ jobs:
             **/artifacts/*/*.appimage
           prerelease: true
           with-authors: true
+          root-version: ${{ steps.latest_tag.outputs.tag }}
                 
       
