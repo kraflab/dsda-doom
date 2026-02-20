@@ -200,14 +200,6 @@ jobs:
         with:
           path: artifacts
 
-      - name: Get latest release
-        id: latest_release
-        run: |
-          TAG=$(gh release view --json tagName -q .tagName)
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Automatic Development Release
         uses: oliversalzburg/action-automatic-semantic-releases@85df1a5f81e6a18f5bb88eb495198b27399066dc
         with:
@@ -220,6 +212,5 @@ jobs:
             **/artifacts/*/*.appimage
           prerelease: true
           with-authors: true
-          root-version: ${{ steps.latest_release.outputs.tag }}
                 
       
