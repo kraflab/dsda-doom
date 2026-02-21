@@ -32,6 +32,20 @@ jobs:
               -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
               -DCMAKE_IGNORE_PATH="C:/Strawberry/perl/bin;C:/Strawberry/c/lib"
 
+          - name: "macOS arm64 static"
+            os: macos-latest
+            build_type: "Release"
+            vcpkg: true
+            triplet: arm64-osx
+            shell: bash
+            package_name: "mac_arm64_static"
+            release: false
+            artifact-path: build/*.zip
+            extra_options: >-
+              -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
+              -DVCPKG_TARGET_TRIPLET=arm64-osx
+              -DCMAKE_INSTALL_PREFIX=/usr
+
           - name: "MSYS2 UCRT64"
             os: windows-latest
             build_type: "Release"
