@@ -69,20 +69,6 @@ jobs:
             shell: bash
             artifact-path: build/*.zip
 
-          - name: "macOS Universal"
-            os: macos-latest
-            build_type: "Release"
-            vcpkg: true
-            triplet: arm64-osx
-            shell: bash
-            package_name: "mac_uni"
-            release: true
-            artifact-path: build/*.zip
-            extra_options: >-
-              -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
-              -DCMAKE_INSTALL_PREFIX=/usr
-              -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
-
     steps:
       - uses: actions/checkout@v4
 
