@@ -1188,23 +1188,14 @@ static char *FindIWADFile(void)
   return iwad;
 }
 
-static dboolean FileMatchesIWAD(const char *name)
+static dboolean FileMatchesIWAD(const char *path)
 {
   int i;
-  int name_length;
+  const char* wadname = I_FileNameFromPath(path);
 
-  name_length = strlen(name);
   for (i = 0; i < nstandard_iwads; ++i)
-  {
-    int iwad_length;
-
-    iwad_length = strlen(standard_iwads[i]);
-    if (
-      name_length >= iwad_length &&
-      !stricmp(name + name_length - iwad_length, standard_iwads[i])
-    )
+    if (!stricmp(wadname, standard_iwads[i]))
       return true;
-  }
 
   return false;
 }
