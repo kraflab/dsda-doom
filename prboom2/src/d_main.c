@@ -659,7 +659,7 @@ void D_PageTicker(void)
 // Check whether to skip IWAD Demos
 static int dsda_SkipIwadDemos(void)
 {
-  int pwaddemo = W_PWADLumpNameExists("DEMO1");
+  int pwaddemo = W_PWADLumpNameExists2("DEMO1");
   int pwadmaps = W_PWADMapExists();
 
   if ((pwadmaps && !pwaddemo) || lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
@@ -1530,8 +1530,8 @@ static void D_AutoloadPWadDir()
     {
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
-      LoadWADsAtPath(autoload_dir, source_auto_load);
-      LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_pwad_queue[i]);
+      LoadWADsAtPath(autoload_dir, source_pwad_auto_load);
+      LoadZIPsAtPath(autoload_dir, source_pwad_auto_load, &autoload_deh_pwad_queue[i]);
       Z_Free(autoload_dir);
     }
 }
@@ -2018,7 +2018,7 @@ static void D_DoomMainSetup(void)
   //e6y: some stuff from command-line should be initialised before ProcessDehFile()
   e6y_InitCommandLine();
 
-  D_AddFile(port_wad_file, source_auto_load);
+  D_AddFile(port_wad_file, source_port_wad);
 
   HandlePlayback(); // must come before autoload: may detect iwad in footer
 
@@ -2079,8 +2079,9 @@ static void D_DoomMainSetup(void)
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
       // Split loading DEHACKED lumps into IWAD/autoload and PWADs/others
       if (lumpinfo[p].source == source_iwad
-          || lumpinfo[p].source == source_pre
-          || lumpinfo[p].source == source_auto_load)
+          || lumpinfo[p].source == source_port_wad
+          || lumpinfo[p].source == source_auto_load
+          || lumpinfo[p].source == source_pwad_auto_load)
         ProcessDehFile(NULL, D_dehout(), p); // cph - add dehacked-in-a-wad support
 
     if (bfgedition)
@@ -2116,8 +2117,9 @@ static void D_DoomMainSetup(void)
   if (!dsda_Flag(dsda_arg_nodeh))
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
       if (!(lumpinfo[p].source == source_iwad
-            || lumpinfo[p].source == source_pre
-            || lumpinfo[p].source == source_auto_load))
+            || lumpinfo[p].source == source_port_wad
+            || lumpinfo[p].source == source_auto_load
+            || lumpinfo[p].source == source_pwad_auto_load))
         ProcessDehFile(NULL, D_dehout(), p);
 
   // process .deh files from PWADs autoload directories
