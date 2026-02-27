@@ -63,6 +63,10 @@ void I_InitGraphics (void);
 void I_UpdateVideoMode(void);
 void I_ShutdownGraphics(void);
 
+void *I_GetSDLWindow(void);
+void *I_GetSDLRenderer(void);
+void dsda_Shutdown(void);
+
 /* Takes full 8 bit values. */
 void I_SetPalette(int pal); /* CPhipps - pass down palette number */
 
