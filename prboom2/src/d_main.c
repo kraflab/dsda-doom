@@ -1919,7 +1919,7 @@ static void IdentifyVersion (void)
 
 static void D_DoomMainSetup(void)
 {
-  int p;
+  int p, slot = -1;
   dsda_arg_t *arg;
   dboolean autoload;
 
@@ -2229,10 +2229,19 @@ static void D_DoomMainSetup(void)
     dsda_SetDemoBaseName(arg->value.v_string);
     dsda_InitDemoRecording();
   }
+  else
+  {
+    arg = dsda_Arg(dsda_arg_loadgame);
+    if (arg->found)
+    {
+      slot = arg->value.v_int;
+      G_LoadGame(slot, true);
+    }
+  }
 
   dsda_ExecutePlaybackOptions();
 
-  if (!userdemo)
+  if (slot == -1 && !userdemo)
   {
     if (autostart || netgame)
     {

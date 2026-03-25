@@ -73,6 +73,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "loads additional deh files",
     arg_string_array, AT_LEAST_ONE_STRING,
   },
+  [dsda_arg_loadgame] = {
+    "-loadgame", NULL, NULL,
+    "loads the given savegame slot",
+    arg_int, 0, 118,
+  },
   [dsda_arg_playdemo] = {
     "-playdemo", NULL, NULL,
     "plays the given demo file",
