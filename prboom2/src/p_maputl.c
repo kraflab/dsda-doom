@@ -801,7 +801,6 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
 
 	if (dsda_IntConfig(dsda_config_map_traces))
 	{
-		extern int gametic;
 		amlinetraces[cur_amlinetrace].x1 = x1;
 		amlinetraces[cur_amlinetrace].x2 = x2;
 		amlinetraces[cur_amlinetrace].y1 = y1;
