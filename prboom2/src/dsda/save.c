@@ -159,6 +159,10 @@ static void dsda_GetGameModifiers(void)
 
 static void dsda_SetGameModifiers(void)
 {
+  // [AR] when playing / recording demos, do NOT touch configs
+  if (!allow_incompatibility)
+    return;
+
   // If "Always Pistol Start" is enabled, skip resetting "Pistol Start"
   if (!dsda_IntConfig(dsda_config_always_pistol_start))
     dsda_UpdateIntConfig(dsda_config_pistol_start,saved_pistolstart,true);
