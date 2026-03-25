@@ -142,15 +142,36 @@ static void dsda_UnArchiveContext(void) {
   true_basetic = gametic - true_logictic_value;
 }
 
-int saved_pistolstart, saved_respawnparm, saved_fastparm, saved_nomonsters, saved_coop_spawns;
+static int saved_pistolstart;
+static int saved_respawnparm;
+static int saved_fastparm;
+static int saved_nomonsters;
+static int saved_coop_spawns;
 
-void dsda_ArchiveGameModifiers(void)
+static void dsda_GetGameModifiers(void)
 {
   saved_pistolstart = pistolstart;
   saved_respawnparm = respawnparm;
   saved_fastparm    = fastparm;
   saved_nomonsters  = nomonsters;
   saved_coop_spawns = coop_spawns;
+}
+
+static void dsda_SetGameModifiers(void)
+{
+  // If "Always Pistol Start" is enabled, skip resetting "Pistol Start"
+  if (!dsda_IntConfig(dsda_config_always_pistol_start))
+    dsda_UpdateIntConfig(dsda_config_pistol_start,saved_pistolstart,true);
+
+  dsda_UpdateIntConfig(dsda_config_respawn_monsters,saved_respawnparm,true);
+  dsda_UpdateIntConfig(dsda_config_fast_monsters,saved_fastparm,true);
+  dsda_UpdateIntConfig(dsda_config_no_monsters,saved_nomonsters,true);
+  dsda_UpdateIntConfig(dsda_config_coop_spawns,saved_coop_spawns,true);
+}
+
+static void dsda_ArchiveGameModifiers(void)
+{
+  dsda_GetGameModifiers();
 
   P_SAVE_X(saved_pistolstart);
   P_SAVE_X(saved_respawnparm);
@@ -159,7 +180,7 @@ void dsda_ArchiveGameModifiers(void)
   P_SAVE_X(saved_coop_spawns);
 }
 
-void dsda_UnArchiveGameModifiers(void)
+static void dsda_UnArchiveGameModifiers(void)
 {
   P_LOAD_X(saved_pistolstart);
   P_LOAD_X(saved_respawnparm);
@@ -167,14 +188,7 @@ void dsda_UnArchiveGameModifiers(void)
   P_LOAD_X(saved_nomonsters);
   P_LOAD_X(saved_coop_spawns);
 
-  // If "Always Pistol Start" is enabled, skip resetting "Pistol Start" upon load
-  if (!dsda_IntConfig(dsda_config_always_pistol_start))
-    dsda_UpdateIntConfig(dsda_config_pistol_start,   saved_pistolstart, true);
-
-  dsda_UpdateIntConfig(dsda_config_respawn_monsters, saved_respawnparm, true);
-  dsda_UpdateIntConfig(dsda_config_fast_monsters,    saved_fastparm,    true);
-  dsda_UpdateIntConfig(dsda_config_no_monsters,      saved_nomonsters,  true);
-  dsda_UpdateIntConfig(dsda_config_coop_spawns,      saved_coop_spawns, true);
+  dsda_SetGameModifiers();
 }
 
 void dsda_ArchiveAll(void) {
