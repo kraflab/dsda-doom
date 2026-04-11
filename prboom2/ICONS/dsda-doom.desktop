@@ -8,3 +8,4 @@ Exec=dsda-doom %F
 Categories=Game;ActionGame;
 MimeType=application/x-doom-wad;
 Keywords=first;person;shooter;doom;boom;mbf;prboom;
+StartupWMClass=dsda-doom
