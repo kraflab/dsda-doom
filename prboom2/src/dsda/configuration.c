@@ -15,6 +15,8 @@
 //	DSDA Config
 //
 
+#include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "am_map.h"
@@ -1484,9 +1486,18 @@ static void dsda_ParseConfigArg(int arg_id, dboolean persist) {
       conf = &dsda_config[id];
       if (conf->type == dsda_config_int) {
         int value;
+        char* str_end;
 
-        if (sscanf(key_value[1], "%i", &value) != 1)
-          I_Error("Config variable \"%s\" requires an integer value", key_value[0]);
+        errno = 0;
+        value = strtol(key_value[1], &str_end, 0);
+        if (errno != 0) {
+          I_Error("Config variable \"%s\" requires an integer value (was \"%s\", err \"%s\")",
+              key_value[0], key_value[1], strerror(errno));
+        }
+        if (*str_end != '\0') {
+          I_Error("Value for config variable \"%s\" was not converted into an integer in its entirety (was \"%s\")",
+          key_value[0], key_value[1]);
+        }
 
         dsda_InitIntConfig(conf, value, persist);
       }
