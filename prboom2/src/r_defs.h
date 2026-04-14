@@ -491,6 +491,7 @@ typedef struct
 typedef struct vissprite_s
 {
   short x1, x2;
+  short gx1;                   // [AR] opengl weapon alignment
   fixed_t gx, gy;              // for line side calculation
   fixed_t gz, gzt;             // global bottom / top for silhouette clipping
   fixed_t startfrac;           // horizontal position of x1
