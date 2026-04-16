@@ -25,6 +25,7 @@ typedef enum {
   dsda_arg_iwad,
   dsda_arg_file,
   dsda_arg_deh,
+  dsda_arg_loadgame,
   dsda_arg_playdemo,
   dsda_arg_playlump,
   dsda_arg_timedemo,
