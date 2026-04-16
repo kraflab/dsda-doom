@@ -1316,6 +1316,19 @@ static void console_SetMobjFlags(mobj_t* mobj, uint64_t flags, uint64_t flags2) 
   P_MapEnd();
 }
 
+static dboolean console_GetTargetID(const char* command, const char* args) {
+    mobj_t* target = HU_Target();   // current HUD target
+    int id = dsda_GetMobjIndex(target);
+
+    if (id == -1) {
+        C_Printf("No valid target selected.\n");
+        return false;
+    }
+
+    C_Printf("Target ID: %d\n", id);
+    return true;
+}
+
 static dboolean console_TargetSpawn(const char* command, const char* args) {
   mobj_t* target;
 
@@ -2325,6 +2338,7 @@ static console_command_entry_t console_commands[] = {
   { "t.r", console_TrackerReset, CF_DEMO },
 
   // thing manipulation
+  { "target.get_target_index", console_GetTargetID, CF_NEVER },
   { "target.spawn", console_TargetSpawn, CF_NEVER },
   { "target.see", console_TargetSee, CF_NEVER },
   { "target.pain", console_TargetPain, CF_NEVER },
