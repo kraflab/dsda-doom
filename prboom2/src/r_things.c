@@ -501,6 +501,28 @@ void R_DrawMaskedColumn(
           // Drawn by either R_DrawColumn
           //  or (SHADOW) R_DrawFuzzColumn.
           dcvars->drawingmasked = 1; // POPE
+          // [AR] Fix SSG fire bleeding bottom line
+          // Player sprites can round one row past the current post.
+          if (dcvars->isplayersprite)
+          {
+            fixed_t post_end    = post->length << FRACBITS;
+            fixed_t frac_start  = dcvars->texturemid + (dcvars->yl - centery) * dcvars->iscale;
+            fixed_t frac_end    = dcvars->texturemid + (dcvars->yh - centery) * dcvars->iscale;
+
+            // Trim extra top rows of player sprite.
+            while (dcvars->yl <= dcvars->yh && frac_start < 0)
+            {
+              dcvars->yl++;
+              frac_start += dcvars->iscale;
+            }
+
+            // Trim extra bottom rows of player sprite.
+            while (dcvars->yl <= dcvars->yh && frac_end >= post_end)
+            {
+              dcvars->yh--;
+              frac_end -= dcvars->iscale;
+            }
+          }
           colfunc (dcvars);
           dcvars->drawingmasked = 0; // POPE
 
@@ -533,6 +555,9 @@ static void R_DrawVisSprite(vissprite_t *vis)
   R_SetDefaultDrawColumnVars(&dcvars);
 
   dcvars.colormap = vis->colormap;
+
+  if (vis->mobjflags & MF_PLAYERSPRITE)
+    dcvars.isplayersprite = true;
 
   // hexen_note: colfunc: No idea how to merge this right now...
   // if (vis->mobjflags & (MF_SHADOW | MF_ALTSHADOW))
