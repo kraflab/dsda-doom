@@ -296,7 +296,7 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
 
   dsda_RestoreCommandHistory();
 
-  restore_key_frame_index = (totalleveltimes + leveltime) / (35 * autoKeyFrameInterval());
+  restore_key_frame_index = (totalleveltimes + leveltime) / (TICRATE * autoKeyFrameInterval());
 
   G_AfterLoad();
 
@@ -384,7 +384,7 @@ void dsda_UpdateAutoKeyFrames(void) {
   ) return;
 
   current_time = totalleveltimes + leveltime;
-  interval_tics = 35 * autoKeyFrameInterval();
+  interval_tics = TICRATE * autoKeyFrameInterval();
 
   // Automatically save a key frame each interval
   if (current_time % interval_tics == 0) {

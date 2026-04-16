@@ -284,7 +284,7 @@ void IN_InitStats(void)
     if (!netgame)
     {
         gametype = SINGLE;
-        count = leveltime / 35;
+        count = leveltime / TICRATE;
         hours = count / 3600;
         count -= hours * 3600;
         minutes = count / 60;
@@ -292,7 +292,7 @@ void IN_InitStats(void)
         seconds = count;
 
         // [crispy] Show total time on intermission
-        count = wbs->totaltimes / 35;
+        count = wbs->totaltimes / TICRATE;
         totalHours = count / 3600;
         count -= totalHours * 3600;
         totalMinutes = count / 60;
