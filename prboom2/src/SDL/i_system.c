@@ -451,6 +451,28 @@ static const char *I_GetBasePath(void)
   return executable_dir;
 }
 
+const char* I_FileNameFromPath(const char *path)
+{
+  const char *filename = path;
+  const char *p;
+
+  // Find last path separator
+  for (p = path; *p; ++p)
+  {
+    if (*p == '/'
+#if defined(_WIN32)
+        || *p == '\\'
+#endif
+#if defined(AMIGA)
+        || *p == ':'
+#endif
+        )
+      filename = p + 1;
+  }
+
+  return filename;
+}
+
 /*
  * I_FindFile
  *
