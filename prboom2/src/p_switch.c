@@ -101,15 +101,20 @@ const switchlist_t *alphSwitchList;         //jff 3/23/98 pointer to switch tabl
 //
 void P_InitSwitchList(void)
 {
-  int lump = -1;
+  int lump = LUMP_NOT_FOUND;
   int i, index = 0;
   int episode = (gamemode == registered || gamemode==retail) ?
                  2 : gamemode == commercial ? 3 : 1;
 
-  // MAP_FORMAT_TODO: switch list?
   if (heretic)
   {
-    alphSwitchList = heretic_alphSwitchList;
+    lump = W_GetAnimatedOrSwitchesLump("SWITCHES");
+
+    // Heretic keeps using built-in switches unless an IWAD/PWAD lump exists
+    if (W_LumpNumExists(lump) && !W_LumpNumInPortWad(lump))
+      alphSwitchList = (const switchlist_t *)W_LumpByNum(lump);
+    else
+      alphSwitchList = heretic_alphSwitchList;
   }
   else if (hexen)
   {
@@ -117,7 +122,7 @@ void P_InitSwitchList(void)
   }
   else
   {
-    lump = W_GetNumForName("SWITCHES"); // cph - new wad lump handling
+    lump = W_GetAnimatedOrSwitchesLump("SWITCHES"); // cph - new wad lump handling
 
     //jff 3/23/98 read the switch table from a predefined lump
     alphSwitchList = (const switchlist_t *)W_LumpByNum(lump);
@@ -140,16 +145,16 @@ void P_InitSwitchList(void)
       // Ignore switches referencing unknown texture names, instead of exiting.
       // Warn if either one is missing, but only add if both are valid.
       texture1 = R_CheckTextureNumForName(alphSwitchList[i].name1);
-      if (texture1 == -1)
+      if (texture1 == LUMP_NOT_FOUND)
         lprintf(LO_WARN, "P_InitSwitchList: unknown texture %s\n",
             alphSwitchList[i].name1);
 
       texture2 = R_CheckTextureNumForName(alphSwitchList[i].name2);
-      if (texture2 == -1)
+      if (texture2 == LUMP_NOT_FOUND)
         lprintf(LO_WARN, "P_InitSwitchList: unknown texture %s\n",
             alphSwitchList[i].name2);
 
-      if (texture1 != -1 && texture2 != -1) {
+      if (texture1 != LUMP_NOT_FOUND && texture2 != LUMP_NOT_FOUND) {
         switchlist[index++] = texture1;
         switchlist[index++] = texture2;
       }
@@ -157,7 +162,7 @@ void P_InitSwitchList(void)
   }
 
   numswitches = index / 2;
-  switchlist[index] = -1;
+  switchlist[index] = LUMP_NOT_FOUND;
 }
 
 //
