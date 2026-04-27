@@ -200,9 +200,9 @@ void P_InitPicAnims (void)
 
   if (heretic)
   {
-    lump = W_CheckNumForName("ANIMATED");
+    lump = W_GetAnimatedOrSwitchesLump("ANIMATED");
 
-    // Heretic keeps using built-in animdefs unless a PWAD lump exists
+    // Heretic keeps using built-in animdefs unless an IWAD/PWAD lump exists
     if (W_LumpNumExists(lump) && !W_LumpNumInPortWad(lump))
       animdefs = (const animdef_t *) W_LumpByNum(lump);
     else
@@ -210,7 +210,7 @@ void P_InitPicAnims (void)
   }
   else
   {
-    lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
+    lump = W_GetAnimatedOrSwitchesLump("ANIMATED"); // cph - new wad lump handling
     //jff 3/23/98 read from predefined or wad lump instead of table
     animdefs = (const animdef_t *)W_LumpByNum(lump);
   }

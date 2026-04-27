@@ -108,9 +108,9 @@ void P_InitSwitchList(void)
 
   if (heretic)
   {
-    lump = W_CheckNumForName("SWITCHES");
+    lump = W_GetAnimatedOrSwitchesLump("SWITCHES");
 
-    // Heretic keeps using built-in switches unless a PWAD lump exists
+    // Heretic keeps using built-in switches unless an IWAD/PWAD lump exists
     if (W_LumpNumExists(lump) && !W_LumpNumInPortWad(lump))
       alphSwitchList = (const switchlist_t *)W_LumpByNum(lump);
     else
@@ -122,7 +122,7 @@ void P_InitSwitchList(void)
   }
   else
   {
-    lump = W_GetNumForName("SWITCHES"); // cph - new wad lump handling
+    lump = W_GetAnimatedOrSwitchesLump("SWITCHES"); // cph - new wad lump handling
 
     //jff 3/23/98 read the switch table from a predefined lump
     alphSwitchList = (const switchlist_t *)W_LumpByNum(lump);
