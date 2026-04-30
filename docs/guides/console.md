@@ -123,10 +123,11 @@ The in-game console offers extra tools for advanced users, including adjusting p
 
 #### Line Manipulation
 - Line activation (use / cross / shoot)
-  - `player.activate_line <line_id>`
-  - `target.activate_line <line_id>`
-  - `mobj.activate_line <mobj_index> <line_id>`
-  - `boss.activate_line <mobj_index> <line_id>`
+  - "line_side" is optional. front sidedef = 0, back sidedef = 1.
+  - `player.activate_line <line_id> <line_side>`
+  - `target.activate_line <line_id> <line_side>`
+  - `mobj.activate_line <mobj_index> <line_id> <line_side>`
+  - `boss.activate_line <mobj_index> <line_id> <line_side>`
     - activates the line with the boss action flag set
 
 #### State Manipulation

@@ -211,6 +211,10 @@ void P_ArchiveWorld (void)
     P_SAVE_X(li->health);
     P_SAVE_X(li->alpha);
 
+    // ID24
+    P_SAVE_X(li->frontmusic);
+    P_SAVE_X(li->backmusic);
+
     for (j = 0; j < 2; j++)
       if (li->sidenum[j] != NO_INDEX)
       {
@@ -308,6 +312,10 @@ void P_UnArchiveWorld (void)
     P_LOAD_X(li->automap_style);
     P_LOAD_X(li->health);
     P_LOAD_X(li->alpha);
+
+    // ID24
+    P_LOAD_X(li->frontmusic);
+    P_LOAD_X(li->backmusic);
 
     if (li->alpha < 1.f)
       li->tranmap = dsda_TranMap(dsda_FloatToPercent(li->alpha));

@@ -1231,6 +1231,9 @@ int EV_DoGenDoor
 int EV_DoGenLockedDoor
 ( line_t* line );
 
+// ID24
+void EV_ChangeMusic(line_t* line, int side);
+
 ////////////////////////////////////////////////////////////////
 //
 // Linedef and sector special thinker spawning
