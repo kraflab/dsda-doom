@@ -40,6 +40,19 @@ vcpkg integrate install
 
 **IMPORTANT: vcpkg does not update itself automatically.** To get newer versions of libraries, you will need to regularly come back and run `git pull`. Similarly, to update the tool, run `./bootstrap-vcpkg.bat -disableMetrics` again after pulling the changes.
 
+### Using the vcpkg installed by Visual Studio
+
+The "C/C++" workload for Visual Studio installs it's own version of vcpkg by default, but this version expects adding a "builtin-baseline" setting to `prboom2/vcpkg.json`.
+
+The easiest way to do this is open a Visual Studio Developer Command Prompt, change to the `prboom2` folder and run
+
+```
+vcpkg integrate install
+vcpkg x-update-baseline --add-initial-baseline
+```
+
+which will add the required setting and should allow Visual Studio's CMake support to just build everything.
+
 ### Building with Visual Studio
 
 Open Visual Studio, and select the "Clone a repository" option. The repository location is `https://github.com/kraflab/dsda-doom.git`, and the path you provide is where the files will be copied to, for example `C:/git/dsda-doom/`. If you already have cloned the repository beforehand, select "Open" and "Open Folder", you should **not** use the "CMake" option as this repo uses an uncommon layout.
