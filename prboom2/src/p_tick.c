@@ -68,9 +68,9 @@ int init_thinkers_count = 0;
 
 void P_InitThinkers(void)
 {
-  P_CleanTeleports();
-
   int i;
+
+  P_CleanTeleports();
 
   for (i=0; i<NUMTHCLASS; i++)  // killough 8/29/98: initialize threaded lists
     thinkerclasscap[i].cprev = thinkerclasscap[i].cnext = &thinkerclasscap[i];
@@ -124,7 +124,7 @@ void P_AddThinker(thinker_t* thinker)
 {
   if (thinker->function == P_MobjThinker)
   {
-    mobj_t* m = thinker;
+    mobj_t* m = (mobj_t *)thinker;
     if (m->type == MT_TELEPORTMAN)
       P_CleanTeleports();
   }
@@ -199,7 +199,7 @@ void P_RemoveThinker(thinker_t *thinker)
 {
   if (thinker->function == P_MobjThinker)
   {
-    mobj_t* m = thinker;
+    mobj_t* m = (mobj_t*)thinker;
     if (m->type == MT_TELEPORTMAN)
       P_CleanTeleports();
   }
@@ -388,39 +388,44 @@ teleport_t* teleports;
 int numTeleports = -1;
 int maxTeleports = 64;
 
-static int C_DECL cmp_teleportSectorIdIndex(const teleport_t* a, const teleport_t* b) 
+static int C_DECL cmp_teleportSectorIdIndex(const void* a, const void* b) 
 {
   register int diff;
-  if (diff = (a->sectorId - b->sectorId)) return diff;
-  return a->index - b->index;
+  if ((diff = ((const teleport_t*)a)->sectorId - ((const teleport_t*)b)->sectorId)) return diff;
+  return ((const teleport_t*)a)->index - ((const teleport_t*)a)->index;
 }
 
-static int C_DECL find_teleportSectorId(const int* key, const teleport_t* t) 
+static int C_DECL find_teleportSectorId(const void* key, const void* t) 
 {
-  return *key - t->sectorId;
+  return *((const int*)key) - ((const teleport_t*)t)->sectorId;
 }
 
 void P_InitTeleports(void)
 {
+  int headTeleports;
+  int headSectorId;
+  register thinker_t* th = NULL;
+
   numTeleports = 0;
   maxTeleports = 64;
 
   if (!teleports) teleports = Z_Malloc(maxTeleports * sizeof(teleport_t));
 
   // Collect all teleports
-  register thinker_t* th = NULL;
   while ((th = P_NextThinker(th, th_misc)) != NULL)
     if (th->function == P_MobjThinker) {
       register mobj_t* m = (mobj_t*)th;
       if (m->type == MT_TELEPORTMAN)
       {
+        teleport_t* newTeleport;
+
         if (numTeleports >= maxTeleports)
         {
           maxTeleports *= 2;
           teleports = Z_Realloc(teleports, maxTeleports * sizeof(teleport_t));
         }
 
-        teleport_t* newTeleport = &teleports[numTeleports];
+        newTeleport = &teleports[numTeleports];
         newTeleport->index = numTeleports; // index for stable sort
         newTeleport->sectorId = m->subsector->sector->iSectorID;
         newTeleport->mobj = m;
@@ -433,8 +438,8 @@ void P_InitTeleports(void)
   // Sort teleports by sectorId and index
   qsort(teleports, numTeleports, sizeof(teleport_t), &cmp_teleportSectorIdIndex);
 
-  int headTeleports = 1;
-  int headSectorId = teleports[0].sectorId;
+  headTeleports = 1;
+  headSectorId = teleports[0].sectorId;
   for (int pos = 1; pos < numTeleports; pos++)
   {
     teleport_t* curTeleport = &teleports[pos];
