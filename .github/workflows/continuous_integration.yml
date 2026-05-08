@@ -52,7 +52,7 @@ jobs:
             artifact-path: build/*.appimage
 
           - name: "macOS arm64 Clang"
-            os: macos-latest
+            os: macos-15
             build_type: "Release"
             extra_options: "-G Ninja"
             release: true
@@ -184,3 +184,33 @@ jobs:
           allowUpdates: true
           omitBodyDuringUpdate: true
           artifacts: ${{ matrix.config.artifact-path }}
+
+  publish:
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Automatic Development Release
+        uses: oliversalzburg/action-automatic-semantic-releases@85df1a5f81e6a18f5bb88eb495198b27399066dc
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          title: Development
+          automatic-release-tag: development
+          body-prefix: These builds may not be demo safe.
+          files: |
+            **/artifacts/*/*.zip
+            **/artifacts/*/*.appimage
+          prerelease: true
+          with-authors: true
+                
+      
