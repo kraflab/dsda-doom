@@ -71,4 +71,17 @@ thinker_t* P_NextThinker(thinker_t*,th_class);
 
 void P_CleanThinkers(void);
 
+typedef struct teleport_s {
+  int index;
+  int sectorId;
+  mobj_t* mobj;
+} teleport_t;
+
+extern teleport_t *teleports;
+
+teleport_t* P_FindTeleport(int sectorId);
+
+void P_InitTeleports(void);
+void P_CleanTeleports(void);
+
 #endif

@@ -144,14 +144,8 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
 
   FIND_SECTORS(id_p, tag)
   {
-    register thinker_t* th = NULL;
-    while ((th = P_NextThinker(th,th_misc)) != NULL)
-      if (th->function == P_MobjThinker) {
-        register mobj_t* m = (mobj_t*)th;
-        if (m->type == MT_TELEPORTMAN  &&
-            m->subsector->sector->iSectorID == *id_p)
-            return m;
-      }
+    register teleport_t* teleport = P_FindTeleport(*id_p);
+    if (teleport) return teleport->mobj;
   }
   return NULL;
 }
