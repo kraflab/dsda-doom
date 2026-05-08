@@ -68,8 +68,8 @@ void dsda_AddSplit(dsda_split_class_t split_class, int lifetime) {
   ticks = lifetime;
 
   // To match the timer, we use the leveltime value at the end of the frame
-  minutes = (leveltime + 1) / 35 / 60;
-  seconds = (float)((leveltime + 1) % (60 * 35)) / 35;
+  minutes = (leveltime + 1) / TICRATE / 60;
+  seconds = (float)((leveltime + 1) % (60 * TICRATE)) / TICRATE;
   snprintf(
     local->component.msg, sizeof(local->component.msg), "%s%d:%05.2f - %s",
     dsda_TextColor(dsda_tc_exhud_event_split),

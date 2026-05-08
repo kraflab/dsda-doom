@@ -193,7 +193,7 @@ static const char* cp437_to_utf8[256] = {
   "\xc3\xb9",
   "\xc3\xbf",
   "\xc3\x96",
-  "\xc3\x9c	",
+  "\xc3\x9c\t",
   "\xc2\xa2",
   "\xc2\xa3",
   "\xc2\xa5",

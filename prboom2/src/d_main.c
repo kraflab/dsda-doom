@@ -736,7 +736,7 @@ void D_SetPage(const char* name, int tics, int music)
 
 static void D_DrawTitle1(const char *name)
 {
-  D_SetPage(name, TICRATE * 170 / 35, mus_intro);
+  D_SetPage(name, TICRATE * 170 / 35, mus_intro); // 35 * 170 / 35, is that correct math?
 }
 
 static void D_DrawTitle2(const char *name)
