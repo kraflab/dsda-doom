@@ -201,26 +201,38 @@ static dboolean console_LevelSecretExit(const char* command, const char* args) {
   return true;
 }
 
-static dboolean console_ActivateLine(mobj_t* mobj, int id, dboolean bossaction) {
+static dboolean console_ActivateLine(mobj_t* mobj, int id, int side, dboolean bossaction) {
   if (!mobj || id < 0 || id >= numlines)
     return false;
 
   P_MapStart();
-  P_UseSpecialLine(mobj, &lines[id], 0, bossaction);
-  map_format.cross_special_line(&lines[id], 0, mobj, bossaction);
-  map_format.shoot_special_line(mobj, &lines[id]);
+  P_UseSpecialLine(mobj, &lines[id], side, bossaction);
+  map_format.cross_special_line(&lines[id], side, mobj, bossaction);
+  map_format.shoot_special_line(mobj, &lines[id], side);
   P_MapEnd();
 
   return true;
 }
 
 static dboolean console_PlayerActivateLine(const char* command, const char* args) {
+  int arg_count;
   int id;
+  int side;
 
-  if (sscanf(args, "%i", &id) != 1)
-    return false;
+  arg_count = sscanf(args, "%i %i", &id, &side);
 
-  return console_ActivateLine(target_player.mo, id, false);
+  if (arg_count == 1 || arg_count == 2)
+  {
+    // No side provided, use front side (0) by default
+    if (arg_count != 2)
+      side = 0;
+
+    side = BETWEEN(0, 1, side);
+
+    return console_ActivateLine(target_player.mo, id, side, false);
+  }
+
+  return false;
 }
 
 static dboolean console_PlayerSetHealth(const char* command, const char* args) {
@@ -1449,15 +1461,27 @@ static dboolean console_TargetTargetPlayer(const char* command, const char* args
 }
 
 static dboolean console_TargetActivateLine(const char* command, const char* args) {
+  int arg_count;
   int id;
+  int side;
   mobj_t* target;
 
-  if (sscanf(args, "%i", &id) != 1)
-    return false;
+  arg_count = sscanf(args, "%i %i", &id, &side);
 
-  target = HU_Target();
+  if (arg_count == 1 || arg_count == 2)
+  {
+    // No side provided, use front side (0) by default
+    if (arg_count != 2)
+      side = 0;
 
-  return console_ActivateLine(target, id, false);
+    side = BETWEEN(0, 1, side);
+
+    target = HU_Target();
+
+    return console_ActivateLine(target, id, side, false);
+  }
+
+  return false;
 }
 
 static dboolean console_TargetAddFlags(const char* command, const char* args) {
@@ -1696,16 +1720,27 @@ static dboolean console_MobjTargetPlayer(const char* command, const char* args) 
 }
 
 static dboolean console_MobjActivateLine(const char* command, const char* args) {
+  int arg_count;
   int id;
+  int side;
   int index;
   mobj_t* target;
 
-  if (sscanf(args, "%d %i", &index, &id) != 2)
-    return false;
+  arg_count = sscanf(args, "%d %i %i", &index, &id, &side);
 
-  target = dsda_FindMobj(index);
+  if (arg_count == 2 || arg_count == 3)
+  {
+    // No side provided, use front side (0) by default
+    if (arg_count != 3)
+      side = 0;
 
-  return console_ActivateLine(target, id, false);
+    side = BETWEEN(0, 1, side);
+
+    target = dsda_FindMobj(index);
+    return console_ActivateLine(target, id, side, false);
+  }
+
+  return false;
 }
 
 static dboolean console_MobjAddFlags(const char* command, const char* args) {
@@ -1775,16 +1810,27 @@ static dboolean console_MobjSetFlags(const char* command, const char* args) {
 }
 
 static dboolean console_BossActivateLine(const char* command, const char* args) {
+  int arg_count;
   int id;
+  int side;
   int index;
   mobj_t* target;
 
-  if (sscanf(args, "%d %i", &index, &id) != 2)
-    return false;
+  arg_count = sscanf(args, "%d %i %i", &index, &id, &side);
 
-  target = dsda_FindMobj(index);
+  if (arg_count == 1 || arg_count == 2)
+  {
+    // No side provided, use front side (0) by default
+    if (arg_count != 2)
+      side = 0;
 
-  return console_ActivateLine(target, id, true);
+    side = BETWEEN(0, 1, side);
+
+    target = dsda_FindMobj(index);
+    return console_ActivateLine(target, id, side, true);
+  }
+
+  return false;
 }
 
 static dboolean console_Spawn(const char* command, const char* args) {

@@ -2404,8 +2404,67 @@ static void P_AllocateUDMFSideDefs(int lump)
   sides = calloc_IfSameLevel(sides, numsides, sizeof(side_t));
 }
 
+dboolean P_PostProcessID24MusicSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
+{
+  dboolean found = false;
+
+  switch (sd->special)
+  {
+    case 2057: case 2058: case 2059: case 2060: case 2061: case 2062:
+    case 2063: case 2064: case 2065: case 2066: case 2067: case 2068:
+    case 2087: case 2088: case 2089: case 2090: case 2091: case 2092:
+    case 2093: case 2094: case 2095: case 2096: case 2097: case 2098:
+    {
+      // All of the W1, WR, S1, SR, G1, GR activations can be triggered from
+      // the back sidedef (reading the front bottom texture) and triggered
+      // from the front sidedef (reading the front upper texture).
+      for (int j = 0; j < numlines; j++)
+      {
+        if (lines[j].sidenum[0] == i)
+        {
+          // Back triggered
+          if ((lines[j].backmusic = W_CheckNumForName(bottom)) < 0)
+          {
+            lines[j].backmusic = 0;
+            sd->bottomtexture = R_TextureNumForName(bottom);
+          }
+          else
+          {
+            sd->bottomtexture = 0;
+          }
+
+          // Front triggered
+          if ((lines[j].frontmusic = W_CheckNumForName(top)) < 0)
+          {
+            lines[j].frontmusic = 0;
+            sd->toptexture = R_TextureNumForName(top);
+          }
+          else
+          {
+            sd->toptexture = 0;
+          }
+        }
+      }
+
+      // Allow midtextures
+      sd->midtexture = R_SafeTextureNumForName(mid, i);
+
+      found = true;
+      break;
+    }
+
+    default:
+      break;
+  }
+
+  return found;
+}
+
 void P_PostProcessCompatibleSidedefSpecial(side_t *sd, const char *bottom, const char *mid, const char *top, sector_t *sec, int i)
 {
+  if (P_PostProcessID24MusicSidedefSpecial(sd, bottom, mid, top, sec, i))
+    return;
+
   // killough 4/4/98: allow sidedef texture names to be overloaded
   // killough 4/11/98: refined to allow colormaps to work as wall
   // textures if invalid as colormaps but valid as textures.
