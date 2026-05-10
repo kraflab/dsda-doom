@@ -603,6 +603,29 @@ const void *W_SafeLumpByNum(int lump)
   return W_LumpNumExists(lump) ? W_LumpByNum(lump) : NULL;
 }
 
+int W_GetAnimatedOrSwitchesLump(const char* lumpname)
+{
+  // Normal lookup - PWAD > port wad > IWAD
+  int lump = W_CheckNumForName(lumpname);
+
+  // If not PWAD lump, check if IWAD lump exists
+  if (W_LumpNumExists(lump) && W_LumpNumInPortWad(lump))
+  {
+    int iwad_lump = LUMP_NOT_FOUND;
+
+    for (iwad_lump = 0; iwad_lump < numlumps; iwad_lump++)
+    {
+      if (!strncmp(lumpinfo[iwad_lump].name, lumpname, 8) &&
+          lumpinfo[iwad_lump].li_namespace == ns_global &&
+          lumpinfo[iwad_lump].source == source_iwad)
+        return iwad_lump;
+    }
+  }
+
+  // PWAD or port wad lump
+  return lump;
+}
+
 int W_LumpNumExists(int lump)
 {
   return lump != LUMP_NOT_FOUND && lump < numlumps;

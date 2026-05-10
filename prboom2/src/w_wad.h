@@ -173,6 +173,8 @@ int W_PWADLumpNumExists(int lump);
 int W_PWADLumpNameExists(const char *name);
 int W_PWADMapExists(void);
 
+int W_GetAnimatedOrSwitchesLump(const char* lumpname);
+
 // CPhipps - convenience macros
 //#define W_LumpByNum(num) (W_LumpByNum)((num),1)
 #define W_LumpByName(name) W_LumpByNum (W_GetNumForName(name))
