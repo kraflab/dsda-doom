@@ -348,6 +348,9 @@
 #define STSTR_COMPON    "Compatibility Mode On"            /* phares */
 #define STSTR_COMPOFF   "Compatibility Mode Off"           /* phares */
 
+// secret messages
+#define HUSTR_SECRETFOUND "A secret is revealed!"
+
 /* f_finale.c */
 
 #define E1TEXT \
