@@ -3286,12 +3286,16 @@ setup_menu_t gen_controller_settings[] = {
   FINAL_ENTRY
 };
 
+static const char* endoom_list[] = { "Off", "On", "Smart", NULL };
+
 setup_menu_t gen_misc_settings[] = {
   { "Death Use Action", S_CHOICE, m_conf, G2_X, dsda_config_death_use_action, 0, death_use_strings },
   { "Boom Weapon Auto Switch", S_YESNO, m_conf, G2_X, dsda_config_switch_when_ammo_runs_out },
   { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G2_X, dsda_config_switch_weapon_on_pickup },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G2_X, dsda_config_cheat_codes },
   { "Skip Quit Prompt", S_YESNO, m_conf, G2_X, dsda_config_skip_quit_prompt },
+  EMPTY_LINE,
+  { "Endoom Screen", S_CHOICE, m_conf, G2_X, dsda_config_show_endoom, 0, endoom_list },
   EMPTY_LINE,
   TITLE("Rewind", G2_X),
   { "Rewind Interval (s)", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_interval },

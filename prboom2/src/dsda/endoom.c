@@ -22,12 +22,17 @@
 
 #include "doomdef.h"
 #include "doomtype.h"
+#include "i_video.h"
 #include "lprintf.h"
 #include "w_wad.h"
 
 #include "dsda/configuration.h"
+#include "textscreen/txt_main.h"
 
 #include "endoom.h"
+
+#define ENDOOM_W 80
+#define ENDOOM_H 25
 
 static const char* cp437_to_utf8[256] = {
   " ",
@@ -309,8 +314,14 @@ typedef enum {
   format_utf8,
 } output_format_t;
 
+typedef enum {
+  endoom_window,
+  endoom_terminal,
+} endoom_export_t;
+
 static byte* endoom;
 static output_format_t output_format;
+static endoom_export_t endoom_export;
 
 #ifdef _WIN32
 static HANDLE hConsole;
@@ -341,12 +352,24 @@ static void RestoreOldMode(void) {
 }
 #endif
 
+int is_opengl = false;
+
 void dsda_CacheEndoom(void) {
   int lump;
+  int show_endoom;
+  int pwad_only;
 
   output_format = dsda_IntConfig(dsda_config_ansi_endoom);
 
-  if (!output_format)
+  show_endoom = dsda_IntConfig(dsda_config_show_endoom);
+
+  if (V_IsOpenGLMode())
+    is_opengl = true;
+
+  if (started_demo)
+    return;
+
+  if (show_endoom==0)
     return;
 
   if (hexen)
@@ -360,7 +383,9 @@ void dsda_CacheEndoom(void) {
       lump = W_CheckNumForName("ENDOOM");
   }
 
-  if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000)
+  pwad_only = (show_endoom==2 && !W_PWADLumpNumExists(lump) && W_PWADMapExists());
+
+  if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000 || pwad_only)
     return;
 
   endoom = Z_Malloc(4000);
@@ -368,7 +393,23 @@ void dsda_CacheEndoom(void) {
 }
 
 void dsda_DumpEndoom(void) {
-  if (endoom) {
+  endoom_export = dsda_IntConfig(dsda_config_export_endoom);
+
+  if (endoom)
+  {
+    if (endoom_export)
+      dsda_TerminalEndoom();
+    else
+      dsda_WindowEndoom();
+  }
+}
+
+//
+// DSDA Terminal ENDOOM
+//
+
+void dsda_TerminalEndoom(void)
+{
     int i;
     const char* color_lookup[] = {
       "0", "4", "2", "6", "1", "5", "3", "7",
@@ -414,5 +455,56 @@ void dsda_DumpEndoom(void) {
 #ifdef _WIN32
     RestoreOldMode();
 #endif
-  }
+}
+
+
+//
+// Window ENDOOM
+//
+
+void dsda_WindowEndoom(void)
+{
+    unsigned char *screendata;
+    int y;
+    int indent;
+
+    // Set up text mode screen
+
+    TXT_PreInit(I_GetSDLWindow(), I_GetSDLRenderer(), is_opengl);
+
+    if (!TXT_Init())
+    {
+        lprintf(LO_ERROR, "Failed to initialize libtextscreen");
+        return;
+    }
+
+    // Write the data to the screen memory
+
+    screendata = TXT_GetScreenData();
+
+    indent = (ENDOOM_W - TXT_SCREEN_W) / 2;
+
+    for (y = 0; y < TXT_SCREEN_H; ++y)
+    {
+        memcpy(screendata + (y * TXT_SCREEN_W * 2),
+               endoom + (y * ENDOOM_W + indent) * 2, TXT_SCREEN_W * 2);
+    }
+
+    // Wait for a keypress
+
+    while (true)
+    {
+        TXT_UpdateScreen();
+
+        if (TXT_GetChar() > 0)
+        {
+            break;
+        }
+
+        TXT_Sleep(0);
+    }
+
+    // Shut down text mode screen
+
+    TXT_Shutdown();
 }
