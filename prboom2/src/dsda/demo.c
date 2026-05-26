@@ -434,7 +434,7 @@ const byte* dsda_EvaluateDemoStartPoint(const byte* demo_p) {
     memcpy(&key_frame.buffer_length, demo_p, sizeof(key_frame.buffer_length));
     demo_p += sizeof(key_frame.buffer_length);
 
-    key_frame.buffer = u.b;
+    key_frame.buffer = u.b + sizeof(key_frame.buffer_length);
 
     dsda_RestoreKeyFrame(&key_frame, false);
     demo_p += key_frame.buffer_length;
