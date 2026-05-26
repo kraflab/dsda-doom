@@ -80,6 +80,7 @@ const char *I_ExeDir(void); // killough 2/16/98: path to executable's dir
 const char *I_ConfigDir(void); // path to config and autoload dir
 
 dboolean HasTrailingSlash(const char* dn);
+const char* I_FileNameFromPath(const char *path);
 char* I_RequireFile(const char* wfname, const char* ext);
 char* I_FindFile(const char* wfname, const char* ext);
 const char* I_FindFile2(const char* wfname, const char* ext);
