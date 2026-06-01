@@ -702,7 +702,12 @@ int dsda_DoomPrepareFinished(void) {
 }
 
 int dsda_DoomMapLightning(int* lightning) {
-  return false;
+  if (raven || !current_map || !current_map->lightning)
+    return false;
+
+  *lightning = current_map->lightning;
+
+  return true;
 }
 
 int dsda_DoomApplyFadeTable(void) {
