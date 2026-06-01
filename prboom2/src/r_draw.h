@@ -79,6 +79,9 @@ typedef struct draw_column_vars_s
   int                 drawingmasked;
   unsigned int        flags; //e6y: for detect patches ind colfunc()
 
+  // [AR] mark weapon sprite
+  dboolean isplayersprite;
+
   // heretic
   int baseclip;
 } draw_column_vars_t;
