@@ -2137,6 +2137,11 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->health = mld->health;
     ld->healthgroup = mld->healthgroup;
 
+    // Clamp to valid values
+    if (ld->automap_style < ams_default || ld->automap_style >= AMS_COUNT) {
+      ld->automap_style = ams_default;
+    }
+
     if (ld->special == zl_sector_set_colormap || ld->special == zl_map_set_colormap)
     {
       if (mld->arg0str)
