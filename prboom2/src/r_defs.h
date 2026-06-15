@@ -286,7 +286,7 @@ typedef byte r_flags_t;
 
 typedef enum
 {
-  // Exposed via Action Speicals or UDMF
+  // Exposed via Action Specials or UDMF
   ams_default,
   ams_one_sided,
   ams_two_sided,
