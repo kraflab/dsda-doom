@@ -471,6 +471,7 @@ set(DOOMMUSIC_SOURCES
     MUSIC/oplplayer.h
     MUSIC/opl_queue.c
     MUSIC/opl_queue.h
+    MUSIC/wf_rom.h
     MUSIC/portmidiplayer.c
     MUSIC/portmidiplayer.h
     MUSIC/vorbisplayer.c
