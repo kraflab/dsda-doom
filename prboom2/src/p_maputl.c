@@ -368,6 +368,11 @@ void P_UnsetThingPosition (mobj_t *thing)
       if (bprev && (*bprev = bnext = thing->bnext))  // unlink from block map
         bnext->bprev = bprev;
     }
+
+    if (thing->type == MT_TELEPORTMAN)
+    {
+        P_ResetTeleptFromSector(thing->subsector->sector - sectors);
+    }
 }
 
 //
@@ -433,6 +438,11 @@ void P_SetThingPosition(mobj_t *thing)
       }
       else        // thing is off the map
         thing->bnext = NULL, thing->bprev = NULL;
+    }
+
+    if (thing->type == MT_TELEPORTMAN)
+    {
+        P_ResetTeleptFromSector(ss->sector - sectors);
     }
 }
 

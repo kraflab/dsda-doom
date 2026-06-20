@@ -64,10 +64,60 @@ static dboolean P_IsMapSpot(mobj_t *mo)
   return mo->type == ZMT_MAPSPOT || mo->type == ZMT_MAPSPOT_GRAVITY;
 }
 
+
+static mobj_t **sectors_telept;
+
+static void P_InitTeleptFromSector(void)
+{
+    if (sectors_telept == NULL)
+    {
+        sectors_telept = Z_CallocLevel(numsectors, sizeof(*sectors_telept));
+    }
+}
+
+void P_ResetTeleptFromSector(int i)
+{
+    if (sectors_telept == NULL)
+    {
+        P_InitTeleptFromSector();
+    }
+
+    sectors_telept[i] = NULL;
+}
+
+static mobj_t *P_TeleptFromSector(int i)
+{
+    if (sectors_telept == NULL)
+    {
+        P_InitTeleptFromSector();
+    }
+
+    if (sectors_telept[i])
+    {
+        return sectors_telept[i];
+    }
+
+    for (thinker_t *thinker = thinkercap.next; thinker != &thinkercap;
+         thinker = thinker->next)
+    {
+        mobj_t *m;
+        if (thinker->function == P_MobjThinker
+            && (m = (mobj_t *)thinker)->type == MT_TELEPORTMAN
+            && m->subsector->sector - sectors == i)
+        {
+            sectors_telept[i] = m;
+            break;
+        }
+    }
+
+    return sectors_telept[i];
+}
+
 static mobj_t* P_TeleportDestination(short thing_id, int tag)
 {
   const int *id_p;
 
+  // ZDoom-y
   if (thing_id)
   {
     int count = 0;
@@ -142,16 +192,14 @@ static mobj_t* P_TeleportDestination(short thing_id, int tag)
     return NULL;
   }
 
+  // Legacy
   FIND_SECTORS(id_p, tag)
   {
-    register thinker_t* th = NULL;
-    while ((th = P_NextThinker(th,th_misc)) != NULL)
-      if (th->function == P_MobjThinker) {
-        register mobj_t* m = (mobj_t*)th;
-        if (m->type == MT_TELEPORTMAN  &&
-            m->subsector->sector->iSectorID == *id_p)
-            return m;
-      }
+    mobj_t* m = NULL;
+    if ((m = P_TeleptFromSector(*id_p)) != NULL)
+    {
+      return m;
+    }
   }
   return NULL;
 }
