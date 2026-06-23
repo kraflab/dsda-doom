@@ -53,6 +53,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda.h"
+#include "dsda/args.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/messenger.h"
@@ -1517,6 +1518,9 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
   // player specific
   if (player)
   {
+    if (dsda_Flag(dsda_arg_track_reality_kill) && (raven || target->subsector->sector->special != 11))
+      damage = 500;
+
     // end of game hell hack
     if (!raven && target->subsector->sector->special == 11 && damage >= target->health)
       damage = target->health - 1;

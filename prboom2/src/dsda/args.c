@@ -273,6 +273,11 @@ static arg_config_t arg_config[dsda_arg_count] = {
     "tracks reality and almost reality categories restrictions",
     arg_null,
   },
+  [dsda_arg_track_reality_kill] = {
+    "-track_reality_kill", NULL, NULL,
+    "causes any player damage to be fatal",
+    arg_null,
+  },
   [dsda_arg_time_keys] = {
     "-time_keys", NULL, "105",
     "announces the time when keys are picked up",
