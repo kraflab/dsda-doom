@@ -1191,18 +1191,11 @@ static char *FindIWADFile(void)
 static dboolean FileMatchesIWAD(const char *name)
 {
   int i;
-  int name_length;
+  const char *base_name = dsda_BaseName(name);
 
-  name_length = strlen(name);
   for (i = 0; i < nstandard_iwads; ++i)
   {
-    int iwad_length;
-
-    iwad_length = strlen(standard_iwads[i]);
-    if (
-      name_length >= iwad_length &&
-      !stricmp(name + name_length - iwad_length, standard_iwads[i])
-    )
+    if (!stricmp(base_name, standard_iwads[i]))
       return true;
   }
 
