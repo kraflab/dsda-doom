@@ -65,7 +65,7 @@ static dboolean P_IsMapSpot(mobj_t *mo)
 }
 
 
-static mobj_t **sectors_telept;
+mobj_t **sectors_telept;
 
 static void P_InitTeleptFromSector(void)
 {
