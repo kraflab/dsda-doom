@@ -3160,26 +3160,28 @@ void A_RandomJump(mobj_t *mo)
 
 void A_LineEffect(mobj_t *mo)
 {
-  static line_t junk;
-  player_t player;
-  player_t *oldplayer;
-
   if (compatibility_level < lxdoom_1_compatibility &&
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  junk = *lines;
-  oldplayer = mo->player;
-  mo->player = &player;
-  player.health = 100;
-  junk.special = (short)mo->state->misc1;
-  if (!junk.special)
-    return;
-  junk.special_args[0] = (short)mo->state->misc2;
-  if (!P_UseSpecialLine(mo, &junk, 0, false))
-    map_format.cross_special_line(&junk, 0, mo, false);
-  mo->state->misc1 = junk.special;
-  mo->player = oldplayer;
+  if (!(mo->intflags & MIF_LINEDONE)) // Unless already used up
+  {
+    line_t junk = *lines;                                   // Fake linedef set to 1st
+    if ((junk.special = (short)mo->state->misc1))           // Linedef type
+    {
+      // [FG] made static
+      static player_t player;                               // Remember player status
+      player_t *oldplayer = mo->player;                     // Remember player status
+      mo->player = &player;                                 // Fake player
+      player.health = 100;                                  // Alive player
+      junk.special_args[0] = (short)mo->state->misc2;       // Sector tag for linedef
+      if (!P_UseSpecialLine(mo, &junk, 0, false))           // Try using it
+        map_format.cross_special_line(&junk, 0, mo, false); // Try crossing it
+      if (!junk.special)                                    // If type cleared,
+        mo->intflags |= MIF_LINEDONE;                       // no more for this thing
+      mo->player = oldplayer;                               // Restore player status
+    }
+  }
 }
 
 //
