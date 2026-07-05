@@ -351,6 +351,7 @@ void R_SetDefaultDrawColumnVars(draw_column_vars_t *dcvars) {
 
   // [AR] mark weapon sprite
   dcvars->isplayersprite = false;
+  dcvars->pspritepostheight = 0;
 
   // heretic
   dcvars->baseclip = -1;

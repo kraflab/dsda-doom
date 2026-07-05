@@ -80,7 +80,8 @@ typedef struct draw_column_vars_s
   unsigned int        flags; //e6y: for detect patches ind colfunc()
 
   // [AR] mark weapon sprite
-  dboolean isplayersprite;
+  dboolean            isplayersprite;
+  int                 pspritepostheight;
 
   // heretic
   int baseclip;
