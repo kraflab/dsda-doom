@@ -515,6 +515,9 @@ const char *bgcastcall   = "BOSSBACK"; // Panel behind cast call
  * cph - updated for prboom */
 const char *savegamename = PROJECT_TARNAME"-savegame";
 
+// secret messages
+const char *s_HUSTR_SECRETFOUND = HUSTR_SECRETFOUND;
+
 // end d_deh.h variable declarations
 // ====================================================================
 
@@ -828,6 +831,9 @@ static deh_strs deh_strlookup[] = {
   {&bgflat31,"BGFLAT31"},
   {&bgcastcall,"BGCASTCALL"},
   {&savegamename,"SAVEGAMENAME"},  // Ty 05/03/98
+
+  // secret messages
+  {&s_HUSTR_SECRETFOUND,"HUSTR_SECRETFOUND"},
 };
 
 static int deh_numstrlookup = sizeof(deh_strlookup) / sizeof(deh_strlookup[0]);

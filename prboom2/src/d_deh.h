@@ -1063,6 +1063,9 @@ extern const char* bgcastcall;
 // from g_game.c, prefix for savegame name like "boomsav"
 extern const char* savegamename;
 
+// secret messages
+extern const char* s_HUSTR_SECRETFOUND;
+
 uint64_t deh_stringToMBF21MobjFlags(char *strval);
 uint64_t deh_stringToMobjFlags(char *strval);
 void deh_changeCompTranslucency(void);
