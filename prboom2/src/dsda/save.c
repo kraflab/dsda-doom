@@ -35,6 +35,8 @@
 #include "dsda/options.h"
 #include "dsda/settings.h"
 
+#include "hexen/sv_save.h"
+
 #include "save.h"
 
 static char* dsda_base_save_dir;
@@ -176,6 +178,20 @@ void dsda_UnArchiveGameModifiers(void)
   dsda_UpdateIntConfig(dsda_config_coop_spawns,      saved_coop_spawns, true);
 }
 
+void dsda_ArchiveHexenStats(void)
+{
+  if (!hexen) return;
+
+  SV_StoreHexenMapStats();
+}
+
+void dsda_UnArchiveHexenStats(void)
+{
+  if (!hexen) return;
+
+  SV_RestoreHexenMapStats();
+}
+
 void dsda_ArchiveAll(void) {
   dsda_ArchiveContext();
 
@@ -193,6 +209,7 @@ void dsda_ArchiveAll(void) {
   P_ArchiveRNG();
   P_ArchiveMap();
 
+  dsda_ArchiveHexenStats();
   dsda_ArchiveGameModifiers();
   dsda_ArchiveInternal();
 }
@@ -214,6 +231,7 @@ void dsda_UnArchiveAll(void) {
   P_UnArchiveMap();
   P_MapEnd();
 
+  dsda_UnArchiveHexenStats();
   dsda_UnArchiveGameModifiers();
   dsda_UnArchiveInternal();
 }
