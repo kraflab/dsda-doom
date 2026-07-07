@@ -176,7 +176,7 @@ int W_AUTOLumpNumExists(int lump);
 int W_AUTOLumpNameExists(const char *name);
 int W_PWADLumpNumExists2(int lump);
 int W_PWADLumpNameExists2(const char *name);
-int W_PWADMapExists(void);
+int W_PWADMapsExist(void);
 
 // CPhipps - convenience macros
 //#define W_LumpByNum(num) (W_LumpByNum)((num),1)

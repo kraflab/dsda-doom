@@ -659,10 +659,10 @@ void D_PageTicker(void)
 // Check whether to skip IWAD Demos
 static int dsda_SkipIwadDemos(void)
 {
-  int pwaddemo = W_PWADLumpNameExists2("DEMO1");
-  int pwadmaps = W_PWADMapExists();
+  int pwaddemos = W_PWADLumpNameExists2("DEMO1");
+  int pwadmaps = W_PWADMapsExist();
 
-  if ((pwadmaps && !pwaddemo) || lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
+  if ((pwadmaps && !pwaddemos) || lumpinfo[W_CheckNumForName("DEMO1")].size == 0)
     return true;
   
   return false;

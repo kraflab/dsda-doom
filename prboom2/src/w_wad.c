@@ -648,7 +648,7 @@ int W_PWADLumpNameExists2(const char *name)
   return (W_AUTOLumpNumExists(W_CheckNumForName(name)) || W_PWADLumpNumExists(W_CheckNumForName(name)));
 }
 
-int W_PWADMapExists(void)
+int W_PWADMapsExist(void)
 {
   return W_PWADLumpNameExists2("THINGS") || W_PWADLumpNameExists2("TEXTMAP");
 }
