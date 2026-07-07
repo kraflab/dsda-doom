@@ -135,6 +135,7 @@ int g_menu_font_spacing;
 
 const char* g_skyflatname;
 
+dboolean started_demo = false;
 dboolean hexen = false;
 dboolean heretic = false;
 dboolean raven = false;
