@@ -65,7 +65,11 @@ static dboolean P_IsMapSpot(mobj_t *mo)
 }
 
 
-mobj_t **sectors_telept;
+static struct
+{
+    mobj_t *telept;
+    dboolean checked;
+} *sectors_telept;
 
 static void P_InitTeleptFromSector(void)
 {
@@ -75,6 +79,11 @@ static void P_InitTeleptFromSector(void)
     }
 }
 
+void P_ResetTeleptList(void)
+{
+    sectors_telept = NULL;
+}
+
 void P_ResetTeleptFromSector(int i)
 {
     if (sectors_telept == NULL)
@@ -82,7 +91,7 @@ void P_ResetTeleptFromSector(int i)
         P_InitTeleptFromSector();
     }
 
-    sectors_telept[i] = NULL;
+    sectors_telept[i].checked = false;
 }
 
 static mobj_t *P_TeleptFromSector(int i)
@@ -92,25 +101,25 @@ static mobj_t *P_TeleptFromSector(int i)
         P_InitTeleptFromSector();
     }
 
-    if (sectors_telept[i])
+    if (sectors_telept[i].checked)
     {
-        return sectors_telept[i];
+        return sectors_telept[i].telept;
     }
 
-    for (thinker_t *thinker = thinkercap.next; thinker != &thinkercap;
-         thinker = thinker->next)
+    for (thinker_t *thinker = thinkercap.next; thinker != &thinkercap; thinker = thinker->next)
     {
         mobj_t *m;
         if (thinker->function == P_MobjThinker
             && (m = (mobj_t *)thinker)->type == MT_TELEPORTMAN
-            && m->subsector->sector - sectors == i)
+            && m->subsector->sector->iSectorID == i)
         {
-            sectors_telept[i] = m;
+            sectors_telept[i].telept = m;
             break;
         }
     }
 
-    return sectors_telept[i];
+    sectors_telept[i].checked = true;
+    return sectors_telept[i].telept;
 }
 
 static mobj_t* P_TeleportDestination(short thing_id, int tag)

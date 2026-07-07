@@ -127,6 +127,7 @@ typedef struct
 } amlinetrace_t;
 
 void P_ResetTeleptFromSector(int i);
+void P_ResetTeleptList(void);
 
 #define NUMAMLINETRACES 64
 extern amlinetrace_t amlinetraces[NUMAMLINETRACES];

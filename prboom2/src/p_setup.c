@@ -3710,7 +3710,7 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
 
   Z_FreeLevel();
 
-  sectors_telept = NULL;
+  P_ResetTeleptList();
 
   P_InitThinkers();
 
