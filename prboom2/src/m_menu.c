@@ -3197,7 +3197,7 @@ static const char* fake_contrast_list[] =
   NULL
 };
 
-static const char *gl_fade_mode_list[] = { "Normal", "Smooth", NULL };
+static const char *gl_fade_mode_list[] = { "Normal", "Smooth", "TrueColor", NULL };
 
 setup_menu_t gen_video_settings[] = {
   { "Video mode", S_CHOICE | S_STR, m_conf, G_X, dsda_config_videomode, 0, videomodes },
