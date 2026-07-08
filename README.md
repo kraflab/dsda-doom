@@ -1,12 +1,31 @@
-# dsda-doom v0.29.3
+<div align="center">
+    <img src="./prboom2/ICONS/dsda-doom.png" alt="dsda-doom logo" height="200"/>
+    <h1>dsda-doom</h1>
+    <h3>A modern but conservative Doom source port</h3>
+</div>
+
+<div align="center" markdown="1">
+
+[![Windows](https://img.shields.io/badge/Windows-grey)]()
+[![macOS](https://img.shields.io/badge/macOS-grey?logo=apple)]()
+[![Linux](https://img.shields.io/badge/Linux-grey?logo=linux&logoColor=white)]()
+<br>
+[![Release](https://img.shields.io/github/release/kraflab/dsda-doom.svg)](https://github.com/kraflab/dsda-doom/releases/latest)
+[![Downloads (latest)](https://img.shields.io/github/downloads/kraflab/dsda-doom/latest/total.svg)](https://github.com/kraflab/dsda-doom/releases/latest)
+[![Downloads (total)](https://img.shields.io/github/downloads/kraflab/dsda-doom/total)](https://github.com/kraflab/dsda-doom/releases/latest)
+<br>
+[![Discord](https://img.shields.io/discord/218106532406099969?logoColor=white&logo=discord&label=Discord)](https://discord.gg/9paQ52zQUT)
+
+</div>
+
 This is a successor of prboom+ with many new features, including:
-- Heretic, Hexen, MBF21, Doom-in-Hexen, UDMF, and MAPINFO support
+- Heretic, Hexen, MBF21 and UDMF support
 - In-game console and scripting
 - Full controller support
 - Palette-based opengl renderer
 - Debugging features for testing
-- Strict mode for speedrunning
 - Various quality of life improvements
+- Strict mode for speedrunning
 - Advanced tools for TASing
 - Rewind
 
@@ -17,7 +36,7 @@ This is a successor of prboom+ with many new features, including:
 - [v0.26](./patch_notes/v0.26.md)
 
 ### Launcher
-There is a dedicated launcher for this port available [here](https://github.com/Pedro-Beirao/dsda-launcher) by PBeGood4.
+There is a dedicated launcher for this port available [dsda-launcher](https://github.com/Pedro-Beirao/dsda-launcher).
 
 ### Doom-in-Hexen Support
 - [Full details](./docs/doom_in_hexen.md)
