@@ -670,7 +670,7 @@ static dboolean dsda_SimpleDemoLoop(void)
   int pwaddemos = W_PWADLumpNameExists2("DEMO1");
   int pwadmaps = W_PWADMapsExist();
 
-  if ((pwadmaps && !pwaddemos) || dsda_IsBlankPWADLump("DEMO1") || doom_v11)
+  if ((pwadmaps && !pwaddemos) || dsda_IsBlankPWADLump("DEMO1"))
     return true;
 
   return false;
