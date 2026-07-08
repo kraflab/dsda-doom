@@ -149,4 +149,6 @@ void R_ResetFuzzCol(int height);
 // Calls R_ResetFuzzCol if x is aligned to the fuzz cell grid
 void R_CheckFuzzCol(int x, int height);
 
+extern int fuzz_cutoff;
+
 #endif

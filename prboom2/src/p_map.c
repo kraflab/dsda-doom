@@ -57,6 +57,7 @@
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/line_special.h"
 
 #include "heretic/def.h"
 
@@ -2329,6 +2330,9 @@ dboolean PTR_ShootTraverse (intercept_t* in)
 
     if (li->special)
       map_format.shoot_special_line(shootthing, li);
+
+    if (map_format.zdoom && li->special == zl_line_horizon)
+      return false;
 
     if (li->flags & ML_TWOSIDED &&
         !(li->flags & (ML_BLOCKEVERYTHING | ML_BLOCKHITSCAN)))

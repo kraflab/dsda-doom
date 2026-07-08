@@ -83,18 +83,12 @@ void dsda_FreePlayPal(void) {
 }
 
 static dboolean dsda_DuplicatePaletteEntry(const byte *playpal, int i, int j) {
-  int colormap_i;
-
   if (
     playpal[3 * i + 0] != playpal[3 * j + 0] ||
     playpal[3 * i + 1] != playpal[3 * j + 1] ||
     playpal[3 * i + 2] != playpal[3 * j + 2]
   )
     return false;
-
-  for (colormap_i = 0; colormap_i < NUMCOLORMAPS; ++colormap_i)
-    if (colormaps[0][colormap_i * 256 + i] != colormaps[0][colormap_i * 256 + j])
-      return false;
 
   return true;
 }

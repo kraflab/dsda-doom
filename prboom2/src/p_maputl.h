@@ -118,4 +118,27 @@ extern divline_t trace;
 
 dboolean P_GetMidTexturePosition(const line_t *line, int sideno, fixed_t *top, fixed_t *bottom);
 
+// bes 01/20/24: foul hacks to draw these lines on automap
+//  bes 02/28/24: moved this to maputl.h and renamed pathtrace to amlinetrace
+typedef struct
+{
+	fixed_t x1, y1, x2, y2;
+	int when;
+} amlinetrace_t;
+
+#define NUMAMLINETRACES 64
+extern amlinetrace_t amlinetraces[NUMAMLINETRACES];
+extern unsigned int cur_amlinetrace;
+
+// bes 02/28/24: automap rectangle traces for blocks (itc ovf blockmap tiles)
+typedef struct
+{
+	fixed_t x1, y1, x2, y2;
+	int when;
+} amrecttrace_t;
+
+#define NUMAMRECTTRACES 64
+extern amrecttrace_t amrecttraces[NUMAMRECTTRACES];
+extern unsigned int cur_amrecttrace;
+
 #endif  /* __P_MAPUTL__ */

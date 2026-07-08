@@ -35,6 +35,7 @@
  *-----------------------------------------------------------------------------
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -93,6 +94,7 @@
 #include "dsda/build.h"
 #include "dsda/configuration.h"
 #include "dsda/console.h"
+#include "dsda/death.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
@@ -159,6 +161,7 @@ int             gameepisode;
 int             gamemap;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;
+static dboolean commandline_loadgame = false;
 static dboolean load_via_cmd = false;
 
 dboolean         timingdemo;    // if true, exit with report on completion
@@ -837,7 +840,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
   {
-    cmd->buttons |= BT_USE;
+    if (!dsda_DeathUseNothingInDemo())
+      cmd->buttons |= BT_USE;
     // clear double clicks if hit use button
     dclicks = 0;
   }
@@ -980,7 +984,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks++;
       if (dclicks == 2)
         {
-          cmd->buttons |= BT_USE;
+          if (!dsda_DeathUseNothingInDemo())
+            cmd->buttons |= BT_USE;
           dclicks = 0;
         }
       else
@@ -1002,7 +1007,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks2++;
       if (dclicks2 == 2)
         {
-          cmd->buttons |= BT_USE;
+          if (!dsda_DeathUseNothingInDemo())
+            cmd->buttons |= BT_USE;
           dclicks2 = 0;
         }
       else
@@ -1435,7 +1441,7 @@ dboolean G_Responder (event_t* ev)
     case ev_move_analog:
       dsda_WatchGameControllerEvent();
 
-      left_analog_x = ev->data1.f;
+      left_analog_x = dsda_StrictMode() ? lroundf(ev->data1.f * 0.5f) * 2 : ev->data1.f;
       left_analog_y = ev->data2.f;
       return true;    // eat events
 
@@ -1636,6 +1642,7 @@ void G_Ticker (void)
             savegameslot = ex->load_slot;
             gameaction = ga_loadgame;
             forced_loadgame = true;
+            commandline_loadgame = false;
             load_via_cmd = true;
             R_SmoothPlaying_Reset(NULL);
           }
@@ -2353,7 +2360,7 @@ void G_ForcedLoadGame(void)
 }
 
 // killough 3/16/98: add slot info
-void G_LoadGame(int slot)
+void G_LoadGame(int slot, dboolean via_commandline)
 {
   if (demorecording)
   {
@@ -2361,7 +2368,7 @@ void G_LoadGame(int slot)
     return;
   }
 
-  if (!demoplayback)
+  if (!demoplayback && !via_commandline)
   {
     forced_loadgame = netgame; // CPhipps - always force load netgames
   }
@@ -2376,6 +2383,7 @@ void G_LoadGame(int slot)
 
   gameaction = ga_loadgame;
   savegameslot = slot;
+  commandline_loadgame = via_commandline;
   load_via_cmd = false;
   R_SmoothPlaying_Reset(NULL); // e6y
 }
@@ -2387,6 +2395,11 @@ static void G_LoadGameErr(const char *msg)
 {
   P_FreeSaveBuffer();
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
+  if (commandline_loadgame)
+  {
+    D_StartTitle();
+    gamestate = GS_DEMOSCREEN;
+  }
 }
 
 const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
@@ -2470,7 +2483,7 @@ void G_DoLoadGame(void)
   // [crispy] loaded game must always be single player.
   // Needed for ability to use a further game loading, as well as
   // cheat codes and other single player only specifics.
-  if (!load_via_cmd)
+  if (!commandline_loadgame && !load_via_cmd)
   {
     netgame = false;
     deathmatch = false;
@@ -3899,7 +3912,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     netgame = true;
   }
 
-  if (!(params & RDH_SKIP_HEADER))
+  if (!(params & RDH_SKIP_HEADER) && gameaction != ga_loadgame)
   {
     G_InitNew(skill, episode, map, true);
     demo_p = dsda_EvaluateDemoStartPoint(demo_p);

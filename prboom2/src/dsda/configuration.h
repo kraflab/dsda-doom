@@ -239,6 +239,7 @@ typedef enum {
   dsda_config_map_trail,
   dsda_config_map_trail_collisions,
   dsda_config_map_trail_size,
+  dsda_config_map_traces,
   dsda_config_automap_overlay,
   dsda_config_automap_rotate,
   dsda_config_automap_follow,

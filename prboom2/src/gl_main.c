@@ -682,7 +682,7 @@ void gld_FillPatch(int lump, int x, int y, int width, int height, enum patch_tra
 // use colormaps[0] as a fallback in such a case.
 const lighttable_t *gld_GetActiveColormap()
 {
-  if (V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed())
+  if (V_IsUILightmodeIndexed() || V_IsAutomapLightmodeIndexed() || V_IsMenuLightmodeIndexed())
     return colormaps[0];
   else if (fixedcolormap)
     return fixedcolormap;
@@ -800,7 +800,9 @@ void gld_DrawWeapon(int weaponlump, vissprite_t *vis, int lightlevel)
   // More precise weapon drawing:
   // Shotgun from DSV3_War looks correctly now. Especially during movement.
   // There is no more line of graphics under certain weapons.
-  x1 = vis->x1;
+  //
+  // [AR] fix wide opengl weapons alignment
+  x1 = vis->gx1;
   x2 = roundf(x1 + gltexture->realtexwidth * pspritexscale_f);
   y1 = roundf(viewheight / 2.0 - vis->texturemid * pspriteyscale_f / FRACUNIT);
   y2 = roundf(y1 + gltexture->realtexheight * pspriteyscale_f);

@@ -123,6 +123,7 @@ static int fuzzpos = 0;
 
 // Fuzz cell size for scaled software fuzz
 static int fuzzcellsize;
+int fuzz_cutoff = false;
 
 // render pipelines
 #define RDC_STANDARD      1

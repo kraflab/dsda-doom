@@ -515,6 +515,9 @@ const char *bgcastcall   = "BOSSBACK"; // Panel behind cast call
  * cph - updated for prboom */
 const char *savegamename = PROJECT_TARNAME"-savegame";
 
+// secret messages
+const char *s_HUSTR_SECRETFOUND = HUSTR_SECRETFOUND;
+
 // end d_deh.h variable declarations
 // ====================================================================
 
@@ -828,6 +831,9 @@ static deh_strs deh_strlookup[] = {
   {&bgflat31,"BGFLAT31"},
   {&bgcastcall,"BGCASTCALL"},
   {&savegamename,"SAVEGAMENAME"},  // Ty 05/03/98
+
+  // secret messages
+  {&s_HUSTR_SECRETFOUND,"HUSTR_SECRETFOUND"},
 };
 
 static int deh_numstrlookup = sizeof(deh_strlookup) / sizeof(deh_strlookup[0]);
@@ -1588,7 +1594,7 @@ void deh_changeCompTranslucency(void)
   if (raven) return;
 
   boom_translucent_sprites = dsda_IntConfig(dsda_config_translucent_sprites);
-  vanilla_translucent_sprites = boom_translucent_sprites > 1;
+  vanilla_translucent_sprites = !dsda_StrictMode() && boom_translucent_sprites > 1;
   translucency_active = (compatibility_level >= boom_compatibility_compatibility) ? !comp[comp_translucency] : vanilla_translucent_sprites;
 
   // Reset translucency
