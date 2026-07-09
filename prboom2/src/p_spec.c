@@ -4634,9 +4634,10 @@ void P_SpawnZDoomPusher(line_t *l)
       }
       else
       {  // [RH] Find thing by tid
-        int s;
+        thing_id_search_t search;
 
-        for (s = -1; (thing = P_FindMobjFromTID(l->special_args[1], &s)) != NULL;)
+        dsda_ResetThingIDSearch(&search);
+        while ((thing = dsda_FindMobjFromThingID(l->special_args[1], &search)) != NULL)
           if (thing->type == map_format.mt_push || thing->type == map_format.mt_pull)
             Add_Pusher(p_push, dx, dy, thing, thing->subsector->sector->iSectorID);
       }
