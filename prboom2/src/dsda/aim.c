@@ -36,7 +36,7 @@ fixed_t dsda_PlayerSlope(player_t* player)
 
 int dsda_PitchToLookDir(angle_t pitch)
 {
-  return -(int) ((((uint64_t) pitch * FIXED_PI) >> FRACBITS) / ANG1);
+  return -(int) ((((long long)(int) pitch * FIXED_PI) >> FRACBITS) / ANG1);
 }
 
 angle_t dsda_LookDirToPitch(int lookdir)
