@@ -1,4 +1,5 @@
-theme: just-the-docs
+# theme: just-the-docs
+remote_theme: just-the-docs/just-the-docs@v0.12.0
 title: dsda-doom
 description: A modern but conservative Doom source port
 baseurl: "/dsda-doom"
