@@ -1,3 +1,8 @@
+---
+title: DSDATC - Text Color
+parent: Configuration
+---
+
 ## Text Color Configuration
 
 Text Color configurations are stored in the DSDATC lump. These defaults can be changed by replacing the lump.

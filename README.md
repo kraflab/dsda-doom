@@ -1,3 +1,10 @@
+---
+nav_order: 1
+layout: page
+title: Overview
+permalink: /
+---
+
 <div align="center">
     <img src="./prboom2/ICONS/dsda-doom.png" alt="dsda-doom logo" height="200"/>
     <h1>dsda-doom</h1>

@@ -1,3 +1,8 @@
+---
+title: DSDAHUD - Hud
+parent: Configuration
+---
+
 ## HUD Configuration
 
 HUD configurations are stored in the DSDAHUD lump. These defaults can be changed by replacing the lump or specifying a hud config file with `-hud filename`. There are separate configurations for each game (doom, heretic, and hexen), with or without the status bar.
