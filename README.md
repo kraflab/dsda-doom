@@ -6,7 +6,7 @@ permalink: /
 ---
 
 <div align="center">
-    <img src="./prboom2/ICONS/dsda-doom.png" alt="dsda-doom logo" height="200"/>
+    <img src="./prboom2/ICONS/dsda-doom.png" alt="dsda-doom logo" width="200"/>
     <h1>dsda-doom</h1>
     <h3>A modern but conservative Doom source port</h3>
 </div>
