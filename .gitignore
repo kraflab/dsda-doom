@@ -33,3 +33,10 @@ CMakePresets.json
 /.cache/
 /prboom2/.cache/
 compile_commands.json
+
+# jekyll
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+vendor

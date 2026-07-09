@@ -1,3 +1,8 @@
+---
+title: DSDAHacked
+parent: Mapping
+---
+
 # DSDHacked
 
 DSDA-Doom supports "unlimited" states, sprites, sounds, and things in dehacked (until you run out of memory / reach 2^31 - 1). This is an extension of mbf21, which vastly increased the demand for raised limits in dehacked. This document is a specification of the behaviour.
