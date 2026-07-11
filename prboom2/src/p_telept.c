@@ -106,6 +106,8 @@ static mobj_t *P_TeleptFromSector(int i)
         return sectors_telept[i].telept;
     }
 
+    sectors_telept[i].telept = NULL;
+
     for (thinker_t *thinker = thinkercap.next; thinker != &thinkercap; thinker = thinker->next)
     {
         mobj_t *m;
