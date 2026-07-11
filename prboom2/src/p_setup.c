@@ -3715,6 +3715,8 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
 
   Z_FreeLevel();
 
+  P_ResetTeleptList();
+
   P_InitThinkers();
 
   // e6y
