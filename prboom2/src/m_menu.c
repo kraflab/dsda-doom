@@ -75,6 +75,7 @@
 #include "smooth.h"
 #include "r_fps.h"
 #include "r_main.h"
+#include "r_patch.h"
 #include "r_segs.h"
 #include "f_finale.h"
 #include "e6y.h"//e6y
@@ -237,6 +238,7 @@ extern menuitem_t InfoMenu4[];
 
 static int current_page;
 static int previous_page;
+static int menu_mouse_hover_tab = -1;
 
 //
 // PROTOTYPES
@@ -285,6 +287,9 @@ static void M_WriteText(int x, int y, const char *string, int cm);
 static int  M_StringWidth(const char *string);
 static int  M_StringHeight(const char *string);
 static void M_DrawTitle(int y, const char *text, int cm);
+static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu);
+static dboolean M_MainItemMouseHovered(int index);
+static int M_MenuMouseHighlightColor(int color);
 static void M_StartMessage(const char *string,void *routine,dboolean input);
 static void M_StopMessage(void);
 
@@ -865,8 +870,11 @@ static void M_DrawLoad(void)
   // CPhipps - patch drawing updated
   V_DrawNamePatch(72 ,LOADGRAPHIC_Y, 0, "M_LOADG", CR_DEFAULT, VPT_STRETCH);
   for (i = 0 ; i < load_end ; i++) {
+    int color = M_MainItemMouseHovered(i) ?
+      M_MenuMouseHighlightColor(CR_DEFAULT) : CR_DEFAULT;
+
     M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], CR_DEFAULT);
+    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], color);
   }
 
   M_DrawTabs(saves_pages, 5, 145);
@@ -1107,8 +1115,13 @@ static void M_DrawSave(void)
   V_DrawNamePatch(72, LOADGRAPHIC_Y, 0, "M_SAVEG", CR_DEFAULT, VPT_STRETCH);
   for (i = 0 ; i < load_end ; i++)
     {
+    int color = current_page == 0 ? CR_DARKEN : CR_DEFAULT;
+
+    if (M_MainItemMouseHovered(i))
+      color = M_MenuMouseHighlightColor(color);
+
     M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], current_page == 0 ? CR_DARKEN : CR_DEFAULT);
+    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], color);
     }
 
   M_DrawTabs(saves_pages, 5, 145);
@@ -1635,6 +1648,30 @@ static void M_SizeDisplay(int choice)
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
 
+typedef struct
+{
+  const char **labels;
+  int visible_tabs;
+  setup_menu_t **pages;
+} setup_page_context_t;
+
+static setup_page_context_t setup_page_context;
+
+static void M_ClearSetupPageContext(void)
+{
+  setup_page_context.labels = NULL;
+  setup_page_context.visible_tabs = 0;
+  setup_page_context.pages = NULL;
+}
+
+static void M_SetSetupPageContext(const char **labels, int visible_tabs,
+                                  setup_menu_t **pages)
+{
+  setup_page_context.labels = labels;
+  setup_page_context.visible_tabs = visible_tabs;
+  setup_page_context.pages = pages;
+}
+
 // save the setup menu's itemon value in the S_END element's x coordinate
 
 static int M_GetSetupMenuItemOn (void)
@@ -1867,9 +1904,207 @@ static char gather_buffer[MAXGATHER+1];  // killough 10/98: make input character
 // displays the appropriate setting value: yes/no, a key binding, a number,
 // a paint chip, etc.
 
+static void M_CopyText(char *dest, size_t dest_size, const char *src)
+{
+  if (dest_size)
+    snprintf(dest, dest_size, "%s", src ? src : "");
+}
+
+static void M_AppendText(char *dest, size_t dest_size, const char *src)
+{
+  size_t len;
+
+  if (!dest_size || !src)
+    return;
+
+  len = strlen(dest);
+  if (len < dest_size)
+    snprintf(dest + len, dest_size - len, "%s", src);
+}
+
+static dboolean M_SetupPointerVisible(const setup_menu_t *s)
+{
+  return current_setup_menu &&
+         s == current_setup_menu + set_menu_itemon &&
+         whichSkull && !setup_select;
+}
+
+static void M_AppendSetupPointer(const setup_menu_t *s,
+                                 char *text, size_t text_size)
+{
+  if (M_SetupPointerVisible(s))
+    M_AppendText(text, text_size, " <");
+}
+
+static void M_TrimSetupString(char *text, dboolean update_entry_index)
+{
+  while (text[0] && M_GetPixelWidth(text) >= MAXENTRYWIDTH)
+  {
+    int len = strlen(text);
+
+    text[--len] = 0;
+    if (update_entry_index && entry_index > len)
+      entry_index--;
+  }
+}
+
+static void M_SetupInputText(const setup_menu_t *s,
+                             char *text, size_t text_size)
+{
+  int i;
+  int offset = 0;
+  const char *format;
+  dboolean any_input = false;
+  dsda_input_t *input = dsda_Input(s->input);
+
+  menu_buffer[0] = '\0';
+
+  for (i = 0; i < input->num_keys; ++i)
+  {
+    if (any_input)
+    {
+      menu_buffer[offset++] = '/';
+      menu_buffer[offset] = '\0';
+    }
+
+    offset = M_GetKeyString(input->key[i], offset);
+    any_input = true;
+  }
+
+  if (input->mouseb != -1)
+  {
+    format = any_input ? "/MB%d" : "MB%d";
+    snprintf(menu_buffer + strlen(menu_buffer),
+             sizeof(menu_buffer) - strlen(menu_buffer),
+             format, input->mouseb + 1);
+    any_input = true;
+  }
+
+  if (input->joyb != -1)
+  {
+    format = any_input ? "/%s" : "%s";
+    snprintf(menu_buffer + strlen(menu_buffer),
+             sizeof(menu_buffer) - strlen(menu_buffer),
+             format, dsda_GameControllerButtonName(input->joyb));
+    any_input = true;
+  }
+
+  if (!any_input)
+    M_GetKeyString(0, 0);
+
+  M_CopyText(text, text_size, menu_buffer);
+}
+
+static dboolean M_SetupSettingText(const setup_menu_t *s,
+                                   char *text, size_t text_size,
+                                   dboolean update_entry_index)
+{
+  int flags = s->m_flags;
+
+  if (!text_size)
+    return false;
+
+  text[0] = '\0';
+
+  if (flags & S_YESNO)
+    M_CopyText(text, text_size,
+               dsda_IntConfig(s->config_id) ? "YES" : "NO");
+  else if (flags & (S_NUM | S_WEAP | S_CRITEM))
+  {
+    if ((flags & (S_HILITE | S_SELECT)) && setup_gather)
+    {
+      gather_buffer[gather_count] = 0;
+      M_CopyText(text, text_size, gather_buffer);
+    }
+    else
+      snprintf(text, text_size, "%d", dsda_IntConfig(s->config_id));
+  }
+  else if (flags & S_INPUT)
+    M_SetupInputText(s, text, text_size);
+  else if (flags & S_STRING)
+  {
+    dboolean editing = setup_select && (flags & (S_HILITE | S_SELECT));
+
+    M_CopyText(text, text_size,
+               editing ? entry_string_index : dsda_StringConfig(s->config_id));
+    if (editing)
+      M_TrimSetupString(text, update_entry_index);
+  }
+  else if (flags & S_CHOICE)
+  {
+    if (flags & S_STR)
+    {
+      M_CopyText(text, text_size,
+                 setup_select && (flags & (S_HILITE | S_SELECT)) ?
+                   entry_string_index : dsda_StringConfig(s->config_id));
+    }
+    else
+    {
+      int value = setup_select && (flags & (S_HILITE | S_SELECT)) ?
+        choice_value : dsda_IntConfig(s->config_id);
+
+      if (s->selectstrings == NULL)
+        snprintf(text, text_size, "%d", value);
+      else
+        M_CopyText(text, text_size, s->selectstrings[value]);
+    }
+  }
+  else if (flags & S_THERMO)
+    snprintf(text, text_size, "%d", dsda_IntConfig(s->config_id));
+  else
+    return false;
+
+  M_AppendSetupPointer(s, text, text_size);
+
+  return text[0] != '\0';
+}
+
+static int M_SetupSettingTextColor(const setup_menu_t *s, int color)
+{
+  int flags = s->m_flags;
+
+  if ((flags & S_CRITEM) &&
+      !((flags & (S_HILITE | S_SELECT)) && setup_gather))
+  {
+    color = dsda_IntConfig(s->config_id);
+
+    if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+      color += CR_DARKEN;
+  }
+
+  return color;
+}
+
+static void M_DrawSetupStringCursor(int x, int y, char *text)
+{
+  int cursor_start, char_width;
+  char c[2];
+
+  *c = text[entry_index]; // hold temporarily
+  c[1] = 0;
+  char_width = M_GetPixelWidth(c);
+  if (char_width == 1)
+    char_width = 7; // default for end of line
+  text[entry_index] = 0; // NULL to get cursor position
+  cursor_start = M_GetPixelWidth(text);
+  text[entry_index] = *c; // replace stored char
+
+  // Now draw the cursor
+  // proff 12/6/98: Drawing of cursor changed for hi-res
+  // e6y: wide-res
+  if (x + cursor_start + char_width < BASE_WIDTH)
+  {
+    int xx = x + cursor_start - 1, yy = y, ww = char_width, hh = 9;
+
+    V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+    V_FillRect(0, xx, yy, ww, hh, playpal_lightest);
+  }
+}
+
 static void M_DrawSetting(const setup_menu_t* s, int y)
 {
   int x = s->m_x, flags = s->m_flags, color;
+  char text[MENU_BUFFER_SIZE];
 
   // Determine color of the text. This may or may not be used later,
   // depending on whether the item is a text string or not.
@@ -1880,104 +2115,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
     flags & S_HILITE ? cr_value_highlight :
     cr_value;
 
-  // Is the item a YES/NO item?
-
-  if (flags & S_YESNO) {
-    strcpy(menu_buffer, dsda_IntConfig(s->config_id) ? "YES" : "NO");
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x,y,color);
-    return;
-  }
-
-  // Is the item a simple number?
-
-  if (flags & (S_NUM | S_WEAP | S_CRITEM)) {
-    // killough 10/98: We must draw differently for items being gathered.
-    if (flags & (S_HILITE | S_SELECT) && setup_gather) {
-      gather_buffer[gather_count] = 0;
-      strcpy(menu_buffer, gather_buffer);
-    }
-    else {
-      int value;
-
-      value = dsda_IntConfig(s->config_id);
-
-      snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
-
-      if (flags & S_CRITEM)
-      {
-        color = value;
-        if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
-          color += CR_DARKEN;
-      }
-    }
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x, y, color);
-    return;
-  }
-
-  // Is the item a key binding?
-
-  if (flags & S_INPUT) {
-    int i;
-    int offset = 0;
-    const char* format;
-    dboolean any_input = false;
-    dsda_input_t* input;
-    input = dsda_Input(s->input);
-
-    // Draw the input bound to the action
-    menu_buffer[0] = '\0';
-
-    for (i = 0; i < input->num_keys; ++i)
-    {
-      if (any_input)
-      {
-        menu_buffer[offset++] = '/';
-        menu_buffer[offset] = '\0';
-      }
-
-      offset = M_GetKeyString(input->key[i], offset);
-      any_input = true;
-    }
-
-    if (input->mouseb != -1)
-    {
-      if (any_input)
-        format = "/MB%d";
-      else
-        format = "MB%d";
-
-      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer),format, input->mouseb + 1);
-      any_input = true;
-    }
-
-    if (input->joyb != -1)
-    {
-      if (any_input)
-        format = "/%s";
-      else
-        format = "%s";
-
-      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer), format,
-              dsda_GameControllerButtonName(input->joyb));
-      any_input = true;
-    }
-
-    // "NONE"
-    if (!any_input)
-      M_GetKeyString(0, 0);
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-
-    M_DrawMenuString(x, y, color);
-
-    return;
-  }
+  color = M_SetupSettingTextColor(s, color);
 
   // Is the item a paint chip?
 
@@ -2000,112 +2138,26 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
     if (!ch) // don't show this item in automap mode
       V_DrawNamePatch(x+1,y,0,"M_PALNO", CR_DEFAULT, VPT_STRETCH);
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+    if (M_SetupPointerVisible(s))
       M_DrawString(x + 8, y, color, " <");
-    return;
-  }
-
-  // Is the item a string?
-  if (flags & S_STRING) {
-    static char text[ENTRY_STRING_BFR_SIZE];
-
-    // Are we editing this string? If so, display a cursor under
-    // the correct character.
-    if (setup_select && (s->m_flags & (S_HILITE|S_SELECT))) {
-      int cursor_start, char_width;
-      char c[2];
-
-      strcpy(text, entry_string_index);
-
-      // If the string is too wide for the screen, trim it back,
-      // one char at a time until it fits. This should only occur
-      // while you're editing the string.
-
-      while (M_GetPixelWidth(text) >= MAXENTRYWIDTH) {
-        int len = strlen(text);
-        text[--len] = 0;
-        if (entry_index > len)
-          entry_index--;
-      }
-
-      // Find the distance from the beginning of the string to
-      // where the cursor should be drawn, plus the width of
-      // the char the cursor is under..
-
-      *c = text[entry_index]; // hold temporarily
-      c[1] = 0;
-      char_width = M_GetPixelWidth(c);
-      if (char_width == 1)
-        char_width = 7; // default for end of line
-      text[entry_index] = 0; // NULL to get cursor position
-      cursor_start = M_GetPixelWidth(text);
-      text[entry_index] = *c; // replace stored char
-
-      // Now draw the cursor
-      // proff 12/6/98: Drawing of cursor changed for hi-res
-      // e6y: wide-res
-      if (x + cursor_start + char_width < BASE_WIDTH)
-      {
-        int xx = (x+cursor_start-1), yy = y, ww = char_width, hh = 9;
-        V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-        V_FillRect(0, xx, yy, ww, hh, playpal_lightest);
-      }
-    }
-    else {
-      strncpy(text, dsda_StringConfig(s->config_id), ENTRY_STRING_BFR_SIZE - 1);
-    }
-
-    // Draw the setting for the item
-
-    strcpy(menu_buffer, text);
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x, y, color);
-    return;
-  }
-
-  // Is the item a selection of choices?
-
-  if (flags & S_CHOICE) {
-    if (flags & S_STR)
-    {
-      if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
-        snprintf(menu_buffer, sizeof(menu_buffer), "%s", entry_string_index);
-      else
-        snprintf(menu_buffer, sizeof(menu_buffer), "%s", dsda_StringConfig(s->config_id));
-    }
-    else
-    {
-      int value;
-
-      if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
-        value = choice_value;
-      else
-        value = dsda_IntConfig(s->config_id);
-
-      if (s->selectstrings == NULL) {
-        snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
-      } else {
-        strcpy(menu_buffer, s->selectstrings[value]);
-      }
-    }
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x,y,color);
     return;
   }
 
   if (flags & S_THERMO) {
     M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
 
-    snprintf(menu_buffer, sizeof(menu_buffer), "%d", dsda_IntConfig(s->config_id));
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x + 80, y + 3, color);
-    return;
+    x += 80;
+    y += 3;
   }
+
+  if (!M_SetupSettingText(s, text, sizeof(text), true))
+    return;
+
+  if ((flags & S_STRING) && setup_select && (flags & (S_HILITE | S_SELECT)))
+    M_DrawSetupStringCursor(x, y, text);
+
+  M_CopyText(menu_buffer, sizeof(menu_buffer), text);
+  M_DrawMenuString(x, y, color);
 }
 
 /////////////////////////////
@@ -2113,31 +2165,35 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 // M_DrawScreenItems takes the data for each menu item and gives it to
 // the drawing routines above.
 
-// CPhipps - static, const parameter, formatting
-static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
+typedef struct
+{
+  int line_height;
+  int scroll_i;
+  int max_i;
+  int limit_i;
+  int excess_i;
+} setup_menu_layout_t;
+
+static void M_GetSetupMenuLayout(const setup_menu_t *base_src, int base_y,
+                                 setup_menu_layout_t *layout)
 {
   int i = 0;
   int end_y;
-  int carry_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
-  int scroll_i = 0;
   int current_i = 0;
   int max_i = 0;
   int excess_i = 0;
   int limit_i = 0;
   int buffer_i = 0;
-  int line_height = 0;
-  float scrollbar_scale = 0;
   const setup_menu_t* src;
 
-  i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
     if (src == &current_setup_menu[set_menu_itemon])
       current_i = i;
 
-    if (src->m_flags & (S_NEXT | S_PREV)) {
-      // nothing
-    }
-    else if (src->m_flags & S_RESET_Y) {
+    if (src->m_flags & (S_NEXT | S_PREV))
+      continue;
+
+    if (src->m_flags & S_RESET_Y) {
       i = 0;
     }
     else {
@@ -2148,29 +2204,57 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     }
   }
 
+  layout->line_height = menu_font->line_height < 9 ? menu_font->line_height : 9;
+  layout->scroll_i = 0;
+  layout->max_i = max_i;
 
-  line_height = menu_font->line_height < 9 ? menu_font->line_height : 9;
-
-  end_y = base_y + (max_i + 1) * line_height;
+  end_y = base_y + (max_i + 1) * layout->line_height;
   if (end_y > 190)
-    excess_i = (end_y - 190 + line_height - 1) / line_height;
+    excess_i = (end_y - 190 + layout->line_height - 1) / layout->line_height;
 
   limit_i = max_i - excess_i;
   buffer_i = (max_i - current_i > 3 ? 3 : max_i - current_i);
 
   if (excess_i && !inhelpscreens)
   {
+    while (current_i - layout->scroll_i > limit_i - buffer_i)
+      ++layout->scroll_i;
+  }
+
+  layout->limit_i = limit_i;
+  layout->excess_i = excess_i;
+}
+
+static void M_DrawSetupMenuScrollbar(int base_y,
+                                     const setup_menu_layout_t *layout)
+{
+  if (layout->excess_i && !inhelpscreens)
+  {
     int xx, yy, ww, hh;
-    while (current_i - scroll_i > limit_i - buffer_i)
-      ++scroll_i;
+    float scrollbar_scale;
 
     // Draw scrollbar if needed
-    scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)max_i;
+    scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)layout->max_i;
 
-    xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
+    xx = 310;
+    yy = base_y + layout->scroll_i * scrollbar_scale;
+    ww = 2;
+    hh = layout->limit_i * scrollbar_scale;
     V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
     V_FillRect(0, xx, yy, ww, hh, colrngs[cr_scrollbar][playpal_lightest]);
   }
+}
+
+// CPhipps - static, const parameter, formatting
+static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
+{
+  int i = 0;
+  int carry_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
+  setup_menu_layout_t layout;
+  const setup_menu_t* src;
+
+  M_GetSetupMenuLayout(base_src, base_y, &layout);
+  M_DrawSetupMenuScrollbar(base_y, &layout);
 
   i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
@@ -2179,16 +2263,16 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     dboolean skip_entry = false;
 
     if (src->m_flags & (S_NEXT | S_PREV)) {
-      desc_y = 190 - line_height - 2;
+      desc_y = 190 - layout.line_height - 2;
     }
     else if (src->m_flags & S_RESET_Y) {
       skip_entry = true;
       i = 0;
     }
     else {
-      desc_y = base_y + (i - scroll_i) * line_height + carry_y;
+      desc_y = base_y + (i - layout.scroll_i) * layout.line_height + carry_y;
 
-      if (i - scroll_i < 0 || i - scroll_i > limit_i)
+      if (i - layout.scroll_i < 0 || i - layout.scroll_i > layout.limit_i)
         skip_entry = true;
 
       ++i;
@@ -2214,56 +2298,109 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 }
 
-// Draws the name of each page. If there are more than m, uses a carousel
-void M_DrawTabs(const char **pages, int m, int y)
-{
-  int x = 0;
-  int w = 0;
-  int i = 0;
-  int start_i = 0;
-  int end_i = m - 1;
-  int s = (m / 2); // halfway point
+#define MENU_TAB_GAP 6
 
-  // Figure out what tabs should be drawn if using carousel
+typedef struct
+{
+  int x;
+  int start_i;
+  int end_i;
+  int page_count;
+} menu_tab_layout_t;
+
+static int M_TabPageCount(const char **pages)
+{
+  int count = 0;
+
+  while (pages && pages[count])
+    count++;
+
+  return count;
+}
+
+static void M_GetTabLayout(const char **pages, int visible_tabs,
+                           menu_tab_layout_t *layout)
+{
+  int i;
+  int s;
+
+  layout->x = 0;
+  layout->start_i = 0;
+  layout->end_i = -1;
+  layout->page_count = M_TabPageCount(pages);
+
+  if (!layout->page_count)
+    return;
+
+  if (visible_tabs <= 0 || visible_tabs > layout->page_count)
+    visible_tabs = layout->page_count;
+
+  layout->end_i = visible_tabs - 1;
+  s = visible_tabs / 2;
+
   if (current_page > s)
   {
-    while (pages[current_page + i] != NULL)
+    i = 0;
+    while (current_page + i < layout->page_count)
       i++;
 
     if (i <= s)
     {
-      start_i = current_page + i - m;
-      end_i = current_page + i;
+      layout->start_i = current_page + i - visible_tabs;
+      layout->end_i = current_page + i;
     }
     else
     {
-        start_i = current_page - s;
-        end_i = current_page + s;
+      layout->start_i = current_page - s;
+      layout->end_i = current_page + s;
     }
   }
 
-  // Find the initial offset to center text
-  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
-  {
-    w = M_GetPixelWidth(pages[i]);
-    x += w + 6;
-  }
-  x = (320 - x + 6) / 2;
+  if (layout->start_i < 0)
+    layout->start_i = 0;
+  if (layout->end_i >= layout->page_count)
+    layout->end_i = layout->page_count - 1;
+
+  for (i = layout->start_i; i <= layout->end_i; i++)
+    layout->x += M_GetPixelWidth(pages[i]) + MENU_TAB_GAP;
+
+  layout->x = (BASE_WIDTH - layout->x + MENU_TAB_GAP) / 2;
+}
+
+// Draws the name of each page. If there are more than m, uses a carousel
+void M_DrawTabs(const char **pages, int m, int y)
+{
+  int x;
+  int i;
+  menu_tab_layout_t layout;
+
+  M_GetTabLayout(pages, m, &layout);
+  if (layout.end_i < layout.start_i)
+    return;
+
+  x = layout.x;
 
   // Draw the arrows on the sides
-  if (start_i > 0)
+  if (layout.start_i > 0)
     M_DrawString(x - M_GetPixelWidth("<-") - 2, y , cr_tab, "<-");
-  if (pages[i] != NULL)
-    M_DrawString(320 - x + 2, y , cr_tab, "->");
+  if (layout.end_i + 1 < layout.page_count)
+    M_DrawString(BASE_WIDTH - x + 2, y , cr_tab, "->");
 
   // Draw the page names
-  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
+  for (i = layout.start_i; i <= layout.end_i; i++)
   {
-    M_DrawString(x, y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
+    int color = (i == current_page || i == menu_mouse_hover_tab) ?
+      cr_tab_highlight : cr_tab;
 
-    w = M_GetPixelWidth(pages[i]);
-    x += w + 6;
+    M_DrawString(x, y, color, pages[i]);
+
+    x += M_GetPixelWidth(pages[i]) + MENU_TAB_GAP;
   }
+}
+
+static void M_DrawSetupTabs(int y)
+{
+  M_DrawTabs(setup_page_context.labels, setup_page_context.visible_tabs, y);
 }
 
 /////////////////////////////
@@ -2361,12 +2498,30 @@ static void M_DrawInstructions(void)
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
-static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
+static void M_ClearSetupMenuState(void)
+{
+  set_general_active = false;
+  set_keybnd_active = false;
+  set_display_active = false;
+  set_demos_active = false;
+  set_compatibility_active = false;
+  set_weapon_active = false;
+  set_auto_active = false;
+  level_table_active = false;
+  M_ClearSetupPageContext();
+}
+
+static void M_EnterSetup(menu_t *menu, dboolean *setup_flag,
+                         setup_menu_t *setup_menu,
+                         const char **page_labels, int visible_tabs,
+                         setup_menu_t **page_menus)
 {
   M_SetupNextMenu(menu);
 
+  M_ClearSetupMenuState();
   setup_active = true;
   *setup_flag = true;
+  M_SetSetupPageContext(page_labels, visible_tabs, page_menus);
   setup_select = false;
   colorbox_active = false;
   setup_gather = false;
@@ -2749,7 +2904,8 @@ setup_menu_t keys_build_settings[] = {
 
 static void M_KeyBindings(int choice)
 {
-  M_EnterSetup(&KeybndDef, &set_keybnd_active, keys_settings[0]);
+  M_EnterSetup(&KeybndDef, &set_keybnd_active, keys_settings[0],
+               keys_pages, 5, keys_settings);
 }
 
 // The drawing part of the Key Bindings Setup initialization. Draw the
@@ -2766,7 +2922,7 @@ static void M_DrawKeybnd(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "KEY BINDINGS", cr_title); // M_KEYBND
   M_DrawInstructions();
-  M_DrawTabs(keys_pages, 5, TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2822,7 +2978,8 @@ setup_menu_t weap_priority_settings[] =  // Weapons Settings screen
 
 static void M_Weapons(int choice)
 {
-  M_EnterSetup(&WeaponDef, &set_weapon_active, weap_settings[0]);
+  M_EnterSetup(&WeaponDef, &set_weapon_active, weap_settings[0],
+               weap_pages, arrlen(weap_pages), weap_settings);
 }
 
 
@@ -2838,7 +2995,7 @@ static void M_DrawWeapons(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "WEAPONS", cr_title); // M_WEAP
   M_DrawInstructions();
-  M_DrawTabs(weap_pages, sizeof(weap_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2909,7 +3066,8 @@ setup_menu_t demos_tas_settings[] =
 
 static void M_Demos(int choice)
 {
-  M_EnterSetup(&DemosDef, &set_demos_active, demos_settings[0]);
+  M_EnterSetup(&DemosDef, &set_demos_active, demos_settings[0],
+               demos_pages, arrlen(demos_pages), demos_settings);
 }
 
 // The drawing part of the Demos Setup initialization. Draw the
@@ -2924,7 +3082,7 @@ static void M_DrawDemos(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "DEMOS", cr_title); // M_DEMOS
   M_DrawInstructions();
-  M_DrawTabs(demos_pages, sizeof(demos_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3057,7 +3215,8 @@ setup_menu_t auto_colors_settings[] =  // 2st AutoMap Settings screen
 
 static void M_Automap(int choice)
 {
-  M_EnterSetup(&AutoMapDef, &set_auto_active, auto_settings[0]);
+  M_EnterSetup(&AutoMapDef, &set_auto_active, auto_settings[0],
+               auto_pages, arrlen(auto_pages), auto_settings);
 }
 
 // Data used by the color palette that is displayed for the player to
@@ -3103,7 +3262,7 @@ static void M_DrawAutoMap(void)
   // CPhipps - patch drawing updated
   M_DrawTitle(2, "AUTOMAP", cr_title); // M_AUTO
   M_DrawInstructions();
-  M_DrawTabs(auto_pages, sizeof(auto_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 
   // If a color is being selected, need to show color paint chips
@@ -3337,7 +3496,8 @@ void M_ChangeDemoSmoothTurns(void)
 
 static void M_General(int choice)
 {
-  M_EnterSetup(&GeneralDef, &set_general_active, gen_settings[0]);
+  M_EnterSetup(&GeneralDef, &set_general_active, gen_settings[0],
+               gen_pages, arrlen(gen_pages), gen_settings);
 }
 
 // The drawing part of the General Setup initialization. Draw the
@@ -3352,7 +3512,7 @@ static void M_DrawGeneral(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "GENERAL", cr_title); // M_GENERL
   M_DrawInstructions();
-  M_DrawTabs(gen_pages, sizeof(gen_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3466,7 +3626,8 @@ setup_menu_t display_crosshair_settings[] =
 
 static void M_Display(int choice)
 {
-  M_EnterSetup(&DisplayDef, &set_display_active, display_settings[0]);
+  M_EnterSetup(&DisplayDef, &set_display_active, display_settings[0],
+               display_pages, arrlen(display_pages), display_settings);
 }
 
 static void M_DrawDisplay(void)
@@ -3477,7 +3638,7 @@ static void M_DrawDisplay(void)
 
   M_DrawTitle(2, "DISPLAY", cr_title); // M_DSPLAY
   M_DrawInstructions();
-  M_DrawTabs(display_pages, sizeof(display_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3536,7 +3697,8 @@ setup_menu_t comp_emulation_settings[] = {
 
 static void M_Compatibility(int choice)
 {
-  M_EnterSetup(&CompatibilityDef, &set_compatibility_active, comp_settings[0]);
+  M_EnterSetup(&CompatibilityDef, &set_compatibility_active, comp_settings[0],
+               comp_pages, arrlen(comp_pages), comp_settings);
 }
 
 static void M_DrawCompatibility(void)
@@ -3547,7 +3709,7 @@ static void M_DrawCompatibility(void)
 
   M_DrawTitle(2, "COMPATIBILITY", cr_title); // M_COMP
   M_DrawInstructions();
-  M_DrawTabs(comp_pages, sizeof(comp_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4067,7 +4229,8 @@ static void M_BuildLevelTable(void)
 static void M_LevelTable(int choice)
 {
   M_BuildLevelTable();
-  M_EnterSetup(&LevelTableDef, &level_table_active, level_table_page[0]);
+  M_EnterSetup(&LevelTableDef, &level_table_active, level_table_page[0],
+               level_table_pages, arrlen(level_table_pages), level_table_page);
 }
 
 static void M_DrawLevelTable(void)
@@ -4080,7 +4243,7 @@ static void M_DrawLevelTable(void)
   if (current_setup_menu != level_table_page[wad_stats_summary_page])
     M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
 
-  M_DrawTabs(level_table_pages, sizeof(level_table_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4554,14 +4717,8 @@ void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
   setup_active = false;
-  set_general_active = false;
-  set_keybnd_active = false;
-  set_display_active = false;
-  set_demos_active = false;
-  set_weapon_active = false;
-  set_auto_active = false;
+  M_ClearSetupMenuState();
   colorbox_active = false;
-  level_table_active = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -5232,6 +5389,10 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
 
 static dboolean M_SetupResponder(int ch, int action, event_t* ev)
 {
+  if (set_keybnd_active && setup_select && ev->type == ev_mouse)
+    if (M_KeyBndResponder(ch, action, ev))
+      return true;
+
   if (M_SetupCommonSelectResponder(ch, action, ev))
     return true;
 
@@ -5770,6 +5931,11 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     }
     else if (action == MENU_ENTER)                     // phares 3/7/98
     {
+      if (ev && ev->type == ev_mouse &&
+          currentMenu == &SaveDef &&
+          itemOn != saveSlot)
+        return true;
+
       saveStringEnter = 0;
       if (savegamestrings[saveSlot][0])
         M_DoSave(saveSlot);
@@ -5795,6 +5961,23 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
   else if (!saveStringEnter)
   {
     int diff = 0;
+
+    if (action == MENU_ENTER)
+    {
+      if (currentMenu->menuitems[itemOn].routine &&
+          currentMenu->menuitems[itemOn].status)
+      {
+        currentMenu->lastOn = itemOn;
+        currentMenu->menuitems[itemOn].routine(itemOn);
+
+        if (currentMenu == &SaveDef && current_page == 0)
+          S_StartVoidSound(g_sfx_oof);
+        else
+          S_StartVoidSound(g_sfx_pistol);
+      }
+
+      return true;
+    }
 
     if (action == MENU_LEFT)
       diff = -1;
@@ -5938,6 +6121,1094 @@ static int M_CurrentAction(void)
   return MENU_NULL;
 }
 
+#define MENU_MOUSE_LEFT        1
+#define MENU_MOUSE_RIGHT       2
+#define MENU_MOUSE_MIDDLE      4
+#define MENU_MOUSE_HEIGHT      200
+#define MENU_MOUSE_TAB_Y_PAD   4
+#define MENU_MOUSE_TAB_X_PAD   6
+#define MENU_MOUSE_MAIN_X_PAD  4
+#define MENU_MOUSE_MAIN_Y_PAD  2
+#define MENU_MOUSE_SETUP_X_PAD 3
+#define MENU_MOUSE_SETUP_Y_PAD 2
+
+typedef struct
+{
+  int left;
+  int top;
+  int right;
+  int bottom;
+} menu_mouse_rect_t;
+
+static int menu_mouse_buttons;
+static int menu_mouse_x = BASE_WIDTH / 2;
+static int menu_mouse_y = MENU_MOUSE_HEIGHT / 2;
+static dboolean menu_mouse_in_viewport;
+static int menu_mouse_drag_setup = -1;
+static int menu_mouse_drag_main = -1;
+static int menu_mouse_hover_main = -1;
+
+static int M_MouseClamp(int value, int low, int high)
+{
+  if (value < low)
+    return low;
+  if (value > high)
+    return high;
+  return value;
+}
+
+static int M_MouseMenuRowHeight(void)
+{
+  return raven ? 20 : LINEHEIGHT;
+}
+
+static void M_MouseClearMainHover(void)
+{
+  menu_mouse_hover_main = -1;
+}
+
+static void M_MouseClearTabHover(void)
+{
+  menu_mouse_hover_tab = -1;
+}
+
+static void M_MouseResetButtons(void)
+{
+  menu_mouse_buttons = 0;
+  menu_mouse_drag_setup = -1;
+  menu_mouse_drag_main = -1;
+}
+
+static void M_MouseSetLogicalPosition(int x, int y)
+{
+  int viewport_w = viewport_rect.w > 0 ? viewport_rect.w :
+                   (SCREENWIDTH > 0 ? SCREENWIDTH : BASE_WIDTH);
+  int viewport_h = viewport_rect.h > 0 ? viewport_rect.h :
+                   (SCREENHEIGHT > 0 ? SCREENHEIGHT : MENU_MOUSE_HEIGHT);
+  int screen_w = SCREENWIDTH > 0 ? SCREENWIDTH : BASE_WIDTH;
+  int screen_h = SCREENHEIGHT > 0 ? SCREENHEIGHT : MENU_MOUSE_HEIGHT;
+  stretch_param_t *stretch = dsda_StretchParams(VPT_STRETCH);
+
+  menu_mouse_in_viewport = x >= 0 && y >= 0 && x < viewport_w && y < viewport_h;
+
+  x = M_MouseClamp(x, 0, viewport_w - 1);
+  y = M_MouseClamp(y, 0, viewport_h - 1);
+
+  x = x * screen_w / viewport_w;
+  y = y * screen_h / viewport_h;
+
+  if (stretch && stretch->video &&
+      stretch->video->width > 0 && stretch->video->height > 0)
+  {
+    x = (x - stretch->deltax1) * BASE_WIDTH / stretch->video->width;
+    y = (y - stretch->deltay1) * MENU_MOUSE_HEIGHT / stretch->video->height;
+  }
+  else
+  {
+    x = x * BASE_WIDTH / screen_w;
+    y = y * MENU_MOUSE_HEIGHT / screen_h;
+  }
+
+  menu_mouse_x = M_MouseClamp(x, 0, BASE_WIDTH - 1);
+  menu_mouse_y = M_MouseClamp(y, 0, MENU_MOUSE_HEIGHT - 1);
+}
+
+static void M_MouseReadPosition(void)
+{
+  int window_x, window_y;
+  int renderer_x, renderer_y;
+
+  SDL_GetMouseState(&window_x, &window_y);
+
+  if (window_rect.w > 0 && window_rect.h > 0 &&
+      renderer_rect.w > 0 && renderer_rect.h > 0)
+  {
+    renderer_x = window_x * renderer_rect.w / window_rect.w;
+    renderer_y = window_y * renderer_rect.h / window_rect.h;
+  }
+  else
+  {
+    renderer_x = window_x;
+    renderer_y = window_y;
+  }
+
+  M_MouseSetLogicalPosition(renderer_x - viewport_rect.x,
+                            renderer_y - viewport_rect.y);
+}
+
+static int M_MouseWheelAction(event_t *ev)
+{
+  if (ev->type != ev_keydown && ev->type != ev_keyup)
+    return MENU_NULL;
+
+  switch (ev->data1.i)
+  {
+    case KEYD_MWHEELUP:
+      return MENU_UP;
+    case KEYD_MWHEELDOWN:
+      return MENU_DOWN;
+    case KEYD_MWHEELLEFT:
+      return MENU_LEFT;
+    case KEYD_MWHEELRIGHT:
+      return MENU_RIGHT;
+    default:
+      return MENU_NULL;
+  }
+}
+
+static dboolean M_MouseBindingCaptureActive(void)
+{
+  return setup_active && set_keybnd_active && setup_select &&
+         current_setup_menu &&
+         (current_setup_menu[set_menu_itemon].m_flags & S_INPUT);
+}
+
+static dboolean M_MouseMainItemRect(const menuitem_t *item, int index,
+                                    dboolean lumps_missing,
+                                    menu_mouse_rect_t *rect)
+{
+  int x = currentMenu->x;
+  int y = currentMenu->y + index * LINEHEIGHT;
+
+  if (raven)
+  {
+    if (!item->alttext)
+      return false;
+
+    rect->left = x;
+    rect->top = currentMenu->y + index * M_MouseMenuRowHeight();
+    rect->right = x + MN_TextBWidth(item->alttext);
+    rect->bottom = rect->top + M_MouseMenuRowHeight();
+    return rect->right > rect->left;
+  }
+
+  if (!lumps_missing && item->name[0] && W_LumpNameExists(item->name))
+  {
+    const rpatch_t *patch = R_PatchByName(item->name);
+
+    rect->left = x - patch->leftoffset;
+    rect->top = y - patch->topoffset;
+    rect->right = rect->left + patch->width;
+    rect->bottom = rect->top + patch->height;
+    return true;
+  }
+
+  if (!item->alttext)
+    return false;
+
+  rect->left = x;
+  rect->top = y + 8 - (M_StringHeight(item->alttext) / 2);
+  rect->right = x + M_StringWidth(item->alttext);
+  rect->bottom = rect->top + M_StringHeight(item->alttext);
+
+  return rect->right > rect->left;
+}
+
+static int M_MousePixelWidth(const char *text)
+{
+  int width;
+
+  if (!text || !text[0])
+    return 0;
+
+  width = M_GetPixelWidth(text);
+
+  return width > 0 ? width : 0;
+}
+
+static int M_MousePixelWidthN(const char *text, size_t len)
+{
+  size_t i;
+  int width = 0;
+
+  if (!text || !len)
+    return 0;
+
+  for (i = 0; i < len; i++)
+  {
+    int c = toupper(text[i]) - HU_FONTSTART;
+
+    if (c < 0 || c > HU_FONTSIZE)
+      width += menu_font->space_width;
+    else
+      width += menu_font->font[c].width;
+
+    width += g_menu_font_spacing;
+  }
+
+  width -= g_menu_font_spacing;
+
+  return width > 0 ? width : 0;
+}
+
+static dboolean M_MousePointInPaddedRect(const menu_mouse_rect_t *rect,
+                                         int x_pad, int y_pad)
+{
+  if (!rect || rect->right <= rect->left || rect->bottom <= rect->top)
+    return false;
+
+  return menu_mouse_x >= rect->left - x_pad &&
+         menu_mouse_x < rect->right + x_pad &&
+         menu_mouse_y >= rect->top - y_pad &&
+         menu_mouse_y < rect->bottom + y_pad;
+}
+
+static dboolean M_MousePointInRect(const menu_mouse_rect_t *rect)
+{
+  return M_MousePointInPaddedRect(rect,
+                                  MENU_MOUSE_MAIN_X_PAD,
+                                  MENU_MOUSE_MAIN_Y_PAD);
+}
+
+static dboolean M_MouseMainItemAtPointer(int *index)
+{
+  int i;
+  dboolean lumps_missing;
+
+  if (!menu_mouse_in_viewport || !currentMenu || currentMenu->numitems <= 0)
+    return false;
+
+  lumps_missing = M_MenuHasMissingRequiredLumps(currentMenu);
+
+  for (i = 0; i < currentMenu->numitems; i++)
+  {
+    menu_mouse_rect_t rect;
+
+    if (currentMenu->menuitems[i].status == -1)
+      continue;
+
+    if (M_MouseMainItemRect(&currentMenu->menuitems[i], i, lumps_missing, &rect) &&
+        M_MousePointInRect(&rect))
+    {
+      *index = i;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean M_MouseSaveItemRect(int index, menu_mouse_rect_t *rect)
+{
+  if (index < 0 || index >= currentMenu->numitems)
+    return false;
+
+  if (raven)
+  {
+    rect->left = currentMenu->x + 5;
+    rect->top = currentMenu->y + index * M_MouseMenuRowHeight() + 5;
+    rect->right = rect->left + MN_TextAWidth(savegamestrings[index]);
+    rect->bottom = rect->top + MN_TextAHeight(savegamestrings[index]);
+  }
+  else
+  {
+    rect->left = currentMenu->x;
+    rect->top = currentMenu->y + index * LINEHEIGHT;
+    rect->right = rect->left + M_StringWidth(savegamestrings[index]);
+    rect->bottom = rect->top + M_StringHeight(savegamestrings[index]);
+  }
+
+  return rect->right > rect->left;
+}
+
+static dboolean M_MouseSaveItemAtPointer(int *index)
+{
+  int i;
+
+  if (!menu_mouse_in_viewport ||
+      (currentMenu != &LoadDef && currentMenu != &SaveDef))
+    return false;
+
+  for (i = 0; i < currentMenu->numitems; i++)
+  {
+    menu_mouse_rect_t rect;
+
+    if (M_MouseSaveItemRect(i, &rect) && M_MousePointInRect(&rect))
+    {
+      *index = i;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean M_MouseUpdateMainHover(void)
+{
+  int index;
+
+  if (!M_MouseMainItemAtPointer(&index) &&
+      !M_MouseSaveItemAtPointer(&index))
+  {
+    M_MouseClearMainHover();
+    return false;
+  }
+
+  if (menu_mouse_hover_main != index)
+  {
+    menu_mouse_hover_main = index;
+    itemOn = index;
+    S_StartVoidSound(g_sfx_menu);
+  }
+
+  return true;
+}
+
+static dboolean M_MouseSelectMainItem(void)
+{
+  int index;
+
+  if (!M_MouseMainItemAtPointer(&index) &&
+      !M_MouseSaveItemAtPointer(&index))
+    return false;
+
+  menu_mouse_hover_main = index;
+  itemOn = index;
+
+  return true;
+}
+
+static int M_MouseSliderValue(int x, int slider_x, int width, int low, int high)
+{
+  int range = high - low + 1;
+  int rel = x - slider_x - 8;
+  int span = width * 8;
+  int value;
+
+  if (range <= 1 || width <= 0)
+    return low;
+
+  rel = M_MouseClamp(rel, 0, span - 1);
+  value = low + rel * range / span;
+
+  return M_MouseClamp(value, low, high);
+}
+
+static int M_MouseThermoValue(int x, int slider_x, int width, int low, int high)
+{
+  if (raven && width > 3)
+  {
+    // MN_DrawSlider() shortens the bar and positions the knob from x + 20.
+    return M_MouseSliderValue(x, slider_x + 12, width - 3, low, high);
+  }
+
+  return M_MouseSliderValue(x, slider_x, width, low, high);
+}
+
+static dboolean M_MouseSetSoundSlider(int index)
+{
+  dsda_config_identifier_t id;
+  int value;
+
+  if (currentMenu != &SoundDef || index < 0 || index >= currentMenu->numitems ||
+      currentMenu->menuitems[index].status != 2)
+    return false;
+
+  id = index == sfx_vol ? dsda_config_sfx_volume : dsda_config_music_volume;
+  value = M_MouseThermoValue(menu_mouse_x, raven ? SoundDef.x - 8 : SoundDef.x,
+                             16, 0, 15);
+
+  if (dsda_IntConfig(id) != value)
+  {
+    dsda_UpdateIntConfig(id, value, true);
+
+    if (index == sfx_vol && dsda_IntConfig(dsda_config_mute_sfx))
+      dsda_ToggleConfig(dsda_config_mute_sfx, true);
+    else if (index == music_vol && dsda_IntConfig(dsda_config_mute_music))
+      dsda_ToggleConfig(dsda_config_mute_music, true);
+
+    S_StartVoidSound(g_sfx_stnmov);
+  }
+
+  itemOn = index;
+  return true;
+}
+
+static dboolean M_MouseSoundSliderAtPointer(int *index)
+{
+  int i;
+  int row_height;
+  int left;
+  int right;
+
+  if (!menu_mouse_in_viewport || currentMenu != &SoundDef)
+    return false;
+
+  row_height = M_MouseMenuRowHeight();
+  left = raven ? SoundDef.x - 20 : SoundDef.x - 8;
+  right = raven ? SoundDef.x + 140 : SoundDef.x + 16 * 8 + 16;
+
+  for (i = 0; i < currentMenu->numitems; i++)
+  {
+    int y;
+
+    if (currentMenu->menuitems[i].status != 2)
+      continue;
+
+    y = SoundDef.y + row_height * (i + 1);
+    if (menu_mouse_y >= y - 4 && menu_mouse_y < y + row_height &&
+        menu_mouse_x >= left && menu_mouse_x <= right)
+    {
+      *index = i;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static dboolean M_MouseSetupTextRangeAtPointer(const char *text, size_t len,
+                                               int x, int y)
+{
+  menu_mouse_rect_t rect;
+  int width = M_MousePixelWidthN(text, len);
+
+  if (width <= 0)
+    return false;
+
+  rect.left = x;
+  rect.top = y;
+  rect.right = x + width;
+  rect.bottom = y + menu_font->height;
+
+  return M_MousePointInPaddedRect(&rect,
+                                  MENU_MOUSE_SETUP_X_PAD,
+                                  MENU_MOUSE_SETUP_Y_PAD);
+}
+
+static dboolean M_MouseSetupTextAtPointer(const char *text, int x, int y)
+{
+  return M_MouseSetupTextRangeAtPointer(text, strlen(text), x, y);
+}
+
+static dboolean M_MouseSetupDescriptionAtPointer(const setup_menu_t *item,
+                                                 int y)
+{
+  const char *line;
+  int x = item->m_x;
+  int flags = item->m_flags;
+
+  if (!(flags & S_SHOWDESC) || !item->m_text)
+    return false;
+
+  for (line = item->m_text; *line; y += 8)
+  {
+    const char *end;
+    size_t len;
+    int width;
+    int left = x;
+
+    while (*line == '\n')
+      line++;
+
+    if (!*line)
+      break;
+
+    end = strchr(line, '\n');
+    len = end ? (size_t)(end - line) : strlen(line);
+    width = M_MousePixelWidthN(line, len);
+
+    if (flags & S_CENTER)
+      left -= width / 2;
+    else if (!(flags & S_LEFTJUST))
+      left -= width + 4;
+
+    if (M_MouseSetupTextRangeAtPointer(line, len, left, y))
+      return true;
+
+    if (!end)
+      break;
+
+    line = end + 1;
+  }
+
+  return false;
+}
+
+static dboolean M_MouseSetupSettingAtPointer(const setup_menu_t *item, int y)
+{
+  char text[MENU_BUFFER_SIZE];
+  menu_mouse_rect_t rect;
+  int width;
+
+  if (!(item->m_flags & S_SHOWSET))
+    return false;
+
+  if (item->m_flags & S_COLOR)
+  {
+    rect.left = item->m_x;
+    rect.top = y - 1;
+    rect.right = item->m_x + 8;
+    rect.bottom = y + menu_font->height;
+
+    if (M_SetupPointerVisible(item))
+      rect.right += M_MousePixelWidth(" <");
+
+    return M_MousePointInPaddedRect(&rect,
+                                    MENU_MOUSE_SETUP_X_PAD,
+                                    MENU_MOUSE_SETUP_Y_PAD);
+  }
+
+  if (!M_SetupSettingText(item, text, sizeof(text), false))
+    return false;
+
+  width = M_MousePixelWidth(text);
+
+  if (item->m_flags & S_THERMO)
+  {
+    rect.left = item->m_x;
+    rect.top = y;
+    rect.right = item->m_x + 80 + width;
+    rect.bottom = y + 3 + menu_font->height;
+  }
+  else
+  {
+    rect.left = item->m_x;
+    rect.top = y;
+    rect.right = item->m_x + width;
+    rect.bottom = y + menu_font->height;
+  }
+
+  return M_MousePointInPaddedRect(&rect,
+                                  MENU_MOUSE_SETUP_X_PAD,
+                                  MENU_MOUSE_SETUP_Y_PAD);
+}
+
+static dboolean M_MouseSetupItemAtVisibleText(const setup_menu_t *item,
+                                              int desc_y, int set_y)
+{
+  return M_MouseSetupDescriptionAtPointer(item, desc_y) ||
+         M_MouseSetupSettingAtPointer(item, set_y);
+}
+
+static dboolean M_MouseSetupItemSelectable(const setup_menu_t *item)
+{
+  return !(item->m_flags & (S_SKIP | S_END | S_PREV | S_NEXT |
+                            S_RESET_Y | S_NOSELECT));
+}
+
+static dboolean M_MouseSetupItemAtPointer(int *index)
+{
+  int i = 0;
+  int carry_y = 0;
+  dboolean found = false;
+  setup_menu_layout_t layout;
+  setup_menu_t *src;
+
+  if (!menu_mouse_in_viewport || !current_setup_menu)
+    return false;
+
+  M_GetSetupMenuLayout(current_setup_menu, DEFAULT_LIST_Y, &layout);
+
+  i = 0;
+  for (src = current_setup_menu; !(src->m_flags & S_END); src++)
+  {
+    int desc_y;
+    int item_y;
+    dboolean skip_entry = false;
+
+    if (src->m_flags & (S_NEXT | S_PREV))
+    {
+      desc_y = 190 - layout.line_height - 2;
+    }
+    else if (src->m_flags & S_RESET_Y)
+    {
+      skip_entry = true;
+      i = 0;
+    }
+    else
+    {
+      desc_y = DEFAULT_LIST_Y + (i - layout.scroll_i) * layout.line_height + carry_y;
+
+      if (i - layout.scroll_i < 0 || i - layout.scroll_i > layout.limit_i)
+        skip_entry = true;
+
+      ++i;
+    }
+
+    if (skip_entry)
+      continue;
+
+    item_y = desc_y;
+    if (src->m_flags & S_THERMO)
+    {
+      carry_y += 6;
+      desc_y += 3;
+    }
+
+    if (!M_MouseSetupItemSelectable(src))
+      continue;
+
+    if (M_MouseSetupItemAtVisibleText(src, desc_y, item_y))
+    {
+      // Later entries are drawn later, so they win if padded hitboxes overlap.
+      *index = (int)(src - current_setup_menu);
+      found = true;
+    }
+  }
+
+  return found;
+}
+
+static const char **M_MouseCurrentTabs(int *visible_tabs, int *y,
+                                       setup_menu_t ***setup_pages)
+{
+  *visible_tabs = 0;
+  *y = 0;
+  *setup_pages = NULL;
+
+  if (currentMenu == &LoadDef || currentMenu == &SaveDef)
+  {
+    *visible_tabs = 5;
+    *y = raven ? 135 : 145;
+    return saves_pages;
+  }
+
+  if (!setup_active)
+    return NULL;
+
+  *y = TABS_Y;
+  *visible_tabs = setup_page_context.visible_tabs;
+  *setup_pages = setup_page_context.pages;
+
+  return setup_page_context.labels;
+}
+
+static dboolean M_MouseTabAtPointer(const char **pages, int visible_tabs,
+                                    int y, int *target_page)
+{
+  int x;
+  int i;
+  menu_tab_layout_t layout;
+
+  M_GetTabLayout(pages, visible_tabs, &layout);
+
+  if (!menu_mouse_in_viewport || !layout.page_count ||
+      menu_mouse_y < y - MENU_MOUSE_TAB_Y_PAD ||
+      menu_mouse_y >= y + DEFAULT_LIST_Y - TABS_Y - 1)
+    return false;
+
+  x = layout.x;
+
+  if (layout.start_i > 0)
+  {
+    int arrow_w = M_GetPixelWidth("<-");
+    int arrow_x = x - arrow_w - 2;
+
+    if (menu_mouse_x >= arrow_x - MENU_TAB_GAP / 2 &&
+        menu_mouse_x < arrow_x + arrow_w + MENU_TAB_GAP / 2)
+    {
+      *target_page = current_page - 1;
+      return true;
+    }
+  }
+
+  if (layout.end_i + 1 < layout.page_count)
+  {
+    int arrow_w = M_GetPixelWidth("->");
+    int arrow_x = BASE_WIDTH - x + 2;
+
+    if (menu_mouse_x >= arrow_x - MENU_TAB_GAP / 2 &&
+        menu_mouse_x < arrow_x + arrow_w + MENU_TAB_GAP / 2)
+    {
+      *target_page = current_page + 1;
+      return true;
+    }
+  }
+
+  for (i = layout.start_i; i <= layout.end_i; i++)
+  {
+    int w = M_GetPixelWidth(pages[i]);
+    int left;
+    int right;
+
+    left = x - MENU_TAB_GAP / 2;
+    right = x + w + MENU_TAB_GAP / 2;
+
+    if (i == layout.start_i && layout.start_i == 0)
+      left -= MENU_MOUSE_TAB_X_PAD;
+    if (i == layout.end_i && layout.end_i + 1 == layout.page_count)
+      right += MENU_MOUSE_TAB_X_PAD;
+
+    if (menu_mouse_x >= left && menu_mouse_x < right)
+    {
+      *target_page = i;
+      return true;
+    }
+
+    x += w + MENU_TAB_GAP;
+  }
+
+  return false;
+}
+
+static dboolean M_MouseUpdateTabHover(void)
+{
+  const char **pages;
+  setup_menu_t **setup_pages;
+  int visible_tabs;
+  int y;
+  int target_page;
+
+  pages = M_MouseCurrentTabs(&visible_tabs, &y, &setup_pages);
+  if (!M_MouseTabAtPointer(pages, visible_tabs, y, &target_page))
+  {
+    M_MouseClearTabHover();
+    return false;
+  }
+
+  if (menu_mouse_hover_tab != target_page)
+  {
+    menu_mouse_hover_tab = target_page;
+    S_StartVoidSound(g_sfx_menu);
+  }
+
+  return true;
+}
+
+static dboolean M_MouseSwitchSetupPage(setup_menu_t **pages, int target_page)
+{
+  if (!pages || target_page < 0 || !pages[target_page])
+    return false;
+
+  if (target_page == current_page)
+    return true;
+
+  M_MouseClearTabHover();
+  current_setup_menu[set_menu_itemon].m_flags &= ~(S_HILITE | S_SELECT);
+  M_SetSetupMenuItemOn(set_menu_itemon);
+
+  previous_page = current_page;
+  current_page = target_page;
+  M_UpdateSetupMenu(pages[target_page]);
+  setup_select = false;
+  setup_gather = false;
+  colorbox_active = false;
+  S_StartVoidSound(g_sfx_menu);
+
+  return true;
+}
+
+static dboolean M_MouseSwitchSavePage(int target_page)
+{
+  if (target_page < 0 || target_page >= save_page_limit)
+    return false;
+
+  if (target_page == current_page)
+    return true;
+
+  M_MouseClearTabHover();
+  current_page = target_page;
+  M_ReadSaveStrings();
+  S_StartVoidSound(g_sfx_menu);
+
+  return true;
+}
+
+static dboolean M_MouseActivateTab(void)
+{
+  const char **pages;
+  setup_menu_t **setup_pages;
+  int visible_tabs;
+  int y;
+  int target_page;
+
+  pages = M_MouseCurrentTabs(&visible_tabs, &y, &setup_pages);
+  if (!M_MouseTabAtPointer(pages, visible_tabs, y, &target_page))
+    return false;
+
+  if (setup_pages)
+    return M_MouseSwitchSetupPage(setup_pages, target_page);
+
+  return M_MouseSwitchSavePage(target_page);
+}
+
+static void M_MouseSelectSetupItem(int index)
+{
+  setup_menu_t *old_item;
+  setup_menu_t *new_item;
+
+  if (!current_setup_menu || index == set_menu_itemon)
+    return;
+
+  old_item = current_setup_menu + set_menu_itemon;
+  new_item = current_setup_menu + index;
+
+  old_item->m_flags &= ~(S_HILITE | S_SELECT);
+  set_menu_itemon = index;
+  M_SetSetupMenuItemOn(set_menu_itemon);
+  new_item->m_flags |= S_HILITE;
+  setup_select = false;
+  setup_gather = false;
+  colorbox_active = false;
+  S_StartVoidSound(g_sfx_menu);
+}
+
+static dboolean M_MouseSetSetupThermo(int index)
+{
+  setup_menu_t *item;
+  int value;
+
+  if (!current_setup_menu || index < 0)
+    return false;
+
+  item = current_setup_menu + index;
+  if (!(item->m_flags & S_THERMO))
+    return false;
+
+  value = M_MouseThermoValue(menu_mouse_x, item->m_x, 8, 0, 15);
+  if (dsda_IntConfig(item->config_id) != value)
+  {
+    dsda_UpdateIntConfig(item->config_id, value, true);
+    S_StartVoidSound(g_sfx_menu);
+  }
+
+  return true;
+}
+
+static dboolean M_MouseActivateSetupItem(event_t *ev)
+{
+  int index;
+  setup_menu_t *item;
+
+  if (setup_select)
+  {
+    item = current_setup_menu + set_menu_itemon;
+
+    if (item->m_flags & S_THERMO)
+    {
+      menu_mouse_drag_setup = set_menu_itemon;
+      return M_MouseSetSetupThermo(set_menu_itemon);
+    }
+
+    if (item->m_flags & S_CHOICE)
+    {
+      // Keep the choice open; left/right keys change the value.
+      return true;
+    }
+
+    return M_SetupResponder(MENU_NULL, MENU_ENTER, ev);
+  }
+
+  if (!M_MouseSetupItemAtPointer(&index))
+    return true;
+
+  M_MouseSelectSetupItem(index);
+  item = current_setup_menu + set_menu_itemon;
+
+  if (item->m_flags & S_THERMO)
+  {
+    menu_mouse_drag_setup = set_menu_itemon;
+    return M_MouseSetSetupThermo(set_menu_itemon);
+  }
+
+  if (item->m_flags & S_YESNO)
+  {
+    // Enter once to select the row, then once to toggle it.
+    if (!M_SetupResponder(MENU_NULL, MENU_ENTER, ev))
+      return false;
+
+    return M_SetupResponder(MENU_NULL, MENU_ENTER, ev);
+  }
+
+  return M_SetupResponder(MENU_NULL, MENU_ENTER, ev);
+}
+
+static dboolean M_MouseCancelSetupSelection(event_t *ev)
+{
+  if (!setup_active || !setup_select || !current_setup_menu)
+    return false;
+
+  menu_mouse_drag_setup = -1;
+  menu_mouse_drag_main = -1;
+
+  return M_SetupResponder(MENU_NULL, MENU_ESCAPE, ev);
+}
+
+static dboolean M_MouseMenuAction(int action, event_t *ev)
+{
+  if (action == MENU_NULL)
+    return false;
+
+  if (messageToPrint)
+    return M_MessageResponder(MENU_NULL, action, ev);
+
+  if (!menuactive)
+    return false;
+
+  if (currentMenu == &LoadDef || currentMenu == &SaveDef)
+    if (M_SaveResponder(MENU_NULL, action, ev))
+      return true;
+
+  if (setup_active)
+    if (M_SetupResponder(MENU_NULL, action, ev))
+      return true;
+
+  if (M_MainNavigationResponder(MENU_NULL, action, ev))
+    return true;
+
+  return false;
+}
+
+static dboolean M_MouseWheelResponder(event_t *ev, int action)
+{
+  if (action == MENU_NULL)
+    return false;
+
+  if (ev->type == ev_keyup)
+    return !M_MouseBindingCaptureActive();
+
+  if (M_MouseBindingCaptureActive())
+    return false;
+
+  M_MouseReadPosition();
+  M_MouseClearMainHover();
+  M_MouseClearTabHover();
+
+  return M_MouseMenuAction(action, ev);
+}
+
+static dboolean M_MouseBindingCaptureResponder(event_t *ev)
+{
+  if (ev->type == ev_mouse)
+  {
+    int buttons = ev->data1.i;
+
+    menu_mouse_buttons = buttons;
+
+    return buttons == 0;
+  }
+
+  return true;
+}
+
+static dboolean M_MouseMotionResponder(void)
+{
+  if (menu_mouse_drag_setup >= 0 && (menu_mouse_buttons & MENU_MOUSE_LEFT))
+    return M_MouseSetSetupThermo(menu_mouse_drag_setup);
+
+  if (menu_mouse_drag_main >= 0 && (menu_mouse_buttons & MENU_MOUSE_LEFT))
+    return M_MouseSetSoundSlider(menu_mouse_drag_main);
+
+  if (menuactive && M_MouseUpdateTabHover())
+  {
+    M_MouseClearMainHover();
+    return true;
+  }
+
+  if (menuactive && setup_active && !setup_select)
+  {
+    int index;
+
+    if (M_MouseSetupItemAtPointer(&index))
+      M_MouseSelectSetupItem(index);
+
+    return true;
+  }
+
+  if (menuactive)
+  {
+    M_MouseUpdateMainHover();
+    return true;
+  }
+
+  return messageToPrint;
+}
+
+static dboolean M_MouseLeftPressResponder(event_t *ev)
+{
+  int slider_index;
+
+  if (messageToPrint)
+    return M_MouseMenuAction(MENU_ENTER, ev);
+
+  if (!menuactive)
+    return false;
+
+  if (M_MouseActivateTab())
+    return true;
+
+  if (setup_active)
+    return M_MouseActivateSetupItem(ev);
+
+  if (M_MouseSoundSliderAtPointer(&slider_index))
+  {
+    menu_mouse_drag_main = slider_index;
+    return M_MouseSetSoundSlider(slider_index);
+  }
+
+  if (!M_MouseSelectMainItem())
+    return true;
+
+  return M_MouseMenuAction(MENU_ENTER, ev);
+}
+
+static dboolean M_MouseButtonResponder(event_t *ev)
+{
+  int buttons = ev->data1.i;
+  int pressed = buttons & ~menu_mouse_buttons;
+  int released = menu_mouse_buttons & ~buttons;
+
+  menu_mouse_buttons = buttons;
+
+  if (released & MENU_MOUSE_LEFT)
+  {
+    menu_mouse_drag_setup = -1;
+    menu_mouse_drag_main = -1;
+  }
+
+  if ((buttons & MENU_MOUSE_LEFT) && menu_mouse_drag_setup >= 0)
+    return M_MouseSetSetupThermo(menu_mouse_drag_setup);
+
+  if ((buttons & MENU_MOUSE_LEFT) && menu_mouse_drag_main >= 0)
+    return M_MouseSetSoundSlider(menu_mouse_drag_main);
+
+  if ((pressed & MENU_MOUSE_RIGHT) && M_MouseCancelSetupSelection(ev))
+    return true;
+
+  if ((pressed & MENU_MOUSE_RIGHT) && saveStringEnter &&
+      currentMenu == &SaveDef)
+    return M_MouseMenuAction(MENU_ESCAPE, ev);
+
+  if (pressed & MENU_MOUSE_RIGHT)
+    return M_MouseMenuAction(MENU_BACKSPACE, ev);
+
+  if (pressed & MENU_MOUSE_MIDDLE)
+    return M_MouseMenuAction(MENU_CLEAR, ev);
+
+  if (pressed & MENU_MOUSE_LEFT)
+    return M_MouseLeftPressResponder(ev);
+
+  return menuactive || messageToPrint;
+}
+
+static dboolean M_MouseResponder(event_t *ev)
+{
+  int action = M_MouseWheelAction(ev);
+
+  if (!menuactive && !messageToPrint)
+    return false;
+
+  if (M_MouseWheelResponder(ev, action))
+    return true;
+
+  if (action != MENU_NULL)
+    return false;
+
+  if (ev->type != ev_mouse && ev->type != ev_mousemotion)
+    return false;
+
+  M_MouseReadPosition();
+
+  if (M_MouseBindingCaptureActive())
+    return M_MouseBindingCaptureResponder(ev);
+
+  if (ev->type == ev_mousemotion)
+    return M_MouseMotionResponder();
+
+  return M_MouseButtonResponder(ev);
+}
+
 dboolean M_Responder(event_t* ev) {
   int ch, action;
 
@@ -5947,6 +7218,15 @@ dboolean M_Responder(event_t* ev) {
   if (M_ConsoleOpen() && action != MENU_ESCAPE)
     if (M_ConsoleResponder(ch, action, ev))
       return true;
+
+  if (M_MouseResponder(ev))
+    return true;
+
+  if (ch != MENU_NULL || action != MENU_NULL)
+  {
+    M_MouseClearMainHover();
+    M_MouseClearTabHover();
+  }
 
   if (currentMenu == &LoadDef || currentMenu == &SaveDef)
     if (M_SaveResponder(ch, action, ev))
@@ -6073,6 +7353,8 @@ void M_StartControlPanel (void)
   if (menuactive)
     return;
 
+  M_MouseResetButtons();
+
   DO_ONCE
     M_InitializeSkillMenu();
     M_InitializeEpisodeMenu();
@@ -6103,6 +7385,42 @@ dboolean M_MenuIsShaded(void)
 void M_ShadedScreen(int scrn)
 {
   V_DrawShaded(scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, FULLSHADE);
+}
+
+static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu)
+{
+  int i;
+
+  if (!menu)
+    return false;
+
+  for (i = 0; i < menu->numitems; i++)
+  {
+    const menuitem_t *item = &menu->menuitems[i];
+
+    if (item->status != -1 &&
+        (!item->name[0] || !W_LumpNameExists(item->name)))
+      return true;
+  }
+
+  return false;
+}
+
+static dboolean M_MainItemMouseHovered(int index)
+{
+  return index == menu_mouse_hover_main &&
+         currentMenu &&
+         index >= 0 &&
+         index < currentMenu->numitems &&
+         currentMenu->menuitems[index].status != -1;
+}
+
+static int M_MenuMouseHighlightColor(int color)
+{
+  if (color >= CR_DEFAULT && color < CR_HUD_LIMIT)
+    return CR_BRIGHT + color;
+
+  return color;
 }
 
 //
@@ -6155,7 +7473,7 @@ void M_Drawer (void)
   else if (menuactive)
   {
     int x, y, max, i;
-    int lumps_missing;
+    dboolean lumps_missing;
 
     M_ChangeMenu(NULL, mnact_float);
 
@@ -6174,36 +7492,23 @@ void M_Drawer (void)
     x = currentMenu->x;
     y = currentMenu->y;
     max = currentMenu->numitems;
-    lumps_missing = 0;
+    lumps_missing = M_MenuHasMissingRequiredLumps(currentMenu);
 
     for (i = 0; i < max; i++)
-      if (
-        currentMenu->menuitems[i].status != -1 && (
-          !currentMenu->menuitems[i].name[0] || !W_LumpNameExists(currentMenu->menuitems[i].name)
-        )
-      )
-        ++lumps_missing;
+    {
+      const menuitem_t *item = &currentMenu->menuitems[i];
+      dboolean hovered = M_MainItemMouseHovered(i);
+      int color = hovered ? M_MenuMouseHighlightColor(item->color) : item->color;
+      int flags = VPT_STRETCH | (color != CR_DEFAULT ? VPT_TRANS : VPT_NONE);
 
-    if (!lumps_missing)
-      for (i = 0; i < max; i++)
-      {
-        if (currentMenu->menuitems[i].name[0])
-          V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
-                          currentMenu->menuitems[i].color, VPT_STRETCH);
+      if (!lumps_missing && item->name[0])
+        V_DrawNamePatch(x, y, 0, item->name, color, flags);
+      else if (item->alttext)
+        M_WriteText(x, y + 8 - (M_StringHeight(item->alttext) / 2),
+                    item->alttext, color);
 
-        y += LINEHEIGHT;
-      }
-    else
-      for (i = 0; i < max; i++)
-      {
-        const char *alttext = currentMenu->menuitems[i].alttext;
-
-        if (alttext)
-          M_WriteText(x, y + 8 - (M_StringHeight(alttext) / 2),
-                      alttext, currentMenu->menuitems[i].color);
-
-        y += LINEHEIGHT;
-      }
+      y += LINEHEIGHT;
+    }
 
     // DRAW SKULL
     if (max > 0)
@@ -6217,11 +7522,24 @@ void M_Drawer (void)
 
 void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
 {
+  if (menudef && menudef != currentMenu)
+  {
+    M_MouseClearMainHover();
+    M_MouseClearTabHover();
+  }
+
   if (menudef)
     currentMenu = menudef;
 
   if (mnact != mnact_nochange)
     menuactive = mnact;
+
+  if (mnact == mnact_inactive)
+  {
+    M_MouseClearMainHover();
+    M_MouseClearTabHover();
+    M_MouseResetButtons();
+  }
 
   if (mnact > mnact_inactive && gamestate == GS_LEVEL)
     dsda_TrackFeature(uf_menu);
@@ -6258,6 +7576,7 @@ void M_SetupNextMenu(menu_t *menudef)
 
   current_page = 0;
   previous_page = 0;
+  M_MouseClearTabHover();
 }
 
 /////////////////////////////

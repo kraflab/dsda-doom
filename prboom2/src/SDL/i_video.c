@@ -1521,13 +1521,17 @@ static dboolean MouseShouldBeGrabbed()
     return false;
   }
 
+  // when menu is active, release the mouse even in fullscreen
+  if (menuactive)
+    return false;
+
   // always grab the mouse when full screen (dont want to
   // see the mouse pointer)
   if (desired_fullscreen)
     return true;
 
-  // when menu is active or game is paused, release the mouse
-  if (menuactive || dsda_Paused())
+  // when game is paused, release the mouse in windowed mode
+  if (dsda_Paused())
     return false;
 
   // grab mouse when playing levels
