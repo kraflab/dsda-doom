@@ -301,7 +301,7 @@ static void D_Wipe(void)
     }
 
     wipestart = nowtime;
-    done = wipe_ScreenWipe(tics);
+    done = wipe_ScreenWipe(1);
 
     // elim - Render texture to screen
     if (V_IsOpenGLMode())
