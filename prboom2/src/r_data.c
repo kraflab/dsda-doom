@@ -166,7 +166,6 @@ static void R_InitTextures (void)
   int  maxoff, maxoff2;
   int  numtextures1, numtextures2;
   const int *directory;
-  int  errors = 0;
 
   // Load the patch names from pnames.lmp.
   name[8] = 0;
@@ -296,9 +295,9 @@ static void R_InitTextures (void)
           if (patch->patch == -1)
             {
               //jff 8/3/98 use logical output routine
-              lprintf(LO_ERROR,"\nR_InitTextures: Missing patch %d in texture %.8s",
+              lprintf(LO_WARN,"\nR_InitTextures: Missing patch %d in texture %.8s",
                      LittleShort(mpatch->patch), texture->name); // killough 4/17/98
-              ++errors;
+              patch->patch = W_CheckNumForName2("TNT1A0", ns_sprites);
             }
         }
 
@@ -309,16 +308,6 @@ static void R_InitTextures (void)
     }
 
   Z_Free(patchlookup);         // killough
-
-  if (errors)
-  {
-    const lumpinfo_t* info;
-
-    info = W_GetLumpInfoByNum(names_lump);
-
-    I_Error("Texture errors: %d!\n%s seems to be incompatible with %s.\nAre you using the right IWAD?",
-            errors, dsda_BaseName(info->wadfile->name), doomverstr);
-  }
 
   // Create translation table for global animation.
   // killough 4/9/98: make column offsets 32-bit;
