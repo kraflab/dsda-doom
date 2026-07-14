@@ -414,6 +414,9 @@ static void I_GetEvent(void)
           {
           case SDL_WINDOWEVENT_FOCUS_GAINED:
           case SDL_WINDOWEVENT_FOCUS_LOST:
+          case SDL_WINDOWEVENT_MINIMIZED:
+          case SDL_WINDOWEVENT_MAXIMIZED:
+          case SDL_WINDOWEVENT_RESTORED:
             UpdateFocus();
             break;
           case SDL_WINDOWEVENT_SIZE_CHANGED:
