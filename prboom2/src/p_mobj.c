@@ -1051,7 +1051,7 @@ floater:
      * incorrectly reverse it, so we might still need this for demo sync
      */
     if (mo->flags & MF_SKULLFLY &&
-	     compatibility_level <= doom2_19_compatibility)
+       compatibility_level <= doom2_19_compatibility)
       mo->momz = -mo->momz; // the skull slammed into something
 
     if (mo->info->crashstate && (mo->flags & MF_CORPSE) && !(mo->flags2 & MF2_ICEDAMAGE))
@@ -1440,7 +1440,7 @@ void P_MobjThinker (mobj_t* mobj)
 
     mobj->movecount++;
 
-    if (mobj->movecount < skill_info.respawn_time * 35)
+    if (mobj->movecount < skill_info.respawn_time * TICRATE)
       return;
 
     if (leveltime & 31)
@@ -1519,7 +1519,7 @@ static PUREFUNC int P_FindDoomedNum(unsigned type)
 }
 
 dboolean P_SpawnProjectile(short thing_id, mobj_t *source, int spawn_num, angle_t angle,
-	                         fixed_t speed, fixed_t vspeed, short dest_id, mobj_t *forcedest,
+                           fixed_t speed, fixed_t vspeed, short dest_id, mobj_t *forcedest,
                            int gravity, short new_thing_id)
 {
   int type;
@@ -1989,7 +1989,7 @@ void P_RespawnSpecials (void)
 
   // wait at least 30 seconds
 
-  if (leveltime - itemrespawntime[iquetail] < 30*35)
+  if (leveltime - itemrespawntime[iquetail] < 30*TICRATE)
     return;
 
   mthing = &itemrespawnque[iquetail];
