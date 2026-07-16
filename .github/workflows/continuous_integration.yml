@@ -39,7 +39,7 @@ jobs:
             triplet: arm64-osx
             shell: bash
             package_name: "mac_uni_static"
-            release: false
+            release: true
             artifact-path: build/*.zip
             extra_options: >-
               -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
