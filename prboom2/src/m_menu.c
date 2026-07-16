@@ -5776,7 +5776,18 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     }
     else if (ch > 0)
     {
-      if (ch >= 32 && ch <= 127 &&
+      if (ch == KEYD_BACKSPACE)
+      {
+        if (saveCharIndex > 0)
+        {
+          if (!strcmp(savegamestrings[saveSlot], dsda_MapLumpName(gameepisode, gamemap)))
+            saveCharIndex = 0;
+          else
+            saveCharIndex--;
+          savegamestrings[saveSlot][saveCharIndex] = 0;
+        }
+      }
+      else if (ch >= 32 && ch < KEYD_BACKSPACE &&
           saveCharIndex < SAVESTRINGSIZE-1 &&
           M_StringWidth(savegamestrings[saveSlot]) < (SAVESTRINGSIZE-2)*8)
       {
