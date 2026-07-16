@@ -31,7 +31,7 @@
  *          YMF262 and VRC VII decaps and die shots.
  *
  * Upstream version: 1.8 (commit cfedb09)
- * Fork version:    1.8-fast.2
+ * Fork version:    1.8-fast.3
  * Fork home:       https://github.com/tgies/Nuked-OPL3-fast
  *
  * Nuked-OPL3-fast is a bit-exact performance-optimized fork of Nuked-OPL3.
@@ -40,7 +40,9 @@
  * Modifications vs. upstream:
  *
  *   - Replaced 8 runtime waveform math functions with a unified 8x1024
- *     logsin lookup table (logsin_wf, in wf_rom.h).
+ *     logsin lookup table (logsin_wf, in wf_rom.h). With
+ *     OPL_WF_TABLE_RUNTIME=1 the table is instead built from the base
+ *     logsinrom[256] at the first OPL3_Reset and wf_rom.h is not used.
  *   - Pre-shifted the exprom table at compile time to eliminate a runtime
  *     shift in OPL3_SlotGenerate.
  *   - Hoisted per-sample envelope rate resolution out of OPL3_EnvelopeCalc
@@ -73,6 +75,20 @@
  *   - Minor: __builtin_ctz for the envelope timer on GCC/Clang with a
  *     portable fallback; replaced the tremolo-position modulo with an
  *     explicit wrap.
+ *   - Compile-time rhythm specialization: OPL3_ProcessSlot and
+ *     OPL3_PhaseGenerate are cloned on a maybe_rhythm flag; only channels
+ *     7 and 8 (slots 13/16/17) take the rhythm-aware clone; every other
+ *     channel's clone omits the slot_num checks and the rhythm switch.
+ *   - Mix-eligibility lists: the per-sample mix passes iterate precomputed
+ *     lists of channels with active outputs routed to that side, rebuilt
+ *     (mix_dirty) only when register writes change routing or algorithms.
+ *   - Dormant-slot generation gate: a slot proven inert (fully attenuated,
+ *     key off, zero phase/output state, mod/trem frozen) is tagged with the
+ *     chip's write generation and skipped with a single compare per sample
+ *     until the next register write.
+ *   - Compatibility switches OPL_COMPAT_OLD_EG (pre-2024 envelope stepping)
+ *     and OPL_COMPAT_DEFERRED_4OP_ALG (pre-Nov-2022 4-op routing update),
+ *     both default-off; see opl3.h.
  */
 
 #include <stddef.h>
@@ -80,7 +96,76 @@
 #include <stdlib.h>
 #include <string.h>
 #include "opl3.h"
+
+#if OPL_WF_TABLE_RUNTIME
+
+/* Base logsin quarter-wave table from upstream Nuked-OPL3. logsin_wf is
+ * derived from it at the first OPL3_Reset and holds the same data as
+ * wf_rom.h (gen_logsin.py documents the derivation). */
+static const uint16_t logsinrom[256] = {
+    0x859, 0x6c3, 0x607, 0x58b, 0x52e, 0x4e4, 0x4a6, 0x471,
+    0x443, 0x41a, 0x3f5, 0x3d3, 0x3b5, 0x398, 0x37e, 0x365,
+    0x34e, 0x339, 0x324, 0x311, 0x2ff, 0x2ed, 0x2dc, 0x2cd,
+    0x2bd, 0x2af, 0x2a0, 0x293, 0x286, 0x279, 0x26d, 0x261,
+    0x256, 0x24b, 0x240, 0x236, 0x22c, 0x222, 0x218, 0x20f,
+    0x206, 0x1fd, 0x1f5, 0x1ec, 0x1e4, 0x1dc, 0x1d4, 0x1cd,
+    0x1c5, 0x1be, 0x1b7, 0x1b0, 0x1a9, 0x1a2, 0x19b, 0x195,
+    0x18f, 0x188, 0x182, 0x17c, 0x177, 0x171, 0x16b, 0x166,
+    0x160, 0x15b, 0x155, 0x150, 0x14b, 0x146, 0x141, 0x13c,
+    0x137, 0x133, 0x12e, 0x129, 0x125, 0x121, 0x11c, 0x118,
+    0x114, 0x10f, 0x10b, 0x107, 0x103, 0x0ff, 0x0fb, 0x0f8,
+    0x0f4, 0x0f0, 0x0ec, 0x0e9, 0x0e5, 0x0e2, 0x0de, 0x0db,
+    0x0d7, 0x0d4, 0x0d1, 0x0cd, 0x0ca, 0x0c7, 0x0c4, 0x0c1,
+    0x0be, 0x0bb, 0x0b8, 0x0b5, 0x0b2, 0x0af, 0x0ac, 0x0a9,
+    0x0a7, 0x0a4, 0x0a1, 0x09f, 0x09c, 0x099, 0x097, 0x094,
+    0x092, 0x08f, 0x08d, 0x08a, 0x088, 0x086, 0x083, 0x081,
+    0x07f, 0x07d, 0x07a, 0x078, 0x076, 0x074, 0x072, 0x070,
+    0x06e, 0x06c, 0x06a, 0x068, 0x066, 0x064, 0x062, 0x060,
+    0x05e, 0x05c, 0x05b, 0x059, 0x057, 0x055, 0x053, 0x052,
+    0x050, 0x04e, 0x04d, 0x04b, 0x04a, 0x048, 0x046, 0x045,
+    0x043, 0x042, 0x040, 0x03f, 0x03e, 0x03c, 0x03b, 0x039,
+    0x038, 0x037, 0x035, 0x034, 0x033, 0x031, 0x030, 0x02f,
+    0x02e, 0x02d, 0x02b, 0x02a, 0x029, 0x028, 0x027, 0x026,
+    0x025, 0x024, 0x023, 0x022, 0x021, 0x020, 0x01f, 0x01e,
+    0x01d, 0x01c, 0x01b, 0x01a, 0x019, 0x018, 0x017, 0x017,
+    0x016, 0x015, 0x014, 0x014, 0x013, 0x012, 0x011, 0x011,
+    0x010, 0x00f, 0x00f, 0x00e, 0x00d, 0x00d, 0x00c, 0x00c,
+    0x00b, 0x00a, 0x00a, 0x009, 0x009, 0x008, 0x008, 0x007,
+    0x007, 0x007, 0x006, 0x006, 0x005, 0x005, 0x005, 0x004,
+    0x004, 0x004, 0x003, 0x003, 0x003, 0x002, 0x002, 0x002,
+    0x002, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001, 0x001,
+    0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000, 0x000
+};
+
+static uint16_t logsin_wf[8][1024];
+static uint8_t logsin_wf_built = 0;
+
+static void OPL3_BuildWfTable(void)
+{
+    uint32_t p;
+    for (p = 0; p < 1024; p++)
+    {
+        uint16_t c2 = (p & 0x100) ? logsinrom[(p & 0xff) ^ 0xff]
+                                  : logsinrom[p & 0xff];
+        uint16_t c6 = (p & 0x200) ? 0x8000 : 0;
+        uint16_t c5 = c6 ? 0x1000
+                         : ((p & 0x80) ? logsinrom[((p ^ 0xff) << 1) & 0xff]
+                                       : logsinrom[(p << 1) & 0xff]);
+        logsin_wf[0][p] = c6 | c2;
+        logsin_wf[1][p] = c6 ? 0x1000 : c2;
+        logsin_wf[2][p] = c2;
+        logsin_wf[3][p] = (p & 0x100) ? 0x1000 : logsinrom[p & 0xff];
+        logsin_wf[4][p] = (uint16_t)((((p & 0x300) == 0x100) ? 0x8000 : 0) | c5);
+        logsin_wf[5][p] = c5;
+        logsin_wf[6][p] = c6;
+        logsin_wf[7][p] = (uint16_t)(c6 | ((c6 ? ((p & 0x1ff) ^ 0x1ff) : p) << 3));
+    }
+    logsin_wf_built = 1;
+}
+
+#else /* OPL_WF_TABLE_RUNTIME */
 #include "wf_rom.h"
+#endif
 
 #if OPL_ENABLE_STEREOEXT && !defined OPL_SIN
 #ifndef _USE_MATH_DEFINES
@@ -311,7 +396,11 @@ static void OPL3_EnvelopeCalc(opl3_slot *slot)
         }
         else
         {
+#if OPL_COMPAT_OLD_EG
+            shift = (rate_hi & 0x03) + eg_incstep[rate_lo][slot->chip->timer & 0x03u];
+#else
             shift = (rate_hi & 0x03) + eg_incstep[rate_lo][slot->chip->eg_timer_lo];
+#endif
             if (shift & 0x04)
             {
                 shift = 0x03;
@@ -426,7 +515,10 @@ static void OPL3_PhaseUpdateInc(opl3_slot *slot)
     }
 }
 
-static void OPL3_PhaseGenerate(opl3_slot *slot)
+/* maybe_rhythm is a compile-time constant at every call site: channels 7 and
+ * 8 are the only ones whose slots (13, 16, 17) have rhythm-special phase
+ * handling. Every other channel's clone omits the switch. */
+static inline void OPL3_PhaseGenerateImpl(opl3_slot *slot, int maybe_rhythm)
 {
     opl3_chip *chip;
     uint32_t phaseinc;
@@ -452,6 +544,10 @@ static void OPL3_PhaseGenerate(opl3_slot *slot)
      * slots (33 of 36) hit the default case and skip everything. The
      * fused switch also lets gcc emit a jump table instead of branches. */
     slot->pg_phase_out = phase;
+    if (!maybe_rhythm)
+    {
+        return;
+    }
     switch (slot->slot_num)
     {
     case 13: /* hh */
@@ -913,6 +1009,49 @@ static void OPL3_ChannelSetupAlg(opl3_channel *channel)
         OPL3_ChannelUpdateDelayedOuts(channel->pair);
     }
 #endif
+    channel->chip->mix_dirty = 1;
+}
+
+/* Rebuild the per-side lists of mix-eligible channels. A channel is
+ * eligible when it has active slot outputs and at least one of the side's
+ * two output routes enabled. Skipping an ineligible channel is
+ * output-identical: its contribution to that side's mix is zero (both
+ * route masks/pans are zero) and accm has no side effects. */
+static void OPL3_RebuildMixLists(opl3_chip *chip)
+{
+    uint8_t ii;
+    uint8_t nl = 0;
+    uint8_t nr = 0;
+    for (ii = 0; ii < 18; ii++)
+    {
+        opl3_channel *channel = &chip->channel[ii];
+        if (!channel->out_cnt)
+        {
+            continue;
+        }
+#if OPL_ENABLE_STEREOEXT
+        if (channel->leftpan | channel->chc)
+        {
+            chip->mix_left[nl++] = channel;
+        }
+        if (channel->rightpan | channel->chd)
+        {
+            chip->mix_right[nr++] = channel;
+        }
+#else
+        if (channel->cha | channel->chc)
+        {
+            chip->mix_left[nl++] = channel;
+        }
+        if (channel->chb | channel->chd)
+        {
+            chip->mix_right[nr++] = channel;
+        }
+#endif
+    }
+    chip->nmix_left = nl;
+    chip->nmix_right = nr;
+    chip->mix_dirty = 0;
 }
 
 static void OPL3_ChannelUpdateAlg(opl3_channel *channel)
@@ -977,6 +1116,7 @@ static void OPL3_ChannelWriteD0(opl3_channel* channel, uint8_t data)
     {
         channel->leftpan = panpot_lut[data ^ 0xffu];
         channel->rightpan = panpot_lut[data];
+        channel->chip->mix_dirty = 1;
     }
 }
 #endif
@@ -1044,14 +1184,18 @@ static void OPL3_ChannelSet4Op(opl3_chip *chip, uint8_t data)
         {
             chip->channel[chnum].chtype = ch_4op;
             chip->channel[chnum + 3u].chtype = ch_4op2;
+#if !OPL_COMPAT_DEFERRED_4OP_ALG
             OPL3_ChannelUpdateAlg(&chip->channel[chnum]);
+#endif
         }
         else
         {
             chip->channel[chnum].chtype = ch_2op;
             chip->channel[chnum + 3u].chtype = ch_2op;
+#if !OPL_COMPAT_DEFERRED_4OP_ALG
             OPL3_ChannelUpdateAlg(&chip->channel[chnum]);
             OPL3_ChannelUpdateAlg(&chip->channel[chnum + 3u]);
+#endif
         }
     }
 }
@@ -1069,13 +1213,14 @@ static int16_t OPL3_ClipSample(int32_t sample)
     return (int16_t)sample;
 }
 
-static void OPL3_ProcessSlot(opl3_slot *slot, uint8_t fb)
+static inline void OPL3_ProcessSlotImpl(opl3_slot *slot, uint8_t fb, int maybe_rhythm)
 {
     /* Fast path for fully-attenuated key-off non-rhythm slots. The envelope
      * rate machine cannot change eg_rout here, but the full path still updates
      * feedback history, eg_out/eg_gen/pg_reset, phase output, noise, and out. */
     if (!slot->key && slot->eg_rout == 0x1ff
-        && slot->slot_num != 13 && slot->slot_num != 16 && slot->slot_num != 17)
+        && (!maybe_rhythm
+            || (slot->slot_num != 13 && slot->slot_num != 16 && slot->slot_num != 17)))
     {
         opl3_chip *chip = slot->chip;
         uint32_t phaseinc;
@@ -1130,7 +1275,8 @@ static void OPL3_ProcessSlot(opl3_slot *slot, uint8_t fb)
         }
 
         if (!slot->reg_vib
-            && slot->slot_num != 13 && slot->slot_num != 16 && slot->slot_num != 17)
+            && (!maybe_rhythm
+                || (slot->slot_num != 13 && slot->slot_num != 16 && slot->slot_num != 17)))
         {
             uint16_t phase = (uint16_t)(slot->pg_phase >> 9);
 
@@ -1139,7 +1285,7 @@ static void OPL3_ProcessSlot(opl3_slot *slot, uint8_t fb)
         }
         else
         {
-            OPL3_PhaseGenerate(slot);
+            OPL3_PhaseGenerateImpl(slot, maybe_rhythm);
         }
 
         OPL3_SlotGenerate(slot);
@@ -1147,8 +1293,21 @@ static void OPL3_ProcessSlot(opl3_slot *slot, uint8_t fb)
     }
     OPL3_SlotCalcFB(slot, fb);
     OPL3_EnvelopeCalc(slot);
-    OPL3_PhaseGenerate(slot);
+    OPL3_PhaseGenerateImpl(slot, maybe_rhythm);
     OPL3_SlotGenerate(slot);
+}
+
+/* Out-of-line clones of OPL3_ProcessSlotImpl. Norm is for the 16 channels
+ * that can never contain a rhythm-special slot (everything except channels
+ * 7 and 8, which hold slots 13/16 and 14/17). */
+static void OPL3_ProcessSlotNorm(opl3_slot *slot, uint8_t fb)
+{
+    OPL3_ProcessSlotImpl(slot, fb, 0);
+}
+
+static void OPL3_ProcessSlotRhythm(opl3_slot *slot, uint8_t fb)
+{
+    OPL3_ProcessSlotImpl(slot, fb, 1);
 }
 
 /* Inlined pre-check skipping the ProcessSlot call for trivially-silent slots.
@@ -1158,27 +1317,66 @@ static void OPL3_ProcessSlot(opl3_slot *slot, uint8_t fb)
  * so the transition sample runs the trivial path inside ProcessSlot, which
  * writes both. The remaining fields the trivial path writes (fbmod, eg_out,
  * pg_reset, pg_phase_out) are recomputed by every ProcessSlot tier. */
-static inline void OPL3_ProcessSlotMaybeInline(opl3_slot *slot, uint8_t fb)
+static inline void OPL3_ProcessSlotMaybeInline(opl3_slot *slot, uint8_t fb, int maybe_rhythm,
+                                               uint32_t write_gen)
 {
+    if (slot->dormant_gen == write_gen)
+    {
+        return;
+    }
     if (!slot->key && slot->eg_rout == 0x1ff
         && slot->eg_gen == envelope_gen_num_release
-        && slot->slot_num != 13 && slot->slot_num != 16 && slot->slot_num != 17
+        && (!maybe_rhythm
+            || (slot->slot_num != 13 && slot->slot_num != 16 && slot->slot_num != 17))
         && fb == 0 && slot->pg_inc == 0 && slot->out == 0
         && slot->prout == 0
         && *slot->mod == 0 && slot->eg_tl_ksl == 0 && *slot->trem == 0
         && slot->pg_phase == 0 && slot->reg_vib == 0 && slot->reg_wf == 0)
     {
+        /* Try to mark the slot dormant, which requires that *mod and *trem
+         * stay zero without reprocessing. trem must be frozen at zeromod.
+         * mod may be zeromod, the slot's own fbmod (unchanged while the slot
+         * is skipped), or another slot's out; that slot is always earlier in
+         * processing order, so if it is dormant now, its out stays 0 for
+         * exactly as long as this slot's own gate holds (any register write
+         * invalidates both). */
+        opl3_chip *chip = slot->chip;
+        if (slot->trem == (uint8_t*)&chip->zeromod)
+        {
+            int16_t *m = slot->mod;
+            if (m == &chip->zeromod || m == &slot->fbmod)
+            {
+                slot->dormant_gen = write_gen;
+            }
+            else
+            {
+                /* m is &src->out for some slot src */
+                opl3_slot *src = (opl3_slot *)((char *)m - offsetof(opl3_slot, out));
+                if (src->dormant_gen == write_gen)
+                {
+                    slot->dormant_gen = write_gen;
+                }
+            }
+        }
         return;
     }
-    OPL3_ProcessSlot(slot, fb);
+    if (maybe_rhythm)
+    {
+        OPL3_ProcessSlotRhythm(slot, fb);
+    }
+    else
+    {
+        OPL3_ProcessSlotNorm(slot, fb);
+    }
 }
 
 /* Process a channel's slot pair (modulator then carrier). */
-static inline void OPL3_ProcessChannelSlots(opl3_channel *channel)
+static inline void OPL3_ProcessChannelSlots(opl3_channel *channel, int maybe_rhythm,
+                                            uint32_t write_gen)
 {
     uint8_t fb = channel->fb;
-    OPL3_ProcessSlotMaybeInline(channel->slotz[0], fb);
-    OPL3_ProcessSlotMaybeInline(channel->slotz[1], fb);
+    OPL3_ProcessSlotMaybeInline(channel->slotz[0], fb, maybe_rhythm, write_gen);
+    OPL3_ProcessSlotMaybeInline(channel->slotz[1], fb, maybe_rhythm, write_gen);
 }
 
 /* Right-channel mix over the out_right pointer lists, into mixbuff[1] and
@@ -1188,15 +1386,11 @@ static void OPL3_MixRight(opl3_chip *chip)
     int32_t mix0 = 0;
     int32_t mix1 = 0;
     uint8_t ii;
-    for (ii = 0; ii < 18; ii++)
+    for (ii = 0; ii < chip->nmix_right; ii++)
     {
-        opl3_channel *channel = &chip->channel[ii];
+        opl3_channel *channel = chip->mix_right[ii];
         int16_t **out;
         int16_t accm;
-        if (!channel->out_cnt)
-        {
-            continue;
-        }
 #if OPL_QUIRK_CHANNELSAMPLEDELAY
         out = channel->out_right;
 #else
@@ -1240,6 +1434,11 @@ inline void OPL3_Generate4Ch(opl3_chip *chip, int16_t *buf4)
     buf4[1] = OPL3_ClipSample(chip->mixbuff[1]);
     buf4[3] = OPL3_ClipSample(chip->mixbuff[3]);
 
+    if (chip->mix_dirty)
+    {
+        OPL3_RebuildMixLists(chip);
+    }
+
     /* Advance the noise LFSR for the whole sample up front (36 steps, one per
      * slot), capturing the bits the hh (slot 13) and sd (slot 16) operators
      * read. This way slot processing does not touch the LFSR so it doesn't need
@@ -1269,21 +1468,24 @@ inline void OPL3_Generate4Ch(opl3_chip *chip, int16_t *buf4)
     /* Process all 36 slots (channel-grouped pairs) before either mix pass.
      * The mixes read the delayed slots' previous-sample out through prout
      * via the out_left/out_right pointer lists. */
-    for (ii = 0; ii < 18; ii++)
     {
-        OPL3_ProcessChannelSlots(&chip->channel[ii]);
+        uint32_t write_gen = chip->write_gen;
+        for (ii = 0; ii < 7; ii++)
+        {
+            OPL3_ProcessChannelSlots(&chip->channel[ii], 0, write_gen);
+        }
+        OPL3_ProcessChannelSlots(&chip->channel[7], 1, write_gen);
+        OPL3_ProcessChannelSlots(&chip->channel[8], 1, write_gen);
+        for (ii = 9; ii < 18; ii++)
+        {
+            OPL3_ProcessChannelSlots(&chip->channel[ii], 0, write_gen);
+        }
     }
 
     mix[0] = mix[1] = 0;
-    for (ii = 0; ii < 18; ii++)
+    for (ii = 0; ii < chip->nmix_left; ii++)
     {
-        channel = &chip->channel[ii];
-        if (!channel->out_cnt) continue;
-#if OPL_ENABLE_STEREOEXT
-        if (!(channel->leftpan | channel->chc)) continue;
-#else
-        if (!(channel->cha | channel->chc)) continue;
-#endif
+        channel = chip->mix_left[ii];
 #if OPL_QUIRK_CHANNELSAMPLEDELAY
         out = channel->out_left;
 #else
@@ -1344,6 +1546,31 @@ inline void OPL3_Generate4Ch(opl3_chip *chip, int16_t *buf4)
 
     chip->timer++;
 
+#if OPL_COMPAT_OLD_EG
+    /* Pre-2024 envelope stepping (upstream 730f8c2 and earlier): eg_add is
+     * recomputed from the raw envelope timer every sample instead of only
+     * on eg_state cycles, and OPL3_EnvelopeCalc indexes eg_incstep with the
+     * live low bits of chip->timer instead of the latched eg_timer_lo. */
+    {
+        uint32_t eg_timer_low = (uint32_t)chip->eg_timer & 0x1fffu;
+        if (!eg_timer_low)
+        {
+            chip->eg_add = 0;
+        }
+        else
+        {
+#if defined(__GNUC__) || defined(__clang__)
+            shift = (uint8_t)__builtin_ctz(eg_timer_low);
+#else
+            while (((eg_timer_low >> shift) & 1) == 0)
+            {
+                shift++;
+            }
+#endif
+            chip->eg_add = shift + 1;
+        }
+    }
+#else
     if (chip->eg_state)
     {
         uint32_t eg_timer_low = (uint32_t)chip->eg_timer & 0x1fffu;
@@ -1365,6 +1592,7 @@ inline void OPL3_Generate4Ch(opl3_chip *chip, int16_t *buf4)
         }
         chip->eg_timer_lo = (uint8_t)(chip->eg_timer & 0x3u);
     }
+#endif
 
     if (chip->eg_timerrem || chip->eg_state)
     {
@@ -1445,6 +1673,12 @@ void OPL3_Reset(opl3_chip *chip, uint32_t samplerate)
     uint8_t channum;
     uint8_t local_ch_slot;
 
+#if OPL_WF_TABLE_RUNTIME
+    if (!logsin_wf_built)
+    {
+        OPL3_BuildWfTable();
+    }
+#endif
     memset(chip, 0, sizeof(opl3_chip));
     for (slotnum = 0; slotnum < 36; slotnum++)
     {
@@ -1491,6 +1725,8 @@ void OPL3_Reset(opl3_chip *chip, uint32_t samplerate)
         OPL3_ChannelSetupAlg(channel);
     }
     chip->noise = 1;
+    chip->mix_dirty = 1;
+    chip->write_gen = 1;
     chip->rateratio = (samplerate << RSM_FRAC) / 49716;
     chip->tremoloshift = 4;
     chip->vibshift = 1;
@@ -1512,6 +1748,15 @@ void OPL3_WriteReg(opl3_chip *chip, uint16_t reg, uint8_t v)
 {
     uint8_t high = (reg >> 8) & 0x01;
     uint8_t regm = reg & 0xff;
+    if (++chip->write_gen == 0)
+    {
+        uint8_t ii;
+        for (ii = 0; ii < 36; ii++)
+        {
+            chip->slot[ii].dormant_gen = 0;
+        }
+        chip->write_gen = 1;
+    }
     switch (regm & 0xf0)
     {
     case 0x00:
