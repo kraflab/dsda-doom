@@ -39,6 +39,18 @@ if(NOT VCPKG_LIBRARY_LINKAGE STREQUAL "static")
       --install-path @executable_path/libs_${CPACK_SYSTEM_PROCESSOR}
       --dest-dir ${packaged_dir}/libs_${CPACK_SYSTEM_PROCESSOR}
   )
+
+  # SDL3 is loaded dynamically by sdl2-compat, so dylibbundler cannot detect it
+  find_library(SDL3_LIBRARY
+    NAMES SDL3
+    PATHS /opt/homebrew/lib /usr/local/lib
+    NO_DEFAULT_PATH
+  )
+
+  file(COPY_FILE
+    "${SDL3_LIBRARY}"
+    "${packaged_dir}/libs_${CPACK_SYSTEM_PROCESSOR}/libSDL3.dylib"
+  )
 endif()
 
 execute_process(
