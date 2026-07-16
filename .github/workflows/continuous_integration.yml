@@ -16,13 +16,13 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: "MSVC x64"
+          - name: "MSVC x64 (vcpkg)"
             os: windows-latest
             build_type: "Release"
             vcpkg: true
             triplet: x64-windows-static-release
             shell: pwsh
-            package_name: "msvc_x64"
+            package_name: "windows_x64_msvc"
             release: true
             artifact-path: build/*.zip
             extra_options: >-
@@ -32,13 +32,13 @@ jobs:
               -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded
               -DCMAKE_IGNORE_PATH="C:/Strawberry/perl/bin;C:/Strawberry/c/lib"
 
-          - name: "macOS arm64 static"
+          - name: "macOS universal (vcpkg)"
             os: macos-latest
             build_type: "Release"
             vcpkg: true
             triplet: arm64-osx
             shell: bash
-            package_name: "mac_arm64_static"
+            package_name: "mac_uni_static"
             release: false
             artifact-path: build/*.zip
             extra_options: >-
@@ -50,7 +50,7 @@ jobs:
             os: windows-latest
             build_type: "Release"
             extra_options: "-G Ninja"
-            package_name: "mingw_x64"
+            package_name: "windows_x64_mingw"
             shell: "msys2 {0}"
             msystem: ucrt64
             msys-env: mingw-w64-ucrt-x86_64
@@ -65,21 +65,11 @@ jobs:
             shell: bash
             artifact-path: build/*.appimage
 
-          - name: "macOS arm64 Clang"
+          - name: "macOS arm64 (brew)"
             os: macos-latest
             build_type: "Release"
             extra_options: "-G Ninja"
-            release: true
             package_name: "mac_arm64"
-            shell: bash
-            artifact-path: build/*.zip
-
-          - name: "macOS x64 Clang"
-            os: macos-15-intel
-            build_type: "Release"
-            extra_options: "-G Ninja"
-            release: true
-            package_name: "mac_x64"
             shell: bash
             artifact-path: build/*.zip
 
@@ -140,7 +130,7 @@ jobs:
       - name: Generate vcpkg cache key
         if: ${{ matrix.config.vcpkg }}
         shell: bash
-        run: echo "CACHE_KEY=vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('prboom2/vcpkg.json') }}" >> $GITHUB_ENV 
+        run: echo "CACHE_KEY=vcpkg-${{ matrix.config.triplet }}-${{ hashFiles('prboom2/vcpkg.json') }}" >> $GITHUB_ENV
 
       - name: Restore vcpkg cache
         if: ${{ matrix.config.vcpkg }}
@@ -160,6 +150,29 @@ jobs:
 
       - name: Build
         run: cmake --build build --config ${{ matrix.config.build_type }}
+
+      - name: Configure macOS x64 (universal)
+        if: matrix.config.name == 'macOS universal (vcpkg)'
+        run: >-
+          cmake -S prboom2
+          -B build-x64
+          -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+          -DSTRICT_FIND=ON
+          -DCMAKE_OSX_ARCHITECTURES=x86_64
+          -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
+          -DVCPKG_TARGET_TRIPLET=x64-osx
+          -DCMAKE_INSTALL_PREFIX=/usr
+
+      - name: Build macOS x64 (universal)
+        if: matrix.config.name == 'macOS universal (vcpkg)'
+        run: cmake --build build-x64 --config ${{ matrix.config.build_type }}
+
+      - name: Lipo builds (universal)
+        if: matrix.config.name == 'macOS universal (vcpkg)'
+        run: |
+            lipo build/dsda-doom build-x64/dsda-doom -create -output dsda-doom
+            rm build/dsda-doom
+            mv dsda-doom build
 
       # Delete the old cache on hit to emulate a cache update.
       - name: Delete old vcpkg cache
