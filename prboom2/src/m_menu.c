@@ -1647,6 +1647,8 @@ static void M_SizeDisplay(int choice)
 
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
+// Negative keeps the selection-driven scroll used by keyboard navigation.
+static int menu_mouse_setup_scroll = -1;
 
 typedef struct
 {
@@ -1704,6 +1706,7 @@ static void M_SetSetupMenuItemOn (const int x)
 
 static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
 {
+  menu_mouse_setup_scroll = -1;
   current_setup_menu = new_setup_menu;
   set_menu_itemon = M_GetSetupMenuItemOn();
   if (current_setup_menu[set_menu_itemon].m_flags & S_NOSELECT)
@@ -2220,6 +2223,9 @@ static void M_GetSetupMenuLayout(const setup_menu_t *base_src, int base_y,
     while (current_i - layout->scroll_i > limit_i - buffer_i)
       ++layout->scroll_i;
   }
+
+  if (base_src == current_setup_menu && menu_mouse_setup_scroll >= 0)
+    layout->scroll_i = MIN(menu_mouse_setup_scroll, excess_i);
 
   layout->limit_i = limit_i;
   layout->excess_i = excess_i;
@@ -4716,6 +4722,7 @@ dboolean M_ConsoleOpen(void)
 void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
+  menu_mouse_setup_scroll = -1;
   setup_active = false;
   M_ClearSetupMenuState();
   colorbox_active = false;
@@ -6157,6 +6164,17 @@ static int M_MouseClamp(int value, int low, int high)
   return value;
 }
 
+static void M_MouseBeginSetupNavigation(void)
+{
+  setup_menu_layout_t layout;
+
+  if (!setup_active || !current_setup_menu || menu_mouse_setup_scroll >= 0)
+    return;
+
+  M_GetSetupMenuLayout(current_setup_menu, DEFAULT_LIST_Y, &layout);
+  menu_mouse_setup_scroll = layout.scroll_i;
+}
+
 static int M_MouseMenuRowHeight(void)
 {
   return raven ? 20 : LINEHEIGHT;
@@ -6881,6 +6899,7 @@ static dboolean M_MouseSwitchSetupPage(setup_menu_t **pages, int target_page)
   previous_page = current_page;
   current_page = target_page;
   M_UpdateSetupMenu(pages[target_page]);
+  M_MouseBeginSetupNavigation();
   setup_select = false;
   setup_gather = false;
   colorbox_active = false;
@@ -6944,6 +6963,36 @@ static void M_MouseSelectSetupItem(int index)
   S_StartVoidSound(g_sfx_menu);
 }
 
+static void M_MouseUpdateSetupHover(void)
+{
+  int index;
+
+  if (M_MouseSetupItemAtPointer(&index))
+    M_MouseSelectSetupItem(index);
+}
+
+static dboolean M_MouseScrollSetup(int action)
+{
+  setup_menu_layout_t layout;
+  int scroll;
+
+  if (!setup_active || setup_select || !current_setup_menu ||
+      (action != MENU_UP && action != MENU_DOWN))
+    return false;
+
+  M_MouseBeginSetupNavigation();
+  M_GetSetupMenuLayout(current_setup_menu, DEFAULT_LIST_Y, &layout);
+
+  if (!layout.excess_i)
+    return false;
+
+  scroll = menu_mouse_setup_scroll + (action == MENU_DOWN ? 1 : -1);
+  menu_mouse_setup_scroll = M_MouseClamp(scroll, 0, layout.excess_i);
+  M_MouseUpdateSetupHover();
+
+  return true;
+}
+
 static dboolean M_MouseSetSetupThermo(int index)
 {
   setup_menu_t *item;
@@ -6962,6 +7011,62 @@ static dboolean M_MouseSetSetupThermo(int index)
     dsda_UpdateIntConfig(item->config_id, value, true);
     S_StartVoidSound(g_sfx_menu);
   }
+
+  return true;
+}
+
+static int M_MouseNextSetupChoice(const char **choices, int current)
+{
+  int next;
+
+  if (!choices)
+    return current;
+
+  next = current + 1;
+  while (choices[next] && choices[next][0] == '~')
+    next++;
+
+  if (!choices[next])
+  {
+    next = 0;
+    while (choices[next] && choices[next][0] == '~')
+      next++;
+  }
+
+  return choices[next] ? next : current;
+}
+
+static dboolean M_MouseCycleSetupChoice(setup_menu_t *item)
+{
+  int current;
+  int next;
+
+  if (!(item->m_flags & S_CHOICE) || !item->selectstrings)
+    return false;
+
+  if (dsda_StrictMode() && dsda_IsStrictConfig(item->config_id))
+    return true;
+
+  if (item->m_flags & S_STR)
+  {
+    current = M_IndexInChoices(dsda_StringConfig(item->config_id),
+                               item->selectstrings);
+    next = M_MouseNextSetupChoice(item->selectstrings, current);
+
+    if (next != current)
+      dsda_UpdateStringConfig(item->config_id, item->selectstrings[next], true);
+  }
+  else
+  {
+    current = dsda_IntConfig(item->config_id);
+    next = M_MouseNextSetupChoice(item->selectstrings, current);
+
+    if (next != current)
+      dsda_UpdateIntConfig(item->config_id, next, true);
+  }
+
+  if (next != current)
+    S_StartVoidSound(g_sfx_menu);
 
   return true;
 }
@@ -7006,6 +7111,9 @@ static dboolean M_MouseActivateSetupItem(event_t *ev)
 
     return M_SetupResponder(MENU_NULL, MENU_ENTER, ev);
   }
+
+  if (item->m_flags & S_CHOICE)
+    return M_MouseCycleSetupChoice(item);
 
   return M_SetupResponder(MENU_NULL, MENU_ENTER, ev);
 }
@@ -7061,6 +7169,9 @@ static dboolean M_MouseWheelResponder(event_t *ev, int action)
   M_MouseClearMainHover();
   M_MouseClearTabHover();
 
+  if (M_MouseScrollSetup(action))
+    return true;
+
   return M_MouseMenuAction(action, ev);
 }
 
@@ -7094,11 +7205,7 @@ static dboolean M_MouseMotionResponder(void)
 
   if (menuactive && setup_active && !setup_select)
   {
-    int index;
-
-    if (M_MouseSetupItemAtPointer(&index))
-      M_MouseSelectSetupItem(index);
-
+    M_MouseUpdateSetupHover();
     return true;
   }
 
@@ -7196,6 +7303,9 @@ static dboolean M_MouseResponder(event_t *ev)
 
   M_MouseReadPosition();
 
+  if (setup_active && !setup_select)
+    M_MouseBeginSetupNavigation();
+
   if (M_MouseBindingCaptureActive())
     return M_MouseBindingCaptureResponder(ev);
 
@@ -7220,6 +7330,9 @@ dboolean M_Responder(event_t* ev) {
 
   if (ch != MENU_NULL || action != MENU_NULL)
   {
+    if (setup_active)
+      menu_mouse_setup_scroll = -1;
+
     M_MouseClearMainHover();
     M_MouseClearTabHover();
   }
