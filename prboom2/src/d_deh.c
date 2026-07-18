@@ -1351,6 +1351,7 @@ static const char *deh_weapon[] = // CPhipps - static const*
   "Shooting frame", // .atkstate
   "Firing frame",   // .flashstate
   "Ammo per shot",  // .ammopershot [XA] new to mbf21
+  "Weapon recoil",  // .recoil [AR] new to mbf21
   "MBF21 Bits",     // .flags
 };
 
@@ -2525,7 +2526,12 @@ static void deh_procWeapon(DEHFILE *fpin, char *line)
       weaponinfo[indexnum].ammopershot = (int)value;
       weaponinfo[indexnum].intflags |= WIF_ENABLEAPS;
     }
-    else if (!deh_strcasecmp(key, deh_weapon[7]))  // MBF21 Bits
+    else if (!deh_strcasecmp(key, deh_weapon[7]))  // Weapon recoil
+    {
+      weaponinfo[indexnum].recoil = (int)value;
+      weaponinfo[indexnum].intflags |= WIF_ENABLERECOIL;
+    }
+    else if (!deh_strcasecmp(key, deh_weapon[8]))  // MBF21 Bits
     {
       if (bGetData == 1)
       {
