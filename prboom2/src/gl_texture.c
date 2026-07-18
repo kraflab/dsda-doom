@@ -194,8 +194,8 @@ static void gld_GetTextureTexID(GLTexture *gltexture, int cm)
       bcm = 0;
     }
   }
-  gltexture->texflags_p = &gltexture->texflags[cm][gltexture->player_cm];
-  gltexture->texid_p = &gltexture->glTexExID[cm][gltexture->player_cm][bcm];
+  gltexture->texflags_p = &gltexture->texflags[cm][player_cm];
+  gltexture->texid_p = &gltexture->glTexExID[cm][player_cm][bcm];
   return;
 }
 
