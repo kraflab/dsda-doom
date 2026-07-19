@@ -1917,7 +1917,7 @@ dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
   // Allow ghost monsters to be rendered translucent
   if (corpse->height == 0 && corpse->radius == 0
     && dsda_IntConfig(dsda_config_translucent_ghosts))
-      corpse->flags |= MF_TRANSLUCENT;  
+      corpse->flags |= MF_TRANSLUCENT;
 
   if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
     totallive++;
@@ -2001,7 +2001,7 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
           // Allow ghost monsters to be rendered translucent
           if (corpsehit->height == 0 && corpsehit->radius == 0
             && dsda_IntConfig(dsda_config_translucent_ghosts))
-              corpsehit->flags |= MF_TRANSLUCENT;  
+              corpsehit->flags |= MF_TRANSLUCENT;
 
           if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
             totallive++;
@@ -2623,13 +2623,13 @@ void A_BossDeath(mobj_t *mo)
 {
   line_t junk;
 
-  // heretic_note: probably we can adopt the clean heretic style and merge
-  if (heretic) return Heretic_A_BossDeath(mo);
-
   if (dsda_BossAction(mo))
   {
     return;
   }
+
+  // heretic_note: probably we can adopt the clean heretic style and merge
+  if (heretic) return Heretic_A_BossDeath(mo);
 
   if (gamemode == commercial)
   {

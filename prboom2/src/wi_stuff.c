@@ -387,7 +387,7 @@ static const char bstar[] = {"STFDEAD0"};
 // "red P[1..g_maxplayers]"
 static const char facebackp[] = {"STPB0"};
 
-static const char *exitpic, *enterpic;
+const char *exitpic, *enterpic;
 
 //
 // CODE
@@ -2198,14 +2198,14 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
 //
 void WI_Start(wbstartstruct_t* wbstartstruct)
 {
+  exitpic = dsda_ExitPic();
+  enterpic = dsda_EnterPic();
+  
   if (heretic) return IN_Start(wbstartstruct);
   if (hexen) return Hexen_IN_Start(wbstartstruct);
 
   WI_initVariables(wbstartstruct);
   WI_loadData();
-
-  exitpic = dsda_ExitPic();
-  enterpic = dsda_EnterPic();
 
   if (deathmatch)
     WI_initDeathmatchStats();
