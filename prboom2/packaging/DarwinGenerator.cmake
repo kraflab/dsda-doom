@@ -19,25 +19,39 @@ file(COPY_FILE
 
 file(WRITE
   "${packaged_dir}/Troubleshooting.txt"
-  "If you are getting errors like 'libzip.5.5.dylib cant be opened because Apple cannot check it for malicious software.'\n"
-  "Run the following command in the dsda-doom folder:\n\n"
-  "xattr -dr com.apple.quarantine path/to/folder\n"
+  "If you are getting errors like 'Apple is not able to verify that dsda-doom is free from malware that could harm your Mac'\n"
+  "Run the following command:\n\n"
+  "xattr -dr com.apple.quarantine path/to/dsda-doom\n"
 )
 
-find_program(DYLIBBUNDLER_EXECUTABLE
-  NAMES dylibbundler
-  REQUIRED
-)
+if(NOT VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+  find_program(DYLIBBUNDLER_EXECUTABLE
+    NAMES dylibbundler
+    REQUIRED
+  )
 
-execute_process(
-  COMMAND ${DYLIBBUNDLER_EXECUTABLE}
-    --bundle-deps
-    --create-dir
-    --overwrite-files
-    --fix-file ${packaged_dir}/dsda-doom
-    --install-path @executable_path/libs_${CPACK_SYSTEM_PROCESSOR}
-    --dest-dir ${packaged_dir}/libs_${CPACK_SYSTEM_PROCESSOR}
-)
+  execute_process(
+    COMMAND ${DYLIBBUNDLER_EXECUTABLE}
+      --bundle-deps
+      --create-dir
+      --overwrite-files
+      --fix-file ${packaged_dir}/dsda-doom
+      --install-path @executable_path/libs_${CPACK_SYSTEM_PROCESSOR}
+      --dest-dir ${packaged_dir}/libs_${CPACK_SYSTEM_PROCESSOR}
+  )
+
+  # SDL3 is loaded dynamically by sdl2-compat, so dylibbundler cannot detect it
+  find_library(SDL3_LIBRARY
+    NAMES SDL3
+    PATHS /opt/homebrew/lib /usr/local/lib
+    NO_DEFAULT_PATH
+  )
+
+  file(COPY_FILE
+    "${SDL3_LIBRARY}"
+    "${packaged_dir}/libs_${CPACK_SYSTEM_PROCESSOR}/libSDL3.dylib"
+  )
+endif()
 
 execute_process(
   COMMAND zip
