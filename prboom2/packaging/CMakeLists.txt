@@ -30,7 +30,7 @@ elseif(CMAKE_OSX_ARCHITECTURES)
 endif()
 
 # Lets assume that VCPKG is only used on mac by our CI
-if(APPLE AND VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+if(APPLE AND NOT BUILD_SHARED_LIBS)
   string(REPLACE "arm64" "uni" target_arch "${target_arch}")
 endif()
 
