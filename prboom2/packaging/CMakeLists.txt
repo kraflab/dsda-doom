@@ -25,12 +25,13 @@ set(target_arch ${CMAKE_SYSTEM_PROCESSOR})
 if(CMAKE_GENERATOR MATCHES "Visual Studio")
   string(TOLOWER "${CMAKE_VS_PLATFORM_NAME}" target_arch)
   string(REPLACE "win32" "x86" target_arch "${target_arch}")
-  if(APPLE)
-    # Lets assume that VCPKG is only used on mac by our CI
-    string(REPLACE "arm64" "uni" target_arch "${target_arch}")
-  endif()
 elseif(CMAKE_OSX_ARCHITECTURES)
   list(JOIN CMAKE_OSX_ARCHITECTURES "-" target_arch)
+endif()
+
+# Lets assume that VCPKG is only used on mac by our CI
+if(APPLE AND VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+  string(REPLACE "arm64" "uni" target_arch "${target_arch}")
 endif()
 
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" platform_name)

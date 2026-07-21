@@ -24,6 +24,7 @@ file(WRITE
   "xattr -dr com.apple.quarantine path/to/dsda-doom\n"
 )
 
+message(${VCPKG_LIBRARY_LINKAGE})
 if(NOT VCPKG_LIBRARY_LINKAGE STREQUAL "static")
   find_program(DYLIBBUNDLER_EXECUTABLE
     NAMES dylibbundler
