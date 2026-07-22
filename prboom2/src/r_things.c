@@ -496,6 +496,7 @@ void R_DrawMaskedColumn(
           dcvars->nextsource = nextcolumn->pixels + post->topdelta;
 
           dcvars->texturemid = basetexturemid - (post->topdelta<<FRACBITS);
+          dcvars->pspritepostheight = dcvars->isplayersprite ? post->length : 0;
 
           dcvars->edgeslope = post->slope;
           // Drawn by either R_DrawColumn
@@ -533,6 +534,9 @@ static void R_DrawVisSprite(vissprite_t *vis)
   R_SetDefaultDrawColumnVars(&dcvars);
 
   dcvars.colormap = vis->colormap;
+
+  if (vis->mobjflags & MF_PLAYERSPRITE)
+    dcvars.isplayersprite = true;
 
   // hexen_note: colfunc: No idea how to merge this right now...
   // if (vis->mobjflags & (MF_SHADOW | MF_ALTSHADOW))
