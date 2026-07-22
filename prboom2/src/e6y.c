@@ -587,7 +587,7 @@ void e6y_WriteStats(void)
   for (level=0;level<numlevels;level++)
   {
     snprintf(str, sizeof(str),
-      "%%s - %%%dd:%%05.2f (%%%dd:%%02d)  K: %%%dd/%%-%dd%%%lds  I: %%%dd/%%-%dd%%%lds  S: %%%dd/%%-%dd %%%lds\r\n",
+      "%%s - %%%dd:%%05.2f (%%%dd:%%02d)  K: %%%dd/%%-%dd%%%lds  I: %%%dd/%%-%dd%%%lds  S: %%%dd/%%-%dd %%%lds\n",
       max.stat[TT_TIME],      max.stat[TT_TOTALTIME],
       max.stat[TT_ALLKILL],   max.stat[TT_TOTALKILL],   (long)allkills_len,
       max.stat[TT_ALLITEM],   max.stat[TT_TOTALITEM],   (long)allitems_len,
