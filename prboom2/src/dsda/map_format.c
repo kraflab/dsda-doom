@@ -258,8 +258,8 @@ extern void P_CrossZDoomSpecialLine(line_t *line, int side, mobj_t *thing, dbool
 extern void P_CrossHereticSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
 extern void P_CrossHexenSpecialLine(line_t *line, int side, mobj_t *thing, dboolean bossaction);
 
-extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line);
-extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line);
+extern void P_ShootCompatibleSpecialLine(mobj_t *thing, line_t *line, int side);
+extern void P_ShootHexenSpecialLine(mobj_t *thing, line_t *line, int side);
 
 extern dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
 extern dboolean P_TestActivateHexenLine(line_t *line, mobj_t *mo, int side, line_activation_t activationType);
