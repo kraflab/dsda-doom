@@ -335,7 +335,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
   if (sfx_id == g_sfx_secret)
     params.sfx_class = sfx_class_secret;
   else if (sfx_id & PICKUP_SOUND ||
-      sfx_id == sfx_oof ||
+      sfx_id == sfx_oof || sfx_id == g_sfx_menu || sfx_id == g_sfx_pistol ||
       (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway))
     params.sfx_class = sfx_class_important;
   else

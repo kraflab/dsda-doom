@@ -6878,7 +6878,7 @@ static dboolean M_MouseUpdateTabHover(void)
   if (menu_mouse_hover_tab != target_page)
   {
     menu_mouse_hover_tab = target_page;
-    S_StartVoidSound(g_sfx_menu);
+    S_StartVoidSound(g_sfx_itemup);
   }
 
   return true;
@@ -6960,7 +6960,7 @@ static void M_MouseSelectSetupItem(int index)
   setup_select = false;
   setup_gather = false;
   colorbox_active = false;
-  S_StartVoidSound(g_sfx_menu);
+  S_StartVoidSound(g_sfx_itemup);
 }
 
 static void M_MouseUpdateSetupHover(void)
@@ -7009,7 +7009,7 @@ static dboolean M_MouseSetSetupThermo(int index)
   if (dsda_IntConfig(item->config_id) != value)
   {
     dsda_UpdateIntConfig(item->config_id, value, true);
-    S_StartVoidSound(g_sfx_menu);
+    S_StartVoidSound(g_sfx_stnmov);
   }
 
   return true;
@@ -7066,7 +7066,7 @@ static dboolean M_MouseCycleSetupChoice(setup_menu_t *item)
   }
 
   if (next != current)
-    S_StartVoidSound(g_sfx_menu);
+    S_StartVoidSound(g_sfx_itemup);
 
   return true;
 }
