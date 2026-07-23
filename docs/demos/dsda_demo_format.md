@@ -1,3 +1,8 @@
+---
+title: DSDA Demo Format
+parent: Demos
+---
+
 ## DSDA Demo Format
 
 This port-specific demo format has some helpful extensions for casual play and some necessary extensions for advanced map formats. When using casual extensions, this format has no long-term _guarantee_ of cross-version compatibility and the resulting demos will not be accepted for upload to DSDA. The main purpose in this case is to assist in testing and FDAs.

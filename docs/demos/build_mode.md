@@ -1,3 +1,8 @@
+---
+title: Build Mode
+parent: Demos
+---
+
 ## Build Mode
 
 *Build Mode is currently in an alpha state! There may be bugs! Back up your demos!*

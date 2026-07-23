@@ -1,3 +1,8 @@
+---
+title: Things and Specials
+parent: Mapping
+---
+
 # Things and Specials
 
 This page documents the new thing types and special actions available in advanced map formats in dsda-doom. DSDA-Doom supports both Doom-in-Hexen and UDMF maps. See the [UDMF documentation](./udmf.md) for complete details about the `dsda` namespace.
