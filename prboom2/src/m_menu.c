@@ -7282,7 +7282,7 @@ static dboolean M_MouseButtonResponder(event_t *ev)
   if (pressed & MENU_MOUSE_LEFT)
     return M_MouseLeftPressResponder(ev);
 
-  return menuactive || messageToPrint;
+  return false;
 }
 
 static dboolean M_MouseResponder(event_t *ev)
