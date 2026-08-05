@@ -314,7 +314,7 @@ void S_ResetAdjustments(void) {
   adjust_volume = 0;
 }
 
-void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeout)
+void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean important, int loop_timeout)
 {
   int cnum;
   sfx_params_t params;
@@ -334,9 +334,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
   // killough 4/25/98
   if (sfx_id == g_sfx_secret)
     params.sfx_class = sfx_class_secret;
-  else if (sfx_id & PICKUP_SOUND ||
-      sfx_id == sfx_oof ||
-      (menuactive && (sfx_id == g_sfx_menu || sfx_id == g_sfx_pistol)) ||
+  else if (important || sfx_id & PICKUP_SOUND || sfx_id == sfx_oof ||
       (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway))
     params.sfx_class = sfx_class_important;
   else
@@ -468,6 +466,11 @@ void S_LoopVoidSound(int sfx_id, int timeout)
   S_LoopSound(NULL, sfx_id, timeout);
 }
 
+void S_StartImportantVoidSound(int sfx_id)
+{
+  S_StartSoundAtVolume(NULL, sfx_id, raven ? 127 : sfx_volume, true, 0);
+}
+
 void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id)
 {
   if (line && line->frontsector && line->frontsector->flags & SECF_SILENT)
@@ -478,12 +481,12 @@ void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id)
 
 void S_StartSound(void *origin, int sfx_id)
 {
-  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, 0);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, false, 0);
 }
 
 void S_LoopSound(void *origin, int sfx_id, int timeout)
 {
-  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, timeout);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, false, timeout);
 }
 
 void S_StopSound(void *origin)

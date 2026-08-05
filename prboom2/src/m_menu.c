@@ -5124,7 +5124,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
             value = 0;
           if (old_value != value)
           {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartImportantVoidSound(g_sfx_menu);
             strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
           }
         }
@@ -5137,7 +5137,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
           } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
 
           if (value >= 0 && choice_value != value) {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartImportantVoidSound(g_sfx_menu);
             choice_value = value;
           }
         }
@@ -5153,7 +5153,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
             value = old_value;
           if (old_value != value)
           {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartImportantVoidSound(g_sfx_menu);
             strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
           }
         }
@@ -5166,7 +5166,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
           } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
 
           if (ptr1->selectstrings[value] && choice_value != value) {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartImportantVoidSound(g_sfx_menu);
             choice_value = value;
           }
         }
@@ -5190,13 +5190,13 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
       if (action == MENU_LEFT) {
         if (dsda_IntConfig(ptr1->config_id) > 0) {
           dsda_DecrementIntConfig(ptr1->config_id, true);
-          S_StartVoidSound(g_sfx_menu);
+          S_StartImportantVoidSound(g_sfx_menu);
         }
       }
       else if (action == MENU_RIGHT) {
         if (dsda_IntConfig(ptr1->config_id) < 15) {
           dsda_IncrementIntConfig(ptr1->config_id, true);
-          S_StartVoidSound(g_sfx_menu);
+          S_StartImportantVoidSound(g_sfx_menu);
         }
       }
       else if (action == MENU_ENTER) {
@@ -5362,7 +5362,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         ptr1->m_flags &= ~S_HILITE;
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
-        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        S_StartImportantVoidSound(g_sfx_menu);  // killough 10/98
         previous_page = current_page;
         current_page--;
         return true;
@@ -5382,7 +5382,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         ptr1->m_flags &= ~S_HILITE;
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
-        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        S_StartImportantVoidSound(g_sfx_menu);  // killough 10/98
         previous_page = current_page;
         current_page++;
         return true;
@@ -5746,7 +5746,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         itemOn = 0;
       else
         itemOn++;
-      S_StartVoidSound(g_sfx_menu);
+      S_StartImportantVoidSound(g_sfx_menu);
     }
     while(currentMenu->menuitems[itemOn].status == -1);
     return true;
@@ -5760,7 +5760,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         itemOn = currentMenu->numitems - 1;
       else
         itemOn--;
-      S_StartVoidSound(g_sfx_menu);
+      S_StartImportantVoidSound(g_sfx_menu);
     }
     while(currentMenu->menuitems[itemOn].status == -1);
     return true;
@@ -5802,7 +5802,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       else
       {
         currentMenu->menuitems[itemOn].routine(itemOn);
-        S_StartVoidSound(g_sfx_pistol);
+        S_StartImportantVoidSound(g_sfx_pistol);
       }
     }
     //jff 3/24/98 remember last skill selected
@@ -5858,7 +5858,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       if (ch && currentMenu->menuitems[i].alphaKey == ch)
       {
         itemOn = i;
-        S_StartVoidSound(g_sfx_menu);
+        S_StartImportantVoidSound(g_sfx_menu);
         return true;
       }
 
@@ -5866,7 +5866,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       if (ch && currentMenu->menuitems[i].alphaKey == ch)
       {
         itemOn = i;
-        S_StartVoidSound(g_sfx_menu);
+        S_StartImportantVoidSound(g_sfx_menu);
         return true;
       }
   }
@@ -5980,7 +5980,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
         if (currentMenu == &SaveDef && current_page == 0)
           S_StartVoidSound(g_sfx_oof);
         else
-          S_StartVoidSound(g_sfx_pistol);
+          S_StartImportantVoidSound(g_sfx_pistol);
       }
 
       return true;
@@ -5993,7 +5993,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
 
     if (diff)
     {
-      S_StartVoidSound(g_sfx_menu);
+      S_StartImportantVoidSound(g_sfx_menu);
 
       current_page += diff;
       if (current_page < 0)
@@ -6466,7 +6466,7 @@ static dboolean M_MouseUpdateMainHover(void)
   {
     menu_mouse_hover_main = index;
     itemOn = index;
-    S_StartVoidSound(g_sfx_menu);
+    S_StartImportantVoidSound(g_sfx_menu);
   }
 
   return true;
@@ -6903,7 +6903,7 @@ static dboolean M_MouseSwitchSetupPage(setup_menu_t **pages, int target_page)
   setup_select = false;
   setup_gather = false;
   colorbox_active = false;
-  S_StartVoidSound(g_sfx_menu);
+  S_StartImportantVoidSound(g_sfx_menu);
 
   return true;
 }
@@ -6919,7 +6919,7 @@ static dboolean M_MouseSwitchSavePage(int target_page)
   M_MouseClearTabHover();
   current_page = target_page;
   M_ReadSaveStrings();
-  S_StartVoidSound(g_sfx_menu);
+  S_StartImportantVoidSound(g_sfx_menu);
 
   return true;
 }
