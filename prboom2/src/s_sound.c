@@ -38,6 +38,7 @@
 #endif
 
 #include "doomstat.h"
+#include "doomtype.h"
 #include "s_sound.h"
 #include "s_advsound.h"
 #include "i_sound.h"
@@ -466,9 +467,16 @@ void S_LoopVoidSound(int sfx_id, int timeout)
   S_LoopSound(NULL, sfx_id, timeout);
 }
 
-void S_StartImportantVoidSound(int sfx_id)
+void S_StartMenuSound(int sfx_id, int fallback_sfx_id, dboolean important)
 {
-  S_StartSoundAtVolume(NULL, sfx_id, raven ? 127 : sfx_volume, true, 0);
+  if (I_GetSfxLumpNum(&S_sfx[sfx_id]) != -1)
+  {
+    S_StartSoundAtVolume(NULL, sfx_id, raven ? 127 : sfx_volume, important, 0);
+  }
+  else if (fallback_sfx_id != -1) // Play a fallback?
+  {
+    S_StartSoundAtVolume(NULL, fallback_sfx_id, raven ? 127 : sfx_volume, important, 0);
+  }
 }
 
 void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id)
