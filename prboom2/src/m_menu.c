@@ -5748,7 +5748,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
 
   if (saveStringEnter && (ch != MENU_NULL || action != MENU_NULL))
   {
-    if (action == MENU_BACKSPACE)                            // phares 3/7/98
+    if (ch == KEYD_BACKSPACE || action == MENU_BACKSPACE)
     {
       if (saveCharIndex > 0)
       {
