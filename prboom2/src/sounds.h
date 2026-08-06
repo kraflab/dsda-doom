@@ -396,11 +396,11 @@ typedef enum {
   sfx_mnusli, // stnmov
   sfx_mnusel, // itemup
   sfx_mnuerr, // oof
-  sfx_inttic,
-  sfx_inttot,
-  sfx_intnex,
-  sfx_intnet,
-  sfx_intdms,
+  sfx_inttic, // pistol
+  sfx_inttot, // barex
+  sfx_intnex, // sgcock
+  sfx_intnet, // pldeth
+  sfx_intdms, // slop
 
   // Everything from here to 500 is reserved
 

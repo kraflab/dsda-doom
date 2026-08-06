@@ -467,7 +467,7 @@ void S_LoopVoidSound(int sfx_id, int timeout)
   S_LoopSound(NULL, sfx_id, timeout);
 }
 
-void S_StartMenuSound(int sfx_id, int fallback_sfx_id, dboolean important)
+void S_StartOptionalSound(int sfx_id, int fallback_sfx_id, dboolean important)
 {
   if (I_GetSfxLumpNum(&S_sfx[sfx_id]) != -1)
   {
