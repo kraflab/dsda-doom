@@ -114,6 +114,8 @@ Unless otherwise specified, argument values are integers. For toggles, a 1 means
   - Uses the message font
 - `map_title`: shows the current map's title
   - Uses the message font
+  - Supports 1 argument: `cycle_author`
+  - `cycle_author`: cycles between map title and author on automap
 - `message`: shows the current player message
   - Uses the message font
   - Supports 1 argument: `center`

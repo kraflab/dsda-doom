@@ -236,6 +236,7 @@ typedef enum {
   dsda_config_map_totals,
   dsda_config_map_time,
   dsda_config_map_title,
+  dsda_config_map_title_author_cycle,
   dsda_config_map_trail,
   dsda_config_map_trail_collisions,
   dsda_config_map_trail_size,
