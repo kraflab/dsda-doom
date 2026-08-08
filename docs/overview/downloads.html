@@ -1,0 +1,145 @@
+---
+title: Downloads
+permalink: /downloads
+parent: Overview
+---
+<h1>Downloads</h1>
+
+<h3 id="dl-status">Loading latest release...</h3>
+
+<div id="dl-container">
+  <div class="dl-tabs" role="tablist">
+    <button class="dl-tab" data-tab="windows" role="tab">Windows</button>
+    <button class="dl-tab" data-tab="macos" role="tab">macOS</button>
+    <button class="dl-tab" data-tab="linux" role="tab">Linux</button>
+  </div>
+
+  <div class="dl-panel" id="dl-windows" data-panel="windows"></div>
+  <div class="dl-panel" id="dl-macos" data-panel="macos"></div>
+  <div class="dl-panel" id="dl-linux" data-panel="linux"></div>
+</div>
+
+<a href="https://github.com/{{ site.repository }}/releases">Older releases</a>
+
+<style>
+  #dl-container {
+    display: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 1em 0;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .dl-tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .dl-tab {
+    flex: 1;
+    padding: 0.6em 1em;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+    color: inherit;
+    opacity: 0.65;
+    border-bottom: 2px solid transparent;
+  }
+  .dl-tab:hover {
+    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .dl-tab.active {
+    opacity: 1;
+    border-bottom: 2px solid currentColor;
+    background: rgba(255, 255, 255, 0.06);
+  }
+  .dl-panel {
+    display: none;
+    padding: 1em;
+  }
+  .dl-panel.active {
+    display: block;
+  }
+</style>
+
+<script>
+(async function () {
+  const statusEl = document.getElementById("dl-status");
+  const containerEl = document.getElementById("dl-container");
+
+  const windowsEl = document.getElementById("dl-windows");
+  const macosEl = document.getElementById("dl-macos");
+  const linuxEl = document.getElementById("dl-linux");
+
+  function toMB(bytes) {
+    if (!bytes) return "";
+    const mb = bytes / (1024 * 1024);
+    return mb.toFixed(1) + " MB";
+  }
+
+  function detectOS() {
+    var ua = navigator.userAgent || "";
+    var platform = navigator.platform || "";
+    if (/Mac/.test(platform) || /Mac OS X/.test(ua)) return "macos";
+    if (/Linux/.test(platform)) return "linux";
+    return "windows";
+  }
+
+  function setupTabs(defaultTab) {
+    var buttons = document.querySelectorAll(".dl-tab");
+    var panels = document.querySelectorAll(".dl-panel");
+
+    function activate(tab) {
+      for (var i = 0; i < buttons.length; i++) {
+        buttons[i].className = "dl-tab" + (buttons[i].getAttribute("data-tab") == tab ? " active" : "");
+      }
+      for (var j = 0; j < panels.length; j++) {
+        panels[j].className = "dl-panel" + (panels[j].getAttribute("data-panel") == tab ? " active" : "");
+      }
+    }
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener("click", function (e) {
+        activate(e.target.getAttribute("data-tab"));
+      });
+    }
+    activate(defaultTab);
+  }
+
+  try {
+    const res = await fetch("https://api.github.com/repos/{{ site.repository }}/releases/latest", {
+      headers: { Accept: "application/vnd.github+json" },
+      signal: AbortSignal.timeout(3000)
+    });
+    if (!res.ok) throw new Error(res.status);
+
+    const release = await res.json();
+    statusEl.textContent = release.name + " - released on " + new Date(release.published_at).toLocaleDateString();
+
+    const assets = release.assets || [];
+    assets.forEach(asset => {
+      const link = document.createElement("a");
+      link.href = asset.browser_download_url;
+      link.textContent = asset.name + " (" + toMB(asset.size) + ")";
+      link.style.display = "block";
+
+      if (/mac/.test(asset.name))
+        macosEl.appendChild(link);
+      else if (/linux/.test(asset.name))
+        linuxEl.appendChild(link);
+      else
+        windowsEl.appendChild(link);
+    });
+
+    containerEl.style.display = "block";
+    setupTabs(detectOS());
+  }
+  catch (err) {
+    statusEl.textContent = "Could not load release info.";
+
+    console.error(err);
+  }
+})();
+</script>

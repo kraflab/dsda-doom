@@ -1,3 +1,8 @@
+---
+title: In-Game Console
+parent: Guides
+---
+
 ## In-Game Console
 
 The in-game console offers extra tools for advanced users, including adjusting player equipment, reassigning config variables, entering cheats, and running scripts. Feedback from the console is currently limited, but command entry is fully supported.

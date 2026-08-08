@@ -1,3 +1,8 @@
+---
+title: DSDAPREF - Preferences
+parent: Mapping
+---
+
 ## DSDAPREF Lump
 
 The DSDAPREF lump contains dsda-doom-specific wad preferences.

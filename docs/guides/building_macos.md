@@ -1,3 +1,8 @@
+---
+title: Building on macOS
+parent: Guides
+---
+
 # Building DSDA-Doom on macOS
 
 This is a basic guide for making a release build of DSDA-Doom on macOS using tools and libraries from brew.

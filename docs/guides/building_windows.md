@@ -1,3 +1,8 @@
+---
+title: Building on Windows
+parent: Guides
+---
+
 # Building DSDA-Doom on Windows
 
 This is a guide for building DSDA-Doom on Windows. It covers the use of MSVC and MSYS2.

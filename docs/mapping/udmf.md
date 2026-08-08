@@ -1,3 +1,8 @@
+---
+title: UDMF
+parent: Mapping
+---
+
 ## UDMF (Universal Doom Map Format)
 
 This page defines the `dsda` udmf namespace. Most features of this namespace form a subset of the `zdoom` namespace - they will be understood by both dsda-doom and gzdoom. Some new additions, marked with a :duck:, fill in some gaps. See the [things and specials doc](./things_and_specials.md) for more information about which specials and thing types are supported.
