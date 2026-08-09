@@ -36,6 +36,7 @@
 #include "p_tick.h"
 #include "p_user.h"
 #include "s_sound.h"
+#include "sounds.h"
 #include "smooth.h"
 #include "v_video.h"
 
@@ -2561,14 +2562,14 @@ static dboolean dsda_ExecuteConsole(const char* command_line, dboolean noise) {
             ret = false;
 
             if (noise)
-              S_StartVoidSound(g_sfx_oof);
+              S_StartOptionalSound(sfx_mnuerr, g_sfx_oof, false);
           }
         }
         else {
           ret = false;
 
           if (noise)
-            S_StartVoidSound(g_sfx_oof);
+            S_StartOptionalSound(sfx_mnuerr, g_sfx_oof, false);
         }
 
         break;
@@ -2580,7 +2581,7 @@ static dboolean dsda_ExecuteConsole(const char* command_line, dboolean noise) {
       ret = false;
 
       if (noise)
-        S_StartVoidSound(g_sfx_oof);
+        S_StartOptionalSound(sfx_mnuerr, g_sfx_oof, false);
     }
   }
 

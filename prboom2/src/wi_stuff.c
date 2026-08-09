@@ -1310,8 +1310,7 @@ void WI_updateDeathmatchStats(void)
       }
     }
 
-
-    S_StartVoidSound(sfx_barexp);  // bang
+    S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
     dm_state = 4;  // we're done with all 4 (or all we have to do)
   }
 
@@ -1319,7 +1318,7 @@ void WI_updateDeathmatchStats(void)
   if (dm_state == 2)
   {
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);  // noise while counting
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false); // noise while counting
 
     stillticking = false;
 
@@ -1358,7 +1357,7 @@ void WI_updateDeathmatchStats(void)
 
     if (!stillticking)
     {
-      S_StartVoidSound(sfx_barexp);
+      S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
       dm_state++;
     }
   }
@@ -1366,7 +1365,7 @@ void WI_updateDeathmatchStats(void)
   {
     if (acceleratestage)
     {
-      S_StartVoidSound(sfx_slop);
+      S_StartOptionalSound(sfx_intdms, sfx_slop, false);
 
       if ( gamemode == commercial)
         WI_initNoState();
@@ -1556,14 +1555,14 @@ void WI_updateNetgameStats(void)
       if (dofrags)
         cnt_frags[i] = WI_fragSum(i);  // we had frags
     }
-    S_StartVoidSound(sfx_barexp);  // bang
+    S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
     ng_state = 10;
   }
 
   if (ng_state == 2)
   {
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);  // pop
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     stillticking = false;
 
@@ -1582,14 +1581,14 @@ void WI_updateNetgameStats(void)
 
     if (!stillticking)
     {
-      S_StartVoidSound(sfx_barexp);
+      S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
       ng_state++;
     }
   }
   else if (ng_state == 4)
   {
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     stillticking = false;
 
@@ -1607,14 +1606,14 @@ void WI_updateNetgameStats(void)
 
     if (!stillticking)
     {
-      S_StartVoidSound(sfx_barexp);
+      S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
       ng_state++;
     }
   }
   else if (ng_state == 6)
   {
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     stillticking = false;
 
@@ -1633,14 +1632,14 @@ void WI_updateNetgameStats(void)
 
     if (!stillticking)
     {
-      S_StartVoidSound(sfx_barexp);
+      S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
       ng_state += 1 + 2*!dofrags;
     }
   }
   else if (ng_state == 8)
   {
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     stillticking = false;
 
@@ -1659,7 +1658,7 @@ void WI_updateNetgameStats(void)
 
     if (!stillticking)
     {
-      S_StartVoidSound(sfx_pldeth);
+      S_StartOptionalSound(sfx_intnet, sfx_pldeth, false);
       ng_state++;
     }
   }
@@ -1667,7 +1666,7 @@ void WI_updateNetgameStats(void)
   {
     if (acceleratestage)
     {
-      S_StartVoidSound(sfx_sgcock);
+      S_StartOptionalSound(sfx_intnex, sfx_sgcock, false);
       if ( gamemode == commercial )
         WI_initNoState();
       else
@@ -1810,7 +1809,7 @@ void WI_updateStats(void)
     cnt_total_time = wbs->totaltimes / TICRATE;
     cnt_time = plrs[me].stime / TICRATE;
     cnt_par = wbs->partime / TICRATE;
-    S_StartVoidSound(sfx_barexp);
+    S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
     sp_state = 10;
   }
 
@@ -1819,12 +1818,12 @@ void WI_updateStats(void)
     cnt_kills[0] += 2;
 
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     if (cnt_kills[0] >= WI_killLimit(me))
     {
       cnt_kills[0] = WI_killPercent(me);
-      S_StartVoidSound(sfx_barexp);
+      S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
       sp_state++;
     }
   }
@@ -1833,12 +1832,12 @@ void WI_updateStats(void)
     cnt_items[0] += 2;
 
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     if (cnt_items[0] >= WI_itemLimit(me))
     {
       cnt_items[0] = WI_itemPercent(me);
-      S_StartVoidSound(sfx_barexp);
+      S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
       sp_state++;
     }
   }
@@ -1847,19 +1846,19 @@ void WI_updateStats(void)
     cnt_secret[0] += 2;
 
     if (!(bcnt&3))
-      S_StartVoidSound(sfx_pistol);
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     if (cnt_secret[0] >= WI_secretLimit(me))
     {
       cnt_secret[0] = WI_secretPercent(me);
-      S_StartVoidSound(sfx_barexp);
+      S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
       sp_state++;
     }
   }
   else if (sp_state == 8)
   {
     if (!(bcnt&3) && play_early_explosion) //e6y: do not play count sound after explosion sound
-      S_StartVoidSound(sfx_pistol);
+      S_StartOptionalSound(sfx_inttic, sfx_pistol, false);
 
     cnt_time += 3;
 
@@ -1885,7 +1884,7 @@ void WI_updateStats(void)
         if (compatibility_level < lxdoom_1_compatibility)
           cnt_total_time = wbs->totaltimes / TICRATE;
 
-        S_StartVoidSound(sfx_barexp);
+        S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
         play_early_explosion = false; // do not play it twice or more
       }
     }
@@ -1901,7 +1900,7 @@ void WI_updateStats(void)
           cnt_total_time = wbs->totaltimes / TICRATE;
 
         if (!modifiedgame) //e6y: do not play explosion sound if it was already played
-          S_StartVoidSound(sfx_barexp);
+          S_StartOptionalSound(sfx_inttot, sfx_barexp, false);
         sp_state++;
       }
     }
@@ -1910,7 +1909,7 @@ void WI_updateStats(void)
   {
     if (acceleratestage)
     {
-      S_StartVoidSound(sfx_sgcock);
+      S_StartOptionalSound(sfx_intnex, sfx_sgcock, false);
 
       if (gamemode == commercial)
         WI_initNoState();

@@ -74,6 +74,8 @@ void S_StartVoidSound(int sfx_id);
 void S_StartImportantVoidSound(int sfx_id);
 void S_LoopVoidSound(int sfx_id, int timeout);
 
+void S_StartOptionalSound(int sfx_id, int fallback_sfx_id, dboolean important);
+
 void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id);
 
 // Will start a sound at a given volume.
