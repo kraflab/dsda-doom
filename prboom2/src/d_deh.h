@@ -225,6 +225,10 @@ extern const char *s_GOTSHOTGUN; // = GOTSHOTGUN;
 //#define GOTSHOTGUN2   "You got the super shotgun!"
 extern const char *s_GOTSHOTGUN2; // = GOTSHOTGUN2;
 
+// Beta pickups.
+extern const char *s_BETA_BONUS3;
+extern const char *s_BETA_BONUS4;
+
 //
 // P_Doors.C
 //
