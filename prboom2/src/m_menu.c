@@ -5815,7 +5815,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
   {
     currentMenu->lastOn = itemOn;
     M_ClearMenus ();
-    S_StartOptionalSound(sfx_mnucls, g_sfx_swtchx, true);
+    S_StartOptionalSound(sfx_mnubak, g_sfx_swtchx, true);
     return true;
   }
 
@@ -5842,12 +5842,12 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       else
         M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
       itemOn = currentMenu->lastOn;
-      S_StartOptionalSound(sfx_mnuopn, g_sfx_swtchn, true);
+      S_StartOptionalSound(sfx_mnubak, g_sfx_swtchn, true);
     }
     else
     {
       M_ClearMenus();
-      S_StartOptionalSound(sfx_mnucls, g_sfx_swtchx, true);
+      S_StartOptionalSound(sfx_mnubak, g_sfx_swtchx, true);
     }
     return true;
   }
