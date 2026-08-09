@@ -329,7 +329,8 @@ static void I_GetEvent(void)
             break;
           }
           // Switch windowed<->fullscreen if pressed Alt-Enter
-          else if (Event->key.keysym.sym == SDLK_RETURN)
+          else if (Event->key.keysym.sym == SDLK_RETURN ||
+                   Event->key.keysym.sym == SDLK_KP_ENTER)
           {
             V_ToggleFullscreen();
             break;
@@ -413,6 +414,9 @@ static void I_GetEvent(void)
           {
           case SDL_WINDOWEVENT_FOCUS_GAINED:
           case SDL_WINDOWEVENT_FOCUS_LOST:
+          case SDL_WINDOWEVENT_MINIMIZED:
+          case SDL_WINDOWEVENT_MAXIMIZED:
+          case SDL_WINDOWEVENT_RESTORED:
             UpdateFocus();
             break;
           case SDL_WINDOWEVENT_SIZE_CHANGED:
