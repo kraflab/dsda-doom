@@ -45,6 +45,7 @@ jobs:
               -DCMAKE_TOOLCHAIN_FILE="$VCPKG_INSTALLATION_ROOT\scripts\buildsystems\vcpkg.cmake"
               -DVCPKG_TARGET_TRIPLET=arm64-osx
               -DCMAKE_INSTALL_PREFIX=/usr
+              -DVCPKG_LIBRARY_LINKAGE=static
 
           - name: "MSYS2 UCRT64"
             os: windows-latest
