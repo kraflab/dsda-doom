@@ -462,6 +462,10 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
       if (P_UseSpecialLine(actor, spechit[numspechit], 0, false))
         good |= spechit[numspechit] == blockline ? 1 : 2;
 
+    // There are checks elsewhere for numspechit == 0, so we don't want to
+    // leave numspechit == -1.
+    numspechit = 0;
+
     if (raven) return good > 0;
 
     /* cph - compatibility maze here
@@ -1917,7 +1921,7 @@ dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
   // Allow ghost monsters to be rendered translucent
   if (corpse->height == 0 && corpse->radius == 0
     && dsda_IntConfig(dsda_config_translucent_ghosts))
-      corpse->flags |= MF_TRANSLUCENT;  
+      corpse->flags |= MF_TRANSLUCENT;
 
   if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
     totallive++;
@@ -2001,7 +2005,7 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
           // Allow ghost monsters to be rendered translucent
           if (corpsehit->height == 0 && corpsehit->radius == 0
             && dsda_IntConfig(dsda_config_translucent_ghosts))
-              corpsehit->flags |= MF_TRANSLUCENT;  
+              corpsehit->flags |= MF_TRANSLUCENT;
 
           if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
             totallive++;
