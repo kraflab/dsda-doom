@@ -1517,7 +1517,8 @@ static dboolean MouseShouldBeGrabbed()
     return (demoplayback && gamestate == GS_LEVEL && !menuactive);
 
   // during playback the mouse should be hidden when not moving
-  if (demoplayback && !menuactive && mouse_hide_timer > 0)
+  if (demoplayback && !menuactive && mouse_hide_timer > 0 &&
+    (dsda_IntConfig(dsda_config_playback_mouse_controls) || !desired_fullscreen))
   {
     if (!dsda_SkipMode())
       mouse_hide_timer--;
