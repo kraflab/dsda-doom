@@ -1819,6 +1819,27 @@ static dboolean console_Spawn(const char* command, const char* args) {
   return P_SpawnMobj(x, y, z, type) != NULL;
 }
 
+static dboolean console_SpawnRelative(const char* command, const char* args) {
+  fixed_t x, y, z;
+  int type;
+
+  if (sscanf(args, "%d %d %d %d", &x, &y, &z, &type) != 4 || type < 0)
+    return false;
+
+  x <<= FRACBITS;
+  y <<= FRACBITS;
+  z <<= FRACBITS;
+
+  type = dsda_FindDehMobjIndex(type - 1);
+
+  if (type == DEH_INDEX_NOT_FOUND)
+    return false;
+
+  return P_SpawnMobj(target_player.mo->x + x,
+                      target_player.mo->y + y,
+                      target_player.mo->z + z, type) != NULL;
+}
+
 static dboolean console_StateSetTics(const char* command, const char* args) {
   int id;
   int value;
@@ -2374,6 +2395,7 @@ static console_command_entry_t console_commands[] = {
   { "mobj.set_flags", console_MobjSetFlags, CF_NEVER },
 
   { "spawn", console_Spawn, CF_NEVER },
+  { "spawn_rel", console_SpawnRelative, CF_NEVER },
 
   // lines
   { "player.activate_line", console_PlayerActivateLine, CF_NEVER },

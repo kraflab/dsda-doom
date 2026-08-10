@@ -122,6 +122,8 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - same as the above commands, but applied to a specific mobj index
 - `spawn <x> <y> <z> <type>`
   - spawns a mobj at the given location, with the given type
+- `spawn_rel <x> <y> <z> <type>`
+  - spawns a mobj at a location relative to the player, with the given type
 
 #### Line Manipulation
 - Line activation (use / cross / shoot)
