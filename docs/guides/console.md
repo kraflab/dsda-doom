@@ -112,6 +112,8 @@ The in-game console offers extra tools for advanced users, including adjusting p
   - set the target thing's health
 - `target.move <x> <y>`
   - move the target to the given coordinates
+- `target.get_target <mobj_index>`
+  - displays the target's mobj index
 - `target.set_target <mobj_index>`
   - changes target's target to the mobj with the given index
 - `target.target_player`

@@ -1426,6 +1426,19 @@ static dboolean console_TargetMove(const char* command, const char* args) {
   return console_MoveMobj(target, x, y);
 }
 
+static dboolean console_TargetGetTarget(const char* command, const char* args) {
+  mobj_t* target = HU_Target();
+  dsda_string_t str;
+  if (target)
+      dsda_StringPrintF(&str, "Mobj Index : %d", target->index);
+  else
+      dsda_StringPrintF(&str, "No target selected");
+
+  dsda_AddAlert(str.string);
+  dsda_FreeString(&str);
+  return true;
+}
+
 static dboolean console_TargetSetTarget(const char* command, const char* args) {
   mobj_t* target;
   int new_target_index;
@@ -2336,6 +2349,7 @@ static console_command_entry_t console_commands[] = {
   { "target.set_state", console_TargetSetState, CF_NEVER },
   { "target.set_health", console_TargetSetHealth, CF_NEVER },
   { "target.move", console_TargetMove, CF_NEVER },
+  { "target.get_target", console_TargetGetTarget, CF_NEVER },
   { "target.set_target", console_TargetSetTarget, CF_NEVER },
   { "target.target_player", console_TargetTargetPlayer, CF_NEVER },
   { "target.add_flags", console_TargetAddFlags, CF_NEVER },
