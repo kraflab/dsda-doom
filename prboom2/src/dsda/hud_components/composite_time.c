@@ -43,11 +43,11 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       "%s%s%d:%02d %s%d:%05.2f ",
       local->label,
       dsda_TextColor(dsda_tc_exhud_total_time),
-      total_time / 35 / 60,
-      (total_time % (60 * 35)) / 35,
+      total_time / TICRATE / 60,
+      (total_time % (60 * TICRATE)) / TICRATE,
       dsda_TextColor(dsda_tc_exhud_level_time),
-      leveltime / 35 / 60,
-      (float) (leveltime % (60 * 35)) / 35
+      leveltime / TICRATE / 60,
+      (float) (leveltime % (60 * TICRATE)) / TICRATE
     );
   else
     length = snprintf(
@@ -56,8 +56,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       "%s%s%d:%05.2f ",
       local->label,
       dsda_TextColor(dsda_tc_exhud_level_time),
-      leveltime / 35 / 60,
-      (float) (leveltime % (60 * 35)) / 35
+      leveltime / TICRATE / 60,
+      (float) (leveltime % (60 * TICRATE)) / TICRATE
     );
 
   if (dsda_reborn && (demorecording || demoplayback)) {
@@ -68,8 +68,8 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       max_size - length,
       "%s%d:%02d ",
       dsda_TextColor(dsda_tc_exhud_demo_length),
-      demo_tic / 35 / 60,
-      (demo_tic % (60 * 35)) / 35
+      demo_tic / TICRATE / 60,
+      (demo_tic % (60 * TICRATE)) / TICRATE
     );
   }
 }

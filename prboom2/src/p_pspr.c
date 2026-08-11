@@ -1559,7 +1559,7 @@ void P_MovePsprites(player_t *player)
 #include "p_maputl.h"
 
 #define MAGIC_JUNK 1234
-#define FLAME_THROWER_TICS 10*35
+#define FLAME_THROWER_TICS (10*TICRATE)
 
 #define MAX_MACE_SPOTS 8
 

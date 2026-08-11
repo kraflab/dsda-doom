@@ -56,14 +56,14 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
       snprintf(
         delta, sizeof(delta),
         " (%s%d:%05.2f)",
-        sign, diff / 35 / 60, (float)(diff % (60 * 35)) / 35
+        sign, diff / TICRATE / 60, (float)(diff % (60 * TICRATE)) / TICRATE
       );
     }
     else {
       snprintf(
         delta, sizeof(delta),
         " (%s%04.2f)",
-        sign, (float)(diff % (60 * 35)) / 35
+        sign, (float)(diff % (60 * TICRATE)) / TICRATE
       );
     }
   }
@@ -72,8 +72,8 @@ static void dsda_UpdateIntermissionTime(dsda_split_t* split) {
     local->time_component.msg,
     sizeof(local->time_component.msg),
     "%s%d:%05.2f",
-    color, leveltime / 35 / 60,
-    (float)(leveltime % (60 * 35)) / 35
+    color, leveltime / TICRATE / 60,
+    (float)(leveltime % (60 * TICRATE)) / TICRATE
   );
 
   strcat(local->time_component.msg, delta);
@@ -92,7 +92,7 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
     const char* sign;
     int diff;
 
-    diff = dsda_SplitComparisonDelta(&split->totalleveltimes) / 35;
+    diff = dsda_SplitComparisonDelta(&split->totalleveltimes) / TICRATE;
     sign = diff >= 0 ? "+" : "-";
     color = diff >= 0 ? dsda_TextColor(dsda_tc_inter_split_normal) :
                         dsda_TextColor(dsda_tc_inter_split_good);
@@ -118,8 +118,8 @@ static void dsda_UpdateIntermissionTotal(dsda_split_t* split) {
     local->total_component.msg,
     sizeof(local->total_component.msg),
     "%s%d:%02d",
-    color, totalleveltimes / 35 / 60,
-    (totalleveltimes / 35) % 60
+    color, totalleveltimes / TICRATE / 60,
+    (totalleveltimes / TICRATE) % 60
   );
 
   strcat(local->total_component.msg, delta);
