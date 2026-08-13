@@ -160,7 +160,7 @@ void T_MAPMusic(void)
 
         if (lumpnum >= 0 && lumpnum < numlumps)
         {
-          S_ChangeMusInfoMusic(lumpnum, true);
+          S_ChangeMusInfoMusic(lumpnum, true, false);
         }
       }
 

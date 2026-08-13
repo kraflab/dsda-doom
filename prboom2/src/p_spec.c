@@ -7718,7 +7718,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       {
         if (!args[1] || (mo->player && mo->player->mo == mo))
         {
-          S_ChangeMusInfoMusic(args[0], args[2]);
+          S_ChangeMusInfoMusic(args[0], args[2], false);
           buttonSuccess = 1;
         }
       }
