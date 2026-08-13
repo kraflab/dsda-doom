@@ -49,7 +49,7 @@ typedef struct {
   void (*spawn_pusher)(line_t*);
   void (*spawn_extra)(line_t*, int);
   void (*cross_special_line)(line_t *, int, mobj_t *, dboolean);
-  void (*shoot_special_line)(mobj_t *, line_t *);
+  void (*shoot_special_line)(mobj_t *, line_t *, int);
   dboolean (*test_activate_line)(line_t *, mobj_t *, int, line_activation_t);
   dboolean (*execute_line_special)(int, int *, line_t *, int, mobj_t *);
   void (*post_process_line_special)(line_t *);
