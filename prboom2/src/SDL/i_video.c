@@ -262,9 +262,7 @@ static int I_TranslateKey(SDL_Keysym* key)
   case SDLK_LCTRL:
   case SDLK_RCTRL:  rc = KEYD_RCTRL;  break;
   case SDLK_LALT:
-  case SDLK_LGUI:
-  case SDLK_RALT:
-  case SDLK_RGUI:  rc = KEYD_RALT;   break;
+  case SDLK_RALT: rc = KEYD_RALT;   break;
   case SDLK_CAPSLOCK: rc = KEYD_CAPSLOCK; break;
   case SDLK_PRINTSCREEN: rc = KEYD_PRINTSC; break;
   case SDLK_SCROLLLOCK: rc = KEYD_SCROLLLOCK; break;
