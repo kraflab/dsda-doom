@@ -1478,6 +1478,10 @@ void P_IterateCompatibleSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy)
       if (oldside != P_PointOnLineSide(thing->x, thing->y, spechit[numspechit]))
         map_format.cross_special_line(spechit[numspechit], oldside, thing, false);
     }
+
+  // There are checks elsewhere for numspechit == 0, so we don't want to
+  // leave numspechit == -1.
+  numspechit = 0;
 }
 
 void P_IterateZDoomSpecHit(mobj_t *thing, fixed_t oldx, fixed_t oldy)
