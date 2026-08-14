@@ -295,11 +295,11 @@ static void cheat_mus(char buf[3])
 
     if (muslump != -1)
     {
-      S_ChangeMusInfoMusic(muslump, true);
+      S_ChangeMusInfoMusic(muslump, true, true);
     }
     else if (musnum != -1)
     {
-      S_ChangeMusic(musnum, 1);
+      S_ChangeMusic(musnum, 1, true);
     }
   }
   else

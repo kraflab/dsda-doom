@@ -290,12 +290,12 @@ void S_Start(void)
   if (musinfo.items[0] != -1)
   {
     if (!dsda_StartQueuedMusic())
-      S_ChangeMusInfoMusic(musinfo.items[0], true);
+      S_ChangeMusInfoMusic(musinfo.items[0], true, false);
   }
   else
   {
     if (!dsda_StartQueuedMusic())
-      S_ChangeMusic(mnum, true);
+      S_ChangeMusic(mnum, true, false);
   }
 }
 
@@ -651,7 +651,7 @@ void S_UpdateSounds(void)
 //
 void S_StartMusic(int m_id)
 {
-  S_ChangeMusic(m_id, false);
+  S_ChangeMusic(m_id, false, false);
 }
 
 dboolean S_ChangeMusicByName(const char *name, dboolean looping)
@@ -664,11 +664,11 @@ dboolean S_ChangeMusicByName(const char *name, dboolean looping)
     return false;
   }
 
-  S_ChangeMusInfoMusic(lump, looping);
+  S_ChangeMusInfoMusic(lump, looping, false);
   return true;
 }
 
-void S_ChangeMusic(int musicnum, int looping)
+void S_ChangeMusic(int musicnum, dboolean looping, dboolean force)
 {
   musicinfo_t *music;
 
@@ -685,6 +685,9 @@ void S_ChangeMusic(int musicnum, int looping)
     I_Error("S_ChangeMusic: Bad music number %d", musicnum);
 
   music = &S_music[musicnum];
+
+  if (mus_playing == music && !force)
+      return;
 
   // shutdown old music
   S_StopMusic();
@@ -716,18 +719,18 @@ void S_RestartMusic(void)
 {
   if (musinfo.current_item != -1)
   {
-    S_ChangeMusInfoMusic(musinfo.current_item, true);
+    S_ChangeMusInfoMusic(musinfo.current_item, true, true);
   }
   else
   {
     if (musicnum_current > mus_None && musicnum_current < num_music)
     {
-      S_ChangeMusic(musicnum_current, true);
+      S_ChangeMusic(musicnum_current, true, true);
     }
   }
 }
 
-void S_ChangeMusInfoMusic(int lumpnum, int looping)
+void S_ChangeMusInfoMusic(int lumpnum, dboolean looping, dboolean force)
 {
   musicinfo_t *music;
 
@@ -745,6 +748,10 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
     return;
 
   music = &S_music[mus_musinfo];
+
+
+  if (music->lumpnum == lumpnum && !force)
+    return;
 
   // shutdown old music
   S_StopMusic();
@@ -1393,5 +1400,5 @@ void S_StartSongName(const char *songLump, dboolean loop)
         break;
     }
 
-    S_ChangeMusic(musicnum, loop);
+    S_ChangeMusic(musicnum, loop, false);
 }
