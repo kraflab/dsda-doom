@@ -116,7 +116,6 @@ int g_sfx_pistol;
 int g_sfx_oof;
 int g_sfx_menu;
 int g_sfx_respawn;
-int g_sfx_secret;
 int g_sfx_revive;
 int g_sfx_console;
 
@@ -188,7 +187,6 @@ static void dsda_InitDoom(void) {
   g_sfx_pistol = sfx_pistol;
   g_sfx_oof = sfx_oof;
   g_sfx_menu = sfx_pstop;
-  g_sfx_secret = sfx_secret;
   g_sfx_revive = sfx_slop;
   g_sfx_console = sfx_radio;
 
@@ -361,7 +359,6 @@ static void dsda_InitHeretic(void) {
   g_sfx_oof = heretic_sfx_plroof;
   g_sfx_menu = heretic_sfx_dorcls;
   g_sfx_respawn = heretic_sfx_respawn;
-  g_sfx_secret = heretic_sfx_chat;
   g_sfx_revive = heretic_sfx_telept;
   g_sfx_console = heretic_sfx_chat;
 
@@ -416,7 +413,7 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].infighting_group = IG_DEFAULT;
     mobjinfo[j].projectile_group = PG_DEFAULT;
     mobjinfo[j].splash_group = SG_DEFAULT;
-    mobjinfo[j].ripsound = heretic_sfx_None;
+    mobjinfo[j].ripsound = sfx_None;
     mobjinfo[j].altspeed = NO_ALTSPEED;
     mobjinfo[j].meleerange = MELEERANGE;
 
@@ -515,7 +512,6 @@ static void dsda_InitHexen(void) {
   g_sfx_oof = hexen_sfx_player_fighter_grunt;
   g_sfx_menu = hexen_sfx_door_light_close;
   g_sfx_respawn = hexen_sfx_respawn;
-  g_sfx_secret = hexen_sfx_chat;
   g_sfx_revive = hexen_sfx_teleport;
   g_sfx_console = hexen_sfx_chat;
 
@@ -566,7 +562,7 @@ static void dsda_InitHexen(void) {
     mobjinfo[j].infighting_group = IG_DEFAULT;
     mobjinfo[j].projectile_group = PG_DEFAULT;
     mobjinfo[j].splash_group = SG_DEFAULT;
-    mobjinfo[j].ripsound = hexen_sfx_None;
+    mobjinfo[j].ripsound = sfx_None;
     mobjinfo[j].altspeed = NO_ALTSPEED;
     mobjinfo[j].meleerange = MELEERANGE;
 

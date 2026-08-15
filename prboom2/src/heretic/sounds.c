@@ -82,6 +82,25 @@ musicinfo_t heretic_S_music[] = {
 
 sfxinfo_t heretic_S_sfx[] = {
     { "", 0, 0, -1, 0, 0, 0, "" },
+
+    { "dssecret", 60, 0, -1, 0, 0, 1, "" },
+
+    // Optional menu/intermission sounds
+    { "dsmnuopn", 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnucls", 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnuact", 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnubak", 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnumov", 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnusli", 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnusel", 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnuerr", 60, 0, -1, 0, 0, 1, "" },
+    { "dsinttic", 60, 0, -1, 0, 0, 1, "" },
+    { "dsinttot", 60, 0, -1, 0, 0, 1, "" },
+    { "dsintnex", 60, 0, -1, 0, 0, 1, "" },
+    { "dsintnet", 60, 0, -1, 0, 0, 1, "" },
+    { "dsintdms", 60, 0, -1, 0, 0, 1, "" },
+
+    // Heretic sounds
     { "gldhit", 32, 0, -1, 0, 0, 2, "" },
     { "gntful", 32, 0, -1, 0, 0, -1, "" },
     { "gnthit", 32, 0, -1, 0, 0, -1, "" },

@@ -2664,7 +2664,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
             sound = hexen_sfx_pig_active1;
             break;
           default:
-            sound = hexen_sfx_None;
+            sound = sfx_None;
             break;
         }
         S_StartMobjSound(usething, sound);
@@ -2698,7 +2698,7 @@ dboolean PTR_UseTraverse (intercept_t* in)
             sound = hexen_sfx_pig_active1;
             break;
           default:
-            sound = hexen_sfx_None;
+            sound = sfx_None;
             break;
         }
         S_StartMobjSound(usething, sound);
@@ -4062,7 +4062,7 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
             P_LineOpening(in->d.line, NULL);
             if (line_opening.range <= 0)
             {
-                sound = hexen_sfx_None;
+                sound = sfx_None;
                 if (PuzzleItemUser->player)
                 {
                     switch (PuzzleItemUser->player->pclass)
@@ -4077,7 +4077,7 @@ dboolean PTR_PuzzleItemTraverse(intercept_t * in)
                             sound = hexen_sfx_puzzle_fail_mage;
                             break;
                         default:
-                            sound = hexen_sfx_None;
+                            sound = sfx_None;
                             break;
                     }
                 }
