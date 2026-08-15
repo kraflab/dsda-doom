@@ -245,7 +245,7 @@ int dsda_UStartFinale(void) {
 
   if (!finaleflat)
     finaleflat = "FLOOR4_8"; // use a single fallback for all maps.
-  
+
   endpic = gamemapinfo->endpic;
 
   return true;
@@ -295,7 +295,8 @@ int dsda_UFTicker(void) {
         finalecount = 0;
         finalestage = 1;
         wipegamestate = -1; // force a wipe
-        if (!stricmp(gamemapinfo->endpic, "$BUNNY"))
+        if (!stricmp(gamemapinfo->endpic, "$BUNNY") ||
+            !stricmp(gamemapinfo->endpic, "$DEMON"))
           F_StartScroll(NULL, NULL, NULL, true);
         else if (!stricmp(gamemapinfo->endpic, "!"))
           return false; // let go of finale ownership

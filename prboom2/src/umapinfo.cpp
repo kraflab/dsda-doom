@@ -225,6 +225,12 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		if (scanner.boolean) strcpy(mape->endpic, "$BUNNY");
 		else strcpy(mape->endpic, "-");
 	}
+	else if (!stricmp(pname, "enddemon"))
+	{
+		scanner.MustGetToken(TK_BoolConst);
+		if (scanner.boolean) strcpy(mape->endpic, "$DEMON");
+		else strcpy(mape->endpic, "-");
+	}
 	else if (!stricmp(pname, "endgame"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
@@ -413,7 +419,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 		ParseMapEntry(scanner, &parsed);
 
 		// Set default level progression here to simplify the checks elsewhere. Doing this lets us skip all normal code for this if nothing has been defined.
-		if (!parsed.nextmap[0] && !parsed.endpic[0])
+		if (!parsed.nextmap[0] && !parsed.endpic[0] && !heretic)
 		{
 			if (!stricmp(parsed.mapname, "MAP30")) strcpy(parsed.endpic, "$CAST");
 			else if (!stricmp(parsed.mapname, "E1M8"))  strcpy(parsed.endpic, gamemode == retail? "CREDIT" : "HELP2");

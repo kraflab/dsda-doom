@@ -289,7 +289,7 @@ void Heretic_F_Drawer(void)
     Heretic_F_TextWrite();
   else
   {
-    if (strcmp(endpic, "$BUNNY") == 0)
+    if (strcmp(endpic, "$DEMON") == 0)
     {
       F_DemonScroll();
       return;
