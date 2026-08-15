@@ -87,11 +87,11 @@ void Heretic_F_StartFinale(void)
   dsda_InterMusic(&mnum, &muslump);
   if (muslump >= 0)
   {
-    S_ChangeMusInfoMusic(muslump, true);
+    S_ChangeMusInfoMusic(muslump, true, false);
   }
   else
   {
-    S_ChangeMusic(heretic_mus_cptd, true);
+    S_ChangeMusic(heretic_mus_cptd, true, false);
   }
 
   dsda_StartFinale();
