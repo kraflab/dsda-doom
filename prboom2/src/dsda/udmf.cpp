@@ -19,13 +19,15 @@
 #include <vector>
 
 extern "C" {
+#include "doomdef.h"
 char *Z_StrdupLevel(const char *s);
 void *Z_MallocLevel(size_t size);
 }
 
 #include "scanner.h"
-
 #include "udmf.h"
+
+udmf_namespace_t udmf_namespace = UDMF_NONE;
 
 std::vector<udmf_line_t> udmf_lines;
 std::vector<udmf_side_t> udmf_sides;
@@ -114,7 +116,7 @@ static char* dsda_FloatString(Scanner &scanner) {
 static void dsda_ParseUDMFLineDef(Scanner &scanner) {
   udmf_line_t line = { 0 };
 
-  line.id = -1;
+  line.id = (udmf_namespace == UDMF_DSDA || udmf_namespace == UDMF_HEXEN) ? -1 : 0;
   line.sideback = -1;
   line.alpha = 1.0;
 
@@ -802,8 +804,21 @@ static void dsda_ParseUDMFIdentifier(Scanner &scanner) {
     scanner.MustGetToken('=');
     scanner.MustGetToken(TK_StringConst);
 
-    if (stricmp(scanner.string, "zdoom") && stricmp(scanner.string, "dsda"))
-      scanner.ErrorF("Unknown UDMF namespace \"%s\"", scanner.string);
+    if (!stricmp(scanner.string, "doom") && !raven) {
+      udmf_namespace = UDMF_DOOM;
+    }
+    else if (!stricmp(scanner.string, "heretic") && heretic) {
+      udmf_namespace = UDMF_HERETIC;
+    }
+    else if (!stricmp(scanner.string, "hexen") && hexen) {
+      udmf_namespace = UDMF_HEXEN;
+    }
+    else if ((!stricmp(scanner.string, "dsda") || !stricmp(scanner.string, "zdoom")) && !raven) {
+      udmf_namespace = UDMF_DSDA;
+    }
+    else {
+      scanner.ErrorF("Unsupported UDMF namespace \"%s\"", scanner.string);
+    }
 
     scanner.MustGetToken(';');
   }

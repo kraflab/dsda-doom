@@ -374,7 +374,7 @@ void D_Display (fixed_t frac)
 {
   static dboolean isborderstate        = false;
   static dboolean borderwillneedredraw = false;
-  static gamestate_t oldgamestate = -1;
+  static gamestate_t oldgamestate = GS_DEFAULT;
   dboolean wipe;
   dboolean viewactive = false, isborder = false;
 
@@ -401,7 +401,7 @@ void D_Display (fixed_t frac)
 
   if (setsizeneeded) {               // change the view size if needed
     R_ExecuteSetViewSize();
-    oldgamestate = -1;            // force background redraw
+    oldgamestate = GS_DEFAULT;            // force background redraw
   }
 
   if (V_IsOpenGLMode() && !exclusive_fullscreen && !nodrawers)
@@ -416,7 +416,7 @@ void D_Display (fixed_t frac)
 
   if (gamestate != GS_LEVEL) { // Not a level
     switch (oldgamestate) {
-    case -1:
+    case GS_DEFAULT:
     case GS_LEVEL:
       V_SetPalette(0); // cph - use default (basic) palette
     default:
@@ -656,6 +656,44 @@ void D_PageTicker(void)
     D_AdvanceDemo();
 }
 
+static dboolean dsda_IsBlankPWADLump(const char* lumpname)
+{
+  if (!W_PWADLumpNameExists(lumpname))
+    return false;
+
+  return lumpinfo[W_CheckNumForName(lumpname)].size == 0;
+}
+
+// Check whether to skip IWAD Demos
+static dboolean dsda_SimpleDemoLoop(void)
+{
+  int pwaddemos = W_PWADLumpNameExists2("DEMO1");
+  int pwadmaps = W_PWADMapsExist();
+
+  if ((pwadmaps && !pwaddemos) || dsda_IsBlankPWADLump("DEMO1"))
+    return true;
+
+  return false;
+}
+
+static dboolean dsda_ForcePWADCredit(void)
+{
+  if (W_PWADLumpNameExists("CREDIT"))
+  {
+    // Simple demo loop and PWAD CREDIT
+    if (dsda_SimpleDemoLoop())
+      return true;
+
+    // Normal demo loop
+    // Check if CREDIT is shown twice in demoloop, else skip dynamic credits
+    // Fixes condition with PWAD CREDIT + REAL DEMO1 + BLANK DEMO2
+    if (W_PWADLumpNameExists2("DEMO1") && dsda_IsBlankPWADLump("DEMO2"))
+      return true;
+  }
+
+  return false;
+}
+
 //
 // D_PageDrawer
 //
@@ -684,8 +722,10 @@ static void D_PageDrawer(void)
     V_ClearBorder();
     V_DrawNamePatchFS(0, 0, 0, pagename, CR_DEFAULT, VPT_STRETCH);
   }
-  else
+  else if (dsda_ForcePWADCredit())
     M_DrawCredits();
+  else
+    M_DrawCreditsDynamic();
 }
 
 //
@@ -827,6 +867,17 @@ void D_DoAdvanceDemo(void)
   // do not even attempt to play DEMO4 if it is not available
   if (demosequence == 6 && gamemode == commercial && !W_LumpNameExists("demo4"))
     demosequence = 0;
+
+  if (dsda_SimpleDemoLoop())
+  {
+    // Skip blank / IWAD demos in PWADs
+    if (demostates[demosequence][gamemode].func == G_DeferedPlayDemo)
+      demosequence++;
+
+    // Limit to just TITLEPIC / CREDIT
+    if (demosequence > (raven ? 3 : 2))
+      demosequence = 0;
+  }
 
   demostates[demosequence][gamemode].func(demostates[demosequence][gamemode].name);
 }
@@ -1166,18 +1217,11 @@ static char *FindIWADFile(void)
 static dboolean FileMatchesIWAD(const char *name)
 {
   int i;
-  int name_length;
+  const char *base_name = dsda_BaseName(name);
 
-  name_length = strlen(name);
   for (i = 0; i < nstandard_iwads; ++i)
   {
-    int iwad_length;
-
-    iwad_length = strlen(standard_iwads[i]);
-    if (
-      name_length >= iwad_length &&
-      !stricmp(name + name_length - iwad_length, standard_iwads[i])
-    )
+    if (!stricmp(base_name, standard_iwads[i]))
       return true;
   }
 
@@ -1505,8 +1549,8 @@ static void D_AutoloadPWadDir()
     {
       char *autoload_dir;
       autoload_dir = GetAutoloadDir(dsda_BaseName(wadfiles[i].name), false);
-      LoadWADsAtPath(autoload_dir, source_auto_load);
-      LoadZIPsAtPath(autoload_dir, source_auto_load, &autoload_deh_pwad_queue[i]);
+      LoadWADsAtPath(autoload_dir, source_pwad_auto_load);
+      LoadZIPsAtPath(autoload_dir, source_pwad_auto_load, &autoload_deh_pwad_queue[i]);
       Z_Free(autoload_dir);
     }
 }
@@ -1785,7 +1829,7 @@ static void dsda_DetectEpisodeStructure(void)
   {
     for (ii=0;ii<10;ii++)
     {
-      sprintf(lump, "E%dM%d", i, ii);
+      snprintf(lump, sizeof(lump), "E%dM%d", i, ii);
       if (W_LumpNameExists(lump))
       {
         EpisodeStructure = true;
@@ -1894,7 +1938,7 @@ static void IdentifyVersion (void)
 
 static void D_DoomMainSetup(void)
 {
-  int p;
+  int p, slot = -1;
   dsda_arg_t *arg;
   dboolean autoload;
 
@@ -1993,7 +2037,7 @@ static void D_DoomMainSetup(void)
   //e6y: some stuff from command-line should be initialised before ProcessDehFile()
   e6y_InitCommandLine();
 
-  D_AddFile(port_wad_file, source_auto_load);
+  D_AddFile(port_wad_file, source_port_wad);
 
   HandlePlayback(); // must come before autoload: may detect iwad in footer
 
@@ -2054,8 +2098,9 @@ static void D_DoomMainSetup(void)
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
       // Split loading DEHACKED lumps into IWAD/autoload and PWADs/others
       if (lumpinfo[p].source == source_iwad
-          || lumpinfo[p].source == source_pre
-          || lumpinfo[p].source == source_auto_load)
+          || lumpinfo[p].source == source_port_wad
+          || lumpinfo[p].source == source_auto_load
+          || lumpinfo[p].source == source_pwad_auto_load)
         ProcessDehFile(NULL, D_dehout(), p); // cph - add dehacked-in-a-wad support
 
     if (bfgedition)
@@ -2091,8 +2136,9 @@ static void D_DoomMainSetup(void)
   if (!dsda_Flag(dsda_arg_nodeh))
     for (p = -1; (p = W_ListNumFromName("DEHACKED", p)) >= 0; )
       if (!(lumpinfo[p].source == source_iwad
-            || lumpinfo[p].source == source_pre
-            || lumpinfo[p].source == source_auto_load))
+            || lumpinfo[p].source == source_port_wad
+            || lumpinfo[p].source == source_auto_load
+            || lumpinfo[p].source == source_pwad_auto_load))
         ProcessDehFile(NULL, D_dehout(), p);
 
   // process .deh files from PWADs autoload directories
@@ -2130,7 +2176,7 @@ static void D_DoomMainSetup(void)
 
   PostProcessDeh();
   dsda_AppendZDoomMobjInfo();
-  dsda_ApplyDefaultMapFormat();
+  dsda_ApplyBinaryMapFormat();
 
   lprintf(LO_DEBUG, "dsda_InitWadStats: Setting up wad stats.\n");
   dsda_InitWadStats();
@@ -2204,10 +2250,19 @@ static void D_DoomMainSetup(void)
     dsda_SetDemoBaseName(arg->value.v_string);
     dsda_InitDemoRecording();
   }
+  else
+  {
+    arg = dsda_Arg(dsda_arg_loadgame);
+    if (arg->found)
+    {
+      slot = arg->value.v_int;
+      G_LoadGame(slot, true);
+    }
+  }
 
   dsda_ExecutePlaybackOptions();
 
-  if (!userdemo)
+  if (slot == -1 && !userdemo)
   {
     if (autostart || netgame)
     {

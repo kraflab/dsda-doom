@@ -340,9 +340,12 @@ static const char *I_GetXDGDataHome(void)
 
     if (!xdgdatahome || !*xdgdatahome)
     {
+      size_t datahome_size;
       const char *home = I_GetHomeDir();
-      datahome = Z_Malloc(strlen(home) + 1 + sizeof(".local/share"));
-      sprintf(datahome, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
+
+      datahome_size = strlen(home) + 1 + sizeof(".local/share");
+      datahome = Z_Malloc(datahome_size);
+      snprintf(datahome, datahome_size, "%s%s%s", home, !HasTrailingSlash(home) ? "/" : "", ".local/share");
     }
     else
     {
@@ -580,6 +583,7 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
   for (i = 0; i < num_search; i++) {
     const char  * d = NULL;
     const char  * s = NULL;
+    size_t p_size = PATH_MAX;
     /* Each entry in the switch sets d to the directory to look in,
      * and optionally s to a subdirectory of d */
     // switch replaced with lookup table
@@ -593,10 +597,14 @@ char* I_FindFileInternal(const char* wfname, const char* ext, dboolean isStatic)
     s = search[i].sub;
 
     if (!isStatic)
-      p = (char*)Z_Malloc((d ? strlen(d) : 0) + (s ? strlen(s) : 0) + pl);
-    sprintf(p, "%s%s%s%s%s", d ? d : "", (d && !HasTrailingSlash(d)) ? "/" : "",
-                             s ? s : "", (s && !HasTrailingSlash(s)) ? "/" : "",
-                             wfname);
+    {
+      p_size = (d ? strlen(d) : 0) + (s ? strlen(s) : 0) + pl;
+      p = (char*)Z_Malloc(p_size);
+    }
+
+    snprintf(p, p_size, "%s%s%s%s%s", d ? d : "", (d && !HasTrailingSlash(d)) ? "/" : "",
+                                     s ? s : "", (s && !HasTrailingSlash(s)) ? "/" : "",
+                                     wfname);
 
     if (ext && !M_FileExists(p))
       strcat(p, ext);

@@ -315,7 +315,7 @@ int EV_StartLightStrobing(line_t* line)
   sector_t* sec;
 
   // start lights strobing in all sectors tagged same as line
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sec = &sectors[*id_p];
 
@@ -347,7 +347,7 @@ int EV_TurnTagLightsOff(line_t* line)
   // search sectors for those with same tag as activating line
 
   // killough 10/98: replaced inefficient search with fast search
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sector_t *sector = sectors + *id_p, *tsec;
     int i, min = sector->lightlevel;
@@ -379,7 +379,7 @@ int EV_LightTurnOn(line_t *line, int bright)
   // search all sectors for ones with same tag as activating line
 
   // killough 10/98: replace inefficient search with fast search
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sector_t *temp, *sector = sectors+*id_p;
     int j, tbright = bright; //jff 5/17/98 search for maximum PER sector
@@ -425,7 +425,7 @@ int EV_LightTurnOnPartway(line_t *line, fixed_t level)
     level = FRACUNIT;
 
   // search all sectors for ones with same tag as activating line
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sector_t *temp, *sector = sectors+*id_p;
     int j, bright = 0, min = sector->lightlevel;

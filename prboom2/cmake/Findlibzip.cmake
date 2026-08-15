@@ -35,25 +35,31 @@ The following cache variables may also be set:
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_LIBZIP QUIET libzip)
+pkg_check_modules(PC_libzip IMPORTED_TARGET libzip)
+
+if(PC_libzip_FOUND)
+  if(NOT TARGET libzip::zip)
+    add_library(libzip::zip ALIAS PkgConfig::PC_libzip)
+  endif()
+  set(libzip_FOUND TRUE)
+  set(libzip_VERSION ${PC_libzip_VERSION})
+  return()
+endif()
 
 find_path(
   libzip_INCLUDE_DIR
   NAMES zip.h
-  HINTS "${PC_LIBZIP_INCLUDEDIR}"
 )
 
 find_file(
   libzip_DLL
   NAMES zip.dll libzip.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_LIBZIP_PREFIX}"
 )
 
 find_library(
   libzip_LIBRARY
   NAMES zip
-  HINTS "${PC_LIBZIP_LIBDIR}"
 )
 
 if(libzip_DLL OR libzip_LIBRARY MATCHES ".so|.dylib")
@@ -62,14 +68,10 @@ else()
   set(_libzip_library_type STATIC)
 endif()
 
-get_flags_from_pkg_config("${_libzip_library_type}" "PC_LIBZIP" "_libzip")
-
-if(_libzip_library_type STREQUAL "STATIC" AND NOT PC_LIBZIP_FOUND)
+if(_libzip_library_type STREQUAL "STATIC")
   set(libzip_LINK_LIBRARIES "" CACHE STRING "Additional libraries to link to libzip.")
   set(libzip_LINK_DIRECTORIES "" CACHE PATH "Additional directories to search libraries in for libzip.")
-  set(_libzip_link_libraries ${libzip_LINK_LIBRARIES})
-  set(_libzip_link_directories ${libzip_LINK_DIRECTORIES})
-  if(NOT _libzip_link_libraries)
+  if(NOT libzip_LINK_LIBRARIES)
     message(WARNING
       "pkg-config is unavailable and libzip seems to be static, link failures are to be expected.\n"
       "Set `libzip_LINK_LIBRARIES` to a list of libraries libzip depends on.\n"
@@ -90,10 +92,8 @@ if(libzip_FOUND)
     set_target_properties(
       libzip::zip
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${libzip_INCLUDE_DIR}"
-                 INTERFACE_COMPILE_OPTIONS "${_libzip_compile_options}"
-                 INTERFACE_LINK_LIBRARIES "${_libzip_link_libraries}"
-                 INTERFACE_LINK_DIRECTORIES "${_libzip_link_directories}"
-                 INTERFACE_LINK_OPTIONS "${_libzip_link_options}"
+                 INTERFACE_LINK_LIBRARIES "${libzip_LINK_LIBRARIES}"
+                 INTERFACE_LINK_DIRECTORIES "${libzip_LINK_DIRECTORIES}"
     )
   endif()
 

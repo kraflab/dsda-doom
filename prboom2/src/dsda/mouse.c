@@ -65,17 +65,12 @@ void dsda_GetMousePosition(int *x, int *y)
 {
   SDL_GetMouseState(x, y);
 
-  // SDL_GetMouseState doesnt account for HiDPI displays
-  {
-    int logical_w, logical_h;
-    SDL_GetWindowSize(sdl_window, &logical_w, &logical_h);
+  // Lets account for HiDPI displays since SDL_GetMouseState doesnt
+  *x = (int)(*x * (float)renderer_rect.w / (float)window_rect.w);
+  *y = (int)(*y * (float)renderer_rect.h / (float)window_rect.h);
 
-    *x = (int)(*x * (float)window_rect.w / (float)logical_w);
-    *y = (int)(*y * (float)window_rect.h / (float)logical_h);
-  }
-
-  // x and y currently have the mouse position in the window
-  // but we want the mouse position in the viewport
+  // x and y currently have the mouse position in the renderer_rect
+  // but we want the mouse position in the viewport_rect
   if (viewport_rect.x < *x && *x < (viewport_rect.w + viewport_rect.x) &&
       viewport_rect.y < *y && *y < (viewport_rect.h + viewport_rect.y))
   {

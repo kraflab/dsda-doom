@@ -53,7 +53,7 @@ typedef struct {
   dboolean (*test_activate_line)(line_t *, mobj_t *, int, line_activation_t);
   dboolean (*execute_line_special)(int, int *, line_t *, int, mobj_t *);
   void (*post_process_line_special)(line_t *);
-  void (*post_process_sidedef_special)(side_t *, const mapsidedef_t *, sector_t *, int);
+  void (*post_process_sidedef_special)(side_t *, const char*, const char*, const char*, sector_t *, int);
   void (*animate_surfaces)(void);
   void (*check_impact)(mobj_t *);
   void (*translate_line_flags)(unsigned int *, line_activation_t *);
@@ -69,10 +69,6 @@ typedef struct {
   void (*add_mobj_thing_id)(mobj_t *, short);
   void (*remove_mobj_thing_id)(mobj_t *);
   void (*iterate_spechit)(mobj_t *, fixed_t, fixed_t);
-  int (*point_on_side)(fixed_t, fixed_t, const node_t *);
-  int (*point_on_seg_side)(fixed_t, fixed_t, const seg_t *);
-  int (*point_on_line_side)(fixed_t, fixed_t, const line_t *);
-  int (*point_on_divline_side)(fixed_t, fixed_t, const divline_t *);
   size_t mapthing_size;
   size_t maplinedef_size;
   int mt_push;
@@ -93,6 +89,7 @@ dboolean dsda_IsDeathExitLine(int index);
 dboolean dsda_IsDeathSecretExitLine(int index);
 dboolean dsda_IsTeleportLine(int index);
 void dsda_ApplyZDoomMapFormat(void);
-void dsda_ApplyDefaultMapFormat(void);
+void dsda_ApplyUDMF(void);
+void dsda_ApplyBinaryMapFormat(void);
 
 #endif

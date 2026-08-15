@@ -18,7 +18,7 @@ if(MSVC)
 elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
   set(sanitiser_names address undefined thread)
   set(sanitiser_ids ASAN UBSAN TSAN)
-  foreach(santiser_name sanitiser_id IN ZIP_LISTS sanitiser_names sanitiser_ids)
+  foreach(sanitiser_name sanitiser_id IN ZIP_LISTS sanitiser_names sanitiser_ids)
     list(APPEND CMAKE_REQUIRED_LINK_OPTIONS -fsanitize=${sanitiser_name})
     check_c_compiler_flag(-fsanitize=${sanitiser_name} HAVE_${sanitiser_id})
     cmake_dependent_option(DSDA_ENABLE_${sanitiser_id}

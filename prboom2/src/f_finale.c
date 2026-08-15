@@ -108,11 +108,11 @@ void F_StartFinale (void)
 
   if (muslump >= 0)
   {
-    S_ChangeMusInfoMusic(muslump, true);
+    S_ChangeMusInfoMusic(muslump, true, false);
   }
   else
   {
-    S_ChangeMusic(mnum, true);
+    S_ChangeMusic(mnum, true, false);
   }
 
   // Okay - IWAD dependend stuff.
@@ -242,6 +242,8 @@ void F_StartFinale (void)
                        (gamemission == pack_plut) ? s_P4TEXT : s_C4TEXT;
         }
         break;
+      case indetermined:
+        break;
     }
   }
 
@@ -287,7 +289,7 @@ float Get_TextSpeed(void)
 // killough 5/10/98: add back v1.9 demo compatibility
 //
 
-static dboolean F_ShowCast(void)
+dboolean F_ShowCast(void)
 {
   return gamemap == 30 ||
          (gamemission == pack_nerve && allow_incompatibility && gamemap == 8) ||
@@ -480,7 +482,7 @@ static void F_StartCastMusic(const char* music, dboolean loop_music)
   }
   else if (gamemode == commercial)
   {
-    S_ChangeMusic(mus_evil, loop_music);
+    S_ChangeMusic(mus_evil, loop_music, false);
   }
   else
   {
@@ -735,7 +737,7 @@ static void F_StartScrollMusic(const char* music, dboolean loop_music)
       lprintf(LO_WARN, "Finale scroll music not found: %s\n", music);
   }
   else if (W_LumpNameExists("D_BUNNY"))
-    S_ChangeMusic(mus_bunny, loop_music);
+    S_ChangeMusic(mus_bunny, loop_music, false);
   else {
     lprintf(LO_WARN, "Finale scroll music unspecified\n");
     S_StopMusic();

@@ -99,8 +99,8 @@ static void gld_PrepareSectorSpecialEffects(void)
 
     for (i=0; i<sectors[num].linecount; i++)
     {
-      unsigned short sidenum0 = sectors[num].lines[i]->sidenum[0];
-      unsigned short sidenum1 = sectors[num].lines[i]->sidenum[1];
+      int32_t sidenum0 = sectors[num].lines[i]->sidenum[0];
+      int32_t sidenum1 = sectors[num].lines[i]->sidenum[1];
       side_t *side0 = (sidenum0 == NO_INDEX ? NULL : &sides[sidenum0]);
       side_t *side1 = (sidenum1 == NO_INDEX ? NULL : &sides[sidenum1]);
       side_t *front;

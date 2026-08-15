@@ -38,12 +38,24 @@ typedef enum {
   death_use_reload,
 } death_use_action_t;
 
+int dsda_DeathUseNothingInDemo(void)
+{
+  // if demorecording and death_use_nothing is set, allow
+  if (demorecording)
+    if (players[consoleplayer].playerstate == PST_DEAD &&
+        dsda_IntConfig(dsda_config_death_use_action) == death_use_nothing)
+      return true;
+
+  // if demoplayback / casual play, ignore
+  return false;
+}
+
 static int dsda_DeathUseAction(void)
 {
-  if (demorecording ||
-      demoplayback ||
-      map_info.flags & MI_ALLOW_RESPAWN ||
-      skill_info.flags & SI_PLAYER_RESPAWN)
+  dboolean force_death_use = demorecording && !dsda_DeathUseNothingInDemo();
+  dboolean mapinfo_respawn = map_info.flags & MI_ALLOW_RESPAWN || skill_info.flags & SI_PLAYER_RESPAWN;
+
+  if (demoplayback || force_death_use || mapinfo_respawn)
     return death_use_default;
 
   return dsda_IntConfig(dsda_config_death_use_action);

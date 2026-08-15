@@ -22,8 +22,6 @@
 #cmakedefine HAVE_DIRENT_H
 
 #cmakedefine HAVE_LIBSDL2_IMAGE
-#cmakedefine HAVE_LIBSDL2_MIXER
-
 #cmakedefine HAVE_LIBMAD
 #cmakedefine HAVE_LIBFLUIDSYNTH
 #cmakedefine HAVE_LIBXMP

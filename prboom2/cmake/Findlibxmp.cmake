@@ -4,15 +4,24 @@
 #  libxmp_LIBRARY
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_libxmp QUIET libxmp)
+pkg_check_modules(PC_libxmp IMPORTED_TARGET libxmp)
+
+if(PC_libxmp_FOUND)
+  if(NOT TARGET libxmp::xmp)
+    add_library(libxmp::xmp ALIAS PkgConfig::PC_libxmp)
+  endif()
+  set(libxmp_FOUND TRUE)
+  set(libxmp_VERSION ${PC_libxmp_VERSION})
+  return()
+endif()
 
 find_library(libxmp_LIBRARY
     NAMES xmp
-    HINTS "${PC_libxmp_LIBDIR}")
+)
 
 find_path(libxmp_INCLUDE_DIR
     NAMES xmp.h
-    HINTS "${PC_libxmp_INCLUDEDIR}")
+)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(libxmp

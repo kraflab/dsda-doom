@@ -76,7 +76,7 @@ static const filelump_t* DemoEx_LumpForName(const char* name, const wadinfo_t* h
 static char* DemoEx_LumpAsString(const char* name, const wadinfo_t* header) {
   char* str;
   const char* lump_data;
-  const byte* buffer;
+  const char* buffer;
   const filelump_t* lump_info;
 
   lump_info = DemoEx_LumpForName(name, header);
@@ -85,7 +85,7 @@ static char* DemoEx_LumpAsString(const char* name, const wadinfo_t* header) {
 
   str = Z_Calloc(lump_info->size + 1, 1);
 
-  buffer = (const byte*) header;
+  buffer = (const char*) header;
   lump_data = buffer + lump_info->filepos;
   strncpy(str, lump_data, lump_info->size);
 
@@ -210,11 +210,11 @@ static void DemoEx_GetParams(const wadinfo_t* header) {
       for (overflow = 0; overflow < OVERFLOW_MAX; overflow++) {
         int value;
         char* pstr;
-        char* mask;
+        size_t mask_size = strlen(overflow_cfgname[overflow]) + 16;
+        char* mask = Z_Malloc(mask_size);
 
-        mask = Z_Malloc(strlen(overflow_cfgname[overflow]) + 16);
         if (mask) {
-          sprintf(mask, "-set %s", overflow_cfgname[overflow]);
+          snprintf(mask, mask_size, "-set %s", overflow_cfgname[overflow]);
           pstr = strstr(str, mask);
 
           if (pstr) {
@@ -311,54 +311,54 @@ static void DemoEx_AddParams(wadtbl_t* wadtbl) {
 
   // add complevel for formats which do not have it in header
   if (demo_compatibility) {
-    sprintf(buf, "-complevel %d ", compatibility_level);
+    snprintf(buf, sizeof(buf), "-complevel %d ", compatibility_level);
     dsda_StringCat(&files, buf);
   }
 
   // for recording or playback using "single-player coop" mode
   if (dsda_Flag(dsda_arg_solo_net)) {
-    sprintf(buf, "-solo-net ");
+    snprintf(buf, sizeof(buf), "-solo-net ");
     dsda_StringCat(&files, buf);
   }
 
   // for recording or playback using "coop in single-player" mode
   if (dsda_Flag(dsda_arg_coop_spawns)) {
-    sprintf(buf, "-coop_spawns ");
+    snprintf(buf, sizeof(buf), "-coop_spawns ");
     dsda_StringCat(&files, buf);
   }
 
   // for recording multiple episodes in one demo
   if (dsda_Flag(dsda_arg_chain_episodes)) {
-    sprintf(buf, "-chain_episodes ");
+    snprintf(buf, sizeof(buf), "-chain_episodes ");
     dsda_StringCat(&files, buf);
   }
 
   arg = dsda_Arg(dsda_arg_emulate);
   if (arg->found) {
-    sprintf(buf, "-emulate %s", arg->value.v_string);
+    snprintf(buf, sizeof(buf), "-emulate %s", arg->value.v_string);
     dsda_StringCat(&files, buf);
   }
 
   // doom 1.2 does not store these params in header
   if (compatibility_level == doom_12_compatibility) {
     if (dsda_Flag(dsda_arg_respawn)) {
-      sprintf(buf, "-respawn ");
+      snprintf(buf, sizeof(buf), "-respawn ");
       dsda_StringCat(&files, buf);
     }
 
     if (dsda_Flag(dsda_arg_fast)) {
-      sprintf(buf, "-fast ");
+      snprintf(buf, sizeof(buf), "-fast ");
       dsda_StringCat(&files, buf);
     }
 
     if (dsda_Flag(dsda_arg_nomonsters)) {
-      sprintf(buf, "-nomonsters ");
+      snprintf(buf, sizeof(buf), "-nomonsters ");
       dsda_StringCat(&files, buf);
     }
   }
 
   if (spechit_baseaddr != 0 && spechit_baseaddr != DEFAULT_SPECHIT_MAGIC) {
-    sprintf(buf, "-spechit %d ", spechit_baseaddr);
+    snprintf(buf, sizeof(buf), "-spechit %d ", spechit_baseaddr);
     dsda_StringCat(&files, buf);
   }
 
@@ -367,7 +367,7 @@ static void DemoEx_AddParams(wadtbl_t* wadtbl) {
     overrun_list_t overflow;
     for (overflow = 0; overflow < OVERFLOW_MAX; overflow++) {
       if (overflows[overflow].happened) {
-        sprintf(buf, "-set %s=%d ", overflow_cfgname[overflow], overflows[overflow].emulate);
+        snprintf(buf, sizeof(buf), "-set %s=%d ", overflow_cfgname[overflow], overflows[overflow].emulate);
         dsda_StringCat(&files, buf);
       }
     }
@@ -451,7 +451,7 @@ static void DemoEx_GetFeatures(const wadinfo_t* header) {
 static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   dsda_cksum_t cksum;
   char* description;
-  byte* buffer;
+  char* buffer;
   size_t buffer_length;
   byte *features;
   char current_feature[3];
@@ -475,7 +475,7 @@ static void DemoEx_AddFeatures(wadtbl_t* wadtbl) {
   strcat(buffer, "-");
   strcat(buffer, cksum.string);
 
-  AddPWADTableLump(wadtbl, DEMOEX_FEATURE_LUMPNAME, buffer, buffer_length);
+  AddPWADTableLump(wadtbl, DEMOEX_FEATURE_LUMPNAME, (const byte*)buffer, buffer_length);
 
   Z_Free(buffer);
   Z_Free(description);

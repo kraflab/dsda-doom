@@ -246,6 +246,7 @@ enum {
   MIF_PLAYER_DAMAGED_BARREL = 8,
   MIF_SPAWNED_BY_ICON = 16,
   MIF_FAKE = 32, // Not a real thing, transient (e.g., for cheats)
+  MIF_LINEDONE              = 0x00000040, // Object has activated W1 or S1 linedef via DEH frame
 };
 
 // heretic

@@ -71,12 +71,15 @@ void S_StartMobjSound(mobj_t *mobj, int sfx_id);
 void S_LoopMobjSound(mobj_t *mobj, int sfx_id, int timeout);
 
 void S_StartVoidSound(int sfx_id);
+void S_StartImportantVoidSound(int sfx_id);
 void S_LoopVoidSound(int sfx_id, int timeout);
+
+void S_StartOptionalSound(int sfx_id, int fallback_sfx_id, dboolean important);
 
 void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id);
 
 // Will start a sound at a given volume.
-void S_StartSoundAtVolume(void *origin, int sound_id, int volume, int loop_timeout);
+void S_StartSoundAtVolume(void *origin, int sound_id, int volume, dboolean important, int loop_timeout);
 
 // killough 4/25/98: mask used to indicate sound origin is player item pickup
 #define PICKUP_SOUND (0x8000)
@@ -93,8 +96,8 @@ void S_UnlinkSound(void *origin);
 void S_StartMusic(int music_id);
 
 // Start music using <music_id> from sounds.h, and set whether looping
-void S_ChangeMusic(int music_id, int looping);
-void S_ChangeMusInfoMusic(int lumpnum, int looping);
+void S_ChangeMusic(int music_id, dboolean looping, dboolean force);
+void S_ChangeMusInfoMusic(int lumpnum, dboolean looping, dboolean force);
 dboolean S_ChangeMusicByName(const char *name, dboolean looping);
 void S_RestartMusic(void);
 

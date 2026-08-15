@@ -386,6 +386,22 @@ typedef enum {
 
   //e6y
   sfx_secret,
+
+  // Optional menu/intermission sounds
+  sfx_mnuopn, // swtchn
+  sfx_mnucls, // swtchx
+  sfx_mnuact, // pistol
+  sfx_mnubak,
+  sfx_mnumov, // pstop
+  sfx_mnusli, // stnmov
+  sfx_mnusel, // itemup
+  sfx_mnuerr, // oof
+  sfx_inttic, // pistol
+  sfx_inttot, // barex
+  sfx_intnex, // sgcock
+  sfx_intnet, // pldeth
+  sfx_intdms, // slop
+
   // Everything from here to 500 is reserved
 
   /* Free sound effect slots for DEHEXTRA. Offset agreed upon with Eternity devs. -SH */

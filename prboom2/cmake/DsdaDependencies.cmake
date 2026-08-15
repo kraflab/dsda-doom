@@ -1,16 +1,8 @@
 include_guard()
 
 if(STRICT_FIND)
-  set(dsda_strict_keyword)
-  if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.1)
-    set(CMAKE_FIND_REQUIRED ON)
-  else()
-    set(dsda_strict_keyword REQUIRED)
-  endif()
+  set(dsda_strict_keyword REQUIRED)
 endif()
-
-# TODO: Move away from including this module this way
-include(PkgConfigHelper)
 
 add_library(dsda_dependencies INTERFACE IMPORTED)
 add_library(dsda::dependencies ALIAS dsda_dependencies)
@@ -33,6 +25,11 @@ find_package(SDL2_mixer REQUIRED)
 find_package(SndFile 1.0.29 REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(libzip REQUIRED)
+
+# ZLIB 1.3.2 static now requires explicit ZLIBSTATIC
+if(NOT TARGET ZLIB::ZLIB AND TARGET ZLIB::ZLIBSTATIC)
+  add_library(ZLIB::ZLIB ALIAS ZLIB::ZLIBSTATIC)
+endif()
 
 if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
    set(HAVE_SNDFILE_MPEG TRUE)
@@ -67,7 +64,7 @@ if(WITH_XMP)
 endif()
 
 if(WITH_VORBISFILE)
-  find_package(Vorbis COMPONENTS File ${dsda_strict_keyword})
+  find_package(Vorbis ${dsda_strict_keyword})
   if(Vorbis_File_FOUND)
     set(HAVE_LIBVORBISFILE TRUE)
   endif()

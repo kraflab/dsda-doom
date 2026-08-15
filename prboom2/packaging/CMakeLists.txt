@@ -21,4 +21,24 @@ elseif(LINUX OR APPLE)
   set(CPACK_LICENSE_DIR "${DSDA_INSTALL_COPYRIGHT_DIR}")
 endif()
 
+set(target_arch ${CMAKE_SYSTEM_PROCESSOR})
+if(CMAKE_GENERATOR MATCHES "Visual Studio")
+  string(TOLOWER "${CMAKE_VS_PLATFORM_NAME}" target_arch)
+  string(REPLACE "win32" "x86" target_arch "${target_arch}")
+elseif(CMAKE_OSX_ARCHITECTURES)
+  list(JOIN CMAKE_OSX_ARCHITECTURES "-" target_arch)
+endif()
+
+# Lets assume that VCPKG is only used on mac by our CI
+if(APPLE AND (VCPKG_LIBRARY_LINKAGE STREQUAL "static"))
+  string(REPLACE "arm64" "uni" target_arch "${target_arch}")
+  set(CPACK_VCPKG_LIBRARY_LINKAGE "${VCPKG_LIBRARY_LINKAGE}")
+endif()
+
+string(TOLOWER "${CMAKE_SYSTEM_NAME}" platform_name)
+string(REPLACE "windows" "win" platform_name "${platform_name}")
+string(REPLACE "darwin" "mac" platform_name "${platform_name}")
+
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${PROJECT_VERSION}-${platform_name}-${target_arch}")
+
 include(CPack)

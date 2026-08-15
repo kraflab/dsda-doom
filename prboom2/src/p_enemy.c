@@ -462,6 +462,10 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
       if (P_UseSpecialLine(actor, spechit[numspechit], 0, false))
         good |= spechit[numspechit] == blockline ? 1 : 2;
 
+    // There are checks elsewhere for numspechit == 0, so we don't want to
+    // leave numspechit == -1.
+    numspechit = 0;
+
     if (raven) return good > 0;
 
     /* cph - compatibility maze here
@@ -1119,7 +1123,7 @@ void A_KeenDie(mobj_t* mo)
           return;                           // other Keen not dead
       }
 
-  junk.tag = 666;
+  junk.special_args[0] = 666;
   EV_DoDoor(&junk,openDoor);
 }
 
@@ -2725,14 +2729,14 @@ void A_BossDeath(mobj_t *mo)
     {
       if (mo->flags2 & MF2_MAP07BOSS1)
       {
-        junk.tag = 666;
+        junk.special_args[0] = 666;
         EV_DoFloor(&junk,lowerFloorToLowest);
         return;
       }
 
       if (mo->flags2 & MF2_MAP07BOSS2)
       {
-        junk.tag = 667;
+        junk.special_args[0] = 667;
         EV_DoFloor(&junk,raiseToTexture);
         return;
       }
@@ -2743,7 +2747,7 @@ void A_BossDeath(mobj_t *mo)
     switch(gameepisode)
     {
       case 1:
-        junk.tag = 666;
+        junk.special_args[0] = 666;
         EV_DoFloor(&junk, lowerFloorToLowest);
         return;
         break;
@@ -2752,13 +2756,13 @@ void A_BossDeath(mobj_t *mo)
         switch(gamemap)
         {
           case 6:
-            junk.tag = 666;
+            junk.special_args[0] = 666;
             EV_DoDoor(&junk, blazeOpen);
             return;
             break;
 
           case 8:
-            junk.tag = 666;
+            junk.special_args[0] = 666;
             EV_DoFloor(&junk, lowerFloorToLowest);
             return;
             break;
@@ -3160,26 +3164,28 @@ void A_RandomJump(mobj_t *mo)
 
 void A_LineEffect(mobj_t *mo)
 {
-  static line_t junk;
-  player_t player;
-  player_t *oldplayer;
-
   if (compatibility_level < lxdoom_1_compatibility &&
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  junk = *lines;
-  oldplayer = mo->player;
-  mo->player = &player;
-  player.health = 100;
-  junk.special = (short)mo->state->misc1;
-  if (!junk.special)
-    return;
-  junk.tag = (short)mo->state->misc2;
-  if (!P_UseSpecialLine(mo, &junk, 0, false))
-    map_format.cross_special_line(&junk, 0, mo, false);
-  mo->state->misc1 = junk.special;
-  mo->player = oldplayer;
+  if (!(mo->intflags & MIF_LINEDONE)) // Unless already used up
+  {
+    line_t junk = *lines;                                   // Fake linedef set to 1st
+    if ((junk.special = (short)mo->state->misc1))           // Linedef type
+    {
+      // [FG] made static
+      static player_t player;                               // Remember player status
+      player_t *oldplayer = mo->player;                     // Remember player status
+      mo->player = &player;                                 // Fake player
+      player.health = 100;                                  // Alive player
+      junk.special_args[0] = (short)mo->state->misc2;       // Sector tag for linedef
+      if (!P_UseSpecialLine(mo, &junk, 0, false))           // Try using it
+        map_format.cross_special_line(&junk, 0, mo, false); // Try crossing it
+      if (!junk.special)                                    // If type cleared,
+        mo->intflags |= MIF_LINEDONE;                       // no more for this thing
+      mo->player = oldplayer;                               // Restore player status
+    }
+  }
 }
 
 //
@@ -5035,7 +5041,7 @@ void Heretic_A_BossDeath(mobj_t * actor)
     {                           // Kill any remaining monsters
         P_Massacre();
     }
-    dummyLine.tag = 666;
+    dummyLine.special_args[0] = 666;
     EV_DoFloor(&dummyLine, lowerFloor);
 }
 

@@ -246,12 +246,13 @@ void dsda_RefreshPistolStart(void)
 {
   dboolean pistol_start_conflict = dsda_IntConfig(dsda_config_always_pistol_start) && !dsda_IntConfig(dsda_config_pistol_start);
 
+  // Fix pistolstart option "conflict"
   if (allow_incompatibility || in_game)
     if (pistol_start_conflict)
-    {
       dsda_UpdateIntConfig(dsda_config_always_pistol_start, false, true);
-      dsda_ResetGameModifiers();
-    }
+
+  // Refresh pistolstart status
+  dsda_ResetGameModifiers();
 }
 
 // if "Always Pistol Start" is enabled, enable "Pistol Start" (avoid impossible condition)
@@ -259,12 +260,13 @@ void dsda_RefreshAlwaysPistolStart(void)
 {
   dboolean pistol_start_conflict = dsda_IntConfig(dsda_config_always_pistol_start) && !dsda_IntConfig(dsda_config_pistol_start);
 
+  // Fix pistolstart option "conflict"
   if (allow_incompatibility || in_game)
     if (pistol_start_conflict)
-    {
       dsda_UpdateIntConfig(dsda_config_pistol_start, true, true);
-      dsda_ResetGameModifiers();
-    }
+
+  // Refresh pistolstart status
+  dsda_ResetGameModifiers();
 }
 
 // During demo recording/playback only use args, else use cfgs

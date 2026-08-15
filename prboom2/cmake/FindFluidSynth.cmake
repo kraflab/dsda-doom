@@ -39,25 +39,31 @@ The following cache variables may also be set:
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_FLUIDSYNTH QUIET fluidsynth)
+pkg_check_modules(PC_fluidsynth IMPORTED_TARGET fluidsynth)
+
+if(PC_fluidsynth_FOUND)
+  if(NOT TARGET FluidSynth::libfluidsynth)
+    add_library(FluidSynth::libfluidsynth ALIAS PkgConfig::PC_fluidsynth)
+  endif()
+  set(FluidSynth_FOUND TRUE)
+  set(FluidSynth_VERSION ${PC_fluidsynth_VERSION})
+  return()
+endif()
 
 find_path(
   FluidSynth_INCLUDE_DIR
   NAMES fluidsynth.h
-  HINTS "${PC_FLUIDSYNTH_INCLUDEDIR}"
 )
 
 find_file(
   FluidSynth_DLL
   NAMES fluidsynth.dll libfluidsynth.dll libfluidsynth-3.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_FLUIDSYNTH_PREFIX}"
 )
 
 find_library(
   FluidSynth_LIBRARY
   NAMES fluidsynth libfluidsynth fluidsynth-3 libfluidsynth-3
-  HINTS "${PC_FLUIDSYNTH_LIBDIR}"
 )
 
 if(FluidSynth_DLL OR FluidSynth_LIBRARY MATCHES ".so|.dylib")
@@ -65,8 +71,6 @@ if(FluidSynth_DLL OR FluidSynth_LIBRARY MATCHES ".so|.dylib")
 else()
   set(_fluidsynth_library_type STATIC)
 endif()
-
-get_flags_from_pkg_config("${_fluidsynth_library_type}" "PC_FLUIDSYNTH" "_fluidsynth")
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
@@ -79,10 +83,6 @@ if(FluidSynth_FOUND)
     set_target_properties(
       FluidSynth::libfluidsynth
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FluidSynth_INCLUDE_DIR}"
-                 INTERFACE_COMPILE_OPTIONS "${_fluidsynth_compile_options}"
-                 INTERFACE_LINK_LIBRARIES "${_fluidsynth_link_libraries}"
-                 INTERFACE_LINK_DIRECTORIES "${_fluidsynth_link_directories}"
-                 INTERFACE_LINK_OPTIONS "${_fluidsynth_link_options}"
     )
   endif()
 

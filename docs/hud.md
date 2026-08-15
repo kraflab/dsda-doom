@@ -101,7 +101,7 @@ Unless otherwise specified, argument values are integers. For toggles, a 1 means
   - Clear the text in the console with `free_text.clear`
   - Use `\n` to create a new line
   - Use `\cXY` to change to color `XY`
-- `map_totals`: shows the kills / secrets / items on the current map
+- `map_totals`: shows the kills / items / secrets on the current map
   - Uses the message font with word labels
   - Supports 4 arguments: `show_kills show_items show_secrets hide_totals`
   - `show_kills`: shows kills in the component

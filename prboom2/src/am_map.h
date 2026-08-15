@@ -74,6 +74,7 @@ typedef struct
   int plyr[8];
   int trail_1;
   int trail_2;
+  int pickup;
 } mapcolor_t;
 
 typedef struct map_point_s

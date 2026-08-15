@@ -87,6 +87,8 @@ const rpatch_t *R_PatchByNum(int id);
 
 const rpatch_t *R_TextureCompositePatchByNum(int id);
 
+dboolean R_IsPatchLump(int lumpnum);
+
 // Size query funcs
 int R_NumPatchWidth(int lump) ;
 int R_NumPatchHeight(int lump);

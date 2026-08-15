@@ -24,6 +24,16 @@ extern "C" {
 
 #include <inttypes.h>
 
+typedef enum {
+  UDMF_NONE,
+  UDMF_DOOM,
+  UDMF_HERETIC,
+  UDMF_HEXEN,
+  UDMF_DSDA,
+} udmf_namespace_t;
+
+extern udmf_namespace_t udmf_namespace;
+
 #define UDMF_ML_BLOCKING           0x0000000000000001ull
 #define UDMF_ML_BLOCKMONSTERS      0x0000000000000002ull
 #define UDMF_ML_TWOSIDED           0x0000000000000004ull

@@ -139,7 +139,7 @@ dboolean dsda_StartQueuedMusic(void) {
   if (music_queue == -1)
     return false;
 
-  S_ChangeMusInfoMusic(music_queue, true);
+  S_ChangeMusInfoMusic(music_queue, true, false);
   music_queue = -1;
 
   return true;

@@ -538,6 +538,14 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       dsda_AddPlayerMessage(s_GOTARMBONUS, player);
       break;
 
+    case SPR_BON3:      // killough 7/11/98: evil sceptre from beta version
+      dsda_AddPlayerMessage(s_BETA_BONUS3, player);
+      break;
+
+    case SPR_BON4:      // killough 7/11/98: unholy bible from beta version
+      dsda_AddPlayerMessage(s_BETA_BONUS4, player);
+      break;
+
     case SPR_SOUL:
       player->health += P_PlayerHealthIncrease(soul_health);
       if (player->health > max_soul)

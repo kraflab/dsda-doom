@@ -106,9 +106,16 @@ int       *texturetranslation;
 //
 
 const byte *R_GetTextureColumn(const rpatch_t *texpatch, int col) {
+  const int width = texpatch->width;
+  const unsigned int mask = texpatch->widthmask;
+
   while (col < 0)
-    col += texpatch->width;
-  col &= texpatch->widthmask;
+    col += width;
+
+  if (mask + 1 == width)
+    col &= mask;
+  else
+    col %= width;
 
   return texpatch->columns[col].pixels;
 }
@@ -281,19 +288,33 @@ static void R_InitTextures (void)
       mpatch = mtexture->patches;
       patch = texture->patches;
 
-      for (j=0 ; j<texture->patchcount ; j++, mpatch++, patch++)
+      for (j=0 ; j<texture->patchcount ; j++, mpatch++)
         {
+          int patchindex = LittleShort(mpatch->patch);
+
+          // Check if patch is in PNAMES bounds
+          if (patchindex < 0 || patchindex >= nummappatches)
+            {
+              lprintf(LO_WARN, "\nR_InitTextures: Texture %.8s references patch index %d outside PNAMES table (%d entries)",
+                      texture->name, patchindex, nummappatches);
+              continue;
+            }
+
           patch->originx = LittleShort(mpatch->originx);
           patch->originy = LittleShort(mpatch->originy);
-          patch->patch = patchlookup[LittleShort(mpatch->patch)];
+          patch->patch = patchlookup[patchindex];
           if (patch->patch == -1)
             {
               //jff 8/3/98 use logical output routine
               lprintf(LO_ERROR,"\nR_InitTextures: Missing patch %d in texture %.8s",
-                     LittleShort(mpatch->patch), texture->name); // killough 4/17/98
+                     patchindex, texture->name); // killough 4/17/98
               ++errors;
             }
+
+          ++patch;
         }
+
+      texture->patchcount = (short)(patch - texture->patches);
 
       for (j=1; j*2 <= texture->width; j<<=1)
         ;

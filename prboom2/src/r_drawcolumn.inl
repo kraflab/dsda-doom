@@ -61,13 +61,18 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
 #endif
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
+  fuzz_cutoff = false;
+
   // Adjust borders. Low...
   if (!dcvars->yl)
     dcvars->yl = 1;
 
   // .. and high.
   if (dcvars->yh == viewheight-1)
+  {
     dcvars->yh = viewheight - 2;
+    fuzz_cutoff = true;
+  }
 #endif
 
   // leban 1/17/99:

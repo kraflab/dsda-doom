@@ -487,11 +487,11 @@ int EV_DoPlat
   switch(type)
   {
     case perpetualRaise:
-      P_ActivateInStasis(line->tag);
+      P_ActivateInStasis(line->special_args[0]);
       break;
 
     case toggleUpDn:
-      P_ActivateInStasis(line->tag);
+      P_ActivateInStasis(line->special_args[0]);
       rtn=1;
       break;
 
@@ -500,7 +500,7 @@ int EV_DoPlat
   }
 
   // act on all sectors tagged the same as the activating linedef
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sec = &sectors[*id_p];
 
@@ -519,7 +519,7 @@ int EV_DoPlat
     plat->sector->floordata = plat; //jff 2/23/98 multiple thinkers
     plat->thinker.function = T_PlatRaise;
     plat->crush = NO_CRUSH;
-    plat->tag = line->tag;
+    plat->tag = line->special_args[0];
 
     //jff 1/26/98 Avoid raise plat bouncing a head off a ceiling and then
     //going down forever -- default low to plat height when triggered
@@ -685,7 +685,7 @@ int EV_StopPlat(line_t* line)
   for (pl=activeplats; pl; pl=pl->next)  // search the active plats
   {
     plat_t *plat = pl->plat;             // for one with the tag not in stasis
-    if (plat->status != in_stasis && plat->tag == line->tag)
+    if (plat->status != in_stasis && plat->tag == line->special_args[0])
     {
       plat->oldstatus = plat->status;    // put it in stasis
       plat->status = in_stasis;
@@ -811,6 +811,8 @@ void T_HexenPlatRaise(plat_t * plat)
                 SN_StartSequence((mobj_t *) & plat->sector->soundorg,
                                  SEQ_PLATFORM + plat->sector->seqType);
             }
+        default:
+            break;
     }
 }
 
@@ -887,6 +889,8 @@ int EV_DoHexenPlat(line_t * line, byte * args, plattype_e type, int amount)
                     plat->high = sec->floorheight;
                 plat->wait = args[2];
                 plat->status = P_Random(pr_hexen) & 1;
+                break;
+            default:
                 break;
         }
         P_AddActivePlat(plat);

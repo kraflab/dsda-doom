@@ -1058,9 +1058,9 @@ static int music_player_was_init[NUM_MUS_PLAYERS];
 // order in which players are to be tried
 char music_player_order[NUM_MUS_PLAYERS][200] =
 {
+  PLAYER_XMP,
   PLAYER_VORBIS,
   PLAYER_MAD,
-  PLAYER_XMP,
   PLAYER_FLUIDSYNTH,
   PLAYER_OPL,
   PLAYER_PORTMIDI,

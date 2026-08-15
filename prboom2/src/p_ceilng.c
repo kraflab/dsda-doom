@@ -443,13 +443,13 @@ int EV_DoCeiling
     case silentCrushAndRaise:
     case crushAndRaise:
       //jff 4/5/98 return if activated
-      rtn = P_ActivateInStasisCeiling(line->tag); // heretic_note: rtn not set in heretic
+      rtn = P_ActivateInStasisCeiling(line->special_args[0]); // heretic_note: rtn not set in heretic
     default:
       break;
   }
 
   // affects all sectors with the same tag as the linedef
-  FIND_SECTORS(id_p, line->tag)
+  FIND_SECTORS(id_p, line->special_args[0])
   {
     sec = &sectors[*id_p];
 
@@ -639,7 +639,7 @@ int EV_CeilingCrushStop(line_t* line)
   for (cl=activeceilings; cl; cl=cl->next)
   {
     ceiling_t *ceiling = cl->ceiling;
-    if (ceiling->direction != 0 && ceiling->tag == line->tag)
+    if (ceiling->direction != 0 && ceiling->tag == line->special_args[0])
     {
       ceiling->olddirection = ceiling->direction;
       ceiling->direction = 0;

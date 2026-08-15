@@ -23,6 +23,7 @@
 #include "g_game.h"
 #include "gl_struct.h"
 #include "lprintf.h"
+#include "i_capture.h"
 #include "i_main.h"
 #include "i_video.h"
 
@@ -151,12 +152,12 @@ dboolean dsda_StrictMode(void) {
 
 dboolean dsda_MuteSfx(void) {
   return dsda_IntConfig(dsda_config_mute_sfx) ||
-         (!I_WindowFocused() && dsda_IntConfig(dsda_config_mute_unfocused_window));
+         (!I_WindowFocused() && dsda_IntConfig(dsda_config_mute_unfocused_window) && !capturing_video);
 }
 
 dboolean dsda_MuteMusic(void) {
   return dsda_IntConfig(dsda_config_mute_music) ||
-         (!I_WindowFocused() && dsda_IntConfig(dsda_config_mute_unfocused_window));
+         (!I_WindowFocused() && dsda_IntConfig(dsda_config_mute_unfocused_window) && !capturing_video);
 }
 
 dboolean dsda_ProcessCheatCodes(void) {

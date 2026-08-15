@@ -62,10 +62,10 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
 
   killcolor = (fullkillcount >= max_kill_requirement ? dsda_TextColor(dsda_tc_map_totals_max) :
                                                        dsda_TextColor(dsda_tc_map_totals_value));
-  secretcolor = (fullsecretcount >= totalsecret ? dsda_TextColor(dsda_tc_map_totals_max) :
-                                                  dsda_TextColor(dsda_tc_map_totals_value));
   itemcolor = (fullitemcount >= totalitems ? dsda_TextColor(dsda_tc_map_totals_max) :
                                              dsda_TextColor(dsda_tc_map_totals_value));
+  secretcolor = (fullsecretcount >= totalsecret ? dsda_TextColor(dsda_tc_map_totals_max) :
+                                                  dsda_TextColor(dsda_tc_map_totals_value));
 
   if (local->include_kills) {
     if (!local->hide_totals || fullkillcount >= max_kill_requirement)
@@ -86,41 +86,41 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
       );
   }
 
-  if (local->include_secrets) {
-    if (!local->hide_totals || fullsecretcount >= totalsecret)
-      length += snprintf(
-        str + length,
-        max_size - length,
-        "%sSecrets: %s%d/%d\n",
-        dsda_TextColor(dsda_tc_map_totals_label),
-        secretcolor, fullsecretcount, totalsecret
-      );
-    else
-      length += snprintf(
-        str + length,
-        max_size - length,
-        "%sSecrets: %s%d\n",
-        dsda_TextColor(dsda_tc_map_totals_label),
-        secretcolor, fullsecretcount
-      );
-  }
-
   if (local->include_items) {
     if (!local->hide_totals || fullitemcount >= totalitems)
-      snprintf(
+      length += snprintf(
         str + length,
         max_size - length,
-        "%sItems: %s%d/%d",
+        "%sItems: %s%d/%d\n",
         dsda_TextColor(dsda_tc_map_totals_label),
         itemcolor, fullitemcount, totalitems
       );
     else
+      length += snprintf(
+        str + length,
+        max_size - length,
+        "%sItems: %s%d\n",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        itemcolor, fullitemcount
+      );
+  }
+
+  if (local->include_secrets) {
+    if (!local->hide_totals || fullsecretcount >= totalsecret)
       snprintf(
         str + length,
         max_size - length,
-        "%sItems: %s%d",
+        "%sSecrets: %s%d/%d",
         dsda_TextColor(dsda_tc_map_totals_label),
-        itemcolor, fullitemcount
+        secretcolor, fullsecretcount, totalsecret
+      );
+    else
+      snprintf(
+        str + length,
+        max_size - length,
+        "%sSecrets: %s%d",
+        dsda_TextColor(dsda_tc_map_totals_label),
+        secretcolor, fullsecretcount
       );
   }
 }

@@ -45,27 +45,33 @@ The following cache variables may also be set:
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_SDL2_MIXER QUIET SDL2_mixer)
+pkg_check_modules(PC_SDL2_mixer IMPORTED_TARGET SDL2_mixer)
+
+if(PC_SDL2_mixer_FOUND)
+  if(NOT TARGET SDL2_mixer::SDL2_mixer)
+    add_library(SDL2_mixer::SDL2_mixer ALIAS PkgConfig::PC_SDL2_mixer)
+  endif()
+  set(SDL2_mixer_FOUND TRUE)
+  set(SDL2_mixer_VERSION ${PC_SDL2_mixer_VERSION})
+  return()
+endif()
 
 find_path(
   SDL2_mixer_INCLUDE_DIR
   NAMES SDL_mixer.h
   PATH_SUFFIXES SDL2
-  HINTS "${PC_SDL2_MIXER_INCLUDEDIR}"
 )
 
 find_file(
   SDL2_mixer_DLL_RELEASE
   NAMES SDL2_mixer.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_SDL2_MIXER_PREFIX}"
 )
 
 find_file(
   SDL2_mixer_DLL_DEBUG
   NAMES SDL2_mixerd.dll
   PATH_SUFFIXES bin
-  HINTS "${PC_SDL2_MIXER_PREFIX}"
 )
 
 include(SelectDllConfigurations)
@@ -74,13 +80,11 @@ select_dll_configurations(SDL2_mixer)
 find_library(
   SDL2_mixer_LIBRARY_RELEASE
   NAMES SDL2_mixer SDL2_mixer-static
-  HINTS "${PC_SDL2_MIXER_LIBDIR}"
 )
 
 find_library(
   SDL2_mixer_LIBRARY_DEBUG
   NAMES SDL2_mixerd SDL2_mixer-staticd
-  HINTS "${PC_SDL2_MIXER_LIBDIR}"
 )
 
 include(SelectLibraryConfigurations)
@@ -92,14 +96,10 @@ else()
   set(_sdl2_mixer_library_type STATIC)
 endif()
 
-get_flags_from_pkg_config("${_sdl2_mixer_library_type}" "PC_SDL2_MIXER" "_sdl2_mixer")
-
-if(_SDL2_mixer_library_type STREQUAL "STATIC" AND NOT PC_SDL2_MIXER_FOUND)
+if(_SDL2_mixer_library_type STREQUAL "STATIC")
   set(SDL2_mixer_LINK_LIBRARIES "" CACHE STRING "Additional libraries to link to SDL2_mixer.")
   set(SDL2_mixer_LINK_DIRECTORIES "" CACHE PATH "Additional directories to search libraries in for SDL2_mixer.")
-  set(_sdl2_mixer_link_libraries ${SDL2_mixer_LINK_LIBRARIES})
-  set(_sdl2_mixer_link_directories ${SDL2_mixer_LINK_DIRECTORIES})
-  if(NOT _sdl2_mixer_link_libraries)
+  if(NOT SDL2_mixer_LINK_LIBRARIES)
     message(WARNING
       "pkg-config is unavailable and SDL2_mixer seems to be static, link failures are to be expected.\n"
       "Set `SDL2_mixer_LINK_LIBRARIES` to a list of libraries SDL2_mixer depends on.\n"
@@ -124,10 +124,8 @@ if(SDL2_mixer_FOUND)
     set_target_properties(
       ${_sdl2_mixer_target_name}
       PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${SDL2_mixer_INCLUDE_DIR}"
-                 INTERFACE_COMPILE_OPTIONS "${_sdl2_mixer_compile_options}"
-                 INTERFACE_LINK_LIBRARIES "${_sdl2_mixer_link_libraries}"
-                 INTERFACE_LINK_DIRECTORIES "${_sdl2_mixer_link_directories}"
-                 INTERFACE_LINK_OPTIONS "${_sdl2_mixer_link_options}"
+                 INTERFACE_LINK_LIBRARIES "${SDL2_mixer_LINK_LIBRARIES}"
+                 INTERFACE_LINK_DIRECTORIES "${SDL2_mixer_LINK_DIRECTORIES}"
     )
   endif()
 

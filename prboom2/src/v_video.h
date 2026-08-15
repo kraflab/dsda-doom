@@ -100,7 +100,9 @@ typedef enum
   CR_DARKEN_BLACK,
   CR_DARKEN_PURPLE,
   CR_DARKEN_WHITE,
-  CR_BLOOD,
+  CR_BRIGHT,
+  CR_BRIGHT_LIMIT = CR_BRIGHT + CR_HUD_LIMIT,
+  CR_BLOOD = CR_BRIGHT_LIMIT,
   CR_BLOOD_GRAY = CR_BLOOD,
   CR_BLOOD_GREEN,
   CR_BLOOD_BLUE,
@@ -146,8 +148,7 @@ extern int          usegamma;
 // The available bit-depth modes
 typedef enum {
   VID_MODESW,
-  VID_MODEGL,
-  VID_MODEMAX
+  VID_MODEGL
 } video_mode_t;
 
 void V_InitMode(video_mode_t mode);

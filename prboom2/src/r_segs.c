@@ -54,6 +54,8 @@
 #include "lprintf.h"
 
 #include "dsda/mapinfo.h"
+#include "dsda/line_special.h"
+#include "dsda/map_format.h"
 #include "dsda/render_stats.h"
 
 // OPTIMIZE: closed two sided lines as single sided
@@ -206,8 +208,8 @@ void R_FixWiggle(sector_t *sec)
 
 static fixed_t R_ScaleFromGlobalAngle(angle_t visangle)
 {
-  int anglea = ANG90 + (visangle - viewangle);
-  int angleb = ANG90 + (visangle - rw_normalangle);
+  angle_t anglea = ANG90 + (visangle - viewangle);
+  angle_t angleb = ANG90 + (visangle - rw_normalangle);
   int den = FixedMul(rw_distance, finesine[anglea >> ANGLETOFINESHIFT]);
   // proff 11/06/98: Changed for high-res
   fixed_t num = FixedMul(projectiony, finesine[angleb >> ANGLETOFINESHIFT]);
@@ -927,6 +929,12 @@ void R_StoreWallRange(const int start, const int stop)
       ds_p->maskedtexturecol = maskedtexturecol = lastopening - rw_x;
       lastopening += rw_stopx - rw_x;
     }
+  }
+
+  if (map_format.zdoom && curline->linedef->special == zl_line_horizon)
+  {
+    rw_scale = ds_p->scale1 = ds_p->scale2 = rw_scalestep = 0;
+    midtexture = toptexture = bottomtexture = maskedtexture = 0;
   }
 
   // calculate rw_offset (only needed for textured lines)

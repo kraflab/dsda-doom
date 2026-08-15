@@ -25,18 +25,25 @@ The following cache variables may also be set:
 #]=======================================================================]
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_mad QUIET mad)
+pkg_check_modules(PC_mad IMPORTED_TARGET mad)
+
+if(PC_mad_FOUND)
+  if(NOT TARGET mad::mad)
+    add_library(mad::mad ALIAS PkgConfig::PC_mad)
+  endif()
+  set(mad_FOUND TRUE)
+  set(mad_VERSION ${PC_mad_VERSION})
+  return()
+endif()
 
 find_path(
   mad_INCLUDE_DIR
   NAMES mad.h
-  HINTS "${PC_mad_INCLUDEDIR}"
 )
 
 find_library(
   mad_LIBRARY
   NAMES mad mad-0
-  HINTS "${PC_mad_LIBDIR}"
 )
 
 include(FindPackageHandleStandardArgs)
