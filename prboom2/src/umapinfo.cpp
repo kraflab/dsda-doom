@@ -232,6 +232,12 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		            ? MapInfo_EndGameBunny
 		            : MapInfo_EndGameClear;
 	}
+	else if (!stricmp(pname, "enddemon"))
+	{
+		scanner.MustGetToken(TK_BoolConst);
+		if (scanner.boolean) strcpy(mape->endpic, "$DEMON");
+		else strcpy(mape->endpic, "-");
+	}
 	else if (!stricmp(pname, "endgame"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
