@@ -2028,11 +2028,11 @@ void WI_Ticker(void)
 
     if (muslump >= 0)
     {
-      S_ChangeMusInfoMusic(muslump, true, false);
+      S_ChangeMusInfoMusic(muslump, true);
     }
     else
     {
-      S_ChangeMusic(mnum, true, false);
+      S_ChangeMusic(mnum, true);
     }
   }
 

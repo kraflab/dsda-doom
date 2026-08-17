@@ -96,8 +96,8 @@ void S_UnlinkSound(void *origin);
 void S_StartMusic(int music_id);
 
 // Start music using <music_id> from sounds.h, and set whether looping
-void S_ChangeMusic(int music_id, dboolean looping, dboolean force);
-void S_ChangeMusInfoMusic(int lumpnum, dboolean looping, dboolean force);
+void S_ChangeMusic(int music_id, int looping);
+void S_ChangeMusInfoMusic(int lumpnum, int looping);
 dboolean S_ChangeMusicByName(const char *name, dboolean looping);
 void S_RestartMusic(void);
 

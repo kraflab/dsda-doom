@@ -290,12 +290,12 @@ void S_Start(void)
   if (musinfo.items[0] != -1)
   {
     if (!dsda_StartQueuedMusic())
-      S_ChangeMusInfoMusic(musinfo.items[0], true, false);
+      S_ChangeMusInfoMusic(musinfo.items[0], true);
   }
   else
   {
     if (!dsda_StartQueuedMusic())
-      S_ChangeMusic(mnum, true, false);
+      S_ChangeMusic(mnum, true);
   }
 }
 
@@ -333,7 +333,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean impor
     return;
 
   // killough 4/25/98
-  if (sfx_id == g_sfx_secret)
+  if (sfx_id == sfx_secret)
     params.sfx_class = sfx_class_secret;
   else if (important || sfx_id & PICKUP_SOUND || sfx_id == sfx_oof ||
       (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway))
@@ -651,7 +651,7 @@ void S_UpdateSounds(void)
 //
 void S_StartMusic(int m_id)
 {
-  S_ChangeMusic(m_id, false, false);
+  S_ChangeMusic(m_id, false);
 }
 
 dboolean S_ChangeMusicByName(const char *name, dboolean looping)
@@ -664,11 +664,11 @@ dboolean S_ChangeMusicByName(const char *name, dboolean looping)
     return false;
   }
 
-  S_ChangeMusInfoMusic(lump, looping, false);
+  S_ChangeMusInfoMusic(lump, looping);
   return true;
 }
 
-void S_ChangeMusic(int musicnum, dboolean looping, dboolean force)
+void S_ChangeMusic(int musicnum, int looping)
 {
   musicinfo_t *music;
 
@@ -685,9 +685,6 @@ void S_ChangeMusic(int musicnum, dboolean looping, dboolean force)
     I_Error("S_ChangeMusic: Bad music number %d", musicnum);
 
   music = &S_music[musicnum];
-
-  if (mus_playing == music && !force)
-      return;
 
   // shutdown old music
   S_StopMusic();
@@ -719,18 +716,18 @@ void S_RestartMusic(void)
 {
   if (musinfo.current_item != -1)
   {
-    S_ChangeMusInfoMusic(musinfo.current_item, true, true);
+    S_ChangeMusInfoMusic(musinfo.current_item, true);
   }
   else
   {
     if (musicnum_current > mus_None && musicnum_current < num_music)
     {
-      S_ChangeMusic(musicnum_current, true, true);
+      S_ChangeMusic(musicnum_current, true);
     }
   }
 }
 
-void S_ChangeMusInfoMusic(int lumpnum, dboolean looping, dboolean force)
+void S_ChangeMusInfoMusic(int lumpnum, int looping)
 {
   musicinfo_t *music;
 
@@ -748,10 +745,6 @@ void S_ChangeMusInfoMusic(int lumpnum, dboolean looping, dboolean force)
     return;
 
   music = &S_music[mus_musinfo];
-
-
-  if (music->lumpnum == lumpnum && !force)
-    return;
 
   // shutdown old music
   S_StopMusic();
@@ -1175,7 +1168,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   if (nosfxparm)
     return;
 
-  if (sound_id == heretic_sfx_None)
+  if (sound_id == sfx_None)
     return;
 
   if (origin == NULL)
@@ -1268,7 +1261,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   if (nosfxparm)
     return;
 
-  if (sound_id == heretic_sfx_None || volume == 0)
+  if (sound_id == sfx_None || volume == 0)
     return;
 
   if (origin == NULL)
@@ -1400,5 +1393,5 @@ void S_StartSongName(const char *songLump, dboolean loop)
         break;
     }
 
-    S_ChangeMusic(musicnum, loop, false);
+    S_ChangeMusic(musicnum, loop);
 }

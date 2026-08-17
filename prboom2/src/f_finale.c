@@ -106,11 +106,11 @@ void F_StartFinale (void)
 
   if (muslump >= 0)
   {
-    S_ChangeMusInfoMusic(muslump, true, false);
+    S_ChangeMusInfoMusic(muslump, true);
   }
   else
   {
-    S_ChangeMusic(mnum, true, false);
+    S_ChangeMusic(mnum, true);
   }
 
   // Okay - IWAD dependend stuff.
@@ -480,7 +480,7 @@ static void F_StartCastMusic(const char* music, dboolean loop_music)
   }
   else if (gamemode == commercial)
   {
-    S_ChangeMusic(mus_evil, loop_music, false);
+    S_ChangeMusic(mus_evil, loop_music);
   }
   else
   {
@@ -735,7 +735,7 @@ static void F_StartScrollMusic(const char* music, dboolean loop_music)
       lprintf(LO_WARN, "Finale scroll music not found: %s\n", music);
   }
   else if (W_LumpNameExists("D_BUNNY"))
-    S_ChangeMusic(mus_bunny, loop_music, false);
+    S_ChangeMusic(mus_bunny, loop_music);
   else {
     lprintf(LO_WARN, "Finale scroll music unspecified\n");
     S_StopMusic();

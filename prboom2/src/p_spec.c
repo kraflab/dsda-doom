@@ -1464,8 +1464,11 @@ void P_PlayerCollectSecret(player_t *player)
 
   if (dsda_IntConfig(dsda_config_hudadd_secretarea))
   {
-    int sfx_id = raven ? g_sfx_secret :
-                 I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
+    int sfx_id = heretic ? heretic_sfx_chat : hexen ? hexen_sfx_chat : sfx_itmbk;
+
+    if (I_GetSfxLumpNum(&S_sfx[sfx_secret]) != -1)
+      sfx_id = sfx_secret;
+
     SetCustomMessage(player - players, s_HUSTR_SECRETFOUND, 2 * TICRATE, sfx_id);
   }
 }
@@ -7718,7 +7721,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
       {
         if (!args[1] || (mo->player && mo->player->mo == mo))
         {
-          S_ChangeMusInfoMusic(args[0], args[2], false);
+          S_ChangeMusInfoMusic(args[0], args[2]);
           buttonSuccess = 1;
         }
       }
