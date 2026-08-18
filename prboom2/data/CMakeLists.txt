@@ -412,6 +412,18 @@ set(SPRITEP
     "18,27,sprites/pls2e0.ppm"
 )
 
+set(SPRITES
+    ${SPRITES}
+    sprites/bon3a0.ppm
+    sprites/bon4a0.ppm
+)
+
+set(SPRITEP
+    ${SPRITEP}
+    "5,51,sprites/bon3a0.ppm"
+    "22,27,sprites/bon4a0.ppm"
+)
+
 set(WAD_SRC
     ${PALETTE}
     ${LUMPS}
