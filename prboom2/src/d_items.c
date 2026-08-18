@@ -64,6 +64,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     1,
     0,
+    0,
     WPF_FLEEMELEE | WPF_AUTOSWITCHFROM | WPF_NOAUTOSWITCHTO
   },
   {
@@ -76,6 +77,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_PISTOLFLASH,
     1,
+    0,
     0,
     WPF_AUTOSWITCHFROM
   },
@@ -90,6 +92,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_SGUNFLASH1,
     1,
     0,
+    0,
     WPF_NOFLAG
   },
   {
@@ -102,6 +105,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_CHAINFLASH1,
     1,
+    0,
     0,
     WPF_NOFLAG
   },
@@ -116,6 +120,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_MISSILEFLASH1,
     1,
     0,
+    0,
     WPF_NOAUTOFIRE
   },
   {
@@ -128,6 +133,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_PLASMAFLASH1,
     1,
+    0,
     0,
     WPF_NOFLAG
   },
@@ -142,6 +148,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_BFGFLASH1,
     40,
     0,
+    0,
     WPF_NOAUTOFIRE
   },
   {
@@ -155,6 +162,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     1,
     0,
+    0,
     WPF_NOTHRUST | WPF_FLEEMELEE | WPF_NOAUTOSWITCHTO
   },
   {
@@ -167,6 +175,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_DSGUNFLASH1,
     2,
+    0,
     0,
     WPF_NOFLAG
   },
@@ -189,6 +198,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     0,
     0,
+    0,
     WPF_NOFLAG
   },
   {
@@ -200,6 +210,7 @@ weaponinfo_t doom_weaponinfo[NUMWEAPONS+2] =
     S_NULL,
     S_NULL,
     S_NULL,
+    0,
     0,
     0,
     WPF_NOFLAG
@@ -220,6 +231,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_STAFFATK1_1,             // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     0,                                 // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -232,6 +244,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_GOLDWANDATK1_1,          // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_GWND_AMMO_1,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -244,6 +257,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_CRBOWATK1_1,             // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_CBOW_AMMO_1,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -256,6 +270,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_BLASTERATK1_3,           // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_BLSR_AMMO_1,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -268,6 +283,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_HORNRODATK1_1,           // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_SKRD_AMMO_1,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -280,6 +296,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_PHOENIXATK1_1,           // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_PHRD_AMMO_1,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOAUTOFIRE
   },
@@ -292,6 +309,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_MACEATK1_2,              // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_MACE_AMMO_1,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -304,6 +322,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_GAUNTLETATK1_3,          // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     0,                                 // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOTHRUST
   },
@@ -316,6 +335,7 @@ weaponinfo_t wpnlev1info[NUMWEAPONS] = {
     HERETIC_S_BEAKATK1_1,              // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     0,                                 // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   }
@@ -331,6 +351,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_STAFFATK2_1,             // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     0,                                 // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -343,6 +364,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_GOLDWANDATK2_1,          // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_GWND_AMMO_2,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -355,6 +377,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_CRBOWATK2_1,             // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_CBOW_AMMO_2,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -367,6 +390,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_BLASTERATK2_3,           // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_BLSR_AMMO_2,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -379,6 +403,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_HORNRODATK2_1,           // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_SKRD_AMMO_2,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -391,6 +416,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_PHOENIXATK2_2,           // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_PHRD_AMMO_2,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOAUTOFIRE
   },
@@ -403,6 +429,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_MACEATK2_1,              // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     USE_MACE_AMMO_2,                   // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   },
@@ -415,6 +442,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_GAUNTLETATK2_3,          // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     0,                                 // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOTHRUST
   },
@@ -427,6 +455,7 @@ weaponinfo_t wpnlev2info[NUMWEAPONS] = {
     HERETIC_S_BEAKATK2_1,              // holdatkstate
     HERETIC_S_NULL,                    // flashstate
     0,                                 // ammopershot
+    0,                                 // recoil
     0,                                 // intflags
     WPF_NOFLAG
   }
@@ -445,6 +474,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_PUNCHATK1_1,            // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       0,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -457,6 +487,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_CMACEATK_1,             // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       0,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -469,6 +500,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_MWANDATK_1,             // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       0,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -481,6 +513,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_SNOUTATK1,              // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       0,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     }
@@ -495,6 +528,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_FAXEATK_1,              // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       2,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -507,6 +541,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_CSTAFFATK_1,            // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       1,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -519,6 +554,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_CONEATK1_3,             // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       3,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -531,6 +567,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_SNOUTATK1,              // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       0,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     }
@@ -545,6 +582,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_FHAMMERATK_1,           // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       3,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -557,6 +595,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_CFLAMEATK_1,            // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       4,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -569,6 +608,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_MLIGHTNINGATK_1,        // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       5,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -581,6 +621,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_SNOUTATK1,              // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       0,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     }
@@ -595,6 +636,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_FSWORDATK_1,            // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       14,                             // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -607,6 +649,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_CHOLYATK_1,             // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       18,                             // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -619,6 +662,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_MSTAFFATK_1,            // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       15,                             // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     },
@@ -631,6 +675,7 @@ weaponinfo_t hexen_weaponinfo[HEXEN_NUMWEAPONS][NUMCLASSES] = {
       HEXEN_S_SNOUTATK1,              // holdatkstate
       HEXEN_S_NULL,                   // flashstate
       0,                              // ammopershot
+      0,                              // recoil
       0,                              // intflags
       WPF_NOFLAG
     }
