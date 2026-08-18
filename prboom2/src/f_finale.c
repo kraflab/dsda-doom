@@ -64,6 +64,7 @@ int finalecount;
 const char*   finaletext;
 const char*   finaleflat;
 const char*   finalepatch;
+const char*   endpic;
 
 // defines for the end mission display text                     // phares
 
@@ -88,6 +89,11 @@ void F_StartFinale (void)
   int mnum;
   int muslump;
 
+  finaletext = NULL;
+  finaleflat = NULL;
+  finalepatch = NULL;
+  endpic = NULL;
+
   if (heretic) return Heretic_F_StartFinale();
   if (hexen) return Hexen_F_StartFinale();
 
@@ -97,10 +103,6 @@ void F_StartFinale (void)
 
   // killough 3/28/98: clear accelerative text flags
   acceleratestage = midstage = 0;
-
-  finaletext = NULL;
-  finaleflat = NULL;
-  finalepatch = NULL;
 
   dsda_InterMusic(&mnum, &muslump);
 
