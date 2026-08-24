@@ -240,13 +240,14 @@
 // (some degree of opaqueness is good, to avoid compatibility woes)
 
 enum {
-  MIF_FALLING = 1,      // Object is falling
-  MIF_ARMED = 2,        // Object is armed (for MF_TOUCHY objects)
-  MIF_SCROLLING = 4,    // Object is affected by scroller / pusher / puller
-  MIF_PLAYER_DAMAGED_BARREL = 8,
-  MIF_SPAWNED_BY_ICON = 16,
-  MIF_FAKE = 32, // Not a real thing, transient (e.g., for cheats)
-  MIF_LINEDONE              = 0x00000040, // Object has activated W1 or S1 linedef via DEH frame
+  MIF_FALLING               = (1<<0), // Object is falling
+  MIF_ARMED                 = (1<<1), // Object is armed (for MF_TOUCHY objects)
+  MIF_SCROLLING             = (1<<2), // Object is affected by scroller / pusher / puller
+  MIF_PLAYER_DAMAGED_BARREL = (1<<3),
+  MIF_SPAWNED_BY_ICON       = (1<<4),
+  MIF_FAKE                  = (1<<5), // Not a real thing, transient (e.g., for cheats)
+  MIF_LINEDONE              = (1<<6), // Object has activated W1 or S1 linedef via DEH frame
+  MIF_NOINTERPOLATEZ        = (1<<7), // [AR] Prevent mobj thinker from overwriting an updated PrevZ (example: lift thinker)
 };
 
 // heretic
