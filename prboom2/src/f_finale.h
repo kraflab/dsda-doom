@@ -54,4 +54,11 @@ void F_StartCast (const char* background, const char* music, dboolean loop_music
 void F_StartScroll (const char* right, const char* left, const char* music, dboolean loop_music);
 void F_StartPostFinale (void);
 
+typedef enum finalestage_e
+{
+    FINALE_STAGE_TEXT,
+    FINALE_STAGE_ART,
+    FINALE_STAGE_CAST
+} finalestage_t;
+
 #endif

@@ -345,7 +345,7 @@ int dsda_DoomInterMusic(int* music_index, int* music_lump) {
   return true;
 }
 
-extern int finalestage;
+extern finalestage_t finalestage;
 extern int finalecount;
 extern const char* finaletext;
 extern const char* finaleflat;
@@ -413,7 +413,7 @@ int dsda_DoomFTicker(void) {
     // advance animation
     finalecount++;
 
-    if (!finalestage) {
+    if (finalestage == FINALE_STAGE_TEXT) {
       float speed = demo_compatibility ? TEXTSPEED : Get_TextSpeed();
 
       if (
@@ -452,7 +452,7 @@ void dsda_DoomFDrawer(void) {
   void F_TextWrite(void);
   void F_BunnyScroll(void);
 
-  if (!finalestage || !end_data)
+  if (finalestage == FINALE_STAGE_TEXT || !end_data)
     F_TextWrite();
   else if (end_data->end == dmi_end_game_scroll)
     F_BunnyScroll();
