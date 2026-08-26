@@ -855,7 +855,6 @@ void F_Drawer (void)
 
   if (finalestage == FINALE_STAGE_CAST)
   {
-    lprintf(LO_WARN, "Reached F_Drawer:F_CastDrawer\n");
     F_CastDrawer ();
     return;
   }

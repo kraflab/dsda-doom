@@ -171,6 +171,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		else
 		{
 			scanner.MustGetToken(TK_StringConst);
+			mape->flags &= ~MapInfo_LabelClear;
 			ReplaceString(&mape->label, scanner.string);
 		}
 	}
@@ -379,8 +380,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			// allow no 0-tag specials here, unless a level exit.
 			if (tag != 0 || special == 11 || special == 51 || special == 52 || special == 124)
 			{
-				if (mape->numbossactions == -1) mape->numbossactions = 1;
-				else mape->numbossactions++;
+				mape->numbossactions++;
 				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
 				mape->bossactions[mape->numbossactions - 1].type = type;
 				mape->bossactions[mape->numbossactions - 1].special = special;
