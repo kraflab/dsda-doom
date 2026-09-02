@@ -141,6 +141,11 @@ dboolean pistolstart;
 
 dboolean randomclass;
 
+int map_colormap;
+fixed_t map_gravity;
+fixed_t map_aircontrol;
+fixed_t map_airfriction;
+
 dboolean singletics = false; // debug flag to cancel adaptiveness
 
 //jff 1/22/98 parms for disabling music and sound

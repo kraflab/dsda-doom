@@ -19,8 +19,6 @@
 
 #include "dsda/args.h"
 #include "dsda/configuration.h"
-#include "dsda/mapinfo/doom/parser.h"
-#include "dsda/text_color.h"
 #include "dsda/utility.h"
 
 #include "skill_info.h"
@@ -126,7 +124,9 @@ const skill_info_t hexen_skill_infos[5] = {
   },
 };
 
-int num_skills;
+// TODO: possible future cross-port standard for custom skill definitions
+// one day... maybe, one day...
+int num_skills = 5;
 skill_info_t* skill_infos;
 
 static void dsda_CopyFactor(fixed_t* dest, const char* source) {
@@ -139,86 +139,16 @@ static void dsda_CopyFactor(fixed_t* dest, const char* source) {
     *dest = dsda_StringToFixed(source) + 1;
 }
 
-void dsda_CopySkillInfo(int i, const doom_mapinfo_skill_t* info) {
-  memset(&skill_infos[i], 0, sizeof(skill_infos[i]));
-
-  dsda_CopyFactor(&skill_infos[i].ammo_factor, info->ammo_factor);
-  dsda_CopyFactor(&skill_infos[i].damage_factor, info->damage_factor);
-  dsda_CopyFactor(&skill_infos[i].armor_factor, info->armor_factor);
-  dsda_CopyFactor(&skill_infos[i].health_factor, info->health_factor);
-  dsda_CopyFactor(&skill_infos[i].monster_health_factor, info->monster_health_factor);
-  dsda_CopyFactor(&skill_infos[i].friend_health_factor, info->friend_health_factor);
-
-  skill_infos[i].respawn_time = info->respawn_time;
-  skill_infos[i].spawn_filter = info->spawn_filter;
-  skill_infos[i].key = info->key;
-
-  if (info->must_confirm)
-    skill_infos[i].must_confirm = Z_Strdup(info->must_confirm);
-
-  if (info->name)
-    skill_infos[i].name = Z_Strdup(info->name);
-
-  if (info->pic_name)
-    skill_infos[i].pic_name = Z_Strdup(info->pic_name);
-
-  if (info->text_color)
-    skill_infos[i].text_color = dsda_ColorNameToIndex(info->text_color);
-
-  skill_infos[i].flags = info->flags;
-}
-
 void dsda_InitSkills(void) {
-  int i = 0;
-  int j;
-  dboolean clear_skills;
-
-  clear_skills = (doom_mapinfo.num_skills && doom_mapinfo.skills_cleared);
-
-  num_skills = (clear_skills ? 0 : 5) + doom_mapinfo.num_skills;
+  const skill_info_t* original_skill_infos;
 
   skill_infos = Z_Calloc(num_skills, sizeof(*skill_infos));
 
-  if (!clear_skills) {
-    const skill_info_t* original_skill_infos;
-
-    original_skill_infos = hexen   ? hexen_skill_infos   :
-                           heretic ? heretic_skill_infos :
-                                     doom_skill_infos;
-
-    for (i = 0; i < 5; ++i)
-      skill_infos[i] = original_skill_infos[i];
-  }
-
-  for (j = 0; j < doom_mapinfo.num_skills; ++j) {
-    if (!stricmp(doom_mapinfo.skills[j].unique_id, "baby")) {
-      dsda_CopySkillInfo(0, &doom_mapinfo.skills[j]);
-      --i;
-      --num_skills;
-    }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "easy")) {
-      dsda_CopySkillInfo(1, &doom_mapinfo.skills[j]);
-      --i;
-      --num_skills;
-    }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "normal")) {
-      dsda_CopySkillInfo(2, &doom_mapinfo.skills[j]);
-      --i;
-      --num_skills;
-    }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "hard")) {
-      dsda_CopySkillInfo(3, &doom_mapinfo.skills[j]);
-      --i;
-      --num_skills;
-    }
-    else if (!stricmp(doom_mapinfo.skills[j].unique_id, "nightmare")) {
-      dsda_CopySkillInfo(4, &doom_mapinfo.skills[j]);
-      --i;
-      --num_skills;
-    }
-    else
-      dsda_CopySkillInfo(i + j, &doom_mapinfo.skills[j]);
-  }
+  original_skill_infos = hexen   ? hexen_skill_infos   :
+                         heretic ? heretic_skill_infos :
+                                   doom_skill_infos;
+  for (int i = 0; i < 5; ++i)
+    skill_infos[i] = original_skill_infos[i];
 }
 
 // At startup, set-up temp game modifier configs based off args / persistent cfgs

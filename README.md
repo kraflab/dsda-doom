@@ -46,9 +46,6 @@ There is a dedicated launcher for this port available [dsda-launcher](https://gi
 ### UDMF Support
 - [Full details](./docs/udmf.md)
 
-### MAPINFO Support
-- [Full details](./docs/mapinfo.md)
-
 ### Hexen Support
 - DSDA-Doom includes demo-compatible support for hexen.
   - Use -iwad HEXEN.WAD (-file HEXDD.WAD for the expansion)

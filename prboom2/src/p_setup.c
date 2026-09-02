@@ -3446,11 +3446,6 @@ static void P_UpdateMapFormat()
   }
   else
   {
-    if (dsda_UseMapinfo())
-      DO_ONCE
-        lprintf(LO_WARN, "Some features of MAPINFO may not work with non-udmf maps!\n");
-      END_ONCE
-
     if (has_behavior && !hexen)
     {
       if (heretic)
@@ -3677,7 +3672,7 @@ void P_MustRebuildBlockmap(void)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_SetupLevel(int episode, int map, int playermask, int skill)
+void P_SetupLevel(int episode, int map, int skill)
 {
   int   i;
   char  lumpname[9];

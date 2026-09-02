@@ -881,10 +881,8 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
         }
         else
         {
-            map_format.execute_line_special(
-              target->special, target->special_args, NULL, 0,
-              map_info.flags & MI_ACTIVATE_OWN_DEATH_SPECIALS ? target : source
-            );
+            // TODO: tenuous "activate own death specials" mapinfo flag
+            map_format.execute_line_special(target->special, target->special_args, NULL, 0, target);
         }
     }
   }

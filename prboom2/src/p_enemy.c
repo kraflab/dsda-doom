@@ -157,7 +157,8 @@ static dboolean P_CheckRange(mobj_t *actor, fixed_t range)
     P_AproxDistance(pl->x-actor->x, pl->y-actor->y) < range &&
     P_CheckSight(actor, actor->target) &&
     ( // finite height!
-      !(raven || map_info.flags & MI_PASSOVER) ||
+      // TODO: possible "passover" mapinfo flag
+      !(raven) ||
       (
         pl->z <= actor->z + actor->height &&
         actor->z <= pl->z + pl->height

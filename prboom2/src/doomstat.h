@@ -175,6 +175,11 @@ extern dboolean coop_spawns;
 
 extern dboolean randomclass;
 
+extern int map_colormap;
+extern fixed_t map_gravity;
+extern fixed_t map_aircontrol;
+extern fixed_t map_airfriction;
+
 // ------------------------------------------
 // Internal parameters for sound rendering.
 // These have been taken from the DOS version,

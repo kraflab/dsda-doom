@@ -159,10 +159,6 @@ set(COMMON_SRC
     dsda/map_format.h
     dsda/mapinfo.c
     dsda/mapinfo.h
-    dsda/mapinfo/doom.c
-    dsda/mapinfo/doom.h
-    dsda/mapinfo/doom/parser.cpp
-    dsda/mapinfo/doom/parser.h
     dsda/mapinfo/hexen.c
     dsda/mapinfo/hexen.h
     dsda/mapinfo/legacy.c

@@ -21,7 +21,6 @@
 #include "z_zone.h"
 
 #include "dsda/mapinfo.h"
-#include "dsda/mapinfo/doom/parser.h"
 
 #include "episode.h"
 
@@ -59,31 +58,6 @@ void dsda_AddOriginalEpisodes(void) {
     if (gamemode == retail && (compatibility_level >= ultdoom_compatibility || W_PWADLumpNameExists2("E4M1")))
       dsda_AddEpisode("e4m1", NULL, "M_EPI4", 't', true);
   }
-}
-
-void dsda_AddCustomEpisodes(void) {
-  int i;
-
-  if (!doom_mapinfo.loaded)
-    return;
-
-  // TODO: umapinfo edits episodes while parsing the lump,
-  // so we add the originals before loading info lumps,
-  // but we want to validate existence in the scope of mapinfo,
-  // so we start from scratch again...
-  dsda_ClearEpisodes();
-
-  if (!doom_mapinfo.episodes_cleared)
-    dsda_AddOriginalEpisodes();
-
-  for (i = 0; i < doom_mapinfo.num_episodes; ++i)
-    dsda_AddEpisode(
-      doom_mapinfo.episodes[i].map_lump,
-      doom_mapinfo.episodes[i].name,
-      doom_mapinfo.episodes[i].pic_name,
-      doom_mapinfo.episodes[i].key,
-      false
-    );
 }
 
 void dsda_ClearEpisodes(void) {

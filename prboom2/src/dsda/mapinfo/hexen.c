@@ -19,9 +19,7 @@
 #include "g_game.h"
 #include "lprintf.h"
 #include "m_misc.h"
-#include "p_setup.h"
 #include "r_data.h"
-#include "s_sound.h"
 #include "sc_man.h"
 #include "sounds.h"
 #include "w_wad.h"
@@ -617,18 +615,6 @@ int dsda_HexenInitSky(void) {
   Sky1ColumnOffset = 0;
   Sky2ColumnOffset = 0;
   DoubleSky = CurrentMap->doubleSky;
-
-  return true;
-}
-
-int dsda_HexenMapFlags(map_info_flags_t* flags) {
-  if (!hexen)
-    return false;
-
-  *flags = MI_INTERMISSION |
-           MI_ACTIVATE_OWN_DEATH_SPECIALS |
-           MI_MISSILES_ACTIVATE_IMPACT_LINES |
-           MI_SHOW_AUTHOR;
 
   return true;
 }

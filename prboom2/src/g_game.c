@@ -1223,19 +1223,9 @@ static void G_DoLoadLevel (void)
 
   for (i = 0; i < g_maxplayers; i++)
   {
-    if (playeringame[i])
-    {
-      if (players[i].playerstate == PST_DEAD)
-        players[i].playerstate = PST_REBORN;
-      else
-      {
-        if (map_info.flags & MI_RESET_HEALTH)
-          G_ResetHealth(&players[i]);
-
-        if (map_info.flags & MI_RESET_INVENTORY)
-          G_ResetInventory(&players[i]);
-      }
-    }
+    // TODO: possible "reset inventory/health" mapinfo flag
+    if (playeringame[i] && players[i].playerstate == PST_DEAD)
+      players[i].playerstate = PST_REBORN;
     memset(players[i].frags, 0, sizeof(players[i].frags));
   }
 
@@ -1253,7 +1243,7 @@ static void G_DoLoadLevel (void)
   if (map_format.sndseq)
     SN_StopAllSequences();
 
-  P_SetupLevel (gameepisode, gamemap, 0, gameskill);
+  P_SetupLevel (gameepisode, gamemap, gameskill);
   if (!demoplayback) // Don't switch views if playing a demo
     displayplayer = consoleplayer;    // view the guy you are playing
   gameaction = ga_nothing;
@@ -2085,7 +2075,8 @@ void G_DoReborn (int playernum)
   if (hexen)
     return Hexen_G_DoReborn(playernum);
 
-  if (!netgame && !(map_info.flags & MI_ALLOW_RESPAWN) && !(skill_info.flags & SI_PLAYER_RESPAWN))
+  // TODO: possible "allow respawn" mapinfo flag
+  if (!netgame && !(skill_info.flags & SI_PLAYER_RESPAWN))
     gameaction = ga_loadlevel;      // reload the level from scratch
   else
     {                               // respawn at the start
@@ -2230,14 +2221,10 @@ void G_DoCompleted (void)
   if (nodrawers && (demoplayback || timingdemo))
     lprintf(LO_INFO, "FINISHED: %s\n", dsda_MapLumpName(gameepisode, gamemap));
 
-  if (!(map_info.flags & MI_INTERMISSION))
-  {
-    G_WorldDone();
-  }
-  else
-  {
-    WI_Start (&wminfo);
-  }
+  // TODO: tenuous "no intermission" mapinfo flag
+  // umapinfo already partially handles it, but not in a friendly way
+  // only in maps that can end the game -- i.e. `endgame`, `endbunny`, etc
+  WI_Start (&wminfo);
 }
 
 //

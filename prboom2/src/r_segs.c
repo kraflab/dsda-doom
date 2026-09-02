@@ -236,14 +236,14 @@ const int fake_contrast_value = 16;
 static dboolean R_FakeContrast(seg_t *seg)
 {
   return fake_contrast_mode != FAKE_CONTRAST_MODE_OFF &&
-         !(map_info.flags & MI_EVEN_LIGHTING) &&
+         // TODO: possible "even fake contrast" mapinfo flag
          seg && !(seg->sidedef->flags & SF_NOFAKECONTRAST) && !hexen;
 }
 
 static dboolean R_SmoothLighting(seg_t *seg)
 {
   return fake_contrast_mode == FAKE_CONTRAST_MODE_SMOOTH ||
-         map_info.flags & MI_SMOOTH_LIGHTING ||
+         // TODO: possible "smooth fake contrast" mapinfo flag
          seg->sidedef->flags & SF_SMOOTHLIGHTING;
 }
 

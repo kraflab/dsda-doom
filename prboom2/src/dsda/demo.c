@@ -803,10 +803,6 @@ void dsda_ApplyDSDADemoFormat(byte** demo_p) {
 
     use_dsda_format = true;
   }
-  else if (dsda_UseMapinfo())
-  {
-    use_dsda_format = true;
-  }
 
   if (dsda_Flag(dsda_arg_dsdademo))
   {

@@ -18,7 +18,6 @@
 #include "doomstat.h"
 #include "g_game.h"
 #include "m_misc.h"
-#include "p_setup.h"
 #include "r_data.h"
 #include "s_sound.h"
 #include "sounds.h"
@@ -779,16 +778,6 @@ int dsda_LegacyAirControl(fixed_t* air_control) {
 }
 
 int dsda_LegacyInitSky(void) {
-  return true;
-}
-
-int dsda_LegacyMapFlags(map_info_flags_t* flags) {
-  *flags = MI_INTERMISSION |
-           MI_ACTIVATE_OWN_DEATH_SPECIALS |
-           MI_LAX_MONSTER_ACTIVATION |
-           MI_MISSILES_ACTIVATE_IMPACT_LINES |
-           MI_SHOW_AUTHOR;
-
   return true;
 }
 

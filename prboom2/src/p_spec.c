@@ -5467,10 +5467,8 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
 
   if (activationType == SPAC_USE || activationType == SPAC_USEBACK)
   {
-    if (
-      (line->flags & ML_CHECKSWITCHRANGE || map_info.flags & MI_CHECK_SWITCH_RANGE) &&
-      !P_CheckSwitchRange(line, mo, side)
-    )
+    // TODO: possible "check switch range" mapinfo flag
+    if ((line->flags & ML_CHECKSWITCHRANGE) && !P_CheckSwitchRange(line, mo, side))
     {
       return false;
     }
@@ -5517,10 +5515,7 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
     // lax activation checks, monsters can also activate certain lines
     // even without them being marked as monster activate-able. This is
     // the default for non-Hexen maps in Hexen format.
-    if (!(map_info.flags & MI_LAX_MONSTER_ACTIVATION))
-    {
-      return false;
-    }
+    // TODO: possible "check switch range" mapinfo flag
 
     if ((activationType == SPAC_USE || activationType == SPAC_PUSH) && line->flags & ML_SECRET)
       return false;    // never open secret doors
@@ -7702,7 +7697,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
     case zl_map_set_colormap:
       if (args[0] >= 0)
       {
-        map_info.default_colormap = args[0];
+        map_colormap = args[0];
       }
       buttonSuccess = 1;
       break;
