@@ -15,6 +15,9 @@
 //	DSDA Settings
 //
 
+#include <errno.h>
+#include <stdlib.h>
+
 #include "doomstat.h"
 #include "m_menu.h"
 #include "e6y.h"
@@ -53,6 +56,26 @@ void dsda_InitSettings(void) {
   gld_ResetAutomapTransparency();
 }
 
+static int dsda_ComplvlStrToNum(const char* data, int length) {
+  if (length == 7 && !strncasecmp("vanilla", data, 7)) {
+    if (gamemode == commercial) {
+      if (gamemission == pack_plut || gamemission == pack_tnt)
+        return 4;
+      else
+        return 2;
+    }
+    else
+      return 3;
+  }
+  else if (length == 4 && !strncasecmp("boom", data, 4))
+    return 9;
+  else if (length == 3 && !strncasecmp("mbf", data, 3))
+    return 11;
+  else if (length == 5 && !strncasecmp("mbf21", data, 5))
+    return 21;
+  return -1;
+}
+
 static int dsda_WadCompatibilityLevel(void) {
   static int complvl = -1;
   static int last_numwadfiles = -1;
@@ -71,23 +94,7 @@ static int dsda_WadCompatibilityLevel(void) {
       length = W_LumpLength(num);
       data = W_LumpByNum(num);
 
-      if (length == 7 && !strncasecmp("vanilla", data, 7)) {
-        if (gamemode == commercial) {
-          if (gamemission == pack_plut || gamemission == pack_tnt)
-            complvl = 4;
-          else
-            complvl = 2;
-        }
-        else
-          complvl = 3;
-      }
-      else if (length == 4 && !strncasecmp("boom", data, 4))
-        complvl = 9;
-      else if (length == 3 && !strncasecmp("mbf", data, 3))
-        complvl = 11;
-      else if (length == 5 && !strncasecmp("mbf21", data, 5))
-        complvl = 21;
-
+      complvl = dsda_ComplvlStrToNum(data, length);
       lprintf(LO_INFO, "Detected COMPLVL lump: %i\n", complvl);
     }
   }
@@ -105,8 +112,23 @@ int dsda_CompatibilityLevel(void) {
 
   complevel_arg = dsda_Arg(dsda_arg_complevel);
 
-  if (complevel_arg->count)
-    return complevel_arg->value.v_int;
+  if (complevel_arg->count) {
+    const char* arg_val = complevel_arg->value.v_string;
+    char* str_end;
+    errno = 0;
+    level = strtol(arg_val, &str_end, 0);
+    if (errno == 0 && *str_end == '\0') {
+      if (level >= -1 && level < MAX_COMPATIBILITY_LEVEL) {
+        return level;
+      }
+    } else {
+      level = dsda_ComplvlStrToNum(arg_val, strlen(arg_val));
+      if (level != -1) {
+        return level;
+      }
+    }
+    I_Error("-complevel value of \"%s\" did not match any known complevel.", arg_val);
+  }
 
   if (!demoplayback) {
     level = dsda_WadCompatibilityLevel();
