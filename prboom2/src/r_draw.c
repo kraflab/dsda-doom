@@ -150,7 +150,7 @@ dboolean R_PartialView(void)
 
 dboolean R_StatusBarVisible(void)
 {
-  return R_PartialView() || automap_on;
+  return R_PartialView() || automap_solid;
 }
 
 //
@@ -548,7 +548,7 @@ void R_FillBackColor (void)
 
 void R_FillBackScreen (void)
 {
-  int automap = automap_on;
+  int automap = automap_solid;
 
   if (grnrock.lumpnum == 0)
     return;

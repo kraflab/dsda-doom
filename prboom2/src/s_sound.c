@@ -144,6 +144,11 @@ static mobj_t* GetSoundListener(void);
 static void Heretic_S_StopSound(void *_origin);
 static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, int loop_timeout);
 
+static dboolean S_IsSecretSound(int sfx_id)
+{
+  return sfx_id == sfx_secret;
+}
+
 void S_ResetSfxVolume(void)
 {
   snd_SfxVolume = dsda_IntConfig(dsda_config_sfx_volume);
@@ -333,7 +338,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean impor
     return;
 
   // killough 4/25/98
-  if (sfx_id == sfx_secret)
+  if (S_IsSecretSound(sfx_id))
     params.sfx_class = sfx_class_secret;
   else if (important || sfx_id & PICKUP_SOUND || sfx_id == sfx_oof ||
       (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway))
@@ -686,6 +691,9 @@ void S_ChangeMusic(int musicnum, int looping)
 
   music = &S_music[musicnum];
 
+  if (mus_playing == music)
+    return;
+
   // shutdown old music
   S_StopMusic();
 
@@ -745,6 +753,10 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
     return;
 
   music = &S_music[mus_musinfo];
+
+  // Allow MUSINFO music to restart after MIDI player changes
+  if (music->lumpnum == lumpnum && mus_playing)
+    return;
 
   // shutdown old music
   S_StopMusic();
@@ -1197,7 +1209,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   params.priority = sfx->priority;
   params.priority *= (10 - (dist / dist_adjust));
 
-  params.sfx_class = sfx_class_none;
+  params.sfx_class = S_IsSecretSound(sound_id) ? sfx_class_secret : sfx_class_none;
 
   cnum = Raven_S_getChannel(listener, origin, sfx, &params);
   if (cnum == channel_not_found)

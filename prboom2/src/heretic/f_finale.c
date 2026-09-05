@@ -52,7 +52,7 @@ void Heretic_F_StartFinale(void)
 {
   gameaction = ga_nothing;
   gamestate = GS_FINALE;
-  automap_active = false;
+  automap_full = false;
 
   switch (gameepisode)
   {

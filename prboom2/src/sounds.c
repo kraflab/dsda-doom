@@ -38,6 +38,8 @@
 #include "config.h"
 #endif
 
+#include <stddef.h>
+
 #include "doomtype.h"
 #include "sounds.h"
 
@@ -119,6 +121,31 @@ musicinfo_t doom_S_music[] = {
   { "musinfo", 0 }
 };
 
+//
+// Port specific / optional sfx
+//
+
+sfx_port_info_t port_S_sfx[] = {
+    { "dsnone", NULL, NULL, 0, 0, -1, 0, 0, 0, "" },
+
+    // DSDA
+    { "dssecret", "secret", "secret", 60, 0, -1, 0, 0, 0, "" }, // Secret
+
+    // Optional menu/intermission sounds
+    { "dsmnuopn", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnucls", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnuact", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnubak", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnumov", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnusli", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnusel", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsmnuerr", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsinttic", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsinttot", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsintnex", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsintnet", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+    { "dsintdms", NULL, NULL, 60, 0, -1, 0, 0, 1, "" },
+};
 
 //
 // Information about all the sfx
@@ -127,23 +154,6 @@ musicinfo_t doom_S_music[] = {
 sfxinfo_t doom_S_sfx[] = {
   // S_sfx[0] needs to be a dummy for odd reasons.
   { "dsnone", 0, 0, -1, 0, 0, 0, "" },
-
-  { "dssecret", 60, 0, -1, 0, 0, 0, "" },
-
-  // Optional menu/intermission sounds
-  { "dsmnuopn", 60, 0, -1, 0, 0, 0, "" },
-  { "dsmnucls", 60, 0, -1, 0, 0, 0, "" },
-  { "dsmnuact", 60, 0, -1, 0, 0, 0, "" },
-  { "dsmnubak", 60, 0, -1, 0, 0, 0, "" },
-  { "dsmnumov", 60, 0, -1, 0, 0, 0, "" },
-  { "dsmnusli", 60, 0, -1, 0, 0, 0, "" },
-  { "dsmnusel", 60, 0, -1, 0, 0, 0, "" },
-  { "dsmnuerr", 60, 0, -1, 0, 0, 0, "" },
-  { "dsinttic", 60, 0, -1, 0, 0, 0, "" },
-  { "dsinttot", 60, 0, -1, 0, 0, 0, "" },
-  { "dsintnex", 60, 0, -1, 0, 0, 0, "" },
-  { "dsintnet", 60, 0, -1, 0, 0, 0, "" },
-  { "dsintdms", 60, 0, -1, 0, 0, 0, "" },
 
   // Doom sounds
   { "dspistol", 64, 0, -1, 0, 0, 0, "" },
@@ -788,5 +798,5 @@ sfxinfo_t doom_disambiguated_sfx[] = {
 
   DISAMBIGUATED_SFX(sfx_dgpain, "dog/pain"),
 
-  DISAMBIGUATED_SFX(sfx_secret, "misc/secret"),
+  //DISAMBIGUATED_SFX(sfx_secret, "misc/secret"),
 };

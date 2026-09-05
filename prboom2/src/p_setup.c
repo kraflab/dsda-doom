@@ -3968,7 +3968,7 @@ void P_SetupLevel(int episode, int map, int skill)
 
   if (dsda_ShowMinimap())
   {
-    AM_Start(false);
+    AM_Start(AM_OPEN_MINIMAP);
   }
 }
 

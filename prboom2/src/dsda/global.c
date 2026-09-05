@@ -145,7 +145,7 @@ static void dsda_InitDoom(void) {
   dsda_InitializeMobjInfo(DOOM_MT_ZERO, DOOM_NUMMOBJTYPES, DOOM_NUMMOBJTYPES);
   dsda_InitializeStates(doom_states, DOOM_NUMSTATES);
   dsda_InitializeSprites(doom_sprnames, DOOM_NUMSPRITES);
-  dsda_InitializeSFX(doom_S_sfx, DOOM_NUMSFX);
+  dsda_InitializeSFX(doom_S_sfx, DOOM_NUMSFX, DOOM_BASESFX_END);
   dsda_InitializeMusic(doom_S_music, DOOM_NUMMUSIC);
 
   demostates = doom_demostates;
@@ -284,7 +284,7 @@ static void dsda_InitHeretic(void) {
   dsda_InitializeMobjInfo(HERETIC_MT_ZERO, HERETIC_NUMMOBJTYPES, HERETIC_NUMMOBJTYPES);
   dsda_InitializeStates(heretic_states, HERETIC_NUMSTATES);
   dsda_InitializeSprites(heretic_sprnames, HERETIC_NUMSPRITES);
-  dsda_InitializeSFX(heretic_S_sfx, HERETIC_NUMSFX);
+  dsda_InitializeSFX(heretic_S_sfx, HERETIC_NUMSFX, HERETIC_BASESFX_END);
   dsda_InitializeMusic(heretic_S_music, HERETIC_NUMMUSIC);
 
   demostates = heretic_demostates;
@@ -441,7 +441,7 @@ static void dsda_InitHexen(void) {
   dsda_InitializeMobjInfo(HEXEN_MT_ZERO, HEXEN_NUMMOBJTYPES, TOTAL_NUMMOBJTYPES);
   dsda_InitializeStates(hexen_states, HEXEN_NUMSTATES);
   dsda_InitializeSprites(hexen_sprnames, HEXEN_NUMSPRITES);
-  dsda_InitializeSFX(hexen_S_sfx, HEXEN_NUMSFX);
+  dsda_InitializeSFX(hexen_S_sfx, HEXEN_NUMSFX, HEXEN_BASESFX_END);
   dsda_InitializeMusic(hexen_S_music, HEXEN_NUMMUSIC);
 
   demostates = hexen_demostates;

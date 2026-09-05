@@ -1018,7 +1018,7 @@ static void R_InitDrawScene(void)
     // proff 11/99: clear buffers
     gld_InitDrawScene();
 
-    if (!automap_on)
+    if (!automap_solid)
     {
       // proff 11/99: switch to perspective mode
       gld_StartDrawScene();
@@ -1124,7 +1124,7 @@ void R_RenderPlayerView (player_t* player)
 
   FakeNetUpdate();
 
-  if (V_IsOpenGLMode() && !automap_on) {
+  if (V_IsOpenGLMode() && !automap_solid) {
     DSDA_ADD_CONTEXT(sf_draw_scene);
     gld_DrawScene(player);
     gld_EndDrawScene();

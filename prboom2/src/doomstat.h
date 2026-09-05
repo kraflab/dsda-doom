@@ -197,17 +197,16 @@ extern int snd_MusicVolume;    // maximum volume for music
 // CPhipps - screen parameters
 extern int desired_screenwidth, desired_screenheight;
 
-extern int automap_active;
+extern int automap_full;
 extern int automap_overlay;
 extern int automap_rotate;
 extern int automap_follow;
 extern int automap_grid;
 
-#define automap_on (automap_active && !automap_overlay)
-#define automap_off (!automap_active && automap_overlay > 0)
-#define automap_stbar (automap_active && R_StatusBarVisible())
-#define automap_input (automap_active)
-#define automap_hud (automap_active && !automap_overlay)
+#define automap_on    (automap_full)
+#define automap_solid (automap_full && !automap_overlay)
+#define automap_input (automap_full)
+#define automap_stbar (automap_full && R_StatusBarVisible())
 
 typedef enum {
   mnact_nochange = -1,

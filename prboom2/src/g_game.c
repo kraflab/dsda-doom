@@ -2214,7 +2214,7 @@ void G_DoCompleted (void)
   wminfo.totaltimes = totalleveltimes;
 
   gamestate = GS_INTERMISSION;
-  automap_active = false;
+  automap_full = false;
 
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
@@ -3083,7 +3083,7 @@ void G_InitNew(int skill, int episode, int map, dboolean prepare)
 
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
-  automap_active = false;
+  automap_full = false;
   dsda_UpdateGameSkill(skill);
   dsda_UpdateGameMap(episode, map);
 

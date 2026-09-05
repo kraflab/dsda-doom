@@ -21,25 +21,25 @@
 
 typedef struct {
   int x, y, width, height, scale;
+
+  // backups of original values
+  // (so we can access them later)
+  int xx, yy, ww, hh;
+  int yy_offset, flags;
 } local_component_t;
 
 static local_component_t* local;
 
-// backups of original values
-// (so we can access them later)
-static int xx, yy, ww, hh;
-static int yy_offset, flags;
-
 static void dsda_UpdateMinimapCoordinates(void) {
 
   // Must recalculate y each update
-  yy = dsda_HudComponentY(yy_offset, flags, 0);
+  local->yy = dsda_HudComponentY(local->yy_offset, local->flags, 0);
 
   // Varables
-  local->x      = xx;
-  local->y      = yy;
-  local->width  = ww;
-  local->height = hh;
+  local->x      = local->xx;
+  local->y      = local->yy;
+  local->width  = local->ww;
+  local->height = local->hh;
 
   if (local->x < 0)
     local->x = 0;
@@ -59,7 +59,7 @@ static void dsda_UpdateMinimapCoordinates(void) {
   if (local->y + local->height > 200)
     local->y = 200 - local->height;
 
-  V_GetWideRect(&local->x, &local->y, &local->width, &local->height, flags);
+  V_GetWideRect(&local->x, &local->y, &local->width, &local->height, local->flags);
 }
 
 void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
@@ -73,12 +73,12 @@ void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_
   local->scale = args[2];
 
   // Constants
-  xx = local->x;
-  ww = local->width;
-  hh = local->height;
+  local->xx = local->x;
+  local->ww = local->width;
+  local->hh = local->height;
 
-  yy_offset = y_offset;
-  flags = vpt;
+  local->yy_offset = y_offset;
+  local->flags = vpt;
 
   // Init scale
   if (local->scale < 64)

@@ -292,7 +292,7 @@ mline_t thingbox_guy[] =
 #undef R
 #define NUMTHINGBOXGUYLINES (sizeof(thingbox_guy)/sizeof(mline_t))
 
-int automap_active;
+int automap_full;
 int automap_overlay;
 int automap_rotate;
 int automap_follow;
@@ -604,25 +604,43 @@ static void AM_changeWindowLoc(void)
 //
 // AM_SetScale
 //
-void AM_SetScale(void)
+typedef enum
 {
+  AM_SCALE_RESET,
+  AM_SCALE_KEEP
+} am_scale_t;
+
+static void AM_SetScale(dboolean keep_scale)
+{
+  fixed_t a, b;
+  fixed_t scale_w, scale_h;
+  fixed_t old_m_w = m_w;
+
+  scale_w = SCREENWIDTH << FRACBITS;
+  scale_h = (SCREENHEIGHT - ST_SCALED_HEIGHT) << FRACBITS;
+
+  a = FixedDiv(scale_w, max_w);
+  b = FixedDiv(scale_h, max_h);
+  min_scale_mtof = a < b ? a : b;
+  max_scale_mtof = FixedDiv(scale_h, 2 * PLAYERRADIUS);
+
+  if (keep_scale)
   {
-    fixed_t a, b;
-    fixed_t scale_w, scale_h;
-
-    scale_w = SCREENWIDTH << FRACBITS;
-    scale_h = (SCREENHEIGHT - ST_SCALED_HEIGHT) << FRACBITS;
-
-    a = FixedDiv(scale_w, max_w);
-    b = FixedDiv(scale_h, max_h);
-    min_scale_mtof = a < b ? a : b;
-    max_scale_mtof = FixedDiv(scale_h, 2 * PLAYERRADIUS);
+    // Keep current zoom when changing resolution / renderer
+    if (automap_full && old_m_w > 0)
+    {
+      scale_mtof = FixedDiv(f_w << FRACBITS, old_m_w);
+      scale_mtof = BETWEEN(min_scale_mtof, max_scale_mtof, scale_mtof);
+      scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+    }
   }
-
-  scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7*FRACUNIT));
-  if (scale_mtof > max_scale_mtof)
-    scale_mtof = min_scale_mtof;
-  scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+  else
+  {
+    scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7*FRACUNIT));
+    if (scale_mtof > max_scale_mtof)
+      scale_mtof = min_scale_mtof;
+    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+  }
 }
 
 //
@@ -630,7 +648,7 @@ void AM_SetScale(void)
 //
 void AM_SetPosition(void)
 {
-  if (automap_active)
+  if (automap_full)
   {
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
@@ -643,12 +661,6 @@ void AM_SetPosition(void)
     {
       f_h = SCREENHEIGHT - ST_SCALED_HEIGHT;
     }
-  }
-  else if (dsda_ShowMinimap())
-  {
-    void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h);
-
-    dsda_CopyMinimapCoordinates(&f_x, &f_y, &f_w, &f_h);
   }
 }
 
@@ -721,7 +733,8 @@ static void AM_initVariables(void)
 void AM_SetResolution(void)
 {
   AM_SetPosition();
-  AM_SetScale();
+  AM_SetScale(AM_SCALE_KEEP);
+  AM_activateNewScale();
 }
 
 static void AM_ResetTagHighlight(void)
@@ -730,6 +743,37 @@ static void AM_ResetTagHighlight(void)
   ZERO_DATA(highlight);
   highlight.x = INT_MIN;
   highlight.y = INT_MIN;
+}
+
+static void AM_UpdateMinimapCoordinates(void)
+{
+  if (dsda_ShowMinimap())
+  {
+    void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h);
+
+    dsda_CopyMinimapCoordinates(&f_x, &f_y, &f_w, &f_h);
+  }
+}
+
+static void AM_SetMinimapScale(void)
+{
+  int dsda_MinimapScale(void);
+
+  min_scale_mtof =
+  max_scale_mtof =
+  scale_mtof = FixedDiv(f_w << FRACBITS, dsda_MinimapScale() << MAPBITS);
+  scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+}
+
+void AM_RefreshMinimap(void)
+{
+  if (!dsda_ShowMinimap() || automap_full)
+    return;
+
+  // Refresh Minimap Coordinates / scale / center
+  AM_UpdateMinimapCoordinates();
+  AM_SetMinimapScale();
+  AM_initVariables();
 }
 
 //
@@ -778,17 +822,10 @@ void AM_ExchangeScales(int full_automap, int *last_full_automap)
 
   if (*last_full_automap && !full_automap)
   {
-    int dsda_MinimapScale(void);
-
     full_min_scale_mtof = min_scale_mtof;
     full_max_scale_mtof = max_scale_mtof;
     full_scale_mtof = scale_mtof;
     full_scale_ftom = scale_ftom;
-
-    min_scale_mtof =
-    max_scale_mtof =
-    scale_mtof = FixedDiv(f_w << FRACBITS, dsda_MinimapScale() << MAPBITS);
-    scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
   }
   else if (!*last_full_automap && full_automap)
   {
@@ -810,10 +847,10 @@ void AM_ExchangeScales(int full_automap, int *last_full_automap)
 //
 void AM_Stop (dboolean minimap)
 {
-  automap_active = false;
+  automap_full = false;
 
   if (minimap && dsda_ShowMinimap())
-    AM_Start(false);
+    AM_Start(AM_OPEN_MINIMAP);
 }
 
 //
@@ -826,27 +863,30 @@ void AM_Stop (dboolean minimap)
 //
 // Passed nothing, returns nothing
 //
-void AM_Start(dboolean full_automap)
+void AM_Start(dboolean open_full_automap)
 {
   static int lastlevel = -1, lastepisode = -1;
   static int last_full_automap;
 
   AM_InitParams();
 
-  automap_active = full_automap;
+  automap_full = open_full_automap;
 
   AM_SetPosition();
 
   if (lastlevel != gamemap || lastepisode != gameepisode)
   {
     AM_findMinMaxBoundaries();
-    AM_SetScale();
+    AM_SetScale(AM_SCALE_RESET);
     lastlevel = gamemap;
     lastepisode = gameepisode;
     last_full_automap = true;
   }
 
-  AM_ExchangeScales(full_automap, &last_full_automap);
+  AM_ExchangeScales(open_full_automap, &last_full_automap);
+
+  if (dsda_ShowMinimap() && !open_full_automap)
+    AM_RefreshMinimap();
 
   AM_initVariables();
 }
@@ -1051,7 +1091,7 @@ dboolean AM_Responder
   {
     if (dsda_InputActivated(dsda_input_map))
     {
-      AM_Start(true);
+      AM_Start(AM_OPEN_FULLAUTOMAP);
       return true;
     }
   }
@@ -2888,10 +2928,12 @@ static void AM_setFrameVariables(void)
 
 void AM_Drawer (dboolean minimap)
 {
-  if (!automap_active && !minimap)
+  // if no automap
+  if (!automap_full && !minimap)
     return;
 
-  if (automap_active && automap_overlay == 2 && minimap)
+  // if minimap + overlay + no fade
+  if (automap_full && automap_overlay == 2 && minimap)
     return;
 
   V_BeginAutomapDraw();

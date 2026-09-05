@@ -321,6 +321,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_switch_weapon_on_pickup),
   MIGRATED_SETTING(dsda_config_viewbob),
   MIGRATED_SETTING(dsda_config_weaponbob),
+  MIGRATED_SETTING(dsda_config_fix_viewbob_floor_jolt),
   MIGRATED_SETTING(dsda_config_quake_intensity),
   MIGRATED_SETTING(dsda_config_organize_failed_demos),
   MIGRATED_SETTING(dsda_config_demo_end_quit),

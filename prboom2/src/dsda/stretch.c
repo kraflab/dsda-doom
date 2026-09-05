@@ -15,6 +15,7 @@
 //	DSDA Stretch
 //
 
+#include "am_map.h"
 #include "doomdef.h"
 #include "doomtype.h"
 #include "hu_stuff.h"
@@ -246,6 +247,11 @@ void dsda_SetupStretchParams(void) {
   video_ex_text.height = ex_text_screenheight;
   GenLookup(video_ex_text.x1lookup, video_ex_text.x2lookup, video_ex_text.width, 320, video_ex_text.xstep);
   GenLookup(video_ex_text.y1lookup, video_ex_text.y2lookup, video_ex_text.height, 200, video_ex_text.ystep);
+}
+
+void dsda_UpdateStretchParams(void) {
+  dsda_SetupStretchParams();
+  AM_RefreshMinimap();
 }
 
 void dsda_EvaluatePatchScale(void) {

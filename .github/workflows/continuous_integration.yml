@@ -17,7 +17,7 @@ jobs:
       matrix:
         config:
           - name: "MSVC x64 (vcpkg)"
-            os: windows-latest
+            os: windows-2022
             build_type: "Release"
             vcpkg: true
             triplet: x64-windows-static-release
@@ -48,7 +48,7 @@ jobs:
               -DVCPKG_LIBRARY_LINKAGE=static
 
           - name: "MSYS2 UCRT64"
-            os: windows-latest
+            os: windows-2022
             build_type: "Release"
             extra_options: "-G Ninja"
             package_name: "windows_x64_mingw"

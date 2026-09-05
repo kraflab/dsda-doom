@@ -1511,12 +1511,6 @@ void V_ChangeScreenResolution(void)
   {
     gld_PreprocessLevel();
   }
-
-  // Refresh Minimap Coordinates
-  if (dsda_ShowMinimap())
-  {
-    dsda_RefreshExHudMinimap();
-  }
 }
 
 void V_FillRectVPT(int scrn, int x, int y, int width, int height, byte color, enum patch_translation_e flags)

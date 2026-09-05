@@ -27,6 +27,7 @@ int dsda_CompatibilityLevel(void);
 void dsda_SetTas(dboolean t);
 int dsda_ViewBob(void);
 int dsda_WeaponBob(void);
+dboolean dsda_FixViewBobFloorJolt(void);
 dboolean dsda_ShowMessages(void);
 dboolean dsda_AutoRun(void);
 dboolean dsda_MouseLook(void);

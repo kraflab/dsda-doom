@@ -114,7 +114,7 @@ void M_ChangeMIDIPlayer(void);
 void HU_InitCrosshair(void);
 void HU_InitThresholds(void);
 void dsda_InitAutoKeyFrames(void);
-void dsda_SetupStretchParams(void);
+void dsda_UpdateStretchParams(void);
 void dsda_InitCommandHistory(void);
 void dsda_InitQuickstartCache(void);
 void dsda_InitParallelSFXFilter(void);
@@ -931,11 +931,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_ex_text_scale_x] = {
     "ex_text_scale_x", dsda_config_ex_text_scale_x,
-    dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
+    dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_UpdateStretchParams
   },
   [dsda_config_ex_text_ratio_y] = {
     "ex_text_ratio_y", dsda_config_ex_text_ratio_y,
-    dsda_config_int, 0, 200, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
+    dsda_config_int, 0, 200, { 0 }, NULL, NOT_STRICT, dsda_UpdateStretchParams
   },
   [dsda_config_wipe_at_full_speed] = {
     "dsda_wipe_at_full_speed", dsda_config_wipe_at_full_speed,
@@ -1040,6 +1040,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_weaponbob] = {
     "dsda_weaponbob_pct", dsda_config_weaponbob,
     dsda_config_int, 0, 4, { 4 }
+  },
+  [dsda_config_fix_viewbob_floor_jolt] = {
+    "dsda_fix_viewbob_floor_jolt", dsda_config_fix_viewbob_floor_jolt,
+    CONF_BOOL(1)
   },
   [dsda_config_quake_intensity] = {
     "dsda_quake_intensity", dsda_config_quake_intensity,

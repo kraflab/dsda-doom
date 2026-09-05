@@ -146,7 +146,7 @@ void gld_MultisamplingSet(void)
   {
     extern int map_use_multisampling;
 
-    int use_multisampling = map_use_multisampling || automap_off;
+    int use_multisampling = map_use_multisampling || !automap_solid;
 
     gld_EnableMultisample(use_multisampling);
   }

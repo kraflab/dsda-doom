@@ -3556,6 +3556,7 @@ setup_menu_t display_options_settings[] = {
   { "View Bobbing", S_CHOICE, m_conf, G_X, dsda_config_viewbob, 0, viewbob_list },
   { "Weapon Bobbing", S_CHOICE, m_conf, G_X, dsda_config_weaponbob, 0, weaponbob_list },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  { "Fix Shallow Floor View Bob Jolt", S_YESNO, m_conf, G_X, dsda_config_fix_viewbob_floor_jolt },
   { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
   { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
@@ -5595,7 +5596,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 
   if (dsda_InputActivated(dsda_input_zoomout))
   {
-    if (automap_active)
+    if (automap_full)
       return false;
     M_SizeDisplay(0);
     S_StartOptionalSound(sfx_mnusli, g_sfx_stnmov, true);
@@ -5604,7 +5605,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 
   if (dsda_InputActivated(dsda_input_zoomin))
   {
-    if (automap_active)
+    if (automap_full)
       return false;
     M_SizeDisplay(1);
     S_StartOptionalSound(sfx_mnusli, g_sfx_stnmov, true);
@@ -5712,7 +5713,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 
   if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
   {
-    if (automap_active)              // jff 2/22/98
+    if (automap_full)                // jff 2/22/98
       return false;                  // HUD mode control
     M_SizeDisplay(2);
     return true;

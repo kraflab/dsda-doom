@@ -105,6 +105,7 @@
 #include "dsda/skill_info.h"
 #include "dsda/skip.h"
 #include "dsda/sndinfo.h"
+#include "dsda/sfx.h"
 #include "dsda/time.h"
 #include "dsda/utility.h"
 #include "dsda/wad_stats.h"
@@ -448,8 +449,8 @@ void D_Display (fixed_t frac)
     dboolean redrawborderstuff;
 
     // Work out if the player view is visible, and if there is a border
-    viewactive = automap_off && !inhelpscreens;
-    isborder = viewactive ? R_PartialView() : (!inhelpscreens && automap_active);
+    viewactive = !inhelpscreens && !automap_solid;
+    isborder = viewactive ? R_PartialView() : (!inhelpscreens && automap_full);
 
     if (oldgamestate != GS_LEVEL || must_fill_back_screen) {
       must_fill_back_screen = false;
@@ -503,7 +504,7 @@ void D_Display (fixed_t frac)
     use_boom_cm=false;
     frame_fixedcolormap = 0;
 
-    if (automap_active)
+    if (automap_full)
     {
       AM_Drawer(false);
     }
@@ -2180,6 +2181,7 @@ static void D_DoomMainSetup(void)
   }
 
   PostProcessDeh();
+  dsda_AppendPortSFX();
   dsda_AppendZDoomMobjInfo();
   dsda_ApplyBinaryMapFormat();
 

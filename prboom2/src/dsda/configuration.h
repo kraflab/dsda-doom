@@ -229,6 +229,7 @@ typedef enum {
   dsda_config_switch_weapon_on_pickup,
   dsda_config_viewbob,
   dsda_config_weaponbob,
+  dsda_config_fix_viewbob_floor_jolt,
   dsda_config_quake_intensity,
   dsda_config_map_blinking_locks,
   dsda_config_map_secret_after,
