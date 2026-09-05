@@ -1748,8 +1748,8 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
       mobj->flags |= MF_FRIEND;    // are always friends.
 
   // TODO: possible mapinfo "passover" flag
-  if (mobj->flags & MF_SOLID)
-    mobj->flags2 |= MF2_PASSMOBJ;
+  //if (mobj->flags & MF_SOLID)
+    //mobj->flags2 |= MF2_PASSMOBJ;
 
   mobj->health = P_MobjSpawnHealth(mobj);
 
