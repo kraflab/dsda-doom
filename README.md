@@ -32,6 +32,7 @@ This is a successor of prboom+ with many new features, including:
 Available for Windows, Linux and macOS in [Releases](https://github.com/kraflab/dsda-doom/releases/latest)
 
 ### Patch Notes
+- [v0.30](./patch_notes/v0.30.md)
 - [v0.29](./patch_notes/v0.29.md)
 - [v0.28](./patch_notes/v0.28.md)
 - [v0.27](./patch_notes/v0.27.md)
@@ -81,7 +82,7 @@ There is a dedicated launcher for this port available [dsda-launcher](https://gi
 - [UMAPINFO v2.2](https://github.com/kraflab/umapinfo)
 
 ### Maintainers
-- @fabiangreffrath, @rfomin, and @Pedro-Beirao 2024-
+- @fabiangreffrath, @rfomin, @Pedro-Beirao, @andrikpowell, @elf-alchemist
 - @kraflab 2020-2024
 
 ### Credits
