@@ -395,12 +395,9 @@ int dsda_UHUTitle(dsda_string_t* str) {
   if (!gamemapinfo || !gamemapinfo->levelname)
     return false;
 
-  if (gamemapinfo->label)
-    s = gamemapinfo->label;
-  else
-    s = gamemapinfo->lumpname;
+  s = (gamemapinfo->label) ? gamemapinfo->label : gamemapinfo->lumpname;
 
-  if (s == gamemapinfo->lumpname || !(gamemapinfo->flags & MapInfo_LabelClear))
+  if (!(gamemapinfo->flags & MapInfo_LabelClear))
     dsda_StringPrintF(str, "%s: %s", s, gamemapinfo->levelname);
   else
     dsda_StringPrintF(str, "%s", gamemapinfo->levelname);
