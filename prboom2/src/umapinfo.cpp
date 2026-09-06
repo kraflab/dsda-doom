@@ -213,6 +213,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	else if (!stricmp(pname, "endpic"))
 	{
 		ParseLumpName(scanner, mape->endpic);
+		mape->flags |= MapInfo_EndGameArt;
 	}
 	else if (!stricmp(pname, "endcast"))
 	{
@@ -484,6 +485,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 			}
 			else if (gamemission == tc_chex && !stricmp(parsed.lumpname, "E1M5"))
 			{
+			  parsed.flags |= MapInfo_EndGameArt;
 			  strcpy(parsed.endpic, "CREDIT");
 			}
 			else
