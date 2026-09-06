@@ -477,12 +477,12 @@ int dsda_UPrepareFinale(int* result) {
   if (!gamemapinfo)
     return false;
 
-  if (gamemapinfo->intertextsecret && secretexit) {
+  if (secretexit && (gamemapinfo->intertextsecret || gamemapinfo->flags & MapInfo_InterTextSecretClear)) {
     *result = !(gamemapinfo->flags & MapInfo_InterTextSecretClear)
             ? WD_START_FINALE
             : 0;
     return true;
-  } else if (gamemapinfo->intertext && !secretexit) {
+  } else if (!secretexit && (gamemapinfo->intertext || gamemapinfo->flags & MapInfo_InterTextClear)) {
     *result = !(gamemapinfo->flags & MapInfo_InterTextClear)
             ? WD_START_FINALE
             : 0;
