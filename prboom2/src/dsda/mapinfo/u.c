@@ -81,7 +81,7 @@ int dsda_UNextMap(int* episode, int* map) {
     name = gamemapinfo->nextsecret;
   else if (gamemapinfo->nextmap[0])
     name = gamemapinfo->nextmap;
-  else if (gamemapinfo->endpic[0] && gamemapinfo->endpic[0] != '-')
+  else if (gamemapinfo->flags & MapInfo_EndGameAny)
   {
     *episode = 1;
     *map = 1;
