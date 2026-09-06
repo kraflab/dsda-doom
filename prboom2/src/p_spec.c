@@ -1466,8 +1466,8 @@ void P_PlayerCollectSecret(player_t *player)
   {
     int sfx_id = heretic ? heretic_sfx_chat : hexen ? hexen_sfx_chat : sfx_itmbk;
 
-    if (I_GetSfxLumpNum(&S_sfx[sfx_secret]) != -1)
-      sfx_id = sfx_secret;
+    if (I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) != -1)
+      sfx_id = g_sfx_secret;
 
     SetCustomMessage(player - players, s_HUSTR_SECRETFOUND, 2 * TICRATE, sfx_id);
   }
