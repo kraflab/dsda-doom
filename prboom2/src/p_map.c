@@ -3885,7 +3885,8 @@ static void CheckForPushSpecial(line_t * line, int side, mobj_t * mobj)
         else if (mobj->flags2 & MF2_IMPACT)
         {
             // TODO: possible "missile activates impact lines" mapinfo flag
-            if (!(mobj->flags & MF_MISSILE) ||
+            // By default, hexen always has this flag
+            if (hexen || !(mobj->flags & MF_MISSILE) ||
                 !mobj->target)
             {
               P_ActivateLine(line, mobj, side, SPAC_IMPACT);
