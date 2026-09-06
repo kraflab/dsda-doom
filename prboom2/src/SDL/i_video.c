@@ -425,7 +425,7 @@ static void I_GetEvent(void)
         break;
 
       case SDL_QUIT:
-        S_StartOptionalSound(sfx_mnucls, sfx_swtchn, true);
+        S_StartOptionalSound(g_sfx_mnucls, g_sfx_swtchn, true);
         M_QuitDOOM(0);
 
       default:

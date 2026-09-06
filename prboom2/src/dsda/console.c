@@ -2598,14 +2598,14 @@ static dboolean dsda_ExecuteConsole(const char* command_line, dboolean noise) {
             ret = false;
 
             if (noise)
-              S_StartOptionalSound(sfx_mnuerr, g_sfx_oof, false);
+              S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, false);
           }
         }
         else {
           ret = false;
 
           if (noise)
-            S_StartOptionalSound(sfx_mnuerr, g_sfx_oof, false);
+            S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, false);
         }
 
         break;
@@ -2617,7 +2617,7 @@ static dboolean dsda_ExecuteConsole(const char* command_line, dboolean noise) {
       ret = false;
 
       if (noise)
-        S_StartOptionalSound(sfx_mnuerr, g_sfx_oof, false);
+        S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, false);
     }
   }
 
