@@ -224,9 +224,9 @@ int dsda_UStartFinale(void) {
   if (!gamemapinfo)
     return false;
 
-  if (secretexit && !(gamemapinfo->flags & MapInfo_InterTextSecretClear))
+  if (secretexit && gamemapinfo->intertextsecret && !(gamemapinfo->flags & MapInfo_InterTextSecretClear))
     finaletext = gamemapinfo->intertextsecret;
-  else if (!secretexit && !(gamemapinfo->flags & MapInfo_InterTextClear))
+  else if (!secretexit && gamemapinfo->intertext && !(gamemapinfo->flags & MapInfo_InterTextClear))
     finaletext = gamemapinfo->intertext;
 
   // this is to avoid a crash on a missing text in the last map.

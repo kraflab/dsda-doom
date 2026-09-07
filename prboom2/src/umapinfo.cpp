@@ -212,47 +212,33 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	}
 	else if (!stricmp(pname, "endpic"))
 	{
+		mape->flags &= ~MapInfo_EndGameAny;
 		ParseLumpName(scanner, mape->endpic);
 		mape->flags |= MapInfo_EndGameArt;
 	}
 	else if (!stricmp(pname, "endcast"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		if (scanner.boolean)
-		{
-			mape->flags |= MapInfo_EndGameCast;
-		}
-		else
-		{
-			mape->flags &= ~MapInfo_EndGameCast;
-			mape->flags |= MapInfo_EndGameClear;
-		}
+		mape->flags &= ~MapInfo_EndGameAny;
+		mape->flags |= (scanner.boolean)
+		            ? MapInfo_EndGameCast
+		            : MapInfo_EndGameClear;
 	}
 	else if (!stricmp(pname, "endbunny"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		if (scanner.boolean)
-		{
-			mape->flags |= MapInfo_EndGameBunny;
-		}
-		else
-		{
-			mape->flags &= ~MapInfo_EndGameBunny;
-			mape->flags |= MapInfo_EndGameClear;
-		}
+		mape->flags &= ~MapInfo_EndGameAny;
+		mape->flags |= (scanner.boolean)
+		            ? MapInfo_EndGameBunny
+		            : MapInfo_EndGameClear;
 	}
 	else if (!stricmp(pname, "endgame"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		if (scanner.boolean)
-		{
-			mape->flags |= MapInfo_EndGameStandard;
-		}
-		else
-		{
-			mape->flags &= ~MapInfo_EndGameStandard;
-			mape->flags |= MapInfo_EndGameClear;
-		}
+		mape->flags &= ~MapInfo_EndGameAny;
+		mape->flags |= (scanner.boolean)
+		            ? MapInfo_EndGameStandard
+		            : MapInfo_EndGameClear;
 	}
 	else if (!stricmp(pname, "exitpic"))
 	{
@@ -357,6 +343,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			// mark level free of boss actions
 			if (mape->bossactions) Z_Free(mape->bossactions);
 			mape->bossactions = NULL;
+			mape->numbossactions = 0;
 			mape->flags |= MapInfo_BossActionClear;
 		}
 		else
@@ -454,11 +441,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 
 		// Set default level progression here to simplify the checks elsewhere.
 		// Doing this lets us skip all normal code for this if nothing has been defined.
-		if (parsed.flags & MapInfo_EndGameAny)
-		{
-			parsed.nextmap[0] = 0;
-		}
-		else if (!parsed.nextmap[0] && !(parsed.flags & MapInfo_EndGameClear))
+		if (!parsed.nextmap[0] && !(parsed.flags & MapInfo_EndGameClear))
 		{
 			if (!stricmp(parsed.lumpname, "MAP30"))
 			{
