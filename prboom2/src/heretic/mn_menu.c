@@ -88,6 +88,9 @@ void MN_DrawCredits(void);
 void MN_DrawHelp1(void);
 void MN_DrawHelp2(void);
 
+static void MN_DrTextAColor(const char *text, int x, int y, int cm);
+static void MN_DrTextBColor(const char *text, int x, int y, int cm);
+
 extern void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
 extern dboolean inhelpscreens;
 extern menu_t ExtHelpDef;
@@ -445,7 +448,7 @@ void MN_Drawer(void)
   {
     const char *text = currentMenu->menuitems[i].alttext;
     if (text)
-      MN_DrTextB(text, x, y);
+      MN_DrTextBColor(text, x, y, M_MenuMouseColor(i, CR_DEFAULT));
     y += ITEM_HEIGHT;
   }
 
@@ -607,7 +610,8 @@ static void MN_DrawFileSlots(int x, int y)
   for (i = 0; i < g_menu_save_page_size; i++)
   {
     V_DrawNamePatch(x, y, 0, "M_FSLOT", CR_DEFAULT, VPT_STRETCH);
-    MN_DrTextA(savegamestrings[i], x + 5, y + 5);
+    MN_DrTextAColor(savegamestrings[i], x + 5, y + 5,
+                    M_MenuMouseColor(i, CR_DEFAULT));
     y += ITEM_HEIGHT;
   }
 
@@ -661,8 +665,16 @@ void MN_DrawPause(void)
 
 void MN_DrTextA(const char *text, int x, int y)
 {
+  MN_DrTextAColor(text, x, y, CR_DEFAULT);
+}
+
+static void MN_DrTextAColor(const char *text, int x, int y, int cm)
+{
   char c;
   int lump;
+  int flags;
+
+  flags = VPT_STRETCH | (cm != CR_DEFAULT ? VPT_TRANS : VPT_NONE);
 
   while ((c = *text++) != 0)
   {
@@ -674,7 +686,7 @@ void MN_DrTextA(const char *text, int x, int y)
     else
     {
       lump = MN_SafeFontALump(c - 33);
-      V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNumPatch(x, y, 0, lump, cm, flags);
       x += R_NumPatchWidth(lump) - 1;
     }
   }
@@ -718,8 +730,16 @@ int MN_TextAWidth(const char *text)
 
 void MN_DrTextB(const char *text, int x, int y)
 {
+  MN_DrTextBColor(text, x, y, CR_DEFAULT);
+}
+
+static void MN_DrTextBColor(const char *text, int x, int y, int cm)
+{
   char c;
   int lump;
+  int flags;
+
+  flags = VPT_STRETCH | (cm != CR_DEFAULT ? VPT_TRANS : VPT_NONE);
 
   while ((c = *text++) != 0)
   {
@@ -731,7 +751,7 @@ void MN_DrTextB(const char *text, int x, int y)
     else
     {
       lump = FontBBaseLump + c - 33;
-      V_DrawNumPatch(x, y, 0, lump, CR_DEFAULT, VPT_STRETCH);
+      V_DrawNumPatch(x, y, 0, lump, cm, flags);
       x += R_NumPatchWidth(lump) - 1;
     }
   }

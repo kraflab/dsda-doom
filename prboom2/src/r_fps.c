@@ -333,6 +333,9 @@ static void R_DoAnInterpolation (int i, fixed_t smoothratio)
 void R_UpdateInterpolations()
 {
   int i;
+
+  P_UpdateMobjInterpolations();
+
   if (!movement_smooth)
     return;
   for (i = numinterpolations-1; i >= 0; --i)

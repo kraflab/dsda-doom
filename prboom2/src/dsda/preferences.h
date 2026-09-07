@@ -24,6 +24,5 @@ void dsda_LoadWadPreferences(void);
 void dsda_HandleMapPreferences(void);
 void dsda_PreferOpenGL(void);
 void dsda_PreferSoftware(void);
-dboolean dsda_UseMapinfo(void);
 
 #endif

@@ -59,14 +59,14 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
 
 dboolean dsda_AllowJumping(void) {
   return (allow_incompatibility && dsda_IntConfig(dsda_config_allow_jumping))
-         || map_info.flags & MI_ALLOW_JUMP
+         // TODO: possible "allow jumping" mapinfo flag
          || dsda_AllowCasualExCmdFeatures();
 }
 
 dboolean dsda_FreeAim(void) {
   return ((allow_incompatibility || dsda_AllowCasualExCmdFeatures())
-         && dsda_IntConfig(dsda_config_freelook))
-         || map_info.flags & MI_ALLOW_FREE_LOOK;
+         // TODO: possible "allow freelook" mapinfo flag
+         && dsda_IntConfig(dsda_config_freelook));
 }
 
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {

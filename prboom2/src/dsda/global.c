@@ -120,6 +120,21 @@ int g_sfx_secret;
 int g_sfx_revive;
 int g_sfx_console;
 
+// Optional menu/intermission sounds
+int g_sfx_mnuopn;
+int g_sfx_mnucls;
+int g_sfx_mnuact;
+int g_sfx_mnubak;
+int g_sfx_mnumov;
+int g_sfx_mnusli;
+int g_sfx_mnusel;
+int g_sfx_mnuerr;
+int g_sfx_inttic;
+int g_sfx_inttot;
+int g_sfx_intnex;
+int g_sfx_intnet;
+int g_sfx_intdms;
+
 int g_door_normal;
 int g_door_raise_in_5_mins;
 int g_door_open;
@@ -192,6 +207,21 @@ static void dsda_InitDoom(void) {
   g_sfx_secret = sfx_secret;
   g_sfx_revive = sfx_slop;
   g_sfx_console = sfx_radio;
+
+  // Optional menu/intermission sounds
+  g_sfx_mnuopn = sfx_mnuopn;
+  g_sfx_mnucls = sfx_mnucls;
+  g_sfx_mnuact = sfx_mnuact;
+  g_sfx_mnubak = sfx_mnubak;
+  g_sfx_mnumov = sfx_mnumov;
+  g_sfx_mnusli = sfx_mnusli;
+  g_sfx_mnusel = sfx_mnusel;
+  g_sfx_mnuerr = sfx_mnuerr;
+  g_sfx_inttic = sfx_inttic;
+  g_sfx_inttot = sfx_inttot;
+  g_sfx_intnex = sfx_intnex;
+  g_sfx_intnet = sfx_intnet;
+  g_sfx_intdms = sfx_intdms;
 
   g_door_normal = normal;
   g_door_raise_in_5_mins = waitRaiseDoor;
@@ -361,10 +391,25 @@ static void dsda_InitHeretic(void) {
   g_sfx_pistol = heretic_sfx_gldhit;
   g_sfx_oof = heretic_sfx_plroof;
   g_sfx_menu = heretic_sfx_dorcls;
+  g_sfx_secret = heretic_sfx_secret;
   g_sfx_respawn = heretic_sfx_respawn;
-  g_sfx_secret = heretic_sfx_chat;
   g_sfx_revive = heretic_sfx_telept;
   g_sfx_console = heretic_sfx_chat;
+
+  // Optional menu/intermission sounds
+  g_sfx_mnuopn = heretic_sfx_mnuopn;
+  g_sfx_mnucls = heretic_sfx_mnucls;
+  g_sfx_mnuact = heretic_sfx_mnuact;
+  g_sfx_mnubak = heretic_sfx_mnubak;
+  g_sfx_mnumov = heretic_sfx_mnumov;
+  g_sfx_mnusli = heretic_sfx_mnusli;
+  g_sfx_mnusel = heretic_sfx_mnusel;
+  g_sfx_mnuerr = heretic_sfx_mnuerr;
+  g_sfx_inttic = heretic_sfx_inttic;
+  g_sfx_inttot = heretic_sfx_inttot;
+  g_sfx_intnex = heretic_sfx_intnex;
+  g_sfx_intnet = heretic_sfx_intnet;
+  g_sfx_intdms = heretic_sfx_intdms;
 
   g_door_normal = vld_normal;
   g_door_raise_in_5_mins = vld_raiseIn5Mins;
@@ -417,7 +462,7 @@ static void dsda_InitHeretic(void) {
     mobjinfo[j].infighting_group = IG_DEFAULT;
     mobjinfo[j].projectile_group = PG_DEFAULT;
     mobjinfo[j].splash_group = SG_DEFAULT;
-    mobjinfo[j].ripsound = heretic_sfx_None;
+    mobjinfo[j].ripsound = sfx_None;
     mobjinfo[j].altspeed = NO_ALTSPEED;
     mobjinfo[j].meleerange = MELEERANGE;
 
@@ -515,10 +560,25 @@ static void dsda_InitHexen(void) {
   g_sfx_pistol = hexen_sfx_fighter_hammer_hitwall;
   g_sfx_oof = hexen_sfx_player_fighter_grunt;
   g_sfx_menu = hexen_sfx_door_light_close;
+  g_sfx_secret = hexen_sfx_secret;
   g_sfx_respawn = hexen_sfx_respawn;
-  g_sfx_secret = hexen_sfx_chat;
   g_sfx_revive = hexen_sfx_teleport;
   g_sfx_console = hexen_sfx_chat;
+
+  // Optional menu/intermission sounds
+  g_sfx_mnuopn = hexen_sfx_mnuopn;
+  g_sfx_mnucls = hexen_sfx_mnucls;
+  g_sfx_mnuact = hexen_sfx_mnuact;
+  g_sfx_mnubak = hexen_sfx_mnubak;
+  g_sfx_mnumov = hexen_sfx_mnumov;
+  g_sfx_mnusli = hexen_sfx_mnusli;
+  g_sfx_mnusel = hexen_sfx_mnusel;
+  g_sfx_mnuerr = hexen_sfx_mnuerr;
+  g_sfx_inttic = hexen_sfx_inttic;
+  g_sfx_inttot = hexen_sfx_inttot;
+  g_sfx_intnex = hexen_sfx_intnex;
+  g_sfx_intnet = hexen_sfx_intnet;
+  g_sfx_intdms = hexen_sfx_intdms;
 
   g_st_height = 39;
   g_border_offset = 4;
@@ -567,7 +627,7 @@ static void dsda_InitHexen(void) {
     mobjinfo[j].infighting_group = IG_DEFAULT;
     mobjinfo[j].projectile_group = PG_DEFAULT;
     mobjinfo[j].splash_group = SG_DEFAULT;
-    mobjinfo[j].ripsound = hexen_sfx_None;
+    mobjinfo[j].ripsound = sfx_None;
     mobjinfo[j].altspeed = NO_ALTSPEED;
     mobjinfo[j].meleerange = MELEERANGE;
 

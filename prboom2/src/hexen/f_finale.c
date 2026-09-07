@@ -50,7 +50,7 @@ void Hexen_F_StartFinale(void)
 {
     gameaction = ga_nothing;
     gamestate = GS_FINALE;
-    automap_active = false;
+    automap_full = false;
 
     FinaleStage = 0;
     FinaleCount = 0;

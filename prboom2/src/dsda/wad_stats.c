@@ -162,34 +162,33 @@ static void dsda_LoadWadStats(void) {
     lines = dsda_SplitString(buffer, "\n\r");
 
     if (lines) {
-      if (!lines[0] || !lines[1])
-        I_Error("Encountered invalid wad stats: %s", path);
+      if (
+        !lines[0] || !lines[1] ||
+        sscanf(lines[0], "%d", &version) != 1 ||
+        version > current_version ||
+        sscanf(lines[1], "%d", &wad_stats.total_kills) != 1
+      ) {
+          lprintf(LO_WARN, "Encountered invalid wad stats: %s", path);
+          M_remove(path);
+      }
+      else {
+        for (i = 2; lines[i] && *lines[i]; ++i) {
+          map_stats_t ms;
 
-      if (sscanf(lines[0], "%d", &version) != 1)
-        I_Error("Encountered invalid wad stats: %s", path);
-
-      if (version > current_version)
-        I_Error("Encountered unsupported wad stats version: %s", path);
-
-      if (sscanf(lines[1], "%d", &wad_stats.total_kills) != 1)
-        I_Error("Encountered invalid wad stats: %s", path);
-
-      for (i = 2; lines[i] && *lines[i]; ++i) {
-        map_stats_t ms;
-
-        if (
-          sscanf(
-            lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-            ms.lump, &ms.episode, &ms.map,
-            &ms.best_skill, &ms.best_time, &ms.best_max_time, &ms.best_nm_time,
-            &ms.total_exits, &ms.total_kills,
-            &ms.best_kills, &ms.best_items, &ms.best_secrets,
-            &ms.max_kills, &ms.max_items, &ms.max_secrets
-          ) == 15
-        ) {
-          map_count += 1;
-          dsda_EnsureMapCount(map_count);
-          wad_stats.maps[map_count - 1] = ms;
+          if (
+            sscanf(
+              lines[i], "%8s %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+              ms.lump, &ms.episode, &ms.map,
+              &ms.best_skill, &ms.best_time, &ms.best_max_time, &ms.best_nm_time,
+              &ms.total_exits, &ms.total_kills,
+              &ms.best_kills, &ms.best_items, &ms.best_secrets,
+              &ms.max_kills, &ms.max_items, &ms.max_secrets
+            ) == 15
+          ) {
+            map_count += 1;
+            dsda_EnsureMapCount(map_count);
+            wad_stats.maps[map_count - 1] = ms;
+          }
         }
       }
 

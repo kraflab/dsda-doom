@@ -4,8 +4,6 @@ This page defines the `dsda` udmf namespace. Most features of this namespace for
 
 In principle, udmf features supported by both dsda-doom and gzdoom should work the same in each. However, there may be maps that do not work in one port or the other due to differences in the underlying physics, similar to other map formats. Significant deviation in behaviour is likely a bug.
 
-It's strongly recommended to configure defaults with [MAPINFO](./mapinfo.md) for cross-port consistency.
-
 DSDA-Doom supports the `doom`, `heretic`, `hexen`, `zdoom` and `dsda` namespaces, as well as the XGLN/ZGLN, XGL2/ZGL2 and XGL3/ZGL3 extended node formats. Properties marked with a `*` are only supported by the opengl renderer.
 
 ### Linedefs

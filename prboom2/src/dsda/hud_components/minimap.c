@@ -21,19 +21,25 @@
 
 typedef struct {
   int x, y, width, height, scale;
+
+  // backups of original values
+  // (so we can access them later)
+  int xx, yy, ww, hh;
+  int yy_offset, flags;
 } local_component_t;
 
 static local_component_t* local;
 
-void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
-  *data = Z_Calloc(1, sizeof(local_component_t));
-  local = *data;
+static void dsda_UpdateMinimapCoordinates(void) {
 
-  local->x = x_offset;
-  local->y = dsda_HudComponentY(y_offset, vpt, 0);
-  local->width = args[0];
-  local->height = args[1];
-  local->scale = args[2];
+  // Must recalculate y each update
+  local->yy = dsda_HudComponentY(local->yy_offset, local->flags, 0);
+
+  // Varables
+  local->x      = local->xx;
+  local->y      = local->yy;
+  local->width  = local->ww;
+  local->height = local->hh;
 
   if (local->x < 0)
     local->x = 0;
@@ -53,10 +59,32 @@ void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_
   if (local->y + local->height > 200)
     local->y = 200 - local->height;
 
+  V_GetWideRect(&local->x, &local->y, &local->width, &local->height, local->flags);
+}
+
+void dsda_InitMinimapHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {
+  *data = Z_Calloc(1, sizeof(local_component_t));
+  local = *data;
+
+  // Varables
+  local->x = x_offset;
+  local->width = args[0];
+  local->height = args[1];
+  local->scale = args[2];
+
+  // Constants
+  local->xx = local->x;
+  local->ww = local->width;
+  local->hh = local->height;
+
+  local->yy_offset = y_offset;
+  local->flags = vpt;
+
+  // Init scale
   if (local->scale < 64)
     local->scale = 1024;
 
-  V_GetWideRect(&local->x, &local->y, &local->width, &local->height, vpt);
+  dsda_UpdateMinimapCoordinates();
 }
 
 void dsda_UpdateMinimapHC(void* data) {
@@ -72,6 +100,8 @@ void dsda_DrawMinimapHC(void* data) {
 void dsda_CopyMinimapCoordinates(int* f_x, int* f_y, int* f_w, int* f_h) {
   if (!local)
     return;
+
+  dsda_UpdateMinimapCoordinates();
 
   *f_x = local->x;
   *f_y = local->y;

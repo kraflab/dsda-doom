@@ -15,6 +15,8 @@
 //	DSDA Config
 //
 
+#include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "am_map.h"
@@ -112,7 +114,7 @@ void M_ChangeMIDIPlayer(void);
 void HU_InitCrosshair(void);
 void HU_InitThresholds(void);
 void dsda_InitAutoKeyFrames(void);
-void dsda_SetupStretchParams(void);
+void dsda_UpdateStretchParams(void);
 void dsda_InitCommandHistory(void);
 void dsda_InitQuickstartCache(void);
 void dsda_InitParallelSFXFilter(void);
@@ -929,11 +931,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_ex_text_scale_x] = {
     "ex_text_scale_x", dsda_config_ex_text_scale_x,
-    dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
+    dsda_config_int, 0, 4000, { 0 }, NULL, NOT_STRICT, dsda_UpdateStretchParams
   },
   [dsda_config_ex_text_ratio_y] = {
     "ex_text_ratio_y", dsda_config_ex_text_ratio_y,
-    dsda_config_int, 0, 200, { 0 }, NULL, NOT_STRICT, dsda_SetupStretchParams
+    dsda_config_int, 0, 200, { 0 }, NULL, NOT_STRICT, dsda_UpdateStretchParams
   },
   [dsda_config_wipe_at_full_speed] = {
     "dsda_wipe_at_full_speed", dsda_config_wipe_at_full_speed,
@@ -1038,6 +1040,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_weaponbob] = {
     "dsda_weaponbob_pct", dsda_config_weaponbob,
     dsda_config_int, 0, 4, { 4 }
+  },
+  [dsda_config_fix_viewbob_floor_jolt] = {
+    "dsda_fix_viewbob_floor_jolt", dsda_config_fix_viewbob_floor_jolt,
+    CONF_BOOL(1)
   },
   [dsda_config_quake_intensity] = {
     "dsda_quake_intensity", dsda_config_quake_intensity,
@@ -1260,11 +1266,11 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_gl_fade_mode] = {
     "gl_fade_mode", dsda_config_gl_fade_mode,
-    dsda_config_int, 0, 1, { 0 }
+    dsda_config_int, 0, 2, { 0 }
   },
   [dsda_config_translucent_sprites] = {
     "boom_translucent_sprites", dsda_config_translucent_sprites,
-    dsda_config_int, 0, 2, { 1 }, NULL, STRICT_INT(1), deh_changeCompTranslucency
+    dsda_config_int, 0, 2, { 1 }, NULL, NOT_STRICT, deh_changeCompTranslucency
   },
   [dsda_config_translucent_ghosts] = {
     "translucent_ghosts", dsda_config_translucent_ghosts,
@@ -1492,9 +1498,18 @@ static void dsda_ParseConfigArg(int arg_id, dboolean persist) {
       conf = &dsda_config[id];
       if (conf->type == dsda_config_int) {
         int value;
+        char* str_end;
 
-        if (sscanf(key_value[1], "%i", &value) != 1)
-          I_Error("Config variable \"%s\" requires an integer value", key_value[0]);
+        errno = 0;
+        value = strtol(key_value[1], &str_end, 0);
+        if (errno != 0) {
+          I_Error("Config variable \"%s\" requires an integer value (was \"%s\", err \"%s\")",
+              key_value[0], key_value[1], strerror(errno));
+        }
+        if (*str_end != '\0') {
+          I_Error("Value for config variable \"%s\" was not converted into an integer in its entirety (was \"%s\")",
+          key_value[0], key_value[1]);
+        }
 
         dsda_InitIntConfig(conf, value, persist);
       }

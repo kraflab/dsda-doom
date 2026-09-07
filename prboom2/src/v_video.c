@@ -57,8 +57,10 @@
 
 #include "dsda/configuration.h"
 #include "dsda/cr_table.h"
+#include "dsda/exhud.h"
 #include "dsda/global.h"
 #include "dsda/palette.h"
+#include "dsda/settings.h"
 #include "dsda/stretch.h"
 #include "dsda/text_color.h"
 

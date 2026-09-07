@@ -120,9 +120,13 @@ void S_ParseMusInfo(const char *mapid)
 
     SC_Close();
   }
-  else
+  else // No MUSINFO lump -> clear MUSINFO music state (without restarting music)
   {
+    memset(musinfo.items, 0, sizeof(musinfo.items));
     musinfo.items[0] = -1;
+    musinfo.mapthing = NULL;
+    musinfo.lastmapthing = NULL;
+    musinfo.tics = 0;
   }
 }
 
@@ -158,9 +162,15 @@ void T_MAPMusic(void)
       {
         int lumpnum = musinfo.items[arraypt];
 
-        if (lumpnum >= 0 && lumpnum < numlumps)
+        if (lumpnum > 0 && lumpnum < numlumps)
         {
           S_ChangeMusInfoMusic(lumpnum, true);
+        }
+        else // missing musinfo entry -> silence
+        {
+          lprintf(LO_WARN, "T_MAPMusic: MUSINFO entry %d not defined\n", arraypt);
+          S_StopMusic();
+          musinfo.current_item = -1;
         }
       }
 

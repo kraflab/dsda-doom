@@ -2137,6 +2137,11 @@ static void P_LoadUDMFLineDefs(int lump)
     ld->health = mld->health;
     ld->healthgroup = mld->healthgroup;
 
+    // Clamp to valid values
+    if (ld->automap_style < ams_default || ld->automap_style >= AMS_COUNT) {
+      ld->automap_style = ams_default;
+    }
+
     if (ld->special == zl_sector_set_colormap || ld->special == zl_map_set_colormap)
     {
       if (mld->arg0str)
@@ -3441,11 +3446,6 @@ static void P_UpdateMapFormat()
   }
   else
   {
-    if (dsda_UseMapinfo())
-      DO_ONCE
-        lprintf(LO_WARN, "Some features of MAPINFO may not work with non-udmf maps!\n");
-      END_ONCE
-
     if (has_behavior && !hexen)
     {
       if (heretic)
@@ -3672,7 +3672,7 @@ void P_MustRebuildBlockmap(void)
 //
 // killough 5/3/98: reformatted, cleaned up
 
-void P_SetupLevel(int episode, int map, int playermask, int skill)
+void P_SetupLevel(int episode, int map, int skill)
 {
   int   i;
   char  lumpname[9];
@@ -3709,6 +3709,8 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
   S_Start();
 
   Z_FreeLevel();
+
+  P_ResetTeleptList();
 
   P_InitThinkers();
 
@@ -3966,7 +3968,7 @@ void P_SetupLevel(int episode, int map, int playermask, int skill)
 
   if (dsda_ShowMinimap())
   {
-    AM_Start(false);
+    AM_Start(AM_OPEN_MINIMAP);
   }
 }
 

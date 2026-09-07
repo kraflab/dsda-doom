@@ -3,6 +3,8 @@
 /build*
 /release*
 
+/prboom2/build*
+
 # spec files
 analysis.txt
 levelstat.txt

@@ -73,6 +73,8 @@
 #define MAXBOB  0x100000
 
 dboolean onground; // whether player is on ground or in air
+int offgroundtics; // how many tics player has been in air
+#define AIRBOBFADETICS 4 // num tics to scale bobbing to 0 in midair
 
 // heretic
 int newtorch;      // used in the torch flicker effect.
@@ -191,7 +193,7 @@ static void P_Bob(player_t *player, angle_t angle, fixed_t move)
 void P_CalcHeight (player_t* player)
 {
   int     angle;
-  fixed_t bob;
+  fixed_t bob, totalviewoffset;
 
   // Regular movement bobbing
   // (needs to be calculated for gun swing
@@ -252,7 +254,9 @@ void P_CalcHeight (player_t* player)
     player->bob = FRACUNIT / 2;
   }
 
-  if (!onground && !raven)
+  offgroundtics = onground ? 0 : offgroundtics + 1;
+
+  if (!onground && !raven && (offgroundtics > AIRBOBFADETICS || !dsda_FixViewBobFloorJolt()) )
   {
     player->viewz = player->mo->z + g_viewheight;
 
@@ -268,7 +272,7 @@ void P_CalcHeight (player_t* player)
 
   // move viewheight
 
-  if (player->playerstate == PST_LIVE)
+  if (player->playerstate == PST_LIVE && (onground || raven) )
   {
     player->viewheight += player->deltaviewheight;
 
@@ -299,7 +303,12 @@ void P_CalcHeight (player_t* player)
   }
   else
   {
-    player->viewz = player->mo->z + player->viewheight + bob;
+    totalviewoffset = player->viewheight + bob - g_viewheight;
+
+    if (!onground && !raven)
+      totalviewoffset = totalviewoffset * (AIRBOBFADETICS + 1 - offgroundtics) / AIRBOBFADETICS;
+
+    player->viewz = player->mo->z + g_viewheight + totalviewoffset;
   }
 
   if (player->playerstate != PST_DEAD && player->mo->z <= player->mo->floorz)
@@ -405,11 +414,11 @@ void P_MovePlayer (player_t* player)
           P_Thrust(player,mo->angle-ANG90,cmd->sidemove*movefactor);
         }
       }
-      else if (map_info.air_control)
+      else if (map_aircontrol)
       {
         int friction, movefactor = P_GetMoveFactor(mo, &friction);
 
-        movefactor = FixedMul(movefactor, map_info.air_control);
+        movefactor = FixedMul(movefactor, map_aircontrol);
 
         if (cmd->forwardmove)
         {
@@ -1480,7 +1489,7 @@ void Raven_P_MovePlayer(player_t * player)
           if (onground || player->mo->flags2 & MF2_FLY)
               P_ForwardThrust(player, player->mo->angle, cmd->forwardmove * 2048);
           else if (hexen)
-              P_ForwardThrust(player, player->mo->angle, map_info.air_control);
+              P_ForwardThrust(player, player->mo->angle, map_aircontrol);
         }
 
         if (cmd->sidemove)
@@ -1488,7 +1497,7 @@ void Raven_P_MovePlayer(player_t * player)
           if (onground || player->mo->flags2 & MF2_FLY)
               P_Thrust(player, player->mo->angle - ANG90, cmd->sidemove * 2048);
           else if (hexen)
-              P_Thrust(player, player->mo->angle, map_info.air_control);
+              P_Thrust(player, player->mo->angle, map_aircontrol);
         }
     }
 

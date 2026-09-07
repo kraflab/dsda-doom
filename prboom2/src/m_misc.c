@@ -323,6 +323,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_switch_weapon_on_pickup),
   MIGRATED_SETTING(dsda_config_viewbob),
   MIGRATED_SETTING(dsda_config_weaponbob),
+  MIGRATED_SETTING(dsda_config_fix_viewbob_floor_jolt),
   MIGRATED_SETTING(dsda_config_quake_intensity),
   MIGRATED_SETTING(dsda_config_organize_failed_demos),
   MIGRATED_SETTING(dsda_config_demo_end_quit),
@@ -914,9 +915,9 @@ void M_ScreenShot(void)
     startshot = shot; // CPhipps - prevent infinite loop
 
     do {
-      int size = snprintf(NULL, 0, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
+      int size = snprintf(NULL, 0, "%s/dsda%04d" SCREENSHOT_EXT, shot_dir, shot);
       lbmname = Z_Realloc(lbmname, size+1);
-      snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
+      snprintf(lbmname, size+1, "%s/dsda%04d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
     } while (M_FileExists(lbmname) && (shot != startshot) && (shot < 10000));
 

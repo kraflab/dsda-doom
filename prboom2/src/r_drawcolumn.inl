@@ -61,13 +61,18 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
 #endif
 
 #if (R_DRAWCOLUMN_PIPELINE & RDC_FUZZ)
+  fuzz_cutoff = false;
+
   // Adjust borders. Low...
   if (!dcvars->yl)
     dcvars->yl = 1;
 
   // .. and high.
   if (dcvars->yh == viewheight-1)
+  {
     dcvars->yh = viewheight - 2;
+    fuzz_cutoff = true;
+  }
 #endif
 
   // leban 1/17/99:
@@ -161,7 +166,20 @@ static void R_DRAWCOLUMN_FUNCNAME(draw_column_vars_t *dcvars)
     //
     // killough 2/1/98: more performance tuning
 
-    if (dcvars->texheight == 128) {
+    // [AR] Fix SSG fire bleeding bottom line
+    // Player sprites can round one row past the current post.
+    // Moved from R_DrawMaskedColumn() to fix >128 height (multi-post) psprites
+    if (dcvars->pspritepostheight) {
+      const fixed_t maxfrac = (dcvars->pspritepostheight << FRACBITS) - 1;
+
+      while (count--) {
+        const fixed_t pspritefrac = BETWEEN(0, maxfrac, frac);
+
+        *dest = GETCOL(pspritefrac);
+        dest += 4;
+        frac += fracstep;
+      }
+    } else if (dcvars->texheight == 128) {
       #define FIXEDT_128MASK ((127<<FRACBITS)|0xffff)
       while(count--) {
         *dest = GETCOL(frac & FIXEDT_128MASK);

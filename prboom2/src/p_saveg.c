@@ -455,7 +455,7 @@ void P_ArchiveMap(void)
 {
   int i;
 
-  P_SAVE_X(automap_active);
+  P_SAVE_X(automap_full);
   P_SAVE_X(markpointnum);
 
   for (i = 0; i < markpointnum; i++)
@@ -467,10 +467,10 @@ void P_ArchiveMap(void)
 
 void P_UnArchiveMap(void)
 {
-  P_LOAD_X(automap_active);
+  P_LOAD_X(automap_full);
 
-  if (automap_active)
-    AM_Start(true);
+  if (automap_full)
+    AM_Start(AM_OPEN_FULLAUTOMAP);
 
   P_LOAD_X(markpointnum);
 

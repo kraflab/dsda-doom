@@ -92,6 +92,21 @@ extern int g_sfx_secret;
 extern int g_sfx_revive;
 extern int g_sfx_console;
 
+// Optional menu/intermission sounds
+extern int g_sfx_mnuopn;
+extern int g_sfx_mnucls;
+extern int g_sfx_mnuact;
+extern int g_sfx_mnubak;
+extern int g_sfx_mnumov;
+extern int g_sfx_mnusli;
+extern int g_sfx_mnusel;
+extern int g_sfx_mnuerr;
+extern int g_sfx_inttic;
+extern int g_sfx_inttot;
+extern int g_sfx_intnex;
+extern int g_sfx_intnet;
+extern int g_sfx_intdms;
+
 extern int g_door_normal;
 extern int g_door_raise_in_5_mins;
 extern int g_door_open;

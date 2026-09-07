@@ -26,6 +26,11 @@ find_package(SndFile 1.0.29 REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(libzip REQUIRED)
 
+# ZLIB 1.3.2 static now requires explicit ZLIBSTATIC
+if(NOT TARGET ZLIB::ZLIB AND TARGET ZLIB::ZLIBSTATIC)
+  add_library(ZLIB::ZLIB ALIAS ZLIB::ZLIBSTATIC)
+endif()
+
 if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
    set(HAVE_SNDFILE_MPEG TRUE)
 endif()

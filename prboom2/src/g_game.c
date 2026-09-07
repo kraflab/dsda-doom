@@ -94,6 +94,7 @@
 #include "dsda/build.h"
 #include "dsda/configuration.h"
 #include "dsda/console.h"
+#include "dsda/death.h"
 #include "dsda/demo.h"
 #include "dsda/excmd.h"
 #include "dsda/exdemo.h"
@@ -160,6 +161,7 @@ int             gameepisode;
 int             gamemap;
 // CPhipps - moved *_loadgame vars here
 static dboolean forced_loadgame = false;
+static dboolean commandline_loadgame = false;
 static dboolean load_via_cmd = false;
 
 dboolean         timingdemo;    // if true, exit with report on completion
@@ -838,7 +840,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
   {
-    cmd->buttons |= BT_USE;
+    if (!dsda_DeathUseNothingInDemo())
+      cmd->buttons |= BT_USE;
     // clear double clicks if hit use button
     dclicks = 0;
   }
@@ -981,7 +984,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks++;
       if (dclicks == 2)
         {
-          cmd->buttons |= BT_USE;
+          if (!dsda_DeathUseNothingInDemo())
+            cmd->buttons |= BT_USE;
           dclicks = 0;
         }
       else
@@ -1003,7 +1007,8 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks2++;
       if (dclicks2 == 2)
         {
-          cmd->buttons |= BT_USE;
+          if (!dsda_DeathUseNothingInDemo())
+            cmd->buttons |= BT_USE;
           dclicks2 = 0;
         }
       else
@@ -1218,19 +1223,9 @@ static void G_DoLoadLevel (void)
 
   for (i = 0; i < g_maxplayers; i++)
   {
-    if (playeringame[i])
-    {
-      if (players[i].playerstate == PST_DEAD)
-        players[i].playerstate = PST_REBORN;
-      else
-      {
-        if (map_info.flags & MI_RESET_HEALTH)
-          G_ResetHealth(&players[i]);
-
-        if (map_info.flags & MI_RESET_INVENTORY)
-          G_ResetInventory(&players[i]);
-      }
-    }
+    // TODO: possible "reset inventory/health" mapinfo flag
+    if (playeringame[i] && players[i].playerstate == PST_DEAD)
+      players[i].playerstate = PST_REBORN;
     memset(players[i].frags, 0, sizeof(players[i].frags));
   }
 
@@ -1248,7 +1243,7 @@ static void G_DoLoadLevel (void)
   if (map_format.sndseq)
     SN_StopAllSequences();
 
-  P_SetupLevel (gameepisode, gamemap, 0, gameskill);
+  P_SetupLevel (gameepisode, gamemap, gameskill);
   if (!demoplayback) // Don't switch views if playing a demo
     displayplayer = consoleplayer;    // view the guy you are playing
   gameaction = ga_nothing;
@@ -1637,6 +1632,7 @@ void G_Ticker (void)
             savegameslot = ex->load_slot;
             gameaction = ga_loadgame;
             forced_loadgame = true;
+            commandline_loadgame = false;
             load_via_cmd = true;
             R_SmoothPlaying_Reset(NULL);
           }
@@ -2079,7 +2075,8 @@ void G_DoReborn (int playernum)
   if (hexen)
     return Hexen_G_DoReborn(playernum);
 
-  if (!netgame && !(map_info.flags & MI_ALLOW_RESPAWN) && !(skill_info.flags & SI_PLAYER_RESPAWN))
+  // TODO: possible "allow respawn" mapinfo flag
+  if (!netgame && !(skill_info.flags & SI_PLAYER_RESPAWN))
     gameaction = ga_loadlevel;      // reload the level from scratch
   else
     {                               // respawn at the start
@@ -2217,21 +2214,17 @@ void G_DoCompleted (void)
   wminfo.totaltimes = totalleveltimes;
 
   gamestate = GS_INTERMISSION;
-  automap_active = false;
+  automap_full = false;
 
   // lmpwatch.pl engine-side demo testing support
   // print "FINISHED: <mapname>" when the player exits the current map
   if (nodrawers && (demoplayback || timingdemo))
     lprintf(LO_INFO, "FINISHED: %s\n", dsda_MapLumpName(gameepisode, gamemap));
 
-  if (!(map_info.flags & MI_INTERMISSION))
-  {
-    G_WorldDone();
-  }
-  else
-  {
-    WI_Start (&wminfo);
-  }
+  // TODO: tenuous "no intermission" mapinfo flag
+  // umapinfo already partially handles it, but not in a friendly way
+  // only in maps that can end the game -- i.e. `endgame`, `endbunny`, etc
+  WI_Start (&wminfo);
 }
 
 //
@@ -2354,7 +2347,7 @@ void G_ForcedLoadGame(void)
 }
 
 // killough 3/16/98: add slot info
-void G_LoadGame(int slot)
+void G_LoadGame(int slot, dboolean via_commandline)
 {
   if (demorecording)
   {
@@ -2362,7 +2355,7 @@ void G_LoadGame(int slot)
     return;
   }
 
-  if (!demoplayback)
+  if (!demoplayback && !via_commandline)
   {
     forced_loadgame = netgame; // CPhipps - always force load netgames
   }
@@ -2377,6 +2370,7 @@ void G_LoadGame(int slot)
 
   gameaction = ga_loadgame;
   savegameslot = slot;
+  commandline_loadgame = via_commandline;
   load_via_cmd = false;
   R_SmoothPlaying_Reset(NULL); // e6y
 }
@@ -2388,6 +2382,11 @@ static void G_LoadGameErr(const char *msg)
 {
   P_FreeSaveBuffer();
   M_ForcedLoadGame(msg);             // Print message asking for 'Y' to force
+  if (commandline_loadgame)
+  {
+    D_StartTitle();
+    gamestate = GS_DEMOSCREEN;
+  }
 }
 
 const char * comp_lev_str[MAX_COMPATIBILITY_LEVEL] =
@@ -2471,7 +2470,7 @@ void G_DoLoadGame(void)
   // [crispy] loaded game must always be single player.
   // Needed for ability to use a further game loading, as well as
   // cheat codes and other single player only specifics.
-  if (!load_via_cmd)
+  if (!commandline_loadgame && !load_via_cmd)
   {
     netgame = false;
     deathmatch = false;
@@ -3084,7 +3083,7 @@ void G_InitNew(int skill, int episode, int map, dboolean prepare)
 
   dsda_ResetPauseMode();
   dsda_ResetCommandHistory();
-  automap_active = false;
+  automap_full = false;
   dsda_UpdateGameSkill(skill);
   dsda_UpdateGameMap(episode, map);
 
@@ -3900,7 +3899,7 @@ const byte* G_ReadDemoHeaderEx(const byte *demo_p, size_t size, unsigned int par
     netgame = true;
   }
 
-  if (!(params & RDH_SKIP_HEADER))
+  if (!(params & RDH_SKIP_HEADER) && gameaction != ga_loadgame)
   {
     G_InitNew(skill, episode, map, true);
     demo_p = dsda_EvaluateDemoStartPoint(demo_p);
