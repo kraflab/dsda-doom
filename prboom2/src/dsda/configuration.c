@@ -23,6 +23,7 @@
 #include "d_deh.h"
 #include "doomdef.h"
 #include "doomstat.h"
+#include "dsda/mapinfo.h"
 #include "hu_stuff.h"
 #include "g_overflow.h"
 #include "gl_struct.h"
@@ -135,7 +136,6 @@ void deh_changeCompTranslucency(void);
 void dsda_InitGameControllerParameters(void);
 void dsda_InitExHud(void);
 void dsda_UpdateFreeText(void);
-void dsda_ResetAirControl(void);
 void dsda_AlterGameFlags(void);
 void dsda_RefreshPistolStart(void);
 void dsda_RefreshAlwaysPistolStart(void);

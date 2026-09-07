@@ -40,6 +40,11 @@ void dsda_PrevMap(int* episode, int* map);
 void dsda_ShowNextLocBehaviour(int* behaviour);
 int dsda_SkipDrawShowNextLoc(void);
 void dsda_UpdateGameMap(int episode, int map);
+void dsda_ResetAirControl(void);
+dboolean dsda_MapAllowsJumping(void);
+dboolean dsda_MapAllowsFreeaim(void);
+dboolean dsda_ExplodeIn3D(void);
+dboolean dsda_VerticalExplosionThrust(void);
 void dsda_ResetLeaveData(void);
 void dsda_UpdateLeaveData(int map, int position, int flags, angle_t angle);
 dboolean dsda_FinaleShortcut(void);
@@ -74,5 +79,6 @@ int dsda_MapCluster(int map);
 short dsda_Sky1Texture(void);
 short dsda_Sky2Texture(void);
 void dsda_InitSky(void);
+dboolean dsda_RequireExCmd(void);
 
 #endif

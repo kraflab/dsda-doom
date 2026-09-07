@@ -179,6 +179,50 @@ void dsda_ResetAirControl(void) {
   map_aircontrol = dsda_AirControl();
 }
 
+dboolean dsda_MapAllowsJumping(void)
+{
+  if (dsda_HexenMapAllowsJumping())
+    return true;
+  if (dsda_UMapAllowsJumping())
+    return true;
+  if (dsda_LegacyMapAllowsJumping())
+    return true;
+  return false;
+}
+
+dboolean dsda_MapAllowsFreeaim(void)
+{
+  if (dsda_HexenMapAllowsFreeAim())
+    return true;
+  if (dsda_UMapAllowsFreeAim())
+    return true;
+  if (dsda_LegacyMapAllowsFreeAim())
+    return true;
+  return false;
+}
+
+dboolean dsda_ExplodeIn3D(void)
+{
+  if (dsda_HexenExplodeIn3D())
+    return true;
+  if (dsda_UExplodeIn3D())
+    return true;
+  if (dsda_LegacyExplodeIn3D())
+    return true;
+  return false;
+}
+
+dboolean dsda_VerticalExplosionThrust(void)
+{
+  if (dsda_HexenVerticalExplosionThrust())
+    return true;
+  if (dsda_UVerticalExplosionThrust())
+    return true;
+  if (dsda_LegacyVerticalExplosionThrust())
+    return true;
+  return false;
+}
+
 void dsda_ResetLeaveData(void) {
   memset(&leave_data, 0, sizeof(leave_data));
 }

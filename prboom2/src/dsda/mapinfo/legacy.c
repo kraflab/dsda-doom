@@ -786,3 +786,23 @@ int dsda_LegacyMapColorMap(int* colormap) {
 
   return true;
 }
+
+dboolean dsda_LegacyMapAllowsJumping(void)
+{
+  return false;
+}
+
+dboolean dsda_LegacyMapAllowsFreeAim(void)
+{
+  return false;
+}
+
+dboolean dsda_LegacyExplodeIn3D(void)
+{
+  return false;
+}
+
+dboolean dsda_LegacyVerticalExplosionThrust(void)
+{
+  return false;
+}

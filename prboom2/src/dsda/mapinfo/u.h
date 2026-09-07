@@ -20,7 +20,6 @@
 
 #include "p_mobj.h"
 
-#include "dsda/mapinfo.h"
 #include "dsda/utility.h"
 
 int dsda_UNameToMap(int* found, const char* name, int* episode, int* map);
@@ -66,5 +65,9 @@ int dsda_UGravity(fixed_t* gravity);
 int dsda_UAirControl(fixed_t* air_control);
 int dsda_UInitSky(void);
 int dsda_UMapColorMap(int* colormap);
+dboolean dsda_UMapAllowsJumping(void);
+dboolean dsda_UMapAllowsFreeAim(void);
+dboolean dsda_UExplodeIn3D(void);
+dboolean dsda_UVerticalExplosionThrust(void);
 
 #endif
