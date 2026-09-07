@@ -224,19 +224,14 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		            ? MapInfo_EndGameCast
 		            : MapInfo_EndGameClear;
 	}
-	else if (!stricmp(pname, "endbunny"))
+	else if ((!stricmp(pname, "endbunny") && !raven) ||
+	         (!stricmp(pname, "enddemon") && heretic))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
 		mape->flags |= (scanner.boolean)
-		            ? MapInfo_EndGameBunny
+		            ? MapInfo_EndGameScroll
 		            : MapInfo_EndGameClear;
-	}
-	else if (!stricmp(pname, "enddemon"))
-	{
-		scanner.MustGetToken(TK_BoolConst);
-		if (scanner.boolean) strcpy(mape->endpic, "$DEMON");
-		else strcpy(mape->endpic, "-");
 	}
 	else if (!stricmp(pname, "endgame"))
 	{
@@ -465,7 +460,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 			}
 			else if (!stricmp(parsed.lumpname, "E3M8"))
 			{
-				parsed.flags |= MapInfo_EndGameBunny;
+				parsed.flags |= MapInfo_EndGameScroll;
 			}
 			else if (!stricmp(parsed.lumpname, "E4M8"))
 			{

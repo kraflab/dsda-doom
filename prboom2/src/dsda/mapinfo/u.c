@@ -297,7 +297,7 @@ int dsda_UFTicker(void) {
         finalecount = 0;
         finalestage = FINALE_STAGE_ART;
         wipegamestate = -1; // force a wipe
-        if (gamemapinfo->flags & MapInfo_EndGameBunny)
+        if (gamemapinfo->flags & MapInfo_EndGameScroll)
           F_StartScroll(NULL, NULL, NULL, true);
         else if (gamemapinfo->flags & MapInfo_EndGameStandard)
           return false; // let go of finale ownership
@@ -324,7 +324,7 @@ void dsda_UFDrawer(void) {
       }
       break;
     case FINALE_STAGE_ART:
-      if (gamemapinfo->flags & MapInfo_EndGameBunny)
+      if (gamemapinfo->flags & MapInfo_EndGameScroll)
       {
         F_BunnyScroll();
       }
@@ -505,7 +505,7 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
-  if (dsda_Flag(dsda_arg_nomapinfo) || dsda_UseMapinfo() || hexen)
+  if (dsda_Flag(dsda_arg_nomapinfo) || hexen)
     return;
 
   p = -1;

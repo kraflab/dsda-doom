@@ -94,11 +94,11 @@ void Heretic_F_StartFinale(void)
   dsda_InterMusic(&mnum, &muslump);
   if (muslump >= 0)
   {
-    S_ChangeMusInfoMusic(muslump, true, false);
+    S_ChangeMusInfoMusic(muslump, true);
   }
   else
   {
-    S_ChangeMusic(heretic_mus_cptd, true, false);
+    S_ChangeMusic(heretic_mus_cptd, true);
   }
 
   dsda_StartFinale();
@@ -302,11 +302,11 @@ void Heretic_F_Drawer(void)
     Heretic_F_TextWrite();
   else
   {
-    if (strcmp(endpic, "$DEMON") == 0)
-    {
-      F_DemonScroll();
-      return;
-    }
+    // if (gamemapinfo->flags & MapInfo_EndGameScroll)
+    // {
+    //   F_DemonScroll();
+    //   return;
+    // }
     if (W_LumpNameExists(endpic))
     {
       V_DrawNamePatch(0, 0, 0, endpic, CR_DEFAULT, VPT_STRETCH);
