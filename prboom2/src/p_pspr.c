@@ -89,6 +89,15 @@ static const int recoil_values[] = {    // phares
   80  // wp_supershotgun
 };
 
+static int P_RecoilValue(weapontype_t weapon)
+{
+  // MBF21 recoil
+  if (weaponinfo[weapon].intflags & WIF_ENABLERECOIL)
+    return weaponinfo[weapon].recoil;
+
+  return recoil_values[weapon];
+}
+
 //
 // P_SetPsprite
 //
@@ -773,16 +782,21 @@ void A_Raise(player_t *player, pspdef_t *psp)
 // muzzle flash, rather than the pressing of the trigger.
 // The BFG delay caused this to be necessary.
 
+static void A_WeaponRecoil(player_t* player)
+{
+  // killough 3/27/98: prevent recoil in no-clipping mode
+  if (!(player->mo->flags & MF_NOCLIP))
+    if (!compatibility && weapon_recoil) // phares
+      P_ForwardThrust(player, ANG180 + player->mo->angle,
+                      2048 * P_RecoilValue(player->readyweapon));
+}
+
 static void A_FireSomething(player_t* player,int adder)
 {
   P_SetPsprite(player, ps_flash,
                weaponinfo[player->readyweapon].flashstate+adder);
 
-  // killough 3/27/98: prevent recoil in no-clipping mode
-  if (!(player->mo->flags & MF_NOCLIP))
-    if (!compatibility && weapon_recoil) // phares
-      P_ForwardThrust(player, ANG180 + player->mo->angle,
-                      2048 * recoil_values[player->readyweapon]);
+  A_WeaponRecoil(player);
 }
 
 //
@@ -948,7 +962,7 @@ void A_FireOldBFG(player_t *player, pspdef_t *psp)
 
   if (weapon_recoil && !(player->mo->flags & MF_NOCLIP))
     P_ForwardThrust(player, ANG180 + player->mo->angle,
-                    512 * recoil_values[wp_plasma]);
+                    512 * recoil_values[wp_plasma]); // [AR] Don't allow mbf21 to change this
 
   P_SubtractAmmo(player, 1);
 
@@ -1510,6 +1524,7 @@ void A_GunFlashTo(player_t *player, pspdef_t *psp)
     P_SetMobjState(player->mo, S_PLAY_ATK2);
 
   P_SetPsprite(player, ps_flash, psp->state->args[0]);
+  A_WeaponRecoil(player);
 }
 
 //
