@@ -441,7 +441,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 
 		// Set default level progression here to simplify the checks elsewhere.
 		// Doing this lets us skip all normal code for this if nothing has been defined.
-		if (!parsed.nextmap[0] && !(parsed.flags & MapInfo_EndGameClear))
+		if (!parsed.nextmap[0] && !(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)))
 		{
 			if (!stricmp(parsed.lumpname, "MAP30"))
 			{

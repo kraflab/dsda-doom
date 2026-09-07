@@ -345,11 +345,17 @@ int dsda_UBossAction(mobj_t* mo) {
   int i;
   line_t junk;
 
-  if (!gamemapinfo || !gamemapinfo->numbossactions)
+  // no bossaction from umapinfo entry, use legacy fallback
+  if (!gamemapinfo)
     return false;
 
+  // bossactions have been cleared, clear legacy as well
   if (gamemapinfo->flags & MapInfo_BossActionClear)
     return true;
+
+  // umapinfo bossaction exists, but is incomplete / invalid, use legacy fallback
+  if (!gamemapinfo->numbossactions)
+    return false;
 
   for (i = 0; i < gamemapinfo->numbossactions; i++)
     if (gamemapinfo->bossactions[i].type == mo->type)
