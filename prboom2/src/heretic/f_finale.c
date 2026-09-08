@@ -100,16 +100,17 @@ static dboolean F_BlockingInput(void)   // Avoid bringing up menu when loading H
 
 dboolean Heretic_F_Responder(event_t * event)
 {
-  if (F_BlockingInput())
-  {                           // we're showing the water pic, make any key kick to demo mode
-    V_SetPlayPal(playpal_default);
-    finalestage++;
-    return true;
-  }
-
   if (event->type != ev_keydown)
   {
     return false;
+  }
+
+  if (F_BlockingInput())
+  {                           // we're showing the water pic, make any key kick to demo mode
+    finalestage++;
+    S_StartVoidSound(g_sfx_swtchx);
+    V_SetPlayPal(playpal_default);
+    return true;
   }
 
   return false;

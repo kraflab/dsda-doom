@@ -249,6 +249,9 @@ void D_PostEvent(event_t *ev)
     }
   }
 
+  if (heretic && gamestate == GS_FINALE && F_Responder(ev))
+    dsda_InputFlushTick(); // When under Heretic's Underwater Palette, make menu event invisible
+  else
   if (M_Responder(ev))
     dsda_InputFlushTick(); // If the menu used the event, make it invisible
   else
