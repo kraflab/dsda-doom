@@ -62,6 +62,8 @@ static int FontABaseLump;
 
 void Heretic_F_StartFinale(void)
 {
+  int mnum, muslump;
+
   gameaction = ga_nothing;
   gamestate = GS_FINALE;
   automap_full = false;
@@ -92,7 +94,6 @@ void Heretic_F_StartFinale(void)
 
   FontABaseLump = W_GetNumForName("FONTA_S") + 1;
 
-  int mnum, muslump;
   dsda_InterMusic(&mnum, &muslump);
   if (muslump >= 0)
   {

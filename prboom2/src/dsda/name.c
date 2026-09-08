@@ -821,7 +821,7 @@ static const char* const action_names[] = {
 
 int dsda_ActorNameToType(const char* name) {
   int i;
-  const char** const actor_names = raven ? actor_names_heretic : actor_names_doom;
+  const char* const* actor_names = raven ? actor_names_heretic : actor_names_doom;
 
   for (i = 0; actor_names[i]; ++i)
     if (!stricmp(name, actor_names[i]))
