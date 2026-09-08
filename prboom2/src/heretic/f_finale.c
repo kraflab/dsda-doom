@@ -21,6 +21,7 @@
 #include "m_menu.h"
 #include "s_sound.h"
 #include "sounds.h"
+#include "umapinfo.h"
 
 #include "dsda/palette.h"
 #include "dsda/mapinfo.h"
@@ -47,6 +48,7 @@ extern const char *finaleflat;
 extern const char* finalepatch;
 extern const char* endpic;
 extern dboolean finalintermission;
+extern int endgameflags;
 
 static int FontABaseLump;
 
@@ -302,11 +304,15 @@ void Heretic_F_Drawer(void)
     Heretic_F_TextWrite();
   else
   {
-    // if (gamemapinfo->flags & MapInfo_EndGameScroll)
-    // {
-    //   F_DemonScroll();
-    //   return;
-    // }
+    if (endgameflags & MapInfo_EndGameClear)
+      return;
+
+    if (endgameflags & MapInfo_EndGameScroll)
+    {
+      F_DemonScroll();
+      return;
+    }
+
     if (W_LumpNameExists(endpic))
     {
       V_DrawNamePatch(0, 0, 0, endpic, CR_DEFAULT, VPT_STRETCH);

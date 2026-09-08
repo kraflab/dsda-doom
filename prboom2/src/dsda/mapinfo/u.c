@@ -220,6 +220,7 @@ extern const char* finalepatch;
 extern const char* endpic;
 extern int acceleratestage;
 extern int midstage;
+extern int endgameflags;
 
 int dsda_UStartFinale(void) {
   if (!gamemapinfo)
@@ -246,6 +247,7 @@ int dsda_UStartFinale(void) {
     finaleflat = "FLOOR4_8"; // use a single fallback for all maps.
 
   endpic = gamemapinfo->endpic;
+  endgameflags = gamemapinfo->flags;
 
   return true;
 }

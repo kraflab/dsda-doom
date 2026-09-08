@@ -66,6 +66,7 @@ const char*   finaletext;
 const char*   finaleflat;
 const char*   finalepatch;
 const char*   endpic;
+int endgameflags;
 
 // defines for the end mission display text                     // phares
 
@@ -94,6 +95,7 @@ void F_StartFinale (void)
   finaleflat = NULL;
   finalepatch = NULL;
   endpic = NULL;
+  endgameflags = 0;
 
   if (heretic) return Heretic_F_StartFinale();
   if (hexen) return Hexen_F_StartFinale();
