@@ -66,6 +66,7 @@ struct MapEntry
 	char music[9];
 	char skytexture[9];
 	char endpic[9];
+	char endpalette[9];
 	char exitpic[9];
 	char enterpic[9];
 	char interbackdrop[9];

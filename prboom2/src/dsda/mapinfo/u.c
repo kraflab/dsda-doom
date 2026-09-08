@@ -33,6 +33,7 @@
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/palette.h"
 #include "dsda/preferences.h"
 
 #include "u.h"
@@ -218,6 +219,7 @@ extern const char* finaletext;
 extern const char* finaleflat;
 extern const char* finalepatch;
 extern const char* endpic;
+extern const char* endpalette;
 extern int acceleratestage;
 extern int midstage;
 extern int endgameflags;
@@ -247,7 +249,13 @@ int dsda_UStartFinale(void) {
     finaleflat = "FLOOR4_8"; // use a single fallback for all maps.
 
   endpic = gamemapinfo->endpic;
+  endpalette = gamemapinfo->endpalette;
   endgameflags = gamemapinfo->flags;
+
+  if (gamemapinfo->endpalette[0]) {
+    dsda_PlayPalData(playpal_custom)->lump_name = gamemapinfo->endpalette;
+    dsda_InitPlayPal(playpal_custom);
+  }
 
   return true;
 }
@@ -326,6 +334,11 @@ void dsda_UFDrawer(void) {
       }
       break;
     case FINALE_STAGE_ART:
+      if (gamemapinfo->endpalette[0])
+      {
+        V_SetPlayPal(playpal_custom);
+      }
+
       if (gamemapinfo->flags & MapInfo_EndGameScroll)
       {
         F_BunnyScroll();

@@ -16,6 +16,7 @@
 // F_finale.c
 
 #include "doomstat.h"
+#include "../f_finale.h"
 #include "w_wad.h"
 #include "v_video.h"
 #include "m_menu.h"
@@ -47,6 +48,7 @@ extern const char *finaletext;
 extern const char *finaleflat;
 extern const char* finalepatch;
 extern const char* endpic;
+extern const char* endpalette;
 extern dboolean finalintermission;
 extern int endgameflags;
 
@@ -113,7 +115,8 @@ void Heretic_F_StartFinale(void)
 
 static dboolean F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
 {
-  return finalestage == 1 && gameepisode == 2 && !(endgameflags & MapInfo_EndGameAny);
+  return (finalestage == 1) &&
+          ((endgameflags & (MapInfo_EndGameClear|MapInfo_EndGameAny)) ? endpalette != NULL : gameepisode == 2);
 }
 
 dboolean Heretic_F_Responder(event_t * event)
@@ -305,8 +308,10 @@ void Heretic_F_Drawer(void)
     Heretic_F_TextWrite();
   else
   {
-    if (endgameflags & MapInfo_EndGameClear)
-      return;
+    if (endpalette)
+    {
+      V_SetPlayPal(playpal_custom);
+    }
 
     if (endgameflags & MapInfo_EndGameScroll)
     {
@@ -324,6 +329,10 @@ void Heretic_F_Drawer(void)
       gameaction = ga_worlddone;
       return;
     }
+
+    if (endgameflags & MapInfo_EndGameClear)
+      return;
+
     switch (gameepisode)
     {
       case 1:

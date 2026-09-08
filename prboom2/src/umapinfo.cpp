@@ -241,6 +241,10 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		            ? MapInfo_EndGameStandard
 		            : MapInfo_EndGameClear;
 	}
+	else if (!stricmp(pname, "endpalette"))
+	{
+		ParseLumpName(scanner, mape->endpalette);
+	}
 	else if (!stricmp(pname, "exitpic"))
 	{
 		ParseLumpName(scanner, mape->exitpic);
