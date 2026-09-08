@@ -56,6 +56,46 @@
                               id_p = dsda_FindSectorsFromID(line->special_args[0]); \
                             }
 
+//
+// [AR]
+// Add immediate texture/effect change for GenFloor/GenCeiling
+// To closer match vanilla's raise actions which immediately change.
+//
+// This fixes the weird state where you have a bridge raise from nukage,
+// But the texture/effect doesn't change until it reaches it's final destination.
+//
+// There is some weirdness in regards to nearest floors / raise 32/24 units.
+// For those I've excluded them from this new behaviour.
+//
+// This must be done via a new complevel since the effect is also transfered
+// Thus it could affect demo compatibility.
+//
+typedef enum
+{
+  gen_floor_plane,
+  gen_ceiling_plane,
+} gen_plane_e;
+
+static dboolean P_ISGenPlaneImmediate(gen_plane_e plane, int direction, int model, int target, int type)
+{
+  // This is where MBF2y gate would be
+  if (!allow_incompatibility)
+    return false;
+
+  // Lowering ceiling changes texture/effect immediately
+  // For trigger or lowest ceiling only
+  if (plane == gen_ceiling_plane && type != genCeiling)
+    return !direction && (model == CTriggerModel || target == CtoLnC);
+
+  // Raising floor changes texture/effect immediately
+  // For trigger or highest floor only
+  if (plane == gen_floor_plane && type != genFloor)
+    return direction && (model == FTriggerModel || target == FtoHnF);
+
+  // Don't change texture/effect until destination (default boom gen behaviour)
+  return false;
+}
+
 //////////////////////////////////////////////////////////
 //
 // Generalized Linedef Type handlers
@@ -230,6 +270,15 @@ int EV_DoGenFloor
           default:
             break;
         }
+      }
+
+      // [AR] Apply changes before floor reaches its destination
+      if (P_ISGenPlaneImmediate(gen_floor_plane, Dirn, ChgM, Targ, floor->type))
+      {
+        floor->sector->floorpic = floor->texture;
+
+        if (floor->type == genFloorChg0 || floor->type == genFloorChgT)
+          P_TransferSpecial(floor->sector, &floor->newspecial);
       }
     }
   }
@@ -411,6 +460,15 @@ int EV_DoGenCeiling
           default:
             break;
         }
+      }
+
+      // [AR] Apply changes before ceiling reaches its destination
+      if (P_ISGenPlaneImmediate(gen_ceiling_plane, Dirn, ChgM, Targ, ceiling->type))
+      {
+        ceiling->sector->ceilingpic = ceiling->texture;
+
+        if (ceiling->type == genCeilingChg0 || ceiling->type == genCeilingChgT)
+          P_TransferSpecial(ceiling->sector, &ceiling->newspecial);
       }
     }
     P_AddActiveCeiling(ceiling);  // add this ceiling to the active list
