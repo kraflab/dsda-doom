@@ -107,8 +107,8 @@ void Heretic_F_StartFinale(void)
   }
 
   dsda_StartFinale();
-  acceleratestage = midstage = 0;
 
+  acceleratestage = midstage = 0;
   finalestage = 0;
   finalecount = 0;
 }
@@ -131,6 +131,7 @@ dboolean Heretic_F_Responder(event_t * event)
     finalestage++;
     S_StartVoidSound(g_sfx_swtchx);
     V_SetPlayPal(playpal_default);
+    V_DrawRawScreen("TITLE");
     return true;
   }
 
@@ -276,22 +277,15 @@ void F_DemonScroll(void)
 
 void F_DrawUnderwater(void)
 {
-  switch (finalestage)
+  if (menuactive) // Force menu off to avoid bad palette on menu
   {
-    case 1:
-      if (menuactive) // Force menu off to avoid bad palette on menu
-      {
-        M_LeaveSetupMenu();
-        M_ClearMenus();
-        S_StartVoidSound(g_sfx_swtchx);
-      }
-      V_SetPlayPal(playpal_heretic_e2end);
-      V_DrawRawScreen("E2END");
-
-      break;
-    case 2:
-      V_DrawRawScreen("TITLE");
+    M_LeaveSetupMenu();
+    M_ClearMenus();
+    S_StartVoidSound(g_sfx_swtchx);
   }
+
+  V_SetPlayPal(playpal_heretic_e2end);
+  V_DrawRawScreen("E2END");
 }
 
 /*
@@ -304,57 +298,64 @@ void F_DrawUnderwater(void)
 
 void Heretic_F_Drawer(void)
 {
-  if (!finalestage)
-    Heretic_F_TextWrite();
-  else
+  switch (finalestage)
   {
-    if (endpalette)
-    {
-      V_SetPlayPal(playpal_custom);
-    }
+    case 0:
+      Heretic_F_TextWrite();
+      break;
+    case 1:
+      if (endpalette)
+      {
+        V_SetPlayPal(playpal_custom);
+      }
 
-    if (endgameflags & MapInfo_EndGameScroll)
-    {
-      F_DemonScroll();
-      return;
-    }
-
-    if (W_LumpNameExists(endpic))
-    {
-      V_DrawNamePatch(0, 0, 0, endpic, CR_DEFAULT, VPT_STRETCH);
-      return;
-    }
-    if (!finalintermission)
-    {
-      gameaction = ga_worlddone;
-      return;
-    }
-
-    if (endgameflags & MapInfo_EndGameClear)
-      return;
-
-    switch (gameepisode)
-    {
-      case 1:
-        if (gamemode == shareware)
-        {
-          V_DrawRawScreen("ORDER");
-        }
-        else
-        {
-          V_DrawRawScreen("CREDIT");
-        }
-        break;
-      case 2:
-        F_DrawUnderwater();
-        break;
-      case 3:
+      if (endgameflags & MapInfo_EndGameScroll)
+      {
         F_DemonScroll();
-        break;
-      case 4:            // Just show credits screen for extended episodes
-      case 5:
-        V_DrawRawScreen("CREDIT");
-        break;
-    }
+        return;
+      }
+
+      if (W_LumpNameExists(endpic))
+      {
+        V_DrawNamePatch(0, 0, 0, endpic, CR_DEFAULT, VPT_STRETCH);
+        return;
+      }
+      if (!finalintermission)
+      {
+        gameaction = ga_worlddone;
+        return;
+      }
+
+      if (endgameflags & MapInfo_EndGameClear)
+        return;
+
+      switch (gameepisode)
+      {
+        case 1:
+          if (gamemode == shareware)
+          {
+            V_DrawRawScreen("ORDER");
+          }
+          else
+          {
+            V_DrawRawScreen("CREDIT");
+          }
+          break;
+        case 2:
+          F_DrawUnderwater();
+          break;
+        case 3:
+          F_DemonScroll();
+          break;
+        case 4:            // Just show credits screen for extended episodes
+        case 5:
+          V_DrawRawScreen("CREDIT");
+          break;
+      }
+
+      break;
+    case 2:
+      V_DrawRawScreen("TITLE");
+      break;
   }
 }
