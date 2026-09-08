@@ -113,7 +113,7 @@ void Heretic_F_StartFinale(void)
 
 static dboolean F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
 {
-  return finalestage == 1 && gameepisode == 2;
+  return finalestage == 1 && gameepisode == 2 && !(endgameflags & MapInfo_EndGameAny);
 }
 
 dboolean Heretic_F_Responder(event_t * event)
