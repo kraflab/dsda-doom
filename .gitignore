@@ -27,6 +27,7 @@ CMakeUserPresets.json
 # Visual Studio Code
 /.vscode/**
 !/.vscode/extension.json
+CMakePresets.json
 
 # clangd
 /.cache/
