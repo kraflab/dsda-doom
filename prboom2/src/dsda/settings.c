@@ -326,7 +326,7 @@ dboolean dsda_SkipWipe(void) {
     return true;
   }
 
-  return !dsda_RenderWipeScreen() || hexen;
+  return !dsda_RenderWipeScreen() || raven;
 }
 
 static dboolean game_controller_used;
