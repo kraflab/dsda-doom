@@ -591,11 +591,11 @@ void MN_DrawSound(void)
 {
   char num[4];
 
-  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX, 16, 16, snd_SfxVolume);
+  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX, 16, 16, snd_SfxVolume, M_CurrentSelectedItem(SFX_VOL_INDEX-1), M_MouseHovered(SFX_VOL_INDEX-1));
   snprintf(num, sizeof(num), "%3d", snd_SfxVolume);
   MN_DrTextA(num, SoundDef.x + 130, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX + 3);
 
-  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, 16, snd_MusicVolume);
+  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, 16, snd_MusicVolume, M_CurrentSelectedItem(MUS_VOL_INDEX-1), M_MouseHovered(MUS_VOL_INDEX-1));
   snprintf(num, sizeof(num), "%3d", snd_MusicVolume);
   MN_DrTextA(num, SoundDef.x + 130, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX + 3);
 }
@@ -789,28 +789,33 @@ void MN_DrawTitle(int y, const char *text, int cm)
 #define SLIDER_WIDTH (SLIDER_LIMIT - 64)
 #define SLIDER_PATCH_COUNT (SLIDER_WIDTH / 8)
 
-void MN_DrawSlider(int x, int y, int width, int range, int slot)
+void MN_DrawSlider(int x, int y, int width, int range, int slot, dboolean selected, dboolean highlight)
 {
   int xx;
   int i;
   int slot_offset;
   short slider_img = 0;
 
+  // [AR] We check both if the item is selected and highlight
+  // to include the label on the sound screen
+  int color = M_HighlightColor(selected && highlight, CR_DEFAULT);
+  int flags = VPT_STRETCH | M_AddColorFlag(color);
+
   width -= 4;
 
   xx = x - 12;
-  V_DrawNamePatch(xx, y, 0, "M_SLDLT", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(xx, y, 0, "M_SLDLT", color, flags);
   xx += 32;
   for (i=0;i<width;i++)
   {
     const char* name;
     name = (slider_img & 1 ? "M_SLDMD1" : "M_SLDMD2");
     slider_img ^= 1;
-    V_DrawNamePatch(xx, y, 0, name, CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(xx, y, 0, name, color, flags);
 
     xx += 8;
   }
-  V_DrawNamePatch(xx, y, 0, "M_SLDRT", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(xx, y, 0, "M_SLDRT", color, flags);
 
   if (slot >= range)
   {
@@ -821,7 +826,7 @@ void MN_DrawSlider(int x, int y, int width, int range, int slot)
 
   slot_offset = 8 * slot * width / range;
   slot_offset -= range / width;
-  V_DrawNamePatch(x + 20 + slot_offset, y + 7, 0, "M_SLDKB", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x + 20 + slot_offset, y + 7, 0, "M_SLDKB", color, flags);
 }
 
 // hexen

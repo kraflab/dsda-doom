@@ -43,6 +43,8 @@ static int menu_mouse_drag_main = -1;
 static int menu_mouse_hover_main = -1;
 static int menu_mouse_hover_tab = -1;
 
+static dboolean M_MouseSoundSliderAtPointer(int *index);
+
 dboolean M_MouseHovered(int index)
 {
   return index == menu_mouse_hover_main &&
@@ -354,7 +356,8 @@ static dboolean M_MouseUpdateMainHover(void)
   int index;
 
   if (!M_MouseMainItemAtPointer(&index) &&
-      !M_MouseSaveItemAtPointer(&index))
+      !M_MouseSaveItemAtPointer(&index) &&
+      !M_MouseSoundSliderAtPointer(&index))
   {
     M_MouseClearMainHover();
     return false;
@@ -375,7 +378,8 @@ static dboolean M_MouseSelectMainItem(void)
   int index;
 
   if (!M_MouseMainItemAtPointer(&index) &&
-      !M_MouseSaveItemAtPointer(&index))
+      !M_MouseSaveItemAtPointer(&index) &&
+      !M_MouseSoundSliderAtPointer(&index))
     return false;
 
   menu_mouse_hover_main = index;
@@ -637,6 +641,12 @@ static dboolean M_MouseSetupItemAtPointer(int *index)
   }
 
   return found;
+}
+
+static dboolean M_MouseSetupThermoAtPointer(const setup_menu_t *item)
+{
+  return menu_mouse_x >= item->m_x &&
+         menu_mouse_x < item->m_x + 80;
 }
 
 static const char **M_MouseCurrentTabs(int *visible_tabs, int *y,
@@ -953,6 +963,9 @@ static dboolean M_MouseActivateSetupItem(event_t *ev)
 
     if (item->m_flags & S_THERMO)
     {
+      if (!M_MouseSetupThermoAtPointer(item))
+        return true;
+
       menu_mouse_drag_setup = set_menu_itemon;
       return M_MouseSetSetupThermo(set_menu_itemon);
     }
@@ -971,6 +984,9 @@ static dboolean M_MouseActivateSetupItem(event_t *ev)
 
   if (item->m_flags & S_THERMO)
   {
+    if (!M_MouseSetupThermoAtPointer(item))
+      return true;
+
     menu_mouse_drag_setup = set_menu_itemon;
     return M_MouseSetSetupThermo(set_menu_itemon);
   }
@@ -1060,6 +1076,11 @@ static dboolean M_MouseBindingCaptureResponder(event_t *ev)
   return true;
 }
 
+static dboolean M_MouseSoundSliderTitleAtPointer(void)
+{
+  return currentMenu->menuitems[itemOn].status == 2;
+}
+
 static dboolean M_MouseMotionResponder(void)
 {
   if (menu_mouse_drag_setup >= 0 && (menu_mouse_buttons & MENU_MOUSE_LEFT))
@@ -1110,6 +1131,9 @@ static dboolean M_MouseLeftPressResponder(event_t *ev)
     menu_mouse_drag_main = slider_index;
     return M_MouseSetSoundSlider(slider_index);
   }
+
+  if (M_MouseSoundSliderTitleAtPointer())
+    return true;
 
   if (!M_MouseSelectMainItem())
     return true;

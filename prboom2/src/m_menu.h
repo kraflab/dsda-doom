@@ -84,6 +84,9 @@ void M_DrawCreditsDynamic(void);    // killough 11/98
 
 void M_DrawTabs(const char **pages, int m, int y);
 
+// for Raven Thermos
+dboolean M_CurrentSelectedItem(int item);
+
 // Menu Highlights
 dboolean M_MouseHovered(int index);
 int M_HighlightColor(dboolean highlight, int color);

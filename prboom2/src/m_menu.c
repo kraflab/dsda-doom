@@ -279,7 +279,7 @@ static void M_DrawHelp (void);                                     // phares 5/0
 static void M_DrawAd(void);
 
 static void M_DrawSaveLoadBorder(int x,int y);
-static void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot);
+static void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot,dboolean selected,dboolean highlight);
 static void M_DrawEmptyCell(menu_t *menu,int item);
 static void M_DrawSelCell(menu_t *menu,int item);
 static void M_WriteText(int x, int y, const char *string, int cm);
@@ -857,6 +857,11 @@ static void M_DeleteSaveGame(int slot)
 // Highlight functions
 //
 
+dboolean M_CurrentSelectedItem(int item)
+{
+  return itemOn == item;
+}
+
 int M_HighlightColor(dboolean highlight, int color)
 {
   if (highlight &&
@@ -1418,12 +1423,12 @@ static void M_DrawSound(void)
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 38, 0, "M_SVOL", CR_DEFAULT, VPT_STRETCH);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,16,snd_SfxVolume);
+  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,16,snd_SfxVolume,M_CurrentSelectedItem(sfx_vol),M_MouseHovered(sfx_vol));
   snprintf(num, sizeof(num), "%3d", snd_SfxVolume);
   strcpy(menu_buffer, num);
   M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(sfx_vol+1) + 3, cr_value_edit);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,16,snd_MusicVolume);
+  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,16,snd_MusicVolume,M_CurrentSelectedItem(music_vol),M_MouseHovered(music_vol));
   snprintf(num, sizeof(num), "%3d", snd_MusicVolume);
   strcpy(menu_buffer, num);
   M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(music_vol+1) + 3, cr_value_edit);
@@ -2164,7 +2169,8 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   }
 
   if (flags & S_THERMO) {
-    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
+    dboolean selected = flags & S_HILITE;
+    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id), selected, true);
 
     x += 80;
     y += 3;
@@ -6563,23 +6569,30 @@ static void M_StopMessage(void)
 // proff/nicolas 09/20/98 -- changed for hi-res
 // CPhipps - patch drawing updated
 //
-static void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
+static void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot, dboolean selected, dboolean highlight )
 {
   int xx;
   int i;
   int dot_offset;
+  int color;
+  int flags;
 
-  if (raven) return MN_DrawSlider(x, y, thermWidth, thermRange, thermDot);
+  if (raven) return MN_DrawSlider(x, y, thermWidth, thermRange, thermDot, selected, highlight);
+
+  // [AR] We check both if the item is selected and highlight
+  // to include the label on the sound screen
+  color = M_HighlightColor(selected && highlight, CR_DEFAULT);
+  flags = VPT_STRETCH | M_AddColorFlag(color);
 
   xx = x;
-  V_DrawNamePatch(xx, y, 0, "M_THERML", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(xx, y, 0, "M_THERML", color, flags);
   xx += 8;
   for (i=0;i<thermWidth;i++)
   {
-    V_DrawNamePatch(xx, y, 0, "M_THERMM", CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(xx, y, 0, "M_THERMM", color, flags);
     xx += 8;
   }
-  V_DrawNamePatch(xx, y, 0, "M_THERMR", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(xx, y, 0, "M_THERMR", color, flags);
 
   if (thermDot >= thermRange)
   {
@@ -6588,7 +6601,7 @@ static void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int therm
 
   dot_offset = 8 * thermDot * thermWidth / thermRange;
   dot_offset -= thermRange / thermWidth;
-  V_DrawNamePatch(x + 8 + dot_offset, y, 0, "M_THERMO", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x + 8 + dot_offset, y, 0, "M_THERMO", color, flags);
 }
 
 //
