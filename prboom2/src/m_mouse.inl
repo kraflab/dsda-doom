@@ -70,7 +70,7 @@ static void M_MouseBeginSetupNavigation(void)
 {
   setup_menu_layout_t layout;
 
-  if (!setup_active || !current_setup_menu || menu_mouse_setup_scroll >= 0)
+  if (!setup_active || !current_setup_menu || menu_mouse_setup_scroll != KEYBOARD_NAV)
     return;
 
   M_GetSetupMenuLayout(current_setup_menu, DEFAULT_LIST_Y, &layout);

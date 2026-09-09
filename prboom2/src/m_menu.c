@@ -854,6 +854,24 @@ static void M_DeleteSaveGame(int slot)
 }
 
 //
+// Highlight functions
+//
+
+int M_HighlightColor(dboolean highlight, int color)
+{
+  if (highlight &&
+      color >= CR_DEFAULT && color < CR_HUD_LIMIT)
+    return CR_BRIGHT + color;
+
+  return color;
+}
+
+int M_AddColorFlag(int color)
+{
+  return color != CR_DEFAULT ? VPT_TRANS : VPT_NONE;
+}
+
+//
 // M_LoadGame & Cie.
 //
 
@@ -1644,8 +1662,10 @@ static void M_SizeDisplay(int choice)
 
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
+
 // Negative keeps the selection-driven scroll used by keyboard navigation.
-static int menu_mouse_setup_scroll = -1;
+#define KEYBOARD_NAV -1
+static int menu_mouse_setup_scroll = KEYBOARD_NAV;
 
 typedef struct
 {
@@ -1703,7 +1723,7 @@ static void M_SetSetupMenuItemOn (const int x)
 
 static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
 {
-  menu_mouse_setup_scroll = -1;
+  menu_mouse_setup_scroll = KEYBOARD_NAV;
   current_setup_menu = new_setup_menu;
   set_menu_itemon = M_GetSetupMenuItemOn();
   if (current_setup_menu[set_menu_itemon].m_flags & S_NOSELECT)
@@ -4720,7 +4740,7 @@ dboolean M_ConsoleOpen(void)
 void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
-  menu_mouse_setup_scroll = -1;
+  menu_mouse_setup_scroll = KEYBOARD_NAV;
   setup_active = false;
   M_ClearSetupMenuState();
   colorbox_active = false;
@@ -6145,7 +6165,7 @@ dboolean M_Responder(event_t* ev) {
   if (ch != MENU_NULL || action != MENU_NULL)
   {
     if (setup_active)
-      menu_mouse_setup_scroll = -1;
+      menu_mouse_setup_scroll = KEYBOARD_NAV;
 
     M_MouseClearMainHover();
     M_MouseClearTabHover();
@@ -6327,20 +6347,6 @@ static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu)
   }
 
   return false;
-}
-
-int M_HighlightColor(dboolean highlight, int color)
-{
-  if (highlight &&
-      color >= CR_DEFAULT && color < CR_HUD_LIMIT)
-    return CR_BRIGHT + color;
-
-  return color;
-}
-
-int M_AddColorFlag(int color)
-{
-  return color != CR_DEFAULT ? VPT_TRANS : VPT_NONE;
 }
 
 //
