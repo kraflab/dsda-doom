@@ -47,6 +47,7 @@
 
 #include "dsda/font.h"
 #include "dsda/mapinfo.h"
+#include "dsda/palette.h"
 
 #include "f_finale.h" // CPhipps - hmm...
 
@@ -267,6 +268,18 @@ dboolean F_Responder (event_t *event)
 
   if (finalestage == FINALE_STAGE_CAST)
     return F_CastResponder (event);
+  else if (finalestage == FINALE_STAGE_ART)
+  {
+    // If the palette is changed, kick to title instead of opening the menu
+    if (event->type == ev_keydown && endpalette)
+    {
+      finalestage = FINALE_STAGE_TITLE;
+      S_StartVoidSound(g_sfx_swtchx);
+      V_SetPlayPal(playpal_default);
+      V_DrawRawScreen("TITLEPIC");
+      return true;
+    }
+  }
 
   return false;
 }
@@ -859,15 +872,9 @@ void F_Drawer (void)
     return;
   }
 
-  if (finalestage == FINALE_STAGE_CAST)
-  {
-    F_CastDrawer ();
-    return;
-  }
-
   if (finalestage == FINALE_STAGE_TEXT)
-    F_TextWrite ();
-  else
+    F_TextWrite();
+  else if (finalestage == FINALE_STAGE_ART)
   {
     const char* finalelump = NULL;
 
@@ -897,4 +904,8 @@ void F_Drawer (void)
       V_DrawNamePatchFS(0, 0, 0, finalelump, CR_DEFAULT, VPT_STRETCH);
     }
   }
+  else if (finalestage == FINALE_STAGE_CAST)
+    F_CastDrawer();
+  else if (finalestage == FINALE_STAGE_TITLE)
+    V_DrawRawScreen("TITLEPIC"); // Palette change has ended, just show the title
 }

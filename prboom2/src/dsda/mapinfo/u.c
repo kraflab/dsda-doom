@@ -353,6 +353,9 @@ void dsda_UFDrawer(void) {
     case FINALE_STAGE_CAST:
       F_CastDrawer();
       break;
+    case FINALE_STAGE_TITLE:
+      V_DrawRawScreen("TITLEPIC"); // Palette change has ended, just show the title
+      break;
   }
 }
 

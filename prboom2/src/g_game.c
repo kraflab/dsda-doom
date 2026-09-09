@@ -1363,9 +1363,6 @@ dboolean G_Responder (event_t* ev)
     }
   }
 
-  if (gamestate == GS_FINALE && F_Responder(ev))
-    return true;  // finale ate the event
-
   if (dsda_BuildResponder(ev))
     return true;
 
