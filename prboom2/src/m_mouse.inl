@@ -1183,6 +1183,9 @@ static dboolean M_MouseLeftPressResponder(event_t *ev)
   if (!menuactive)
     return false;
 
+  if (inhelpscreens)
+    return M_MouseMenuAction(MENU_ENTER, ev);
+
   if (M_MouseActivateTab())
     return true;
 
