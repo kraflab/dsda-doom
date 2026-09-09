@@ -59,11 +59,7 @@ static dboolean M_MouseTabHovered(int page)
 
 static int M_MouseClamp(int value, int low, int high)
 {
-  if (value < low)
-    return low;
-  if (value > high)
-    return high;
-  return value;
+  return BETWEEN(low, high, value);
 }
 
 static void M_MouseBeginSetupNavigation(void)
