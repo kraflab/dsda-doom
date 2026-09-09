@@ -95,6 +95,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/mouse.h"
 #include "dsda/playback.h"
 #include "dsda/skip.h"
 #include "dsda/stretch.h"
