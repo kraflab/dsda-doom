@@ -257,7 +257,7 @@ void F_DrawUnderwater(void)
         M_ClearMenus();
         S_StartVoidSound(g_sfx_swtchx);
       }
-      V_SetPlayPal(playpal_heretic_e2end);
+      V_SetCustomPlayPal("E2PAL");
       V_DrawRawScreen("E2END");
 
       break;

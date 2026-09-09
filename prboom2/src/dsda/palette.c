@@ -16,6 +16,7 @@
 //
 
 #include <math.h>
+#include <string.h>
 
 #include "r_main.h"
 #include "w_wad.h"
@@ -24,6 +25,8 @@
 #include "palette.h"
 
 static int playpal_index = playpal_default;
+static dboolean custom_playpal_active;
+static char custom_playpal_name[9];
 
 static dsda_playpal_t playpal_data[NUMPALETTES] = {
   { playpal_default, "PLAYPAL" },
@@ -35,11 +38,17 @@ static dsda_playpal_t playpal_data[NUMPALETTES] = {
   { playpal_6, "PLAYPAL6" },
   { playpal_7, "PLAYPAL7" },
   { playpal_8, "PLAYPAL8" },
-  { playpal_9, "PLAYPAL9" },
-  { playpal_heretic_e2end, "E2PAL" }
+  { playpal_9, "PLAYPAL9" }
+};
+
+static dsda_playpal_t custom_playpal_data = {
+  -1, custom_playpal_name
 };
 
 dsda_playpal_t* dsda_PlayPalData(void) {
+  if (custom_playpal_active)
+    return &custom_playpal_data;
+
   return &playpal_data[playpal_index];
 }
 
@@ -70,16 +79,34 @@ void dsda_SetPlayPal(int index) {
     index = playpal_default;
 
   playpal_index = index;
+  custom_playpal_active = false;
+}
+
+static void dsda_FreePlayPalData(dsda_playpal_t* data)
+{
+  if (data->lump)
+  {
+    Z_Free(data->lump);
+    data->lump = NULL;
+  }
+
+  if (data->colours)
+  {
+    Z_Free(data->colours);
+    data->colours = NULL;
+  }
+
+  data->length = 0;
 }
 
 void dsda_FreePlayPal(void) {
   int playpal_i;
 
   for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i)
-    if (playpal_data[playpal_i].lump) {
-      Z_Free(playpal_data[playpal_i].lump);
-      playpal_data[playpal_i].lump = NULL;
-    }
+    dsda_FreePlayPalData(&playpal_data[playpal_i]);
+
+  dsda_FreePlayPalData(&custom_playpal_data);
+  custom_playpal_active = false;
 }
 
 static dboolean dsda_DuplicatePaletteEntry(const byte *playpal, int i, int j) {
@@ -140,64 +167,81 @@ double dsda_PaletteEntryLightness(const byte *playpal, int i) {
   return L;
 }
 
+static void dsda_InitPlayPalData(dsda_playpal_t* data) {
+  double lightness;
+  double darkest, lightest;
+  int lump;
+  const byte *playpal;
+  int i, j, found = 0;
+
+  lump = W_CheckNumForName(data->lump_name);
+  if (lump == LUMP_NOT_FOUND)
+    return;
+
+  playpal = W_LumpByNum(lump);
+
+  // find two duplicate palette entries. use one for transparency.
+  // rewrite source pixels in patches to the other on composition.
+  for (i = 0; i < 256; i++) {
+    for (j = i + 1; j < 256; j++) {
+      if (dsda_DuplicatePaletteEntry(playpal, i, j)) {
+        found = 1;
+        break;
+      }
+    }
+
+    if (found)
+      break;
+  }
+
+  if (found) { // found duplicate
+    data->transparent = i;
+    data->duplicate   = j;
+  }
+  else { // no duplicate: use 255 for transparency, as done previously
+    data->transparent = 255;
+    data->duplicate   = -1;
+  }
+
+  // find the brightness extremes (0-100)
+  darkest = 101.0;
+  lightest = -1.0;
+  for (i = 0; i < 256; i++) {
+    lightness = dsda_PaletteEntryLightness(playpal, i);
+
+    if (lightness < darkest) {
+      darkest = lightness;
+      data->darkest = i;
+    }
+
+    if (lightness > lightest) {
+      lightest = lightness;
+      data->lightest = i;
+    }
+  }
+}
+
+int dsda_SetCustomPlayPal(const char* lump_name)
+{
+  if (!lump_name || W_CheckNumForName(lump_name) == LUMP_NOT_FOUND)
+    return false;
+
+  if (custom_playpal_active && !stricmp(custom_playpal_name, lump_name))
+    return true;
+
+  dsda_FreePlayPalData(&custom_playpal_data);
+  strncpy(custom_playpal_name, lump_name, 8);
+  custom_playpal_name[8] = '\0';
+  dsda_InitPlayPalData(&custom_playpal_data);
+  custom_playpal_active = true;
+
+  return true;
+}
+
 // Moved from r_patch.c
 void dsda_InitPlayPal(void) {
   int playpal_i;
-  double lightness;
-  double darkest, lightest;
 
-  for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i) {
-    int lump;
-    const byte *playpal;
-    int i, j, found = 0;
-
-    lump = W_CheckNumForName(playpal_data[playpal_i].lump_name);
-    if (lump == LUMP_NOT_FOUND)
-      continue;
-
-    playpal = W_LumpByNum(lump);
-
-    if (!playpal_data[playpal_i].duplicate) {
-      // find two duplicate palette entries. use one for transparency.
-      // rewrite source pixels in patches to the other on composition.
-
-      for (i = 0; i < 256; i++) {
-        for (j = i + 1; j < 256; j++) {
-          if (dsda_DuplicatePaletteEntry(playpal, i, j)) {
-            found = 1;
-            break;
-          }
-        }
-
-        if (found)
-          break;
-      }
-
-      if (found) { // found duplicate
-        playpal_data[playpal_i].transparent = i;
-        playpal_data[playpal_i].duplicate   = j;
-      }
-      else { // no duplicate: use 255 for transparency, as done previously
-        playpal_data[playpal_i].transparent = 255;
-        playpal_data[playpal_i].duplicate   = -1;
-      }
-    }
-
-    // find the brightness extremes (0-100)
-    darkest = 101.0;
-    lightest = -1.0;
-    for (i = 0; i < 256; i++) {
-      lightness = dsda_PaletteEntryLightness(playpal, i);
-
-      if (lightness < darkest) {
-        darkest = lightness;
-        playpal_data[playpal_i].darkest = i;
-      }
-
-      if (lightness > lightest) {
-        lightest = lightness;
-        playpal_data[playpal_i].lightest = i;
-      }
-    }
-  }
+  for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i)
+    dsda_InitPlayPalData(&playpal_data[playpal_i]);
 }

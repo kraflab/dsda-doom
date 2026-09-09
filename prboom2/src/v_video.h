@@ -267,6 +267,7 @@ extern V_DrawShaded_f V_DrawShaded;
 void V_TouchPalette(void);
 void V_SetPalette(int pal);
 void V_SetPlayPal(int playpal_index);
+dboolean V_SetCustomPlayPal(const char* lump_name);
 
 // Alt-Enter: fullscreen <-> windowed
 void V_ToggleFullscreen(void);

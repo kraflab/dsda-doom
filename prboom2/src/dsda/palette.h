@@ -31,7 +31,6 @@ typedef enum {
   playpal_7,
   playpal_8,
   playpal_9,
-  playpal_heretic_e2end,
   NUMPALETTES
 } dsda_playpal_index_t;
 
@@ -54,6 +53,7 @@ double dsda_PaletteEntryLightness(const byte *playpal, int i);
 dsda_playpal_t* dsda_PlayPalData(void);
 void dsda_CyclePlayPal(void);
 void dsda_SetPlayPal(int index);
+int dsda_SetCustomPlayPal(const char* lump_name);
 void dsda_FreePlayPal(void);
 void dsda_InitPlayPal(void);
 

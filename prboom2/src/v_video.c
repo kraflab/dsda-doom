@@ -697,9 +697,8 @@ void V_SetPalette(int pal)
   }
 }
 
-void V_SetPlayPal(int playpal_index)
+static void V_UpdatePlayPal(void)
 {
-  dsda_SetPlayPal(playpal_index);
   R_UpdatePlayPal();
   V_SetPalette(currentPaletteIndex);
 
@@ -707,6 +706,21 @@ void V_SetPlayPal(int playpal_index)
   {
     gld_FlushTextures();
   }
+}
+
+void V_SetPlayPal(int playpal_index)
+{
+  dsda_SetPlayPal(playpal_index);
+  V_UpdatePlayPal();
+}
+
+dboolean V_SetCustomPlayPal(const char* lump_name)
+{
+  if (!dsda_SetCustomPlayPal(lump_name))
+    return false;
+
+  V_UpdatePlayPal();
+  return true;
 }
 
 //
