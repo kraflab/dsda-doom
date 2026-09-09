@@ -223,6 +223,7 @@ extern int levelstarttic;
 extern int force_singletics_to;
 
 int HU_DrawDemoProgress(int force);
+dboolean HU_MouseOnDemoProgressBar(int *x);
 
 #ifdef _WIN32
 int GetFullPath(const char* FileName, const char* ext, char *Buffer, size_t BufferLength);

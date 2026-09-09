@@ -1251,7 +1251,27 @@ static dboolean M_MouseResponder(event_t *ev)
   int action = M_MouseWheelAction(ev);
 
   if (!menuactive && !messageToPrint)
-    return false;
+  {
+    dboolean click_to_open_menu = (gamestate == GS_DEMOSCREEN ||
+                                  demoplayback);
+  
+    if (click_to_open_menu && ev->type == ev_mouse &&
+        (ev->data1.i & MENU_MOUSE_LEFT))
+    {
+      M_MouseReadPosition();
+
+      // [AR] Bring up the menu if mouse is not on demo progressbar
+      if (menu_mouse_in_viewport &&
+          (!demoplayback || !HU_MouseOnDemoProgressBar(NULL)))
+      {
+        M_StartControlPanel();
+        S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
+        return true;
+      }
+    }
+
+    return false;    
+  }
 
   if (M_MouseWheelResponder(ev, action))
     return true;
