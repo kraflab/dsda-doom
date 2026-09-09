@@ -531,7 +531,7 @@ static dboolean M_MouseSetupDescriptionAtPointer(const setup_menu_t *item,
     width = M_MousePixelWidthN(line, len);
 
     if (flags & S_CENTER)
-      left -= width / 2;
+      left = (BASE_WIDTH - width) / 2;
     else if (!(flags & S_LEFTJUST))
       left -= width + 4;
 

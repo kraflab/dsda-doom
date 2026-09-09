@@ -2039,7 +2039,7 @@ static void M_DrawItem(const setup_menu_t* s, int y)
     int offset = 0;
 
     if (flags & S_CENTER)
-      offset = w / 2;
+      offset = x - (BASE_WIDTH - w) / 2;
     else if (!(flags & S_LEFTJUST))
       offset = w + 4;
 
