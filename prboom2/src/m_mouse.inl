@@ -609,6 +609,36 @@ static dboolean M_MouseSetupItemSelectable(const setup_menu_t *item)
                             S_RESET_Y | S_NOSELECT));
 }
 
+// [AR] Allow mouse select for color picker
+static dboolean M_MouseColorChipAtPointer(void)
+{
+  int x;
+  int y;
+
+  if (!menu_mouse_in_viewport || !setup_active || !setup_select ||
+      !colorbox_active)
+    return false;
+
+  x = menu_mouse_x - COLORPALXORIG;
+  y = menu_mouse_y - COLORPALYORIG;
+
+  if (x < 0 || x >= 16 * CHIP_SIZE ||
+      y < 0 || y >= 16 * CHIP_SIZE)
+    return false;
+
+  x /= CHIP_SIZE;
+  y /= CHIP_SIZE;
+
+  if (x != color_palette_x || y != color_palette_y)
+  {
+    color_palette_x = x;
+    color_palette_y = y;
+    S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
+  }
+
+  return true;
+}
+
 static dboolean M_MouseSetupItemAtPointer(int *index)
 {
   int i = 0;
@@ -963,6 +993,14 @@ static dboolean M_MouseActivateSetupItem(event_t *ev)
   {
     item = current_setup_menu + set_menu_itemon;
 
+    if (item->m_flags & S_COLOR)
+    {
+      if (!M_MouseColorChipAtPointer())
+        return true;
+
+      return M_SetupResponder(MENU_NULL, MENU_ENTER, ev);
+    }
+
     if (item->m_flags & S_THERMO)
     {
       if (!M_MouseSetupThermoAtPointer(item))
@@ -1090,6 +1128,9 @@ static dboolean M_MouseMotionResponder(void)
 
   if (menu_mouse_drag_main >= 0 && (menu_mouse_buttons & MENU_MOUSE_LEFT))
     return M_MouseSetSoundSlider(menu_mouse_drag_main);
+
+  if (M_MouseColorChipAtPointer())
+    return true;
 
   if (menuactive && M_MouseUpdateTabHover())
   {
