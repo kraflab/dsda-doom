@@ -87,6 +87,15 @@ void M_DrawTabs(const char **pages, int m, int y);
 // for Raven Thermos
 dboolean M_CurrentSelectedItem(int item);
 
+// Save / Load Highlights
+dboolean M_FileBoxSelected(int menu, int item);
+int M_FileTextColor(int menu, int item);
+
+typedef enum {
+  MN_LOAD,
+  MN_SAVE,
+} save_or_load_menu;
+
 // Menu Highlights
 dboolean M_MouseHovered(int index);
 int M_HighlightColor(dboolean highlight, int color);

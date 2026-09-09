@@ -278,7 +278,7 @@ static void M_DrawSave(void);
 static void M_DrawHelp (void);                                     // phares 5/04/98
 static void M_DrawAd(void);
 
-static void M_DrawSaveLoadBorder(int x,int y);
+static void M_DrawSaveLoadBorder(int x,int y,dboolean selected);
 static void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot,dboolean selected,dboolean highlight);
 static void M_DrawEmptyCell(menu_t *menu,int item);
 static void M_DrawSelCell(menu_t *menu,int item);
@@ -854,6 +854,41 @@ static void M_DeleteSaveGame(int slot)
 }
 
 //
+// Load/Save Highlight
+//
+
+static dboolean M_FileSlotEnabled(int menu, int item)
+{
+  // Disable unsaved slots
+  if (menu == MN_LOAD)
+    return LoadMenue[item].status;
+
+  // Disable quicksave page items
+  if (menu == MN_SAVE)
+    return current_page != 0;
+
+  return false;
+}
+
+dboolean M_FileBoxSelected(int menu, int item)
+{
+  // Disabled slots -> never highlight
+  if (!M_FileSlotEnabled(menu, item))
+    return false;
+
+  // Mouse highlight
+  if (M_MouseHovered(item) && CR_BRIGHT)
+    return true;
+
+  return false;
+}
+
+int M_FileTextColor(int menu, int item)
+{
+  return M_FileSlotEnabled(menu, item) ? CR_DEFAULT : CR_DARKEN;
+}
+
+//
 // Highlight functions
 //
 
@@ -892,10 +927,11 @@ static void M_DrawLoad(void)
   // CPhipps - patch drawing updated
   V_DrawNamePatch(72 ,LOADGRAPHIC_Y, 0, "M_LOADG", CR_DEFAULT, VPT_STRETCH);
   for (i = 0 ; i < load_end ; i++) {
-    int color = M_HighlightColor(M_MouseHovered(i), CR_DEFAULT);
+    dboolean selected   = M_FileBoxSelected(MN_LOAD, i);
+    int textcolor       = M_HighlightColor(selected, M_FileTextColor(MN_LOAD, i));
 
-    M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], color);
+    M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i,selected);
+    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i],textcolor);
   }
 
   M_DrawTabs(saves_pages, 5, 145);
@@ -908,19 +944,21 @@ static void M_DrawLoad(void)
 // Draw border for the savegame description
 //
 
-static void M_DrawSaveLoadBorder(int x,int y)
+static void M_DrawSaveLoadBorder(int x,int y,dboolean selected)
 {
   int i;
+  int color = M_HighlightColor(selected, CR_DEFAULT);
+  int flags = VPT_STRETCH | M_AddColorFlag(color);
 
-  V_DrawNamePatch(x-8, y+7, 0, "M_LSLEFT", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x-8, y+7, 0, "M_LSLEFT", color, flags);
 
   for (i = 0 ; i < 24 ; i++)
     {
-      V_DrawNamePatch(x, y+7, 0, "M_LSCNTR", CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(x, y+7, 0, "M_LSCNTR", color, flags);
       x += 8;
     }
 
-  V_DrawNamePatch(x, y+7, 0, "M_LSRGHT", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x, y+7, 0, "M_LSRGHT", color, flags);
 }
 
 //
@@ -1136,12 +1174,11 @@ static void M_DrawSave(void)
   V_DrawNamePatch(72, LOADGRAPHIC_Y, 0, "M_SAVEG", CR_DEFAULT, VPT_STRETCH);
   for (i = 0 ; i < load_end ; i++)
     {
-    int color = current_page == 0 ? CR_DARKEN : CR_DEFAULT;
+    dboolean selected   = M_FileBoxSelected(MN_SAVE, i);
+    int textcolor       = M_HighlightColor(selected, M_FileTextColor(MN_SAVE, i));
 
-    M_HighlightColor(M_MouseHovered(i), color);
-
-    M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], color);
+    M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i,selected);
+    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i],textcolor);
     }
 
   M_DrawTabs(saves_pages, 5, 145);

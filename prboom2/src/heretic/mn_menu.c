@@ -602,16 +602,20 @@ void MN_DrawSound(void)
 
 extern char savegamestrings[10][SAVESTRINGSIZE];
 
-static void MN_DrawFileSlots(int x, int y)
+static void MN_DrawFileSlots(int x, int y, int menu)
 {
   int i;
   extern const char *saves_pages[];
 
   for (i = 0; i < g_menu_save_page_size; i++)
   {
-    V_DrawNamePatch(x, y, 0, "M_FSLOT", CR_DEFAULT, VPT_STRETCH);
-    MN_DrTextAColor(savegamestrings[i], x + 5, y + 5,
-                    M_HighlightColor(M_MouseHovered(i), CR_DEFAULT));
+    dboolean selected = M_FileBoxSelected(menu, i);
+    int textcolor = M_HighlightColor(selected, M_FileTextColor(menu, i));
+    int boxcolor  = M_HighlightColor(selected, CR_DEFAULT);
+    int flags = VPT_STRETCH | M_AddColorFlag(boxcolor);
+
+    V_DrawNamePatch(x, y, 0, "M_FSLOT", boxcolor, flags);
+    MN_DrTextAColor(savegamestrings[i], x + 5, y + 5, textcolor);
     y += ITEM_HEIGHT;
   }
 
@@ -625,7 +629,7 @@ void MN_DrawLoad(void)
   title = "LOAD GAME";
 
   MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
-  MN_DrawFileSlots(LoadDef.x, LoadDef.y);
+  MN_DrawFileSlots(LoadDef.x, LoadDef.y, MN_LOAD);
 
   if (delete_verify)
     M_DrawDelVerify();
@@ -641,7 +645,7 @@ void MN_DrawSave(void)
   title = "SAVE GAME";
 
   MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 10);
-  MN_DrawFileSlots(SaveDef.x, SaveDef.y);
+  MN_DrawFileSlots(SaveDef.x, SaveDef.y, MN_SAVE);
 
   if (saveStringEnter)
   {

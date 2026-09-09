@@ -313,16 +313,18 @@ static dboolean M_MouseSaveItemRect(int index, menu_mouse_rect_t *rect)
 
   if (raven)
   {
-    rect->left = currentMenu->x + 5;
+    const rpatch_t *patch = R_PatchByName("M_FSLOT");
+
+    rect->left = currentMenu->x - patch->leftoffset;
     rect->top = currentMenu->y + index * M_MouseMenuRowHeight() + 5;
-    rect->right = rect->left + MN_TextAWidth(savegamestrings[index]);
+    rect->right = rect->left + patch->width; // [AR] Get full width of slot
     rect->bottom = rect->top + MN_TextAHeight(savegamestrings[index]);
   }
   else
   {
-    rect->left = currentMenu->x;
+    rect->left = currentMenu->x - 8;
     rect->top = currentMenu->y + index * LINEHEIGHT;
-    rect->right = rect->left + M_StringWidth(savegamestrings[index]);
+    rect->right = currentMenu->x + (24 + 1) * 8; // [AR] Get full width of slot
     rect->bottom = rect->top + M_StringHeight(savegamestrings[index]);
   }
 
