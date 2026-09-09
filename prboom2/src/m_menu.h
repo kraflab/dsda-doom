@@ -83,7 +83,11 @@ void M_DrawCredits(void);
 void M_DrawCreditsDynamic(void);    // killough 11/98
 
 void M_DrawTabs(const char **pages, int m, int y);
-int M_MenuMouseColor(int index, int color);
+
+// Menu Highlights
+dboolean M_MouseHovered(int index);
+int M_HighlightColor(dboolean highlight, int color);
+int M_AddColorFlag(int color);
 
 /****************************
  *

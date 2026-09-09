@@ -448,7 +448,7 @@ void MN_Drawer(void)
   {
     const char *text = currentMenu->menuitems[i].alttext;
     if (text)
-      MN_DrTextBColor(text, x, y, M_MenuMouseColor(i, CR_DEFAULT));
+      MN_DrTextBColor(text, x, y, M_HighlightColor(M_MouseHovered(i), CR_DEFAULT));
     y += ITEM_HEIGHT;
   }
 
@@ -611,7 +611,7 @@ static void MN_DrawFileSlots(int x, int y)
   {
     V_DrawNamePatch(x, y, 0, "M_FSLOT", CR_DEFAULT, VPT_STRETCH);
     MN_DrTextAColor(savegamestrings[i], x + 5, y + 5,
-                    M_MenuMouseColor(i, CR_DEFAULT));
+                    M_HighlightColor(M_MouseHovered(i), CR_DEFAULT));
     y += ITEM_HEIGHT;
   }
 
@@ -674,7 +674,7 @@ static void MN_DrTextAColor(const char *text, int x, int y, int cm)
   int lump;
   int flags;
 
-  flags = VPT_STRETCH | (cm != CR_DEFAULT ? VPT_TRANS : VPT_NONE);
+  flags = VPT_STRETCH | M_AddColorFlag(cm);
 
   while ((c = *text++) != 0)
   {
@@ -739,7 +739,7 @@ static void MN_DrTextBColor(const char *text, int x, int y, int cm)
   int lump;
   int flags;
 
-  flags = VPT_STRETCH | (cm != CR_DEFAULT ? VPT_TRANS : VPT_NONE);
+  flags = VPT_STRETCH | M_AddColorFlag(cm);
 
   while ((c = *text++) != 0)
   {
