@@ -271,7 +271,7 @@ dboolean F_Responder (event_t *event)
   else if (finalestage == FINALE_STAGE_ART)
   {
     // If the palette is changed, kick to title instead of opening the menu
-    if (event->type == ev_keydown && endpalette)
+    if (event->type == ev_keydown && endpalette && endpalette[0])
     {
       finalestage = FINALE_STAGE_TITLE;
       S_StartVoidSound(g_sfx_swtchx);

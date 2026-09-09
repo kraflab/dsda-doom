@@ -304,7 +304,7 @@ void Heretic_F_Drawer(void)
       Heretic_F_TextWrite();
       break;
     case 1:
-      if (endpalette)
+      if (endpalette && endpalette[0])
       {
         V_SetPlayPal(playpal_custom);
       }
