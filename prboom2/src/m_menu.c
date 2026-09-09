@@ -6382,6 +6382,15 @@ void M_ShadedScreen(int scrn)
   V_DrawShaded(scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, FULLSHADE);
 }
 
+static dboolean M_OptionalLumpMissing(const menuitem_t *item)
+{
+  // if not optional, return
+  if (!(item->flags & MENUF_OPTLUMP))
+    return false;
+
+  return item->name[0] && !W_LumpNameExists(item->name);
+}
+
 static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu)
 {
   int i;
@@ -6394,6 +6403,7 @@ static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu)
     const menuitem_t *item = &menu->menuitems[i];
 
     if (item->status != -1 &&
+        !(item->flags & MENUF_OPTLUMP) &&
         (!item->name[0] || !W_LumpNameExists(item->name)))
       return true;
   }
@@ -6478,7 +6488,7 @@ void M_Drawer (void)
       int color = M_HighlightColor(M_MouseHovered(i), item->color);
       int flags = VPT_STRETCH | M_AddColorFlag(color);
 
-      if (!lumps_missing && item->name[0])
+      if (!lumps_missing && item->name[0] && !M_OptionalLumpMissing(item))
         V_DrawNamePatch(x, y, 0, item->name, color, flags);
       else if (item->alttext)
         M_WriteText(x, y + 8 - (M_StringHeight(item->alttext) / 2),

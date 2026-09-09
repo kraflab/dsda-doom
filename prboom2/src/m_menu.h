@@ -163,9 +163,11 @@ typedef struct
   char  alphaKey; // hotkey in menu
   const char *alttext;
   int color;
+  byte flags;
 } menuitem_t;
 
 #define MENUF_TEXTINPUT 0x01
+#define MENUF_OPTLUMP   0x02 // [Nugget] Optional graphic lump
 
 typedef struct menu_s
 {
