@@ -609,6 +609,25 @@ static dboolean M_MouseSetupItemSelectable(const setup_menu_t *item)
                             S_RESET_Y | S_NOSELECT));
 }
 
+#define MENU_LEVELTABLE_LEFT 8
+#define MENU_LEVELTABLE_RIGHT 309
+
+// [AR] Allow mouse to highlight full row for level table
+static dboolean M_MouseLevelTableRowAtPointer(int y)
+{
+  menu_mouse_rect_t rect;
+
+  if (!level_table_active)
+    return false;
+
+  rect.left = MENU_LEVELTABLE_LEFT;
+  rect.top = y;
+  rect.right = MENU_LEVELTABLE_RIGHT;
+  rect.bottom = y + menu_font->height;
+
+  return M_MousePointInPaddedRect(&rect, 0, MENU_MOUSE_SETUP_Y_PAD);
+}
+
 // [AR] Allow mouse select for color picker
 static dboolean M_MouseColorChipAtPointer(void)
 {
@@ -664,7 +683,8 @@ static dboolean M_MouseSetupItemAtPointer(int *index)
     if (!M_MouseSetupItemSelectable(src))
       continue;
 
-    if (M_MouseSetupItemAtVisibleText(src, desc_y, item_y))
+    if (M_MouseLevelTableRowAtPointer(desc_y) ||
+        M_MouseSetupItemAtVisibleText(src, desc_y, item_y))
     {
       // Later entries are drawn later, so they win if padded hitboxes overlap.
       *index = (int)(src - current_setup_menu);
