@@ -563,7 +563,7 @@ static dboolean M_MouseSetupSettingAtPointer(const setup_menu_t *item, int y)
     rect.right = item->m_x + 8;
     rect.bottom = y + menu_font->height;
 
-    if (M_SetupPointerVisible(item))
+    if (M_ShowBlinkingArrowRight(item))
       rect.right += M_MousePixelWidth(" <");
 
     return M_MousePointInPaddedRect(&rect,

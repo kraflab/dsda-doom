@@ -136,14 +136,14 @@
 #define S_CREDIT   0x00200000 // killough 10/98: credit
 #define S_THERMO   0x00400000 // Slider for choosing a value
 #define S_CHOICE   0x00800000 // this item has several values
-// #define S_      0x01000000
-#define S_NAME     0x02000000
-#define S_RESET_Y  0x04000000
-// #define S_      0x08000000
-// #define S_      0x10000000
+#define S_NAME     0x01000000
+#define S_RESET_Y  0x02000000
+#define S_STR      0x04000000 // need to refactor things...
+#define S_NOCLEAR  0x08000000
+#define S_DISABLED 0x10000000 // disabled / darken options
 // #define S_      0x20000000
-#define S_STR      0x40000000 // need to refactor things...
-#define S_NOCLEAR  0x80000000
+// #define S_      0x40000000
+// #define S_      0x80000000
 
 /* S_SHOWDESC  = the set of items whose description should be displayed
  * S_SHOWSET   = the set of items whose setting should be displayed
@@ -770,6 +770,7 @@ void M_ChooseSkill(int choice)
       message = s_NIGHTMARE; // Ty 03/27/98 - externalized
 
     M_StartMessage(message, M_VerifySkill, true);
+    M_SetupNextMenu(&ReadDef1); // Clear in-menu variables when "no" or "ESC"
 
     return;
   }
@@ -1905,6 +1906,106 @@ static int entry_index;
 static char entry_string_index[ENTRY_STRING_BFR_SIZE]; // points to new strings while editing
 static int choice_value;
 
+//
+// Main Disable Function
+//
+
+static dboolean M_ItemDisabled(const setup_menu_t* s)
+{
+  // Strict Mode
+  if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+    return true;
+
+  return false;
+}
+
+//
+// Check item selection
+//
+
+static dboolean M_ItemSelected(const setup_menu_t *s)
+{
+    int flags = s->m_flags;
+
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
+      return true;
+
+    return false;
+}
+
+//
+// Main text functions
+//
+
+static void M_CopyText(char *dest, size_t dest_size, const char *src)
+{
+  if (dest_size)
+    snprintf(dest, dest_size, "%s", src ? src : "");
+}
+
+static void M_AppendText(char *dest, size_t dest_size, const char *src)
+{
+  size_t len;
+
+  if (!dest_size || !src)
+    return;
+
+  len = strlen(dest);
+  if (len < dest_size)
+    snprintf(dest + len, dest_size - len, "%s", src);
+}
+
+static void M_TrimSetupString(char *text, dboolean update_entry_index)
+{
+  while (text[0] && M_GetPixelWidth(text) >= MAXENTRYWIDTH)
+  {
+    int len = strlen(text);
+
+    text[--len] = 0;
+    if (update_entry_index && entry_index > len)
+      entry_index--;
+  }
+}
+
+//
+// Blinking arrow
+//
+
+dboolean M_ShowBlinkingArrowRight(const setup_menu_t *s)
+{
+  return M_ItemSelected(s) && !setup_select;
+}
+
+static void M_BlinkingArrowRight(const setup_menu_t *s, char *text, size_t text_size)
+{
+  if (M_ShowBlinkingArrowRight(s))
+    M_AppendText(text, text_size, " <");
+}
+
+/////////////////////////////
+//
+// Menu Color Item Functions
+//
+//
+
+static int GetItemColor(int flags)
+{
+    return (flags & S_TITLE && flags & S_DISABLED) ? cr_title + CR_DARKEN :
+            flags & S_DISABLED ? cr_label + CR_DARKEN :
+            flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
+            flags & S_HILITE ? cr_label_highlight :
+            flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
+            cr_label; // killough 10/98
+}
+
+static int GetOptionColor(int flags)
+{
+    return flags & S_DISABLED ? cr_value + CR_DARKEN :
+           flags & S_SELECT ? cr_value_edit :
+           flags & S_HILITE ? cr_value_highlight :
+           cr_value;
+}
+
 /////////////////////////////
 //
 // phares 4/18/98:
@@ -1920,13 +2021,12 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   int x = s->m_x;
   int flags = s->m_flags;
   char *p, *t;
-  int w = 0;
-  int color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_label + CR_DARKEN :
-    flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
-    flags & S_HILITE ? cr_label_highlight :
-    flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
-    cr_label; // killough 10/98
+  int color;
+
+  if (M_ItemDisabled(s))
+    flags |= S_DISABLED;
+
+  color = GetItemColor(flags);
 
   /* killough 10/98:
    * Enhance to support multiline text separated by newlines.
@@ -1935,14 +2035,19 @@ static void M_DrawItem(const setup_menu_t* s, int y)
 
   for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
   {      /* killough 10/98: support left-justification: */
+    int w = M_GetPixelWidth(p);
+    int offset = 0;
+
     if (flags & S_CENTER)
-      w = M_GetPixelWidth(p) / 2;
+      offset = w / 2;
     else if (!(flags & S_LEFTJUST))
-      w = M_GetPixelWidth(p) + 4;
-    M_DrawString(x - w, y ,color, p);
+      offset = w + 4;
+
+    M_DrawString(x - offset, y, color, p);
+
     // print a blinking "arrow" next to the currently highlighted menu item
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
-      M_DrawString(x - w - 8, y, color, ">");
+    if (M_ItemSelected(s))
+      M_DrawString(x - offset - 8, y, color, ">");
   }
   Z_Free(t);
 }
@@ -1965,50 +2070,6 @@ static char gather_buffer[MAXGATHER+1];  // killough 10/98: make input character
 // selected or being changed. Then, depending on the type of item, it
 // displays the appropriate setting value: yes/no, a key binding, a number,
 // a paint chip, etc.
-
-static void M_CopyText(char *dest, size_t dest_size, const char *src)
-{
-  if (dest_size)
-    snprintf(dest, dest_size, "%s", src ? src : "");
-}
-
-static void M_AppendText(char *dest, size_t dest_size, const char *src)
-{
-  size_t len;
-
-  if (!dest_size || !src)
-    return;
-
-  len = strlen(dest);
-  if (len < dest_size)
-    snprintf(dest + len, dest_size - len, "%s", src);
-}
-
-static dboolean M_SetupPointerVisible(const setup_menu_t *s)
-{
-  return current_setup_menu &&
-         s == current_setup_menu + set_menu_itemon &&
-         whichSkull && !setup_select;
-}
-
-static void M_AppendSetupPointer(const setup_menu_t *s,
-                                 char *text, size_t text_size)
-{
-  if (M_SetupPointerVisible(s))
-    M_AppendText(text, text_size, " <");
-}
-
-static void M_TrimSetupString(char *text, dboolean update_entry_index)
-{
-  while (text[0] && M_GetPixelWidth(text) >= MAXENTRYWIDTH)
-  {
-    int len = strlen(text);
-
-    text[--len] = 0;
-    if (update_entry_index && entry_index > len)
-      entry_index--;
-  }
-}
 
 static void M_SetupInputText(const setup_menu_t *s,
                              char *text, size_t text_size)
@@ -2116,21 +2177,21 @@ static dboolean M_SetupSettingText(const setup_menu_t *s,
   else
     return false;
 
-  M_AppendSetupPointer(s, text, text_size);
+  M_BlinkingArrowRight(s, text, text_size);
 
   return text[0] != '\0';
 }
 
-static int M_SetupSettingTextColor(const setup_menu_t *s, int color)
+static int M_SetupSettingColor(const setup_menu_t *s, int flags)
 {
-  int flags = s->m_flags;
+  int color = GetOptionColor(flags);
+  dboolean editing = setup_gather && (flags & (S_HILITE | S_SELECT));
 
-  if ((flags & S_CRITEM) &&
-      !((flags & (S_HILITE | S_SELECT)) && setup_gather))
+  if ((flags & S_CRITEM) && !editing)
   {
     color = dsda_IntConfig(s->config_id);
 
-    if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+    if (flags & S_DISABLED)
       color += CR_DARKEN;
   }
 
@@ -2168,16 +2229,13 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
   int x = s->m_x, flags = s->m_flags, color;
   char text[MENU_BUFFER_SIZE];
 
+  if (M_ItemDisabled(s))
+    flags |= S_DISABLED;
+
   // Determine color of the text. This may or may not be used later,
   // depending on whether the item is a text string or not.
 
-  color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_value + CR_DARKEN :
-    flags & S_SELECT ? cr_value_edit :
-    flags & S_HILITE ? cr_value_highlight :
-    cr_value;
-
-  color = M_SetupSettingTextColor(s, color);
+  color = M_SetupSettingColor(s, flags);
 
   // Is the item a paint chip?
 
@@ -2200,7 +2258,7 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
     if (!ch) // don't show this item in automap mode
       V_DrawNamePatch(x+1,y,0,"M_PALNO", CR_DEFAULT, VPT_STRETCH);
-    if (M_SetupPointerVisible(s))
+    if (M_ItemSelected(s) && !setup_select)
       M_DrawString(x + 8, y, color, " <");
     return;
   }
@@ -2411,8 +2469,9 @@ static void M_GetTabLayout(const char **pages, int visible_tabs,
     visible_tabs = layout->page_count;
 
   layout->end_i = visible_tabs - 1;
-  s = visible_tabs / 2;
+  s = visible_tabs / 2;  // halfway point
 
+  // Figure out what tabs should be drawn if using carousel
   if (current_page > s)
   {
     i = 0;
