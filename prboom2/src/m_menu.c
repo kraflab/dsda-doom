@@ -2248,6 +2248,39 @@ static void M_GetSetupMenuLayout(const setup_menu_t *base_src, int base_y,
   layout->excess_i = excess_i;
 }
 
+static dboolean M_GetSetupItemPosition(const setup_menu_t *item, int base_y, const setup_menu_layout_t *layout, int *index, int *carry_y, int *desc_y, int *set_y)
+{
+  if (item->m_flags & (S_NEXT | S_PREV))
+  {
+    *desc_y = 190 - layout->line_height - 2;
+  }
+  else if (item->m_flags & S_RESET_Y)
+  {
+    *index = 0;
+    return false;
+  }
+  else {
+    *desc_y = base_y + (*index - layout->scroll_i) * layout->line_height + *carry_y;
+
+    if (*index - layout->scroll_i < 0 || *index - layout->scroll_i > layout->limit_i)
+    {
+      ++*index;
+      return false;
+    }
+
+    ++*index;
+  }
+
+  *set_y = *desc_y;
+  if (item->m_flags & S_THERMO)
+  {
+    *carry_y += 6;
+    *desc_y += 3;
+  }
+
+  return true;
+}
+
 static void M_DrawSetupMenuScrollbar(int base_y,
                                      const setup_menu_layout_t *layout)
 {
@@ -2283,33 +2316,9 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   for (src = base_src; !(src->m_flags & S_END); src++) {
     int desc_y;
     int set_y;
-    dboolean skip_entry = false;
 
-    if (src->m_flags & (S_NEXT | S_PREV)) {
-      desc_y = 190 - layout.line_height - 2;
-    }
-    else if (src->m_flags & S_RESET_Y) {
-      skip_entry = true;
-      i = 0;
-    }
-    else {
-      desc_y = base_y + (i - layout.scroll_i) * layout.line_height + carry_y;
-
-      if (i - layout.scroll_i < 0 || i - layout.scroll_i > layout.limit_i)
-        skip_entry = true;
-
-      ++i;
-    }
-
-    if (skip_entry)
+    if (!M_GetSetupItemPosition(src, base_y, &layout, &i, &carry_y, &desc_y, &set_y))
       continue;
-
-    set_y = desc_y;
-    if (src->m_flags & S_THERMO)
-    {
-      carry_y += 6;
-      desc_y += 3;
-    }
 
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)

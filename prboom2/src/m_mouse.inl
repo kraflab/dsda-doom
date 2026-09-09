@@ -610,7 +610,7 @@ static dboolean M_MouseSetupItemSelectable(const setup_menu_t *item)
 static dboolean M_MouseSetupItemAtPointer(int *index)
 {
   int i = 0;
-  int carry_y = 0;
+  int carry_y = 0; // Larger items add an offset that carries over to following settings.
   dboolean found = false;
   setup_menu_layout_t layout;
   setup_menu_t *src;
@@ -625,36 +625,9 @@ static dboolean M_MouseSetupItemAtPointer(int *index)
   {
     int desc_y;
     int item_y;
-    dboolean skip_entry = false;
 
-    if (src->m_flags & (S_NEXT | S_PREV))
-    {
-      desc_y = 190 - layout.line_height - 2;
-    }
-    else if (src->m_flags & S_RESET_Y)
-    {
-      skip_entry = true;
-      i = 0;
-    }
-    else
-    {
-      desc_y = DEFAULT_LIST_Y + (i - layout.scroll_i) * layout.line_height + carry_y;
-
-      if (i - layout.scroll_i < 0 || i - layout.scroll_i > layout.limit_i)
-        skip_entry = true;
-
-      ++i;
-    }
-
-    if (skip_entry)
+    if (!M_GetSetupItemPosition(src, DEFAULT_LIST_Y, &layout, &i, &carry_y, &desc_y, &item_y))
       continue;
-
-    item_y = desc_y;
-    if (src->m_flags & S_THERMO)
-    {
-      carry_y += 6;
-      desc_y += 3;
-    }
 
     if (!M_MouseSetupItemSelectable(src))
       continue;
