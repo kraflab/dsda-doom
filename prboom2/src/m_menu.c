@@ -456,12 +456,12 @@ enum
 
 static menuitem_t MainMenu[]=
 {
-  {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
-  {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
-  {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
-  {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
-  {1,"M_RDTHIS",M_ReadThis,'r', "READ THIS"},
-  {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
+  {M_ITEM_ACTION,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
+  {M_ITEM_ACTION,"M_OPTION",M_Options, 'o', "OPTIONS"},
+  {M_ITEM_ACTION,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
+  {M_ITEM_ACTION,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
+  {M_ITEM_ACTION,"M_RDTHIS",M_ReadThis,'r', "READ THIS"},
+  {M_ITEM_ACTION,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
 };
 
 menu_t MainDef =
@@ -517,17 +517,17 @@ enum               // killough 10/98
 
 static menuitem_t ReadMenu1[] =
 {
-  {1,"",M_ReadThis2,0}
+  {M_ITEM_ACTION,"",M_ReadThis2,0}
 };
 
 static menuitem_t ReadMenu2[]=
 {
-  {1,"",M_FinishReadThis,0}
+  {M_ITEM_ACTION,"",M_FinishReadThis,0}
 };
 
 static menuitem_t HelpMenu[]=    // killough 10/98
 {
-  {1,"",M_FinishHelp,0}
+  {M_ITEM_ACTION,"",M_FinishHelp,0}
 };
 
 static menu_t ReadDef1 =
@@ -814,14 +814,14 @@ const char *saves_pages[] =
 
 menuitem_t LoadMenue[]=
 {
-  {1,"", M_LoadSelect,'1'},
-  {1,"", M_LoadSelect,'2'},
-  {1,"", M_LoadSelect,'3'},
-  {1,"", M_LoadSelect,'4'},
-  {1,"", M_LoadSelect,'5'},
-  {1,"", M_LoadSelect,'6'},
-  {1,"", M_LoadSelect,'7'}, //jff 3/15/98 extend number of slots
-  {1,"", M_LoadSelect,'8'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'1'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'2'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'3'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'4'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'5'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'6'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'7'}, //jff 3/15/98 extend number of slots
+  {M_ITEM_ACTION,"", M_LoadSelect,'8'},
 };
 
 menu_t LoadDef =
@@ -862,7 +862,7 @@ static dboolean M_FileSlotEnabled(int menu, int item)
 {
   // Disable unsaved slots
   if (menu == MN_LOAD)
-    return LoadMenue[item].status;
+    return LoadMenue[item].status == M_ITEM_ACTION;
 
   // Disable quicksave page items
   if (menu == MN_SAVE)
@@ -1037,14 +1037,14 @@ void M_LoadGame (int choice)
 
 static menuitem_t SaveMenu[]=
 {
-  {1,"", M_SaveSelect,'1'},
-  {1,"", M_SaveSelect,'2'},
-  {1,"", M_SaveSelect,'3'},
-  {1,"", M_SaveSelect,'4'},
-  {1,"", M_SaveSelect,'5'},
-  {1,"", M_SaveSelect,'6'},
-  {1,"", M_SaveSelect,'7'}, //jff 3/15/98 extend number of slots
-  {1,"", M_SaveSelect,'8'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'1'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'2'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'3'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'4'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'5'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'6'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'7'}, //jff 3/15/98 extend number of slots
+  {M_ITEM_ACTION,"", M_SaveSelect,'8'},
 };
 
 menu_t SaveDef =
@@ -1078,11 +1078,11 @@ static void M_ReadSaveStrings(void)
     if (!fp || !fread(&savegamestrings[i], SAVESTRINGSIZE, 1, fp))
     {
       strcpy(&savegamestrings[i][0],s_EMPTYSTRING); // Ty 03/27/98 - externalized
-      LoadMenue[i].status = 0;
+      LoadMenue[i].status = M_ITEM_INACTIVE;
     }
     else
     {
-      LoadMenue[i].status = 1;
+      LoadMenue[i].status = M_ITEM_ACTION;
     }
 
     if (fp)
@@ -1294,15 +1294,15 @@ enum
 
 static menuitem_t OptionsMenu[]=
 {
-  { 1, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
-  { 1, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
-  { 1, "M_DSPLAY", M_Display, 'd', "DISPLAY" },
-  { 1, "M_DEMOS", M_Demos, 'm', "DEMOS" },
-  { 1, "M_COMP", M_Compatibility, 'c', "COMPATIBILITY" },
-  { 1, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
-  { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
-  // { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" }, only available using the keybind
-  { 1, "M_LVLTBL", M_LevelTable, 'l', "LEVEL TABLE" },
+  { M_ITEM_ACTION, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
+  { M_ITEM_ACTION, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
+  { M_ITEM_ACTION, "M_DSPLAY", M_Display, 'd', "DISPLAY" },
+  { M_ITEM_ACTION, "M_DEMOS", M_Demos, 'm', "DEMOS" },
+  { M_ITEM_ACTION, "M_COMP", M_Compatibility, 'c', "COMPATIBILITY" },
+  { M_ITEM_ACTION, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
+  { M_ITEM_ACTION, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
+  // { M_ITEM_ACTION, "M_SVOL", M_Sound, 's', "SOUND VOLUME" }, only available using the keybind
+  { M_ITEM_ACTION, "M_LVLTBL", M_LevelTable, 'l', "LEVEL TABLE" },
 };
 
 menu_t OptionsDef =
@@ -1432,10 +1432,10 @@ enum
 
 menuitem_t SoundMenu[]=
 {
-  {2,"M_SFXVOL",M_SfxVol,'s'},
-  {-1,"",0},
-  {2,"M_MUSVOL",M_MusicVol,'m'},
-  {-1,"",0}
+  { M_ITEM_THERMO,"M_SFXVOL",M_SfxVol,'s' },
+  { M_ITEM_SKIP,"",0 },
+  { M_ITEM_THERMO,"M_MUSVOL",M_MusicVol,'m' },
+  { M_ITEM_SKIP,"",0 }
 };
 
 menu_t SoundDef =
@@ -1801,7 +1801,7 @@ enum
 
 static menuitem_t Generic_Setup[] =
 {
-  {1,"",M_DoNothing,0}
+  {M_ITEM_ACTION,"",M_DoNothing,0}
 };
 
 static menu_t GeneralDef =                                           // killough 10/98
@@ -4429,7 +4429,7 @@ int extended_help_index;   // index of current extended help screen
 
 menuitem_t ExtHelpMenu[] =
 {
-  {1,"",M_ExtHelpNextScreen,0}
+  {M_ITEM_ACTION,"",M_ExtHelpNextScreen,0}
 };
 
 menu_t ExtHelpDef =
@@ -5878,7 +5878,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         itemOn++;
       S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
     }
-    while(currentMenu->menuitems[itemOn].status == -1);
+    while(currentMenu->menuitems[itemOn].status == M_ITEM_SKIP);
     return true;
   }
 
@@ -5892,14 +5892,14 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         itemOn--;
       S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
     }
-    while(currentMenu->menuitems[itemOn].status == -1);
+    while(currentMenu->menuitems[itemOn].status == M_ITEM_SKIP);
     return true;
   }
 
   if (action == MENU_LEFT)                             // phares 3/7/98
   {
     if (currentMenu->menuitems[itemOn].routine &&
-        currentMenu->menuitems[itemOn].status == 2)
+        currentMenu->menuitems[itemOn].status == M_ITEM_THERMO)
     {
       S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, false);
       currentMenu->menuitems[itemOn].routine(0);
@@ -5910,7 +5910,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
   if (action == MENU_RIGHT)                            // phares 3/7/98
   {
     if (currentMenu->menuitems[itemOn].routine &&
-        currentMenu->menuitems[itemOn].status == 2)
+        currentMenu->menuitems[itemOn].status == M_ITEM_THERMO)
     {
       S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, false);
       currentMenu->menuitems[itemOn].routine(1);
@@ -5924,7 +5924,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         currentMenu->menuitems[itemOn].status)
     {
       currentMenu->lastOn = itemOn;
-      if (currentMenu->menuitems[itemOn].status == 2)
+      if (currentMenu->menuitems[itemOn].status == M_ITEM_THERMO)
       {
         currentMenu->menuitems[itemOn].routine(1);   // right arrow
         S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, false);
@@ -6343,7 +6343,7 @@ static void M_InitializeSkillMenu(void)
 
   for (i = 0; i < num_skills; ++i)
   {
-    SkillDef.menuitems[i].status = 1;
+    SkillDef.menuitems[i].status = M_ITEM_ACTION;
 
     if (skill_infos[i].pic_name)
       strncpy(SkillDef.menuitems[i].name, skill_infos[i].pic_name, 8);
@@ -6371,7 +6371,7 @@ static void M_InitializeEpisodeMenu(void)
 
   for (i = 0; i < num_episodes; ++i)
   {
-    EpiDef.menuitems[i].status = 1;
+    EpiDef.menuitems[i].status = M_ITEM_ACTION;
 
     if (episodes[i].pic_name)
       strncpy(EpiDef.menuitems[i].name, episodes[i].pic_name, 8);
@@ -6461,7 +6461,7 @@ static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu)
   {
     const menuitem_t *item = &menu->menuitems[i];
 
-    if (item->status != -1 &&
+    if (item->status != M_ITEM_SKIP &&
         !(item->flags & MENUF_OPTLUMP) &&
         (!item->name[0] || !W_LumpNameExists(item->name)))
       return true;

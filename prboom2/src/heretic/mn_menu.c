@@ -112,10 +112,10 @@ enum { infoempty2, info2_end } info_e2;
 enum { infoempty3, info3_end } info_e3;
 enum { infoempty4, info4_end } info_e4;
 
-menuitem_t InfoMenu1[] = { {1,"",MN_Info2,0} };
-menuitem_t InfoMenu2[] = { {1,"",MN_Info3,0} };
-menuitem_t InfoMenu3[] = { {1,"",MN_Info4,0} };
-menuitem_t InfoMenu4[] = { {1,"",MN_FinishInfo,0} };
+menuitem_t InfoMenu1[] = { {M_ITEM_ACTION,"",MN_Info2,0} };
+menuitem_t InfoMenu2[] = { {M_ITEM_ACTION,"",MN_Info3,0} };
+menuitem_t InfoMenu3[] = { {M_ITEM_ACTION,"",MN_Info4,0} };
+menuitem_t InfoMenu4[] = { {M_ITEM_ACTION,"",MN_FinishInfo,0} };
 
 menu_t InfoDef1 =
 {
@@ -235,11 +235,11 @@ enum
 
 menuitem_t RavenMainMenu[]=
 {
-  {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
-  {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
-  {1,"M_GFILES", MN_GameFiles,'g', "GAME FILES"},
-  {1,"M_INFO",MN_Info,'i', "INFO"},
-  {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
+  {M_ITEM_ACTION,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
+  {M_ITEM_ACTION,"M_OPTION",M_Options, 'o', "OPTIONS"},
+  {M_ITEM_ACTION,"M_GFILES", MN_GameFiles,'g', "GAME FILES"},
+  {M_ITEM_ACTION,"M_INFO",MN_Info,'i', "INFO"},
+  {M_ITEM_ACTION,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
 };
 
 
@@ -258,8 +258,8 @@ enum
 
 menuitem_t SaveLoadMenu[]=
 {
-  {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
-  {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
+  {M_ITEM_ACTION,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
+  {M_ITEM_ACTION,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
 };
 
 menu_t SaveLoadDef =

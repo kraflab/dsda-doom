@@ -51,7 +51,7 @@ dboolean M_MouseHovered(int index)
          currentMenu &&
          index >= 0 &&
          index < currentMenu->numitems &&
-         currentMenu->menuitems[index].status != -1;
+         currentMenu->menuitems[index].status != M_ITEM_SKIP;
 }
 
 static dboolean M_MouseTabHovered(int page)
@@ -292,7 +292,7 @@ static dboolean M_MouseMainItemAtPointer(int *index)
   {
     menu_mouse_rect_t rect;
 
-    if (currentMenu->menuitems[i].status == -1)
+    if (currentMenu->menuitems[i].status == M_ITEM_SKIP)
       continue;
 
     if (M_MouseMainItemRect(&currentMenu->menuitems[i], i, lumps_missing, &rect) &&
@@ -423,7 +423,7 @@ static dboolean M_MouseSetSoundSlider(int index)
   int value;
 
   if (currentMenu != &SoundDef || index < 0 || index >= currentMenu->numitems ||
-      currentMenu->menuitems[index].status != 2)
+      currentMenu->menuitems[index].status != M_ITEM_THERMO)
     return false;
 
   id = index == sfx_vol ? dsda_config_sfx_volume : dsda_config_music_volume;
@@ -464,7 +464,7 @@ static dboolean M_MouseSoundSliderAtPointer(int *index)
   {
     int y;
 
-    if (currentMenu->menuitems[i].status != 2)
+    if (currentMenu->menuitems[i].status != M_ITEM_THERMO)
       continue;
 
     y = SoundDef.y + row_height * (i + 1);
@@ -1138,7 +1138,7 @@ static dboolean M_MouseBindingCaptureResponder(event_t *ev)
 
 static dboolean M_MouseSoundSliderTitleAtPointer(void)
 {
-  return currentMenu->menuitems[itemOn].status == 2;
+  return currentMenu->menuitems[itemOn].status == M_ITEM_THERMO;
 }
 
 static dboolean M_MouseMotionResponder(void)

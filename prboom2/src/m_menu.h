@@ -151,13 +151,21 @@ typedef struct setup_menu_s
 // MENU TYPEDEFS
 //
 
+typedef enum
+{
+  M_ITEM_SKIP = -1,
+  M_ITEM_INACTIVE,
+  M_ITEM_ACTION,
+  M_ITEM_THERMO,
+} menuitem_type_t;
+
 typedef struct
 {
-  short status; // 0 = no cursor here, 1 = ok, 2 = arrows ok
+  menuitem_type_t status;
   char  name[10];
 
   // choice = menu item #.
-  // if status = 2,
+  // if status = M_ITEM_THERMO,
   //   choice=0:leftarrow,1:rightarrow
   void  (*routine)(int choice);
   char  alphaKey; // hotkey in menu
