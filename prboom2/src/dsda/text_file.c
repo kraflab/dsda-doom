@@ -104,16 +104,16 @@ static char* dsda_TextFileTime(void) {
       text_file_time,
       16,
       "%d:%05.2f",
-      dsda_last_leveltime / 35 / 60,
-      (float)(dsda_last_leveltime % (60 * 35)) / 35
+      dsda_last_leveltime / TICRATE / 60,
+      (float)(dsda_last_leveltime % (60 * TICRATE)) / TICRATE
     );
   else
     snprintf(
       text_file_time,
       16,
       "%d:%02d",
-      totalleveltimes / 35 / 60,
-      (totalleveltimes / 35) % 60
+      totalleveltimes / TICRATE / 60,
+      (totalleveltimes / TICRATE) % 60
     );
 
   return text_file_time;

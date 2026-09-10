@@ -529,16 +529,16 @@ int EV_DoGenLift
     switch(Dely)
     {
       case 0:
-        plat->wait = 1*35;
+        plat->wait = 1*TICRATE;
         break;
       case 1:
-        plat->wait = PLATWAIT*35;
+        plat->wait = PLATWAIT*TICRATE;
         break;
       case 2:
-        plat->wait = 5*35;
+        plat->wait = 5*TICRATE;
         break;
       case 3:
-        plat->wait = 10*35;
+        plat->wait = 10*TICRATE;
         break;
     }
 
@@ -951,7 +951,7 @@ int EV_DoGenDoor
     {
       default:
       case 0:
-        door->topwait = 35;
+        door->topwait = TICRATE;
         break;
       case 1:
         door->topwait = VDOORWAIT;

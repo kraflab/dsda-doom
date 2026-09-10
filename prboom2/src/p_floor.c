@@ -1048,7 +1048,7 @@ int P_SpawnDonut(int secnum, line_t *line, fixed_t pillarspeed, fixed_t slimespe
       if (DonutOverrun(&s3_floorheight, &s3_floorpic))
       {
         lprintf(LO_WARN, "EV_DoDonut: Emulated with floorheight %d, floor pic %d.\n",
-          s3_floorheight >> 16, s3_floorpic);
+          s3_floorheight >> FRACBITS, s3_floorpic);
       }
       else
       {
@@ -1196,7 +1196,7 @@ int EV_DoZDoomElevator(line_t *line, elevator_e type, fixed_t speed, fixed_t hei
     P_SpawnElevator(sec, line, type, speed, height);
   }
 
-	return rtn;
+  return rtn;
 }
 
 int EV_DoElevator
@@ -2403,8 +2403,8 @@ static void P_SpawnPlaneWaggle(sector_t *sector, int height, int speed,
   waggle->accDelta = speed << 10;
   waggle->scale = 0;
   waggle->targetScale = height << 10;
-  waggle->scaleDelta = waggle->targetScale / (35 + ((3 * 35) * height) / 255);
-  waggle->ticker = timer ? timer * 35 : -1;
+  waggle->scaleDelta = waggle->targetScale / (TICRATE + ((3 * TICRATE) * height) / 255);
+  waggle->ticker = timer ? timer * TICRATE : -1;
   waggle->state = WGLSTATE_EXPAND;
   P_AddThinker(&waggle->thinker);
 }

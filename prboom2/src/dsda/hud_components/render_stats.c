@@ -35,8 +35,8 @@ static void dsda_UpdateCurrentComponentText(char* str, size_t max_size) {
     str, max_size,
     "%sFPS %s%4d %sSEGS %s%4d %sPLANES %s%4d %sSPRITES %s%4d",
     dsda_TextColor(dsda_tc_exhud_render_label),
-    dsda_render_stats_fps < 35 ? dsda_TextColor(dsda_tc_exhud_render_bad) :
-                                 dsda_TextColor(dsda_tc_exhud_render_good),
+    dsda_render_stats_fps < TICRATE ? dsda_TextColor(dsda_tc_exhud_render_bad) :
+                                      dsda_TextColor(dsda_tc_exhud_render_good),
     dsda_render_stats_fps,
     dsda_TextColor(dsda_tc_exhud_render_label),
     dsda_render_stats.drawsegs > 256 ? dsda_TextColor(dsda_tc_exhud_render_bad) :

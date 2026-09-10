@@ -1183,7 +1183,7 @@ dboolean P_UndoPlayerChicken(player_t * player)
         mo->flags = oldFlags;
         mo->flags2 = oldFlags2;
         player->mo = mo;
-        player->chickenTics = 2 * 35;
+        player->chickenTics = 2 * TICRATE;
         return (false);
     }
     playerNum = P_GetPlayerNum(player);
@@ -1868,7 +1868,7 @@ dboolean P_UndoPlayerMorph(player_t * player)
         mo->flags = oldFlags;
         mo->flags2 = oldFlags2;
         player->mo = mo;
-        player->morphTics = 2 * 35;
+        player->morphTics = 2 * TICRATE;
         return (false);
     }
     if (player->pclass == PCLASS_FIGHTER)
