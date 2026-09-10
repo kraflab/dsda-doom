@@ -73,14 +73,16 @@ void dsda_SetPlayPal(int index) {
   playpal_index = index;
 }
 
-void dsda_FreePlayPal(void) {
-  int playpal_i;
+void dsda_FreePlayPal(int playpal_i) {
+  if (playpal_data[playpal_i].lump) {
+    Z_Free(playpal_data[playpal_i].lump);
+    playpal_data[playpal_i].lump = NULL;
+  }
+}
 
-  for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i)
-    if (playpal_data[playpal_i].lump) {
-      Z_Free(playpal_data[playpal_i].lump);
-      playpal_data[playpal_i].lump = NULL;
-    }
+void dsda_FreeAllPlayPals(void) {
+  for (int playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i)
+    dsda_FreePlayPal(playpal_i);
 }
 
 static dboolean dsda_DuplicatePaletteEntry(const byte *playpal, int i, int j) {
@@ -148,6 +150,8 @@ void dsda_InitPlayPal(int playpal_i) {
   int lump;
   const byte *playpal;
   int i, j, found = 0;
+
+  dsda_FreePlayPal(playpal_i);
 
   lump = W_CheckNumForName(playpal_data[playpal_i].lump_name);
   if (lump == LUMP_NOT_FOUND)

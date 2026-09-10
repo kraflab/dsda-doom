@@ -1197,7 +1197,7 @@ const unsigned char* V_GetPlaypal(void)
 
 void V_FreePlaypal(void)
 {
-  dsda_FreePlayPal();
+  dsda_FreeAllPlayPals();
 }
 
 int V_GetPlaypalCount(void)

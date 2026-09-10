@@ -57,7 +57,8 @@ double dsda_PaletteEntryLightness(const byte *playpal, int i);
 dsda_playpal_t* dsda_PlayPalData(int playpal_i);
 void dsda_CyclePlayPal(void);
 void dsda_SetPlayPal(int index);
-void dsda_FreePlayPal(void);
+void dsda_FreePlayPal(int playpal_i);
+void dsda_FreeAllPlayPals(void);
 void dsda_InitPlayPal(int playpal_i);
 void dsda_InitAllPlayPals(void);
 
