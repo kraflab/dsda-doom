@@ -78,6 +78,15 @@ void dsda_FreePlayPal(int playpal_i) {
     Z_Free(playpal_data[playpal_i].lump);
     playpal_data[playpal_i].lump = NULL;
   }
+  if (playpal_data[playpal_i].colours) {
+    Z_Free(playpal_data[playpal_i].colours);
+    playpal_data[playpal_i].colours= NULL;
+  }
+  playpal_data[playpal_i].length = 0;
+  playpal_data[playpal_i].transparent = 0;
+  playpal_data[playpal_i].duplicate = 0;
+  playpal_data[playpal_i].darkest = 0;
+  playpal_data[playpal_i].lightest = 0;
 }
 
 void dsda_FreeAllPlayPals(void) {

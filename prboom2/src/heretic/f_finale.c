@@ -116,7 +116,7 @@ void Heretic_F_StartFinale(void)
 static dboolean F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
 {
   return (finalestage == 1) &&
-          ((endgameflags & (MapInfo_EndGameClear|MapInfo_EndGameAny)) ? endpalette != NULL : gameepisode == 2);
+          ((endgameflags & (MapInfo_EndGameClear|MapInfo_EndGameAny)) ? (endpalette && endpalette[0]) : gameepisode == 2);
 }
 
 dboolean Heretic_F_Responder(event_t * event)
@@ -317,7 +317,7 @@ void Heretic_F_Drawer(void)
 
       if (W_LumpNameExists(endpic))
       {
-        V_DrawNamePatch(0, 0, 0, endpic, CR_DEFAULT, VPT_STRETCH);
+        V_DrawRawScreen(endpic);
         return;
       }
       if (!finalintermission)
