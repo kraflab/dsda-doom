@@ -113,7 +113,7 @@ void Heretic_F_StartFinale(void)
   finalecount = 0;
 }
 
-static dboolean F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
+static dboolean Heretic_F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
 {
   return (finalestage == 1) &&
           ((endgameflags & (MapInfo_EndGameClear|MapInfo_EndGameAny)) ? (endpalette && endpalette[0]) : gameepisode == 2);
@@ -126,7 +126,7 @@ dboolean Heretic_F_Responder(event_t * event)
     return false;
   }
 
-  if (F_BlockingInput())
+  if (Heretic_F_BlockingInput())
   {                           // we're showing the water pic, make any key kick to demo mode
     finalestage++;
     S_StartVoidSound(g_sfx_swtchx);

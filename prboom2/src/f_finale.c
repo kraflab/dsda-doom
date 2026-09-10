@@ -261,6 +261,11 @@ void F_StartFinale (void)
 
 
 
+static dboolean F_BlockingInput(void)
+{
+  return finalestage == FINALE_STAGE_ART && endpalette && endpalette[0];
+}
+
 dboolean F_Responder (event_t *event)
 {
   if (heretic) return Heretic_F_Responder(event);
@@ -271,7 +276,7 @@ dboolean F_Responder (event_t *event)
   else if (finalestage == FINALE_STAGE_ART)
   {
     // If the palette is changed, kick to title instead of opening the menu
-    if (event->type == ev_keydown && endpalette && endpalette[0])
+    if (F_BlockingInput() && event->type == ev_keydown)
     {
       finalestage = FINALE_STAGE_TITLE;
       S_StartVoidSound(g_sfx_swtchx);

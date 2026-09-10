@@ -249,11 +249,12 @@ void D_PostEvent(event_t *ev)
     }
   }
 
-  if (gamestate == GS_FINALE)
-    F_Responder(ev);
-
-  if (M_Responder(ev))
+  if (gamestate == GS_FINALE && !F_ShowCast() && F_Responder(ev))
+    dsda_InputFlushTick(); // custom palette screen ate the event
+  else if (M_Responder(ev))
     dsda_InputFlushTick(); // If the menu used the event, make it invisible
+  else if (gamestate == GS_FINALE && F_Responder(ev))
+    dsda_InputFlushTick(); // finale ate the event
   else
     G_Responder(ev);
 }

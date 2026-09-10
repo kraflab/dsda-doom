@@ -503,7 +503,6 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
   			}
 			}
 
-
 			// If no default attribute, just go to the next map
 			if (!(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)))
 			{
