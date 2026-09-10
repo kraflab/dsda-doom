@@ -33,6 +33,7 @@
 #include "dsda/global.h"
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
+#include "dsda/palette.h"
 #include "dsda/preferences.h"
 
 #include "u.h"
@@ -217,8 +218,11 @@ extern int finalecount;
 extern const char* finaletext;
 extern const char* finaleflat;
 extern const char* finalepatch;
+extern const char* endpic;
+extern const char* endpalette;
 extern int acceleratestage;
 extern int midstage;
+extern int endgameflags;
 
 int dsda_UStartFinale(void) {
   if (!gamemapinfo)
@@ -243,6 +247,15 @@ int dsda_UStartFinale(void) {
 
   if (!finaleflat)
     finaleflat = "FLOOR4_8"; // use a single fallback for all maps.
+
+  endpic = gamemapinfo->endpic;
+  endpalette = gamemapinfo->endpalette;
+  endgameflags = gamemapinfo->flags;
+
+  if (gamemapinfo->endpalette[0]) {
+    dsda_PlayPalData(playpal_custom)->lump_name = gamemapinfo->endpalette;
+    dsda_InitPlayPal(playpal_custom);
+  }
 
   return true;
 }
@@ -294,7 +307,7 @@ int dsda_UFTicker(void) {
         finalecount = 0;
         finalestage = FINALE_STAGE_ART;
         wipegamestate = -1; // force a wipe
-        if (gamemapinfo->flags & MapInfo_EndGameBunny)
+        if (gamemapinfo->flags & MapInfo_EndGameScroll)
           F_StartScroll(NULL, NULL, NULL, true);
         else if (gamemapinfo->flags & MapInfo_EndGameStandard)
           return false; // let go of finale ownership
@@ -321,7 +334,12 @@ void dsda_UFDrawer(void) {
       }
       break;
     case FINALE_STAGE_ART:
-      if (gamemapinfo->flags & MapInfo_EndGameBunny)
+      if (gamemapinfo->endpalette[0])
+      {
+        V_SetPlayPal(playpal_custom);
+      }
+
+      if (gamemapinfo->flags & MapInfo_EndGameScroll)
       {
         F_BunnyScroll();
       }
@@ -334,6 +352,9 @@ void dsda_UFDrawer(void) {
       break;
     case FINALE_STAGE_CAST:
       F_CastDrawer();
+      break;
+    case FINALE_STAGE_TITLE:
+      V_DrawRawScreen("TITLEPIC"); // Palette change has ended, just show the title
       break;
   }
 }
@@ -502,7 +523,7 @@ int dsda_UPrepareFinale(int* result) {
 void dsda_ULoadMapInfo(void) {
   int p;
 
-  if (dsda_Flag(dsda_arg_nomapinfo) || raven)
+  if (dsda_Flag(dsda_arg_nomapinfo) || hexen)
     return;
 
   p = -1;

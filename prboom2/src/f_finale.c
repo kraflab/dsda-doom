@@ -47,6 +47,7 @@
 
 #include "dsda/font.h"
 #include "dsda/mapinfo.h"
+#include "dsda/palette.h"
 
 #include "f_finale.h" // CPhipps - hmm...
 
@@ -65,6 +66,9 @@ int finalecount;
 const char*   finaletext;
 const char*   finaleflat;
 const char*   finalepatch;
+const char*   endpic;
+const char*   endpalette;
+int endgameflags;
 
 // defines for the end mission display text                     // phares
 
@@ -89,6 +93,13 @@ void F_StartFinale (void)
   int mnum;
   int muslump;
 
+  finaletext = NULL;
+  finaleflat = NULL;
+  finalepatch = NULL;
+  endpic = NULL;
+  endpalette = NULL;
+  endgameflags = 0;
+
   if (heretic) return Heretic_F_StartFinale();
   if (hexen) return Hexen_F_StartFinale();
 
@@ -98,10 +109,6 @@ void F_StartFinale (void)
 
   // killough 3/28/98: clear accelerative text flags
   acceleratestage = midstage = 0;
-
-  finaletext = NULL;
-  finaleflat = NULL;
-  finalepatch = NULL;
 
   dsda_InterMusic(&mnum, &muslump);
 
@@ -261,6 +268,18 @@ dboolean F_Responder (event_t *event)
 
   if (finalestage == FINALE_STAGE_CAST)
     return F_CastResponder (event);
+  else if (finalestage == FINALE_STAGE_ART)
+  {
+    // If the palette is changed, kick to title instead of opening the menu
+    if (event->type == ev_keydown && endpalette && endpalette[0])
+    {
+      finalestage = FINALE_STAGE_TITLE;
+      S_StartVoidSound(g_sfx_swtchx);
+      V_SetPlayPal(playpal_default);
+      V_DrawRawScreen("TITLEPIC");
+      return true;
+    }
+  }
 
   return false;
 }
@@ -853,15 +872,9 @@ void F_Drawer (void)
     return;
   }
 
-  if (finalestage == FINALE_STAGE_CAST)
-  {
-    F_CastDrawer ();
-    return;
-  }
-
   if (finalestage == FINALE_STAGE_TEXT)
-    F_TextWrite ();
-  else
+    F_TextWrite();
+  else if (finalestage == FINALE_STAGE_ART)
   {
     const char* finalelump = NULL;
 
@@ -891,4 +904,8 @@ void F_Drawer (void)
       V_DrawNamePatchFS(0, 0, 0, finalelump, CR_DEFAULT, VPT_STRETCH);
     }
   }
+  else if (finalestage == FINALE_STAGE_CAST)
+    F_CastDrawer();
+  else if (finalestage == FINALE_STAGE_TITLE)
+    V_DrawRawScreen("TITLEPIC"); // Palette change has ended, just show the title
 }

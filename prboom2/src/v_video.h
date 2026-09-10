@@ -266,7 +266,7 @@ extern V_DrawShaded_f V_DrawShaded;
 // CPhipps - function to set the palette to palette number pal.
 void V_TouchPalette(void);
 void V_SetPalette(int pal);
-void V_SetPlayPal(int playpal_index);
+void V_SetPlayPal(int playpal_i);
 
 // Alt-Enter: fullscreen <-> windowed
 void V_ToggleFullscreen(void);

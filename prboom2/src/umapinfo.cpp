@@ -216,7 +216,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		ParseLumpName(scanner, mape->endpic);
 		mape->flags |= MapInfo_EndGameArt;
 	}
-	else if (!stricmp(pname, "endcast"))
+	else if (!stricmp(pname, "endcast") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
@@ -224,12 +224,13 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		            ? MapInfo_EndGameCast
 		            : MapInfo_EndGameClear;
 	}
-	else if (!stricmp(pname, "endbunny"))
+	else if ((!stricmp(pname, "endbunny") && !raven) ||
+	         (!stricmp(pname, "enddemon") && heretic))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
 		mape->flags |= (scanner.boolean)
-		            ? MapInfo_EndGameBunny
+		            ? MapInfo_EndGameScroll
 		            : MapInfo_EndGameClear;
 	}
 	else if (!stricmp(pname, "endgame"))
@@ -239,6 +240,10 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		mape->flags |= (scanner.boolean)
 		            ? MapInfo_EndGameStandard
 		            : MapInfo_EndGameClear;
+	}
+	else if (!stricmp(pname, "endpalette"))
+	{
+		ParseLumpName(scanner, mape->endpalette);
 	}
 	else if (!stricmp(pname, "exitpic"))
 	{
@@ -366,7 +371,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			scanner.MustGetInteger();
 			tag = scanner.number;
 			// allow no 0-tag specials here, unless a level exit.
-			if (tag != 0 || special == 11 || special == 51 || special == 52 || special == 124)
+			if (tag != 0 || special == 11 || special == 51 || special == 52 || (raven ? special == 105 : special == 124))
 			{
 				mape->numbossactions++;
 				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
@@ -441,7 +446,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 
 		// Set default level progression here to simplify the checks elsewhere.
 		// Doing this lets us skip all normal code for this if nothing has been defined.
-		if (!parsed.nextmap[0] && !(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)))
+		if (!parsed.nextmap[0] && !(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)) && !raven)
 		{
 			if (!stricmp(parsed.lumpname, "MAP30"))
 			{
@@ -459,7 +464,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 			}
 			else if (!stricmp(parsed.lumpname, "E3M8"))
 			{
-				parsed.flags |= MapInfo_EndGameBunny;
+				parsed.flags |= MapInfo_EndGameScroll;
 			}
 			else if (!stricmp(parsed.lumpname, "E4M8"))
 			{

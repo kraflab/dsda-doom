@@ -5533,7 +5533,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
   if (dsda_InputActivated(dsda_input_cycle_palette))
   {
     dsda_CyclePlayPal();
-    doom_printf("Palette %s", dsda_PlayPalData()->lump_name);
+    doom_printf("Palette %s", dsda_PlayPalData(playpal_index)->lump_name);
     S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     return true;
   }
