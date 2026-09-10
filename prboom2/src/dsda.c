@@ -394,6 +394,10 @@ int dsda_MaxKillRequirement() {
   return dsda_max_kill_requirement;
 }
 
+void dsda_SetMaxKillRequirement(int max_kills) {
+  dsda_max_kill_requirement = max_kills;
+}
+
 void dsda_WatchPTickCompleted(void) {
   dsda_FlipLineActivationTracker();
 }

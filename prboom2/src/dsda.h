@@ -85,6 +85,7 @@ dboolean dsda_MovieComplete(void);
 void dsda_DecomposeILTime(dsda_level_time_t* level_time);
 void dsda_DecomposeMovieTime(dsda_movie_time_t* total_time);
 int dsda_MaxKillRequirement(void);
+void dsda_SetMaxKillRequirement(int max_kills);
 int* dsda_PlayerActivatedLines(void);
 
 int dsda_TurboScale(void);

@@ -21,5 +21,7 @@ void SV_Init(void);
 void SV_MapTeleport(int map, int position);
 void SV_StoreMapArchive(void);
 void SV_RestoreMapArchive(void);
+void SV_StoreHexenMapStats(void);
+void SV_RestoreHexenMapStats(void);
 
 #endif
