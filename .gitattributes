@@ -255,6 +255,8 @@ prboom2/data/sprites/dogsk0.ppm -text
 prboom2/data/sprites/dogsl0.ppm -text
 prboom2/data/sprites/dogsm0.ppm -text
 prboom2/data/sprites/dogsn0.ppm -text
+prboom2/data/sprites/bon3a0.lmp -text
+prboom2/data/sprites/bon4a0.lmp -text
 prboom2/data/sprites/free/dogsa1.ppm -text
 prboom2/data/sprites/free/dogsa2a8.ppm -text
 prboom2/data/sprites/free/dogsa3a7.ppm -text
@@ -313,6 +315,8 @@ prboom2/data/sprites/free/dogsk0.ppm -text
 prboom2/data/sprites/free/dogsl0.ppm -text
 prboom2/data/sprites/free/dogsm0.ppm -text
 prboom2/data/sprites/free/dogsn0.ppm -text
+prboom2/data/sprites/free/bon3a0.lmp -text
+prboom2/data/sprites/free/bon4a0.lmp -text
 prboom2/data/sprites/pls1a0.ppm -text
 prboom2/data/sprites/pls1b0.ppm -text
 prboom2/data/sprites/pls1c0.ppm -text

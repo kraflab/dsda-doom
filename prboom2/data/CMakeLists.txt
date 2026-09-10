@@ -306,6 +306,8 @@ set(SPRITES
     sprites/dogsl0.ppm
     sprites/dogsm0.ppm
     sprites/dogsn0.ppm
+    sprites/bon3a0.ppm
+    sprites/bon4a0.ppm
 )
 set(SPRITEP
     ${SPRITEP}
@@ -379,6 +381,17 @@ set(SPRITEP
     "33,67,sprites/dogsl0.ppm"
     "33,68,sprites/dogsm0.ppm"
     "33,69,sprites/dogsn0.ppm"
+)
+
+set(SPRITES
+    ${SPRITES}
+    sprites/bon3a0.ppm
+    sprites/bon4a0.ppm
+)
+set(SPRITEP
+    ${SPRITEP}
+    "4,47,sprites/bon3a0.ppm"
+    "19,19,sprites/bon4a0.ppm"
 )
 
 set(SPRITES
