@@ -46,8 +46,6 @@ dboolean dsda_ExCmdDemo(void) {
 }
 
 void dsda_EnableCasualExCmdFeatures(void) {
-  void dsda_ResetAirControl(void);
-
   casual_excmd_features = true;
 
   dsda_ResetAirControl();
@@ -59,14 +57,14 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
 
 dboolean dsda_AllowJumping(void) {
   return (allow_incompatibility && dsda_IntConfig(dsda_config_allow_jumping))
-         // TODO: possible "allow jumping" mapinfo flag
+         || dsda_MapAllowsJumping()
          || dsda_AllowCasualExCmdFeatures();
 }
 
 dboolean dsda_FreeAim(void) {
   return ((allow_incompatibility || dsda_AllowCasualExCmdFeatures())
-         // TODO: possible "allow freelook" mapinfo flag
-         && dsda_IntConfig(dsda_config_freelook));
+         && dsda_IntConfig(dsda_config_freelook))
+         || dsda_MapAllowsFreeaim();
 }
 
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {
