@@ -123,7 +123,7 @@ int dsda_UShowNextLocBehaviour(int* behaviour) {
   if (!gamemapinfo)
     return false;
 
-  if (gamemapinfo->flags & (MapInfo_EndGameAny|MapInfo_EndGameClear))
+  if (gamemapinfo->flags & (MapInfo_EndGameAny))
     *behaviour = WI_SHOW_NEXT_DONE;
   else
     *behaviour = WI_SHOW_NEXT_LOC | WI_SHOW_NEXT_EPISODAL;

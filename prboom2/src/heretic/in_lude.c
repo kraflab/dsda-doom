@@ -177,6 +177,11 @@ static yahpt_t YAHspot[3][9] = {
 
 static const char *NameForMap(int map)
 {
+    if (map < 1 || map > 9)
+    {
+        return "";
+    }
+
     const char *name = LevelNames[(gameepisode - 1) * 9 + map - 1];
 
     if (strlen(name) < 7)
@@ -192,6 +197,13 @@ static dboolean IN_HasInterpic()
           W_LumpNameExists(enterpic) || W_LumpNameExists(exitpic);
 }
 
+static dboolean IN_UseWorldMap(void)
+{
+  return gameepisode > 0 && gameepisode < 4 &&
+         prevmap > 0 && prevmap < 10 &&
+         nextmap > 0 && nextmap < 10;
+}
+
 static void IN_DrawInterpic(void)
 {
   // e6y: wide-res
@@ -205,12 +217,16 @@ static void IN_DrawInterpic(void)
   {
     V_DrawNamePatchFS(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
   }
-  else
+  else if (IN_UseWorldMap())
   {
     char name[9];
     snprintf(name, sizeof(name), "MAPE%d", gameepisode);
 
     V_DrawNamePatchFS(0, 0, 0, name, CR_DEFAULT, VPT_STRETCH);
+  }
+  else
+  {
+    V_DrawBackground("FLOOR16", 0);
   }
 }
 
@@ -653,7 +669,7 @@ void IN_DrawOldLevel(void)
     IN_DrawLevelname(lf_levelpic, prev_level_name, 3);
     MN_DrTextA("FINISHED", 160 - MN_TextAWidth("FINISHED") / 2, 25);
 
-    if (exitpic) return;
+    if (exitpic || !IN_UseWorldMap()) return;
 
     if (prevmap == 9)
     {
@@ -700,7 +716,7 @@ void IN_DrawYAH(void)
     {
         prevmap = nextmap - 1;
     }
-    if (enterpic || exitpic) return;
+    if (enterpic || exitpic || !IN_UseWorldMap()) return;
 
     for (int i = 0; i < prevmap; i++)
     {
