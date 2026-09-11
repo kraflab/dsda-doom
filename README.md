@@ -32,6 +32,7 @@ This is a successor of prboom+ with many new features, including:
 Available for Windows, Linux and macOS in [Releases](https://github.com/kraflab/dsda-doom/releases/latest)
 
 ### Patch Notes
+- [v0.30](./patch_notes/v0.30.md)
 - [v0.29](./patch_notes/v0.29.md)
 - [v0.28](./patch_notes/v0.28.md)
 - [v0.27](./patch_notes/v0.27.md)
@@ -53,7 +54,6 @@ There is a dedicated launcher for this port available [dsda-launcher](https://gi
   - You can force hexen engine behaviour with `-hexen` (shouldn't be necessary)
 - Don't need to supply complevel (hexen is complevel 0 by necessity)
 - Known issues
-  - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for hexen (it will default instead to "Doom format")
   - The "Apply multisampling" automap option is disabled for hexen
   - Automap colors are not configurable for hexen
   - Some of the more advanced features are not implemented for hexen yet, and using them may cause crashes or other odd behaviour.
@@ -69,7 +69,6 @@ There is a dedicated launcher for this port available [dsda-launcher](https://gi
 - Heretic game logic should be set automatically if you use `HERETIC.WAD` as the iwad. If it doesn't work, please use the `-heretic` commandline option. This flips a switch in the engine that determines all the core game data.
 - Don't need to supply complevel (heretic is complevel 0 by necessity)
 - Known issues
-  - Setting the "Status Bar and Menu Appearance" option to "not adjusted" will have no effect for heretic (it will default instead to "Doom format").
   - The "Apply multisampling" automap option is disabled for heretic.
   - Automap colors are not configurable for heretic.
   - Some of the more advanced features are not implemented for heretic yet, and using them may cause crashes or other odd behaviour.
@@ -81,7 +80,7 @@ There is a dedicated launcher for this port available [dsda-launcher](https://gi
 - [UMAPINFO v2.2](https://github.com/kraflab/umapinfo)
 
 ### Maintainers
-- @fabiangreffrath, @rfomin, and @Pedro-Beirao 2024-
+- @fabiangreffrath, @rfomin, @Pedro-Beirao, @andrikpowell, @elf-alchemist
 - @kraflab 2020-2024
 
 ### Credits
