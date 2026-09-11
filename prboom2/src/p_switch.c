@@ -34,6 +34,7 @@
 #include "doomstat.h"
 #include "w_wad.h"
 #include "r_main.h"
+#include "p_enemy.h"
 #include "p_maputl.h"
 #include "p_spec.h"
 #include "g_game.h"
@@ -1582,6 +1583,9 @@ dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dbool
         case 70:               // Turbo Lower Floor
             if (EV_DoFloor(line, turboLower))
                 P_ChangeSwitchTexture(line, 1);
+            break;
+        case 515:
+            P_Massacre();
             break;
     }
 

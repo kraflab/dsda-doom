@@ -370,8 +370,10 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			scanner.MustGetToken(',');
 			scanner.MustGetInteger();
 			tag = scanner.number;
-			// allow no 0-tag specials here, unless a level exit.
-			if (tag != 0 || special == 11 || special == 51 || special == 52 || (raven ? special == 105 : special == 124))
+			// allow no 0-tag specials here, unless a level exit or massacre.
+			if (tag != 0 || special == 11 || special == 51 || special == 52 ||
+			   (heretic ? special == 105 : special == 124) ||
+			   (heretic && special == 515))
 			{
 				mape->numbossactions++;
 				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);

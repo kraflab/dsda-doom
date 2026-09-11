@@ -177,12 +177,14 @@ static yahpt_t YAHspot[3][9] = {
 
 static const char *NameForMap(int map)
 {
+    const char *name;
+
     if (map < 1 || map > 9)
     {
         return "";
     }
 
-    const char *name = LevelNames[(gameepisode - 1) * 9 + map - 1];
+    name = LevelNames[(gameepisode - 1) * 9 + map - 1];
 
     if (strlen(name) < 7)
     {
