@@ -15,6 +15,7 @@
 //  DSDA Name
 //
 
+#include "info.h"
 #include "string.h"
 
 #include "doomdef.h"
@@ -821,11 +822,12 @@ static const char* const action_names[] = {
 
 int dsda_ActorNameToType(const char* name) {
   int i;
-  const char* const* actor_names = raven ? actor_names_heretic : actor_names_doom;
+  const char* const* actor_names = heretic ? actor_names_heretic : actor_names_doom;
 
   for (i = 0; actor_names[i]; ++i)
     if (!stricmp(name, actor_names[i]))
-      return dsda_GetDehMobjIndex(i);
+      return heretic ? dsda_GetDehMobjIndex(HERETIC_MT_ZERO + i) :
+                       dsda_GetDehMobjIndex(i);
 
   return NAME_NOT_FOUND;
 }

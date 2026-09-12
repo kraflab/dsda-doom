@@ -123,7 +123,7 @@ int dsda_UShowNextLocBehaviour(int* behaviour) {
   if (!gamemapinfo)
     return false;
 
-  if (gamemapinfo->flags & (MapInfo_EndGameAny))
+  if (gamemapinfo->flags & (MapInfo_EndGameAny|MapInfo_EndGameClear))
     *behaviour = WI_SHOW_NEXT_DONE;
   else
     *behaviour = WI_SHOW_NEXT_LOC | WI_SHOW_NEXT_EPISODAL;
@@ -334,7 +334,7 @@ void dsda_UFDrawer(void) {
       }
       break;
     case FINALE_STAGE_ART:
-      if (gamemapinfo->endpalette[0])
+      if (gamemapinfo->endpalette[0] && playpal_index != playpal_custom)
       {
         V_SetPlayPal(playpal_custom);
       }
