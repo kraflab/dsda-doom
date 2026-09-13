@@ -2339,7 +2339,13 @@ void P_TrySpawnPlayer(const mapthing_t *mthing, int player)
 {
   mapthing_t *player_start;
 
-  player_start = &playerstarts[mthing->special_args[0]][player];
+  // Hexen stored these regardless of arg1, but only used the relevant ones depending on game type
+  // this caused a crash - HEXDD MAP39 players have arg1 of 99
+  if (mthing->special_args[0] < MAX_PLAYER_STARTS)
+    player_start = &playerstarts[mthing->special_args[0]][player];
+  else
+    player_start = &playerstarts[0][player];
+
   *player_start = *mthing;
   player_start->type = player + 1;
 
