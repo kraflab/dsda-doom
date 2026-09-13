@@ -271,6 +271,7 @@ void S_Start(void)
 {
   int mnum;
   int muslump;
+  dboolean no_musinfo_default;
 
   // kill all playing sounds at start of level
   //  (trust me - a good idea)
@@ -287,15 +288,19 @@ void S_Start(void)
     musinfo.items[0] = muslump;
   }
 
-  if (musinfo.items[0] != -1)
+  no_musinfo_default = (musinfo.items[0] == -1);
+
+  // Keep map's default music available to MUSINFO slot 0
+  // Needed when restoring queued music from a key frame
+  if (no_musinfo_default)
+    musinfo.items[0] = dsda_MusicIndexToLumpNum(mnum);
+
+  if (!dsda_StartQueuedMusic())
   {
-    if (!dsda_StartQueuedMusic())
-      S_ChangeMusInfoMusic(musinfo.items[0], true);
-  }
-  else
-  {
-    if (!dsda_StartQueuedMusic())
+    if (no_musinfo_default)
       S_ChangeMusic(mnum, true);
+    else
+      S_ChangeMusInfoMusic(musinfo.items[0], true);
   }
 }
 
