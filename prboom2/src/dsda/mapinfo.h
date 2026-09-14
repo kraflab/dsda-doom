@@ -79,6 +79,5 @@ int dsda_MapCluster(int map);
 short dsda_Sky1Texture(void);
 short dsda_Sky2Texture(void);
 void dsda_InitSky(void);
-dboolean dsda_RequireExCmd(void);
 
 #endif

@@ -158,7 +158,7 @@ static PlayerMovement ParsePlayerMovement(Scanner &scanner)
 
 	if (pm == PM_Unset)
 	{
-		scanner.ErrorF("Expected 'disallow', 'allow' or require, got %s", keyword);
+		scanner.ErrorF("Expected 'disallow', 'allow' or 'require', got %s", keyword);
 	}
 
 	return pm;
@@ -380,7 +380,8 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		}
 		else
 		{
-		  int special, tag, type;
+			BossAction action = { 0 };
+			int special, tag, type;
 			mape->flags &= ~MapInfo_BossActionClear;
 
 			type = dsda_ActorNameToType(scanner.string);
@@ -400,64 +401,36 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			// allow no 0-tag specials here, unless a level exit.
 			if (tag != 0 || special == 11 || special == 51 || special == 52 || special == 124)
 			{
+				action.type = type;
+				action.special = special;
+				action.args[0] = tag;
 				mape->numbossactions++;
 				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
-				mape->bossactions[mape->numbossactions - 1].type = type;
-				mape->bossactions[mape->numbossactions - 1].special = special;
-				mape->bossactions[mape->numbossactions - 1].args[0] = tag;
+				mape->bossactions[mape->numbossactions - 1] = action;
 			}
 
 		}
 	}
 	else if (!stricmp(pname, "jumping"))
 	{
-		switch (ParsePlayerMovement(scanner))
-		{
-			case PM_Disallow:
-				mape->flags &= ~MapInfo_Jumping;
-				break;
-			case PM_Allow:
-				mape->flags |= MapInfo_Jumping;
-				break;
-			case PM_Require:
-				mape->flags |= MapInfo_Jumping;
-				break;
-		}
+		mape->jumping = ParsePlayerMovement(scanner);
 	}
 	else if (!stricmp(pname, "crouching"))
 	{
-		switch (ParsePlayerMovement(scanner))
+		mape->crouching = ParsePlayerMovement(scanner);
+
+		if (mape->crouching == PM_Require)
 		{
-			case PM_Disallow:
-				mape->flags &= ~MapInfo_Crouching;
-				break;
-			case PM_Allow:
-				mape->flags |= MapInfo_Crouching;
-				break;
-			case PM_Require:
-				lprintf(LO_WARN,
-				        "Parsing UMAPINFO found a 'crounching = "
-				        "required' entry, but crouching is not "
-				        "supported, map %s may not work correctly.\n",
-				        mape->lumpname);
-				mape->flags |= MapInfo_Crouching;
-				break;
+			lprintf(LO_WARN,
+			        "Parsing UMAPINFO found a 'crouching = "
+			        "require' entry, but crouching is not "
+			        "supported, map %s may not work correctly.\n",
+			        mape->lumpname);
 		}
 	}
 	else if (!stricmp(pname, "freeaim"))
 	{
-		switch (ParsePlayerMovement(scanner))
-		{
-			case PM_Disallow:
-				mape->flags &= ~MapInfo_FreeAim;
-				break;
-			case PM_Allow:
-				mape->flags |= MapInfo_FreeAim;
-				break;
-			case PM_Require:
-				mape->flags |= MapInfo_FreeAim;
-				break;
-		}
+		mape->freeaim = ParsePlayerMovement(scanner);
 	}
 	else if (!stricmp(pname, "DSDADoom_VerticalExplosionThrust"))
 	{
@@ -491,6 +464,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 
 		if (action.type != NAME_NOT_FOUND && action.special != NAME_NOT_FOUND)
 		{
+			mape->flags &= ~MapInfo_BossActionClear;
 			mape->numbossactions++;
 			mape->bossactions = (struct BossAction *)Z_Realloc(
 			      mape->bossactions,

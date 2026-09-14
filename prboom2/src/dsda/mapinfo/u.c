@@ -627,12 +627,12 @@ int dsda_UMapColorMap(int* colormap) {
 
 dboolean dsda_UMapAllowsJumping(void)
 {
-  return gamemapinfo && (gamemapinfo->flags & MapInfo_Jumping);
+  return gamemapinfo && (gamemapinfo->jumping == PM_Allow || gamemapinfo->jumping == PM_Require);
 }
 
 dboolean dsda_UMapAllowsFreeAim(void)
 {
-  return gamemapinfo && (gamemapinfo->flags & MapInfo_FreeAim);
+  return gamemapinfo && (gamemapinfo->freeaim == PM_Allow || gamemapinfo->freeaim == PM_Require);
 }
 
 dboolean dsda_UExplodeIn3D(void)

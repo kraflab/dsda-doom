@@ -42,12 +42,8 @@ typedef enum MapinfoFlags
 
 	MapInfo_BossActionClear = (1u << 9),
 
-	MapInfo_Jumping = (1u << 10),
-	MapInfo_FreeAim = (1u << 11),
-	MapInfo_Crouching = (1u << 12),
-
-	MapInfo_EX_VerticalExplosionThrust = (1u << 13),
-	MapInfo_EX_ExplodeIn3D = (1u << 14),
+	MapInfo_EX_VerticalExplosionThrust = (1u << 10),
+	MapInfo_EX_ExplodeIn3D = (1u << 11),
 
 	MapInfo_EndGameAny = (MapInfo_EndGameArt | MapInfo_EndGameStandard |
                         MapInfo_EndGameCast | MapInfo_EndGameBunny),
@@ -92,6 +88,10 @@ struct MapEntry
 
 	int numbossactions;
 	struct BossAction *bossactions;
+
+	PlayerMovement jumping;
+	PlayerMovement freeaim;
+	PlayerMovement crouching;
 };
 
 struct MapList
