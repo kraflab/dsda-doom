@@ -622,3 +622,23 @@ int dsda_HexenInitSky(void) {
 int dsda_HexenMapColorMap(int* colormap) {
   return false;
 }
+
+dboolean dsda_HexenMapAllowsJumping(void)
+{
+  return false;
+}
+
+dboolean dsda_HexenMapAllowsFreeAim(void)
+{
+  return false;
+}
+
+dboolean dsda_HexenExplodeIn3D(void)
+{
+  return false;
+}
+
+dboolean dsda_HexenVerticalExplosionThrust(void)
+{
+  return false;
+}
