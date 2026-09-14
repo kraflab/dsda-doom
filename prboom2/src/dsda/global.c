@@ -421,7 +421,7 @@ static void dsda_InitHeretic(void) {
 
   g_menu_flat = "FLOOR30";
   g_menu_save_page_size = 5;
-  g_menu_font_spacing = 0;
+  g_menu_font_spacing = -1;
 
   g_skyflatname = "F_SKY1";
 
@@ -586,7 +586,7 @@ static void dsda_InitHexen(void) {
 
   g_menu_flat = "F_032";
   g_menu_save_page_size = 5;
-  g_menu_font_spacing = 0;
+  g_menu_font_spacing = -1;
 
   g_skyflatname = "F_SKY";
 

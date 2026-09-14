@@ -106,7 +106,9 @@ static void ApplyWindowResize(SDL_Event *resize_event);
 static void ActivateMouse(void);
 static void DeactivateMouse(void);
 //static int AccelerateMouse(int val);
+static void UpdatePlaybackMouseTimer(void);
 static void I_ReadMouse(void);
+static dboolean MouseIsInWindow(void);
 static dboolean MouseShouldBeGrabbed();
 static void UpdateFocus(void);
 
@@ -417,6 +419,10 @@ static void I_GetEvent(void)
           case SDL_WINDOWEVENT_RESTORED:
             UpdateFocus();
             break;
+          case SDL_WINDOWEVENT_MOVED:
+            // update mouse cursor position
+            I_SetWindowRect();
+            break;
           case SDL_WINDOWEVENT_SIZE_CHANGED:
             ApplyWindowResize(Event);
             break;
@@ -441,6 +447,9 @@ static void I_GetEvent(void)
 void I_StartTic (void)
 {
   I_GetEvent();
+
+  // Moved here so that playback bar can shrink when mouse is outside window
+  UpdatePlaybackMouseTimer();
 
   if (dsda_AllowMouse())
     I_ReadMouse();
@@ -1459,6 +1468,12 @@ static void CorrectMouseStutter(int *x, int *y)
   y_remainder_old = y_remainder;
 }
 
+static void UpdatePlaybackMouseTimer(void)
+{
+  if (demoplayback && !menuactive && mouse_hide_timer > 0 && !dsda_SkipMode())
+    mouse_hide_timer--;
+}
+
 //
 // Read the change in mouse state to generate mouse motion events
 //
@@ -1471,6 +1486,10 @@ static void I_ReadMouse(void)
 
   //e6y: new mouse code
   UpdateGrab();
+
+  // Don't pull mouse away if outside window
+  if (demoplayback && !menuactive && !desired_fullscreen && !MouseIsInWindow())
+    return;
 
   if (window_focused)
   {
@@ -1494,12 +1513,31 @@ static void I_ReadMouse(void)
   }
 }
 
+static dboolean MouseIsInWindow(void)
+{
+  int mouse_x, mouse_y;
+
+  if (!sdl_window)
+    return false;
+
+  SDL_GetGlobalMouseState(&mouse_x, &mouse_y);
+
+  return mouse_x >= window_rect.x && mouse_x < window_rect.x + window_rect.w &&
+         mouse_y >= window_rect.y && mouse_y < window_rect.y + window_rect.h;
+}
+
 static dboolean MouseShouldBeGrabbed()
 {
   // never grab the mouse when in screensaver mode
 
   //if (screensaver_mode)
   //    return false;
+
+  // In windowed demo playback, only hide/grab the cursor while it's inside the window
+  if (demoplayback && !menuactive && !desired_fullscreen && !MouseIsInWindow())
+  {
+    return false;
+  }
 
   // if the window doesnt have focus, never grab it
   if (!window_focused)
@@ -1518,9 +1556,7 @@ static dboolean MouseShouldBeGrabbed()
   if (demoplayback && !menuactive && mouse_hide_timer > 0 &&
     (dsda_IntConfig(dsda_config_playback_mouse_controls) || !desired_fullscreen))
   {
-    if (!dsda_SkipMode())
-      mouse_hide_timer--;
-
+    // moved hide playback bar timer logic to not be tied to "inside window" logic
     return false;
   }
 
@@ -1605,6 +1641,7 @@ static void ApplyWindowResize(SDL_Event *resize_event)
 
 void I_SetWindowRect()
 {
+  SDL_GetWindowPosition(sdl_window, &window_rect.x, &window_rect.y);
   SDL_GetWindowSize(sdl_window, &window_rect.w, &window_rect.h);
 
   if (V_IsOpenGLMode())

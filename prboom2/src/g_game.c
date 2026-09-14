@@ -1308,13 +1308,9 @@ dboolean G_Responder (event_t* ev)
   if (dsda_IntConfig(dsda_config_playback_mouse_controls) &&
     demoplayback && !timingdemo && dsda_InputActivated(dsda_input_fire))
   {
-    int x, y;
+    int x;
 
-    dsda_GetMousePosition(&x, &y);
-
-    y = y * ACTUALHEIGHT / viewport_rect.h;
-
-    if (x && y > (ACTUALHEIGHT - ST_SCALED_HEIGHT / 6))
+    if (HU_MouseOnDemoProgressBar(&x))
     {
       dsda_JumpToLogicTic(demo_tics_count * x / viewport_rect.w);
       return true;

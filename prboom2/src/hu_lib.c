@@ -89,6 +89,7 @@ void HUlib_initTextLine(hu_textline_t* t, int x, int y,
   t->flags = flags;
   t->line_height = f->line_height;
   t->space_width = f->space_width;
+  t->kerning = f->kerning;
   HUlib_clearTextLine(t);
 }
 
@@ -167,7 +168,7 @@ void HUlib_drawTextLine
     }
     else  if (c != ' ' && c >= l->sc && c <= 127)
     {
-      w = l->f[c - l->sc].width;
+      w = l->f[c - l->sc].width + l->kerning;
       if (x+w-l->f[c - l->sc].leftoffset > BASE_WIDTH)
         break;
       // killough 1/18/98 -- support multiple lines:
@@ -185,7 +186,7 @@ void HUlib_drawTextLine
   l->cm = oc; //jff 2/17/98 restore original color
 
   // draw the cursor if requested
-  if (drawcursor && x + l->f['_' - l->sc].width <= BASE_WIDTH)
+  if (drawcursor && x + l->f['_' - l->sc].width + l->kerning <= BASE_WIDTH)
   {
     // killough 1/18/98 -- support multiple lines
     // CPhipps - patch drawing updated
@@ -218,7 +219,7 @@ void HUlib_setTextXCenter(hu_textline_t* t)
   while (*s)
   {
     int c = toupper(*(s++)) - HU_FONTSTART;
-    t->x -= (c < 0 || c > HU_FONTSIZE ? t->space_width : t->f[c].width);
+    t->x -= (c < 0 || c > HU_FONTSIZE ? t->space_width : t->f[c].width + t->kerning);
   }
   if (t->x < 0)
     t->x = 0;
