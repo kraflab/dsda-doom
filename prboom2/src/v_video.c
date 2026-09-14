@@ -632,7 +632,7 @@ static void V_DrawMemPatch(int x, int y, int scrn, const rpatch_t *patch,
 // a dark faded background under menus.
 //
 static void FUNC_V_DrawShaded(int scrn, int x, int y, int width, int height, int shade)
-{ 
+{
   const lighttable_t *darkcolormap;
   extern dboolean LevelUseFullBright;
   extern const byte* colormap_lump;
@@ -697,9 +697,9 @@ void V_SetPalette(int pal)
   }
 }
 
-void V_SetPlayPal(int playpal_index)
+void V_SetPlayPal(int playpal_i)
 {
-  dsda_SetPlayPal(playpal_index);
+  dsda_SetPlayPal(playpal_i);
   R_UpdatePlayPal();
   V_SetPalette(currentPaletteIndex);
 
@@ -1181,7 +1181,7 @@ const unsigned char* V_GetPlaypal(void)
 {
   dsda_playpal_t* playpal_data;
 
-  playpal_data = dsda_PlayPalData();
+  playpal_data = dsda_PlayPalData(playpal_index);
 
   if (!playpal_data->lump)
   {
@@ -1197,13 +1197,13 @@ const unsigned char* V_GetPlaypal(void)
 
 void V_FreePlaypal(void)
 {
-  dsda_FreePlayPal();
+  dsda_FreeAllPlayPals();
 }
 
 int V_GetPlaypalCount(void)
 {
   V_GetPlaypal(); // ensure playpal data is initialized
-  return (dsda_PlayPalData()->length / PALETTE_SIZE);
+  return (dsda_PlayPalData(playpal_index)->length / PALETTE_SIZE);
 }
 
 //
@@ -1611,7 +1611,7 @@ void V_DrawRawScreenSection(const char *lump_name, int source_offset, int dest_y
       // Don't draw pixels outside screen
       if ((x_pos < 0) || (x_pos > SCREENWIDTH - width))
         continue;
-      
+
       V_FillRect(0, x_pos, y, width, height, *raw);
     }
 }

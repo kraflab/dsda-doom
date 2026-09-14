@@ -216,7 +216,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		ParseLumpName(scanner, mape->endpic);
 		mape->flags |= MapInfo_EndGameArt;
 	}
-	else if (!stricmp(pname, "endcast"))
+	else if (!stricmp(pname, "endcast") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
@@ -224,12 +224,13 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		            ? MapInfo_EndGameCast
 		            : MapInfo_EndGameClear;
 	}
-	else if (!stricmp(pname, "endbunny"))
+	else if ((!stricmp(pname, "endbunny") && !raven) ||
+	         (!stricmp(pname, "enddemon") && heretic))
 	{
 		scanner.MustGetToken(TK_BoolConst);
 		mape->flags &= ~MapInfo_EndGameAny;
 		mape->flags |= (scanner.boolean)
-		            ? MapInfo_EndGameBunny
+		            ? MapInfo_EndGameScroll
 		            : MapInfo_EndGameClear;
 	}
 	else if (!stricmp(pname, "endgame"))
@@ -239,6 +240,10 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		mape->flags |= (scanner.boolean)
 		            ? MapInfo_EndGameStandard
 		            : MapInfo_EndGameClear;
+	}
+	else if (!stricmp(pname, "endpalette"))
+	{
+		ParseLumpName(scanner, mape->endpalette);
 	}
 	else if (!stricmp(pname, "exitpic"))
 	{
@@ -365,8 +370,10 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			scanner.MustGetToken(',');
 			scanner.MustGetInteger();
 			tag = scanner.number;
-			// allow no 0-tag specials here, unless a level exit.
-			if (tag != 0 || special == 11 || special == 51 || special == 52 || special == 124)
+			// allow no 0-tag specials here, unless a level exit or massacre.
+			if (tag != 0 || special == 11 || special == 51 || special == 52 ||
+			   (heretic ? special == 105 : special == 124) ||
+			   (heretic && special == 515))
 			{
 				mape->numbossactions++;
 				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
@@ -443,41 +450,69 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 		// Doing this lets us skip all normal code for this if nothing has been defined.
 		if (!parsed.nextmap[0] && !(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)))
 		{
-			if (!stricmp(parsed.lumpname, "MAP30"))
+		  if (!raven)
 			{
-				parsed.flags |= MapInfo_EndGameCast;
+			  if (!stricmp(parsed.lumpname, "MAP30"))
+  			{
+  				parsed.flags |= MapInfo_EndGameCast;
+  			}
+			  else if (!stricmp(parsed.lumpname, "E1M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameArt;
+  				strcpy(parsed.endpic, gamemode == retail && !pwad_help2_check ? "CREDIT" : "HELP2");
+  			}
+			  else if (!stricmp(parsed.lumpname, "E2M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameArt;
+  				strcpy(parsed.endpic, "VICTORY2");
+  			}
+			  else if (!stricmp(parsed.lumpname, "E3M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameScroll;
+  			}
+			  else if (!stricmp(parsed.lumpname, "E4M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameArt;
+  				strcpy(parsed.endpic, "ENDPIC");
+  			}
+			  else if (gamemission == tc_chex && !stricmp(parsed.lumpname, "E1M5"))
+  			{
+  			  parsed.flags |= MapInfo_EndGameArt;
+  			  strcpy(parsed.endpic, "CREDIT");
+  			}
 			}
-			else if (!stricmp(parsed.lumpname, "E1M8"))
-			{
-				parsed.flags |= MapInfo_EndGameArt;
-				strcpy(parsed.endpic, gamemode == retail && !pwad_help2_check ? "CREDIT" : "HELP2");
+		  else if (heretic)
+		  {
+				if (!stricmp(parsed.lumpname, "E1M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameArt;
+  				strcpy(parsed.endpic, gamemode == shareware ? "ORDER" : "CREDIT");
+  			}
+				else if (!stricmp(parsed.lumpname, "E2M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameArt;
+  				strcpy(parsed.endpic, "E2END");
+  				strcpy(parsed.endpalette, "E2PAL");
+  			}
+				else if (!stricmp(parsed.lumpname, "E3M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameScroll;
+  			}
+				else if (!stricmp(parsed.lumpname, "E4M8") || !stricmp(parsed.lumpname, "E5M8"))
+  			{
+  				parsed.flags |= MapInfo_EndGameArt;
+  				strcpy(parsed.endpic, "CREDIT");
+  			}
 			}
-			else if (!stricmp(parsed.lumpname, "E2M8"))
+
+			// If no default attribute, just go to the next map
+			if (!(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)))
 			{
-				parsed.flags |= MapInfo_EndGameArt;
-				strcpy(parsed.endpic, "VICTORY2");
-			}
-			else if (!stricmp(parsed.lumpname, "E3M8"))
-			{
-				parsed.flags |= MapInfo_EndGameBunny;
-			}
-			else if (!stricmp(parsed.lumpname, "E4M8"))
-			{
-				parsed.flags |= MapInfo_EndGameArt;
-				strcpy(parsed.endpic, "ENDPIC");
-			}
-			else if (gamemission == tc_chex && !stricmp(parsed.lumpname, "E1M5"))
-			{
-			  parsed.flags |= MapInfo_EndGameArt;
-			  strcpy(parsed.endpic, "CREDIT");
-			}
-			else
-			{
-				int ep, map;
-				if (G_ValidateMapName(parsed.lumpname, &ep, &map))
-				{
-					strcpy(parsed.nextmap, VANILLA_MAP_LUMP_NAME(ep, map + 1));
-				}
+  			int ep, map;
+  			if (G_ValidateMapName(parsed.lumpname, &ep, &map))
+  			{
+  				strcpy(parsed.nextmap, VANILLA_MAP_LUMP_NAME(ep, map + 1));
+  			}
 			}
 		}
 

@@ -33,7 +33,7 @@ typedef enum MapinfoFlags
 	MapInfo_EndGameArt = (1u << 2),
 	MapInfo_EndGameStandard = (1u << 3),
 	MapInfo_EndGameCast = (1u << 4),
-	MapInfo_EndGameBunny = (1u << 5),
+	MapInfo_EndGameScroll = (1u << 5),
 
 	MapInfo_NoIntermission = (1u << 6),
 	MapInfo_InterTextClear = (1u << 7),
@@ -42,7 +42,7 @@ typedef enum MapinfoFlags
 	MapInfo_BossActionClear = (1u << 9),
 
 	MapInfo_EndGameAny = (MapInfo_EndGameArt | MapInfo_EndGameStandard |
-                        MapInfo_EndGameCast | MapInfo_EndGameBunny),
+                        MapInfo_EndGameCast | MapInfo_EndGameScroll),
 } UMapinfoFlags;
 
 struct BossAction
@@ -66,6 +66,7 @@ struct MapEntry
 	char music[9];
 	char skytexture[9];
 	char endpic[9];
+	char endpalette[9];
 	char exitpic[9];
 	char enterpic[9];
 	char interbackdrop[9];
