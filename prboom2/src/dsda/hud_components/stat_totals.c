@@ -34,6 +34,66 @@ typedef struct {
 
 static local_component_t* local;
 
+int dsda_PrintDMStat(char *buffer, size_t size, const char *cm, int result, int others, const char* separator)
+{
+  return snprintf(
+    buffer, size,
+    "%s%i/%i%s",
+    cm, result, others,
+    separator ? separator : ""
+  );
+}
+
+static void dsda_DMStats(char* str, size_t max_size) {
+  int i, p;
+  size_t length;
+  int player_count = 0;
+
+  length = 0;
+
+  for (i = 0; i < g_maxplayers; ++i)
+    if (playeringame[i])
+      player_count++;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+      int result = 0, others = 0;
+      const char *color;
+
+      if (!playeringame[i])
+          continue;
+
+      for (p = 0; p < g_maxplayers; ++p)
+      {
+          if (!playeringame[p])
+              continue;
+
+          if (i != p)
+          {
+              result += players[i].frags[p];
+              others -= players[p].frags[i];
+          }
+          else
+          {
+              result -= players[i].frags[p];
+          }
+      }
+
+      color = (i == displayplayer) ? dsda_TextColor(dsda_tc_exhud_totals_max)
+                                   : dsda_TextColor(dsda_tc_exhud_totals_value);
+
+      player_count--;
+
+      length += dsda_PrintDMStat(
+        str + length, max_size - length,
+        color, result, others,
+        player_count > 0 ? local->stat_separator : ""
+      );
+
+      if (length >= max_size)
+        break;
+  }
+}
+
 int dsda_PrintStats(char *buffer, size_t size, const char* label, const char* cm, const int th_count, const int th_total, dboolean show_totals, const char *separator)
 {
     char print_stats[32] = "";
@@ -105,7 +165,14 @@ static void dsda_LevelStats(char* str, size_t max_size) {
 }
 
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
-  dsda_LevelStats(str, max_size);
+  if (deathmatch)
+  {
+    dsda_DMStats(str, max_size);
+  }
+  else
+  {
+    dsda_LevelStats(str, max_size);
+  }
 }
 
 void dsda_InitStatTotalsHC(int x_offset, int y_offset, int vpt, int* args, int arg_count, void** data) {

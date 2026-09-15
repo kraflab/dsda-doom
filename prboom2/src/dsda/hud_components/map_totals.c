@@ -35,7 +35,53 @@ static const char* dsda_StatSeparator() {
   return local->stats_count > 0 ? "\n" : "";
 }
 
-static void dsda_UpdateComponentText(char* str, size_t max_size) {
+static void dsda_DMStats(char* str, size_t max_size) {
+  int i, p;
+  size_t length;
+
+  length = 0;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+      int result = 0, others = 0;
+      const char *color;
+
+      if (!playeringame[i])
+          continue;
+
+      for (p = 0; p < g_maxplayers; ++p)
+      {
+          if (!playeringame[p])
+              continue;
+
+          if (i != p)
+          {
+              result += players[i].frags[p];
+              others -= players[p].frags[i];
+          }
+          else
+          {
+              result -= players[i].frags[p];
+          }
+      }
+
+      color = (i == displayplayer) ? dsda_TextColor(dsda_tc_map_totals_max)
+                                   : dsda_TextColor(dsda_tc_map_totals_value);
+
+      length += dsda_PrintDMStat(
+        str + length,
+        max_size - length,
+        color,
+        result,
+        others,
+        " "
+      );
+
+      if (length >= max_size)
+        break;
+  }
+}
+
+static void dsda_LevelStats(char* str, size_t max_size) {
   size_t length;
   const char* killcolor;
   const char* itemcolor;
@@ -96,6 +142,17 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
     );
 
     length += dsda_PrintStats(str + length, max_size - length, NULL, secretcolor, dsda_GetCurrentSecrets(), dsda_GetMaxSecrets(), !local->hide_totals || dsda_IsAllSecrets(), dsda_StatSeparator());
+  }
+}
+
+static void dsda_UpdateComponentText(char* str, size_t max_size) {
+  if (deathmatch)
+  {
+    dsda_DMStats(str, max_size);
+  }
+  else
+  {
+    dsda_LevelStats(str, max_size);
   }
 }
 
