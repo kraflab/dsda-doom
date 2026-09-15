@@ -448,7 +448,7 @@ void MN_Drawer(void)
   {
     const char *text = currentMenu->menuitems[i].alttext;
     int custom_skill_text = text && (currentMenu->menuitems[i].flags == MENUF_OPTLUMP);
-    int color = M_HighlightColor(M_MenuItemHighlighted(i), CR_DEFAULT);
+    int color = M_HighlightColor(M_MouseHovered(i), CR_DEFAULT);
 
     if (custom_skill_text) {  // use small font for custom skill
       y += 6;                 // add some padding (looks bad otherwise)

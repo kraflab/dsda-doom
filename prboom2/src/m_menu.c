@@ -859,15 +859,6 @@ static void M_DeleteSaveGame(int slot)
 // Load/Save Highlight
 //
 
-dboolean M_MenuItemHighlighted(int item)
-{
-  // Mouse highlight is always enabled
-  if (M_MouseHovered(item))
-    return true;
-
-  return false;
-}
-
 static dboolean M_FileSlotEnabled(int menu, int item)
 {
   // Disable unsaved slots
@@ -887,8 +878,11 @@ dboolean M_FileBoxSelected(int menu, int item)
   if (!M_FileSlotEnabled(menu, item))
     return false;
 
-  // Menu highlight
-  return M_MenuItemHighlighted(item);
+  // Mouse highlight
+  if (M_MouseHovered(item))
+    return true;
+
+  return false;
 }
 
 int M_FileTextColor(int menu, int item)
@@ -6549,7 +6543,7 @@ void M_Drawer (void)
     for (i = 0; i < max; i++)
     {
       const menuitem_t *item = &currentMenu->menuitems[i];
-      int color = M_HighlightColor(M_MenuItemHighlighted(i), item->color);
+      int color = M_HighlightColor(M_MouseHovered(i), item->color);
       int flags = VPT_STRETCH | M_AddColorFlag(color);
 
       if (!lumps_missing && item->name[0] && !M_OptionalLumpMissing(item))
@@ -6723,7 +6717,7 @@ static void M_DrawThermoSmall(int x, int y, int thermWidth, int thermRange, int 
 
 void M_DrawThermoBig(int x, int y, int thermWidth, int thermRange, int thermDot, int menu_item)
 {
-  dboolean highlight = (itemOn == menu_item) && M_MenuItemHighlighted(menu_item);
+  dboolean highlight = (itemOn == menu_item) && M_MouseHovered(menu_item);
   int color = M_HighlightColor(highlight, CR_DEFAULT);
 
   M_DrawThermo(x, y, thermWidth, thermRange, thermDot, color );

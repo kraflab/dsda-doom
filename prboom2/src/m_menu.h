@@ -100,7 +100,6 @@ typedef enum {
 dboolean M_MouseHovered(int index);
 int M_HighlightColor(dboolean highlight, int color);
 int M_AddColorFlag(int color);
-dboolean M_MenuItemHighlighted(int item);
 
 /****************************
  *
