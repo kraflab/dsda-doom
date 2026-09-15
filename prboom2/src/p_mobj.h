@@ -245,9 +245,10 @@ enum {
   MIF_SCROLLING             = (1<<2), // Object is affected by scroller / pusher / puller
   MIF_PLAYER_DAMAGED_BARREL = (1<<3),
   MIF_SPAWNED_BY_ICON       = (1<<4),
-  MIF_FAKE                  = (1<<5), // Not a real thing, transient (e.g., for cheats)
-  MIF_LINEDONE              = (1<<6), // Object has activated W1 or S1 linedef via DEH frame
-  MIF_INTERP_CAPTURE        = (1<<7), // [AR] Capture interpolation once per tic
+  MIF_SPAWNED_BY_DSPARIL    = (1<<5),
+  MIF_FAKE                  = (1<<6), // Not a real thing, transient (e.g., for cheats)
+  MIF_LINEDONE              = (1<<7), // Object has activated W1 or S1 linedef via DEH frame
+  MIF_INTERP_CAPTURE        = (1<<8), // [AR] Capture interpolation once per tic
 };
 
 // heretic

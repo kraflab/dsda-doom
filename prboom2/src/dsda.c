@@ -307,7 +307,8 @@ void dsda_WatchDeath(mobj_t* thing) {
 
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
-  if (target->intflags & MIF_SPAWNED_BY_ICON) player->maxkilldiscount++;
+  if (target->intflags & MIF_SPAWNED_BY_ICON || target->intflags & MIF_SPAWNED_BY_DSPARIL)
+    player->maxkilldiscount++;
   dsda_WadStatsKill();
 }
 
@@ -382,6 +383,16 @@ void dsda_WatchUnMorph(mobj_t* morphed) {
 
 void dsda_WatchIconSpawn(mobj_t* spawned) {
   spawned->intflags |= MIF_SPAWNED_BY_ICON;
+
+  // Fix count from dsda_WatchSpawn
+  // We can't know inside P_SpawnMobj what the source is
+  // This is less invasive than introducing a spawn source concept
+  if (!((spawned->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+    --dsda_max_kill_requirement;
+}
+
+void dsda_WatchDSparilSpawn(mobj_t* spawned) {
+  spawned->intflags |= MIF_SPAWNED_BY_DSPARIL;
 
   // Fix count from dsda_WatchSpawn
   // We can't know inside P_SpawnMobj what the source is
@@ -482,6 +493,7 @@ void dsda_WatchLevelCompletion(void) {
     // max rules: everything dead that affects kill counter except icon spawns
     if (
       !((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)) \
+      && !(mobj->intflags & MIF_SPAWNED_BY_DSPARIL) \
       && !(mobj->intflags & MIF_SPAWNED_BY_ICON) \
       && mobj->health > 0
     ) {

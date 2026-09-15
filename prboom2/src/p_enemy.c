@@ -4212,6 +4212,7 @@ void A_GenWizard(mobj_t * actor)
 
     mo = P_SpawnMobj(actor->x, actor->y,
                      actor->z - mobjinfo[HERETIC_MT_WIZARD].height / 2, HERETIC_MT_WIZARD);
+    dsda_WatchDSparilSpawn(mo);
     if (P_TestMobjLocation(mo) == false)
     {                           // Didn't fit
         P_RemoveMobj(mo);
