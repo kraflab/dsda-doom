@@ -598,11 +598,11 @@ void MN_DrawSound(void)
 {
   char num[4];
 
-  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX, 16, 16, snd_SfxVolume, M_CurrentSelectedItem(SFX_VOL_INDEX-1), M_MouseHovered(SFX_VOL_INDEX-1));
+  M_DrawThermoBig(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX, 16, 16, snd_SfxVolume, SFX_VOL_INDEX-1);
   snprintf(num, sizeof(num), "%3d", snd_SfxVolume);
   MN_DrTextA(num, SoundDef.x + 130, SoundDef.y + ITEM_HEIGHT * SFX_VOL_INDEX + 3);
 
-  MN_DrawSlider(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, 16, snd_MusicVolume, M_CurrentSelectedItem(MUS_VOL_INDEX-1), M_MouseHovered(MUS_VOL_INDEX-1));
+  M_DrawThermoBig(SoundDef.x - 8, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX, 16, 16, snd_MusicVolume, MUS_VOL_INDEX-1);
   snprintf(num, sizeof(num), "%3d", snd_MusicVolume);
   MN_DrTextA(num, SoundDef.x + 130, SoundDef.y + ITEM_HEIGHT * MUS_VOL_INDEX + 3);
 }
@@ -800,7 +800,7 @@ void MN_DrawTitle(int y, const char *text, int cm)
 #define SLIDER_WIDTH (SLIDER_LIMIT - 64)
 #define SLIDER_PATCH_COUNT (SLIDER_WIDTH / 8)
 
-void MN_DrawSlider(int x, int y, int width, int range, int slot, dboolean selected, dboolean highlight)
+void MN_DrawSlider(int x, int y, int width, int range, int slot, int color)
 {
   int xx;
   int i;
@@ -809,7 +809,6 @@ void MN_DrawSlider(int x, int y, int width, int range, int slot, dboolean select
 
   // [AR] We check both if the item is selected and highlight
   // to include the label on the sound screen
-  int color = M_HighlightColor(selected && highlight, CR_DEFAULT);
   int flags = VPT_STRETCH | M_AddColorFlag(color);
 
   width -= 4;
