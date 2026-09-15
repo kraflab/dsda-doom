@@ -32,49 +32,27 @@ static local_component_t* local;
 static void dsda_UpdateComponentText(char* str, size_t max_size) {
   int i;
   size_t length;
-  int fullkillcount, fullitemcount, fullsecretcount;
   const char* killcolor;
   const char* itemcolor;
   const char* secretcolor;
-  int kill_percent_count;
-  int max_kill_requirement;
 
   length = 0;
-  fullkillcount = 0;
-  fullitemcount = 0;
-  fullsecretcount = 0;
-  kill_percent_count = 0;
-  max_kill_requirement = dsda_MaxKillRequirement();
 
-  for (i = 0; i < g_maxplayers; ++i) {
-    if (playeringame[i]) {
-      fullkillcount += players[i].killcount - players[i].maxkilldiscount;
-      fullitemcount += players[i].itemcount;
-      fullsecretcount += players[i].secretcount;
-      kill_percent_count += players[i].killcount;
-    }
-  }
-
-  if (skill_info.respawn_time) {
-    fullkillcount = kill_percent_count;
-    max_kill_requirement = totalkills;
-  }
-
-  killcolor = (fullkillcount >= max_kill_requirement ? dsda_TextColor(dsda_tc_map_totals_max) :
-                                                       dsda_TextColor(dsda_tc_map_totals_value));
-  itemcolor = (fullitemcount >= totalitems ? dsda_TextColor(dsda_tc_map_totals_max) :
-                                             dsda_TextColor(dsda_tc_map_totals_value));
-  secretcolor = (fullsecretcount >= totalsecret ? dsda_TextColor(dsda_tc_map_totals_max) :
-                                                  dsda_TextColor(dsda_tc_map_totals_value));
+  killcolor   = (dsda_IsAllKills()    ? dsda_TextColor(dsda_tc_map_totals_max) :
+                                        dsda_TextColor(dsda_tc_map_totals_value));
+  itemcolor   = (dsda_IsAllItems()    ? dsda_TextColor(dsda_tc_map_totals_max) :
+                                        dsda_TextColor(dsda_tc_map_totals_value));
+  secretcolor = (dsda_IsAllSecrets()  ? dsda_TextColor(dsda_tc_map_totals_max) :
+                                        dsda_TextColor(dsda_tc_map_totals_value));
 
   if (local->include_kills) {
-    if (!local->hide_totals || fullkillcount >= max_kill_requirement)
+    if (!local->hide_totals || dsda_IsAllKills())
       length += snprintf(
         str,
         max_size,
         "%sMonsters: %s%d/%d\n",
         dsda_TextColor(dsda_tc_map_totals_label),
-        killcolor, fullkillcount, max_kill_requirement
+        killcolor, dsda_GetCurrentKills(), dsda_GetMaxKills()
       );
     else
       length += snprintf(
@@ -82,18 +60,18 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
         max_size,
         "%sMonsters: %s%d\n",
         dsda_TextColor(dsda_tc_map_totals_label),
-        killcolor, fullkillcount
+        killcolor, dsda_GetCurrentKills()
       );
   }
 
   if (local->include_items) {
-    if (!local->hide_totals || fullitemcount >= totalitems)
+    if (!local->hide_totals || dsda_IsAllItems())
       length += snprintf(
         str + length,
         max_size - length,
         "%sItems: %s%d/%d\n",
         dsda_TextColor(dsda_tc_map_totals_label),
-        itemcolor, fullitemcount, totalitems
+        itemcolor, dsda_GetCurrentItems(), dsda_GetMaxItems()
       );
     else
       length += snprintf(
@@ -101,18 +79,18 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
         max_size - length,
         "%sItems: %s%d\n",
         dsda_TextColor(dsda_tc_map_totals_label),
-        itemcolor, fullitemcount
+        itemcolor, dsda_GetCurrentItems()
       );
   }
 
   if (local->include_secrets) {
-    if (!local->hide_totals || fullsecretcount >= totalsecret)
+    if (!local->hide_totals || dsda_IsAllSecrets())
       snprintf(
         str + length,
         max_size - length,
         "%sSecrets: %s%d/%d",
         dsda_TextColor(dsda_tc_map_totals_label),
-        secretcolor, fullsecretcount, totalsecret
+        secretcolor, dsda_GetCurrentSecrets(), dsda_GetMaxSecrets()
       );
     else
       snprintf(
@@ -120,7 +98,7 @@ static void dsda_UpdateComponentText(char* str, size_t max_size) {
         max_size - length,
         "%sSecrets: %s%d",
         dsda_TextColor(dsda_tc_map_totals_label),
-        secretcolor, fullsecretcount
+        secretcolor, dsda_GetCurrentSecrets()
       );
   }
 }

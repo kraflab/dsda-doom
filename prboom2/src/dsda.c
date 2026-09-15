@@ -37,6 +37,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/mouse.h"
 #include "dsda/settings.h"
+#include "dsda/skill_info.h"
 #include "dsda/split_tracker.h"
 #include "dsda/tracker.h"
 #include "dsda/wad_stats.h"
@@ -413,6 +414,90 @@ void dsda_WatchDSparilSpawn(mobj_t* spawned) {
 
 int dsda_MaxKillRequirement() {
   return dsda_max_kill_requirement;
+}
+
+int dsda_GetCurrentKills(void)
+{
+  int i;
+  int fullkillcount = 0;
+  int kill_percent_count = 0;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+    if (playeringame[i]) {
+      fullkillcount += players[i].killcount - players[i].maxkilldiscount;
+      kill_percent_count += players[i].killcount;
+    }
+  }
+
+  if (skill_info.respawn_time) {
+    fullkillcount = kill_percent_count;
+  }
+
+  return fullkillcount;
+}
+
+int dsda_GetCurrentItems(void)
+{
+  int i;
+  int fullitemcount = 0;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+    if (playeringame[i]) {
+      fullitemcount += players[i].itemcount;
+    }
+  }
+
+  return fullitemcount;
+}
+
+int dsda_GetCurrentSecrets(void)
+{
+  int i;
+  int fullsecretcount = 0;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+    if (playeringame[i]) {
+      fullsecretcount += players[i].secretcount;
+    }
+  }
+
+  return fullsecretcount;
+}
+
+int dsda_GetMaxKills(void)
+{
+  int max_kill_requirement = dsda_MaxKillRequirement();
+
+  if (skill_info.respawn_time) {
+    max_kill_requirement = totalkills;
+  }
+
+  return max_kill_requirement;
+}
+
+int dsda_GetMaxItems(void)
+{
+  return totalitems;
+}
+
+int dsda_GetMaxSecrets(void)
+{
+  return totalsecret;
+}
+
+dboolean dsda_IsAllKills(void)
+{
+  return dsda_GetCurrentKills() >= dsda_GetMaxKills();
+}
+
+dboolean dsda_IsAllItems(void)
+{
+  return dsda_GetCurrentItems() >= dsda_GetMaxItems();
+}
+
+dboolean dsda_IsAllSecrets(void)
+{
+  return dsda_GetCurrentSecrets() >= dsda_GetMaxSecrets();
 }
 
 void dsda_WatchPTickCompleted(void) {
