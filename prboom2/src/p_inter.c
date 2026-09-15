@@ -865,7 +865,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     P_UpdateThinker(&target->thinker);
   }
 
-  if (!((target->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(target))
     totallive--;
 
   dsda_WatchDeath(target);

@@ -80,6 +80,7 @@ void dsda_WatchNewGame(void);
 void dsda_WatchLevelReload(int* reloaded);
 void dsda_WatchLineActivation(line_t* line, mobj_t* mo);
 void dsda_WatchPTickCompleted(void);
+dboolean dsda_IsCountedKill(mobj_t* mo);
 
 dboolean dsda_ILComplete(void);
 dboolean dsda_MovieComplete(void);

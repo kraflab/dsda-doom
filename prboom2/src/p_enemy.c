@@ -1924,7 +1924,7 @@ dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
     && dsda_IntConfig(dsda_config_translucent_ghosts))
       corpse->flags |= MF_TRANSLUCENT;
 
-  if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(corpse))
     totallive++;
 
   corpse->health = P_MobjSpawnHealth(corpse);
@@ -2008,7 +2008,7 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
             && dsda_IntConfig(dsda_config_translucent_ghosts))
               corpsehit->flags |= MF_TRANSLUCENT;
 
-          if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+          if (dsda_IsCountedKill(corpsehit))
             totallive++;
 
           corpsehit->health = P_MobjSpawnHealth(corpsehit);
