@@ -84,8 +84,8 @@ void M_DrawCreditsDynamic(void);    // killough 11/98
 
 void M_DrawTabs(const char **pages, int m, int y);
 
-// for Raven Thermos
-dboolean M_CurrentSelectedItem(int item);
+// Big Thermo (for Raven)
+void M_DrawThermoBig(int x, int y, int thermWidth, int thermRange, int thermDot, int menu_item);
 
 // Save / Load Highlights
 dboolean M_FileBoxSelected(int menu, int item);
@@ -100,6 +100,7 @@ typedef enum {
 dboolean M_MouseHovered(int index);
 int M_HighlightColor(dboolean highlight, int color);
 int M_AddColorFlag(int color);
+dboolean M_MenuItemHighlighted(int item);
 
 /****************************
  *
