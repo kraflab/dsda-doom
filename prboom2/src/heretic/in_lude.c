@@ -196,7 +196,7 @@ static const char *NameForMap(int map)
 static dboolean IN_HasInterpic()
 {
   return (gameepisode > 0 && gameepisode < 4) ||
-          W_LumpNameExists(enterpic) || W_LumpNameExists(exitpic);
+          enterpic || exitpic;
 }
 
 static dboolean IN_UseWorldMap(void)
@@ -211,11 +211,11 @@ static void IN_DrawInterpic(void)
   // e6y: wide-res
   V_ClearBorder();
 
-  if (W_LumpNameExists(enterpic))
+  if (enterpic)
   {
     V_DrawNamePatchFS(0, 0, 0, enterpic, CR_DEFAULT, VPT_STRETCH);
   }
-  else if (W_LumpNameExists(exitpic))
+  else if (exitpic)
   {
     V_DrawNamePatchFS(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
   }
@@ -653,7 +653,7 @@ void IN_DrawStatBack(void)
     // e6y: wide-res
     V_ClearBorder();
 
-    if (W_LumpNameExists(exitpic))
+    if (exitpic)
     {
         V_DrawNamePatch(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
     }
@@ -1161,7 +1161,7 @@ void IN_DrTextB(const char *text, int x, int y)
 void IN_DrawLevelname(const char *patch, const char *levelname, int y)
 {
   int x;
-  if (W_LumpNameExists(patch))
+  if (patch)
   {
     x = 160 - V_NamePatchWidth(patch) / 2;
     V_DrawNamePatch(x, y, 0, patch, CR_DEFAULT, VPT_STRETCH);
