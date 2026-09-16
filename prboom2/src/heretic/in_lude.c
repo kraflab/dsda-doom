@@ -265,14 +265,10 @@ static void IN_InitLumps(void)
 
 static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
 {
-  int behaviour, done_behaviour;
+  int behaviour;
 
   dsda_ShowNextLocBehaviour(&behaviour);
-  dsda_PrepareFinale(&done_behaviour);
-
-  // Heretic used WI_SHOW_NEXT_DONE differently than Doom
-  // Here we fix that via done_behaviour for UMAPINFO
-  finalintermission = (behaviour & WI_SHOW_NEXT_DONE) && (done_behaviour & (WD_VICTORY | WD_START_FINALE));
+  finalintermission = (behaviour & WI_SHOW_NEXT_DONE);
 
   wbs = wbstartstruct;
   prevmap = wbs->last + 1;
