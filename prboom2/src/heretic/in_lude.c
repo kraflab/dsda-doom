@@ -1144,8 +1144,8 @@ void IN_DrTextB(const char *text, int x, int y)
 
     while ((c = *text++) != 0)
     {
-        if (c > 90) // Lowercase chars
-          c -= 32;
+        if (c >= 'a' && c <= 'z') // Lowercase chars
+          c -= 'a' - 'A';
 
         if (c < 33)
           x += 8;
