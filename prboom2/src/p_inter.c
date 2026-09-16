@@ -870,6 +870,10 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
 
   dsda_WatchDeath(target);
 
+  // Transfer kill to the second form
+  if (heretic && target->type == HERETIC_MT_SORCERER1)
+    target->intflags |= MIF_SPAWNED_BY_DSPARIL;
+
   if (map_format.hexen && target->special)
   {
     if (!hexen || (target->flags & MF_COUNTKILL || target->type == HEXEN_MT_ZBELL))
@@ -2505,6 +2509,7 @@ dboolean P_ChickenMorph(mobj_t * actor)
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
     S_StartMobjSound(fog, heretic_sfx_telept);
     chicken = P_SpawnMobj(x, y, z, HERETIC_MT_CHICKEN);
+    chicken->intflags |= actor->intflags & MIF_SPAWNED_BY_DSPARIL;
     chicken->special2.i = moType;
     chicken->special1.i = CHICKENTICS + P_Random(pr_heretic);
     chicken->flags |= ghost;
