@@ -62,6 +62,7 @@ typedef struct dsda_options {
   int comp_friendlyspawn;
   int comp_voodooscroller;
   int comp_reservedlineflag;
+  int comp_thingsectorlight;
 } dsda_options_t;
 
 void dsda_ParseOptionsLump(void);
