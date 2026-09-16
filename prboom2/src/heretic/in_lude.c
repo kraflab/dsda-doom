@@ -1158,7 +1158,7 @@ void IN_DrTextB(const char *text, int x, int y)
     }
 }
 
-void IN_DrawLevelname(const char *patch, const char *levelname, int y)
+static void IN_DrawLevelname(const char *patch, const char *levelname, int y)
 {
   int x;
   if (patch)
