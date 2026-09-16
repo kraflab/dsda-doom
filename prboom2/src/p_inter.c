@@ -59,6 +59,7 @@
 #include "dsda/skill_info.h"
 
 #include "heretic/def.h"
+#include "heretic/p_action.h"
 #include "heretic/sb_bar.h"
 
 #include "hexen/p_acs.h"
@@ -871,7 +872,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
   dsda_WatchDeath(target);
 
   // Transfer kill to the second form
-  if (heretic && target->type == HERETIC_MT_SORCERER1)
+  if (heretic && P_MobjHasDeathAction(target, A_SorcererRise))
     target->intflags |= MIF_SPAWNED_BY_DSPARIL;
 
   if (map_format.hexen && target->special)
@@ -1837,6 +1838,37 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     if (justhit && (target->target == source || !target->target ||
         !(target->flags & target->target->flags & MF_FRIEND)))
       target->flags |= MF_JUSTHIT;    // fight back!
+}
+
+//
+// [AR] check states for action
+//
+
+static dboolean P_StateChainHasAction(int state, actionf_t action)
+{
+  int count;
+
+  for (count = 0; count < num_states; ++count)
+  {
+    if (state == g_s_null || state < 0 || state >= num_states)
+      return false;
+
+    if (states[state].action == action)
+      return true;
+
+    state = states[state].nextstate;
+  }
+
+  return false;
+}
+
+dboolean P_MobjHasDeathAction(mobj_t *mo, actionf_t action)
+{
+  if (!mo->info)
+    return false;
+
+  return P_StateChainHasAction(mo->info->deathstate,  action) ||
+         P_StateChainHasAction(mo->info->xdeathstate, action);
 }
 
 // heretic
