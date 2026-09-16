@@ -304,13 +304,14 @@ int dsda_UFTicker(void) {
       }
       else
       {
+        if (gamemapinfo->flags & MapInfo_EndGameStandard)
+          return false; // let legacy code select episode ending
+
         finalecount = 0;
         finalestage = FINALE_STAGE_ART;
         wipegamestate = -1; // force a wipe
         if (gamemapinfo->flags & MapInfo_EndGameScroll)
           F_StartScroll(NULL, NULL, NULL, true);
-        else if (gamemapinfo->flags & MapInfo_EndGameStandard)
-          return false; // let go of finale ownership
       }
     }
     else
