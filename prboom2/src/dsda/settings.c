@@ -326,7 +326,15 @@ dboolean dsda_SkipWipe(void) {
     return true;
   }
 
-  return !dsda_RenderWipeScreen() || raven;
+  // Hexen doesnt have screen wipe
+  if (hexen)
+    return true;
+
+  // Heretic doesnt have screen wipe, but allow it during demos (QOL for quickstarting)
+  if (heretic && !demorecording)
+    return true;
+
+  return !dsda_RenderWipeScreen();
 }
 
 static dboolean game_controller_used;
