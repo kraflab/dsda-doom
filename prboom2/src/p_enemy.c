@@ -4105,8 +4105,7 @@ void A_SorcererRise(mobj_t * actor)
 
     actor->flags &= ~MF_SOLID;
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_SORCERER2);
-    dsda_WatchDSparilSpawn(mo);
-    mo->intflags &= ~MIF_SPAWNED_BY_DSPARIL;
+    dsda_WatchDSparilPhaseSpawn(mo);
     P_SetMobjState(mo, HERETIC_S_SOR2_RISE1);
     mo->angle = actor->angle;
     P_SetTarget(&mo->target, actor->target);

@@ -871,9 +871,9 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
 
   dsda_WatchDeath(target);
 
-  // Transfer kill to the second form
+  // Transfer kill to the second phase
   if (heretic && P_MobjHasDeathAction(target, A_SorcererRise))
-    target->intflags |= MIF_SPAWNED_BY_DSPARIL;
+    target->intflags |= MIF_DSPARIL_FIRST_PHASE;
 
   if (map_format.hexen && target->special)
   {

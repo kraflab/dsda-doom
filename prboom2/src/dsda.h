@@ -67,6 +67,7 @@ void dsda_WatchUnMorph(mobj_t* morphed);
 void dsda_WatchSpawn(mobj_t* spawned);
 void dsda_WatchIconSpawn(mobj_t* spawned);
 void dsda_WatchDSparilSpawn(mobj_t* spawned);
+void dsda_WatchDSparilPhaseSpawn(mobj_t* spawned);
 void dsda_WatchCommand(void);
 void dsda_WatchLedgeImpact(mobj_t* thing, int target_z);
 void dsda_WatchBeforeLevelSetup(void);

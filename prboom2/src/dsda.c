@@ -273,6 +273,10 @@ static dboolean dsda_IsDSparilSpawn(mobj_t* mo) {
   return mo->intflags & MIF_SPAWNED_BY_DSPARIL;
 }
 
+static dboolean dsda_IsDSparilPhaseSpawn(mobj_t* mo) {
+  return mo->intflags & MIF_DSPARIL_FIRST_PHASE;
+}
+
 // killough 7/20/98: exclude friends
 // Translated: countkill and not friend
 dboolean dsda_IsCountedKill(mobj_t* mo) {
@@ -322,7 +326,9 @@ void dsda_WatchDeath(mobj_t* thing) {
 
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
-  if (dsda_IsIconSpawn(target) || dsda_IsDSparilSpawn(target))
+  if (dsda_IsIconSpawn(target) ||
+      dsda_IsDSparilSpawn(target) ||
+      dsda_IsDSparilPhaseSpawn(target))
     player->maxkilldiscount++;
   dsda_WadStatsKill();
 }
@@ -408,6 +414,12 @@ void dsda_WatchDSparilSpawn(mobj_t* spawned) {
   // Fix count from dsda_WatchSpawn
   // We can't know inside P_SpawnMobj what the source is
   // This is less invasive than introducing a spawn source concept
+  if (dsda_IsCountedKill(spawned))
+    --dsda_max_kill_requirement;
+}
+
+// Remove the kill from D'Sparil's first phase
+void dsda_WatchDSparilPhaseSpawn(mobj_t* spawned) {
   if (dsda_IsCountedKill(spawned))
     --dsda_max_kill_requirement;
 }
@@ -590,6 +602,7 @@ void dsda_WatchLevelCompletion(void) {
       dsda_IsCountedKill(mobj) \
       && !dsda_IsIconSpawn(mobj) \
       && !dsda_IsDSparilSpawn(mobj) \
+      && !dsda_IsDSparilPhaseSpawn(mobj) \
       && mobj->health > 0
     ) {
       ++missed_monsters;
