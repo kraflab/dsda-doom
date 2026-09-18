@@ -135,7 +135,7 @@ int dsda_USkipDrawShowNextLoc(int* skip) {
   if (!gamemapinfo)
     return false;
 
-  *skip = ((gamemapinfo->finale >= EG_Standard) != 0);
+  *skip = (gamemapinfo->finale >= EG_Standard);
 
   return true;
 }
