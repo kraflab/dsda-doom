@@ -23,6 +23,7 @@
 #include "p_inter.h"
 #include "p_tick.h"
 
+#include "dsda.h"
 #include "hexen/a_action.h"
 
 #include "p_things.h"
@@ -227,6 +228,7 @@ dboolean EV_ThingSpawn(byte * args, dboolean fog)
         newMobj = P_SpawnMobj(mobj->x, mobj->y, z, moType);
         if (P_TestMobjLocation(newMobj) == false)
         {                       // Didn't fit
+            dsda_WatchFailedSpawn(newMobj);
             P_RemoveMobj(newMobj);
         }
         else

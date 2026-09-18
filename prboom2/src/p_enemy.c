@@ -1924,7 +1924,7 @@ dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
     && dsda_IntConfig(dsda_config_translucent_ghosts))
       corpse->flags |= MF_TRANSLUCENT;
 
-  if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(corpse))
     totallive++;
 
   corpse->health = P_MobjSpawnHealth(corpse);
@@ -2008,7 +2008,7 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
             && dsda_IntConfig(dsda_config_translucent_ghosts))
               corpsehit->flags |= MF_TRANSLUCENT;
 
-          if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+          if (dsda_IsCountedKill(corpsehit))
             totallive++;
 
           corpsehit->health = P_MobjSpawnHealth(corpsehit);
@@ -3895,6 +3895,7 @@ dboolean P_UpdateChicken(mobj_t * actor, int tics)
     oldChicken = *actor;
     P_SetMobjState(actor, HERETIC_S_FREETARGMOBJ);
     mo = P_SpawnMobj(x, y, z, moType);
+    mo->intflags |= oldChicken.intflags & MIF_SPAWNED_BY_DSPARIL;
     dsda_WatchUnMorph(mo);
     if (P_TestMobjLocation(mo) == false)
     {                           // Didn't fit
@@ -4104,6 +4105,7 @@ void A_SorcererRise(mobj_t * actor)
 
     actor->flags &= ~MF_SOLID;
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_SORCERER2);
+    dsda_WatchDSparilPhaseSpawn(mo);
     P_SetMobjState(mo, HERETIC_S_SOR2_RISE1);
     mo->angle = actor->angle;
     P_SetTarget(&mo->target, actor->target);
@@ -4214,9 +4216,11 @@ void A_GenWizard(mobj_t * actor)
                      actor->z - mobjinfo[HERETIC_MT_WIZARD].height / 2, HERETIC_MT_WIZARD);
     if (P_TestMobjLocation(mo) == false)
     {                           // Didn't fit
+        dsda_WatchFailedSpawn(mo);
         P_RemoveMobj(mo);
         return;
     }
+    dsda_WatchDSparilSpawn(mo);
     actor->momx = actor->momy = actor->momz = 0;
     P_SetMobjState(actor, mobjinfo[actor->type].deathstate);
     actor->flags &= ~MF_MISSILE;
@@ -8004,6 +8008,7 @@ void A_SpawnBishop(mobj_t * actor)
     {
         if (!P_TestMobjLocation(mo))
         {
+            dsda_WatchFailedSpawn(mo);
             P_SetMobjState(mo, HEXEN_S_NULL);
         }
     }

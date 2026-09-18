@@ -29,113 +29,149 @@ typedef struct {
   const char* label_i;
   const char* label_s;
   const char* stat_separator;
+  int stats_count;
 } local_component_t;
 
 static local_component_t* local;
 
-static void dsda_UpdateComponentText(char* str, size_t max_size) {
-  int i;
+int dsda_PrintDMStat(char *buffer, size_t size, const char *cm, int result, int others, const char* separator)
+{
+  return snprintf(
+    buffer, size,
+    "%s%i/%i%s",
+    cm, result, others,
+    separator ? separator : ""
+  );
+}
+
+static void dsda_DMStats(char* str, size_t max_size) {
+  int i, p;
   size_t length;
-  int fullkillcount, fullitemcount, fullsecretcount;
+  int player_count = 0;
+
+  length = 0;
+
+  for (i = 0; i < g_maxplayers; ++i)
+    if (playeringame[i])
+      player_count++;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+      int result = 0, others = 0;
+      const char *color;
+
+      if (!playeringame[i])
+          continue;
+
+      for (p = 0; p < g_maxplayers; ++p)
+      {
+          if (!playeringame[p])
+              continue;
+
+          if (i != p)
+          {
+              result += players[i].frags[p];
+              others -= players[p].frags[i];
+          }
+          else
+          {
+              result -= players[i].frags[p];
+          }
+      }
+
+      color = (i == displayplayer) ? dsda_TextColor(dsda_tc_exhud_totals_max)
+                                   : dsda_TextColor(dsda_tc_exhud_totals_value);
+
+      player_count--;
+
+      length += dsda_PrintDMStat(
+        str + length, max_size - length,
+        color, result, others,
+        player_count > 0 ? local->stat_separator : ""
+      );
+
+      if (length >= max_size)
+        break;
+  }
+}
+
+int dsda_PrintStats(char *buffer, size_t size, const char* label, const char* cm, const int th_count, const int th_total, dboolean show_totals, const char *separator)
+{
+    char print_stats[32] = "";
+    int has_label = (label != NULL);
+
+    if (show_totals)
+      sprintf(print_stats, "%d/%d", th_count, th_total);
+    else 
+      sprintf(print_stats, "%d", th_count);
+
+    if (has_label)
+    {
+      return snprintf( buffer, size,
+                        "%s%s%s%s%s",
+                        dsda_TextColor(dsda_tc_exhud_totals_label),
+                        label, cm, print_stats,
+                        separator ? separator : "");
+    }
+    else
+    {
+      return snprintf( buffer, size,
+                        "%s%s%s",
+                        cm, print_stats,
+                        separator ? separator : "");
+    }
+}
+
+static const char* dsda_StatSeparator() {
+  return local->stats_count > 0 ? local->stat_separator : "";
+}
+
+static void dsda_LevelStats(char* str, size_t max_size) {
+  size_t length;
   const char* killcolor;
   const char* itemcolor;
   const char* secretcolor;
-  int kill_percent_count;
-  int max_kill_requirement;
 
   length = 0;
-  fullkillcount = 0;
-  fullitemcount = 0;
-  fullsecretcount = 0;
-  kill_percent_count = 0;
-  max_kill_requirement = dsda_MaxKillRequirement();
+  local->stats_count = 0;
 
-  for (i = 0; i < g_maxplayers; ++i) {
-    if (playeringame[i]) {
-      fullkillcount += players[i].killcount - players[i].maxkilldiscount;
-      fullitemcount += players[i].itemcount;
-      fullsecretcount += players[i].secretcount;
-      kill_percent_count += players[i].killcount;
-    }
+  killcolor   = (dsda_IsAllKills()    ? dsda_TextColor(dsda_tc_exhud_totals_max) :
+                                        dsda_TextColor(dsda_tc_exhud_totals_value));
+  itemcolor   = (dsda_IsAllItems()    ? dsda_TextColor(dsda_tc_exhud_totals_max) :
+                                        dsda_TextColor(dsda_tc_exhud_totals_value));
+  secretcolor = (dsda_IsAllSecrets()  ? dsda_TextColor(dsda_tc_exhud_totals_max) :
+                                        dsda_TextColor(dsda_tc_exhud_totals_value));
+
+  if (local->include_kills)   local->stats_count++;
+  if (local->include_items)   local->stats_count++;
+  if (local->include_secrets) local->stats_count++;
+
+  if (local->include_kills)
+  {
+    local->stats_count--;
+    length += dsda_PrintStats(str + length, max_size - length, local->label_k, killcolor, dsda_GetCurrentKills(), dsda_GetMaxKills(), !local->hide_totals || dsda_IsAllKills(), dsda_StatSeparator());
   }
 
-  if (skill_info.respawn_time) {
-    fullkillcount = kill_percent_count;
-    max_kill_requirement = totalkills;
+  if (local->include_items)
+  {
+    local->stats_count--;
+    length += dsda_PrintStats(str + length, max_size - length, local->label_i, itemcolor, dsda_GetCurrentItems(), dsda_GetMaxItems(), !local->hide_totals || dsda_IsAllItems(), dsda_StatSeparator());
   }
 
-  killcolor = (fullkillcount >= max_kill_requirement ? dsda_TextColor(dsda_tc_exhud_totals_max) :
-                                                       dsda_TextColor(dsda_tc_exhud_totals_value));
-  secretcolor = (fullsecretcount >= totalsecret ? dsda_TextColor(dsda_tc_exhud_totals_max) :
-                                                  dsda_TextColor(dsda_tc_exhud_totals_value));
-  itemcolor = (fullitemcount >= totalitems ? dsda_TextColor(dsda_tc_exhud_totals_max) :
-                                             dsda_TextColor(dsda_tc_exhud_totals_value));
-
-  if (local->include_kills) {
-    if (!local->hide_totals || fullkillcount >= max_kill_requirement)
-      length += snprintf(
-        str,
-        max_size,
-        "%s%s%s%d/%d%s",
-        dsda_TextColor(dsda_tc_exhud_totals_label),
-        local->label_k,
-        killcolor, fullkillcount, max_kill_requirement,
-        local->stat_separator
-      );
-    else
-      length += snprintf(
-        str,
-        max_size,
-        "%s%s%s%d%s",
-        dsda_TextColor(dsda_tc_exhud_totals_label),
-        local->label_k,
-        killcolor, fullkillcount,
-        local->stat_separator
-      );
+  if (local->include_secrets)
+  {
+    local->stats_count--;
+    length += dsda_PrintStats(str + length, max_size - length, local->label_s, secretcolor, dsda_GetCurrentSecrets(), dsda_GetMaxSecrets(), !local->hide_totals || dsda_IsAllSecrets(), dsda_StatSeparator());
   }
+}
 
-  if (local->include_items) {
-    if (!local->hide_totals || fullitemcount >= totalitems)
-      length += snprintf(
-        str + length,
-        max_size - length,
-        "%s%s%s%d/%d%s",
-        dsda_TextColor(dsda_tc_exhud_totals_label),
-        local->label_i,
-        itemcolor, fullitemcount, totalitems,
-        local->stat_separator
-      );
-    else
-      length += snprintf(
-        str + length,
-        max_size - length,
-        "%s%s%s%d%s",
-        dsda_TextColor(dsda_tc_exhud_totals_label),
-        local->label_i,
-        itemcolor, fullitemcount,
-        local->stat_separator
-      );
+static void dsda_UpdateComponentText(char* str, size_t max_size) {
+  if (deathmatch)
+  {
+    dsda_DMStats(str, max_size);
   }
-
-  if (local->include_secrets) {
-    if (!local->hide_totals || fullsecretcount >= totalsecret)
-      snprintf(
-        str + length,
-        max_size - length,
-        "%s%s%s%d/%d",
-        dsda_TextColor(dsda_tc_exhud_totals_label),
-        local->label_s,
-        secretcolor, fullsecretcount, totalsecret
-      );
-    else
-      snprintf(
-        str + length,
-        max_size - length,
-        "%s%s%s%d",
-        dsda_TextColor(dsda_tc_exhud_totals_label),
-        local->label_s,
-        secretcolor, fullsecretcount
-      );
+  else
+  {
+    dsda_LevelStats(str, max_size);
   }
 }
 

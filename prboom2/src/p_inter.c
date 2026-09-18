@@ -59,6 +59,7 @@
 #include "dsda/skill_info.h"
 
 #include "heretic/def.h"
+#include "heretic/p_action.h"
 #include "heretic/sb_bar.h"
 
 #include "hexen/p_acs.h"
@@ -865,10 +866,14 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     P_UpdateThinker(&target->thinker);
   }
 
-  if (!((target->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(target))
     totallive--;
 
   dsda_WatchDeath(target);
+
+  // Transfer kill to the second phase
+  if (heretic && P_MobjHasDeathAction(target, A_SorcererRise))
+    target->intflags |= MIF_DSPARIL_FIRST_PHASE;
 
   if (map_format.hexen && target->special)
   {
@@ -1835,6 +1840,37 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
       target->flags |= MF_JUSTHIT;    // fight back!
 }
 
+//
+// [AR] check states for action
+//
+
+static dboolean P_StateChainHasAction(int state, actionf_t action)
+{
+  int count;
+
+  for (count = 0; count < num_states; ++count)
+  {
+    if (state == g_s_null || state < 0 || state >= num_states)
+      return false;
+
+    if (states[state].action == action)
+      return true;
+
+    state = states[state].nextstate;
+  }
+
+  return false;
+}
+
+dboolean P_MobjHasDeathAction(mobj_t *mo, actionf_t action)
+{
+  if (!mo->info)
+    return false;
+
+  return P_StateChainHasAction(mo->info->deathstate,  action) ||
+         P_StateChainHasAction(mo->info->xdeathstate, action);
+}
+
 // heretic
 
 #include "p_user.h"
@@ -2505,6 +2541,7 @@ dboolean P_ChickenMorph(mobj_t * actor)
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
     S_StartMobjSound(fog, heretic_sfx_telept);
     chicken = P_SpawnMobj(x, y, z, HERETIC_MT_CHICKEN);
+    chicken->intflags |= actor->intflags & MIF_SPAWNED_BY_DSPARIL;
     chicken->special2.i = moType;
     chicken->special1.i = CHICKENTICS + P_Random(pr_heretic);
     chicken->flags |= ghost;
