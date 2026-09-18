@@ -977,8 +977,11 @@ static dboolean M_MouseCycleSetupChoice(setup_menu_t *item)
   if (!(item->m_flags & S_CHOICE) || !item->selectstrings)
     return false;
 
-  if (dsda_StrictMode() && dsda_IsStrictConfig(item->config_id))
+  if (M_ItemDisabled(item))
+  {
+    S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, true);
     return true;
+  }
 
   if (item->m_flags & S_STR)
   {
@@ -1270,7 +1273,7 @@ static dboolean M_MouseResponder(event_t *ev)
       }
     }
 
-    return false;    
+    return false;
   }
 
   if (M_MouseWheelResponder(ev, action))
