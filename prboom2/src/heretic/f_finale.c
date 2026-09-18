@@ -50,7 +50,7 @@ extern const char* finalepatch;
 extern const char* endpic;
 extern const char* endpalette;
 extern dboolean finalintermission;
-extern int endgameflags;
+extern int finaletype;
 
 static int FontABaseLump;
 
@@ -116,7 +116,8 @@ void Heretic_F_StartFinale(void)
 static dboolean Heretic_F_BlockingInput(void)   // Avoid bringing up menu when loading Heretic's custom E2 palette
 {
   return (finalestage == 1) &&
-          ((endgameflags & (MapInfo_EndGameClear|MapInfo_EndGameAny)) ? (endpalette && endpalette[0]) : gameepisode == 2);
+         ((finaletype != EG_None) ? (endpalette && endpalette[0])
+                                  : gameepisode == 2);
 }
 
 dboolean Heretic_F_Responder(event_t * event)
@@ -309,7 +310,7 @@ void Heretic_F_Drawer(void)
         V_SetPlayPal(playpal_custom);
       }
 
-      if (endgameflags & MapInfo_EndGameScroll)
+      if (finaletype == EG_Scroll)
       {
         F_DemonScroll();
         return;
@@ -326,7 +327,7 @@ void Heretic_F_Drawer(void)
         return;
       }
 
-      if (endgameflags & MapInfo_EndGameClear)
+      if (finaletype == EG_Clear)
         return;
 
       switch (gameepisode)

@@ -82,7 +82,7 @@ int dsda_UNextMap(int* episode, int* map) {
     name = gamemapinfo->nextsecret;
   else if (gamemapinfo->nextmap[0])
     name = gamemapinfo->nextmap;
-  else if (gamemapinfo->flags & MapInfo_EndGameAny)
+  else if (gamemapinfo->finale >= EG_Standard)
   {
     *episode = 1;
     *map = 1;
@@ -123,7 +123,7 @@ int dsda_UShowNextLocBehaviour(int* behaviour) {
   if (!gamemapinfo)
     return false;
 
-  if (gamemapinfo->flags & (MapInfo_EndGameAny|MapInfo_EndGameClear))
+  if (gamemapinfo->finale != EG_None)
     *behaviour = WI_SHOW_NEXT_DONE;
   else
     *behaviour = WI_SHOW_NEXT_LOC | WI_SHOW_NEXT_EPISODAL;
@@ -135,7 +135,7 @@ int dsda_USkipDrawShowNextLoc(int* skip) {
   if (!gamemapinfo)
     return false;
 
-  *skip = ((gamemapinfo->flags & MapInfo_EndGameAny) != 0);
+  *skip = ((gamemapinfo->finale >= EG_Standard) != 0);
 
   return true;
 }
@@ -222,7 +222,7 @@ extern const char* endpic;
 extern const char* endpalette;
 extern int acceleratestage;
 extern int midstage;
-extern int endgameflags;
+extern int finaletype;
 
 int dsda_UStartFinale(void) {
   if (!gamemapinfo)
@@ -250,7 +250,7 @@ int dsda_UStartFinale(void) {
 
   endpic = gamemapinfo->endpic;
   endpalette = gamemapinfo->endpalette;
-  endgameflags = gamemapinfo->flags;
+  finaletype = gamemapinfo->finale;
 
   if (gamemapinfo->endpalette[0]) {
     dsda_PlayPalData(playpal_custom)->lump_name = gamemapinfo->endpalette;
@@ -295,9 +295,9 @@ int dsda_UFTicker(void) {
   }
 
   if (next_level) {
-    if (!secretexit && gamemapinfo->flags & MapInfo_EndGameAny)
+    if (!secretexit && gamemapinfo->finale >= EG_Standard)
     {
-      if (gamemapinfo->flags & MapInfo_EndGameCast)
+      if (gamemapinfo->finale == EG_Cast)
       {
         F_StartCast(NULL, NULL, true);
         return false; // let go of finale ownership
@@ -307,9 +307,9 @@ int dsda_UFTicker(void) {
         finalecount = 0;
         finalestage = FINALE_STAGE_ART;
         wipegamestate = -1; // force a wipe
-        if (gamemapinfo->flags & MapInfo_EndGameScroll)
+        if (gamemapinfo->finale == EG_Scroll)
           F_StartScroll(NULL, NULL, NULL, true);
-        else if (gamemapinfo->flags & MapInfo_EndGameStandard)
+        else if (gamemapinfo->finale == EG_Standard)
           return false; // let go of finale ownership
       }
     }
@@ -339,7 +339,7 @@ void dsda_UFDrawer(void) {
         V_SetPlayPal(playpal_custom);
       }
 
-      if (gamemapinfo->flags & MapInfo_EndGameScroll)
+      if (gamemapinfo->finale == EG_Scroll)
       {
         F_BunnyScroll();
       }
@@ -450,7 +450,7 @@ int dsda_UPrepareIntermission(int* result) {
   if (!gamemapinfo)
     return false;
 
-  if (gamemapinfo->flags & MapInfo_EndGameAny
+  if (gamemapinfo->finale >= EG_Standard
       && gamemapinfo->flags & MapInfo_NoIntermission)
   {
     *result = DC_VICTORY;
@@ -511,7 +511,7 @@ int dsda_UPrepareFinale(int* result) {
             ? WD_START_FINALE
             : 0;
     return true;
-  } else if (gamemapinfo->flags & MapInfo_EndGameAny && !secretexit) {
+  } else if (gamemapinfo->finale >= EG_Standard && !secretexit) {
     *result = WD_VICTORY;
 
     return true;
