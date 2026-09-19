@@ -196,7 +196,7 @@ static const char *NameForMap(int map)
 static dboolean IN_HasInterpic()
 {
   return (gameepisode > 0 && gameepisode < 4) ||
-          W_LumpNameExists(enterpic) || W_LumpNameExists(exitpic);
+          enterpic || exitpic;
 }
 
 static dboolean IN_UseWorldMap(void)
@@ -211,11 +211,11 @@ static void IN_DrawInterpic(void)
   // e6y: wide-res
   V_ClearBorder();
 
-  if (W_LumpNameExists(enterpic))
+  if (enterpic)
   {
     V_DrawNamePatchFS(0, 0, 0, enterpic, CR_DEFAULT, VPT_STRETCH);
   }
-  else if (W_LumpNameExists(exitpic))
+  else if (exitpic)
   {
     V_DrawNamePatchFS(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
   }
@@ -265,14 +265,10 @@ static void IN_InitLumps(void)
 
 static void IN_InitVariables(wbstartstruct_t* wbstartstruct)
 {
-  int behaviour, done_behaviour;
+  int behaviour;
 
   dsda_ShowNextLocBehaviour(&behaviour);
-  dsda_PrepareFinale(&done_behaviour);
-
-  // Heretic used WI_SHOW_NEXT_DONE differently than Doom
-  // Here we fix that via done_behaviour for UMAPINFO
-  finalintermission = (behaviour & WI_SHOW_NEXT_DONE) && (done_behaviour & (WD_VICTORY | WD_START_FINALE));
+  finalintermission = (behaviour & WI_SHOW_NEXT_DONE);
 
   wbs = wbstartstruct;
   prevmap = wbs->last + 1;
@@ -653,7 +649,7 @@ void IN_DrawStatBack(void)
     // e6y: wide-res
     V_ClearBorder();
 
-    if (W_LumpNameExists(exitpic))
+    if (exitpic)
     {
         V_DrawNamePatch(0, 0, 0, exitpic, CR_DEFAULT, VPT_STRETCH);
     }
@@ -1144,8 +1140,8 @@ void IN_DrTextB(const char *text, int x, int y)
 
     while ((c = *text++) != 0)
     {
-        if (c > 90) // Lowercase chars
-          c -= 32;
+        if (c >= 'a' && c <= 'z') // Lowercase chars
+          c -= 'a' - 'A';
 
         if (c < 33)
           x += 8;
@@ -1158,10 +1154,10 @@ void IN_DrTextB(const char *text, int x, int y)
     }
 }
 
-void IN_DrawLevelname(const char *patch, const char *levelname, int y)
+static void IN_DrawLevelname(const char *patch, const char *levelname, int y)
 {
   int x;
-  if (W_LumpNameExists(patch))
+  if (patch)
   {
     x = 160 - V_NamePatchWidth(patch) / 2;
     V_DrawNamePatch(x, y, 0, patch, CR_DEFAULT, VPT_STRETCH);

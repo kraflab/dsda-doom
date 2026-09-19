@@ -316,7 +316,7 @@ void Heretic_F_Drawer(void)
         return;
       }
 
-      if (W_LumpNameExists(endpic))
+      if (endpic && endpic[0])
       {
         V_DrawRawScreen(endpic);
         return;

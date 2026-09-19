@@ -123,7 +123,15 @@ int dsda_UShowNextLocBehaviour(int* behaviour) {
   if (!gamemapinfo)
     return false;
 
-  if (gamemapinfo->finale != EG_None)
+  // WI_SHOW_NEXT_DONE means something different for Heretic
+  //
+  // Heretic: "finalintermission -> endgame"
+  // Doom:    "intermission -> next map or endgame"
+
+  int intermission_end = heretic ? (gamemapinfo->finale >= EG_Standard) :
+                                   (gamemapinfo->finale != EG_None);
+
+  if (intermission_end)
     *behaviour = WI_SHOW_NEXT_DONE;
   else
     *behaviour = WI_SHOW_NEXT_LOC | WI_SHOW_NEXT_EPISODAL;
