@@ -23,7 +23,7 @@
 
 #include "palette.h"
 
-static int playpal_index = playpal_default;
+int playpal_index = playpal_default;
 
 static dsda_playpal_t playpal_data[NUMPALETTES] = {
   { playpal_default, "PLAYPAL" },
@@ -36,11 +36,12 @@ static dsda_playpal_t playpal_data[NUMPALETTES] = {
   { playpal_7, "PLAYPAL7" },
   { playpal_8, "PLAYPAL8" },
   { playpal_9, "PLAYPAL9" },
-  { playpal_heretic_e2end, "E2PAL" }
+  { playpal_heretic_e2end, "E2PAL" },
+  { playpal_custom, "" },
 };
 
-dsda_playpal_t* dsda_PlayPalData(void) {
-  return &playpal_data[playpal_index];
+dsda_playpal_t* dsda_PlayPalData(int playpal_i) {
+  return &playpal_data[playpal_i];
 }
 
 void dsda_CyclePlayPal(void) {
@@ -72,14 +73,25 @@ void dsda_SetPlayPal(int index) {
   playpal_index = index;
 }
 
-void dsda_FreePlayPal(void) {
-  int playpal_i;
+void dsda_FreePlayPal(int playpal_i) {
+  if (playpal_data[playpal_i].lump) {
+    Z_Free(playpal_data[playpal_i].lump);
+    playpal_data[playpal_i].lump = NULL;
+  }
+  if (playpal_data[playpal_i].colours) {
+    Z_Free(playpal_data[playpal_i].colours);
+    playpal_data[playpal_i].colours= NULL;
+  }
+  playpal_data[playpal_i].length = 0;
+  playpal_data[playpal_i].transparent = 0;
+  playpal_data[playpal_i].duplicate = 0;
+  playpal_data[playpal_i].darkest = 0;
+  playpal_data[playpal_i].lightest = 0;
+}
 
-  for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i)
-    if (playpal_data[playpal_i].lump) {
-      Z_Free(playpal_data[playpal_i].lump);
-      playpal_data[playpal_i].lump = NULL;
-    }
+void dsda_FreeAllPlayPals(void) {
+  for (int playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i)
+    dsda_FreePlayPal(playpal_i);
 }
 
 static dboolean dsda_DuplicatePaletteEntry(const byte *playpal, int i, int j) {
@@ -141,63 +153,67 @@ double dsda_PaletteEntryLightness(const byte *playpal, int i) {
 }
 
 // Moved from r_patch.c
-void dsda_InitPlayPal(void) {
-  int playpal_i;
+void dsda_InitPlayPal(int playpal_i) {
   double lightness;
   double darkest, lightest;
+  int lump;
+  const byte *playpal;
+  int i, j, found = 0;
 
-  for (playpal_i = 0; playpal_i < NUMPALETTES; ++playpal_i) {
-    int lump;
-    const byte *playpal;
-    int i, j, found = 0;
+  dsda_FreePlayPal(playpal_i);
 
-    lump = W_CheckNumForName(playpal_data[playpal_i].lump_name);
-    if (lump == LUMP_NOT_FOUND)
-      continue;
+  lump = W_CheckNumForName(playpal_data[playpal_i].lump_name);
+  if (lump == LUMP_NOT_FOUND)
+    return;
 
-    playpal = W_LumpByNum(lump);
+  playpal = W_LumpByNum(lump);
 
-    if (!playpal_data[playpal_i].duplicate) {
-      // find two duplicate palette entries. use one for transparency.
-      // rewrite source pixels in patches to the other on composition.
+  if (!playpal_data[playpal_i].duplicate) {
+    // find two duplicate palette entries. use one for transparency.
+    // rewrite source pixels in patches to the other on composition.
 
-      for (i = 0; i < 256; i++) {
-        for (j = i + 1; j < 256; j++) {
-          if (dsda_DuplicatePaletteEntry(playpal, i, j)) {
-            found = 1;
-            break;
-          }
-        }
-
-        if (found)
-          break;
-      }
-
-      if (found) { // found duplicate
-        playpal_data[playpal_i].transparent = i;
-        playpal_data[playpal_i].duplicate   = j;
-      }
-      else { // no duplicate: use 255 for transparency, as done previously
-        playpal_data[playpal_i].transparent = 255;
-        playpal_data[playpal_i].duplicate   = -1;
-      }
-    }
-
-    // find the brightness extremes (0-100)
-    darkest = 101.0;
-    lightest = -1.0;
     for (i = 0; i < 256; i++) {
-      lightness = dsda_PaletteEntryLightness(playpal, i);
-
-      if (lightness < darkest) {
-        darkest = lightness;
-        playpal_data[playpal_i].darkest = i;
+      for (j = i + 1; j < 256; j++) {
+        if (dsda_DuplicatePaletteEntry(playpal, i, j)) {
+          found = 1;
+          break;
+        }
       }
 
-      if (lightness > lightest) {
-        lightest = lightness;
-        playpal_data[playpal_i].lightest = i;
-      }
+      if (found)
+        break;
     }
+
+    if (found) { // found duplicate
+      playpal_data[playpal_i].transparent = i;
+      playpal_data[playpal_i].duplicate   = j;
+    }
+    else { // no duplicate: use 255 for transparency, as done previously
+      playpal_data[playpal_i].transparent = 255;
+      playpal_data[playpal_i].duplicate   = -1;
+    }
+  }
+
+  // find the brightness extremes (0-100)
+  darkest = 101.0;
+  lightest = -1.0;
+  for (i = 0; i < 256; i++) {
+    lightness = dsda_PaletteEntryLightness(playpal, i);
+
+    if (lightness < darkest) {
+      darkest = lightness;
+      playpal_data[playpal_i].darkest = i;
+    }
+
+    if (lightness > lightest) {
+      lightest = lightness;
+      playpal_data[playpal_i].lightest = i;
+    }
+  }
+}
+
+void dsda_InitAllPlayPals(void) {
+  for (int playpal_i = 0; playpal_i < NUMPALETTES; playpal_i++) {
+    dsda_InitPlayPal(playpal_i);
   }
 }

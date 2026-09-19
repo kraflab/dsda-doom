@@ -420,6 +420,8 @@ typedef enum {
 #define ORIG_FRICTION_FACTOR   2048        // original value
 #define FRICTION_FLY           0xeb00
 
+extern dboolean started_demo;
+
 extern dboolean raven;
 
 // heretic

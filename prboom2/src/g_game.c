@@ -840,8 +840,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
 
   if (dsda_InputActive(dsda_input_use) || dsda_InputTickActivated(dsda_input_use))
   {
-    if (!dsda_DeathUseNothingInDemo())
-      cmd->buttons |= BT_USE;
+    cmd->buttons |= BT_USE;
     // clear double clicks if hit use button
     dclicks = 0;
   }
@@ -984,8 +983,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks++;
       if (dclicks == 2)
         {
-          if (!dsda_DeathUseNothingInDemo())
-            cmd->buttons |= BT_USE;
+          cmd->buttons |= BT_USE;
           dclicks = 0;
         }
       else
@@ -1007,8 +1005,7 @@ void G_BuildTiccmd(ticcmd_t* cmd)
         dclicks2++;
       if (dclicks2 == 2)
         {
-          if (!dsda_DeathUseNothingInDemo())
-            cmd->buttons |= BT_USE;
+          cmd->buttons |= BT_USE;
           dclicks2 = 0;
         }
       else
@@ -1308,13 +1305,9 @@ dboolean G_Responder (event_t* ev)
   if (dsda_IntConfig(dsda_config_playback_mouse_controls) &&
     demoplayback && !timingdemo && dsda_InputActivated(dsda_input_fire))
   {
-    int x, y;
+    int x;
 
-    dsda_GetMousePosition(&x, &y);
-
-    y = y * ACTUALHEIGHT / viewport_rect.h;
-
-    if (x && y > (ACTUALHEIGHT - ST_SCALED_HEIGHT / 6))
+    if (HU_MouseOnDemoProgressBar(&x))
     {
       dsda_JumpToLogicTic(demo_tics_count * x / viewport_rect.w);
       return true;
@@ -1362,9 +1355,6 @@ dboolean G_Responder (event_t* ev)
       return true;
     }
   }
-
-  if (gamestate == GS_FINALE && F_Responder(ev))
-    return true;  // finale ate the event
 
   if (dsda_BuildResponder(ev))
     return true;
