@@ -438,7 +438,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 
 		// Set default level progression here to simplify the checks elsewhere.
 		// Doing this lets us skip all normal code for this if nothing has been defined.
-		if (!parsed.nextmap[0] && parsed.finale != EG_None)
+		if (!parsed.nextmap[0] && parsed.finale == EG_None)
 		{
 			if (!raven)
 			{
@@ -496,7 +496,7 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 			}
 
 			// If no default attribute, just go to the next map
-			if (parsed.finale != EG_None)
+			if (parsed.finale == EG_None)
 			{
 				int ep, map;
 				if (G_ValidateMapName(parsed.lumpname, &ep, &map))
