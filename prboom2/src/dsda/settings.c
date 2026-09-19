@@ -117,7 +117,7 @@ int dsda_CompatibilityLevel(void) {
     char* str_end;
     errno = 0;
     level = strtol(arg_val, &str_end, 0);
-    if (errno == 0 && *str_end == '\0') {
+    if (errno == 0) {
       if (level >= -1 && level < MAX_COMPATIBILITY_LEVEL) {
         return level;
       }
