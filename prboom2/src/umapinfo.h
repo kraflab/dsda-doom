@@ -25,24 +25,25 @@ extern "C"
 {
 #endif
 
+typedef enum MapinfoFinale
+{
+  EG_Clear = -1,
+  EG_None,
+  EG_Standard,
+  EG_Art,
+  EG_Cast,
+  EG_Scroll,
+} MapinfoFinale;
+
 typedef enum MapinfoFlags
 {
 	MapInfo_LabelClear = (1u << 0),
 
-	MapInfo_EndGameClear = (1u << 1),
-	MapInfo_EndGameArt = (1u << 2),
-	MapInfo_EndGameStandard = (1u << 3),
-	MapInfo_EndGameCast = (1u << 4),
-	MapInfo_EndGameScroll = (1u << 5),
+	MapInfo_NoIntermission = (1u << 1),
+	MapInfo_InterTextClear = (1u << 2),
+	MapInfo_InterTextSecretClear = (1u << 3),
 
-	MapInfo_NoIntermission = (1u << 6),
-	MapInfo_InterTextClear = (1u << 7),
-	MapInfo_InterTextSecretClear = (1u << 8),
-
-	MapInfo_BossActionClear = (1u << 9),
-
-	MapInfo_EndGameAny = (MapInfo_EndGameArt | MapInfo_EndGameStandard |
-                        MapInfo_EndGameCast | MapInfo_EndGameScroll),
+	MapInfo_BossActionClear = (1u << 4),
 } UMapinfoFlags;
 
 struct BossAction
@@ -73,6 +74,7 @@ struct MapEntry
 	char intermusic[9];
 	int partime;
 	int flags;
+	MapinfoFinale finale;
 
 	int numbossactions;
 	struct BossAction *bossactions;
