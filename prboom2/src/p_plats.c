@@ -557,7 +557,7 @@ int EV_DoPlat
           plat->low = sec->floorheight;
 
         plat->high = sec->floorheight;
-        plat->wait = 35*PLATWAIT;
+        plat->wait = TICRATE*PLATWAIT;
         plat->status = down;
         S_StartSectorSound(sec, g_sfx_pstart);
         break;
@@ -570,7 +570,7 @@ int EV_DoPlat
           plat->low = sec->floorheight;
 
         plat->high = sec->floorheight;
-        plat->wait = 35*PLATWAIT;
+        plat->wait = TICRATE*PLATWAIT;
         plat->status = down;
         S_StartSectorSound(sec, sfx_pstart);
         break;
@@ -587,7 +587,7 @@ int EV_DoPlat
         if (plat->high < sec->floorheight)
           plat->high = sec->floorheight;
 
-        plat->wait = 35*PLATWAIT;
+        plat->wait = TICRATE*PLATWAIT;
         plat->status = P_Random(pr_plats)&1;
 
         S_StartSectorSound(sec, g_sfx_pstart);
@@ -595,7 +595,7 @@ int EV_DoPlat
 
       case toggleUpDn: //jff 3/14/98 add new type to support instant toggle
         plat->speed = PLATSPEED;  //not used
-        plat->wait = 35*PLATWAIT; //not used
+        plat->wait = TICRATE*PLATWAIT; //not used
         plat->crush = DOOM_CRUSH; //jff 3/14/98 crush anything in the way
 
         // set up toggling between ceiling, floor inclusive

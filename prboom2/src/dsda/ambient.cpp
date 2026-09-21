@@ -68,7 +68,7 @@ void dsda_UpdateAmbientSource(ambient_source_t* source) {
 
   // looping
   if (source->data.min_tics < 0) {
-    source->wait_tics = 35;
+    source->wait_tics = TICRATE;
 
     if (!source->data.attenuation) {
       S_AdjustVolume(source->data.volume);
@@ -146,13 +146,13 @@ static void dsda_ParseAmbient(Scanner &scanner) {
   }
   else if (scanner.StringMatch("random")) {
     scanner.MustGetFloat();
-    amb_sfx.min_tics = 35 * scanner.decimal;
+    amb_sfx.min_tics = TICRATE * scanner.decimal;
     scanner.MustGetFloat();
-    amb_sfx.max_tics = 35 * scanner.decimal;
+    amb_sfx.max_tics = TICRATE * scanner.decimal;
   }
   else if (scanner.StringMatch("periodic")) {
     scanner.MustGetFloat();
-    amb_sfx.min_tics = 35 * scanner.decimal;
+    amb_sfx.min_tics = TICRATE * scanner.decimal;
     amb_sfx.max_tics = amb_sfx.min_tics;
   }
 
