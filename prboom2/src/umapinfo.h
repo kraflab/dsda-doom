@@ -45,6 +45,9 @@ typedef enum MapinfoFlags
 	MapInfo_InterTextSecretClear = (1u << 3),
 
 	MapInfo_BossActionClear = (1u << 4),
+
+	MapInfo_EX_ExplodeIn3D = (1u << 5),
+	MapInfo_EX_VerticalExplosionThrust = (1u << 6),
 } UMapinfoFlags;
 
 struct BossAction
