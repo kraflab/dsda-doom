@@ -120,6 +120,8 @@ int dsda_UPrevMap(int* episode, int* map) {
 }
 
 int dsda_UShowNextLocBehaviour(int* behaviour) {
+  int intermission_end;
+
   if (!gamemapinfo)
     return false;
 
@@ -128,8 +130,8 @@ int dsda_UShowNextLocBehaviour(int* behaviour) {
   // Heretic: "finalintermission -> endgame"
   // Doom:    "intermission -> next map or endgame"
 
-  int intermission_end = heretic ? (gamemapinfo->finale >= EG_Standard) :
-                                   (gamemapinfo->finale != EG_None);
+  intermission_end = heretic ? (gamemapinfo->finale >= EG_Standard) :
+                               (gamemapinfo->finale != EG_None);
 
   if (intermission_end)
     *behaviour = WI_SHOW_NEXT_DONE;
