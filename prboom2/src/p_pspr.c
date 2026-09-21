@@ -1279,7 +1279,8 @@ void A_WeaponProjectile(player_t *player, pspdef_t *psp)
 void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
 {
   int hspread, vspread, numbullets, damagebase, damagemod;
-  int i, damage, angle, slope;
+  int i, damage, slope;
+  angle_t angle;
 
   CHECK_WEAPON_CODEPOINTER("A_WeaponBulletAttack", player);
 
@@ -1297,7 +1298,7 @@ void A_WeaponBulletAttack(player_t *player, pspdef_t *psp)
   for (i = 0; i < numbullets; i++)
   {
     damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
-    angle = (int)player->mo->angle + P_RandomHitscanAngle(pr_mbf21, hspread);
+    angle = player->mo->angle + (angle_t)P_RandomHitscanAngle(pr_mbf21, hspread);
     slope = bulletslope + P_RandomHitscanSlope(pr_mbf21, vspread);
 
     P_LineAttack(player->mo, angle, MISSILERANGE, slope, damage);
@@ -2670,7 +2671,7 @@ void AdjustPlayerAngle(mobj_t * pmo)
     int difference;
 
     angle = R_PointToAngle2(pmo->x, pmo->y, linetarget->x, linetarget->y);
-    difference = (int) angle - (int) pmo->angle;
+    difference = (int)(angle - pmo->angle);
     if (abs(difference) > MAX_ANGADJUST)
     {
         pmo->angle += difference > 0 ? MAX_ANGADJUST : -MAX_ANGADJUST;

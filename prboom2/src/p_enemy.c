@@ -3326,7 +3326,8 @@ void A_MonsterProjectile(mobj_t *actor)
 void A_MonsterBulletAttack(mobj_t *actor)
 {
   int hspread, vspread, numbullets, damagebase, damagemod;
-  int aimslope, i, damage, angle, slope;
+  int aimslope, i, damage, slope;
+  angle_t angle;
 
   if (!mbf21 || !actor->target)
     return;
@@ -3345,7 +3346,7 @@ void A_MonsterBulletAttack(mobj_t *actor)
   for (i = 0; i < numbullets; i++)
   {
     damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
-    angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, hspread);
+    angle = actor->angle + (angle_t)P_RandomHitscanAngle(pr_mbf21, hspread);
     slope = aimslope + P_RandomHitscanSlope(pr_mbf21, vspread);
 
     P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
@@ -6469,9 +6470,9 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
     {                           // attack the destination mobj if it's attackable
         mobj_t *oldTarget;
 
-        if (abs((int) actor->angle - (int) R_PointToAngle2(actor->x, actor->y,
+        if (abs((int)(actor->angle - R_PointToAngle2(actor->x, actor->y,
                                                target->x,
-                                               target->y)) < ANG45 / 2)
+                                               target->y))) < ANG45 / 2)
         {
             oldTarget = actor->target;
             actor->target = target;
@@ -6520,9 +6521,9 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
                 }
                 angleToSpot = R_PointToAngle2(actor->x, actor->y,
                                               mo_x, mo_y);
-                if (abs((int) angleToSpot - (int) angleToTarget) < bestAngle)
+                if (abs((int)(angleToSpot - angleToTarget)) < bestAngle)
                 {
-                    bestAngle = abs((int) angleToSpot - (int) angleToTarget);
+                    bestAngle = abs((int)(angleToSpot - angleToTarget));
                     bestArg = i;
                 }
             }
@@ -6586,13 +6587,13 @@ void A_DragonFlight(mobj_t * actor)
         }
         angle = R_PointToAngle2(actor->x, actor->y, actor->target->x,
                                 actor->target->y);
-        if (abs((int) actor->angle - (int) angle) < ANG45 / 2
+        if (abs((int)(actor->angle - angle)) < ANG45 / 2
             && P_CheckMeleeRange(actor))
         {
             P_DamageMobj(actor->target, actor, actor, HITDICE(8));
             S_StartMobjSound(actor, hexen_sfx_dragon_attack);
         }
-        else if (abs((int) actor->angle - (int) angle) <= ANG1 * 20)
+        else if (abs((int)(actor->angle - angle)) <= ANG1 * 20)
         {
             P_SetMobjState(actor, actor->info->missilestate);
             S_StartMobjSound(actor, hexen_sfx_dragon_attack);
@@ -7592,7 +7593,7 @@ void A_SorcBallOrbit(mobj_t * actor)
         case SORC_STOPPING:    // Balls stopping
             if ((parent->special2.i == actor->type) &&
                 (parent->special_args[1] > SORCBALL_SPEED_ROTATIONS) &&
-                (abs((int) angle - (int) (parent->angle >> ANGLETOFINESHIFT)) <
+                (abs((int)(angle - (angle_t) (parent->angle >> ANGLETOFINESHIFT))) <
                  (30 << 5)))
             {
                 // Can stop now
