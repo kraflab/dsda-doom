@@ -244,34 +244,24 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	}
 	else if (!stricmp(pname, "endpic"))
 	{
-		mape->flags &= ~MapInfo_EndGameAny;
 		ParseLumpName(scanner, mape->endpic);
-		mape->flags |= MapInfo_EndGameArt;
+		mape->finale = EG_Art;
 	}
 	else if (!stricmp(pname, "endcast") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		mape->flags &= ~MapInfo_EndGameAny;
-		mape->flags |= (scanner.boolean)
-		            ? MapInfo_EndGameCast
-		            : MapInfo_EndGameClear;
+		mape->flags = (scanner.boolean) ? EG_Cast : EG_Clear;
 	}
 	else if ((!stricmp(pname, "endbunny") && !raven) ||
 	         (!stricmp(pname, "enddemon") && heretic))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		mape->flags &= ~MapInfo_EndGameAny;
-		mape->flags |= (scanner.boolean)
-		            ? MapInfo_EndGameScroll
-		            : MapInfo_EndGameClear;
+		mape->flags = (scanner.boolean) ? EG_Scroll : EG_Clear;
 	}
 	else if (!stricmp(pname, "endgame"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		mape->flags &= ~MapInfo_EndGameAny;
-		mape->flags |= (scanner.boolean)
-		            ? MapInfo_EndGameStandard
-		            : MapInfo_EndGameClear;
+		mape->flags = (scanner.boolean) ? EG_Standard : EG_Clear;
 	}
 	else if (!stricmp(pname, "endpalette"))
 	{
@@ -543,36 +533,36 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 
 		// Set default level progression here to simplify the checks elsewhere.
 		// Doing this lets us skip all normal code for this if nothing has been defined.
-		if (!parsed.nextmap[0] && !(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)))
+		if (!parsed.nextmap[0] && parsed.finale == EG_None)
 		{
 			if (!raven)
 			{
 				if (!stricmp(parsed.lumpname, "MAP30"))
 				{
-					parsed.flags |= MapInfo_EndGameCast;
+					parsed.finale = EG_Cast;
 				}
 				else if (!stricmp(parsed.lumpname, "E1M8"))
 				{
-					parsed.flags |= MapInfo_EndGameArt;
+					parsed.finale = EG_Art;
 					strcpy(parsed.endpic, gamemode == retail && !pwad_help2_check ? "CREDIT" : "HELP2");
 				}
 				else if (!stricmp(parsed.lumpname, "E2M8"))
 				{
-					parsed.flags |= MapInfo_EndGameArt;
+					parsed.finale = EG_Art;
 					strcpy(parsed.endpic, "VICTORY2");
 				}
 				else if (!stricmp(parsed.lumpname, "E3M8"))
 				{
-					parsed.flags |= MapInfo_EndGameScroll;
+					parsed.finale = EG_Scroll;
 				}
 				else if (!stricmp(parsed.lumpname, "E4M8"))
 				{
-					parsed.flags |= MapInfo_EndGameArt;
+					parsed.finale = EG_Art;
 					strcpy(parsed.endpic, "ENDPIC");
 				}
 				else if (gamemission == tc_chex && !stricmp(parsed.lumpname, "E1M5"))
 				{
-					parsed.flags |= MapInfo_EndGameArt;
+					parsed.finale = EG_Art;
 					strcpy(parsed.endpic, "CREDIT");
 				}
 			}
@@ -580,28 +570,28 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 			{
 				if (!stricmp(parsed.lumpname, "E1M8"))
 				{
-					parsed.flags |= MapInfo_EndGameArt;
+					parsed.finale = EG_Art;
 					strcpy(parsed.endpic, gamemode == shareware ? "ORDER" : "CREDIT");
 				}
 				else if (!stricmp(parsed.lumpname, "E2M8"))
 				{
-					parsed.flags |= MapInfo_EndGameArt;
+					parsed.finale = EG_Art;
 					strcpy(parsed.endpic, "E2END");
 					strcpy(parsed.endpalette, "E2PAL");
 				}
 				else if (!stricmp(parsed.lumpname, "E3M8"))
 				{
-					parsed.flags |= MapInfo_EndGameScroll;
+					parsed.finale = EG_Scroll;
 				}
 				else if (!stricmp(parsed.lumpname, "E4M8") || !stricmp(parsed.lumpname, "E5M8"))
 				{
-					parsed.flags |= MapInfo_EndGameArt;
+					parsed.finale = EG_Art;
 					strcpy(parsed.endpic, "CREDIT");
 				}
 			}
 
 			// If no default attribute, just go to the next map
-			if (!(parsed.flags & (MapInfo_EndGameAny|MapInfo_EndGameClear)))
+			if (parsed.finale == EG_None)
 			{
 				int ep, map;
 				if (G_ValidateMapName(parsed.lumpname, &ep, &map))

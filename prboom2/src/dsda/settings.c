@@ -56,7 +56,7 @@ void dsda_InitSettings(void) {
   gld_ResetAutomapTransparency();
 }
 
-static int dsda_ComplvlStrToNum(const char* data, int length) {
+static int dsda_ComplvlStrToNum(const char* data, size_t length) {
   if (length == 7 && !strncasecmp("vanilla", data, 7)) {
     if (gamemode == commercial) {
       if (gamemission == pack_plut || gamemission == pack_tnt)
@@ -114,15 +114,40 @@ int dsda_CompatibilityLevel(void) {
 
   if (complevel_arg->count) {
     const char* arg_val = complevel_arg->value.v_string;
+    const char* value_start = arg_val;
+    size_t value_len;
     char* str_end;
+    dboolean parsed_number;
+
+    // Allow spaces before cl number/word
+    while (isspace((unsigned char)*value_start))
+      ++value_start;
+
+    // find where value starts after spaces
+    value_len = strlen(value_start);
+
+    // Remove spaces after value
+    while (value_len > 0 && isspace((unsigned char)value_start[value_len - 1]))
+      --value_len;
+
     errno = 0;
-    level = strtol(arg_val, &str_end, 0);
-    if (errno == 0 && *str_end == '\0') {
+    level = strtol(value_start, &str_end, 10);
+    parsed_number = str_end != value_start;
+
+    // Allow spaces after cl number/word
+    while (isspace((unsigned char)*str_end))
+      ++str_end;
+
+    // Parse complevel number
+    if (errno == 0 && parsed_number && *str_end == '\0') {
       if (level >= -1 && level < MAX_COMPATIBILITY_LEVEL) {
         return level;
       }
-    } else {
-      level = dsda_ComplvlStrToNum(arg_val, strlen(arg_val));
+    }
+
+    // Parse complevel word
+    else {
+      level = dsda_ComplvlStrToNum(value_start, value_len);
       if (level != -1) {
         return level;
       }
