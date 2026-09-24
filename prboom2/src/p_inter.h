@@ -51,6 +51,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor,mobj_t *source,int damage);
 void P_HealMobj(mobj_t *mo, int num);
 int P_PlayerHealthIncrease(int value);
 
+dboolean P_MobjHasDeathAction(mobj_t *mo, actionf_t action);
+
 /* killough 5/2/98: moved from d_deh.c, g_game.c, m_misc.c, others: */
 
 extern int god_health;   /* Ty 03/09/98 - deh support, see also p_inter.c */
