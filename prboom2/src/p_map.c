@@ -2864,8 +2864,7 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
   dist = dx > dy ? dx : dy;
 
-  // TODO: possible "3d explosion" mapinfo flag
-  if (map_format.zdoom &&
+  if (dsda_ExplodeIn3D() &&
       (bomb.spot->z < thing->z || bomb.spot->z >= thing->z + thing->height))
   {
     fixed_t dz;
@@ -2915,8 +2914,7 @@ dboolean PIT_RadiusAttack (mobj_t* thing)
 
     P_DamageMobj (thing, bomb.spot, bomb.source, damage);
 
-    // TODO: possible "vertical explosion thrust" mapinfo flag
-    if (map_format.zdoom && !(bomb.flags & BF_HORIZONTAL))
+    if (dsda_VerticalExplosionThrust() && !(bomb.flags & BF_HORIZONTAL))
     {
       fixed_t thrust;
       fixed_t dxy, dz;

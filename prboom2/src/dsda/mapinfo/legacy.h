@@ -64,5 +64,9 @@ int dsda_LegacyGravity(fixed_t* gravity);
 int dsda_LegacyAirControl(fixed_t* air_control);
 int dsda_LegacyInitSky(void);
 int dsda_LegacyMapColorMap(int* colormap);
+dboolean dsda_LegacyMapAllowsJumping(void);
+dboolean dsda_LegacyMapAllowsFreeAim(void);
+dboolean dsda_LegacyExplodeIn3D(void);
+dboolean dsda_LegacyVerticalExplosionThrust(void);
 
 #endif

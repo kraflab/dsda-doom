@@ -21,10 +21,7 @@
 #include "lprintf.h"
 #include "p_enemy.h"
 #include "p_spec.h"
-#include "p_tick.h"
 #include "r_state.h"
-#include "s_sound.h"
-#include "sounds.h"
 #include "umapinfo.h"
 #include "v_video.h"
 #include "w_wad.h"
@@ -34,7 +31,6 @@
 #include "dsda/map_format.h"
 #include "dsda/mapinfo.h"
 #include "dsda/palette.h"
-#include "dsda/preferences.h"
 
 #include "u.h"
 
@@ -374,6 +370,8 @@ void dsda_UFDrawer(void) {
 // `MapInfo_BossActionClear` means to do nothing.
 // positive values mean to check the list of boss actions and run all that apply.
 int dsda_UBossAction(mobj_t* mo) {
+  extern dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int side, mobj_t * mo);
+
   int i;
   line_t junk;
 
@@ -403,11 +401,16 @@ int dsda_UBossAction(mobj_t* mo) {
     if (gamemapinfo->bossactions[i].type == mo->type) {
       junk = *lines;
       junk.special = (short) gamemapinfo->bossactions[i].special;
-      junk.special_args[0] = (short) gamemapinfo->bossactions[i].tag;
+      COLLAPSE_SPECIAL_ARGS(junk.special_args, gamemapinfo->bossactions[i].args);
 
-      // use special semantics for line activation to block problem types.
-      if (!P_UseSpecialLine(mo, &junk, 0, true))
-        map_format.cross_special_line(&junk, 0, mo, true);
+      if (gamemapinfo->bossactions[i].is_param) {
+        // explicitly defined from param actions
+        P_ExecuteZDoomLineSpecial(junk.special, junk.special_args, NULL, 0, mo);
+      } else {
+        // defined from classic actions
+        if (!P_UseSpecialLine(mo, &junk, 0, true))
+          map_format.cross_special_line(&junk, 0, mo, true);
+      }
     }
   }
 
@@ -652,4 +655,24 @@ int dsda_UInitSky(void) {
 
 int dsda_UMapColorMap(int* colormap) {
   return false;
+}
+
+dboolean dsda_UMapAllowsJumping(void)
+{
+  return gamemapinfo && (gamemapinfo->jumping == PM_Allow || gamemapinfo->jumping == PM_Require);
+}
+
+dboolean dsda_UMapAllowsFreeAim(void)
+{
+  return gamemapinfo && (gamemapinfo->freeaim == PM_Allow || gamemapinfo->freeaim == PM_Require);
+}
+
+dboolean dsda_UExplodeIn3D(void)
+{
+  return gamemapinfo && (gamemapinfo->flags & MapInfo_EX_ExplodeIn3D);
+}
+
+dboolean dsda_UVerticalExplosionThrust(void)
+{
+  return gamemapinfo && (gamemapinfo->flags & MapInfo_EX_VerticalExplosionThrust);
 }
