@@ -36,6 +36,8 @@
 #include "config.h"
 #endif
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -849,6 +851,143 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
 
 static dboolean sound_was_initialized;
 
+#define MAX_AUDIO_DEVICES 64
+const char *audio_devices_list[MAX_AUDIO_DEVICES + 1] = { NULL };
+
+static char current_audio_device[256] = "";
+
+static dboolean I_DeviceInList(const char *name)
+{
+  int i;
+
+  if (!name || !name[0])
+    return false;
+
+  for (i = 0; audio_devices_list[i]; ++i)
+    if (!strcasecmp(audio_devices_list[i], name))
+      return true;
+
+  return false;
+}
+
+static const char *I_DefaultAudioDevice(void)
+{
+#if SDL_VERSION_ATLEAST(2, 24, 0)
+  char *name = NULL;
+  const char *match = NULL;
+  int i;
+
+  if (SDL_GetDefaultAudioInfo(&name, NULL, 0) == 0 && name)
+  {
+    for (i = 0; audio_devices_list[i]; ++i)
+    {
+      if (!strcasecmp(audio_devices_list[i], name))
+      {
+        match = audio_devices_list[i];
+        break;
+      }
+    }
+
+    SDL_free(name);
+  }
+
+  return match;
+#else
+  return NULL;
+#endif
+}
+
+static const char *I_ResolveAudioDevice(void)
+{
+  const char *configured = dsda_StringConfig(dsda_config_snd_device);
+  const char *resolved;
+
+  if (I_DeviceInList(configured))
+    resolved = configured;
+  else
+    resolved = I_DefaultAudioDevice();
+
+  if (resolved && strcmp(resolved, configured ? configured : ""))
+    dsda_HackStringConfig(dsda_config_snd_device, resolved, false);
+
+  return resolved;
+}
+
+static void I_RememberAudioDevice(const char *snd_device)
+{
+  snprintf(current_audio_device, sizeof(current_audio_device), "%s", snd_device ? snd_device : "");
+}
+
+static dboolean I_OpenAudioDevice(int audio_rate, int audio_channels, int audio_buffers, const char *snd_device)
+{
+  if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers, snd_device, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
+  {
+    lprintf(LO_WARN, "couldn't open audio device \"%s\" (%s)\n", snd_device ? snd_device : "default", SDL_GetError());
+    if (snd_device)
+    {
+      lprintf(LO_WARN, "falling back to default audio device\n");
+      if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers, NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
+      {
+        lprintf(LO_WARN, "couldn't open audio with desired format (%s)\n", SDL_GetError());
+        return false;
+      }
+    }
+    else
+    {
+      lprintf(LO_WARN, "couldn't open audio with desired format (%s)\n", SDL_GetError());
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void I_ChangeAudioDevice(void)
+{
+  const char *snd_device;
+  int i;
+
+  if (!sound_was_initialized || dumping_sound)
+    return;
+
+  snd_device = dsda_StringConfig(dsda_config_snd_device);
+  if (!snd_device || !snd_device[0])
+    snd_device = NULL;
+
+  if (!strcasecmp(snd_device ? snd_device : "", current_audio_device))
+    return;
+
+  S_StopMusic();
+
+  SDL_LockMutex(sfxmutex);
+  for (i = 0; i < MAX_CHANNELS; ++i)
+    stopchan(i);
+  SDL_UnlockMutex(sfxmutex);
+
+  Mix_HaltMusic();
+  Mix_CloseAudio();
+  SDL_CloseAudio();
+
+  if (!I_OpenAudioDevice(snd_samplerate, 2, getSliceSize(), snd_device))
+  {
+    lprintf(LO_ERROR, "audio device switch failed, sound disabled\n");
+    sound_was_initialized = false;
+    return;
+  }
+
+  Mix_QuerySpec(&snd_samplerate, NULL, NULL);
+
+  Mix_SetPostMix(I_UpdateSound, NULL);
+
+  SDL_PauseAudio(0);
+
+  I_RememberAudioDevice(snd_device);
+
+  S_RestartMusic();
+
+  lprintf(LO_INFO, "switched audio output to \"%s\"\n", current_audio_device);
+}
+
 void I_ShutdownSound(void)
 {
   if (sound_was_initialized)
@@ -893,43 +1032,42 @@ void I_InitSound(void)
   audio_channels = 2;
   audio_buffers = getSliceSize();
 
-  snd_device = dsda_StringConfig(dsda_config_snd_device);
-  if (snd_device && !snd_device[0])
-    snd_device = NULL;
+  {
+    // the device list is built once at startup, so anything plugged in afterward will need a restart
+    int i, count = SDL_GetNumAudioDevices(0);
+    int list_size = 0;
+    lprintf(LO_INFO, "Audio output devices (%d):\n", count);
+    for (i = 0; i < count && list_size < MAX_AUDIO_DEVICES; ++i)
+    {
+      const char *name = SDL_GetAudioDeviceName(i, 0);
+      if (name)
+      {
+        lprintf(LO_INFO, "  \"%s\"\n", name);
+        audio_devices_list[list_size] = Z_Strdup(name);
+        ++list_size;
+      }
+    }
+    audio_devices_list[list_size] = NULL;
+  }
+
+  snd_device = I_ResolveAudioDevice();
 
   if (snd_device)
     lprintf(LO_DEBUG, "opening configured audio device \"%s\"\n", snd_device);
 
-  if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
-                          snd_device, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
+  if (!I_OpenAudioDevice(audio_rate, audio_channels, audio_buffers, snd_device))
   {
-    lprintf(LO_WARN, "couldn't open audio device \"%s\" (%s)\n",
-            snd_device ? snd_device : "default", SDL_GetError());
-    if (snd_device)
-    {
-      lprintf(LO_WARN, "falling back to default audio device\n");
-      if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
-                              NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
-      {
-        lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
-        nosfxparm = true;
-        nomusicparm = true;
-        return;
-      }
-    }
-    else
-    {
-      lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
-      nosfxparm = true;
-      nomusicparm = true;
-      return;
-    }
+    nosfxparm = true;
+    nomusicparm = true;
+    return;
   }
 
   // [FG] feed actual sample frequency back into config variable
   Mix_QuerySpec(&snd_samplerate, NULL, NULL);
 
   sound_was_initialized = true;
+
+  I_RememberAudioDevice(snd_device);
 
   Mix_SetPostMix(I_UpdateSound, NULL);
 
