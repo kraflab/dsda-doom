@@ -756,6 +756,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
     "snd_soundfont", dsda_config_snd_soundfont,
     CONF_STRING("")
   },
+  [dsda_config_snd_device] = {
+    "snd_device", dsda_config_snd_device,
+    CONF_STRING("")
+  },
   [dsda_config_mus_fluidsynth_chorus] = {
     "mus_fluidsynth_chorus", dsda_config_mus_fluidsynth_chorus,
     CONF_BOOL(0)

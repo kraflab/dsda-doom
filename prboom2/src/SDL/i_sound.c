@@ -871,6 +871,7 @@ void I_InitSound(void)
   int audio_rate;
   int audio_channels;
   int audio_buffers;
+  const char *snd_device;
 
   I_InitSoundParams();
 
@@ -892,13 +893,37 @@ void I_InitSound(void)
   audio_channels = 2;
   audio_buffers = getSliceSize();
 
+  snd_device = dsda_StringConfig(dsda_config_snd_device);
+  if (snd_device && !snd_device[0])
+    snd_device = NULL;
+
+  if (snd_device)
+    lprintf(LO_DEBUG, "opening configured audio device \"%s\"\n", snd_device);
+
   if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
-                          NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
+                          snd_device, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
   {
-    lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
-    nosfxparm = true;
-    nomusicparm = true;
-    return;
+    lprintf(LO_WARN, "couldn't open audio device \"%s\" (%s)\n",
+            snd_device ? snd_device : "default", SDL_GetError());
+    if (snd_device)
+    {
+      lprintf(LO_WARN, "falling back to default audio device\n");
+      if (Mix_OpenAudioDevice(audio_rate, MIX_DEFAULT_FORMAT, audio_channels, audio_buffers,
+                              NULL, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE) < 0)
+      {
+        lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
+        nosfxparm = true;
+        nomusicparm = true;
+        return;
+      }
+    }
+    else
+    {
+      lprintf(LO_DEBUG, "couldn't open audio with desired format (%s)\n", SDL_GetError());
+      nosfxparm = true;
+      nomusicparm = true;
+      return;
+    }
   }
 
   // [FG] feed actual sample frequency back into config variable
