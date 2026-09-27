@@ -17,22 +17,22 @@
 //
 //-----------------------------------------------------------------------------
 
+#include <assert.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <assert.h>
-#include "umapinfo.h"
 #include "scanner.h"
+#include "umapinfo.h"
 
 extern "C"
 {
-#include "m_misc.h"
-#include "g_game.h"
 #include "doomdef.h"
 #include "doomstat.h"
-
 #include "dsda/episode.h"
 #include "dsda/name.h"
+#include "g_game.h"
+#include "lprintf.h"
+#include "m_misc.h"
 
 MapList Maps;
 }
@@ -130,6 +130,38 @@ static int ParseLumpName(Scanner &scanner, char *buffer)
 	buffer[8] = 0;
 	M_Strupr(buffer);
 	return 1;
+}
+
+// -----------------------------------------------
+//
+// Parses an advanced player movement option
+//
+// -----------------------------------------------
+static PlayerMovement ParsePlayerMovement(Scanner &scanner)
+{
+	auto pm = PM_Unset;
+	scanner.MustGetToken(TK_Identifier);
+	auto keyword = scanner.string;
+
+	if (!stricmp(keyword, "disallow"))
+	{
+		pm = PM_Disallow;
+	}
+	else if (!stricmp(keyword, "allow"))
+	{
+		pm = PM_Allow;
+	}
+	else if (!stricmp(keyword, "require"))
+	{
+		pm = PM_Require;
+	}
+
+	if (pm == PM_Unset)
+	{
+		scanner.ErrorF("Expected 'disallow', 'allow' or 'require', got %s", keyword);
+	}
+
+	return pm;
 }
 
 // -----------------------------------------------
@@ -343,6 +375,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		}
 		else
 		{
+			BossAction action = { 0 };
 			int special, tag, type;
 			mape->flags &= ~MapInfo_BossActionClear;
 
@@ -365,13 +398,75 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			   (heretic ? special == 105 : special == 124) ||
 			   (heretic && special == 515))
 			{
+				action.type = type;
+				action.special = special;
+				action.args[0] = tag;
 				mape->numbossactions++;
 				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
-				mape->bossactions[mape->numbossactions - 1].type = type;
-				mape->bossactions[mape->numbossactions - 1].special = special;
-				mape->bossactions[mape->numbossactions - 1].tag = tag;
+				mape->bossactions[mape->numbossactions - 1] = action;
 			}
 
+		}
+	}
+	else if (!stricmp(pname, "jumping"))
+	{
+		mape->jumping = ParsePlayerMovement(scanner);
+	}
+	else if (!stricmp(pname, "crouching"))
+	{
+		mape->crouching = ParsePlayerMovement(scanner);
+
+		if (mape->crouching == PM_Require)
+		{
+			lprintf(LO_WARN,
+			        "Parsing UMAPINFO found a 'crouching = "
+			        "require' entry, but crouching is not "
+			        "supported, map %s may not work correctly.\n",
+			        mape->lumpname);
+		}
+	}
+	else if (!stricmp(pname, "freeaim"))
+	{
+		mape->freeaim = ParsePlayerMovement(scanner);
+	}
+	else if (!stricmp(pname, "DSDADoom_VerticalExplosionThrust"))
+	{
+		scanner.MustGetToken(TK_BoolConst);
+		if (scanner.boolean) mape->flags |= MapInfo_EX_VerticalExplosionThrust;
+		else mape->flags &= ~MapInfo_EX_VerticalExplosionThrust;
+	}
+	else if (!stricmp(pname, "DSDADoom_ExplodeIn3D"))
+	{
+		scanner.MustGetToken(TK_BoolConst);
+		if (scanner.boolean) mape->flags |= MapInfo_EX_ExplodeIn3D;
+		else mape->flags &= ~MapInfo_EX_ExplodeIn3D;
+	}
+	else if (!stricmp(pname, "DSDADoom_SpecialAction"))
+	{
+		BossAction action = { 0 };
+		action.is_param = true;
+		scanner.MustGetString();
+		action.type = dsda_ActorNameToType(scanner.string);
+		scanner.MustGetToken(',');
+		scanner.MustGetString();
+		action.special = dsda_ActionNameToNumber(scanner.string);
+
+		for (int i = 0; i < 5; ++i)
+		{
+			if (!scanner.CheckToken(','))
+				break;
+			scanner.MustGetInteger();
+			action.args[i] = scanner.number;
+		}
+
+		if (action.type != NAME_NOT_FOUND && action.special != NAME_NOT_FOUND)
+		{
+			mape->flags &= ~MapInfo_BossActionClear;
+			mape->numbossactions++;
+			mape->bossactions = (struct BossAction *)Z_Realloc(
+			      mape->bossactions,
+			      sizeof(struct BossAction) * mape->numbossactions);
+			mape->bossactions[mape->numbossactions - 1] = action;
 		}
 	}
 	else

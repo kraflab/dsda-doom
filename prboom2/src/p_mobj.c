@@ -721,7 +721,7 @@ fixed_t P_MobjGravity(mobj_t* mo)
 
 void P_AutoCorrectLookDir(player_t* player)
 {
-  if (allow_incompatibility && dsda_MouseLook())
+  if (allow_incompatibility && dsda_FreeAim())
   {
     return;
   }

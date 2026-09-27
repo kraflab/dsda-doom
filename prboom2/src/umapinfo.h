@@ -24,6 +24,7 @@
 extern "C"
 {
 #endif
+#include "r_defs.h"
 
 typedef enum MapinfoFinale
 {
@@ -44,14 +45,26 @@ typedef enum MapinfoFlags
 	MapInfo_InterTextSecretClear = (1u << 3),
 
 	MapInfo_BossActionClear = (1u << 4),
+
+	MapInfo_EX_ExplodeIn3D = (1u << 5),
+	MapInfo_EX_VerticalExplosionThrust = (1u << 6),
 } UMapinfoFlags;
 
 struct BossAction
 {
+	dboolean is_param;
 	int type;
 	int special;
-	int tag;
+	int args[LINE_ARG_COUNT];
 };
+
+typedef enum PlayerMovement
+{
+  PM_Unset,
+  PM_Disallow,
+  PM_Allow,
+  PM_Require,
+} PlayerMovement;
 
 struct MapEntry
 {
@@ -78,6 +91,10 @@ struct MapEntry
 
 	int numbossactions;
 	struct BossAction *bossactions;
+
+	PlayerMovement jumping;
+	PlayerMovement freeaim;
+	PlayerMovement crouching;
 };
 
 struct MapList

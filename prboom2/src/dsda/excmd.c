@@ -22,6 +22,7 @@
 
 #include "dsda/configuration.h"
 #include "dsda/mapinfo.h"
+#include "umapinfo.h"
 
 #include "excmd.h"
 
@@ -46,8 +47,6 @@ dboolean dsda_ExCmdDemo(void) {
 }
 
 void dsda_EnableCasualExCmdFeatures(void) {
-  void dsda_ResetAirControl(void);
-
   casual_excmd_features = true;
 
   dsda_ResetAirControl();
@@ -58,15 +57,19 @@ dboolean dsda_AllowCasualExCmdFeatures(void) {
 }
 
 dboolean dsda_AllowJumping(void) {
-  return (allow_incompatibility && dsda_IntConfig(dsda_config_allow_jumping))
-         // TODO: possible "allow jumping" mapinfo flag
-         || dsda_AllowCasualExCmdFeatures();
+  if (!allow_incompatibility && !dsda_AllowCasualExCmdFeatures())
+    return false;
+
+  return (dsda_MapAllowsJumping() != PM_Disallow && dsda_IntConfig(dsda_config_allow_jumping)) ||
+          dsda_MapAllowsJumping() == PM_Require;
 }
 
 dboolean dsda_FreeAim(void) {
-  return ((allow_incompatibility || dsda_AllowCasualExCmdFeatures())
-         // TODO: possible "allow freelook" mapinfo flag
-         && dsda_IntConfig(dsda_config_freelook));
+  if (!allow_incompatibility && !dsda_AllowCasualExCmdFeatures())
+    return false;
+
+  return (dsda_MapAllowsFreeaim() != PM_Disallow && dsda_IntConfig(dsda_config_freelook)) ||
+          dsda_MapAllowsFreeaim() == PM_Require;
 }
 
 void dsda_ReadExCmd(ticcmd_t* cmd, const byte** p) {

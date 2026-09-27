@@ -23,6 +23,7 @@
 #include "dsda/mapinfo/hexen.h"
 #include "dsda/mapinfo/u.h"
 #include "dsda/mapinfo/legacy.h"
+#include "umapinfo.h"
 
 #include "mapinfo.h"
 
@@ -177,6 +178,26 @@ void dsda_UpdateGameMap(int episode, int map) {
 
 void dsda_ResetAirControl(void) {
   map_aircontrol = dsda_AirControl();
+}
+
+PlayerMovement dsda_MapAllowsJumping(void)
+{
+  return dsda_UMapAllowsJumping();
+}
+
+PlayerMovement dsda_MapAllowsFreeaim(void)
+{
+  return dsda_UMapAllowsFreeAim();
+}
+
+dboolean dsda_ExplodeIn3D(void)
+{
+  return dsda_UExplodeIn3D();
+}
+
+dboolean dsda_VerticalExplosionThrust(void)
+{
+  return dsda_UVerticalExplosionThrust();
 }
 
 void dsda_ResetLeaveData(void) {
