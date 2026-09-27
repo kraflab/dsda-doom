@@ -19,6 +19,7 @@
 #define __DSDA_MAPINFO__
 
 #include "p_mobj.h"
+#include "umapinfo.h"
 
 #include "dsda/utility.h"
 
@@ -41,8 +42,8 @@ void dsda_ShowNextLocBehaviour(int* behaviour);
 int dsda_SkipDrawShowNextLoc(void);
 void dsda_UpdateGameMap(int episode, int map);
 void dsda_ResetAirControl(void);
-dboolean dsda_MapAllowsJumping(void);
-dboolean dsda_MapAllowsFreeaim(void);
+PlayerMovement dsda_MapAllowsJumping(void);
+PlayerMovement dsda_MapAllowsFreeaim(void);
 dboolean dsda_ExplodeIn3D(void);
 dboolean dsda_VerticalExplosionThrust(void);
 void dsda_ResetLeaveData(void);

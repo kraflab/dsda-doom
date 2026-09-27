@@ -23,6 +23,7 @@
 #include "dsda/mapinfo/hexen.h"
 #include "dsda/mapinfo/u.h"
 #include "dsda/mapinfo/legacy.h"
+#include "umapinfo.h"
 
 #include "mapinfo.h"
 
@@ -179,48 +180,24 @@ void dsda_ResetAirControl(void) {
   map_aircontrol = dsda_AirControl();
 }
 
-dboolean dsda_MapAllowsJumping(void)
+PlayerMovement dsda_MapAllowsJumping(void)
 {
-  if (dsda_HexenMapAllowsJumping())
-    return true;
-  if (dsda_UMapAllowsJumping())
-    return true;
-  if (dsda_LegacyMapAllowsJumping())
-    return true;
-  return false;
+  return dsda_UMapAllowsJumping();
 }
 
-dboolean dsda_MapAllowsFreeaim(void)
+PlayerMovement dsda_MapAllowsFreeaim(void)
 {
-  if (dsda_HexenMapAllowsFreeAim())
-    return true;
-  if (dsda_UMapAllowsFreeAim())
-    return true;
-  if (dsda_LegacyMapAllowsFreeAim())
-    return true;
-  return false;
+  return dsda_UMapAllowsFreeAim();
 }
 
 dboolean dsda_ExplodeIn3D(void)
 {
-  if (dsda_HexenExplodeIn3D())
-    return true;
-  if (dsda_UExplodeIn3D())
-    return true;
-  if (dsda_LegacyExplodeIn3D())
-    return true;
-  return false;
+  return dsda_UExplodeIn3D();
 }
 
 dboolean dsda_VerticalExplosionThrust(void)
 {
-  if (dsda_HexenVerticalExplosionThrust())
-    return true;
-  if (dsda_UVerticalExplosionThrust())
-    return true;
-  if (dsda_LegacyVerticalExplosionThrust())
-    return true;
-  return false;
+  return dsda_UVerticalExplosionThrust();
 }
 
 void dsda_ResetLeaveData(void) {

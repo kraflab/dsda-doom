@@ -189,10 +189,6 @@ dboolean dsda_AutoRun(void) {
   return dsda_IntConfig(dsda_config_autorun);
 }
 
-dboolean dsda_MouseLook(void) {
-  return dsda_IntConfig(dsda_config_freelook);
-}
-
 dboolean dsda_VertMouse(void) {
   return dsda_IntConfig(dsda_config_vertmouse);
 }
