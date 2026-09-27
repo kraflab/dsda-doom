@@ -17,11 +17,12 @@
 #include "s_sound.h"
 #include "g_game.h"
 #include "d_main.h"
+#include "sounds.h"
 
 static void Hexen_D_DrawTitle(const char *_x)
 {
   D_SetPage("TITLE", 280, 0);
-  S_StartSongName("hexen", true);
+  S_ChangeMusic(hexen_mus_hexen, true);
 }
 
 static void Hexen_D_DrawTitle2(const char *_x)
