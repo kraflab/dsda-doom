@@ -128,20 +128,64 @@ int PUREFUNC P_BoxOnLineSide(const fixed_t *tmbox, const line_t *ld)
 
 int PUREFUNC P_CompatiblePointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
 {
-  return
-    !line->dx ? x <= line->x ? line->dy > 0 : line->dy < 0 :
-    !line->dy ? y <= line->y ? line->dx < 0 : line->dx > 0 :
-    (line->dy^line->dx^(x -= line->x)^(y -= line->y)) < 0 ? (line->dy^x) < 0 :
-    FixedMul(y>>8, line->dx>>8) >= FixedMul(line->dy>>8, x>>8);
+  if(!line->dx)
+  {
+    if(x <= line->x)
+      return line->dy > 0;
+    else
+      return line->dy < 0;
+  }
+  else
+  {
+    if(!line->dy)
+    {
+      if(y <= line->y)
+        return line->dx < 0;
+      else
+        return line->dx > 0;
+    }
+    else
+    {
+      x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)line->x));
+      y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)line->y));
+
+      if((line->dy ^ line->dx ^ x ^ y) < 0)
+        return (line->dy ^ x) < 0;
+      else
+        return FixedMul(y >> 8, line->dx >> 8) >= FixedMul(line->dy >> 8, x >> 8);
+    }
+  }
 }
 
 int PUREFUNC P_ZDoomPointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
 {
-  return
-    !line->dx ? x <= line->x ? line->dy > 0 : line->dy < 0 :
-    !line->dy ? y <= line->y ? line->dx < 0 : line->dx > 0 :
-    (line->dy^line->dx^(x -= line->x)^(y -= line->y)) < 0 ? (line->dy^x) < 0 :
-    (long long) y * line->dx >= (long long) x * line->dy;
+  if(!line->dx)
+  {
+    if(x <= line->x)
+      return line->dy > 0;
+    else
+      return line->dy < 0;
+  }
+  else
+  {
+    if(!line->dy)
+    {
+      if(y <= line->y)
+        return line->dx < 0;
+      else
+        return line->dx > 0;
+    }
+    else
+    {
+      x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)line->x));
+      y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)line->y));
+
+      if((line->dy ^ line->dx ^ x ^ y) < 0)
+        return (line->dy ^ x) < 0;
+      else
+        return (long long)y * line->dx >= (long long)x * line->dy;
+    }
+  }
 }
 
 int (*P_PointOnDivlineSide)(fixed_t x, fixed_t y, const divline_t *line);
