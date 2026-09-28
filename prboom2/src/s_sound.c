@@ -1380,33 +1380,3 @@ int S_GetSoundID(const char *name)
     }
     return 0;
 }
-
-void S_StartSongName(const char *songLump, dboolean loop)
-{
-    int musicnum;
-
-    // lazy shortcut hack - this is a unique character
-    switch (songLump[1])
-    {
-      case 'e':
-        musicnum = hexen_mus_hexen;
-        break;
-      case 'u':
-        musicnum = hexen_mus_hub;
-        break;
-      case 'a':
-        musicnum = hexen_mus_hall;
-        break;
-      case 'r':
-        musicnum = hexen_mus_orb;
-        break;
-      case 'h':
-        musicnum = hexen_mus_chess;
-        break;
-      default:
-        musicnum = hexen_mus_hub;
-        break;
-    }
-
-    S_ChangeMusic(musicnum, loop);
-}
