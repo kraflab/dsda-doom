@@ -987,9 +987,9 @@ void M_LoadSelect(int choice)
 
 static char *forced_loadgame_message;
 
-static void M_VerifyForcedLoadGame(int ch)
+static void M_VerifyForcedLoadGame(int affirmative)
 {
-  if (ch=='y')
+  if (affirmative==1)
     G_ForcedLoadGame();
   Z_Free(forced_loadgame_message);    // free the message Z_Strdup()'ed below
   M_ClearMenus();
