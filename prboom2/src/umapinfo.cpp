@@ -250,18 +250,18 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	else if (!stricmp(pname, "endcast") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		mape->flags = (scanner.boolean) ? EG_Cast : EG_Clear;
+		mape->finale = (scanner.boolean) ? EG_Cast : EG_Clear;
 	}
 	else if ((!stricmp(pname, "endbunny") && !raven) ||
 	         (!stricmp(pname, "enddemon") && heretic))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		mape->flags = (scanner.boolean) ? EG_Scroll : EG_Clear;
+		mape->finale = (scanner.boolean) ? EG_Scroll : EG_Clear;
 	}
 	else if (!stricmp(pname, "endgame"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		mape->flags = (scanner.boolean) ? EG_Standard : EG_Clear;
+		mape->finale = (scanner.boolean) ? EG_Standard : EG_Clear;
 	}
 	else if (!stricmp(pname, "endpalette"))
 	{
