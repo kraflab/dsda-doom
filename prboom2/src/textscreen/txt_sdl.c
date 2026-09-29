@@ -791,6 +791,30 @@ signed int TXT_GetChar(void)
                 }
                 break;
 
+            case SDL_CONTROLLERBUTTONDOWN:
+                switch (ev.cbutton.button)
+                {
+                    case SDL_CONTROLLER_BUTTON_A:
+                    case SDL_CONTROLLER_BUTTON_START:
+                        return KEY_ENTER;
+
+                    case SDL_CONTROLLER_BUTTON_B:
+                        return 27;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                        return KEY_UPARROW;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                        return KEY_DOWNARROW;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                        return KEY_LEFTARROW;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                        return KEY_RIGHTARROW;
+                }
+                break;
+
             case SDL_CONTROLLERDEVICEADDED:
             case SDL_CONTROLLERDEVICEREMOVED:
                 SDL_PushEvent(&ev);
