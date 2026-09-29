@@ -280,7 +280,7 @@ dboolean F_Responder (event_t *event)
     if (F_BlockingInput() && event->type == ev_keydown)
     {
       finalestage = FINALE_STAGE_TITLE;
-      S_StartVoidSound(g_sfx_swtchx);
+      S_StartOptionalSound(g_sfx_mnucls, g_sfx_swtchx, false);
       V_SetPlayPal(playpal_default);
       V_DrawRawScreen("TITLEPIC");
       return true;
