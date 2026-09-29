@@ -759,7 +759,7 @@ dsda_config_t dsda_config[dsda_config_count] = {
   },
   [dsda_config_snd_device] = {
     "snd_device", dsda_config_snd_device,
-    CONF_STRING(""), NULL, NOT_STRICT, I_ChangeAudioDevice
+    CONF_STRING("Default"), NULL, NOT_STRICT, I_ChangeAudioDevice
   },
   [dsda_config_mus_fluidsynth_chorus] = {
     "mus_fluidsynth_chorus", dsda_config_mus_fluidsynth_chorus,

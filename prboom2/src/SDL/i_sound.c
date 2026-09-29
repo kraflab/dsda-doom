@@ -852,6 +852,7 @@ static void I_UpdateSound(void *unused, Uint8 *stream, int len)
 static dboolean sound_was_initialized;
 
 #define MAX_AUDIO_DEVICES 64
+#define AUDIO_DEVICE_DEFAULT "Default"
 const char *audio_devices_list[MAX_AUDIO_DEVICES + 1] = { NULL };
 
 static char current_audio_device[256] = "";
@@ -870,47 +871,17 @@ static dboolean I_DeviceInList(const char *name)
   return false;
 }
 
-static const char *I_DefaultAudioDevice(void)
-{
-#if SDL_VERSION_ATLEAST(2, 24, 0)
-  char *name = NULL;
-  const char *match = NULL;
-  int i;
-
-  if (SDL_GetDefaultAudioInfo(&name, NULL, 0) == 0 && name)
-  {
-    for (i = 0; audio_devices_list[i]; ++i)
-    {
-      if (!strcasecmp(audio_devices_list[i], name))
-      {
-        match = audio_devices_list[i];
-        break;
-      }
-    }
-
-    SDL_free(name);
-  }
-
-  return match;
-#else
-  return NULL;
-#endif
-}
-
 static const char *I_ResolveAudioDevice(void)
 {
   const char *configured = dsda_StringConfig(dsda_config_snd_device);
-  const char *resolved;
 
-  if (I_DeviceInList(configured))
-    resolved = configured;
-  else
-    resolved = I_DefaultAudioDevice();
+  if (configured && strcasecmp(configured, AUDIO_DEVICE_DEFAULT) && I_DeviceInList(configured))
+    return configured;
 
-  if (resolved && strcmp(resolved, configured ? configured : ""))
-    dsda_HackStringConfig(dsda_config_snd_device, resolved, false);
+  if (!configured || strcmp(configured, AUDIO_DEVICE_DEFAULT))
+    dsda_HackStringConfig(dsda_config_snd_device, AUDIO_DEVICE_DEFAULT, false);
 
-  return resolved;
+  return NULL;
 }
 
 static void I_RememberAudioDevice(const char *snd_device)
@@ -950,9 +921,7 @@ void I_ChangeAudioDevice(void)
   if (!sound_was_initialized || dumping_sound)
     return;
 
-  snd_device = dsda_StringConfig(dsda_config_snd_device);
-  if (!snd_device || !snd_device[0])
-    snd_device = NULL;
+  snd_device = I_ResolveAudioDevice();
 
   if (!strcasecmp(snd_device ? snd_device : "", current_audio_device))
     return;
@@ -1036,16 +1005,14 @@ void I_InitSound(void)
     // the device list is built once at startup, so anything plugged in afterward will need a restart
     int i, count = SDL_GetNumAudioDevices(0);
     int list_size = 0;
-    lprintf(LO_INFO, "Audio output devices (%d):\n", count);
+
+    audio_devices_list[list_size++] = AUDIO_DEVICE_DEFAULT;
+
     for (i = 0; i < count && list_size < MAX_AUDIO_DEVICES; ++i)
     {
       const char *name = SDL_GetAudioDeviceName(i, 0);
       if (name)
-      {
-        lprintf(LO_INFO, "  \"%s\"\n", name);
-        audio_devices_list[list_size] = Z_Strdup(name);
-        ++list_size;
-      }
+        audio_devices_list[list_size++] = Z_Strdup(name);
     }
     audio_devices_list[list_size] = NULL;
   }
