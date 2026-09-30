@@ -16,6 +16,7 @@
 //
 
 #include "doomstat.h"
+#include "e6y.h"
 #include "g_game.h"
 #include "i_system.h"
 #include "lprintf.h"
@@ -57,8 +58,7 @@ dboolean dsda_JumpToLogicTic(int tic) {
   if (tic < 0)
     return false;
 
-  if (!dsda_RestoreClosestKeyFrame(tic))
-    return false;
+  dsda_RestoreClosestKeyFrame(tic);
 
   if (tic != true_logictic)
     dsda_SkipToLogicTic(tic);
@@ -70,8 +70,7 @@ dboolean dsda_JumpToLogicTicFrom(int tic, int from_tic) {
   if (tic < 0 || tic > true_logictic)
     return false;
 
-  if (!dsda_RestoreClosestKeyFrame(from_tic))
-    return false;
+  dsda_RestoreClosestKeyFrame(from_tic);
 
   if (tic != true_logictic)
     dsda_SkipToLogicTic(tic);

@@ -792,7 +792,8 @@ int HU_DrawDemoProgress(int force)
     extern auto_kf_t* auto_key_frames;
     extern int auto_kf_size;
     extern dsda_key_frame_t* playback_key_frames;
-    extern int playback_kf_size;
+    extern int playback_kf_count;
+    extern int playback_kf_interval;
     extern dsda_key_frame_t quick_kf;
     int x;
 
@@ -806,10 +807,10 @@ int HU_DrawDemoProgress(int force)
       V_FillRect(0, 2, inner_y, len - 4, inner_h, playpal_darkest);
 
     // playback key frames in light blue
-    for (int i = 0; i < playback_kf_size; i++)
+    for (int i = 0; i < playback_kf_count; i++)
     {
       if (!playback_key_frames[i].buffer) continue;
-      x = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * playback_key_frames[i].game_tic_count / tics_count));
+      x = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * playback_key_frames[i].tic_count / tics_count));
       V_FillRect(0, x, inner_y, 1, inner_h, colrngs[CR_LIGHTBLUE][playpal_lightest]);
     }
 
@@ -817,14 +818,14 @@ int HU_DrawDemoProgress(int force)
     for (int i = 0; i < auto_kf_size; i++)
     {
       if (!auto_key_frames[i].kf.buffer) continue;
-      x= MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * auto_key_frames[i].kf.game_tic_count / tics_count));
+      x= MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * auto_key_frames[i].kf.tic_count / tics_count));
       V_FillRect(0, x, inner_y, 1, inner_h, colrngs[CR_GREEN][playpal_lightest]);
     }
 
     // quick key frame in red
     if (quick_kf.buffer)
     {
-      x = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * quick_kf.game_tic_count / tics_count));
+      x = MIN(SCREENWIDTH, (int)((int64_t)SCREENWIDTH * quick_kf.tic_count / tics_count));
       V_FillRect(0, x, inner_y, 1, inner_h, colrngs[CR_RED][playpal_lightest]);
     }
 
