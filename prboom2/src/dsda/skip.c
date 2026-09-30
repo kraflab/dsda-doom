@@ -145,7 +145,7 @@ void dsda_EvaluateSkipModeBuildTiccmd(void) {
 
   if (!dsda_SkipMode() || gametic <= 0) return;
 
-  at_target_tic = demo_skiptics > 0 ?
+  at_target_tic = demo_skiptics >= 0 ?
           gametic - levelstarttic > demo_skiptics :
           dsda_DemoTic() - demo_skiptics >= demo_tics_count;
 
