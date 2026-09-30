@@ -1,6 +1,7 @@
 ## Summary
 
-<!-- What does this PR do, and why? Link related issues, e.g. "Fixes #123". -->
+<!-- Link related issues, e.g. "Fixes #123". -->
+<!-- What does this PR do, and why? Explain how this can be tested, if possible. -->
 
 ## Patch notes
 
