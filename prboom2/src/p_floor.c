@@ -1048,7 +1048,7 @@ int P_SpawnDonut(int secnum, line_t *line, fixed_t pillarspeed, fixed_t slimespe
       if (DonutOverrun(&s3_floorheight, &s3_floorpic))
       {
         lprintf(LO_WARN, "EV_DoDonut: Emulated with floorheight %d, floor pic %d.\n",
-          s3_floorheight >> 16, s3_floorpic);
+          s3_floorheight >> FRACBITS, s3_floorpic);
       }
       else
       {
