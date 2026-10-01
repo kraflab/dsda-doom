@@ -436,7 +436,7 @@ static char menu_buffer[MENU_BUFFER_SIZE];
 
 // main_e provides numerical values for which Big Font screen you're on
 
-enum
+enum main_e
 {
   newgame = 0,
   loadgame,
@@ -445,7 +445,7 @@ enum
   readthis,
   quitdoom,
   main_end
-} main_e;
+};
 
 //
 // MainMenu is the definition of what the main menu Screen should look
@@ -495,23 +495,23 @@ static void M_DrawMainMenu(void)
 // There are no menu items on the Read This! screens, so read_e just
 // provides a placeholder to maintain structure.
 
-enum
+enum read_e
 {
   rdthsempty1,
   read1_end
-} read_e;
+};
 
-enum
+enum read_e2
 {
   rdthsempty2,
   read2_end
-} read_e2;
+};
 
-enum               // killough 10/98
+enum help_e        // killough 10/98
 {
   helpempty,
   help_end
-} help_e;
+};
 
 
 // The definitions of the Read This! screens
@@ -786,7 +786,7 @@ void M_ChooseSkill(int choice)
 
 // numerical values for the Load Game slots
 
-enum
+enum load_e
 {
   load1,
   load2,
@@ -796,7 +796,7 @@ enum
   load6,
   load7,
   load_end
-} load_e;
+};
 
 static int current_save_page = 1; // 0 is the quicksaves page
 static int current_save_item = 0;
@@ -1272,7 +1272,7 @@ void M_SaveGame (int choice)
 
 // numerical values for the Options menu items
 
-enum
+enum options_e
 {
   opt_general, // killough 10/98
   opt_bindings,
@@ -1284,7 +1284,7 @@ enum
   // opt_soundvol,
   opt_level_table,
   opt_end
-} options_e;
+};
 
 // The definitions of the Options menu
 
@@ -1415,14 +1415,14 @@ void M_QuitDOOM(int choice)
 // numerical values for the Sound Volume menu items
 // The 'empty' slots are where the sliding scales appear.
 
-enum
+enum sound_e
 {
   sfx_vol,
   sfx_empty1,
   music_vol,
   sfx_empty2,
   sound_end
-} sound_e;
+};
 
 // The definitions of the Sound Volume menu
 
@@ -1786,11 +1786,11 @@ static void M_DoNothing(int choice)
 // the generic_setup_e enum mimics the 'Big Font' menu structures, but
 // means nothing to the Setup Menus.
 
-enum
+enum generic_setup_e
 {
   generic_setupempty1,
   generic_setup_end
-} generic_setup_e;
+};
 
 // Generic_Setup is a do-nothing definition that the mainstream Menu code
 // can understand, while the Setup Menu code is working. Another placeholder.
