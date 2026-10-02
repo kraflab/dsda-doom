@@ -112,38 +112,38 @@
  *  Setup Screen. They can be OR'ed together where appropriate
  */
 
-#define S_HILITE   0x00000001 // Cursor is sitting on this item
-#define S_SELECT   0x00000002 // We're changing this item
-#define S_TITLE    0x00000004 // Title item
-#define S_YESNO    0x00000008 // Yes or No item
-#define S_CRITEM   0x00000010 // Message color
-#define S_COLOR    0x00000020 // Automap color
-#define S_LABEL    0x00000040
-#define S_TC_SEL   0x00000080
-#define S_PREV     0x00000100 // Previous menu exists
-#define S_NEXT     0x00000200 // Next menu exists
-#define S_INPUT    0x00000400 // Composite input binding
-#define S_WEAP     0x00000800 // Weapon #
-#define S_NUM      0x00001000 // Numerical item
-#define S_SKIP     0x00002000 // Cursor can't land here
-#define S_KEEP     0x00004000 // Don't swap key out
-#define S_END      0x00008000 // Last item in list (dummy)
-#define S_LEVWARN  0x00010000 // killough 8/30/98: Always warn about pending change
-#define S_NOSELECT 0x00020000
-#define S_CENTER   0x00040000
-#define S_FILE     0x00080000 // killough 10/98: Filenames
-#define S_LEFTJUST 0x00100000 // killough 10/98: items which are left-justified
-#define S_CREDIT   0x00200000 // killough 10/98: credit
-#define S_THERMO   0x00400000 // Slider for choosing a value
-#define S_CHOICE   0x00800000 // this item has several values
-#define S_NAME     0x01000000
-#define S_RESET_Y  0x02000000
-#define S_STR      0x04000000 // need to refactor things...
-#define S_NOCLEAR  0x08000000
-#define S_DISABLED 0x10000000 // disabled / darken options
-// #define S_      0x20000000
-// #define S_      0x40000000
-// #define S_      0x80000000
+#define S_HILITE        0x00000001 // Cursor is sitting on this item
+#define S_SELECT        0x00000002 // We're changing this item
+#define S_TITLE         0x00000004 // Title item
+#define S_YESNO         0x00000008 // Yes or No item
+#define S_CRITEM        0x00000010 // Message color
+#define S_COLOR         0x00000020 // Automap color
+#define S_LABEL         0x00000040
+#define S_TC_SEL        0x00000080
+#define S_PREV          0x00000100 // Previous menu exists
+#define S_NEXT          0x00000200 // Next menu exists
+#define S_INPUT         0x00000400 // Composite input binding
+#define S_WEAP          0x00000800 // Weapon #
+#define S_NUM           0x00001000 // Numerical item
+#define S_SKIP          0x00002000 // Cursor can't land here
+#define S_KEEP          0x00004000 // Don't swap key out
+#define S_END           0x00008000 // Last item in list (dummy)
+#define S_LEVWARN       0x00010000 // killough 8/30/98: Always warn about pending change
+#define S_NOSELECT      0x00020000
+#define S_CENTER        0x00040000
+#define S_FILE          0x00080000 // killough 10/98: Filenames
+#define S_LEFTJUST      0x00100000 // killough 10/98: items which are left-justified
+#define S_CREDIT_TYPE   0x00200000
+#define S_CREDIT_NAME   0x00400000
+#define S_THERMO        0x00800000 // Slider for choosing a value
+#define S_CHOICE        0x01000000 // this item has several values
+#define S_NAME          0x02000000
+#define S_RESET_Y       0x04000000
+#define S_STR           0x08000000 // need to refactor things...
+#define S_NOCLEAR       0x10000000
+#define S_DISABLED      0x20000000 // disabled / darken options
+// #define S_           0x40000000
+// #define S_           0x80000000
 
 /* S_SHOWDESC  = the set of items whose description should be displayed
  * S_SHOWSET   = the set of items whose setting should be displayed
@@ -151,7 +151,7 @@
  * S_HASDEFPTR = the set of items whose var field points to default array
  */
 
-#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT|S_CHOICE|S_THERMO|S_NAME)
+#define S_SHOWDESC (S_LABEL|S_TITLE|S_YESNO|S_CRITEM|S_COLOR|S_PREV|S_NEXT|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CREDIT_TYPE|S_CREDIT_NAME|S_CHOICE|S_THERMO|S_NAME)
 
 #define S_SHOWSET  (S_YESNO|S_CRITEM|S_COLOR|S_INPUT|S_WEAP|S_NUM|S_FILE|S_CHOICE|S_THERMO|S_NAME)
 
@@ -1990,6 +1990,7 @@ static int GetItemColor(int flags)
             flags & S_DISABLED ? cr_label + CR_DARKEN :
             flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
             flags & S_HILITE ? cr_label_highlight :
+            flags & (S_CREDIT_NAME) ? cr_label_highlight :
             flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
             cr_label; // killough 10/98
 }
@@ -4715,25 +4716,27 @@ static void M_DrawAd (void)
     M_DrawCredits();
 }
 
-#define CR_X 20
-#define CR_X2 50
+#define CRED_TYPE 20
+#define CRED_NAME 30
 
 setup_menu_t cred_settings[]={
-  {"Programmers",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X},
-  {"Florian 'Proff' Schulze",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"Colin Phipps",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"Neil Stevens",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"Andrey Budko",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Developers",S_SKIP|S_CREDIT_TYPE|S_LEFTJUST,m_null, CRED_TYPE},
+  {"Kraflab,  Pedro Beirao,  Fabian Greffrath,",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"rfomin,  Andrik Powell,  Elf-Alchemist",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
   EMPTY_LINE,
-  {"Additional Credit To",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X},
-  {"id Software for DOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"TeamTNT for BOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"Lee Killough for MBF",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"The DOSDoom-Team for DOSDOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"Marisa Heit for ZDOOM",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"Michael 'Kodak' Ryssen for DOOMGL",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"Jess Haas for lSDLDoom",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
-  {"all others who helped (see AUTHORS file)",S_SKIP|S_CREDIT|S_LEFTJUST,m_null, CR_X2},
+  {"Based on PrBoom",S_SKIP|S_CREDIT_TYPE|S_LEFTJUST,m_null, CRED_TYPE},
+  {"Florian 'Proff' Schulze,  Colin Phipps,",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"Neil Stevens,  Andrey Budko",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  EMPTY_LINE,
+  {"Additional Credit To",S_SKIP|S_CREDIT_TYPE|S_LEFTJUST,m_null, CRED_TYPE},
+  {"id Software for DOOM",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"TeamTNT for BOOM",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"Lee Killough for MBF",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"The DOSDoom-Team for DOSDOOM",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"Marisa Heit for ZDOOM",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"Michael 'Kodak' Ryssen for DOOMGL",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"Jess Haas for lSDLDoom",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
+  {"all others who helped (see AUTHORS file)",S_SKIP|S_CREDIT_NAME|S_LEFTJUST,m_null, CRED_NAME},
 
   FINAL_ENTRY
 };
