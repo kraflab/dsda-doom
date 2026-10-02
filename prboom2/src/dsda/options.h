@@ -71,8 +71,4 @@ int dsda_GameOptionSize(void);
 byte* dsda_WriteOptions21(byte* demo_p);
 const byte *dsda_ReadOptions21(const byte *demo_p);
 
-// killough 5/2/98: number of bytes reserved for saving options
-#define MBF_GAME_OPTION_SIZE 64
-#define MBF21_GAME_OPTION_SIZE (21 + MBF21_COMP_TOTAL)
-
 #endif

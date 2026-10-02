@@ -362,6 +362,10 @@ static int mbf21_comp_translation[MBF21_COMP_TOTAL] = {
   comp_thingsectorlight,
 };
 
+// killough 5/2/98: number of bytes reserved for saving options
+#define MBF_GAME_OPTION_SIZE 64
+#define MBF21_GAME_OPTION_SIZE (21 + MBF21_COMP_TOTAL)
+
 int dsda_GameOptionSize(void) {
   return mbf21 ? MBF21_GAME_OPTION_SIZE : MBF_GAME_OPTION_SIZE;
 }
@@ -462,7 +466,7 @@ const byte *dsda_ReadOptions21(const byte *demo_p) {
   // comp_thingsectorlight
   if (count < 26)
     comp[mbf21_comp_translation[25]] = 0;
-  
+
   G_Compatibility();
 
   return demo_p;
