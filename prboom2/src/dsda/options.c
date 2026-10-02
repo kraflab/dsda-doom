@@ -396,8 +396,8 @@ byte* dsda_WriteOptions21(byte* demo_p) {
   *demo_p++ = dog_jumping;
   *demo_p++ = monkeys;
 
-  *demo_p++ = COMP_TOTAL;
-  for (i = 0; i < COMP_TOTAL; i++)
+  *demo_p++ = MBF21_COMP_TOTAL;
+  for (i = 0; i < MBF21_COMP_TOTAL; i++)
     *demo_p++ = comp[mbf21_comp_translation[i]] != 0;
 
   if (demo_p != target)
@@ -445,7 +445,7 @@ const byte *dsda_ReadOptions21(const byte *demo_p) {
 
   count = *demo_p++;
 
-  if (count > COMP_TOTAL)
+  if (count > MBF21_COMP_TOTAL)
     I_Error("Encountered unknown mbf21 compatibility options!");
 
   for (i = 0; i < count; i++)
