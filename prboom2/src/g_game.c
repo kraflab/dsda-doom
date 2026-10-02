@@ -3197,7 +3197,7 @@ byte *G_WriteOptions(byte *demo_p)
     return dsda_WriteOptions21(demo_p);
   }
 
-  target = demo_p + MBF_GAME_OPTION_SIZE;
+  target = demo_p + dsda_GameOptionSize();
 
   *demo_p++ = monsters_remember;  // part of monster AI
 

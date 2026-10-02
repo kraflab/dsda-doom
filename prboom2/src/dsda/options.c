@@ -368,7 +368,7 @@ int dsda_GameOptionSize(void) {
 
 byte* dsda_WriteOptions21(byte* demo_p) {
   int i;
-  byte *target = demo_p + MBF21_GAME_OPTION_SIZE();
+  byte *target = demo_p + dsda_GameOptionSize();
 
   *demo_p++ = monsters_remember;
   *demo_p++ = weapon_recoil;
