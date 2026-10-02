@@ -38,6 +38,7 @@
 #endif
 
 #include "doomstat.h"
+#include "doomtype.h"
 #include "s_sound.h"
 #include "s_advsound.h"
 #include "i_sound.h"
@@ -270,6 +271,7 @@ void S_Start(void)
 {
   int mnum;
   int muslump;
+  dboolean no_musinfo_default;
 
   // kill all playing sounds at start of level
   //  (trust me - a good idea)
@@ -286,15 +288,19 @@ void S_Start(void)
     musinfo.items[0] = muslump;
   }
 
-  if (musinfo.items[0] != -1)
+  no_musinfo_default = (musinfo.items[0] == -1);
+
+  // Keep map's default music available to MUSINFO slot 0
+  // Needed when restoring queued music from a key frame
+  if (no_musinfo_default)
+    musinfo.items[0] = dsda_MusicIndexToLumpNum(mnum);
+
+  if (!dsda_StartQueuedMusic())
   {
-    if (!dsda_StartQueuedMusic())
-      S_ChangeMusInfoMusic(musinfo.items[0], true);
-  }
-  else
-  {
-    if (!dsda_StartQueuedMusic())
+    if (no_musinfo_default)
       S_ChangeMusic(mnum, true);
+    else
+      S_ChangeMusInfoMusic(musinfo.items[0], true);
   }
 }
 
@@ -314,7 +320,7 @@ void S_ResetAdjustments(void) {
   adjust_volume = 0;
 }
 
-void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeout)
+void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, dboolean important, int loop_timeout)
 {
   int cnum;
   sfx_params_t params;
@@ -334,8 +340,7 @@ void S_StartSoundAtVolume(void *origin_p, int sfx_id, int volume, int loop_timeo
   // killough 4/25/98
   if (sfx_id == g_sfx_secret)
     params.sfx_class = sfx_class_secret;
-  else if (sfx_id & PICKUP_SOUND ||
-      sfx_id == sfx_oof ||
+  else if (important || sfx_id & PICKUP_SOUND || sfx_id == sfx_oof ||
       (compatibility_level >= prboom_2_compatibility && sfx_id == sfx_noway))
     params.sfx_class = sfx_class_important;
   else
@@ -467,6 +472,18 @@ void S_LoopVoidSound(int sfx_id, int timeout)
   S_LoopSound(NULL, sfx_id, timeout);
 }
 
+void S_StartOptionalSound(int sfx_id, int fallback_sfx_id, dboolean important)
+{
+  if (I_GetSfxLumpNum(&S_sfx[sfx_id]) != -1)
+  {
+    S_StartSoundAtVolume(NULL, sfx_id, raven ? 127 : sfx_volume, important, 0);
+  }
+  else if (fallback_sfx_id != -1) // Play a fallback?
+  {
+    S_StartSoundAtVolume(NULL, fallback_sfx_id, raven ? 127 : sfx_volume, important, 0);
+  }
+}
+
 void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id)
 {
   if (line && line->frontsector && line->frontsector->flags & SECF_SILENT)
@@ -477,12 +494,12 @@ void S_StartLineSound(line_t *line, degenmobj_t *soundorg, int sfx_id)
 
 void S_StartSound(void *origin, int sfx_id)
 {
-  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, 0);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, false, 0);
 }
 
 void S_LoopSound(void *origin, int sfx_id, int timeout)
 {
-  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, timeout);
+  S_StartSoundAtVolume(origin, sfx_id, raven ? 127 : sfx_volume, false, timeout);
 }
 
 void S_StopSound(void *origin)
@@ -737,7 +754,8 @@ void S_ChangeMusInfoMusic(int lumpnum, int looping)
 
   music = &S_music[mus_musinfo];
 
-  if (music->lumpnum == lumpnum)
+  // Allow MUSINFO music to restart after MIDI player changes
+  if (music->lumpnum == lumpnum && mus_playing)
     return;
 
   // shutdown old music
@@ -1162,7 +1180,7 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   if (nosfxparm)
     return;
 
-  if (sound_id == heretic_sfx_None)
+  if (sound_id == sfx_None)
     return;
 
   if (origin == NULL)
@@ -1191,7 +1209,10 @@ static void Raven_S_StartSoundAtVolume(void *_origin, int sound_id, int volume, 
   params.priority = sfx->priority;
   params.priority *= (10 - (dist / dist_adjust));
 
-  params.sfx_class = sfx_class_none;
+  if (sound_id == g_sfx_secret)
+    params.sfx_class = sfx_class_secret;
+  else
+    params.sfx_class = sfx_class_none;
 
   cnum = Raven_S_getChannel(listener, origin, sfx, &params);
   if (cnum == channel_not_found)
@@ -1255,7 +1276,7 @@ void S_StartAmbientSound(void *_origin, int sound_id, int volume)
   if (nosfxparm)
     return;
 
-  if (sound_id == heretic_sfx_None || volume == 0)
+  if (sound_id == sfx_None || volume == 0)
     return;
 
   if (origin == NULL)
@@ -1358,34 +1379,4 @@ int S_GetSoundID(const char *name)
         }
     }
     return 0;
-}
-
-void S_StartSongName(const char *songLump, dboolean loop)
-{
-    int musicnum;
-
-    // lazy shortcut hack - this is a unique character
-    switch (songLump[1])
-    {
-      case 'e':
-        musicnum = hexen_mus_hexen;
-        break;
-      case 'u':
-        musicnum = hexen_mus_hub;
-        break;
-      case 'a':
-        musicnum = hexen_mus_hall;
-        break;
-      case 'r':
-        musicnum = hexen_mus_orb;
-        break;
-      case 'h':
-        musicnum = hexen_mus_chess;
-        break;
-      default:
-        musicnum = hexen_mus_hub;
-        break;
-    }
-
-    S_ChangeMusic(musicnum, loop);
 }

@@ -39,8 +39,6 @@
 #include "p_map.h"
 #include "p_tick.h"
 #include "sounds.h"
-#include "st_stuff.h"
-#include "hu_stuff.h"
 #include "s_sound.h"
 #include "s_advsound.h"
 #include "info.h"
@@ -59,7 +57,7 @@
 #include "dsda/ambient.h"
 #include "dsda/excmd.h"
 #include "dsda/map_format.h"
-#include "dsda/mapinfo.h"
+#include "dsda/line_special.h"
 #include "dsda/settings.h"
 #include "dsda/skill_info.h"
 #include "dsda/spawn_number.h"
@@ -67,7 +65,6 @@
 #include "dsda/tranmap.h"
 #include "dsda/utility.h"
 
-#include "heretic/def.h"
 #include "heretic/sb_bar.h"
 
 #include "hexen/po_man.h"
@@ -456,7 +453,7 @@ static void P_XYMovement (mobj_t* mo)
           {
             case HEXEN_MT_CENTAUR:
             case HEXEN_MT_CENTAURLEADER:
-              if (abs((int) angle - (int) BlockingMobj->angle) >> 24 > 45)
+              if (abs((int)(angle - BlockingMobj->angle)) >> 24 > 45)
                 goto explode;
               if (mo->type == HEXEN_MT_HOLY_FX)
                 goto explode;
@@ -515,6 +512,14 @@ static void P_XYMovement (mobj_t* mo)
             return;
           }
         }
+
+        // [RH] Don't explode on horizon lines.
+        if (map_format.zdoom && blockline && blockline->special == zl_line_horizon)
+        {
+          P_RemoveMobj(mo);
+          return;
+        }
+
         P_ExplodeMissile(mo);
       }
       else // whatever else it is, it is now standing still in (x,y)
@@ -530,14 +535,14 @@ static void P_XYMovement (mobj_t* mo)
 
   if (
     mo->z > mo->floorz && !(mo->flags2 & MF2_ONMOBJ) && !(mo->flags & MF_FLY) &&
-    player && mo->player && map_info.air_control > 256
+    player && mo->player && map_aircontrol > 256
   )
   {
-    mo->momx = FixedMul(mo->momx, map_info.air_friction);
-    mo->momy = FixedMul(mo->momy, map_info.air_friction);
+    mo->momx = FixedMul(mo->momx, map_airfriction);
+    mo->momy = FixedMul(mo->momy, map_airfriction);
 
-    player->momx = FixedMul(player->momx, map_info.air_friction);
-    player->momy = FixedMul(player->momy, map_info.air_friction);
+    player->momx = FixedMul(player->momx, map_airfriction);
+    player->momy = FixedMul(player->momy, map_airfriction);
     return;
   }
 
@@ -716,7 +721,7 @@ fixed_t P_MobjGravity(mobj_t* mo)
 
 void P_AutoCorrectLookDir(player_t* player)
 {
-  if (allow_incompatibility && dsda_MouseLook())
+  if (allow_incompatibility && dsda_FreeAim())
   {
     return;
   }
@@ -1250,6 +1255,33 @@ fixed_t FloatBobOffsets[64] = {
 };
 
 //
+// P_MobjInterpolation
+//
+
+static dboolean mobj_interp_capture;
+
+void P_UpdateMobjInterpolations(void)
+{
+  mobj_interp_capture = !mobj_interp_capture;
+}
+
+// [AR] Save mobj interpolation once per tic
+// This fixes out-of-sync thinker order of operations (i.e. lift thinkers)
+void P_MobjInterpolation(mobj_t *mobj)
+{
+  dboolean captured = !!(mobj->intflags & MIF_INTERP_CAPTURE);
+
+  if (captured == mobj_interp_capture)
+    return;
+
+  mobj->PrevX = mobj->x;
+  mobj->PrevY = mobj->y;
+  mobj->PrevZ = mobj->z;
+
+  mobj->intflags ^= MIF_INTERP_CAPTURE;
+}
+
+//
 // P_MobjThinker
 //
 
@@ -1267,9 +1299,7 @@ void P_MobjThinker (mobj_t* mobj)
     return;
   }
 
-  mobj->PrevX = mobj->x;
-  mobj->PrevY = mobj->y;
-  mobj->PrevZ = mobj->z;
+  P_MobjInterpolation(mobj);
 
   // momentum movement
   BlockingMobj = NULL;
@@ -1717,8 +1747,9 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
     if (type == g_mt_player)         // Except in old demos, players
       mobj->flags |= MF_FRIEND;    // are always friends.
 
-  if (map_info.flags & MI_PASSOVER && mobj->flags & MF_SOLID)
-    mobj->flags2 |= MF2_PASSMOBJ;
+  // TODO: possible mapinfo "passover" flag
+  //if (mobj->flags & MF_SOLID)
+    //mobj->flags2 |= MF2_PASSMOBJ;
 
   mobj->health = P_MobjSpawnHealth(mobj);
 
@@ -1811,17 +1842,21 @@ mobj_t* P_SpawnMobj(fixed_t x,fixed_t y,fixed_t z,mobjtype_t type)
   mobj->PrevY = mobj->y;
   mobj->PrevZ = mobj->z;
 
+  // Prevent projectiles from rendering close to the player's camera
+  if (!mobj_interp_capture)
+    mobj->intflags |= MIF_INTERP_CAPTURE;
+
   mobj->thinker.function = P_MobjThinker;
 
   //e6y
   mobj->friction = ORIG_FRICTION;                        // phares 3/17/98
-  mobj->gravity = map_info.gravity;
+  mobj->gravity = map_gravity;
   mobj->alpha = 1.f;
   mobj->index = -1;
 
   mobj->target = mobj->tracer = mobj->lastenemy = NULL;
   P_AddThinker(&mobj->thinker);
-  if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(mobj))
     totallive++;
 
   dsda_WatchSpawn(mobj);
@@ -2095,8 +2130,8 @@ void P_SpawnPlayer (int n, const mapthing_t* mthing)
   else
     mobj = P_SpawnMobj(x,y,z, g_mt_player);
 
-  if (map_info.flags & MI_USE_PLAYER_START_Z)
-    mobj->z += mthing->height;
+  // TODO: possible "use player start z" mapinfo flag
+  //   mobj->z += mthing->height;
 
   if (map_format.zdoom)
     P_AdjustZLimits(mobj);
@@ -2421,9 +2456,9 @@ mobj_t* P_SpawnMapThing (const mapthing_t* mthing, int index)
   // check for players specially
   if ((player = P_TypeToPlayer(thingtype)) >= 0)
   {
-    if (map_info.flags & MI_FILTER_STARTS)
-      if (!P_ShouldSpawnMapThing(options))
-        return NULL;
+    // TODO: possible "filter starts" mapinfo flag
+    //   if (!P_ShouldSpawnMapThing(options))
+    //     return NULL;
 
     // killough 7/19/98: Marine's best friend :)
     if (
@@ -2592,7 +2627,7 @@ spawnit:
     if (mthing->gravity < 0)
       mobj->gravity = -mthing->gravity;
     else
-      mobj->gravity = FixedMul(map_info.gravity, mthing->gravity);
+      mobj->gravity = FixedMul(map_gravity, mthing->gravity);
   }
 
   mobj->alpha = mthing->alpha;
@@ -2654,7 +2689,7 @@ spawnit:
   }
 
   /* killough 7/20/98: exclude friends */
-  if (!((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(mobj))
     totalkills++;
 
   if (mobj->flags & MF_COUNTITEM)
@@ -3005,9 +3040,7 @@ void P_BlasterMobjThinker(mobj_t * mobj)
     fixed_t z;
     dboolean changexy;
 
-    mobj->PrevX = mobj->x;
-    mobj->PrevY = mobj->y;
-    mobj->PrevZ = mobj->z;
+    P_MobjInterpolation(mobj);
 
     // Handle movement
     if (mobj->momx || mobj->momy || (mobj->z != mobj->floorz) || mobj->momz)

@@ -75,6 +75,7 @@
 #include "smooth.h"
 #include "r_fps.h"
 #include "r_main.h"
+#include "r_patch.h"
 #include "r_segs.h"
 #include "f_finale.h"
 #include "e6y.h"//e6y
@@ -135,14 +136,14 @@
 #define S_CREDIT   0x00200000 // killough 10/98: credit
 #define S_THERMO   0x00400000 // Slider for choosing a value
 #define S_CHOICE   0x00800000 // this item has several values
-// #define S_      0x01000000
-#define S_NAME     0x02000000
-#define S_RESET_Y  0x04000000
-// #define S_      0x08000000
-// #define S_      0x10000000
+#define S_NAME     0x01000000
+#define S_RESET_Y  0x02000000
+#define S_STR      0x04000000 // need to refactor things...
+#define S_NOCLEAR  0x08000000
+#define S_DISABLED 0x10000000 // disabled / darken options
 // #define S_      0x20000000
-#define S_STR      0x40000000 // need to refactor things...
-#define S_NOCLEAR  0x80000000
+// #define S_      0x40000000
+// #define S_      0x80000000
 
 /* S_SHOWDESC  = the set of items whose description should be displayed
  * S_SHOWSET   = the set of items whose setting should be displayed
@@ -277,19 +278,23 @@ static void M_DrawSave(void);
 static void M_DrawHelp (void);                                     // phares 5/04/98
 static void M_DrawAd(void);
 
-static void M_DrawSaveLoadBorder(int x,int y);
-static void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot);
+static void M_DrawSaveLoadBorder(int x,int y,dboolean selected);
+static void M_DrawThermo(int x,int y,int thermWidth,int thermRange,int thermDot,int color);
+static void M_DrawThermoSmall(int x, int y, int thermWidth, int thermRange, int thermDot, const setup_menu_t *setup_item);
 static void M_DrawEmptyCell(menu_t *menu,int item);
 static void M_DrawSelCell(menu_t *menu,int item);
 static void M_WriteText(int x, int y, const char *string, int cm);
 static int  M_StringWidth(const char *string);
 static int  M_StringHeight(const char *string);
 static void M_DrawTitle(int y, const char *text, int cm);
+static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu);
 static void M_StartMessage(const char *string,void *routine,dboolean input);
 static void M_StopMessage(void);
 
 void M_ChangeMenu(menu_t *menu, menuactive_t mnact);
 void M_ClearMenus (void);
+
+static dboolean M_MouseTabHovered(int page);
 
 // phares 3/30/98
 // prototypes added to support Setup Menus and Extended HELP screens
@@ -431,7 +436,7 @@ static char menu_buffer[MENU_BUFFER_SIZE];
 
 // main_e provides numerical values for which Big Font screen you're on
 
-enum
+enum main_e
 {
   newgame = 0,
   loadgame,
@@ -440,7 +445,7 @@ enum
   readthis,
   quitdoom,
   main_end
-} main_e;
+};
 
 //
 // MainMenu is the definition of what the main menu Screen should look
@@ -452,12 +457,12 @@ enum
 
 static menuitem_t MainMenu[]=
 {
-  {1,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
-  {1,"M_OPTION",M_Options, 'o', "OPTIONS"},
-  {1,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
-  {1,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
-  {1,"M_RDTHIS",M_ReadThis,'r', "READ THIS"},
-  {1,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
+  {M_ITEM_ACTION,"M_NGAME", M_NewGame, 'n', "NEW GAME"},
+  {M_ITEM_ACTION,"M_OPTION",M_Options, 'o', "OPTIONS"},
+  {M_ITEM_ACTION,"M_LOADG", M_LoadGame,'l', "LOAD GAME"},
+  {M_ITEM_ACTION,"M_SAVEG", M_SaveGame,'s', "SAVE GAME"},
+  {M_ITEM_ACTION,"M_RDTHIS",M_ReadThis,'r', "READ THIS"},
+  {M_ITEM_ACTION,"M_QUITG", M_QuitDOOM,'q', "QUIT GAME"}
 };
 
 menu_t MainDef =
@@ -490,40 +495,40 @@ static void M_DrawMainMenu(void)
 // There are no menu items on the Read This! screens, so read_e just
 // provides a placeholder to maintain structure.
 
-enum
+enum read_e
 {
   rdthsempty1,
   read1_end
-} read_e;
+};
 
-enum
+enum read_e2
 {
   rdthsempty2,
   read2_end
-} read_e2;
+};
 
-enum               // killough 10/98
+enum help_e        // killough 10/98
 {
   helpempty,
   help_end
-} help_e;
+};
 
 
 // The definitions of the Read This! screens
 
 static menuitem_t ReadMenu1[] =
 {
-  {1,"",M_ReadThis2,0}
+  {M_ITEM_ACTION,"",M_ReadThis2,0}
 };
 
 static menuitem_t ReadMenu2[]=
 {
-  {1,"",M_FinishReadThis,0}
+  {M_ITEM_ACTION,"",M_FinishReadThis,0}
 };
 
 static menuitem_t HelpMenu[]=    // killough 10/98
 {
-  {1,"",M_FinishHelp,0}
+  {M_ITEM_ACTION,"",M_FinishHelp,0}
 };
 
 static menu_t ReadDef1 =
@@ -605,7 +610,7 @@ static void M_DrawReadThis1(void)
 static void M_DrawReadThis2(void)
 {
   const char* helplump = (gamemode == commercial) ? "HELP" : "HELP1";
-  int pwadmaps = W_PWADMapExists(); // show help screen for IWAD
+  int pwadmaps = W_PWADMapsExist(); // show help screen for IWAD
 
   inhelpscreens = true;
 
@@ -766,6 +771,7 @@ void M_ChooseSkill(int choice)
       message = s_NIGHTMARE; // Ty 03/27/98 - externalized
 
     M_StartMessage(message, M_VerifySkill, true);
+    M_SetupNextMenu(&ReadDef1); // Clear in-menu variables when "no" or "ESC"
 
     return;
   }
@@ -780,7 +786,7 @@ void M_ChooseSkill(int choice)
 
 // numerical values for the Load Game slots
 
-enum
+enum load_e
 {
   load1,
   load2,
@@ -790,7 +796,7 @@ enum
   load6,
   load7,
   load_end
-} load_e;
+};
 
 static int current_save_page = 1; // 0 is the quicksaves page
 static int current_save_item = 0;
@@ -809,14 +815,14 @@ const char *saves_pages[] =
 
 menuitem_t LoadMenue[]=
 {
-  {1,"", M_LoadSelect,'1'},
-  {1,"", M_LoadSelect,'2'},
-  {1,"", M_LoadSelect,'3'},
-  {1,"", M_LoadSelect,'4'},
-  {1,"", M_LoadSelect,'5'},
-  {1,"", M_LoadSelect,'6'},
-  {1,"", M_LoadSelect,'7'}, //jff 3/15/98 extend number of slots
-  {1,"", M_LoadSelect,'8'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'1'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'2'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'3'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'4'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'5'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'6'},
+  {M_ITEM_ACTION,"", M_LoadSelect,'7'}, //jff 3/15/98 extend number of slots
+  {M_ITEM_ACTION,"", M_LoadSelect,'8'},
 };
 
 menu_t LoadDef =
@@ -850,6 +856,59 @@ static void M_DeleteSaveGame(int slot)
 }
 
 //
+// Load/Save Highlight
+//
+
+static dboolean M_FileSlotEnabled(int menu, int item)
+{
+  // Disable unsaved slots
+  if (menu == MN_LOAD)
+    return LoadMenue[item].status == M_ITEM_ACTION;
+
+  // Disable quicksave page items
+  if (menu == MN_SAVE)
+    return current_page != 0;
+
+  return false;
+}
+
+dboolean M_FileBoxSelected(int menu, int item)
+{
+  // Disabled slots -> never highlight
+  if (!M_FileSlotEnabled(menu, item))
+    return false;
+
+  // Mouse highlight
+  if (M_MouseHovered(item))
+    return true;
+
+  return false;
+}
+
+int M_FileTextColor(int menu, int item)
+{
+  return M_FileSlotEnabled(menu, item) ? CR_DEFAULT : CR_DARKEN;
+}
+
+//
+// Highlight functions
+//
+
+int M_HighlightColor(dboolean highlight, int color)
+{
+  if (highlight &&
+      color >= CR_DEFAULT && color < CR_HUD_LIMIT)
+    return CR_BRIGHT + color;
+
+  return color;
+}
+
+int M_AddColorFlag(int color)
+{
+  return color != CR_DEFAULT ? VPT_TRANS : VPT_NONE;
+}
+
+//
 // M_LoadGame & Cie.
 //
 
@@ -865,8 +924,11 @@ static void M_DrawLoad(void)
   // CPhipps - patch drawing updated
   V_DrawNamePatch(72 ,LOADGRAPHIC_Y, 0, "M_LOADG", CR_DEFAULT, VPT_STRETCH);
   for (i = 0 ; i < load_end ; i++) {
-    M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], CR_DEFAULT);
+    dboolean selected   = M_FileBoxSelected(MN_LOAD, i);
+    int textcolor       = M_HighlightColor(selected, M_FileTextColor(MN_LOAD, i));
+
+    M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i,selected);
+    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i],textcolor);
   }
 
   M_DrawTabs(saves_pages, 5, 145);
@@ -879,19 +941,21 @@ static void M_DrawLoad(void)
 // Draw border for the savegame description
 //
 
-static void M_DrawSaveLoadBorder(int x,int y)
+static void M_DrawSaveLoadBorder(int x,int y,dboolean selected)
 {
   int i;
+  int color = M_HighlightColor(selected, CR_DEFAULT);
+  int flags = VPT_STRETCH | M_AddColorFlag(color);
 
-  V_DrawNamePatch(x-8, y+7, 0, "M_LSLEFT", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x-8, y+7, 0, "M_LSLEFT", color, flags);
 
   for (i = 0 ; i < 24 ; i++)
     {
-      V_DrawNamePatch(x, y+7, 0, "M_LSCNTR", CR_DEFAULT, VPT_STRETCH);
+      V_DrawNamePatch(x, y+7, 0, "M_LSCNTR", color, flags);
       x += 8;
     }
 
-  V_DrawNamePatch(x, y+7, 0, "M_LSRGHT", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x, y+7, 0, "M_LSRGHT", color, flags);
 }
 
 //
@@ -913,7 +977,7 @@ void M_LoadSelect(int choice)
   //  to g_game.c, this only passes the slot.
 
   // killough 3/16/98, 5/15/98: add slot, cmd
-  G_LoadGame(choice + current_page * g_menu_save_page_size);
+  G_LoadGame(choice + current_page * g_menu_save_page_size, false);
   M_ClearMenus();
 }
 
@@ -923,9 +987,9 @@ void M_LoadSelect(int choice)
 
 static char *forced_loadgame_message;
 
-static void M_VerifyForcedLoadGame(int ch)
+static void M_VerifyForcedLoadGame(dboolean affirmative)
 {
-  if (ch=='y')
+  if (affirmative)
     G_ForcedLoadGame();
   Z_Free(forced_loadgame_message);    // free the message Z_Strdup()'ed below
   M_ClearMenus();
@@ -969,14 +1033,14 @@ void M_LoadGame (int choice)
 
 static menuitem_t SaveMenu[]=
 {
-  {1,"", M_SaveSelect,'1'},
-  {1,"", M_SaveSelect,'2'},
-  {1,"", M_SaveSelect,'3'},
-  {1,"", M_SaveSelect,'4'},
-  {1,"", M_SaveSelect,'5'},
-  {1,"", M_SaveSelect,'6'},
-  {1,"", M_SaveSelect,'7'}, //jff 3/15/98 extend number of slots
-  {1,"", M_SaveSelect,'8'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'1'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'2'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'3'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'4'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'5'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'6'},
+  {M_ITEM_ACTION,"", M_SaveSelect,'7'}, //jff 3/15/98 extend number of slots
+  {M_ITEM_ACTION,"", M_SaveSelect,'8'},
 };
 
 menu_t SaveDef =
@@ -1010,11 +1074,11 @@ static void M_ReadSaveStrings(void)
     if (!fp || !fread(&savegamestrings[i], SAVESTRINGSIZE, 1, fp))
     {
       strcpy(&savegamestrings[i][0],s_EMPTYSTRING); // Ty 03/27/98 - externalized
-      LoadMenue[i].status = 0;
+      LoadMenue[i].status = M_ITEM_INACTIVE;
     }
     else
     {
-      LoadMenue[i].status = 1;
+      LoadMenue[i].status = M_ITEM_ACTION;
     }
 
     if (fp)
@@ -1107,8 +1171,11 @@ static void M_DrawSave(void)
   V_DrawNamePatch(72, LOADGRAPHIC_Y, 0, "M_SAVEG", CR_DEFAULT, VPT_STRETCH);
   for (i = 0 ; i < load_end ; i++)
     {
-    M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
-    M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i], current_page == 0 ? CR_DARKEN : CR_DEFAULT);
+    dboolean selected   = M_FileBoxSelected(MN_SAVE, i);
+    int textcolor       = M_HighlightColor(selected, M_FileTextColor(MN_SAVE, i));
+
+    M_DrawSaveLoadBorder(SaveDef.x,SaveDef.y+LINEHEIGHT*i,selected);
+    M_WriteText(SaveDef.x,SaveDef.y+LINEHEIGHT*i,savegamestrings[i],textcolor);
     }
 
   M_DrawTabs(saves_pages, 5, 145);
@@ -1116,7 +1183,7 @@ static void M_DrawSave(void)
   if (saveStringEnter)
     {
     i = M_StringWidth(savegamestrings[saveSlot]);
-    M_WriteText(LoadDef.x + i,LoadDef.y+LINEHEIGHT*saveSlot,"_", CR_DEFAULT);
+    M_WriteText(SaveDef.x + i,SaveDef.y+LINEHEIGHT*saveSlot,"_", CR_DEFAULT);
     }
 
   if (delete_verify)
@@ -1205,7 +1272,7 @@ void M_SaveGame (int choice)
 
 // numerical values for the Options menu items
 
-enum
+enum options_e
 {
   opt_general, // killough 10/98
   opt_bindings,
@@ -1217,21 +1284,21 @@ enum
   // opt_soundvol,
   opt_level_table,
   opt_end
-} options_e;
+};
 
 // The definitions of the Options menu
 
 static menuitem_t OptionsMenu[]=
 {
-  { 1, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
-  { 1, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
-  { 1, "M_DSPLAY", M_Display, 'd', "DISPLAY" },
-  { 1, "M_DEMOS", M_Demos, 'm', "DEMOS" },
-  { 1, "M_COMP", M_Compatibility, 'c', "COMPATIBILITY" },
-  { 1, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
-  { 1, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
-  // { 1, "M_SVOL", M_Sound, 's', "SOUND VOLUME" }, only available using the keybind
-  { 1, "M_LVLTBL", M_LevelTable, 'l', "LEVEL TABLE" },
+  { M_ITEM_ACTION, "M_GENERL", M_General, 'g', "GENERAL" }, // killough 10/98
+  { M_ITEM_ACTION, "M_KEYBND", M_KeyBindings,'k', "KEY BINDINGS" },
+  { M_ITEM_ACTION, "M_DSPLAY", M_Display, 'd', "DISPLAY" },
+  { M_ITEM_ACTION, "M_DEMOS", M_Demos, 'm', "DEMOS" },
+  { M_ITEM_ACTION, "M_COMP", M_Compatibility, 'c', "COMPATIBILITY" },
+  { M_ITEM_ACTION, "M_WEAP", M_Weapons, 'w', "WEAPONS" },
+  { M_ITEM_ACTION, "M_AUTO", M_Automap, 'a', "AUTOMAP" },
+  // { M_ITEM_ACTION, "M_SVOL", M_Sound, 's', "SOUND VOLUME" }, only available using the keybind
+  { M_ITEM_ACTION, "M_LVLTBL", M_LevelTable, 'l', "LEVEL TABLE" },
 };
 
 menu_t OptionsDef =
@@ -1302,9 +1369,9 @@ static void M_QuitResponse(dboolean affirmative)
     int i;
 
     if (gamemode == commercial)
-      S_StartVoidSound(quitsounds2[(gametic>>2)&7]);
+      S_StartOptionalSound(quitsounds2[(gametic>>2)&7], -1, true);
     else
-      S_StartVoidSound(quitsounds[(gametic>>2)&7]);
+      S_StartOptionalSound(quitsounds[(gametic>>2)&7], -1, true);
 
     // wait till all sounds stopped or 3 seconds are over
     i = 30;
@@ -1348,23 +1415,23 @@ void M_QuitDOOM(int choice)
 // numerical values for the Sound Volume menu items
 // The 'empty' slots are where the sliding scales appear.
 
-enum
+enum sound_e
 {
   sfx_vol,
   sfx_empty1,
   music_vol,
   sfx_empty2,
   sound_end
-} sound_e;
+};
 
 // The definitions of the Sound Volume menu
 
 menuitem_t SoundMenu[]=
 {
-  {2,"M_SFXVOL",M_SfxVol,'s'},
-  {-1,"",0},
-  {2,"M_MUSVOL",M_MusicVol,'m'},
-  {-1,"",0}
+  { M_ITEM_THERMO,"M_SFXVOL",M_SfxVol,'s' },
+  { M_ITEM_SKIP,"",0 },
+  { M_ITEM_THERMO,"M_MUSVOL",M_MusicVol,'m' },
+  { M_ITEM_SKIP,"",0 }
 };
 
 menu_t SoundDef =
@@ -1390,12 +1457,12 @@ static void M_DrawSound(void)
   // CPhipps - patch drawing updated
   V_DrawNamePatch(60, 38, 0, "M_SVOL", CR_DEFAULT, VPT_STRETCH);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,16,snd_SfxVolume);
+  M_DrawThermoBig(SoundDef.x,SoundDef.y+LINEHEIGHT*(sfx_vol+1),16,16,snd_SfxVolume,sfx_vol);
   snprintf(num, sizeof(num), "%3d", snd_SfxVolume);
   strcpy(menu_buffer, num);
   M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(sfx_vol+1) + 3, cr_value_edit);
 
-  M_DrawThermo(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,16,snd_MusicVolume);
+  M_DrawThermoBig(SoundDef.x,SoundDef.y+LINEHEIGHT*(music_vol+1),16,16,snd_MusicVolume,music_vol);
   snprintf(num, sizeof(num), "%3d", snd_MusicVolume);
   strcpy(menu_buffer, num);
   M_DrawMenuString(SoundDef.x + 150, SoundDef.y+LINEHEIGHT*(music_vol+1) + 3, cr_value_edit);
@@ -1482,7 +1549,7 @@ static void M_QuickSave(void)
   time (&now);
   timeinfo = localtime (&now);
 
-  strftime(description, sizeof(description), "quick %x %X", timeinfo);
+  strftime(description, sizeof(description), "%x %X", timeinfo);
 
   G_SaveGame(QUICKSAVESLOT, description);
   doom_printf("%s", description);
@@ -1521,7 +1588,7 @@ static void M_QuickLoad(void)
 
   if (M_FileExists(name))
   {
-    G_LoadGame(QUICKSAVESLOT);
+    G_LoadGame(QUICKSAVESLOT, false);
     doom_printf("quickload");
   }
   else
@@ -1635,6 +1702,34 @@ static void M_SizeDisplay(int choice)
 static int set_menu_itemon; // which setup item is selected?   // phares 3/98
 static setup_menu_t* current_setup_menu; // points to current setup menu table
 
+// Negative keeps the selection-driven scroll used by keyboard navigation.
+#define KEYBOARD_NAV -1
+static int menu_mouse_setup_scroll = KEYBOARD_NAV;
+
+typedef struct
+{
+  const char **labels;
+  int visible_tabs;
+  setup_menu_t **pages;
+} setup_page_context_t;
+
+static setup_page_context_t setup_page_context;
+
+static void M_ClearSetupPageContext(void)
+{
+  setup_page_context.labels = NULL;
+  setup_page_context.visible_tabs = 0;
+  setup_page_context.pages = NULL;
+}
+
+static void M_SetSetupPageContext(const char **labels, int visible_tabs,
+                                  setup_menu_t **pages)
+{
+  setup_page_context.labels = labels;
+  setup_page_context.visible_tabs = visible_tabs;
+  setup_page_context.pages = pages;
+}
+
 // save the setup menu's itemon value in the S_END element's x coordinate
 
 static int M_GetSetupMenuItemOn (void)
@@ -1667,6 +1762,7 @@ static void M_SetSetupMenuItemOn (const int x)
 
 static void M_UpdateSetupMenu(setup_menu_t *new_setup_menu)
 {
+  menu_mouse_setup_scroll = KEYBOARD_NAV;
   current_setup_menu = new_setup_menu;
   set_menu_itemon = M_GetSetupMenuItemOn();
   if (current_setup_menu[set_menu_itemon].m_flags & S_NOSELECT)
@@ -1690,18 +1786,18 @@ static void M_DoNothing(int choice)
 // the generic_setup_e enum mimics the 'Big Font' menu structures, but
 // means nothing to the Setup Menus.
 
-enum
+enum generic_setup_e
 {
   generic_setupempty1,
   generic_setup_end
-} generic_setup_e;
+};
 
 // Generic_Setup is a do-nothing definition that the mainstream Menu code
 // can understand, while the Setup Menu code is working. Another placeholder.
 
 static menuitem_t Generic_Setup[] =
 {
-  {1,"",M_DoNothing,0}
+  {M_ITEM_ACTION,"",M_DoNothing,0}
 };
 
 static menu_t GeneralDef =                                           // killough 10/98
@@ -1806,6 +1902,106 @@ static int entry_index;
 static char entry_string_index[ENTRY_STRING_BFR_SIZE]; // points to new strings while editing
 static int choice_value;
 
+//
+// Main Disable Function
+//
+
+static dboolean M_ItemDisabled(const setup_menu_t* s)
+{
+  // Strict Mode
+  if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
+    return true;
+
+  return false;
+}
+
+//
+// Check item selection
+//
+
+static dboolean M_ItemSelected(const setup_menu_t *s)
+{
+    int flags = s->m_flags;
+
+    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
+      return true;
+
+    return false;
+}
+
+//
+// Main text functions
+//
+
+static void M_CopyText(char *dest, size_t dest_size, const char *src)
+{
+  if (dest_size)
+    snprintf(dest, dest_size, "%s", src ? src : "");
+}
+
+static void M_AppendText(char *dest, size_t dest_size, const char *src)
+{
+  size_t len;
+
+  if (!dest_size || !src)
+    return;
+
+  len = strlen(dest);
+  if (len < dest_size)
+    snprintf(dest + len, dest_size - len, "%s", src);
+}
+
+static void M_TrimSetupString(char *text, dboolean update_entry_index)
+{
+  while (text[0] && M_GetPixelWidth(text) >= MAXENTRYWIDTH)
+  {
+    int len = strlen(text);
+
+    text[--len] = 0;
+    if (update_entry_index && entry_index > len)
+      entry_index--;
+  }
+}
+
+//
+// Blinking arrow
+//
+
+dboolean M_ShowBlinkingArrowRight(const setup_menu_t *s)
+{
+  return M_ItemSelected(s) && !setup_select;
+}
+
+static void M_BlinkingArrowRight(const setup_menu_t *s, char *text, size_t text_size)
+{
+  if (M_ShowBlinkingArrowRight(s))
+    M_AppendText(text, text_size, " <");
+}
+
+/////////////////////////////
+//
+// Menu Color Item Functions
+//
+//
+
+static int GetItemColor(int flags)
+{
+    return (flags & S_TITLE && flags & S_DISABLED) ? cr_title + CR_DARKEN :
+            flags & S_DISABLED ? cr_label + CR_DARKEN :
+            flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
+            flags & S_HILITE ? cr_label_highlight :
+            flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
+            cr_label; // killough 10/98
+}
+
+static int GetOptionColor(int flags)
+{
+    return flags & S_DISABLED ? cr_value + CR_DARKEN :
+           flags & S_SELECT ? cr_value_edit :
+           flags & S_HILITE ? cr_value_highlight :
+           cr_value;
+}
+
 /////////////////////////////
 //
 // phares 4/18/98:
@@ -1821,13 +2017,12 @@ static void M_DrawItem(const setup_menu_t* s, int y)
   int x = s->m_x;
   int flags = s->m_flags;
   char *p, *t;
-  int w = 0;
-  int color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_label + CR_DARKEN :
-    flags & (S_SELECT|S_TC_SEL) ? cr_label_edit :
-    flags & S_HILITE ? cr_label_highlight :
-    flags & (S_TITLE|S_NEXT|S_PREV) ? cr_title :
-    cr_label; // killough 10/98
+  int color;
+
+  if (M_ItemDisabled(s))
+    flags |= S_DISABLED;
+
+  color = GetItemColor(flags);
 
   /* killough 10/98:
    * Enhance to support multiline text separated by newlines.
@@ -1836,14 +2031,19 @@ static void M_DrawItem(const setup_menu_t* s, int y)
 
   for (p = t = Z_Strdup(s->m_text); (p = strtok(p,"\n")); y += 8, p = NULL)
   {      /* killough 10/98: support left-justification: */
+    int w = M_GetPixelWidth(p);
+    int offset = 0;
+
     if (flags & S_CENTER)
-      w = M_GetPixelWidth(p) / 2;
+      offset = x - (BASE_WIDTH - w) / 2;
     else if (!(flags & S_LEFTJUST))
-      w = M_GetPixelWidth(p) + 4;
-    M_DrawString(x - w, y ,color, p);
+      offset = w + 4;
+
+    M_DrawString(x - offset, y, color, p);
+
     // print a blinking "arrow" next to the currently highlighted menu item
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !(flags & S_NOSELECT))
-      M_DrawString(x - w - 8, y, color, ">");
+    if (M_ItemSelected(s))
+      M_DrawString(x - offset - 8, y, color, ">");
   }
   Z_Free(t);
 }
@@ -1867,117 +2067,171 @@ static char gather_buffer[MAXGATHER+1];  // killough 10/98: make input character
 // displays the appropriate setting value: yes/no, a key binding, a number,
 // a paint chip, etc.
 
+static void M_SetupInputText(const setup_menu_t *s,
+                             char *text, size_t text_size)
+{
+  int i;
+  int offset = 0;
+  const char *format;
+  dboolean any_input = false;
+  dsda_input_t *input = dsda_Input(s->input);
+
+  menu_buffer[0] = '\0';
+
+  for (i = 0; i < input->num_keys; ++i)
+  {
+    if (any_input)
+    {
+      menu_buffer[offset++] = '/';
+      menu_buffer[offset] = '\0';
+    }
+
+    offset = M_GetKeyString(input->key[i], offset);
+    any_input = true;
+  }
+
+  if (input->mouseb != -1)
+  {
+    format = any_input ? "/MB%d" : "MB%d";
+    snprintf(menu_buffer + strlen(menu_buffer),
+             sizeof(menu_buffer) - strlen(menu_buffer),
+             format, input->mouseb + 1);
+    any_input = true;
+  }
+
+  if (input->joyb != -1)
+  {
+    format = any_input ? "/%s" : "%s";
+    snprintf(menu_buffer + strlen(menu_buffer),
+             sizeof(menu_buffer) - strlen(menu_buffer),
+             format, dsda_GameControllerButtonName(input->joyb));
+    any_input = true;
+  }
+
+  if (!any_input)
+    M_GetKeyString(0, 0);
+
+  M_CopyText(text, text_size, menu_buffer);
+}
+
+static dboolean M_SetupSettingText(const setup_menu_t *s,
+                                   char *text, size_t text_size,
+                                   dboolean update_entry_index)
+{
+  int flags = s->m_flags;
+
+  if (!text_size)
+    return false;
+
+  text[0] = '\0';
+
+  if (flags & S_YESNO)
+    M_CopyText(text, text_size,
+               dsda_IntConfig(s->config_id) ? "YES" : "NO");
+  else if (flags & (S_NUM | S_WEAP | S_CRITEM))
+  {
+    if ((flags & (S_HILITE | S_SELECT)) && setup_gather)
+    {
+      gather_buffer[gather_count] = 0;
+      M_CopyText(text, text_size, gather_buffer);
+    }
+    else
+      snprintf(text, text_size, "%d", dsda_IntConfig(s->config_id));
+  }
+  else if (flags & S_INPUT)
+    M_SetupInputText(s, text, text_size);
+  else if (flags & S_STRING)
+  {
+    dboolean editing = setup_select && (flags & (S_HILITE | S_SELECT));
+
+    M_CopyText(text, text_size,
+               editing ? entry_string_index : dsda_StringConfig(s->config_id));
+    if (editing)
+      M_TrimSetupString(text, update_entry_index);
+  }
+  else if (flags & S_CHOICE)
+  {
+    if (flags & S_STR)
+    {
+      M_CopyText(text, text_size,
+                 setup_select && (flags & (S_HILITE | S_SELECT)) ?
+                   entry_string_index : dsda_StringConfig(s->config_id));
+    }
+    else
+    {
+      int value = setup_select && (flags & (S_HILITE | S_SELECT)) ?
+        choice_value : dsda_IntConfig(s->config_id);
+
+      if (s->selectstrings == NULL)
+        snprintf(text, text_size, "%d", value);
+      else
+        M_CopyText(text, text_size, s->selectstrings[value]);
+    }
+  }
+  else if (flags & S_THERMO)
+    snprintf(text, text_size, "%d", dsda_IntConfig(s->config_id));
+  else
+    return false;
+
+  M_BlinkingArrowRight(s, text, text_size);
+
+  return text[0] != '\0';
+}
+
+static int M_SetupSettingColor(const setup_menu_t *s, int flags)
+{
+  int color = GetOptionColor(flags);
+  dboolean editing = setup_gather && (flags & (S_HILITE | S_SELECT));
+
+  if ((flags & S_CRITEM) && !editing)
+  {
+    color = dsda_IntConfig(s->config_id);
+
+    if (flags & S_DISABLED)
+      color += CR_DARKEN;
+  }
+
+  return color;
+}
+
+static void M_DrawSetupStringCursor(int x, int y, char *text)
+{
+  int cursor_start, char_width;
+  char c[2];
+
+  *c = text[entry_index]; // hold temporarily
+  c[1] = 0;
+  char_width = M_GetPixelWidth(c);
+  if (char_width == 1)
+    char_width = 7; // default for end of line
+  text[entry_index] = 0; // NULL to get cursor position
+  cursor_start = M_GetPixelWidth(text);
+  text[entry_index] = *c; // replace stored char
+
+  // Now draw the cursor
+  // proff 12/6/98: Drawing of cursor changed for hi-res
+  // e6y: wide-res
+  if (x + cursor_start + char_width < BASE_WIDTH)
+  {
+    int xx = x + cursor_start - 1, yy = y, ww = char_width, hh = 9;
+
+    V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
+    V_FillRect(0, xx, yy, ww, hh, playpal_lightest);
+  }
+}
+
 static void M_DrawSetting(const setup_menu_t* s, int y)
 {
   int x = s->m_x, flags = s->m_flags, color;
+  char text[MENU_BUFFER_SIZE];
+
+  if (M_ItemDisabled(s))
+    flags |= S_DISABLED;
 
   // Determine color of the text. This may or may not be used later,
   // depending on whether the item is a text string or not.
 
-  color =
-    dsda_StrictMode() && dsda_IsStrictConfig(s->config_id) ? cr_value + CR_DARKEN :
-    flags & S_SELECT ? cr_value_edit :
-    flags & S_HILITE ? cr_value_highlight :
-    cr_value;
-
-  // Is the item a YES/NO item?
-
-  if (flags & S_YESNO) {
-    strcpy(menu_buffer, dsda_IntConfig(s->config_id) ? "YES" : "NO");
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x,y,color);
-    return;
-  }
-
-  // Is the item a simple number?
-
-  if (flags & (S_NUM | S_WEAP | S_CRITEM)) {
-    // killough 10/98: We must draw differently for items being gathered.
-    if (flags & (S_HILITE | S_SELECT) && setup_gather) {
-      gather_buffer[gather_count] = 0;
-      strcpy(menu_buffer, gather_buffer);
-    }
-    else {
-      int value;
-
-      value = dsda_IntConfig(s->config_id);
-
-      snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
-
-      if (flags & S_CRITEM)
-      {
-        color = value;
-        if (dsda_StrictMode() && dsda_IsStrictConfig(s->config_id))
-          color += CR_DARKEN;
-      }
-    }
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x, y, color);
-    return;
-  }
-
-  // Is the item a key binding?
-
-  if (flags & S_INPUT) {
-    int i;
-    int offset = 0;
-    const char* format;
-    dboolean any_input = false;
-    dsda_input_t* input;
-    input = dsda_Input(s->input);
-
-    // Draw the input bound to the action
-    menu_buffer[0] = '\0';
-
-    for (i = 0; i < input->num_keys; ++i)
-    {
-      if (any_input)
-      {
-        menu_buffer[offset++] = '/';
-        menu_buffer[offset] = '\0';
-      }
-
-      offset = M_GetKeyString(input->key[i], offset);
-      any_input = true;
-    }
-
-    if (input->mouseb != -1)
-    {
-      if (any_input)
-        format = "/MB%d";
-      else
-        format = "MB%d";
-
-      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer),format, input->mouseb + 1);
-      any_input = true;
-    }
-
-    if (input->joyb != -1)
-    {
-      if (any_input)
-        format = "/%s";
-      else
-        format = "%s";
-
-      snprintf(menu_buffer + strlen(menu_buffer), sizeof(menu_buffer) - strlen(menu_buffer), format,
-              dsda_GameControllerButtonName(input->joyb));
-      any_input = true;
-    }
-
-    // "NONE"
-    if (!any_input)
-      M_GetKeyString(0, 0);
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-
-    M_DrawMenuString(x, y, color);
-
-    return;
-  }
+  color = M_SetupSettingColor(s, flags);
 
   // Is the item a paint chip?
 
@@ -2000,112 +2254,26 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
     if (!ch) // don't show this item in automap mode
       V_DrawNamePatch(x+1,y,0,"M_PALNO", CR_DEFAULT, VPT_STRETCH);
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
+    if (M_ItemSelected(s) && !setup_select)
       M_DrawString(x + 8, y, color, " <");
     return;
   }
 
-  // Is the item a string?
-  if (flags & S_STRING) {
-    static char text[ENTRY_STRING_BFR_SIZE];
-
-    // Are we editing this string? If so, display a cursor under
-    // the correct character.
-    if (setup_select && (s->m_flags & (S_HILITE|S_SELECT))) {
-      int cursor_start, char_width;
-      char c[2];
-
-      strcpy(text, entry_string_index);
-
-      // If the string is too wide for the screen, trim it back,
-      // one char at a time until it fits. This should only occur
-      // while you're editing the string.
-
-      while (M_GetPixelWidth(text) >= MAXENTRYWIDTH) {
-        int len = strlen(text);
-        text[--len] = 0;
-        if (entry_index > len)
-          entry_index--;
-      }
-
-      // Find the distance from the beginning of the string to
-      // where the cursor should be drawn, plus the width of
-      // the char the cursor is under..
-
-      *c = text[entry_index]; // hold temporarily
-      c[1] = 0;
-      char_width = M_GetPixelWidth(c);
-      if (char_width == 1)
-        char_width = 7; // default for end of line
-      text[entry_index] = 0; // NULL to get cursor position
-      cursor_start = M_GetPixelWidth(text);
-      text[entry_index] = *c; // replace stored char
-
-      // Now draw the cursor
-      // proff 12/6/98: Drawing of cursor changed for hi-res
-      // e6y: wide-res
-      if (x + cursor_start + char_width < BASE_WIDTH)
-      {
-        int xx = (x+cursor_start-1), yy = y, ww = char_width, hh = 9;
-        V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
-        V_FillRect(0, xx, yy, ww, hh, playpal_lightest);
-      }
-    }
-    else {
-      strncpy(text, dsda_StringConfig(s->config_id), ENTRY_STRING_BFR_SIZE - 1);
-    }
-
-    // Draw the setting for the item
-
-    strcpy(menu_buffer, text);
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x, y, color);
-    return;
-  }
-
-  // Is the item a selection of choices?
-
-  if (flags & S_CHOICE) {
-    if (flags & S_STR)
-    {
-      if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
-        snprintf(menu_buffer, sizeof(menu_buffer), "%s", entry_string_index);
-      else
-        snprintf(menu_buffer, sizeof(menu_buffer), "%s", dsda_StringConfig(s->config_id));
-    }
-    else
-    {
-      int value;
-
-      if (setup_select && (s->m_flags & (S_HILITE | S_SELECT)))
-        value = choice_value;
-      else
-        value = dsda_IntConfig(s->config_id);
-
-      if (s->selectstrings == NULL) {
-        snprintf(menu_buffer, sizeof(menu_buffer), "%d", value);
-      } else {
-        strcpy(menu_buffer, s->selectstrings[value]);
-      }
-    }
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x,y,color);
-    return;
-  }
-
   if (flags & S_THERMO) {
-    M_DrawThermo(x, y, 8, 16, dsda_IntConfig(s->config_id));
+    M_DrawThermoSmall(x, y, 8, 16, dsda_IntConfig(s->config_id), s);
 
-    snprintf(menu_buffer, sizeof(menu_buffer), "%d", dsda_IntConfig(s->config_id));
-
-    if (s == current_setup_menu + set_menu_itemon && whichSkull && !setup_select)
-      strcat(menu_buffer, " <");
-    M_DrawMenuString(x + 80, y + 3, color);
-    return;
+    x += 80;
+    y += 3;
   }
+
+  if (!M_SetupSettingText(s, text, sizeof(text), true))
+    return;
+
+  if ((flags & S_STRING) && setup_select && (flags & (S_HILITE | S_SELECT)))
+    M_DrawSetupStringCursor(x, y, text);
+
+  M_CopyText(menu_buffer, sizeof(menu_buffer), text);
+  M_DrawMenuString(x, y, color);
 }
 
 /////////////////////////////
@@ -2113,31 +2281,35 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 // M_DrawScreenItems takes the data for each menu item and gives it to
 // the drawing routines above.
 
-// CPhipps - static, const parameter, formatting
-static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
+typedef struct
+{
+  int line_height;
+  int scroll_i;
+  int max_i;
+  int limit_i;
+  int excess_i;
+} setup_menu_layout_t;
+
+static void M_GetSetupMenuLayout(const setup_menu_t *base_src, int base_y,
+                                 setup_menu_layout_t *layout)
 {
   int i = 0;
   int end_y;
-  int carry_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
-  int scroll_i = 0;
   int current_i = 0;
   int max_i = 0;
   int excess_i = 0;
   int limit_i = 0;
   int buffer_i = 0;
-  int line_height = 0;
-  float scrollbar_scale = 0;
   const setup_menu_t* src;
 
-  i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
     if (src == &current_setup_menu[set_menu_itemon])
       current_i = i;
 
-    if (src->m_flags & (S_NEXT | S_PREV)) {
-      // nothing
-    }
-    else if (src->m_flags & S_RESET_Y) {
+    if (src->m_flags & (S_NEXT | S_PREV))
+      continue;
+
+    if (src->m_flags & S_RESET_Y) {
       i = 0;
     }
     else {
@@ -2148,61 +2320,101 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
     }
   }
 
+  layout->line_height = menu_font->line_height < 9 ? menu_font->line_height : 9;
+  layout->scroll_i = 0;
+  layout->max_i = max_i;
 
-  line_height = menu_font->line_height < 9 ? menu_font->line_height : 9;
-
-  end_y = base_y + (max_i + 1) * line_height;
+  end_y = base_y + (max_i + 1) * layout->line_height;
   if (end_y > 190)
-    excess_i = (end_y - 190 + line_height - 1) / line_height;
+    excess_i = (end_y - 190 + layout->line_height - 1) / layout->line_height;
 
   limit_i = max_i - excess_i;
   buffer_i = (max_i - current_i > 3 ? 3 : max_i - current_i);
 
   if (excess_i && !inhelpscreens)
   {
+    while (current_i - layout->scroll_i > limit_i - buffer_i)
+      ++layout->scroll_i;
+  }
+
+  if (base_src == current_setup_menu && menu_mouse_setup_scroll >= 0)
+    layout->scroll_i = MIN(menu_mouse_setup_scroll, excess_i);
+
+  layout->limit_i = limit_i;
+  layout->excess_i = excess_i;
+}
+
+static dboolean M_GetSetupItemPosition(const setup_menu_t *item, int base_y, const setup_menu_layout_t *layout, int *index, int *carry_y, int *desc_y, int *set_y)
+{
+  if (item->m_flags & (S_NEXT | S_PREV))
+  {
+    *desc_y = 190 - layout->line_height - 2;
+  }
+  else if (item->m_flags & S_RESET_Y)
+  {
+    *index = 0;
+    return false;
+  }
+  else {
+    *desc_y = base_y + (*index - layout->scroll_i) * layout->line_height + *carry_y;
+
+    if (*index - layout->scroll_i < 0 || *index - layout->scroll_i > layout->limit_i)
+    {
+      ++*index;
+      return false;
+    }
+
+    ++*index;
+  }
+
+  *set_y = *desc_y;
+  if (item->m_flags & S_THERMO)
+  {
+    *carry_y += 6;
+    *desc_y += 3;
+  }
+
+  return true;
+}
+
+static void M_DrawSetupMenuScrollbar(int base_y,
+                                     const setup_menu_layout_t *layout)
+{
+  if (layout->excess_i && !inhelpscreens)
+  {
     int xx, yy, ww, hh;
-    while (current_i - scroll_i > limit_i - buffer_i)
-      ++scroll_i;
+    float scrollbar_scale;
 
     // Draw scrollbar if needed
-    scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)max_i;
+    scrollbar_scale = (185 - DEFAULT_LIST_Y) / (float)layout->max_i;
 
-    xx = 310, yy = base_y + scroll_i * scrollbar_scale, ww = 2, hh = limit_i * scrollbar_scale;
+    xx = 310;
+    yy = base_y + layout->scroll_i * scrollbar_scale;
+    ww = 2;
+    hh = layout->limit_i * scrollbar_scale;
     V_GetWideRect(&xx, &yy, &ww, &hh, VPT_STRETCH);
     V_FillRect(0, xx, yy, ww, hh, colrngs[cr_scrollbar][playpal_lightest]);
   }
+}
+
+// CPhipps - static, const parameter, formatting
+static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
+{
+  int i = 0;
+  int carry_y = 0; // Bigger elements (like S_THERMO) needs a bigger offset that carries over for all settings
+  setup_menu_layout_t layout;
+  const setup_menu_t* src;
+
+  M_GetSetupMenuLayout(base_src, base_y, &layout);
+  M_DrawSetupMenuScrollbar(base_y, &layout);
 
   i = 0;
   for (src = base_src; !(src->m_flags & S_END); src++) {
     int desc_y;
     int set_y;
-    dboolean skip_entry = false;
 
-    if (src->m_flags & (S_NEXT | S_PREV)) {
-      desc_y = 190 - line_height - 2;
-    }
-    else if (src->m_flags & S_RESET_Y) {
-      skip_entry = true;
-      i = 0;
-    }
-    else {
-      desc_y = base_y + (i - scroll_i) * line_height + carry_y;
-
-      if (i - scroll_i < 0 || i - scroll_i > limit_i)
-        skip_entry = true;
-
-      ++i;
-    }
-
-    if (skip_entry)
+    if (!M_GetSetupItemPosition(src, base_y, &layout, &i, &carry_y, &desc_y, &set_y))
       continue;
-
-    set_y = desc_y;
-    if (src->m_flags & S_THERMO)
-    {
-      carry_y += 6;
-      desc_y += 3;
-    }
 
     // See if we're to draw the item description (left-hand part)
     if (src->m_flags & S_SHOWDESC)
@@ -2214,56 +2426,110 @@ static void M_DrawScreenItems(const setup_menu_t* base_src, int base_y)
   }
 }
 
-// Draws the name of each page. If there are more than m, uses a carousel
-void M_DrawTabs(const char **pages, int m, int y)
+#define MENU_TAB_GAP 6
+
+typedef struct
 {
-  int x = 0;
-  int w = 0;
-  int i = 0;
-  int start_i = 0;
-  int end_i = m - 1;
-  int s = (m / 2); // halfway point
+  int x;
+  int start_i;
+  int end_i;
+  int page_count;
+} menu_tab_layout_t;
+
+static int M_TabPageCount(const char **pages)
+{
+  int count = 0;
+
+  while (pages && pages[count])
+    count++;
+
+  return count;
+}
+
+static void M_GetTabLayout(const char **pages, int visible_tabs,
+                           menu_tab_layout_t *layout)
+{
+  int i;
+  int s;
+
+  layout->x = 0;
+  layout->start_i = 0;
+  layout->end_i = -1;
+  layout->page_count = M_TabPageCount(pages);
+
+  if (!layout->page_count)
+    return;
+
+  if (visible_tabs <= 0 || visible_tabs > layout->page_count)
+    visible_tabs = layout->page_count;
+
+  layout->end_i = visible_tabs - 1;
+  s = visible_tabs / 2;  // halfway point
 
   // Figure out what tabs should be drawn if using carousel
   if (current_page > s)
   {
-    while (pages[current_page + i] != NULL)
+    i = 0;
+    while (current_page + i < layout->page_count)
       i++;
 
     if (i <= s)
     {
-      start_i = current_page + i - m;
-      end_i = current_page + i;
+      layout->start_i = current_page + i - visible_tabs;
+      layout->end_i = current_page + i;
     }
     else
     {
-        start_i = current_page - s;
-        end_i = current_page + s;
+      layout->start_i = current_page - s;
+      layout->end_i = current_page + s;
     }
   }
 
-  // Find the initial offset to center text
-  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
-  {
-    w = M_GetPixelWidth(pages[i]);
-    x += w + 6;
-  }
-  x = (320 - x + 6) / 2;
+  if (layout->start_i < 0)
+    layout->start_i = 0;
+  if (layout->end_i >= layout->page_count)
+    layout->end_i = layout->page_count - 1;
+
+  for (i = layout->start_i; i <= layout->end_i; i++)
+    layout->x += M_GetPixelWidth(pages[i]) + MENU_TAB_GAP;
+
+  layout->x = (BASE_WIDTH - layout->x + MENU_TAB_GAP) / 2;
+}
+
+// Draws the name of each page. If there are more than m, uses a carousel
+void M_DrawTabs(const char **pages, int m, int y)
+{
+  int x;
+  int i;
+  menu_tab_layout_t layout;
+
+  M_GetTabLayout(pages, m, &layout);
+  if (layout.end_i < layout.start_i)
+    return;
+
+  x = layout.x;
 
   // Draw the arrows on the sides
-  if (start_i > 0)
+  if (layout.start_i > 0)
     M_DrawString(x - M_GetPixelWidth("<-") - 2, y , cr_tab, "<-");
-  if (pages[i] != NULL)
-    M_DrawString(320 - x + 2, y , cr_tab, "->");
+  if (layout.end_i + 1 < layout.page_count)
+    M_DrawString(BASE_WIDTH - x + 2, y , cr_tab, "->");
 
   // Draw the page names
-  for (i = start_i; (i <= end_i && pages[i] != NULL); i++)
+  for (i = layout.start_i; i <= layout.end_i; i++)
   {
-    M_DrawString(x, y,i == current_page ? cr_tab_highlight: cr_tab, pages[i]);
+    int color = (i == current_page || M_MouseTabHovered(i)) ?
+      cr_tab_highlight : cr_tab;
 
-    w = M_GetPixelWidth(pages[i]);
-    x += w + 6;
+    M_DrawString(x, y, color, pages[i]);
+
+    x += M_GetPixelWidth(pages[i]) + MENU_TAB_GAP;
   }
+}
+
+static void M_DrawSetupTabs(int y)
+{
+  M_DrawTabs(setup_page_context.labels, setup_page_context.visible_tabs, y);
 }
 
 /////////////////////////////
@@ -2361,12 +2627,30 @@ static void M_DrawInstructions(void)
 #define EMPTY_LINE { 0, S_SKIP, m_null }
 #define NEW_COLUMN { 0, S_SKIP | S_RESET_Y, m_null }
 
-static void M_EnterSetup(menu_t *menu, dboolean *setup_flag, setup_menu_t *setup_menu)
+static void M_ClearSetupMenuState(void)
+{
+  set_general_active = false;
+  set_keybnd_active = false;
+  set_display_active = false;
+  set_demos_active = false;
+  set_compatibility_active = false;
+  set_weapon_active = false;
+  set_auto_active = false;
+  level_table_active = false;
+  M_ClearSetupPageContext();
+}
+
+static void M_EnterSetup(menu_t *menu, dboolean *setup_flag,
+                         setup_menu_t *setup_menu,
+                         const char **page_labels, int visible_tabs,
+                         setup_menu_t **page_menus)
 {
   M_SetupNextMenu(menu);
 
+  M_ClearSetupMenuState();
   setup_active = true;
   *setup_flag = true;
+  M_SetSetupPageContext(page_labels, visible_tabs, page_menus);
   setup_select = false;
   colorbox_active = false;
   setup_gather = false;
@@ -2749,7 +3033,8 @@ setup_menu_t keys_build_settings[] = {
 
 static void M_KeyBindings(int choice)
 {
-  M_EnterSetup(&KeybndDef, &set_keybnd_active, keys_settings[0]);
+  M_EnterSetup(&KeybndDef, &set_keybnd_active, keys_settings[0],
+               keys_pages, 5, keys_settings);
 }
 
 // The drawing part of the Key Bindings Setup initialization. Draw the
@@ -2766,7 +3051,7 @@ static void M_DrawKeybnd(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "KEY BINDINGS", cr_title); // M_KEYBND
   M_DrawInstructions();
-  M_DrawTabs(keys_pages, 5, TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2822,7 +3107,8 @@ setup_menu_t weap_priority_settings[] =  // Weapons Settings screen
 
 static void M_Weapons(int choice)
 {
-  M_EnterSetup(&WeaponDef, &set_weapon_active, weap_settings[0]);
+  M_EnterSetup(&WeaponDef, &set_weapon_active, weap_settings[0],
+               weap_pages, arrlen(weap_pages), weap_settings);
 }
 
 
@@ -2838,7 +3124,7 @@ static void M_DrawWeapons(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "WEAPONS", cr_title); // M_WEAP
   M_DrawInstructions();
-  M_DrawTabs(weap_pages, sizeof(weap_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2909,7 +3195,8 @@ setup_menu_t demos_tas_settings[] =
 
 static void M_Demos(int choice)
 {
-  M_EnterSetup(&DemosDef, &set_demos_active, demos_settings[0]);
+  M_EnterSetup(&DemosDef, &set_demos_active, demos_settings[0],
+               demos_pages, arrlen(demos_pages), demos_settings);
 }
 
 // The drawing part of the Demos Setup initialization. Draw the
@@ -2924,7 +3211,7 @@ static void M_DrawDemos(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "DEMOS", cr_title); // M_DEMOS
   M_DrawInstructions();
-  M_DrawTabs(demos_pages, sizeof(demos_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -2993,6 +3280,7 @@ setup_menu_t auto_appearance_settings[] =
 {
   { "Enable textured display", S_YESNO, m_conf, AA_X, dsda_config_map_textured },
   { "Things appearance", S_CHOICE, m_conf, AA_X, dsda_config_map_things_appearance, 0, map_things_appearance_list },
+  { "Show Line Traces", S_YESNO, m_conf, AA_X, dsda_config_map_traces },
   EMPTY_LINE,
   { "Translucency percentage", S_SKIP | S_TITLE, m_null, AA_X},
   { "Textured automap", S_NUM, m_conf, AA_X, dsda_config_map_textured_trans },
@@ -3056,7 +3344,8 @@ setup_menu_t auto_colors_settings[] =  // 2st AutoMap Settings screen
 
 static void M_Automap(int choice)
 {
-  M_EnterSetup(&AutoMapDef, &set_auto_active, auto_settings[0]);
+  M_EnterSetup(&AutoMapDef, &set_auto_active, auto_settings[0],
+               auto_pages, arrlen(auto_pages), auto_settings);
 }
 
 // Data used by the color palette that is displayed for the player to
@@ -3102,7 +3391,7 @@ static void M_DrawAutoMap(void)
   // CPhipps - patch drawing updated
   M_DrawTitle(2, "AUTOMAP", cr_title); // M_AUTO
   M_DrawInstructions();
-  M_DrawTabs(auto_pages, sizeof(auto_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 
   // If a color is being selected, need to show color paint chips
@@ -3196,7 +3485,7 @@ static const char* fake_contrast_list[] =
   NULL
 };
 
-static const char *gl_fade_mode_list[] = { "Normal", "Smooth", NULL };
+static const char *gl_fade_mode_list[] = { "Normal", "Smooth", "TrueColor", NULL };
 
 setup_menu_t gen_video_settings[] = {
   { "Video mode", S_CHOICE | S_STR, m_conf, G_X, dsda_config_videomode, 0, videomodes },
@@ -3285,12 +3574,16 @@ setup_menu_t gen_controller_settings[] = {
   FINAL_ENTRY
 };
 
+static const char* endoom_list[] = { "Off", "On", "Smart", NULL };
+
 setup_menu_t gen_misc_settings[] = {
   { "Death Use Action", S_CHOICE, m_conf, G2_X, dsda_config_death_use_action, 0, death_use_strings },
   { "Boom Weapon Auto Switch", S_YESNO, m_conf, G2_X, dsda_config_switch_when_ammo_runs_out },
   { "Auto Switch Weapon on Pickup", S_YESNO, m_conf, G2_X, dsda_config_switch_weapon_on_pickup },
   { "Enable Cheat Code Entry", S_YESNO, m_conf, G2_X, dsda_config_cheat_codes },
   { "Skip Quit Prompt", S_YESNO, m_conf, G2_X, dsda_config_skip_quit_prompt },
+  EMPTY_LINE,
+  { "Endoom Screen", S_CHOICE, m_conf, G2_X, dsda_config_show_endoom, 0, endoom_list },
   EMPTY_LINE,
   TITLE("Rewind", G2_X),
   { "Rewind Interval (s)", S_NUM, m_conf, G2_X, dsda_config_auto_key_frame_interval },
@@ -3336,7 +3629,8 @@ void M_ChangeDemoSmoothTurns(void)
 
 static void M_General(int choice)
 {
-  M_EnterSetup(&GeneralDef, &set_general_active, gen_settings[0]);
+  M_EnterSetup(&GeneralDef, &set_general_active, gen_settings[0],
+               gen_pages, arrlen(gen_pages), gen_settings);
 }
 
 // The drawing part of the General Setup initialization. Draw the
@@ -3351,7 +3645,7 @@ static void M_DrawGeneral(void)
   // proff/nicolas 09/20/98 -- changed for hi-res
   M_DrawTitle(2, "GENERAL", cr_title); // M_GENERL
   M_DrawInstructions();
-  M_DrawTabs(gen_pages, sizeof(gen_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3389,6 +3683,7 @@ setup_menu_t display_options_settings[] = {
   { "View Bobbing", S_CHOICE, m_conf, G_X, dsda_config_viewbob, 0, viewbob_list },
   { "Weapon Bobbing", S_CHOICE, m_conf, G_X, dsda_config_weaponbob, 0, weaponbob_list },
   { "Weapon Attack Alignment", S_CHOICE, m_conf, G_X, dsda_config_weapon_attack_alignment, 0, weapon_attack_alignment_strings },
+  { "Fix Shallow Floor View Bob Jolt", S_YESNO, m_conf, G_X, dsda_config_fix_viewbob_floor_jolt },
   { "Linear Sky Scrolling", S_YESNO, m_conf, G_X, dsda_config_render_linearsky },
   { "Quake Intensity", S_NUM, m_conf, G_X, dsda_config_quake_intensity },
   { "OpenGL Show Health Bars", S_YESNO, m_conf, G_X, dsda_config_gl_health_bar },
@@ -3465,7 +3760,8 @@ setup_menu_t display_crosshair_settings[] =
 
 static void M_Display(int choice)
 {
-  M_EnterSetup(&DisplayDef, &set_display_active, display_settings[0]);
+  M_EnterSetup(&DisplayDef, &set_display_active, display_settings[0],
+               display_pages, arrlen(display_pages), display_settings);
 }
 
 static void M_DrawDisplay(void)
@@ -3476,7 +3772,7 @@ static void M_DrawDisplay(void)
 
   M_DrawTitle(2, "DISPLAY", cr_title); // M_DSPLAY
   M_DrawInstructions();
-  M_DrawTabs(display_pages, sizeof(display_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -3535,7 +3831,8 @@ setup_menu_t comp_emulation_settings[] = {
 
 static void M_Compatibility(int choice)
 {
-  M_EnterSetup(&CompatibilityDef, &set_compatibility_active, comp_settings[0]);
+  M_EnterSetup(&CompatibilityDef, &set_compatibility_active, comp_settings[0],
+               comp_pages, arrlen(comp_pages), comp_settings);
 }
 
 static void M_DrawCompatibility(void)
@@ -3546,7 +3843,7 @@ static void M_DrawCompatibility(void)
 
   M_DrawTitle(2, "COMPATIBILITY", cr_title); // M_COMP
   M_DrawInstructions();
-  M_DrawTabs(comp_pages, sizeof(comp_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4066,7 +4363,8 @@ static void M_BuildLevelTable(void)
 static void M_LevelTable(int choice)
 {
   M_BuildLevelTable();
-  M_EnterSetup(&LevelTableDef, &level_table_active, level_table_page[0]);
+  M_EnterSetup(&LevelTableDef, &level_table_active, level_table_page[0],
+               level_table_pages, arrlen(level_table_pages), level_table_page);
 }
 
 static void M_DrawLevelTable(void)
@@ -4079,7 +4377,7 @@ static void M_DrawLevelTable(void)
   if (current_setup_menu != level_table_page[wad_stats_summary_page])
     M_DrawInstructionString(cr_info_edit, "Press ENTER key to warp");
 
-  M_DrawTabs(level_table_pages, sizeof(level_table_pages), TABS_Y);
+  M_DrawSetupTabs(TABS_Y);
   M_DrawScreenItems(current_setup_menu, DEFAULT_LIST_Y);
 }
 
@@ -4098,7 +4396,7 @@ static void M_SelectDone(setup_menu_t* ptr)
 {
   ptr->m_flags &= ~S_SELECT;
   ptr->m_flags |= S_HILITE;
-  S_StartVoidSound(g_sfx_itemup);
+  S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
   setup_select = false;
   colorbox_active = false;
 }
@@ -4130,7 +4428,7 @@ int extended_help_index;   // index of current extended help screen
 
 menuitem_t ExtHelpMenu[] =
 {
-  {1,"",M_ExtHelpNextScreen,0}
+  {M_ITEM_ACTION,"",M_ExtHelpNextScreen,0}
 };
 
 menu_t ExtHelpDef =
@@ -4258,8 +4556,11 @@ static int M_GetKeyString(int c,int offset)
     // cph - Keypad keys, general code reorganisation to
     //  make this smaller and neater.
     if ((0x100 <= c) && (c < 0x200)) {
-      if (c == KEYD_KEYPADENTER)
+      if (c == KEYD_KEYPADENTER) {
   s = "PADE";
+  strcpy(&menu_buffer[offset], s);
+  offset+=4;
+      }
       else {
   strcpy(&menu_buffer[offset], "PAD");
   offset+=4;
@@ -4530,11 +4831,11 @@ static void M_HandleToggles(void)
       {
         if (toggle->invert_message ? !value : value)
         {
-          S_StartVoidSound(g_sfx_console);
+          S_StartOptionalSound(g_sfx_console, -1, true);
         }
         else
         {
-          S_StartVoidSound(g_sfx_oof);
+          S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, true);
         }
       }
     }
@@ -4549,15 +4850,10 @@ dboolean M_ConsoleOpen(void)
 void M_LeaveSetupMenu(void)
 {
   M_SetSetupMenuItemOn(set_menu_itemon);
+  menu_mouse_setup_scroll = KEYBOARD_NAV;
   setup_active = false;
-  set_general_active = false;
-  set_keybnd_active = false;
-  set_display_active = false;
-  set_demos_active = false;
-  set_weapon_active = false;
-  set_auto_active = false;
+  M_ClearSetupMenuState();
   colorbox_active = false;
-  level_table_active = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -4740,7 +5036,7 @@ static dboolean M_AutoResponder(int ch, int action, event_t* ev)
     {
       if (++color_palette_y == 16)
         color_palette_y = 0;
-      S_StartVoidSound(g_sfx_itemup);
+      S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
       return true;
     }
 
@@ -4748,7 +5044,7 @@ static dboolean M_AutoResponder(int ch, int action, event_t* ev)
     {
       if (--color_palette_y < 0)
         color_palette_y = 15;
-      S_StartVoidSound(g_sfx_itemup);
+      S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
       return true;
     }
 
@@ -4756,7 +5052,7 @@ static dboolean M_AutoResponder(int ch, int action, event_t* ev)
     {
       if (--color_palette_x < 0)
         color_palette_x = 15;
-      S_StartVoidSound(g_sfx_itemup);
+      S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
       return true;
     }
 
@@ -4764,7 +5060,7 @@ static dboolean M_AutoResponder(int ch, int action, event_t* ev)
     {
       if (++color_palette_x == 16)
         color_palette_x = 0;
-      S_StartVoidSound(g_sfx_itemup);
+      S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
       return true;
     }
 
@@ -4873,7 +5169,7 @@ static dboolean M_LevelTableResponder(int ch, int action, event_t* ev)
 
     M_LeaveSetupMenu();
     M_ClearMenus();
-    S_StartVoidSound(g_sfx_swtchx);
+    S_StartOptionalSound(g_sfx_mnucls, g_sfx_swtchx, false);
 
     return true;
   }
@@ -4956,7 +5252,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
             value = 0;
           if (old_value != value)
           {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
             strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
           }
         }
@@ -4969,7 +5265,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
           } while (value > 0 && ptr1->selectstrings && ptr1->selectstrings[value][0] == '~');
 
           if (value >= 0 && choice_value != value) {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
             choice_value = value;
           }
         }
@@ -4985,7 +5281,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
             value = old_value;
           if (old_value != value)
           {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
             strncpy(entry_string_index, ptr1->selectstrings[value], ENTRY_STRING_BFR_SIZE - 1);
           }
         }
@@ -4998,7 +5294,7 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
           } while (ptr1->selectstrings && ptr1->selectstrings[value] && ptr1->selectstrings[value][0] == '~');
 
           if (ptr1->selectstrings[value] && choice_value != value) {
-            S_StartVoidSound(g_sfx_menu);
+            S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
             choice_value = value;
           }
         }
@@ -5022,13 +5318,13 @@ static dboolean M_SetupCommonSelectResponder(int ch, int action, event_t* ev)
       if (action == MENU_LEFT) {
         if (dsda_IntConfig(ptr1->config_id) > 0) {
           dsda_DecrementIntConfig(ptr1->config_id, true);
-          S_StartVoidSound(g_sfx_menu);
+          S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, true);
         }
       }
       else if (action == MENU_RIGHT) {
         if (dsda_IntConfig(ptr1->config_id) < 15) {
           dsda_IncrementIntConfig(ptr1->config_id, true);
-          S_StartVoidSound(g_sfx_menu);
+          S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, true);
         }
       }
       else if (action == MENU_ENTER) {
@@ -5093,11 +5389,12 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
     {
       if (ptr1->m_flags & S_NOCLEAR)
       {
-        S_StartVoidSound(g_sfx_oof);
+        S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, true);
       }
       else
       {
         dsda_InputReset(ptr1->input);
+        S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
       }
     }
 
@@ -5155,7 +5452,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
 
     ptr1->m_flags |= S_SELECT;
     setup_select = true;
-    S_StartVoidSound(g_sfx_itemup);
+    S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
     return true;
   }
 
@@ -5169,10 +5466,10 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
       {
         M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
         itemOn = currentMenu->lastOn;
-        S_StartVoidSound(g_sfx_swtchn);
+        S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
       }
     ptr1->m_flags &= ~(S_HILITE|S_SELECT);// phares 4/19/98
-    S_StartVoidSound(g_sfx_swtchx);
+    S_StartOptionalSound(g_sfx_mnucls, g_sfx_swtchx, true);
     return true;
   }
 
@@ -5194,7 +5491,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         ptr1->m_flags &= ~S_HILITE;
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
-        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
         previous_page = current_page;
         current_page--;
         return true;
@@ -5214,7 +5511,7 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
         ptr1->m_flags &= ~S_HILITE;
         M_SetSetupMenuItemOn(set_menu_itemon);
         M_UpdateSetupMenu(ptr2->menu);
-        S_StartVoidSound(g_sfx_menu);  // killough 10/98
+        S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
         previous_page = current_page;
         current_page++;
         return true;
@@ -5228,6 +5525,10 @@ static dboolean M_SetupNavigationResponder(int ch, int action, event_t* ev)
 
 static dboolean M_SetupResponder(int ch, int action, event_t* ev)
 {
+  if (set_keybnd_active && setup_select && ev->type == ev_mouse)
+    if (M_KeyBndResponder(ch, action, ev))
+      return true;
+
   if (M_SetupCommonSelectResponder(ch, action, ev))
     return true;
 
@@ -5269,14 +5570,14 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
     M_ChangeMenu(F1_menu, mnact_nochange);
 
     itemOn = 0;
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_savegame))
   {
     M_StartControlPanel();
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     M_SaveGame(0);
     return true;
   }
@@ -5284,7 +5585,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
   if (dsda_InputActivated(dsda_input_loadgame))
   {
     M_StartControlPanel();
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     M_LoadGame(0);
     return true;
   }
@@ -5292,7 +5593,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
   if (dsda_InputActivated(dsda_input_level_table))
   {
     M_StartControlPanel();
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     M_LevelTable(0);
     return true;
   }
@@ -5302,27 +5603,27 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
     M_StartControlPanel ();
     M_ChangeMenu(&SoundDef, mnact_nochange);
     itemOn = sfx_vol;
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_quicksave))
   {
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     M_QuickSave();
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_endgame))
   {
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     M_EndGame(0);
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_quickload))
   {
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     M_QuickLoad();
     return true;
   }
@@ -5330,7 +5631,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
   if (dsda_InputActivated(dsda_input_quit))
   {
     if (!dsda_SkipQuitPrompt())
-      S_StartVoidSound(g_sfx_swtchn);
+      S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     M_QuitDOOM(0);
     return true;
   }
@@ -5352,15 +5653,15 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
   {
     int value = dsda_CycleConfig(dsda_config_input_profile, true);
     doom_printf("Input Profile %d", value);
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_cycle_palette))
   {
     dsda_CyclePlayPal();
-    doom_printf("Palette %s", dsda_PlayPalData()->lump_name);
-    S_StartVoidSound(g_sfx_swtchn);
+    doom_printf("Palette %s", dsda_PlayPalData(playpal_index)->lump_name);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     return true;
   }
 
@@ -5398,14 +5699,14 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
        dsda_InputActivated(dsda_input_fire) || dsda_InputActivated(dsda_input_use) || dsda_InputActivated(dsda_input_menu_enter)))) // phares
   {
     M_StartControlPanel();
-    S_StartVoidSound(g_sfx_swtchn);
+    S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_console))
   {
     if (dsda_OpenConsole())
-      S_StartVoidSound(g_sfx_swtchn);
+      S_StartOptionalSound(g_sfx_mnuopn, g_sfx_swtchn, true);
     return true;
   }
 
@@ -5422,20 +5723,20 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 
   if (dsda_InputActivated(dsda_input_zoomout))
   {
-    if (automap_active)
+    if (automap_full)
       return false;
     M_SizeDisplay(0);
-    S_StartVoidSound(g_sfx_stnmov);
+    S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, true);
     return true;
   }
 
   if (dsda_InputActivated(dsda_input_zoomin))
-  {                                   // jff 2/23/98
-    if (automap_active)               // allow
-      return false;                   // key_hud==key_zoomin
-    M_SizeDisplay(1);                                             //  ^
-    S_StartVoidSound(g_sfx_stnmov);                              //  |
-    return true;                                                  // phares
+  {
+    if (automap_full)
+      return false;
+    M_SizeDisplay(1);
+    S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, true);
+    return true;
   }
 
   if (dsda_InputActivated(dsda_input_nextlevel))
@@ -5539,7 +5840,7 @@ static dboolean M_InactiveMenuResponder(int ch, int action, event_t* ev)
 
   if (dsda_InputActivated(dsda_input_hud))   // heads-up mode
   {
-    if (automap_active)              // jff 2/22/98
+    if (automap_full)                // jff 2/22/98
       return false;                  // HUD mode control
     M_SizeDisplay(2);
     return true;
@@ -5574,9 +5875,9 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         itemOn = 0;
       else
         itemOn++;
-      S_StartVoidSound(g_sfx_menu);
+      S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
     }
-    while(currentMenu->menuitems[itemOn].status == -1);
+    while(currentMenu->menuitems[itemOn].status == M_ITEM_SKIP);
     return true;
   }
 
@@ -5588,18 +5889,18 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         itemOn = currentMenu->numitems - 1;
       else
         itemOn--;
-      S_StartVoidSound(g_sfx_menu);
+      S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
     }
-    while(currentMenu->menuitems[itemOn].status == -1);
+    while(currentMenu->menuitems[itemOn].status == M_ITEM_SKIP);
     return true;
   }
 
   if (action == MENU_LEFT)                             // phares 3/7/98
   {
     if (currentMenu->menuitems[itemOn].routine &&
-        currentMenu->menuitems[itemOn].status == 2)
+        currentMenu->menuitems[itemOn].status == M_ITEM_THERMO)
     {
-      S_StartVoidSound(g_sfx_stnmov);
+      S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, false);
       currentMenu->menuitems[itemOn].routine(0);
     }
     return true;
@@ -5608,9 +5909,9 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
   if (action == MENU_RIGHT)                            // phares 3/7/98
   {
     if (currentMenu->menuitems[itemOn].routine &&
-        currentMenu->menuitems[itemOn].status == 2)
+        currentMenu->menuitems[itemOn].status == M_ITEM_THERMO)
     {
-      S_StartVoidSound(g_sfx_stnmov);
+      S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, false);
       currentMenu->menuitems[itemOn].routine(1);
     }
     return true;
@@ -5622,15 +5923,15 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
         currentMenu->menuitems[itemOn].status)
     {
       currentMenu->lastOn = itemOn;
-      if (currentMenu->menuitems[itemOn].status == 2)
+      if (currentMenu->menuitems[itemOn].status == M_ITEM_THERMO)
       {
         currentMenu->menuitems[itemOn].routine(1);   // right arrow
-        S_StartVoidSound(g_sfx_stnmov);
+        S_StartOptionalSound(g_sfx_mnusli, g_sfx_stnmov, false);
       }
       else
       {
         currentMenu->menuitems[itemOn].routine(itemOn);
-        S_StartVoidSound(g_sfx_pistol);
+        S_StartOptionalSound(g_sfx_mnuact, g_sfx_pistol, true);
       }
     }
     //jff 3/24/98 remember last skill selected
@@ -5642,7 +5943,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
   {
     currentMenu->lastOn = itemOn;
     M_ClearMenus ();
-    S_StartVoidSound(g_sfx_swtchx);
+    S_StartOptionalSound(g_sfx_mnubak, g_sfx_swtchx, true);
     return true;
   }
 
@@ -5669,12 +5970,12 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       else
         M_ChangeMenu(currentMenu->prevMenu, mnact_nochange);
       itemOn = currentMenu->lastOn;
-      S_StartVoidSound(g_sfx_swtchn);
+      S_StartOptionalSound(g_sfx_mnubak, g_sfx_swtchn, true);
     }
     else
     {
       M_ClearMenus();
-      S_StartVoidSound(g_sfx_swtchx);
+      S_StartOptionalSound(g_sfx_mnubak, g_sfx_swtchx, true);
     }
     return true;
   }
@@ -5686,7 +5987,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       if (ch && currentMenu->menuitems[i].alphaKey == ch)
       {
         itemOn = i;
-        S_StartVoidSound(g_sfx_menu);
+        S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
         return true;
       }
 
@@ -5694,7 +5995,7 @@ static dboolean M_MainNavigationResponder(int ch, int action, event_t* ev)
       if (ch && currentMenu->menuitems[i].alphaKey == ch)
       {
         itemOn = i;
-        S_StartVoidSound(g_sfx_menu);
+        S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
         return true;
       }
   }
@@ -5728,11 +6029,11 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     {
       case confirmation_yes:
         M_DeleteSaveGame(itemOn + current_page * g_menu_save_page_size);
-        S_StartVoidSound(g_sfx_itemup);
+        S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
         delete_verify = false;
         break;
       case confirmation_no:
-        S_StartVoidSound(g_sfx_itemup);
+        S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
         delete_verify = false;
         break;
       case confirmation_null:
@@ -5744,7 +6045,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
 
   if (saveStringEnter && (ch != MENU_NULL || action != MENU_NULL))
   {
-    if (action == MENU_BACKSPACE)                            // phares 3/7/98
+    if (ch == KEYD_BACKSPACE || action == MENU_BACKSPACE)
     {
       if (saveCharIndex > 0)
       {
@@ -5766,6 +6067,11 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
     }
     else if (action == MENU_ENTER)                     // phares 3/7/98
     {
+      if (ev && ev->type == ev_mouse &&
+          currentMenu == &SaveDef &&
+          itemOn != saveSlot)
+        return true;
+
       saveStringEnter = 0;
       if (savegamestrings[saveSlot][0])
         M_DoSave(saveSlot);
@@ -5792,6 +6098,27 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
   {
     int diff = 0;
 
+    if (action == MENU_ENTER)
+    {
+      if (currentMenu->menuitems[itemOn].routine &&
+          currentMenu->menuitems[itemOn].status)
+      {
+        currentMenu->lastOn = itemOn;
+        currentMenu->menuitems[itemOn].routine(itemOn);
+
+        if (currentMenu == &SaveDef && current_page == 0)
+        S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, true);
+        else
+          S_StartOptionalSound(g_sfx_mnuact, g_sfx_pistol, true);
+      }
+      else
+      {
+        S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, true);
+      }
+
+      return true;
+    }
+
     if (action == MENU_LEFT)
       diff = -1;
     else if (action == MENU_RIGHT)
@@ -5799,7 +6126,7 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
 
     if (diff)
     {
-      S_StartVoidSound(g_sfx_menu);
+      S_StartOptionalSound(g_sfx_mnumov, g_sfx_menu, true);
 
       current_page += diff;
       if (current_page < 0)
@@ -5815,14 +6142,14 @@ static dboolean M_SaveResponder(int ch, int action, event_t* ev)
   {
     if (LoadMenue[itemOn].status)
     {
-      S_StartVoidSound(g_sfx_itemup);
+      S_StartOptionalSound(g_sfx_mnusel, g_sfx_itemup, false);
       currentMenu->lastOn = itemOn;
       delete_verify = true;
       return true;
     }
     else
     {
-      S_StartVoidSound(g_sfx_oof);
+      S_StartOptionalSound(g_sfx_mnuerr, g_sfx_oof, true);
     }
   }
 
@@ -5846,7 +6173,7 @@ static dboolean M_MessageResponder(int ch, int action, event_t* ev)
     messageRoutine(confirmation);
 
   M_ChangeMenu(NULL, mnact_inactive);
-  S_StartVoidSound(g_sfx_swtchx);
+  S_StartOptionalSound(g_sfx_mnucls, g_sfx_swtchx, true);
   return true;
 }
 
@@ -5934,6 +6261,8 @@ static int M_CurrentAction(void)
   return MENU_NULL;
 }
 
+#include "m_mouse.inl"
+
 dboolean M_Responder(event_t* ev) {
   int ch, action;
 
@@ -5943,6 +6272,18 @@ dboolean M_Responder(event_t* ev) {
   if (M_ConsoleOpen() && action != MENU_ESCAPE)
     if (M_ConsoleResponder(ch, action, ev))
       return true;
+
+  if (M_MouseResponder(ev))
+    return true;
+
+  if (ch != MENU_NULL || action != MENU_NULL)
+  {
+    if (setup_active)
+      menu_mouse_setup_scroll = KEYBOARD_NAV;
+
+    M_MouseClearMainHover();
+    M_MouseClearTabHover();
+  }
 
   if (currentMenu == &LoadDef || currentMenu == &SaveDef)
     if (M_SaveResponder(ch, action, ev))
@@ -6005,7 +6346,7 @@ static void M_InitializeSkillMenu(void)
 
   for (i = 0; i < num_skills; ++i)
   {
-    SkillDef.menuitems[i].status = 1;
+    SkillDef.menuitems[i].status = M_ITEM_ACTION;
 
     if (skill_infos[i].pic_name)
       strncpy(SkillDef.menuitems[i].name, skill_infos[i].pic_name, 8);
@@ -6033,7 +6374,7 @@ static void M_InitializeEpisodeMenu(void)
 
   for (i = 0; i < num_episodes; ++i)
   {
-    EpiDef.menuitems[i].status = 1;
+    EpiDef.menuitems[i].status = M_ITEM_ACTION;
 
     if (episodes[i].pic_name)
       strncpy(EpiDef.menuitems[i].name, episodes[i].pic_name, 8);
@@ -6069,6 +6410,8 @@ void M_StartControlPanel (void)
   if (menuactive)
     return;
 
+  M_MouseResetButtons();
+
   DO_ONCE
     M_InitializeSkillMenu();
     M_InitializeEpisodeMenu();
@@ -6099,6 +6442,35 @@ dboolean M_MenuIsShaded(void)
 void M_ShadedScreen(int scrn)
 {
   V_DrawShaded(scrn, 0, 0, SCREENWIDTH, SCREENHEIGHT, FULLSHADE);
+}
+
+static dboolean M_OptionalLumpMissing(const menuitem_t *item)
+{
+  // if not optional, return
+  if (!(item->flags & MENUF_OPTLUMP))
+    return false;
+
+  return item->name[0] && !W_LumpNameExists(item->name);
+}
+
+static dboolean M_MenuHasMissingRequiredLumps(const menu_t *menu)
+{
+  int i;
+
+  if (!menu)
+    return false;
+
+  for (i = 0; i < menu->numitems; i++)
+  {
+    const menuitem_t *item = &menu->menuitems[i];
+
+    if (item->status != M_ITEM_SKIP &&
+        !(item->flags & MENUF_OPTLUMP) &&
+        (!item->name[0] || !W_LumpNameExists(item->name)))
+      return true;
+  }
+
+  return false;
 }
 
 //
@@ -6151,7 +6523,7 @@ void M_Drawer (void)
   else if (menuactive)
   {
     int x, y, max, i;
-    int lumps_missing;
+    dboolean lumps_missing;
 
     M_ChangeMenu(NULL, mnact_float);
 
@@ -6170,36 +6542,22 @@ void M_Drawer (void)
     x = currentMenu->x;
     y = currentMenu->y;
     max = currentMenu->numitems;
-    lumps_missing = 0;
+    lumps_missing = M_MenuHasMissingRequiredLumps(currentMenu);
 
     for (i = 0; i < max; i++)
-      if (
-        currentMenu->menuitems[i].status != -1 && (
-          !currentMenu->menuitems[i].name[0] || !W_LumpNameExists(currentMenu->menuitems[i].name)
-        )
-      )
-        ++lumps_missing;
+    {
+      const menuitem_t *item = &currentMenu->menuitems[i];
+      int color = M_HighlightColor(M_MouseHovered(i), item->color);
+      int flags = VPT_STRETCH | M_AddColorFlag(color);
 
-    if (!lumps_missing)
-      for (i = 0; i < max; i++)
-      {
-        if (currentMenu->menuitems[i].name[0])
-          V_DrawNamePatch(x, y, 0, currentMenu->menuitems[i].name,
-                          currentMenu->menuitems[i].color, VPT_STRETCH);
+      if (!lumps_missing && item->name[0] && !M_OptionalLumpMissing(item))
+        V_DrawNamePatch(x, y, 0, item->name, color, flags);
+      else if (item->alttext)
+        M_WriteText(x, y + 8 - (M_StringHeight(item->alttext) / 2),
+                    item->alttext, color);
 
-        y += LINEHEIGHT;
-      }
-    else
-      for (i = 0; i < max; i++)
-      {
-        const char *alttext = currentMenu->menuitems[i].alttext;
-
-        if (alttext)
-          M_WriteText(x, y + 8 - (M_StringHeight(alttext) / 2),
-                      alttext, currentMenu->menuitems[i].color);
-
-        y += LINEHEIGHT;
-      }
+      y += LINEHEIGHT;
+    }
 
     // DRAW SKULL
     if (max > 0)
@@ -6213,11 +6571,24 @@ void M_Drawer (void)
 
 void M_ChangeMenu(menu_t *menudef, menuactive_t mnact)
 {
+  if (menudef && menudef != currentMenu)
+  {
+    M_MouseClearMainHover();
+    M_MouseClearTabHover();
+  }
+
   if (menudef)
     currentMenu = menudef;
 
   if (mnact != mnact_nochange)
     menuactive = mnact;
+
+  if (mnact == mnact_inactive)
+  {
+    M_MouseClearMainHover();
+    M_MouseClearTabHover();
+    M_MouseResetButtons();
+  }
 
   if (mnact > mnact_inactive && gamestate == GS_LEVEL)
     dsda_TrackFeature(uf_menu);
@@ -6254,6 +6625,7 @@ void M_SetupNextMenu(menu_t *menudef)
 
   current_page = 0;
   previous_page = 0;
+  M_MouseClearTabHover();
 }
 
 /////////////////////////////
@@ -6306,23 +6678,28 @@ static void M_StopMessage(void)
 // proff/nicolas 09/20/98 -- changed for hi-res
 // CPhipps - patch drawing updated
 //
-static void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot )
+static void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int thermDot, int color)
 {
   int xx;
   int i;
   int dot_offset;
+  int flags;
 
-  if (raven) return MN_DrawSlider(x, y, thermWidth, thermRange, thermDot);
+  if (raven) return MN_DrawSlider(x, y, thermWidth, thermRange, thermDot, color);
+
+  // [AR] We check both if the item is selected and highlight
+  // to include the label on the sound screen
+  flags = VPT_STRETCH | M_AddColorFlag(color);
 
   xx = x;
-  V_DrawNamePatch(xx, y, 0, "M_THERML", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(xx, y, 0, "M_THERML", color, flags);
   xx += 8;
   for (i=0;i<thermWidth;i++)
   {
-    V_DrawNamePatch(xx, y, 0, "M_THERMM", CR_DEFAULT, VPT_STRETCH);
+    V_DrawNamePatch(xx, y, 0, "M_THERMM", color, flags);
     xx += 8;
   }
-  V_DrawNamePatch(xx, y, 0, "M_THERMR", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(xx, y, 0, "M_THERMR", color, flags);
 
   if (thermDot >= thermRange)
   {
@@ -6331,7 +6708,23 @@ static void M_DrawThermo(int x, int y, int thermWidth, int thermRange, int therm
 
   dot_offset = 8 * thermDot * thermWidth / thermRange;
   dot_offset -= thermRange / thermWidth;
-  V_DrawNamePatch(x + 8 + dot_offset, y, 0, "M_THERMO", CR_DEFAULT, VPT_STRETCH);
+  V_DrawNamePatch(x + 8 + dot_offset, y, 0, "M_THERMO", color, flags);
+}
+
+static void M_DrawThermoSmall(int x, int y, int thermWidth, int thermRange, int thermDot, const setup_menu_t *setup_item)
+{
+  dboolean selected = setup_item->m_flags & S_HILITE;
+  int color = M_ItemDisabled(setup_item) ? CR_DARKEN : M_HighlightColor(selected, CR_DEFAULT);
+
+  M_DrawThermo(x, y, thermWidth, thermRange, thermDot, color );
+}
+
+void M_DrawThermoBig(int x, int y, int thermWidth, int thermRange, int thermDot, int menu_item)
+{
+  dboolean highlight = (itemOn == menu_item) && M_MouseHovered(menu_item);
+  int color = M_HighlightColor(highlight, CR_DEFAULT);
+
+  M_DrawThermo(x, y, thermWidth, thermRange, thermDot, color );
 }
 
 //
@@ -6403,9 +6796,7 @@ static void M_WriteText (int x,int y, const char* string, int cm)
   cx = x;
   cy = y;
 
-  flags = VPT_STRETCH;
-  if (cm != CR_DEFAULT)
-    flags |= VPT_TRANS;
+  flags = VPT_STRETCH | M_AddColorFlag(cm);
 
   while(1) {
     c = *ch++;

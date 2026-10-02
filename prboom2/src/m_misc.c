@@ -90,6 +90,8 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_demo_smoothturnsfactor),
   MIGRATED_SETTING(dsda_config_screenshot_dir),
   MIGRATED_SETTING(dsda_config_startup_delay_ms),
+  MIGRATED_SETTING(dsda_config_show_endoom),
+  MIGRATED_SETTING(dsda_config_export_endoom),
   MIGRATED_SETTING(dsda_config_ansi_endoom),
   MIGRATED_SETTING(dsda_config_quit_sounds),
   MIGRATED_SETTING(dsda_config_announce_map),
@@ -247,6 +249,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_map_trail),
   MIGRATED_SETTING(dsda_config_map_trail_collisions),
   MIGRATED_SETTING(dsda_config_map_trail_size),
+  MIGRATED_SETTING(dsda_config_map_traces),
   MIGRATED_SETTING(dsda_config_automap_overlay),
   MIGRATED_SETTING(dsda_config_automap_rotate),
   MIGRATED_SETTING(dsda_config_automap_follow),
@@ -320,6 +323,7 @@ cfg_def_t cfg_defs[] =
   MIGRATED_SETTING(dsda_config_switch_weapon_on_pickup),
   MIGRATED_SETTING(dsda_config_viewbob),
   MIGRATED_SETTING(dsda_config_weaponbob),
+  MIGRATED_SETTING(dsda_config_fix_viewbob_floor_jolt),
   MIGRATED_SETTING(dsda_config_quake_intensity),
   MIGRATED_SETTING(dsda_config_organize_failed_demos),
   MIGRATED_SETTING(dsda_config_demo_end_quit),
@@ -911,9 +915,9 @@ void M_ScreenShot(void)
     startshot = shot; // CPhipps - prevent infinite loop
 
     do {
-      int size = snprintf(NULL, 0, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
+      int size = snprintf(NULL, 0, "%s/dsda%04d" SCREENSHOT_EXT, shot_dir, shot);
       lbmname = Z_Realloc(lbmname, size+1);
-      snprintf(lbmname, size+1, "%s/doom%02d" SCREENSHOT_EXT, shot_dir, shot);
+      snprintf(lbmname, size+1, "%s/dsda%04d" SCREENSHOT_EXT, shot_dir, shot);
       shot++;
     } while (M_FileExists(lbmname) && (shot != startshot) && (shot < 10000));
 

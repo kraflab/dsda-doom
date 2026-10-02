@@ -25,6 +25,7 @@ typedef enum {
   dsda_arg_iwad,
   dsda_arg_file,
   dsda_arg_deh,
+  dsda_arg_loadgame,
   dsda_arg_playdemo,
   dsda_arg_playlump,
   dsda_arg_timedemo,
@@ -148,7 +149,6 @@ typedef enum {
   dsda_arg_do_not_use_misc12_frame_parameters_in_a_mushroom,
   dsda_arg_apply_mbf_codepointers_to_any_complevel,
   dsda_arg_reset_monsterspawner_params_after_loading,
-  dsda_arg_debug_mapinfo,
   dsda_arg_count,
 } dsda_arg_identifier_t;
 

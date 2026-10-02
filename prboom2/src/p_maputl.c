@@ -47,6 +47,7 @@
 #include "e6y.h"//e6y
 
 #include "dsda/map_format.h"
+#include <dsda/configuration.h>
 
 //
 // P_AproxDistance
@@ -127,20 +128,64 @@ int PUREFUNC P_BoxOnLineSide(const fixed_t *tmbox, const line_t *ld)
 
 int PUREFUNC P_CompatiblePointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
 {
-  return
-    !line->dx ? x <= line->x ? line->dy > 0 : line->dy < 0 :
-    !line->dy ? y <= line->y ? line->dx < 0 : line->dx > 0 :
-    (line->dy^line->dx^(x -= line->x)^(y -= line->y)) < 0 ? (line->dy^x) < 0 :
-    FixedMul(y>>8, line->dx>>8) >= FixedMul(line->dy>>8, x>>8);
+  if(!line->dx)
+  {
+    if(x <= line->x)
+      return line->dy > 0;
+    else
+      return line->dy < 0;
+  }
+  else
+  {
+    if(!line->dy)
+    {
+      if(y <= line->y)
+        return line->dx < 0;
+      else
+        return line->dx > 0;
+    }
+    else
+    {
+      x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)line->x));
+      y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)line->y));
+
+      if((line->dy ^ line->dx ^ x ^ y) < 0)
+        return (line->dy ^ x) < 0;
+      else
+        return FixedMul(y >> 8, line->dx >> 8) >= FixedMul(line->dy >> 8, x >> 8);
+    }
+  }
 }
 
 int PUREFUNC P_ZDoomPointOnDivlineSide(fixed_t x, fixed_t y, const divline_t *line)
 {
-  return
-    !line->dx ? x <= line->x ? line->dy > 0 : line->dy < 0 :
-    !line->dy ? y <= line->y ? line->dx < 0 : line->dx > 0 :
-    (line->dy^line->dx^(x -= line->x)^(y -= line->y)) < 0 ? (line->dy^x) < 0 :
-    (long long) y * line->dx >= (long long) x * line->dy;
+  if(!line->dx)
+  {
+    if(x <= line->x)
+      return line->dy > 0;
+    else
+      return line->dy < 0;
+  }
+  else
+  {
+    if(!line->dy)
+    {
+      if(y <= line->y)
+        return line->dx < 0;
+      else
+        return line->dx > 0;
+    }
+    else
+    {
+      x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)line->x));
+      y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)line->y));
+
+      if((line->dy ^ line->dx ^ x ^ y) < 0)
+        return (line->dy ^ x) < 0;
+      else
+        return (long long)y * line->dx >= (long long)x * line->dy;
+    }
+  }
 }
 
 int (*P_PointOnDivlineSide)(fixed_t x, fixed_t y, const divline_t *line);
@@ -367,6 +412,11 @@ void P_UnsetThingPosition (mobj_t *thing)
       if (bprev && (*bprev = bnext = thing->bnext))  // unlink from block map
         bnext->bprev = bprev;
     }
+
+    if (thing->type == MT_TELEPORTMAN)
+    {
+        P_ResetTeleptFromSector(thing->subsector->sector->iSectorID);
+    }
 }
 
 //
@@ -432,6 +482,11 @@ void P_SetThingPosition(mobj_t *thing)
       }
       else        // thing is off the map
         thing->bnext = NULL, thing->bprev = NULL;
+    }
+
+    if (thing->type == MT_TELEPORTMAN)
+    {
+        P_ResetTeleptFromSector(ss->sector->iSectorID);
     }
 }
 
@@ -773,6 +828,9 @@ dboolean P_TraverseIntercepts(traverser_t func, fixed_t maxfrac)
   return true;                  // everything was traversed
 }
 
+amlinetrace_t amlinetraces[NUMAMLINETRACES] = {0};
+unsigned int cur_amlinetrace = 0;
+
 //
 // P_PathTraverse
 // Traces a line from x1,y1 to x2,y2,
@@ -794,6 +852,16 @@ dboolean P_PathTraverse(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2,
   int     mapx1, mapy1;
   int     mapxstep, mapystep;
   int     count;
+
+	if (dsda_IntConfig(dsda_config_map_traces))
+	{
+		amlinetraces[cur_amlinetrace].x1 = x1;
+		amlinetraces[cur_amlinetrace].x2 = x2;
+		amlinetraces[cur_amlinetrace].y1 = y1;
+		amlinetraces[cur_amlinetrace].y2 = y2;
+		amlinetraces[cur_amlinetrace].when = leveltime;
+		cur_amlinetrace = (cur_amlinetrace + 1) % NUMAMLINETRACES;
+	}
 
   validcount++;
   intercept_p = intercepts;

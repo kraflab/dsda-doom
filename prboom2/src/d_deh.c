@@ -279,6 +279,8 @@ const char *s_GOTLAUNCHER = GOTLAUNCHER;
 const char *s_GOTPLASMA   = GOTPLASMA;
 const char *s_GOTSHOTGUN  = GOTSHOTGUN;
 const char *s_GOTSHOTGUN2 = GOTSHOTGUN2;
+const char *s_BETA_BONUS3 = BETA_BONUS3;
+const char *s_BETA_BONUS4 = BETA_BONUS4;
 const char *s_PD_BLUEO    = PD_BLUEO;
 const char *s_PD_REDO     = PD_REDO;
 const char *s_PD_YELLOWO  = PD_YELLOWO;
@@ -515,6 +517,9 @@ const char *bgcastcall   = "BOSSBACK"; // Panel behind cast call
  * cph - updated for prboom */
 const char *savegamename = PROJECT_TARNAME"-savegame";
 
+// secret messages
+const char *s_HUSTR_SECRETFOUND = HUSTR_SECRETFOUND;
+
 // end d_deh.h variable declarations
 // ====================================================================
 
@@ -607,6 +612,8 @@ static deh_strs deh_strlookup[] = {
   {&s_GOTPLASMA,"GOTPLASMA"},
   {&s_GOTSHOTGUN,"GOTSHOTGUN"},
   {&s_GOTSHOTGUN2,"GOTSHOTGUN2"},
+  {&s_BETA_BONUS3,"BETA_BONUS3"},
+  {&s_BETA_BONUS4,"BETA_BONUS4"},
   {&s_PD_BLUEO,"PD_BLUEO"},
   {&s_PD_REDO,"PD_REDO"},
   {&s_PD_YELLOWO,"PD_YELLOWO"},
@@ -828,6 +835,9 @@ static deh_strs deh_strlookup[] = {
   {&bgflat31,"BGFLAT31"},
   {&bgcastcall,"BGCASTCALL"},
   {&savegamename,"SAVEGAMENAME"},  // Ty 05/03/98
+
+  // secret messages
+  {&s_HUSTR_SECRETFOUND,"HUSTR_SECRETFOUND"},
 };
 
 static int deh_numstrlookup = sizeof(deh_strlookup) / sizeof(deh_strlookup[0]);

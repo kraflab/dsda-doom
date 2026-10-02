@@ -3138,24 +3138,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MAPSPOT,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR | MF_NOGRAVITY,        // flags
      0                          // flags2
      },
@@ -3165,24 +3165,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MAPSPOT,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      MF2_DONTDRAW               // flags2
      },
@@ -3192,12 +3192,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIREBALL1_1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -3209,7 +3209,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
@@ -3219,24 +3219,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARROW_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ARROW_X1,                // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      6 * FRACUNIT,              // speed
      8 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3246,24 +3246,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DART_1,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DART_X1,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      6 * FRACUNIT,              // speed
      8 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      2,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3273,24 +3273,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_POISONDART_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_POISONDART_X1,           // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      6 * FRACUNIT,              // speed
      8 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      2,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3300,24 +3300,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_RIPPERBALL_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_RIPPERBALL_X1,           // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      6 * FRACUNIT,              // speed
      8 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      2,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_RIP   // flags2
      },
@@ -3327,24 +3327,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_PRJ_BLADE1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_PRJ_BLADE_X1,            // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      6 * FRACUNIT,              // speed
      6 * FRACUNIT,              // radius
      6 * FRACUNIT,              // height
      100,                       // mass
      3,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3354,12 +3354,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICESHARD1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -3371,7 +3371,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      1,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_ICEDAMAGE     // flags2
      },
@@ -3381,24 +3381,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FLAME_TSMALL1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3408,24 +3408,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FLAME_TLARGE1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3435,24 +3435,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FLAME_SMALL1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      MF2_NOTELEPORT | MF2_DONTDRAW      // flags2
      },
@@ -3462,24 +3462,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FLAME_LARGE1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      MF2_NOTELEPORT | MF2_DONTDRAW      // flags2
      },
@@ -3489,24 +3489,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ITEM_PTN1_1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -3516,24 +3516,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_PTN2_1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -3543,24 +3543,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_SOAR1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -3570,24 +3570,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_INVU1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -3597,24 +3597,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_SUMMON,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -3624,24 +3624,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SUMMON_FX1_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SUMMON_FX2_1,            // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      20 * FRACUNIT,             // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_DROPOFF | MF_NOBLOCKMAP,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3651,24 +3651,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_THRUSTINIT2_1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      128 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -3678,24 +3678,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_THRUSTINIT1_1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      128 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP | MF2_DONTDRAW      // flags2
      },
@@ -3705,24 +3705,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_TELOTHER1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -3732,24 +3732,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TELO_FX1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_TELO_FX9,                // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      20 * FRACUNIT,             // speed
      16 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      10001,                     // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_NOBLOCKMAP,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3759,24 +3759,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TELO_FX2_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_TELO_FX9,                // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      16 * FRACUNIT,             // speed
      16 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      10001,                     // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_NOBLOCKMAP,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3786,24 +3786,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TELO_FX3_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_TELO_FX9,                // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      16 * FRACUNIT,             // speed
      16 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      10001,                     // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_NOBLOCKMAP,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3813,24 +3813,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TELO_FX4_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_TELO_FX9,                // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      16 * FRACUNIT,             // speed
      16 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      10001,                     // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_NOBLOCKMAP,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3840,24 +3840,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TELO_FX5_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_TELO_FX9,                // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      16 * FRACUNIT,             // speed
      16 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      10001,                     // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_NOBLOCKMAP,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3867,24 +3867,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DIRT1_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DIRT1_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3894,24 +3894,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DIRT2_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DIRT2_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3921,24 +3921,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DIRT3_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DIRT3_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -3948,24 +3948,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DIRT4_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DIRT4_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
@@ -3975,24 +3975,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DIRT5_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DIRT5_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
@@ -4002,24 +4002,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DIRT6_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DIRT6_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
@@ -4029,24 +4029,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DIRTCLUMP1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4056,24 +4056,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ROCK1_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ROCK1_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4083,24 +4083,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ROCK2_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ROCK2_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4110,24 +4110,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ROCK3_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ROCK3_D,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4137,24 +4137,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SPAWNFOG1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR,       // flags
      MF2_DONTDRAW | MF2_FLOATBOB        // flags2
      },
@@ -4164,24 +4164,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FOGPATCHS1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FOGPATCHS0,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      FRACUNIT,                  // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_FLOAT | MF_NOGRAVITY | MF_SHADOW | MF_NOCLIP,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4191,24 +4191,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FOGPATCHM1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FOGPATCHM0,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      FRACUNIT,                  // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_FLOAT | MF_NOGRAVITY | MF_SHADOW | MF_NOCLIP,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4218,24 +4218,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FOGPATCHL1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FOGPATCHL0,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      FRACUNIT,                  // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_FLOAT | MF_NOGRAVITY | MF_SHADOW | MF_NOCLIP,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4245,24 +4245,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_QUAKE_ACTIVE1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR,       // flags
      MF2_DONTDRAW               // flags2
      },
@@ -4272,24 +4272,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD1_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD1_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4299,24 +4299,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD2_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD2_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4326,24 +4326,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD3_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD3_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4353,24 +4353,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD4_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD4_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4380,24 +4380,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD5_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD5_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4407,24 +4407,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD6_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD6_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4434,24 +4434,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD7_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD7_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4461,24 +4461,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD8_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD8_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4488,24 +4488,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD9_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD9_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4515,24 +4515,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SGSHARD0_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SGSHARD0_D,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -4542,24 +4542,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_EGGC1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -4571,10 +4571,10 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      0,                         // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -4586,7 +4586,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      1,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -4596,24 +4596,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_SPHL1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -4623,24 +4623,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZWINGEDSTATUENOSKULL,    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -4650,24 +4650,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZGEMPEDESTAL1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      40 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -4677,24 +4677,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZSKULL,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4704,24 +4704,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEMBIG,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4731,24 +4731,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEMRED,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4758,24 +4758,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEMGREEN1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4785,24 +4785,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEMGREEN2,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4812,24 +4812,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEMBLUE1,        // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4839,24 +4839,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEMBLUE2,        // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4866,24 +4866,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZBOOK1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4893,24 +4893,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZBOOK2,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4920,24 +4920,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZSKULL2,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4947,24 +4947,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZFWEAPON,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -4974,24 +4974,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZCWEAPON,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -5001,24 +5001,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZMWEAPON,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -5028,24 +5028,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEAR_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -5055,24 +5055,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEAR2_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -5082,24 +5082,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEAR3_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -5109,24 +5109,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTIPUZZGEAR4_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -5136,24 +5136,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_TRCH1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5163,12 +5163,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIREBOMB1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -5180,7 +5180,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOGRAVITY | MF_ALTSHADOW,       // flags
      MF2_FIREDAMAGE             // flags2
      },
@@ -5190,24 +5190,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_ATLP1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5217,24 +5217,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_PSBG1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5244,24 +5244,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_POISONBAG1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOGRAVITY | MF_NOBLOCKMAP,      // flags
      0                          // flags2
      },
@@ -5271,12 +5271,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_POISONCLOUD1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -5288,7 +5288,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      1,                         // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOGRAVITY | MF_NOBLOCKMAP | MF_SHADOW | MF_NOCLIP | MF_DROPOFF, // flags
      MF2_NODMGTHRUST            // flags2
      },
@@ -5300,10 +5300,10 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      hexen_sfx_flechette_bounce,      // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -5315,7 +5315,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      10 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_FLOORBOUNCE | MF2_FIREDAMAGE   // flags2
      },
@@ -5325,24 +5325,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_BOOTS1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5352,24 +5352,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_MANA,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5379,24 +5379,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_ARMOR1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5406,24 +5406,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_BLAST1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5433,24 +5433,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARTI_HEALRAD1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -5460,24 +5460,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SPLASH1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SPLASHX,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      2 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_CANNOTPUSH       // flags2
      },
@@ -5487,24 +5487,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SPLASHBASE1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -5514,24 +5514,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_LAVASPLASH1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -5541,24 +5541,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_LAVASMOKE1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -5568,24 +5568,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SLUDGECHUNK1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SLUDGECHUNKX,            // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      2 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_CANNOTPUSH       // flags2
      },
@@ -5595,24 +5595,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SLUDGESPLASH1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -5622,24 +5622,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZWINGEDSTATUE1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -5649,24 +5649,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZROCK1_1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -5676,24 +5676,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZROCK2_1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -5703,24 +5703,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZROCK3_1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -5730,24 +5730,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZROCK4_1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -5757,24 +5757,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHANDELIER1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      60 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPAWNCEILING | MF_NOGRAVITY,    // flags
      0                          // flags2
      },
@@ -5784,24 +5784,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHANDELIER_U,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      60 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPAWNCEILING | MF_NOGRAVITY,    // flags
      0                          // flags2
      },
@@ -5811,24 +5811,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREEDEAD1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      96 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -5838,24 +5838,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREE,                   // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      128 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -5865,12 +5865,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREEDESTRUCTIBLE1,      // spawnstate
      70,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -5882,7 +5882,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      180 * FRACUNIT,            // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,      // flags
      0                          // flags2
      },
@@ -5892,24 +5892,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREESWAMP182_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      150 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -5919,24 +5919,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREESWAMP172_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      120 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -5946,24 +5946,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTUMPBURNED1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      12 * FRACUNIT,             // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -5973,24 +5973,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTUMPBARE1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      12 * FRACUNIT,             // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6000,24 +6000,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTUMPSWAMP1_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6027,24 +6027,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTUMPSWAMP2_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6054,24 +6054,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMLARGE1_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6081,24 +6081,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMLARGE2_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6108,24 +6108,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMLARGE3_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6135,24 +6135,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMSMALL1_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6162,24 +6162,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMSMALL2_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6189,24 +6189,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMSMALL3_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6216,24 +6216,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMSMALL4_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6243,24 +6243,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHROOMSMALL5_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6270,24 +6270,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITEPILLAR1,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      138 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6297,24 +6297,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITELARGE1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      48 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6324,24 +6324,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITEMEDIUM1,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      6 * FRACUNIT,              // radius
      40 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6351,24 +6351,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITESMALL1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      36 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6378,24 +6378,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALACTITELARGE1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      66 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -6405,24 +6405,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALACTITEMEDIUM1,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      6 * FRACUNIT,              // radius
      50 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -6432,24 +6432,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALACTITESMALL1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      40 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -6459,24 +6459,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZMOSSCEILING1_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPAWNCEILING | MF_NOGRAVITY,    // flags
      0                          // flags2
      },
@@ -6486,24 +6486,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZMOSSCEILING2_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      24 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPAWNCEILING | MF_NOGRAVITY,    // flags
      0                          // flags2
      },
@@ -6513,24 +6513,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSWAMPVINE1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      52 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6540,24 +6540,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCORPSEKABOB1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      92 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6567,24 +6567,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCORPSESLEEPING1,        // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -6594,24 +6594,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTOMBSTONERIP1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      46 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6621,24 +6621,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTOMBSTONESHANE1,        // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      46 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6648,24 +6648,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTOMBSTONEBIGCROSS1,     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      46 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6675,24 +6675,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTOMBSTONEBRIANR1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      52 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6702,24 +6702,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTOMBSTONECROSSCIRCLE1,  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      52 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6729,24 +6729,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTOMBSTONESMALLCROSS1,   // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      46 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6756,24 +6756,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTOMBSTONEBRIANP1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      46 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6783,24 +6783,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CORPSEHANGING_1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      6 * FRACUNIT,              // radius
      75 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -6810,24 +6810,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEGREENTALL_1,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      108 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6837,24 +6837,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEBLUETALL_1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      108 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6864,24 +6864,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEGREENSHORT_1,     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6891,24 +6891,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEBLUESHORT_1,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6918,24 +6918,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLESTRIPETALL_1,     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      108 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6945,24 +6945,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEDARKREDTALL_1,    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      108 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6972,24 +6972,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEREDTALL_1,        // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      108 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -6999,24 +6999,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLETANTALL_1,        // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      108 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7026,24 +7026,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLERUSTTALL_1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      108 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7053,24 +7053,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEDARKREDSHORT_1,   // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7080,24 +7080,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLEREDSHORT_1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7107,24 +7107,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLETANSHORT_1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7134,24 +7134,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTATUEGARGOYLERUSTSHORT_1,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      14 * FRACUNIT,             // radius
      62 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7161,24 +7161,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZBANNERTATTERED_1,       // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      120 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7188,24 +7188,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREELARGE1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ZTREELARGE1,             // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      180 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7215,24 +7215,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREELARGE2,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ZTREELARGE2,             // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      180 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7242,24 +7242,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREEGNARLED1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      22 * FRACUNIT,             // radius
      100 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7269,24 +7269,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTREEGNARLED2,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      22 * FRACUNIT,             // radius
      100 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7296,24 +7296,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZLOG,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      25 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7323,24 +7323,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALACTITEICELARGE,     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      66 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -7350,24 +7350,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALACTITEICEMEDIUM,    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      50 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -7377,24 +7377,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALACTITEICESMALL,     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -7404,24 +7404,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALACTITEICETINY,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -7431,24 +7431,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITEICELARGE,     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      66 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7458,24 +7458,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITEICEMEDIUM,    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      50 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7485,24 +7485,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITEICESMALL,     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7512,24 +7512,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSTALAGMITEICETINY,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7539,24 +7539,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZROCKBROWN1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      17 * FRACUNIT,             // radius
      72 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7566,24 +7566,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZROCKBROWN2,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      50 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7593,24 +7593,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZROCKBLACK,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      40 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7620,24 +7620,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZRUBBLE1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -7647,24 +7647,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZRUBBLE2,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -7674,24 +7674,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZRUBBLE3,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -7701,24 +7701,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZVASEPILLAR,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      12 * FRACUNIT,             // radius
      54 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -7728,24 +7728,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZPOTTERY1,               // spawnstate
      15,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ZPOTTERY_EXPLODE,        // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD | MF_DROPOFF, // flags
      MF2_SLIDE | MF2_PUSHABLE | MF2_TELESTOMP | MF2_PASSMOBJ    // flags2
      },
@@ -7755,24 +7755,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZPOTTERY2,               // spawnstate
      15,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ZPOTTERY_EXPLODE,        // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      25 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD | MF_DROPOFF, // flags
      MF2_SLIDE | MF2_PUSHABLE | MF2_TELESTOMP | MF2_PASSMOBJ    // flags2
      },
@@ -7782,24 +7782,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZPOTTERY3,               // spawnstate
      15,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ZPOTTERY_EXPLODE,        // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      25 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD | MF_DROPOFF, // flags
      MF2_SLIDE | MF2_PUSHABLE | MF2_TELESTOMP | MF2_PASSMOBJ    // flags2
      },
@@ -7809,24 +7809,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_POTTERYBIT_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_POTTERYBIT_EX0,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE,                // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -7836,24 +7836,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCORPSELYNCHED1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      11 * FRACUNIT,             // radius
      95 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -7863,24 +7863,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCORPSELYNCHED2,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      100 * FRACUNIT,            // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -7890,24 +7890,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCORPSESITTING,          // spawnstate
      30,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ZCORPSESITTING_X,        // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      35 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,      // flags
      0                          // flags2
      },
@@ -7917,24 +7917,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CORPSEBIT_1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      MF2_TELESTOMP              // flags2
      },
@@ -7944,12 +7944,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CORPSEBLOODDRIP,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -7961,7 +7961,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE,                // flags
      MF2_LOGRAV                 // flags2
      },
@@ -7971,24 +7971,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BLOODPOOL,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -7998,24 +7998,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCANDLE1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -8025,24 +8025,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZLEAFSPAWNER,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR,       // flags
      MF2_DONTDRAW               // flags2
      },
@@ -8052,24 +8052,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_LEAF1_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_LEAF_X1,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      2 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE,        // flags
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
@@ -8079,24 +8079,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_LEAF2_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_LEAF_X1,                 // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      2 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE,        // flags
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
@@ -8106,24 +8106,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTWINEDTORCH_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8133,24 +8133,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZTWINEDTORCH_UNLIT,      // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      10 * FRACUNIT,             // radius
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8160,24 +8160,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BRIDGE1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      32 * FRACUNIT,             // radius
      2 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_NOGRAVITY,   // flags
      MF2_DONTDRAW               // flags2
      },
@@ -8187,24 +8187,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BBALL1,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -8214,24 +8214,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZWALLTORCH1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -8241,24 +8241,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZWALLTORCH_U,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -8268,24 +8268,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZBARREL1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8295,12 +8295,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHRUB1,                 // spawnstate
      20,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_ZSHRUB1_X1,              // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -8312,7 +8312,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      24 * FRACUNIT,             // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,      // flags
      0                          // flags2
      },
@@ -8322,12 +8322,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSHRUB2,                 // spawnstate
      10,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_ZSHRUB2_X1,              // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -8339,7 +8339,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      40 * FRACUNIT,             // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,      // flags
      0                          // flags2
      },
@@ -8349,24 +8349,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZBUCKET1,                // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      72 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -8376,9 +8376,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZPOISONSHROOM1,          // spawnstate
      30,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_ZPOISONSHROOM_P1,        // painstate
      255,                       // painchance
      hexen_sfx_poisonshroom_pain,     // painsound
@@ -8393,7 +8393,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      20 * FRACUNIT,             // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SHOOTABLE | MF_SOLID | MF_NOBLOOD,      // flags
      0                          // flags2
      },
@@ -8403,24 +8403,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZFIREBULL1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      80 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8430,24 +8430,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZFIREBULL_U,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      80 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8457,24 +8457,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZFIRETHING1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      10 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8484,24 +8484,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZBRASSTORCH1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      6 * FRACUNIT,              // radius
      35 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8511,12 +8511,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZSUITOFARMOR,            // spawnstate
      60,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -8528,7 +8528,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      72 * FRACUNIT,             // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,      // flags
      0                          // flags2
      },
@@ -8538,24 +8538,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZARMORCHUNK1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      0,                         // flags
      0                          // flags2
      },
@@ -8565,12 +8565,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZBELL,                   // spawnstate
      5,                         // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -8582,7 +8582,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      120 * FRACUNIT,            // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD | MF_NOGRAVITY | MF_SPAWNCEILING,     // flags
      0                          // flags2
      },
@@ -8592,24 +8592,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZBLUE_CANDLE1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -8619,24 +8619,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZIRON_MAIDEN,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      12 * FRACUNIT,             // radius
      60 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8646,12 +8646,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZXMAS_TREE,              // spawnstate
      20,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_ZXMAS_TREE_X1,           // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -8663,7 +8663,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      130 * FRACUNIT,            // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,      // flags
      0                          // flags2
      },
@@ -8673,24 +8673,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCAULDRON1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      12 * FRACUNIT,             // radius
      26 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8700,24 +8700,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCAULDRON_U,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      12 * FRACUNIT,             // radius
      26 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID,                  // flags
      0                          // flags2
      },
@@ -8727,24 +8727,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHAINBIT32,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SPAWNCEILING,    // flags
      0                          // flags2
      },
@@ -8754,24 +8754,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHAINBIT64,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SPAWNCEILING,    // flags
      0                          // flags2
      },
@@ -8781,24 +8781,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHAINEND_HEART,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SPAWNCEILING,    // flags
      0                          // flags2
      },
@@ -8808,24 +8808,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHAINEND_HOOK1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SPAWNCEILING,    // flags
      0                          // flags2
      },
@@ -8835,24 +8835,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHAINEND_HOOK2,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SPAWNCEILING,    // flags
      0                          // flags2
      },
@@ -8862,24 +8862,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHAINEND_SPIKE,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SPAWNCEILING,    // flags
      0                          // flags2
      },
@@ -8889,24 +8889,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ZCHAINEND_SKULL,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      32 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SPAWNCEILING,    // flags
      0                          // flags2
      },
@@ -8916,24 +8916,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -8943,24 +8943,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT2,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -8970,24 +8970,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT3,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -8997,24 +8997,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT4,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -9024,24 +9024,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT5,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -9051,24 +9051,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT6,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -9078,24 +9078,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT7,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -9105,24 +9105,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT8,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -9132,24 +9132,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT9,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -9159,24 +9159,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TABLE_SHIT10,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -9186,24 +9186,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TFOG1,                   // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -9213,24 +9213,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_TELESMOKE1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -9240,24 +9240,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR,       // flags
      0                          // flags2
      },
@@ -9272,19 +9272,19 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      hexen_sfx_fighter_punch_hitwall, // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -9294,24 +9294,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_AXE,                     // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -9326,19 +9326,19 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      hexen_sfx_fighter_hammer_hitwall,        // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -9353,19 +9353,19 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      hexen_sfx_fighter_hammer_hitwall,        // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -9375,24 +9375,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_AXEBLOOD1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_AXEBLOOD6,               // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      2 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF, // flags
      MF2_NOTELEPORT | MF2_CANNOTPUSH    // flags2
      },
@@ -9402,24 +9402,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_HAMM,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -9429,12 +9429,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_HAMMER_MISSILE_1,        // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -9446,7 +9446,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      20 * FRACUNIT,             // height
      100,                       // mass
      10,                        // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FIREDAMAGE  // flags2
      },
@@ -9461,19 +9461,19 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      hexen_sfx_fighter_hammer_hitwall,        // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -9483,12 +9483,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FSWORD_MISSILE1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -9500,7 +9500,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      8,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
@@ -9510,24 +9510,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FSWORD_FLAME1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -9537,24 +9537,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CSTAFF,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -9564,12 +9564,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CSTAFF_MISSILE1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -9581,7 +9581,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      10 * FRACUNIT,             // height
      100,                       // mass
      5,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
@@ -9593,22 +9593,22 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      hexen_sfx_cleric_cstaff_hitthing,        // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -9618,24 +9618,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CFLAME1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -9645,24 +9645,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CFLAMEFLOOR1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -9677,19 +9677,19 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      hexen_sfx_cleric_flame_explode,  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      FRACUNIT,                  // radius
      FRACUNIT,                  // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -9704,19 +9704,19 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      hexen_sfx_cleric_flame_explode,  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      FRACUNIT,                  // radius
      FRACUNIT,                  // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -9726,12 +9726,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CIRCLE_FLAME1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -9743,7 +9743,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      16 * FRACUNIT,             // height
      100,                       // mass
      2,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
@@ -9753,24 +9753,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CFLAME_MISSILE1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_CFLAME_MISSILE_X,        // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      200 * FRACUNIT,            // speed
      14 * FRACUNIT,             // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      8,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_DONTDRAW | MF2_FIREDAMAGE   // flags2
      },
@@ -9780,12 +9780,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_HOLY_FX1,                // spawnstate
      105,                       // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -9797,7 +9797,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      6 * FRACUNIT,              // height
      100,                       // mass
      3,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE,     // flags
      MF2_NOTELEPORT | MF2_SEEKERMISSILE | MF2_RIP | MF2_IMPACT | MF2_PCROSS     // flags2
      },
@@ -9807,24 +9807,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_HOLY_TAIL1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      FRACUNIT,                  // radius
      FRACUNIT,                  // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_NOCLIP | MF_ALTSHADOW,      // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -9834,24 +9834,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_HOLY_PUFF1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -9861,24 +9861,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_HOLY_MISSILE1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_HOLY_MISSILE_X,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      30 * FRACUNIT,             // speed
      15 * FRACUNIT,             // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_MISSILE,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -9888,24 +9888,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_HOLY_MISSILE_P1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW,  // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -9915,24 +9915,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MWANDPUFF1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      MF2_NOTELEPORT | MF2_CANNOTPUSH | MF2_NODMGTHRUST  // flags2
      },
@@ -9942,24 +9942,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MWANDSMOKE1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      MF2_NOTELEPORT | MF2_CANNOTPUSH | MF2_NODMGTHRUST  // flags2
      },
@@ -9969,24 +9969,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MWAND_MISSILE1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_MWANDPUFF1,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      184 * FRACUNIT,            // speed
      12 * FRACUNIT,             // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      2,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_RIP | MF2_IMPACT | MF2_PCROSS | MF2_NODMGTHRUST | MF2_CANNOTPUSH      // flags2
      },
@@ -9996,24 +9996,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MW_LIGHTNING1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -10023,24 +10023,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_LIGHTNING_CEILING1,      // spawnstate
      144,                       // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_LIGHTNING_C_X1,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      25 * FRACUNIT,             // speed
      16 * FRACUNIT,             // radius
      40 * FRACUNIT,             // height
      100,                       // mass
      8,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE | MF_DROPOFF,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
@@ -10050,24 +10050,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_LIGHTNING_FLOOR1,        // spawnstate
      144,                       // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_LIGHTNING_F_X1,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      25 * FRACUNIT,             // speed
      16 * FRACUNIT,             // radius
      40 * FRACUNIT,             // height
      100,                       // mass
      8,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE | MF_DROPOFF,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
@@ -10077,24 +10077,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_LIGHTNING_ZAP1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_LIGHTNING_ZAP_X8,        // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      35 * FRACUNIT,             // height
      100,                       // mass
      2,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE | MF_DROPOFF,    // flags
      0                          // flags2
      },
@@ -10104,12 +10104,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MSTAFF_FX1_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -10121,7 +10121,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      6,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE | MF2_RIP | MF2_IMPACT | MF2_PCROSS        // flags2
      },
@@ -10131,12 +10131,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MSTAFF_FX2_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -10148,7 +10148,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE | MF2_IMPACT | MF2_PCROSS | MF2_SEEKERMISSILE      // flags2
      },
@@ -10158,24 +10158,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FSWORD1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10185,24 +10185,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FSWORD2,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10212,24 +10212,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FSWORD3,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10239,24 +10239,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CHOLY1,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10266,24 +10266,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CHOLY2,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10293,24 +10293,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CHOLY3,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10320,24 +10320,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MSTAFF1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10347,24 +10347,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MSTAFF2,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10374,24 +10374,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MSTAFF3,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -10401,24 +10401,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_PUNCHPUFF1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -10428,24 +10428,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_COS1,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -10455,12 +10455,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SHARDFX1_1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -10472,7 +10472,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      1,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_ICEDAMAGE   // flags2
      },
@@ -10482,24 +10482,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BLOOD1,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      0                          // flags2
      },
@@ -10509,24 +10509,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BLOODSPLATTER1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_BLOODSPLATTERX,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      2 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF,   // flags
      MF2_NOTELEPORT | MF2_CANNOTPUSH    // flags2
      },
@@ -10536,24 +10536,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_GIBS1,                   // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_CORPSE,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -10563,9 +10563,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FPLAY,                   // spawnstate
      100,                       // spawnhealth
      HEXEN_S_FPLAY_RUN1,              // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      0,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_FPLAY_PAIN,              // painstate
      255,                       // painchance
      hexen_sfx_player_fighter_pain,   // painsound
@@ -10574,13 +10574,13 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FPLAY_DIE1,              // deathstate
      HEXEN_S_FPLAY_XDIE1,             // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      16 * FRACUNIT,             // radius
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,   // flags
      MF2_WINDTHRUST | MF2_FOOTCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
@@ -10590,24 +10590,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BLOODYSKULL1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      4 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF,        // flags
      MF2_LOGRAV | MF2_CANNOTPUSH        // flags2
      },
@@ -10617,24 +10617,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_PLAYER_SPEED1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_ALTSHADOW,       // flags
      0                          // flags2
      },
@@ -10644,24 +10644,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICECHUNK1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF,        // flags
      MF2_LOGRAV | MF2_CANNOTPUSH | MF2_FOOTCLIP        // flags2
      },
@@ -10671,9 +10671,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CPLAY,                   // spawnstate
      100,                       // spawnhealth
      HEXEN_S_CPLAY_RUN1,              // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      0,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_CPLAY_PAIN,              // painstate
      255,                       // painchance
      hexen_sfx_player_cleric_pain,    // painsound
@@ -10682,13 +10682,13 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_CPLAY_DIE1,              // deathstate
      HEXEN_S_CPLAY_XDIE1,             // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      16 * FRACUNIT,             // radius
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,   // flags
      MF2_WINDTHRUST | MF2_FOOTCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
@@ -10698,9 +10698,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MPLAY,                   // spawnstate
      100,                       // spawnhealth
      HEXEN_S_MPLAY_RUN1,              // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      0,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_MPLAY_PAIN,              // painstate
      255,                       // painchance
      hexen_sfx_player_mage_pain,      // painsound
@@ -10709,13 +10709,13 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_MPLAY_DIE1,              // deathstate
      HEXEN_S_MPLAY_XDIE1,             // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      16 * FRACUNIT,             // radius
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,   // flags
      MF2_WINDTHRUST | MF2_FOOTCLIP | MF2_SLIDE | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
@@ -10725,9 +10725,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_PIGPLAY,                 // spawnstate
      100,                       // spawnhealth
      HEXEN_S_PIGPLAY_RUN1,            // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      0,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_PIGPLAY_PAIN,            // painstate
      255,                       // painchance
      hexen_sfx_pig_pain,              // painsound
@@ -10742,7 +10742,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      24 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_NOTDMATCH,       // flags
      MF2_WINDTHRUST | MF2_SLIDE | MF2_PASSMOBJ | MF2_FOOTCLIP | MF2_TELESTOMP | MF2_PUSHWALL   // flags2
      },
@@ -10754,7 +10754,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_PIG_WALK1,               // seestate
      hexen_sfx_pig_active1,           // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_PIG_PAIN,                // painstate
      128,                       // painchance
      hexen_sfx_pig_pain,              // painsound
@@ -10833,12 +10833,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CENTAUR_FX1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -10850,7 +10850,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      16 * FRACUNIT,             // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS   // flags2
      },
@@ -10860,24 +10860,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CENTAUR_SHIELD1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_CENTAUR_SHIELD_X1,       // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -10887,24 +10887,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CENTAUR_SWORD1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_CENTAUR_SWORD_X1,        // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -10941,24 +10941,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMONCHUNK1_1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMONCHUNK1_4,           // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -10968,24 +10968,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMONCHUNK2_1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMONCHUNK2_4,           // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -10995,24 +10995,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMONCHUNK3_1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMONCHUNK3_4,           // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11022,24 +11022,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMONCHUNK4_1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMONCHUNK4_4,           // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11049,24 +11049,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMONCHUNK5_1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMONCHUNK5_4,           // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11076,12 +11076,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMONFX_MOVE1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11093,7 +11093,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      6 * FRACUNIT,              // height
      100,                       // mass
      5,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FIREDAMAGE  // flags2
      },
@@ -11130,24 +11130,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMON2CHUNK1_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMON2CHUNK1_4,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11157,24 +11157,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMON2CHUNK2_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMON2CHUNK2_4,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11184,24 +11184,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMON2CHUNK3_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMON2CHUNK3_4,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11211,24 +11211,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMON2CHUNK4_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMON2CHUNK4_4,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11238,24 +11238,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMON2CHUNK5_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_DEMON2CHUNK5_4,          // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_CORPSE,       // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11265,12 +11265,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DEMON2FX_MOVE1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11282,7 +11282,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      6 * FRACUNIT,              // height
      100,                       // mass
      5,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE | MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FIREDAMAGE  // flags2
      },
@@ -11346,12 +11346,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_WRTHFX_MOVE1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11363,7 +11363,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      6 * FRACUNIT,              // height
      5,                         // mass
      5,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF | MF_MISSILE,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FOOTCLIP | MF2_FIREDAMAGE  // flags2
      },
@@ -11373,24 +11373,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_WRTHFX_SIZZLE1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      2 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF,        // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11400,12 +11400,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_WRTHFX_DROP1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11417,7 +11417,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      5 * FRACUNIT,              // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -11427,12 +11427,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_WRTHFX_ADROP1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11444,7 +11444,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      5 * FRACUNIT,              // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -11454,12 +11454,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_WRTHFX_BDROP1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11471,7 +11471,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      5 * FRACUNIT,              // height
      5,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -11508,24 +11508,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MNTRFX1_1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_MNTRFXI1_1,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      20 * FRACUNIT,             // speed
      10 * FRACUNIT,             // radius
      6 * FRACUNIT,              // height
      100,                       // mass
      3,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
@@ -11535,24 +11535,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MNTRFX2_1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_MNTRFXI2_1,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      14 * FRACUNIT,             // speed
      5 * FRACUNIT,              // radius
      12 * FRACUNIT,             // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
@@ -11564,22 +11564,22 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      0,                         // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_MNTRFXI2_1,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
@@ -11589,24 +11589,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MINOSMOKE1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -11616,24 +11616,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MINOSMOKEX1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -11660,7 +11660,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      70 * FRACUNIT,             // height
      INT_MAX,                    // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_COUNTKILL | MF_NOBLOOD,      // flags
      MF2_PASSMOBJ | MF2_DONTDRAW | MF2_CANTLEAVEFLOORPIC | MF2_NONSHOOTABLE | MF2_MCROSS        // flags2
      },
@@ -11687,7 +11687,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      70 * FRACUNIT,             // height
      200,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_COUNTKILL | MF_NOBLOOD,      // flags
      MF2_PASSMOBJ | MF2_DONTDRAW | MF2_CANTLEAVEFLOORPIC | MF2_NONSHOOTABLE | MF2_MCROSS        // flags2
      },
@@ -11699,10 +11699,10 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      0,                         // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11714,7 +11714,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      10 * FRACUNIT,             // height
      100,                       // mass
      4,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -11724,24 +11724,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SERPENT_HEAD1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      10 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      MF2_LOGRAV                 // flags2
      },
@@ -11751,24 +11751,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SERPENT_GIB1_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      3 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -11778,24 +11778,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SERPENT_GIB2_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      3 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -11805,24 +11805,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SERPENT_GIB3_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      3 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      0                          // flags2
      },
@@ -11859,24 +11859,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BISHOP_PUFF1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SHADOW | MF_NOBLOCKMAP | MF_NOGRAVITY,  // flags
      0                          // flags2
      },
@@ -11886,24 +11886,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BISHOPBLUR1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -11913,24 +11913,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BISHOPPAINBLUR1,         // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
      0                          // flags2
      },
@@ -11940,12 +11940,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BISHFX1_1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -11957,7 +11957,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      6 * FRACUNIT,              // height
      100,                       // mass
      1,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_SEEKERMISSILE // flags2
      },
@@ -11994,12 +11994,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DRAGON_FX1_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -12011,7 +12011,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      10 * FRACUNIT,             // height
      100,                       // mass
      6,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE    // flags2
      },
@@ -12021,12 +12021,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_DRAGON_FX2_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -12038,7 +12038,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP,             // flags
      MF2_NOTELEPORT | MF2_FIREDAMAGE | MF2_DONTDRAW     // flags2
      },
@@ -12048,24 +12048,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARMOR_1,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -12075,24 +12075,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARMOR_2,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -12102,24 +12102,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARMOR_3,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -12129,24 +12129,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ARMOR_4,                 // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
@@ -12156,24 +12156,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MANA1_1,                 // spawnstate
      10,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -12183,24 +12183,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MANA2_1,                 // spawnstate
      10,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -12210,24 +12210,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MANA3_1,                 // spawnstate
      20,                        // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      8 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      MF2_FLOATBOB               // flags2
      },
@@ -12237,24 +12237,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY1,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12264,24 +12264,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY2,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12291,24 +12291,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY3,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12318,24 +12318,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY4,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12345,24 +12345,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY5,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12372,24 +12372,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY6,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12399,24 +12399,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY7,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12426,24 +12426,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY8,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12453,24 +12453,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEY9,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12480,24 +12480,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEYA,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12507,24 +12507,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KEYB,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      8 * FRACUNIT,              // radius
      20 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SPECIAL,                // flags
      0                          // flags2
      },
@@ -12534,24 +12534,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SND_WIND1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR,       // flags
      0                          // flags2
      },
@@ -12561,24 +12561,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SND_WATERFALL,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR,       // flags
      0                          // flags2
      },
@@ -12615,24 +12615,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ETTIN_MACE1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ETTIN_MACE5,             // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -12644,7 +12644,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_LOOK4,             // seestate
      hexen_sfx_fired_spawn,           // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_FIRED_PAIN1,             // painstate
      1,                         // painchance
      hexen_sfx_fired_pain,            // painsound
@@ -12669,24 +12669,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_CORPSE1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -12696,24 +12696,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_CORPSE4,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_DROPOFF | MF_CORPSE,    // flags
      MF2_NOTELEPORT | MF2_FOOTCLIP     // flags2
      },
@@ -12723,24 +12723,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_RDROP1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FIRED_RDEAD1_1,          // deathstate
      HEXEN_S_FIRED_RDEAD1_2,          // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      16,                        // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -12750,24 +12750,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_RDROP2,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FIRED_RDEAD2_1,          // deathstate
      HEXEN_S_FIRED_RDEAD2_2,          // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      16,                        // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -12777,24 +12777,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_RDROP3,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FIRED_RDEAD3_1,          // deathstate
      HEXEN_S_FIRED_RDEAD3_2,          // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      16,                        // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -12804,24 +12804,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_RDROP4,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FIRED_RDEAD4_1,          // deathstate
      HEXEN_S_FIRED_RDEAD4_2,          // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      16,                        // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -12831,24 +12831,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_RDROP5,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_FIRED_RDEAD5_1,          // deathstate
      HEXEN_S_FIRED_RDEAD5_2,          // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      3 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      16,                        // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -12858,12 +12858,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIRED_FX6_1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -12875,7 +12875,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      6 * FRACUNIT,              // height
      15,                        // mass
      1,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_DROPOFF | MF_MISSILE,    // flags
      MF2_NOTELEPORT | MF2_IMPACT | MF2_PCROSS | MF2_FOOTCLIP | MF2_FIREDAMAGE  // flags2
      },
@@ -12890,13 +12890,13 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      hexen_sfx_iceguy_attack,         // attacksound
      HEXEN_S_ICEGUY_PAIN1,            // painstate
      144,                       // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      0,                         // meleestate
      HEXEN_S_ICEGUY_ATK1,             // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_ICEGUY_DEATH,            // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      14,                        // speed
      22 * FRACUNIT,             // radius
      75 * FRACUNIT,             // height
@@ -12912,12 +12912,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICEGUY_FX1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -12929,7 +12929,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      10 * FRACUNIT,             // height
      100,                       // mass
      1,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
      MF2_NOTELEPORT | MF2_ICEDAMAGE     // flags2
      },
@@ -12939,24 +12939,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICEFX_PUFF1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      FRACUNIT,                  // radius
      FRACUNIT,                  // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW | MF_DROPOFF,     // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -12966,24 +12966,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICEGUY_FX2_1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      10 * FRACUNIT,             // speed
      4 * FRACUNIT,              // radius
      4 * FRACUNIT,              // height
      100,                       // mass
      1,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_MISSILE,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_ICEDAMAGE        // flags2
      },
@@ -12993,24 +12993,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICEGUY_BIT1,             // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      FRACUNIT,                  // radius
      FRACUNIT,                  // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF,        // flags
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
@@ -13020,24 +13020,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICEGUY_WISP1_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE,     // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13047,24 +13047,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_ICEGUY_WISP2_1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE,     // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13074,9 +13074,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_FIGHTER,                 // spawnstate
      800,                       // spawnhealth
      HEXEN_S_FIGHTER_RUN1,            // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_FIGHTER_PAIN,            // painstate
      50,                        // painchance
      hexen_sfx_player_fighter_pain,   // painsound
@@ -13091,7 +13091,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
      MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
@@ -13101,9 +13101,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_CLERIC,                  // spawnstate
      800,                       // spawnhealth
      HEXEN_S_CLERIC_RUN1,             // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_CLERIC_PAIN,             // painstate
      50,                        // painchance
      hexen_sfx_player_cleric_pain,    // painsound
@@ -13118,7 +13118,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
      MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
@@ -13128,9 +13128,9 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_MAGE,                    // spawnstate
      800,                       // spawnhealth
      HEXEN_S_MAGE_RUN1,               // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_MAGE_PAIN,               // painstate
      50,                        // painchance
      hexen_sfx_player_mage_pain,      // painsound
@@ -13145,7 +13145,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      64 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,    // flags
      MF2_FOOTCLIP | MF2_PASSMOBJ | MF2_TELESTOMP | MF2_PUSHWALL | MF2_MCROSS   // flags2
      },
@@ -13157,7 +13157,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SORC_WALK1,              // seestate
      hexen_sfx_sorcerer_sight,        // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_SORC_PAIN1,              // painstate
      10,                        // painchance
      hexen_sfx_sorcerer_pain,         // painsound
@@ -13184,22 +13184,22 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      hexen_sfx_sorcerer_ballbounce,   // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_SORCBALL1_D1,            // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SORCBALL1_D5,            // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      10 * FRACUNIT,             // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE, // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -13211,22 +13211,22 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      hexen_sfx_sorcerer_ballbounce,   // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_SORCBALL2_D1,            // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SORCBALL2_D5,            // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      10 * FRACUNIT,             // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE, // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -13238,22 +13238,22 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      hexen_sfx_sorcerer_ballbounce,   // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_SORCBALL3_D1,            // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SORCBALL3_D5,            // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      10 * FRACUNIT,             // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE, // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -13265,22 +13265,22 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      hexen_sfx_sorcerer_ballbounce,   // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SORCFX1_D1,              // deathstate
      HEXEN_S_SORCFX1_D1,              // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      7 * FRACUNIT,              // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE,        // flags
      MF2_NOTELEPORT | MF2_FLOORBOUNCE   // flags2
      },
@@ -13290,24 +13290,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SORCFX2_SPLIT1,          // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_SORCFX2T1,               // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      15 * FRACUNIT,             // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13317,24 +13317,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SORCFX2T1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_ALTSHADOW,       // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13346,22 +13346,22 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_NULL,                    // seestate
      hexen_sfx_sorcerer_bishopspawn,  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_BISHMORPH1,              // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      15 * FRACUNIT,             // speed
      22 * FRACUNIT,             // radius
      65 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE,        // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13371,24 +13371,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SORCFX3_EXP1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_ALTSHADOW,       // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13398,12 +13398,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SORCFX4_1,               // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -13415,7 +13415,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      10 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_MISSILE | MF_NOGRAVITY, // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13425,24 +13425,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SORCSPARK1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      5 * FRACUNIT,              // radius
      5 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF,        // flags
      MF2_NOTELEPORT | MF2_LOGRAV        // flags2
      },
@@ -13452,24 +13452,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BLASTEFFECT1,            // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_NOCLIP | MF_ALTSHADOW,   // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13479,12 +13479,12 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_WATERDRIP1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
@@ -13496,7 +13496,7 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      16 * FRACUNIT,             // height
      1,                         // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_MISSILE,                // flags
      MF2_LOGRAV | MF2_NOTELEPORT        // flags2
      },
@@ -13533,24 +13533,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      8 * FRACUNIT,              // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE | MF_NOCLIP, // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13560,24 +13560,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      8 * FRACUNIT,              // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE | MF_NOCLIP, // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13587,24 +13587,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      8 * FRACUNIT,              // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE | MF_NOCLIP, // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13614,24 +13614,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      8 * FRACUNIT,              // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE | MF_NOCLIP, // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13641,24 +13641,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      8 * FRACUNIT,              // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE | MF_NOCLIP, // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13668,24 +13668,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KSPIRIT_ROAM1,           // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      8 * FRACUNIT,              // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_DROPOFF | MF_NOGRAVITY | MF_ALTSHADOW | MF_MISSILE | MF_NOCLIP, // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13803,24 +13803,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_KBOLT1,                  // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      15 * FRACUNIT,             // radius
      35 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE | MF_DROPOFF,    // flags
      MF2_NOTELEPORT             // flags2
      },
@@ -13830,24 +13830,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_SPAWNBATS1,              // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_NULL,                    // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      0,                         // speed
      20 * FRACUNIT,             // radius
      16 * FRACUNIT,             // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOSECTOR | MF_NOGRAVITY,        // flags
      MF2_DONTDRAW               // flags2
      },
@@ -13857,24 +13857,24 @@ raven_mobjinfo_t hexen_mobjinfo[HEXEN_NUMMOBJTYPES] = {
      HEXEN_S_BAT1,                    // spawnstate
      1000,                      // spawnhealth
      HEXEN_S_NULL,                    // seestate
-     hexen_sfx_None,                  // seesound
+     sfx_None,                  // seesound
      8,                         // reactiontime
-     hexen_sfx_None,                  // attacksound
+     sfx_None,                  // attacksound
      HEXEN_S_NULL,                    // painstate
      0,                         // painchance
-     hexen_sfx_None,                  // painsound
+     sfx_None,                  // painsound
      HEXEN_S_NULL,                    // meleestate
      HEXEN_S_NULL,                    // missilestate
      HEXEN_S_NULL,                    // crashstate
      HEXEN_S_BAT_DEATH,               // deathstate
      HEXEN_S_NULL,                    // xdeathstate
-     hexen_sfx_None,                  // deathsound
+     sfx_None,                  // deathsound
      5 * FRACUNIT,              // speed
      3 * FRACUNIT,              // radius
      3 * FRACUNIT,              // height
      100,                       // mass
      0,                         // damage
-     hexen_sfx_None,                  // activesound
+     sfx_None,                  // activesound
      MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE, // flags
      MF2_PASSMOBJ | MF2_NOTELEPORT      // flags2
      }

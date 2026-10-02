@@ -24,17 +24,51 @@
 extern "C"
 {
 #endif
+#include "r_defs.h"
+
+typedef enum MapinfoFinale
+{
+  EG_Clear = -1,
+  EG_None,
+  EG_Standard,
+  EG_Art,
+  EG_Cast,
+  EG_Scroll,
+} MapinfoFinale;
+
+typedef enum MapinfoFlags
+{
+	MapInfo_LabelClear = (1u << 0),
+
+	MapInfo_NoIntermission = (1u << 1),
+	MapInfo_InterTextClear = (1u << 2),
+	MapInfo_InterTextSecretClear = (1u << 3),
+
+	MapInfo_BossActionClear = (1u << 4),
+
+	MapInfo_EX_ExplodeIn3D = (1u << 5),
+	MapInfo_EX_VerticalExplosionThrust = (1u << 6),
+} UMapinfoFlags;
 
 struct BossAction
 {
+	dboolean is_param;
 	int type;
 	int special;
-	int tag;
+	int args[LINE_ARG_COUNT];
 };
+
+typedef enum PlayerMovement
+{
+  PM_Unset,
+  PM_Disallow,
+  PM_Allow,
+  PM_Require,
+} PlayerMovement;
 
 struct MapEntry
 {
-	char *mapname;
+	char *lumpname;
 	char *levelname;
 	char *label;
 	char *author;
@@ -46,17 +80,21 @@ struct MapEntry
 	char music[9];
 	char skytexture[9];
 	char endpic[9];
+	char endpalette[9];
 	char exitpic[9];
 	char enterpic[9];
 	char interbackdrop[9];
 	char intermusic[9];
 	int partime;
-	int nointermission;
-	int numbossactions;
+	int flags;
+	MapinfoFinale finale;
 
-	unsigned int propertycount;
-	struct MapProperty *properties;
+	int numbossactions;
 	struct BossAction *bossactions;
+
+	PlayerMovement jumping;
+	PlayerMovement freeaim;
+	PlayerMovement crouching;
 };
 
 struct MapList

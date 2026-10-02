@@ -22,47 +22,52 @@
 
 #include "doomdef.h"
 #include "doomtype.h"
+#include "i_video.h"
 #include "lprintf.h"
 #include "w_wad.h"
 
 #include "dsda/configuration.h"
+#include "textscreen/txt_main.h"
 
 #include "endoom.h"
 
+#define ENDOOM_W 80
+#define ENDOOM_H 25
+
 static const char* cp437_to_utf8[256] = {
   " ",
-  "\xe2\x98\xba",
-  "\xe2\x98\xbb",
-  "\xe2\x99\xa5",
-  "\xe2\x99\xa6",
-  "\xe2\x99\xa3",
-  "\xe2\x99\xa0",
-  "\xe2\x80\xa2",
-  "\xe2\x97\x98",
-  "\xe2\x97\x8b",
-  "\xe2\x97\x99",
-  "\xe2\x99\x82",
-  "\xe2\x99\x80",
-  "\xe2\x99\xaa",
-  "\xe2\x99\xab",
-  "\xe2\x98\xbc",
+  "\xe2\x98\xba", // ☺
+  "\xe2\x98\xbb", // ☻
+  "\xe2\x99\xa5", // ♥
+  "\xe2\x99\xa6", // ♦
+  "\xe2\x99\xa3", // ♣
+  "\xe2\x99\xa0", // ♠
+  "\xe2\x80\xa2", // •
+  "\xe2\x97\x98", // ◘
+  "\xe2\x97\x8b", // ○
+  "\xe2\x97\x99", // ◙
+  "\xe2\x99\x82", // ♂
+  "\xe2\x99\x80", // ♀
+  "\xe2\x99\xaa", // ♪
+  "\xe2\x99\xab", // ♫
+  "\xe2\x98\xbc", // ☼
 
-  "\xe2\x96\xba",
-  "\xe2\x97\x84",
-  "\xe2\x86\x95",
-  "\xe2\x80\xbc",
-  "\xc2\xb6",
-  "\xc2\xa7",
-  "\xe2\x96\xac",
-  "\xe2\x86\xa8",
-  "\xe2\x86\x91",
-  "\xe2\x86\x93",
-  "\xe2\x86\x92",
-  "\xe2\x86\x90",
-  "\xe2\x88\x9f",
-  "\xe2\x86\x94",
-  "\xe2\x96\xb2",
-  "\xe2\x96\xbc",
+  "\xe2\x96\xba", // ►
+  "\xe2\x97\x84", // ◄
+  "\xe2\x86\x95", // ↕
+  "\xe2\x80\xbc", // ‼
+  "\xc2\xb6", // ¶
+  "\xc2\xa7", // §
+  "\xe2\x96\xac", // ▬
+  "\xe2\x86\xa8", // ↨
+  "\xe2\x86\x91", // ↑
+  "\xe2\x86\x93", // ↓
+  "\xe2\x86\x92", // →
+  "\xe2\x86\x90", // ←
+  "\xe2\x88\x9f", // ∟
+  "\xe2\x86\x94", // ↔
+  "\xe2\x96\xb2", // ▲
+  "\xe2\x96\xbc", // ▼
 
   " ",
   "!",
@@ -164,143 +169,143 @@ static const char* cp437_to_utf8[256] = {
   "|",
   "}",
   "~",
-  "\xe2\x8c\x82",
+  "\xe2\x8c\x82", // ⌂
 
-  "\xc3\x87",
-  "\xc3\xbc",
-  "\xc3\xa9",
-  "\xc3\xa2",
-  "\xc3\xa4",
-  "\xc3\xa0",
-  "\xc3\xa5",
-  "\xc3\xa7",
-  "\xc3\xaa",
-  "\xc3\xab",
-  "\xc3\xa8",
-  "\xc3\xaf",
-  "\xc3\xae",
-  "\xc3\xac",
-  "\xc3\x84",
-  "\xc3\x85",
+  "\xc3\x87", // Ç
+  "\xc3\xbc", // ü
+  "\xc3\xa9", // é
+  "\xc3\xa2", // â
+  "\xc3\xa4", // ä
+  "\xc3\xa0", // à
+  "\xc3\xa5", // å
+  "\xc3\xa7", // ç
+  "\xc3\xaa", // ê
+  "\xc3\xab", // ë
+  "\xc3\xa8", // è
+  "\xc3\xaf", // ï
+  "\xc3\xae", // î
+  "\xc3\xac", // ì
+  "\xc3\x84", // Ä
+  "\xc3\x85", // Å
 
-  "\xc3\x89",
-  "\xc3\xa6",
-  "\xc3\x86",
-  "\xc3\xb4",
-  "\xc3\xb6",
-  "\xc3\xb2",
-  "\xc3\xbb",
-  "\xc3\xb9",
-  "\xc3\xbf",
-  "\xc3\x96",
-  "\xc3\x9c	",
-  "\xc2\xa2",
-  "\xc2\xa3",
-  "\xc2\xa5",
-  "\xe2\x82\xa7",
-  "\xc6\x92",
+  "\xc3\x89", // É
+  "\xc3\xa6", // æ
+  "\xc3\x86", // Æ
+  "\xc3\xb4", // ô
+  "\xc3\xb6", // ö
+  "\xc3\xb2", // ò
+  "\xc3\xbb", // û
+  "\xc3\xb9", // ù
+  "\xc3\xbf", // ÿ
+  "\xc3\x96", // Ö
+  "\xc3\x9c", // Ü
+  "\xc2\xa2", // ¢
+  "\xc2\xa3", // £
+  "\xc2\xa5", // ¥
+  "\xe2\x82\xa7", // ₧
+  "\xc6\x92", // ƒ
 
-  "\xc3\xa1",
-  "\xc3\xad",
-  "\xc3\xb3",
-  "\xc3\xba",
-  "\xc3\xb1",
-  "\xc3\x91",
-  "\xc2\xaa",
-  "\xc2\xba",
-  "\xc2\xbf",
-  "\xe2\x8c\x90",
-  "\xc2\xac",
-  "\xc2\xbd",
-  "\xc2\xbc",
-  "\xc2\xa1",
-  "\xc2\xab",
-  "\xc2\xbb",
+  "\xc3\xa1", // á
+  "\xc3\xad", // í
+  "\xc3\xb3", // ó
+  "\xc3\xba", // ú
+  "\xc3\xb1", // ñ
+  "\xc3\x91", // Ñ
+  "\xc2\xaa", // ª
+  "\xc2\xba", // º
+  "\xc2\xbf", // ¿
+  "\xe2\x8c\x90", // ⌐
+  "\xc2\xac", // ¬
+  "\xc2\xbd", // ½
+  "\xc2\xbc", // ¼
+  "\xc2\xa1", // ¡
+  "\xc2\xab", // «
+  "\xc2\xbb", // »
 
-  "\xe2\x96\x91",
-  "\xe2\x96\x92",
-  "\xe2\x96\x93",
-  "\xe2\x94\x82",
-  "\xe2\x94\xa4",
-  "\xe2\x95\xa1",
-  "\xe2\x95\xa2",
-  "\xe2\x95\x96",
-  "\xe2\x95\x95",
-  "\xe2\x95\xa3",
-  "\xe2\x95\x91",
-  "\xe2\x95\x97",
-  "\xe2\x95\x9d",
-  "\xe2\x95\x9c",
-  "\xe2\x95\x9b",
-  "\xe2\x94\x90",
+  "\xe2\x96\x91", // ░
+  "\xe2\x96\x92", // ▒
+  "\xe2\x96\x93", // ▓
+  "\xe2\x94\x82", // │
+  "\xe2\x94\xa4", // ┤
+  "\xe2\x95\xa1", // ╡
+  "\xe2\x95\xa2", // ╢
+  "\xe2\x95\x96", // ╖
+  "\xe2\x95\x95", // ╕
+  "\xe2\x95\xa3", // ╣
+  "\xe2\x95\x91", // ║
+  "\xe2\x95\x97", // ╗
+  "\xe2\x95\x9d", // ╝
+  "\xe2\x95\x9c", // ╜
+  "\xe2\x95\x9b", // ╛
+  "\xe2\x94\x90", // ┐
 
-  "\xe2\x94\x94",
-  "\xe2\x94\xb4",
-  "\xe2\x94\xac",
-  "\xe2\x94\x9c",
-  "\xe2\x94\x80",
-  "\xe2\x94\xbc",
-  "\xe2\x95\x9e",
-  "\xe2\x95\x9f",
-  "\xe2\x95\x9a",
-  "\xe2\x95\x94",
-  "\xe2\x95\xa9",
-  "\xe2\x95\xa6",
-  "\xe2\x95\xa0",
-  "\xe2\x95\x90",
-  "\xe2\x95\xac",
-  "\xe2\x95\xa7",
+  "\xe2\x94\x94", // └
+  "\xe2\x94\xb4", // ┴
+  "\xe2\x94\xac", // ┬
+  "\xe2\x94\x9c", // ├
+  "\xe2\x94\x80", // ─
+  "\xe2\x94\xbc", // ┼
+  "\xe2\x95\x9e", // ╞
+  "\xe2\x95\x9f", // ╟
+  "\xe2\x95\x9a", // ╚
+  "\xe2\x95\x94", // ╔
+  "\xe2\x95\xa9", // ╩
+  "\xe2\x95\xa6", // ╦
+  "\xe2\x95\xa0", // ╠
+  "\xe2\x95\x90", // ═
+  "\xe2\x95\xac", // ╬
+  "\xe2\x95\xa7", // ╧
 
-  "\xe2\x95\xa8",
-  "\xe2\x95\xa4",
-  "\xe2\x95\xa5",
-  "\xe2\x95\x99",
-  "\xe2\x95\x98",
-  "\xe2\x95\x92",
-  "\xe2\x95\x93",
-  "\xe2\x95\xab",
-  "\xe2\x95\xaa",
-  "\xe2\x94\x98",
-  "\xe2\x94\x8c",
-  "\xe2\x96\x88",
-  "\xe2\x96\x84",
-  "\xe2\x96\x8c",
-  "\xe2\x96\x90",
-  "\xe2\x96\x80",
+  "\xe2\x95\xa8", // ╨
+  "\xe2\x95\xa4", // ╤
+  "\xe2\x95\xa5", // ╥
+  "\xe2\x95\x99", // ╙
+  "\xe2\x95\x98", // ╘
+  "\xe2\x95\x92", // ╒
+  "\xe2\x95\x93", // ╓
+  "\xe2\x95\xab", // ╫
+  "\xe2\x95\xaa", // ╪
+  "\xe2\x94\x98", // ┘
+  "\xe2\x94\x8c", // ┌
+  "\xe2\x96\x88", // █
+  "\xe2\x96\x84", // ▄
+  "\xe2\x96\x8c", // ▌
+  "\xe2\x96\x90", // ▐
+  "\xe2\x96\x80", // ▀
 
-  "\xce\xb1",
-  "\xc3\x9f",
-  "\xce\x93",
-  "\xcf\x80",
-  "\xce\xa3",
-  "\xcf\x83",
-  "\xc2\xb5",
-  "\xcf\x84",
-  "\xce\xa6",
-  "\xce\x98",
-  "\xce\xa9",
-  "\xce\xb4",
-  "\xe2\x88\x9e",
-  "\xcf\x86",
-  "\xce\xb5",
-  "\xe2\x88\xa9",
+  "\xce\xb1", // α
+  "\xc3\x9f", // ß
+  "\xce\x93", // Γ
+  "\xcf\x80", // π
+  "\xce\xa3", // Σ
+  "\xcf\x83", // σ
+  "\xc2\xb5", // µ
+  "\xcf\x84", // τ
+  "\xce\xa6", // Φ
+  "\xce\x98", // Θ
+  "\xce\xa9", // Ω
+  "\xce\xb4", // δ
+  "\xe2\x88\x9e", // ∞
+  "\xcf\x86", // φ
+  "\xce\xb5", // ε
+  "\xe2\x88\xa9", // ∩
 
-  "\xe2\x89\xa1",
-  "\xc2\xb1",
-  "\xe2\x89\xa5",
-  "\xe2\x89\xa4",
-  "\xe2\x8c\xa0",
-  "\xe2\x8c\xa1",
-  "\xc3\xb7",
-  "\xe2\x89\x88",
-  "\xc2\xb0",
-  "\xe2\x88\x99",
-  "\xc2\xb7",
-  "\xe2\x88\x9a",
-  "\xe2\x81\xbf",
-  "\xc2\xb2",
-  "\xe2\x96\xa0",
-  "\xc2\xa0",
+  "\xe2\x89\xa1", // ≡
+  "\xc2\xb1", // ±
+  "\xe2\x89\xa5", // ≥
+  "\xe2\x89\xa4", // ≤
+  "\xe2\x8c\xa0", // ⌠
+  "\xe2\x8c\xa1", // ⌡
+  "\xc3\xb7", // ÷
+  "\xe2\x89\x88", // ≈
+  "\xc2\xb0", // °
+  "\xe2\x88\x99", // ∙
+  "\xc2\xb7", // ·
+  "\xe2\x88\x9a", // √
+  "\xe2\x81\xbf", // ⁿ
+  "\xc2\xb2", // ²
+  "\xe2\x96\xa0", // ■
+  "\xc2\xa0", // NBSP
 };
 
 typedef enum {
@@ -309,8 +314,14 @@ typedef enum {
   format_utf8,
 } output_format_t;
 
+typedef enum {
+  endoom_window,
+  endoom_terminal,
+} endoom_export_t;
+
 static byte* endoom;
 static output_format_t output_format;
+static endoom_export_t endoom_export;
 
 #ifdef _WIN32
 static HANDLE hConsole;
@@ -341,12 +352,24 @@ static void RestoreOldMode(void) {
 }
 #endif
 
+int is_opengl = false;
+
 void dsda_CacheEndoom(void) {
   int lump;
+  int show_endoom;
+  int pwad_only;
 
   output_format = dsda_IntConfig(dsda_config_ansi_endoom);
 
-  if (!output_format)
+  show_endoom = dsda_IntConfig(dsda_config_show_endoom);
+
+  if (V_IsOpenGLMode())
+    is_opengl = true;
+
+  if (started_demo)
+    return;
+
+  if (show_endoom==0)
     return;
 
   if (hexen)
@@ -360,7 +383,9 @@ void dsda_CacheEndoom(void) {
       lump = W_CheckNumForName("ENDOOM");
   }
 
-  if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000)
+  pwad_only = (show_endoom==2 && !W_PWADLumpNumExists(lump) && W_PWADMapsExist());
+
+  if (lump == LUMP_NOT_FOUND || W_LumpLength(lump) != 4000 || pwad_only)
     return;
 
   endoom = Z_Malloc(4000);
@@ -368,7 +393,23 @@ void dsda_CacheEndoom(void) {
 }
 
 void dsda_DumpEndoom(void) {
-  if (endoom) {
+  endoom_export = dsda_IntConfig(dsda_config_export_endoom);
+
+  if (endoom)
+  {
+    if (endoom_export)
+      dsda_TerminalEndoom();
+    else
+      dsda_WindowEndoom();
+  }
+}
+
+//
+// DSDA Terminal ENDOOM
+//
+
+void dsda_TerminalEndoom(void)
+{
     int i;
     const char* color_lookup[] = {
       "0", "4", "2", "6", "1", "5", "3", "7",
@@ -414,5 +455,56 @@ void dsda_DumpEndoom(void) {
 #ifdef _WIN32
     RestoreOldMode();
 #endif
-  }
+}
+
+
+//
+// Window ENDOOM
+//
+
+void dsda_WindowEndoom(void)
+{
+    unsigned char *screendata;
+    int y;
+    int indent;
+
+    // Set up text mode screen
+
+    TXT_PreInit(I_GetSDLWindow(), I_GetSDLRenderer(), is_opengl);
+
+    if (!TXT_Init())
+    {
+        lprintf(LO_ERROR, "Failed to initialize libtextscreen");
+        return;
+    }
+
+    // Write the data to the screen memory
+
+    screendata = TXT_GetScreenData();
+
+    indent = (ENDOOM_W - TXT_SCREEN_W) / 2;
+
+    for (y = 0; y < TXT_SCREEN_H; ++y)
+    {
+        memcpy(screendata + (y * TXT_SCREEN_W * 2),
+               endoom + (y * ENDOOM_W + indent) * 2, TXT_SCREEN_W * 2);
+    }
+
+    // Wait for a keypress
+
+    while (true)
+    {
+        TXT_UpdateScreen();
+
+        if (TXT_GetChar() > 0)
+        {
+            break;
+        }
+
+        TXT_Sleep(0);
+    }
+
+    // Shut down text mode screen
+
+    TXT_Shutdown();
 }

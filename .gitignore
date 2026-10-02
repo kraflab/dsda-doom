@@ -3,6 +3,8 @@
 /build*
 /release*
 
+/prboom2/build*
+
 # spec files
 analysis.txt
 levelstat.txt
@@ -25,6 +27,9 @@ CMakeUserPresets.json
 # Visual Studio Code
 /.vscode/**
 !/.vscode/extension.json
+CMakePresets.json
 
 # clangd
 /.cache/
+/prboom2/.cache/
+compile_commands.json

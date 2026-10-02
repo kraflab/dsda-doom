@@ -34,6 +34,7 @@
 #include "doomstat.h"
 #include "w_wad.h"
 #include "r_main.h"
+#include "p_enemy.h"
 #include "p_maputl.h"
 #include "p_spec.h"
 #include "g_game.h"
@@ -101,15 +102,20 @@ const switchlist_t *alphSwitchList;         //jff 3/23/98 pointer to switch tabl
 //
 void P_InitSwitchList(void)
 {
-  int lump = -1;
+  int lump = LUMP_NOT_FOUND;
   int i, index = 0;
   int episode = (gamemode == registered || gamemode==retail) ?
                  2 : gamemode == commercial ? 3 : 1;
 
-  // MAP_FORMAT_TODO: switch list?
   if (heretic)
   {
-    alphSwitchList = heretic_alphSwitchList;
+    lump = W_GetAnimatedOrSwitchesLump("SWITCHES");
+
+    // Heretic keeps using built-in switches unless an IWAD/PWAD lump exists
+    if (W_LumpNumExists(lump) && !W_LumpNumInPortWad(lump))
+      alphSwitchList = (const switchlist_t *)W_LumpByNum(lump);
+    else
+      alphSwitchList = heretic_alphSwitchList;
   }
   else if (hexen)
   {
@@ -117,7 +123,7 @@ void P_InitSwitchList(void)
   }
   else
   {
-    lump = W_GetNumForName("SWITCHES"); // cph - new wad lump handling
+    lump = W_GetAnimatedOrSwitchesLump("SWITCHES"); // cph - new wad lump handling
 
     //jff 3/23/98 read the switch table from a predefined lump
     alphSwitchList = (const switchlist_t *)W_LumpByNum(lump);
@@ -140,16 +146,16 @@ void P_InitSwitchList(void)
       // Ignore switches referencing unknown texture names, instead of exiting.
       // Warn if either one is missing, but only add if both are valid.
       texture1 = R_CheckTextureNumForName(alphSwitchList[i].name1);
-      if (texture1 == -1)
+      if (texture1 == LUMP_NOT_FOUND)
         lprintf(LO_WARN, "P_InitSwitchList: unknown texture %s\n",
             alphSwitchList[i].name1);
 
       texture2 = R_CheckTextureNumForName(alphSwitchList[i].name2);
-      if (texture2 == -1)
+      if (texture2 == LUMP_NOT_FOUND)
         lprintf(LO_WARN, "P_InitSwitchList: unknown texture %s\n",
             alphSwitchList[i].name2);
 
-      if (texture1 != -1 && texture2 != -1) {
+      if (texture1 != LUMP_NOT_FOUND && texture2 != LUMP_NOT_FOUND) {
         switchlist[index++] = texture1;
         switchlist[index++] = texture2;
       }
@@ -157,7 +163,7 @@ void P_InitSwitchList(void)
   }
 
   numswitches = index / 2;
-  switchlist[index] = -1;
+  switchlist[index] = LUMP_NOT_FOUND;
 }
 
 //
@@ -1378,12 +1384,12 @@ P_UseSpecialLine
 dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dboolean bossaction)
 {
     // This condition never reached in heretic
-    if (side || bossaction) return false;
+    if (side) return false;
 
     //
     //      Switches that other things can activate
     //
-    if (!thing->player)
+    if (!thing->player && !bossaction)
     {
         if (line->flags & ML_SECRET)
             return false;       // never open secret doors
@@ -1397,6 +1403,20 @@ dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dbool
             default:
                 return false;
         }
+    }
+
+    if (bossaction)
+    {
+      switch(line->special)
+      {
+        // 0-tag specials, locked switches and teleporters need to be blocked for boss actions.
+        case 1:         // MANUAL DOOR RAISE
+        case 32:        // MANUAL BLUE
+        case 33:        // MANUAL RED
+        case 34:        // MANUAL YELLOW
+          return false;
+          break;
+      }
     }
 
     //
@@ -1563,6 +1583,9 @@ dboolean Heretic_P_UseSpecialLine(mobj_t * thing, line_t * line, int side, dbool
         case 70:               // Turbo Lower Floor
             if (EV_DoFloor(line, turboLower))
                 P_ChangeSwitchTexture(line, 1);
+            break;
+        case 515:
+            P_Massacre();
             break;
     }
 

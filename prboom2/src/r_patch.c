@@ -130,14 +130,14 @@ void R_InitPatches(void) {
     memset(texture_composites, 0, sizeof(rpatch_t)*numtextures);
   }
 
-  dsda_InitPlayPal();
+  dsda_InitAllPlayPals();
   R_UpdatePlayPal();
 }
 
 void R_UpdatePlayPal(void) {
   dsda_playpal_t* playpal_data;
 
-  playpal_data = dsda_PlayPalData();
+  playpal_data = dsda_PlayPalData(playpal_index);
   playpal_transparent = playpal_data->transparent;
   playpal_duplicate = playpal_data->duplicate;
   playpal_darkest = playpal_data->darkest;

@@ -157,7 +157,8 @@ static dboolean P_CheckRange(mobj_t *actor, fixed_t range)
     P_AproxDistance(pl->x-actor->x, pl->y-actor->y) < range &&
     P_CheckSight(actor, actor->target) &&
     ( // finite height!
-      !(raven || map_info.flags & MI_PASSOVER) ||
+      // TODO: possible "passover" mapinfo flag
+      !(raven) ||
       (
         pl->z <= actor->z + actor->height &&
         actor->z <= pl->z + pl->height
@@ -461,6 +462,10 @@ static dboolean P_Move(mobj_t *actor, dboolean dropoff) /* killough 9/12/98 */
     for (good = false; numspechit--; )
       if (P_UseSpecialLine(actor, spechit[numspechit], 0, false))
         good |= spechit[numspechit] == blockline ? 1 : 2;
+
+    // There are checks elsewhere for numspechit == 0, so we don't want to
+    // leave numspechit == -1.
+    numspechit = 0;
 
     if (raven) return good > 0;
 
@@ -1917,9 +1922,9 @@ dboolean P_RaiseThing(mobj_t *corpse, mobj_t *raiser)
   // Allow ghost monsters to be rendered translucent
   if (corpse->height == 0 && corpse->radius == 0
     && dsda_IntConfig(dsda_config_translucent_ghosts))
-      corpse->flags |= MF_TRANSLUCENT;  
+      corpse->flags |= MF_TRANSLUCENT;
 
-  if (!((corpse->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(corpse))
     totallive++;
 
   corpse->health = P_MobjSpawnHealth(corpse);
@@ -2001,9 +2006,9 @@ static dboolean P_HealCorpse(mobj_t* actor, int radius, statenum_t healstate, sf
           // Allow ghost monsters to be rendered translucent
           if (corpsehit->height == 0 && corpsehit->radius == 0
             && dsda_IntConfig(dsda_config_translucent_ghosts))
-              corpsehit->flags |= MF_TRANSLUCENT;  
+              corpsehit->flags |= MF_TRANSLUCENT;
 
-          if (!((corpsehit->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+          if (dsda_IsCountedKill(corpsehit))
             totallive++;
 
           corpsehit->health = P_MobjSpawnHealth(corpsehit);
@@ -2623,13 +2628,13 @@ void A_BossDeath(mobj_t *mo)
 {
   line_t junk;
 
-  // heretic_note: probably we can adopt the clean heretic style and merge
-  if (heretic) return Heretic_A_BossDeath(mo);
-
   if (dsda_BossAction(mo))
   {
     return;
   }
+
+  // heretic_note: probably we can adopt the clean heretic style and merge
+  if (heretic) return Heretic_A_BossDeath(mo);
 
   if (gamemode == commercial)
   {
@@ -3160,26 +3165,28 @@ void A_RandomJump(mobj_t *mo)
 
 void A_LineEffect(mobj_t *mo)
 {
-  static line_t junk;
-  player_t player;
-  player_t *oldplayer;
-
   if (compatibility_level < lxdoom_1_compatibility &&
       !prboom_comp[PC_APPLY_MBF_CODEPOINTERS_TO_ANY_COMPLEVEL].state)
     return;
 
-  junk = *lines;
-  oldplayer = mo->player;
-  mo->player = &player;
-  player.health = 100;
-  junk.special = (short)mo->state->misc1;
-  if (!junk.special)
-    return;
-  junk.special_args[0] = (short)mo->state->misc2;
-  if (!P_UseSpecialLine(mo, &junk, 0, false))
-    map_format.cross_special_line(&junk, 0, mo, false);
-  mo->state->misc1 = junk.special;
-  mo->player = oldplayer;
+  if (!(mo->intflags & MIF_LINEDONE)) // Unless already used up
+  {
+    line_t junk = *lines;                                   // Fake linedef set to 1st
+    if ((junk.special = (short)mo->state->misc1))           // Linedef type
+    {
+      // [FG] made static
+      static player_t player;                               // Remember player status
+      player_t *oldplayer = mo->player;                     // Remember player status
+      mo->player = &player;                                 // Fake player
+      player.health = 100;                                  // Alive player
+      junk.special_args[0] = (short)mo->state->misc2;       // Sector tag for linedef
+      if (!P_UseSpecialLine(mo, &junk, 0, false))           // Try using it
+        map_format.cross_special_line(&junk, 0, mo, false); // Try crossing it
+      if (!junk.special)                                    // If type cleared,
+        mo->intflags |= MIF_LINEDONE;                       // no more for this thing
+      mo->player = oldplayer;                               // Restore player status
+    }
+  }
 }
 
 //
@@ -3319,7 +3326,8 @@ void A_MonsterProjectile(mobj_t *actor)
 void A_MonsterBulletAttack(mobj_t *actor)
 {
   int hspread, vspread, numbullets, damagebase, damagemod;
-  int aimslope, i, damage, angle, slope;
+  int aimslope, i, damage, slope;
+  angle_t angle;
 
   if (!mbf21 || !actor->target)
     return;
@@ -3338,7 +3346,7 @@ void A_MonsterBulletAttack(mobj_t *actor)
   for (i = 0; i < numbullets; i++)
   {
     damage = (P_Random(pr_mbf21) % damagemod + 1) * damagebase;
-    angle = (int)actor->angle + P_RandomHitscanAngle(pr_mbf21, hspread);
+    angle = actor->angle + (angle_t)P_RandomHitscanAngle(pr_mbf21, hspread);
     slope = aimslope + P_RandomHitscanSlope(pr_mbf21, vspread);
 
     P_LineAttack(actor, angle, MISSILERANGE, slope, damage);
@@ -3888,6 +3896,7 @@ dboolean P_UpdateChicken(mobj_t * actor, int tics)
     oldChicken = *actor;
     P_SetMobjState(actor, HERETIC_S_FREETARGMOBJ);
     mo = P_SpawnMobj(x, y, z, moType);
+    mo->intflags |= oldChicken.intflags & MIF_SPAWNED_BY_DSPARIL;
     dsda_WatchUnMorph(mo);
     if (P_TestMobjLocation(mo) == false)
     {                           // Didn't fit
@@ -4097,6 +4106,7 @@ void A_SorcererRise(mobj_t * actor)
 
     actor->flags &= ~MF_SOLID;
     mo = P_SpawnMobj(actor->x, actor->y, actor->z, HERETIC_MT_SORCERER2);
+    dsda_WatchDSparilPhaseSpawn(mo);
     P_SetMobjState(mo, HERETIC_S_SOR2_RISE1);
     mo->angle = actor->angle;
     P_SetTarget(&mo->target, actor->target);
@@ -4207,9 +4217,11 @@ void A_GenWizard(mobj_t * actor)
                      actor->z - mobjinfo[HERETIC_MT_WIZARD].height / 2, HERETIC_MT_WIZARD);
     if (P_TestMobjLocation(mo) == false)
     {                           // Didn't fit
+        dsda_WatchFailedSpawn(mo);
         P_RemoveMobj(mo);
         return;
     }
+    dsda_WatchDSparilSpawn(mo);
     actor->momx = actor->momy = actor->momz = 0;
     P_SetMobjState(actor, mobjinfo[actor->type].deathstate);
     actor->flags &= ~MF_MISSILE;
@@ -4736,7 +4748,7 @@ void A_MakePod(mobj_t * actor)
 
 void A_ESound(mobj_t * mo)
 {
-    int sound = heretic_sfx_None;
+    int sound = sfx_None;
 
     switch (mo->type)
     {
@@ -5717,7 +5729,7 @@ void Hexen_A_Scream(mobj_t * actor)
                         sound = hexen_sfx_player_mage_normal_death;
                         break;
                     default:
-                        sound = hexen_sfx_None;
+                        sound = sfx_None;
                         break;
                 }
             }
@@ -5735,7 +5747,7 @@ void Hexen_A_Scream(mobj_t * actor)
                         sound = hexen_sfx_player_mage_crazy_death;
                         break;
                     default:
-                        sound = hexen_sfx_None;
+                        sound = sfx_None;
                         break;
                 }
             }
@@ -5753,7 +5765,7 @@ void Hexen_A_Scream(mobj_t * actor)
                         sound = hexen_sfx_player_mage_extreme1_death;
                         break;
                     default:
-                        sound = hexen_sfx_None;
+                        sound = sfx_None;
                         break;
                 }
                 sound += P_Random(pr_hexen) % 3;        // Three different extreme deaths
@@ -6462,9 +6474,9 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
     {                           // attack the destination mobj if it's attackable
         mobj_t *oldTarget;
 
-        if (abs((int) actor->angle - (int) R_PointToAngle2(actor->x, actor->y,
+        if (abs((int)(actor->angle - R_PointToAngle2(actor->x, actor->y,
                                                target->x,
-                                               target->y)) < ANG45 / 2)
+                                               target->y))) < ANG45 / 2)
         {
             oldTarget = actor->target;
             actor->target = target;
@@ -6513,9 +6525,9 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
                 }
                 angleToSpot = R_PointToAngle2(actor->x, actor->y,
                                               mo_x, mo_y);
-                if (abs((int) angleToSpot - (int) angleToTarget) < bestAngle)
+                if (abs((int)(angleToSpot - angleToTarget)) < bestAngle)
                 {
-                    bestAngle = abs((int) angleToSpot - (int) angleToTarget);
+                    bestAngle = abs((int)(angleToSpot - angleToTarget));
                     bestArg = i;
                 }
             }
@@ -6579,13 +6591,13 @@ void A_DragonFlight(mobj_t * actor)
         }
         angle = R_PointToAngle2(actor->x, actor->y, actor->target->x,
                                 actor->target->y);
-        if (abs((int) actor->angle - (int) angle) < ANG45 / 2
+        if (abs((int)(actor->angle - angle)) < ANG45 / 2
             && P_CheckMeleeRange(actor))
         {
             P_DamageMobj(actor->target, actor, actor, HITDICE(8));
             S_StartMobjSound(actor, hexen_sfx_dragon_attack);
         }
-        else if (abs((int) actor->angle - (int) angle) <= ANG1 * 20)
+        else if (abs((int)(actor->angle - angle)) <= ANG1 * 20)
         {
             P_SetMobjState(actor, actor->info->missilestate);
             S_StartMobjSound(actor, hexen_sfx_dragon_attack);
@@ -7585,7 +7597,7 @@ void A_SorcBallOrbit(mobj_t * actor)
         case SORC_STOPPING:    // Balls stopping
             if ((parent->special2.i == actor->type) &&
                 (parent->special_args[1] > SORCBALL_SPEED_ROTATIONS) &&
-                (abs((int) angle - (int) (parent->angle >> ANGLETOFINESHIFT)) <
+                (abs((int)(angle - (angle_t) (parent->angle >> ANGLETOFINESHIFT))) <
                  (30 << 5)))
             {
                 // Can stop now
@@ -7997,6 +8009,7 @@ void A_SpawnBishop(mobj_t * actor)
     {
         if (!P_TestMobjLocation(mo))
         {
+            dsda_WatchFailedSpawn(mo);
             P_SetMobjState(mo, HEXEN_S_NULL);
         }
     }

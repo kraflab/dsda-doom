@@ -59,6 +59,7 @@
 #include "dsda/skill_info.h"
 
 #include "heretic/def.h"
+#include "heretic/p_action.h"
 #include "heretic/sb_bar.h"
 
 #include "hexen/p_acs.h"
@@ -538,6 +539,14 @@ void P_TouchSpecialThing(mobj_t *special, mobj_t *toucher)
       dsda_AddPlayerMessage(s_GOTARMBONUS, player);
       break;
 
+    case SPR_BON3:      // killough 7/11/98: evil sceptre from beta version
+      dsda_AddPlayerMessage(s_BETA_BONUS3, player);
+      break;
+
+    case SPR_BON4:      // killough 7/11/98: unholy bible from beta version
+      dsda_AddPlayerMessage(s_BETA_BONUS4, player);
+      break;
+
     case SPR_SOUL:
       player->health += P_PlayerHealthIncrease(soul_health);
       if (player->health > max_soul)
@@ -857,10 +866,14 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
     P_UpdateThinker(&target->thinker);
   }
 
-  if (!((target->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(target))
     totallive--;
 
   dsda_WatchDeath(target);
+
+  // Transfer kill to the second phase
+  if (heretic && P_MobjHasDeathAction(target, A_SorcererRise))
+    target->intflags |= MIF_DSPARIL_FIRST_PHASE;
 
   if (map_format.hexen && target->special)
   {
@@ -873,10 +886,8 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
         }
         else
         {
-            map_format.execute_line_special(
-              target->special, target->special_args, NULL, 0,
-              map_info.flags & MI_ACTIVATE_OWN_DEATH_SPECIALS ? target : source
-            );
+            // TODO: tenuous "activate own death specials" mapinfo flag
+            map_format.execute_line_special(target->special, target->special_args, NULL, 0, target);
         }
     }
   }
@@ -1032,7 +1043,7 @@ static void P_KillMobj(mobj_t *source, mobj_t *target)
       }
     }
 
-    if (target->player == &players[consoleplayer] && automap_active)
+    if (target->player == &players[consoleplayer] && automap_full)
       AM_Stop(true);    // don't die in auto map; switch view prior to dying
   }
 
@@ -1291,7 +1302,8 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     damage = FixedMul(damage, skill_info.damage_factor);
 
   // Special damage types
-  if (raven && inflictor)
+  if (heretic && inflictor)
+  {
     switch (inflictor->type)
     {
       case HERETIC_MT_EGGFX:
@@ -1366,6 +1378,15 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
           }
         }
         break;
+      default:
+        break;
+    }
+  }
+  else if (hexen && inflictor)
+  {
+    switch (inflictor->type)
+    {
+
       case HEXEN_MT_EGGFX:
         if (player)
         {
@@ -1459,6 +1480,7 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
       default:
         break;
     }
+  }
 
   // Some close combat weapons should not
   // inflict thrust and push the victim out of reach,
@@ -1816,6 +1838,37 @@ void P_DamageMobj(mobj_t *target,mobj_t *inflictor, mobj_t *source, int damage)
     if (justhit && (target->target == source || !target->target ||
         !(target->flags & target->target->flags & MF_FRIEND)))
       target->flags |= MF_JUSTHIT;    // fight back!
+}
+
+//
+// [AR] check states for action
+//
+
+static dboolean P_StateChainHasAction(int state, actionf_t action)
+{
+  int count;
+
+  for (count = 0; count < num_states; ++count)
+  {
+    if (state == g_s_null || state < 0 || state >= num_states)
+      return false;
+
+    if (states[state].action == action)
+      return true;
+
+    state = states[state].nextstate;
+  }
+
+  return false;
+}
+
+dboolean P_MobjHasDeathAction(mobj_t *mo, actionf_t action)
+{
+  if (!mo->info)
+    return false;
+
+  return P_StateChainHasAction(mo->info->deathstate,  action) ||
+         P_StateChainHasAction(mo->info->xdeathstate, action);
 }
 
 // heretic
@@ -2488,6 +2541,7 @@ dboolean P_ChickenMorph(mobj_t * actor)
     fog = P_SpawnMobj(x, y, z + TELEFOGHEIGHT, HERETIC_MT_TFOG);
     S_StartMobjSound(fog, heretic_sfx_telept);
     chicken = P_SpawnMobj(x, y, z, HERETIC_MT_CHICKEN);
+    chicken->intflags |= actor->intflags & MIF_SPAWNED_BY_DSPARIL;
     chicken->special2.i = moType;
     chicken->special1.i = CHICKENTICS + P_Random(pr_heretic);
     chicken->flags |= ghost;

@@ -62,6 +62,7 @@
 #include "xs_Float.h"
 
 #include "dsda/configuration.h"
+#include "dsda/excmd.h"
 #include "dsda/exhud.h"
 #include "dsda/features.h"
 #include "dsda/map_format.h"
@@ -178,13 +179,7 @@ int extralight;                           // bumped light from gun blasts
 // killough 5/2/98: reformatted
 //
 
-// Workaround for optimization bug in clang
-// fixes desync in competn/doom/fp2-3655.lmp and in dmnsns.wad dmn01m909.lmp
-#if defined(__clang__)
-PUREFUNC int R_CompatiblePointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
-#else
 PUREFUNC int R_CompatiblePointOnSide(fixed_t x, fixed_t y, const node_t *node)
-#endif
 {
   if (!node->dx)
     return x <= node->x ? node->dy > 0 : node->dy < 0;
@@ -192,8 +187,8 @@ PUREFUNC int R_CompatiblePointOnSide(fixed_t x, fixed_t y, const node_t *node)
   if (!node->dy)
     return y <= node->y ? node->dx < 0 : node->dx > 0;
 
-  x -= node->x;
-  y -= node->y;
+  x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)node->x));
+  y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)node->y));
 
   // Try to quickly decide by looking at sign bits.
   if ((node->dy ^ node->dx ^ x ^ y) < 0)
@@ -201,11 +196,7 @@ PUREFUNC int R_CompatiblePointOnSide(fixed_t x, fixed_t y, const node_t *node)
   return FixedMul(y, node->dx>>FRACBITS) >= FixedMul(node->dy>>FRACBITS, x);
 }
 
-#if defined(__clang__)
-PUREFUNC int R_ZDoomPointOnSide(volatile fixed_t x, volatile fixed_t y, const node_t *node)
-#else
 PUREFUNC int R_ZDoomPointOnSide(fixed_t x, fixed_t y, const node_t *node)
-#endif
 {
   if (!node->dx)
     return x <= node->x ? node->dy > 0 : node->dy < 0;
@@ -213,8 +204,8 @@ PUREFUNC int R_ZDoomPointOnSide(fixed_t x, fixed_t y, const node_t *node)
   if (!node->dy)
     return y <= node->y ? node->dx < 0 : node->dx > 0;
 
-  x -= node->x;
-  y -= node->y;
+  x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)node->x));
+  y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)node->y));
 
   // Try to quickly decide by looking at sign bits.
   if ((node->dy ^ node->dx ^ x ^ y) < 0)
@@ -230,8 +221,8 @@ PUREFUNC int R_CompatiblePointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
 {
   fixed_t lx = line->v1->x;
   fixed_t ly = line->v1->y;
-  fixed_t ldx = line->v2->x - lx;
-  fixed_t ldy = line->v2->y - ly;
+  fixed_t ldx = (fixed_t)(((ufixed_t)line->v2->x) - ((ufixed_t)lx));
+  fixed_t ldy = (fixed_t)(((ufixed_t)line->v2->y) - ((ufixed_t)ly));
 
   if (!ldx)
     return x <= lx ? ldy > 0 : ldy < 0;
@@ -239,8 +230,8 @@ PUREFUNC int R_CompatiblePointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
   if (!ldy)
     return y <= ly ? ldx < 0 : ldx > 0;
 
-  x -= lx;
-  y -= ly;
+  x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)lx));
+  y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)ly));
 
   // Try to quickly decide by looking at sign bits.
   if ((ldy ^ ldx ^ x ^ y) < 0)
@@ -252,8 +243,8 @@ PUREFUNC int R_ZDoomPointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
 {
   fixed_t lx = line->v1->x;
   fixed_t ly = line->v1->y;
-  fixed_t ldx = line->v2->x - lx;
-  fixed_t ldy = line->v2->y - ly;
+  fixed_t ldx = (fixed_t)(((ufixed_t)line->v2->x) - ((ufixed_t)lx));
+  fixed_t ldy = (fixed_t)(((ufixed_t)line->v2->y) - ((ufixed_t)ly));
 
   if (!ldx)
     return x <= lx ? ldy > 0 : ldy < 0;
@@ -261,8 +252,8 @@ PUREFUNC int R_ZDoomPointOnSegSide(fixed_t x, fixed_t y, const seg_t *line)
   if (!ldy)
     return y <= ly ? ldx < 0 : ldx > 0;
 
-  x -= lx;
-  y -= ly;
+  x = (fixed_t)(((ufixed_t)x) - ((ufixed_t)lx));
+  y = (fixed_t)(((ufixed_t)y) - ((ufixed_t)ly));
 
   // Try to quickly decide by looking at sign bits.
   if ((ldy ^ ldx ^ x ^ y) < 0)
@@ -876,7 +867,7 @@ void R_SetupFreelook(void)
     int i;
 
     centery = viewheight / 2;
-    if (raven || dsda_MouseLook())
+    if (raven || dsda_FreeAim())
     {
       dy = FixedMul(focallengthy, finetangent[(ANG90-viewpitch)>>ANGLETOFINESHIFT]);
       centery += dy >> FRACBITS;
@@ -967,7 +958,7 @@ static void R_SetupFrame (player_t *player)
       cm = 0;
   }
   else
-    cm = map_info.default_colormap;
+    cm = map_colormap;
 
   //e6y: save previous and current colormap
   boom_cm = cm;
@@ -1018,7 +1009,7 @@ static void R_InitDrawScene(void)
     // proff 11/99: clear buffers
     gld_InitDrawScene();
 
-    if (!automap_on)
+    if (!automap_solid)
     {
       // proff 11/99: switch to perspective mode
       gld_StartDrawScene();
@@ -1124,7 +1115,7 @@ void R_RenderPlayerView (player_t* player)
 
   FakeNetUpdate();
 
-  if (V_IsOpenGLMode() && !automap_on) {
+  if (V_IsOpenGLMode() && !automap_solid) {
     DSDA_ADD_CONTEXT(sf_draw_scene);
     gld_DrawScene(player);
     gld_EndDrawScene();

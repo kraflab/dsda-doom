@@ -68,6 +68,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <locale.h>
 
 #include "e6y.h"
 
@@ -219,6 +220,7 @@ static void I_Quit (void)
 {
   M_SaveDefaults ();
   dsda_DumpEndoom();
+  dsda_Shutdown();
 }
 
 //
@@ -292,6 +294,9 @@ int main(int argc, char **argv)
   lprintf(LO_DEBUG, "M_LoadDefaults: Load system defaults.\n");
   M_LoadDefaults();              // load before initing other systems
   lprintf(LO_DEBUG, "\n");
+
+  // Print date and time in the Load/Save Game menus in the current locale
+  setlocale(LC_TIME, "");
 
   /* Version info */
   PrintVer();

@@ -37,6 +37,7 @@
 #include "dsda/key_frame.h"
 #include "dsda/mouse.h"
 #include "dsda/settings.h"
+#include "dsda/skill_info.h"
 #include "dsda/split_tracker.h"
 #include "dsda/tracker.h"
 #include "dsda/wad_stats.h"
@@ -264,6 +265,24 @@ void dsda_WatchCard(card_t card) {
     }
 }
 
+static dboolean dsda_IsIconSpawn(mobj_t* mo) {
+  return mo->intflags & MIF_SPAWNED_BY_ICON;
+}
+
+static dboolean dsda_IsDSparilSpawn(mobj_t* mo) {
+  return mo->intflags & MIF_SPAWNED_BY_DSPARIL;
+}
+
+static dboolean dsda_IsDSparilPhaseSpawn(mobj_t* mo) {
+  return mo->intflags & MIF_DSPARIL_FIRST_PHASE;
+}
+
+// killough 7/20/98: exclude friends
+// Translated: countkill and not friend
+dboolean dsda_IsCountedKill(mobj_t* mo) {
+  return !((mo->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL));
+}
+
 static int player_damage_leveltime;
 int player_damage_last_tic;
 
@@ -307,22 +326,21 @@ void dsda_WatchDeath(mobj_t* thing) {
 
 void dsda_WatchKill(player_t* player, mobj_t* target) {
   player->killcount++;
-  if (target->intflags & MIF_SPAWNED_BY_ICON) player->maxkilldiscount++;
+  if (dsda_IsIconSpawn(target) ||
+      dsda_IsDSparilSpawn(target) ||
+      dsda_IsDSparilPhaseSpawn(target))
+    player->maxkilldiscount++;
   dsda_WadStatsKill();
 }
 
 void dsda_WatchResurrection(mobj_t* target, mobj_t* raiser) {
   int i;
 
-  if (raiser && raiser->intflags & MIF_SPAWNED_BY_ICON)
+  if (raiser && dsda_IsIconSpawn(raiser))
     target->intflags |= MIF_SPAWNED_BY_ICON;
 
-  if (
-    (
-      (target->flags ^ MF_COUNTKILL) &
-      (MF_FRIEND | MF_COUNTKILL)
-    ) || target->intflags & MIF_SPAWNED_BY_ICON
-  ) return;
+  if (!dsda_IsCountedKill(target) || dsda_IsIconSpawn(target))
+    return;
 
   for (i = 0; i < g_maxplayers; ++i) {
     if (!playeringame[i] || players[i].killcount == 0) continue;
@@ -358,13 +376,13 @@ void dsda_WatchSpawn(mobj_t* spawned) {
 
   if (!dsda_any_weapons) dsda_any_weapons = dsda_IsWeapon(spawned);
 
-  if (!((spawned->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(spawned))
     ++dsda_max_kill_requirement;
 }
 
 void dsda_WatchFailedSpawn(mobj_t* spawned) {
   // Fix count from dsda_WatchSpawn
-  if (!((spawned->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(spawned))
     --dsda_max_kill_requirement;
 }
 
@@ -376,7 +394,7 @@ void dsda_WatchMorph(mobj_t* morphed) {
 
 void dsda_WatchUnMorph(mobj_t* morphed) {
   // Fix count from dsda_WatchSpawn
-  if (!((morphed->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(morphed))
     --dsda_max_kill_requirement;
 }
 
@@ -386,12 +404,112 @@ void dsda_WatchIconSpawn(mobj_t* spawned) {
   // Fix count from dsda_WatchSpawn
   // We can't know inside P_SpawnMobj what the source is
   // This is less invasive than introducing a spawn source concept
-  if (!((spawned->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)))
+  if (dsda_IsCountedKill(spawned))
+    --dsda_max_kill_requirement;
+}
+
+void dsda_WatchDSparilSpawn(mobj_t* spawned) {
+  spawned->intflags |= MIF_SPAWNED_BY_DSPARIL;
+
+  // Fix count from dsda_WatchSpawn
+  // We can't know inside P_SpawnMobj what the source is
+  // This is less invasive than introducing a spawn source concept
+  if (dsda_IsCountedKill(spawned))
+    --dsda_max_kill_requirement;
+}
+
+// Remove the kill from D'Sparil's first phase
+void dsda_WatchDSparilPhaseSpawn(mobj_t* spawned) {
+  if (dsda_IsCountedKill(spawned))
     --dsda_max_kill_requirement;
 }
 
 int dsda_MaxKillRequirement() {
   return dsda_max_kill_requirement;
+}
+
+int dsda_GetCurrentKills(void)
+{
+  int i;
+  int fullkillcount = 0;
+  int kill_percent_count = 0;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+    if (playeringame[i]) {
+      fullkillcount += players[i].killcount - players[i].maxkilldiscount;
+      kill_percent_count += players[i].killcount;
+    }
+  }
+
+  if (skill_info.respawn_time) {
+    fullkillcount = kill_percent_count;
+  }
+
+  return fullkillcount;
+}
+
+int dsda_GetCurrentItems(void)
+{
+  int i;
+  int fullitemcount = 0;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+    if (playeringame[i]) {
+      fullitemcount += players[i].itemcount;
+    }
+  }
+
+  return fullitemcount;
+}
+
+int dsda_GetCurrentSecrets(void)
+{
+  int i;
+  int fullsecretcount = 0;
+
+  for (i = 0; i < g_maxplayers; ++i) {
+    if (playeringame[i]) {
+      fullsecretcount += players[i].secretcount;
+    }
+  }
+
+  return fullsecretcount;
+}
+
+int dsda_GetMaxKills(void)
+{
+  int max_kill_requirement = dsda_MaxKillRequirement();
+
+  if (skill_info.respawn_time) {
+    max_kill_requirement = totalkills;
+  }
+
+  return max_kill_requirement;
+}
+
+int dsda_GetMaxItems(void)
+{
+  return totalitems;
+}
+
+int dsda_GetMaxSecrets(void)
+{
+  return totalsecret;
+}
+
+dboolean dsda_IsAllKills(void)
+{
+  return dsda_GetCurrentKills() >= dsda_GetMaxKills();
+}
+
+dboolean dsda_IsAllItems(void)
+{
+  return dsda_GetCurrentItems() >= dsda_GetMaxItems();
+}
+
+dboolean dsda_IsAllSecrets(void)
+{
+  return dsda_GetCurrentSecrets() >= dsda_GetMaxSecrets();
 }
 
 void dsda_WatchPTickCompleted(void) {
@@ -481,8 +599,10 @@ void dsda_WatchLevelCompletion(void) {
 
     // max rules: everything dead that affects kill counter except icon spawns
     if (
-      !((mobj->flags ^ MF_COUNTKILL) & (MF_FRIEND | MF_COUNTKILL)) \
-      && !(mobj->intflags & MIF_SPAWNED_BY_ICON) \
+      dsda_IsCountedKill(mobj) \
+      && !dsda_IsIconSpawn(mobj) \
+      && !dsda_IsDSparilSpawn(mobj) \
+      && !dsda_IsDSparilPhaseSpawn(mobj) \
       && mobj->health > 0
     ) {
       ++missed_monsters;

@@ -96,6 +96,10 @@ void dsda_InitializeMusic(musicinfo_t* source, int count) {
 
   S_music = source;
 
+  // Prevent MUSINFO from treating lump 0 (PLAYPAL) as music.
+  musinfo.current_item = -1;
+  S_music[mus_musinfo].lumpnum = -1;
+
   // S_music = malloc(num_music * sizeof(*S_music));
   // memcpy(S_music, source, num_music * sizeof(*S_music));
 

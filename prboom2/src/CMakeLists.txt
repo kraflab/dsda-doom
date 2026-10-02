@@ -159,10 +159,6 @@ set(COMMON_SRC
     dsda/map_format.h
     dsda/mapinfo.c
     dsda/mapinfo.h
-    dsda/mapinfo/doom.c
-    dsda/mapinfo/doom.h
-    dsda/mapinfo/doom/parser.cpp
-    dsda/mapinfo/doom/parser.h
     dsda/mapinfo/hexen.c
     dsda/mapinfo/hexen.h
     dsda/mapinfo/legacy.c
@@ -245,6 +241,16 @@ set(COMMON_SRC
     dsda/wad_stats.h
     dsda/zipfile.c
     dsda/zipfile.h
+    textscreen/doomkeys.h
+    textscreen/txt_main.h
+    textscreen/txt_sdl.c
+    textscreen/txt_sdl.h
+    textscreen/txt_utf8.c
+    textscreen/txt_utf8.h
+    textscreen/fonts/convert-font
+    textscreen/fonts/normal.h
+    textscreen/fonts/hauge-8x18-v1-6.png
+    textscreen/fonts/README
     dstrings.c
     dstrings.h
     d_deh.c
@@ -471,6 +477,7 @@ set(DOOMMUSIC_SOURCES
     MUSIC/oplplayer.h
     MUSIC/opl_queue.c
     MUSIC/opl_queue.h
+    MUSIC/wf_rom.h
     MUSIC/portmidiplayer.c
     MUSIC/portmidiplayer.h
     MUSIC/vorbisplayer.c

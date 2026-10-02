@@ -36,6 +36,7 @@
 #include "d_event.h"
 #include "g_game.h"
 #include "lprintf.h"
+#include "umapinfo.h"
 #include "v_video.h"
 #include "w_wad.h"
 #include "s_sound.h"
@@ -47,6 +48,7 @@
 
 #include "dsda/font.h"
 #include "dsda/mapinfo.h"
+#include "dsda/palette.h"
 
 #include "f_finale.h" // CPhipps - hmm...
 
@@ -59,11 +61,15 @@
 
 // Stage of animation:
 //  0 = text, 1 = art screen, 2 = character cast
-int finalestage;
+
+finalestage_t finalestage;
 int finalecount;
 const char*   finaletext;
 const char*   finaleflat;
 const char*   finalepatch;
+const char*   endpic;
+const char*   endpalette;
+MapinfoFinale finaletype;
 
 // defines for the end mission display text                     // phares
 
@@ -88,19 +94,22 @@ void F_StartFinale (void)
   int mnum;
   int muslump;
 
+  finaletext = NULL;
+  finaleflat = NULL;
+  finalepatch = NULL;
+  endpic = NULL;
+  endpalette = NULL;
+  finaletype = EG_None;
+
   if (heretic) return Heretic_F_StartFinale();
   if (hexen) return Hexen_F_StartFinale();
 
   gameaction = ga_nothing;
   gamestate = GS_FINALE;
-  automap_active = false;
+  automap_full = false;
 
   // killough 3/28/98: clear accelerative text flags
   acceleratestage = midstage = 0;
-
-  finaletext = NULL;
-  finaleflat = NULL;
-  finalepatch = NULL;
 
   dsda_InterMusic(&mnum, &muslump);
 
@@ -247,19 +256,36 @@ void F_StartFinale (void)
 
   dsda_StartFinale();
 
-  finalestage = 0;
+  finalestage = FINALE_STAGE_TEXT;
   finalecount = 0;
 }
 
 
+
+static dboolean F_BlockingInput(void)
+{
+  return finalestage == FINALE_STAGE_ART && endpalette && endpalette[0];
+}
 
 dboolean F_Responder (event_t *event)
 {
   if (heretic) return Heretic_F_Responder(event);
   if (hexen) return Hexen_F_Responder(event);
 
-  if (finalestage == 2)
+  if (finalestage == FINALE_STAGE_CAST)
     return F_CastResponder (event);
+  else if (finalestage == FINALE_STAGE_ART)
+  {
+    // If the palette is changed, kick to title instead of opening the menu
+    if (F_BlockingInput() && event->type == ev_keydown)
+    {
+      finalestage = FINALE_STAGE_TITLE;
+      S_StartOptionalSound(g_sfx_mnucls, g_sfx_swtchx, false);
+      V_SetPlayPal(playpal_default);
+      V_DrawRawScreen("TITLEPIC");
+      return true;
+    }
+  }
 
   return false;
 }
@@ -317,10 +343,10 @@ void F_Ticker(void)
   // advance animation
   finalecount++;
 
-  if (finalestage == 2)
+  if (finalestage == FINALE_STAGE_CAST)
     F_CastTicker();
 
-  if (!finalestage)
+  if (finalestage == FINALE_STAGE_TEXT)
     {
       float speed = demo_compatibility ? TEXTSPEED : Get_TextSpeed();
       /* killough 2/28/98: changed to allow acceleration */
@@ -499,7 +525,7 @@ void F_StartCast (const char* background, const char* music, dboolean loop_music
   caststate = &states[mobjinfo[castorder[castnum].type].seestate];
   casttics = caststate->tics;
   castdeath = false;
-  finalestage = 2;
+  finalestage = FINALE_STAGE_CAST;
   castframes = 0;
   castonmelee = 0;
   castattacking = false;
@@ -750,7 +776,7 @@ void F_StartScroll (const char* right, const char* left, const char* music, dboo
   scrollpic1 = right ? right : pfub1;
   scrollpic2 = left ? left : pfub2;
   finalecount = 0;
-  finalestage = 1;
+  finalestage = FINALE_STAGE_ART;
 
   end_patches_exist = W_CheckNumForName("END0") != LUMP_NOT_FOUND &&
                       W_CheckNumForName("END1") != LUMP_NOT_FOUND &&
@@ -835,7 +861,7 @@ void F_BunnyScroll (void)
 void F_StartPostFinale (void)
 {
   finalecount = 0;
-  finalestage = 1;
+  finalestage = FINALE_STAGE_ART;
   wipegamestate = -1; // force a wipe
 }
 
@@ -852,15 +878,9 @@ void F_Drawer (void)
     return;
   }
 
-  if (finalestage == 2)
-  {
-    F_CastDrawer ();
-    return;
-  }
-
-  if (!finalestage)
-    F_TextWrite ();
-  else
+  if (finalestage == FINALE_STAGE_TEXT)
+    F_TextWrite();
+  else if (finalestage == FINALE_STAGE_ART)
   {
     const char* finalelump = NULL;
 
@@ -890,4 +910,8 @@ void F_Drawer (void)
       V_DrawNamePatchFS(0, 0, 0, finalelump, CR_DEFAULT, VPT_STRETCH);
     }
   }
+  else if (finalestage == FINALE_STAGE_CAST)
+    F_CastDrawer();
+  else if (finalestage == FINALE_STAGE_TITLE)
+    V_DrawRawScreen("TITLEPIC"); // Palette change has ended, just show the title
 }

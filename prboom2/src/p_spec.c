@@ -189,7 +189,7 @@ void P_InitPicAnims (void)
 {
   int         i;
   const animdef_t *animdefs; //jff 3/23/98 pointer to animation lump
-  int         lump = -1;
+  int         lump = LUMP_NOT_FOUND;
   //  Init animation
 
   if (map_format.animdefs)
@@ -200,22 +200,23 @@ void P_InitPicAnims (void)
 
   if (heretic)
   {
-    lump = W_CheckNumForName("ANIMATED");
+    lump = W_GetAnimatedOrSwitchesLump("ANIMATED");
 
-    if (lump != LUMP_NOT_FOUND && lumpinfo[lump].source != source_auto_load)
+    // Heretic keeps using built-in animdefs unless an IWAD/PWAD lump exists
+    if (W_LumpNumExists(lump) && !W_LumpNumInPortWad(lump))
       animdefs = (const animdef_t *) W_LumpByNum(lump);
     else
       animdefs = heretic_animdefs;
   }
   else
   {
-    lump = W_GetNumForName("ANIMATED"); // cph - new wad lump handling
+    lump = W_GetAnimatedOrSwitchesLump("ANIMATED"); // cph - new wad lump handling
     //jff 3/23/98 read from predefined or wad lump instead of table
     animdefs = (const animdef_t *)W_LumpByNum(lump);
   }
 
   lastanim = anims;
-  for (i=0 ; animdefs[i].istexture != -1 ; i++)
+  for (i=0 ; animdefs[i].istexture != LUMP_NOT_FOUND ; i++)
   {
     // 1/11/98 killough -- removed limit by array-doubling
     if (lastanim >= anims + maxanims)
@@ -229,7 +230,7 @@ void P_InitPicAnims (void)
     if (animdefs[i].istexture)
     {
       // different episode ?
-      if (R_CheckTextureNumForName(animdefs[i].startname) == -1)
+      if (R_CheckTextureNumForName(animdefs[i].startname) == LUMP_NOT_FOUND)
           continue;
 
       lastanim->picnum = R_TextureNumForName (animdefs[i].endname);
@@ -1463,9 +1464,12 @@ void P_PlayerCollectSecret(player_t *player)
 
   if (dsda_IntConfig(dsda_config_hudadd_secretarea))
   {
-    int sfx_id = raven ? g_sfx_secret :
-                 I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) < 0 ? sfx_itmbk : g_sfx_secret;
-    SetCustomMessage(player - players, "A secret is revealed!", 2 * TICRATE, sfx_id);
+    int sfx_id = heretic ? heretic_sfx_chat : hexen ? hexen_sfx_chat : sfx_itmbk;
+
+    if (I_GetSfxLumpNum(&S_sfx[g_sfx_secret]) != -1)
+      sfx_id = g_sfx_secret;
+
+    SetCustomMessage(player - players, s_HUSTR_SECRETFOUND, 2 * TICRATE, sfx_id);
   }
 }
 
@@ -4633,9 +4637,10 @@ void P_SpawnZDoomPusher(line_t *l)
       }
       else
       {  // [RH] Find thing by tid
-        int s;
+        thing_id_search_t search;
 
-        for (s = -1; (thing = P_FindMobjFromTID(l->special_args[1], &s)) != NULL;)
+        dsda_ResetThingIDSearch(&search);
+        while ((thing = dsda_FindMobjFromThingID(l->special_args[1], &search)) != NULL)
           if (thing->type == map_format.mt_push || thing->type == map_format.mt_pull)
             Add_Pusher(p_push, dx, dy, thing, thing->subsector->sector->iSectorID);
       }
@@ -5462,10 +5467,8 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
 
   if (activationType == SPAC_USE || activationType == SPAC_USEBACK)
   {
-    if (
-      (line->flags & ML_CHECKSWITCHRANGE || map_info.flags & MI_CHECK_SWITCH_RANGE) &&
-      !P_CheckSwitchRange(line, mo, side)
-    )
+    // TODO: possible "check switch range" mapinfo flag
+    if ((line->flags & ML_CHECKSWITCHRANGE) && !P_CheckSwitchRange(line, mo, side))
     {
       return false;
     }
@@ -5512,10 +5515,7 @@ dboolean P_TestActivateZDoomLine(line_t *line, mobj_t *mo, int side, line_activa
     // lax activation checks, monsters can also activate certain lines
     // even without them being marked as monster activate-able. This is
     // the default for non-Hexen maps in Hexen format.
-    if (!(map_info.flags & MI_LAX_MONSTER_ACTIVATION))
-    {
-      return false;
-    }
+    // TODO: possible "check switch range" mapinfo flag
 
     if ((activationType == SPAC_USE || activationType == SPAC_PUSH) && line->flags & ML_SECRET)
       return false;    // never open secret doors
@@ -7697,7 +7697,7 @@ dboolean P_ExecuteZDoomLineSpecial(int special, int * args, line_t * line, int s
     case zl_map_set_colormap:
       if (args[0] >= 0)
       {
-        map_info.default_colormap = args[0];
+        map_colormap = args[0];
       }
       buttonSuccess = 1;
       break;

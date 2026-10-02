@@ -19,8 +19,6 @@
 #define __DSDA_MAPINFO_HEXEN__
 
 #include "p_mobj.h"
-
-#include "dsda/mapinfo.h"
 #include "dsda/utility.h"
 
 int dsda_HexenNameToMap(int* found, const char* name, int* episode, int* map);
@@ -65,7 +63,10 @@ int dsda_HexenSky2Texture(short* texture);
 int dsda_HexenGravity(fixed_t* gravity);
 int dsda_HexenAirControl(fixed_t* air_control);
 int dsda_HexenInitSky(void);
-int dsda_HexenMapFlags(map_info_flags_t* flags);
 int dsda_HexenMapColorMap(int* colormap);
+dboolean dsda_HexenMapAllowsJumping(void);
+dboolean dsda_HexenMapAllowsFreeAim(void);
+dboolean dsda_HexenExplodeIn3D(void);
+dboolean dsda_HexenVerticalExplosionThrust(void);
 
 #endif

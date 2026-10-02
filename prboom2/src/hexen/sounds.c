@@ -28,6 +28,8 @@ musicinfo_t hexen_S_music[HEXEN_NUMMUSIC] = {
 
 sfxinfo_t hexen_S_sfx[] = {
     { "", 0, 0, 0, 0, 0, 0, "" },
+
+    // Hexen sounds
     { "", 256, 0, 1, 0, 0, 2, "PlayerFighterNormalDeath" },
     { "", 256, 0, 1, 0, 0, 2, "PlayerFighterCrazyDeath" },
     { "", 256, 0, 1, 0, 0, 2, "PlayerFighterExtreme1Death" },
@@ -272,4 +274,22 @@ sfxinfo_t hexen_S_sfx[] = {
     { "", 32, 0, 1, 0, 0, 2, "Fireball" },
     { "", 30, 0, 1, 0, 0, 2, "PuppyBeat" },
     { "", 32, 0, 1, 0, 0, 4, "MysticIncant" },
+
+    // DSDA
+    { "secret", 512, 0, 1, 0, 0, 2, "" }, // match hexen_sfx_chat
+
+    // Optional menu/intermission sounds
+    { "dsmnuopn", 60, 0, 1, 0, 0, 1, "" },
+    { "dsmnucls", 60, 0, 1, 0, 0, 1, "" },
+    { "dsmnuact", 60, 0, 1, 0, 0, 1, "" },
+    { "dsmnubak", 60, 0, 1, 0, 0, 1, "" },
+    { "dsmnumov", 60, 0, 1, 0, 0, 1, "" },
+    { "dsmnusli", 60, 0, 1, 0, 0, 1, "" },
+    { "dsmnusel", 60, 0, 1, 0, 0, 1, "" },
+    { "dsmnuerr", 60, 0, 1, 0, 0, 1, "" },
+    { "dsinttic", 60, 0, 1, 0, 0, 1, "" },
+    { "dsinttot", 60, 0, 1, 0, 0, 1, "" },
+    { "dsintnex", 60, 0, 1, 0, 0, 1, "" },
+    { "dsintnet", 60, 0, 1, 0, 0, 1, "" },
+    { "dsintdms", 60, 0, 1, 0, 0, 1, "" },
 };

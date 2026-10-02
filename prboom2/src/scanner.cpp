@@ -51,7 +51,7 @@ const char* const Scanner::TokenNames[TK_NumSpecialTokens] =
 	"Logical Or",
 	"Equals",
 	"Not Equals",
-	"Greater Than or Equals"
+	"Greater Than or Equals",
 	"Less Than or Equals",
 	"Left Shift",
 	"Right Shift"
@@ -643,7 +643,7 @@ void Scanner::Unescape(char *str)
 		if (c != '\\') {
 			*str++ = c;
 		}
-		else {
+		else if (*p) {
 			switch (*p) {
 			case 'a':
 				*str++ = '\a';
@@ -718,6 +718,10 @@ void Scanner::Unescape(char *str)
 				break;
 			}
 			p++;
+		}
+		else
+		{
+			// Trailing backslash
 		}
 	}
 	*str = 0;

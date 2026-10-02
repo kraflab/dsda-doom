@@ -17,3 +17,5 @@
 
 void dsda_CacheEndoom(void);
 void dsda_DumpEndoom(void);
+void dsda_TerminalEndoom(void);
+void dsda_WindowEndoom(void);

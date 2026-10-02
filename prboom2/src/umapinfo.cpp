@@ -17,22 +17,22 @@
 //
 //-----------------------------------------------------------------------------
 
+#include <assert.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <assert.h>
-#include "umapinfo.h"
 #include "scanner.h"
+#include "umapinfo.h"
 
 extern "C"
 {
-#include "m_misc.h"
-#include "g_game.h"
 #include "doomdef.h"
 #include "doomstat.h"
-
 #include "dsda/episode.h"
 #include "dsda/name.h"
+#include "g_game.h"
+#include "lprintf.h"
+#include "m_misc.h"
 
 MapList Maps;
 }
@@ -44,17 +44,14 @@ MapList Maps;
 
 static void FreeMap(MapEntry *mape)
 {
-	if (mape->mapname) Z_Free(mape->mapname);
+	if (mape->lumpname) Z_Free(mape->lumpname);
 	if (mape->levelname) Z_Free(mape->levelname);
 	if (mape->label) Z_Free(mape->label);
 	if (mape->author) Z_Free(mape->author);
 	if (mape->intertext) Z_Free(mape->intertext);
 	if (mape->intertextsecret) Z_Free(mape->intertextsecret);
-	if (mape->properties) Z_Free(mape->properties);
 	if (mape->bossactions) Z_Free(mape->bossactions);
-	mape->propertycount = 0;
-	mape->mapname = NULL;
-	mape->properties = NULL;
+	mape->lumpname = NULL;
 }
 
 
@@ -137,6 +134,38 @@ static int ParseLumpName(Scanner &scanner, char *buffer)
 
 // -----------------------------------------------
 //
+// Parses an advanced player movement option
+//
+// -----------------------------------------------
+static PlayerMovement ParsePlayerMovement(Scanner &scanner)
+{
+	auto pm = PM_Unset;
+	scanner.MustGetToken(TK_Identifier);
+	auto keyword = scanner.string;
+
+	if (!stricmp(keyword, "disallow"))
+	{
+		pm = PM_Disallow;
+	}
+	else if (!stricmp(keyword, "allow"))
+	{
+		pm = PM_Allow;
+	}
+	else if (!stricmp(keyword, "require"))
+	{
+		pm = PM_Require;
+	}
+
+	if (pm == PM_Unset)
+	{
+		scanner.ErrorF("Expected 'disallow', 'allow' or 'require', got %s", keyword);
+	}
+
+	return pm;
+}
+
+// -----------------------------------------------
+//
 // Parses a standard property that is already known
 // These do not get stored in the property list
 // but in dedicated struct member variables.
@@ -161,7 +190,10 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	{
 		if (scanner.CheckToken(TK_Identifier))
 		{
-			if (scanner.StringMatch("clear")) ReplaceString(&mape->label, "-");
+			if (scanner.StringMatch("clear"))
+			{
+				mape->flags |= MapInfo_LabelClear;
+			}
 			else
 			{
 				scanner.ErrorF("Either 'clear' or string constant expected");
@@ -171,8 +203,9 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 		else
 		{
 			scanner.MustGetToken(TK_StringConst);
-	                ReplaceString(&mape->label, scanner.string);
-	        }
+			mape->flags &= ~MapInfo_LabelClear;
+			ReplaceString(&mape->label, scanner.string);
+		}
 	}
 	else if (!stricmp(pname, "author"))
 	{
@@ -212,24 +245,27 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	else if (!stricmp(pname, "endpic"))
 	{
 		ParseLumpName(scanner, mape->endpic);
+		mape->finale = EG_Art;
 	}
-	else if (!stricmp(pname, "endcast"))
+	else if (!stricmp(pname, "endcast") && !raven)
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		if (scanner.boolean) strcpy(mape->endpic, "$CAST");
-		else strcpy(mape->endpic, "-");
+		mape->finale = (scanner.boolean) ? EG_Cast : EG_Clear;
 	}
-	else if (!stricmp(pname, "endbunny"))
+	else if ((!stricmp(pname, "endbunny") && !raven) ||
+	         (!stricmp(pname, "enddemon") && heretic))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		if (scanner.boolean) strcpy(mape->endpic, "$BUNNY");
-		else strcpy(mape->endpic, "-");
+		mape->finale = (scanner.boolean) ? EG_Scroll : EG_Clear;
 	}
 	else if (!stricmp(pname, "endgame"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		if (scanner.boolean) strcpy(mape->endpic, "!");
-		else strcpy(mape->endpic, "-");
+		mape->finale = (scanner.boolean) ? EG_Standard : EG_Clear;
+	}
+	else if (!stricmp(pname, "endpalette"))
+	{
+		ParseLumpName(scanner, mape->endpalette);
 	}
 	else if (!stricmp(pname, "exitpic"))
 	{
@@ -242,7 +278,10 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	else if (!stricmp(pname, "nointermission"))
 	{
 		scanner.MustGetToken(TK_BoolConst);
-		mape->nointermission = scanner.boolean;
+		if (scanner.boolean)
+			mape->flags |= MapInfo_NoIntermission;
+		else
+			mape->flags &= ~MapInfo_NoIntermission;
 	}
 	else if (!stricmp(pname, "partime"))
 	{
@@ -251,17 +290,35 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	}
 	else if (!stricmp(pname, "intertext"))
 	{
-		char *lname = ParseMultiString(scanner, 1);
-		if (!lname) return 0;
-		if (mape->intertext != NULL) Z_Free(mape->intertext);
-		mape->intertext = lname;
+		if (scanner.CheckToken(TK_Identifier))
+		{
+			if (!stricmp(scanner.string, "clear"))
+				mape->flags |= MapInfo_InterTextClear;
+			else
+				scanner.ErrorF("Either 'clear' or string constant expected");
+		}
+		else
+		{
+			mape->flags &= ~MapInfo_InterTextClear;
+			if (mape->intertext) Z_Free(mape->intertext);
+			mape->intertext = ParseMultiString(scanner, 1);
+		}
 	}
 	else if (!stricmp(pname, "intertextsecret"))
 	{
-		char *lname = ParseMultiString(scanner, 1);
-		if (!lname) return 0;
-		if (mape->intertextsecret != NULL) Z_Free(mape->intertextsecret);
-		mape->intertextsecret = lname;
+		if (scanner.CheckToken(TK_Identifier))
+		{
+			if (!stricmp(scanner.string, "clear"))
+				mape->flags |= MapInfo_InterTextSecretClear;
+			else
+				scanner.ErrorF("Either 'clear' or string constant expected");
+		}
+		else
+		{
+			mape->flags &= ~MapInfo_InterTextSecretClear;
+			if (mape->intertextsecret) Z_Free(mape->intertextsecret);
+			mape->intertextsecret = ParseMultiString(scanner, 1);
+		}
 	}
 	else if (!stricmp(pname, "interbackdrop"))
 	{
@@ -300,7 +357,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 				}
 			}
 
-			dsda_AddEpisode(mape->mapname, alttext, lumpname, key, false);
+			dsda_AddEpisode(mape->lumpname, alttext, lumpname, key, false);
 
 			if (alttext) Z_Free(alttext);
 		}
@@ -308,22 +365,23 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 	else if (!stricmp(pname, "bossaction"))
 	{
 		scanner.MustGetToken(TK_Identifier);
-		int special, tag;
 		if (scanner.StringMatch("clear"))
 		{
 			// mark level free of boss actions
-			special = tag = -1;
 			if (mape->bossactions) Z_Free(mape->bossactions);
 			mape->bossactions = NULL;
-			mape->numbossactions = -1;
+			mape->numbossactions = 0;
+			mape->flags |= MapInfo_BossActionClear;
 		}
 		else
 		{
-			int i;
+			BossAction action = { 0 };
+			int special, tag, type;
+			mape->flags &= ~MapInfo_BossActionClear;
 
-			i = dsda_ActorNameToType(scanner.string);
+			type = dsda_ActorNameToType(scanner.string);
 
-			if (i == NAME_NOT_FOUND)
+			if (type == NAME_NOT_FOUND)
 			{
 				scanner.ErrorF("Unknown thing type %s", scanner.string);
 				return 0;
@@ -335,17 +393,80 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 			scanner.MustGetToken(',');
 			scanner.MustGetInteger();
 			tag = scanner.number;
-			// allow no 0-tag specials here, unless a level exit.
-			if (tag != 0 || special == 11 || special == 51 || special == 52 || special == 124)
+			// allow no 0-tag specials here, unless a level exit or massacre.
+			if (tag != 0 || special == 11 || special == 51 || special == 52 ||
+			   (heretic ? special == 105 : special == 124) ||
+			   (heretic && special == 515))
 			{
-				if (mape->numbossactions == -1) mape->numbossactions = 1;
-				else mape->numbossactions++;
+				action.type = type;
+				action.special = special;
+				action.args[0] = tag;
+				mape->numbossactions++;
 				mape->bossactions = (struct BossAction *)Z_Realloc(mape->bossactions, sizeof(struct BossAction) * mape->numbossactions);
-				mape->bossactions[mape->numbossactions - 1].type = i;
-				mape->bossactions[mape->numbossactions - 1].special = special;
-				mape->bossactions[mape->numbossactions - 1].tag = tag;
+				mape->bossactions[mape->numbossactions - 1] = action;
 			}
 
+		}
+	}
+	else if (!stricmp(pname, "jumping"))
+	{
+		mape->jumping = ParsePlayerMovement(scanner);
+	}
+	else if (!stricmp(pname, "crouching"))
+	{
+		mape->crouching = ParsePlayerMovement(scanner);
+
+		if (mape->crouching == PM_Require)
+		{
+			lprintf(LO_WARN,
+			        "Parsing UMAPINFO found a 'crouching = "
+			        "require' entry, but crouching is not "
+			        "supported, map %s may not work correctly.\n",
+			        mape->lumpname);
+		}
+	}
+	else if (!stricmp(pname, "freeaim"))
+	{
+		mape->freeaim = ParsePlayerMovement(scanner);
+	}
+	else if (!stricmp(pname, "DSDADoom_VerticalExplosionThrust"))
+	{
+		scanner.MustGetToken(TK_BoolConst);
+		if (scanner.boolean) mape->flags |= MapInfo_EX_VerticalExplosionThrust;
+		else mape->flags &= ~MapInfo_EX_VerticalExplosionThrust;
+	}
+	else if (!stricmp(pname, "DSDADoom_ExplodeIn3D"))
+	{
+		scanner.MustGetToken(TK_BoolConst);
+		if (scanner.boolean) mape->flags |= MapInfo_EX_ExplodeIn3D;
+		else mape->flags &= ~MapInfo_EX_ExplodeIn3D;
+	}
+	else if (!stricmp(pname, "DSDADoom_SpecialAction"))
+	{
+		BossAction action = { 0 };
+		action.is_param = true;
+		scanner.MustGetString();
+		action.type = dsda_ActorNameToType(scanner.string);
+		scanner.MustGetToken(',');
+		scanner.MustGetString();
+		action.special = dsda_ActionNameToNumber(scanner.string);
+
+		for (int i = 0; i < 5; ++i)
+		{
+			if (!scanner.CheckToken(','))
+				break;
+			scanner.MustGetInteger();
+			action.args[i] = scanner.number;
+		}
+
+		if (action.type != NAME_NOT_FOUND && action.special != NAME_NOT_FOUND)
+		{
+			mape->flags &= ~MapInfo_BossActionClear;
+			mape->numbossactions++;
+			mape->bossactions = (struct BossAction *)Z_Realloc(
+			      mape->bossactions,
+			      sizeof(struct BossAction) * mape->numbossactions);
+			mape->bossactions[mape->numbossactions - 1] = action;
 		}
 	}
 	else
@@ -372,9 +493,7 @@ static int ParseStandardProperty(Scanner &scanner, MapEntry *mape)
 
 static int ParseMapEntry(Scanner &scanner, MapEntry *val)
 {
-	val->mapname = NULL;
-	val->propertycount = 0;
-	val->properties = NULL;
+	val->lumpname = NULL;
 
 	scanner.MustGetIdentifier("map");
 	scanner.MustGetToken(TK_Identifier);
@@ -384,7 +503,7 @@ static int ParseMapEntry(Scanner &scanner, MapEntry *val)
 		return 0;
 	}
 
-	ReplaceString(&val->mapname, scanner.string);
+	ReplaceString(&val->lumpname, scanner.string);
 	scanner.MustGetToken('{');
 	while(!scanner.CheckToken('}'))
 	{
@@ -412,28 +531,80 @@ int ParseUMapInfo(const unsigned char *buffer, size_t length, umapinfo_errorfunc
 		MapEntry parsed = { 0 };
 		ParseMapEntry(scanner, &parsed);
 
-		// Set default level progression here to simplify the checks elsewhere. Doing this lets us skip all normal code for this if nothing has been defined.
-		if (!parsed.nextmap[0] && !parsed.endpic[0])
+		// Set default level progression here to simplify the checks elsewhere.
+		// Doing this lets us skip all normal code for this if nothing has been defined.
+		if (!parsed.nextmap[0] && parsed.finale == EG_None)
 		{
-			if (!stricmp(parsed.mapname, "MAP30")) strcpy(parsed.endpic, "$CAST");
-			else if (!stricmp(parsed.mapname, "E1M8"))  strcpy(parsed.endpic, gamemode == retail? "CREDIT" : "HELP2");
-			else if (!stricmp(parsed.mapname, "E2M8"))  strcpy(parsed.endpic, "VICTORY2");
-			else if (!stricmp(parsed.mapname, "E3M8"))  strcpy(parsed.endpic, "$BUNNY");
-			else if (!stricmp(parsed.mapname, "E4M8"))  strcpy(parsed.endpic, "ENDPIC");
-			else if (gamemission == tc_chex && !stricmp(parsed.mapname, "E1M5"))  strcpy(parsed.endpic, "CREDIT");
-			else
+			if (!raven)
+			{
+				if (!stricmp(parsed.lumpname, "MAP30"))
+				{
+					parsed.finale = EG_Cast;
+				}
+				else if (!stricmp(parsed.lumpname, "E1M8"))
+				{
+					parsed.finale = EG_Art;
+					strcpy(parsed.endpic, gamemode == retail && !pwad_help2_check ? "CREDIT" : "HELP2");
+				}
+				else if (!stricmp(parsed.lumpname, "E2M8"))
+				{
+					parsed.finale = EG_Art;
+					strcpy(parsed.endpic, "VICTORY2");
+				}
+				else if (!stricmp(parsed.lumpname, "E3M8"))
+				{
+					parsed.finale = EG_Scroll;
+				}
+				else if (!stricmp(parsed.lumpname, "E4M8"))
+				{
+					parsed.finale = EG_Art;
+					strcpy(parsed.endpic, "ENDPIC");
+				}
+				else if (gamemission == tc_chex && !stricmp(parsed.lumpname, "E1M5"))
+				{
+					parsed.finale = EG_Art;
+					strcpy(parsed.endpic, "CREDIT");
+				}
+			}
+			else if (heretic)
+			{
+				if (!stricmp(parsed.lumpname, "E1M8"))
+				{
+					parsed.finale = EG_Art;
+					strcpy(parsed.endpic, gamemode == shareware ? "ORDER" : "CREDIT");
+				}
+				else if (!stricmp(parsed.lumpname, "E2M8"))
+				{
+					parsed.finale = EG_Art;
+					strcpy(parsed.endpic, "E2END");
+					strcpy(parsed.endpalette, "E2PAL");
+				}
+				else if (!stricmp(parsed.lumpname, "E3M8"))
+				{
+					parsed.finale = EG_Scroll;
+				}
+				else if (!stricmp(parsed.lumpname, "E4M8") || !stricmp(parsed.lumpname, "E5M8"))
+				{
+					parsed.finale = EG_Art;
+					strcpy(parsed.endpic, "CREDIT");
+				}
+			}
+
+			// If no default attribute, just go to the next map
+			if (parsed.finale == EG_None)
 			{
 				int ep, map;
-				G_ValidateMapName(parsed.mapname, &ep, &map);
-				map++;
-				snprintf(parsed.nextmap, sizeof(parsed.nextmap), "%s", VANILLA_MAP_LUMP_NAME(ep, map));
+				if (G_ValidateMapName(parsed.lumpname, &ep, &map))
+				{
+					strcpy(parsed.nextmap, VANILLA_MAP_LUMP_NAME(ep, map + 1));
+				}
 			}
 		}
 
 		// Does this property already exist? If yes, replace it.
 		for(i = 0; i < Maps.mapcount; i++)
 		{
-			if (!strcmp(parsed.mapname, Maps.maps[i].mapname))
+			if (!strcmp(parsed.lumpname, Maps.maps[i].lumpname))
 			{
 				FreeMap(&Maps.maps[i]);
 				Maps.maps[i] = parsed;

@@ -90,14 +90,14 @@ dsda_deh_mobjinfo_t dsda_GetDehMobjInfo(int index) {
 }
 
 void dsda_InitializeMobjInfo(int zero, int max, int count) {
-  extern dboolean raven;
+  extern dboolean hexen;
 
   num_mobj_types = count;
   mobj_types_zero = zero;
 
   mobjinfo = Z_Calloc(num_mobj_types, sizeof(*mobjinfo));
 
-  if (raven) return;
+  if (hexen) return;
 
   deh_mobj_index_hash.start_index = num_mobj_types;
   deh_mobj_index_hash.end_index = num_mobj_types;

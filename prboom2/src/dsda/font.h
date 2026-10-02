@@ -30,6 +30,8 @@ typedef struct {
   int line_height;
   int space_width;
   int start;
+
+  int kerning; // Heretic/Hexen -1 kerning
 } dsda_font_t;
 
 extern dsda_font_t hud_font;

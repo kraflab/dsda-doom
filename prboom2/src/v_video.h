@@ -100,7 +100,9 @@ typedef enum
   CR_DARKEN_BLACK,
   CR_DARKEN_PURPLE,
   CR_DARKEN_WHITE,
-  CR_BLOOD,
+  CR_BRIGHT,
+  CR_BRIGHT_LIMIT = CR_BRIGHT + CR_HUD_LIMIT,
+  CR_BLOOD = CR_BRIGHT_LIMIT,
   CR_BLOOD_GRAY = CR_BLOOD,
   CR_BLOOD_GREEN,
   CR_BLOOD_BLUE,
@@ -264,7 +266,7 @@ extern V_DrawShaded_f V_DrawShaded;
 // CPhipps - function to set the palette to palette number pal.
 void V_TouchPalette(void);
 void V_SetPalette(int pal);
-void V_SetPlayPal(int playpal_index);
+void V_SetPlayPal(int playpal_i);
 
 // Alt-Enter: fullscreen <-> windowed
 void V_ToggleFullscreen(void);

@@ -68,6 +68,7 @@ typedef struct
   enum patch_translation_e flags;
 
   int line_height;
+  int kerning; // Heretic/Hexen -1 kerning
   int space_width;
 } hu_textline_t;
 

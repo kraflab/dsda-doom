@@ -268,7 +268,10 @@ typedef enum {
 
 typedef enum {
   sfx_None,
-  sfx_pistol,
+
+  BASE_NUMSFX,
+
+  sfx_pistol = BASE_NUMSFX,
   sfx_shotgn,
   sfx_sgcock,
   sfx_dshtgn,
@@ -384,8 +387,24 @@ typedef enum {
   sfx_dgdth,
   sfx_dgpain,
 
-  //e6y
+  // DSDA
   sfx_secret,
+
+  // Optional menu/intermission sounds
+  sfx_mnuopn, // swtchn
+  sfx_mnucls, // swtchx
+  sfx_mnuact, // pistol
+  sfx_mnubak,
+  sfx_mnumov, // pstop
+  sfx_mnusli, // stnmov
+  sfx_mnusel, // itemup
+  sfx_mnuerr, // oof
+  sfx_inttic, // pistol
+  sfx_inttot, // barex
+  sfx_intnex, // sgcock
+  sfx_intnet, // pldeth
+  sfx_intdms, // slop
+
   // Everything from here to 500 is reserved
 
   /* Free sound effect slots for DEHEXTRA. Offset agreed upon with Eternity devs. -SH */
@@ -593,8 +612,7 @@ typedef enum {
   DOOM_NUMSFX,
 
   // heretic
-  heretic_sfx_None = 0,
-  heretic_sfx_gldhit,
+  heretic_sfx_gldhit = BASE_NUMSFX,
   heretic_sfx_gntful,
   heretic_sfx_gnthit,
   heretic_sfx_gntpow,
@@ -738,11 +756,29 @@ typedef enum {
   heretic_sfx_amb9,
   heretic_sfx_amb10,
   heretic_sfx_amb11,
+
+  // DSDA
+  heretic_sfx_secret,
+
+  // Optional menu/intermission sounds
+  heretic_sfx_mnuopn, // swtchn
+  heretic_sfx_mnucls, // swtchx
+  heretic_sfx_mnuact, // pistol
+  heretic_sfx_mnubak,
+  heretic_sfx_mnumov, // pstop
+  heretic_sfx_mnusli, // stnmov
+  heretic_sfx_mnusel, // itemup
+  heretic_sfx_mnuerr, // oof
+  heretic_sfx_inttic, // pistol
+  heretic_sfx_inttot, // barex
+  heretic_sfx_intnex, // sgcock
+  heretic_sfx_intnet, // pldeth
+  heretic_sfx_intdms, // slop
+
   HERETIC_NUMSFX,
 
   // hexen
-  hexen_sfx_None = 0,
-  hexen_sfx_player_fighter_normal_death,    // class specific death screams
+  hexen_sfx_player_fighter_normal_death = BASE_NUMSFX, // class specific death screams
   hexen_sfx_player_fighter_crazy_death,
   hexen_sfx_player_fighter_extreme1_death,
   hexen_sfx_player_fighter_extreme2_death,
@@ -986,6 +1022,25 @@ typedef enum {
   hexen_sfx_fireball,
   hexen_sfx_puppybeat,
   hexen_sfx_mysticincant,
+
+  // DSDA
+  hexen_sfx_secret,
+
+  // Optional menu/intermission sounds
+  hexen_sfx_mnuopn, // swtchn
+  hexen_sfx_mnucls, // swtchx
+  hexen_sfx_mnuact, // pistol
+  hexen_sfx_mnubak,
+  hexen_sfx_mnumov, // pstop
+  hexen_sfx_mnusli, // stnmov
+  hexen_sfx_mnusel, // itemup
+  hexen_sfx_mnuerr, // oof
+  hexen_sfx_inttic, // pistol
+  hexen_sfx_inttot, // barex
+  hexen_sfx_intnex, // sgcock
+  hexen_sfx_intnet, // pldeth
+  hexen_sfx_intdms, // slop
+
   HEXEN_NUMSFX
 } sfxenum_t;
 

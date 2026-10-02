@@ -29,6 +29,12 @@ elseif(CMAKE_OSX_ARCHITECTURES)
   list(JOIN CMAKE_OSX_ARCHITECTURES "-" target_arch)
 endif()
 
+# Lets assume that VCPKG is only used on mac by our CI
+if(APPLE AND (VCPKG_LIBRARY_LINKAGE STREQUAL "static"))
+  string(REPLACE "arm64" "uni" target_arch "${target_arch}")
+  set(CPACK_VCPKG_LIBRARY_LINKAGE "${VCPKG_LIBRARY_LINKAGE}")
+endif()
+
 string(TOLOWER "${CMAKE_SYSTEM_NAME}" platform_name)
 string(REPLACE "windows" "win" platform_name "${platform_name}")
 string(REPLACE "darwin" "mac" platform_name "${platform_name}")

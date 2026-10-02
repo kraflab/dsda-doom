@@ -191,6 +191,33 @@ static void dsda_LoadCRLumps(byte* buffer) {
   }
 }
 
+static int dsda_BrightenPaletteEntry(const byte *playpal, int entry)
+{
+  int palette_i = entry * 3;
+  int target_r = playpal[palette_i + 0];
+  int target_g = playpal[palette_i + 1];
+  int target_b = playpal[palette_i + 2];
+  int max = target_r;
+  double scale;
+
+  if (target_g > max)
+    max = target_g;
+  if (target_b > max)
+    max = target_b;
+  if (!max)
+    return entry;
+
+  scale = 1.4;
+  if (max * scale > 255.0)
+    scale = 255.0 / max;
+
+  target_r = (int)(target_r * scale + 0.5);
+  target_g = (int)(target_g * scale + 0.5);
+  target_b = (int)(target_b * scale + 0.5);
+
+  return V_BestColor(playpal, target_r, target_g, target_b);
+}
+
 byte* dsda_GenerateCRTable(void) {
   int cr_i;
   int orig_i;
@@ -223,7 +250,7 @@ byte* dsda_GenerateCRTable(void) {
       length = 1;
 
     for (dark_i = 0; dark_i < 2; ++dark_i) {
-      for (cr_i = 0; cr_i < CR_DARKEN; ++cr_i) {
+      for (cr_i = 0; cr_i < CR_HUD_LIMIT; ++cr_i) {
         int target_r, target_g, target_b;
         int best_i = 0;
         int best_dist = INT_MAX;
@@ -273,6 +300,16 @@ byte* dsda_GenerateCRTable(void) {
 
         buffer[(dark_i ? CR_DARKEN * 256 : 0) + cr_i * 256 + orig_i] = best_i;
       }
+    }
+
+    buffer[CR_BRIGHT * 256 + orig_i] =
+      dsda_BrightenPaletteEntry(playpal, orig_i);
+  }
+
+  for (cr_i = CR_DEFAULT + 1; cr_i < CR_HUD_LIMIT; ++cr_i) {
+    for (orig_i = 0; orig_i < 256; ++orig_i) {
+      buffer[(CR_BRIGHT + cr_i) * 256 + orig_i] =
+        buffer[CR_BRIGHT * 256 + buffer[cr_i * 256 + orig_i]];
     }
   }
 

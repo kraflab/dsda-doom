@@ -1099,7 +1099,7 @@ int EV_DoZDoomDoor(vldoor_e type, line_t *line, mobj_t *mo, int tag, fixed_t spe
       if (door->thinker.function == T_VerticalDoor)
       {
         // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
-        if (door->type == DREV_NORMAL && type == DREV_NORMAL)
+        if (door->type == normal && type == normal)
         {
           if (door->direction == -1)
           {

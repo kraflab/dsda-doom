@@ -48,6 +48,28 @@ vec3 indexRGB(float ci, float li)
   return texture2D(colormap, vec2(ci, li)).rgb;
 }
 
+// [PN+JN] TrueColor smooth fade mode.
+// Interpolates directly between COLORMAP row 0 (brightest)
+// and row 31 (darkest), bypassing the intermediate 30 rows.
+vec3 indexRGB_TrueColor(float ci, float li)
+{
+  // Strictly clamp li to 0..31 range (excluding the 32nd invulnerability row!)
+  li = clamp(li, 0.0, 31.0);
+
+  // Normalize to 0.0 .. 1.0
+  float t = li / 31.0;
+
+  // V coordinates for rows 0 and 31 (texel centers)
+  float v_bright = 0.0  / 32.0;
+  float v_dark   = 31.0 / 32.0;
+
+  vec3 color_bright = texture2D(colormap, vec2(ci, v_bright)).rgb;
+  vec3 color_dark   = texture2D(colormap, vec2(ci, v_dark)).rgb;
+
+  // Interpolate between the brightest and darkest colors
+  return mix(color_bright, color_dark, t);
+}
+
 uniform sampler2D tex;
 uniform int fade_mode;
 
@@ -63,6 +85,11 @@ void main()
   {
     // Smooth fade mode.
     color = mix(indexRGB(ci, floor(li)), indexRGB(ci, floor(li + 1.0)), fract(li));
+  }
+  else if (fade_mode == 2)
+  {
+    // Full TrueColor mode.
+    color = indexRGB_TrueColor(ci, li);
   }
   else
   {
