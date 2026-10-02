@@ -47,7 +47,7 @@ Available for Windows, Linux and macOS in [Releases](https://github.com/kraflab/
 - [v0.26](./patch_notes/v0.26.md)
 
 ### Launcher
-There is a dedicated launcher for this port available [dsda-launcher](https://github.com/Pedro-Beirao/dsda-launcher).
+There is a dedicated launcher for this port available [dsda-launcher](https://github.com/dsda-org/dsda-launcher).
 
 ### Doom-in-Hexen Support
 - [Full details](./docs/doom_in_hexen.md)
