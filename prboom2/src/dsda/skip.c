@@ -131,7 +131,7 @@ void dsda_SkipToLogicTic(int tic) {
 }
 
 void dsda_EvaluateSkipModeGTicker(void) {
-  if (dsda_SkipMode() && skip_until_logictic && skip_until_logictic <= true_logictic)
+  if (dsda_SkipMode() && skip_until_logictic && skip_until_logictic <= dsda_DemoTic())
     dsda_ExitSkipMode();
 }
 

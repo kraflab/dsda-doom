@@ -1309,7 +1309,7 @@ dboolean G_Responder (event_t* ev)
 
     if (HU_MouseOnDemoProgressBar(&x))
     {
-      dsda_JumpToLogicTic(demo_tics_count * x / viewport_rect.w);
+      dsda_JumpToLogicTic((demo_tics_count * demo_playerscount) * x / viewport_rect.w);
       return true;
     }
   }

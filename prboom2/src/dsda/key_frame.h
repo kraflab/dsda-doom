@@ -30,7 +30,8 @@ typedef struct {
 typedef struct {
   byte* buffer;
   int buffer_length;
-  int game_tic_count;
+  int logictics_count;
+  int tic_count;
   parent_kf_t parent;
 } dsda_key_frame_t;
 

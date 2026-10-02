@@ -18,6 +18,7 @@
 #include <time.h>
 
 #include "doomstat.h"
+#include "dsda/state.h"
 #include "s_advsound.h"
 #include "s_sound.h"
 #include "st_stuff.h"
@@ -62,7 +63,8 @@ auto_kf_t* auto_key_frames;
 int auto_kf_size = 0;
 static auto_kf_t* last_auto_kf;
 dsda_key_frame_t* playback_key_frames;
-int playback_kf_size = 0;
+int playback_kf_count = 0;
+int playback_kf_interval = 0;
 static int restore_key_frame_index = -1;
 
 static int dsda_auto_key_frame_interval;
@@ -137,29 +139,29 @@ static dsda_key_frame_t* dsda_ClosestKeyFrame(int target_tic_count) {
 
   if (auto_key_frames)
     for (int i = 0; i < auto_kf_size; i++)
-      if (auto_key_frames[i].kf.game_tic_count <= target_tic_count)
-        if (!closest || auto_key_frames[i].kf.game_tic_count > closest->game_tic_count)
+      if (auto_key_frames[i].kf.logictics_count <= target_tic_count)
+        if (!closest || auto_key_frames[i].kf.logictics_count > closest->logictics_count)
           closest = &auto_key_frames[i].kf;
 
   if (playback_key_frames)
-    for (int i = 0; i < playback_kf_size; i++)
-      if (playback_key_frames[i].game_tic_count <= target_tic_count)
-        if (!closest || playback_key_frames[i].game_tic_count > closest->game_tic_count)
+    for (int i = 0; i < playback_kf_count; i++)
+      if (playback_key_frames[i].logictics_count <= target_tic_count)
+        if (!closest || playback_key_frames[i].logictics_count > closest->logictics_count)
           closest = &playback_key_frames[i];
 
   if (!demorecording && temp_kf.buffer)
-    if (temp_kf.game_tic_count <= target_tic_count)
-      if (!closest || temp_kf.game_tic_count > closest->game_tic_count)
+    if (temp_kf.logictics_count <= target_tic_count)
+      if (!closest || temp_kf.logictics_count > closest->logictics_count)
         closest = &temp_kf;
 
   if (!demorecording && quick_kf.buffer)
-    if (quick_kf.game_tic_count <= target_tic_count)
-      if (!closest || quick_kf.game_tic_count > closest->game_tic_count)
+    if (quick_kf.logictics_count <= target_tic_count)
+      if (!closest || quick_kf.logictics_count > closest->logictics_count)
         closest = &quick_kf;
 
   if (first_kf.buffer)
-    if (first_kf.game_tic_count <= target_tic_count)
-      if (!closest || first_kf.game_tic_count > closest->game_tic_count)
+    if (first_kf.logictics_count <= target_tic_count)
+      if (!closest || first_kf.logictics_count > closest->logictics_count)
         closest = &first_kf;
 
   return closest;
@@ -206,14 +208,16 @@ void dsda_InitAutoKeyFrames(void) {
 
 void dsda_InitPlaybackKeyFrames() {
   // Max of 60 keyframes are saved, and they need to have 1 minute in between each
-  playback_kf_size = demo_tics_count * demo_playerscount / TICRATE / 60;
-  if (playback_kf_size > 60)
-    playback_kf_size = 60;
+  playback_kf_count = (demo_tics_count * demo_playerscount) / (TICRATE * 60);
+  if (playback_kf_count > 60)
+    playback_kf_count = 60;
+
+  playback_kf_interval = (demo_tics_count * demo_playerscount) / playback_kf_count;
 
   if (playback_key_frames != NULL)
     Z_Free(playback_key_frames);
 
-  playback_key_frames = Z_Calloc(playback_kf_size, sizeof(dsda_key_frame_t));
+  playback_key_frames = Z_Calloc(playback_kf_count, sizeof(dsda_key_frame_t));
 }
 
 void dsda_ExportKeyFrame(byte* buffer, int length) {
@@ -233,12 +237,14 @@ void dsda_ExportKeyFrame(byte* buffer, int length) {
 
 // Stripped down version of G_DoSaveGame
 void dsda_StoreKeyFrame(dsda_key_frame_t* key_frame, byte complete, byte export) {
-  key_frame->game_tic_count = true_logictic;
+  key_frame->logictics_count = true_logictic;
+  key_frame->tic_count = dsda_DemoTic();
 
   P_InitSaveBuffer();
 
   P_SAVE_BYTE(complete);
-  P_SAVE_X(key_frame->game_tic_count);
+  P_SAVE_X(key_frame->logictics_count);
+  P_SAVE_X(key_frame->tic_count);
 
   // Store state of demo playback buffer
   dsda_StorePlaybackPosition();
@@ -284,7 +290,8 @@ void dsda_RestoreKeyFrame(dsda_key_frame_t* key_frame, dboolean skip_wipe) {
   save_p = key_frame->buffer;
 
   P_LOAD_BYTE(complete);
-  P_LOAD_X(key_frame->game_tic_count);
+  P_LOAD_X(key_frame->logictics_count);
+  P_LOAD_X(key_frame->tic_count);
 
   // Restore state of demo playback buffer
   dsda_RestorePlaybackPosition();
@@ -325,6 +332,9 @@ dboolean dsda_RestoreClosestKeyFrame(int tic) {
   key_frame = dsda_ClosestKeyFrame(tic);
 
   if (!key_frame)
+    return false;
+
+  if (key_frame->tic_count < dsda_DemoTic() && dsda_DemoTic() < tic)
     return false;
 
   dsda_RestoreKeyFrame(key_frame, true);
@@ -429,19 +439,13 @@ void dsda_UpdateAutoKeyFrames(void) {
 }
 
 void dsda_UpdatePlaybackKeyFrames(void) {
-  int current_time;
-  int interval_tics;
-
-  if (gameaction != ga_nothing || playback_kf_size == 0) return;
-
-  current_time = totalleveltimes + leveltime;
-  interval_tics = (demo_tics_count * demo_playerscount) / playback_kf_size;
+  if (gameaction != ga_nothing || playback_kf_count == 0) return;
 
   // Automatically save a key frame each interval
-  if (current_time % interval_tics == 0 &&
-      current_time / interval_tics < playback_kf_size) {
+  if (dsda_DemoTic() % playback_kf_interval == 0 &&
+      dsda_DemoTic() / playback_kf_interval < playback_kf_count) {
 
-    dsda_key_frame_t* current_key_frame = &playback_key_frames[current_time / interval_tics];
+    dsda_key_frame_t* current_key_frame = &playback_key_frames[dsda_DemoTic() / playback_kf_interval];
 
     if (!current_key_frame->buffer)
       dsda_StoreKeyFrame(current_key_frame, false, false);
