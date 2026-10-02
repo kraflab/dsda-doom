@@ -84,8 +84,8 @@ There is a dedicated launcher for this port available [dsda-launcher](https://gi
   - Some menus extend over the hud.
 
 ### Other Standards
-- [MBF21 v1.4](https://github.com/kraflab/mbf21)
-- [UMAPINFO v2.2](https://github.com/kraflab/umapinfo)
+- [MBF21 v1.4](https://github.com/doom-cross-port-collab/mbf21)
+- [UMAPINFO rev3](https://github.com/doom-cross-port-collab/umapinfo)
 
 ### Maintainers
 - @fabiangreffrath, @rfomin, @Pedro-Beirao, @andrikpowell, @elf-alchemist
