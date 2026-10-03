@@ -116,8 +116,17 @@ enum {
   comp_friendlyspawn,
   comp_voodooscroller,
   comp_reservedlineflag,
+  comp_thingsectorlight,
+  COMP_TOTAL,
 
-  MBF_COMP_TOTAL = 32  // limit in MBF format
+  // Some of the above comp values are not used in actual MBF21
+  // This is a DSDA-specific implementation detail
+  MBF21_COMP_TOTAL = 26,
+
+  // MBF used a fixed sized array for comp[]
+  // Must retain it so the read/write of MBF demos works correctly
+  // Yes, this does mean that MBF21_COMP_TOTAL is smaller, as of now
+  MBF_COMP_TOTAL = 32,
 };
 
 enum {
@@ -128,7 +137,7 @@ enum {
   COMPERR_NUM
 };
 
-extern int comp[MBF_COMP_TOTAL];
+extern int comp[COMP_TOTAL];
 extern int default_comperr[COMPERR_NUM];
 
 // -------------------------------------------

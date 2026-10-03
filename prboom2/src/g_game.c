@@ -2635,7 +2635,7 @@ void G_Compatibility(void)
   static const struct {
     complevel_t fix; // level at which fix/change was introduced
     complevel_t opt; // level at which fix/change was made optional
-  } levels[] = {
+  } levels[COMP_TOTAL] = {
     // comp_telefrag - monsters used to telefrag only on MAP30, now they do it for spawners only
     { mbf_compatibility, mbf_compatibility },
     // comp_dropoff - MBF encourages things to drop off of overhangs
@@ -2702,11 +2702,13 @@ void G_Compatibility(void)
     // comp_voodooscroller - Voodoo dolls on slow scrollers move too slowly
     { mbf21_compatibility, mbf21_compatibility },
     // comp_reservedlineflag - ML_RESERVED clears extended flags
-    { mbf21_compatibility, mbf21_compatibility }
+    { mbf21_compatibility, mbf21_compatibility },
+    // comp_thingsectorlight - Sprites are lit according to the average of transferred light levels
+    { mbf21_compatibility, mbf21_compatibility },
   };
   unsigned int i;
 
-  if (sizeof(levels)/sizeof(*levels) != MBF_COMP_TOTAL)
+  if (sizeof(levels)/sizeof(*levels) != COMP_TOTAL)
     I_Error("G_Compatibility: consistency error");
 
   for (i = 0; i < sizeof(levels)/sizeof(*levels); i++)
@@ -2846,6 +2848,7 @@ void G_ReloadDefaults(void)
     comp[comp_friendlyspawn] = options->comp_friendlyspawn;
     comp[comp_voodooscroller] = options->comp_voodooscroller;
     comp[comp_reservedlineflag] = options->comp_reservedlineflag;
+    comp[comp_thingsectorlight] = options->comp_thingsectorlight;
   }
 
   G_Compatibility();
@@ -3245,11 +3248,9 @@ byte *G_WriteOptions(byte *demo_p)
 
   *demo_p++ = monkeys;
 
-  {   // killough 10/98: a compatibility vector now
-    int i;
-    for (i = 0; i < MBF_COMP_TOTAL; i++)
-      *demo_p++ = comp[i] != 0;
-  }
+  // killough 10/98: a compatibility vector now
+  for (int i = 0; i < MBF_COMP_TOTAL; i++)
+    *demo_p++ = comp[i] != 0;
 
   // unused forceOldBsp
   *demo_p++ = 0;
@@ -3338,11 +3339,9 @@ const byte *G_ReadOptions(const byte *demo_p)
 
     monkeys = *demo_p++;
 
-    {   // killough 10/98: a compatibility vector now
-      int i;
-      for (i = 0; i < MBF_COMP_TOTAL; i++)
-        comp[i] = *demo_p++;
-    }
+    // killough 10/98: a compatibility vector now
+    for (int i = 0; i < MBF_COMP_TOTAL; i++)
+      comp[i] = *demo_p++;
 
     // unused forceOldBsp
     demo_p++;
