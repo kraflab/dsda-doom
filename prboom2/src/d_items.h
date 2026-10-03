@@ -41,6 +41,7 @@
 // Internal weapon flags
 //
 #define WIF_ENABLEAPS 0x00000001 // [XA] enable "ammo per shot" field for native Doom weapon codepointers
+#define WIF_ENABLERECOIL 0x00000002 // [AR] enable custom weapon recoil
 
 // haleyjd 09/11/07: weapon flags
 //
@@ -63,6 +64,7 @@ typedef struct
   int         holdatkstate;
   int         flashstate;
   int         ammopershot;
+  int         recoil;
   int         intflags;
   int         flags;
 } weaponinfo_t;
