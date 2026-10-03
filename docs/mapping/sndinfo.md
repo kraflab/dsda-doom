@@ -1,3 +1,8 @@
+---
+title: SNDINFO
+parent: Mapping
+---
+
 ## SNDINFO
 
 SNDINFO is a lump that allows authors to configure various advanced sound features. In DSDA-Doom, this lump is currently only used to define ambient sound effects.

@@ -1,3 +1,11 @@
+---
+nav_order: 1
+layout: page
+title: Overview
+permalink: /
+has_children: true
+---
+
 <div align="center">
     <img src="./prboom2/ICONS/dsda-doom.png" alt="dsda-doom logo" width="200"/>
     <h1>dsda-doom</h1>
@@ -39,7 +47,7 @@ Available for Windows, Linux and macOS in [Releases](https://github.com/kraflab/
 - [v0.26](./patch_notes/v0.26.md)
 
 ### Launcher
-There is a dedicated launcher for this port available [dsda-launcher](https://github.com/Pedro-Beirao/dsda-launcher).
+There is a dedicated launcher for this port available [dsda-launcher](https://github.com/dsda-org/dsda-launcher).
 
 ### Doom-in-Hexen Support
 - [Full details](./docs/doom_in_hexen.md)
@@ -76,8 +84,8 @@ There is a dedicated launcher for this port available [dsda-launcher](https://gi
   - Some menus extend over the hud.
 
 ### Other Standards
-- [MBF21 v1.4](https://github.com/kraflab/mbf21)
-- [UMAPINFO v2.2](https://github.com/kraflab/umapinfo)
+- [MBF21 v1.4](https://github.com/doom-cross-port-collab/mbf21)
+- [UMAPINFO rev3](https://github.com/doom-cross-port-collab/umapinfo)
 
 ### Maintainers
 - @fabiangreffrath, @rfomin, @Pedro-Beirao, @andrikpowell, @elf-alchemist

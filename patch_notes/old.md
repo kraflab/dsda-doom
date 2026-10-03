@@ -1,3 +1,8 @@
+---
+title: Old
+parent: Changelog
+---
+
 ### v0.12.1
 - You can now play heretic
 
