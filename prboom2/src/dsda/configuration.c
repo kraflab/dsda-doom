@@ -114,6 +114,7 @@ void M_ChangeSpeed(void);
 void M_ChangeShorttics(void);
 void I_InitSoundParams(void);
 void S_Init(void);
+void I_ChangeAudioDevice(void);
 void M_ChangeMIDIPlayer(void);
 void HU_InitCrosshair(void);
 void HU_InitThresholds(void);
@@ -755,6 +756,10 @@ dsda_config_t dsda_config[dsda_config_count] = {
   [dsda_config_snd_soundfont] = {
     "snd_soundfont", dsda_config_snd_soundfont,
     CONF_STRING("")
+  },
+  [dsda_config_snd_device] = {
+    "snd_device", dsda_config_snd_device,
+    CONF_STRING("Default"), NULL, NOT_STRICT, I_ChangeAudioDevice
   },
   [dsda_config_mus_fluidsynth_chorus] = {
     "mus_fluidsynth_chorus", dsda_config_mus_fluidsynth_chorus,

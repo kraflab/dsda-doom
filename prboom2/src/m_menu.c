@@ -1951,6 +1951,20 @@ static void M_AppendText(char *dest, size_t dest_size, const char *src)
     snprintf(dest + len, dest_size - len, "%s", src);
 }
 
+static void M_TruncateTextToWidth(char *text, size_t text_size, int max_width)
+{
+  int len = strlen(text);
+
+  if (len == 0 || M_GetPixelWidth(text) <= max_width)
+    return;
+
+  while (len > 0 && M_GetPixelWidth(text) + M_GetPixelWidth("...") > max_width)
+    text[--len] = 0;
+
+  if (len > 0)
+    M_AppendText(text, text_size, "...");
+}
+
 static void M_TrimSetupString(char *text, dboolean update_entry_index)
 {
   while (text[0] && M_GetPixelWidth(text) >= MAXENTRYWIDTH)
@@ -2268,6 +2282,21 @@ static void M_DrawSetting(const setup_menu_t* s, int y)
 
   if (!M_SetupSettingText(s, text, sizeof(text), true))
     return;
+
+  // bit of a jank (if not disgusting) way to do this, but it's to avoid the long strings caused by most audio outputs >:D
+  if ((flags & S_CHOICE) && (flags & S_STR))
+  {
+    size_t len = strlen(text);
+
+    if (len >= 2 && text[len - 1] == '<' && text[len - 2] == ' ')
+    {
+      text[len - 2] = 0;
+      M_TruncateTextToWidth(text, sizeof(text), BASE_WIDTH - x - M_GetPixelWidth(" <"));
+      M_AppendText(text, sizeof(text), " <");
+    }
+    else
+      M_TruncateTextToWidth(text, sizeof(text), BASE_WIDTH - x);
+  }
 
   if ((flags & S_STRING) && setup_select && (flags & (S_HILITE | S_SELECT)))
     M_DrawSetupStringCursor(x, y, text);
@@ -3523,6 +3552,7 @@ setup_menu_t gen_audio_settings[] = {
   { "Parallel Same-Sound Window", S_NUM, m_conf, G_X, dsda_config_parallel_sfx_window },
   EMPTY_LINE,
   { "Preferred MIDI player", S_CHOICE | S_STR, m_conf, G_X, dsda_config_snd_midiplayer, 0, midiplayers },
+  { "Audio Output Device", S_CHOICE | S_STR, m_conf, G_X, dsda_config_snd_device, 0, audio_devices_list },
 
   PREV_PAGE(gen_video_settings),
   NEXT_PAGE(gen_mouse_settings),
