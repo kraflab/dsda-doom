@@ -1,3 +1,8 @@
+---
+title: Optional sounds
+parent: Mapping
+---
+
 # Optional Sounds
 
 These are sound lumps that can be optionally provided and will be used instead of the game's default. For example instead of forcing the menu opening sound to be the same sound as as switch, it can be its own.
