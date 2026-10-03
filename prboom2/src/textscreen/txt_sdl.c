@@ -45,6 +45,7 @@ static int is_opengl = false;
 #define SCREEN_ROWS 25
 
 static GLuint gl_texture = 0;
+static GLubyte *gl_texture_data;
 static int glwindow_w = 0;
 static int glwindow_h = 0;
 
@@ -206,11 +207,22 @@ int TXT_Init(void)
 void TXT_Shutdown(void)
 {
     if (is_opengl)
+    {
         if (gl_texture != 0)
         {
             glDeleteTextures(1, &gl_texture);
             gl_texture = 0;
         }
+
+        free(gl_texture_data);
+        gl_texture_data = NULL;
+    }
+
+    if (texture_upscaled != NULL)
+    {
+        SDL_DestroyTexture(texture_upscaled);
+        texture_upscaled = NULL;
+    }
 
     free(screendata);
     screendata = NULL;
@@ -341,6 +353,12 @@ void TXT_UpdateScreenArea(int x, int y, int w, int h)
     // the screen; find a more efficient way to do it.
     screentx = SDL_CreateTextureFromSurface(renderer, screenbuffer);
 
+    if (screentx == NULL)
+    {
+        lprintf(LO_ERROR, "Failed to create text screen texture: %s\n", SDL_GetError());
+        return;
+    }
+
     SDL_RenderClear(renderer);
     GetDestRect(&rect);
 
@@ -450,7 +468,6 @@ int GL_TXT_Init(void)
 
 void GL_TXT_UpdateScreen(void)
 {
-    static GLubyte *texture_data;
     int tex_w, tex_h, tex_w2, tex_h2;
 
     glClearColor(0, 0, 0, 1);
@@ -458,7 +475,6 @@ void GL_TXT_UpdateScreen(void)
 
     SDL_LockSurface(screenbuffer);
 
-    texture_data = NULL;
     tex_w = TXT_SCREEN_W * FONT_CHAR_W;
     tex_h = TXT_SCREEN_H * FONT_CHAR_H;
 
@@ -467,8 +483,8 @@ void GL_TXT_UpdateScreen(void)
     tex_w2 = tex_w * 2;
     tex_h2 = tex_h * 2;
 
-    if (!texture_data)
-        texture_data = malloc(tex_w2 * tex_h2 * 4);
+    if (!gl_texture_data)
+        gl_texture_data = malloc(tex_w2 * tex_h2 * 4);
 
     for (int y = 0; y < TXT_SCREEN_H; y++) {
         for (int x = 0; x < TXT_SCREEN_W; x++) {
@@ -513,10 +529,10 @@ void GL_TXT_UpdateScreen(void)
                         for (int dx = 0; dx < 2; dx++)
                         {
                             int idx = ((dst_y + dy) * tex_w2 + (dst_x + dx)) * 4;
-                            texture_data[idx + 0] = r;
-                            texture_data[idx + 1] = g;
-                            texture_data[idx + 2] = b;
-                            texture_data[idx + 3] = 255;
+                            gl_texture_data[idx + 0] = r;
+                            gl_texture_data[idx + 1] = g;
+                            gl_texture_data[idx + 2] = b;
+                            gl_texture_data[idx + 3] = 255;
                         }
                 }
             }
@@ -532,12 +548,12 @@ void GL_TXT_UpdateScreen(void)
         glBindTexture(GL_TEXTURE_2D, gl_texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_w2, tex_h2, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_w2, tex_h2, 0, GL_RGBA, GL_UNSIGNED_BYTE, gl_texture_data);
     }
     else
     {
         glBindTexture(GL_TEXTURE_2D, gl_texture);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_w2, tex_h2, GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, tex_w2, tex_h2, GL_RGBA, GL_UNSIGNED_BYTE, gl_texture_data);
     }
 
     // Draw 2x texture (image) normal size in window
@@ -772,6 +788,30 @@ signed int TXT_GetChar(void)
                 if (is_opengl && ev.window.event == SDL_WINDOWEVENT_RESIZED)
                 {
                     GL_TXT_SetupOrtho(ev.window.data1, ev.window.data2);
+                }
+                break;
+
+            case SDL_CONTROLLERBUTTONDOWN:
+                switch (ev.cbutton.button)
+                {
+                    case SDL_CONTROLLER_BUTTON_A:
+                    case SDL_CONTROLLER_BUTTON_START:
+                        return KEY_ENTER;
+
+                    case SDL_CONTROLLER_BUTTON_B:
+                        return 27;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_UP:
+                        return KEY_UPARROW;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+                        return KEY_DOWNARROW;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+                        return KEY_LEFTARROW;
+
+                    case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+                        return KEY_RIGHTARROW;
                 }
                 break;
 
